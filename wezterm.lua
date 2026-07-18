@@ -39,4 +39,27 @@ config.colors = { background = '#0d1117', foreground = '#e6edf3' }
 -- module form instead:  { 'python', '-m', 'taskboard' }
 config.default_prog = { 'taskboard' }
 
+-- ----------------------------------------------------------------------------
+-- "toggle the window border" — the app (Textual) CANNOT touch OS window chrome,
+-- but WezTerm can at runtime. These are WezTerm key bindings, not app buttons.
+-- ----------------------------------------------------------------------------
+config.keys = {
+  -- Ctrl+Shift+B : flip the frame on/off (NONE <-> TITLE|RESIZE)
+  {
+    key = 'b',
+    mods = 'CTRL|SHIFT',
+    action = wezterm.action_callback(function(window, _pane)
+      local overrides = window:get_config_overrides() or {}
+      if overrides.window_decorations == 'TITLE | RESIZE' then
+        overrides.window_decorations = 'NONE'          -- back to frameless
+      else
+        overrides.window_decorations = 'TITLE | RESIZE' -- show the frame
+      end
+      window:set_config_overrides(overrides)
+    end),
+  },
+  -- F11 : borderless fullscreen (another way to go frameless)
+  { key = 'F11', action = wezterm.action.ToggleFullScreen },
+}
+
 return config
