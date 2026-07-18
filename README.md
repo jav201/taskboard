@@ -177,7 +177,7 @@ Angeles, JST → Tokyo, …), so your saved board keeps working.
 ```powershell
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pytest            # 27 Pilot + render tests
+pytest            # 28 Pilot + render tests
 ```
 
 ## Project layout

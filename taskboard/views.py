@@ -105,10 +105,13 @@ def valid_url(url: str | None) -> str | None:
     return u
 
 
-def title_markup(task: Task, width: int, selected: bool) -> str:
-    """A fixed-`width` task-title cell: escaped, optional OSC-8 link, ↗ glyph."""
+def title_markup(task: Task, width: int, selected: bool, arrow: bool = True) -> str:
+    """A fixed-`width` task-title cell: escaped, optional OSC-8 link, ↗ glyph.
+
+    `arrow=False` omits the inline ↗ (used where ↗ is drawn as a separate,
+    space-reserved right indicator so it can never collide with the title)."""
     url = valid_url(task.url)
-    suffix = " ↗" if url else ""
+    suffix = " ↗" if (url and arrow) else ""
     text = fit(task.title + suffix, width)   # width math on PLAIN text
     body = escape(text)                       # then escape for markup
     if url:
@@ -116,6 +119,46 @@ def title_markup(task: Task, width: int, selected: bool) -> str:
     if selected:
         body = f"[reverse]{body}[/reverse]"
     return body
+
+
+def _fit_indicators(tokens: list[tuple[str, str]], budget: int) -> tuple[str, int]:
+    """Right-aligned indicator glyphs, each rendered as ' <glyph>' (2 cells).
+
+    Keeps as many as fit within `budget`, dropping from the LEFT (so the
+    rightmost/most-important marker survives when space is tight). Returns
+    (markup, used_width). `tokens` is [(glyph, color_key), ...]."""
+    kept: list[tuple[str, str]] = []
+    cost = 0
+    for glyph, col in reversed(tokens):
+        if cost + 2 <= budget:
+            kept.insert(0, (glyph, col))
+            cost += 2
+        else:
+            break
+    markup = "".join(c(" " + g, col) for g, col in kept)
+    return markup, cost
+
+
+def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
+              prefix: str = "", prefix_color: str = "mut",
+              allow_priority: bool = True) -> str:
+    """A width-exact card: `prefix` + truncated title + right indicators (↗ ◉).
+
+    Title is truncated with … so it can NEVER share a cell with the trailing
+    indicators, at any width down to 0. Always returns exactly `wc` cells."""
+    if wc <= 0:
+        return ""
+    if wc < len(prefix):
+        return c(fit(prefix, wc), prefix_color)
+    tokens: list[tuple[str, str]] = []
+    if valid_url(task.url):
+        tokens.append(("↗", "accent"))
+    if allow_priority and task.priority == "high" and task.status != "done":
+        tokens.append(("◉", "amber"))
+    ind_markup, used = _fit_indicators(tokens, wc - len(prefix))
+    title_w = max(0, wc - len(prefix) - used)
+    pre = c(prefix, prefix_color) if prefix else ""
+    return pre + title_markup(task, title_w, selected, arrow=False) + ind_markup
 
 
 def progress_bar(done: int, total: int, width: int, color: str) -> str:
@@ -199,7 +242,14 @@ def header(title: str, right: str, w: int) -> str:
     tvis = len(_strip(title))
     rvis = len(_strip(right))
     dash = w - 8 - tvis - rvis            # 8 = "╭─ " + " " + " " + " ─╮"
-    dash = max(1, dash)
+    if dash < 1:                          # too tight -> drop the right content
+        right, rvis = "", 0
+        dash = w - 8 - tvis
+    if dash < 1:                          # still tight -> truncate the title itself
+        plain = fit(_strip(title), max(0, w - 6))
+        dash2 = max(0, w - 6 - len(plain))
+        return (c("╭─ ", "frame") + c(plain, "accent", bold=True) + " "
+                + c("─" * dash2, "frame") + c("─╮", "frame"))
     return (c("╭─ ", "frame") + title + " " + c("─" * dash, "frame") + " "
             + right + " " + c("─╮", "frame"))
 
@@ -284,14 +334,9 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
             return ""
         if idx < len(items):
             t = items[idx]
-            sel = t.id == selected_id
-            pr = " ◉" if t.priority == "high" and t.status != "done" else ""
-            mark = "▲ " if t.status == "blocked" else ""
-            wt = colw - len(pr) - len(mark)
-            body = (c(escape(mark), "over") if mark else "") + title_markup(t, wt, sel)
-            if pr:
-                body += c(escape(pr), "amber")
-            return body
+            blocked = t.status == "blocked"
+            return card_cell(t, board, colw, t.id == selected_id,
+                             prefix="▲ " if blocked else "", prefix_color="over")
         return fit("", colw)
 
     def meta(items, colw):
@@ -362,14 +407,17 @@ def render_columns(board, show_archived, selected_id, today=None,
     for label, key, wc in cols:
         items = buckets[key]
         cnt = str(len(items))
-        spk_w = max(0, min(4, wc - 4 - len(cnt)))
+        tail = len(cnt) + 1                 # mandatory " " + count
+        if wc < tail + 1:                   # not even room for "L cnt"
+            hdr.append(fit(f"{label} {cnt}"[:wc], wc))
+            continue
+        # optional sparkline needs 1 space + >=1 label char reserved
+        spk_w = max(0, min(4, wc - tail - 2)) if wc - tail - 2 >= 0 else 0
+        lab_w = max(0, wc - tail - (spk_w + 1 if spk_w > 0 else 0))
+        cell = c(fit(label, lab_w), "hd", bold=True) + " " + c(cnt, "dim")
         if spk_w > 0:
-            lab = fit(label, max(1, wc - 2 - len(cnt) - spk_w))
-            cell = (c(lab, "hd", bold=True) + " " + c(cnt, "dim") + " "
-                    + sparkline(spark_for(items), "green" if key == "done" else "accent", spk_w))
-        else:
-            lab = fit(label, max(1, wc - 1 - len(cnt)))
-            cell = c(lab, "hd", bold=True) + " " + c(cnt, "dim")
+            cell += " " + sparkline(spark_for(items),
+                                    "green" if key == "done" else "accent", spk_w)
         hdr.append(cell)
     lines.append(line(c("│", "frame").join(hdr)))
     lines.append(_border("├", "─", "┤", junctions("┼"), w))
@@ -387,12 +435,11 @@ def render_columns(board, show_archived, selected_id, today=None,
             t = items[r]
             sel = t.id == selected_id
             if key == "done":
-                card.append(c("✓ ", "done") + title_markup(t, wc - 2, sel))
-            elif t.priority == "high" and t.status != "done":
-                card.append(c("▊ ", project_color(board, t))
-                            + title_markup(t, wc - 4, sel) + " " + c("◉", "amber"))
+                card.append(card_cell(t, board, wc, sel, prefix="✓ ",
+                                      prefix_color="done", allow_priority=False))
             else:
-                card.append(c("▊ ", project_color(board, t)) + title_markup(t, wc - 2, sel))
+                card.append(card_cell(t, board, wc, sel, prefix="▊ ",
+                                      prefix_color=project_color(board, t)))
         lines.append(line(c("│", "frame").join(card)))
         if line_map is not None:
             idx = len(lines) - 1
@@ -410,9 +457,15 @@ def render_columns(board, show_archived, selected_id, today=None,
             p_obj = board.project_by_id(t.project_id)
             pname = p_obj.name if p_obj else "—"
             chip_txt, chip_col = date_chip(t, today)
-            avail = max(0, wc - 7)
-            meta.append(c("  ", "dim") + c(escape(fit(pname, 4)), "dim") + " "
-                        + c(escape(fit(chip_txt, avail)), chip_col))
+            # width-exact: 2 lead spaces + pname(<=4) + gap + chip, all within wc
+            lead = min(2, wc)
+            remain = wc - lead
+            pname_w = min(4, remain)
+            gap = 1 if remain - pname_w >= 1 else 0
+            chip_w = max(0, remain - pname_w - gap)
+            meta.append(c(" " * lead, "dim") + c(escape(fit(pname, pname_w)), "dim")
+                        + (" " if gap else "")
+                        + c(escape(fit(chip_txt, chip_w)), chip_col))
         lines.append(line(c("│", "frame").join(meta)))
 
     lines.append(bottom(junctions("┴"), w))
@@ -446,7 +499,10 @@ def render_agenda(board, show_archived, selected_id, today=None,
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
-    title_w = max(6, inner - 32)   # fixed cols: dot/proj/glyph/braille/chip = 32
+    # full row has fixed cols (dot/proj/glyph/braille/chip = 32); when there's
+    # not enough width for a usable title, fall back to a compact dot+title row.
+    title_w = inner - 32
+    compact = title_w < 6
 
     tasks = board.visible_tasks(show_archived)
     overdue_n = sum(1 for t in tasks if agenda_bucket(t, today) == "overdue")
@@ -471,16 +527,19 @@ def render_agenda(board, show_archived, selected_id, today=None,
         for t in rows:
             sel = t.id == selected_id
             pcol = project_color(board, t)
-            p_obj = board.project_by_id(t.project_id)
-            pname = p_obj.name if p_obj else "Inbox"
-            sg, sgcol = status_glyph(t)
-            row_urg = urgency(t, today)
-            braille = _URG_BRAILLE[row_urg]
-            chip_txt, chip_col = date_chip(t, today)
-            row = (" " + c("●", pcol) + " " + title_markup(t, title_w, sel) + " "
-                   + c(escape(fit(pname[:8], 8)), "dim") + " "
-                   + c(sg, sgcol) + " " + c(braille, _URG_COLOR[row_urg]) + "  "
-                   + c(escape(fit(chip_txt, 12)), chip_col))
+            if compact:                      # narrow: dot + title only (width-exact)
+                row = " " + c("●", pcol) + " " + title_markup(t, inner - 3, sel)
+            else:
+                p_obj = board.project_by_id(t.project_id)
+                pname = p_obj.name if p_obj else "Inbox"
+                sg, sgcol = status_glyph(t)
+                row_urg = urgency(t, today)
+                braille = _URG_BRAILLE[row_urg]
+                chip_txt, chip_col = date_chip(t, today)
+                row = (" " + c("●", pcol) + " " + title_markup(t, title_w, sel) + " "
+                       + c(escape(fit(pname[:8], 8)), "dim") + " "
+                       + c(sg, sgcol) + " " + c(braille, _URG_COLOR[row_urg]) + "  "
+                       + c(escape(fit(chip_txt, 12)), chip_col))
             lines.append(line(row))
             if line_map is not None:
                 line_map[t.id] = len(lines) - 1

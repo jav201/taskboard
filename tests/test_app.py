@@ -347,6 +347,38 @@ async def test_nav_scrolls_selection_into_view_when_overflowing(tmp_path):
         assert top <= idx < top + vp.size.height     # scrolled into view
 
 
+def test_columns_card_indicators_never_overlap_title(tmp_path):
+    """A long-title, high-priority, has-url card: the title text and its trailing
+    ↗/◉ indicators must occupy DISJOINT column ranges at every width (proved by
+    column-range math on the rendered line), and every line == the exact width."""
+    from taskboard.models import Board, Project, Task
+    from taskboard.views import render_columns, distribute
+    b = Board.load(str(tmp_path / "b.json"))
+    lp = Project("Platform Reliability and Observability", "rose", "on_track")
+    b.projects.append(lp)
+    b.add_task(Task("Refactor the whole authentication and onboarding subsystem",
+                    lp.id, "backlog", "high", due_date="2026-07-20",
+                    url="https://example.com/x"))
+    today = date(2026, 7, 17)
+    seen_truncation = False
+    for w in (130, 96, 40, 30, 24):     # wide, WezTerm default, narrow, tiny, MIN
+        lines = str(render_columns(b, False, None, today, width=w, height=0)).split("\n")
+        assert all(len(l) == w for l in lines), f"width {w}: a line != {w}"
+        wc0 = distribute((w - 2) - 3, 4)[0]        # BACKLOG (first) column width
+        for l in lines:
+            cell = l[1:1 + wc0]                     # chars inside the first column
+            if "◉" not in cell and "↗" not in cell:
+                continue
+            first = min(i for i, ch in enumerate(cell) if ch in "◉↗")
+            # from the first indicator onward: ONLY spaces/indicators (no title char)
+            assert all(ch in " ◉↗" for ch in cell[first:]), (w, repr(cell))
+            title_part = cell[2:first]              # after the "▊ " prefix
+            assert "◉" not in title_part and "↗" not in title_part
+            if "…" in title_part:
+                seen_truncation = True
+    assert seen_truncation   # the long title really was truncated to reserve room
+
+
 async def test_url_task_open_action(tmp_path, monkeypatch):
     app = make_app(tmp_path)
     async with app.run_test() as pilot:

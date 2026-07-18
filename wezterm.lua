@@ -35,9 +35,10 @@ config.window_padding = { left = 6, right = 6, top = 4, bottom = 4 }
 config.color_scheme = nil
 config.colors = { background = '#0d1117', foreground = '#e6edf3' }
 
--- launch the task board directly. If `taskboard` isn't on PATH, use the
--- module form instead:  { 'python', '-m', 'taskboard' }
-config.default_prog = { 'taskboard' }
+-- WezTerm opens your normal shell — so you can run taskboard OR any other
+-- widget/command in this window. Just type `taskboard` to launch the board.
+-- Prefer a DEDICATED window that boots straight into the board? Uncomment:
+--   config.default_prog = { 'taskboard' }        -- (or { 'python', '-m', 'taskboard' })
 
 -- ----------------------------------------------------------------------------
 -- "toggle the window border" — the app (Textual) CANNOT touch OS window chrome,
