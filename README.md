@@ -1,0 +1,176 @@
+# taskboard
+
+A **frameless kanban desktop-widget task board** built in [Textual](https://textual.textualize.io/).
+Run it in a borderless terminal, pin it always-on-top, and it floats on your desktop as a live
+widget. Four switchable views over the same data; single dark theme tuned for a terminal.
+
+Built and verified against **Textual 8.2.8 / rich 15.0.0** (Python 3.12).
+
+```
+╭─ ◆ TASKBOARD ──────────────────────────────── 12 open · 4 due ─╮
+│          │TODO             │DOING            │DONE             │
+├──────────┼─────────────────┼─────────────────┼─────────────────┤
+│▐ Textual │dev-flow doc     │M22 pitfalls m… ◉│systems 5/5      │
+│▐ ▇▇▇░░░░░│                 │1 more           │1 more           │
+╰──────────┴─────────────────┴─────────────────┴─────────────────╯
+```
+
+## Views
+
+| Key | View | What it's for |
+|-----|------|---------------|
+| `1` | **Swimlanes** | Projects as rows × TODO/DOING/DONE columns, with a half-block progress bar per project. |
+| `2` | **Columns** | Classic kanban: BACKLOG / ACTIVE / BLOCKED / DONE, project-colored cards, WIP counts + throughput sparklines, due chips. |
+| `3` | **Agenda** | Tasks grouped by urgency: OVERDUE / TODAY / THIS WEEK / LATER / NO DATE, with braille due-bars. |
+| `4` | **Gantt** | An 8-week time axis; a bar per project (start→due) with its task bars underneath; undated items listed under UNSCHEDULED. |
+
+## Install as a command
+
+You have never packaged a CLI before, so here is the simplest correct path first.
+
+### Recommended: pipx (isolated, gives you a global `taskboard` command)
+
+`pipx` installs the app into its own isolated environment and puts the `taskboard` command on your PATH — it won't collide with anything else.
+
+```powershell
+python -m pip install --user pipx
+python -m pipx ensurepath
+# >>> close and REOPEN your terminal here so PATH updates <<<
+pipx install "C:\Users\jjgh8\OneDrive\Documents\Github\taskboard"
+```
+
+Now, from any terminal:
+
+```powershell
+taskboard
+```
+
+To **update** after you edit the code:
+
+```powershell
+pipx reinstall taskboard
+```
+
+### Alternative: pip (user install)
+
+```powershell
+cd "C:\Users\jjgh8\OneDrive\Documents\Github\taskboard"
+pip install --user .
+taskboard
+```
+
+If `taskboard` is "not recognized", your Python **user scripts** dir isn't on PATH. Find it and add it:
+
+```powershell
+python -c "import site,os; print(os.path.join(site.getuserbase(), 'Scripts'))"
+# add that folder to your PATH (System Settings → Environment Variables), reopen terminal
+```
+
+To update after edits: `pip install --user . --force-reinstall`.
+
+### Run from source (development)
+
+```powershell
+cd "C:\Users\jjgh8\OneDrive\Documents\Github\taskboard"
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m taskboard
+```
+
+Both `python -m taskboard` and the installed `taskboard` command launch the same app.
+
+## Where your data lives
+
+Tasks are stored as JSON at:
+
+```
+C:\Users\<you>\.taskboard\board.json
+```
+
+It is **not** inside the installed package (the package dir is read-only once pip/pipx-installed).
+The file is created and seeded with demo data on first run. If it ever gets corrupted, the app
+starts empty and leaves the file untouched so you can recover it by hand.
+
+## Make it a frameless desktop widget
+
+Windows Terminal cannot go borderless, so use **WezTerm** (or Alacritty). In your
+`~/.wezterm.lua`:
+
+```lua
+local wezterm = require 'wezterm'
+return {
+  window_decorations = "NONE",          -- no titlebar / frame
+  enable_tab_bar = false,               -- no tab strip
+  window_background_opacity = 0.85,     -- let the desktop show through
+  default_prog = { "taskboard" },       -- launch the app directly (or: {"python","-m","taskboard"})
+  initial_cols = 68,                    -- fits the 66-wide widget
+  initial_rows = 26,
+}
+```
+
+Then pin it **always-on-top** with [PowerToys](https://learn.microsoft.com/windows/powertoys/)
+→ *Always On Top* (default shortcut `Win+Ctrl+T`). The frame is gone; Textual paints the rest.
+
+## Keybindings
+
+| Key | Action |
+|-----|--------|
+| `1` `2` `3` `4` | Switch view (Swimlanes / Columns / Agenda / Gantt) |
+| `↑` `↓` (or `k` `j`) | Move the task selection |
+| `a` | Add task |
+| `p` | Add project |
+| `e` | Edit selected task |
+| `d` / `Delete` | Delete selected task (asks to confirm) |
+| `x` | Archive / unarchive selected task |
+| `h` | Toggle showing archived items (hidden by default) |
+| `o` | Open the selected task's URL in your browser |
+| `q` | Quit |
+
+Inside a modal: `Esc` cancels, `Tab` moves between fields, `Enter` on a button activates it.
+
+Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink (clickable in
+terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
+
+## The two custom clocks
+
+The bottom ribbon shows local time, date, ISO week (e.g. `W29`), and **two custom timezone
+clocks**. Edit them at the top of [`taskboard/ribbon.py`](taskboard/ribbon.py):
+
+```python
+CLOCKS: list[tuple[str, str]] = [
+    ("LA", "America/Los_Angeles"),
+    ("Madrid", "Europe/Madrid"),
+]
+```
+
+Each entry is `(short label, IANA timezone)`. Timezone data ships via the `tzdata` dependency, so
+it works on Windows without extra setup.
+
+## Development
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+pytest            # 13 Pilot + render tests
+```
+
+## Project layout
+
+```
+taskboard/
+  taskboard/
+    __init__.py        package + version
+    __main__.py        entry point: main() -> TaskboardApp().run()
+    app.py             the App: view switching, selection, modals, one clock interval
+    models.py          Project / Task dataclasses + Board (JSON persistence, seed)
+    views.py           the four view renderers (rich markup, escaped user text)
+    modals.py          add/edit task, add/edit project, confirm-delete modals
+    ribbon.py          bottom status bar (time/date/week + two custom clocks)
+    taskboard.tcss     palette + layout (single dark theme)
+  tests/
+    test_app.py        Pilot tests + pure-render tests
+  pyproject.toml       packaging + console entry point (`taskboard`)
+  requirements.txt     pinned deps
+  README.md
+```
