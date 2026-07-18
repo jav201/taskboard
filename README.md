@@ -137,7 +137,8 @@ window, then tap it again to go frameless.
 | `d` / `Delete` | Delete selected task (asks to confirm) |
 | `x` | Archive / unarchive selected task |
 | `v` | Toggle showing archived items (hidden by default) |
-| `o` | Open the selected task's URL in your browser |
+| `o` | Open the selected task's URLs in your browser (opens all of them) |
+| `i` | Open the selected task's images in your OS default viewer |
 | `c` | Choose the two ribbon city clocks (type to find a city) |
 | `q` | Quit |
 

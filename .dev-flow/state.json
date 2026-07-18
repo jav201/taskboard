@@ -1,0 +1,65 @@
+{
+  "project": "taskboard",
+  "language": "en",
+  "batch_id": "2026-07-18-batch-01",
+  "batch_objective": "Scrub personal seed->generic demo; multi-URL per task; images per task; + full engineering artifact audit",
+  "current_phase": 6,
+  "phase_status": "awaiting-sync",
+  "iterations_per_phase": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0
+  },
+  "artifacts": {
+    "1": ".dev-flow/01-requirements.md",
+    "2": ".dev-flow/02-review.md",
+    "3": ".dev-flow/03-increments/",
+    "4": ".dev-flow/04-validation.md",
+    "5": ".dev-flow/05-postmortem.md",
+    "6": ".dev-flow/06-docs/"
+  },
+  "standing_authorization": {
+    "date": "2026-07-18",
+    "autonomy": "End-to-end autonomous; agent self-approves every gate against the objective exit criteria and documents each decision.",
+    "merge": "Commit straight to main (no PR).",
+    "operator_phrasing": "End to end autonomously... Commit straight to main"
+  },
+  "decisions_log": [
+    {
+      "phase": 1,
+      "date": "2026-07-18",
+      "decision": "approved",
+      "notes": "3 US/7 HLR/23 LLR/3 AT/26 TC; DoR all READY; draft-time citations real; gaps (missing cancelled+archived in seed, 16 author-tokens) noted. Coverage/Certainty/Evidence bar met."
+    },
+    {
+      "phase": 2,
+      "date": "2026-07-18",
+      "decision": "approved",
+      "notes": "0 blockers; 4 majors (F1 test:361 url= kwarg; F2 AT-003 press i; F3 startfile isfile/try-except/UNC guard; F4 drop .svg) folded into Phase 3; 5 minors. Coverage/Certainty/Evidence met."
+    },
+    {
+      "phase": 3,
+      "date": "2026-07-18",
+      "decision": "approved",
+      "notes": "3 increments (f1b9e96 multi-URL, 63f4a22 images, 7532e03 seed) pushed to main. 36 tests green (base 28+8). Seed denylist 0 author tokens (independently rescanned). os.startfile allowlist {png,jpg,jpeg,gif,webp,bmp} no svg + isfile + UNC/file:// refuse + try/except verified. AT-001/002/003 black-box + mutation-checked. Coverage/Certainty/Evidence met."
+    },
+    {
+      "phase": 4,
+      "date": "2026-07-18",
+      "decision": "approved",
+      "notes": "Validation PASS. AT-001/002/003 each reconciled to one node; both layers; ledger 28->36; supersession 0 live .url; 1 minor (modal prefill by inspection); 2 accepted open items. No iterate."
+    },
+    {
+      "phase": 6,
+      "date": "2026-07-18",
+      "decision": "approved",
+      "notes": "Docs done: traceability 0 gaps, functionality, exec-summary, 3 mermaid diagrams. Postmortem: 0 iterations, 10/10 findings closed/accepted. README updated (i binding + all-URLs). Batch complete; artifacts committed to main. 5 carry-forward items for next batch."
+    }
+  ],
+  "obsidian_synced": false,
+  "created_at": "2026-07-18T12:00:00"
+}
