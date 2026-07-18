@@ -13,7 +13,7 @@ from textual.containers import Vertical, VerticalScroll
 from textual.widgets import Footer, Static
 
 from .models import Board, Project, Task, default_board_path
-from .modals import ClockModal, ConfirmModal, ProjectModal, TaskModal
+from .modals import ClockModal, ConfirmModal, ProjectModal, ProjectPicker, TaskModal
 from .ribbon import Ribbon
 from .views import nav_model, render_view, valid_url
 
@@ -46,6 +46,7 @@ class TaskboardApp(App):
         ("4", "view('gantt')", "Gantt"),
         ("a", "add_task", "Add"),
         ("p", "add_project", "Project"),
+        ("P", "manage_projects", "Projects"),
         ("e", "edit", "Edit"),
         ("d", "delete", "Del"),
         ("delete", "delete", "Del"),
@@ -69,6 +70,14 @@ class TaskboardApp(App):
         self.view_mode = "swimlanes"
         self.show_archived = False
         self.selected_task_id: str | None = None
+
+    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
+        """While a modal is open, release the board's priority arrow/vim bindings
+        so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
+        receive them instead of moving the hidden board selection."""
+        if action in ("cursor", "hmove") and len(self.screen_stack) > 1:
+            return False
+        return True
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="viewport"):
@@ -304,3 +313,6 @@ class TaskboardApp(App):
             return
         self.board.add_project(Project(**data))
         self.refresh_view()
+
+    def action_manage_projects(self) -> None:
+        self.push_screen(ProjectPicker(self.board))

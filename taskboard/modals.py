@@ -14,10 +14,12 @@ from __future__ import annotations
 from rich.markup import escape
 
 from textual.app import ComposeResult
+from textual.binding import Binding
 from textual.containers import Grid, Horizontal, VerticalScroll
 from textual.screen import ModalScreen
 from textual.suggester import SuggestFromList
-from textual.widgets import Button, Input, Label, Select, TextArea
+from textual.widgets import Button, Input, Label, OptionList, Select, TextArea
+from textual.widgets.option_list import Option
 
 from .models import (PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
                      TASK_STATUSES, Board, Project, Task, city_names, resolve_city)
@@ -167,6 +169,129 @@ class ProjectModal(ModalScreen[dict | None]):
             "due_date": self._val("f-due") or None,
         }
         self.dismiss(data)
+
+
+class ProjectPicker(ModalScreen[None]):
+    """Manage existing projects: edit / archive / delete, in place.
+
+    Mutations persist immediately (Board.save) and re-render the board behind
+    the modal, so the picker stays open for the next action. Option labels are
+    markup sinks -> project names are escaped (A1). Deleting a project reassigns
+    its tasks to no-project (Inbox), the least-destructive choice — no task is
+    ever lost to a project delete.
+    """
+
+    BINDINGS = [
+        ("escape", "close", "Close"),
+        ("e", "edit", "Edit"),
+        ("x", "archive", "Archive"),
+        ("d", "delete", "Delete"),
+        Binding("j", "move(1)", show=False),
+        Binding("k", "move(-1)", show=False),
+    ]
+
+    def __init__(self, board: Board):
+        super().__init__()
+        self.board = board
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="picker-box", classes="modal"):
+            yield Label("[b]Projects[/b]  —  e edit · x archive · d delete · esc close",
+                        classes="modal-title")
+            yield OptionList(id="proj-list")
+
+    def on_mount(self) -> None:
+        self._reload()
+        self.query_one("#proj-list", OptionList).focus()
+
+    # ---- list rendering ----------------------------------------------------
+    def _project_line(self, p: Project) -> str:
+        n = sum(1 for t in self.board.tasks if t.project_id == p.id)
+        parts = [f"[b]{escape(p.name)}[/b]", p.status]
+        if p.archived:
+            parts.append("[dim]archived[/dim]")
+        parts.append(f"{n} task{'s' if n != 1 else ''}")
+        return "  ·  ".join(parts)
+
+    def _reload(self, keep: str | None = None) -> None:
+        """Rebuild the list from the board (clear-before-add avoids DuplicateIds)."""
+        ol = self.query_one("#proj-list", OptionList)
+        ol.clear_options()
+        projects = self.board.projects
+        if not projects:
+            ol.add_option(Option("No projects yet — press esc, then p to add one.",
+                                 disabled=True))
+            return
+        for p in projects:
+            ol.add_option(Option(self._project_line(p), id=p.id))
+        if keep is not None:
+            for i, p in enumerate(projects):
+                if p.id == keep:
+                    ol.highlighted = i
+                    break
+
+    def _current(self) -> Project | None:
+        ol = self.query_one("#proj-list", OptionList)
+        idx = ol.highlighted
+        if idx is None:
+            return None
+        return self.board.project_by_id(ol.get_option_at_index(idx).id)
+
+    # ---- navigation / actions ---------------------------------------------
+    def action_move(self, delta: int) -> None:
+        projects = self.board.projects
+        if not projects:
+            return
+        ol = self.query_one("#proj-list", OptionList)
+        cur = ol.highlighted if ol.highlighted is not None else 0
+        ol.highlighted = max(0, min(len(projects) - 1, cur + delta))
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self.action_edit()   # Enter / click on a row opens the editor
+
+    def action_edit(self) -> None:
+        proj = self._current()
+        if proj is None:
+            return
+        self.app.push_screen(ProjectModal(proj),
+                             lambda data, p=proj: self._on_edited(p, data))
+
+    def _on_edited(self, proj: Project, data: dict | None) -> None:
+        if not data:
+            return
+        for k, v in data.items():
+            setattr(proj, k, v)
+        self.board.save()
+        self.app.refresh_view()
+        self._reload(keep=proj.id)
+
+    def action_archive(self) -> None:
+        proj = self._current()
+        if proj is None:
+            return
+        proj.archived = not proj.archived
+        self.board.save()
+        self.app.refresh_view()
+        self._reload(keep=proj.id)
+
+    def action_delete(self) -> None:
+        proj = self._current()
+        if proj is None:
+            return
+        n = sum(1 for t in self.board.tasks if t.project_id == proj.id)
+        msg = f"Delete '{proj.name}'? Its {n} task{'s' if n != 1 else ''} move to Inbox."
+        self.app.push_screen(ConfirmModal(msg),
+                             lambda ok, p=proj: self._on_delete(p, ok))
+
+    def _on_delete(self, proj: Project, ok: bool) -> None:
+        if not ok:
+            return
+        self.board.delete_project(proj.id)   # tasks -> Inbox (project_id=None)
+        self.app.refresh_view()
+        self._reload()
+
+    def action_close(self) -> None:
+        self.dismiss(None)
 
 
 class ClockModal(ModalScreen[dict | None]):

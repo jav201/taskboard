@@ -133,6 +133,7 @@ window, then tap it again to go frameless.
 | `←` `→` (or `h` `l`) | Move between columns (Columns/Swimlanes) — jumps to the next column's first task. No-op in Agenda/Gantt (single column). |
 | `a` | Add task |
 | `p` | Add project |
+| `P` | Manage projects (edit / archive / delete existing projects) |
 | `e` | Edit selected task |
 | `d` / `Delete` | Delete selected task (asks to confirm) |
 | `x` | Archive / unarchive selected task |
@@ -147,6 +148,13 @@ column (not some unrelated task in data order); Right jumps to the next column. 
 selected task stays highlighted and is scrolled into view.
 
 Inside a modal: `Esc` cancels, `Tab` moves between fields, `Enter` on a button activates it.
+
+**Managing projects.** `p` only *adds* a project; press `P` to **manage the ones you already
+have**. It opens a list of every project (name · status · task count, archived ones flagged). With a
+project highlighted: `e` (or `Enter`) edits it — change its name, status
+(`on_track`/`paused`/`cancelled`/`completed`), color, and start/due dates; `x` archives or
+unarchives it; `d` deletes it. **Deleting a project never deletes its tasks** — they are reassigned
+to Inbox (no-project). Every change saves immediately and the board re-renders behind the menu.
 
 Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink (clickable in
 terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
@@ -178,7 +186,7 @@ Angeles, JST → Tokyo, …), so your saved board keeps working.
 ```powershell
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pytest            # 28 Pilot + render tests
+pytest            # 41 Pilot + render tests
 ```
 
 ## Project layout
@@ -191,7 +199,7 @@ taskboard/
     app.py             the App: view switching, selection, modals, one clock interval
     models.py          Project / Task dataclasses + Board (JSON persistence, seed)
     views.py           the four view renderers (rich markup, escaped user text)
-    modals.py          add/edit task, add/edit project, confirm-delete modals
+    modals.py          add/edit task, add/edit project, project manager, confirm-delete modals
     ribbon.py          bottom status bar (time/date/week + two custom clocks)
     taskboard.tcss     palette + layout (single dark theme)
   tests/

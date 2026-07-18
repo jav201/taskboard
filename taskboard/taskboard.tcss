@@ -98,7 +98,19 @@ FooterKey .footer-key--key {
     margin-left: 1;
 }
 
-TaskModal, ProjectModal, ConfirmModal {
+TaskModal, ProjectModal, ConfirmModal, ProjectPicker {
     align: center middle;
     background: #0007;
+}
+
+/* project manager list */
+#proj-list {
+    height: auto;
+    max-height: 16;
+    margin-top: 1;
+    border: round #1b2431;
+    background: #0b111a;
+}
+#proj-list:focus {
+    border: round #2dd4bf;
 }
