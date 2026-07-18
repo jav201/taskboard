@@ -6,7 +6,7 @@ from datetime import date
 
 import pytest
 
-from textual.widgets import Button, Input, Static
+from textual.widgets import Button, Input, Select, Static
 
 from taskboard.app import TaskboardApp
 from taskboard.models import Board, Task
@@ -116,11 +116,49 @@ async def test_ribbon_shows_time_date_week_and_two_clocks(tmp_path):
     async with app.run_test() as pilot:
         ribbon = app.query_one("#ribbon", Ribbon)
         text = str(ribbon.render())
-        # HH:MM:SS + week token + both configured clock labels
+        # HH:MM:SS + week token + both DEFAULT clock labels (CST / EST)
         assert ":" in text
         assert "W" in text
-        assert "LA" in text
-        assert "Madrid" in text
+        assert "CST" in text
+        assert "EST" in text
+
+
+async def test_clock_modal_changes_and_persists(tmp_path):
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test() as pilot:
+        # defaults first
+        assert app.board.get_clocks() == ("CST", "EST")
+        await pilot.press("c")
+        await pilot.pause()
+        app.screen.query_one("#f-clock1", Select).value = "JST"
+        app.screen.query_one("#save", Button).press()
+        await pilot.pause()
+        # (a) ribbon now shows the new zone
+        ribbon = app.query_one("#ribbon", Ribbon)
+        assert "JST" in str(ribbon.render())
+        assert app.board.get_clocks()[0] == "JST"
+    # (b) persisted: reload the board file from disk
+    reloaded = Board.load(board_path)
+    assert reloaded.get_clocks() == ("JST", "EST")
+
+
+def test_fixed_offset_clock_arithmetic():
+    from datetime import datetime, timezone
+    from taskboard.ribbon import clock_hhmm
+    utc = datetime(2026, 7, 17, 12, 0, tzinfo=timezone.utc)
+    assert clock_hhmm(-360, utc) == "06:00"   # CST  (UTC-6)
+    assert clock_hhmm(-300, utc) == "07:00"   # EST  (UTC-5)
+    assert clock_hhmm(330, utc) == "17:30"    # IST  (UTC+5:30)
+    assert clock_hhmm(540, utc) == "21:00"    # JST  (UTC+9)
+
+
+def test_board_clock_settings_backcompat(tmp_path):
+    import json
+    p = tmp_path / "old.json"
+    p.write_text(json.dumps({"projects": [], "tasks": []}), encoding="utf-8")
+    board = Board.load(str(p))            # no "settings" key present
+    assert board.get_clocks() == ("CST", "EST")
 
 
 async def test_url_task_open_action(tmp_path, monkeypatch):

@@ -10,7 +10,7 @@ from textual.containers import VerticalScroll
 from textual.widgets import Footer, Static
 
 from .models import Board, Project, Task, default_board_path
-from .modals import ConfirmModal, ProjectModal, TaskModal
+from .modals import ClockModal, ConfirmModal, ProjectModal, TaskModal
 from .ribbon import Ribbon
 from .views import render_view, valid_url
 
@@ -37,6 +37,7 @@ class TaskboardApp(App):
         ("x", "archive", "Archive"),
         ("h", "toggle_archived", "Show arch"),
         ("o", "open_url", "Open URL"),
+        ("c", "clocks", "Clocks"),
         ("down,j", "cursor(1)", "Down"),
         ("up,k", "cursor(-1)", "Up"),
         ("q", "quit", "Quit"),
@@ -58,6 +59,7 @@ class TaskboardApp(App):
     def on_mount(self) -> None:
         self._select_first()
         self.refresh_view()
+        self._apply_clock_settings()
         # ONE shared clock interval for the whole app (never per-widget).
         self.set_interval(1.0, self._tick)
 
@@ -66,6 +68,24 @@ class TaskboardApp(App):
         ribbons = self.query("#ribbon")
         if ribbons:
             ribbons.first(Ribbon).update_clock()
+
+    def _apply_clock_settings(self) -> None:
+        ribbons = self.query("#ribbon")
+        if not ribbons:
+            return
+        ribbon = ribbons.first(Ribbon)
+        ribbon.clock1_key, ribbon.clock2_key = self.board.get_clocks()
+        ribbon.update_clock()
+
+    def action_clocks(self) -> None:
+        k1, k2 = self.board.get_clocks()
+        self.push_screen(ClockModal(k1, k2), self._on_clocks_saved)
+
+    def _on_clocks_saved(self, data: dict | None) -> None:
+        if not data:
+            return
+        self.board.set_clocks(data["clock1"], data["clock2"])
+        self._apply_clock_settings()
 
     # ---- selection ---------------------------------------------------------
     def _visible_task_ids(self) -> list[str]:

@@ -19,7 +19,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Label, Select
 
 from .models import (PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
-                     TASK_STATUSES, Board, Project, Task)
+                     TASK_STATUSES, Board, Project, Task, clock_select_options)
 
 NONE_VALUE = "__none__"
 
@@ -153,6 +153,42 @@ class ProjectModal(ModalScreen[dict | None]):
             "due_date": self._val("f-due") or None,
         }
         self.dismiss(data)
+
+
+class ClockModal(ModalScreen[dict | None]):
+    """Pick the two ribbon clocks (fixed UTC-offset zones). Returns their keys."""
+
+    BINDINGS = [("escape", "cancel", "Cancel")]
+
+    def __init__(self, clock1: str, clock2: str):
+        super().__init__()
+        self._clock1 = clock1
+        self._clock2 = clock2
+
+    def compose(self) -> ComposeResult:
+        options = clock_select_options()  # labels are curated constants (safe)
+        with VerticalScroll(id="modal-box", classes="modal"):
+            yield Label("[b]Ribbon clocks[/b]", classes="modal-title")
+            with Grid(classes="modal-grid"):
+                yield Label("Clock 1")
+                yield Select(options, value=self._clock1, allow_blank=False, id="f-clock1")
+                yield Label("Clock 2")
+                yield Select(options, value=self._clock2, allow_blank=False, id="f-clock2")
+            with Horizontal(classes="modal-buttons"):
+                yield Button("Save", variant="success", id="save")
+                yield Button("Cancel", variant="default", id="cancel")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "save":
+            self.dismiss({
+                "clock1": str(self.query_one("#f-clock1").value),
+                "clock2": str(self.query_one("#f-clock2").value),
+            })
+        else:
+            self.dismiss(None)
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
 
 
 class ConfirmModal(ModalScreen[bool]):

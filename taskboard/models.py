@@ -20,6 +20,32 @@ PROJECT_STATUSES = ("on_track", "paused", "cancelled", "completed")
 TASK_STATUSES = ("backlog", "active", "blocked", "done")
 TASK_PRIORITIES = ("low", "normal", "high")
 
+# --- ribbon clock zones: FIXED UTC offsets (no DST), the "UTC convention" ----
+# Each entry is (conventional abbreviation, offset in minutes from UTC).
+CLOCK_ZONES: tuple[tuple[str, int], ...] = (
+    ("UTC", 0),
+    ("HST", -600), ("AKST", -540), ("PST", -480), ("MST", -420),
+    ("CST", -360), ("EST", -300), ("AST", -240), ("BRT", -180),
+    ("GMT", 0), ("CET", 60), ("EET", 120), ("MSK", 180), ("GST", 240),
+    ("IST", 330), ("ICT", 420), ("HKT", 480), ("JST", 540),
+    ("AEST", 600), ("NZST", 720),
+)
+ZONE_OFFSETS: dict[str, int] = dict(CLOCK_ZONES)
+DEFAULT_CLOCK1 = "CST"
+DEFAULT_CLOCK2 = "EST"
+
+
+def offset_label(minutes: int) -> str:
+    """1min offset -> 'UTC+0' / 'UTC-6' / 'UTC+5:30'."""
+    sign = "+" if minutes >= 0 else "-"
+    h, m = divmod(abs(minutes), 60)
+    return f"UTC{sign}{h}:{m:02d}" if m else f"UTC{sign}{h}"
+
+
+def clock_select_options() -> list[tuple[str, str]]:
+    """(label, value) options for a clock Select, e.g. ('CST (UTC-6)', 'CST')."""
+    return [(f"{abbrev} ({offset_label(off)})", abbrev) for abbrev, off in CLOCK_ZONES]
+
 
 def default_board_path() -> Path:
     """User-data location for the JSON store.
@@ -97,10 +123,12 @@ class Task:
 class Board:
     """Owns projects + tasks and the JSON file behind them."""
 
-    def __init__(self, projects: list[Project], tasks: list[Task], path: Path):
+    def __init__(self, projects: list[Project], tasks: list[Task], path: Path,
+                 settings: dict | None = None):
         self.projects = projects
         self.tasks = tasks
         self.path = path
+        self.settings = settings or {}
 
     # ---- persistence -------------------------------------------------------
     @classmethod
@@ -114,7 +142,9 @@ class Board:
             raw = json.loads(path.read_text(encoding="utf-8"))
             projects = [Project.from_dict(p) for p in raw.get("projects", [])]
             tasks = [Task.from_dict(t) for t in raw.get("tasks", [])]
-            return cls(projects, tasks, path)
+            # settings is optional -> back-compat with pre-settings board files
+            settings = raw.get("settings") if isinstance(raw.get("settings"), dict) else {}
+            return cls(projects, tasks, path, settings)
         except (json.JSONDecodeError, OSError, TypeError, AttributeError):
             # Corrupt / unreadable: start empty, leave the file untouched.
             return cls([], [], path)
@@ -124,8 +154,25 @@ class Board:
         data = {
             "projects": [asdict(p) for p in self.projects],
             "tasks": [asdict(t) for t in self.tasks],
+            "settings": self.settings,
         }
         self.path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    # ---- ribbon clock settings --------------------------------------------
+    def get_clocks(self) -> tuple[str, str]:
+        """The two selected clock zone abbreviations, validated w/ defaults."""
+        k1 = self.settings.get("clock1")
+        k2 = self.settings.get("clock2")
+        if k1 not in ZONE_OFFSETS:
+            k1 = DEFAULT_CLOCK1
+        if k2 not in ZONE_OFFSETS:
+            k2 = DEFAULT_CLOCK2
+        return k1, k2
+
+    def set_clocks(self, clock1: str, clock2: str) -> None:
+        self.settings["clock1"] = clock1
+        self.settings["clock2"] = clock2
+        self.save()
 
     # ---- lookups -----------------------------------------------------------
     def project_by_id(self, pid: str | None) -> Project | None:
