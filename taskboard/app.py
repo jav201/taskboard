@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import webbrowser
 from pathlib import Path
 
@@ -18,6 +19,11 @@ from .views import nav_model, render_view, valid_url
 
 VIEW_ORDER = ["swimlanes", "columns", "agenda", "gantt"]
 VIEW_KEYS = {"1": "swimlanes", "2": "columns", "3": "agenda", "4": "gantt"}
+
+# Local image paths opened via os.startfile are gated to this extension allowlist.
+# os.startfile launches a path with its OS-associated handler, so a non-image
+# file would EXECUTE — .svg is excluded because it is scriptable (F4, C-6).
+IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
 
 
 class BoardView(Static):
@@ -46,6 +52,7 @@ class TaskboardApp(App):
         ("x", "archive", "Archive"),
         ("v", "toggle_archived", "Show arch"),
         ("o", "open_url", "Open URL"),
+        ("i", "open_images", "Images"),
         ("c", "clocks", "Clocks"),
         # priority=True so these beat the focused VerticalScroll's own arrow-key
         # scrolling when the board overflows (pitfall A6).
@@ -257,6 +264,36 @@ class TaskboardApp(App):
             v = valid_url(u)
             if v:
                 webbrowser.open(v)
+
+    def action_open_images(self) -> None:
+        task = self.selected_task
+        if not task:
+            return
+        for ref in task.images:
+            v = valid_url(ref)
+            if v:                           # http(s) image URL -> browser
+                webbrowser.open(v)
+            else:                           # otherwise treat as a local file path
+                self._open_local_image(ref)
+
+    def _open_local_image(self, ref: str) -> None:
+        """Open a local image path in the OS viewer, gated for safety (C-6).
+
+        Only an EXISTING regular file whose extension is in the image allowlist
+        is passed to os.startfile; UNC and file:// paths are refused; any
+        os-level failure is swallowed so a keypress never crashes the app."""
+        if ref.startswith(("\\\\", "//")):          # UNC path -> refuse (F3)
+            return
+        if ref.lower().startswith("file://"):       # file URL -> refuse (F3)
+            return
+        if Path(ref).suffix.lower() not in IMAGE_EXTS:   # extension allowlist (F4)
+            return
+        if not os.path.isfile(ref):                 # must be an existing file (F3)
+            return
+        try:
+            os.startfile(ref)                       # Windows-only (DD-4)
+        except OSError:
+            pass
 
     # ---- project -----------------------------------------------------------
     def action_add_project(self) -> None:

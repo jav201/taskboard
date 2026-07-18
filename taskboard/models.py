@@ -188,6 +188,7 @@ class Task:
     start_date: str | None = None
     due_date: str | None = None
     urls: list[str] = field(default_factory=list)
+    images: list[str] = field(default_factory=list)
     archived: bool = False
     id: str = field(default_factory=_new_id)
 
@@ -201,6 +202,7 @@ class Task:
             urls = [d["url"]]
         else:
             urls = []
+        images = [str(i) for i in d["images"]] if isinstance(d.get("images"), list) else []
         return cls(
             id=d.get("id") or _new_id(),
             title=d.get("title", "Untitled"),
@@ -210,6 +212,7 @@ class Task:
             start_date=d.get("start_date"),
             due_date=d.get("due_date"),
             urls=urls,
+            images=images,
             archived=bool(d.get("archived", False)),
         )
 

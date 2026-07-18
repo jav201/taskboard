@@ -470,6 +470,88 @@ async def test_at_002_multiple_urls_black_box(tmp_path, monkeypatch):
         assert opened == ["https://one.example.com", "https://two.example.com"]
 
 
+# ---- US-3: images per task ------------------------------------------------ #
+def test_task_images_model(tmp_path):
+    """TC-005a/b (LLR-005.1/005.2): default_factory list + lenient read + round-trip."""
+    from taskboard.models import Board, Task
+    assert Task("t").images == []
+    assert Task("a").images is not Task("b").images
+    assert Task.from_dict({"title": "x", "images": ["a", "b"]}).images == ["a", "b"]
+    assert Task.from_dict({"title": "x"}).images == []
+    assert Task.from_dict({"title": "x", "images": "nope"}).images == []
+    p = str(tmp_path / "b.json")
+    board = Board.load(p)
+    refs = ["./mockups/home.png", "https://pics.example.com/b.jpg"]
+    board.add_task(Task("img", None, "backlog", "normal", images=refs))
+    t = next(t for t in Board.load(p).tasks if t.title == "img")
+    assert t.images == refs
+
+
+async def test_open_images_allowlist_and_isfile(tmp_path, monkeypatch):
+    """TC-007c (LLR-007.3): os.startfile fires ONLY for an existing image-ext
+    local file; missing files, non-image extensions, UNC and file:// are all
+    refused (never executed, never crash)."""
+    real = tmp_path / "ok.png"
+    real.write_bytes(b"x")
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        started = []
+        monkeypatch.setattr("taskboard.app.os.startfile", started.append)
+        t = Task("imgs", None, "backlog", "normal", images=[
+            str(real),                      # existing .png  -> opened
+            str(tmp_path / "gone.png"),     # allowed ext, missing file -> skip
+            str(tmp_path / "x.svg"),        # scriptable ext -> skip (F4)
+            "C:/evil.exe",                  # executable -> skip
+            "\\\\host\\share\\a.png",       # UNC -> skip (F3)
+            "file:///c:/a.png",             # file URL -> skip (F3)
+        ])
+        app.board.add_task(t)
+        app.selected_task_id = t.id
+        app.action_open_images()
+        assert started == [str(real)]       # only the existing allowed image file
+
+
+async def test_at_003_images_black_box(tmp_path, monkeypatch):
+    """AT-003 (US-3, black-box): a task with image refs shows the ▤ glyph, and
+    pressing the real `i` key opens the image URL (browser) + the existing
+    image-ext local file (os.startfile). A .svg, an .exe and a missing file are
+    NOT startfile'd and do not crash."""
+    real_png = tmp_path / "shot.png"
+    real_png.write_bytes(b"x")
+    svg = tmp_path / "vec.svg"
+    svg.write_bytes(b"<svg/>")              # exists -> only the extension gate stops it
+    exe = tmp_path / "evil.exe"
+    exe.write_bytes(b"MZ")
+    missing = tmp_path / "gone.png"
+    refs = [str(real_png), "https://pics.example.com/a.png",
+            str(svg), str(exe), str(missing)]
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("a")
+        await pilot.pause()
+        app.screen.query_one("#f-title", Input).value = "IMGTASK"
+        app.screen.query_one("#f-images", TextArea).text = "\n".join(refs)
+        await save_open_modal(app, pilot)
+        task = next(t for t in app.board.tasks if t.title == "IMGTASK")
+        assert task.images == refs          # modal keeps every non-blank line, in order
+        # the card renders the width-1 image glyph, lines stay width-exact
+        app.selected_task_id = task.id
+        await pilot.press("2")
+        text = board_text(app)
+        assert "▤" in text
+        # every rendered line is the same width -> the glyph is single-cell
+        assert len({len(l) for l in text.split("\n") if l}) == 1
+        # pressing the actual `i` binding routes each ref safely
+        started, browsed = [], []
+        monkeypatch.setattr("taskboard.app.os.startfile", started.append)
+        monkeypatch.setattr("taskboard.app.webbrowser.open", browsed.append)
+        await pilot.press("i")
+        assert started == [str(real_png)]                       # existing image only
+        assert browsed == ["https://pics.example.com/a.png"]    # the http image URL
+        assert str(svg) not in started and str(exe) not in started
+        assert str(missing) not in started
+
+
 async def test_markup_injection_is_escaped(tmp_path):
     """A title full of markup must render literally, never crash (pitfall A1)."""
     app = make_app(tmp_path)
