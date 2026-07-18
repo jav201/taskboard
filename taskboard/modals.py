@@ -16,10 +16,11 @@ from rich.markup import escape
 from textual.app import ComposeResult
 from textual.containers import Grid, Horizontal, VerticalScroll
 from textual.screen import ModalScreen
+from textual.suggester import SuggestFromList
 from textual.widgets import Button, Input, Label, Select
 
 from .models import (PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
-                     TASK_STATUSES, Board, Project, Task, clock_select_options)
+                     TASK_STATUSES, Board, Project, Task, city_names, resolve_city)
 
 NONE_VALUE = "__none__"
 
@@ -156,7 +157,7 @@ class ProjectModal(ModalScreen[dict | None]):
 
 
 class ClockModal(ModalScreen[dict | None]):
-    """Pick the two ribbon clocks (fixed UTC-offset zones). Returns their keys."""
+    """Pick the two ribbon clocks by CITY (type to find one). Returns city names."""
 
     BINDINGS = [("escape", "cancel", "Cancel")]
 
@@ -166,24 +167,27 @@ class ClockModal(ModalScreen[dict | None]):
         self._clock2 = clock2
 
     def compose(self) -> ComposeResult:
-        options = clock_select_options()  # labels are curated constants (safe)
+        # inline autocomplete: type "mad" -> suggests "Madrid" (accept with →/Enter)
+        suggester = SuggestFromList(city_names(), case_sensitive=False)
         with VerticalScroll(id="modal-box", classes="modal"):
-            yield Label("[b]Ribbon clocks[/b]", classes="modal-title")
+            yield Label("[b]Ribbon clocks[/b] — type a city", classes="modal-title")
             with Grid(classes="modal-grid"):
                 yield Label("Clock 1")
-                yield Select(options, value=self._clock1, allow_blank=False, id="f-clock1")
+                yield Input(value=self._clock1, suggester=suggester,
+                            placeholder="find a city…", id="f-clock1")
                 yield Label("Clock 2")
-                yield Select(options, value=self._clock2, allow_blank=False, id="f-clock2")
+                yield Input(value=self._clock2, suggester=suggester,
+                            placeholder="find a city…", id="f-clock2")
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "save":
-            self.dismiss({
-                "clock1": str(self.query_one("#f-clock1").value),
-                "clock2": str(self.query_one("#f-clock2").value),
-            })
+            # unknown / blank entry -> keep the current value (guarded)
+            c1 = resolve_city(str(self.query_one("#f-clock1").value)) or self._clock1
+            c2 = resolve_city(str(self.query_one("#f-clock2").value)) or self._clock2
+            self.dismiss({"clock1": c1, "clock2": c2})
         else:
             self.dismiss(None)
 

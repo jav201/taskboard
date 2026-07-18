@@ -1,6 +1,7 @@
 # Runtime + test deps, pinned to the versions this app was built and verified against.
-# (Custom clocks use fixed UTC offsets, so no zoneinfo/tzdata dependency is needed.)
+# tzdata provides the IANA timezone database for zoneinfo (city clocks) on Windows.
 textual==8.2.8
 rich==15.0.0
+tzdata==2026.3
 pytest==9.1.1
 pytest-asyncio==1.4.0
