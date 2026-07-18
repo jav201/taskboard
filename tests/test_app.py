@@ -6,7 +6,7 @@ from datetime import date
 
 import pytest
 
-from textual.widgets import Button, Footer, Input, Static
+from textual.widgets import Button, Footer, Input, Static, TextArea
 
 from taskboard.app import BoardView, TaskboardApp
 from taskboard.models import Board, Task
@@ -358,7 +358,7 @@ def test_columns_card_indicators_never_overlap_title(tmp_path):
     b.projects.append(lp)
     b.add_task(Task("Refactor the whole authentication and onboarding subsystem",
                     lp.id, "backlog", "high", due_date="2026-07-20",
-                    url="https://example.com/x"))
+                    urls=["https://example.com/x"]))
     today = date(2026, 7, 17)
     seen_truncation = False
     for w in (130, 96, 40, 30, 24):     # wide, WezTerm default, narrow, tiny, MIN
@@ -382,13 +382,12 @@ def test_columns_card_indicators_never_overlap_title(tmp_path):
 async def test_url_task_open_action(tmp_path, monkeypatch):
     app = make_app(tmp_path)
     async with app.run_test() as pilot:
-        opened = {}
-        monkeypatch.setattr("taskboard.app.webbrowser.open",
-                            lambda u: opened.setdefault("url", u))
-        url_task = next(t for t in app.board.tasks if t.url)
+        opened = []
+        monkeypatch.setattr("taskboard.app.webbrowser.open", opened.append)
+        url_task = next(t for t in app.board.tasks if t.urls)
         app.selected_task_id = url_task.id
         app.action_open_url()
-        assert opened.get("url") == url_task.url
+        assert opened == url_task.urls
 
 
 async def test_url_renders_link_and_arrow(tmp_path):
@@ -396,6 +395,79 @@ async def test_url_renders_link_and_arrow(tmp_path):
     async with app.run_test() as pilot:
         await pilot.press("3")  # agenda shows titles wide enough
         assert "↗" in board_text(app)
+
+
+# ---- US-2: multiple URLs per task ----------------------------------------- #
+def test_task_urls_model_migration():
+    """TC-002a/b (LLR-002.1/002.2): default_factory list + legacy migration."""
+    from taskboard.models import Task
+    # default is an empty list, not shared across instances (no mutable default)
+    assert Task("t").urls == []
+    assert Task("a").urls is not Task("b").urls
+    # legacy single "url" string migrates to a one-element list
+    assert Task.from_dict({"title": "x", "url": "https://x"}).urls == ["https://x"]
+    # modern "urls" list is read as-is
+    assert Task.from_dict({"title": "x", "urls": ["a", "b"]}).urls == ["a", "b"]
+    # malformed / missing inputs degrade to [] and never raise
+    assert Task.from_dict({"title": "x"}).urls == []
+    assert Task.from_dict({"title": "x", "urls": "notalist"}).urls == []
+    assert Task.from_dict({"title": "x", "url": None}).urls == []
+
+
+def test_task_urls_roundtrip(tmp_path):
+    """TC-002c (LLR-002.3): save serializes urls; load reconstructs it exactly."""
+    from taskboard.models import Board, Task
+    p = str(tmp_path / "b.json")
+    board = Board.load(p)
+    links = ["https://a.com", "https://b.com", "https://c.com"]
+    board.add_task(Task("multi", None, "backlog", "normal", urls=links))
+    reloaded = Board.load(p)
+    t = next(t for t in reloaded.tasks if t.title == "multi")
+    assert t.urls == links
+
+
+def test_legacy_url_board_migrates_on_load(tmp_path):
+    """DD-2: a hand-written legacy board (`url` key) loads with urls==[url];
+    the legacy singular attribute no longer exists on the model."""
+    import json
+    from taskboard.models import Board, Task
+    p = tmp_path / "legacy.json"
+    p.write_text(json.dumps({
+        "projects": [],
+        "tasks": [{"title": "old", "url": "https://legacy.example.com/"}],
+    }), encoding="utf-8")
+    board = Board.load(str(p))
+    assert board.tasks[0].urls == ["https://legacy.example.com/"]
+    assert not hasattr(Task("t"), "url")   # legacy field dropped (one-way migration)
+
+
+async def test_at_002_multiple_urls_black_box(tmp_path, monkeypatch):
+    """AT-002 (US-2, black-box): the user enters several URLs in the modal;
+    the card shows ↗ and pressing the real `o` key opens every valid URL.
+    Invalid / markup-injection lines are dropped (C-3/F9), no MarkupError."""
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("a")
+        await pilot.pause()
+        app.screen.query_one("#f-title", Input).value = "MULTIURL"
+        app.screen.query_one("#f-urls", TextArea).text = (
+            "https://one.example.com\n"
+            "https://ok.example.com/[boom]\n"   # markup chars -> valid_url drops it
+            "not a url\n"                        # non-http -> dropped
+            "https://two.example.com")
+        await save_open_modal(app, pilot)
+        task = next(t for t in app.board.tasks if t.title == "MULTIURL")
+        # modal kept ONLY the two valid URLs, in order
+        assert task.urls == ["https://one.example.com", "https://two.example.com"]
+        # the card renders the ↗ indicator (agenda shows titles wide) — no crash
+        app.selected_task_id = task.id
+        await pilot.press("3")
+        assert "↗" in board_text(app)
+        # pressing the actual `o` binding opens EVERY valid URL
+        opened = []
+        monkeypatch.setattr("taskboard.app.webbrowser.open", opened.append)
+        await pilot.press("o")
+        assert opened == ["https://one.example.com", "https://two.example.com"]
 
 
 async def test_markup_injection_is_escaped(tmp_path):

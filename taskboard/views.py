@@ -90,8 +90,17 @@ def project_color(board: Board, task: Task) -> str:
     return p.color if p else "dim"  # standalone tasks are grey
 
 
+def first_valid_url(task: Task) -> str | None:
+    """The first URL that passes ``valid_url`` (the OSC-8 link target), else None."""
+    for u in task.urls:
+        v = valid_url(u)
+        if v:
+            return v
+    return None
+
+
 def has_url(task: Task) -> bool:
-    return bool(valid_url(task.url))
+    return first_valid_url(task) is not None
 
 
 def valid_url(url: str | None) -> str | None:
@@ -110,7 +119,7 @@ def title_markup(task: Task, width: int, selected: bool, arrow: bool = True) -> 
 
     `arrow=False` omits the inline ↗ (used where ↗ is drawn as a separate,
     space-reserved right indicator so it can never collide with the title)."""
-    url = valid_url(task.url)
+    url = first_valid_url(task)          # OSC-8 target = the FIRST valid URL (F6)
     suffix = " ↗" if (url and arrow) else ""
     text = fit(task.title + suffix, width)   # width math on PLAIN text
     body = escape(text)                       # then escape for markup
@@ -151,7 +160,7 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
     if wc < len(prefix):
         return c(fit(prefix, wc), prefix_color)
     tokens: list[tuple[str, str]] = []
-    if valid_url(task.url):
+    if has_url(task):
         tokens.append(("↗", "accent"))
     if allow_priority and task.priority == "high" and task.status != "done":
         tokens.append(("◉", "amber"))

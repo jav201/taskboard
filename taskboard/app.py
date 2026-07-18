@@ -251,8 +251,12 @@ class TaskboardApp(App):
 
     def action_open_url(self) -> None:
         task = self.selected_task
-        if task and valid_url(task.url):
-            webbrowser.open(task.url)
+        if not task:
+            return
+        for u in task.urls:                 # open EVERY valid http(s) URL
+            v = valid_url(u)
+            if v:
+                webbrowser.open(v)
 
     # ---- project -----------------------------------------------------------
     def action_add_project(self) -> None:

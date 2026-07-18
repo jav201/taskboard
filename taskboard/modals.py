@@ -17,10 +17,11 @@ from textual.app import ComposeResult
 from textual.containers import Grid, Horizontal, VerticalScroll
 from textual.screen import ModalScreen
 from textual.suggester import SuggestFromList
-from textual.widgets import Button, Input, Label, Select
+from textual.widgets import Button, Input, Label, Select, TextArea
 
 from .models import (PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
                      TASK_STATUSES, Board, Project, Task, city_names, resolve_city)
+from .views import valid_url
 
 NONE_VALUE = "__none__"
 
@@ -63,9 +64,10 @@ class TaskModal(ModalScreen[dict | None]):
                 yield Label("Due (YYYY-MM-DD)")
                 yield Input(value=(t.due_date or "" if t else ""), placeholder="optional",
                             id="f-due")
-                yield Label("URL")
-                yield Input(value=(t.url or "" if t else ""), placeholder="https://…",
-                            id="f-url")
+            yield Label("URLs (one per line)")
+            urls_area = TextArea("\n".join(t.urls) if t else "", id="f-urls")
+            urls_area.styles.height = 4   # 1fr TextArea would collapse in the auto modal
+            yield urls_area
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
@@ -83,9 +85,15 @@ class TaskModal(ModalScreen[dict | None]):
         node = self.query_one(f"#{wid}")
         return str(node.value).strip()
 
+    def _lines(self, wid: str) -> list[str]:
+        """Non-blank, stripped lines from a multi-line TextArea, in order."""
+        text = self.query_one(f"#{wid}", TextArea).text
+        return [ln.strip() for ln in text.splitlines() if ln.strip()]
+
     def _save(self) -> None:
         title = self._val("f-title") or "Untitled"
         proj = self._val("f-project")
+        urls = [v for v in (valid_url(ln) for ln in self._lines("f-urls")) if v]
         data = {
             "title": title,
             "project_id": None if proj == NONE_VALUE else proj,
@@ -93,7 +101,7 @@ class TaskModal(ModalScreen[dict | None]):
             "priority": self._val("f-priority"),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
-            "url": self._val("f-url") or None,
+            "urls": urls,
         }
         self.dismiss(data)
 

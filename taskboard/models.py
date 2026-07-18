@@ -187,12 +187,20 @@ class Task:
     priority: str = "normal"
     start_date: str | None = None
     due_date: str | None = None
-    url: str | None = None
+    urls: list[str] = field(default_factory=list)
     archived: bool = False
     id: str = field(default_factory=_new_id)
 
     @classmethod
     def from_dict(cls, d: dict) -> "Task":
+        # urls: prefer the modern list; migrate a legacy single "url" string
+        # into a one-element list (one-way, DD-2); else empty. Never raises.
+        if isinstance(d.get("urls"), list):
+            urls = [str(u) for u in d["urls"]]
+        elif isinstance(d.get("url"), str) and d.get("url"):
+            urls = [d["url"]]
+        else:
+            urls = []
         return cls(
             id=d.get("id") or _new_id(),
             title=d.get("title", "Untitled"),
@@ -201,7 +209,7 @@ class Task:
             priority=d.get("priority") if d.get("priority") in TASK_PRIORITIES else "normal",
             start_date=d.get("start_date"),
             due_date=d.get("due_date"),
-            url=d.get("url"),
+            urls=urls,
             archived=bool(d.get("archived", False)),
         )
 
@@ -324,13 +332,13 @@ def seed_data() -> tuple[list[Project], list[Task]]:
 
     tasks = [
         Task("M22 pitfalls module", textual.id, "active", "high", due_date=iso(0),
-             url="https://textual.textualize.io/"),
+             urls=["https://textual.textualize.io/"]),
         Task("dev-flow doc", textual.id, "backlog", "normal", due_date=iso(2)),
         Task("verify counts", textual.id, "active", "normal"),
         Task("systems 5/5", textual.id, "done", "normal"),
         Task("count-guard", textual.id, "done", "normal"),
         Task("pricing sheet", grndia.id, "backlog", "high", due_date=iso(-2),
-             url="https://grndia.com/pricing"),
+             urls=["https://grndia.com/pricing"]),
         Task("funnel copy", grndia.id, "active", "normal", due_date=iso(3)),
         Task("proposal v2", grndia.id, "done", "normal"),
         Task("portfolio polish", jobhunt.id, "backlog", "normal", due_date=iso(4)),
@@ -341,7 +349,7 @@ def seed_data() -> tuple[list[Project], list[Task]]:
         # standalone tasks -> Inbox
         Task("call the accountant", None, "backlog", "normal", due_date=iso(-1)),
         Task("renew domain", None, "backlog", "low", due_date=iso(6),
-             url="https://example.com/domains"),
+             urls=["https://example.com/domains"]),
         Task("read RAG paper", None, "backlog", "normal"),
     ]
     return projects, tasks
