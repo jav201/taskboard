@@ -7,7 +7,7 @@ from datetime import date
 
 import pytest
 
-from textual.widgets import Button, Footer, Input, Static, TextArea
+from textual.widgets import Button, Footer, Input, OptionList, Select, Static, TextArea
 
 from taskboard.app import BoardView, TaskboardApp
 from taskboard.models import Board, Task
@@ -110,6 +110,116 @@ async def test_add_project(tmp_path):
         await save_open_modal(app, pilot)
         assert len(app.board.projects) == before + 1
         assert any(p.name == "NEWPROJ" for p in app.board.projects)
+
+
+# ---- project manager (edit / archive / delete existing projects) ---------- #
+async def test_manage_projects_edit_status_persists(tmp_path):
+    """P opens the manager; editing a project's status to 'paused' updates the
+    board AND survives a reload from disk (real key presses, on-disk oracle)."""
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        target = next(p for p in app.board.projects if p.name == "Mobile App")
+        assert target.status == "on_track"                 # precondition
+        idx = app.board.projects.index(target)
+        await pilot.press("P")                              # open project manager
+        await pilot.pause()
+        app.screen.query_one("#proj-list", OptionList).highlighted = idx
+        await pilot.press("e")                              # edit highlighted project
+        await pilot.pause()
+        app.screen.query_one("#f-status", Select).value = "paused"
+        app.screen.query_one("#save", Button).press()
+        await pilot.pause()
+        assert app.board.project_by_id(target.id).status == "paused"
+    reloaded = Board.load(board_path)                       # reload from disk
+    assert reloaded.project_by_id(target.id).status == "paused"
+
+
+async def test_manage_projects_archive_hides_and_persists(tmp_path):
+    """Archiving a project via the manager hides it under the archived toggle in
+    the board render, and the archived flag persists to disk."""
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("1")                              # swimlanes shows project rows
+        target = next(p for p in app.board.projects if p.name == "Mobile App")
+        assert not target.archived
+        assert "Mobile App" in board_text(app)             # visible before archiving
+        idx = app.board.projects.index(target)
+        await pilot.press("P")
+        await pilot.pause()
+        app.screen.query_one("#proj-list", OptionList).highlighted = idx
+        await pilot.press("x")                              # archive
+        await pilot.pause()
+        assert app.board.project_by_id(target.id).archived is True
+        await pilot.press("escape")                         # close the manager
+        await pilot.pause()
+        assert "Mobile App" not in board_text(app)         # hidden by default
+        await pilot.press("v")                              # show archived
+        assert "Mobile App" in board_text(app)             # visible again
+    reloaded = Board.load(board_path)
+    assert reloaded.project_by_id(target.id).archived is True
+
+
+async def test_manage_projects_delete_moves_tasks_to_inbox(tmp_path):
+    """Deleting a project reassigns its tasks to Inbox (project_id=None); the
+    tasks survive and the reassignment persists to disk (least-destructive)."""
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        target = next(p for p in app.board.projects if p.name == "API Platform")
+        task_ids = [t.id for t in app.board.tasks if t.project_id == target.id]
+        assert task_ids                                     # precondition: it has tasks
+        idx = app.board.projects.index(target)
+        await pilot.press("P")
+        await pilot.pause()
+        app.screen.query_one("#proj-list", OptionList).highlighted = idx
+        await pilot.press("d")                              # delete -> ConfirmModal
+        await pilot.pause()
+        app.screen.query_one("#yes", Button).press()        # confirm
+        await pilot.pause()
+        assert app.board.project_by_id(target.id) is None
+        assert all(app.board.task_by_id(t).project_id is None for t in task_ids)
+    reloaded = Board.load(board_path)
+    assert reloaded.project_by_id(target.id) is None
+    assert all(reloaded.task_by_id(t) is not None for t in task_ids)      # survived
+    assert all(reloaded.task_by_id(t).project_id is None for t in task_ids)
+
+
+async def test_manage_projects_empty_state_no_crash(tmp_path):
+    """Zero projects -> a friendly placeholder, and e/x/d are safe no-ops (no
+    project selected -> no editor/confirm pushed, no crash)."""
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        app.board.projects.clear()
+        app.board.save()
+        app.refresh_view()
+        await pilot.press("P")
+        await pilot.pause()
+        assert len(app.screen_stack) == 2                   # picker is open
+        for key in ("e", "x", "d"):
+            await pilot.press(key)
+            await pilot.pause()
+            assert len(app.screen_stack) == 2               # nothing pushed, still open
+        assert app.board.projects == []
+
+
+async def test_manage_projects_escapes_markup_name(tmp_path):
+    """A project name full of markup is listed literally (escaped), never parsed
+    as tags -> no MarkupError when the picker builds its list (pitfall A1)."""
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("p")                              # add a markup-named project
+        await pilot.pause()
+        app.screen.query_one("#f-name", Input).value = "[red]boom[/red]"
+        await save_open_modal(app, pilot)
+        await pilot.press("P")                              # open manager (builds the list)
+        await pilot.pause()
+        ol = app.screen.query_one("#proj-list", OptionList)
+        prompts = [str(ol.get_option_at_index(i).prompt)
+                   for i in range(len(app.board.projects))]
+        # the brackets are backslash-escaped in the list -> rendered literally
+        assert any("\\[red]boom\\[/red]" in pr for pr in prompts)
 
 
 async def test_ribbon_shows_time_date_week_and_two_clocks(tmp_path):
