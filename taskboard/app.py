@@ -5,8 +5,9 @@ from __future__ import annotations
 import webbrowser
 from pathlib import Path
 
+from textual import events
 from textual.app import App, ComposeResult
-from textual.containers import VerticalScroll
+from textual.containers import Vertical, VerticalScroll
 from textual.widgets import Footer, Static
 
 from .models import Board, Project, Task, default_board_path
@@ -16,6 +17,13 @@ from .views import render_view, valid_url
 
 VIEW_ORDER = ["swimlanes", "columns", "agenda", "gantt"]
 VIEW_KEYS = {"1": "swimlanes", "2": "columns", "3": "agenda", "4": "gantt"}
+
+
+class BoardView(Static):
+    """The main board surface; re-renders the active view whenever it resizes."""
+
+    def on_resize(self, event: events.Resize) -> None:
+        self.app.refresh_view()
 
 
 class TaskboardApp(App):
@@ -52,9 +60,10 @@ class TaskboardApp(App):
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="viewport"):
-            yield Static(id="board")
-        yield Ribbon(id="ribbon")
-        yield Footer()
+            yield BoardView(id="board")
+        with Vertical(id="statusbar"):     # ribbon (top row) + footer (bottom row)
+            yield Ribbon(id="ribbon")
+            yield Footer()
 
     def on_mount(self) -> None:
         self._select_first()
@@ -118,9 +127,13 @@ class TaskboardApp(App):
         boards = self.query("#board")
         if not boards:
             return
+        board_widget = boards.first(BoardView)
+        w = board_widget.size.width or 0
+        vps = self.query("#viewport")
+        h = vps.first().size.height if vps else (board_widget.size.height or 0)
         content = render_view(self.view_mode, self.board, self.show_archived,
-                              self.selected_task_id)
-        boards.first(Static).update(content)
+                              self.selected_task_id, width=w, height=h)
+        board_widget.update(content)
 
     def action_view(self, mode: str) -> None:
         if mode in VIEW_ORDER:

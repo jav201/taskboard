@@ -92,25 +92,24 @@ It is **not** inside the installed package (the package dir is read-only once pi
 The file is created and seeded with demo data on first run. If it ever gets corrupted, the app
 starts empty and leaves the file untouched so you can recover it by hand.
 
-## Make it a frameless desktop widget
+## Make it frameless
 
-Windows Terminal cannot go borderless, so use **WezTerm** (or Alacritty). In your
-`~/.wezterm.lua`:
+**Textual cannot remove the window chrome itself** — that's the terminal's job, and
+**Windows Terminal / PowerShell cannot go borderless** (they always draw a title bar). Use
+**WezTerm** (or Alacritty), which can.
 
-```lua
-local wezterm = require 'wezterm'
-return {
-  window_decorations = "NONE",          -- no titlebar / frame
-  enable_tab_bar = false,               -- no tab strip
-  window_background_opacity = 0.85,     -- let the desktop show through
-  default_prog = { "taskboard" },       -- launch the app directly (or: {"python","-m","taskboard"})
-  initial_cols = 68,                    -- fits the 66-wide widget
-  initial_rows = 26,
-}
-```
+A ready-made config ships in this repo: [`wezterm.lua`](wezterm.lua). It sets
+`window_decorations = "NONE"`, turns the tab bar off, uses `window_background_opacity = 0.9`, sizes
+the window, and launches `taskboard` via `default_prog`.
 
-Then pin it **always-on-top** with [PowerToys](https://learn.microsoft.com/windows/powertoys/)
-→ *Always On Top* (default shortcut `Win+Ctrl+T`). The frame is gone; Textual paints the rest.
+1. Install WezTerm: <https://wezterm.org>
+2. Use the config — either copy it to your home dir as `C:\Users\<you>\.wezterm.lua`, or point
+   WezTerm at it: `wezterm --config-file "…\taskboard\wezterm.lua"`.
+3. Pin the window **always-on-top** with [PowerToys](https://learn.microsoft.com/windows/powertoys/)
+   → *Always On Top* (default shortcut `Win+Ctrl+T`).
+
+The frame is gone and the board **fills the window** — resize it and the four views reflow to the
+new size. Textual paints the rest.
 
 ## Keybindings
 
@@ -158,7 +157,7 @@ Because the offsets are fixed, no `zoneinfo`/`tzdata` timezone database is neede
 ```powershell
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pytest            # 16 Pilot + render tests
+pytest            # 20 Pilot + render tests
 ```
 
 ## Project layout

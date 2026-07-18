@@ -8,29 +8,37 @@ Screen {
 #viewport {
     width: 1fr;
     height: 1fr;
-    padding: 1 2 0 2;
+    padding: 0;
     scrollbar-size: 1 1;
     scrollbar-color: #334154;
     scrollbar-background: #0d1117;
 }
 
+/* the board fills the viewport width; height grows with content (scrolls) */
 #board {
-    width: auto;
+    width: 1fr;
     height: auto;
 }
 
-/* bottom ribbon docked above the footer */
-Ribbon {
+/* status bar docked at the bottom: two stacked rows (ribbon over footer).
+   A single bottom-docked container guarantees they occupy DIFFERENT rows —
+   two separate dock:bottom widgets collide on the same row. And with no
+   border on the height:1 Ribbon it keeps a real content row (M22 §C-32). */
+#statusbar {
     dock: bottom;
+    height: 2;
+    width: 1fr;
+    background: #0b0f17;
+}
+Ribbon {
     height: 1;
     width: 1fr;
     background: #0b0f17;
     color: #8b98a5;
-    border-top: solid #334154;
     padding: 0 1;
 }
-
 Footer {
+    height: 1;
     background: #0b0f17;
     color: #8b98a5;
 }

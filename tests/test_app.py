@@ -6,9 +6,9 @@ from datetime import date
 
 import pytest
 
-from textual.widgets import Button, Input, Select, Static
+from textual.widgets import Button, Footer, Input, Select, Static
 
-from taskboard.app import TaskboardApp
+from taskboard.app import BoardView, TaskboardApp
 from taskboard.models import Board, Task
 from taskboard.ribbon import Ribbon
 from taskboard.views import render_agenda, render_gantt
@@ -159,6 +159,57 @@ def test_board_clock_settings_backcompat(tmp_path):
     p.write_text(json.dumps({"projects": [], "tasks": []}), encoding="utf-8")
     board = Board.load(str(p))            # no "settings" key present
     assert board.get_clocks() == ("CST", "EST")
+
+
+async def test_ribbon_is_painted_and_not_overlapping_footer(tmp_path):
+    """Painted-region check (M22 C-32): a render-string test alone is a
+    false-positive class — the ribbon can render text while being invisible."""
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 35)) as pilot:
+        await pilot.pause()
+        ribbon = app.query_one("#ribbon", Ribbon)
+        footer = app.query_one(Footer)
+        # (a) the ribbon has a real content row to paint into
+        assert ribbon.content_size.height >= 1
+        # (b) ribbon and footer occupy DIFFERENT rows (no overlap)
+        r, f = ribbon.region, footer.region
+        assert r.height >= 1 and f.height >= 1
+        assert (r.y + r.height <= f.y) or (f.y + f.height <= r.y)
+        assert r.y < f.y   # ribbon sits ABOVE the footer
+
+
+async def test_board_fills_viewport_width(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test(size=(140, 40)) as pilot:
+        await pilot.pause()
+        board = app.query_one("#board", BoardView)
+        vp = app.query_one("#viewport")
+        # board content width tracks the viewport (fills, not stuck at 66)
+        assert abs(board.content_size.width - vp.size.width) <= 4
+        assert board.content_size.width >= 120   # definitely not the old 66
+
+
+async def test_board_reflows_on_resize(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test(size=(90, 30)) as pilot:
+        await pilot.pause()
+        board = app.query_one("#board", BoardView)
+        first = board.content_size.width
+        await pilot.resize_terminal(150, 40)
+        await pilot.pause()
+        second = board.content_size.width
+        assert second > first                       # width tracked the resize
+        assert abs(second - app.query_one("#viewport").size.width) <= 4
+
+
+async def test_tiny_size_does_not_crash(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test(size=(40, 12)) as pilot:
+        await pilot.pause()
+        for key in ("1", "2", "3", "4"):
+            await pilot.press(key)          # every view renders at 40x12
+        board = app.query_one("#board", BoardView)
+        assert board.content_size.width > 0  # rendered something, no exception
 
 
 async def test_url_task_open_action(tmp_path, monkeypatch):
