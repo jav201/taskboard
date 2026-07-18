@@ -320,39 +320,57 @@ class Board:
 
 
 def seed_data() -> tuple[list[Project], list[Task]]:
-    """Demo content anchored to today so every urgency bucket is populated."""
+    """Neutral, author-agnostic demo content that exercises every board feature.
+
+    A generic software-product org: it reveals nothing about who built the tool
+    while covering all project/task statuses, priorities, urgency buckets,
+    archived items, standalone + project tasks, multiple URLs and images. Anchored
+    to today so the urgency buckets stay populated on any run.
+    """
     today = date.today()
 
     def iso(offset_days: int) -> str:
         return (today + timedelta(days=offset_days)).isoformat()
 
-    textual = Project("Textual", "violet", "on_track", start_date=iso(-20), due_date=iso(10))
-    grndia = Project("GRNDIA", "sky", "on_track", start_date=iso(-10), due_date=iso(14))
-    jobhunt = Project("Job Hunt", "amber", "paused", start_date=iso(-5), due_date=iso(28))
-    launch = Project("Launch", "rose", "on_track", start_date=iso(2), due_date=iso(40))
-    ops = Project("Ops", "green", "completed", start_date=iso(-30), due_date=iso(-2))
-    projects = [textual, grndia, jobhunt, launch, ops]
+    web = Project("Website Redesign", "sky", "on_track", start_date=iso(-20), due_date=iso(14))
+    mobile = Project("Mobile App", "violet", "on_track", start_date=iso(-10), due_date=iso(30))
+    api = Project("API Platform", "amber", "paused", start_date=iso(-5), due_date=iso(45))
+    legacy = Project("Legacy Sunset", "rose", "cancelled", start_date=iso(-40), due_date=iso(-5))
+    warehouse = Project("Data Warehouse", "green", "completed",
+                        start_date=iso(-60), due_date=iso(-3))
+    wiki = Project("Internal Wiki", "green", "completed", archived=True,
+                   start_date=iso(-120), due_date=iso(-80))
+    projects = [web, mobile, api, legacy, warehouse, wiki]
 
     tasks = [
-        Task("M22 pitfalls module", textual.id, "active", "high", due_date=iso(0),
-             urls=["https://textual.textualize.io/"]),
-        Task("dev-flow doc", textual.id, "backlog", "normal", due_date=iso(2)),
-        Task("verify counts", textual.id, "active", "normal"),
-        Task("systems 5/5", textual.id, "done", "normal"),
-        Task("count-guard", textual.id, "done", "normal"),
-        Task("pricing sheet", grndia.id, "backlog", "high", due_date=iso(-2),
-             urls=["https://grndia.com/pricing"]),
-        Task("funnel copy", grndia.id, "active", "normal", due_date=iso(3)),
-        Task("proposal v2", grndia.id, "done", "normal"),
-        Task("portfolio polish", jobhunt.id, "backlog", "normal", due_date=iso(4)),
-        Task("interview prep x2", jobhunt.id, "active", "high", due_date=iso(0)),
-        Task("vendor onboarding", jobhunt.id, "blocked", "high", due_date=iso(1)),
-        Task("CV refresh", jobhunt.id, "done", "low"),
-        Task("landing hero", launch.id, "backlog", "normal", due_date=iso(9)),
+        # Website Redesign — note: image tasks stay normal/low priority + no URL
+        # so their card carries only the image glyph (never with the ◉/↗ markers).
+        Task("Design homepage mockups", web.id, "active", "normal", due_date=iso(0),
+             images=["./mockups/home.png", "./mockups/home-dark.png"]),
+        Task("Fix checkout 500 error", web.id, "blocked", "high", due_date=iso(-2),
+             urls=["https://status.example.com/incident/4821",
+                   "https://logs.example.com/checkout"]),
+        Task("Optimize image assets", web.id, "active", "low", due_date=iso(6),
+             images=["https://picsum.photos/seed/hero/640"]),
+        # API Platform (paused)
+        Task("Write API reference", api.id, "backlog", "normal", due_date=iso(5),
+             urls=["https://docs.example.com/api/v2"]),
+        Task("Plan Q3 roadmap", api.id, "backlog", "normal"),
+        Task("Deprecate v1 endpoints", api.id, "backlog", "high", due_date=iso(9)),
+        # Mobile App
+        Task("Audit dependencies", mobile.id, "active", "normal", due_date=iso(12)),
+        Task("Set up CI pipeline", mobile.id, "done", "normal"),
+        Task("Add push notifications", mobile.id, "backlog", "normal", due_date=iso(18)),
+        # Data Warehouse (completed)
+        Task("Migrate user table", warehouse.id, "done", "low"),
+        Task("Compress database backups", warehouse.id, "blocked", "normal", due_date=iso(-1)),
+        Task("Archive old logs", warehouse.id, "backlog", "low", due_date=iso(25),
+             archived=True),
+        # Legacy Sunset (cancelled)
+        Task("Shut down legacy servers", legacy.id, "backlog", "normal", due_date=iso(8)),
         # standalone tasks -> Inbox
-        Task("call the accountant", None, "backlog", "normal", due_date=iso(-1)),
-        Task("renew domain", None, "backlog", "low", due_date=iso(6),
-             urls=["https://example.com/domains"]),
-        Task("read RAG paper", None, "backlog", "normal"),
+        Task("Renew TLS certificate", None, "backlog", "high", due_date=iso(3)),
+        Task("Update onboarding copy", None, "backlog", "normal"),
+        Task("Review pull requests", None, "active", "normal", due_date=iso(1)),
     ]
     return projects, tasks

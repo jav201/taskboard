@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date
 
 import pytest
@@ -509,6 +510,50 @@ async def test_open_images_allowlist_and_isfile(tmp_path, monkeypatch):
         app.selected_task_id = t.id
         app.action_open_images()
         assert started == [str(real)]       # only the existing allowed image file
+
+
+SEED_DENYLIST = re.compile(
+    r"grndia|textualize\.io|job\s*hunt|m22|dev-flow|proposal v2|funnel|"
+    r"portfolio|interview prep|cv refresh|systems 5/5|count-guard|rag paper|"
+    r"textual", re.IGNORECASE)
+
+
+def test_at_001_seed_generic_and_complete(tmp_path):
+    """AT-001 (US-1, black-box): the freshly seeded, on-disk board.json contains
+    ZERO author-denylist tokens AND at least one item in every feature dimension.
+    The dimension checks are derived from the seed itself (input-set-as-oracle)."""
+    from pathlib import Path
+    from taskboard.models import (Board, PROJECT_STATUSES, TASK_STATUSES,
+                                  TASK_PRIORITIES)
+    from taskboard.views import urgency
+
+    p = tmp_path / "board.json"
+    board = Board.load(str(p))          # non-existent path -> seed_data() fires + saves
+    projects, tasks = board.projects, board.tasks
+
+    # (a) 0 author tokens over the ACTUAL persisted deliverable
+    on_disk = Path(p).read_text(encoding="utf-8")
+    assert SEED_DENYLIST.findall(on_disk) == []
+
+    # (b) all four project statuses (incl. the previously-missing 'cancelled')
+    assert {pr.status for pr in projects} == set(PROJECT_STATUSES)
+    # (c) all four task statuses + all three priorities
+    assert {t.status for t in tasks} == set(TASK_STATUSES)
+    assert {t.priority for t in tasks} == set(TASK_PRIORITIES)
+    # (d) >=1 archived project AND >=1 archived task
+    assert sum(1 for pr in projects if pr.archived) >= 1
+    assert sum(1 for t in tasks if t.archived) >= 1
+    # (e) standalone AND project-bound tasks
+    assert any(t.project_id is None for t in tasks)
+    assert any(t.project_id is not None for t in tasks)
+    # (f) urgency buckets span overdue / today / this-week-or-later / none / done
+    today = date.today()
+    buckets = {urgency(t, today) for t in tasks}
+    assert {"overdue", "today", "none", "done"} <= buckets
+    assert buckets & {"week", "later"}
+    # (g) the batch's own new capabilities are showcased
+    assert any(len(t.urls) >= 2 for t in tasks)
+    assert any(len(t.images) >= 1 for t in tasks)
 
 
 async def test_at_003_images_black_box(tmp_path, monkeypatch):
