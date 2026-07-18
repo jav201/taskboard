@@ -94,7 +94,7 @@ async def test_archive_and_show_archived_toggle(tmp_path):
         assert app.board.task_by_id(tid).archived is True
         await pilot.press("2")
         assert "ARCHME" not in board_text(app)   # hidden by default
-        await pilot.press("h")            # show archived
+        await pilot.press("v")            # show archived (moved off 'h' -> vim-left)
         await pilot.press("2")
         assert "ARCHME" in board_text(app)       # now visible
 
@@ -210,6 +210,114 @@ async def test_tiny_size_does_not_crash(tmp_path):
             await pilot.press(key)          # every view renders at 40x12
         board = app.query_one("#board", BoardView)
         assert board.content_size.width > 0  # rendered something, no exception
+
+
+async def test_columns_nav_follows_displayed_order_not_board_order(tmp_path):
+    from taskboard.views import nav_model
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("2")   # columns
+        cols = nav_model("columns", app.board, False)
+        backlog = cols[0]
+        board_order = [t.id for t in app.board.visible_tasks(False)]
+        # the displayed column order differs from flat board order (the old bug)
+        assert backlog != board_order[:len(backlog)]
+
+        app.selected_task_id = backlog[0]
+        app.refresh_view()
+        visited = [app.selected_task_id]
+        for _ in range(len(backlog) - 1):
+            await pilot.press("down")
+            visited.append(app.selected_task_id)
+        # Down visits the BACKLOG column in its displayed order, exactly
+        assert visited == backlog
+        assert all(app.board.task_by_id(t).status == "backlog" for t in visited)
+        # and render places them strictly top-to-bottom in that same order
+        idxs = [app._line_map[t] for t in backlog if t in app._line_map]
+        assert idxs == sorted(idxs)
+
+
+async def test_right_moves_to_next_column_first_task(tmp_path):
+    from taskboard.views import nav_model
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("2")
+        cols = nav_model("columns", app.board, False)
+        app.selected_task_id = cols[0][0]
+        app.refresh_view()
+        await pilot.press("right")
+        assert app.selected_task_id == cols[1][0]   # ACTIVE column's first task
+        await pilot.press("right")
+        # BLOCKED has one task in seed; Right lands on its first task
+        assert app.selected_task_id == cols[2][0]
+
+
+async def test_up_at_top_of_column_is_noop(tmp_path):
+    from taskboard.views import nav_model
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("2")
+        cols = nav_model("columns", app.board, False)
+        app.selected_task_id = cols[0][0]
+        app.refresh_view()
+        await pilot.press("up")                 # already at top
+        assert app.selected_task_id == cols[0][0]   # unchanged, no jump
+
+
+async def test_no_keypress_selects_offscreen_task(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test(size=(100, 30)) as pilot:
+        await pilot.pause()
+        visible = {t.id for t in app.board.visible_tasks(False)}
+        for view in ("1", "2", "3", "4"):
+            await pilot.press(view)
+            for key in ("down", "down", "right", "down", "left", "up", "right", "j", "k"):
+                await pilot.press(key)
+                assert app.selected_task_id in visible
+
+
+async def test_agenda_nav_follows_urgency_order(tmp_path):
+    from taskboard.views import nav_model
+    app = make_app(tmp_path)
+    async with app.run_test(size=(100, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("3")   # agenda
+        order = nav_model("agenda", app.board, False)[0]
+        board_order = [t.id for t in app.board.visible_tasks(False)]
+        assert order != board_order              # grouped by urgency, not board order
+        app.selected_task_id = order[0]
+        app.refresh_view()
+        visited = [app.selected_task_id]
+        for _ in range(len(order) - 1):
+            await pilot.press("down")
+            visited.append(app.selected_task_id)
+        assert visited == order
+
+
+async def test_nav_scrolls_selection_into_view_when_overflowing(tmp_path):
+    """Arrow keys must MOVE selection (not be eaten by the scroll container) and
+    the selected row must scroll into view — checked with a viewport smaller
+    than the content, the exact case the tall-size tests couldn't catch."""
+    from taskboard.views import nav_model
+    app = make_app(tmp_path)
+    async with app.run_test(size=(100, 18)) as pilot:
+        await pilot.pause()
+        await pilot.press("3")   # agenda (linear, taller than 18 rows)
+        order = nav_model("agenda", app.board, False)[0]
+        app.selected_task_id = order[0]
+        app.refresh_view()
+        await pilot.pause()
+        for _ in range(len(order) - 1):
+            await pilot.press("down")
+        await pilot.pause()
+        assert app.selected_task_id == order[-1]     # keys moved selection, not scrolled only
+        vp = app.query_one("#viewport")
+        idx = app._line_map[app.selected_task_id]
+        top = vp.scroll_offset.y
+        assert top <= idx < top + vp.size.height     # scrolled into view
 
 
 async def test_url_task_open_action(tmp_path, monkeypatch):

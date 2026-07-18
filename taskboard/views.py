@@ -248,7 +248,7 @@ def _lane_columns(tasks: list[Task]):
 
 
 def render_swimlanes(board, show_archived, selected_id, today=None,
-                     width=68, height=0) -> Text:
+                     width=68, height=0, line_map=None) -> Text:
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
@@ -307,6 +307,11 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
               + cell(doing, 0, c1) + c("│", "frame")
               + cell(done, 0, c2))
         lines.append(line(l1))
+        if line_map is not None:
+            idx = len(lines) - 1
+            for bucket in (todo, doing, done):
+                if bucket:
+                    line_map[bucket[0].id] = idx
         l2 = (c("▐ ", color) + progress_bar(len(done), len(rows), label_w - 2, color)
               + c("│", "frame") + meta(todo, c0) + c("│", "frame")
               + meta(doing, c1) + c("│", "frame") + meta(done, c2))
@@ -325,7 +330,7 @@ KCOLS = [("BACKLOG", "backlog"), ("ACTIVE", "active"),
 
 
 def render_columns(board, show_archived, selected_id, today=None,
-                   width=68, height=0) -> Text:
+                   width=68, height=0, line_map=None) -> Text:
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
@@ -389,6 +394,12 @@ def render_columns(board, show_archived, selected_id, today=None,
             else:
                 card.append(c("▊ ", project_color(board, t)) + title_markup(t, wc - 2, sel))
         lines.append(line(c("│", "frame").join(card)))
+        if line_map is not None:
+            idx = len(lines) - 1
+            for _, key, wc in cols:
+                items = buckets[key]
+                if r < len(items):
+                    line_map[items[r].id] = idx
         meta = []
         for label, key, wc in cols:
             items = buckets[key]
@@ -431,7 +442,7 @@ def agenda_bucket(task: Task, today: date) -> str:
 
 
 def render_agenda(board, show_archived, selected_id, today=None,
-                  width=68, height=0) -> Text:
+                  width=68, height=0, line_map=None) -> Text:
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
@@ -471,6 +482,8 @@ def render_agenda(board, show_archived, selected_id, today=None,
                    + c(sg, sgcol) + " " + c(braille, _URG_COLOR[row_urg]) + "  "
                    + c(escape(fit(chip_txt, 12)), chip_col))
             lines.append(line(row))
+            if line_map is not None:
+                line_map[t.id] = len(lines) - 1
 
     if not any_rows:
         lines.append(line(c(fit("  (nothing scheduled — press 'a' to add a task)", inner), "dim")))
@@ -482,7 +495,7 @@ def render_agenda(board, show_archived, selected_id, today=None,
 # view: GANTT  (weeks as columns; project + task bars; today marker)
 # ---------------------------------------------------------------------------
 def render_gantt(board, show_archived, selected_id, today=None,
-                 width=68, height=0) -> Text:
+                 width=68, height=0, line_map=None) -> Text:
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
@@ -541,6 +554,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
             sel = t.id == selected_id
             lines.append(line(c("  ", "dim") + title_markup(t, glabel_w - 3, sel) + " "
                               + bar_cells(ts, te, p.color, "▬") + " " * trailing))
+            if line_map is not None:
+                line_map[t.id] = len(lines) - 1
 
     for t in tasks:
         if board.project_by_id(t.project_id) is not None:
@@ -553,6 +568,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
         scheduled_any = True
         lines.append(line(c(fit("▐ " + t.title, glabel_w), "dim")
                           + bar_cells(ts, te, "dim", "▬") + " " * trailing))
+        if line_map is not None:
+            line_map[t.id] = len(lines) - 1
 
     if not scheduled_any:
         lines.append(line(c(fit("  (nothing dated — add start/due dates)", inner), "dim")))
@@ -565,6 +582,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
             sel = t.id == selected_id
             lines.append(line(" " + c("○", project_color(board, t)) + " "
                               + title_markup(t, inner - 3, sel)))
+            if line_map is not None:
+                line_map[t.id] = len(lines) - 1
 
     lines.append(bottom(None, w))
     return Text.from_markup("\n".join(fill_height(lines, height, w)))
@@ -582,6 +601,58 @@ RENDERERS = {
 
 
 def render_view(mode, board, show_archived, selected_id, today=None,
-                width=68, height=0) -> Text:
+                width=68, height=0, line_map=None) -> Text:
     fn = RENDERERS.get(mode, render_swimlanes)
-    return fn(board, show_archived, selected_id, today, width, height)
+    return fn(board, show_archived, selected_id, today, width, height, line_map)
+
+
+# ---------------------------------------------------------------------------
+# navigation model — the ON-SCREEN order of each view, so cursor moves follow
+# what the user sees (never board/data order). Returns a list of columns; each
+# column is an ordered list of task-ids. Linear views return a single column.
+# ---------------------------------------------------------------------------
+def _is_dated(task: Task) -> bool:
+    return (parse_iso(task.start_date) or parse_iso(task.due_date)) is not None
+
+
+def nav_model(mode, board, show_archived, today=None) -> list[list[str]]:
+    today = today or date.today()
+    tasks = board.visible_tasks(show_archived)
+
+    if mode == "columns":
+        return [[t.id for t in tasks if t.status == key] for _, key in KCOLS]
+
+    if mode == "swimlanes":
+        lanes = [[t for t in tasks if t.project_id == p.id]
+                 for p in board.visible_projects(show_archived)]
+        inbox = [t for t in tasks if board.project_by_id(t.project_id) is None]
+        if inbox:
+            lanes.append(inbox)
+        cols: list[list[str]] = [[], [], []]   # TODO / DOING / DONE
+        for lane in lanes:                      # only the first task of each cell shows
+            for i, bucket in enumerate(_lane_columns(lane)):
+                if bucket:
+                    cols[i].append(bucket[0].id)
+        return cols
+
+    if mode == "agenda":
+        by = {g[1]: [] for g in AGENDA_GROUPS}
+        for t in tasks:
+            by[agenda_bucket(t, today)].append(t)
+        order: list[str] = []
+        for _, gkey, _ in AGENDA_GROUPS:
+            order += [t.id for t in by[gkey]]
+        return [order]
+
+    if mode == "gantt":
+        order, unscheduled = [], []
+        for p in board.visible_projects(show_archived):
+            for t in [t for t in tasks if t.project_id == p.id]:
+                (order if _is_dated(t) else unscheduled).append(t.id)
+        for t in tasks:
+            if board.project_by_id(t.project_id) is not None:
+                continue
+            (order if _is_dated(t) else unscheduled).append(t.id)
+        return [order + unscheduled]
+
+    return [[t.id for t in tasks]]

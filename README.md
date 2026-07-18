@@ -111,21 +111,39 @@ the window, and launches `taskboard` via `default_prog`.
 The frame is gone and the board **fills the window** — resize it and the four views reflow to the
 new size. Textual paints the rest.
 
+### Toggle the window border at runtime
+
+The bundled `wezterm.lua` binds two keys (a WezTerm feature — an in-app button *cannot* remove the
+OS frame):
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+Shift+B` | Flip the window frame on/off (`NONE` ↔ `TITLE \| RESIZE`) |
+| `F11` | Toggle borderless fullscreen |
+
+So you can start frameless, tap `Ctrl+Shift+B` to get the title bar back when you need to drag the
+window, then tap it again to go frameless.
+
 ## Keybindings
 
 | Key | Action |
 |-----|--------|
 | `1` `2` `3` `4` | Switch view (Swimlanes / Columns / Agenda / Gantt) |
-| `↑` `↓` (or `k` `j`) | Move the task selection |
+| `↑` `↓` (or `k` `j`) | Move selection **in the current view's on-screen order**. In Columns/Swimlanes this moves *within* the column/lane. |
+| `←` `→` (or `h` `l`) | Move between columns (Columns/Swimlanes) — jumps to the next column's first task. No-op in Agenda/Gantt (single column). |
 | `a` | Add task |
 | `p` | Add project |
 | `e` | Edit selected task |
 | `d` / `Delete` | Delete selected task (asks to confirm) |
 | `x` | Archive / unarchive selected task |
-| `h` | Toggle showing archived items (hidden by default) |
+| `v` | Toggle showing archived items (hidden by default) |
 | `o` | Open the selected task's URL in your browser |
 | `c` | Choose the two ribbon clocks |
 | `q` | Quit |
+
+Navigation follows what you **see**: Down in Columns walks down the current status
+column (not some unrelated task in data order); Right jumps to the next column. The
+selected task stays highlighted and is scrolled into view.
 
 Inside a modal: `Esc` cancels, `Tab` moves between fields, `Enter` on a button activates it.
 
@@ -157,7 +175,7 @@ Because the offsets are fixed, no `zoneinfo`/`tzdata` timezone database is neede
 ```powershell
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pytest            # 20 Pilot + render tests
+pytest            # 25 Pilot + render tests
 ```
 
 ## Project layout
