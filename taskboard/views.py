@@ -164,6 +164,8 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
         tokens.append(("↗", "accent"))
     if allow_priority and task.priority == "high" and task.status != "done":
         tokens.append(("◉", "amber"))
+    if task.images:
+        tokens.append(("▤", "sky"))     # width-1 image indicator, distinct from ↗/◉
     ind_markup, used = _fit_indicators(tokens, wc - len(prefix))
     title_w = max(0, wc - len(prefix) - used)
     pre = c(prefix, prefix_color) if prefix else ""

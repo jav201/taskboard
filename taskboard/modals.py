@@ -68,6 +68,10 @@ class TaskModal(ModalScreen[dict | None]):
             urls_area = TextArea("\n".join(t.urls) if t else "", id="f-urls")
             urls_area.styles.height = 4   # 1fr TextArea would collapse in the auto modal
             yield urls_area
+            yield Label("Images (path or URL, one per line)")
+            images_area = TextArea("\n".join(t.images) if t else "", id="f-images")
+            images_area.styles.height = 4
+            yield images_area
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
@@ -102,6 +106,7 @@ class TaskModal(ModalScreen[dict | None]):
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
             "urls": urls,
+            "images": self._lines("f-images"),   # local paths valid at entry (no filter)
         }
         self.dismiss(data)
 
