@@ -1,0 +1,96 @@
+/* taskboard - single dark theme, terminal-widget aesthetic */
+
+Screen {
+    background: #0d1117;
+    color: #e6edf3;
+}
+
+#viewport {
+    width: 1fr;
+    height: 1fr;
+    padding: 1 2 0 2;
+    scrollbar-size: 1 1;
+    scrollbar-color: #334154;
+    scrollbar-background: #0d1117;
+}
+
+#board {
+    width: auto;
+    height: auto;
+}
+
+/* bottom ribbon docked above the footer */
+Ribbon {
+    dock: bottom;
+    height: 1;
+    width: 1fr;
+    background: #0b0f17;
+    color: #8b98a5;
+    border-top: solid #334154;
+    padding: 0 1;
+}
+
+Footer {
+    background: #0b0f17;
+    color: #8b98a5;
+}
+FooterKey .footer-key--key {
+    color: #2dd4bf;
+}
+
+/* ---- modals ---- */
+.modal {
+    width: 62;
+    max-width: 90%;
+    height: auto;
+    max-height: 90%;
+    padding: 1 2;
+    background: #0d1219;
+    border: round #334154;
+}
+#modal-box, #confirm-box {
+    align: center middle;
+}
+.modal-title {
+    color: #2dd4bf;
+    text-style: bold;
+    margin-bottom: 1;
+}
+.modal Label {
+    color: #8b98a5;
+    margin-top: 1;
+}
+.modal-grid {
+    grid-size: 2;
+    grid-columns: 20 1fr;
+    grid-gutter: 0 1;
+    height: auto;
+}
+.modal-grid Label {
+    margin-top: 1;
+    content-align: left middle;
+    height: 3;
+}
+.modal Input {
+    border: tall #1b2431;
+    background: #0b111a;
+}
+.modal Input:focus {
+    border: tall #2dd4bf;
+}
+.modal Select {
+    width: 1fr;
+}
+.modal-buttons {
+    height: auto;
+    margin-top: 1;
+    align: right middle;
+}
+.modal-buttons Button {
+    margin-left: 1;
+}
+
+TaskModal, ProjectModal, ConfirmModal {
+    align: center middle;
+    background: #0007;
+}

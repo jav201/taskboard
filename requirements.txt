@@ -1,0 +1,6 @@
+# Runtime + test deps, pinned to the versions this app was built and verified against.
+textual==8.2.8
+rich==15.0.0
+tzdata==2026.3
+pytest==9.1.1
+pytest-asyncio==1.4.0

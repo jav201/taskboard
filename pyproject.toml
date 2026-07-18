@@ -1,0 +1,25 @@
+[project]
+name = "taskboard"
+version = "0.1.0"
+description = "A frameless kanban desktop-widget task board built in Textual."
+requires-python = ">=3.10"
+dependencies = ["textual", "tzdata"]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+taskboard = "taskboard.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["taskboard"]
+
+[tool.setuptools.package-data]
+taskboard = ["*.tcss"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

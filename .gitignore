@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+# local dev data copy (real data lives in ~/.taskboard/board.json)
+board.json
+.pytest_cache/
