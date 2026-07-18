@@ -138,7 +138,7 @@ window, then tap it again to go frameless.
 | `x` | Archive / unarchive selected task |
 | `v` | Toggle showing archived items (hidden by default) |
 | `o` | Open the selected task's URL in your browser |
-| `c` | Choose the two ribbon clocks |
+| `c` | Choose the two ribbon city clocks (type to find a city) |
 | `q` | Quit |
 
 Navigation follows what you **see**: Down in Columns walks down the current status
@@ -150,32 +150,34 @@ Inside a modal: `Esc` cancels, `Tab` moves between fields, `Enter` on a button a
 Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink (clickable in
 terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
 
-## The two custom clocks
+## The two city clocks
 
-The bottom ribbon shows local time, date, ISO week (e.g. `W29`), and **two custom clocks**.
-Choose them **in-app**: press `c` to open the clock menu, pick a zone for Clock 1 and Clock 2,
-and Save. The selection is saved to `board.json` and survives restarts. Defaults are
-**CST (UTC-6)** and **EST (UTC-5)**.
+The bottom ribbon shows local time, date, ISO week (e.g. `W29`), and **two city clocks** —
+e.g. `Mexico City 09:14 · Tokyo 23:14`.
 
-The clocks use **fixed UTC offsets** (no daylight-saving shifts) — that's the "UTC convention".
-Available zones:
+Choose them **in-app**: press `c` to open the clock menu. Each clock is an Input you **type a
+city into** — start typing and it autocompletes (type `mad` → `Madrid`, accept with `→` or
+`Enter`). Save with the button (`Esc` cancels). An unknown or blank entry keeps the current city.
+The two cities are saved to `board.json` and survive restarts. Defaults: **Mexico City** and
+**New York**.
 
-```
-UTC (UTC+0)
-HST (UTC-10)  AKST (UTC-9)  PST (UTC-8)  MST (UTC-7)  CST (UTC-6)  EST (UTC-5)  AST (UTC-4)  BRT (UTC-3)
-GMT (UTC+0)   CET (UTC+1)   EET (UTC+2)  MSK (UTC+3)  GST (UTC+4)  IST (UTC+5:30)  ICT (UTC+7)
-HKT (UTC+8)   JST (UTC+9)   AEST (UTC+10)  NZST (UTC+12)
-```
+Times are **real and DST-aware** (via Python's `zoneinfo`, so `tzdata` is a dependency on
+Windows). ~75 cities are available across LATAM, US/Canada, Europe, Middle East/Africa, and
+Asia/Pacific — Mexico City, Monterrey, Bogotá, Lima, Santiago, São Paulo, Buenos Aires, New York,
+Chicago, Denver, Los Angeles, Toronto, London, Madrid, Paris, Berlin, Rome, Istanbul, Dubai,
+Cairo, Johannesburg, Mumbai, Bangkok, Singapore, Hong Kong, Shanghai, Tokyo, Seoul, Sydney,
+Auckland, and more.
 
-Because the offsets are fixed, no `zoneinfo`/`tzdata` timezone database is needed. Local time
-(the first field) still follows your system clock.
+Upgrading from an older build? Previously-saved fixed-offset clocks (`CST`, `EST`, …) are
+migrated automatically to a representative city (CST → Mexico City, EST → New York, PST → Los
+Angeles, JST → Tokyo, …), so your saved board keeps working.
 
 ## Development
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pytest            # 25 Pilot + render tests
+pytest            # 27 Pilot + render tests
 ```
 
 ## Project layout

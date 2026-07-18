@@ -6,7 +6,7 @@ from datetime import date
 
 import pytest
 
-from textual.widgets import Button, Footer, Input, Select, Static
+from textual.widgets import Button, Footer, Input, Static
 
 from taskboard.app import BoardView, TaskboardApp
 from taskboard.models import Board, Task
@@ -116,49 +116,76 @@ async def test_ribbon_shows_time_date_week_and_two_clocks(tmp_path):
     async with app.run_test() as pilot:
         ribbon = app.query_one("#ribbon", Ribbon)
         text = str(ribbon.render())
-        # HH:MM:SS + week token + both DEFAULT clock labels (CST / EST)
+        # HH:MM:SS + week token + both DEFAULT clock cities (Mexico City / New York)
         assert ":" in text
         assert "W" in text
-        assert "CST" in text
-        assert "EST" in text
+        assert "Mexico City" in text
+        assert "New York" in text
 
 
-async def test_clock_modal_changes_and_persists(tmp_path):
+async def test_clock_modal_search_pick_persists(tmp_path):
     board_path = str(tmp_path / "board.json")
     app = TaskboardApp(board_path=board_path)
     async with app.run_test() as pilot:
-        # defaults first
-        assert app.board.get_clocks() == ("CST", "EST")
+        assert app.board.get_clocks() == ("Mexico City", "New York")   # fresh defaults
         await pilot.press("c")
         await pilot.pause()
-        app.screen.query_one("#f-clock1", Select).value = "JST"
+        # type-to-find: 'tokyo' resolves to the canonical 'Tokyo' city
+        app.screen.query_one("#f-clock1", Input).value = "tokyo"
         app.screen.query_one("#save", Button).press()
         await pilot.pause()
-        # (a) ribbon now shows the new zone
+        # (a) ribbon now shows the chosen city
         ribbon = app.query_one("#ribbon", Ribbon)
-        assert "JST" in str(ribbon.render())
-        assert app.board.get_clocks()[0] == "JST"
-    # (b) persisted: reload the board file from disk
+        assert "Tokyo" in str(ribbon.render())
+        assert app.board.get_clocks()[0] == "Tokyo"
+    # (b) persisted: reload the board file from disk, clock2 keeps its default
     reloaded = Board.load(board_path)
-    assert reloaded.get_clocks() == ("JST", "EST")
+    assert reloaded.get_clocks() == ("Tokyo", "New York")
 
 
-def test_fixed_offset_clock_arithmetic():
+async def test_clock_modal_unknown_city_falls_back(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        await pilot.press("c")
+        await pilot.pause()
+        app.screen.query_one("#f-clock1", Input).value = "Nowhereville"  # not a city
+        app.screen.query_one("#save", Button).press()
+        await pilot.pause()
+        assert app.board.get_clocks()[0] == "Mexico City"   # kept current value
+
+
+def test_city_clock_is_zoneinfo_dst_aware():
     from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
     from taskboard.ribbon import clock_hhmm
+    from taskboard.models import CITY_TO_ZONE
     utc = datetime(2026, 7, 17, 12, 0, tzinfo=timezone.utc)
-    assert clock_hhmm(-360, utc) == "06:00"   # CST  (UTC-6)
-    assert clock_hhmm(-300, utc) == "07:00"   # EST  (UTC-5)
-    assert clock_hhmm(330, utc) == "17:30"    # IST  (UTC+5:30)
-    assert clock_hhmm(540, utc) == "21:00"    # JST  (UTC+9)
+    for city in ("Mexico City", "New York", "Tokyo", "London", "Mumbai"):
+        expected = utc.astimezone(ZoneInfo(CITY_TO_ZONE[city])).strftime("%H:%M")
+        assert clock_hhmm(CITY_TO_ZONE[city], utc) == expected
+    # sanity: Tokyo (UTC+9) is 15h ahead of Mexico City (UTC-6, no DST in 2022+)
+    mx = clock_hhmm(CITY_TO_ZONE["Mexico City"], utc)
+    tk = clock_hhmm(CITY_TO_ZONE["Tokyo"], utc)
+    assert mx == "06:00" and tk == "21:00"
 
 
 def test_board_clock_settings_backcompat(tmp_path):
     import json
+    # (1) no settings at all -> fresh city defaults
     p = tmp_path / "old.json"
     p.write_text(json.dumps({"projects": [], "tasks": []}), encoding="utf-8")
-    board = Board.load(str(p))            # no "settings" key present
-    assert board.get_clocks() == ("CST", "EST")
+    assert Board.load(str(p)).get_clocks() == ("Mexico City", "New York")
+    # (2) legacy fixed-offset abbreviations migrate to representative cities
+    q = tmp_path / "legacy.json"
+    q.write_text(json.dumps({"projects": [], "tasks": [],
+                             "settings": {"clock1": "CST", "clock2": "EST"}}),
+                 encoding="utf-8")
+    assert Board.load(str(q)).get_clocks() == ("Mexico City", "New York")
+    r = tmp_path / "legacy2.json"
+    r.write_text(json.dumps({"projects": [], "tasks": [],
+                             "settings": {"clock1": "JST", "clock2": "CET"}}),
+                 encoding="utf-8")
+    assert Board.load(str(r)).get_clocks() == ("Tokyo", "Madrid")
 
 
 async def test_ribbon_is_painted_and_not_overlapping_footer(tmp_path):

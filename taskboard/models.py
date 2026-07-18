@@ -20,31 +20,117 @@ PROJECT_STATUSES = ("on_track", "paused", "cancelled", "completed")
 TASK_STATUSES = ("backlog", "active", "blocked", "done")
 TASK_PRIORITIES = ("low", "normal", "high")
 
-# --- ribbon clock zones: FIXED UTC offsets (no DST), the "UTC convention" ----
-# Each entry is (conventional abbreviation, offset in minutes from UTC).
-CLOCK_ZONES: tuple[tuple[str, int], ...] = (
-    ("UTC", 0),
-    ("HST", -600), ("AKST", -540), ("PST", -480), ("MST", -420),
-    ("CST", -360), ("EST", -300), ("AST", -240), ("BRT", -180),
-    ("GMT", 0), ("CET", 60), ("EET", 120), ("MSK", 180), ("GST", 240),
-    ("IST", 330), ("ICT", 420), ("HKT", 480), ("JST", 540),
-    ("AEST", 600), ("NZST", 720),
+# --- ribbon clocks: CITY -> IANA timezone (real, DST-aware via zoneinfo) ------
+# Curated across the regions the user works in. Display name is the city; the
+# value stored in board.json is the city name (unique -> recovers its zone).
+CITY_ZONES: tuple[tuple[str, str], ...] = (
+    # LATAM
+    ("Mexico City", "America/Mexico_City"),
+    ("Monterrey", "America/Monterrey"),
+    ("Guadalajara", "America/Mexico_City"),
+    ("Guatemala City", "America/Guatemala"),
+    ("San José", "America/Costa_Rica"),
+    ("Panama", "America/Panama"),
+    ("Bogotá", "America/Bogota"),
+    ("Quito", "America/Guayaquil"),
+    ("Lima", "America/Lima"),
+    ("Caracas", "America/Caracas"),
+    ("Santiago", "America/Santiago"),
+    ("Buenos Aires", "America/Argentina/Buenos_Aires"),
+    ("Montevideo", "America/Montevideo"),
+    ("São Paulo", "America/Sao_Paulo"),
+    # US / Canada
+    ("New York", "America/New_York"),
+    ("Boston", "America/New_York"),
+    ("Miami", "America/New_York"),
+    ("Atlanta", "America/New_York"),
+    ("Toronto", "America/Toronto"),
+    ("Chicago", "America/Chicago"),
+    ("Denver", "America/Denver"),
+    ("Phoenix", "America/Phoenix"),
+    ("Los Angeles", "America/Los_Angeles"),
+    ("San Francisco", "America/Los_Angeles"),
+    ("Seattle", "America/Los_Angeles"),
+    ("Vancouver", "America/Vancouver"),
+    ("Anchorage", "America/Anchorage"),
+    ("Honolulu", "Pacific/Honolulu"),
+    # Europe
+    ("London", "Europe/London"),
+    ("Dublin", "Europe/Dublin"),
+    ("Lisbon", "Europe/Lisbon"),
+    ("Madrid", "Europe/Madrid"),
+    ("Paris", "Europe/Paris"),
+    ("Brussels", "Europe/Brussels"),
+    ("Amsterdam", "Europe/Amsterdam"),
+    ("Berlin", "Europe/Berlin"),
+    ("Zurich", "Europe/Zurich"),
+    ("Rome", "Europe/Rome"),
+    ("Vienna", "Europe/Vienna"),
+    ("Prague", "Europe/Prague"),
+    ("Warsaw", "Europe/Warsaw"),
+    ("Copenhagen", "Europe/Copenhagen"),
+    ("Oslo", "Europe/Oslo"),
+    ("Stockholm", "Europe/Stockholm"),
+    ("Helsinki", "Europe/Helsinki"),
+    ("Athens", "Europe/Athens"),
+    ("Moscow", "Europe/Moscow"),
+    # Middle East / Africa
+    ("Istanbul", "Europe/Istanbul"),
+    ("Tel Aviv", "Asia/Jerusalem"),
+    ("Dubai", "Asia/Dubai"),
+    ("Riyadh", "Asia/Riyadh"),
+    ("Tehran", "Asia/Tehran"),
+    ("Cairo", "Africa/Cairo"),
+    ("Casablanca", "Africa/Casablanca"),
+    ("Lagos", "Africa/Lagos"),
+    ("Accra", "Africa/Accra"),
+    ("Nairobi", "Africa/Nairobi"),
+    ("Johannesburg", "Africa/Johannesburg"),
+    # Asia / Pacific
+    ("Karachi", "Asia/Karachi"),
+    ("Mumbai", "Asia/Kolkata"),
+    ("Delhi", "Asia/Kolkata"),
+    ("Bangkok", "Asia/Bangkok"),
+    ("Jakarta", "Asia/Jakarta"),
+    ("Singapore", "Asia/Singapore"),
+    ("Hong Kong", "Asia/Hong_Kong"),
+    ("Shanghai", "Asia/Shanghai"),
+    ("Taipei", "Asia/Taipei"),
+    ("Manila", "Asia/Manila"),
+    ("Seoul", "Asia/Seoul"),
+    ("Tokyo", "Asia/Tokyo"),
+    ("Perth", "Australia/Perth"),
+    ("Brisbane", "Australia/Brisbane"),
+    ("Sydney", "Australia/Sydney"),
+    ("Melbourne", "Australia/Melbourne"),
+    ("Auckland", "Pacific/Auckland"),
 )
-ZONE_OFFSETS: dict[str, int] = dict(CLOCK_ZONES)
-DEFAULT_CLOCK1 = "CST"
-DEFAULT_CLOCK2 = "EST"
+CITY_TO_ZONE: dict[str, str] = dict(CITY_ZONES)
+_CITY_LOWER: dict[str, str] = {name.lower(): name for name, _ in CITY_ZONES}
+
+DEFAULT_CLOCK1 = "Mexico City"
+DEFAULT_CLOCK2 = "New York"
+
+# migrate old fixed-offset abbreviations (pre-city boards) to a representative city
+_LEGACY_ABBREV_TO_CITY = {
+    "UTC": "London", "GMT": "London", "HST": "Honolulu", "AKST": "Anchorage",
+    "PST": "Los Angeles", "MST": "Denver", "CST": "Mexico City", "EST": "New York",
+    "AST": "Santiago", "BRT": "São Paulo", "CET": "Madrid", "EET": "Athens",
+    "MSK": "Moscow", "GST": "Dubai", "IST": "Mumbai", "ICT": "Bangkok",
+    "HKT": "Hong Kong", "JST": "Tokyo", "AEST": "Sydney", "NZST": "Auckland",
+}
 
 
-def offset_label(minutes: int) -> str:
-    """1min offset -> 'UTC+0' / 'UTC-6' / 'UTC+5:30'."""
-    sign = "+" if minutes >= 0 else "-"
-    h, m = divmod(abs(minutes), 60)
-    return f"UTC{sign}{h}:{m:02d}" if m else f"UTC{sign}{h}"
+def city_names() -> list[str]:
+    """All selectable city display names (for the searchable picker)."""
+    return [name for name, _ in CITY_ZONES]
 
 
-def clock_select_options() -> list[tuple[str, str]]:
-    """(label, value) options for a clock Select, e.g. ('CST (UTC-6)', 'CST')."""
-    return [(f"{abbrev} ({offset_label(off)})", abbrev) for abbrev, off in CLOCK_ZONES]
+def resolve_city(text: str | None) -> str | None:
+    """Case-insensitive match of typed text to a canonical city name, else None."""
+    if not text:
+        return None
+    return _CITY_LOWER.get(text.strip().lower())
 
 
 def default_board_path() -> Path:
@@ -160,14 +246,17 @@ class Board:
 
     # ---- ribbon clock settings --------------------------------------------
     def get_clocks(self) -> tuple[str, str]:
-        """The two selected clock zone abbreviations, validated w/ defaults."""
-        k1 = self.settings.get("clock1")
-        k2 = self.settings.get("clock2")
-        if k1 not in ZONE_OFFSETS:
-            k1 = DEFAULT_CLOCK1
-        if k2 not in ZONE_OFFSETS:
-            k2 = DEFAULT_CLOCK2
-        return k1, k2
+        """The two selected clock CITIES, validated + migrated from old boards."""
+        return (self._resolve_clock(self.settings.get("clock1"), DEFAULT_CLOCK1),
+                self._resolve_clock(self.settings.get("clock2"), DEFAULT_CLOCK2))
+
+    @staticmethod
+    def _resolve_clock(value: str | None, default: str) -> str:
+        if value in CITY_TO_ZONE:
+            return value
+        if value in _LEGACY_ABBREV_TO_CITY:      # pre-city board -> migrate
+            return _LEGACY_ABBREV_TO_CITY[value]
+        return default
 
     def set_clocks(self, clock1: str, clock2: str) -> None:
         self.settings["clock1"] = clock1
