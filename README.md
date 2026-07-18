@@ -125,6 +125,7 @@ Then pin it **always-on-top** with [PowerToys](https://learn.microsoft.com/windo
 | `x` | Archive / unarchive selected task |
 | `h` | Toggle showing archived items (hidden by default) |
 | `o` | Open the selected task's URL in your browser |
+| `c` | Choose the two ribbon clocks |
 | `q` | Quit |
 
 Inside a modal: `Esc` cancels, `Tab` moves between fields, `Enter` on a button activates it.
@@ -134,25 +135,30 @@ terminals that support it, e.g. WezTerm). The `o` key always works regardless of
 
 ## The two custom clocks
 
-The bottom ribbon shows local time, date, ISO week (e.g. `W29`), and **two custom timezone
-clocks**. Edit them at the top of [`taskboard/ribbon.py`](taskboard/ribbon.py):
+The bottom ribbon shows local time, date, ISO week (e.g. `W29`), and **two custom clocks**.
+Choose them **in-app**: press `c` to open the clock menu, pick a zone for Clock 1 and Clock 2,
+and Save. The selection is saved to `board.json` and survives restarts. Defaults are
+**CST (UTC-6)** and **EST (UTC-5)**.
 
-```python
-CLOCKS: list[tuple[str, str]] = [
-    ("LA", "America/Los_Angeles"),
-    ("Madrid", "Europe/Madrid"),
-]
+The clocks use **fixed UTC offsets** (no daylight-saving shifts) — that's the "UTC convention".
+Available zones:
+
+```
+UTC (UTC+0)
+HST (UTC-10)  AKST (UTC-9)  PST (UTC-8)  MST (UTC-7)  CST (UTC-6)  EST (UTC-5)  AST (UTC-4)  BRT (UTC-3)
+GMT (UTC+0)   CET (UTC+1)   EET (UTC+2)  MSK (UTC+3)  GST (UTC+4)  IST (UTC+5:30)  ICT (UTC+7)
+HKT (UTC+8)   JST (UTC+9)   AEST (UTC+10)  NZST (UTC+12)
 ```
 
-Each entry is `(short label, IANA timezone)`. Timezone data ships via the `tzdata` dependency, so
-it works on Windows without extra setup.
+Because the offsets are fixed, no `zoneinfo`/`tzdata` timezone database is needed. Local time
+(the first field) still follows your system clock.
 
 ## Development
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pytest            # 13 Pilot + render tests
+pytest            # 16 Pilot + render tests
 ```
 
 ## Project layout
