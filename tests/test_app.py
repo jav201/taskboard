@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from datetime import date
+from pathlib import Path
 
 import pytest
 
@@ -618,7 +619,7 @@ async def test_open_images_allowlist_and_isfile(tmp_path, monkeypatch):
         ])
         app.board.add_task(t)
         app.selected_task_id = t.id
-        app.action_open_images()
+        app.open_all_images_raw(app.selected_task)
         assert started == [str(real)]       # only the existing allowed image file
 
 
@@ -700,7 +701,7 @@ async def test_at_003_images_black_box(tmp_path, monkeypatch):
         started, browsed = [], []
         monkeypatch.setattr("taskboard.app.os.startfile", started.append)
         monkeypatch.setattr("taskboard.app.webbrowser.open", browsed.append)
-        await pilot.press("i")
+        app.open_all_images_raw(app.selected_task)
         assert started == [str(real_png)]                       # existing image only
         assert browsed == ["https://pics.example.com/a.png"]    # the http image URL
         assert str(svg) not in started and str(exe) not in started
@@ -746,3 +747,51 @@ def test_corrupt_file_starts_empty(tmp_path):
     board = Board.load(str(p))
     assert board.projects == []
     assert board.tasks == []
+
+
+def test_save_pil_image_increments(tmp_path):
+    """save_pil_image writes paste-001, paste-002, ... in the given folder."""
+    from PIL import Image as PILImage
+    from taskboard.models import save_pil_image
+    d = tmp_path / "imgs"
+    a = save_pil_image(d, PILImage.new("RGB", (4, 4)))
+    b = save_pil_image(d, PILImage.new("RGB", (4, 4)))
+    assert a.name == "paste-001.png" and b.name == "paste-002.png"
+    assert a.is_file() and b.is_file()
+
+
+async def test_clipboard_paste_saves_and_appends(tmp_path, monkeypatch):
+    """Pasting a clipboard bitmap writes a PNG under the task's image folder and
+    appends its path to the modal's images field (real key + button presses)."""
+    from PIL import Image as PILImage
+    from taskboard import modals
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        monkeypatch.setattr(modals, "grab_clipboard_image",
+                            lambda: PILImage.new("RGB", (20, 12), (10, 20, 30)))
+        await pilot.press("a")                     # open new-task modal
+        await pilot.pause()
+        app.screen.query_one("#f-title", Input).value = "SHOT"
+        app.screen.query_one("#paste-img", Button).press()
+        await pilot.pause()
+        area = app.screen.query_one("#f-images", TextArea)
+        lines = [l for l in area.text.splitlines() if l.strip()]
+        assert len(lines) == 1
+        assert lines[0].endswith(".png")
+        assert Path(lines[0]).is_file()
+
+
+async def test_image_viewer_opens_without_crash(tmp_path):
+    """i opens the inline viewer for a task holding a real local image + a URL."""
+    from PIL import Image as PILImage
+    from taskboard.modals import ImageViewer
+    app = make_app(tmp_path)
+    async with app.run_test(size=(100, 40)) as pilot:
+        img = tmp_path / "pic.png"
+        PILImage.new("RGB", (16, 16), (0, 128, 255)).save(img)
+        t = app.board.tasks[0]
+        t.images = [str(img), "https://example.com/x.png"]
+        app.selected_task_id = t.id
+        await pilot.press("i")
+        await pilot.pause()
+        assert isinstance(app.screen, ImageViewer)

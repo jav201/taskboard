@@ -11,6 +11,9 @@ Notes on the pitfalls these avoid:
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 from rich.markup import escape
 
 from textual.app import ComposeResult
@@ -21,8 +24,9 @@ from textual.suggester import SuggestFromList
 from textual.widgets import Button, Input, Label, OptionList, Select, TextArea
 from textual.widgets.option_list import Option
 
-from .models import (PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
-                     TASK_STATUSES, Board, Project, Task, city_names, resolve_city)
+from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
+                     TASK_STATUSES, Board, Project, Task, _new_id, city_names,
+                     grab_clipboard_image, resolve_city, save_pil_image)
 from .views import valid_url
 
 NONE_VALUE = "__none__"
@@ -37,6 +41,9 @@ class TaskModal(ModalScreen[dict | None]):
         super().__init__()
         self.board = board
         self._edit_task = task
+        # stable folder key for pasted images; a NEW task adopts it as its id on
+        # save, so images live at images/<task-id>/.
+        self._img_key = task.id if task else _new_id()
 
     def compose(self) -> ComposeResult:
         t = self._edit_task
@@ -74,6 +81,8 @@ class TaskModal(ModalScreen[dict | None]):
             images_area = TextArea("\n".join(t.images) if t else "", id="f-images")
             images_area.styles.height = 4
             yield images_area
+            yield Button("Paste image from clipboard", variant="primary",
+                         id="paste-img")
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
@@ -81,8 +90,34 @@ class TaskModal(ModalScreen[dict | None]):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "save":
             self._save()
+        elif event.button.id == "paste-img":
+            self._paste_image()
         else:
             self.dismiss(None)
+
+    def _paste_image(self) -> None:
+        """Grab an image (or image files) from the clipboard, persist a pasted
+        bitmap under the task's image folder, and append the path(s) to the
+        images field. Friendly notice when the clipboard has no usable image."""
+        grabbed = grab_clipboard_image()
+        if grabbed is None:
+            self.notify("No image found in the clipboard.", severity="warning")
+            return
+        added: list[str] = []
+        if isinstance(grabbed, list):                    # files copied in Explorer
+            for p in grabbed:
+                if Path(p).suffix.lower() in IMAGE_EXTS and os.path.isfile(p):
+                    added.append(p)
+            if not added:
+                self.notify("Clipboard holds no image files.", severity="warning")
+                return
+        else:                                            # a raw bitmap
+            dest = save_pil_image(self.board.image_dir(self._img_key), grabbed)
+            added.append(str(dest))
+        area = self.query_one("#f-images", TextArea)
+        existing = area.text.rstrip("\n")
+        area.text = (existing + "\n" if existing else "") + "\n".join(added)
+        self.notify(f"Added {len(added)} image{'' if len(added) == 1 else 's'}.")
 
     def action_cancel(self) -> None:
         self.dismiss(None)
@@ -101,6 +136,7 @@ class TaskModal(ModalScreen[dict | None]):
         proj = self._val("f-project")
         urls = [v for v in (valid_url(ln) for ln in self._lines("f-urls")) if v]
         data = {
+            "id": self._img_key,
             "title": title,
             "project_id": None if proj == NONE_VALUE else proj,
             "status": self._val("f-status"),
@@ -354,3 +390,53 @@ class ConfirmModal(ModalScreen[bool]):
 
     def action_no(self) -> None:
         self.dismiss(False)
+
+
+class ImageViewer(ModalScreen[None]):
+    """Show a task's images rescaled inline — crisp via the terminal graphics
+    protocol where the terminal supports it (e.g. WezTerm), half-block/Unicode
+    fallback otherwise. ``o`` opens every image raw in its OS-default app /
+    browser; ``esc`` closes. Remote URLs are listed as links (``o`` opens them).
+    """
+
+    BINDINGS = [("escape", "close", "Close"), ("o", "open_raw", "Open raw")]
+
+    def __init__(self, task: Task, board: Board):
+        super().__init__()
+        self._view_task = task
+        self._board = board
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="viewer-box", classes="modal"):
+            yield Label(
+                f"[b]{escape(self._view_task.title)}[/b]  —  o open raw · esc close",
+                classes="modal-title")
+            if not self._view_task.images:
+                yield Label("[dim]No images on this task.[/dim]")
+                return
+            for ref in self._view_task.images:
+                yield from self._image_block(ref)
+
+    def _image_block(self, ref: str):
+        if valid_url(ref):                       # remote: can't inline; link it
+            yield Label(f"link · {escape(ref)}")
+            return
+        path = Path(ref)
+        if path.suffix.lower() not in IMAGE_EXTS or not path.is_file():
+            yield Label(f"[dim]missing:[/dim] {escape(ref)}")
+            return
+        try:
+            from textual_image.widget import Image as AutoImage
+            img = AutoImage(str(path))
+            img.styles.width = 40
+            img.styles.height = 16
+            yield img
+        except Exception:                        # never blank the modal on one bad file
+            yield Label(f"[dim]could not render:[/dim] {escape(ref)}")
+        yield Label(f"[dim]{escape(path.name)}[/dim]")
+
+    def action_open_raw(self) -> None:
+        self.app.open_all_images_raw(self._task)
+
+    def action_close(self) -> None:
+        self.dismiss(None)
