@@ -17,7 +17,7 @@ from uuid import uuid4
 # --- enumerations (kept as plain strings; validated leniently at the edges) ---
 PROJECT_COLORS = ("violet", "sky", "amber", "rose", "green")
 PROJECT_STATUSES = ("on_track", "paused", "cancelled", "completed")
-TASK_STATUSES = ("backlog", "active", "blocked", "done")
+TASK_STATUSES = ("backlog", "doing", "blocked", "done")
 TASK_PRIORITIES = ("low", "normal", "high")
 
 # --- ribbon clocks: CITY -> IANA timezone (real, DST-aware via zoneinfo) ------
@@ -246,7 +246,9 @@ class Task:
             id=d.get("id") or _new_id(),
             title=d.get("title", "Untitled"),
             project_id=d.get("project_id"),
-            status=d.get("status") if d.get("status") in TASK_STATUSES else "backlog",
+            status=("doing" if d.get("status") == "active"
+                    else d.get("status") if d.get("status") in TASK_STATUSES
+                    else "backlog"),
             priority=d.get("priority") if d.get("priority") in TASK_PRIORITIES else "normal",
             start_date=d.get("start_date"),
             due_date=d.get("due_date"),
@@ -389,12 +391,12 @@ def seed_data() -> tuple[list[Project], list[Task]]:
     tasks = [
         # Website Redesign — note: image tasks stay normal/low priority + no URL
         # so their card carries only the image glyph (never with the ◉/↗ markers).
-        Task("Design homepage mockups", web.id, "active", "normal", due_date=iso(0),
+        Task("Design homepage mockups", web.id, "doing", "normal", due_date=iso(0),
              images=["./mockups/home.png", "./mockups/home-dark.png"]),
         Task("Fix checkout 500 error", web.id, "blocked", "high", due_date=iso(-2),
              urls=["https://status.example.com/incident/4821",
                    "https://logs.example.com/checkout"]),
-        Task("Optimize image assets", web.id, "active", "low", due_date=iso(6),
+        Task("Optimize image assets", web.id, "doing", "low", due_date=iso(6),
              images=["https://picsum.photos/seed/hero/640"]),
         # API Platform (paused)
         Task("Write API reference", api.id, "backlog", "normal", due_date=iso(5),
@@ -402,7 +404,7 @@ def seed_data() -> tuple[list[Project], list[Task]]:
         Task("Plan Q3 roadmap", api.id, "backlog", "normal"),
         Task("Deprecate v1 endpoints", api.id, "backlog", "high", due_date=iso(9)),
         # Mobile App
-        Task("Audit dependencies", mobile.id, "active", "normal", due_date=iso(12)),
+        Task("Audit dependencies", mobile.id, "doing", "normal", due_date=iso(12)),
         Task("Set up CI pipeline", mobile.id, "done", "normal"),
         Task("Add push notifications", mobile.id, "backlog", "normal", due_date=iso(18)),
         # Data Warehouse (completed)
@@ -415,6 +417,6 @@ def seed_data() -> tuple[list[Project], list[Task]]:
         # standalone tasks -> Inbox
         Task("Renew TLS certificate", None, "backlog", "high", due_date=iso(3)),
         Task("Update onboarding copy", None, "backlog", "normal"),
-        Task("Review pull requests", None, "active", "normal", due_date=iso(1)),
+        Task("Review pull requests", None, "doing", "normal", due_date=iso(1)),
     ]
     return projects, tasks

@@ -20,7 +20,7 @@ Built and verified against **Textual 8.2.8 / rich 15.0.0** (Python 3.12).
 | Key | View | What it's for |
 |-----|------|---------------|
 | `1` | **Swimlanes** | Projects as rows × TODO/DOING/DONE columns, with a half-block progress bar per project. |
-| `2` | **Columns** | Classic kanban: BACKLOG / ACTIVE / BLOCKED / DONE, project-colored cards, WIP counts + throughput sparklines, due chips. |
+| `2` | **Columns** | Classic kanban: BACKLOG / DOING / BLOCKED / DONE, project-colored cards, WIP counts + throughput sparklines, due chips. |
 | `3` | **Agenda** | Tasks grouped by urgency: OVERDUE / TODAY / THIS WEEK / LATER / NO DATE, with braille due-bars. |
 | `4` | **Gantt** | An 8-week time axis; a bar per project (start→due) with its task bars underneath; undated items listed under UNSCHEDULED. |
 
