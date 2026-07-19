@@ -80,7 +80,7 @@ def status_glyph(task: Task) -> tuple[str, str]:
     return {
         "done": ("✓", "done"),
         "blocked": ("▲", "over"),
-        "active": ("◐", "accent"),
+        "doing": ("◐", "accent"),
         "backlog": ("○", "dim"),
     }.get(task.status, ("○", "dim"))
 
@@ -303,7 +303,7 @@ def _clamp_width(width: int) -> int:
 # ---------------------------------------------------------------------------
 def _lane_columns(tasks: list[Task]):
     todo = [t for t in tasks if t.status == "backlog"]
-    doing = [t for t in tasks if t.status in ("active", "blocked")]
+    doing = [t for t in tasks if t.status in ("doing", "blocked")]
     done = [t for t in tasks if t.status == "done"]
     return todo, doing, done
 
@@ -381,7 +381,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
 # ---------------------------------------------------------------------------
 # view: COLUMNS  (BACKLOG / ACTIVE / BLOCKED / DONE)
 # ---------------------------------------------------------------------------
-KCOLS = [("BACKLOG", "backlog"), ("ACTIVE", "active"),
+KCOLS = [("BACKLOG", "backlog"), ("DOING", "doing"),
          ("BLOCKED", "blocked"), ("DONE", "done")]
 
 
