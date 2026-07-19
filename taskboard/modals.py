@@ -29,6 +29,15 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      grab_clipboard_image, resolve_city, save_pil_image)
 from .views import valid_url
 
+# Imported at MODULE load (before the app starts) on purpose: textual-image
+# detects the terminal's graphics support by QUERYING the terminal, which only
+# works before Textual seizes it. A lazy import inside the viewer would run
+# after app start -> detection fails -> silent low-res half-cell fallback.
+try:
+    from textual_image.widget import Image as AutoImage
+except Exception:          # pragma: no cover - dependency present in prod
+    AutoImage = None
+
 NONE_VALUE = "__none__"
 
 
@@ -425,18 +434,19 @@ class ImageViewer(ModalScreen[None]):
         if path.suffix.lower() not in IMAGE_EXTS or not path.is_file():
             yield Label(f"[dim]missing:[/dim] {escape(ref)}")
             return
+        if AutoImage is None:
+            yield Label(f"[dim](install textual-image to preview)[/dim] {escape(ref)}")
+            return
         try:
-            from textual_image.widget import Image as AutoImage
-            img = AutoImage(str(path))
-            img.styles.width = 40
-            img.styles.height = 16
-            yield img
+            img = AutoImage(str(path))           # size comes from #viewer-box Image (TCSS)
         except Exception:                        # never blank the modal on one bad file
             yield Label(f"[dim]could not render:[/dim] {escape(ref)}")
+            return
+        yield img
         yield Label(f"[dim]{escape(path.name)}[/dim]")
 
     def action_open_raw(self) -> None:
-        self.app.open_all_images_raw(self._task)
+        self.app.open_all_images_raw(self._view_task)
 
     def action_close(self) -> None:
         self.dismiss(None)
