@@ -139,7 +139,7 @@ window, then tap it again to go frameless.
 | `x` | Archive / unarchive selected task |
 | `v` | Toggle showing archived items (hidden by default) |
 | `o` | Open the selected task's URLs in your browser (opens all of them) |
-| `i` | Open the selected task's images in your OS default viewer |
+| `i` | Open the inline image viewer for the selected task (rescaled thumbnails) |
 | `c` | Choose the two ribbon city clocks (type to find a city) |
 | `q` | Quit |
 
@@ -158,6 +158,15 @@ to Inbox (no-project). Every change saves immediately and the board re-renders b
 
 Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink (clickable in
 terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
+
+### Images
+
+In the task editor, click **Paste image from clipboard** to attach a screenshot straight from the
+clipboard. Pasted images are stored as **real files** under `~/.taskboard/images/<task-id>/`, so you
+can open them raw with any app. Press `i` on a selected task to view its images rescaled **inline**
+(crisp in graphics-capable terminals like WezTerm, half-block fallback elsewhere); inside the viewer
+press `o` to open them all raw in your OS default app / browser. You can also paste plain image paths
+or URLs directly into the Images field, one per line.
 
 ## The two city clocks
 

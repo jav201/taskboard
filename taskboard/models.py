@@ -142,6 +142,45 @@ def default_board_path() -> Path:
     return Path.home() / ".taskboard" / "board.json"
 
 
+# Local image paths are opened with their OS-associated handler, so a non-image
+# file would EXECUTE — .svg is excluded because it is scriptable. Canonical home
+# for the allowlist (app.py and modals.py both import it).
+IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
+
+
+def grab_clipboard_image():
+    """Return a PIL.Image from the clipboard, a list of file-path strings when
+    files were copied instead, or None when the clipboard holds neither / Pillow
+    is unavailable. Never raises."""
+    try:
+        from PIL import ImageGrab
+        from PIL import Image as _PILImage
+    except Exception:
+        return None
+    try:
+        data = ImageGrab.grabclipboard()
+    except Exception:
+        return None
+    if isinstance(data, _PILImage.Image):
+        return data
+    if isinstance(data, list):
+        return [str(p) for p in data]
+    return None
+
+
+def save_pil_image(directory: Path, image) -> Path:
+    """Save a PIL image as the next free ``paste-NNN.png`` in ``directory``
+    (created if missing) and return its resolved absolute path."""
+    directory.mkdir(parents=True, exist_ok=True)
+    n = 1
+    while (directory / f"paste-{n:03d}.png").exists():
+        n += 1
+    dest = directory / f"paste-{n:03d}.png"
+    to_save = image if image.mode in ("RGB", "RGBA", "L") else image.convert("RGB")
+    to_save.save(dest, "PNG")
+    return dest.resolve()
+
+
 def _new_id() -> str:
     return uuid4().hex[:8]
 
@@ -226,6 +265,11 @@ class Board:
         self.tasks = tasks
         self.path = path
         self.settings = settings or {}
+
+    def image_dir(self, task_id: str) -> Path:
+        """Per-task folder for pasted images, kept beside the board file so the
+        raw files are openable by any app: <board-dir>/images/<task_id>/."""
+        return self.path.parent / "images" / task_id
 
     # ---- persistence -------------------------------------------------------
     @classmethod

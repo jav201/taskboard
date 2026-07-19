@@ -12,18 +12,13 @@ from textual.binding import Binding
 from textual.containers import Vertical, VerticalScroll
 from textual.widgets import Footer, Static
 
-from .models import Board, Project, Task, default_board_path
-from .modals import ClockModal, ConfirmModal, ProjectModal, ProjectPicker, TaskModal
+from .models import IMAGE_EXTS, Board, Project, Task, default_board_path
+from .modals import ClockModal, ConfirmModal, ImageViewer, ProjectModal, ProjectPicker, TaskModal
 from .ribbon import Ribbon
 from .views import nav_model, render_view, valid_url
 
 VIEW_ORDER = ["swimlanes", "columns", "agenda", "gantt"]
 VIEW_KEYS = {"1": "swimlanes", "2": "columns", "3": "agenda", "4": "gantt"}
-
-# Local image paths opened via os.startfile are gated to this extension allowlist.
-# os.startfile launches a path with its OS-associated handler, so a non-image
-# file would EXECUTE — .svg is excluded because it is scriptable (F4, C-6).
-IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
 
 
 class BoardView(Static):
@@ -278,6 +273,10 @@ class TaskboardApp(App):
         task = self.selected_task
         if not task:
             return
+        self.push_screen(ImageViewer(task, self.board))
+
+    def open_all_images_raw(self, task: Task) -> None:
+        """Open every image on the task in its OS-default app / browser (raw)."""
         for ref in task.images:
             v = valid_url(ref)
             if v:                           # http(s) image URL -> browser
