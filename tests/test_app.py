@@ -795,3 +795,23 @@ async def test_image_viewer_opens_without_crash(tmp_path):
         await pilot.press("i")
         await pilot.pause()
         assert isinstance(app.screen, ImageViewer)
+
+
+async def test_image_viewer_open_raw_fires(tmp_path, monkeypatch):
+    """`o` inside the viewer opens every image raw via open_all_images_raw
+    (regression: the viewer must reference the task, not Textual's _task slot)."""
+    from PIL import Image as PILImage
+    opened = []
+    app = make_app(tmp_path)
+    async with app.run_test(size=(100, 40)) as pilot:
+        img = tmp_path / "pic.png"
+        PILImage.new("RGB", (16, 16), (0, 200, 120)).save(img)
+        t = app.board.tasks[0]
+        t.images = [str(img)]
+        app.selected_task_id = t.id
+        monkeypatch.setattr("os.startfile", lambda p: opened.append(p), raising=False)
+        await pilot.press("i")                 # open the viewer
+        await pilot.pause()
+        await pilot.press("o")                 # open raw
+        await pilot.pause()
+        assert opened == [str(img)]
