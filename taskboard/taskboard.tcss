@@ -98,7 +98,33 @@ FooterKey .footer-key--key {
     margin-left: 1;
 }
 
-TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails {
+/* date field + calendar button (sits in the modal-grid's 1fr cell) */
+.date-row {
+    height: 3;
+    width: 1fr;
+}
+.date-row .date-input {
+    width: 1fr;
+}
+.cal-btn {
+    width: 6;
+    min-width: 6;
+    height: 3;
+    margin-left: 1;
+}
+
+/* calendar picker */
+#cal-box {
+    width: 100;
+    max-width: 95%;
+}
+#cal-grid {
+    padding: 0 1;
+    color: #c9d3df;
+    height: auto;
+}
+
+TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails, CalendarModal {
     align: center middle;
     background: #0007;
 }
