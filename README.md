@@ -1,5 +1,11 @@
 # taskboard
 
+<p align="center">
+  <img src="docs/taskboard.gif" width="660" alt="taskboard — four views"><br>
+  <sub>Swimlanes · Columns · Agenda · Gantt — switch with keys 1–4.</sub>
+</p>
+
+
 A **frameless kanban desktop-widget task board** built in [Textual](https://textual.textualize.io/).
 Run it in a borderless terminal, pin it always-on-top, and it floats on your desktop as a live
 widget. Four switchable views over the same data; single dark theme tuned for a terminal.
