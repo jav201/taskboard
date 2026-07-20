@@ -98,7 +98,7 @@ FooterKey .footer-key--key {
     margin-left: 1;
 }
 
-TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer {
+TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer, TaskDetails {
     align: center middle;
     background: #0007;
 }
@@ -118,11 +118,11 @@ TaskModal, ProjectModal, ConfirmModal, ProjectPicker, ImageViewer {
 /* image viewer — wider than the form modals so previews are large.
    width:100% + height:auto MUST come from the stylesheet; setting height:auto
    via widget.styles in Python collapses the image to 0 rows. */
-#viewer-box {
+#viewer-box, #details-box {
     width: 100;
     max-width: 95%;
 }
-#viewer-box Image {
+#viewer-box Image, #details-box Image {
     width: 100%;
     height: auto;
     margin-bottom: 1;

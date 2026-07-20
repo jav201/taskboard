@@ -12,6 +12,7 @@ from textual.widgets import Button, Footer, Input, OptionList, Select, Static, T
 
 from taskboard.app import BoardView, TaskboardApp
 from taskboard.models import Board, Task
+from taskboard.modals import TaskDetails, TaskModal, image_block
 from taskboard.ribbon import Ribbon
 from taskboard.views import render_agenda, render_gantt
 
@@ -815,3 +816,92 @@ async def test_image_viewer_open_raw_fires(tmp_path, monkeypatch):
         await pilot.press("o")                 # open raw
         await pilot.pause()
         assert opened == [str(img)]
+
+
+# --------------------------------------------------------------------------- #
+# Notes field + read-only details view (fast-dev-flow: notes-details batch)
+# --------------------------------------------------------------------------- #
+def _details_text(app) -> str:
+    """Plain text of every Static/Label on the current screen (markup stripped)."""
+    from textual.widgets import Static
+    return " ".join(str(w.render()) for w in app.screen.query(Static))
+
+
+def test_task_notes_backcompat_from_dict():
+    """AC1: a task dict with no 'notes' key loads with notes == '' (old boards)."""
+    t = Task.from_dict({"title": "legacy", "status": "backlog"})
+    assert t.notes == ""
+
+
+async def test_task_notes_persist_through_reload(tmp_path):
+    """AC2: notes typed in the edit modal survive a fresh Board.load from disk."""
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        await pilot.press("a")
+        await pilot.pause()
+        app.screen.query_one("#f-title", Input).value = "NOTETASK"
+        app.screen.query_one("#f-notes", TextArea).text = "remember the LUKS passphrase"
+        await save_open_modal(app, pilot)
+    reloaded = Board.load(str(tmp_path / "board.json"))
+    t = next(t for t in reloaded.tasks if t.title == "NOTETASK")
+    assert t.notes == "remember the LUKS passphrase"
+
+
+async def test_enter_opens_readonly_details(tmp_path):
+    """AC3/AC6: Enter opens TaskDetails (not the editor) and it has no Save control."""
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        assert app.selected_task is not None          # a seeded task is selected
+        await pilot.press("enter")
+        await pilot.pause()
+        assert isinstance(app.screen, TaskDetails)
+        assert not isinstance(app.screen, TaskModal)
+        assert len(app.screen.query("#save")) == 0    # read-only: no save button
+
+
+async def test_details_shows_all_fields_and_image(tmp_path):
+    """AC4/AC5: details renders every field + notes + urls, and an on-disk image
+    goes through the render path (never the 'missing' branch)."""
+    from PIL import Image as PILImage
+    app = make_app(tmp_path)
+    async with app.run_test(size=(100, 40)) as pilot:
+        img = tmp_path / "pic.png"
+        PILImage.new("RGB", (16, 16), (0, 150, 90)).save(img)
+        t = Task(title="DETAILTASK", status="doing", priority="high",
+                 due_date="2026-09-01", notes="line one\nline two",
+                 urls=["https://example.com/x"], images=[str(img)])
+        app.board.tasks.append(t)
+        app.selected_task_id = t.id
+        app.refresh_view()
+        await pilot.press("enter")
+        await pilot.pause()
+        assert isinstance(app.screen, TaskDetails)
+        text = _details_text(app)
+        assert "DETAILTASK" in text
+        assert "doing" in text and "high" in text and "2026-09-01" in text
+        assert "line one" in text and "line two" in text     # notes shown
+        assert "example.com/x" in text                       # url listed
+        assert "missing" not in text                         # the real file resolved
+
+
+async def test_details_escapes_notes_markup(tmp_path):
+    """AC6: bracketed notes are escaped, not interpreted as Rich markup (A1)."""
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        t = Task(title="X", notes="[bold]INJECT[/bold]")
+        app.board.tasks.append(t)
+        app.selected_task_id = t.id
+        app.refresh_view()
+        await pilot.press("enter")
+        await pilot.pause()
+        # literal brackets survive -> markup was escaped, not rendered as bold
+        assert "[bold]INJECT[/bold]" in _details_text(app)
+
+
+def test_image_block_link_and_missing_fallbacks(tmp_path):
+    """AC5: the shared image_block helper links remote URLs and flags missing
+    local files, and never raises on either."""
+    remote = list(image_block("https://example.com/a.png"))
+    assert remote and "link" in str(remote[0].render())
+    missing = list(image_block(str(tmp_path / "nope.png")))
+    assert missing and "missing" in str(missing[0].render())
