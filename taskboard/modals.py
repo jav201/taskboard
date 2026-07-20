@@ -21,7 +21,7 @@ from textual.binding import Binding
 from textual.containers import Grid, Horizontal, VerticalScroll
 from textual.screen import ModalScreen
 from textual.suggester import SuggestFromList
-from textual.widgets import Button, Input, Label, OptionList, Select, TextArea
+from textual.widgets import Button, Input, Label, OptionList, Select, Static, TextArea
 from textual.widgets.option_list import Option
 
 from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
@@ -82,6 +82,10 @@ class TaskModal(ModalScreen[dict | None]):
                 yield Label("Due (YYYY-MM-DD)")
                 yield Input(value=(t.due_date or "" if t else ""), placeholder="optional",
                             id="f-due")
+            yield Label("Notes")
+            notes_area = TextArea(t.notes if t else "", id="f-notes")
+            notes_area.styles.height = 5   # 1fr TextArea would collapse in the auto modal
+            yield notes_area
             yield Label("URLs (one per line)")
             urls_area = TextArea("\n".join(t.urls) if t else "", id="f-urls")
             urls_area.styles.height = 4   # 1fr TextArea would collapse in the auto modal
@@ -152,6 +156,7 @@ class TaskModal(ModalScreen[dict | None]):
             "priority": self._val("f-priority"),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
+            "notes": self.query_one("#f-notes", TextArea).text.strip(),
             "urls": urls,
             "images": self._lines("f-images"),   # local paths valid at entry (no filter)
         }
@@ -401,6 +406,30 @@ class ConfirmModal(ModalScreen[bool]):
         self.dismiss(False)
 
 
+def image_block(ref: str):
+    """Render one image reference inline (crisp via terminal graphics where
+    supported, else a fallback line). Remote URLs are listed as links; a
+    missing / unrenderable local file yields a dim notice. A generator of
+    widgets, shared by ImageViewer and TaskDetails. Never raises."""
+    if valid_url(ref):                       # remote: can't inline; link it
+        yield Label(f"link · {escape(ref)}")
+        return
+    path = Path(ref)
+    if path.suffix.lower() not in IMAGE_EXTS or not path.is_file():
+        yield Label(f"[dim]missing:[/dim] {escape(ref)}")
+        return
+    if AutoImage is None:
+        yield Label(f"[dim](install textual-image to preview)[/dim] {escape(ref)}")
+        return
+    try:
+        img = AutoImage(str(path))           # size comes from the Image TCSS rule
+    except Exception:                        # never blank the modal on one bad file
+        yield Label(f"[dim]could not render:[/dim] {escape(ref)}")
+        return
+    yield img
+    yield Label(f"[dim]{escape(path.name)}[/dim]")
+
+
 class ImageViewer(ModalScreen[None]):
     """Show a task's images rescaled inline — crisp via the terminal graphics
     protocol where the terminal supports it (e.g. WezTerm), half-block/Unicode
@@ -424,29 +453,63 @@ class ImageViewer(ModalScreen[None]):
                 yield Label("[dim]No images on this task.[/dim]")
                 return
             for ref in self._view_task.images:
-                yield from self._image_block(ref)
-
-    def _image_block(self, ref: str):
-        if valid_url(ref):                       # remote: can't inline; link it
-            yield Label(f"link · {escape(ref)}")
-            return
-        path = Path(ref)
-        if path.suffix.lower() not in IMAGE_EXTS or not path.is_file():
-            yield Label(f"[dim]missing:[/dim] {escape(ref)}")
-            return
-        if AutoImage is None:
-            yield Label(f"[dim](install textual-image to preview)[/dim] {escape(ref)}")
-            return
-        try:
-            img = AutoImage(str(path))           # size comes from #viewer-box Image (TCSS)
-        except Exception:                        # never blank the modal on one bad file
-            yield Label(f"[dim]could not render:[/dim] {escape(ref)}")
-            return
-        yield img
-        yield Label(f"[dim]{escape(path.name)}[/dim]")
+                yield from image_block(ref)
 
     def action_open_raw(self) -> None:
         self.app.open_all_images_raw(self._view_task)
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
+class TaskDetails(ModalScreen[None]):
+    """Read-only view of every field on a task, with images rendered inline.
+    No save/edit control (can't mutate the task) — ``o`` opens images/URLs raw
+    in the OS handler, ``esc`` closes. Every user-controlled string is escaped
+    (markup-injection pitfall A1)."""
+
+    BINDINGS = [("escape", "close", "Close"), ("o", "open_raw", "Open raw")]
+
+    def __init__(self, task: Task, board: Board):
+        super().__init__()
+        self._detail_task = task     # NOT self._task: collides with Textual's pump task
+        self._board = board
+
+    def compose(self) -> ComposeResult:
+        t = self._detail_task
+        proj = self._board.project_by_id(t.project_id)
+        proj_name = escape(proj.name) if proj else "Inbox"
+        with VerticalScroll(id="details-box", classes="modal"):
+            yield Label(f"[b]{escape(t.title)}[/b]  —  o open raw · esc close",
+                        classes="modal-title")
+            with Grid(classes="modal-grid"):
+                yield Label("Project")
+                yield Label(proj_name)
+                yield Label("Status")
+                yield Label(escape(t.status))
+                yield Label("Priority")
+                yield Label(escape(t.priority))
+                yield Label("Start")
+                yield Label(escape(t.start_date or "—"))
+                yield Label("Due")
+                yield Label(escape(t.due_date or "—"))
+            yield Label("[b]Notes[/b]")
+            yield Static(escape(t.notes) if t.notes else "[dim]—[/dim]")
+            yield Label("[b]URLs[/b]")
+            if t.urls:
+                for u in t.urls:
+                    yield Label(f"link · {escape(u)}")
+            else:
+                yield Label("[dim]—[/dim]")
+            yield Label("[b]Images[/b]")
+            if t.images:
+                for ref in t.images:
+                    yield from image_block(ref)
+            else:
+                yield Label("[dim]—[/dim]")
+
+    def action_open_raw(self) -> None:
+        self.app.open_all_images_raw(self._detail_task)
 
     def action_close(self) -> None:
         self.dismiss(None)
