@@ -226,6 +226,7 @@ class Task:
     priority: str = "normal"
     start_date: str | None = None
     due_date: str | None = None
+    notes: str = ""
     urls: list[str] = field(default_factory=list)
     images: list[str] = field(default_factory=list)
     archived: bool = False
@@ -252,6 +253,7 @@ class Task:
             priority=d.get("priority") if d.get("priority") in TASK_PRIORITIES else "normal",
             start_date=d.get("start_date"),
             due_date=d.get("due_date"),
+            notes=str(d.get("notes") or ""),   # additive; absent on pre-notes boards
             urls=urls,
             images=images,
             archived=bool(d.get("archived", False)),
