@@ -1,102 +1,103 @@
-# Quick Spec — taskboard: task notes + read-only details view
+# Quick Spec — taskboard: reliable paste + calendar date picker
 
 > Minimal spec for `/fast-dev-flow`. Acceptance criteria are observable.
 
 ---
 
 ## 1. Objective (1 line)
-
-Give tasks an optional free-text **notes** field and a **read-only details view** (a keybinding) that shows every field of the selected task — including its images rendered inline — without opening the edit modal.
+Make text **paste** work reliably (Ctrl+V from any Windows app) and replace flow-stopping typed dates with an **arrow-key calendar picker**, while keeping typed dates working.
 
 ---
 
 ## 2. User stories
-
-- As a user, I want to attach longer notes/description to a task, so that a card can carry detail that doesn't fit in the title.
-- As a user, I want to press one key to see all of a task's data (including its images) read-only, so that I can review it without risking accidental edits.
+- As a user, I want to paste text I copied from another app into a task's title/notes/URLs, so I don't have to retype it.
+- As a user, I want to pick dates from a calendar instead of typing `YYYY-MM-DD`, so setting a due date isn't a chore.
 
 ---
 
 ## 3. Acceptance criteria (observable)
-
-- [ ] **AC1 — model back-compat:** When a `Task` is loaded from a `board.json` that has **no** `notes` key, the system shall load it with `notes == ""` (no crash, existing boards unaffected).
-- [ ] **AC2 — persist notes:** When the user types text into the notes field of the edit modal and saves, the system shall persist that text to `board.json` and reload it on the task's `notes` after a fresh `Board.load`.
-- [ ] **AC3 — open details:** When a task is selected on the board and the user presses **Enter**, the system shall push a read-only details screen (`TaskDetails`) and shall **not** push the edit modal (`TaskModal`).
-- [ ] **AC4 — shows all fields:** When the details screen is open, it shall display the task's title, project name (or "Inbox"), status, priority, start/due dates, URLs, and notes.
-- [ ] **AC5 — renders images inline:** When the selected task has image paths/URLs, the details screen shall render each local image inline (same mechanism as `ImageViewer`) and list remote-URL images as links; a missing/bad file shall show a "missing/could not render" line, never crash the modal.
-- [ ] **AC6 — read-only + safe render:** The details screen shall expose no Save/edit control; `esc` closes it. Notes and all user text shall be passed through `rich.markup.escape()` so square-bracket content cannot inject Rich markup (pitfall A1).
+- [ ] **AC1 — clipboard text read:** `grab_clipboard_text()` returns the OS clipboard's text as a `str`, or `None` when it holds no text / on any error (never raises). Windows uses `ctypes` `CF_UNICODETEXT`; macOS `pbpaste`; Linux `xclip`/`xsel`.
+- [ ] **AC2 — paste into Input:** When a text `Input` is focused in a modal and the user presses **Ctrl+V**, the system shall insert the clipboard text at the cursor (verified by monkeypatching `grab_clipboard_text` and asserting the Input's value contains it).
+- [ ] **AC3 — paste into TextArea:** Same as AC2 but for a focused `TextArea` (e.g. the notes field) — clipboard text is inserted into the TextArea.
+- [ ] **AC4 — paste guard:** When the clipboard has no text (or no text field is focused), Ctrl+V shall show a friendly `notify` and change no field (no crash).
+- [ ] **AC5 — calendar opens & returns a date:** A `CalendarModal` seeded with a date string shall, on **Enter**, dismiss returning the highlighted day as `YYYY-MM-DD`; **esc** dismisses returning `None`.
+- [ ] **AC6 — calendar navigation:** In `CalendarModal`, left/right move ±1 day, up/down ±1 week, `[`/`]` (and pageup/pagedown) ±1 month, `t` jumps to today — each changing the highlighted date.
+- [ ] **AC7 — wired into the modals:** Pressing the calendar button next to a date field in `TaskModal`/`ProjectModal` opens `CalendarModal`; picking a day writes `YYYY-MM-DD` into that field's `Input`. Typing a date directly still works and still saves.
+- [ ] **AC8 — back-compat:** All existing tests still pass; no change to persistence, the board file format, or existing bindings other than adding Ctrl+V (paste) and the calendar buttons.
 
 ---
 
 ## 4. Validation strategy
-
-Unit + Textual `pilot` tests in `tests/test_app.py`, one per AC where feasible:
-- AC1: `Task.from_dict({...no notes...}).notes == ""`.
-- AC2: drive the edit modal, set the notes `TextArea`, save, `Board.load` from the same path, assert `notes` persisted.
-- AC3: seed a task, `pilot.press("enter")`, assert `app.screen` is a `TaskDetails` (and pressing enter did not open `TaskModal`).
-- AC4/AC5: mount `TaskDetails` for a task with a real temp PNG + a remote URL + a missing path; assert it composes without error and the labels contain the field values.
-- AC6: `TaskDetails` has no `#save` button; a title containing `[red]x[/red]` renders escaped (assert the modal builds and the raw string is treated as literal).
-Manual smoke: run the app, press Enter on a seeded task, confirm the panel + image render, press esc.
+Pytest + Textual `pilot` (asyncio auto), in `tests/test_app.py`:
+- AC1: monkeypatch the platform read; assert `str`/`None` and no raise on failure.
+- AC2/AC3: open TaskModal, focus title `Input` / notes `TextArea`, monkeypatch `grab_clipboard_text` → `"PASTED"`, press `ctrl+v`, assert the widget contains it.
+- AC4: monkeypatch to `None`, press `ctrl+v`, assert no crash and field unchanged.
+- AC5/AC6: mount `CalendarModal("2026-07-20")`, drive keys via pilot, assert the dismissed result / highlighted date (`right`→21, `down`→27, `]`→Aug, `t`→today).
+- AC7: open TaskModal, press the start-date calendar button, pick a day, assert `#f-start` value is a valid `YYYY-MM-DD`.
+- AC8: full suite green.
 
 ---
 
 ## 5. Non-goals
-
-- No change to card rendering on the board (no "has notes" glyph) — existing look stays as-is.
-- No editing from the details view (no inline edit, no jump-to-edit shortcut required).
-- No new persistence format/migration beyond the additive `notes` field.
-- No change to the existing `i` ImageViewer or `o`/`e`/`d` bindings.
+- No recurring dates, ranges, times, or locale/first-day-of-week config (Mon-first, fixed).
+- No new dependency (stdlib `calendar` + `datetime` only).
+- No change to how dates are stored or validated on save (still ISO strings via `parse_iso`).
+- Not touching the board/agenda/gantt views or the image-paste button.
 
 ---
 
 ## 6. Detected security flags
-
 - [ ] Auth / identity
 - [ ] Secrets / config
 - [ ] External integrations
 - [ ] Sensitive data
 - [ ] Destructive DB
-- [x] Input / attack surface (free-text user input rendered in the TUI)
+- [x] Input / attack surface (pasted clipboard text is user input; Linux read shells out to `xclip`/`xsel`)
 - [ ] Network / exposure
 
 **`security_required`:** `true`
 
-**Risk summary:** The only flag is **input/rendering**: `notes` is free-text user input shown in a Rich/Textual `Label`. This codebase has a documented markup-injection pitfall (A1) and already `escape()`s all user-controlled text (titles, project names). The notes field — and every user string shown in `TaskDetails` — must go through `rich.markup.escape()`. Local image opening already has an allowlist/existence gate (`_open_local_image`, C-6/F3/F4); the details view only *renders* via the existing `ImageViewer` path and adds no new file-execution surface. No secrets, network, or DB surface. Mitigation is a one-line-per-field discipline, verified by AC6's test.
+**Risk summary:** Two mild input-surface points. (1) **Pasted text** is user-controlled — but it's inserted as literal data into an `Input`/`TextArea`, never rendered as markup here; places that later render task text already `rich.markup.escape()` it (card titles, the details view). No new render path. (2) The **Linux clipboard read** invokes `xclip`/`xsel` — must use a fixed `subprocess` argv list (no `shell=True`, no interpolation) so nothing can inject a command; macOS `pbpaste` likewise. Windows uses `ctypes` (no process). All reads wrapped to never raise. No secrets, network, or DB surface.
 
 ---
 
 ## 7. Batch status
-
 | Field | Value |
 |-------|-------|
 | Current phase | closed |
 | Started | 2026-07-20 |
 | Closed | 2026-07-20 |
 | Promoted to /dev-flow | no |
-| Notes | single 5-file increment; 51/51 tests pass |
+| Notes | builds on merged notes/details feature; prior spec archived; independent code-review audit passed |
 
 ---
 
 ## 8. Close (filled in phase C)
 
 ### What changed
-Added an optional free-text `notes` field to `Task` (additive/back-compatible) with a matching notes box in the edit modal, and a read-only `TaskDetails` screen opened with **Enter** that shows every field of the selected task — project, status, priority, dates, URLs, notes — with images rendered inline (via a shared `image_block` helper extracted from `ImageViewer`). No board-card changes; no existing binding changed.
+Added reliable **Ctrl+V text paste** (`grab_clipboard_text()` — Windows `ctypes`, macOS `pbpaste`, Linux `xclip`/`xsel`, never raises — inserted into the focused `Input`/`TextArea` via a priority `ctrl+v` binding on the text-field modals) and a **`CalendarModal` date picker** (stdlib `calendar`+`datetime`; arrow-key nav, `t`=today, Enter→`YYYY-MM-DD`, Esc cancels) opened from a 📅 button beside each date field in `TaskModal`/`ProjectModal`. Typing dates still works; persistence/format unchanged.
 
 ### How it was tested
-- `test_task_notes_backcompat_from_dict` (AC1) · `test_task_notes_persist_through_reload` (AC2) · `test_enter_opens_readonly_details` (AC3/AC6) · `test_details_shows_all_fields_and_image` (AC4/AC5) · `test_details_escapes_notes_markup` (AC6) · `test_image_block_link_and_missing_fallbacks` (AC5).
-- Full suite: **51 passed** (45 pre-existing + 6 new). Pilot tests drive real `enter` keypresses = runtime smoke.
+- 7 new tests (AC1–AC7) in `tests/test_app.py`; AC6 expanded to both directions + a short-month day-clamp (Jan 31 → Feb 28).
+- Full suite: **58 passed**, 0 failed.
 
 ### Open risks / pending
-- None functional. Note: the project `.venv` lacks Pillow (pre-existing); tests must run under an interpreter with Pillow + textual-image + pytest-asyncio.
+- None blocking. Windows clipboard path is the one exercised on this machine; the Linux `xclip`/`xsel` argv branch isn't run under CI-on-Windows (guarded, never raises).
 
 ### Security flags — handling
-Input/rendering flag: every user string in `TaskDetails` (title, status, priority, dates, project name, notes, URLs) passes through `rich.markup.escape()`; `test_details_escapes_notes_markup` proves `[bold]…[/bold]` in notes renders literally. Two bugs caught by *running*: a Rich-markup path and a `self._task` collision with Textual's internal message-pump task (renamed `self._detail_task`). No new file-exec/network/DB surface — `open_all_images_raw` reuses the existing allowlist/existence gate.
+Input/surface flag: pasted text is inserted as **literal data** (`insert_text_at_cursor`/`insert`), no new render path; existing render paths already `escape()`. Linux/macOS clipboard read uses a **fixed `subprocess` argv (no shell, 2s timeout)**; Windows uses `ctypes` with `finally` cleanup (no leaked clipboard lock). `grab_clipboard_text` is double-guarded and never raises. Independent code-review confirmed PASS.
+
+### Notable bug caught in-flight
+`CalendarModal` first named its redraw helper `_render` — which **shadows Textual's internal `Widget._render()`** (must return a `Visual`), making the screen's visual `None` and crashing `render_strips`. Renamed `_redraw`. Same name-collision class as the documented `self._task` pitfall.
 
 ### Suggested commit message
 ```
-feat(task): notes field + read-only details view with inline images
+feat(modals): Ctrl+V clipboard paste + calendar date picker
 
-Add an optional free-text notes field to Task (backward-compatible) and a
-TaskDetails screen (Enter) showing all task data read-only, images inline.
-Extract a shared image_block helper from ImageViewer. All user text escaped.
+Add grab_clipboard_text() (Windows ctypes / macOS pbpaste / Linux xclip|xsel,
+never raises) and a Ctrl+V paste action into the focused Input/TextArea on the
+text-field modals. Add CalendarModal (stdlib calendar/datetime) opened from a
+button beside each date field; arrow-key nav, t=today, Enter picks. Typing
+dates still works. Redraw helper is named _redraw (not _render) to avoid
+shadowing Textual's Widget._render.
 ```
