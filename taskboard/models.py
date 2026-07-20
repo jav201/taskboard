@@ -168,6 +168,56 @@ def grab_clipboard_image():
     return None
 
 
+def _win_clipboard_text():
+    """Windows clipboard TEXT via the Win32 API (ctypes). None on empty/error."""
+    import ctypes
+    CF_UNICODETEXT = 13
+    try:
+        u, k = ctypes.windll.user32, ctypes.windll.kernel32
+        if not u.OpenClipboard(0):
+            return None
+        try:
+            handle = u.GetClipboardData(CF_UNICODETEXT)
+            if not handle:
+                return None
+            k.GlobalLock.restype = ctypes.c_void_p
+            ptr = k.GlobalLock(handle)
+            if not ptr:
+                return None
+            try:
+                return ctypes.c_wchar_p(ptr).value or None
+            finally:
+                k.GlobalUnlock(handle)
+        finally:
+            u.CloseClipboard()
+    except Exception:
+        return None
+
+
+def grab_clipboard_text():
+    """Return the OS clipboard's TEXT as a str, or None when it holds no text or
+    on any error. Windows reads the Win32 clipboard directly (ctypes); macOS uses
+    ``pbpaste``; Linux uses ``xclip``/``xsel``. Fixed argv (never a shell), so
+    clipboard contents can't inject a command. Never raises."""
+    import sys
+    try:
+        if sys.platform == "win32":
+            return _win_clipboard_text()
+        import subprocess
+        for argv in (["pbpaste"],
+                     ["xclip", "-selection", "clipboard", "-o"],
+                     ["xsel", "-b", "-o"]):
+            try:
+                res = subprocess.run(argv, capture_output=True, timeout=2)
+            except (OSError, subprocess.SubprocessError):
+                continue
+            if res.returncode == 0:
+                return res.stdout.decode("utf-8", "replace") or None
+        return None
+    except Exception:
+        return None
+
+
 def save_pil_image(directory: Path, image) -> Path:
     """Save a PIL image as the next free ``paste-NNN.png`` in ``directory``
     (created if missing) and return its resolved absolute path."""

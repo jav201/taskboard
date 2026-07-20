@@ -11,7 +11,9 @@ Notes on the pitfalls these avoid:
 
 from __future__ import annotations
 
+import calendar
 import os
+from datetime import date, timedelta
 from pathlib import Path
 
 from rich.markup import escape
@@ -26,7 +28,8 @@ from textual.widgets.option_list import Option
 
 from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
                      TASK_STATUSES, Board, Project, Task, _new_id, city_names,
-                     grab_clipboard_image, resolve_city, save_pil_image)
+                     grab_clipboard_image, grab_clipboard_text, parse_iso,
+                     resolve_city, save_pil_image)
 from .views import valid_url
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
@@ -40,11 +43,132 @@ except Exception:          # pragma: no cover - dependency present in prod
 
 NONE_VALUE = "__none__"
 
+_WEEK_HEADER = "[dim]Mo Tu We Th Fr Sa Su[/dim]"
 
-class TaskModal(ModalScreen[dict | None]):
+
+class CalendarModal(ModalScreen[str | None]):
+    """Arrow-key month calendar. Dismisses with 'YYYY-MM-DD' on Enter, None on
+    Esc. Navigation: left/right ±1 day, up/down ±1 week, [ / ] (or PageUp/Down)
+    ±1 month, t = today. Monday-first; stdlib calendar + datetime only.
+
+    Nav bindings are priority so the focusable scroll container can't eat the
+    arrows (pitfall A6)."""
+
+    BINDINGS = [
+        ("escape", "cancel", "Cancel"),
+        Binding("left", "move(-1)", "-1d", show=False, priority=True),
+        Binding("right", "move(1)", "+1d", show=False, priority=True),
+        Binding("up", "move(-7)", "-1w", show=False, priority=True),
+        Binding("down", "move(7)", "+1w", show=False, priority=True),
+        Binding("left_square_bracket,pageup", "month(-1)", "-1m", show=False, priority=True),
+        Binding("right_square_bracket,pagedown", "month(1)", "+1m", show=False, priority=True),
+        Binding("t", "today", "Today", show=False, priority=True),
+        Binding("enter", "pick", "Pick", show=False, priority=True),
+    ]
+
+    def __init__(self, initial: str | None = None):
+        super().__init__()
+        self._sel = parse_iso(initial) or date.today()
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="cal-box", classes="modal"):
+            yield Label(self._title_text(), id="cal-title", classes="modal-title")
+            yield Static(self._grid_text(), id="cal-grid")
+
+    def _title_text(self) -> str:
+        # escape the literal [ ] (the month-nav keys) so Rich renders them
+        # verbatim instead of treating them as a markup tag
+        return (f"[b]{self._sel:%B %Y}[/b]  —  "
+                "←→ day · ↑↓ week · \\[ \\] month · t today · enter pick")
+
+    def _grid_text(self) -> str:
+        d = self._sel
+        lines = [_WEEK_HEADER]
+        for week in calendar.Calendar(firstweekday=0).monthdatescalendar(d.year, d.month):
+            cells = []
+            for day in week:
+                label = f"{day.day:2d}"
+                if day == d:
+                    cells.append(f"[b reverse]{label}[/]")
+                elif day.month != d.month:
+                    cells.append(f"[dim]{label}[/dim]")
+                else:
+                    cells.append(label)
+            lines.append(" ".join(cells))
+        return "\n".join(lines)
+
+    def _redraw(self) -> None:
+        # NOT _render: that name is Textual's internal Widget._render(), which
+        # must return a Visual. Overriding it to return None makes the screen's
+        # own visual None and crashes Visual.to_strips (render_strips).
+        self.query_one("#cal-title", Label).update(self._title_text())
+        self.query_one("#cal-grid", Static).update(self._grid_text())
+
+    def action_move(self, days: int) -> None:
+        self._sel += timedelta(days=days)
+        self._redraw()
+
+    def action_month(self, delta: int) -> None:
+        month_index = self._sel.month - 1 + delta
+        year = self._sel.year + month_index // 12
+        month = month_index % 12 + 1
+        last = calendar.monthrange(year, month)[1]
+        self._sel = self._sel.replace(year=year, month=month, day=min(self._sel.day, last))
+        self._redraw()
+
+    def action_today(self) -> None:
+        self._sel = date.today()
+        self._redraw()
+
+    def action_pick(self) -> None:
+        self.dismiss(self._sel.isoformat())
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class ClipboardPasteMixin:
+    """Reliable Ctrl+V text paste for a modal: reads OS clipboard TEXT and
+    inserts it into the focused Input/TextArea. Textual's native paste is
+    unreliable on Windows, so we read the clipboard ourselves. Each modal wires
+    the Ctrl+V binding in its own BINDINGS (Textual doesn't collect BINDINGS from
+    a plain mixin); this class supplies the action."""
+
+    def action_paste_text(self) -> None:
+        target = self.app.focused
+        if not isinstance(target, (Input, TextArea)):
+            self.notify("Focus a text field to paste into.", severity="warning")
+            return
+        text = grab_clipboard_text()
+        if not text:
+            self.notify("Clipboard has no text.", severity="warning")
+            return
+        if isinstance(target, Input):
+            target.insert_text_at_cursor(text)
+        else:
+            target.insert(text)
+
+
+class DatePickerMixin:
+    """Calendar-button handler: opens CalendarModal for a date field and writes
+    the picked 'YYYY-MM-DD' back into that field's Input. Button ids are
+    'cal-<field-id>' (e.g. 'cal-f-start')."""
+
+    def _open_calendar(self, field_id: str) -> None:
+        current = self.query_one(f"#{field_id}", Input).value.strip()
+        self.app.push_screen(CalendarModal(current or None),
+                             lambda res, fid=field_id: self._on_date_picked(fid, res))
+
+    def _on_date_picked(self, field_id: str, result: str | None) -> None:
+        if result:
+            self.query_one(f"#{field_id}", Input).value = result
+
+
+class TaskModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
     """Returns a dict of task fields on save, or None on cancel."""
 
-    BINDINGS = [("escape", "cancel", "Cancel")]
+    BINDINGS = [("escape", "cancel", "Cancel"),
+                Binding("ctrl+v", "paste_text", "Paste", priority=True)]
 
     def __init__(self, board: Board, task: Task | None = None):
         super().__init__()
@@ -77,11 +201,15 @@ class TaskModal(ModalScreen[dict | None]):
                              value=(t.priority if t else "normal"),
                              allow_blank=False, id="f-priority")
                 yield Label("Start (YYYY-MM-DD)")
-                yield Input(value=(t.start_date or "" if t else ""), placeholder="optional",
-                            id="f-start")
+                with Horizontal(classes="date-row"):
+                    yield Input(value=(t.start_date or "" if t else ""), placeholder="optional",
+                                id="f-start", classes="date-input")
+                    yield Button("📅", id="cal-f-start", classes="cal-btn")
                 yield Label("Due (YYYY-MM-DD)")
-                yield Input(value=(t.due_date or "" if t else ""), placeholder="optional",
-                            id="f-due")
+                with Horizontal(classes="date-row"):
+                    yield Input(value=(t.due_date or "" if t else ""), placeholder="optional",
+                                id="f-due", classes="date-input")
+                    yield Button("📅", id="cal-f-due", classes="cal-btn")
             yield Label("Notes")
             notes_area = TextArea(t.notes if t else "", id="f-notes")
             notes_area.styles.height = 5   # 1fr TextArea would collapse in the auto modal
@@ -101,10 +229,13 @@ class TaskModal(ModalScreen[dict | None]):
                 yield Button("Cancel", variant="default", id="cancel")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "save":
+        bid = event.button.id or ""
+        if bid == "save":
             self._save()
-        elif event.button.id == "paste-img":
+        elif bid == "paste-img":
             self._paste_image()
+        elif bid.startswith("cal-"):
+            self._open_calendar(bid[4:])
         else:
             self.dismiss(None)
 
@@ -163,10 +294,11 @@ class TaskModal(ModalScreen[dict | None]):
         self.dismiss(data)
 
 
-class ProjectModal(ModalScreen[dict | None]):
+class ProjectModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
     """Returns a dict of project fields on save, or None on cancel."""
 
-    BINDINGS = [("escape", "cancel", "Cancel")]
+    BINDINGS = [("escape", "cancel", "Cancel"),
+                Binding("ctrl+v", "paste_text", "Paste", priority=True)]
 
     def __init__(self, project: Project | None = None):
         super().__init__()
@@ -189,18 +321,25 @@ class ProjectModal(ModalScreen[dict | None]):
                              value=(p.status if p else "on_track"),
                              allow_blank=False, id="f-status")
                 yield Label("Start (YYYY-MM-DD)")
-                yield Input(value=(p.start_date or "" if p else ""), placeholder="optional",
-                            id="f-start")
+                with Horizontal(classes="date-row"):
+                    yield Input(value=(p.start_date or "" if p else ""), placeholder="optional",
+                                id="f-start", classes="date-input")
+                    yield Button("📅", id="cal-f-start", classes="cal-btn")
                 yield Label("Due (YYYY-MM-DD)")
-                yield Input(value=(p.due_date or "" if p else ""), placeholder="optional",
-                            id="f-due")
+                with Horizontal(classes="date-row"):
+                    yield Input(value=(p.due_date or "" if p else ""), placeholder="optional",
+                                id="f-due", classes="date-input")
+                    yield Button("📅", id="cal-f-due", classes="cal-btn")
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "save":
+        bid = event.button.id or ""
+        if bid == "save":
             self._save()
+        elif bid.startswith("cal-"):
+            self._open_calendar(bid[4:])
         else:
             self.dismiss(None)
 
@@ -344,10 +483,11 @@ class ProjectPicker(ModalScreen[None]):
         self.dismiss(None)
 
 
-class ClockModal(ModalScreen[dict | None]):
+class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
     """Pick the two ribbon clocks by CITY (type to find one). Returns city names."""
 
-    BINDINGS = [("escape", "cancel", "Cancel")]
+    BINDINGS = [("escape", "cancel", "Cancel"),
+                Binding("ctrl+v", "paste_text", "Paste", priority=True)]
 
     def __init__(self, clock1: str, clock2: str):
         super().__init__()
