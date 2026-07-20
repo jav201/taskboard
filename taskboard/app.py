@@ -13,7 +13,8 @@ from textual.containers import Vertical, VerticalScroll
 from textual.widgets import Footer, Static
 
 from .models import IMAGE_EXTS, Board, Project, Task, default_board_path
-from .modals import ClockModal, ConfirmModal, ImageViewer, ProjectModal, ProjectPicker, TaskModal
+from .modals import (ClockModal, ConfirmModal, ImageViewer, ProjectModal, ProjectPicker,
+                     TaskDetails, TaskModal)
 from .ribbon import Ribbon
 from .views import nav_model, render_view, valid_url
 
@@ -42,6 +43,7 @@ class TaskboardApp(App):
         ("a", "add_task", "Add"),
         ("p", "add_project", "Project"),
         ("P", "manage_projects", "Projects"),
+        ("enter", "details", "Details"),
         ("e", "edit", "Edit"),
         ("d", "delete", "Del"),
         ("delete", "delete", "Del"),
@@ -218,6 +220,14 @@ class TaskboardApp(App):
         self.board.add_task(task)
         self.selected_task_id = task.id
         self.refresh_view()
+
+    def action_details(self) -> None:
+        """Read-only details view of the selected task (Enter). Never opens the
+        editor — a safe way to review all fields + images."""
+        task = self.selected_task
+        if task is None:
+            return
+        self.push_screen(TaskDetails(task, self.board))
 
     def action_edit(self) -> None:
         task = self.selected_task
