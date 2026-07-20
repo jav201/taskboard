@@ -10,9 +10,10 @@ import pytest
 
 from textual.widgets import Button, Footer, Input, OptionList, Select, Static, TextArea
 
+from taskboard import models, modals
 from taskboard.app import BoardView, TaskboardApp
 from taskboard.models import Board, Task
-from taskboard.modals import TaskDetails, TaskModal, image_block
+from taskboard.modals import CalendarModal, TaskDetails, TaskModal, image_block
 from taskboard.ribbon import Ribbon
 from taskboard.views import render_agenda, render_gantt
 
@@ -905,3 +906,134 @@ def test_image_block_link_and_missing_fallbacks(tmp_path):
     assert remote and "link" in str(remote[0].render())
     missing = list(image_block(str(tmp_path / "nope.png")))
     assert missing and "missing" in str(missing[0].render())
+
+
+# --------------------------------------------------------------------------- #
+# Reliable paste (Ctrl+V) + calendar date picker (fast-dev-flow: dates+paste)
+# --------------------------------------------------------------------------- #
+import sys as _sys
+
+
+def test_grab_clipboard_text_dispatch_and_never_raises(monkeypatch):
+    """AC1: grab_clipboard_text returns the text or None, and never raises even
+    when the underlying reader blows up."""
+    if _sys.platform == "win32":
+        monkeypatch.setattr(models, "_win_clipboard_text", lambda: "hello clip")
+        assert models.grab_clipboard_text() == "hello clip"
+
+        def boom():
+            raise RuntimeError("nope")
+        monkeypatch.setattr(models, "_win_clipboard_text", boom)
+        assert models.grab_clipboard_text() is None          # guarded
+    else:
+        def raise_os(*a, **k):
+            raise OSError("no clipboard tool")
+        monkeypatch.setattr("subprocess.run", raise_os)
+        assert models.grab_clipboard_text() is None
+
+
+async def test_ctrl_v_pastes_into_focused_input(tmp_path, monkeypatch):
+    """AC2: Ctrl+V inserts clipboard text into the focused Input."""
+    monkeypatch.setattr(modals, "grab_clipboard_text", lambda: "PASTED-TEXT")
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        await pilot.press("a")                       # open TaskModal
+        await pilot.pause()
+        inp = app.screen.query_one("#f-title", Input)
+        inp.focus()
+        await pilot.pause()
+        await pilot.press("ctrl+v")
+        await pilot.pause()
+        assert "PASTED-TEXT" in inp.value
+
+
+async def test_ctrl_v_pastes_into_focused_textarea(tmp_path, monkeypatch):
+    """AC3: Ctrl+V inserts clipboard text into the focused notes TextArea."""
+    monkeypatch.setattr(modals, "grab_clipboard_text", lambda: "MULTI\nLINE")
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        await pilot.press("a")
+        await pilot.pause()
+        ta = app.screen.query_one("#f-notes", TextArea)
+        ta.focus()
+        await pilot.pause()
+        await pilot.press("ctrl+v")
+        await pilot.pause()
+        assert "MULTI" in ta.text and "LINE" in ta.text
+
+
+async def test_ctrl_v_empty_clipboard_is_noop(tmp_path, monkeypatch):
+    """AC4: with no clipboard text, Ctrl+V changes nothing and doesn't crash."""
+    monkeypatch.setattr(modals, "grab_clipboard_text", lambda: None)
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        await pilot.press("a")
+        await pilot.pause()
+        inp = app.screen.query_one("#f-title", Input)
+        inp.focus()
+        await pilot.pause()
+        await pilot.press("ctrl+v")
+        await pilot.pause()
+        assert inp.value == ""                       # unchanged, no crash
+
+
+async def test_calendar_enter_and_escape(tmp_path):
+    """AC5: Enter returns the highlighted date; Esc returns None."""
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        out = {}
+        app.push_screen(CalendarModal("2026-07-20"), lambda r: out.__setitem__("v", r))
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+        assert out["v"] == "2026-07-20"
+
+        out2 = {}
+        app.push_screen(CalendarModal("2026-07-20"), lambda r: out2.__setitem__("v", r))
+        await pilot.pause()
+        await pilot.press("escape")
+        await pilot.pause()
+        assert out2["v"] is None
+
+
+async def test_calendar_navigation(tmp_path):
+    """AC6: arrows/month/today move the highlighted date (both directions), and
+    a month hop clamps the day to the shorter month."""
+    async def pick_after(keys, seed="2026-07-20"):
+        app = make_app(tmp_path)
+        out = {}
+        async with app.run_test() as pilot:
+            app.push_screen(CalendarModal(seed), lambda r: out.__setitem__("v", r))
+            await pilot.pause()
+            for k in keys:
+                await pilot.press(k)
+            await pilot.press("enter")
+            await pilot.pause()
+        return out["v"]
+
+    assert await pick_after(["right"]) == "2026-07-21"           # +1 day
+    assert await pick_after(["left"]) == "2026-07-19"            # -1 day
+    assert await pick_after(["down"]) == "2026-07-27"            # +1 week
+    assert await pick_after(["up"]) == "2026-07-13"              # -1 week
+    assert await pick_after(["right_square_bracket"]) == "2026-08-20"   # +1 month
+    assert await pick_after(["left_square_bracket"]) == "2026-06-20"    # -1 month
+    assert await pick_after(["pagedown"]) == "2026-08-20"        # +1 month (alias)
+    assert await pick_after(["t"]) == date.today().isoformat()   # today
+    # day-clamp: Jan 31 -> Feb has no 31st -> 28 (2026 not a leap year)
+    assert await pick_after(["right_square_bracket"], seed="2026-01-31") == "2026-02-28"
+
+
+async def test_calendar_button_writes_date_into_field(tmp_path):
+    """AC7: the calendar button opens the picker and writes YYYY-MM-DD back into
+    the date Input (empty field -> today)."""
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        await pilot.press("a")                       # TaskModal
+        await pilot.pause()
+        app.screen.query_one("#cal-f-start", Button).press()
+        await pilot.pause()
+        assert isinstance(app.screen, CalendarModal)
+        await pilot.press("enter")                   # pick seeded (today)
+        await pilot.pause()
+        val = app.screen.query_one("#f-start", Input).value
+        assert val == date.today().isoformat()
