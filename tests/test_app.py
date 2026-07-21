@@ -1037,3 +1037,27 @@ async def test_calendar_button_writes_date_into_field(tmp_path):
         await pilot.pause()
         val = app.screen.query_one("#f-start", Input).value
         assert val == date.today().isoformat()
+
+
+def test_clean_clipboard_text_strips_controls_and_caps():
+    """Guards the freeze/terminal-corruption fix: control bytes (e.g. the ESC in
+    a mouse escape sequence) and NULs are dropped, tab/newline kept, length capped."""
+    from taskboard.models import _clean_clipboard_text, _MAX_PASTE_CHARS
+    assert _clean_clipboard_text("a\tb\nc") == "a\tb\nc"          # tab/newline kept
+    assert _clean_clipboard_text("x\x1b[<0;5;5M\x00y") == "x[<0;5;5My"  # ESC + NUL removed
+    assert _clean_clipboard_text("") is None
+    assert _clean_clipboard_text(None) is None
+    assert len(_clean_clipboard_text("z" * (_MAX_PASTE_CHARS + 50))) == _MAX_PASTE_CHARS
+
+
+def test_win_clipboard_roundtrip():
+    """Proves the 64-bit handle fix on real Windows: a string put on the clipboard
+    reads back intact (the truncated-handle bug returned None or garbage)."""
+    import sys
+    import subprocess
+    if sys.platform != "win32":
+        pytest.skip("windows clipboard path only")
+    sample = "roundtrip 123 ABC taskboard"
+    subprocess.run(["powershell", "-NoProfile", "-Command", f"Set-Clipboard -Value '{sample}'"],
+                   check=False)
+    assert models.grab_clipboard_text() == sample
