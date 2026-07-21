@@ -178,7 +178,13 @@ def _clean_clipboard_text(text: str | None) -> str | None:
     freeze rendering. None if nothing usable remains."""
     if not text:
         return None
-    cleaned = "".join(c for c in text if c in "\t\n\r" or ord(c) >= 0x20)
+    # keep tab/newline/CR + printable ASCII (0x20-0x7E) + everything from 0xA0 up
+    # (accents, emoji, NBSP…); drop C0 (incl. ESC), DEL (0x7F), and C1 (0x80-0x9F)
+    # — all of which some terminals treat as control introducers.
+    cleaned = "".join(
+        c for c in text
+        if c in "\t\n\r" or (0x20 <= ord(c) < 0x7f) or ord(c) >= 0xa0
+    )
     return cleaned[:_MAX_PASTE_CHARS] or None
 
 
