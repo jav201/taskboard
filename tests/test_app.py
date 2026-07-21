@@ -1044,7 +1044,9 @@ def test_clean_clipboard_text_strips_controls_and_caps():
     a mouse escape sequence) and NULs are dropped, tab/newline kept, length capped."""
     from taskboard.models import _clean_clipboard_text, _MAX_PASTE_CHARS
     assert _clean_clipboard_text("a\tb\nc") == "a\tb\nc"          # tab/newline kept
-    assert _clean_clipboard_text("x\x1b[<0;5;5M\x00y") == "x[<0;5;5My"  # ESC + NUL removed
+    # C0 (ESC), NUL, DEL (0x7f) and C1 (0x9b) all removed; printable payload kept
+    assert _clean_clipboard_text("x\x1b[<0;5;5M\x00\x7f\x9by") == "x[<0;5;5My"
+    assert _clean_clipboard_text("café 🎉 — ñ") == "café 🎉 — ñ"   # accents/emoji/≥0xA0 kept
     assert _clean_clipboard_text("") is None
     assert _clean_clipboard_text(None) is None
     assert len(_clean_clipboard_text("z" * (_MAX_PASTE_CHARS + 50))) == _MAX_PASTE_CHARS
@@ -1057,7 +1059,14 @@ def test_win_clipboard_roundtrip():
     import subprocess
     if sys.platform != "win32":
         pytest.skip("windows clipboard path only")
-    sample = "roundtrip 123 ABC taskboard"
-    subprocess.run(["powershell", "-NoProfile", "-Command", f"Set-Clipboard -Value '{sample}'"],
-                   check=False)
-    assert models.grab_clipboard_text() == sample
+    # save the user's clipboard and restore it afterward (don't clobber it)
+    prior = subprocess.run(["powershell", "-NoProfile", "-Command", "Get-Clipboard"],
+                           capture_output=True, text=True).stdout
+    try:
+        sample = "roundtrip 123 ABC taskboard"
+        subprocess.run(["powershell", "-NoProfile", "-Command", f"Set-Clipboard -Value '{sample}'"],
+                       check=False)
+        assert models.grab_clipboard_text() == sample
+    finally:
+        subprocess.run(["powershell", "-NoProfile", "-Command", "Set-Clipboard", "-Value", prior],
+                       check=False)
