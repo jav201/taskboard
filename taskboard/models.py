@@ -168,41 +168,78 @@ def grab_clipboard_image():
     return None
 
 
-def _win_clipboard_text():
-    """Windows clipboard TEXT via the Win32 API (ctypes). None on empty/error."""
+_MAX_PASTE_CHARS = 100_000
+
+
+def _clean_clipboard_text(text: str | None) -> str | None:
+    """Make clipboard text safe to insert into a field: drop C0/C1 control
+    characters (except tab/newline/carriage-return) so stray control bytes can't
+    corrupt the terminal, and cap the length so a huge/binary clipboard can't
+    freeze rendering. None if nothing usable remains."""
+    if not text:
+        return None
+    cleaned = "".join(c for c in text if c in "\t\n\r" or ord(c) >= 0x20)
+    return cleaned[:_MAX_PASTE_CHARS] or None
+
+
+def _win_clipboard_text() -> str | None:
+    """Windows clipboard TEXT via the Win32 API (ctypes). None on empty/error.
+
+    ctypes return/arg types are set EXPLICITLY: on 64-bit Windows the HANDLE and
+    pointer values are 64-bit, and ctypes' default ``c_int`` return TRUNCATES
+    them to 32 bits -> a bogus handle -> GlobalLock hands back a pointer into
+    arbitrary memory, which a scan-to-NUL read then dumps as a huge garbage
+    string (froze the UI + corrupted the terminal). The read is bounded by
+    GlobalSize so it can never run past the real buffer."""
     import ctypes
+    from ctypes import wintypes
     CF_UNICODETEXT = 13
     try:
         u, k = ctypes.windll.user32, ctypes.windll.kernel32
-        if not u.OpenClipboard(0):
+        u.OpenClipboard.argtypes = [wintypes.HWND]
+        u.OpenClipboard.restype = wintypes.BOOL
+        u.GetClipboardData.argtypes = [wintypes.UINT]
+        u.GetClipboardData.restype = wintypes.HANDLE          # 64-bit (was c_int)
+        u.CloseClipboard.restype = wintypes.BOOL
+        k.GlobalLock.argtypes = [wintypes.HGLOBAL]
+        k.GlobalLock.restype = wintypes.LPVOID
+        k.GlobalUnlock.argtypes = [wintypes.HGLOBAL]
+        k.GlobalSize.argtypes = [wintypes.HGLOBAL]
+        k.GlobalSize.restype = ctypes.c_size_t
+        if not u.OpenClipboard(None):
             return None
         try:
             handle = u.GetClipboardData(CF_UNICODETEXT)
             if not handle:
                 return None
-            k.GlobalLock.restype = ctypes.c_void_p
             ptr = k.GlobalLock(handle)
             if not ptr:
                 return None
             try:
-                return ctypes.c_wchar_p(ptr).value or None
+                size = k.GlobalSize(handle)                   # bytes of the buffer
+                if not size:
+                    return None
+                raw = ctypes.string_at(ptr, size)            # bounded read
             finally:
                 k.GlobalUnlock(handle)
+            # CF_UNICODETEXT is NUL-terminated UTF-16LE; stop at the terminator.
+            return raw.decode("utf-16-le", "replace").split("\x00", 1)[0] or None
         finally:
             u.CloseClipboard()
     except Exception:
         return None
 
 
-def grab_clipboard_text():
+def grab_clipboard_text() -> str | None:
     """Return the OS clipboard's TEXT as a str, or None when it holds no text or
     on any error. Windows reads the Win32 clipboard directly (ctypes); macOS uses
     ``pbpaste``; Linux uses ``xclip``/``xsel``. Fixed argv (never a shell), so
-    clipboard contents can't inject a command. Never raises."""
+    clipboard contents can't inject a command. The result is control-stripped and
+    length-capped (``_clean_clipboard_text``). Never raises."""
     import sys
     try:
         if sys.platform == "win32":
-            return _win_clipboard_text()
+            return _clean_clipboard_text(_win_clipboard_text())
         import subprocess
         for argv in (["pbpaste"],
                      ["xclip", "-selection", "clipboard", "-o"],
@@ -212,7 +249,7 @@ def grab_clipboard_text():
             except (OSError, subprocess.SubprocessError):
                 continue
             if res.returncode == 0:
-                return res.stdout.decode("utf-8", "replace") or None
+                return _clean_clipboard_text(res.stdout.decode("utf-8", "replace"))
         return None
     except Exception:
         return None
