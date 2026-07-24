@@ -582,17 +582,46 @@ def render_agenda(board, show_archived, selected_id, today=None,
 # ---------------------------------------------------------------------------
 # view: GANTT  (weeks as columns; project + task bars; today marker)
 # ---------------------------------------------------------------------------
+BAR_DONE = "⣿"     # 8/8 dots — the completed share of a project's span
+BAR_TODO = "⢕"     # 4/8 dots — the remaining share; same family, same height
+
+
+def gantt_meta(project, progress: float, today: date, width: int) -> str:
+    """The figures right of a project bar: phase progress %, then the distance to
+    the project's OWN due date.
+
+    `progress` is the same number that drove the bar, so the two can never
+    disagree. We store no phase-transition timestamps, so a velocity/ETA is not
+    computable and must not be invented — 'due Nd' is a due-date figure, not a
+    forecast. A project without a due date gets a dim placeholder, no number."""
+    if width <= 0:
+        return ""
+    pct = f"{int(round(100 * progress))}%"
+    d = parse_iso(project.due_date)
+    if d is None:
+        due, due_col = "—", "dim"
+    else:
+        delta = (d - today).days
+        due, due_col = f"due {delta}d", ("over" if delta < 0 else "mut")
+    plain = f"{pct} {due}"
+    if len(plain) > width:                      # too tight -> the percent alone
+        return c(fit(pct, width, "right"), project.color, bold=True)
+    return (" " * (width - len(plain)) + c(pct, project.color, bold=True)
+            + " " + c(due, due_col))
+
+
 def render_gantt(board, show_archived, selected_id, today=None,
                  width=68, height=0, line_map=None) -> Text:
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
     glabel_w = max(10, min(16, inner // 4))
-    avail = max(0, inner - glabel_w)
     cell = 6
+    meta_w = min(14, max(0, inner - glabel_w - cell))       # progress % + due
+    avail = max(0, inner - glabel_w - meta_w)
     weeks = max(1, min(20, avail // cell)) if avail >= cell else 1
     grid = weeks * cell
-    trailing = max(0, inner - glabel_w - grid)
+    trailing = max(0, inner - glabel_w - meta_w - grid)
     chart_start = today - timedelta(days=today.weekday())   # Monday of this week
 
     def week_index(d):
@@ -610,6 +639,23 @@ def render_gantt(board, show_archived, selected_id, today=None,
             out += c(char * (cell - 1) + " ", color) if active[i] else " " * cell
         return out
 
+    def project_bar(s_idx, e_idx, color, progress):
+        """ONE continuous bar over the project's span: dense glyphs for the
+        completed share, half-density for the rest, both full-cell and in the
+        project's colour so the bar keeps a constant height end to end. The
+        split comes from the phase weights, not from done/total."""
+        if (s_idx is None or e_idx is None or e_idx < s_idx
+                or e_idx < 0 or s_idx > weeks - 1):
+            return " " * grid
+        s = max(0, min(weeks - 1, s_idx))
+        e = max(0, min(weeks - 1, e_idx))
+        start = s * cell
+        bar_width = (e - s + 1) * cell - 1
+        filled = max(0, min(bar_width, int(round(progress * bar_width))))
+        return (" " * start
+                + c(BAR_DONE * filled + BAR_TODO * (bar_width - filled), color)
+                + " " * (grid - start - bar_width))
+
     right = c(f"{weeks}w axis", "mut")
     lines = [header(c("GANTT", "accent", bold=True), right, w)]
 
@@ -617,8 +663,10 @@ def render_gantt(board, show_archived, selected_id, today=None,
     for wk in range(weeks):
         lbl = "W" + (chart_start + timedelta(weeks=wk)).strftime("%V")
         axis += c(fit(lbl, cell), "accent" if wk == 0 else "dim", bold=(wk == 0))
-    lines.append(line(axis + " " * trailing))
-    marker = c(fit("", glabel_w), "dim") + c(fit("▲ today", grid + trailing), "accent")
+    meta_head = c(fit("prog   due", meta_w, "right"), "mut") if meta_w >= 10 else " " * meta_w
+    lines.append(line(axis + " " * trailing + meta_head))
+    marker = (c(fit("", glabel_w), "dim") + c(fit("▲ today", grid + trailing), "accent")
+              + " " * meta_w)
     lines.append(line(marker))
 
     projects = board.visible_projects(show_archived)
@@ -626,12 +674,16 @@ def render_gantt(board, show_archived, selected_id, today=None,
     scheduled_any = False
     unscheduled: list[Task] = []
 
-    for p in projects:
+    for i, p in enumerate(projects):
+        if i:                                   # a divider BETWEEN project blocks
+            lines.append(line(c("┈" * inner, "frame")))
         si, ei = week_index(parse_iso(p.start_date)), week_index(parse_iso(p.due_date))
         if si is not None and ei is not None:
             scheduled_any = True
-        lines.append(line(c(fit("▐ " + p.name, glabel_w), p.color, bold=True)
-                          + bar_cells(si, ei, p.color, "█") + " " * trailing))
+        prog = board.project_progress(p.id, show_archived)
+        lines.append(line(c(escape(fit("▐ " + p.name, glabel_w)), p.color, bold=True)
+                          + project_bar(si, ei, p.color, prog)
+                          + " " * trailing + gantt_meta(p, prog, today, meta_w)))
         for t in [t for t in tasks if t.project_id == p.id]:
             ts = week_index(parse_iso(t.start_date) or parse_iso(t.due_date))
             te = week_index(parse_iso(t.due_date) or parse_iso(t.start_date))
@@ -641,7 +693,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
             scheduled_any = True
             sel = t.id == selected_id
             lines.append(line(c("  ", "dim") + title_markup(t, glabel_w - 3, sel) + " "
-                              + bar_cells(ts, te, p.color, "▬") + " " * trailing))
+                              + bar_cells(ts, te, p.color, "▬") + " " * trailing
+                              + " " * meta_w))
             if line_map is not None:
                 line_map[t.id] = len(lines) - 1
 
@@ -654,8 +707,9 @@ def render_gantt(board, show_archived, selected_id, today=None,
             unscheduled.append(t)
             continue
         scheduled_any = True
-        lines.append(line(c(fit("▐ " + t.title, glabel_w), "dim")
-                          + bar_cells(ts, te, "dim", "▬") + " " * trailing))
+        lines.append(line(c(escape(fit("▐ " + t.title, glabel_w)), "dim")
+                          + bar_cells(ts, te, "dim", "▬") + " " * trailing
+                          + " " * meta_w))
         if line_map is not None:
             line_map[t.id] = len(lines) - 1
 
