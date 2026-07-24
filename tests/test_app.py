@@ -373,7 +373,7 @@ async def test_columns_nav_follows_displayed_order_not_board_order(tmp_path):
             visited.append(app.selected_task_id)
         # Down visits the BACKLOG column in its displayed order, exactly
         assert visited == backlog
-        assert all(app.board.task_by_id(t).status == "backlog" for t in visited)
+        assert all(app.board.task_by_id(t).phase == app.board.phases[0] for t in visited)
         # and render places them strictly top-to-bottom in that same order
         idxs = [app._line_map[t] for t in backlog if t in app._line_map]
         assert idxs == sorted(idxs)
@@ -389,9 +389,9 @@ async def test_right_moves_to_next_column_first_task(tmp_path):
         app.selected_task_id = cols[0][0]
         app.refresh_view()
         await pilot.press("right")
-        assert app.selected_task_id == cols[1][0]   # ACTIVE column's first task
+        assert app.selected_task_id == cols[1][0]   # 2nd phase column's first task
         await pilot.press("right")
-        # BLOCKED has one task in seed; Right lands on its first task
+        # the 3rd phase column has tasks in seed; Right lands on its first task
         assert app.selected_task_id == cols[2][0]
 
 
@@ -471,14 +471,15 @@ def test_columns_card_indicators_never_overlap_title(tmp_path):
     lp = Project("Platform Reliability and Observability", "rose", "on_track")
     b.projects.append(lp)
     b.add_task(Task("Refactor the whole authentication and onboarding subsystem",
-                    lp.id, "backlog", "high", due_date="2026-07-20",
+                    lp.id, "Backlog", "high", due_date="2026-07-20",
                     urls=["https://example.com/x"]))
     today = date(2026, 7, 17)
+    n = len(b.phases)
     seen_truncation = False
     for w in (130, 96, 40, 30, 24):     # wide, WezTerm default, narrow, tiny, MIN
         lines = str(render_columns(b, False, None, today, width=w, height=0)).split("\n")
         assert all(len(l) == w for l in lines), f"width {w}: a line != {w}"
-        wc0 = distribute((w - 2) - 3, 4)[0]        # BACKLOG (first) column width
+        wc0 = distribute((w - 2) - (n - 1), n)[0]   # first phase column width
         for l in lines:
             cell = l[1:1 + wc0]                     # chars inside the first column
             if "◉" not in cell and "↗" not in cell:
@@ -534,7 +535,7 @@ def test_task_urls_roundtrip(tmp_path):
     p = str(tmp_path / "b.json")
     board = Board.load(p)
     links = ["https://a.com", "https://b.com", "https://c.com"]
-    board.add_task(Task("multi", None, "backlog", "normal", urls=links))
+    board.add_task(Task("multi", None, "Backlog", "normal", urls=links))
     reloaded = Board.load(p)
     t = next(t for t in reloaded.tasks if t.title == "multi")
     assert t.urls == links
@@ -596,7 +597,7 @@ def test_task_images_model(tmp_path):
     p = str(tmp_path / "b.json")
     board = Board.load(p)
     refs = ["./mockups/home.png", "https://pics.example.com/b.jpg"]
-    board.add_task(Task("img", None, "backlog", "normal", images=refs))
+    board.add_task(Task("img", None, "Backlog", "normal", images=refs))
     t = next(t for t in Board.load(p).tasks if t.title == "img")
     assert t.images == refs
 
@@ -611,7 +612,7 @@ async def test_open_images_allowlist_and_isfile(tmp_path, monkeypatch):
     async with app.run_test() as pilot:
         started = []
         monkeypatch.setattr("taskboard.app.os.startfile", started.append)
-        t = Task("imgs", None, "backlog", "normal", images=[
+        t = Task("imgs", None, "Backlog", "normal", images=[
             str(real),                      # existing .png  -> opened
             str(tmp_path / "gone.png"),     # allowed ext, missing file -> skip
             str(tmp_path / "x.svg"),        # scriptable ext -> skip (F4)
@@ -636,7 +637,7 @@ def test_at_001_seed_generic_and_complete(tmp_path):
     ZERO author-denylist tokens AND at least one item in every feature dimension.
     The dimension checks are derived from the seed itself (input-set-as-oracle)."""
     from pathlib import Path
-    from taskboard.models import (Board, PROJECT_STATUSES, TASK_STATUSES,
+    from taskboard.models import (Board, DEFAULT_PHASES, PROJECT_STATUSES,
                                   TASK_PRIORITIES)
     from taskboard.views import urgency
 
@@ -650,8 +651,9 @@ def test_at_001_seed_generic_and_complete(tmp_path):
 
     # (b) all four project statuses (incl. the previously-missing 'cancelled')
     assert {pr.status for pr in projects} == set(PROJECT_STATUSES)
-    # (c) all four task statuses + all three priorities
-    assert {t.status for t in tasks} == set(TASK_STATUSES)
+    # (c) every default phase is populated, a blocked task exists, all priorities
+    assert {t.phase for t in tasks} == set(DEFAULT_PHASES)
+    assert any(t.blocked for t in tasks)
     assert {t.priority for t in tasks} == set(TASK_PRIORITIES)
     # (d) >=1 archived project AND >=1 archived task
     assert sum(1 for pr in projects if pr.archived) >= 1
@@ -661,7 +663,7 @@ def test_at_001_seed_generic_and_complete(tmp_path):
     assert any(t.project_id is not None for t in tasks)
     # (f) urgency buckets span overdue / today / this-week-or-later / none / done
     today = date.today()
-    buckets = {urgency(t, today) for t in tasks}
+    buckets = {urgency(t, today, board) for t in tasks}
     assert {"overdue", "today", "none", "done"} <= buckets
     assert buckets & {"week", "later"}
     # (g) the batch's own new capabilities are showcased
@@ -728,7 +730,7 @@ async def test_markup_injection_is_escaped(tmp_path):
 def test_gantt_handles_undated_tasks(tmp_path):
     board = Board.load(str(tmp_path / "b.json"))  # seeded
     # a task with no dates at all
-    board.add_task(Task("floating task", None, "backlog", "normal"))
+    board.add_task(Task("floating task", None, "Backlog", "normal"))
     out = str(render_gantt(board, False, None, today=date(2026, 7, 17)))
     assert "GANTT" in out
     assert "UNSCHEDULED" in out
@@ -737,7 +739,7 @@ def test_gantt_handles_undated_tasks(tmp_path):
 
 def test_agenda_handles_undated_tasks(tmp_path):
     board = Board.load(str(tmp_path / "b.json"))
-    board.add_task(Task("no due date task", None, "backlog", "normal"))
+    board.add_task(Task("no due date task", None, "Backlog", "normal"))
     out = str(render_agenda(board, False, None, today=date(2026, 7, 17)))
     assert "AGENDA" in out
     assert "NO DATE" in out
@@ -868,7 +870,7 @@ async def test_details_shows_all_fields_and_image(tmp_path):
     async with app.run_test(size=(100, 40)) as pilot:
         img = tmp_path / "pic.png"
         PILImage.new("RGB", (16, 16), (0, 150, 90)).save(img)
-        t = Task(title="DETAILTASK", status="doing", priority="high",
+        t = Task(title="DETAILTASK", phase="Doing", priority="high",
                  due_date="2026-09-01", notes="line one\nline two",
                  urls=["https://example.com/x"], images=[str(img)])
         app.board.tasks.append(t)
@@ -879,7 +881,7 @@ async def test_details_shows_all_fields_and_image(tmp_path):
         assert isinstance(app.screen, TaskDetails)
         text = _details_text(app)
         assert "DETAILTASK" in text
-        assert "doing" in text and "high" in text and "2026-09-01" in text
+        assert "Doing" in text and "high" in text and "2026-09-01" in text
         assert "line one" in text and "line two" in text     # notes shown
         assert "example.com/x" in text                       # url listed
         assert "missing" not in text                         # the real file resolved
@@ -1101,6 +1103,153 @@ def test_project_accepts_a_new_colour():
     from taskboard.models import Project
     assert Project.from_dict({"name": "X", "color": "indigo"}).color == "indigo"
     assert Project.from_dict({"name": "Y", "color": "nope"}).color == "violet"   # fallback
+
+
+# --------------------------------------------------------------------------- #
+# Ordered custom phases (fast-dev-flow increment 2)
+# --------------------------------------------------------------------------- #
+def test_legacy_status_migrates_to_phase():
+    """WHY: boards written before phases existed must keep opening — every legacy
+    status maps to exactly one (phase, blocked) pair, and 'blocked' becomes a flag
+    on the Doing phase rather than a phase of its own."""
+    cases = {"backlog": ("Backlog", False), "doing": ("Doing", False),
+             "active": ("Doing", False), "blocked": ("Doing", True),
+             "done": ("Done", False)}
+    for status, expected in cases.items():
+        t = Task.from_dict({"title": "x", "status": status})
+        assert (t.phase, t.blocked) == expected, status
+    # unknown / missing status -> the first default phase, not blocked
+    for d in ({"title": "x"}, {"title": "x", "status": "nonsense"}):
+        t = Task.from_dict(d)
+        assert (t.phase, t.blocked) == ("Backlog", False)
+    # an explicit phase wins over any legacy status still in the file
+    t = Task.from_dict({"title": "x", "status": "backlog", "phase": "Done"})
+    assert t.phase == "Done"
+
+
+def test_migration_preserves_every_task_and_field(tmp_path):
+    """WHY: migration must never cost the user data. A legacy board survives a
+    load->save->load round-trip with every task, every field, and even keys this
+    version does not model (written by another version) intact."""
+    import json
+    p = tmp_path / "legacy.json"
+    p.write_text(json.dumps({
+        "projects": [{"id": "p1", "name": "Old", "color": "sky", "status": "on_track",
+                      "owner_email": "someone@example.com"}],          # unknown key
+        "tasks": [
+            {"id": "t1", "title": "one", "project_id": "p1", "status": "backlog",
+             "urls": ["https://a.example.com"], "images": ["./a.png"]},
+            {"id": "t2", "title": "two", "project_id": "p1", "status": "blocked",
+             "urls": ["https://b.example.com", "https://c.example.com"],
+             "images": ["./b.png", "./c.png"]},
+            {"id": "t3", "title": "three", "status": "done",
+             "estimate_hours": 7},                                      # unknown key
+            {"id": "t4", "title": "four", "status": "active"},
+        ],
+    }), encoding="utf-8")
+
+    Board.load(str(p)).save()                    # migrate + write back
+    reloaded = Board.load(str(p))
+
+    assert [t.id for t in reloaded.tasks] == ["t1", "t2", "t3", "t4"]     # none dropped
+    assert [t.title for t in reloaded.tasks] == ["one", "two", "three", "four"]
+    assert [(t.phase, t.blocked) for t in reloaded.tasks] == [
+        ("Backlog", False), ("Doing", True), ("Done", False), ("Doing", False)]
+    assert reloaded.task_by_id("t1").urls == ["https://a.example.com"]
+    assert reloaded.task_by_id("t1").images == ["./a.png"]
+    assert reloaded.task_by_id("t2").urls == ["https://b.example.com",
+                                              "https://c.example.com"]
+    assert reloaded.task_by_id("t2").images == ["./b.png", "./c.png"]
+    assert reloaded.task_by_id("t3").extra["estimate_hours"] == 7
+    assert reloaded.projects[0].extra["owner_email"] == "someone@example.com"
+    # and the unknown keys are really on disk, not just in memory
+    on_disk = json.loads(p.read_text(encoding="utf-8"))
+    assert on_disk["phases"] == list(models.DEFAULT_PHASES)
+    assert next(t for t in on_disk["tasks"] if t["id"] == "t3")["estimate_hours"] == 7
+    assert on_disk["projects"][0]["owner_email"] == "someone@example.com"
+
+
+def test_task_progress_from_phase_order(tmp_path):
+    """WHY: progress is positional — it is the phase's index in the board's own
+    order, so a custom workflow reports progress without any extra bookkeeping."""
+    b = Board([], [], tmp_path / "b.json", phases=["A", "B", "C", "D"])
+    assert b.task_progress(Task("t", phase="A")) == 0.0
+    assert b.task_progress(Task("t", phase="B")) == pytest.approx(1 / 3)
+    assert b.task_progress(Task("t", phase="D")) == 1.0
+    # a phase the board doesn't know falls back to the start, never raises
+    assert b.task_progress(Task("t", phase="ZZZ")) == 0.0
+    # a single-phase board has no range to measure -> 0.0, no ZeroDivisionError
+    single = Board([], [], tmp_path / "s.json", phases=["Only"])
+    assert single.task_progress(Task("t", phase="Only")) == 0.0
+
+
+def test_project_progress_is_mean_of_tasks(tmp_path):
+    """WHY: this number will drive the gantt bar — it must be the mean of the
+    VISIBLE tasks' progress, and an empty project must not blow up."""
+    b = Board([], [], tmp_path / "b.json", phases=["A", "B", "C"])
+    b.tasks = [Task("t1", "p1", "A"), Task("t2", "p1", "B"), Task("t3", "p1", "C")]
+    assert b.project_progress("p1") == pytest.approx((0.0 + 0.5 + 1.0) / 3)
+    b.tasks.append(Task("t4", "p1", "C", archived=True))
+    assert b.project_progress("p1") == pytest.approx(0.5)          # archived excluded
+    assert b.project_progress("p1", show_archived=True) == pytest.approx(0.625)
+    assert b.project_progress("no-such-project") == 0.0            # empty -> 0.0
+
+
+def test_blocked_task_stays_in_its_phase(tmp_path):
+    """WHY: blocked is a FLAG, not a phase — a blocked task keeps its place in the
+    workflow (and its marker) instead of being parked in a column of its own."""
+    from taskboard.views import phase_buckets, render_columns
+    b = Board.load(str(tmp_path / "b.json"))            # seeded, default phases
+    stuck = Task("STUCK", None, "Doing", "normal", blocked=True)
+    b.add_task(stuck)
+    buckets = phase_buckets(b, b.visible_tasks(False))
+    assert len(buckets) == len(b.phases)
+    doing = b.phases.index("Doing")
+    assert stuck.id in [t.id for t in buckets[doing]]
+    assert all(stuck.id not in [t.id for t in bucket]
+               for i, bucket in enumerate(buckets) if i != doing)
+    out = str(render_columns(b, False, None, date(2026, 7, 17), width=120))
+    assert "DOING" in out
+    assert "BLOCKED" not in out              # no blocked column exists any more
+    assert "▲" in out                        # the blocked marker still shows
+
+
+async def test_modal_sets_phase_and_blocked_and_persists(tmp_path):
+    """WHY: the editor is the only way a user changes a phase — the phase Select
+    and the blocked Checkbox must reach the task and survive a reload from disk."""
+    from textual.widgets import Checkbox
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("a")
+        await pilot.pause()
+        app.screen.query_one("#f-title", Input).value = "PHASETASK"
+        app.screen.query_one("#f-phase", Select).value = "Doing"
+        app.screen.query_one("#f-blocked", Checkbox).value = True
+        await save_open_modal(app, pilot)
+        t = next(t for t in app.board.tasks if t.title == "PHASETASK")
+        assert (t.phase, t.blocked) == ("Doing", True)
+    t2 = next(t for t in Board.load(board_path).tasks if t.title == "PHASETASK")
+    assert (t2.phase, t2.blocked) == ("Doing", True)
+
+
+def test_custom_phases_drive_the_columns(tmp_path):
+    """WHY: the columns view must be generated FROM the board's phases — five
+    custom phases means five column headers, and the list persists to disk."""
+    from taskboard.views import render_columns
+    phases = ["Intake", "Design", "Build", "Review", "Shipped"]
+    path = tmp_path / "custom.json"
+    b = Board([], [], path, phases=phases)
+    b.tasks = [Task(f"task {p}", None, p) for p in phases]
+    b.save()
+    assert Board.load(str(path)).phases == phases          # round-trips
+
+    out = str(render_columns(b, False, None, date(2026, 7, 17), width=140)).split("\n")
+    header_row = out[1]                                    # row under the frame title
+    for p in phases:
+        assert p.upper() in header_row
+    assert header_row.count("│") == len(phases) + 1        # 5 columns -> 4 dividers + 2 edges
+    assert all(len(l) == 140 for l in out)                 # still width-exact
 
 
 async def test_view_renders_with_a_new_colour(tmp_path):
