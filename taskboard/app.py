@@ -74,6 +74,7 @@ class TaskboardApp(App):
         self.kanban_presentation = "grouped"
         self.show_archived = False
         self.selected_task_id: str | None = None
+        self._tick_n = 0                 # drives the gantt flow packet
 
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
         """While a modal is open, release the board's priority arrow/vim bindings
@@ -123,6 +124,24 @@ class TaskboardApp(App):
         ribbons = self.query("#ribbon")
         if ribbons:
             ribbons.first(Ribbon).update_clock()
+        self._tick_n += 1
+        if self.view_mode == "gantt":
+            self._repaint_flow()         # advance the flow packet, keep scroll/selection
+
+    def _repaint_flow(self) -> None:
+        """Re-render the board content at the new tick WITHOUT re-selecting or
+        scrolling, so the gantt flow animates without yanking the viewport."""
+        boards = self.query("#board")
+        if not boards:
+            return
+        bw = boards.first(BoardView)
+        vps = self.query("#viewport")
+        h = vps.first().size.height if vps else (bw.size.height or 0)
+        self._line_map = {}
+        bw.update(render_view(self.view_mode, self.board, self.show_archived,
+                              self.selected_task_id, width=bw.size.width or 0, height=h,
+                              line_map=self._line_map,
+                              presentation=self.kanban_presentation, tick=self._tick_n))
 
     def _apply_clock_settings(self) -> None:
         ribbons = self.query("#ribbon")
@@ -212,7 +231,7 @@ class TaskboardApp(App):
         content = render_view(self.view_mode, self.board, self.show_archived,
                               self.selected_task_id, width=w, height=h,
                               line_map=self._line_map,
-                              presentation=self.kanban_presentation)
+                              presentation=self.kanban_presentation, tick=self._tick_n)
         board_widget.update(content)
         self._scroll_selected_into_view()
 
