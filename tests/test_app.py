@@ -1422,3 +1422,118 @@ def test_kanban_windows_phases_when_they_dont_fit(tmp_path):
     assert "◀ 5" in out                                  # 5 phases hidden to the left
     out0 = str(render_kanban(b, False, b.tasks[1].id, date(2026, 7, 17), width=40, height=0))
     assert "5 ▶" in out0                                 # …and to the right at the start
+
+# --- gantt project bar (dual-density braille + honest due figure) ----------- #
+GANTT_TODAY = date(2026, 7, 20)          # a Monday, so week 0 starts on it
+DENSE, HALF = "⣿", "⢕"        # the two bar glyphs
+BANNED = ("⣤", "⡀", "░", "▒")   # textures that lose height
+
+
+def _gantt_board(tmp_path):
+    """Phases [A, B, C]. Alpha sits at 50% (one task in A, one in C) and has a
+    due date; Beta sits at 0% (both tasks in A) and has NO due date."""
+    from taskboard.models import Board, Project, Task
+    b = Board([], [], tmp_path / "g.json", phases=["A", "B", "C"])
+    alpha = Project("Alpha", "cyan", start_date="2026-07-20", due_date="2026-08-17")
+    beta = Project("Beta", "amber", start_date="2026-07-20", due_date=None)
+    b.projects += [alpha, beta]
+    b.tasks += [
+        Task("A first", alpha.id, "A", start_date="2026-07-20", due_date="2026-07-27"),
+        Task("A last", alpha.id, "C", start_date="2026-07-27", due_date="2026-08-10"),
+        Task("B one", beta.id, "A", start_date="2026-07-20", due_date="2026-08-03"),
+        Task("B two", beta.id, "A", start_date="2026-07-20", due_date="2026-08-03"),
+    ]
+    return b
+
+
+def _gantt_rows(board, width=68):
+    return str(render_gantt(board, False, None, today=GANTT_TODAY,
+                            width=width, height=0)).splitlines()
+
+
+def _project_row(board, name, width=68):
+    return next(l for l in _gantt_rows(board, width) if name in l)
+
+
+def test_gantt_bar_uses_dual_density_braille(tmp_path):
+    """WHY: the project span must read as ONE bar of constant height — the
+    completed share differs by DOT DENSITY, not by a shorter/bottom-weighted
+    glyph, which is what made the old solid block look like it lost height."""
+    b = _gantt_board(tmp_path)
+    row = _project_row(b, "Alpha")
+    assert DENSE in row and HALF in row
+    out = "".join(_gantt_rows(b))
+    for bad in BANNED:
+        assert bad not in out, f"{bad!r} is a height-breaking texture"
+
+
+def test_gantt_bar_split_follows_phase_progress(tmp_path):
+    """WHY: the split is the PHASE WEIGHT (one task in A + one in C -> 0.5), not
+    a done/total count — otherwise a two-task project could only ever read
+    0/50/100% and would ignore the middle of the workflow."""
+    b = _gantt_board(tmp_path)
+    alpha = next(p for p in b.projects if p.name == "Alpha")
+    assert b.project_progress(alpha.id) == pytest.approx(0.5)
+    row = _project_row(b, "Alpha")
+    done, todo = row.count(DENSE), row.count(HALF)
+    total = done + todo
+    assert total > 0
+    assert abs(done - b.project_progress(alpha.id) * total) <= 1     # ±1 rounding
+
+
+def test_gantt_bar_extremes(tmp_path):
+    """0% draws no dense cell and 100% draws no half cell — the bar still spans
+    the same width in both cases."""
+    b = _gantt_board(tmp_path)
+    beta = next(p for p in b.projects if p.name == "Beta")
+    beta.due_date = "2026-08-17"                        # same span as Alpha
+    beta_row = _project_row(b, "Beta")
+    assert DENSE not in beta_row and HALF in beta_row
+
+    alpha = next(p for p in b.projects if p.name == "Alpha")
+    for t in [t for t in b.tasks if t.project_id == alpha.id]:
+        t.phase = "C"                                   # everything in the last phase
+    alpha_row = _project_row(b, "Alpha")
+    assert HALF not in alpha_row and DENSE in alpha_row
+    assert alpha_row.count(DENSE) == beta_row.count(HALF)   # same span, same width
+
+
+def test_gantt_shows_due_days_not_invented_estimate(tmp_path):
+    """WHY: we store no phase-transition timestamps, so a velocity ETA is not
+    computable. The trailing figure is the project's own due-date distance, and
+    a project without a due date gets a placeholder — never a fabricated number."""
+    b = _gantt_board(tmp_path)
+    assert "due 28d" in _project_row(b, "Alpha")        # 2026-07-20 -> 2026-08-17
+
+    beta_row = _project_row(b, "Beta")
+    assert "—" in beta_row                          # dim em-dash placeholder
+    assert "due" not in beta_row
+    assert not re.search(r"\d+d", beta_row)              # no invented day figure
+
+    beta = next(p for p in b.projects if p.name == "Beta")
+    beta.due_date = "2026-07-13"                        # a week overdue
+    assert "due -7d" in _project_row(b, "Beta")
+
+
+def test_gantt_divides_projects(tmp_path):
+    """One divider BETWEEN project blocks — none before the first or after the
+    last, so N projects give exactly N-1 dividers."""
+    from taskboard.models import Project
+    b = _gantt_board(tmp_path)
+    rows = _gantt_rows(b)
+    dividers = [l for l in rows if "┈" in l]
+    assert len(dividers) == len(b.projects) - 1 == 1
+    assert all(l.count("┈") == 68 - 2 for l in dividers)      # full-width row
+
+    b.projects.append(Project("Gamma", "lime", start_date="2026-07-20",
+                              due_date="2026-08-03"))
+    assert len([l for l in _gantt_rows(b) if "┈" in l]) == len(b.projects) - 1 == 2
+
+
+def test_gantt_width_exact_across_widths(tmp_path):
+    b = _gantt_board(tmp_path)
+    sel = b.tasks[0].id
+    for w in (40, 68, 100, 140):
+        lines = str(render_gantt(b, False, sel, today=GANTT_TODAY,
+                                 width=w, height=0)).splitlines()
+        assert all(len(l) == w for l in lines), f"gantt at {w}: a line != {w}"
