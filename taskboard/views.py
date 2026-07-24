@@ -41,6 +41,7 @@ HEX = {
     "fuchsia": "#e879f9",
     "pink": "#f472b6",
     "over": "#f43f5e",
+    "bright": "#e6edf7",
     "soon": "#fbbf24",
     "later": "#64748b",
     "done": "#3f9c6d",
@@ -627,6 +628,51 @@ def gantt_meta(project, progress: float, today: date, width: int,
             + " " + c(due, due_col))
 
 
+def _gantt_day_col(d, chart_start, weeks, cell):
+    """Column of date `d` INSIDE the timeline grid (0-based), reusing the same
+    week/day math as `week_index`. Returns an int when `d` is on-screen, a
+    ('clampL'|'clampR', col) tuple when it falls off the left/right edge, or
+    None when there is no date."""
+    if d is None:
+        return None
+    days = (d - chart_start).days
+    wk = days // 7
+    if wk < 0:
+        return ("clampL", 0)
+    if wk >= weeks:
+        return ("clampR", weeks * cell - 1)
+    dow = days - wk * 7                       # 0..6 within the week
+    return wk * cell + min(cell - 1, dow * cell // 7)
+
+
+def _overlay_cells(markup: str, width: int, cells: dict[int, str]) -> str:
+    """Overwrite specific VISIBLE columns of a markup string in place.
+
+    `markup` renders to exactly `width` cells; `cells` maps {visible_col:
+    replacement_markup} where each replacement is balanced, single-cell markup.
+    The replacement is injected in place of the character at that column, so the
+    total visible width never changes (this is what keeps every gantt row
+    width-exact). Rich's style stack makes an inner `[c]…[/]` inside an outer
+    span reopen the outer colour after it closes, so overwriting a coloured bar
+    cell is safe."""
+    if not cells:
+        return markup
+    out, vis, i, n = [], 0, 0, len(markup)
+    while i < n:
+        ch = markup[i]
+        if ch == "\\" and i + 1 < n and markup[i + 1] == "[":   # escaped literal '['
+            out.append(cells.get(vis, markup[i:i + 2]))
+            i, vis = i + 2, vis + 1
+        elif ch == "[":                                          # a markup tag (0 width)
+            j = markup.index("]", i)
+            out.append(markup[i:j + 1])
+            i = j + 1
+        else:                                                    # one visible char
+            out.append(cells.get(vis, ch))
+            i, vis = i + 1, vis + 1
+    return "".join(out)
+
+
 def render_gantt(board, show_archived, selected_id, today=None,
                  width=68, height=0, line_map=None) -> Text:
     today = today or date.today()
@@ -673,7 +719,15 @@ def render_gantt(board, show_archived, selected_id, today=None,
                 + c(BAR_DONE * filled + BAR_TODO * (bar_width - filled), color)
                 + " " * (grid - start - bar_width))
 
-    right = c(f"{weeks}w axis", "mut")
+    col_today = _gantt_day_col(today, chart_start, weeks, cell)
+    rule = c("┃", "accent")
+
+    projects = board.visible_projects(show_archived)
+    past_due = sum(1 for p in projects
+                   if (d := parse_iso(p.due_date)) is not None and d < today)
+    axis_lbl = f"{weeks}w axis"
+    right = (c(f"▲ {past_due} past due", "over") + c("  " + axis_lbl, "mut")
+             if past_due else c(axis_lbl, "mut"))
     lines = [header(c("GANTT", "accent", bold=True), right, w)]
 
     axis = c(fit("", glabel_w), "mut")
@@ -684,11 +738,17 @@ def render_gantt(board, show_archived, selected_id, today=None,
     meta_head = (c(fit(head_txt, meta_w, "right"), "mut")
                  if meta_w >= len(head_txt) else " " * meta_w)
     lines.append(line(axis + " " * trailing + meta_head))
-    marker = (c(fit("", glabel_w), "dim") + c(fit("▲ today", grid + trailing), "accent")
-              + " " * meta_w)
-    lines.append(line(marker))
+    lbl_cells = list(" " * grid)                    # the today rule + its small label
+    tag, pos = "today", col_today + 2
+    if pos + len(tag) > grid:
+        pos = max(0, col_today - 1 - len(tag))
+    for k, chx in enumerate(tag):
+        if 0 <= pos + k < grid:
+            lbl_cells[pos + k] = chx
+    label_row = _overlay_cells(c("".join(lbl_cells), "accent"), grid, {col_today: rule})
+    lines.append(line(c(fit("", glabel_w), "dim") + label_row
+                      + " " * trailing + " " * meta_w))
 
-    projects = board.visible_projects(show_archived)
     tasks = board.visible_tasks(show_archived)
     scheduled_any = False
     unscheduled: list[Task] = []
@@ -700,8 +760,19 @@ def render_gantt(board, show_archived, selected_id, today=None,
         if si is not None and ei is not None:
             scheduled_any = True
         prog = board.project_progress(p.id, show_archived)
+        gcells: dict[int, str] = {}
+        due = parse_iso(p.due_date)
+        dcol = _gantt_day_col(due, chart_start, weeks, cell)
+        if dcol is not None:                         # a due diamond at its date column
+            dcolor = "over" if due < today else "bright"
+            if isinstance(dcol, tuple):              # off-screen -> clamp to the edge
+                gcells[dcol[1]] = c("◂" if dcol[0] == "clampL" else "▸", dcolor)
+            else:
+                gcells[dcol] = c("◆", dcolor)
+        gcells[col_today] = rule                     # the rule wins its own cell
+        bar = _overlay_cells(project_bar(si, ei, p.color, prog), grid, gcells)
         lines.append(line(c(escape(fit("▐ " + p.name, glabel_w)), p.color, bold=True)
-                          + project_bar(si, ei, p.color, prog)
+                          + bar
                           + " " * trailing
                           + gantt_meta(p, prog, today, meta_w, meta_full)))
         for t in [t for t in tasks if t.project_id == p.id]:
@@ -712,8 +783,11 @@ def render_gantt(board, show_archived, selected_id, today=None,
                 continue
             scheduled_any = True
             sel = t.id == selected_id
+            u = urgency(t, today, board)
+            bcolor = "over" if u == "overdue" else "soon" if u == "today" else p.color
+            tbar = _overlay_cells(bar_cells(ts, te, bcolor, "▬"), grid, {col_today: rule})
             lines.append(line(c("  ", "dim") + title_markup(t, glabel_w - 3, sel) + " "
-                              + bar_cells(ts, te, p.color, "▬") + " " * trailing
+                              + tbar + " " * trailing
                               + " " * meta_w))
             if line_map is not None:
                 line_map[t.id] = len(lines) - 1
@@ -727,8 +801,11 @@ def render_gantt(board, show_archived, selected_id, today=None,
             unscheduled.append(t)
             continue
         scheduled_any = True
+        u = urgency(t, today, board)
+        bcolor = "over" if u == "overdue" else "soon" if u == "today" else "dim"
+        obar = _overlay_cells(bar_cells(ts, te, bcolor, "▬"), grid, {col_today: rule})
         lines.append(line(c(escape(fit("▐ " + t.title, glabel_w)), "dim")
-                          + bar_cells(ts, te, "dim", "▬") + " " * trailing
+                          + obar + " " * trailing
                           + " " * meta_w))
         if line_map is not None:
             line_map[t.id] = len(lines) - 1

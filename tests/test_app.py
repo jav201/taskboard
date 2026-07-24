@@ -1427,6 +1427,7 @@ def test_kanban_windows_phases_when_they_dont_fit(tmp_path):
 
 # --- gantt project bar (dual-density braille + honest due figure) ----------- #
 GANTT_TODAY = date(2026, 7, 20)          # a Monday, so week 0 starts on it
+GANTT_MIDWEEK = date(2026, 7, 23)        # a Thursday, so the today rule sits mid-grid
 DENSE, HALF = "⣿", "⢕"        # the two bar glyphs
 BANNED = ("⣤", "⡀", "░", "▒")   # textures that lose height
 
@@ -1537,10 +1538,13 @@ def test_gantt_divides_projects(tmp_path):
 def test_gantt_width_exact_across_widths(tmp_path):
     b = _gantt_board(tmp_path)
     sel = b.tasks[0].id
-    for w in (40, 68, 100, 140):
-        lines = str(render_gantt(b, False, sel, today=GANTT_TODAY,
-                                 width=w, height=0)).splitlines()
-        assert all(len(l) == w for l in lines), f"gantt at {w}: a line != {w}"
+    # sweep both a Monday today (rule at grid col 0) and a mid-week today (rule
+    # off col 0, so the diamond/clamp overlays exercise interior columns too)
+    for tday in (GANTT_TODAY, GANTT_MIDWEEK):
+        for w in (40, 68, 100, 140):
+            lines = str(render_gantt(b, False, sel, today=tday,
+                                     width=w, height=0)).splitlines()
+            assert all(len(l) == w for l in lines), f"gantt {w}/{tday}: a line != {w}"
 
 
 def test_gantt_meta_column_adapts_to_width(tmp_path):
@@ -1572,6 +1576,129 @@ def test_gantt_meta_column_adapts_to_width(tmp_path):
     weeks_narrow = len(re.findall(r"W\d\d", narrow_rows[1]))
     weeks_if_full = max(1, min(20, (inner - glabel_w - META_FULL_W) // cell))
     assert weeks_narrow > weeks_if_full
+
+
+# --- gantt Fable-5 redesign: today rule, due diamonds, urgency bars --------- #
+def _bar_styles(text, title):
+    """The set of style strings painting the '▬' cells of the row whose label
+    contains `title` (reads the Text's spans, since str() drops colour)."""
+    lines = text.plain.split("\n")
+    li = next(i for i, l in enumerate(lines) if title in l)
+    base = sum(len(lines[j]) + 1 for j in range(li))       # +1 for each '\n'
+    styles = set()
+    for k, ch in enumerate(lines[li]):
+        if ch == "▬":
+            off = base + k
+            for sp in text.spans:
+                if sp.start <= off < sp.end:
+                    styles.add(str(sp.style))
+    return styles
+
+
+def test_gantt_today_rule_spans_all_rows(tmp_path):
+    """WHY: schedule risk should read as geometry — the accent today rule is one
+    continuous vertical line, the SAME column on a project row and the task rows
+    beneath it, not a lone marker floating on one row."""
+    b = _gantt_board(tmp_path)
+    lines = str(render_gantt(b, False, None, today=GANTT_MIDWEEK,
+                             width=68, height=0)).splitlines()
+    prow = next(l for l in lines if "Alpha" in l)
+    trow = next(l for l in lines if "A first" in l)
+    assert "┃" in prow and "┃" in trow
+    assert prow.index("┃") == trow.index("┃")       # same column -> a vertical line
+
+
+def test_gantt_due_diamond_side_of_rule(tmp_path):
+    """WHY: each project's own due date is a diamond at its timeline column — red
+    and LEFT of the rule when already past, bright and RIGHT of it when still
+    ahead; a project with no due date draws nothing."""
+    from taskboard.models import Board, Project
+    b = Board([], [], tmp_path / "g.json", phases=["A", "B", "C"])
+    b.projects += [
+        Project("Past", "cyan", start_date="2026-07-20", due_date="2026-07-20"),
+        Project("Future", "amber", start_date="2026-07-20", due_date="2026-08-10"),
+        Project("Nodue", "lime", start_date="2026-07-20", due_date=None),
+    ]
+    lines = str(render_gantt(b, False, None, today=GANTT_MIDWEEK,
+                             width=100, height=0)).splitlines()
+    past = next(l for l in lines if "Past" in l)
+    future = next(l for l in lines if "Future" in l)
+    nodue = next(l for l in lines if "Nodue" in l)
+    assert "◆" in past and past.index("◆") < past.index("┃")        # past -> left
+    assert "◆" in future and future.index("◆") > future.index("┃")  # future -> right
+    assert "◆" not in nodue                                          # no due date, no ◆
+
+
+def test_gantt_due_diamond_colour_by_pastness(tmp_path):
+    """The past diamond carries over/red, the future diamond the bright key."""
+    from taskboard.models import Board, Project
+    from taskboard.views import HEX
+    b = Board([], [], tmp_path / "g.json", phases=["A", "B", "C"])
+    b.projects += [
+        Project("Past", "cyan", start_date="2026-07-20", due_date="2026-07-20"),
+        Project("Future", "amber", start_date="2026-07-20", due_date="2026-08-10"),
+    ]
+    txt = render_gantt(b, False, None, today=GANTT_MIDWEEK, width=100, height=0)
+    lines = txt.plain.split("\n")
+
+    def diamond_styles(title):
+        li = next(i for i, l in enumerate(lines) if title in l)
+        base = sum(len(lines[j]) + 1 for j in range(li))
+        off = base + lines[li].index("◆")
+        return {str(sp.style) for sp in txt.spans if sp.start <= off < sp.end}
+
+    assert any(HEX["over"] in s for s in diamond_styles("Past"))
+    assert any(HEX["bright"] in s for s in diamond_styles("Future"))
+
+
+def test_gantt_task_bar_colour_by_urgency(tmp_path):
+    """WHY: a task bar's colour must carry its urgency at a glance — red when
+    overdue, amber when due today, otherwise the PROJECT colour (never grey)."""
+    from taskboard.models import Board, Project, Task
+    from taskboard.views import HEX
+    b = Board([], [], tmp_path / "g.json", phases=["A", "B", "C"])
+    p = Project("P", "cyan", start_date="2026-07-20", due_date="2026-09-30")
+    b.projects.append(p)
+    b.tasks += [
+        Task("overduetask", p.id, "A", start_date="2026-07-20", due_date="2026-07-20"),
+        Task("duetodaytask", p.id, "A", start_date="2026-07-20", due_date="2026-07-23"),
+        Task("ontracktask", p.id, "A", start_date="2026-07-27", due_date="2026-08-24"),
+    ]
+    txt = render_gantt(b, False, None, today=GANTT_MIDWEEK, width=100, height=0)
+    assert any(HEX["over"] in s for s in _bar_styles(txt, "overduetask"))
+    assert any(HEX["soon"] in s for s in _bar_styles(txt, "duetodaytask"))
+    on_track = _bar_styles(txt, "ontracktask")
+    assert any(HEX["cyan"] in s for s in on_track)                       # project colour
+    assert not any(HEX["over"] in s or HEX["soon"] in s for s in on_track)
+
+
+def test_gantt_header_counts_past_due(tmp_path):
+    """The header leads with an '▲ N past due' count of projects whose due date
+    is strictly before today, and omits the phrase entirely when N == 0."""
+    from taskboard.models import Board, Project
+    b = Board([], [], tmp_path / "g.json", phases=["A", "B", "C"])
+    b.projects += [
+        Project("P1", "cyan", start_date="2026-07-01", due_date="2026-07-10"),
+        Project("P2", "amber", start_date="2026-07-01", due_date="2026-07-15"),
+        Project("P3", "lime", start_date="2026-07-20", due_date="2026-09-01"),
+    ]
+    head = str(render_gantt(b, False, None, today=GANTT_MIDWEEK,
+                            width=100, height=0)).splitlines()[0]
+    assert "2 past due" in head
+
+    b.projects = [p for p in b.projects if p.name == "P3"]       # none past due now
+    head2 = str(render_gantt(b, False, None, today=GANTT_MIDWEEK,
+                             width=100, height=0)).splitlines()[0]
+    assert "past due" not in head2
+
+
+def test_gantt_still_has_dual_density_bar(tmp_path):
+    """REGRESSION GUARD: the additions are drawn ON TOP of the ⣿/⢕ dual-density
+    project progress bar — the bar glyphs must still be present."""
+    b = _gantt_board(tmp_path)
+    out = "".join(str(render_gantt(b, False, None, today=GANTT_MIDWEEK,
+                                   width=100, height=0)).splitlines())
+    assert DENSE in out and HALF in out
 
 
 # --- phase editor (increment 5) -------------------------------------------- #
