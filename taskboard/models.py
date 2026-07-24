@@ -528,6 +528,60 @@ class Board:
                 t.project_id = None
         self.save()
 
+    # ---- phase mutations (in memory; the caller saves) ----------------------
+    def add_phase(self, name: str) -> bool:
+        """Append a phase. Rejects blank, or a name already present
+        (case-insensitively)."""
+        name = str(name).strip()
+        if not name or any(p.strip().lower() == name.lower() for p in self.phases):
+            return False
+        self.phases.append(name)
+        return True
+
+    def rename_phase(self, old: str, new: str) -> bool:
+        """Rename a phase AND move every task that referenced it. Without the
+        second half the tasks would be orphaned and silently demoted to the
+        first phase on the next load."""
+        new = str(new).strip()
+        if not new or old not in self.phases:
+            return False
+        if any(p.strip().lower() == new.lower() and p != old for p in self.phases):
+            return False
+        self.phases[self.phases.index(old)] = new
+        for t in self.tasks:
+            if t.phase == old:
+                t.phase = new
+        return True
+
+    def delete_phase(self, name: str, reassign_to: str | None = None) -> bool:
+        """Remove a phase; its tasks move to `reassign_to`, defaulting to the
+        previous phase (or the next one when deleting the first). Refuses to
+        delete the last remaining phase — a board always needs one."""
+        if name not in self.phases or len(self.phases) <= 1:
+            return False
+        i = self.phases.index(name)
+        target = reassign_to if (reassign_to in self.phases and reassign_to != name) else None
+        if target is None:
+            target = self.phases[i - 1] if i > 0 else self.phases[1]
+        self.phases.remove(name)
+        for t in self.tasks:
+            if t.phase == name:
+                t.phase = target
+        return True
+
+    def move_phase(self, name: str, delta: int) -> bool:
+        """Reorder a phase (-1 earlier, +1 later). Task phase NAMES are
+        untouched; only the order changes — which is exactly what progress and
+        the estimate read."""
+        if name not in self.phases:
+            return False
+        i = self.phases.index(name)
+        j = i + delta
+        if not (0 <= j < len(self.phases)):
+            return False
+        self.phases.insert(j, self.phases.pop(i))
+        return True
+
 
 def seed_data() -> tuple[list[Project], list[Task]]:
     """Neutral, author-agnostic demo content that exercises every board feature.

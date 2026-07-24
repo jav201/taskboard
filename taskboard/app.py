@@ -13,8 +13,8 @@ from textual.containers import Vertical, VerticalScroll
 from textual.widgets import Footer, Static
 
 from .models import IMAGE_EXTS, Board, Project, Task, default_board_path
-from .modals import (ClockModal, ConfirmModal, ImageViewer, ProjectModal, ProjectPicker,
-                     TaskDetails, TaskModal)
+from .modals import (ClockModal, ConfirmModal, ImageViewer, PhaseEditor, ProjectModal,
+                     ProjectPicker, TaskDetails, TaskModal)
 from .ribbon import Ribbon
 from .views import nav_model, render_view, valid_url
 
@@ -48,6 +48,7 @@ class TaskboardApp(App):
         ("a", "add_task", "Add"),
         ("p", "add_project", "Project"),
         ("P", "manage_projects", "Projects"),
+        ("f", "manage_phases", "Phases"),
         ("enter", "details", "Details"),
         ("e", "edit", "Edit"),
         ("d", "delete", "Del"),
@@ -341,3 +342,7 @@ class TaskboardApp(App):
 
     def action_manage_projects(self) -> None:
         self.push_screen(ProjectPicker(self.board))
+
+    # ---- phases ------------------------------------------------------------
+    def action_manage_phases(self) -> None:
+        self.push_screen(PhaseEditor(self.board))

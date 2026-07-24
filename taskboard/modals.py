@@ -552,6 +552,191 @@ class ConfirmModal(ModalScreen[bool]):
         self.dismiss(False)
 
 
+class TextPrompt(ModalScreen[str | None]):
+    """One-line text prompt. Dismisses with the STRIPPED text on Save/Enter and
+    None on Cancel/Esc, so the caller can tell "left it blank" from "cancelled"."""
+
+    BINDINGS = [("escape", "cancel", "Cancel")]
+
+    def __init__(self, title: str, initial: str = "", placeholder: str = ""):
+        super().__init__()
+        self._title = title
+        self._initial = initial
+        self._placeholder = placeholder
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="modal-box", classes="modal"):
+            yield Label(f"[b]{escape(self._title)}[/b]", classes="modal-title")
+            yield Input(value=self._initial, placeholder=self._placeholder, id="f-text")
+            with Horizontal(classes="modal-buttons"):
+                yield Button("Save", variant="success", id="save")
+                yield Button("Cancel", variant="default", id="cancel")
+
+    def on_mount(self) -> None:
+        self.query_one("#f-text", Input).focus()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        self._save()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "save":
+            self._save()
+        else:
+            self.dismiss(None)
+
+    def _save(self) -> None:
+        self.dismiss(str(self.query_one("#f-text", Input).value).strip())
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class PhaseEditor(ModalScreen[None]):
+    """Manage the board's ORDERED phases: add / rename / reorder / delete.
+
+    Mutations persist immediately (Board.save) and re-render the board behind
+    the modal, so the editor stays open for the next action. Phase names are
+    user text -> escaped everywhere they are rendered (A1). Renaming moves the
+    tasks that referenced the old name and deleting reassigns them to a
+    neighbour, so no edit here can orphan a task; the last phase can't be
+    deleted because every view indexes into the list.
+    """
+
+    BINDINGS = [
+        ("escape", "close", "Close"),
+        ("a", "add", "Add"),
+        ("e", "rename", "Rename"),
+        ("d", "delete", "Delete"),
+        Binding("left_square_bracket", "reorder(-1)", "Earlier"),
+        Binding("right_square_bracket", "reorder(1)", "Later"),
+        Binding("j", "move(1)", show=False),
+        Binding("k", "move(-1)", show=False),
+    ]
+
+    def __init__(self, board: Board):
+        super().__init__()
+        self.board = board
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="picker-box", classes="modal"):
+            # the literal [ is escaped so Rich prints the key instead of
+            # reading it as the start of a markup tag
+            yield Label("[b]Phases[/b]  —  a add · e rename · d delete · "
+                        "\\[ / ] reorder · esc close", classes="modal-title")
+            yield OptionList(id="phase-list")
+
+    def on_mount(self) -> None:
+        self._reload()
+        self.query_one("#phase-list", OptionList).focus()
+
+    # ---- list rendering ----------------------------------------------------
+    def _phase_line(self, index: int, name: str) -> str:
+        n = sum(1 for t in self.board.tasks if t.phase == name)
+        return (f"[dim]{index + 1}.[/dim]  [b]{escape(name)}[/b]"
+                f"  ·  {n} task{'s' if n != 1 else ''}")
+
+    def _reload(self, keep: int | None = None) -> None:
+        """Rebuild the list from the board (clear-before-add avoids DuplicateIds)."""
+        ol = self.query_one("#phase-list", OptionList)
+        ol.clear_options()
+        phases = self.board.phases
+        for i, name in enumerate(phases):
+            ol.add_option(Option(self._phase_line(i, name)))
+        if phases:
+            ol.highlighted = max(0, min(len(phases) - 1, keep or 0))
+
+    def _committed(self, keep: int) -> None:
+        self.board.save()
+        self.app.refresh_view()
+        self._reload(keep=keep)
+
+    def _current_index(self) -> int | None:
+        """Position of the highlighted phase, or None when nothing is selected.
+        Rows carry no id — a phase is identified by its position, which is the
+        thing reordering changes."""
+        idx = self.query_one("#phase-list", OptionList).highlighted
+        if idx is None or not (0 <= idx < len(self.board.phases)):
+            return None
+        return idx
+
+    # ---- navigation / actions ---------------------------------------------
+    def action_move(self, delta: int) -> None:
+        phases = self.board.phases
+        if not phases:
+            return
+        ol = self.query_one("#phase-list", OptionList)
+        cur = ol.highlighted if ol.highlighted is not None else 0
+        ol.highlighted = max(0, min(len(phases) - 1, cur + delta))
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self.action_rename()   # Enter / click on a row renames it
+
+    def action_add(self) -> None:
+        self.app.push_screen(TextPrompt("New phase", placeholder="phase name"),
+                             self._on_added)
+
+    def _on_added(self, name: str | None) -> None:
+        if name is None:
+            return
+        if not name:
+            self.notify("A phase needs a name.", severity="warning")
+            return
+        if not self.board.add_phase(name):
+            self.notify(f"'{escape(name)}' already exists.", severity="warning")
+            return
+        self._committed(len(self.board.phases) - 1)
+
+    def action_rename(self) -> None:
+        i = self._current_index()
+        if i is None:
+            return
+        old = self.board.phases[i]
+        self.app.push_screen(TextPrompt("Rename phase", initial=old),
+                             lambda new, o=old: self._on_renamed(o, new))
+
+    def _on_renamed(self, old: str, new: str | None) -> None:
+        if new is None or new == old:
+            return
+        if not new:
+            self.notify("A phase needs a name.", severity="warning")
+            return
+        if not self.board.rename_phase(old, new):
+            self.notify(f"'{escape(new)}' already exists.", severity="warning")
+            return
+        self._committed(self.board.phases.index(new))
+
+    def action_delete(self) -> None:
+        i = self._current_index()
+        if i is None:
+            return
+        if len(self.board.phases) <= 1:
+            self.notify("A board needs at least one phase.", severity="warning")
+            return
+        name = self.board.phases[i]
+        target = self.board.phases[i - 1] if i > 0 else self.board.phases[1]
+        n = sum(1 for t in self.board.tasks if t.phase == name)
+        self.app.push_screen(
+            ConfirmModal(f"Delete '{name}'? Its {n} task{'s' if n != 1 else ''} "
+                         f"move to '{target}'."),
+            lambda ok, nm=name, k=i: self._on_delete(nm, k, ok))
+
+    def _on_delete(self, name: str, index: int, ok: bool) -> None:
+        if not ok or not self.board.delete_phase(name):
+            return
+        self._committed(max(0, index - 1))
+
+    def action_reorder(self, delta: int) -> None:
+        i = self._current_index()
+        if i is None:
+            return
+        if not self.board.move_phase(self.board.phases[i], delta):
+            return
+        self._committed(i + delta)      # follow the phase to its new position
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
 def image_block(ref: str):
     """Render one image reference inline (crisp via terminal graphics where
     supported, else a fallback line). Remote URLs are listed as links; a
