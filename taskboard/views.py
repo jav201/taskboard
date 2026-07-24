@@ -228,6 +228,49 @@ def urgency(task: Task, today: date, board: Board) -> str:
     return "later"
 
 
+# The columns view renders each task's urgency as ONE block-ramp cell (the "heat"
+# glyph). Kept as a module-level dict so the mapping (glyph + palette key) is
+# testable on its own. ``urgency`` already returns "done" for last-phase tasks,
+# so a done card wins the ✓ without any extra check here.
+HEAT = {
+    "overdue": ("█", "over"),
+    "today":   ("▓", "soon"),
+    "week":    ("▒", "accent"),
+    "later":   ("░", "dim"),
+    "none":    ("·", "dim"),
+    "done":    ("✓", "done"),
+}
+
+
+def heat_cell(task: Task, today: date, board: Board) -> tuple[str, str]:
+    """The task's urgency as a single width-1 (glyph, color-key)."""
+    return HEAT[urgency(task, today, board)]
+
+
+def reldue_token(task: Task, today: date, board: Board) -> tuple[str, str]:
+    """A short relative-due token + color-key: '-2d' / 'today' / '+5d', or ''
+    when the task has no due date (or is done). Colored by the same urgency."""
+    u = urgency(task, today, board)
+    d = parse_iso(task.due_date)
+    if d is None or u in ("none", "done"):
+        return "", "dim"
+    delta = (d - today).days
+    if delta < 0:
+        return f"{delta}d", "over"        # the minus sign is already in the number
+    if delta == 0:
+        return "today", "soon"
+    if delta <= 7:
+        return f"+{delta}d", "accent"
+    return f"+{delta}d", "dim"
+
+
+def sort_by_due(tasks: list[Task]) -> list[Task]:
+    """A COPY of `tasks` ordered by due date (soonest first); undated tasks sink
+    to the bottom. Stable within a group; never mutates the input list."""
+    return sorted(tasks, key=lambda t: (parse_iso(t.due_date) is None,
+                                        parse_iso(t.due_date) or date.max))
+
+
 _URG_COLOR = {"overdue": "over", "today": "soon", "week": "later",
               "later": "later", "none": "dim", "done": "done"}
 _URG_BRAILLE = {"overdue": "⣿⣿⣤", "today": "⣿⣿⣿", "week": "⣿⣄⡀",
@@ -401,6 +444,41 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
 # ---------------------------------------------------------------------------
 # view: COLUMNS  (one column per board phase, in order)
 # ---------------------------------------------------------------------------
+def _column_card(task: Task, board: Board, wc: int, selected: bool,
+                 today: date) -> str:
+    """A single width-exact column card: heat glyph + project chip + title +
+    right-aligned relative-due token. The title is truncated so it can never
+    share a cell with the token (they split the column width). Returns exactly
+    `wc` cells at any width."""
+    if wc <= 0:
+        return ""
+    hglyph, hcol = heat_cell(task, today, board)
+    parts = [c(hglyph, hcol)]
+    used = 1
+    if used < wc:                                   # project-identity chip
+        parts.append(c("▊", project_color(board, task)))
+        used += 1
+    if used < wc:                                   # one gap before the title
+        parts.append(" ")
+        used += 1
+    remaining = wc - used
+    rtext, rcol = reldue_token(task, today, board)
+    rcost = len(rtext) + 1 if rtext else 0          # a leading space + the token
+    if rcost >= remaining:                          # no room for both -> drop it
+        rcost = 0
+    name_w = remaining - rcost
+    body = escape(fit(task.title, name_w))          # width math on PLAIN text
+    url = first_valid_url(task)
+    if url:
+        body = f"[link={url}]{body}[/link]"
+    if selected:
+        body = f"[reverse]{body}[/reverse]"
+    parts.append(body)
+    if rcost:
+        parts.append(c(fit(rtext, rcost, "right"), rcol))
+    return "".join(parts)
+
+
 def render_columns(board, show_archived, selected_id, today=None,
                    width=68, height=0, line_map=None) -> Text:
     today = today or date.today()
@@ -408,7 +486,6 @@ def render_columns(board, show_archived, selected_id, today=None,
     inner = w - 2
     n = len(board.phases)
     widths = distribute(inner - (n - 1), n)     # n-1 separators between n columns
-    last = n - 1
 
     def junctions(mid):
         j, pos = {}, 0
@@ -425,78 +502,53 @@ def render_columns(board, show_archived, selected_id, today=None,
 
     buckets = phase_buckets(board, tasks)
 
-    def spark_for(items):
-        vals = [0, 0, 0, 0]
-        for t in items:
-            vals[{"overdue": 0, "today": 1, "week": 2}
-                 .get(urgency(t, today, board), 3)] += 1
-        return vals
-
-    hdr = []
-    for i, name in enumerate(board.phases):
-        wc = widths[i]
-        items = buckets[i]
+    def header_cell(name, items, wc):
+        """`LABEL · count` at the left, a red `N late` figure right-aligned when
+        the column holds overdue tasks (omitted when N == 0). Width-exact."""
         label = name.upper()
         cnt = str(len(items))
-        tail = len(cnt) + 1                 # mandatory " " + count
-        if wc < tail + 1:                   # not even room for "L cnt"
-            hdr.append(escape(fit(f"{label} {cnt}"[:wc], wc)))
-            continue
-        # optional sparkline needs 1 space + >=1 label char reserved
-        spk_w = max(0, min(4, wc - tail - 2)) if wc - tail - 2 >= 0 else 0
-        lab_w = max(0, wc - tail - (spk_w + 1 if spk_w > 0 else 0))
-        cell = c(escape(fit(label, lab_w)), "hd", bold=True) + " " + c(cnt, "dim")
-        if spk_w > 0:
-            cell += " " + sparkline(spark_for(items),
-                                    "green" if i == last else "accent", spk_w)
-        hdr.append(cell)
+        late = sum(1 for t in items if urgency(t, today, board) == "overdue")
+        late_txt = f"{late} late" if late else ""
+        rcost = len(late_txt) + 1 if late_txt else 0
+        if rcost >= wc:                             # no room -> drop the figure
+            rcost, late_txt = 0, ""
+        left_w = wc - rcost
+        tail = f" · {cnt}"
+        if len(tail) < left_w:
+            cell = (c(escape(fit(label, left_w - len(tail))), "hd", bold=True)
+                    + c(" · ", "mut") + c(cnt, "dim"))
+        else:                                       # too tight -> label only
+            cell = c(escape(fit(label, left_w)), "hd", bold=True)
+        if rcost:
+            cell += c(fit(late_txt, rcost, "right"), "over")
+        return cell
+
+    hdr = [header_cell(name, buckets[i], widths[i])
+           for i, name in enumerate(board.phases)]
     lines.append(line(c("│", "frame").join(hdr)))
     lines.append(_border("├", "─", "┤", junctions("┼"), w))
 
-    max_rows = max((len(v) for v in buckets), default=0)
+    # sort each column by due date (soonest on top) so a column reads top-down as
+    # a depleting urgency gradient; sort a COPY, never board.tasks.
+    ordered = [sort_by_due(bucket) for bucket in buckets]
+    max_rows = max((len(v) for v in ordered), default=0)
     if max_rows == 0:
         lines.append(line(c(fit("  (no tasks — press 'a' to add one)", inner), "dim")))
     for r in range(max_rows):
         card = []
         for i, wc in enumerate(widths):
-            items = buckets[i]
+            items = ordered[i]
             if r >= len(items):
                 card.append(fit("", wc))
-                continue
-            t = items[r]
-            sel = t.id == selected_id
-            if i == last:
-                card.append(card_cell(t, board, wc, sel, prefix="✓ ",
-                                      prefix_color="done", allow_priority=False))
             else:
-                card.append(card_cell(t, board, wc, sel, prefix="▊ ",
-                                      prefix_color=project_color(board, t)))
+                t = items[r]
+                card.append(_column_card(t, board, wc, t.id == selected_id, today))
         lines.append(line(c("│", "frame").join(card)))
         if line_map is not None:
             idx = len(lines) - 1
-            for items in buckets:
+            for items in ordered:
                 if r < len(items):
                     line_map[items[r].id] = idx
-        meta = []
-        for i, wc in enumerate(widths):
-            items = buckets[i]
-            if r >= len(items) or i == last:
-                meta.append(fit("", wc))
-                continue
-            t = items[r]
-            p_obj = board.project_by_id(t.project_id)
-            pname = p_obj.name if p_obj else "—"
-            chip_txt, chip_col = date_chip(t, today, board)
-            # width-exact: 2 lead spaces + pname(<=4) + gap + chip, all within wc
-            lead = min(2, wc)
-            remain = wc - lead
-            pname_w = min(4, remain)
-            gap = 1 if remain - pname_w >= 1 else 0
-            chip_w = max(0, remain - pname_w - gap)
-            meta.append(c(" " * lead, "dim") + c(escape(fit(pname, pname_w)), "dim")
-                        + (" " if gap else "")
-                        + c(escape(fit(chip_txt, chip_w)), chip_col))
-        lines.append(line(c("│", "frame").join(meta)))
 
     lines.append(bottom(junctions("┴"), w))
     return Text.from_markup("\n".join(fill_height(lines, height, w)))
@@ -1047,8 +1099,9 @@ def nav_model(mode, board, show_archived, today=None) -> list[list[str]]:
     today = today or date.today()
     tasks = board.visible_tasks(show_archived)
 
-    if mode == "columns":
-        return [[t.id for t in bucket] for bucket in phase_buckets(board, tasks)]
+    if mode == "columns":       # sorted by due, matching what render_columns draws
+        return [[t.id for t in sort_by_due(bucket)]
+                for bucket in phase_buckets(board, tasks)]
 
     if mode == "kanban":       # same phase columns, but in project-grouped order
         ordered: list[Task] = []
