@@ -1070,3 +1070,46 @@ def test_win_clipboard_roundtrip():
     finally:
         subprocess.run(["powershell", "-NoProfile", "-Command", "Set-Clipboard", "-Value", prior],
                        check=False)
+
+
+# ---- project palette (12 colours) ---------------------------------------- #
+def test_palette_has_twelve_and_keeps_the_originals():
+    """The 5 original colours must survive with their exact hex, so existing
+    boards keep the colours their projects were saved with."""
+    from taskboard.models import PROJECT_COLORS
+    from taskboard.views import HEX
+    assert len(PROJECT_COLORS) == 12
+    assert len(set(PROJECT_COLORS)) == 12                 # no duplicates
+    for name in ("violet", "sky", "amber", "rose", "green"):
+        assert name in PROJECT_COLORS
+    assert HEX["violet"] == "#a78bfa"
+    assert HEX["sky"] == "#38bdf8"
+    assert HEX["amber"] == "#fbbf24"
+    assert HEX["rose"] == "#fb7185"
+    assert HEX["green"] == "#4ade80"
+
+
+def test_every_project_colour_has_a_hex():
+    """WHY: views look colours up by name — a colour in the picker without a HEX
+    entry would render wrong (or blow up) the moment a user selects it."""
+    from taskboard.models import PROJECT_COLORS
+    from taskboard.views import HEX
+    assert [c for c in PROJECT_COLORS if c not in HEX] == []
+
+
+def test_project_accepts_a_new_colour():
+    from taskboard.models import Project
+    assert Project.from_dict({"name": "X", "color": "indigo"}).color == "indigo"
+    assert Project.from_dict({"name": "Y", "color": "nope"}).color == "violet"   # fallback
+
+
+async def test_view_renders_with_a_new_colour(tmp_path):
+    """A project using one of the new colours renders without error."""
+    from taskboard.models import Board, Project
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        app.board.add_project(Project(name="Cyan Proj", color="cyan"))
+        app.refresh_view()
+        await pilot.pause()
+        assert "Cyan Proj" in board_text(app)
