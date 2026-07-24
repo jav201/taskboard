@@ -463,37 +463,152 @@ async def test_nav_scrolls_selection_into_view_when_overflowing(tmp_path):
         assert top <= idx < top + vp.size.height     # scrolled into view
 
 
-def test_columns_card_indicators_never_overlap_title(tmp_path):
-    """A long-title, high-priority, has-url card: the title text and its trailing
-    ↗/◉ indicators must occupy DISJOINT column ranges at every width (proved by
-    column-range math on the rendered line), and every line == the exact width."""
+def test_columns_due_token_never_overlaps_title(tmp_path):
+    """One-line redesign: the trailing relative-due token and the title text
+    occupy DISJOINT ranges of the column at every width (the token is flush-right
+    and the title truncates with … to reserve room), and every line == the exact
+    width. (Was test_columns_card_indicators_never_overlap_title — same intent,
+    the ↗/◉ indicators are replaced by the right-aligned due token.)"""
     from taskboard.models import Board, Project, Task
     from taskboard.views import render_columns, distribute
     b = Board.load(str(tmp_path / "b.json"))
     lp = Project("Platform Reliability and Observability", "rose", "on_track")
     b.projects.append(lp)
+    # +20d from 2026-07-17 -> a unique "+20d" token identifies this task's row
     b.add_task(Task("Refactor the whole authentication and onboarding subsystem",
-                    lp.id, "Backlog", "high", due_date="2026-07-20",
-                    urls=["https://example.com/x"]))
+                    lp.id, "Backlog", "normal", due_date="2026-08-06"))
     today = date(2026, 7, 17)
     n = len(b.phases)
-    seen_truncation = False
+    token = "+20d"
+    seen_token = seen_truncation = False
     for w in (130, 96, 40, 30, 24):     # wide, WezTerm default, narrow, tiny, MIN
         lines = str(render_columns(b, False, None, today, width=w, height=0)).split("\n")
         assert all(len(l) == w for l in lines), f"width {w}: a line != {w}"
         wc0 = distribute((w - 2) - (n - 1), n)[0]   # first phase column width
         for l in lines:
             cell = l[1:1 + wc0]                     # chars inside the first column
-            if "◉" not in cell and "↗" not in cell:
+            if not cell.endswith(token):            # only our task's row carries +20d
                 continue
-            first = min(i for i, ch in enumerate(cell) if ch in "◉↗")
-            # from the first indicator onward: ONLY spaces/indicators (no title char)
-            assert all(ch in " ◉↗" for ch in cell[first:]), (w, repr(cell))
-            title_part = cell[2:first]              # after the "▊ " prefix
-            assert "◉" not in title_part and "↗" not in title_part
+            seen_token = True
+            body = cell[:-len(token)]               # everything LEFT of the token
+            assert token not in body                # the token lives once, at the right
+            title_part = body[3:]                   # after the heat + chip + space
+            assert "▊" not in title_part            # the chip never bleeds into the title
             if "…" in title_part:
                 seen_truncation = True
-    assert seen_truncation   # the long title really was truncated to reserve room
+    assert seen_token        # the token rendered at the wider widths
+    assert seen_truncation   # and the long title was truncated to reserve its room
+    # the render sorted a COPY: board.tasks order is untouched
+    assert b.tasks[-1].title.startswith("Refactor")
+
+
+# --- Fable-5 columns redesign: one-line heat-sorted cards ------------------- #
+def _columns_body(board, today, width=100):
+    """The task-bearing body rows of the columns view (between the ├─┤ divider
+    and the ╰──╯ bottom): index 3 .. -1 of the rendered lines."""
+    from taskboard.views import render_columns
+    rows = str(render_columns(board, False, None, today, width=width, height=0)).split("\n")
+    return rows, rows[3:-1]
+
+
+def test_columns_cards_are_one_line(tmp_path):
+    """A column with N tasks yields N single-line cards, not 2N: the redesign
+    collapses the old title+meta pair into one row per task (2x density)."""
+    from taskboard.models import Board, Task
+    b = Board([], [], tmp_path / "b.json")            # default phases; empty
+    for i in range(3):
+        b.tasks.append(Task(f"CARD{i}", None, "Backlog", "normal",
+                            due_date=f"2026-07-2{i}"))
+    _, body = _columns_body(b, date(2026, 7, 17))
+    assert len(body) == 3                             # 3 tasks -> 3 rows (not 6)
+    for i in range(3):
+        assert sum(1 for l in body if f"CARD{i}" in l) == 1   # each on its own line
+
+
+def test_columns_heat_glyph_by_urgency(tmp_path):
+    """Each urgency renders its expected heat glyph (with the mapped colour key)
+    as the FIRST cell of the card. The glyph+colour mapping lives in the module
+    HEAT dict; the render places the right glyph at the head of each row."""
+    from taskboard.models import Board, Task
+    from taskboard.views import HEAT, urgency
+    # (a) the mapping itself: urgency -> (glyph, palette-key)
+    assert HEAT == {
+        "overdue": ("█", "over"), "today": ("▓", "soon"), "week": ("▒", "accent"),
+        "later": ("░", "dim"), "none": ("·", "dim"), "done": ("✓", "done")}
+
+    b = Board([], [], tmp_path / "b.json")            # phases Backlog/Doing/Done
+    today = date(2026, 7, 17)
+    b.tasks += [
+        Task("OVER", None, "Backlog", "normal", due_date="2026-07-10"),   # -7  overdue
+        Task("TODAY", None, "Backlog", "normal", due_date="2026-07-17"),  # 0   today
+        Task("WEEK", None, "Backlog", "normal", due_date="2026-07-20"),   # +3  week
+        Task("LATER", None, "Backlog", "normal", due_date="2026-08-06"),  # +20 later
+        Task("NONE", None, "Backlog", "normal"),                          #     no date
+        Task("DONE", None, "Done", "normal"),                             #     last phase
+    ]
+    # urgency really buckets them as intended (guards the mapping's premise)
+    got = {t.title: urgency(t, today, b) for t in b.tasks}
+    assert got == {"OVER": "overdue", "TODAY": "today", "WEEK": "week",
+                   "LATER": "later", "NONE": "none", "DONE": "done"}
+
+    rows, body = _columns_body(b, today, width=100)   # widths -> [32,32,32]
+    # Backlog is column 0 (heat at index 1); Done is column 2 (heat at index 67).
+    # Backlog rows are sorted by due: OVER, TODAY, WEEK, LATER, NONE.
+    assert body[0][1] == "█" and body[0][67] == "✓"   # overdue + the done card
+    assert body[1][1] == "▓"                          # today
+    assert body[2][1] == "▒"                          # this week
+    assert body[3][1] == "░"                          # later
+    assert body[4][1] == "·"                          # no date
+
+
+def test_columns_cards_sorted_by_due(tmp_path):
+    """Inside a column a sooner-due task sits above a later one, and an undated
+    task sinks below both — regardless of board insertion order."""
+    from taskboard.models import Board, Task
+    b = Board([], [], tmp_path / "b.json")
+    b.tasks += [
+        Task("LATER", None, "Backlog", "normal", due_date="2026-08-01"),
+        Task("SOONER", None, "Backlog", "normal", due_date="2026-07-20"),
+        Task("UNDATED", None, "Backlog", "normal"),
+    ]
+    rows, _ = _columns_body(b, date(2026, 7, 17))
+
+    def row_of(title):
+        return next(i for i, l in enumerate(rows) if title in l)
+
+    assert row_of("SOONER") < row_of("LATER") < row_of("UNDATED")
+    # board.tasks itself was NOT reordered (the view sorts a copy)
+    assert [t.title for t in b.tasks] == ["LATER", "SOONER", "UNDATED"]
+
+
+def test_columns_header_shows_late_count(tmp_path):
+    """A column header leads with `N late` in overdue-red when it holds overdue
+    tasks, and omits the figure entirely when it holds none."""
+    from taskboard.models import Board, Task
+    b = Board([], [], tmp_path / "b.json")
+    b.tasks += [
+        Task("O1", None, "Doing", "normal", due_date="2026-07-01"),   # overdue
+        Task("O2", None, "Doing", "normal", due_date="2026-07-05"),   # overdue
+        Task("B1", None, "Backlog", "normal", due_date="2026-08-01"),  # not overdue
+    ]
+    rows, _ = _columns_body(b, date(2026, 7, 17), width=120)
+    header = rows[1]
+    assert "2 late" in header            # the Doing column shows its overdue count
+    assert header.count("late") == 1     # Backlog (0 overdue) omits the figure
+
+
+def test_columns_width_exact_across_widths(tmp_path):
+    """Every rendered line is exactly `width` cells wide at 40/68/100/140 — the
+    heat cell, chip, title and due token must always split the column exactly."""
+    from taskboard.models import Board
+    b = Board.load(str(tmp_path / "b.json"))          # seeded: varied urgencies
+    today = date(2026, 7, 17)
+    for w in (40, 68, 100, 140):
+        from taskboard.views import render_columns
+        lines = str(render_columns(b, False, None, today, width=w, height=0)).split("\n")
+        assert lines, f"width {w}: no output"
+        assert len({len(l) for l in lines}) == 1, f"width {w}: ragged lines"
+        assert all(len(l) == w for l in lines), f"width {w}: a line != {w}"
 
 
 async def test_url_task_open_action(tmp_path, monkeypatch):
@@ -696,9 +811,11 @@ async def test_at_003_images_black_box(tmp_path, monkeypatch):
         await save_open_modal(app, pilot)
         task = next(t for t in app.board.tasks if t.title == "IMGTASK")
         assert task.images == refs          # modal keeps every non-blank line, in order
-        # the card renders the width-1 image glyph, lines stay width-exact
+        # the card renders the width-1 image glyph, lines stay width-exact.
+        # (kanban, not columns: the one-line columns redesign drops card_cell's
+        # ▤/↗/◉ indicators; kanban still renders them through the same helper.)
         app.selected_task_id = task.id
-        await pilot.press("2")
+        await pilot.press("5")
         text = board_text(app)
         assert "▤" in text
         # every rendered line is the same width -> the glyph is single-cell
