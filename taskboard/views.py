@@ -795,8 +795,15 @@ def _overlay_cells(markup: str, width: int, cells: dict[int, str]) -> str:
     return "".join(out)
 
 
+def _flowing(board: Board, task: Task) -> bool:
+    """A task is "in progress" — worth animating a flow packet on — when it
+    has left the first phase, is not done, and is not blocked."""
+    return (not board.is_done(task) and not task.blocked
+            and board.phase_index(task) > 0)
+
+
 def render_gantt(board, show_archived, selected_id, today=None,
-                 width=68, height=0, line_map=None) -> Text:
+                 width=68, height=0, line_map=None, tick=0) -> Text:
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
@@ -823,6 +830,16 @@ def render_gantt(board, show_archived, selected_id, today=None,
         for i in range(weeks):
             out += c(char * (cell - 1) + " ", color) if active[i] else " " * cell
         return out
+
+    def _flow_cols(s_idx, e_idx):
+        """Visible columns carrying this bar's "▬" cells, left→right, so a
+        packet can drift along them toward the due ◆."""
+        if s_idx is None or e_idx is None:
+            return []
+        s, e = max(0, min(weeks - 1, s_idx)), max(0, min(weeks - 1, e_idx))
+        if e < s or e_idx < 0 or s_idx > weeks - 1:
+            return []
+        return [i * cell + k for i in range(s, e + 1) for k in range(cell - 1)]
 
     def project_bar(s_idx, e_idx, color, progress):
         """ONE continuous bar over the project's span: dense glyphs for the
@@ -907,7 +924,14 @@ def render_gantt(board, show_archived, selected_id, today=None,
             sel = t.id == selected_id
             u = urgency(t, today, board)
             bcolor = "over" if u == "overdue" else "soon" if u == "today" else p.color
-            tbar = _overlay_cells(bar_cells(ts, te, bcolor, "▬"), grid, {col_today: rule})
+            gcells_t = {col_today: rule}
+            if _flowing(board, t):        # a bright packet drifts toward the due ◆
+                fcols = _flow_cols(ts, te)
+                if fcols:
+                    pcol = fcols[tick % len(fcols)]
+                    if pcol != col_today:      # never fight the today rule
+                        gcells_t[pcol] = c("▬", "bright")
+            tbar = _overlay_cells(bar_cells(ts, te, bcolor, "▬"), grid, gcells_t)
             lines.append(line(c("  ", "dim") + title_markup(t, glabel_w - 3, sel) + " "
                               + tbar + " " * trailing
                               + " " * meta_w))
@@ -1148,10 +1172,13 @@ RENDERERS = {
 
 
 def render_view(mode, board, show_archived, selected_id, today=None,
-                width=68, height=0, line_map=None, presentation="grouped") -> Text:
+                width=68, height=0, line_map=None, presentation="grouped", tick=0) -> Text:
     if mode == "kanban":
         return render_kanban(board, show_archived, selected_id, today, width, height,
                              line_map, presentation)
+    if mode == "gantt":
+        return render_gantt(board, show_archived, selected_id, today, width, height,
+                            line_map, tick=tick)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 
