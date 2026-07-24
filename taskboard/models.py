@@ -15,7 +15,8 @@ from pathlib import Path
 from uuid import uuid4
 
 # --- enumerations (kept as plain strings; validated leniently at the edges) ---
-PROJECT_COLORS = ("violet", "sky", "amber", "rose", "green")
+PROJECT_COLORS = ("rose", "orange", "amber", "lime", "green", "cyan",
+                  "sky", "blue", "indigo", "violet", "fuchsia", "pink")
 PROJECT_STATUSES = ("on_track", "paused", "cancelled", "completed")
 TASK_STATUSES = ("backlog", "doing", "blocked", "done")
 TASK_PRIORITIES = ("low", "normal", "high")
