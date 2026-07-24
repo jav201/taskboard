@@ -13,7 +13,8 @@ from textual.widgets import Button, Footer, Input, OptionList, Select, Static, T
 from taskboard import models, modals
 from taskboard.app import BoardView, TaskboardApp
 from taskboard.models import Board, Task
-from taskboard.modals import CalendarModal, TaskDetails, TaskModal, image_block
+from taskboard.modals import (CalendarModal, PhaseEditor, TaskDetails, TaskModal,
+                              image_block)
 from taskboard.ribbon import Ribbon
 from taskboard.views import render_agenda, render_gantt
 
@@ -1537,3 +1538,124 @@ def test_gantt_width_exact_across_widths(tmp_path):
         lines = str(render_gantt(b, False, sel, today=GANTT_TODAY,
                                  width=w, height=0)).splitlines()
         assert all(len(l) == w for l in lines), f"gantt at {w}: a line != {w}"
+
+
+# --- phase editor (increment 5) -------------------------------------------- #
+def _phase_board(tmp_path, phases=("A", "B", "C"), tasks=None) -> Board:
+    """Board with an explicit phase list, saved to tmp_path (never ~/.taskboard)."""
+    b = Board([], list(tasks or []), tmp_path / "board.json", phases=list(phases))
+    b.save()
+    return b
+
+
+def test_add_phase_rejects_blank_and_duplicates(tmp_path):
+    """WHY: a blank or case-variant phase would produce two rows that look like
+    one workflow step, and canonical_phase() resolves case-insensitively — so a
+    'doing' next to 'Doing' would make task placement ambiguous."""
+    b = _phase_board(tmp_path, ("Backlog", "Doing", "Done"))
+    before = list(b.phases)
+
+    assert b.add_phase("   ") is False
+    assert b.phases == before
+    assert b.add_phase("dOiNg") is False               # case-variant duplicate
+    assert b.phases == before
+
+    assert b.add_phase("  Review  ") is True           # stored stripped
+    assert b.phases == before + ["Review"]
+
+
+def test_rename_phase_moves_its_tasks(tmp_path):
+    """WHY (the critical one): the phase list and task.phase are joined BY NAME.
+    Renaming only the list would leave every task pointing at a name the board
+    no longer knows, and Board.load() falls back to phases[0] — silently
+    demoting finished work to the backlog."""
+    tasks = [Task("t1", None, "B"), Task("t2", None, "B"), Task("keep", None, "C")]
+    b = _phase_board(tmp_path, ("A", "B", "C"), tasks)
+    moved = [t.id for t in b.tasks if t.phase == "B"]
+    assert len(moved) == 2                              # precondition
+
+    assert b.rename_phase("B", "Building") is True
+    assert b.phases == ["A", "Building", "C"]
+    assert all(b.task_by_id(i).phase == "Building" for i in moved)
+    assert not any(t.phase == "B" for t in b.tasks)     # nothing left behind
+    b.save()
+
+    reloaded = Board.load(b.path)                       # on-disk oracle
+    assert reloaded.phases == ["A", "Building", "C"]
+    assert all(reloaded.task_by_id(i).phase == "Building" for i in moved)
+    assert reloaded.task_by_id(tasks[2].id).phase == "C"        # untouched
+
+
+def test_delete_phase_reassigns_tasks_and_never_loses_them(tmp_path):
+    """WHY: deleting a workflow step must not delete the work sitting in it —
+    its tasks fall back to the previous phase, the least-destructive choice."""
+    tasks = [Task("a", None, "A"), Task("b1", None, "B"), Task("b2", None, "B"),
+             Task("c", None, "C")]
+    b = _phase_board(tmp_path, ("A", "B", "C"), tasks)
+
+    assert b.delete_phase("B") is True
+    assert b.phases == ["A", "C"]
+    assert len(b.tasks) == 4                            # nothing lost
+    assert [t.phase for t in b.tasks] == ["A", "A", "A", "C"]
+
+
+def test_delete_last_phase_is_refused(tmp_path):
+    """WHY: progress, the kanban columns and the gantt all index into phases —
+    an empty list would leave every task pointing nowhere."""
+    b = _phase_board(tmp_path, ("Only",), [Task("solo", None, "Only")])
+
+    assert b.delete_phase("Only") is False
+    assert b.phases == ["Only"]
+    assert len(b.tasks) == 1 and b.tasks[0].phase == "Only"
+
+
+def test_move_phase_reorders_and_changes_progress(tmp_path):
+    """WHY: progress is POSITIONAL, so reordering is the operation that changes
+    how far along a task reads — without touching any task's phase name."""
+    task = Task("t", None, "C")
+    b = _phase_board(tmp_path, ("A", "B", "C"), [task])
+    assert b.task_progress(task) == pytest.approx(1.0)   # last of three
+
+    assert b.move_phase("C", -1) is True
+    assert b.phases == ["A", "C", "B"]
+    assert task.phase == "C"                             # name untouched
+    assert b.task_progress(task) == pytest.approx(0.5)
+
+    before = list(b.phases)
+    assert b.move_phase("A", -1) is False                # past the front
+    assert b.move_phase("B", 1) is False                 # past the end
+    assert b.move_phase("nope", 1) is False              # unknown phase
+    assert b.phases == before
+
+
+async def test_phase_editor_opens_and_lists_phases(tmp_path):
+    """f opens the editor and every board phase gets exactly one row."""
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("f")
+        await pilot.pause()
+        assert isinstance(app.screen, PhaseEditor)
+        ol = app.screen.query_one("#phase-list", OptionList)
+        assert ol.option_count == len(app.board.phases)
+        prompts = [str(ol.get_option_at_index(i).prompt) for i in range(ol.option_count)]
+        for name in app.board.phases:
+            assert any(name in pr for pr in prompts)
+
+
+async def test_phase_editor_reorder_key_moves_phase(tmp_path):
+    """']' moves the highlighted phase one step later, the board is saved
+    immediately (on-disk oracle) and the highlight follows the phase."""
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        original = list(app.board.phases)
+        assert len(original) >= 2                       # precondition
+        await pilot.press("f")
+        await pilot.pause()
+        app.screen.query_one("#phase-list", OptionList).highlighted = 0
+        await pilot.press("right_square_bracket")
+        await pilot.pause()
+        expected = [original[1], original[0]] + original[2:]
+        assert app.board.phases == expected
+        assert app.screen.query_one("#phase-list", OptionList).highlighted == 1
+    assert Board.load(board_path).phases == expected     # persisted
