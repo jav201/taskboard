@@ -1568,7 +1568,7 @@ def test_gantt_meta_column_adapts_to_width(tmp_path):
     # …and dropping it buys real timeline: strictly more week columns than the
     # same total width would afford with a full-width meta column.
     inner = narrow - 2
-    glabel_w = max(10, min(16, inner // 4))
+    glabel_w = max(18, min(30, inner // 3))     # must mirror render_gantt's label width
     weeks_narrow = len(re.findall(r"W\d\d", narrow_rows[1]))
     weeks_if_full = max(1, min(20, (inner - glabel_w - META_FULL_W) // cell))
     assert weeks_narrow > weeks_if_full
@@ -1884,3 +1884,25 @@ async def test_phase_editor_blank_name_is_rejected(tmp_path):
         assert app.board.phases == ["Backlog", "Doing", "Done"]
         assert isinstance(app.screen, PhaseEditor)                  # back, no crash
         assert app.screen.query_one("#phase-list", OptionList).option_count == 3
+
+
+def test_gantt_label_column_is_generous_for_names():
+    """The label column used to cap at 16 (~14 visible), truncating names. It
+    now scales up so full names are readable at a normal width."""
+    from taskboard.models import Board, Project, Task
+    from datetime import date
+    from taskboard.views import render_gantt
+    # Build explicitly so the long names are guaranteed present:
+    b = Board(projects=[Project(name="Unity Trainings Long", color="violet", id="p1")],
+              tasks=[Task(title="Training_Playground_Navigation", project_id="p1",
+                          phase="Doing", id="t1", due_date=None)],
+              path=__import__("pathlib").Path("x"), settings={},
+              phases=["Backlog", "Doing", "Done"])
+    txt = str(render_gantt(b, False, "t1", today=date.today(), width=120, height=20))
+    lines = txt.split("\n")
+    # the project row must show clearly more than the old ~14 visible chars of the name
+    assert "Unity Trainings" in txt                      # >14 chars visible now
+    # the task title row must show substantially more than the old truncation
+    assert "Training_Playgroun" in txt                   # >= 18 chars of the title
+    # width-exact still holds at this width
+    assert len({len(l) for l in lines}) == 1
