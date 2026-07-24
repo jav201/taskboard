@@ -16,7 +16,7 @@ from taskboard.models import Board, Task
 from taskboard.modals import (CalendarModal, PhaseEditor, TaskDetails, TaskModal,
                               image_block)
 from taskboard.ribbon import Ribbon
-from taskboard.views import render_agenda, render_gantt
+from taskboard.views import META_FULL_INNER, render_agenda, render_gantt
 
 
 def make_app(tmp_path) -> TaskboardApp:
@@ -50,7 +50,7 @@ async def test_all_four_views_switch(tmp_path):
         await pilot.press("1")
         assert "TASKBOARD" in board_text(app)   # swimlanes
         await pilot.press("2")
-        assert "KANBAN" in board_text(app)       # columns
+        assert "COLUMNS" in board_text(app)      # columns
         await pilot.press("3")
         assert "AGENDA" in board_text(app)       # agenda
         await pilot.press("4")
@@ -1502,18 +1502,20 @@ def test_gantt_bar_extremes(tmp_path):
 def test_gantt_shows_due_days_not_invented_estimate(tmp_path):
     """WHY: we store no phase-transition timestamps, so a velocity ETA is not
     computable. The trailing figure is the project's own due-date distance, and
-    a project without a due date gets a placeholder — never a fabricated number."""
+    a project without a due date gets a placeholder — never a fabricated number.
+    Rendered WIDE on purpose: the due figure only exists above META_FULL_INNER."""
     b = _gantt_board(tmp_path)
-    assert "due 28d" in _project_row(b, "Alpha")        # 2026-07-20 -> 2026-08-17
+    wide = META_FULL_INNER + 2                          # inner == META_FULL_INNER
+    assert "due 28d" in _project_row(b, "Alpha", wide)   # 2026-07-20 -> 2026-08-17
 
-    beta_row = _project_row(b, "Beta")
+    beta_row = _project_row(b, "Beta", wide)
     assert "—" in beta_row                          # dim em-dash placeholder
     assert "due" not in beta_row
     assert not re.search(r"\d+d", beta_row)              # no invented day figure
 
     beta = next(p for p in b.projects if p.name == "Beta")
     beta.due_date = "2026-07-13"                        # a week overdue
-    assert "due -7d" in _project_row(b, "Beta")
+    assert "due -7d" in _project_row(b, "Beta", wide)
 
 
 def test_gantt_divides_projects(tmp_path):
@@ -1806,3 +1808,47 @@ async def test_phase_name_with_markup_is_escaped(tmp_path):
         ol = app.screen.query_one("#phase-list", OptionList)
         prompts = [str(ol.get_option_at_index(i).prompt) for i in range(ol.option_count)]
         assert any("\\[red]boom\\[/red]" in pr for pr in prompts)
+
+
+async def test_phase_editor_reorder_left_and_boundaries(tmp_path):
+    """WHY: '[' is the mirror of ']' and shares its persistence path, but the
+    FIRST row has nowhere earlier to go. move_phase returns False there, and the
+    editor must treat that as a no-op — not save a reordering that never happened
+    and not raise while re-highlighting an index that moved out of range."""
+    app = _phase_app(tmp_path, ("A", "B", "C"))
+    board_path = app.board.path
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("f")
+        await pilot.pause()
+        app.screen.query_one("#phase-list", OptionList).highlighted = 2   # not first
+        await pilot.press("left_square_bracket")
+        await pilot.pause()
+        assert app.board.phases == ["A", "C", "B"]
+        assert app.screen.query_one("#phase-list", OptionList).highlighted == 1
+        assert Board.load(board_path).phases == ["A", "C", "B"]     # persisted
+
+        app.screen.query_one("#phase-list", OptionList).highlighted = 0   # the first
+        await pilot.press("left_square_bracket")
+        await pilot.pause()
+        assert app.board.phases == ["A", "C", "B"]                  # unchanged
+        assert isinstance(app.screen, PhaseEditor)                  # still usable
+    assert Board.load(board_path).phases == ["A", "C", "B"]
+
+
+async def test_phase_editor_blank_name_is_rejected(tmp_path):
+    """WHY: TextPrompt dismisses an empty Save with "" (cancel is None), so the
+    editor sees a real callback carrying a nameless phase. A blank row would be
+    an unclickable, unnameable workflow step that every view still indexes into."""
+    app = _phase_app(tmp_path, ("Backlog", "Doing", "Done"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("f")
+        await pilot.pause()
+        await pilot.press("a")
+        await pilot.pause()
+        assert isinstance(app.screen, modals.TextPrompt)
+        app.screen.query_one("#f-text", Input).value = "   "        # blank once stripped
+        await save_open_modal(app, pilot)
+        await pilot.pause()
+        assert app.board.phases == ["Backlog", "Doing", "Done"]
+        assert isinstance(app.screen, PhaseEditor)                  # back, no crash
+        assert app.screen.query_one("#phase-list", OptionList).option_count == 3

@@ -7,3 +7,4 @@ dist/
 # local dev data copy (real data lives in ~/.taskboard/board.json)
 board.json
 .pytest_cache/
+debug-*.log

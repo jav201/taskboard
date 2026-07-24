@@ -420,7 +420,7 @@ def render_columns(board, show_archived, selected_id, today=None,
     tasks = board.visible_tasks(show_archived)
     due_n = sum(1 for t in tasks if urgency(t, today, board) in ("overdue", "today"))
     right = c(f"▲ {due_n} due", "over", bold=True)
-    lines = [header(c("KANBAN", "accent", bold=True) + c(" · board", "mut"), right, w)]
+    lines = [header(c("COLUMNS", "accent", bold=True) + c(" · board", "mut"), right, w)]
 
     buckets = phase_buckets(board, tasks)
 
@@ -586,7 +586,22 @@ BAR_DONE = "⣿"     # 8/8 dots — the completed share of a project's span
 BAR_TODO = "⢕"     # 4/8 dots — the remaining share; same family, same height
 
 
-def gantt_meta(project, progress: float, today: date, width: int) -> str:
+META_FULL_W = 14        # ' 62% due 28d' — percent AND due figure
+META_PCT_W = 6          # ' 62%'         — percent alone
+META_FULL_INNER = 90    # below this the timeline needs those cells more
+
+
+def gantt_meta_geometry(inner: int, glabel_w: int, cell: int) -> tuple[int, bool]:
+    """Width of the figures column right of the bars, and whether it carries the
+    due figure. The due date is the first thing to go on a narrow terminal: it
+    costs ~8 cells, which is more than a whole week column of timeline."""
+    full = inner >= META_FULL_INNER
+    want = META_FULL_W if full else META_PCT_W
+    return min(want, max(0, inner - glabel_w - cell)), full
+
+
+def gantt_meta(project, progress: float, today: date, width: int,
+               with_due: bool = True) -> str:
     """The figures right of a project bar: phase progress %, then the distance to
     the project's OWN due date.
 
@@ -597,6 +612,8 @@ def gantt_meta(project, progress: float, today: date, width: int) -> str:
     if width <= 0:
         return ""
     pct = f"{int(round(100 * progress))}%"
+    if not with_due:
+        return c(fit(pct, width, "right"), project.color, bold=True)
     d = parse_iso(project.due_date)
     if d is None:
         due, due_col = "—", "dim"
@@ -617,7 +634,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
     inner = w - 2
     glabel_w = max(10, min(16, inner // 4))
     cell = 6
-    meta_w = min(14, max(0, inner - glabel_w - cell))       # progress % + due
+    meta_w, meta_full = gantt_meta_geometry(inner, glabel_w, cell)
     avail = max(0, inner - glabel_w - meta_w)
     weeks = max(1, min(20, avail // cell)) if avail >= cell else 1
     grid = weeks * cell
@@ -663,7 +680,9 @@ def render_gantt(board, show_archived, selected_id, today=None,
     for wk in range(weeks):
         lbl = "W" + (chart_start + timedelta(weeks=wk)).strftime("%V")
         axis += c(fit(lbl, cell), "accent" if wk == 0 else "dim", bold=(wk == 0))
-    meta_head = c(fit("prog   due", meta_w, "right"), "mut") if meta_w >= 10 else " " * meta_w
+    head_txt = "prog   due" if meta_full else "prog"
+    meta_head = (c(fit(head_txt, meta_w, "right"), "mut")
+                 if meta_w >= len(head_txt) else " " * meta_w)
     lines.append(line(axis + " " * trailing + meta_head))
     marker = (c(fit("", glabel_w), "dim") + c(fit("▲ today", grid + trailing), "accent")
               + " " * meta_w)
@@ -683,7 +702,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
         prog = board.project_progress(p.id, show_archived)
         lines.append(line(c(escape(fit("▐ " + p.name, glabel_w)), p.color, bold=True)
                           + project_bar(si, ei, p.color, prog)
-                          + " " * trailing + gantt_meta(p, prog, today, meta_w)))
+                          + " " * trailing
+                          + gantt_meta(p, prog, today, meta_w, meta_full)))
         for t in [t for t in tasks if t.project_id == p.id]:
             ts = week_index(parse_iso(t.start_date) or parse_iso(t.due_date))
             te = week_index(parse_iso(t.due_date) or parse_iso(t.start_date))
