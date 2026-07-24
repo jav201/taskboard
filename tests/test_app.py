@@ -861,7 +861,7 @@ def test_agenda_handles_undated_tasks(tmp_path):
     board.add_task(Task("no due date task", None, "Backlog", "normal"))
     out = str(render_agenda(board, False, None, today=date(2026, 7, 17)))
     assert "AGENDA" in out
-    assert "NO DATE" in out
+    assert "no date" in out          # undated tasks collect under the 'no date' group
 
 
 def test_corrupt_file_starts_empty(tmp_path):
@@ -2150,3 +2150,138 @@ def test_gantt_label_column_is_generous_for_names():
     assert "Training_Playgroun" in txt                   # >= 18 chars of the title
     # width-exact still holds at this width
     assert len({len(l) for l in lines}) == 1
+
+
+# --- agenda Fable-5 redesign: shared-axis due dot-plot ---------------------- #
+AGENDA_TODAY = date(2026, 7, 23)      # a Thursday; the today rule sits mid-axis
+
+
+def _agenda_board(tmp_path):
+    """A board covering every axis branch: overdue, due-today, this-week, later,
+    an off-window clamp (far past / far future), an undated task and a done one."""
+    from taskboard.models import Board, Project, Task
+    b = Board([], [], tmp_path / "a.json", phases=["A", "B", "C"])
+    p = Project("Proj", "cyan", start_date="2026-07-01", due_date="2026-09-01")
+    b.projects.append(p)
+    b.tasks += [
+        Task("past far", p.id, "A", due_date="2025-01-01"),      # clamp left
+        Task("overdue", p.id, "A", due_date="2026-07-20"),       # -3d
+        Task("today", p.id, "A", due_date="2026-07-23"),         # on the rule
+        Task("soon", p.id, "A", due_date="2026-07-27"),          # +4d
+        Task("later", p.id, "A", due_date="2026-08-10"),         # +18d
+        Task("future far", p.id, "A", due_date="2027-12-31"),    # clamp right
+        Task("done one", p.id, "C", due_date="2026-07-25"),      # last phase -> done
+        Task("undated", p.id, "A", due_date=None),               # no date group
+    ]
+    return b
+
+
+def _row(lines, title):
+    return next(l for l in lines if title in l)
+
+
+def test_agenda_has_no_urgency_group_headers(tmp_path):
+    """WHY: the shared axis now ENCODES urgency by position, so the old textual
+    OVERDUE / TODAY / THIS WEEK sub-headers are pure redundancy and are gone."""
+    b = _agenda_board(tmp_path)
+    out = str(render_agenda(b, False, None, today=AGENDA_TODAY, width=100))
+    assert "OVERDUE" not in out
+    assert "TODAY" not in out            # the header count says 'today' (lower-case)
+    assert "THIS WEEK" not in out
+    assert "LATER" not in out
+
+
+def test_agenda_dot_position_encodes_due(tmp_path):
+    """WHY: distance along the axis IS urgency — a sooner due date puts its ● left
+    of a later one, and a task due today sits exactly on the today-rule column."""
+    from taskboard.models import Board, Project, Task
+    b = Board([], [], tmp_path / "a.json", phases=["A", "B", "C"])
+    p = Project("Proj", "cyan")
+    b.projects.append(p)
+    b.tasks += [
+        Task("soonertask", p.id, "A", due_date="2026-07-24"),    # +1d
+        Task("latertask", p.id, "A", due_date="2026-07-30"),     # +7d
+        Task("todaytask", p.id, "A", due_date="2026-07-23"),     # +0d
+    ]
+    lines = str(render_agenda(b, False, None, today=AGENDA_TODAY, width=100)).splitlines()
+    rs, rl, rt = _row(lines, "soonertask"), _row(lines, "latertask"), _row(lines, "todaytask")
+    assert rs.index("●") < rl.index("●")          # sooner is left of later
+    rule_col = rs.index("┃")                       # the rule shows on non-today rows
+    assert rt.index("●") == rule_col               # a due-today dot sits on the rule column
+
+
+def test_agenda_today_rule_present(tmp_path):
+    """WHY: 'today' must be one vertical anchor, the SAME teal ┃ column on every
+    task row — the fixed reference every dot is read against."""
+    from taskboard.models import Board, Project, Task
+    from taskboard.views import HEX
+    b = Board([], [], tmp_path / "a.json", phases=["A", "B", "C"])
+    p = Project("Proj", "cyan")
+    b.projects.append(p)
+    b.tasks += [
+        Task("alphatask", p.id, "A", due_date="2026-07-25"),     # +2d
+        Task("betatask", p.id, "A", due_date="2026-07-28"),      # +5d
+    ]
+    txt = render_agenda(b, False, None, today=AGENDA_TODAY, width=100)
+    lines = txt.plain.split("\n")
+    r1, r2 = _row(lines, "alphatask"), _row(lines, "betatask")
+    assert "┃" in r1 and "┃" in r2
+    assert r1.index("┃") == r2.index("┃")          # a single vertical line, same column
+    li = next(i for i, l in enumerate(lines) if "alphatask" in l)
+    base = sum(len(lines[j]) + 1 for j in range(li))
+    off = base + r1.index("┃")
+    styles = {str(sp.style) for sp in txt.spans if sp.start <= off < sp.end}
+    assert any(HEX["accent"] in s for s in styles)  # the rule is teal
+
+
+def test_agenda_undated_tasks_are_kept(tmp_path):
+    """WHY: a task with no due date can't sit on a time axis, but dropping it would
+    hide work — it must survive under a single 'no date' group."""
+    from taskboard.models import Board, Project, Task
+    b = Board([], [], tmp_path / "a.json", phases=["A", "B", "C"])
+    p = Project("Proj", "cyan")
+    b.projects.append(p)
+    b.tasks += [
+        Task("dateditem", p.id, "A", due_date="2026-07-25"),
+        Task("floatyitem", p.id, "A", due_date=None),
+    ]
+    out = str(render_agenda(b, False, None, today=AGENDA_TODAY, width=100))
+    assert "no date" in out               # the group label is present
+    assert "floatyitem" in out            # and the undated task is not dropped
+
+
+def test_agenda_dot_colour_by_urgency(tmp_path):
+    """WHY: colour reinforces the position — an overdue dot is red (over), a
+    due-today dot is amber (soon), so a glance reads the crunch without counting."""
+    from taskboard.models import Board, Project, Task
+    from taskboard.views import HEX
+    b = Board([], [], tmp_path / "a.json", phases=["A", "B", "C"])
+    p = Project("Proj", "cyan")
+    b.projects.append(p)
+    b.tasks += [
+        Task("overdueitem", p.id, "A", due_date="2026-07-20"),   # -3d
+        Task("duetodayitem", p.id, "A", due_date="2026-07-23"),  # +0d
+    ]
+    txt = render_agenda(b, False, None, today=AGENDA_TODAY, width=100)
+    lines = txt.plain.split("\n")
+
+    def dot_styles(title):
+        li = next(i for i, l in enumerate(lines) if title in l)
+        base = sum(len(lines[j]) + 1 for j in range(li))
+        off = base + lines[li].index("●")
+        return {str(sp.style) for sp in txt.spans if sp.start <= off < sp.end}
+
+    assert any(HEX["over"] in s for s in dot_styles("overdueitem"))
+    assert any(HEX["soon"] in s for s in dot_styles("duetodayitem"))
+
+
+def test_agenda_width_exact_across_widths(tmp_path):
+    """WHY: box-art breaks the instant one line drifts a cell. Every agenda line —
+    header, scale, dot rows (incl. off-window ◂/▸ clamps), the 'no date' divider,
+    the done row and the height-fill blanks — must be EXACTLY the target width."""
+    b = _agenda_board(tmp_path)
+    sel = b.tasks[1].id
+    for w in (40, 68, 100, 140):
+        lines = str(render_agenda(b, False, sel, today=AGENDA_TODAY,
+                                  width=w, height=30)).splitlines()
+        assert all(len(l) == w for l in lines), f"agenda {w}: a line != {w}"
