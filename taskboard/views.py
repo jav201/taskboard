@@ -83,13 +83,14 @@ def distribute(total: int, n: int) -> list[int]:
 # ---------------------------------------------------------------------------
 # glyphs
 # ---------------------------------------------------------------------------
-def status_glyph(task: Task) -> tuple[str, str]:
-    return {
-        "done": ("✓", "done"),
-        "blocked": ("▲", "over"),
-        "doing": ("◐", "accent"),
-        "backlog": ("○", "dim"),
-    }.get(task.status, ("○", "dim"))
+def status_glyph(board: Board, task: Task) -> tuple[str, str]:
+    if board.is_done(task):
+        return ("✓", "done")
+    if task.blocked:
+        return ("▲", "over")
+    if board.phase_index(task) == 0:
+        return ("○", "dim")
+    return ("◐", "accent")
 
 
 def project_color(board: Board, task: Task) -> str:
@@ -169,7 +170,7 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
     tokens: list[tuple[str, str]] = []
     if has_url(task):
         tokens.append(("↗", "accent"))
-    if allow_priority and task.priority == "high" and task.status != "done":
+    if allow_priority and task.priority == "high" and not board.is_done(task):
         tokens.append(("◉", "amber"))
     if task.images:
         tokens.append(("▤", "sky"))     # width-1 image indicator, distinct from ↗/◉
@@ -210,8 +211,8 @@ def sparkline(values: list[int], color: str, width: int = 4) -> str:
 # ---------------------------------------------------------------------------
 # urgency
 # ---------------------------------------------------------------------------
-def urgency(task: Task, today: date) -> str:
-    if task.status == "done":
+def urgency(task: Task, today: date, board: Board) -> str:
+    if board.is_done(task):
         return "done"
     d = parse_iso(task.due_date)
     if d is None:
@@ -232,8 +233,8 @@ _URG_BRAILLE = {"overdue": "⣿⣿⣤", "today": "⣿⣿⣿", "week": "⣿⣄⡀
                 "later": "⣀⡀ ", "none": "   ", "done": "⣿⣿⣿"}
 
 
-def date_chip(task: Task, today: date) -> tuple[str, str]:
-    u = urgency(task, today)
+def date_chip(task: Task, today: date, board: Board) -> tuple[str, str]:
+    u = urgency(task, today, board)
     if u == "done":
         return "done", "done"
     d = parse_iso(task.due_date)
@@ -306,13 +307,26 @@ def _clamp_width(width: int) -> int:
 
 
 # ---------------------------------------------------------------------------
-# view: SWIMLANES  (rows = projects + Inbox, cols = TODO/DOING/DONE)
+# view: SWIMLANES  (rows = projects + Inbox, cols = the board's phases)
 # ---------------------------------------------------------------------------
-def _lane_columns(tasks: list[Task]):
-    todo = [t for t in tasks if t.status == "backlog"]
-    doing = [t for t in tasks if t.status in ("doing", "blocked")]
-    done = [t for t in tasks if t.status == "done"]
-    return todo, doing, done
+def phase_buckets(board: Board, tasks: list[Task]) -> list[list[Task]]:
+    """One bucket per board phase, in phase order. A blocked task stays in its
+    own phase (blocked is a flag, not a column); an unknown phase falls into the
+    first bucket. This is THE grouping every view uses."""
+    index = {name: i for i, name in enumerate(board.phases)}
+    buckets: list[list[Task]] = [[] for _ in board.phases]
+    for t in tasks:
+        buckets[index.get(t.phase, 0)].append(t)
+    return buckets
+
+
+def _lane_junctions(label_w: int, cols: list[int], mid: str) -> dict[int, str]:
+    """Column-separator positions for the swimlane grid (one before each column)."""
+    j, pos = {}, label_w
+    for wc in cols:
+        j[pos] = mid
+        pos += 1 + wc
+    return j
 
 
 def render_swimlanes(board, show_archived, selected_id, today=None,
@@ -321,21 +335,21 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
     w = _clamp_width(width)
     inner = w - 2
     label_w = max(8, min(14, inner // 5))
-    c0, c1, c2 = distribute(inner - label_w - 3, 3)
+    n = len(board.phases)
+    cols = distribute(inner - label_w - n, n)
 
     tasks = board.visible_tasks(show_archived)
-    open_n = sum(1 for t in tasks if t.status != "done")
-    due_n = sum(1 for t in tasks if urgency(t, today) in ("overdue", "today"))
+    open_n = sum(1 for t in tasks if not board.is_done(t))
+    due_n = sum(1 for t in tasks if urgency(t, today, board) in ("overdue", "today"))
     right = c(f"{open_n} open · ", "mut") + c(f"{due_n} due", "over", bold=True)
 
     lines = [header(c("◆ TASKBOARD", "accent", bold=True), right, w)]
-    hdr = (fit("", label_w) + c("│", "frame")
-           + c(fit("TODO", c0), "hd", bold=True) + c("│", "frame")
-           + c(fit("DOING", c1), "hd", bold=True) + c("│", "frame")
-           + c(fit("DONE", c2), "hd", bold=True))
+    hdr = fit("", label_w)
+    for i, name in enumerate(board.phases):
+        hdr += (c("│", "frame")
+                + c(escape(fit(name.upper(), cols[i])), "hd", bold=True))
     lines.append(line(hdr))
-    j = {label_w: "┼", label_w + 1 + c0: "┼", label_w + 2 + c0 + c1: "┼"}
-    lines.append(_border("├", "─", "┤", j, w))
+    lines.append(_border("├", "─", "┤", _lane_junctions(label_w, cols, "┼"), w))
 
     lanes: list[tuple[str, str, list[Task]]] = []
     for p in board.visible_projects(show_archived):
@@ -352,9 +366,8 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
             return ""
         if idx < len(items):
             t = items[idx]
-            blocked = t.status == "blocked"
             return card_cell(t, board, colw, t.id == selected_id,
-                             prefix="▲ " if blocked else "", prefix_color="over")
+                             prefix="▲ " if t.blocked else "", prefix_color="over")
         return fit("", colw)
 
     def meta(items, colw):
@@ -364,95 +377,94 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
         return fit("", colw)
 
     for name, color, rows in lanes:
-        todo, doing, done = _lane_columns(rows)
-        l1 = (c("▐ ", color) + c(fit(name, label_w - 2), color) + c("│", "frame")
-              + cell(todo, 0, c0) + c("│", "frame")
-              + cell(doing, 0, c1) + c("│", "frame")
-              + cell(done, 0, c2))
+        buckets = phase_buckets(board, rows)
+        l1 = c("▐ ", color) + c(fit(name, label_w - 2), color)
+        for i, bucket in enumerate(buckets):
+            l1 += c("│", "frame") + cell(bucket, 0, cols[i])
         lines.append(line(l1))
         if line_map is not None:
             idx = len(lines) - 1
-            for bucket in (todo, doing, done):
+            for bucket in buckets:
                 if bucket:
                     line_map[bucket[0].id] = idx
-        l2 = (c("▐ ", color) + progress_bar(len(done), len(rows), label_w - 2, color)
-              + c("│", "frame") + meta(todo, c0) + c("│", "frame")
-              + meta(doing, c1) + c("│", "frame") + meta(done, c2))
+        done_n = len(buckets[-1]) if buckets else 0
+        l2 = c("▐ ", color) + progress_bar(done_n, len(rows), label_w - 2, color)
+        for i, bucket in enumerate(buckets):
+            l2 += c("│", "frame") + meta(bucket, cols[i])
         lines.append(line(l2))
 
-    jb = {label_w: "┴", label_w + 1 + c0: "┴", label_w + 2 + c0 + c1: "┴"}
-    lines.append(bottom(jb, w))
+    lines.append(bottom(_lane_junctions(label_w, cols, "┴"), w))
     return Text.from_markup("\n".join(fill_height(lines, height, w)))
 
 
 # ---------------------------------------------------------------------------
-# view: COLUMNS  (BACKLOG / ACTIVE / BLOCKED / DONE)
+# view: COLUMNS  (one column per board phase, in order)
 # ---------------------------------------------------------------------------
-KCOLS = [("BACKLOG", "backlog"), ("DOING", "doing"),
-         ("BLOCKED", "blocked"), ("DONE", "done")]
-
-
 def render_columns(board, show_archived, selected_id, today=None,
                    width=68, height=0, line_map=None) -> Text:
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
-    widths = distribute(inner - 3, 4)     # 3 separators between 4 columns
-    cols = [(label, key, widths[i]) for i, (label, key) in enumerate(KCOLS)]
+    n = len(board.phases)
+    widths = distribute(inner - (n - 1), n)     # n-1 separators between n columns
+    last = n - 1
 
     def junctions(mid):
         j, pos = {}, 0
-        for _, _, wc in cols[:-1]:
+        for wc in widths[:-1]:
             pos += wc
             j[pos] = mid
             pos += 1
         return j
 
     tasks = board.visible_tasks(show_archived)
-    due_n = sum(1 for t in tasks if urgency(t, today) in ("overdue", "today"))
+    due_n = sum(1 for t in tasks if urgency(t, today, board) in ("overdue", "today"))
     right = c(f"▲ {due_n} due", "over", bold=True)
     lines = [header(c("KANBAN", "accent", bold=True) + c(" · board", "mut"), right, w)]
 
-    buckets = {key: [t for t in tasks if t.status == key] for _, key in KCOLS}
+    buckets = phase_buckets(board, tasks)
 
     def spark_for(items):
         vals = [0, 0, 0, 0]
         for t in items:
-            vals[{"overdue": 0, "today": 1, "week": 2}.get(urgency(t, today), 3)] += 1
+            vals[{"overdue": 0, "today": 1, "week": 2}
+                 .get(urgency(t, today, board), 3)] += 1
         return vals
 
     hdr = []
-    for label, key, wc in cols:
-        items = buckets[key]
+    for i, name in enumerate(board.phases):
+        wc = widths[i]
+        items = buckets[i]
+        label = name.upper()
         cnt = str(len(items))
         tail = len(cnt) + 1                 # mandatory " " + count
         if wc < tail + 1:                   # not even room for "L cnt"
-            hdr.append(fit(f"{label} {cnt}"[:wc], wc))
+            hdr.append(escape(fit(f"{label} {cnt}"[:wc], wc)))
             continue
         # optional sparkline needs 1 space + >=1 label char reserved
         spk_w = max(0, min(4, wc - tail - 2)) if wc - tail - 2 >= 0 else 0
         lab_w = max(0, wc - tail - (spk_w + 1 if spk_w > 0 else 0))
-        cell = c(fit(label, lab_w), "hd", bold=True) + " " + c(cnt, "dim")
+        cell = c(escape(fit(label, lab_w)), "hd", bold=True) + " " + c(cnt, "dim")
         if spk_w > 0:
             cell += " " + sparkline(spark_for(items),
-                                    "green" if key == "done" else "accent", spk_w)
+                                    "green" if i == last else "accent", spk_w)
         hdr.append(cell)
     lines.append(line(c("│", "frame").join(hdr)))
     lines.append(_border("├", "─", "┤", junctions("┼"), w))
 
-    max_rows = max((len(v) for v in buckets.values()), default=0)
+    max_rows = max((len(v) for v in buckets), default=0)
     if max_rows == 0:
         lines.append(line(c(fit("  (no tasks — press 'a' to add one)", inner), "dim")))
     for r in range(max_rows):
         card = []
-        for label, key, wc in cols:
-            items = buckets[key]
+        for i, wc in enumerate(widths):
+            items = buckets[i]
             if r >= len(items):
                 card.append(fit("", wc))
                 continue
             t = items[r]
             sel = t.id == selected_id
-            if key == "done":
+            if i == last:
                 card.append(card_cell(t, board, wc, sel, prefix="✓ ",
                                       prefix_color="done", allow_priority=False))
             else:
@@ -461,20 +473,19 @@ def render_columns(board, show_archived, selected_id, today=None,
         lines.append(line(c("│", "frame").join(card)))
         if line_map is not None:
             idx = len(lines) - 1
-            for _, key, wc in cols:
-                items = buckets[key]
+            for items in buckets:
                 if r < len(items):
                     line_map[items[r].id] = idx
         meta = []
-        for label, key, wc in cols:
-            items = buckets[key]
-            if r >= len(items) or key == "done":
+        for i, wc in enumerate(widths):
+            items = buckets[i]
+            if r >= len(items) or i == last:
                 meta.append(fit("", wc))
                 continue
             t = items[r]
             p_obj = board.project_by_id(t.project_id)
             pname = p_obj.name if p_obj else "—"
-            chip_txt, chip_col = date_chip(t, today)
+            chip_txt, chip_col = date_chip(t, today, board)
             # width-exact: 2 lead spaces + pname(<=4) + gap + chip, all within wc
             lead = min(2, wc)
             remain = wc - lead
@@ -550,10 +561,10 @@ def render_agenda(board, show_archived, selected_id, today=None,
             else:
                 p_obj = board.project_by_id(t.project_id)
                 pname = p_obj.name if p_obj else "Inbox"
-                sg, sgcol = status_glyph(t)
-                row_urg = urgency(t, today)
+                sg, sgcol = status_glyph(board, t)
+                row_urg = urgency(t, today, board)
                 braille = _URG_BRAILLE[row_urg]
-                chip_txt, chip_col = date_chip(t, today)
+                chip_txt, chip_col = date_chip(t, today, board)
                 row = (" " + c("●", pcol) + " " + title_markup(t, title_w, sel) + " "
                        + c(escape(fit(pname[:8], 8)), "dim") + " "
                        + c(sg, sgcol) + " " + c(braille, _URG_COLOR[row_urg]) + "  "
@@ -697,7 +708,7 @@ def nav_model(mode, board, show_archived, today=None) -> list[list[str]]:
     tasks = board.visible_tasks(show_archived)
 
     if mode == "columns":
-        return [[t.id for t in tasks if t.status == key] for _, key in KCOLS]
+        return [[t.id for t in bucket] for bucket in phase_buckets(board, tasks)]
 
     if mode == "swimlanes":
         lanes = [[t for t in tasks if t.project_id == p.id]
@@ -705,9 +716,9 @@ def nav_model(mode, board, show_archived, today=None) -> list[list[str]]:
         inbox = [t for t in tasks if board.project_by_id(t.project_id) is None]
         if inbox:
             lanes.append(inbox)
-        cols: list[list[str]] = [[], [], []]   # TODO / DOING / DONE
+        cols: list[list[str]] = [[] for _ in board.phases]   # one per phase
         for lane in lanes:                      # only the first task of each cell shows
-            for i, bucket in enumerate(_lane_columns(lane)):
+            for i, bucket in enumerate(phase_buckets(board, lane)):
                 if bucket:
                     cols[i].append(bucket[0].id)
         return cols

@@ -18,8 +18,15 @@ from uuid import uuid4
 PROJECT_COLORS = ("rose", "orange", "amber", "lime", "green", "cyan",
                   "sky", "blue", "indigo", "violet", "fuchsia", "pink")
 PROJECT_STATUSES = ("on_track", "paused", "cancelled", "completed")
-TASK_STATUSES = ("backlog", "doing", "blocked", "done")
 TASK_PRIORITIES = ("low", "normal", "high")
+
+# Tasks move through an ORDERED list of phases owned by the board; progress is
+# positional (phase index / last index), so a board can define its own workflow.
+DEFAULT_PHASES = ("Backlog", "Doing", "Done")
+# legacy task.status -> (phase, blocked) ; kept forever so old boards keep loading
+LEGACY_STATUS = {"backlog": ("Backlog", False), "doing": ("Doing", False),
+                 "active": ("Doing", False), "blocked": ("Doing", True),
+                 "done": ("Done", False)}
 
 # --- ribbon clocks: CITY -> IANA timezone (real, DST-aware via zoneinfo) ------
 # Curated across the regions the user works in. Display name is the city; the
@@ -289,6 +296,19 @@ def parse_iso(value: str | None) -> date | None:
         return None
 
 
+def _extra_keys(d: dict, known: set[str]) -> dict:
+    """Every key we don't model, kept verbatim so a load->save round-trip never
+    drops data another (older/newer) version of the app wrote."""
+    return {k: v for k, v in d.items() if k not in known}
+
+
+_PROJECT_KEYS = {"id", "name", "color", "status", "archived", "start_date", "due_date",
+                 "extra"}
+_TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
+              "due_date", "notes", "urls", "images", "archived", "extra",
+              "status", "url"}          # last two: legacy, consumed by the migration
+
+
 @dataclass
 class Project:
     name: str
@@ -297,6 +317,7 @@ class Project:
     archived: bool = False
     start_date: str | None = None
     due_date: str | None = None
+    extra: dict = field(default_factory=dict)
     id: str = field(default_factory=_new_id)
 
     @classmethod
@@ -309,6 +330,7 @@ class Project:
             archived=bool(d.get("archived", False)),
             start_date=d.get("start_date"),
             due_date=d.get("due_date"),
+            extra=_extra_keys(d, _PROJECT_KEYS),
         )
 
 
@@ -316,7 +338,7 @@ class Project:
 class Task:
     title: str
     project_id: str | None = None
-    status: str = "backlog"
+    phase: str = "Backlog"
     priority: str = "normal"
     start_date: str | None = None
     due_date: str | None = None
@@ -324,6 +346,8 @@ class Task:
     urls: list[str] = field(default_factory=list)
     images: list[str] = field(default_factory=list)
     archived: bool = False
+    blocked: bool = False
+    extra: dict = field(default_factory=dict)
     id: str = field(default_factory=_new_id)
 
     @classmethod
@@ -337,13 +361,18 @@ class Task:
         else:
             urls = []
         images = [str(i) for i in d["images"]] if isinstance(d.get("images"), list) else []
+        # phase/blocked when present; otherwise migrate the legacy status field.
+        legacy_phase, legacy_blocked = LEGACY_STATUS.get(d.get("status"),
+                                                         ("Backlog", False))
+        phase = d["phase"] if isinstance(d.get("phase"), str) and d["phase"] else legacy_phase
+        blocked = bool(d["blocked"]) if "blocked" in d else legacy_blocked
         return cls(
             id=d.get("id") or _new_id(),
             title=d.get("title", "Untitled"),
             project_id=d.get("project_id"),
-            status=("doing" if d.get("status") == "active"
-                    else d.get("status") if d.get("status") in TASK_STATUSES
-                    else "backlog"),
+            phase=phase,
+            blocked=blocked,
+            extra=_extra_keys(d, _TASK_KEYS),
             priority=d.get("priority") if d.get("priority") in TASK_PRIORITIES else "normal",
             start_date=d.get("start_date"),
             due_date=d.get("due_date"),
@@ -358,11 +387,13 @@ class Board:
     """Owns projects + tasks and the JSON file behind them."""
 
     def __init__(self, projects: list[Project], tasks: list[Task], path: Path,
-                 settings: dict | None = None):
+                 settings: dict | None = None, phases: list[str] | None = None):
         self.projects = projects
         self.tasks = tasks
         self.path = path
         self.settings = settings or {}
+        # ordered workflow; never empty (progress + every view index into it)
+        self.phases = list(phases) if phases else list(DEFAULT_PHASES)
 
     def image_dir(self, task_id: str) -> Path:
         """Per-task folder for pasted images, kept beside the board file so the
@@ -383,16 +414,32 @@ class Board:
             tasks = [Task.from_dict(t) for t in raw.get("tasks", [])]
             # settings is optional -> back-compat with pre-settings board files
             settings = raw.get("settings") if isinstance(raw.get("settings"), dict) else {}
-            return cls(projects, tasks, path, settings)
+            phases = raw.get("phases")
+            if not (isinstance(phases, list) and phases
+                    and all(isinstance(p, str) and p for p in phases)):
+                phases = None
+            board = cls(projects, tasks, path, settings, phases)
+            for t in board.tasks:            # a phase the board no longer has
+                if t.phase not in board.phases:
+                    t.phase = board.phases[0]
+            return board
         except (json.JSONDecodeError, OSError, TypeError, AttributeError):
             # Corrupt / unreadable: start empty, leave the file untouched.
             return cls([], [], path)
 
+    @staticmethod
+    def _to_dict(item) -> dict:
+        """Serialize a Project/Task, merging its preserved unknown keys back in
+        (known fields win, so our model is always the source of truth)."""
+        d = asdict(item)
+        return {**d.pop("extra", {}), **d}
+
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         data = {
-            "projects": [asdict(p) for p in self.projects],
-            "tasks": [asdict(t) for t in self.tasks],
+            "phases": self.phases,
+            "projects": [self._to_dict(p) for p in self.projects],
+            "tasks": [self._to_dict(t) for t in self.tasks],
             "settings": self.settings,
         }
         self.path.write_text(json.dumps(data, indent=2), encoding="utf-8")
@@ -433,11 +480,23 @@ class Board:
     def visible_tasks(self, show_archived: bool) -> list[Task]:
         return [t for t in self.tasks if show_archived or not t.archived]
 
-    def project_progress(self, pid: str, show_archived: bool) -> tuple[int, int]:
-        """(#done, #total) for a project's visible tasks."""
-        rows = [t for t in self.visible_tasks(show_archived) if t.project_id == pid]
-        done = sum(1 for t in rows if t.status == "done")
-        return done, len(rows)
+    # ---- progress (positional: how far along the phase list a task sits) ----
+    def phase_index(self, task: Task) -> int:
+        try:
+            return self.phases.index(task.phase)
+        except ValueError:
+            return 0
+
+    def task_progress(self, task: Task) -> float:
+        n = len(self.phases)
+        return self.phase_index(task) / (n - 1) if n > 1 else 0.0
+
+    def project_progress(self, project_id: str, show_archived: bool = False) -> float:
+        rows = [t for t in self.visible_tasks(show_archived) if t.project_id == project_id]
+        return sum(self.task_progress(t) for t in rows) / len(rows) if rows else 0.0
+
+    def is_done(self, task: Task) -> bool:
+        return bool(self.phases) and task.phase == self.phases[-1]
 
     # ---- mutations ---------------------------------------------------------
     def add_task(self, task: Task) -> None:
@@ -465,7 +524,8 @@ def seed_data() -> tuple[list[Project], list[Task]]:
     """Neutral, author-agnostic demo content that exercises every board feature.
 
     A generic software-product org: it reveals nothing about who built the tool
-    while covering all project/task statuses, priorities, urgency buckets,
+    while covering all project statuses, every default phase (plus a blocked
+    task), priorities, urgency buckets,
     archived items, standalone + project tasks, multiple URLs and images. Anchored
     to today so the urgency buckets stay populated on any run.
     """
@@ -487,32 +547,34 @@ def seed_data() -> tuple[list[Project], list[Task]]:
     tasks = [
         # Website Redesign — note: image tasks stay normal/low priority + no URL
         # so their card carries only the image glyph (never with the ◉/↗ markers).
-        Task("Design homepage mockups", web.id, "doing", "normal", due_date=iso(0),
+        Task("Design homepage mockups", web.id, "Doing", "normal", due_date=iso(0),
              images=["./mockups/home.png", "./mockups/home-dark.png"]),
-        Task("Fix checkout 500 error", web.id, "blocked", "high", due_date=iso(-2),
+        Task("Fix checkout 500 error", web.id, "Doing", "high", due_date=iso(-2),
+             blocked=True,
              urls=["https://status.example.com/incident/4821",
                    "https://logs.example.com/checkout"]),
-        Task("Optimize image assets", web.id, "doing", "low", due_date=iso(6),
+        Task("Optimize image assets", web.id, "Doing", "low", due_date=iso(6),
              images=["https://picsum.photos/seed/hero/640"]),
         # API Platform (paused)
-        Task("Write API reference", api.id, "backlog", "normal", due_date=iso(5),
+        Task("Write API reference", api.id, "Backlog", "normal", due_date=iso(5),
              urls=["https://docs.example.com/api/v2"]),
-        Task("Plan Q3 roadmap", api.id, "backlog", "normal"),
-        Task("Deprecate v1 endpoints", api.id, "backlog", "high", due_date=iso(9)),
+        Task("Plan Q3 roadmap", api.id, "Backlog", "normal"),
+        Task("Deprecate v1 endpoints", api.id, "Backlog", "high", due_date=iso(9)),
         # Mobile App
-        Task("Audit dependencies", mobile.id, "doing", "normal", due_date=iso(12)),
-        Task("Set up CI pipeline", mobile.id, "done", "normal"),
-        Task("Add push notifications", mobile.id, "backlog", "normal", due_date=iso(18)),
+        Task("Audit dependencies", mobile.id, "Doing", "normal", due_date=iso(12)),
+        Task("Set up CI pipeline", mobile.id, "Done", "normal"),
+        Task("Add push notifications", mobile.id, "Backlog", "normal", due_date=iso(18)),
         # Data Warehouse (completed)
-        Task("Migrate user table", warehouse.id, "done", "low"),
-        Task("Compress database backups", warehouse.id, "blocked", "normal", due_date=iso(-1)),
-        Task("Archive old logs", warehouse.id, "backlog", "low", due_date=iso(25),
+        Task("Migrate user table", warehouse.id, "Done", "low"),
+        Task("Compress database backups", warehouse.id, "Doing", "normal",
+             due_date=iso(-1), blocked=True),
+        Task("Archive old logs", warehouse.id, "Backlog", "low", due_date=iso(25),
              archived=True),
         # Legacy Sunset (cancelled)
-        Task("Shut down legacy servers", legacy.id, "backlog", "normal", due_date=iso(8)),
+        Task("Shut down legacy servers", legacy.id, "Backlog", "normal", due_date=iso(8)),
         # standalone tasks -> Inbox
-        Task("Renew TLS certificate", None, "backlog", "high", due_date=iso(3)),
-        Task("Update onboarding copy", None, "backlog", "normal"),
-        Task("Review pull requests", None, "doing", "normal", due_date=iso(1)),
+        Task("Renew TLS certificate", None, "Backlog", "high", due_date=iso(3)),
+        Task("Update onboarding copy", None, "Backlog", "normal"),
+        Task("Review pull requests", None, "Doing", "normal", due_date=iso(1)),
     ]
     return projects, tasks

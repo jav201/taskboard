@@ -23,11 +23,12 @@ from textual.binding import Binding
 from textual.containers import Grid, Horizontal, VerticalScroll
 from textual.screen import ModalScreen
 from textual.suggester import SuggestFromList
-from textual.widgets import Button, Input, Label, OptionList, Select, Static, TextArea
+from textual.widgets import (Button, Checkbox, Input, Label, OptionList, Select, Static,
+                             TextArea)
 from textual.widgets.option_list import Option
 
 from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
-                     TASK_STATUSES, Board, Project, Task, _new_id, city_names,
+                     Board, Project, Task, _new_id, city_names,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image)
 from .views import valid_url
@@ -192,10 +193,14 @@ class TaskModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
             with Grid(classes="modal-grid"):
                 yield Label("Project")
                 yield Select(proj_options, value=proj_value, allow_blank=False, id="f-project")
-                yield Label("Status")
-                yield Select([(s, s) for s in TASK_STATUSES],
-                             value=(t.status if t else "backlog"),
-                             allow_blank=False, id="f-status")
+                yield Label("Phase")
+                phases = self.board.phases
+                yield Select([(escape(p), p) for p in phases],
+                             value=(t.phase if (t and t.phase in phases) else phases[0]),
+                             allow_blank=False, id="f-phase")
+                yield Label("Blocked")
+                yield Checkbox("blocked", value=bool(t.blocked) if t else False,
+                               id="f-blocked")
                 yield Label("Priority")
                 yield Select([(p, p) for p in TASK_PRIORITIES],
                              value=(t.priority if t else "normal"),
@@ -283,7 +288,8 @@ class TaskModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
             "id": self._img_key,
             "title": title,
             "project_id": None if proj == NONE_VALUE else proj,
-            "status": self._val("f-status"),
+            "phase": self._val("f-phase"),
+            "blocked": bool(self.query_one("#f-blocked", Checkbox).value),
             "priority": self._val("f-priority"),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
@@ -625,8 +631,8 @@ class TaskDetails(ModalScreen[None]):
             with Grid(classes="modal-grid"):
                 yield Label("Project")
                 yield Label(proj_name)
-                yield Label("Status")
-                yield Label(escape(t.status))
+                yield Label("Phase")
+                yield Label(escape(t.phase) + (" · blocked" if t.blocked else ""))
                 yield Label("Priority")
                 yield Label(escape(t.priority))
                 yield Label("Start")
