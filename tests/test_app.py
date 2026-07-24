@@ -16,7 +16,8 @@ from taskboard.models import Board, Task
 from taskboard.modals import (CalendarModal, PhaseEditor, TaskDetails, TaskModal,
                               image_block)
 from taskboard.ribbon import Ribbon
-from taskboard.views import META_FULL_INNER, render_agenda, render_gantt
+from taskboard.views import (META_FULL_INNER, META_FULL_W, render_agenda,
+                             render_gantt)
 
 
 def make_app(tmp_path) -> TaskboardApp:
@@ -1540,6 +1541,37 @@ def test_gantt_width_exact_across_widths(tmp_path):
         lines = str(render_gantt(b, False, sel, today=GANTT_TODAY,
                                  width=w, height=0)).splitlines()
         assert all(len(l) == w for l in lines), f"gantt at {w}: a line != {w}"
+
+
+def test_gantt_meta_column_adapts_to_width(tmp_path):
+    """WHY: the due figure costs ~8 cells, more than a whole week column. Above
+    META_FULL_INNER the meta column carries percent AND due; below it the due
+    figure is dropped so the timeline gets those cells back. Both halves matter:
+    a narrow board that still spends 14 cells on figures loses a week column."""
+    b = _gantt_board(tmp_path)
+    cell = 6
+
+    wide = META_FULL_INNER + 2                       # inner == META_FULL_INNER
+    wide_rows = _gantt_rows(b, wide)
+    assert re.search(r"due -?\d+d", _project_row(b, "Alpha", wide))
+    assert "due" in wide_rows[1]                     # the axis row carries the head
+    assert all(len(l) == wide for l in wide_rows)
+
+    narrow = META_FULL_INNER - 30                    # clearly below the threshold
+    narrow_rows = _gantt_rows(b, narrow)
+    alpha_narrow = _project_row(b, "Alpha", narrow)
+    assert "50%" in alpha_narrow                     # the percent survives…
+    assert not re.search(r"due -?\d+d", "".join(narrow_rows))   # …the due figure not
+    assert "due" not in narrow_rows[1]
+    assert all(len(l) == narrow for l in narrow_rows)
+
+    # …and dropping it buys real timeline: strictly more week columns than the
+    # same total width would afford with a full-width meta column.
+    inner = narrow - 2
+    glabel_w = max(10, min(16, inner // 4))
+    weeks_narrow = len(re.findall(r"W\d\d", narrow_rows[1]))
+    weeks_if_full = max(1, min(20, (inner - glabel_w - META_FULL_W) // cell))
+    assert weeks_narrow > weeks_if_full
 
 
 # --- phase editor (increment 5) -------------------------------------------- #
