@@ -395,6 +395,16 @@ class Board:
         # ordered workflow; never empty (progress + every view index into it)
         self.phases = list(phases) if phases else list(DEFAULT_PHASES)
 
+    def canonical_phase(self, name: str) -> str:
+        """Resolve a stored phase name to this board's spelling. Matching is
+        case- and whitespace-insensitive, so a legacy 'backlog' or ' Done '
+        snaps to 'Backlog'/'Done' instead of silently falling back to the first
+        phase (which would demote finished work)."""
+        if not self.phases:
+            return name
+        table = {p.strip().lower(): p for p in self.phases}
+        return table.get(str(name).strip().lower(), self.phases[0])
+
     def image_dir(self, task_id: str) -> Path:
         """Per-task folder for pasted images, kept beside the board file so the
         raw files are openable by any app: <board-dir>/images/<task_id>/."""
@@ -419,9 +429,8 @@ class Board:
                     and all(isinstance(p, str) and p for p in phases)):
                 phases = None
             board = cls(projects, tasks, path, settings, phases)
-            for t in board.tasks:            # a phase the board no longer has
-                if t.phase not in board.phases:
-                    t.phase = board.phases[0]
+            for t in board.tasks:            # snap to the board's spelling;
+                t.phase = board.canonical_phase(t.phase)   # unknown -> first
             return board
         except (json.JSONDecodeError, OSError, TypeError, AttributeError):
             # Corrupt / unreadable: start empty, leave the file untouched.

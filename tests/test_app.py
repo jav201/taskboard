@@ -1262,3 +1262,38 @@ async def test_view_renders_with_a_new_colour(tmp_path):
         app.refresh_view()
         await pilot.pause()
         assert "Cyan Proj" in board_text(app)
+
+
+def test_canonical_phase_is_case_insensitive(tmp_path):
+    """WHY: real boards contain 'backlog'/'done' in the wrong case. Falling back
+    to phases[0] would silently demote a finished task to the first phase."""
+    from taskboard.models import Board
+    b = Board.load(tmp_path / "b.json")
+    b.phases = ["Backlog", "Doing", "Done"]
+    assert b.canonical_phase("backlog") == "Backlog"
+    assert b.canonical_phase("DONE") == "Done"
+    assert b.canonical_phase("  doing ") == "Doing"
+    assert b.canonical_phase("Backlog") == "Backlog"
+    assert b.canonical_phase("nonsense") == "Backlog"        # genuine unknown -> first
+
+
+def test_load_snaps_wrong_case_phases_without_demoting(tmp_path):
+    """A stored lowercase 'done' must load as Done, not be demoted to Backlog."""
+    import json
+    from taskboard.models import Board
+    p = tmp_path / "board.json"
+    p.write_text(json.dumps({
+        "phases": ["Backlog", "Doing", "Done"],
+        "projects": [],
+        "tasks": [
+            {"id": "a", "title": "lower done", "phase": "done"},
+            {"id": "b", "title": "lower backlog", "phase": "backlog"},
+            {"id": "c", "title": "weird", "phase": "Nope"},
+        ],
+        "settings": {},
+    }), encoding="utf-8")
+    b = Board.load(p)
+    by = {t.id: t.phase for t in b.tasks}
+    assert by["a"] == "Done"          # NOT demoted
+    assert by["b"] == "Backlog"
+    assert by["c"] == "Backlog"       # genuine unknown falls back
