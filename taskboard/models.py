@@ -9,6 +9,7 @@ empty (we never overwrite it, so the user can recover it by hand).
 from __future__ import annotations
 
 import json
+import shutil
 from dataclasses import asdict, dataclass, field
 from datetime import date, timedelta
 from pathlib import Path
@@ -309,6 +310,51 @@ _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "star
               "status", "url"}          # last two: legacy, consumed by the migration
 
 
+def _quarantine_corrupt_file(path: Path):
+    """Copy a corrupt/unreadable board file to a `.corrupt` sidecar (never
+    clobbering an existing quarantine) so the user's bytes survive even if the
+    app later writes a fresh empty board. Returns the backup path, or None."""
+    try:
+        if not path.exists() or path.stat().st_size == 0:
+            return None
+        backup = path.with_name(path.name + ".corrupt")
+        if not backup.exists():
+            shutil.copy2(path, backup)
+        return backup
+    except OSError:
+        return None
+
+
+def _rescue_task(entry, reason: str) -> "Task":
+    """Preserve an unreadable task entry instead of dropping it: the original
+    content is kept in `notes` (shown in the task modal) and flagged in `extra`,
+    so a format change can never make a task silently vanish."""
+    try:
+        raw = entry if isinstance(entry, str) else json.dumps(entry, ensure_ascii=False, default=str)
+    except Exception:
+        raw = repr(entry)
+    title = "(recovered task)"
+    if isinstance(entry, dict) and isinstance(entry.get("title"), str) and entry["title"].strip():
+        title = entry["title"].strip()
+    elif isinstance(entry, str) and entry.strip():
+        title = "(recovered) " + entry.strip()[:48]
+    note = (f"[rescued] this task could not be read normally ({reason}). Its "
+            f"original content was preserved below so nothing is lost:\n{raw}")
+    return Task(title=title, notes=note,
+                extra={"_rescued": True, "_rescue_reason": reason})
+
+
+def _rescue_project(entry) -> "Project":
+    """Preserve an unreadable project entry as a flagged placeholder rather than
+    letting one bad row drop every project (which would orphan its tasks)."""
+    name = "(recovered project)"
+    if isinstance(entry, dict) and isinstance(entry.get("name"), str) and entry["name"].strip():
+        name = entry["name"].strip()
+    elif isinstance(entry, str) and entry.strip():
+        name = "(recovered) " + entry.strip()[:48]
+    return Project(name=name, extra={"_rescued": True})
+
+
 @dataclass
 class Project:
     name: str
@@ -352,35 +398,43 @@ class Task:
 
     @classmethod
     def from_dict(cls, d: dict) -> "Task":
-        # urls: prefer the modern list; migrate a legacy single "url" string
-        # into a one-element list (one-way, DD-2); else empty. Never raises.
-        if isinstance(d.get("urls"), list):
-            urls = [str(u) for u in d["urls"]]
-        elif isinstance(d.get("url"), str) and d.get("url"):
-            urls = [d["url"]]
-        else:
-            urls = []
-        images = [str(i) for i in d["images"]] if isinstance(d.get("images"), list) else []
-        # phase/blocked when present; otherwise migrate the legacy status field.
-        legacy_phase, legacy_blocked = LEGACY_STATUS.get(d.get("status"),
-                                                         ("Backlog", False))
-        phase = d["phase"] if isinstance(d.get("phase"), str) and d["phase"] else legacy_phase
-        blocked = bool(d["blocked"]) if "blocked" in d else legacy_blocked
-        return cls(
-            id=d.get("id") or _new_id(),
-            title=d.get("title", "Untitled"),
-            project_id=d.get("project_id"),
-            phase=phase,
-            blocked=blocked,
-            extra=_extra_keys(d, _TASK_KEYS),
-            priority=d.get("priority") if d.get("priority") in TASK_PRIORITIES else "normal",
-            start_date=d.get("start_date"),
-            due_date=d.get("due_date"),
-            notes=str(d.get("notes") or ""),   # additive; absent on pre-notes boards
-            urls=urls,
-            images=images,
-            archived=bool(d.get("archived", False)),
-        )
+        """Total: never raises. A non-object entry, or a dict that trips the
+        parser, is rescued into a placeholder Task that PRESERVES the original
+        content, so a schema change can never make a task silently disappear."""
+        if not isinstance(d, dict):
+            return _rescue_task(d, "not a JSON object")
+        try:
+            # urls: prefer the modern list; migrate a legacy single "url" string
+            # into a one-element list (one-way, DD-2); else empty. Never raises.
+            if isinstance(d.get("urls"), list):
+                urls = [str(u) for u in d["urls"]]
+            elif isinstance(d.get("url"), str) and d.get("url"):
+                urls = [d["url"]]
+            else:
+                urls = []
+            images = [str(i) for i in d["images"]] if isinstance(d.get("images"), list) else []
+            # phase/blocked when present; otherwise migrate the legacy status field.
+            legacy_phase, legacy_blocked = LEGACY_STATUS.get(d.get("status"),
+                                                             ("Backlog", False))
+            phase = d["phase"] if isinstance(d.get("phase"), str) and d["phase"] else legacy_phase
+            blocked = bool(d["blocked"]) if "blocked" in d else legacy_blocked
+            return cls(
+                id=d.get("id") or _new_id(),
+                title=d.get("title", "Untitled"),
+                project_id=d.get("project_id"),
+                phase=phase,
+                blocked=blocked,
+                extra=_extra_keys(d, _TASK_KEYS),
+                priority=d.get("priority") if d.get("priority") in TASK_PRIORITIES else "normal",
+                start_date=d.get("start_date"),
+                due_date=d.get("due_date"),
+                notes=str(d.get("notes") or ""),   # additive; absent on pre-notes boards
+                urls=urls,
+                images=images,
+                archived=bool(d.get("archived", False)),
+            )
+        except Exception as exc:                    # never let one bad task raise
+            return _rescue_task(d, type(exc).__name__)
 
 
 class Board:
@@ -392,8 +446,15 @@ class Board:
         self.tasks = tasks
         self.path = path
         self.settings = settings or {}
+        self._load_report: dict = {}
         # ordered workflow; never empty (progress + every view index into it)
         self.phases = list(phases) if phases else list(DEFAULT_PHASES)
+
+    @property
+    def load_report(self) -> dict:
+        """Health of the most recent load: how many entries were rescued and
+        whether the file was quarantined. Empty dict for a clean load."""
+        return self._load_report
 
     def canonical_phase(self, name: str) -> str:
         """Resolve a stored phase name to this board's spelling. Matching is
@@ -420,21 +481,42 @@ class Board:
             return board
         try:
             raw = json.loads(path.read_text(encoding="utf-8"))
-            projects = [Project.from_dict(p) for p in raw.get("projects", [])]
-            tasks = [Task.from_dict(t) for t in raw.get("tasks", [])]
-            # settings is optional -> back-compat with pre-settings board files
-            settings = raw.get("settings") if isinstance(raw.get("settings"), dict) else {}
-            phases = raw.get("phases")
-            if not (isinstance(phases, list) and phases
-                    and all(isinstance(p, str) and p for p in phases)):
-                phases = None
-            board = cls(projects, tasks, path, settings, phases)
-            for t in board.tasks:            # snap to the board's spelling;
-                t.phase = board.canonical_phase(t.phase)   # unknown -> first
+        except (json.JSONDecodeError, OSError, TypeError, ValueError):
+            raw = None
+        if not isinstance(raw, dict):
+            # Whole file unreadable: quarantine a copy so a later save can never
+            # destroy the user's bytes, then start empty (the file is untouched).
+            backup = _quarantine_corrupt_file(path)
+            board = cls([], [], path)
+            board._load_report = {"file_unreadable": True,
+                                  "backup": str(backup) if backup else None,
+                                  "projects_rescued": 0, "tasks_rescued": 0}
             return board
-        except (json.JSONDecodeError, OSError, TypeError, AttributeError):
-            # Corrupt / unreadable: start empty, leave the file untouched.
-            return cls([], [], path)
+        # per-item rescue: one malformed entry can NEVER empty the whole board.
+        projects, p_rescued = [], 0
+        for p in raw.get("projects", []) or []:
+            try:
+                projects.append(Project.from_dict(p))
+            except Exception:
+                projects.append(_rescue_project(p))
+                p_rescued += 1
+        tasks, t_rescued = [], 0
+        for t in raw.get("tasks", []) or []:
+            task = Task.from_dict(t)                 # total: rescues internally
+            tasks.append(task)
+            if task.extra.get("_rescued"):
+                t_rescued += 1
+        settings = raw.get("settings") if isinstance(raw.get("settings"), dict) else {}
+        phases = raw.get("phases")
+        if not (isinstance(phases, list) and phases
+                and all(isinstance(p, str) and p for p in phases)):
+            phases = None
+        board = cls(projects, tasks, path, settings, phases)
+        for t in board.tasks:                # snap to the board's spelling;
+            t.phase = board.canonical_phase(t.phase)   # unknown -> first
+        board._load_report = {"file_unreadable": False, "backup": None,
+                              "projects_rescued": p_rescued, "tasks_rescued": t_rescued}
+        return board
 
     @staticmethod
     def _to_dict(item) -> dict:

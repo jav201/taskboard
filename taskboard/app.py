@@ -97,6 +97,26 @@ class TaskboardApp(App):
         self._apply_clock_settings()
         # ONE shared clock interval for the whole app (never per-widget).
         self.set_interval(1.0, self._tick)
+        self._warn_if_rescued()
+
+    def _warn_if_rescued(self) -> None:
+        """Surface a load that had to repair drifted/corrupt data, so the user
+        knows some items were recovered (and can open them to fix them)."""
+        r = self.board.load_report
+        if not r:
+            return
+        if r.get("file_unreadable"):
+            where = r.get("backup") or "a .corrupt sidecar"
+            self.notify(
+                f"board.json was unreadable; a copy was kept at {where}. "
+                "Started empty — your file was not overwritten.",
+                title="Board recovered", severity="error", timeout=10)
+        elif r.get("tasks_rescued") or r.get("projects_rescued"):
+            n = r.get("tasks_rescued", 0) + r.get("projects_rescued", 0)
+            self.notify(
+                f"{n} item(s) had an unreadable format and were recovered "
+                "(see their notes). Nothing was lost.",
+                title="Tasks recovered", severity="warning", timeout=10)
 
     # ---- clock -------------------------------------------------------------
     def _tick(self) -> None:
