@@ -1659,3 +1659,150 @@ async def test_phase_editor_reorder_key_moves_phase(tmp_path):
         assert app.board.phases == expected
         assert app.screen.query_one("#phase-list", OptionList).highlighted == 1
     assert Board.load(board_path).phases == expected     # persisted
+
+
+def _phase_app(tmp_path, phases=("A", "B", "C"), tasks=None) -> TaskboardApp:
+    """App over a board with an explicit phase list, on disk in tmp_path."""
+    board = _phase_board(tmp_path, phases, tasks)
+    return TaskboardApp(board_path=str(board.path))
+
+
+async def test_phase_editor_add_via_prompt(tmp_path):
+    """WHY: the editor's 'a' only opens a prompt — the phase does not exist until
+    the prompt's callback runs AND the board is saved. Both halves are asserted,
+    the second against the file on disk."""
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        before = list(app.board.phases)
+        await pilot.press("f")
+        await pilot.pause()
+        await pilot.press("a")
+        await pilot.pause()
+        assert isinstance(app.screen, modals.TextPrompt)
+        app.screen.query_one("#f-text", Input).value = "Review"
+        await save_open_modal(app, pilot)
+        await pilot.pause()
+        assert app.board.phases == before + ["Review"]
+        assert isinstance(app.screen, PhaseEditor)          # editor stays open
+    assert Board.load(board_path).phases == before + ["Review"]
+
+
+async def test_phase_editor_rename_moves_tasks_through_the_ui(tmp_path):
+    """WHY: renaming from the editor must carry the tasks with it. The model does
+    that, but only if the editor hands it the OLD name of the HIGHLIGHTED row —
+    pass the wrong one and the tasks keep a name the board no longer knows, so
+    the next load demotes them to phases[0]. Driven through the real widgets and
+    checked after a reload, which is where such an orphan would show up."""
+    app = _phase_app(tmp_path, ("A", "B", "C"),
+                     [Task("t1", None, "B"), Task("t2", None, "B"),
+                      Task("keep", None, "C")])
+    board_path = app.board.path
+    async with app.run_test(size=(120, 40)) as pilot:
+        moved = [t.id for t in app.board.tasks if t.phase == "B"]
+        kept = next(t.id for t in app.board.tasks if t.phase == "C")
+        assert len(moved) == 2                              # precondition
+        await pilot.press("f")
+        await pilot.pause()
+        app.screen.query_one("#phase-list", OptionList).highlighted = 1
+        await pilot.press("e")                              # rename the highlighted phase
+        await pilot.pause()
+        assert app.screen.query_one("#f-text", Input).value == "B"   # prefilled
+        app.screen.query_one("#f-text", Input).value = "Building"
+        await save_open_modal(app, pilot)
+        await pilot.pause()
+        assert app.board.phases == ["A", "Building", "C"]
+        assert all(app.board.task_by_id(i).phase == "Building" for i in moved)
+        assert not any(t.phase == "B" for t in app.board.tasks)
+
+    reloaded = Board.load(board_path)                       # on-disk oracle
+    assert reloaded.phases == ["A", "Building", "C"]
+    assert all(reloaded.task_by_id(i).phase == "Building" for i in moved)
+    assert reloaded.task_by_id(kept).phase == "C"           # untouched
+
+
+async def test_phase_editor_add_rejects_duplicate(tmp_path):
+    """WHY: the prompt returns free text, so the editor is the last gate before a
+    case-variant twin of an existing phase reaches the board."""
+    app = _phase_app(tmp_path, ("Backlog", "Doing", "Done"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("f")
+        await pilot.pause()
+        await pilot.press("a")
+        await pilot.pause()
+        app.screen.query_one("#f-text", Input).value = "backlog"
+        await save_open_modal(app, pilot)
+        await pilot.pause()
+        assert app.board.phases == ["Backlog", "Doing", "Done"]
+        assert isinstance(app.screen, PhaseEditor)
+        assert app.screen.query_one("#phase-list", OptionList).option_count == 3
+
+
+async def test_phase_editor_prompt_cancel_is_a_noop(tmp_path):
+    """WHY: TextPrompt dismisses with None on escape and "" on an empty save —
+    the editor must treat cancel as "changed my mind", not as a blank phase."""
+    app = _phase_app(tmp_path, ("Backlog", "Doing", "Done"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("f")
+        await pilot.pause()
+        await pilot.press("a")
+        await pilot.pause()
+        assert isinstance(app.screen, modals.TextPrompt)
+        await pilot.press("escape")
+        await pilot.pause()
+        assert app.board.phases == ["Backlog", "Doing", "Done"]
+        assert isinstance(app.screen, PhaseEditor)          # back to the editor
+
+
+async def test_phase_editor_delete_reassigns_through_the_ui(tmp_path):
+    """WHY: deleting a workflow step from the editor must not delete the work in
+    it. The confirm dialog is part of the path — the tasks only move once it
+    returns True — so the whole flow is driven, not just the model call."""
+    app = _phase_app(tmp_path, ("A", "B", "C"),
+                     [Task("a", None, "A"), Task("b1", None, "B"),
+                      Task("b2", None, "B"), Task("c", None, "C")])
+    async with app.run_test(size=(120, 40)) as pilot:
+        moved = [t.id for t in app.board.tasks if t.phase == "B"]
+        assert len(moved) == 2                              # precondition
+        await pilot.press("f")
+        await pilot.pause()
+        app.screen.query_one("#phase-list", OptionList).highlighted = 1
+        await pilot.press("d")
+        await pilot.pause()
+        assert isinstance(app.screen, modals.ConfirmModal)
+        app.screen.query_one("#yes", Button).press()
+        await pilot.pause()
+        await pilot.pause()
+        assert app.board.phases == ["A", "C"]
+        assert len(app.board.tasks) == 4                    # nothing lost
+        assert all(app.board.task_by_id(i).phase == "A" for i in moved)
+
+
+async def test_phase_editor_refuses_deleting_the_last_phase(tmp_path):
+    """WHY: every view indexes into phases, so an empty list would leave the task
+    pointing nowhere. The editor must refuse before even asking to confirm."""
+    app = _phase_app(tmp_path, ("Only",), [Task("solo", None, "Only")])
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("f")
+        await pilot.pause()
+        app.screen.query_one("#phase-list", OptionList).highlighted = 0
+        await pilot.press("d")
+        await pilot.pause()
+        assert isinstance(app.screen, PhaseEditor)          # no confirm was pushed
+        assert app.board.phases == ["Only"]
+        assert len(app.board.tasks) == 1
+        assert app.board.tasks[0].phase == "Only"
+
+
+async def test_phase_name_with_markup_is_escaped(tmp_path):
+    """WHY: phase names are user text and the editor's rows are markup — an
+    unescaped '[red]' would either vanish as a tag or raise MarkupError while the
+    list builds (pitfall A1)."""
+    app = _phase_app(tmp_path, ("[red]boom[/red]", "Done"),
+                     [Task("t", None, "[red]boom[/red]")])
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("f")
+        await pilot.pause()
+        ol = app.screen.query_one("#phase-list", OptionList)
+        prompts = [str(ol.get_option_at_index(i).prompt) for i in range(ol.option_count)]
+        assert any("\\[red]boom\\[/red]" in pr for pr in prompts)
