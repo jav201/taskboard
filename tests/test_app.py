@@ -1297,3 +1297,128 @@ def test_load_snaps_wrong_case_phases_without_demoting(tmp_path):
     assert by["a"] == "Done"          # NOT demoted
     assert by["b"] == "Backlog"
     assert by["c"] == "Backlog"       # genuine unknown falls back
+
+
+# --- kanban view (every task in its phase, grouped by project) -------------- #
+def _kanban_board(tmp_path):
+    """A board where ONE project has THREE tasks in ONE phase — the case
+    swimlanes collapsed to 'first task + N more'."""
+    from taskboard.models import Board, Project, Task
+    b = Board.load(str(tmp_path / "k.json"))
+    b.projects.clear()
+    b.tasks.clear()
+    alpha = Project("Alpha", "cyan", "on_track")
+    beta = Project("Beta", "amber", "on_track")
+    b.projects += [alpha, beta]
+    b.tasks += [
+        Task("KA one", alpha.id, "Backlog"),
+        Task("KA two", alpha.id, "Backlog"),
+        Task("KA three", alpha.id, "Backlog"),
+        Task("KA doing", alpha.id, "Doing"),
+        Task("KB done", beta.id, "Done"),
+        Task("KB blocked", beta.id, "Doing", blocked=True),
+        Task("Loose one", None, "Backlog"),
+    ]
+    b.save()
+    return b
+
+
+def test_kanban_shows_every_task_in_its_phase(tmp_path):
+    """WHY: swimlanes only rendered the FIRST task of each project/phase cell and
+    summarised the rest as 'N more' — this view exists to show them ALL."""
+    from taskboard.views import render_kanban
+    b = _kanban_board(tmp_path)
+    out = str(render_kanban(b, False, None, date(2026, 7, 17), width=160, height=0))
+    for title in ("KA one", "KA two", "KA three", "KA doing", "KB done", "Loose one"):
+        assert title in out, f"{title} missing from the kanban render"
+
+
+def test_kanban_groups_by_project(tmp_path):
+    """Each phase column groups its tasks under a per-project header line."""
+    from taskboard.views import render_kanban, _phase_window, distribute
+    b = _kanban_board(tmp_path)
+    w = 160
+    lines = str(render_kanban(b, False, None, date(2026, 7, 17),
+                              width=w, height=0)).split("\n")
+    start, widths = _phase_window(b, w - 2, None)
+    assert start == 0 and len(widths) == len(b.phases)
+    col0 = [l[1:1 + widths[0]] for l in lines]          # the Backlog column only
+    assert any("Alpha" in cell for cell in col0)         # project header present
+    assert any("Inbox" in cell for cell in col0)         # project-less group
+    # …and the header sits ABOVE that project's three tasks in the same column
+    hdr = next(i for i, cell in enumerate(col0) if "Alpha" in cell)
+    tasks = [i for i, cell in enumerate(col0) if "KA one" in cell or "KA three" in cell]
+    assert tasks and all(i > hdr for i in tasks)
+
+
+def test_kanban_marks_blocked_without_moving_it(tmp_path):
+    """A blocked task keeps its own phase (blocked is a flag, not a column) and
+    carries the ▲ marker."""
+    from taskboard.views import render_kanban, _phase_window
+    b = _kanban_board(tmp_path)
+    w = 160
+    lines = str(render_kanban(b, False, None, date(2026, 7, 17),
+                              width=w, height=0)).split("\n")
+    start, widths = _phase_window(b, w - 2, None)
+    doing = b.phases.index("Doing")
+    off = 1 + sum(widths[:doing]) + doing                # 1 border + prior cols + seps
+    cells = [l[off:off + widths[doing]] for l in lines]
+    row = next(cell for cell in cells if "KB blocked" in cell)
+    assert "▲" in row
+    assert not any("KB blocked" in l[1:1 + widths[0]] for l in lines)   # not moved
+
+
+def test_kanban_matrix_shows_progress_percent(tmp_path):
+    from taskboard.views import render_kanban
+    b = _kanban_board(tmp_path)
+    alpha = next(p for p in b.projects if p.name == "Alpha")
+    expected = int(round(100 * b.project_progress(alpha.id)))
+    out = str(render_kanban(b, False, None, date(2026, 7, 17), width=160, height=0,
+                            presentation="matrix"))
+    row = next(l for l in out.split("\n") if "Alpha" in l)
+    assert f"{expected}%" in row
+    assert "prog" in out
+
+
+async def test_tab_toggles_kanban_presentation(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("5")
+        assert "grouped" in board_text(app)
+        assert "prog" not in board_text(app)
+        await pilot.press("tab")
+        assert app.kanban_presentation == "matrix"
+        assert "prog" in board_text(app)        # only the matrix has a prog column
+        await pilot.press("tab")
+        assert app.kanban_presentation == "grouped"
+        assert "prog" not in board_text(app)
+
+
+def test_kanban_width_exact_across_widths(tmp_path):
+    from taskboard.views import render_kanban
+    b = _kanban_board(tmp_path)
+    sel = b.tasks[0].id
+    for w in (40, 68, 100, 140):
+        for pres in ("grouped", "matrix"):
+            lines = str(render_kanban(b, False, sel, date(2026, 7, 17), width=w,
+                                      height=0, presentation=pres)).split("\n")
+            assert all(len(l) == w for l in lines), f"{pres} at {w}: a line != {w}"
+
+
+def test_kanban_windows_phases_when_they_dont_fit(tmp_path):
+    """8 phases can't fit at 40 cells with a 12-cell floor: render the window
+    that fits and say how many phases are hidden."""
+    from taskboard.views import render_kanban, _phase_window
+    b = _kanban_board(tmp_path)
+    b.phases = [f"Phase{i}" for i in range(8)]
+    for t in b.tasks:
+        t.phase = b.phases[0]
+    b.tasks[0].phase = b.phases[7]
+    start, widths = _phase_window(b, 38, b.tasks[0])     # width 40 -> inner 38
+    assert len(widths) == 3 and all(wc >= 12 for wc in widths)
+    assert start + len(widths) == 8                      # window followed the selection
+    out = str(render_kanban(b, False, b.tasks[0].id, date(2026, 7, 17), width=40, height=0))
+    assert "PHASE7" in out and "PHASE0" not in out       # only the window is drawn
+    assert "◀ 5" in out                                  # 5 phases hidden to the left
+    out0 = str(render_kanban(b, False, b.tasks[1].id, date(2026, 7, 17), width=40, height=0))
+    assert "5 ▶" in out0                                 # …and to the right at the start

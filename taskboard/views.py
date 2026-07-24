@@ -678,6 +678,191 @@ def render_gantt(board, show_archived, selected_id, today=None,
 
 
 # ---------------------------------------------------------------------------
+# view: KANBAN  (one column per phase with EVERY task, grouped by project;
+#                `tab` switches to a project x phase matrix)
+# ---------------------------------------------------------------------------
+MIN_COL = 12        # a phase column narrower than this shows nothing useful
+
+
+def _phase_window(board: Board, grid: int, selected: Task | None,
+                  min_col: int = MIN_COL) -> tuple[int, list[int]]:
+    """(start, widths) for the phases that fit in `grid` cells at >= `min_col`.
+
+    `grid` includes the 1-cell separators between columns. When not every phase
+    fits, the window follows the selected task's phase so navigating into a
+    hidden phase brings it on screen."""
+    n = len(board.phases)
+    fits = max(1, min(n, (grid + 1) // (min_col + 1)))
+    if fits >= n:
+        start = 0
+    else:
+        sel = board.phase_index(selected) if selected is not None else 0
+        start = max(0, min(n - fits, sel - (fits - 1) // 2))
+    return start, distribute(grid - (fits - 1), fits)
+
+
+def _windowed_header(board: Board, start: int, widths: list[int]) -> list[str]:
+    """Phase-name header cells, with `◀ N` / `N ▶` counts for hidden phases."""
+    n, end = len(board.phases), start + len(widths)
+    cells = []
+    for i, wc in enumerate(widths):
+        pre = f"◀ {start} " if (i == 0 and start > 0) else ""
+        suf = f" {n - end} ▶" if (i == len(widths) - 1 and end < n) else ""
+        avail = wc - len(pre) - len(suf)
+        if avail < 1:                       # no room for a label -> markers only
+            cells.append(c(fit((pre + suf).strip(), wc), "mut"))
+            continue
+        cells.append(c(pre, "mut")
+                     + c(escape(fit(board.phases[start + i].upper(), avail)), "hd", bold=True)
+                     + c(suf, "mut"))
+    return cells
+
+
+def _kanban_groups(board, tasks, show_archived) -> list[tuple[str, str, list[Task]]]:
+    """(name, color, tasks) per project that owns any of `tasks`, Inbox last."""
+    groups = []
+    for p in board.visible_projects(show_archived):
+        items = [t for t in tasks if t.project_id == p.id]
+        if items:
+            groups.append((p.name, p.color, items))
+    inbox = [t for t in tasks if board.project_by_id(t.project_id) is None]
+    if inbox:
+        groups.append(("Inbox", "dim", inbox))
+    return groups
+
+
+def _kanban_column_rows(board, tasks, wc, selected_id,
+                        show_archived) -> list[tuple[str, str | None]]:
+    """(markup, task-id) rows for ONE phase column: a coloured project header
+    followed by EVERY one of that project's tasks in this phase."""
+    rows: list[tuple[str, str | None]] = []
+    for name, color, items in _kanban_groups(board, tasks, show_archived):
+        rows.append((c("▐ ", color) + c(escape(fit(name, max(0, wc - 2))), color, bold=True),
+                     None))
+        for t in items:
+            rows.append((card_cell(t, board, wc, t.id == selected_id,
+                                   prefix="▲ " if t.blocked else "▊ ",
+                                   prefix_color="over" if t.blocked
+                                   else project_color(board, t)), t.id))
+    return rows
+
+
+def _col_junctions(widths: list[int], mid: str) -> dict[int, str]:
+    j, pos = {}, 0
+    for wc in widths[:-1]:
+        pos += wc
+        j[pos] = mid
+        pos += 1
+    return j
+
+
+def _matrix_junctions(label_w: int, widths: list[int], mid: str) -> dict[int, str]:
+    j, pos = {}, label_w
+    j[pos] = mid
+    pos += 1
+    for wc in widths:
+        pos += wc
+        j[pos] = mid
+        pos += 1
+    return j
+
+
+def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_map) -> list[str]:
+    inner = w - 2
+    tasks = board.visible_tasks(show_archived)
+    start, widths = _phase_window(board, inner, board.task_by_id(selected_id))
+    buckets = phase_buckets(board, tasks)
+    sep = c("│", "frame")
+
+    right = c(f"{len(tasks)} tasks", "mut")
+    lines = [header(c("KANBAN", "accent", bold=True) + c(" · grouped", "mut"), right, w)]
+    lines.append(line(sep.join(_windowed_header(board, start, widths))))
+    lines.append(_border("├", "─", "┤", _col_junctions(widths, "┼"), w))
+
+    cols = [_kanban_column_rows(board, buckets[start + i], wc, selected_id, show_archived)
+            for i, wc in enumerate(widths)]
+    max_rows = max((len(col) for col in cols), default=0)
+    if max_rows == 0:
+        lines.append(line(c(fit("  (no tasks — press 'a' to add one)", inner), "dim")))
+    for r in range(max_rows):
+        lines.append(line(sep.join(col[r][0] if r < len(col) else fit("", widths[i])
+                                   for i, col in enumerate(cols))))
+        if line_map is not None:
+            for col in cols:
+                if r < len(col) and col[r][1]:
+                    line_map[col[r][1]] = len(lines) - 1
+    lines.append(bottom(_col_junctions(widths, "┴"), w))
+    return lines
+
+
+def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map) -> list[str]:
+    inner = w - 2
+    tasks = board.visible_tasks(show_archived)
+    label_w = max(6, min(14, inner // 5))
+    prog_w = 5
+    selected = board.task_by_id(selected_id)
+    start, widths = _phase_window(board, inner - label_w - prog_w - 2, selected)
+    sep = c("│", "frame")
+
+    right = c(f"{len(tasks)} tasks", "mut")
+    lines = [header(c("KANBAN", "accent", bold=True) + c(" · matrix", "mut"), right, w)]
+    lines.append(line(fit("", label_w) + sep
+                      + sep.join(_windowed_header(board, start, widths)) + sep
+                      + c(fit("prog", prog_w, "right"), "hd", bold=True)))
+    lines.append(_border("├", "─", "┤", _matrix_junctions(label_w, widths, "┼"), w))
+
+    rows: list[tuple[str, str, str | None, list[Task]]] = [
+        (p.name, p.color, p.id, [t for t in tasks if t.project_id == p.id])
+        for p in board.visible_projects(show_archived)]
+    inbox = [t for t in tasks if board.project_by_id(t.project_id) is None]
+    if inbox:
+        rows.append(("Inbox", "dim", None, inbox))
+    if not rows:
+        lines.append(line(c(fit("  (no projects — press 'p' to add one)", inner), "dim")))
+
+    for name, color, pid, items in rows:
+        buckets = phase_buckets(board, items)
+        cells = []
+        for i, wc in enumerate(widths):
+            bucket = buckets[start + i]
+            cells.append(c(fit(" " + ("▊" * len(bucket) if bucket else "·"), wc),
+                           color if bucket else "dim"))
+        pct = (f"{int(round(100 * board.project_progress(pid, show_archived)))}%"
+               if pid else "—")
+        lines.append(line(c("▐ ", color) + c(escape(fit(name, label_w - 2)), color, bold=True)
+                          + sep + sep.join(cells) + sep
+                          + c(fit(pct, prog_w, "right"), "accent" if pid else "dim")))
+        if line_map is not None:
+            for t in items:
+                line_map[t.id] = len(lines) - 1
+
+    lines.append(_border("├", "─", "┤", _matrix_junctions(label_w, widths, "┴"), w))
+    if selected is None:
+        lines.append(line(c(fit("  (no selection)", inner), "dim")))
+    else:
+        p_obj = board.project_by_id(selected.project_id)
+        tail = (f"{p_obj.name if p_obj else 'Inbox'} · {selected.phase} · "
+                f"{board.phase_index(selected) + 1}/{len(board.phases)}")
+        avail = max(0, inner - 4)
+        tail_w = min(len(tail), avail // 2)
+        lines.append(line(" " + c("▲" if selected.blocked else "▊",
+                                  "over" if selected.blocked else project_color(board, selected))
+                          + " " + title_markup(selected, avail - tail_w, False)
+                          + " " + c(escape(fit(tail, tail_w)), "mut")))
+    lines.append(bottom(None, w))
+    return lines
+
+
+def render_kanban(board, show_archived, selected_id, today=None,
+                  width=68, height=0, line_map=None, presentation="grouped") -> Text:
+    today = today or date.today()
+    w = _clamp_width(width)
+    build = _kanban_matrix if presentation == "matrix" else _kanban_grouped
+    lines = build(board, show_archived, selected_id, today, w, height, line_map)
+    return Text.from_markup("\n".join(fill_height(lines, height, w)))
+
+
+# ---------------------------------------------------------------------------
 # dispatcher
 # ---------------------------------------------------------------------------
 RENDERERS = {
@@ -685,11 +870,15 @@ RENDERERS = {
     "columns": render_columns,
     "agenda": render_agenda,
     "gantt": render_gantt,
+    "kanban": render_kanban,
 }
 
 
 def render_view(mode, board, show_archived, selected_id, today=None,
-                width=68, height=0, line_map=None) -> Text:
+                width=68, height=0, line_map=None, presentation="grouped") -> Text:
+    if mode == "kanban":
+        return render_kanban(board, show_archived, selected_id, today, width, height,
+                             line_map, presentation)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 
@@ -709,6 +898,12 @@ def nav_model(mode, board, show_archived, today=None) -> list[list[str]]:
 
     if mode == "columns":
         return [[t.id for t in bucket] for bucket in phase_buckets(board, tasks)]
+
+    if mode == "kanban":       # same phase columns, but in project-grouped order
+        ordered: list[Task] = []
+        for _, _, items in _kanban_groups(board, tasks, show_archived):
+            ordered += items
+        return [[t.id for t in bucket] for bucket in phase_buckets(board, ordered)]
 
     if mode == "swimlanes":
         lanes = [[t for t in tasks if t.project_id == p.id]
