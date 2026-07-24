@@ -18,8 +18,9 @@ from .modals import (ClockModal, ConfirmModal, ImageViewer, ProjectModal, Projec
 from .ribbon import Ribbon
 from .views import nav_model, render_view, valid_url
 
-VIEW_ORDER = ["swimlanes", "columns", "agenda", "gantt"]
-VIEW_KEYS = {"1": "swimlanes", "2": "columns", "3": "agenda", "4": "gantt"}
+VIEW_ORDER = ["swimlanes", "columns", "agenda", "gantt", "kanban"]
+VIEW_KEYS = {"1": "swimlanes", "2": "columns", "3": "agenda", "4": "gantt",
+             "5": "kanban"}
 
 
 class BoardView(Static):
@@ -40,6 +41,10 @@ class TaskboardApp(App):
         ("2", "view('columns')", "Cols"),
         ("3", "view('agenda')", "Agenda"),
         ("4", "view('gantt')", "Gantt"),
+        ("5", "view('kanban')", "Kanban"),
+        # priority=True so tab reaches us instead of the screen's focus_next;
+        # check_action hands it back to modals (see below).
+        Binding("tab", "toggle_presentation", "Layout", priority=True),
         ("a", "add_task", "Add"),
         ("p", "add_project", "Project"),
         ("P", "manage_projects", "Projects"),
@@ -65,6 +70,7 @@ class TaskboardApp(App):
         super().__init__()
         self.board = Board.load(board_path or default_board_path())
         self.view_mode = "swimlanes"
+        self.kanban_presentation = "grouped"
         self.show_archived = False
         self.selected_task_id: str | None = None
 
@@ -72,7 +78,8 @@ class TaskboardApp(App):
         """While a modal is open, release the board's priority arrow/vim bindings
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
         receive them instead of moving the hidden board selection."""
-        if action in ("cursor", "hmove") and len(self.screen_stack) > 1:
+        if (action in ("cursor", "hmove", "toggle_presentation")
+                and len(self.screen_stack) > 1):
             return False
         return True
 
@@ -183,7 +190,8 @@ class TaskboardApp(App):
         self._line_map: dict[str, int] = {}
         content = render_view(self.view_mode, self.board, self.show_archived,
                               self.selected_task_id, width=w, height=h,
-                              line_map=self._line_map)
+                              line_map=self._line_map,
+                              presentation=self.kanban_presentation)
         board_widget.update(content)
         self._scroll_selected_into_view()
 
@@ -208,6 +216,14 @@ class TaskboardApp(App):
         if mode in VIEW_ORDER:
             self.view_mode = mode
             self.refresh_view()
+
+    def action_toggle_presentation(self) -> None:
+        """Tab flips the kanban view's presentation; a no-op elsewhere."""
+        if self.view_mode != "kanban":
+            return
+        self.kanban_presentation = ("matrix" if self.kanban_presentation == "grouped"
+                                    else "grouped")
+        self.refresh_view()
 
     # ---- task CRUD ---------------------------------------------------------
     def action_add_task(self) -> None:
