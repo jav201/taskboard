@@ -578,13 +578,14 @@ def agenda_bucket(task: Task, today: date) -> str:
 
 def render_agenda(board, show_archived, selected_id, today=None,
                   width=68, height=0, line_map=None) -> Text:
+    """A due dot-plot: every task with a due date is a ● on ONE shared day-axis
+    (1 cell = 1 day) with a full-height teal today rule ┃. Distance from the rule
+    is urgency; a vertical stack of dots at one column is a crunch day. Rows are
+    sorted by due, so no OVERDUE/TODAY/THIS-WEEK sub-headers are needed. Tasks
+    with no due date collect under a 'no date' group at the bottom."""
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
-    # full row has fixed cols (dot/proj/glyph/braille/chip = 32); when there's
-    # not enough width for a usable title, fall back to a compact dot+title row.
-    title_w = inner - 32
-    compact = title_w < 6
 
     tasks = board.visible_tasks(show_archived)
     overdue_n = sum(1 for t in tasks if agenda_bucket(t, today) == "overdue")
@@ -593,40 +594,109 @@ def render_agenda(board, show_archived, selected_id, today=None,
              + c(f"{today_n} today", "soon"))
     lines = [header(c("AGENDA", "accent", bold=True), right, w)]
 
-    by_group: dict[str, list[Task]] = {g[1]: [] for g in AGENDA_GROUPS}
-    for t in tasks:
-        by_group[agenda_bucket(t, today)].append(t)
+    dated = sort_by_due([t for t in tasks if parse_iso(t.due_date) is not None])
+    undated = [t for t in tasks if parse_iso(t.due_date) is None]
 
-    any_rows = False
-    for gname, gkey, gcol in AGENDA_GROUPS:
-        rows = by_group[gkey]
-        if not rows:
-            continue
-        any_rows = True
-        label = f" {gname} "
-        lines.append(line(c(label, gcol, bold=(gkey in ("overdue", "today")))
-                          + c("─" * max(0, inner - len(label)), "frame")))
-        for t in rows:
-            sel = t.id == selected_id
-            pcol = project_color(board, t)
-            if compact:                      # narrow: dot + title only (width-exact)
-                row = " " + c("●", pcol) + " " + title_markup(t, inner - 3, sel)
+    # geometry: a row is chip(2) title(TW) proj(8) state(1) axis(AX) due(6) with
+    # single-space gaps (21 fixed cells); TW + AX share the rest. Below ~budget 20
+    # there is no room for a usable axis, so fall back to a compact chip+title row.
+    PROJ_W, DUE_W = 8, 6
+    budget = inner - 21
+    axis_w = max(12, min(44, (budget * 6) // 10)) if budget >= 20 else 0
+    title_w = budget - axis_w
+    compact = axis_w < 12 or title_w < 8
+    today_col = max(1, min(axis_w - 2, round((axis_w - 1) * 14 / 43))) if not compact else 0
+
+    def cells_markup(cells: list[tuple[str, str | None]]) -> str:
+        """Merge a per-cell [(char, color-key|None), ...] list into markup,
+        coalescing runs of the same colour. Visible width == len(cells)."""
+        sentinel = object()
+        out: list[str] = []
+        run: list[str] = []
+        key: object = sentinel
+        for ch, k in cells:
+            if k == key:
+                run.append(ch)
             else:
-                p_obj = board.project_by_id(t.project_id)
-                pname = p_obj.name if p_obj else "Inbox"
-                sg, sgcol = status_glyph(board, t)
-                row_urg = urgency(t, today, board)
-                braille = _URG_BRAILLE[row_urg]
-                chip_txt, chip_col = date_chip(t, today, board)
-                row = (" " + c("●", pcol) + " " + title_markup(t, title_w, sel) + " "
-                       + c(escape(fit(pname[:8], 8)), "dim") + " "
-                       + c(sg, sgcol) + " " + c(braille, _URG_COLOR[row_urg]) + "  "
-                       + c(escape(fit(chip_txt, 12)), chip_col))
-            lines.append(line(row))
+                if run:
+                    s = escape("".join(run))
+                    out.append(s if key is None else c(s, key))  # type: ignore[arg-type]
+                run, key = [ch], k
+        if run:
+            s = escape("".join(run))
+            out.append(s if key is None else c(s, key))  # type: ignore[arg-type]
+        return "".join(out)
+
+    _DOT_KEY = {"overdue": "over", "today": "soon", "week": "hd",
+                "later": "hd", "done": "done"}
+
+    def axis_markup(t: Task, has_due: bool) -> str:
+        cells: list[tuple[str, str | None]] = [(" ", None)] * axis_w
+        cells[today_col] = ("┃", "accent")           # teal rule, every row, one column
+        if has_due:
+            delta = (parse_iso(t.due_date) - today).days
+            col = today_col + delta
+            clamp_l, clamp_r = col < 0, col > axis_w - 1
+            col = max(0, min(axis_w - 1, col))
+            lo, hi = (col, today_col) if col < today_col else (today_col, col)
+            for i in range(lo + 1, hi):               # thin tail rule->dot (not the rule)
+                if cells[i][0] == " ":
+                    cells[i] = ("─", "dim")
+            glyph = "◂" if clamp_l else "▸" if clamp_r else "●"
+            cells[col] = (glyph, _DOT_KEY[urgency(t, today, board)])
+        return cells_markup(cells)
+
+    def due_tok(t: Task) -> tuple[str, str]:
+        if board.is_done(t):
+            return "done", "done"
+        txt, col = reldue_token(t, today, board)
+        return (txt, col) if txt else ("—", "dim")
+
+    def row_markup(t: Task, has_due: bool) -> str:
+        sel = t.id == selected_id
+        pcol = project_color(board, t)
+        dtxt, dcol = due_tok(t)
+        if compact:                                   # narrow: chip + title + due
+            return (c("▊", pcol) + " " + title_markup(t, inner - 9, sel) + " "
+                    + c(fit(dtxt, DUE_W, "right"), dcol))
+        p_obj = board.project_by_id(t.project_id)
+        pname = p_obj.name if p_obj else "Inbox"
+        sg, sgcol = status_glyph(board, t)
+        return (c("▊", pcol) + " " + title_markup(t, title_w, sel) + " "
+                + c(escape(fit(pname, PROJ_W)), "dim") + " "
+                + c(sg, sgcol) + " " + axis_markup(t, has_due) + " "
+                + c(fit(dtxt, DUE_W, "right"), dcol))
+
+    if not compact and (dated or undated):            # a small date scale over the axis
+        scale: list[tuple[str, str | None]] = [(" ", None)] * axis_w
+
+        def put(idx: int, text: str, k: str) -> None:
+            for j, ch in enumerate(text):
+                if 0 <= idx + j < axis_w:
+                    scale[idx + j] = (ch, k)
+
+        put(0, f"-{today_col}d", "mut")
+        rlbl = f"+{axis_w - 1 - today_col}d"
+        put(axis_w - len(rlbl), rlbl, "mut")
+        if axis_w >= 24:
+            put(max(0, today_col - 2), "today", "accent")
+        lines.append(line(" " * (title_w + 14) + cells_markup(scale) + " " * 7))
+
+    for t in dated:
+        lines.append(line(row_markup(t, True)))
+        if line_map is not None:
+            line_map[t.id] = len(lines) - 1
+
+    if undated:
+        label = " no date "
+        lines.append(line(c(label, "dim")
+                          + c("─" * max(0, inner - len(label)), "frame")))
+        for t in undated:
+            lines.append(line(row_markup(t, False)))
             if line_map is not None:
                 line_map[t.id] = len(lines) - 1
 
-    if not any_rows:
+    if not dated and not undated:
         lines.append(line(c(fit("  (nothing scheduled — press 'a' to add a task)", inner), "dim")))
     lines.append(bottom(None, w))
     return Text.from_markup("\n".join(fill_height(lines, height, w)))
@@ -1122,14 +1192,10 @@ def nav_model(mode, board, show_archived, today=None) -> list[list[str]]:
                     cols[i].append(bucket[0].id)
         return cols
 
-    if mode == "agenda":
-        by = {g[1]: [] for g in AGENDA_GROUPS}
-        for t in tasks:
-            by[agenda_bucket(t, today)].append(t)
-        order: list[str] = []
-        for _, gkey, _ in AGENDA_GROUPS:
-            order += [t.id for t in by[gkey]]
-        return [order]
+    if mode == "agenda":       # dated (sorted by due), then undated — matches render
+        dated = [t for t in tasks if parse_iso(t.due_date) is not None]
+        undated = [t for t in tasks if parse_iso(t.due_date) is None]
+        return [[t.id for t in sort_by_due(dated)] + [t.id for t in undated]]
 
     if mode == "gantt":
         order, unscheduled = [], []
