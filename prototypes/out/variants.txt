@@ -1,0 +1,135 @@
+======================================================================================================================
+=== 0 BASELINE
+======================================================================================================================
+╭─ KANBAN · grouped ────────────────────────────────────────────────────────────────────────────────────── 28 tasks ─╮
+│BACKLOG                      │FOLLOW UP                   │DOING                       │DONE                        │
+├─────────────────────────────┼────────────────────────────┼────────────────────────────┼────────────────────────────┤
+│▐ GPU Homelab (MLOps)        │                            │▐ Lab Telemetria + Curso 3d │▐ Unity Trainings           │
+│▊ W1 · Backup + verify I… ↗ ◉│                            │▊ Inc1 - PRUEBA DE ACEPTA… ◉│▊ Training_Playground_Nav… ▤│
+│▊ W2 · Security hardenin… ↗ ◉│                            │▊ Inc2 - Servicio 'stats'… ◉│▐ Lab Telemetria + Curso 3d │
+│▊ W3 · Laptop-server fix… ↗ ◉│                            │                            │▊ Inc1 - Bala trazadora: ag…│
+│▊ W4 · Install k3s (API … ↗ ◉│                            │                            │▊ Inc1 - Curso 3d publicado…│
+│▊ W5 · Rep 2a — Ollama con… ↗│                            │                            │                            │
+│▊ W6 · Rep 2b — FastAPI RAG …│                            │                            │                            │
+│▊ W7 · Rep 3a — Port RAG s… ↗│                            │                            │                            │
+│▊ W8 · Rep 3b — Helm-chart… ↗│                            │                            │                            │
+│▊ W9 · Rep 4 — KubeRay clu… ↗│                            │                            │                            │
+│▊ W10 · Rep 5 — KServe Inf… ↗│                            │                            │                            │
+│▐ Lab Telemetria + Curso 3d  │                            │                            │                            │
+│▊ Inc1 - Anadir la card del …│                            │                            │                            │
+│▊ Inc2 - Postgres/Timescal… ◉│                            │                            │                            │
+│▊ Inc2 - Demo de backpressur…│                            │                            │                            │
+│▊ Inc2 - Seccion s11 del cur…│                            │                            │                            │
+│▊ Inc3 - frame-agent: captur…│                            │                            │                            │
+│▊ Inc3 - trainer en GPU: b… ◉│                            │                            │                            │
+│▊ Inc3 - Seccion del curso: …│                            │                            │                            │
+│▊ Inc5 - Hardening: intern… ◉│                            │                            │                            │
+│▊ Inc6 - Cierre del curso 3d…│                            │                            │                            │
+│▊ Inc4a - Servidor FastAPI… ◉│                            │                            │                            │
+│▊ Inc4b - Cliente WEB contra…│                            │                            │                            │
+│▊ Inc4c - Cliente TUI (Textu…│                            │                            │                            │
+│▊ Inc4d - Seccion del curso:…│                            │                            │                            │
+│                                                                                                                    │
+╰─────────────────────────────┴────────────────────────────┴────────────────────────────┴────────────────────────────╯
+
+======================================================================================================================
+=== A TRIAGE
+======================================================================================================================
+╭─ TRIAGE ───────────────────────────────────────────────────────────────────────────────────────────────── 25 open ─╮
+│ ███ ███   ▐ GPU Homelab (MLOps)                                                                                    │
+│ █     █   W9 · Rep 4 — KubeRay cluster (head + 2 workers), run a distributed job, watch the Ray dashboard          │
+│ ███   █                                                                                                            │
+│   █   █   Backlog   days left                                                                                      │
+│ ███   █   e edit   enter details   x archive                                                                       │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│  UP NEXT                                                                                                           │
+│   Inc1 - PRUEBA DE ACEPTACION (Javier): mover el control                                                      1d!  │
+│   W1 · Backup + verify ISO SHA256 + full wipe + install Ubuntu 24.04 (LUKS) + SSH + Tailscale                  1d  │
+│   Inc2 - Servicio 'stats': ventanas deslizantes + consumer groups                                              3d  │
+│   Inc2 - Postgres/Timescale con volumen nombrado                                                               6d  │
+│   Inc2 - Demo de backpressure: matar el consumidor y ver crecer el lag                                         7d  │
+│   W2 · Security hardening pass (BIOS firmware + Secure Boot, SSH key-only, UFW, fail2ban, auto-updates, R…     8d  │
+│   Inc2 - Seccion s11 del curso (persistencia y consumer groups)                                                8d  │
+│   Inc3 - frame-agent: captura de pantalla en el host                                                          12d  │
+│   W3 · Laptop-server fixes (lid/charge/heat) + Nvidia driver + nvidia-container-toolkit + verify docker -…    15d  │
+│   Inc3 - trainer en GPU: behavioral cloning con --gpus all                                                    18d  │
+│   Inc3 - Seccion del curso: imagen propia, capas y GPU                                                        20d  │
+│   W4 · Install k3s (API bound to Tailscale) + Nvidia k8s device plugin + GPU test pod (nvidia.com/gpu: 1)     22d  │
+│   Inc4a - Servidor FastAPI: el contrato (REST + WebSocket)                                                    24d  │
+│   Inc4b - Cliente WEB contra el contrato                                                                      26d  │
+│   W5 · Rep 2a — Ollama container on GPU, pull 7B Q4 model, verify it runs on GPU (ollama ps)                  29d  │
+│   Inc4c - Cliente TUI (Textual) contra el MISMO contrato                                                      29d  │
+│   Inc4d - Seccion del curso: separacion cliente/servidor                                                      31d  │
+│   Inc5 - Hardening: internal:true + allowlist squid (caso headroom)                                           32d  │
+│   W6 · Rep 2b — FastAPI RAG over own PDFs + docker-compose (Ollama + API), curl the endpoint                  36d  │
+│   Inc1 - Anadir la card del curso 3d en index.html                                                            37d  │
+│                                                                                                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+======================================================================================================================
+=== B MATRIX
+======================================================================================================================
+╭─ MATRIX ───────────────────────────────────────────────────────────────────────────────────── 28 tasks · 4 phases ─╮
+│                   BACKLOG              FOLLOW UP            DOING                DONE                      PROGRESS│
+│▐ Unity Trainings  ·                    ·                    ·                    ▪                     ▇▇▇▇▇▇▇ 100%│
+│▐ GPU Homelab (ML… ██████████           ·                    ·                    ·                     ░░░░░░░   0%│
+│▐ Lab Telemetria … █████████████        ·                    ▪▪                   ▪▪                    ▇░░░░░░  12%│
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ▐ GPU Homelab (MLOps)                                                                                     10 tasks │
+│ ○ W1 · Backup + verify ISO SHA256 + full wipe + in…    1d ○ W2 · Security hardening pass (BIOS firmware + Se…    8d│
+│ ○ W3 · Laptop-server fixes (lid/charge/heat) + Nvi…   15d ○ W4 · Install k3s (API bound to Tailscale) + Nvid…   22d│
+│ ○ W5 · Rep 2a — Ollama container on GPU, pull 7B Q…   29d ○ W6 · Rep 2b — FastAPI RAG over own PDFs + docker…   36d│
+│ ○ W7 · Rep 3a — Port RAG stack to k3s: Deployments…   43d ○ W8 · Rep 3b — Helm-chart the stack (values.yaml)…   50d│
+│ ○ W9 · Rep 4 — KubeRay cluster (head + 2 workers),…   57d ○ W10 · Rep 5 — KServe InferenceService + autoscal…   64d│
+│ ▐ Unity Trainings                                                                                          1 tasks │
+│ ✓ Training_Playground_Navigation                      5d!                                                          │
+│ ▐ Lab Telemetria + Curso 3d                                                                               17 tasks │
+│ ✓ Inc1 - Bala trazadora: agente XInput -> Redis ->…   2d! ✓ Inc1 - Curso 3d publicado (s0-s10, 3 simuladores)   2d!│
+│ ◐ Inc1 - PRUEBA DE ACEPTACION (Javier): mover el c…   1d! ◐ Inc2 - Servicio 'stats': ventanas deslizantes + …    3d│
+│ ○ Inc2 - Postgres/Timescale con volumen nombrado       6d ○ Inc2 - Demo de backpressure: matar el consumidor…    7d│
+│ ○ Inc2 - Seccion s11 del curso (persistencia y con…    8d ○ Inc3 - frame-agent: captura de pantalla en el ho…   12d│
+│ ○ Inc3 - trainer en GPU: behavioral cloning con --…   18d ○ Inc3 - Seccion del curso: imagen propia, capas y…   20d│
+│ ○ Inc4a - Servidor FastAPI: el contrato (REST + We…   24d ○ Inc4b - Cliente WEB contra el contrato              26d│
+│ ○ Inc4c - Cliente TUI (Textual) contra el MISMO co…   29d ○ Inc4d - Seccion del curso: separacion cliente/se…   31d│
+│ ○ Inc5 - Hardening: internal:true + allowlist squi…   32d ○ Inc1 - Anadir la card del curso 3d en index.html    37d│
+│ ○ Inc6 - Cierre del curso 3d + puente a k3s del ho…   37d                                                          │
+│                                                                                                                    │
+│                                                                                                                    │
+│                                                                                                                    │
+│                                                                                                                    │
+│                                                                                                                    │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+======================================================================================================================
+=== C FLOW
+======================================================================================================================
+╭─ FLOW ───────────────────────────────────────────────────────────────────────────────────────────── 23 0 2 3  wip ─╮
+│ BACKLOG 23█                                                         FOLLOW 0    DOING 2▁         DONE 3▂           │
+├────────────────────────────────────────────────────────────────────┬───────────┬────────────────┬──────────────────┤
+│ GPU Homelab (MLOps)                                                 empty       Lab Telemetria   Lab Telemetria +  │
+│ •W1 · Backup + verify ISO SHA256 + full wipe + install Ubuntu 24.0… —           •Inc1 - PRUEBA … •Inc1 - Bala traz…│
+│  W2 · Security hardening pass (BIOS firmware + Secure Boot, SSH ke…             •Inc2 - Servici… •Inc1 - Curso 3d …│
+│  W3 · Laptop-server fixes (lid/charge/heat) + Nvidia driver + nvid…                              Unity Trainings   │
+│  W4 · Install k3s (API bound to Tailscale) + Nvidia k8s device plu…                              •Training_Playgro…│
+│  W5 · Rep 2a — Ollama container on GPU, pull 7B Q4 model, verify i…                                                │
+│  W6 · Rep 2b — FastAPI RAG over own PDFs + docker-compose (Ollama …                                                │
+│  W7 · Rep 3a — Port RAG stack to k3s: Deployments + Services + Tra…                                                │
+│  W8 · Rep 3b — Helm-chart the stack (values.yaml), helm install, c…                                                │
+│  W9 · Rep 4 — KubeRay cluster (head + 2 workers), run a distribute…                                                │
+│  W10 · Rep 5 — KServe InferenceService + autoscaling, observe scal…                                                │
+│ Lab Telemetria + Curso 3d                                                                                          │
+│  Inc2 - Postgres/Timescale con volumen nombrado                                                                    │
+│  Inc2 - Demo de backpressure: matar el consumidor y ver crecer el …                                                │
+│  Inc2 - Seccion s11 del curso (persistencia y consumer groups)                                                     │
+│  Inc3 - frame-agent: captura de pantalla en el host                                                                │
+│  Inc3 - trainer en GPU: behavioral cloning con --gpus all                                                          │
+│  Inc3 - Seccion del curso: imagen propia, capas y GPU                                                              │
+│  Inc4a - Servidor FastAPI: el contrato (REST + WebSocket)                                                          │
+│  Inc4b - Cliente WEB contra el contrato                                                                            │
+│  Inc4c - Cliente TUI (Textual) contra el MISMO contrato                                                            │
+│  Inc4d - Seccion del curso: separacion cliente/servidor                                                            │
+│  Inc5 - Hardening: internal:true + allowlist squid (caso headroom)                                                 │
+│  Inc1 - Anadir la card del curso 3d en index.html                                                                  │
+│  Inc6 - Cierre del curso 3d + puente a k3s del homelab                                                             │
+│                                                                                                                    │
+╰────────────────────────────────────────────────────────────────────┴───────────┴────────────────┴──────────────────╯
