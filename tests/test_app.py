@@ -2137,17 +2137,17 @@ def test_gantt_label_column_is_generous_for_names():
     from datetime import date
     from taskboard.views import render_gantt
     # Build explicitly so the long names are guaranteed present:
-    b = Board(projects=[Project(name="Unity Trainings Long", color="violet", id="p1")],
-              tasks=[Task(title="Training_Playground_Navigation", project_id="p1",
+    b = Board(projects=[Project(name="Corvus Sessions Long", color="violet", id="p1")],
+              tasks=[Task(title="Telemetry_Ingestion_Navigation", project_id="p1",
                           phase="Doing", id="t1", due_date=None)],
               path=__import__("pathlib").Path("x"), settings={},
               phases=["Backlog", "Doing", "Done"])
     txt = str(render_gantt(b, False, "t1", today=date.today(), width=120, height=20))
     lines = txt.split("\n")
     # the project row must show clearly more than the old ~14 visible chars of the name
-    assert "Unity Trainings" in txt                      # >14 chars visible now
+    assert "Corvus Sessions" in txt                      # >14 chars visible now
     # the task title row must show substantially more than the old truncation
-    assert "Training_Playgroun" in txt                   # >= 18 chars of the title
+    assert "Telemetry_Ingestio" in txt                   # >= 18 chars of the title
     # width-exact still holds at this width
     assert len({len(l) for l in lines}) == 1
 
