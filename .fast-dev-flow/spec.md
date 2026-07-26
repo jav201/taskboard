@@ -28,8 +28,8 @@ Three increments, one view each (gantt / columns / agenda), each = views.py + te
 - [ ] all clear
 **security_required:** false (pure rendering; no data-model or persistence change; no I/O).
 
-## 7. Open design decision (needs Javier)
-The gantt PROGRESS bar: today's bar is the dual-density braille `⣿`(done)/`⢕`(remaining) you tuned over several iterations. Fable-5's proposal replaces it with a solid `█`(done, project colour) + quiet `░`(remaining, dim) track, arguing the new today-rule and due-diamond read better against a calm background (2-colours-per-cell). DECIDED (Javier): OPTION B — keep the ⣿/⢕ dual-density progress bar; add the today-rule + due-diamond + urgency-coloured task bars on top of it.
+## 7. Open design decision (needs the operator)
+The gantt PROGRESS bar: today's bar is the dual-density braille `⣿`(done)/`⢕`(remaining) you tuned over several iterations. Fable-5's proposal replaces it with a solid `█`(done, project colour) + quiet `░`(remaining, dim) track, arguing the new today-rule and due-diamond read better against a calm background (2-colours-per-cell). DECIDED (the operator): OPTION B — keep the ⣿/⢕ dual-density progress bar; add the today-rule + due-diamond + urgency-coloured task bars on top of it.
 
 ## 8. Batch status
 | Field | Value |
@@ -41,8 +41,8 @@ The gantt PROGRESS bar: today's bar is the dual-density braille `⣿`(done)/`⢕
 
 ## 9. Close (2026-07-24)
 Three Fable-5 view redesigns landed, all on main, 121 tests (from a 104 baseline):
-- `169d454` GANTT — full-height teal today-rule across every row, per-project due `◆` diamond (red past / bright future, `◂`/`▸` clamp off-window), task bars coloured by urgency; kept the ⣿/⢕ dual-density bar underneath (Javier's decision) + `▲ N past due` header.
+- `169d454` GANTT — full-height teal today-rule across every row, per-project due `◆` diamond (red past / bright future, `◂`/`▸` clamp off-window), task bars coloured by urgency; kept the ⣿/⢕ dual-density bar underneath (the operator's decision) + `▲ N past due` header.
 - `4fd4a1d` COLUMNS — one-line heat cards (`█▓▒░·✓` by urgency + project chip + name + relative due), sorted by due (urgency gradient top-down), `N late` header. 2x density.
 - `cf9a07d` AGENDA — shared-axis due dot-plot with today-rule; distance = urgency, vertical clusters = crunch; dropped the OVERDUE/TODAY/THIS-WEEK headers; undated tasks kept under a `no date` group.
-Verified against a COPY of the real board (28 tasks): all five views width-exact, board never touched. Origin of the design: a Fable-5 agent prototype (artifact c86895c7), approved by Javier.
+Verified against a COPY of the real board (28 tasks): all five views width-exact, board never touched. Origin of the design: a Fable-5 agent prototype (artifact c86895c7), approved by the operator.
 Minor follow-ups (not blocking): dead `_URG_BRAILLE`/`AGENDA_GROUPS` in views.py now unused; agenda axis span is fixed (far dates clamp to the edge) — could be made adaptive; two views still titled with their own names is fine now (columns = COLUMNS, kanban = KANBAN).
