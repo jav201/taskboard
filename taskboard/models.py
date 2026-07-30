@@ -48,6 +48,11 @@ DROPPED_PROJECT_COLORS = {
 PROJECT_STATUSES = ("on_track", "paused", "cancelled", "completed")
 TASK_PRIORITIES = ("low", "normal", "high")
 
+# Finished work stops being news. A task that has been in its done phase this
+# long is archived automatically — but ONLY when the board knows when it was
+# finished (see Board.auto_archive_done).
+AUTO_ARCHIVE_DAYS = 20
+
 # Tasks move through an ORDERED list of phases owned by the board; progress is
 # positional (phase index / last index), so a board can define its own workflow.
 DEFAULT_PHASES = ("Backlog", "Doing", "Done")
@@ -938,6 +943,47 @@ class Board:
         return bool(self.phases) and task.phase == self.phases[-1]
 
     # ---- mutations ---------------------------------------------------------
+    def auto_archive_done(self, today: date | None = None) -> list[Task]:
+        """Archive finished work that has been finished a long time.
+
+        Uses the board's ONE archive: `task.archived`, the same flag `x` toggles,
+        so nothing is deleted, nothing moves to a second store, and the existing
+        unarchive path reverses it exactly. Returns what it archived.
+
+        THE AGE MUST BE KNOWN. `phase_changed` only exists from the moment that
+        field shipped, so a done task that has not moved since has no completion
+        date — and a task with no date is not old, it is UNDATED. Archiving it
+        would be inventing the history increment 6 refused to invent. In practice
+        this means the sweep does nothing on an existing board and starts biting
+        only as work is completed from now on.
+
+        'Completed' means the LAST time the task entered its done phase: bouncing
+        out of done and back restarts the clock, which is the honest reading of
+        'finished 20 days ago'."""
+        today = today or date.today()
+        moved = []
+        for t in self.tasks:
+            if t.archived or not self.is_done(t):
+                continue
+            age = days_in_phase(t, today)
+            if age is not None and age >= AUTO_ARCHIVE_DAYS:
+                t.archived = True
+                moved.append(t)
+        return moved
+
+    def archivable_report(self, today: date | None = None) -> dict:
+        """What the sweep would do, and what it CANNOT know — so the rollout can
+        be explained instead of just happening."""
+        today = today or date.today()
+        done = [t for t in self.tasks if not t.archived and self.is_done(t)]
+        aged = [t for t in done if days_in_phase(t, today) is not None]
+        return {"done_on_board": len(done),
+                "archivable": sum(1 for t in aged
+                                  if days_in_phase(t, today) >= AUTO_ARCHIVE_DAYS),
+                "too_recent": sum(1 for t in aged
+                                  if days_in_phase(t, today) < AUTO_ARCHIVE_DAYS),
+                "unknown_age": len(done) - len(aged)}
+
     def set_task_phase(self, task: Task, phase: str, today: date | None = None) -> bool:
         """Move a task to `phase`, stamping WHEN it moved. Returns whether it
         actually moved — re-saving a task without touching its phase must not

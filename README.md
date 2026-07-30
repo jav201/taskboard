@@ -179,6 +179,13 @@ Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink
 terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
 High-priority tasks are marked `!` — a glyph, deliberately not a colour (see below).
 
+**Finished work gets out of the way.** In the gantt, a project lists its open tasks first
+and its done ones at the tail. A task that has been done for **20 days or more is archived
+automatically** at startup — archived, never deleted: press `v` to see archived items and
+`x` to bring one back, and the app tells you when it has swept any. It only archives work
+whose completion date it actually knows (recorded from the moment a task changes phase), so
+tasks finished before this feature existed stay put rather than being guessed about.
+
 ### Project colours: eight, and why not twelve
 
 Every hue in this app has exactly one job. A **project** hue says *which project*; the
