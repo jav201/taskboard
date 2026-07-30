@@ -16,8 +16,34 @@ from pathlib import Path
 from uuid import uuid4
 
 # --- enumerations (kept as plain strings; validated leniently at the edges) ---
-PROJECT_COLORS = ("rose", "orange", "amber", "lime", "green", "cyan",
-                  "sky", "blue", "indigo", "violet", "fuchsia", "pink")
+# THE COLOUR RATION. A project hue NAMES (which project); the app's reserved hues
+# JUDGE (over #f43f5e = overdue, soon #fbbf24 = due today) or CALL ATTENTION
+# (accent #2dd4bf = today/focus). No mark may wear both jobs, so an identity hue
+# that is confusable with a reserved one is not offered. Four were dropped on
+# measured euclidean rgb distance (nearest reserved hue in brackets):
+#   amber  #fbbf24 -> soon      0.0   IDENTICAL to "due today"
+#   cyan   #22d3ee -> accent   48.3   reads as the today rule
+#   orange #fb923c -> soon     51.0
+#   rose   #fb7185 -> over     63.8
+# Bands: >=70 from a judging hue (over/soon), >=55 from accent. The closest
+# survivors are lime 97.7 (soon), pink 101.7 (over) and sky 62.4 (accent).
+# The oracle is in tests/test_palette_ration.py — it measures, it does not
+# consult this list, so re-adding a hue near a reserved one turns it red.
+PROJECT_COLORS = ("lime", "green", "sky", "blue",
+                  "indigo", "violet", "fuchsia", "pink")
+
+# Boards saved before the ration keep loading: a dropped hue is remapped to a
+# surviving one. The assignment is the injective map with the smallest total rgb
+# distance (unique optimum over all 1680 injective maps; runner-up +3.04).
+# INJECTIVE ON PURPOSE: plain nearest-hue would send amber AND orange to lime,
+# making two previously-distinct projects indistinguishable — which breaks the
+# very job the identity hue has. Distances in brackets.
+DROPPED_PROJECT_COLORS = {
+    "cyan": "sky",        # 32.7
+    "rose": "pink",       # 49.5
+    "amber": "lime",      # 97.7
+    "orange": "fuchsia",  # 191.6
+}
 PROJECT_STATUSES = ("on_track", "paused", "cancelled", "completed")
 TASK_PRIORITIES = ("low", "normal", "high")
 
@@ -355,6 +381,18 @@ def _rescue_project(entry) -> "Project":
     return Project(name=name, extra={"_rescued": True})
 
 
+def project_color_on_load(color) -> str:
+    """The lawful hue for a stored colour: itself if still offered, its ration
+    remap if it was dropped, else the `violet` fallback for anything unknown.
+
+    A FIXED POINT — every output is in PROJECT_COLORS and no output is a remap
+    key, so loading and saving repeatedly never keeps changing a project's
+    colour. A board that used no dropped hue is not touched at all."""
+    if color in PROJECT_COLORS:
+        return color
+    return DROPPED_PROJECT_COLORS.get(color, "violet")
+
+
 @dataclass
 class Project:
     name: str
@@ -371,7 +409,7 @@ class Project:
         return cls(
             id=d.get("id") or _new_id(),
             name=d.get("name", "Untitled"),
-            color=d.get("color") if d.get("color") in PROJECT_COLORS else "violet",
+            color=project_color_on_load(d.get("color")),
             status=d.get("status") if d.get("status") in PROJECT_STATUSES else "on_track",
             archived=bool(d.get("archived", False)),
             start_date=d.get("start_date"),
@@ -681,8 +719,8 @@ def seed_data() -> tuple[list[Project], list[Task]]:
 
     web = Project("Website Redesign", "sky", "on_track", start_date=iso(-20), due_date=iso(14))
     mobile = Project("Mobile App", "violet", "on_track", start_date=iso(-10), due_date=iso(30))
-    api = Project("API Platform", "amber", "paused", start_date=iso(-5), due_date=iso(45))
-    legacy = Project("Legacy Sunset", "rose", "cancelled", start_date=iso(-40), due_date=iso(-5))
+    api = Project("API Platform", "lime", "paused", start_date=iso(-5), due_date=iso(45))
+    legacy = Project("Legacy Sunset", "pink", "cancelled", start_date=iso(-40), due_date=iso(-5))
     warehouse = Project("Data Warehouse", "green", "completed",
                         start_date=iso(-60), due_date=iso(-3))
     wiki = Project("Internal Wiki", "green", "completed", archived=True,
@@ -691,7 +729,7 @@ def seed_data() -> tuple[list[Project], list[Task]]:
 
     tasks = [
         # Website Redesign — note: image tasks stay normal/low priority + no URL
-        # so their card carries only the image glyph (never with the ◉/↗ markers).
+        # so their card carries only the image glyph (never with the !/↗ markers).
         Task("Design homepage mockups", web.id, "Doing", "normal", due_date=iso(0),
              images=["./mockups/home.png", "./mockups/home-dark.png"]),
         Task("Fix checkout 500 error", web.id, "Doing", "high", due_date=iso(-2),

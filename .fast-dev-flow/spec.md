@@ -1,48 +1,115 @@
-# Quick Spec — implement the Fable-5 visual redesigns (gantt · columns · agenda)
+# Quick Spec — Prism Increment 1: the colour ration
+
+**Status:** CLOSED 2026-07-30 · **Base ref:** `b3cc60d` (main) · **Flow:** fast-dev-flow · **Language:** English
+**Result:** all six acceptance criteria met. 152 tests green (137 pre-existing + 15 new),
+4 mutants killed (M1 re-add amber, M2 non-optimal remap, M3 oscillating load, M4 revert
+the glyph), every mutated file restored byte-identical. `~/.taskboard` md5+mtime unchanged
+across all 11 files. Carry-overs recorded in `.dev-flow/BACKLOG.md`.
+**Source of truth:** `_tui_prism_proposal/PROPOSAL.md` §9 row 1, measurements in `AUDIT.md` §5.
 
 ## 1. Objective
-Bring the three approved Fable-5 redesigns into the real app: make schedule risk visual in the gantt, collapse columns cards to one heat-sorted line, and turn the agenda into a shared-axis due dot-plot. Reference mockup: artifact c86895c7 / generator tmp/gen_mockup.py.
+Give every hue exactly one job. Today `amber` is simultaneously a project identity
+hue and the hue the app uses for *due today* / *high priority* — rgb distance 0.0,
+the same colour meaning two things in all five views. Drop the four identity hues
+that collide with a judging hue, remap old boards deterministically, and move the
+high-priority marker out of the colour houses into the glyph house.
 
 ## 2. User stories
-- As a user, I want to see at a glance which projects/tasks have crossed "today" and which are overdue, without reading small "-5d" text.
-- As a user, I want the columns board denser and ordered so the most urgent card is on top of each column.
-- As a user, I want the agenda to show due dates on a time axis so distance = urgency and clusters = crunch weeks.
+- As a user, when a mark is amber I want to know it means *urgency*, never *which project*.
+- As a user with an existing board, I want it to keep loading — my projects get a
+  lawful colour automatically, and the same one every time.
+- As a user, I still want to see which tasks are high priority, without that mark
+  borrowing the urgency colour.
 
 ## 3. Acceptance criteria (observable)
-- [ ] AC1 GANTT today-rule: a full-height vertical rule (teal `┃`) is drawn at today's column across every project/task row; rows stay width-exact.
-- [ ] AC2 GANTT due diamond: each project shows a `◆` at its due-date position on the timeline — red when the due date is before today, bright otherwise; a project with no due date shows none.
-- [ ] AC3 GANTT task colour: a task bar is red when overdue, amber when due today, else the project colour (no more uniform grey); the header shows a `▲ N past due` count.
-- [ ] AC4 COLUMNS one-line cards: each card is a single line (heat glyph + project colour chip + name + relative due), cards within a phase are sorted by due date (soonest first, undated last), and each column header shows a `N late` count.
-- [ ] AC5 AGENDA dot-plot: every due task is a `●` on one shared day-axis with a today rule; urgency reads from distance to the rule; the OVERDUE/TODAY/THIS-WEEK sub-headers and the braille progress dots are removed; width-exact.
-- [ ] AC6: all existing tests stay green; each new behaviour has a test; the real board is never read/written by tests.
+- **AC1 (ration).** For every name in `PROJECT_COLORS`, the rgb distance from
+  `HEX[name]` to each judging hue is above its house's band: >=70 from `over`
+  (#f43f5e) and `soon` (#fbbf24); >=55 from `accent` (#2dd4bf). Measured, not a
+  name list. `PROJECT_COLORS` has 8 entries and contains none of
+  `rose`/`orange`/`amber`/`cyan`.
+- **AC2 (remap).** `Project.from_dict({"color": "amber"})` yields `lime`;
+  `rose`->`pink`, `orange`->`fuchsia`, `cyan`->`sky`. An unknown colour still falls
+  back to `violet`. The map is injective — two projects that differed still differ.
+- **AC3 (stability).** load->save->load->save of a board containing all four dropped
+  hues produces byte-identical JSON on the second and third passes (fixed point,
+  no oscillation).
+- **AC4 (no collateral).** A board whose projects use only surviving hues is
+  byte-identical after a load->save round trip.
+- **AC5 (glyph house).** The high-priority marker rendered by `card_cell` is `!`
+  in a neutral (`ink`) tone; `HEX["soon"]`/`#fbbf24` appears nowhere in the markup
+  of a high-priority card, and `◉` is gone. Verified through the real renderers of
+  the views that draw it (swimlanes, kanban).
+- **AC6.** All 137 existing tests stay green (system python; see §5 note), and the
+  one test that encodes the *old* 12-colour law is rewritten to the new law rather
+  than deleted.
 
-## 4. Validation strategy
-Three increments, one view each (gantt / columns / agenda), each = views.py + tests/test_app.py. Per view: unit/render tests asserting the new glyphs/positions (today-rule column, diamond side of rule for a past-vs-future due, task colour by urgency, one-line card count + sort order, dot positions), plus the existing width-sweep. Manual smoke each increment: render the REAL board (via a copy) and eyeball. Escape hatch: if any single view can't be done inside 2 files or the batch drifts, stop and offer /dev-flow.
+## 4. The measured law (recomputed on this repo, not copied)
 
-## 5. Non-goals
-- No change to swimlanes or kanban views.
-- No new interaction/keys (these are render changes to existing views on their existing keys 4/2/3).
-- Not guaranteeing 256-colour terminals distinguish every project chip (flagged risk, see below).
+`python -c` over `taskboard.models.PROJECT_COLORS` x `taskboard.views.HEX`,
+euclidean rgb — the same metric `_tui_prism_proposal/audit_capture.py:146` uses:
 
-## 6. Detected security flags
-- [ ] all clear
-**security_required:** false (pure rendering; no data-model or persistence change; no I/O).
+| identity hue | over | soon | accent | done | verdict |
+|---|---|---|---|---|---|
+| amber #fbbf24 | 140.7 | **0.0** | 258.7 | 204.7 | **DROP** — identical to *due today* |
+| orange #fb923c | 90.0 | **51.0** | 252.9 | 194.5 | **DROP** |
+| rose #fb7185 | **63.8** | 124.5 | 235.8 | 194.3 | **DROP** |
+| cyan #22d3ee | 294.5 | 297.1 | **48.3** | 143.2 | **DROP** — reads as the today-rule teal |
+| sky #38bdf8 | 273.7 | 288.1 | 62.4 | 143.0 | keep (thin: 7.4 over the accent band) |
+| green #4ade80 | 235.2 | 201.9 | 70.1 | 69.6 | keep (`done` is a check tint, not a field — no band) |
+| lime, blue, indigo, violet, fuchsia, pink | >=165.9 | >=97.7 | >=91.1 | >=136.4 | keep |
 
-## 7. Open design decision (needs Javier)
-The gantt PROGRESS bar: today's bar is the dual-density braille `⣿`(done)/`⢕`(remaining) you tuned over several iterations. Fable-5's proposal replaces it with a solid `█`(done, project colour) + quiet `░`(remaining, dim) track, arguing the new today-rule and due-diamond read better against a calm background (2-colours-per-cell). DECIDED (Javier): OPTION B — keep the ⣿/⢕ dual-density progress bar; add the today-rule + due-diamond + urgency-coloured task bars on top of it.
+**Deviation from the proposal, stated up front.** PROPOSAL.md §9 phrases the
+criterion as *"ninguna distancia identidad<->severidad < 70"*. That single threshold
+is not consistent with the drop list it names in R1: at a flat 70 over all four
+judging hues, `sky` (62.4) and `green` (69.6) would fall too — six drops, not four.
+The measured numbers govern, so the law is written as **two bands**: judging hues
+(`over`, `soon`) get the wide band 70; the attention hue (`accent`) gets 55, which
+is the only band that separates the measured pair cyan 48.3 / sky 62.4; `done` gets
+none. That reproduces exactly the four drops Javier approved. The 55 band is
+calibrated, and its margin is thin — recorded as a risk, not hidden.
 
-## 8. Batch status
-| Field | Value |
-|-------|-------|
-| Current phase | closed |
-| Started | 2026-07-24 |
-| Notes | 3 view redesigns — at the upper bound of fast-dev-flow (same as the prior batch). Promote to /dev-flow if it drifts. |
+**Remap.** Injective assignment minimising total rgb distance (brute-forced over
+all 1680 injective maps; the optimum is unique, runner-up +3.04):
+`rose->pink 49.5` · `cyan->sky 32.7` · `amber->lime 97.7` · `orange->fuchsia 191.6`.
+Injective *by requirement*: nearest-with-reuse would send both amber and orange to
+`lime`, making two previously-distinct projects indistinguishable — which destroys
+the very house the ration protects.
 
+## 5. Premise table (C-43)
 
-## 9. Close (2026-07-24)
-Three Fable-5 view redesigns landed, all on main, 121 tests (from a 104 baseline):
-- `169d454` GANTT — full-height teal today-rule across every row, per-project due `◆` diamond (red past / bright future, `◂`/`▸` clamp off-window), task bars coloured by urgency; kept the ⣿/⢕ dual-density bar underneath (Javier's decision) + `▲ N past due` header.
-- `4fd4a1d` COLUMNS — one-line heat cards (`█▓▒░·✓` by urgency + project chip + name + relative due), sorted by due (urgency gradient top-down), `N late` header. 2x density.
-- `cf9a07d` AGENDA — shared-axis due dot-plot with today-rule; distance = urgency, vertical clusters = crunch; dropped the OVERDUE/TODAY/THIS-WEEK headers; undated tasks kept under a `no date` group.
-Verified against a COPY of the real board (28 tasks): all five views width-exact, board never touched. Origin of the design: a Fable-5 agent prototype (artifact c86895c7), approved by Javier.
-Minor follow-ups (not blocking): dead `_URG_BRAILLE`/`AGENDA_GROUPS` in views.py now unused; agenda axis span is fixed (far dates clamp to the edge) — could be made adaptive; two views still titled with their own names is fine now (columns = COLUMNS, kanban = KANBAN).
+| Premise | Tier | Verdict | Executed evidence |
+|---|---|---|---|
+| `PROJECT_COLORS` is a 12-tuple in `models.py` | premise | TRUE | `taskboard/models.py:19-20` |
+| The four names in PROPOSAL R1 exist in this code | premise | TRUE | grep: rose/orange/amber/cyan all at `models.py:19` |
+| amber == the due-today hue, distance 0.0 | premise | TRUE | recomputed: `amber #fbbf24` vs `soon #fbbf24` -> 0.0 |
+| "no distance < 70" selects exactly those four | hypothesis (from the design batch) | FALSE | at 70, `sky` 62.4 and `green` 69.6 also fall -> §4 two-band law |
+| The high-priority marker is rendered in all 5 views | hypothesis | FALSE | `◉` occurs once in source: `views.py:175` (`card_cell`), used by swimlanes (`views.py:413`) and kanban (`views.py:1040`) only; columns/agenda/gantt never render priority |
+| The colour *ration* affects all 5 views | premise | TRUE | project hues are painted in all five (`views.py:425`, `459`, agenda/gantt chips) |
+| Old colours are validated on load in one place | premise | TRUE | `models.py:374` `color=... if ... in PROJECT_COLORS else "violet"` |
+| Baseline is 137 green | premise | TRUE | `python -m pytest tests -q` -> `137 passed in 33.19s` |
+| `.venv` can run the suite | premise | FALSE | `.venv` python -> `5 failed` (`ModuleNotFoundError: No module named 'PIL'`); use system python |
+| No `docs/engineering-rules.md`, no backlog file exists | premise | TRUE | `Test-Path` -> False; `.dev-flow/` has no BACKLOG.md -> create the default |
+
+## 6. Security flags
+Scan of objective + criteria: **none fired.** No auth, secrets, network, external
+integration, or user-input surface. The only data-safety concern is the live board,
+handled by the standing rule: `~/.taskboard/board.json` is never opened — md5+mtime
+of all 11 files under `~/.taskboard` baselined before the batch and re-verified at
+close. `security_required: false`.
+
+## 7. Non-goals (stated, not silently skipped)
+- Adding a priority marker to columns / agenda / gantt (they show none today — new
+  feature, not a ration).
+- The `!N` *aggregate* per project row — that is Increment 3's lanes row; a task
+  card carries one task, so N is always 1 and the mark is `!`.
+- Removing the four hexes from `views.HEX`: they stay as palette constants (tests
+  and code construct `Project("X","cyan")` directly; the ration is defined on
+  `PROJECT_COLORS`, which is what the picker and the loader read).
+- `ribbon.py:49` paints the ISO week in `amber` — a non-identity mark wearing the
+  reserved hue. Real finding, outside this increment -> backlog.
+- Views 2-5 layout, the lanes redesign (Increments 2-6).
+
+## 8. Files (5 code + 2 flow artifacts)
+`taskboard/models.py` · `taskboard/views.py` · `tests/test_palette_ration.py` (new)
+· `tests/test_app.py` (rewrite the old 12-colour law) · `README.md`
+· `.fast-dev-flow/spec.md` · `.dev-flow/BACKLOG.md` (created at close)

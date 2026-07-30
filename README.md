@@ -164,6 +164,32 @@ to Inbox (no-project). Every change saves immediately and the board re-renders b
 
 Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink (clickable in
 terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
+High-priority tasks are marked `!` — a glyph, deliberately not a colour (see below).
+
+### Project colours: eight, and why not twelve
+
+Every hue in this app has exactly one job. A **project** hue says *which project*; the
+**red** `#f43f5e` says *overdue*; the **amber** `#fbbf24` says *due today*; the **teal**
+`#2dd4bf` marks *today / focus*. A colour that does two jobs cannot be read — and `amber`
+used to be a project colour at the *identical* hex as "due today", so a project's spine, name
+and bar were painted in the exact colour the app uses for urgency.
+
+Four project colours were therefore retired, on measured rgb distance to the hue they
+collided with: **amber** (0.0 from *due today*), **cyan** (48.3 from the teal), **orange**
+(51.0), **rose** (63.8 from *overdue*). Eight remain: lime, green, sky, blue, indigo, violet,
+fuchsia, pink.
+
+**Existing boards keep working.** A project saved with a retired colour is remapped the first
+time the board loads — `amber→lime`, `rose→pink`, `cyan→sky`, `orange→fuchsia` — and then never
+changes again. The remap is one-to-one, so two projects that had different colours still have
+different colours. To see in advance what your own board would change to:
+
+```powershell
+python -c "import json,pathlib;from taskboard.models import DROPPED_PROJECT_COLORS as M;d=json.loads(pathlib.Path.home().joinpath('.taskboard/board.json').read_text(encoding='utf-8'));print([(p['name'],p['color'],M[p['color']]) for p in d['projects'] if p.get('color') in M])"
+```
+
+For the same reason the high-priority marker is the glyph `!` rather than the amber `◉` it was
+before: importance is not urgency, so it does not get to wear the urgency colour.
 
 ### Images
 
