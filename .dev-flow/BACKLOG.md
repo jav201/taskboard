@@ -96,6 +96,29 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   rebuilt lanes view by AUDIT.md's own method at its own reference size and
   compares against its numbers. 11 laws, 235 green, 3 mutants killed.
 
+- **DONE** · The world-city catalog — `CITY_ZONES` 75 -> 340 cities / 243 zones,
+  all 40 UTC offsets in use covered, every zone resolved through `zoneinfo` by
+  the test suite; `resolve_city` is accent-blind on a fallback. 14 laws + 1 app
+  test, 250 green, 5 mutants killed. (`9ed055b`)
+- **DONE** · Gantt ordering + auto-archive — open work first, done work at the
+  tail; `AUTO_ARCHIVE_DAYS = 20` sweeps long-finished work into the existing
+  `archived` flag at startup, but only when the completion date is KNOWN.
+  16 laws, 266 green, 5 mutants killed. (`db31a5c`)
+
+## Open — raised by the archive increment
+
+- **Auto-archive does nothing on Javier's existing board, by design.** Every
+  finished task there predates `phase_changed`, so its age is unknown and it is
+  left alone (measured: a 30-done legacy board sweeps 0). If he wants the old
+  ones gone he must archive them by hand (`x`) — or we add an explicit,
+  opt-in "treat everything done before <date> as archived" action, which would
+  be a deliberate one-time decision rather than a guess.
+- **Reordering phases can make a task "done" while carrying an older stamp**, so
+  the next start may sweep it. It cannot touch a legacy board (no stamp), but if
+  phase reordering becomes common, consider re-stamping on `move_phase`.
+- **The sweep runs only at startup.** A long-running widget will not archive work
+  that ages past 20 days while it is open, until the next launch.
+
 ## Open — raised by the occupancy measurement
 
 - **PROPOSAL §4.3's ">= 45 % marked at typical/extreme" is met at typical
