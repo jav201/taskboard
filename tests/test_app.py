@@ -259,6 +259,24 @@ async def test_clock_modal_search_pick_persists(tmp_path):
     assert reloaded.get_clocks() == ("Tokyo", "New York")
 
 
+async def test_clock_modal_finds_an_accented_city_from_an_ascii_keyboard(tmp_path):
+    """End to end through the real picker, with the widened catalog: he types
+    what his keyboard gives him and the ribbon shows the city as it is spelled.
+    (Also the smoke that the 340-city suggester still drives the modal.)"""
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test() as pilot:
+        await pilot.press("c")
+        await pilot.pause()
+        app.screen.query_one("#f-clock1", Input).value = "sao paulo"
+        app.screen.query_one("#f-clock2", Input).value = "Kathmandu"   # UTC+5:45
+        app.screen.query_one("#save", Button).press()
+        await pilot.pause()
+        assert app.board.get_clocks() == ("São Paulo", "Kathmandu")
+        assert "São Paulo" in str(app.query_one("#ribbon", Ribbon).render())
+    assert Board.load(board_path).get_clocks() == ("São Paulo", "Kathmandu")
+
+
 async def test_clock_modal_unknown_city_falls_back(tmp_path):
     app = make_app(tmp_path)
     async with app.run_test() as pilot:
