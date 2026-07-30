@@ -93,7 +93,11 @@ def distribute(total: int, n: int) -> list[int]:
 # unlit is DRAWN as its own lattice — ash behind today, dim ahead — never left
 # as void. Pure helpers: no view calls them yet.
 # ---------------------------------------------------------------------------
-RULE = "╎"        # the today boundary. Its ambient rotation is increment 6.
+RULE = "╎"        # the today boundary at rest
+# THE AMBIENT: the rule breathes, and it does so in the GLYPH, never in colour.
+# Four phases on the app's one shared 1 s clock = a 4 s cycle, which clears the
+# ≥2 s floor for an always-open surface (the 400-2000 ms band reads as a fault).
+RULE_PHASES = ("╎", "╽", "╎", "╿")
 LATTICE = "·"
 OFF_LEFT, OFF_RIGHT = "◂", "▸"
 
@@ -151,7 +155,8 @@ def off_window_glyph(col: int | tuple[str, int]) -> str:
 
 
 def field_rows(bm: Bitmap, geo: FieldGeo, hue: str, *,
-               off_left: bool = False, off_right: bool = False) -> list[str]:
+               off_left: bool = False, off_right: bool = False,
+               phase: int = 0) -> list[str]:
     """Pack a dot bitmap to cells and colour them: the figure in `hue` (ash once
     it is behind today), the unlit ground as the lattice, and the today rule in
     the attention hue. Every row is EXACTLY `geo.field_w` cells.
@@ -168,7 +173,7 @@ def field_rows(bm: Bitmap, geo: FieldGeo, hue: str, *,
             past = (2 * i + 1) < geo.today_dc
             if ch == " ":
                 if i == geo.today_dc // 2:
-                    out.append(c(RULE, "accent"))
+                    out.append(c(RULE_PHASES[phase % len(RULE_PHASES)], "accent"))
                 else:
                     out.append(c(LATTICE, "ash" if past else "dim"))
             else:
@@ -784,11 +789,12 @@ def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
 
 
 def stack_block(lane: LaneFacts, geo: FieldGeo, board: Board, today: date,
-                inner: int, titles: int, wrows: int, selected_id) -> list[Row]:
+                inner: int, titles: int, wrows: int, selected_id,
+                phase: int = 0) -> list[Row]:
     """A project: its own wave in its own hue, then its next-due work named."""
     offl, offr = _off_window(lane, geo, today)
     field = field_rows(project_wave(lane, geo, today, wrows), geo, lane.hue,
-                       off_left=offl, off_right=offr)
+                       off_left=offl, off_right=offr, phase=phase)
     gap = " " * max(0, inner - geo.label_w - geo.field_w - geo.figs_w)
     rows: list[Row] = [(_lane_label(lane, geo.label_w) + field[0] + gap
                         + _figures(lane, geo.figs_w), None)]
@@ -845,7 +851,7 @@ def _rights_w(rights: list[tuple[str, str]]) -> int:
 
 
 def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
-              prof: int) -> list[Row]:
+              prof: int, phase: int = 0) -> list[Row]:
     """The one project that needs you now, given a DRAWN, CARVED field: its own
     bank several rows tall, ending in `◆` — its own due date — so the air left
     ABOVE the curve before that diamond is the work that cannot land in time."""
@@ -868,7 +874,8 @@ def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
 
     bm = project_wave(lane, geo, today, prof, carve_count=True)
     offl, offr = _off_window(lane, geo, today)
-    field = field_rows(bm, geo, lane.hue, off_left=offl, off_right=offr)
+    field = field_rows(bm, geo, lane.hue, off_left=offl, off_right=offr,
+                       phase=phase)
     edge_cell = min(geo.field_w - 1, wave_edge(lane, geo, today) // 2 + 1)
     for i, row in enumerate(field):
         body = row
@@ -898,7 +905,7 @@ def _put_cell(row_markup: str, index: int, replacement: str) -> str:
 
 
 def render_swimlanes(board, show_archived, selected_id, today=None,
-                     width=68, height=0, line_map=None) -> Text:
+                     width=68, height=0, line_map=None, tick=0) -> Text:
     """Lanes: projects RANKED by pressure on one shared axis of days. The one
     that needs you now gets a drawn field; the rest get a row each; the ones
     with nothing open rest at the bottom. Nothing is ever dropped in silence —
@@ -928,8 +935,9 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
 
     blocks: list[list[Row]] = []
     if active:
-        blocks.append(lead_band(active[0], geo, today, inner, prof))
-    blocks += [stack_block(ln, geo, board, today, inner, titles, wrows, selected_id)
+        blocks.append(lead_band(active[0], geo, today, inner, prof, tick))
+    blocks += [stack_block(ln, geo, board, today, inner, titles, wrows,
+                           selected_id, tick)
                for ln in stack]
     blocks += [[resting_row(ln, geo, inner)] for ln in resting]
 
@@ -1698,6 +1706,9 @@ def render_view(mode, board, show_archived, selected_id, today=None,
     if mode == "gantt":
         return render_gantt(board, show_archived, selected_id, today, width, height,
                             line_map, tick=tick)
+    if mode == "swimlanes":
+        return render_swimlanes(board, show_archived, selected_id, today, width,
+                                height, line_map, tick=tick)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 

@@ -18,6 +18,11 @@ from .modals import (ClockModal, ConfirmModal, ImageViewer, PhaseEditor, Project
 from .ribbon import Ribbon
 from .views import nav_model, render_view, valid_url
 
+# The app's ONE shared clock. Every animated surface counts in these ticks, so
+# the ambient's cycle length is this times the number of phases it rotates
+# through — which is why the motion laws read it instead of assuming it.
+TICK_SECONDS = 1.0
+
 VIEW_ORDER = ["swimlanes", "columns", "agenda", "gantt", "kanban"]
 VIEW_KEYS = {"1": "swimlanes", "2": "columns", "3": "agenda", "4": "gantt",
              "5": "kanban"}
@@ -97,7 +102,7 @@ class TaskboardApp(App):
         self.refresh_view()
         self._apply_clock_settings()
         # ONE shared clock interval for the whole app (never per-widget).
-        self.set_interval(1.0, self._tick)
+        self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
 
     def _warn_if_rescued(self) -> None:
@@ -125,8 +130,10 @@ class TaskboardApp(App):
         if ribbons:
             ribbons.first(Ribbon).update_clock()
         self._tick_n += 1
-        if self.view_mode == "gantt":
-            self._repaint_flow()         # advance the flow packet, keep scroll/selection
+        if self.view_mode in ("gantt", "swimlanes"):
+            # gantt: advance the flow packet. lanes: breathe the today rule.
+            # Both keep scroll and selection exactly where they were.
+            self._repaint_flow()
 
     def _repaint_flow(self) -> None:
         """Re-render the board content at the new tick WITHOUT re-selecting or
