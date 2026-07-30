@@ -291,34 +291,6 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
     return pre + title_markup(task, title_w, selected, arrow=False) + ind_markup
 
 
-def progress_bar(done: int, total: int, width: int, color: str) -> str:
-    if width <= 0:
-        return ""
-    if total <= 0:
-        return c("░" * width, "dim")
-    filled = max(0, min(width, round(width * done / total)))
-    return c("▇" * filled, color) + c("░" * (width - filled), "frame")
-
-
-_SPARK = "▁▂▃▄▅▆▇█"
-
-
-def sparkline(values: list[int], color: str, width: int = 4) -> str:
-    vals = values[: max(0, width)]
-    if not vals:
-        return ""
-    hi = max(vals)
-    if hi <= 0:
-        return c("▁" * len(vals), "dim")
-    out = []
-    for v in vals:
-        if v <= 0:
-            out.append("▁")
-        else:  # visibility floor: any nonzero -> at least one level up (A8)
-            out.append(_SPARK[max(1, round((len(_SPARK) - 1) * v / hi))])
-    return c("".join(out), color)
-
-
 # ---------------------------------------------------------------------------
 # urgency
 # ---------------------------------------------------------------------------
