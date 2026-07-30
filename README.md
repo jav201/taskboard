@@ -13,19 +13,32 @@ widget. Four switchable views over the same data; single dark theme tuned for a 
 Built and verified against **Textual 8.2.8 / rich 15.0.0** (Python 3.12).
 
 ```
-╭─ ◆ TASKBOARD ──────────────────────────────── 12 open · 4 due ─╮
-│          │TODO             │DOING            │DONE             │
-├──────────┼─────────────────┼─────────────────┼─────────────────┤
-│▐ Textual │dev-flow doc     │M22 pitfalls m… ◉│systems 5/5      │
-│▐ ▇▇▇░░░░░│                 │1 more           │1 more           │
-╰──────────┴─────────────────┴─────────────────┴─────────────────╯
+╭─ ◆ TASKBOARD ───────────────────────────────── 4 open · 1 due ─╮
+│▌ TEXTUAL                                    unaged  2 open  ▲4d│
+│            ············╎····◆······················            │
+│            ············╎·⣀⢀⣀·······················            │
+│            ············╎⠸⣫⣾⣿·······················            │
+│            ··········⣰⣶⢰⣶⣶⣾⣿·······················            │
+│            ··········⣿⣿⢸⣿⣿⣿⣿·······················            │
+│  M22 pitfalls module                                        ▲4d│
+│▎ Systems   ············╎····⢠⣤⣤⣤⣿⣿⣿⣿⡇·············· 0/2    +26d│
+│▎  ⠤ KServe rollout                                         +11d│
+│▎  ⣀ k3s bootstrap                                          +18d│
+│▏ Archive ✓  1/1 done · · · · · · · · · · · · · · ·    completed│
+│            -24d      today                     +55d            │
+╰────────────────────────────────────────────────────────────────╯
 ```
+
+Every row sits on **one shared axis of days** — `╎` is today, one cell is two days — so
+two projects' work is comparable by eye. The project under the most pressure leads with a
+drawn field ending in `◆`, its own due date; the rest get a row each; anything with
+nothing open **rests** at the bottom. Severity (`▲Nd`) is worn only by a date.
 
 ## Views
 
 | Key | View | What it's for |
 |-----|------|---------------|
-| `1` | **Swimlanes** | Projects as rows × TODO/DOING/DONE columns, with a half-block progress bar per project. |
+| `1` | **Lanes** | One row per project on a shared day axis, **ranked by pressure**: a drawn field for the project that needs you now, a row for the rest, a resting row for anything with nothing open. Shows each project's status (`‖ ╳ ✓`), its `done/total`, its high-priority count `!N`, and how long its work has sat in phase. |
 | `2` | **Columns** | Classic kanban: BACKLOG / DOING / BLOCKED / DONE, project-colored cards, WIP counts + throughput sparklines, due chips. |
 | `3` | **Agenda** | Tasks grouped by urgency: OVERDUE / TODAY / THIS WEEK / LATER / NO DATE, with braille due-bars. |
 | `4` | **Gantt** | An 8-week time axis; a bar per project (start→due) with its task bars underneath; undated items listed under UNSCHEDULED. |
