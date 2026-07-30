@@ -304,6 +304,11 @@ class TaskboardApp(App):
         if not data:
             return
         for k, v in data.items():
+            if k == "phase":
+                # routed through the board so the move is DATED; assigning it
+                # here would leave the stamp behind and momentum unknowable
+                self.board.set_task_phase(task, v)
+                continue
             setattr(task, k, v)
         self.board.save()
         self.refresh_view()

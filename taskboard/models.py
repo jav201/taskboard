@@ -333,6 +333,7 @@ _PROJECT_KEYS = {"id", "name", "color", "status", "archived", "start_date", "due
                  "extra"}
 _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
               "due_date", "notes", "urls", "images", "archived", "extra",
+              "phase_changed",
               "status", "url"}          # last two: legacy, consumed by the migration
 
 
@@ -379,6 +380,17 @@ def _rescue_project(entry) -> "Project":
     elif isinstance(entry, str) and entry.strip():
         name = "(recovered) " + entry.strip()[:48]
     return Project(name=name, extra={"_rescued": True})
+
+
+def days_in_phase(task: "Task", today: date) -> int | None:
+    """How long this task has sat where it is, or None when the board never
+    recorded the move. UNKNOWN IS NOT ZERO: a board written before the stamp
+    existed knows nothing about its own history, and inventing a start date for
+    it would turn every old task into a fresh one at a glance."""
+    moved = parse_iso(task.phase_changed)
+    if moved is None:
+        return None
+    return max(0, (today - moved).days)
 
 
 def project_color_on_load(color) -> str:
@@ -431,6 +443,11 @@ class Task:
     images: list[str] = field(default_factory=list)
     archived: bool = False
     blocked: bool = False
+    # ISO date this task last CHANGED PHASE. None on every task that existed
+    # before the field did, and on every task that has never moved — the board
+    # has no history, so this can only ever start counting from now. `None`
+    # means UNKNOWN and must never be read as zero.
+    phase_changed: str | None = None
     extra: dict = field(default_factory=dict)
     id: str = field(default_factory=_new_id)
 
@@ -470,6 +487,9 @@ class Task:
                 urls=urls,
                 images=images,
                 archived=bool(d.get("archived", False)),
+                # additive; absent -> unknown, never back-filled with a guess
+                phase_changed=(d.get("phase_changed")
+                               if isinstance(d.get("phase_changed"), str) else None),
             )
         except Exception as exc:                    # never let one bad task raise
             return _rescue_task(d, type(exc).__name__)
@@ -628,6 +648,20 @@ class Board:
         return bool(self.phases) and task.phase == self.phases[-1]
 
     # ---- mutations ---------------------------------------------------------
+    def set_task_phase(self, task: Task, phase: str, today: date | None = None) -> bool:
+        """Move a task to `phase`, stamping WHEN it moved. Returns whether it
+        actually moved — re-saving a task without touching its phase must not
+        reset the clock, or every edit would make stale work look fresh.
+
+        The caller saves. This is the ONLY place the stamp is written, so a
+        phase that changes by any other route stays honestly unknown."""
+        phase = self.canonical_phase(phase)
+        if phase == task.phase:
+            return False
+        task.phase = phase
+        task.phase_changed = (today or date.today()).isoformat()
+        return True
+
     def add_task(self, task: Task) -> None:
         self.tasks.append(task)
         self.save()
