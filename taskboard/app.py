@@ -12,7 +12,8 @@ from textual.binding import Binding
 from textual.containers import Vertical, VerticalScroll
 from textual.widgets import Footer, Static
 
-from .models import IMAGE_EXTS, Board, Project, Task, default_board_path
+from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
+                     default_board_path)
 from .modals import (ClockModal, ConfirmModal, ImageViewer, PhaseEditor, ProjectModal,
                      ProjectPicker, TaskDetails, TaskModal)
 from .ribbon import Ribbon
@@ -98,12 +99,26 @@ class TaskboardApp(App):
             yield Footer()
 
     def on_mount(self) -> None:
+        self._sweep_old_done()
         self._select_first()
         self.refresh_view()
         self._apply_clock_settings()
         # ONE shared clock interval for the whole app (never per-widget).
         self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
+
+    def _sweep_old_done(self) -> None:
+        """Archive long-finished work at startup — and SAY SO. Tasks leaving the
+        board without a word is the thing that would make a user distrust it;
+        they are archived, not deleted, and `v` shows them again."""
+        moved = self.board.auto_archive_done()
+        if not moved:
+            return
+        self.board.save()
+        self.notify(
+            f"{len(moved)} task(s) finished more than {AUTO_ARCHIVE_DAYS} days ago "
+            "were archived. Press 'v' to see archived items, 'x' to bring one back.",
+            title="Archived old work", severity="information", timeout=8)
 
     def _warn_if_rescued(self) -> None:
         """Surface a load that had to repair drifted/corrupt data, so the user

@@ -1208,6 +1208,19 @@ BAR_DONE = "⣿"     # 8/8 dots — the completed share of a project's span
 BAR_TODO = "⢕"     # 4/8 dots — the remaining share; same family, same height
 
 
+def gantt_tasks(board: Board, tasks: list[Task], project_id: str | None) -> list[Task]:
+    """One project's tasks in the order the gantt lists them: WORK STILL OPEN
+    FIRST, finished work at the tail, each group by due date (soonest first,
+    undated last).
+
+    Was: raw board order, so a task finished in May sat between two live ones.
+    The renderer and `nav_model` both call this, so the cursor cannot walk an
+    order the screen does not show."""
+    rows = [t for t in tasks if t.project_id == project_id]
+    return (sort_by_due([t for t in rows if not board.is_done(t)])
+            + sort_by_due([t for t in rows if board.is_done(t)]))
+
+
 META_FULL_W = 14        # ' 62% due 28d' — percent AND due figure
 META_PCT_W = 6          # ' 62%'         — percent alone
 META_FULL_INNER = 90    # below this the timeline needs those cells more
@@ -1413,7 +1426,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
                           + bar
                           + " " * trailing
                           + gantt_meta(p, prog, today, meta_w, meta_full)))
-        for t in [t for t in tasks if t.project_id == p.id]:
+        for t in gantt_tasks(board, tasks, p.id):
             ts = week_index(parse_iso(t.start_date) or parse_iso(t.due_date))
             te = week_index(parse_iso(t.due_date) or parse_iso(t.start_date))
             if ts is None and te is None:
@@ -1437,9 +1450,9 @@ def render_gantt(board, show_archived, selected_id, today=None,
             if line_map is not None:
                 line_map[t.id] = len(lines) - 1
 
-    for t in tasks:
-        if board.project_by_id(t.project_id) is not None:
-            continue
+    loose = [t for t in tasks if board.project_by_id(t.project_id) is None]
+    for t in (sort_by_due([t for t in loose if not board.is_done(t)])
+              + sort_by_due([t for t in loose if board.is_done(t)])):
         ts = week_index(parse_iso(t.start_date) or parse_iso(t.due_date))
         te = week_index(parse_iso(t.due_date) or parse_iso(t.start_date))
         if ts is None and te is None:
@@ -1754,11 +1767,11 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
     if mode == "gantt":
         order, unscheduled = [], []
         for p in board.visible_projects(show_archived):
-            for t in [t for t in tasks if t.project_id == p.id]:
+            for t in gantt_tasks(board, tasks, p.id):
                 (order if _is_dated(t) else unscheduled).append(t.id)
-        for t in tasks:
-            if board.project_by_id(t.project_id) is not None:
-                continue
+        loose = [t for t in tasks if board.project_by_id(t.project_id) is None]
+        for t in (sort_by_due([t for t in loose if not board.is_done(t)])
+                  + sort_by_due([t for t in loose if board.is_done(t)])):
             (order if _is_dated(t) else unscheduled).append(t.id)
         return [order + unscheduled]
 
