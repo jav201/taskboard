@@ -160,7 +160,7 @@ def _fit_indicators(tokens: list[tuple[str, str]], budget: int) -> tuple[str, in
 def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
               prefix: str = "", prefix_color: str = "mut",
               allow_priority: bool = True) -> str:
-    """A width-exact card: `prefix` + truncated title + right indicators (↗ ◉).
+    """A width-exact card: `prefix` + truncated title + right indicators (↗ !).
 
     Title is truncated with … so it can NEVER share a cell with the trailing
     indicators, at any width down to 0. Always returns exactly `wc` cells."""
@@ -172,9 +172,14 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
     if has_url(task):
         tokens.append(("↗", "accent"))
     if allow_priority and task.priority == "high" and not board.is_done(task):
-        tokens.append(("◉", "amber"))
+        # THE GLYPH HOUSE. High priority used to be a ◉ in `amber` — the exact hex
+        # (#fbbf24) the app uses for "due today". Two meanings, one colour, so the
+        # mark could not be read. Severity keeps that seat (it is worn by dates:
+        # date_chip / reldue_token); priority is carried by the SHAPE `!` in the
+        # neutral ink tone, which claims neither the identity nor the judging house.
+        tokens.append(("!", "ink"))
     if task.images:
-        tokens.append(("▤", "sky"))     # width-1 image indicator, distinct from ↗/◉
+        tokens.append(("▤", "sky"))     # width-1 image indicator, distinct from ↗/!
     ind_markup, used = _fit_indicators(tokens, wc - len(prefix))
     title_w = max(0, wc - len(prefix) - used)
     pre = c(prefix, prefix_color) if prefix else ""

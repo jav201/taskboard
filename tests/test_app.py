@@ -1193,20 +1193,25 @@ def test_win_clipboard_roundtrip():
                        check=False)
 
 
-# ---- project palette (12 colours) ---------------------------------------- #
-def test_palette_has_twelve_and_keeps_the_originals():
-    """The 5 original colours must survive with their exact hex, so existing
-    boards keep the colours their projects were saved with."""
+# ---- project palette (8 colours, after the ration) ----------------------- #
+def test_palette_has_eight_and_keeps_the_lawful_originals():
+    """Was: twelve colours, "the 5 originals survive with their exact hex".
+
+    The colour ration (Prism increment 1) retired four of them — amber, cyan,
+    orange, rose — because each is confusable with a hue that JUDGES (see
+    test_palette_ration.py for the measured oracle). What this test still
+    guarantees is the other half of the old promise: a surviving colour keeps
+    its exact hex, so a project saved as `sky` looks unchanged."""
     from taskboard.models import PROJECT_COLORS
     from taskboard.views import HEX
-    assert len(PROJECT_COLORS) == 12
-    assert len(set(PROJECT_COLORS)) == 12                 # no duplicates
-    for name in ("violet", "sky", "amber", "rose", "green"):
+    assert len(PROJECT_COLORS) == 8
+    assert len(set(PROJECT_COLORS)) == 8                  # no duplicates
+    for name in ("violet", "sky", "green"):
         assert name in PROJECT_COLORS
+    for name in ("amber", "rose", "orange", "cyan"):
+        assert name not in PROJECT_COLORS
     assert HEX["violet"] == "#a78bfa"
     assert HEX["sky"] == "#38bdf8"
-    assert HEX["amber"] == "#fbbf24"
-    assert HEX["rose"] == "#fb7185"
     assert HEX["green"] == "#4ade80"
 
 
