@@ -163,7 +163,15 @@ class TaskboardApp(App):
 
     # ---- selection (follows the CURRENT VIEW's on-screen order) -------------
     def _nav_columns(self) -> list[list[str]]:
-        return nav_model(self.view_mode, self.board, self.show_archived)
+        # The lanes view's allocator spends the HEIGHT it is given, so how many
+        # tasks it names — and therefore what the cursor can reach — depends on
+        # the viewport. Navigation asks the same question the renderer answered.
+        vps = self.query("#viewport")
+        h = vps.first().size.height if vps else 0
+        boards = self.query("#board")
+        bw = boards.first(BoardView).size.width if boards else 0
+        return nav_model(self.view_mode, self.board, self.show_archived,
+                         width=bw or 68, height=h)
 
     def _nav_flat(self) -> list[str]:
         return [tid for col in self._nav_columns() for tid in col]

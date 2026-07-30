@@ -538,9 +538,19 @@ def lane_facts(board: Board, today: date, name: str, hue: str, status: str,
         due_in=due_in, worst=worst)
 
 
+def lane_pressure(lane: LaneFacts) -> tuple:
+    """What puts a project at the top: how much of it is already late, how late
+    the worst of it is, how much falls due today, and how close its own date is.
+    THE ORDER IS THE HIERARCHY — the view does not ask the reader to scan for
+    the project that needs them."""
+    return (-len(lane.late), -lane.worst, -lane.today_n,
+            lane.due_in if lane.due_in is not None else 9999)
+
+
 def lanes_of(board: Board, show_archived: bool, today: date) -> list[LaneFacts]:
-    """Every project as a lane, then the Inbox if it has anything. THE order the
-    lanes view draws (ranking arrives with the allocator)."""
+    """Every project as a lane, then the Inbox if it has anything — RANKED by
+    pressure. Work with nothing open sinks to the bottom, and so does work
+    nobody expects anything from (cancelled, completed)."""
     tasks = board.visible_tasks(show_archived)
     out = [lane_facts(board, today, p.name, p.color, p.status, p.due_date,
                       [t for t in tasks if t.project_id == p.id])
@@ -548,7 +558,28 @@ def lanes_of(board: Board, show_archived: bool, today: date) -> list[LaneFacts]:
     inbox = [t for t in tasks if board.project_by_id(t.project_id) is None]
     if inbox:
         out.append(lane_facts(board, today, "Inbox", "dim", "on_track", None, inbox))
-    return out
+    return sorted(out, key=lambda ln: (ln.resting, ln.closed, lane_pressure(ln)))
+
+
+def allocate(geo: FieldGeo, opens: list[int], n_rest: int,
+             room: int) -> tuple[int, int, int]:
+    """(titles per stacked project, rows for the lead's bench, wave rows each).
+
+    Space is INFORMATION-PROPORTIONAL IN BOTH DIRECTIONS: the search maximises
+    rows actually used, breaking ties toward titles first (a named task outranks
+    a taller curve on a mission-control surface) and toward a taller LEAD before
+    taller stack waves — five equal waves would be a tie of near-equals, and the
+    lead would stop being the hero."""
+    floor = geo.profile_rows
+    ceil = 10 if geo.large else 6
+    best, best_score = (0, floor, 1), (-1, -1, -1)
+    for titles in range(0, 4):
+        for wrows in (1, 2):
+            for prof in range(floor, ceil + 1):
+                need = prof + sum(wrows + min(titles, o) for o in opens) + n_rest
+                if need <= room and (need, titles, prof) > best_score:
+                    best_score, best = (need, titles, prof), (titles, prof, wrows)
+    return best
 
 
 def lane_titles(lane: LaneFacts, limit: int) -> list[Task]:
@@ -650,9 +681,28 @@ def _scale_row(geo: FieldGeo, inner: int) -> str:
             + " " * max(0, inner - geo.label_w - span))
 
 
-def project_wave(lane: LaneFacts, geo: FieldGeo, today: date, rows: int) -> Bitmap:
+def wave_edge(lane: LaneFacts, geo: FieldGeo, today: date) -> int:
+    """The last dot column the bank may occupy: the project's OWN due date.
+    Past it there is no more life to spend, so a plateau running to the right
+    edge would be saying nothing."""
+    if lane.due_in is not None:
+        col = day_col(today + timedelta(days=lane.due_in), today, geo)
+        edge = col[1] if isinstance(col, tuple) else col
+    else:
+        dues = [day_col(d, today, geo) for d in
+                (parse_iso(t.due_date) for t in lane.open) if d]
+        edge = max((cl[1] if isinstance(cl, tuple) else cl for cl in dues),
+                   default=geo.today_dc)
+    return max(geo.today_dc, min(max(0, geo.dot_w - 1), edge))
+
+
+def project_wave(lane: LaneFacts, geo: FieldGeo, today: date, rows: int,
+                 carve_count: bool = False) -> Bitmap:
     """The project's own cumulative bank, with time CARVED into it: a notch per
-    day that fell due and did not land, and today as a hole through every wave."""
+    day that fell due and did not land, and today as a hole through every wave.
+
+    `carve_count` cuts the open count out of the field as digits — a figure the
+    field gives up, never a label printed on top of it."""
     bm = Bitmap(geo.dot_w, rows * DOT_ROWS)
     cols = []
     for t in lane.open:
@@ -662,16 +712,17 @@ def project_wave(lane: LaneFacts, geo: FieldGeo, today: date, rows: int) -> Bitm
         col = day_col(d, today, geo)
         cols.append(col[1] if isinstance(col, tuple) else col)
     steps = [sum(1 for cl in cols if cl <= x) for x in range(geo.dot_w)]
-    if lane.due_in is not None:
-        col = day_col(today + timedelta(days=lane.due_in), today, geo)
-        edge = col[1] if isinstance(col, tuple) else col
-    else:
-        edge = max(cols, default=geo.today_dc)
-    edge = max(geo.today_dc, min(geo.dot_w - 1, edge))
+    edge = wave_edge(lane, geo, today)
     load_curve(bm, steps, max(1, lane.total), edge)
     for t in lane.late:
         col = day_col(parse_iso(t.due_date), today, geo)
         bm.carve_notch(col[1] if isinstance(col, tuple) else col, 2)
+    if carve_count and rows >= 3 and lane.open:
+        txt = str(len(lane.open))
+        gw = len(txt) * 5
+        x = max(geo.today_dc + 2, edge - gw - 1)
+        if bm.ink_at(x) >= 7:                  # only carve where there IS field
+            bm.carve_text(txt, x, (bm.h - 7) // 2)
     bm.carve_col(geo.today_dc)
     return bm
 
@@ -689,7 +740,7 @@ def _off_window(lane: LaneFacts, geo: FieldGeo, today: date) -> tuple[bool, bool
     return left, right
 
 
-LANE_TITLES = 2      # named tasks per lane; the allocator makes this dynamic
+LANE_TITLES = 2      # the allocator's default when no height is known
 
 
 def lane_geometry(inner: int, height: int) -> FieldGeo:
@@ -717,52 +768,162 @@ def _pad(markup: str, width: int) -> str:
     return markup + " " * max(0, width - len(_strip(markup)))
 
 
+Row = tuple[str, "str | None"]      # (markup, the task this row names)
+
+
+def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
+               inner: int, selected: bool) -> Row:
+    tok, tok_key = due_token(task, today)
+    title_w = max(0, inner - 5 - len(tok) - 1)
+    body = escape(fit(clip(task.title, title_w), title_w))
+    if selected:
+        body = f"[reverse]{body}[/reverse]"
+    return ((c("▎", lane.hue) + "  "
+             + c(phase_glyph({min(3, board.phase_index(task))}), lane.hue) + " "
+             + c(body, "mut") + " " + c(tok, tok_key)), task.id)
+
+
+def stack_block(lane: LaneFacts, geo: FieldGeo, board: Board, today: date,
+                inner: int, titles: int, wrows: int, selected_id) -> list[Row]:
+    """A project: its own wave in its own hue, then its next-due work named."""
+    offl, offr = _off_window(lane, geo, today)
+    field = field_rows(project_wave(lane, geo, today, wrows), geo, lane.hue,
+                       off_left=offl, off_right=offr)
+    gap = " " * max(0, inner - geo.label_w - geo.field_w - geo.figs_w)
+    rows: list[Row] = [(_lane_label(lane, geo.label_w) + field[0] + gap
+                        + _figures(lane, geo.figs_w), None)]
+    for extra in field[1:]:
+        rows.append((c("▎", lane.hue) + " " * (geo.label_w - 1) + extra, None))
+    for t in lane_titles(lane, titles):
+        rows.append(_title_row(t, board, lane, today, inner, t.id == selected_id))
+    return rows
+
+
+def resting_row(lane: LaneFacts, geo: FieldGeo, inner: int) -> Row:
+    """Nothing open. This is the state a repeated element spends most of its
+    life in, so it is DESIGNED rather than inherited: a thin spine, everything
+    on the quiet step, no field — and it still says what it is."""
+    word = {"completed": "completed", "cancelled": "cancelled",
+            "paused": "paused"}.get(lane.status, "nothing open")
+    body = list(" " * geo.field_w)
+    for i in range(0, geo.field_w, 2):
+        body[i] = LATTICE
+    done = f" {lane.done_n}/{lane.total} done "
+    body[:len(done)] = list(done[:geo.field_w])
+    label = (c("▏", "dim") + " " + c(escape(fit(clip(lane.name, geo.label_w - 5),
+                                                geo.label_w - 5)), "mut") + " "
+             + c(STATUS_MARK.get(lane.status, " "), "dim") + " ")
+    tail = fit(word, geo.figs_w, "right")
+    return (label + c("".join(body[:geo.field_w]), "dim")
+            + " " * max(0, inner - geo.label_w - geo.field_w - geo.figs_w)
+            + c(tail, "dim"), None)
+
+
+def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
+              prof: int) -> list[Row]:
+    """The one project that needs you now, given a DRAWN, CARVED field: its own
+    bank several rows tall, ending in `◆` — its own due date — so the air left
+    ABOVE the curve before that diamond is the work that cannot land in time."""
+    chip, chip_key = pressure_chip(lane)
+    open_txt = f"{len(lane.open)} open"
+    name = clip(lane.name.upper(), max(0, inner - geo.figs_w - 4))
+    head = (c("▌ ", lane.hue) + c(escape(name), lane.hue, bold=True))
+    pad = inner - len(_strip(head)) - len(open_txt) - len(chip) - 2
+    head += " " * max(0, pad) + c(open_txt, "mut") + "  " + c(chip, chip_key)
+    rows: list[Row] = [(head, None)]
+
+    bm = project_wave(lane, geo, today, prof, carve_count=True)
+    offl, offr = _off_window(lane, geo, today)
+    field = field_rows(bm, geo, lane.hue, off_left=offl, off_right=offr)
+    edge_cell = min(geo.field_w - 1, wave_edge(lane, geo, today) // 2 + 1)
+    for i, row in enumerate(field):
+        body = row
+        if i == 0 and 0 <= edge_cell < geo.field_w:
+            body = _put_cell(row, edge_cell, c("◆", lane.hue))
+        rows.append((" " * geo.label_w + body, None))
+
+    if lane.late:
+        worst = sorted(lane.late, key=lambda t: parse_iso(t.due_date))[0]
+        d = (today - parse_iso(worst.due_date)).days
+        tok = f"▲{d}d"
+        w_title = max(0, inner - len(tok) - 3)
+        rows.append(("  " + c(escape(fit(clip(worst.title, w_title), w_title)), "mut")
+                     + " " + c(tok, "over"), worst.id))
+    else:
+        rows.append(("  " + c("nothing late", "dim"), None))
+    return rows
+
+
+def _put_cell(row_markup: str, index: int, replacement: str) -> str:
+    """Swap ONE visible cell of an already-composed row. The field is built as
+    `[hex]x[/]` segments of one cell each, so a cell is a segment."""
+    parts = row_markup.split("[/]")
+    if 0 <= index < len(parts) - 1:
+        parts[index] = replacement.rsplit("[/]", 1)[0]
+    return "[/]".join(parts)
+
+
 def render_swimlanes(board, show_archived, selected_id, today=None,
                      width=68, height=0, line_map=None) -> Text:
-    """Lanes: one row per project, ALL on the same axis of days. The field is
-    the work the project still owes, today is carved through it, and the figures
-    on the right say how much is done and how late it is."""
+    """Lanes: projects RANKED by pressure on one shared axis of days. The one
+    that needs you now gets a drawn field; the rest get a row each; the ones
+    with nothing open rest at the bottom. Nothing is ever dropped in silence —
+    what does not fit is counted."""
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
-    geo = lane_geometry(inner, height or 24)
+    h = height or 24
+    lanes, geo, titles, prof, wrows = swimlane_plan(
+        board, show_archived, today, w, h)
 
     tasks = board.visible_tasks(show_archived)
     open_n = sum(1 for t in tasks if not board.is_done(t))
     due_n = sum(1 for t in tasks if urgency(t, today, board) in ("overdue", "today"))
     right = c(f"{open_n} open · ", "mut") + c(f"{due_n} due", "over", bold=True)
+    lines = [header(c("◆ TASKBOARD", "accent", bold=True), right, w)]
 
-    lines = [header(c("◆ TASKBOARD", "accent", bold=True), right, w),
-             line(_pad(_scale_row(geo, inner), inner))]
-
-    lanes = lanes_of(board, show_archived, today)
     if not lanes:
         lines.append(line(c(fit("  (no projects — press 'p' to add one)", inner), "dim")))
+        lines.append(line(_pad(_scale_row(geo, inner), inner)))
+        lines.append(bottom(None, w))
+        return Text.from_markup("\n".join(fill_height(lines, height, w)))
 
-    for lane in lanes:
-        offl, offr = _off_window(lane, geo, today)
-        field = field_rows(project_wave(lane, geo, today, 1), geo, lane.hue,
-                           off_left=offl, off_right=offr)[0]
-        row = (_lane_label(lane, geo.label_w) + field
-               + " " * max(0, inner - geo.label_w - geo.field_w - geo.figs_w)
-               + _figures(lane, geo.figs_w))
-        lines.append(line(_pad(row, inner)))
+    active = [ln for ln in lanes if not ln.resting]
+    resting = [ln for ln in lanes if ln.resting]
+    stack = active[1:]
 
-        for t in lane_titles(lane, LANE_TITLES):
-            tok, tok_key = due_token(t, today)
-            title_w = max(0, inner - 5 - len(tok) - 1)
-            body = escape(fit(clip(t.title, title_w), title_w))
-            if t.id == selected_id:
-                body = f"[reverse]{body}[/reverse]"
-            trow = (c("▎", lane.hue) + "  "
-                    + c(phase_glyph({min(3, board.phase_index(t))}), lane.hue) + " "
-                    + c(body, "mut") + " " + c(tok, tok_key))
-            lines.append(line(_pad(trow, inner)))
-            if line_map is not None:
-                line_map[t.id] = len(lines) - 1
+    blocks: list[list[Row]] = []
+    if active:
+        blocks.append(lead_band(active[0], geo, today, inner, prof))
+    blocks += [stack_block(ln, geo, board, today, inner, titles, wrows, selected_id)
+               for ln in stack]
+    blocks += [[resting_row(ln, geo, inner)] for ln in resting]
 
+    body: list[Row] = []
+    shed = 0
+    for i, blk in enumerate(blocks):
+        if len(body) + len(blk) > max(0, h - 3):
+            shed = len(blocks) - i
+            break
+        body += blk
+
+    for markup, tid in body:
+        lines.append(line(_pad(markup, inner)))
+        if tid is not None and line_map is not None:
+            line_map[tid] = len(lines) - 1
+
+    scale = (_scale_with_note(geo, inner, f"+{shed} not shown") if shed
+             else _scale_row(geo, inner))
+    lines.append(line(_pad(scale, inner)))
     lines.append(bottom(None, w))
     return Text.from_markup("\n".join(fill_height(lines, height, w)))
+
+
+def _scale_with_note(geo: FieldGeo, inner: int, note: str) -> str:
+    """The axis, plus what the height could not show. A view that drops rows in
+    silence is lying about how much work there is."""
+    base = _strip(_scale_row(geo, inner))[:max(0, inner - len(note) - 1)]
+    return c(base, "dim") + " " * max(0, inner - len(base) - len(note)) + c(note, "mut")
 
 
 # ---------------------------------------------------------------------------
@@ -1516,7 +1677,38 @@ def _is_dated(task: Task) -> bool:
     return (parse_iso(task.start_date) or parse_iso(task.due_date)) is not None
 
 
-def nav_model(mode, board, show_archived, today=None) -> list[list[str]]:
+def swimlane_plan(board, show_archived, today: date, width: int,
+                  height: int) -> tuple[list[LaneFacts], FieldGeo, int, int, int]:
+    """(lanes ranked, geometry, titles, lead rows, wave rows) — the single answer
+    both the renderer and navigation work from. The allocator spends the space
+    it is actually given, so the answer depends on BOTH dimensions; asking it
+    twice with different numbers is how a cursor ends up on an undrawn task."""
+    h = height or 24
+    geo = lane_geometry(_clamp_width(width) - 2, h)
+    lanes = lanes_of(board, show_archived, today)
+    active = [ln for ln in lanes if not ln.resting]
+    titles, prof, wrows = allocate(
+        geo, [len(ln.open) for ln in active[1:]],
+        len([ln for ln in lanes if ln.resting]), h - 3 - (2 if active else 0))
+    return lanes, geo, titles, prof, wrows
+
+
+def swimlane_nav(board, show_archived, today: date, width: int,
+                 height: int) -> list[str]:
+    """The task ids the lanes view NAMES, in the order it draws them."""
+    lanes, _geo, titles, _prof, _wrows = swimlane_plan(
+        board, show_archived, today, width, height)
+    active = [ln for ln in lanes if not ln.resting]
+    out: list[str] = []
+    if active and active[0].late:
+        out.append(sorted(active[0].late, key=lambda t: parse_iso(t.due_date))[0].id)
+    for lane in active[1:]:
+        out += [t.id for t in lane_titles(lane, titles)]
+    return out
+
+
+def nav_model(mode, board, show_archived, today=None, width: int = 68,
+              height: int = 0) -> list[list[str]]:
     today = today or date.today()
     tasks = board.visible_tasks(show_archived)
 
@@ -1531,10 +1723,11 @@ def nav_model(mode, board, show_archived, today=None) -> list[list[str]]:
         return [[t.id for t in bucket] for bucket in phase_buckets(board, ordered)]
 
     if mode == "swimlanes":
-        # ONE column now: the view is a stack of lanes, and the only selectable
-        # things in it are the tasks each lane NAMES, in the order it names them.
-        return [[t.id for lane in lanes_of(board, show_archived, today)
-                 for t in lane_titles(lane, LANE_TITLES)]]
+        # ONE column: the view is a stack of lanes, and the only selectable
+        # things in it are the tasks it NAMES, in the order it names them — the
+        # lead's worst late task first, then each stacked lane's titles. The
+        # allocator decides how many, so the height is part of the question.
+        return [swimlane_nav(board, show_archived, today, width, height)]
 
     if mode == "agenda":       # dated (sorted by due), then undated — matches render
         dated = [t for t in tasks if parse_iso(t.due_date) is not None]

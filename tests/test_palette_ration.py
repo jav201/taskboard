@@ -256,8 +256,13 @@ def test_every_view_that_marks_priority_marks_it_with_the_glyph(tmp_path):
     per card, so its mark is `!`; the lanes row names a PROJECT, so its mark is
     the count `!N`. Columns/agenda/gantt mark priority nowhere — pinned here too,
     so nobody is silently given one. (Was: `!` in both, before the lanes row
-    replaced the per-phase cards.)"""
+    replaced the per-phase cards. The lanes board needs TWO projects, because
+    the one under most pressure is drawn as the leader's band, whose head row
+    carries an open count instead of the lane figures.)"""
     b, p = _board(tmp_path)
+    lead = Project("Leader", "sky")
+    b.projects.append(lead)
+    b.add_task(Task("Overdue thing", lead.id, "Doing", "normal", due_date="2026-07-01"))
     b.add_task(Task("Urgent thing", p.id, "Backlog", "high"))
     marks = {}
     for mode in VIEWS:
