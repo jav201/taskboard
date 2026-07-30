@@ -55,9 +55,25 @@ def typical(tmp_path):
 
 
 def lane_rows(out: list[str]) -> list[str]:
-    """The PROJECT rows — a named lane, not one of the task rows under it (those
-    carry the same spine but two spaces before their phase glyph)."""
+    """The stacked PROJECT rows — a named lane, not one of the task rows under
+    it (those carry the same spine but two spaces before their phase glyph)."""
     return [line for line in out if line.startswith("│▎ ") and line[3] != " "]
+
+
+def resting_rows(out: list[str]) -> list[str]:
+    """Lanes with nothing open: the thin spine."""
+    return [line for line in out if line.startswith("│▏ ")]
+
+
+def lead_head(out: list[str]) -> str:
+    """The leader's band opens with the heavy spine and a shouted name."""
+    return next(line for line in out if line.startswith("│▌ "))
+
+
+def project_blocks(out: list[str]) -> int:
+    """Every project on screen, in whichever of its three forms it took."""
+    return (len(lane_rows(out)) + len(resting_rows(out))
+            + sum(1 for line in out if line.startswith("│▌ ")))
 
 
 def rows_of(b, w=96, h=30, selected=None, line_map=None):
@@ -114,35 +130,89 @@ def test_today_sits_in_the_same_column_on_every_lane(tmp_path):
     b = typical(tmp_path)
     geo = lane_geometry(94, 30)
     col = 1 + geo.label_w + geo.today_dc // 2          # +1 for the frame border
-    lanes = lane_rows(rows_of(b, 96, 30))
-    assert len(lanes) >= 4
-    marks = {line[col] for line in lanes}
-    for ch in marks:
+    out = rows_of(b, 96, 30)
+    fielded = [line for line in out
+               if len(line) > col and (line[col] == RULE
+                                       or 0x2800 <= ord(line[col]) <= 0x28FF)]
+    assert len(fielded) >= 4        # the lead's band rows plus the stacked lanes
+    assert len(lane_rows(out)) >= 2
+    for line in lane_rows(out):
+        ch = line[col]
         assert ch == RULE or 0x2800 <= ord(ch) <= 0x28FF, f"{ch!r} at the today column"
-    assert RULE in marks          # at least one lane shows the rule uncovered
+    assert any(line[col] == RULE for line in out)   # the rule shows where uncovered
 
 
 def test_a_project_whose_work_runs_off_the_window_is_marked_not_crushed(tmp_path):
     """PROPOSAL §4.2 / R3. The window narrows as the widget shrinks; what falls
     outside is FLAGGED at the edge instead of being piled onto the last column."""
     b = board(tmp_path, "far.json")
-    p = Project("Far", "lime", "on_track", due_date=iso(400))
-    b.projects.append(p)
-    b.tasks.append(Task("A very distant thing", p.id, "Backlog", "normal",
-                        due_date=iso(400)))
-    lane = [line for line in rows_of(b, 40, 20) if line.startswith("│▎ ")][0]
+    near = Project("Near", "sky", "on_track", due_date=iso(-1))
+    far = Project("Far", "lime", "on_track", due_date=iso(400))
+    b.projects += [near, far]
+    b.tasks += [Task("An overdue thing", near.id, "Doing", "normal", due_date=iso(-3)),
+                Task("A very distant thing", far.id, "Backlog", "normal",
+                     due_date=iso(400))]
+    lane = next(line for line in lane_rows(rows_of(b, 40, 20)) if "Far" in line)
     assert "▸" in lane
 
 
 # --------------------------------------------------------------------------- #
 # what the row says
 # --------------------------------------------------------------------------- #
-def test_the_row_names_the_project_and_shows_its_figures(tmp_path):
+def test_a_stacked_row_names_the_project_and_shows_its_figures(tmp_path):
+    """(Atlas moved to the leader's band in increment 5, so the figures law is
+    checked on a stacked lane — the form most projects take.)"""
     b = typical(tmp_path)
-    lane = [line for line in rows_of(b) if "Atlas" in line][0]
-    assert "1/3" in lane            # done / total
-    assert "!1" in lane             # one high-priority open task
-    assert "▲9d" in lane            # its worst late distance
+    lane = next(line for line in lane_rows(rows_of(b)) if "Beacon" in line)
+    assert "0/1" in lane            # done / total
+    assert "+40d" in lane           # its own due distance, in the neutral tone
+
+
+def test_the_leader_is_the_project_under_the_most_pressure(tmp_path):
+    """THE ORDER IS THE HIERARCHY: the reader is not asked to scan for the
+    project that needs them. The pressured project is added LAST here on
+    purpose — insertion order must not be able to fake this."""
+    b = board(tmp_path, "rank.json")
+    calm1 = Project("Calm one", "sky", "on_track", due_date=iso(60))
+    calm2 = Project("Calm two", "blue", "on_track", due_date=iso(70))
+    burning = Project("Burning", "lime", "on_track", due_date=iso(5))
+    b.projects += [calm1, calm2, burning]
+    b.tasks += [
+        Task("Something later", calm1.id, "Backlog", "normal", due_date=iso(30)),
+        Task("Something else", calm2.id, "Backlog", "normal", due_date=iso(40)),
+        Task("The fire", burning.id, "Doing", "normal", due_date=iso(-11)),
+    ]
+    out = rows_of(b)
+    assert "BURNING" in lead_head(out)
+    assert "1 open" in lead_head(out)
+    assert "▲11d" in lead_head(out)             # severity, worn by a date distance
+    assert b.projects.index(burning) == 2       # and it was NOT first in the data
+
+
+def test_the_leader_gets_a_drawn_field_that_ends_at_its_own_due_date(tmp_path):
+    """The bench is the one figure on this screen ≥ 4 rows tall, and it STOPS at
+    the project's own date: the air left above the curve before that `◆` is the
+    work that cannot land in time."""
+    b = typical(tmp_path)
+    out = rows_of(b, 96, 30)
+    head = out.index(lead_head(out))
+    band = out[head + 1:head + 12]
+    drawn = [line for line in band if any(0x2800 <= ord(ch) <= 0x28FF for ch in line)]
+    assert len(drawn) >= 4
+
+    # the diamond marks Atlas's OWN date (+20d), so it must sit near today, far
+    # from the right edge — a bench that ran to the edge would also show a ◆
+    from taskboard.views import lane_geometry, lanes_of, wave_edge
+    geo = lane_geometry(94, 30)
+    lane = next(ln for ln in lanes_of(b, False, TODAY) if ln.name == "Atlas")
+    want = 1 + geo.label_w + min(geo.field_w - 1, wave_edge(lane, geo, TODAY) // 2 + 1)
+    row = next(line for line in band if "◆" in line)
+    assert row.index("◆") == want
+    assert want < 1 + geo.label_w + geo.field_w - 3      # not pinned to the edge
+    # and nothing of the bench is drawn beyond it
+    for line in drawn:
+        assert not any(0x2800 <= ord(ch) <= 0x28FF and ch != "⠀"
+                       for ch in line[want + 1:])
 
 
 def test_a_stopped_project_is_visibly_stopped(tmp_path):
@@ -167,11 +237,13 @@ def test_a_closed_project_is_never_judged(tmp_path):
 
 def test_the_lane_names_its_next_due_work_soonest_first(tmp_path):
     b = typical(tmp_path)
+    b.tasks.append(Task("Rotate the signing keys", b.projects[1].id, "Backlog",
+                        "normal", due_date=iso(4)))
     out = rows_of(b)
-    i_late = next(i for i, line in enumerate(out) if "Fix the ingest path" in line)
-    i_next = next(i for i, line in enumerate(out) if "Write the v2 reference" in line)
-    i_atlas = next(i for i, line in enumerate(out) if "Atlas" in line)
-    assert i_atlas < i_late < i_next
+    i_lane = next(i for i, line in enumerate(out) if "Beacon" in line)
+    i_soon = next(i for i, line in enumerate(out) if "Rotate the signing keys" in line)
+    i_late = next(i for i, line in enumerate(out) if "Harden the search index" in line)
+    assert i_lane < i_soon < i_late              # +4d named before +12d
     assert not any("Ship the migration" in line for line in out)   # done work is not named
 
 
@@ -179,9 +251,11 @@ def test_a_named_task_carries_its_phase_as_a_climbing_dot(tmp_path):
     """One cell, and the dot CLIMBS as the task advances — the second variable
     goes to the glyph, never to a second hue."""
     b = typical(tmp_path)
+    b.tasks.append(Task("Rotate the signing keys", b.projects[1].id, "Doing",
+                        "normal", due_date=iso(4)))
     out = rows_of(b)
-    doing = next(line for line in out if "Fix the ingest path" in line)
-    backlog = next(line for line in out if "Write the v2 reference" in line)
+    doing = next(line for line in out if "Rotate the signing keys" in line)
+    backlog = next(line for line in out if "Deprecate v1 endpoints" in line)
     assert phase_glyph({1}) in doing
     assert phase_glyph({0}) in backlog
     assert phase_glyph({0}) != phase_glyph({1})
@@ -217,18 +291,23 @@ def test_navigation_walks_exactly_the_tasks_the_view_names(tmp_path):
     user experiences as 'the selection vanished'."""
     for make in (typical, extreme):
         b = make(tmp_path)
-        cols = nav_model("swimlanes", b, False, TODAY)
-        assert len(cols) == 1
-        drawn = [t.id for lane in lanes_of(b, False, TODAY)
-                 for t in lane_titles(lane, LANE_TITLES)]
-        assert cols[0] == drawn
-        # and the view really does name FEWER tasks than the lanes hold open,
-        # so "walks what is drawn" is a different claim from "walks everything"
-        if make is extreme:
-            assert len(drawn) < sum(len(l.open) for l in lanes_of(b, False, TODAY))
-        out = rows_of(b)
-        for tid in cols[0]:
-            assert any(b.task_by_id(tid).title[:12] in line for line in out)
+        for w, h in ((96, 30), (72, 24)):
+            cols = nav_model("swimlanes", b, False, TODAY, width=w, height=h)
+            assert len(cols) == 1
+            out = rows_of(b, w, h)
+            for tid in cols[0]:
+                title = b.task_by_id(tid).title
+                assert any(title[:12] in line for line in out), \
+                    f"{w}x{h}: nav points at {title!r}, which is not drawn"
+            # every NAMED task is reachable — nothing drawn is unselectable
+            named = [t.id for t in b.tasks
+                     if any(t.title[:12] in line for line in out)
+                     and not b.is_done(t)]
+            assert set(cols[0]) <= set(named)
+        if make is extreme:      # the view names fewer than it holds open, so
+            lanes = lanes_of(b, False, TODAY)   # "walks what is drawn" is a
+            cols = nav_model("swimlanes", b, False, TODAY, width=96, height=30)
+            assert len(cols[0]) < sum(len(l.open) for l in lanes)   # real claim
 
 
 def test_the_line_map_points_at_the_row_that_names_the_task(tmp_path):
@@ -242,11 +321,11 @@ def test_the_line_map_points_at_the_row_that_names_the_task(tmp_path):
 
 def test_the_selected_task_is_marked_in_its_own_row(tmp_path):
     b = typical(tmp_path)
-    target = next(t for t in b.tasks if t.title == "Write the v2 reference")
+    target = next(t for t in b.tasks if t.title == "Harden the search index")
     text = render_swimlanes(b, False, target.id, TODAY, width=96, height=30)
     reversed_spans = [text.plain[s.start:s.end] for s in text.spans
                       if "reverse" in str(s.style)]
-    assert any("Write the v2 reference" in seg for seg in reversed_spans)
+    assert any("Harden the search index" in seg for seg in reversed_spans)
 
 
 def test_the_inbox_is_a_lane_of_its_own(tmp_path):
@@ -300,17 +379,56 @@ def test_all_three_loads_render_width_exact_and_lose_no_project(tmp_path):
         for w, h in ((72, 24), (96, 30), (130, 44)):
             out = rows_of(b, w, h)
             assert all(len(line) == w for line in out), f"{make.__name__} {w}x{h}"
-            assert len(lane_rows(out)) == n_projects, f"{make.__name__} {w}x{h}"
+            assert project_blocks(out) == n_projects, f"{make.__name__} {w}x{h}"
 
 
-def test_a_project_with_no_open_work_still_gets_its_row(tmp_path):
-    """The resting state is DESIGNED in the next increment; until then it must
-    at least not vanish."""
-    b = board(tmp_path, "rest.json")
+def test_nothing_is_ever_dropped_in_silence(tmp_path):
+    """When the height cannot hold every project, the ones that did not fit are
+    COUNTED. A view that silently shows fewer rows tells the reader there is
+    less work than there is."""
+    b = extreme(tmp_path)
+    tall, short = rows_of(b, 96, 44), rows_of(b, 96, 12)
+    assert project_blocks(short) < project_blocks(tall)
+    assert any("not shown" in line for line in short)
+    assert not any("not shown" in line for line in tall)
+
+
+def test_a_project_with_nothing_open_rests(tmp_path):
+    """The resting row is DESIGNED, not inherited: one row, a thin spine, the
+    quiet step, and it still says what it is and what it finished."""
+    b = typical(tmp_path)
     p = Project("Done and dusted", "green", "completed", due_date=iso(-3))
     b.projects.append(p)
     b.tasks.append(Task("Finished", p.id, "Done", "normal", due_date=iso(-5)))
     out = rows_of(b, 96, 30)
-    assert len(lane_rows(out)) == 1
-    assert any("Done and" in line for line in out)      # clipped, with a visible …
-    assert any("…" in line for line in lane_rows(out))
+    rest = resting_rows(out)
+    assert len(rest) == 1
+    assert "Done and" in rest[0]
+    assert "1/1 done" in rest[0]
+    assert "completed" in rest[0]
+    assert "▎" not in rest[0]           # the thin spine, not the lane spine
+
+
+def test_resting_lanes_sink_below_the_working_ones(tmp_path):
+    b = typical(tmp_path)
+    p = Project("Done and dusted", "green", "completed", due_date=iso(-3))
+    b.projects.append(p)
+    b.tasks.append(Task("Finished", p.id, "Done", "normal", due_date=iso(-5)))
+    out = rows_of(b, 96, 30)
+    assert out.index(resting_rows(out)[0]) > out.index(lane_rows(out)[-1])
+
+
+def test_the_allocator_spends_the_height_it_is_given(tmp_path):
+    """Space is information-proportional in BOTH directions: a taller widget
+    names more work and draws a taller bench, and it never overflows."""
+    b = extreme(tmp_path)
+    from taskboard.views import swimlane_plan
+    # SAME width and same size step (both >= 26 rows, so the geometry's own
+    # floors are identical) — only the allocator's search can differ here.
+    short = swimlane_plan(b, False, TODAY, 96, 28)
+    tall = swimlane_plan(b, False, TODAY, 96, 44)
+    assert short[1].large and tall[1].large
+    assert (tall[2], tall[3]) >= (short[2], short[3])       # titles, lead rows
+    assert tall[2] > short[2] or tall[3] > short[3]
+    for h in range(12, 46):
+        assert len(rows_of(b, 96, h)) == h
