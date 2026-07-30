@@ -19,7 +19,7 @@ from typing import NamedTuple
 from rich.markup import escape
 from rich.text import Text
 
-from .models import Board, Task, parse_iso
+from .models import Board, Task, days_in_phase, parse_iso
 from .wave import DOT_ROWS, Bitmap, load_curve
 
 # --- palette (hexes from the approved mockup; all survive rich quantization) --
@@ -819,17 +819,51 @@ def resting_row(lane: LaneFacts, geo: FieldGeo, inner: int) -> Row:
             + c(tail, "dim"), None)
 
 
+def sitting(lane: LaneFacts, today: date) -> str:
+    """How long the lead's most stagnant open task has sat in its phase.
+
+    THE ONE HONEST FORM THIS CAN TAKE. The board stores a phase-change date
+    only from the moment that field existed, so a task that has never moved
+    since has no age — and `views.py` already ruled for the gantt that a figure
+    the data cannot support must not be invented. So: a number only when every
+    named-in-this-figure task is dated, and the word `unaged` when the board
+    simply does not know. Never a zero standing in for a blank."""
+    if not lane.open:
+        return ""
+    ages = [days_in_phase(t, today) for t in lane.open]
+    known = [a for a in ages if a is not None]
+    if not known:
+        return "unaged"
+    worst = max(known)
+    unknown = len(ages) - len(known)
+    return f"{worst}d in phase" + (f" · {unknown} unaged" if unknown else "")
+
+
+def _rights_w(rights: list[tuple[str, str]]) -> int:
+    """Visible width of a right-hand block joined by two spaces."""
+    return sum(len(t) for t, _ in rights) + 2 * max(0, len(rights) - 1)
+
+
 def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
               prof: int) -> list[Row]:
     """The one project that needs you now, given a DRAWN, CARVED field: its own
     bank several rows tall, ending in `◆` — its own due date — so the air left
     ABOVE the curve before that diamond is the work that cannot land in time."""
     chip, chip_key = pressure_chip(lane)
-    open_txt = f"{len(lane.open)} open"
-    name = clip(lane.name.upper(), max(0, inner - geo.figs_w - 4))
-    head = (c("▌ ", lane.hue) + c(escape(name), lane.hue, bold=True))
-    pad = inner - len(_strip(head)) - len(open_txt) - len(chip) - 2
-    head += " " * max(0, pad) + c(open_txt, "mut") + "  " + c(chip, chip_key)
+    # The head is width-exact by construction, and it sheds from the LEFT of the
+    # right-hand block: momentum goes first (it is context), then the open count,
+    # and the chip goes last because it is the only one that says anything is
+    # wrong. [PROPOSAL 4.2, the order of loss]
+    rights = [(t, k) for t, k in ((sitting(lane, today), "dim"),
+                                  (f"{len(lane.open)} open", "mut"),
+                                  (chip, chip_key)) if t]
+    while rights and 2 + 4 + _rights_w(rights) > inner:
+        rights.pop(0)
+    rw = _rights_w(rights)
+    name_w = max(0, inner - 3 - rw)
+    body = fit(clip(lane.name.upper(), name_w), name_w)
+    head = (c("▌ ", lane.hue) + c(escape(body), lane.hue, bold=True) + " "
+            + "  ".join(c(t, k) for t, k in rights))
     rows: list[Row] = [(head, None)]
 
     bm = project_wave(lane, geo, today, prof, carve_count=True)
