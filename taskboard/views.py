@@ -14,11 +14,13 @@ alignment survives across monospace fonts (M22 ambiguous-glyph trap).
 from __future__ import annotations
 
 from datetime import date, timedelta
+from typing import NamedTuple
 
 from rich.markup import escape
 from rich.text import Text
 
 from .models import Board, Task, parse_iso
+from .wave import Bitmap
 
 # --- palette (hexes from the approved mockup; all survive rich quantization) --
 HEX = {
@@ -41,6 +43,7 @@ HEX = {
     "fuchsia": "#e879f9",
     "pink": "#f472b6",
     "over": "#f43f5e",
+    "ash": "#6b4a3f",     # the CONSUMED field: days already spent (Prism's 4th house)
     "bright": "#e6edf7",
     "soon": "#fbbf24",
     "later": "#64748b",
@@ -79,6 +82,103 @@ def distribute(total: int, n: int) -> list[int]:
         total = 0
     base, rem = divmod(total, n)
     return [base + (1 if i < rem else 0) for i in range(n)]
+
+
+# ---------------------------------------------------------------------------
+# the shared day axis and the field
+#
+# ONE DOT COLUMN = ONE DAY, and every row of a view shares the same axis, so
+# `today` sits in the same screen column on every line. The field is drawn with
+# the dot engine (`.wave`) and packed to braille; whatever the engine leaves
+# unlit is DRAWN as its own lattice — ash behind today, dim ahead — never left
+# as void. Pure helpers: no view calls them yet.
+# ---------------------------------------------------------------------------
+RULE = "╎"        # the today boundary. Its ambient rotation is increment 6.
+LATTICE = "·"
+OFF_LEFT, OFF_RIGHT = "◂", "▸"
+
+
+class FieldGeo(NamedTuple):
+    """The geometry every row of the view shares. Ported from the proposal's
+    `Geo` (`_tui_prism_proposal/prototype.py:162`)."""
+    width: int
+    height: int
+    large: bool
+    label_w: int
+    figs_w: int
+    field_x: int
+    field_w: int
+    dot_w: int
+    today_dc: int
+    today_cell: int
+    profile_rows: int
+
+
+def field_geometry(width: int, height: int) -> FieldGeo:
+    large = width >= 88 and height >= 26
+    label_w = 15 if large else 12
+    figs_w = 13 if large else 11
+    field_w = max(8, width - label_w - figs_w - 1)
+    dot_w = field_w * 2
+    # today lands on an EVEN dot column so no cell straddles the boundary
+    today_dc = (int(dot_w * 0.30) // 2) * 2
+    return FieldGeo(width=width, height=height, large=large, label_w=label_w,
+                    figs_w=figs_w, field_x=label_w, field_w=field_w, dot_w=dot_w,
+                    today_dc=today_dc, today_cell=label_w + today_dc // 2,
+                    profile_rows=4 if large else 2)
+
+
+def day_col(d: date, today: date, geo: FieldGeo) -> int | tuple[str, int]:
+    """The dot column of a date — or ``("L"|"R", clamped)`` when it falls
+    outside the window. CLIP AND FLAG: a date beyond the window is never
+    silently pinned to the edge, because a mark at the edge and a mark past it
+    would then be the same picture."""
+    x = geo.today_dc + (d - today).days
+    if x < 0:
+        return ("L", 0)
+    if x >= geo.dot_w:
+        return ("R", geo.dot_w - 1)
+    return x
+
+
+def off_window_glyph(col: int | tuple[str, int]) -> str:
+    """The mark a flagged column earns, or "" for one that fits. This is the
+    half `Geo.day_dc` never had: it returned the flag and every caller in the
+    proposal dropped it (`prototype.py:218`), so nothing was ever drawn."""
+    if isinstance(col, tuple):
+        return OFF_LEFT if col[0] == "L" else OFF_RIGHT
+    return ""
+
+
+def field_rows(bm: Bitmap, geo: FieldGeo, hue: str, *,
+               off_left: bool = False, off_right: bool = False) -> list[str]:
+    """Pack a dot bitmap to cells and colour them: the figure in `hue` (ash once
+    it is behind today), the unlit ground as the lattice, and the today rule in
+    the attention hue. Every row is EXACTLY `geo.field_w` cells.
+
+    `off_left`/`off_right` replace the edge cell with `◂`/`▸` — something is out
+    there that this window cannot show. The mark is neutral: it judges nothing
+    and names nothing, it reports the window."""
+    rows = []
+    for chars in bm.to_braille():
+        cells = list(chars[:geo.field_w])
+        cells += [" "] * (geo.field_w - len(cells))
+        out = []
+        for i, ch in enumerate(cells):
+            past = (2 * i + 1) < geo.today_dc
+            if ch == " ":
+                if i == geo.today_dc // 2:
+                    out.append(c(RULE, "accent"))
+                else:
+                    out.append(c(LATTICE, "ash" if past else "dim"))
+            else:
+                out.append(c(ch, "ash" if past else hue))
+        if off_left:
+            out[0] = c(OFF_LEFT, "mut")
+        if off_right:
+            out[-1] = c(OFF_RIGHT, "mut")
+        rows.append("".join(out))
+    return rows
 
 
 # ---------------------------------------------------------------------------

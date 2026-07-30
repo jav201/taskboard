@@ -58,9 +58,16 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
 
 ## Open — findings raised while porting the wave engine (increment 2)
 
-- **`taskboard/wave.py` is imported by nothing but its tests.** Deliberate (the
-  mandate was a self-contained module), but it is dead weight in the package
-  until increment 3/4 draws with it. If those slip, decide: keep or revert.
+- ~~`taskboard/wave.py` is imported by nothing but its tests.~~ **RETIRED** —
+  `views.field_rows` draws with it as of increment 3.
+- **`field_geometry` does not fit below 32 columns** (increment 3, measured and
+  pinned by `test_the_ported_geometry_does_not_fit_below_32_columns`): `field_w`
+  has a floor of 8, so at 24-31 columns label + field + figures exceed the width
+  by 32-w cells. Inherited from the proposal's `Geo`; harmless while no view
+  calls it, and it must be resolved by whoever wires the lanes row at MIN_WIDTH.
+- **The proposal's §4.1 budget table says the L step shows a "68-day window";
+  the code shows 134 days** (67 field cells x 2 days per cell). The table counts
+  cells, the code counts days. Code governs; the table is wrong.
 - **`carve_text` carries prototype-grade edges, kept for port fidelity:** its
   returned width includes the trailing inter-glyph gap (`"40"` -> 10, not 9), the
   loop index `i` is unused, and the returned height is the constant 7 rather than
