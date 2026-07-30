@@ -92,6 +92,25 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   ("a date beyond the window is FLAGGED, not clamped") lives in the prototype's
   `Geo`, not in `wave.py`; increment 2's helpers must carry that, not the engine.
 
+- **DONE** · The occupancy harness — `tests/test_occupancy.py` measures the
+  rebuilt lanes view by AUDIT.md's own method at its own reference size and
+  compares against its numbers. 11 laws, 235 green, 3 mutants killed.
+
+## Open — raised by the occupancy measurement
+
+- **PROPOSAL §4.3's ">= 45 % marked at typical/extreme" is met at typical
+  (45.4 %) and MISSED at extreme (44.7 %)** — by 0.3 points. Pinned by
+  `test_the_proposals_own_45_percent_floor_is_met_at_typical_and_missed_at_extreme`
+  so it cannot quietly widen. The frame alone costs ~7.6 %; removing it would
+  clear the floor at both loads.
+- **"Wider is worse" is reduced, not cured.** Stepping 72x24 -> 96x30 still adds
+  dead space at typical (+1.3 points) and extreme (+11.1), against the old
+  view's +10.9 and +15.9. Cause: named-task rows are short strings that gain only
+  blanks as the widget widens, while the field is what spends width. A calm board
+  now INVERTS (it gets better as it widens). Fix candidate: let a title row carry
+  something on its right at wide sizes, or give the lead more bench rows instead
+  of more titles.
+
 ## Open — raised while finishing the roadmap (increments 4-7)
 
 - **The box frame and the `◆ TASKBOARD` header survive**, so PRISM's measured
