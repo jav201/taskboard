@@ -251,16 +251,19 @@ def test_a_judging_hue_is_never_worn_by_a_name_or_a_priority_mark(tmp_path):
 
 
 def test_every_view_that_marks_priority_marks_it_with_the_glyph(tmp_path):
-    """Priority is drawn by exactly one helper (`card_cell`), which the lanes and
-    kanban views use; columns/agenda/gantt draw no priority at all today. This
-    pins BOTH halves — the two that mark it use the neutral glyph, and the three
-    that do not mark it are not silently given one."""
+    """Priority is marked by a SHAPE in a neutral tone, never by a hue. Two
+    views mark it and they mark it differently on purpose: kanban names one task
+    per card, so its mark is `!`; the lanes row names a PROJECT, so its mark is
+    the count `!N`. Columns/agenda/gantt mark priority nowhere — pinned here too,
+    so nobody is silently given one. (Was: `!` in both, before the lanes row
+    replaced the per-phase cards.)"""
     b, p = _board(tmp_path)
     b.add_task(Task("Urgent thing", p.id, "Backlog", "high"))
     marks = {}
     for mode in VIEWS:
         out = render_view(mode, b, False, None, date(2026, 7, 30), width=100, height=30)
-        marks[mode] = [style for style, txt in _styles(out) if txt.strip() == "!"]
-    assert marks["swimlanes"] == [HEX["ink"]]
-    assert marks["kanban"] == [HEX["ink"]]
+        marks[mode] = [(style, txt.strip()) for style, txt in _styles(out)
+                       if txt.strip().startswith("!")]
+    assert marks["swimlanes"] == [(HEX["ink"], "!1")]
+    assert marks["kanban"] == [(HEX["ink"], "!")]
     assert marks["columns"] == marks["agenda"] == marks["gantt"] == []
