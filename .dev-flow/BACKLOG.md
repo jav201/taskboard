@@ -108,9 +108,11 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   laws about mechanism (resolution, carving, attribution, ordered coverage,
   clip-and-flag, motion) were reproduced in `tests/` and the frame-occupancy
   ones were not. A real occupancy harness for the app is still missing.
-- **`progress_bar`, `sparkline` and `_lane_junctions` are now unused** in
-  `views.py` — the lanes rewrite orphaned them. Left in place rather than
-  deleted in the same commit that rewrote the view; delete deliberately.
+- ~~**`progress_bar`, `sparkline` and `_lane_junctions` are now unused**~~
+  DONE: `_lane_junctions` had already died with the lanes rewrite; `progress_bar`,
+  `sparkline` and `_SPARK` deleted (zero callers, zero test references, verified
+  by grep). The README's view-2 line promised "throughput sparklines" that no
+  code drew — corrected in the same commit.
 - **The gantt's own `_flowing` animation and the lanes ambient now share one
   clock**, so a future change to `TICK_SECONDS` moves both. The motion laws read
   the constant, so the illegal-band failure will be caught, but the gantt's
