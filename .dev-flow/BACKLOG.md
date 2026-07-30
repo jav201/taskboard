@@ -4,6 +4,8 @@ Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly o
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
 **Base ref:** `b3cc60d` (main) · **Last refresh:** 2026-07-30
+**Status:** the Prism roadmap (PROPOSAL.md §9, rows 1-6) is COMPLETE — seven commits,
+`a06a635`..`0b635e3`, none pushed. 226 tests green.
 
 ## Shipped
 
@@ -24,15 +26,28 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   700 ms ambient tick that is 0.3 %. Engine only — markup, styling and Textual
   compositing are NOT in these numbers, so the view's real cost is still unmeasured.
 
-## Open — Prism roadmap (`_tui_prism_proposal/PROPOSAL.md` §9)
+- **DONE** · Prism increment 3 (roadmap row 2) — the shared day axis + field
+  lattice as pure helpers (`field_geometry`, `day_col`, `off_window_glyph`,
+  `field_rows`); the clip/flag vocabulary finally gets a MARK. 14 tests,
+  182 green, 4 mutants killed. (`d3061e4`)
+- **DONE** · Prism increment 4 (roadmap row 3) — the new lanes row replaces the
+  two per project; scale row; nav follows what is drawn. 18 tests, 202 green,
+  5 mutants killed. (`f433e19`)
+- **DONE** · Prism increment 5 (roadmap row 4) — pressure ranking, leader's
+  bench with its carved count and `◆`, resting row, height allocator, "+N not
+  shown". 25 tests, 207 green, 5 mutants killed — **three of which were vacuous
+  on the first run and were fixed**. (`f3509ea`)
+- **DONE** · Prism increment 6 (roadmap row 5) — momentum: `Task.phase_changed`,
+  `Board.set_task_phase`, `days_in_phase` (None = unknown, never zero), the
+  lead's `Nd in phase · N unaged` figure. 13 tests, 219 green, 4 mutants killed.
+  (`e9f36be`)
+- **DONE** · Prism increment 7 (roadmap row 6) — the ambient: the today rule
+  rotates through 4 glyphs on the app's one shared clock; nothing else moves and
+  no colour changes. 7 tests, 226 green, 4 mutants killed. (`0b635e3`)
 
-| # | item | files (est.) | note |
-|---|---|---|---|
-| 2 | Shared day axis + field lattice as pure helpers in `views.py` | 2 | no view changes yet; the dot engine it draws with is already in `taskboard/wave.py` |
-| 3 | The new project row (horizon + phase glyph + figures + chip + status mark) | 2 | replaces the 2 rows of `render_swimlanes` |
-| 4 | Leader's bench + pressure ranking + resting row + height allocator | 4 | port the 21 laws of `verify_prism.py` into `tests/` |
-| 5 | Momentum — needs a model change (`phase_changed` on `Task`) | 4 | do NOT start before 2-4; old tasks must read *unknown*, never zero |
-| 6 | Ambient — 700 ms interval rotating the today rule in lanes | 3 | 2800 ms cycle; no cell but the rule may change |
+## Open — Prism roadmap
+
+**Nothing.** Rows 1-6 of `_tui_prism_proposal/PROPOSAL.md` §9 are all shipped.
 
 ## Open — findings raised while shipping increment 1
 
@@ -76,6 +91,33 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
 - **The engine has no clip/flag vocabulary of its own.** `verify_prism.py` law 12
   ("a date beyond the window is FLAGGED, not clamped") lives in the prototype's
   `Geo`, not in `wave.py`; increment 2's helpers must carry that, not the engine.
+
+## Open — raised while finishing the roadmap (increments 4-7)
+
+- **The box frame and the `◆ TASKBOARD` header survive**, so PRISM's measured
+  "0 % chrome" is NOT reached. The roadmap allocates no increment to the frame,
+  so it was not mine to remove. Decide deliberately: the frame is ~2 columns and
+  2 rows of every render.
+- **The proposal's open items, untouched by design** (they are not roadmap rows):
+  the Inbox is drawn as an ordinary lane rather than designed (R6 — it works, it
+  just was never designed); only two size steps exist (S/L); and `calm` boards
+  still leave a lot of empty field. Recorded, not solved.
+- **The 21 laws of `verify_prism.py` were adapted, not ported wholesale.** Laws
+  that measure the PROTOTYPE's composed frame (occupancy floors, tone histogram,
+  ink percentages) have no meaning against the real app's framed render, so the
+  laws about mechanism (resolution, carving, attribution, ordered coverage,
+  clip-and-flag, motion) were reproduced in `tests/` and the frame-occupancy
+  ones were not. A real occupancy harness for the app is still missing.
+- **`progress_bar`, `sparkline` and `_lane_junctions` are now unused** in
+  `views.py` — the lanes rewrite orphaned them. Left in place rather than
+  deleted in the same commit that rewrote the view; delete deliberately.
+- **The gantt's own `_flowing` animation and the lanes ambient now share one
+  clock**, so a future change to `TICK_SECONDS` moves both. The motion laws read
+  the constant, so the illegal-band failure will be caught, but the gantt's
+  speed is not pinned by any test.
+- **`sitting()` reports the lead only.** Every other lane's momentum is computed
+  (`days_in_phase`) but not shown; a drawn stagnation channel remains open, and
+  it now has data to draw from.
 
 ## Housekeeping
 
