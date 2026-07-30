@@ -11,13 +11,24 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   retired (amber 0.0 / cyan 48.3 / orange 51.0 / rose 63.8 from a reserved hue),
   deterministic injective remap on load, high-priority marker moved from the amber
   `◉` to the neutral glyph `!`. 15 new tests, 152 green, 4 mutants killed.
-  (this batch — see `.fast-dev-flow/spec.md`)
+  (`a06a635` — see `.fast-dev-flow/spec.md`)
+- **DONE** · Prism increment 2 — `taskboard/wave.py`: the REV2 dot engine ported
+  as a pure, view-independent module (2x4 dots per cell, braille packed last,
+  carve/notch, 4x7 font). Behaviour verified identical to the proposal's module
+  over 400 randomized differential trials. 16 new tests, 168 green, 4 mutants
+  killed. **No view imports it yet — that is increment 3/4.** (this batch)
+- **DONE** · R5 (render cost of the field) — **measured**, no optimisation done:
+  at 96x30 with the proposal's L-step geometry (68-day window, leader bench 10
+  rows), the engine costs **1.37 ms (calm) / 1.84 ms (typical) / 2.24 ms
+  (extreme)** per frame for 748 / 952 / 1156 braille cells. Against increment 6's
+  700 ms ambient tick that is 0.3 %. Engine only — markup, styling and Textual
+  compositing are NOT in these numbers, so the view's real cost is still unmeasured.
 
 ## Open — Prism roadmap (`_tui_prism_proposal/PROPOSAL.md` §9)
 
 | # | item | files (est.) | note |
 |---|---|---|---|
-| 2 | Shared day axis + field lattice as pure helpers in `views.py` | 2 | no view changes yet |
+| 2 | Shared day axis + field lattice as pure helpers in `views.py` | 2 | no view changes yet; the dot engine it draws with is already in `taskboard/wave.py` |
 | 3 | The new project row (horizon + phase glyph + figures + chip + status mark) | 2 | replaces the 2 rows of `render_swimlanes` |
 | 4 | Leader's bench + pressure ranking + resting row + height allocator | 4 | port the 21 laws of `verify_prism.py` into `tests/` |
 | 5 | Momentum — needs a model change (`phase_changed` on `Task`) | 4 | do NOT start before 2-4; old tasks must read *unknown*, never zero |
@@ -44,6 +55,20 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
 - **`.venv` cannot run the suite** — `ModuleNotFoundError: No module named 'PIL'`
   makes 5 image tests error there; the suite is green under system python. Either
   install Pillow into `.venv` or mark those tests as requiring it.
+
+## Open — findings raised while porting the wave engine (increment 2)
+
+- **`taskboard/wave.py` is imported by nothing but its tests.** Deliberate (the
+  mandate was a self-contained module), but it is dead weight in the package
+  until increment 3/4 draws with it. If those slip, decide: keep or revert.
+- **`carve_text` carries prototype-grade edges, kept for port fidelity:** its
+  returned width includes the trailing inter-glyph gap (`"40"` -> 10, not 9), the
+  loop index `i` is unused, and the returned height is the constant 7 rather than
+  the glyph's real extent. Behavioural changes, so they were NOT "cleaned" —
+  decide deliberately when a caller exists.
+- **The engine has no clip/flag vocabulary of its own.** `verify_prism.py` law 12
+  ("a date beyond the window is FLAGGED, not clamped") lives in the prototype's
+  `Geo`, not in `wave.py`; increment 2's helpers must carry that, not the engine.
 
 ## Housekeeping
 
