@@ -1,8 +1,16 @@
 # taskboard
 
 <p align="center">
-  <img src="docs/taskboard.gif" width="660" alt="taskboard — four views"><br>
-  <sub>Lanes · Agenda · Gantt · Kanban — switch with keys 1–4.</sub>
+  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes view, live"><br>
+  <sub>The <b>lanes</b> view. Every frame is the real app; the today rule breathes on a 4 s cycle.</sub>
+</p>
+
+<p align="center">
+  <img src="docs/taskboard-gantt.png" width="380" alt="gantt — two bands per project, and the gap is the slip">
+  <img src="docs/taskboard-agenda.png" width="380" alt="agenda — every due date on one shared axis"><br>
+  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column">
+  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one row per project, ranked by pressure"><br>
+  <sub><b>gantt · agenda · kanban · lanes</b> — real renders of the seeded demo board at 96×26.</sub>
 </p>
 
 
@@ -13,34 +21,40 @@ widget. Four switchable views over the same data; single dark theme tuned for a 
 Built and verified against **Textual 8.2.8 / rich 15.0.0** (Python 3.12).
 
 ```
-╭─ ◆ TASKBOARD ───────────────────────────────── 4 open · 1 due ─╮
-│▌ TEXTUAL                                    unaged  2 open  ▲4d│
-│            ············╎····◆······················            │
-│            ············╎·⣀⢀⣀·······················            │
-│            ············╎⠸⣫⣾⣿·······················            │
-│            ··········⣰⣶⢰⣶⣶⣾⣿·······················            │
-│            ··········⣿⣿⢸⣿⣿⣿⣿·······················            │
-│  M22 pitfalls module                                        ▲4d│
-│▎ Systems   ············╎····⢠⣤⣤⣤⣿⣿⣿⣿⡇·············· 0/2    +26d│
-│▎  ⠤ KServe rollout                                         +11d│
-│▎  ⣀ k3s bootstrap                                          +18d│
-│▏ Archive ✓  1/1 done · · · · · · · · · · · · · · ·    completed│
-│            -24d      today                     +55d            │
-╰────────────────────────────────────────────────────────────────╯
+◆ TASKBOARD                                              7 open · 2 due
+▌ WEBSITE REDESIGN                               unaged  !1  3 open  ▲3d
+            ···············╎···⢀⣀⡀◆···························
+            ···············⢠⣤⣤⣤⣼⣿⡇····························
+            ·············⢀⣶⢸⣿⣿⣿⣿⣿⡇····························
+  Fix checkout 500 error                                             ▲3d
+▎ Platfo…   ···············╎·······⣤⣤⣤⣤⣿⣿⣿⣿⣿⣿⣿⡇···············    ⣿⣿⣿⣿⣿⡇
+▎  ⠤ KServe rollout                                               ⣿⣿⣿⡇··
+▎  ⣀ k3s bootstrap                                                ⣿⣿⣿⡇··
+▎ API Pl… ‖ ···············╎·········⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿············    ⣿⣿⣿⣿⣿⡇
+▎  ⣀ Write API reference                                          ⣿⣿⣿⡇··
+▎ Inbox     ···············╎⢸·································    ······
+▎  ⠤ Review pull requests                                         ⣿⡇····
+▏ Data W… ✓  1/1 done · · · · · · · · · · · · · · · · · · · ·  completed
+            -30d         today                            +69d
 ```
 
 Every row sits on **one shared axis of days** — `╎` is today, one cell is two days — so
 two projects' work is comparable by eye. The project under the most pressure leads with a
 drawn field ending in `◆`, its own due date; the rest get a row each; anything with
-nothing open **rests** at the bottom. Severity (`▲Nd`) is worn only by a date.
+nothing open **rests** at the bottom. The right edge of every row is a **six-cell due
+meter**: short means act now, ash means spent, and `▲` is the only alert on the row.
+
+**There is no box.** The views commit with rules, not borders — every cell of the width
+carries content or field, and the counts that a title bar would have held ride the head
+row instead.
 
 ## Views
 
 | Key | View | What it's for |
 |-----|------|---------------|
-| `1` | **Lanes** | One row per project on a shared day axis, **ranked by pressure**: a drawn field for the project that needs you now, a row for the rest, a resting row for anything with nothing open. Shows each project's status (`‖ ╳ ✓`), its `done/total`, its high-priority count `!N`, and how long its work has sat in phase. |
-| `2` | **Agenda** | Every dated task on one shared day axis, ordered by urgency, each drawing its reach from today to its due date. |
-| `3` | **Gantt** | An 8-week time axis; a bar per project (start→due) with its task bars underneath; undated items listed under UNSCHEDULED. |
+| `1` | **Lanes** | One row per project on a shared day axis, **ranked by pressure**: a drawn field for the project that needs you now, a row for the rest, a resting row for anything with nothing open. Each row shows the project's status (`‖ ╳ ✓`) and ends in its due meter; the leader's band carries its open count, its high-priority count `!N`, and how long its work has sat in phase. |
+| `2` | **Agenda** | Every dated task on one shared day axis, ordered by urgency, each drawing its reach from today to its due date. No meter here on purpose — the row already says the same thing twice, as order and as length. |
+| `3` | **Gantt** | The same day axis, with a **past**: each project is two bands — its span (ash for elapsed, colour for what remains, ending at `◆`) over a progress band, so **the gap between them is the slip**, read as a length. Each task is a reach tipped by its phase glyph; finished work rests in ash at the tail. |
 | `4` | **Kanban** | Every task in its phase column, grouped by project. |
 
 > **Columns was retired** — kanban is the same phase grid and loses nothing, so the
@@ -150,6 +164,7 @@ window, then tap it again to go frameless.
 
 | Key | Action |
 |-----|--------|
+| `?` | **Legend** — what every mark on the *current* view means (it only ever explains marks that are actually on screen) |
 | `1` `2` `3` `4` | Switch view (Lanes / Agenda / Gantt / Kanban) |
 | `↑` `↓` (or `k` `j`) | Move selection **in the current view's on-screen order**. In Kanban this moves *within* the phase column. |
 | `←` `→` (or `h` `l`) | Move between phase columns (Kanban) — jumps to the next column's first task. No-op in the single-column views. |
@@ -162,7 +177,10 @@ window, then tap it again to go frameless.
 | `v` | Toggle showing archived items (hidden by default) |
 | `o` | Open the selected task's URLs in your browser (opens all of them) |
 | `i` | Open the inline image viewer for the selected task (rescaled thumbnails) |
-| `c` | Choose the two ribbon city clocks (type to find a city) |
+| `Enter` | Details of the selected task (read-only: every field, notes, URLs, images) |
+| `f` | Manage the board's phases (add / rename / reorder / delete) |
+| `Tab` | Kanban only: switch between the grouped and matrix layouts |
+| `c` | Choose the two ribbon city clocks (type to find a city — accent-blind, so `Sao Paulo` finds `São Paulo`) |
 | `q` | Quit |
 
 Navigation follows what you **see**: Down in Kanban walks down the current phase
@@ -235,11 +253,16 @@ The two cities are saved to `board.json` and survive restarts. Defaults: **Mexic
 **New York**.
 
 Times are **real and DST-aware** (via Python's `zoneinfo`, so `tzdata` is a dependency on
-Windows). ~75 cities are available across LATAM, US/Canada, Europe, Middle East/Africa, and
-Asia/Pacific — Mexico City, Monterrey, Bogotá, Lima, Santiago, São Paulo, Buenos Aires, New York,
-Chicago, Denver, Los Angeles, Toronto, London, Madrid, Paris, Berlin, Rome, Istanbul, Dubai,
-Cairo, Johannesburg, Mumbai, Bangkok, Singapore, Hong Kong, Shanghai, Tokyo, Seoul, Sydney,
-Auckland, and more.
+Windows). **340 cities** are available across LATAM, US/Canada, Europe, the Middle East, Africa,
+Asia and Oceania — and between them they cover **every UTC offset in current use**, including the
+awkward ones you cannot guess a big city for: India +5:30 (Mumbai), Nepal +5:45 (Kathmandu),
+Newfoundland −3:30 (St. John's), Chatham +12:45, Eucla +8:45, Kabul +4:30, Yangon +6:30,
+Marquesas −9:30. So when the city you want is missing, some city on the same clock is not.
+
+The search is **accent-blind on a fallback**: exact matching is unchanged, and only when nothing
+matches does `Sao Paulo` find `São Paulo`, `Bogota` find `Bogotá`, `Dusseldorf` find `Düsseldorf`.
+(Every zone is verified against your machine's own `tzdata` by the test suite, so a city that
+cannot tell the time cannot ship.)
 
 Upgrading from an older build? Previously-saved fixed-offset clocks (`CST`, `EST`, …) are
 migrated automatically to a representative city (CST → Mexico City, EST → New York, PST → Los
