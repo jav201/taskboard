@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from textual.widgets import Button, Footer, Input, OptionList, Select, Static, TextArea
+from textual.widgets import Button, Input, OptionList, Select, Static, TextArea
 
 from taskboard import models, modals
 from taskboard.app import BoardView, TaskboardApp
@@ -324,12 +324,14 @@ def test_board_clock_settings_backcompat(tmp_path):
 
 async def test_ribbon_is_painted_and_not_overlapping_footer(tmp_path):
     """Painted-region check (M22 C-32): a render-string test alone is a
-    false-positive class — the ribbon can render text while being invisible."""
+    false-positive class — the ribbon can render text while being invisible.
+    (The bottom row is now our own KeyBar; Textual's Footer rendered blank.)"""
+    from taskboard.keymap import KeyBar
     app = make_app(tmp_path)
     async with app.run_test(size=(120, 35)) as pilot:
         await pilot.pause()
         ribbon = app.query_one("#ribbon", Ribbon)
-        footer = app.query_one(Footer)
+        footer = app.query_one("#keybar", KeyBar)
         # (a) the ribbon has a real content row to paint into
         assert ribbon.content_size.height >= 1
         # (b) ribbon and footer occupy DIFFERENT rows (no overlap)
