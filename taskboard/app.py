@@ -177,6 +177,16 @@ class TaskboardApp(App):
         self.push_screen(LegendModal(self.view_mode, self.board,
                                      size=(w or 96, h or 30)))
 
+    def action_report(self) -> None:
+        """`R` — write an HTML report of the board beside the board file.
+
+        It says where the file went and does NOT open it: opening a browser is
+        an action the reader did not ask for, so it stays their move."""
+        from .report import write_report
+        out = write_report(self.board)
+        self.notify(f"Report written to {out}", title="Report",
+                    severity="information", timeout=10)
+
     def action_clocks(self) -> None:
         k1, k2 = self.board.get_clocks()
         self.push_screen(ClockModal(k1, k2), self._on_clocks_saved)

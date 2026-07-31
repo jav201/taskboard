@@ -1,10 +1,10 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-07-18-batch-01",
-  "batch_objective": "Scrub personal seed->generic demo; multi-URL per task; images per task; + full engineering artifact audit",
-  "current_phase": 6,
-  "phase_status": "awaiting-sync",
+  "batch_id": "2026-07-31-batch-02",
+  "batch_objective": "Generated board report (self-contained HTML), whole board or one project",
+  "current_phase": 0,
+  "phase_status": "routed-to-fast-flow",
   "iterations_per_phase": {
     "0": 0,
     "1": 0,
@@ -58,8 +58,20 @@
       "date": "2026-07-18",
       "decision": "approved",
       "notes": "Docs done: traceability 0 gaps, functionality, exec-summary, 3 mermaid diagrams. Postmortem: 0 iterations, 10/10 findings closed/accepted. README updated (i binding + all-URLs). Batch complete; artifacts committed to main. 5 carry-forward items for next batch."
+    },
+    {
+      "phase": 6,
+      "date": "2026-07-31",
+      "decision": "close batch",
+      "notes": "batch-01 CLOSED EXPLICITLY on 2026-07-31. It finished 2026-07-18 and its work merged and shipped long since; only the Obsidian vault sync was never run, and that is the operator's call (it touches his vault), so it is recorded in .dev-flow/BACKLOG.md as a named pending item rather than left as a phase status. The file had sat at phase 6 'awaiting-sync' for 13 days, asserting a false project state to every later session (C-44)."
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-07-18T12:00:00"
+  "created_at": "2026-07-31T07:29:19",
+  "batch_closed_at": "2026-07-31",
+  "routing_note": "Phase 0 routed this batch to /fast-dev-flow per the command's own matrix (internal tool, ~6 files, known path, no regulated context); operator approved 2026-07-31. The spec lives at .fast-dev-flow/spec.md; this file records the routing so the next session is not misled.",
+  "previous_batch": {
+    "batch_id": "2026-07-18-batch-01",
+    "status": "closed"
+  }
 }

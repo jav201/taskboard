@@ -181,6 +181,7 @@ window, then tap it again to go frameless.
 | `Enter` | Details of the selected task (read-only: every field, notes, URLs, images) |
 | `f` | Manage the board's phases (add / rename / reorder / delete) |
 | `Tab` | Kanban only: switch between the grouped and matrix layouts |
+| `R` | **Write a report** — a self-contained HTML document of the board, saved beside your board file. It says where it went and does not open it. |
 | `c` | Choose the two ribbon city clocks (type to find a city — accent-blind, so `Sao Paulo` finds `São Paulo`) |
 | `q` | Quit |
 
@@ -252,6 +253,28 @@ can open them raw with any app. Press `i` on a selected task to view its images 
 (crisp in graphics-capable terminals like WezTerm, half-block fallback elsewhere); inside the viewer
 press `o` to open them all raw in your OS default app / browser. You can also paste plain image paths
 or URLs directly into the Images field, one per line.
+
+## Reports
+
+Press **`R`** in the app, or run it from the shell:
+
+```powershell
+taskboard --report                 # the whole board
+taskboard --report "Website Redesign"   # one project
+```
+
+Either way you get **one self-contained `.html` file** — CSS and figures inlined,
+no CDN, no network — written to `reports/` beside your board file (so
+`~/.taskboard/reports/`), and the path is printed. Nothing is opened for you.
+
+It reports only what the board holds: open and done counts, the overdue pressure,
+the due horizon, each project's cumulative load curve (drawn from the same engine
+the board draws with), and how long work has sat in phase — **`unaged` where the
+board never recorded a date, never a guessed zero.** No forecasts and no velocity;
+the board stores no history to compute them from.
+
+**Generating a report never modifies your board** — that is enforced by a test
+that compares the file's checksum before and after.
 
 ## The two city clocks
 

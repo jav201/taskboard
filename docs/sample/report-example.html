@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>taskboard — the whole board</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 2rem 1.25rem 4rem;
+       font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+       background: #0d1117; color: #e6edf3; }
+main { max-width: 60rem; margin: 0 auto; }
+h1 { font-size: 1.5rem; margin: 0 0 .25rem; letter-spacing: .01em; }
+h2 { font-size: 1.05rem; margin: 2.5rem 0 .75rem; padding-bottom: .35rem;
+     border-bottom: 1px solid #334154; font-weight: 600; }
+.sub { color: #8b98a5; margin: 0 0 2rem; font-size: .9rem; }
+.tiles { display: flex; flex-wrap: wrap; gap: .75rem; margin: 0 0 .5rem; }
+.tile { flex: 1 1 8rem; background: #161b22; border: 1px solid #21262d;
+        border-radius: 8px; padding: .7rem .85rem; }
+.tile .n { font-size: 1.6rem; font-weight: 650; letter-spacing: -.01em; }
+.tile .k { color: #8b98a5; font-size: .78rem; text-transform: uppercase;
+           letter-spacing: .06em; }
+table { border-collapse: collapse; width: 100%; margin: .5rem 0 0; font-size: .9rem; }
+th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #21262d;
+         vertical-align: top; }
+th { color: #8b98a5; font-weight: 600; font-size: .78rem; text-transform: uppercase;
+     letter-spacing: .06em; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.chip { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px;
+        margin-right: .45rem; vertical-align: baseline; }
+.over { color: #f43f5e; }
+.spent { color: #6b4a3f; }
+.mut { color: #8b98a5; }
+figure { margin: 1rem 0 0; }
+figcaption { color: #8b98a5; font-size: .82rem; margin: .4rem 0 0; }
+.curve { display: block; width: 100%; height: auto; background: #0f141b;
+         border: 1px solid #21262d; border-radius: 8px; }
+footer { color: #8b98a5; font-size: .82rem; margin-top: 3rem;
+         border-top: 1px solid #21262d; padding-top: .75rem; }
+@media (prefers-color-scheme: light) {
+  body { background: #ffffff; color: #1f2328; }
+  .tile, .curve { background: #f6f8fa; border-color: #d0d7de; }
+  h2 { border-color: #d0d7de; }
+  th, td { border-color: #d0d7de; }
+  .sub, .k, .mut, figcaption, footer { color: #59636e; }
+}
+@media print { body { background: #fff; color: #000; } .curve { background: #fff; } }
+</style></head>
+<body><main>
+<h1>taskboard · the whole board</h1>
+<p class="sub">Generated 2026-07-31 from the board's own data.
+Counts and dates only — nothing here is a forecast.</p>
+
+<h2>Where the board stands</h2>
+<div class="tiles"><div class="tile"><div class="n">5</div><div class="k">projects</div></div><div class="tile"><div class="n">7</div><div class="k">open</div></div><div class="tile"><div class="n">2</div><div class="k">done</div></div><div class="tile"><div class="n">1</div><div class="k">overdue</div></div><div class="tile"><div class="n">0</div><div class="k">archived</div></div></div>
+
+<h2>The horizon</h2>
+<table><thead><tr><th>when</th><th class="n">tasks</th><th>share</th></tr></thead><tbody><tr><td class="over">overdue</td><td class="n">1</td><td style="width:55%"><svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" role="presentation"><rect x="0" y="1" width="25.0" height="8" rx="2" fill="#f43f5e"/></svg></td></tr><tr><td>today</td><td class="n">1</td><td style="width:55%"><svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" role="presentation"><rect x="0" y="1" width="25.0" height="8" rx="2" fill="#2dd4bf"/></svg></td></tr><tr><td>this week</td><td class="n">1</td><td style="width:55%"><svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" role="presentation"><rect x="0" y="1" width="25.0" height="8" rx="2" fill="#8b98a5"/></svg></td></tr><tr><td>this month</td><td class="n">4</td><td style="width:55%"><svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" role="presentation"><rect x="0" y="1" width="100.0" height="8" rx="2" fill="#8b98a5"/></svg></td></tr><tr><td>later</td><td class="n">0</td><td style="width:55%"><svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" role="presentation"><rect x="0" y="1" width="0.0" height="8" rx="2" fill="#8b98a5"/></svg></td></tr><tr><td>no date</td><td class="n">0</td><td style="width:55%"><svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" role="presentation"><rect x="0" y="1" width="0.0" height="8" rx="2" fill="#8b98a5"/></svg></td></tr><tr><td>done</td><td class="n">2</td><td style="width:55%"><svg width="100%" height="10" viewBox="0 0 100 10" preserveAspectRatio="none" role="presentation"><rect x="0" y="1" width="50.0" height="8" rx="2" fill="#6b4a3f"/></svg></td></tr></tbody></table>
+
+<h2><span class="chip" style="background:#a3e635"></span>Website Redesign</h2>
+<div class="tiles"><div class="tile"><div class="n">3</div><div class="k">open</div></div><div class="tile"><div class="n">1</div><div class="k">done</div></div><div class="tile"><div class="n">4</div><div class="k">total</div></div><div class="tile"><div class="n">1</div><div class="k">high priority</div></div><div class="tile"><div class="n">in 12d</div><div class="k">own due date</div></div></div>
+<p class="mut"><span class="over">1 overdue</span> (worst 3d) · momentum: unaged</p>
+<figure><svg class="curve" viewBox="0 0 640 72" role="img" aria-label="cumulative load for Website Redesign"><polyline points="0,72 0.0,72.0 18.8,72.0 37.6,72.0 56.5,72.0 75.3,72.0 94.1,72.0 112.9,72.0 131.8,72.0 150.6,72.0 169.4,72.0 188.2,72.0 207.1,56.0 225.9,56.0 244.7,56.0 263.5,40.0 282.4,40.0 301.2,40.0 320.0,40.0 338.8,40.0 357.6,40.0 376.5,40.0 395.3,40.0 414.1,40.0 432.9,24.0 451.8,24.0 470.6,24.0 489.4,24.0 508.2,24.0 527.1,24.0 545.9,24.0 564.7,24.0 583.5,24.0 602.4,24.0 621.2,24.0 640.0,24.0 640,72" fill="#a3e635" fill-opacity="0.20" stroke="none"/><polyline points="0.0,72.0 18.8,72.0 37.6,72.0 56.5,72.0 75.3,72.0 94.1,72.0 112.9,72.0 131.8,72.0 150.6,72.0 169.4,72.0 188.2,72.0 207.1,56.0 225.9,56.0 244.7,56.0 263.5,40.0 282.4,40.0 301.2,40.0 320.0,40.0 338.8,40.0 357.6,40.0 376.5,40.0 395.3,40.0 414.1,40.0 432.9,24.0 451.8,24.0 470.6,24.0 489.4,24.0 508.2,24.0 527.1,24.0 545.9,24.0 564.7,24.0 583.5,24.0 602.4,24.0 621.2,24.0 640.0,24.0" fill="none" stroke="#a3e635" stroke-width="2" stroke-linejoin="round"/><line x1="256.0" y1="0" x2="256.0" y2="72" stroke="#2dd4bf" stroke-width="1.5"/><text x="260.0" y="12" fill="#2dd4bf" font-size="10">today</text></svg>
+<figcaption>Cumulative open work by its due day — the same curve the board draws.
+The rule marks today.</figcaption></figure>
+<table><thead><tr><th>next due</th><th>phase</th><th class="n">due</th><th class="n">in phase</th></tr></thead><tbody><tr><td>Fix checkout 500 error</td><td>Doing</td><td class="n">3d overdue</td><td class="n mut">unaged</td></tr><tr><td>Design homepage mockups</td><td>Doing</td><td class="n">due today</td><td class="n mut">unaged</td></tr><tr><td>Optimize image assets</td><td>Backlog</td><td class="n">in 9d</td><td class="n mut">unaged</td></tr></tbody></table>
+
+<h2><span class="chip" style="background:#38bdf8"></span>Platform</h2>
+<div class="tiles"><div class="tile"><div class="n">2</div><div class="k">open</div></div><div class="tile"><div class="n">0</div><div class="k">done</div></div><div class="tile"><div class="n">2</div><div class="k">total</div></div><div class="tile"><div class="n">1</div><div class="k">high priority</div></div><div class="tile"><div class="n">in 38d</div><div class="k">own due date</div></div></div>
+<p class="mut">0 overdue · momentum: unaged</p>
+<figure><svg class="curve" viewBox="0 0 640 72" role="img" aria-label="cumulative load for Platform"><polyline points="0,72 0.0,72.0 17.3,72.0 34.6,72.0 51.9,72.0 69.2,72.0 86.5,72.0 103.8,72.0 121.1,72.0 138.4,72.0 155.7,72.0 173.0,72.0 190.3,72.0 207.6,72.0 224.9,72.0 242.2,72.0 259.5,72.0 276.8,72.0 294.1,72.0 311.4,72.0 328.6,72.0 345.9,72.0 363.2,72.0 380.5,72.0 397.8,72.0 415.1,72.0 432.4,72.0 449.7,72.0 467.0,72.0 484.3,72.0 501.6,72.0 518.9,40.0 536.2,40.0 553.5,40.0 570.8,40.0 588.1,40.0 605.4,40.0 622.7,40.0 640.0,40.0 640,72" fill="#38bdf8" fill-opacity="0.20" stroke="none"/><polyline points="0.0,72.0 17.3,72.0 34.6,72.0 51.9,72.0 69.2,72.0 86.5,72.0 103.8,72.0 121.1,72.0 138.4,72.0 155.7,72.0 173.0,72.0 190.3,72.0 207.6,72.0 224.9,72.0 242.2,72.0 259.5,72.0 276.8,72.0 294.1,72.0 311.4,72.0 328.6,72.0 345.9,72.0 363.2,72.0 380.5,72.0 397.8,72.0 415.1,72.0 432.4,72.0 449.7,72.0 467.0,72.0 484.3,72.0 501.6,72.0 518.9,40.0 536.2,40.0 553.5,40.0 570.8,40.0 588.1,40.0 605.4,40.0 622.7,40.0 640.0,40.0" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linejoin="round"/><line x1="235.8" y1="0" x2="235.8" y2="72" stroke="#2dd4bf" stroke-width="1.5"/><text x="239.8" y="12" fill="#2dd4bf" font-size="10">today</text></svg>
+<figcaption>Cumulative open work by its due day — the same curve the board draws.
+The rule marks today.</figcaption></figure>
+<table><thead><tr><th>next due</th><th>phase</th><th class="n">due</th><th class="n">in phase</th></tr></thead><tbody><tr><td>KServe rollout</td><td>Doing</td><td class="n">in 16d</td><td class="n mut">unaged</td></tr><tr><td>k3s bootstrap</td><td>Backlog</td><td class="n">in 24d</td><td class="n mut">unaged</td></tr></tbody></table>
+
+<h2><span class="chip" style="background:#a78bfa"></span>API Platform · paused</h2>
+<div class="tiles"><div class="tile"><div class="n">1</div><div class="k">open</div></div><div class="tile"><div class="n">0</div><div class="k">done</div></div><div class="tile"><div class="n">1</div><div class="k">total</div></div><div class="tile"><div class="n">0</div><div class="k">high priority</div></div><div class="tile"><div class="n">in 45d</div><div class="k">own due date</div></div></div>
+<p class="mut">0 overdue · momentum: unaged</p>
+<figure><svg class="curve" viewBox="0 0 640 72" role="img" aria-label="cumulative load for API Platform"><polyline points="0,72 0.0,72.0 18.8,72.0 37.6,72.0 56.5,72.0 75.3,72.0 94.1,72.0 112.9,72.0 131.8,72.0 150.6,72.0 169.4,72.0 188.2,72.0 207.1,72.0 225.9,72.0 244.7,72.0 263.5,72.0 282.4,72.0 301.2,72.0 320.0,72.0 338.8,72.0 357.6,72.0 376.5,72.0 395.3,72.0 414.1,72.0 432.9,72.0 451.8,72.0 470.6,72.0 489.4,72.0 508.2,72.0 527.1,72.0 545.9,72.0 564.7,72.0 583.5,72.0 602.4,72.0 621.2,72.0 640.0,8.0 640,72" fill="#a78bfa" fill-opacity="0.20" stroke="none"/><polyline points="0.0,72.0 18.8,72.0 37.6,72.0 56.5,72.0 75.3,72.0 94.1,72.0 112.9,72.0 131.8,72.0 150.6,72.0 169.4,72.0 188.2,72.0 207.1,72.0 225.9,72.0 244.7,72.0 263.5,72.0 282.4,72.0 301.2,72.0 320.0,72.0 338.8,72.0 357.6,72.0 376.5,72.0 395.3,72.0 414.1,72.0 432.9,72.0 451.8,72.0 470.6,72.0 489.4,72.0 508.2,72.0 527.1,72.0 545.9,72.0 564.7,72.0 583.5,72.0 602.4,72.0 621.2,72.0 640.0,8.0" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linejoin="round"/><line x1="256.0" y1="0" x2="256.0" y2="72" stroke="#2dd4bf" stroke-width="1.5"/><text x="260.0" y="12" fill="#2dd4bf" font-size="10">today</text></svg>
+<figcaption>Cumulative open work by its due day — the same curve the board draws.
+The rule marks today.</figcaption></figure>
+<table><thead><tr><th>next due</th><th>phase</th><th class="n">due</th><th class="n">in phase</th></tr></thead><tbody><tr><td>Write API reference</td><td>Backlog</td><td class="n">in 20d</td><td class="n mut">unaged</td></tr></tbody></table>
+
+<h2><span class="chip" style="background:#5b6675"></span>Inbox</h2>
+<div class="tiles"><div class="tile"><div class="n">1</div><div class="k">open</div></div><div class="tile"><div class="n">0</div><div class="k">done</div></div><div class="tile"><div class="n">1</div><div class="k">total</div></div><div class="tile"><div class="n">0</div><div class="k">high priority</div></div><div class="tile"><div class="n">no date</div><div class="k">own due date</div></div></div>
+<p class="mut">0 overdue · momentum: unaged</p>
+<figure><svg class="curve" viewBox="0 0 640 72" role="img" aria-label="cumulative load for Inbox"><polyline points="0,72 0.0,72.0 18.8,72.0 37.6,72.0 56.5,72.0 75.3,72.0 94.1,72.0 112.9,72.0 131.8,72.0 150.6,72.0 169.4,72.0 188.2,72.0 207.1,72.0 225.9,72.0 244.7,72.0 263.5,72.0 282.4,72.0 301.2,72.0 320.0,8.0 338.8,8.0 357.6,8.0 376.5,8.0 395.3,8.0 414.1,8.0 432.9,8.0 451.8,8.0 470.6,8.0 489.4,8.0 508.2,8.0 527.1,8.0 545.9,8.0 564.7,8.0 583.5,8.0 602.4,8.0 621.2,8.0 640.0,8.0 640,72" fill="#5b6675" fill-opacity="0.20" stroke="none"/><polyline points="0.0,72.0 18.8,72.0 37.6,72.0 56.5,72.0 75.3,72.0 94.1,72.0 112.9,72.0 131.8,72.0 150.6,72.0 169.4,72.0 188.2,72.0 207.1,72.0 225.9,72.0 244.7,72.0 263.5,72.0 282.4,72.0 301.2,72.0 320.0,8.0 338.8,8.0 357.6,8.0 376.5,8.0 395.3,8.0 414.1,8.0 432.9,8.0 451.8,8.0 470.6,8.0 489.4,8.0 508.2,8.0 527.1,8.0 545.9,8.0 564.7,8.0 583.5,8.0 602.4,8.0 621.2,8.0 640.0,8.0" fill="none" stroke="#5b6675" stroke-width="2" stroke-linejoin="round"/><line x1="256.0" y1="0" x2="256.0" y2="72" stroke="#2dd4bf" stroke-width="1.5"/><text x="260.0" y="12" fill="#2dd4bf" font-size="10">today</text></svg>
+<figcaption>Cumulative open work by its due day — the same curve the board draws.
+The rule marks today.</figcaption></figure>
+<table><thead><tr><th>next due</th><th>phase</th><th class="n">due</th><th class="n">in phase</th></tr></thead><tbody><tr><td>Review pull requests</td><td>Doing</td><td class="n">in 3d</td><td class="n mut">unaged</td></tr></tbody></table>
+
+<h2><span class="chip" style="background:#4ade80"></span>Data Warehouse · completed</h2>
+<div class="tiles"><div class="tile"><div class="n">0</div><div class="k">open</div></div><div class="tile"><div class="n">1</div><div class="k">done</div></div><div class="tile"><div class="n">1</div><div class="k">total</div></div><div class="tile"><div class="n">0</div><div class="k">high priority</div></div><div class="tile"><div class="n">-9d</div><div class="k">own due date</div></div></div>
+<p class="mut">0 overdue · momentum: nothing open</p>
+<figure><svg class="curve" viewBox="0 0 640 72" role="img" aria-label="cumulative load for Data Warehouse"><polyline points="0,72 0.0,72.0 18.8,72.0 37.6,72.0 56.5,72.0 75.3,72.0 94.1,72.0 112.9,72.0 131.8,72.0 150.6,72.0 169.4,72.0 188.2,72.0 207.1,72.0 225.9,72.0 244.7,72.0 263.5,72.0 282.4,72.0 301.2,72.0 320.0,72.0 338.8,72.0 357.6,72.0 376.5,72.0 395.3,72.0 414.1,72.0 432.9,72.0 451.8,72.0 470.6,72.0 489.4,72.0 508.2,72.0 527.1,72.0 545.9,72.0 564.7,72.0 583.5,72.0 602.4,72.0 621.2,72.0 640.0,72.0 640,72" fill="#4ade80" fill-opacity="0.20" stroke="none"/><polyline points="0.0,72.0 18.8,72.0 37.6,72.0 56.5,72.0 75.3,72.0 94.1,72.0 112.9,72.0 131.8,72.0 150.6,72.0 169.4,72.0 188.2,72.0 207.1,72.0 225.9,72.0 244.7,72.0 263.5,72.0 282.4,72.0 301.2,72.0 320.0,72.0 338.8,72.0 357.6,72.0 376.5,72.0 395.3,72.0 414.1,72.0 432.9,72.0 451.8,72.0 470.6,72.0 489.4,72.0 508.2,72.0 527.1,72.0 545.9,72.0 564.7,72.0 583.5,72.0 602.4,72.0 621.2,72.0 640.0,72.0" fill="none" stroke="#4ade80" stroke-width="2" stroke-linejoin="round"/><line x1="256.0" y1="0" x2="256.0" y2="72" stroke="#2dd4bf" stroke-width="1.5"/><text x="260.0" y="12" fill="#2dd4bf" font-size="10">today</text></svg>
+<figcaption>Cumulative open work by its due day — the same curve the board draws.
+The rule marks today.</figcaption></figure>
+<p class="mut">Nothing open with a date.</p>
+
+<footer>taskboard · a local file, generated on demand. Work with no recorded
+completion date reads <em>unaged</em> rather than a guess.</footer>
+</main></body></html>

@@ -3,9 +3,9 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `b3cc60d` (main) · **Last refresh:** 2026-07-30
-**Status:** the Prism roadmap (PROPOSAL.md §9, rows 1-6) is COMPLETE — seven commits,
-`a06a635`..`0b635e3`, none pushed. 226 tests green.
+**Base ref:** `eec625b` (origin/main) · **Last refresh:** 2026-07-31 (batch-02 open)
+**Status:** the Prism roadmap is complete and SHIPPED; the frame is gone, the report
+batch (`2026-07-31-batch-02`) is in flight under `/fast-dev-flow`. 345 tests green.
 
 ## Shipped
 
@@ -137,6 +137,51 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
 - ~~Auto-archive does nothing on Javier's existing board, by design... he must
   archive them by hand — or we add an explicit, opt-in one-time action.~~
   **CLOSED**: that action is `X`.
+
+- **DONE** · The board report (batch `2026-07-31-batch-02`) — self-contained HTML,
+  whole board or one project, `R` in the app and `taskboard --report [PROJECT]`.
+  Read-only by law. 18 laws, 363 green, 8 mutants killed. (this batch)
+
+## Open — raised by the report batch
+
+- **Increment 22b (REV6's spend ladder) is APPROVED AND QUEUED** — the allocator
+  prohibition, the lattice behind title rows, the absence line. The prototype's
+  `law_spend` is already in `verify_prism.py` and is recorded QUEUED in the
+  prism-laws manifest. REV6 also carries its own open defect to check for in the
+  app: extreme sat 0.5pt below typical in marked cells (an ink-monotone violation).
+- **The report has no `--format svg`.** Struck deliberately in the spec (an SVG
+  container cannot reflow); if a single pasteable figure is ever wanted, it is a
+  small follow-on, not a redesign.
+- **The report is not linked from the app's legend.** `?` explains marks in the
+  views; it says nothing about `R`. Minor, and arguably correct — the legend is
+  about marks, not actions.
+
+## Open — process / operator actions
+
+- **`/dev-flow-sync` was never run for batch `2026-07-18-batch-01`.** That batch is
+  now explicitly CLOSED in `state.json` (its work merged and shipped on 2026-07-18);
+  the only unfinished step is uploading its artifacts to the Obsidian vault.
+  **This one is Javier's to run** — it writes to his vault, which is outside this
+  repo and not an agent's call. Until then the batch's artifacts live only in
+  `.dev-flow/`.
+
+## Open — raised by the report batch's Phase 0 (measured)
+
+- **The 8 project hues fail as a CATEGORICAL palette — identity-vs-identity was
+  never measured.** The colour ration checked every identity hue against the hues
+  that JUDGE (>=70 from over/soon, >=55 from accent) and never checked the identity
+  hues against EACH OTHER. Run through `dataviz/scripts/validate_palette.js` on
+  both the dark surface (`#0d1117`) and light:
+  - `fuchsia #e879f9` vs `violet #a78bfa` — **dE 0.4 for protanopia**: identical to
+    a red-blind reader.
+  - `violet #a78bfa` vs `indigo #818cf8` — **dE 5.4 normal vision**, against a floor
+    of 15: hard to tell apart *with full colour vision*.
+  In the TUI this is survivable (a project is also its row, its spine and its name),
+  which is why it never surfaced. It would NOT be survivable in a chart that encodes
+  a project by hue alone — hence the report's design rule (direct labels + a table
+  view, never hue-alone). **Fixing the palette itself is a separate decision**: it
+  means re-stepping two of the eight hues and remapping existing boards, exactly the
+  cost the original ration paid.
 
 ## Open — raised by the one-time archive
 

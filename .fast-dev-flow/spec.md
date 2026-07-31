@@ -1,94 +1,118 @@
-# Quick Spec — the deliberate one-time archive, and archive from the editor
+# Quick Spec — the board report (self-contained HTML)
 
-**Status:** CLOSED 2026-07-30 · **Base ref:** `ff5a10b` (main) · **Flow:** fast-dev-flow · **Language:** English
+**Status:** CLOSED 2026-07-31 · **Base ref:** `eec625b` (origin/main) · **Batch:** `2026-07-31-batch-02`
+**Flow:** `/fast-dev-flow` — routed here from `/dev-flow` Phase 0, operator-approved
+2026-07-31. Rationale in `.dev-flow/2026-07-31-batch-02/PLAN.md`.
+**Authorization:** end-to-end autonomous · **commit on `main`, never push** · every
+un-asked decision recorded in the plan's decision log.
 
 ## 1. Objective
-Javier's board hit the case increment 10's packet predicted: every finished task
-on it predates `phase_changed`, so the standing 20-day sweep moves **0 of 30**
-(measured, premise table below) and the feature reads as absent — while the UI
-carries the weight of all that old work. Give him a **deliberate one-time purge**
-for work the timer can never reach, and put an archive control **inside the
-editor**, where he went looking for it.
+Generate a **self-contained local HTML document** reporting the board — the whole
+board or one project — on demand. It states what the data actually holds and
+nothing more, and it never modifies the board.
 
-## 2. User stories
-- As a user with a board older than the feature, I want to clear out finished
-  work in one deliberate action — told how much, asked first, never surprised.
-- As a user, I want to archive a task while I have it open for editing, not only
-  from the board.
-- As a user, I want the archive to keep behaving like the archive: `v` shows it,
-  `x` brings it back, nothing is deleted.
+## 2. User story
+**US-01** — *As the board's owner, I want to generate a report of the whole board
+or of one project, so I can read and share its state outside the TUI.*
 
 ## 3. Acceptance criteria (observable)
-- **AC1.** `X` on a board with N finished-but-undated tasks opens a confirm that
-  states N and does **not** move anything until it is confirmed; cancelling
-  moves nothing.
-- **AC2.** Confirming archives exactly those N, saves, and says so.
-- **AC3.** The purge **never touches dated done work**, however old — that
-  belongs to the 20-day timer.
-- **AC4.** The purge **stamps nothing**: an archived task's `phase_changed`
-  stays `None`.
-- **AC5.** Conservation: every task id survives and only `archived` differs.
-- **AC6.** Reversible: the task is hidden by default, listed under `v`, and
-  `archived = False` restores it.
-- **AC7.** After the purge the standing sweep owns the future: a task stamped
-  today and aged 20 days is archived by the timer.
-- **AC8.** `X` on a board with nothing to purge says so and opens no confirm.
-- **AC9.** The task editor has an `archived` control; toggling it and saving
-  archives the task, and the change persists.
-- **AC10.** `X` appears in the key bar and in the README (the KEYMAP contract).
-- **AC11.** All 333 existing tests stay green.
+- **AC1.** `taskboard --report --board <fixture>` writes a `.html` file, prints its
+  path, and exits without starting the TUI.
+- **AC2.** `--report "<project name>"` scopes the document to that project;
+  an unknown name exits non-zero and names the mistake, writing nothing.
+- **AC3.** The file is **self-contained**: no `http://`/`https://` sub-resource, no
+  `<script src>`, no `<link rel=stylesheet href>`. Opening it needs only a browser.
+- **AC4.** **READ-ONLY LAW** — generating a report **never writes the board**:
+  `Board.save` is not called and the file's mtime does not move, for both scopes.
+  *(Amended at close. It was first written as "byte-identical (md5 before ==
+  after)" — which its own mutant proved vacuous: saving an unmodified board
+  rewrites the SAME bytes, so a checksum cannot see a write, only a change.)*
+- **AC5.** The counts in the document equal the board's real counts (open, done,
+  overdue, archived) for board scope and for project scope.
+- **AC6.** Momentum is honest: a project whose tasks carry no `phase_changed`
+  reads **`unaged`**, never `0d`.
+- **AC7.** No figure encodes a project by hue alone: every figure ships direct
+  labels **and** a table view of the same numbers.
+- **AC8.** Register: the document contains no second person and no grading of the
+  reader (the same law `test_prism_laws.py` applies to the views).
+- **AC9.** `R` in the app generates the report and reports the path in a notice;
+  it never opens anything without saying so. `R` obeys the KEYMAP contract (on the
+  bar, in the README).
+- **AC10.** All 345 existing tests stay green.
 
-## 4. Premise table (C-43) — all probes executed against disk
+## 4. Premise table (C-43) — executed probes
 
 | Premise | Tier | Verdict | Executed evidence |
 |---|---|---|---|
-| The standing sweep is inert on a pre-stamp board | premise | TRUE | probe: `auto_archive_done()` -> **0 of 30** tasks |
-| Those tasks are findable as a set | premise | TRUE | probe: `unstamped_done()` -> **30** |
-| `Board.unstamped_done` / `archive_unstamped_done` exist | premise | TRUE | probe P1/P2 -> True |
-| `X` is in the KEYMAP seat | premise | TRUE | probe P3 -> `['X']` |
-| `action_purge_done` exists on the app | premise | TRUE | probe P4 -> True |
-| `ConfirmModal` can carry a non-"Delete" label | premise | TRUE | probe P5 -> True (added this batch) |
-| The editor exposes `f-archived` and returns it | premise | TRUE | probe P6/P7 -> True |
-| The startup notify for the standing sweep exists | premise | TRUE | probe P8 -> "Archived old work" in `app.py` |
-| Archiving is a flag, so nothing is deleted | axiom | TRUE | `models.py` `visible_tasks(show_archived)`; conservation law already in `tests/test_archive.py` |
-| **Tests for any of this exist** | premise | FALSE -> **RESOLVED** | was `grep -c` -> **0**; now 12 laws in `tests/test_archive.py`, 28 passing in that file, 6 mutants killed |
+| No report feature exists (RC-1 already-shipped) | premise | TRUE | grep: only `load_report` (load health) + `archivable_report` (archive counts) |
+| Per-project facts are already computed | premise | TRUE | probe P2: `LaneFacts` = name, hue, status, tasks, open, late, done_n, total, today_n, high, due_in, worst |
+| Momentum + the `unaged` honesty already exist | premise | TRUE | probe P3: `views.sitting()` callable |
+| The load curve engine is available to draw with | premise | TRUE | probe P4: `wave.load_curve` callable |
+| The CLI is argparse and extensible | premise | TRUE | probe P6: `argparse` in `__main__` |
+| `R` is free in the KEYMAP seat | premise | TRUE | probe P7: `R` not among the seat's shown keys |
+| The 8 project hues are safe as a chart palette | hypothesis | **FALSE** | `validate_palette.js`: fuchsia-violet dE **0.4** protan; violet-indigo dE **5.4** normal (floor 15). Dark **and** light. -> AC7 exists because of this. |
+| The board is only ever read | axiom (re-proved here) | asserted | AC4 makes it a law with a fixture + a mutant |
 
 ## 5. Security flags
-Scan of objective + criteria: **none fired.** No auth, secrets, network, or
-external integration. The one sensitive axis is **data loss**, which is not on
-the flag list but is this batch's main risk — answered by AC3/AC4/AC5/AC6 and by
-the fact that archiving is a flag, never a delete. `security_required: false`.
+Scan: **none fired.** No auth, secrets, network, credentials, or external
+integration. The report is a local file, generated on demand, from data already on
+disk. `security_required: false`.
 
-## 6. Non-goals
-- Changing the 20-day rule or `AUTO_ARCHIVE_DAYS`.
-- Back-filling `phase_changed` for old work (the whole point is that it stays
-  unknown).
-- Any automatic purge — this action only ever runs when a human presses `X`.
-- Archiving projects (this is tasks only; `P` already archives projects).
+Two adjacent risks are handled as design, not flags:
+- **Untrusted text into markup** — task titles, notes and project names are
+  user-authored and go into HTML. **Every interpolated value is escaped**
+  (`html.escape`), with a hostile-title law. This is the C-17 lesson in a new
+  surface: the app already learned it for rich markup.
+- **Data at rest** — the report contains the board's contents in cleartext; it is
+  written beside the board it came from, never uploaded.
 
-## 7. Files (6 — one over the cap, stated)
-`taskboard/models.py` · `taskboard/keymap.py` · `taskboard/app.py` ·
-`taskboard/modals.py` · `tests/test_archive.py` · `README.md`
+## 6. Non-goals (named so they are not invented)
+No scheduling, no email, no cloud, no auto-open, no history the board does not
+store, **no forecasts or velocity** (the momentum ruling travels), no PDF
+generation (a browser prints one).
 
-## 8. Flow deviation, recorded
-The instruction to run this increment under `/fast-dev-flow` arrived **after the
-implementation was written**, so this spec was produced mid-batch rather than
-before code. Its premise table is therefore a **verification** of what exists
-(every row is an executed probe against disk, and one came back FALSE) rather
-than a plan. The remaining work — the tests — is being done spec-first.
+## 7. Design decisions
+
+**HTML container, SVG figures inlined.** A report is a document: prose + tables +
+several figures, reflowing, searchable, printable. A single `.html` with CSS and
+SVG inlined is as self-contained as a `.svg`, without the fixed canvas. *Struck:*
+SVG-as-container — text does not reflow and long names overflow. *Strikeable
+later:* `--format svg` for one pasteable figure.
+
+**Output path** = `<the board file's own directory>/reports/<scope>-<date>.html`.
+So the real app writes to `~/.taskboard/reports/`, and every test writes beside its
+fixture — the live directory is unreachable from a test by construction.
+
+**Figures, per the `dataviz` procedure:** form first (magnitude -> bar; the load
+curve -> the real `wave` engine's own shape), colour last and computed, direct
+labels, a table view beside every figure, no dual axis, status hues reserved.
+
+## 8. Files (5)
+`taskboard/report.py` (new) · `taskboard/__main__.py` · `taskboard/keymap.py` ·
+`taskboard/app.py` · `tests/test_report.py` (new). README updated at close (+1).
 
 ## 9. Close
 
-All 11 acceptance criteria are covered by named tests, each confirmed present on
-disk (`tests/test_archive.py`, 28 passing). 343 green overall; one pre-existing
-environmental failure (`test_win_clipboard_roundtrip`) proved not ours — the OS
-clipboard itself is refusing operations right now (`Set-Clipboard` errors), and
-this batch changes no clipboard code.
+All 10 acceptance criteria are covered by named tests (18 in `tests/test_report.py`,
+each confirmed on disk). **363 green.** Eight mutants verified red.
 
-Six mutants verified red: the sweep taking stamped work, the sweep inventing a
-date, a wrong count in the confirm, the purge running without asking, the purge
-deleting instead of archiving, and the editor's control not being applied.
+**The premise table's one FALSE premise did its job**: the palette measurement is
+why AC7 exists, and AC7's law is what kills the "named only by its colour chip"
+mutant.
 
-**The README law built last increment caught this batch's own omission**: `X`
-was in the seat and missing from the README, and the keybinding test went red
-until it was documented. That is the control paying for itself.
+**A vacuous law, found by its own mutant and rewritten.** The read-only law first
+compared the board file's CHECKSUM before and after — and a report that called
+`board.save()` PASSED it, because saving an unmodified board writes the same bytes
+back. Content-equality cannot see a write, only a change; and the risk is exactly
+the case where they differ (a load-time remap or the archive sweep in memory would
+be flushed over the user's file, silently, with a green test). The law now asserts
+what it means: `Board.save` is never called, and the file's mtime does not move.
+
+**Two of my own laws caught this batch's omissions** — the README keybinding law
+(`R` bound, undocumented) and the prism-laws manifest (the prototype gained
+`law_spend` upstream while this batch was in flight; recorded as QUEUED for the
+approved increment 22b rather than skipped).
+
+**Defect found and fixed in the document itself:** a completed project was being
+reported "9d overdue". Nothing is expected of a closed project, so nothing about
+it can be late — the same ruling the due meter obeys, now carried into the report.
