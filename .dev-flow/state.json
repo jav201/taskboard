@@ -28,50 +28,67 @@
     "merge": "Commit straight to main (no PR).",
     "operator_phrasing": "End to end autonomously... Commit straight to main"
   },
-  "decisions_log": [
-    {
-      "phase": 1,
-      "date": "2026-07-18",
-      "decision": "approved",
-      "notes": "3 US/7 HLR/23 LLR/3 AT/26 TC; DoR all READY; draft-time citations real; gaps (missing cancelled+archived in seed, 16 author-tokens) noted. Coverage/Certainty/Evidence bar met."
-    },
-    {
-      "phase": 2,
-      "date": "2026-07-18",
-      "decision": "approved",
-      "notes": "0 blockers; 4 majors (F1 test:361 url= kwarg; F2 AT-003 press i; F3 startfile isfile/try-except/UNC guard; F4 drop .svg) folded into Phase 3; 5 minors. Coverage/Certainty/Evidence met."
-    },
-    {
-      "phase": 3,
-      "date": "2026-07-18",
-      "decision": "approved",
-      "notes": "3 increments (f1b9e96 multi-URL, 63f4a22 images, 7532e03 seed) pushed to main. 36 tests green (base 28+8). Seed denylist 0 author tokens (independently rescanned). os.startfile allowlist {png,jpg,jpeg,gif,webp,bmp} no svg + isfile + UNC/file:// refuse + try/except verified. AT-001/002/003 black-box + mutation-checked. Coverage/Certainty/Evidence met."
-    },
-    {
-      "phase": 4,
-      "date": "2026-07-18",
-      "decision": "approved",
-      "notes": "Validation PASS. AT-001/002/003 each reconciled to one node; both layers; ledger 28->36; supersession 0 live .url; 1 minor (modal prefill by inspection); 2 accepted open items. No iterate."
-    },
-    {
-      "phase": 6,
-      "date": "2026-07-18",
-      "decision": "approved",
-      "notes": "Docs done: traceability 0 gaps, functionality, exec-summary, 3 mermaid diagrams. Postmortem: 0 iterations, 10/10 findings closed/accepted. README updated (i binding + all-URLs). Batch complete; artifacts committed to main. 5 carry-forward items for next batch."
-    },
-    {
-      "phase": 6,
-      "date": "2026-07-31",
-      "decision": "close batch",
-      "notes": "batch-01 CLOSED EXPLICITLY on 2026-07-31. It finished 2026-07-18 and its work merged and shipped long since; only the Obsidian vault sync was never run, and that is the operator's call (it touches his vault), so it is recorded in .dev-flow/BACKLOG.md as a named pending item rather than left as a phase status. The file had sat at phase 6 'awaiting-sync' for 13 days, asserting a false project state to every later session (C-44)."
-    }
-  ],
+  "decisions_log": [],
   "obsidian_synced": false,
   "created_at": "2026-07-31T07:29:19",
-  "batch_closed_at": "2026-07-31",
-  "routing_note": "Phase 0 routed this batch to /fast-dev-flow per the command's own matrix (internal tool, ~6 files, known path, no regulated context); operator approved 2026-07-31. The spec lives at .fast-dev-flow/spec.md; this file records the routing so the next session is not misled.",
-  "previous_batch": {
-    "batch_id": "2026-07-18-batch-01",
-    "status": "closed"
-  }
+  "routing_note": "Phase 0 routed this batch to /fast-dev-flow per the command's own matrix (internal tool, ~6 files, known path, no regulated context); operator approved 2026-07-31. The spec lives at .fast-dev-flow/spec.md; this file records the routing so the next session is not misled. This batch has no /dev-flow decisions_log entries because it never entered phase 1 - its record is the spec, and it is out of scope for /dev-flow-sync (that command copies the 01/02/04/05/06 artifact set, which /fast-dev-flow does not produce).",
+  "artifacts_note": "WARNING: the artifacts listed above are the /dev-flow PATHS, not this batch's files. The files currently at .dev-flow/01-requirements.md, 02-review.md, 04-validation.md, 05-postmortem.md and 06-docs/ belong to the CLOSED batch 2026-07-18-batch-01 (they say so in their own title lines). This batch has written none of them. Do not read them as the current batch's record.",
+  "closed_batches": [
+    {
+      "batch_id": "2026-07-18-batch-01",
+      "batch_objective": "Neutral capability-showcasing demo seed; multiple URLs per task; image references with a safe open-in-viewer action",
+      "final_phase": 6,
+      "phase_status": "approved",
+      "closed_at": "2026-07-31",
+      "shipped_at": "2026-07-18",
+      "obsidian_synced": true,
+      "obsidian_path": "G:\\My Drive\\ConsultIA\\Obsidian_Vaults\\AI-Consulting-Brain\\01 - Proyectos\\taskboard\\dev-flow-batches\\2026-07-18-batch-01\\",
+      "artifacts_location": ".dev-flow/01-requirements.md, 02-review.md, 03-increments/, 04-validation.md, 05-postmortem.md, 06-docs/ (still at the .dev-flow root; not moved, so the shipped commits' paths stay valid)",
+      "decisions_log": [
+        {
+          "phase": 1,
+          "date": "2026-07-18",
+          "decision": "approved",
+          "notes": "3 US/7 HLR/23 LLR/3 AT/26 TC; DoR all READY; draft-time citations real; gaps (missing cancelled+archived in seed, 16 author-tokens) noted. Coverage/Certainty/Evidence bar met."
+        },
+        {
+          "phase": 2,
+          "date": "2026-07-18",
+          "decision": "approved",
+          "notes": "0 blockers; 4 majors (F1 test:361 url= kwarg; F2 AT-003 press i; F3 startfile isfile/try-except/UNC guard; F4 drop .svg) folded into Phase 3; 5 minors. Coverage/Certainty/Evidence met."
+        },
+        {
+          "phase": 3,
+          "date": "2026-07-18",
+          "decision": "approved",
+          "notes": "3 increments (f1b9e96 multi-URL, 63f4a22 images, 7532e03 seed) pushed to main. 36 tests green (base 28+8). Seed denylist 0 author tokens (independently rescanned). os.startfile allowlist {png,jpg,jpeg,gif,webp,bmp} no svg + isfile + UNC/file:// refuse + try/except verified. AT-001/002/003 black-box + mutation-checked. Coverage/Certainty/Evidence met."
+        },
+        {
+          "phase": 4,
+          "date": "2026-07-18",
+          "decision": "approved",
+          "notes": "Validation PASS. AT-001/002/003 each reconciled to one node; both layers; ledger 28->36; supersession 0 live .url; 1 minor (modal prefill by inspection); 2 accepted open items. No iterate."
+        },
+        {
+          "phase": 6,
+          "date": "2026-07-18",
+          "decision": "approved",
+          "notes": "Docs done: traceability 0 gaps, functionality, exec-summary, 3 mermaid diagrams. Postmortem: 0 iterations, 10/10 findings closed/accepted. README updated (i binding + all-URLs). Batch complete; artifacts committed to main. 5 carry-forward items for next batch."
+        },
+        {
+          "phase": 6,
+          "date": "2026-07-31",
+          "decision": "close batch",
+          "notes": "batch-01 CLOSED EXPLICITLY on 2026-07-31. It finished 2026-07-18 and its work merged and shipped long since; only the Obsidian vault sync was never run, and that is the operator's call (it touches his vault), so it is recorded in .dev-flow/BACKLOG.md as a named pending item rather than left as a phase status. The file had sat at phase 6 'awaiting-sync' for 13 days, asserting a false project state to every later session (C-44)."
+        },
+        {
+          "phase": 6,
+          "date": "2026-07-31",
+          "decision": "synced-to-obsidian",
+          "notes": "G:\\My Drive\\ConsultIA\\Obsidian_Vaults\\AI-Consulting-Brain\\01 - Proyectos\\taskboard\\dev-flow-batches\\2026-07-18-batch-01\\ - 9 artifacts + generated index README + project Dashboard.md. Created the vault's taskboard project folder (none existed). 03-increments not synced per vault convention. Destination named from the artifacts' self-identification, not this file's batch_id, which had been repurposed for batch-02."
+        }
+      ],
+      "log_gap_note": "No phase-5 entry was ever written, although 05-postmortem.md exists and is complete. The phase ran; only its log line is missing."
+    }
+  ]
 }
