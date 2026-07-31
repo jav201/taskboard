@@ -210,3 +210,35 @@ async def test_switching_views_restates_the_keys_for_that_view(tmp_path):
         await pilot.press("1")                       # lanes
         await pilot.pause()
         assert tab.show not in str(bar.render())
+
+
+# --------------------------------------------------------------------------- #
+# two defects of the stock Footer, which this bar exists instead of
+# --------------------------------------------------------------------------- #
+def test_the_bar_is_ours_and_no_stock_footer_is_mounted():
+    """Textual's `Footer` is what this replaced: on 8.2.8 it reported its
+    bindings ready and mounted ZERO children, painting a blank row while 24
+    bindings were live. Reintroducing it would hand the contract back to a
+    widget that has already broken it once."""
+    import inspect
+
+    from taskboard import app as app_module
+    src = inspect.getsource(app_module)
+    assert "Footer" not in src, "the stock Footer is back in the app"
+    assert "KeyBar" in src
+    assert "from textual.widgets import" in src and "Footer" not in src.split(
+        "from textual.widgets import")[1].split("\n")[0]
+
+
+def test_no_two_shown_keys_share_an_action():
+    """MEASURED on Textual 8.2.8: `Footer` collapses bindings BY ACTION —
+    `action_to_bindings` is keyed on `binding.action` (`_footer.py:252`) — so six
+    distinct keys bound to one action print as a single entry. Our own bar
+    renders per KEYMAP row and dodges that, but a shared action would still
+    corrupt any Footer-derived surface (and any future help screen grouped the
+    same way). The constraint is cheap to keep and expensive to rediscover."""
+    import collections
+    shown = [k for k in KEYMAP]
+    by_action = collections.Counter(k.action for k in shown)
+    dupes = {a: n for a, n in by_action.items() if n > 1}
+    assert not dupes, f"these actions are claimed by more than one shown key: {dupes}"

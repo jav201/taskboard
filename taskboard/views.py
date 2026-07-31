@@ -1746,3 +1746,121 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
         return [order + unscheduled]
 
     return [[t.id for t in tasks]]
+
+
+# ---------------------------------------------------------------------------
+# the legend — what `?` explains, per view
+#
+# THREE COMMITMENTS, and they are what make it impossible for this to lie:
+#   1. every swatch is drawn by CALLING the same function that draws the mark in
+#      the view, so there is no second copy of the art to drift;
+#   2. it is per view — the gantt's legend is not the lanes';
+#   3. it explains ONLY what is on screen. If this board has no cancelled
+#      project, the `╳` entry does not appear: sending the reader to look for an
+#      absent mark is another way of lying. (The proposal's own law caught seven
+#      such ghost marks in its first version.)
+#
+# Register: it DESCRIBES MARKS. It never addresses the reader and never judges
+# the work — "overdue" is a fact about a date.
+# ---------------------------------------------------------------------------
+def _legend_board_facts(board: Board, today: date) -> dict:
+    tasks = board.visible_tasks(False)
+    projects = board.visible_projects(False)
+    open_ = [t for t in tasks if not board.is_done(t)]
+    dues = [(parse_iso(t.due_date), t) for t in tasks]
+    return {
+        "projects": projects,
+        "tasks": tasks,
+        "statuses": {p.status for p in projects},
+        "phases": {min(3, board.phase_index(t)) for t in open_},
+        "high": any(t.priority == "high" for t in open_),
+        "done": any(board.is_done(t) for t in tasks),
+        "overdue": any(d and d < today and not board.is_done(t) for d, t in dues),
+        "today": any(d == today and not board.is_done(t) for d, t in dues),
+        "week": any(d and 0 < (d - today).days <= 7 for d, t in dues),
+        "later": any(d and (d - today).days > 7 for d, t in dues),
+        "undated": any(d is None for d, _t in dues),
+        "project_due": any(p.due_date for p in projects),
+        "blocked": any(t.blocked for t in open_),
+    }
+
+
+def _meter_swatch(days, done=False) -> str:
+    return meter_markup(due_meter(days, done=done))
+
+
+def legend_entries(mode: str, board: Board, today: date | None = None,
+                   width: int = 96, height: int = 30) -> list[tuple[str, str]]:
+    """(swatch, what it means) for the marks THIS view is currently drawing.
+
+    The size is part of the question: the lanes allocator decides how many tasks
+    are NAMED, and a phase glyph only exists on a named row. Explaining a phase
+    the screen never draws is the same ghost as explaining an absent status."""
+    today = today or date.today()
+    f = _legend_board_facts(board, today)
+    hue = f["projects"][0].color if f["projects"] else "violet"
+    out: list[tuple[str, str]] = []
+
+    # The spine has two forms and the view chooses by rank: the leader wears the
+    # heavy one, the stacked lanes the thin one. A board whose only project leads
+    # draws no thin spine at all — so neither does its legend.
+    active = [p for p in f["projects"]
+              if any(t.project_id == p.id and not board.is_done(t) for t in f["tasks"])]
+    if mode == "kanban" and f["projects"]:
+        # kanban draws the project header with ▐ and each card with ▊ — the
+        # lanes spine ▎ is a different view's glyph and does not belong here
+        out.append((c("▐", hue), "project header, by colour"))
+        if f["tasks"]:
+            out.append((c("▊", hue), "a task card, in its project's colour"))
+    if mode == "swimlanes":
+        if active:
+            out.append((c("▌", active[0].color), "the project under most pressure"))
+        if len(active) > 1:
+            out.append((c("▎", hue), "spine: the project, by colour"))
+        if len(active) < len(f["projects"]):
+            out.append((c("▏", "dim"), "a project with nothing open, at rest"))
+        out.append((c(LATTICE, "ash") + c(LATTICE, "dim") + c(RULE, "accent"),
+                    "field: ash spent · dim still to spend · ╎ today"))
+        if f["project_due"]:
+            out.append((c("◆", hue), "the project's own due date"))
+        for st in ("paused", "cancelled", "completed"):
+            if st in f["statuses"]:
+                out.append((c(STATUS_MARK[st], "dim"), f"project {st}"))
+        lanes, _geo, titles, _prof, _wr = swimlane_plan(board, False, today,
+                                                        width, height)
+        named = [t for lane in [ln for ln in lanes if not ln.resting][1:]
+                 for t in lane_titles(lane, titles)]
+        for i in sorted({min(3, board.phase_index(t)) for t in named}):
+            out.append((c(phase_glyph({i}), hue),
+                        f"task in phase {i + 1}: the dot climbs as it advances"))
+        if f["high"]:
+            out.append((c("!N", "ink"), "high-priority work still open"))
+    if mode == "gantt":
+        if f["projects"]:
+            out.append((c(BAR_DONE * 2, hue) + c(BAR_TODO * 2, hue),
+                        "project span: dense is done, half-dense is the rest"))
+        if f["tasks"]:
+            out.append((c("▬▬", hue), "a task's own span"))
+        if f["project_due"]:
+            out.append((c("◆", "bright"), "the project's own due date"))
+        out.append((c("┃", "accent"), "today"))
+    if mode == "agenda":
+        out.append((c("●", "over"), "a task's due date, on the shared day axis"))
+        out.append((c("─", "dim"), "its reach: from today to that date"))
+        out.append((c("┃", "accent"), "today"))
+        if f["blocked"]:
+            out.append((c("▲", "over"), "blocked"))
+    if mode in ("swimlanes", "gantt"):
+        for present, days, label in (("overdue", -1, "overdue — ▲ is the only alert"),
+                                     ("today", 0, "due today"),
+                                     ("week", 3, "due this week"),
+                                     ("later", 40, "due later")):
+            if f[present]:
+                out.append((_meter_swatch(days), f"meter: {label}"))
+        if f["done"]:
+            out.append((_meter_swatch(None, done=True), "meter in ash: work spent"))
+        if f["undated"]:
+            out.append((_meter_swatch(None), "meter unlit: no date to measure"))
+    if mode == "kanban" and f["high"]:
+        out.append((c("!", "ink"), "high-priority task"))
+    return out
