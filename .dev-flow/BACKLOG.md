@@ -105,6 +105,25 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   `archived` flag at startup, but only when the completion date is KNOWN.
   16 laws, 266 green, 5 mutants killed. (`db31a5c`)
 
+- **DONE** · The key-bar contract — `taskboard/keymap.py` is the one seat;
+  `BINDINGS` and the bar are both generated from it. Replaced Textual's `Footer`,
+  which mounted zero children and painted a BLANK row while 24 bindings were
+  live. 17 laws, 283 green, 6 mutants killed. (`68e85b4`)
+
+## Open — raised by the key-bar contract
+
+- **REV5's remaining items are NOT started, by instruction**, pending Javier's
+  review of the prototype: the `?` legend popup, the columns retirement, the
+  meters, the title widths.
+- **Until a legend key exists, `+N` is the fallback below ~50 columns.** Once `?`
+  ships it must be declared `universal=True` so it sorts beside `q` and can never
+  be the key that drops — the seat already supports it.
+- **`o` (URL) and `i` (Images) are shown always but do nothing unless the
+  selected task has one.** That is "live but a no-op", not a dead key, and
+  hiding them would violate the standing instruction not to hide keys — but if
+  the contract is ever tightened to per-selection state, they are the two
+  entries that need a rule.
+
 ## Open — raised by the archive increment
 
 - **Auto-archive does nothing on Javier's existing board, by design.** Every
