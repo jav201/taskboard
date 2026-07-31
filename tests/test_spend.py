@@ -201,3 +201,87 @@ def test_ink_stays_monotone_at_extreme(tmp_path):
 def test_the_gantt_spends_its_cells_too(tmp_path):
     b = load(tmp_path, 5, 21, "g.json")
     assert census(rows(b, "gantt"))["dead"] <= 30.0
+
+
+# --------------------------------------------------------------------------- #
+# 5 — the calm board: rungs stop at INFORMATION, never at a round number
+# --------------------------------------------------------------------------- #
+def test_the_calm_board_spends_the_rows_it_was_given(tmp_path):
+    """A calm board exhausted the ladder with a THIRD of the panel void — 55.1 %
+    dead, eleven rows of nothing. Not because it had nothing to say, but because
+    every rung stopped at a constant: name at most 3, resolve at most 2 rows.
+    Both ceilings now answer to information, so the calm board fills."""
+    dead = census(rows(load(tmp_path, 2, 4, "calm.json")))["dead"]
+    assert dead <= 40.0, dead
+
+
+def test_no_row_of_the_panel_is_left_void(tmp_path):
+    """The sharper form of the same law, and the one that cannot be satisfied by
+    a lucky census: on NO board may the body simply stop and leave whole rows
+    blank. A row nothing claims is the ladder failing to spend."""
+    for projects, tasks in ((2, 4), (1, 2), (3, 9), (5, 21), (8, 44)):
+        ls = rows(load(tmp_path, projects, tasks, f"v{projects}.json"), "swimlanes", 96, 30)
+        void = [i for i, line in enumerate(ls) if not line.strip()]
+        assert not void, f"{projects}p/{tasks}t left rows {void} void"
+
+
+def test_naming_is_never_capped_below_what_a_lane_holds(tmp_path):
+    """RUNG ONE'S CEILING IS INFORMATION. The old cap of 3 was a hole rather than
+    a bound: a lane holding 8 open tasks could name only 3, and the PROHIBITION
+    then froze the field at one row — so the rows that could have named the other
+    five went void instead. With room to spare, everything nameable is named."""
+    geo = lane_geometry(96, 40)
+    titles, prof, wrows = allocate(geo, [8], 0, 36)
+    assert titles >= 8, (titles, prof, wrows)
+
+
+def test_the_lead_is_still_the_hero_when_the_wave_may_grow(tmp_path):
+    """What bounds rung two once the ROOM stops bounding it. The wave ceiling is
+    the lead's own bench: five equal waves would be a tie of near-equals and the
+    lead would stop being the hero. Checked across the allocator's whole space,
+    including the calm boards where the room no longer binds."""
+    geo = lane_geometry(96, 30)
+    for room in range(4, 60):
+        for opens in ([1], [2], [1, 1, 1], [2, 2], [4, 4, 4, 4]):
+            titles, prof, wrows = allocate(geo, opens, 0, room)
+            assert wrows < prof, f"room={room} opens={opens}: wave {wrows} >= lead {prof}"
+
+
+def test_rung_four_never_outbids_a_rung_above_it(tmp_path):
+    """The hero absorbs what NOTHING ELSE can use — and not one row more. It may
+    never eat the row rung three needs to say what is not there, and it may never
+    fire while a task is unnamed, which would be rung two jumping the queue with
+    a different name on it."""
+    geo = lane_geometry(96, 30)
+    # calm and roomy: the hero grows, and the absence line still gets drawn
+    titles, prof, wrows = allocate(geo, [2], 0, 26)
+    assert prof + wrows + min(titles, 2) <= 26 - 1, (titles, prof, wrows)
+    out = "\n".join(rows(load(tmp_path, 2, 4, "r4.json"), "swimlanes", 96, 30))
+    assert re.search(r"\d+ projects? ·", out), "rung three lost its row to rung four"
+    # unnamed work: the hero must NOT absorb, because rung one is still unpaid
+    # And the reason rung four needs no GUARD against firing while work is
+    # unnamed: surplus and unnamed work cannot coexist, because one more title
+    # would have raised `need` and the search maximises `need`. Proven over the
+    # space rather than asserted in a comment.
+    geo2 = lane_geometry(96, 40)
+    for room in range(4, 50):
+        for opens in ([40], [8, 8], [12, 3], [2, 2], [1]):
+            titles, prof, wrows = allocate(geo2, opens, 0, room)
+            need = prof + sum(wrows + min(titles, o) for o in opens)
+            unnamed = sum(max(0, o - titles) for o in opens)
+            assert not (unnamed and room - need > 1), (
+                f"room={room} opens={opens}: {room - need} rows to spare while "
+                f"{unnamed} task(s) unnamed — rung one was left unpaid")
+
+
+def test_the_calm_board_buys_RESOLUTION_and_not_just_a_taller_hero(tmp_path):
+    """Rung four can MASK rung two: if the wave ceiling were a constant again,
+    the hero would absorb the leftover, the panel would still fill and every
+    census would still pass — while the stack lane sat at its minimum. Dead
+    space is the wrong question here. The question is whether the rows the calm
+    board bought are RESOLUTION, spread across the lanes that had room to grow."""
+    geo = lane_geometry(96, 30)
+    titles, prof, wrows = allocate(geo, [2], 0, 26)
+    assert wrows > 2, (
+        f"a calm board with 26 rows for one stack lane gave it {wrows} wave "
+        f"row(s) — the ceiling is a constant again, and the hero ate the rest")

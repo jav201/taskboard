@@ -200,7 +200,13 @@ def test_the_leader_gets_a_drawn_field_that_ends_at_its_own_due_date(tmp_path):
     b = typical(tmp_path)
     out = rows_of(b, 96, 30)
     head = out.index(lead_head(out))
-    band = out[head + 1:head + 12]
+    # Take the bench the ALLOCATOR actually granted. A hardcoded window was a
+    # constant pretending to be a law: once the wave ceiling became room-aware
+    # the lead's bench shortened, and the fixed slice spilled into the next
+    # lane's curve — failing this test with another project's ink.
+    from taskboard.views import swimlane_plan
+    _l, _g, _t, prof, _w = swimlane_plan(b, False, TODAY, 96, 30)
+    band = out[head + 1:head + 1 + prof]
     drawn = [line for line in band if any(0x2800 <= ord(ch) <= 0x28FF for ch in line)]
     assert len(drawn) >= 4
 
