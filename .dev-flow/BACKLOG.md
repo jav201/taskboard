@@ -116,6 +116,28 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
 - ~~Until a legend key exists, `+N` is the fallback below ~50 columns.~~
   **CLOSED** — `?` ships declared `universal=True`.
 
+- **DONE** · REV5 #22 — the 17 prototype laws reconciled into the suite under a
+  disk-checked MANIFEST; attribution and register ported; the register law found
+  a real second-person string in the app's voice. (`90a7f4f`)
+- **DONE** · The gantt FIELD redesign (REV3) — two bands, the slip as a length,
+  an axis with a past. **Carrying 71.4 % at typical (target 71.1 %) and ink now
+  MONOTONE: 25.0 % -> 25.9 % typical to extreme, where the old view inverted
+  23.3 % -> 21.0 %.** Chrome 21.2 % -> 7.8 %. (`c17dded`)
+- ~~The gantt's field redesign is not done.~~ **CLOSED** by `c17dded`.
+
+## Open — raised by the gantt field redesign
+
+- **The closure law stays red** (`test_the_closure_law_is_knowingly_unmet`): all
+  four views still draw a box. The gantt's chrome fell from 21.2 % to 7.8 % by
+  removing the divider rows, so what remains IS the frame. Removing it is now
+  the single largest occupancy win left in the app.
+- **`calm` gantt is 67.8 % dead.** The two-band field needs data to fill; a
+  near-empty board has little to draw. Same honest weakness the proposal records
+  for calm lanes.
+- **The gantt sheds rows at short heights** and counts them (`+N not shown`),
+  which the old view did not do — it simply drew fewer. Consistent with lanes
+  now, but it is a behaviour change worth knowing.
+
 ## Open — raised by the REV5 roadmap
 
 - **REV5 #22 (the 90 laws ported to `tests/`) was NOT attempted** — it was not
