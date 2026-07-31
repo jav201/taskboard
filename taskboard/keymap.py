@@ -58,6 +58,7 @@ KEYMAP: tuple[Key, ...] = (
     Key("P", "P", "manage_projects", "Projects"),
     Key("f", "f", "manage_phases", "Phases"),
     Key("c", "c", "clocks", "Clocks"),
+    Key("R", "R", "report", "Report"),
     # Tab only does something in kanban, so it is only claimed there — a key
     # advertised everywhere that answers in one place is the same lie in reverse.
     Key("tab", "⇥", "toggle_presentation", "Layout", priority=True, views=("kanban",)),
