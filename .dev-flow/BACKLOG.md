@@ -110,6 +110,33 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   which mounted zero children and painted a BLANK row while 24 bindings were
   live. 17 laws, 283 green, 6 mutants killed. (`68e85b4`)
 
+- **DONE** · REV5 #17 columns retirement (`17c705b`) · #18 lanes due meter
+  (`c3ff23d`) · #19 gantt meter + field titles (`52349ff`) · #20 agenda laws
+  (`889e812`) · #21 the `?` legend (`0259948`). 320 green.
+- ~~Until a legend key exists, `+N` is the fallback below ~50 columns.~~
+  **CLOSED** — `?` ships declared `universal=True`.
+
+## Open — raised by the REV5 roadmap
+
+- **REV5 #22 (the 90 laws ported to `tests/`) was NOT attempted** — it was not
+  in the approved list.
+- **The gantt's field redesign is not done.** #19 ported the RULING (meter at the
+  edge, titles over the field, one severity seat) onto the existing week-grid
+  gantt. The frames show a lanes-style dot field with compact marks near each due
+  date; that is a separate redesign and is not claimed.
+- **The proposal's title targets did not transfer**, in three views: its numbers
+  (lanes 77→83, gantt 11→33, agenda 12→19) describe a prototype whose titles were
+  boxed inside a label column. Measured here BEFORE the pass: lanes 83-85,
+  agenda 30, gantt 27. The freed width in lanes went to the FIELD (+6 L / +4 S)
+  instead, and gantt titles now grow +6 per empty week in front of their bar.
+- **Task rows in lanes lost 2 cells** to the meter (6 cells vs the `+12d` token's
+  4) — the trade the proposal names explicitly.
+- **At narrow gantt widths the percent drops and the meter stays** — a drop-order
+  the proposal legislates only for the wide case.
+- **The agenda's ink ceiling is nowhere near breached** (38.3 % vs 85 %), so the
+  designed half-density reach lattice is deliberately NOT applied. Pinned by law
+  so a future widening cannot cross it silently.
+
 ## Open — raised by the key-bar contract
 
 - **REV5's remaining items are NOT started, by instruction**, pending Javier's
