@@ -242,3 +242,63 @@ def test_no_two_shown_keys_share_an_action():
     by_action = collections.Counter(k.action for k in shown)
     dupes = {a: n for a, n in by_action.items() if n > 1}
     assert not dupes, f"these actions are claimed by more than one shown key: {dupes}"
+
+
+# --------------------------------------------------------------------------- #
+# the README is a surface too, and the same law applies to it
+# --------------------------------------------------------------------------- #
+def _readme() -> str:
+    import pathlib
+    return (pathlib.Path(__file__).parent.parent / "README.md").read_text(encoding="utf-8")
+
+
+def test_every_image_the_readme_shows_exists():
+    """A README pointing at a deleted asset is a broken front page; one pointing
+    at a STALE asset is worse, because it looks fine and shows an app that no
+    longer exists. This catches the first; the second is why the assets are
+    regenerated from the real app rather than kept."""
+    import pathlib
+    import re
+    root = pathlib.Path(__file__).parent.parent
+    refs = set(re.findall(r'(docs/[\w.-]+\.(?:png|gif|svg))', _readme()))
+    assert refs, "the README shows no images at all"
+    for ref in refs:
+        assert (root / ref).exists(), f"README shows {ref}, which is not in the repo"
+
+
+def test_the_readme_keybinding_table_matches_the_seat():
+    """THE CONTRACT REACHES THE README. Every key the table documents must be a
+    real binding, and every key the app binds must be documented — the same law
+    the key bar obeys, applied to the page a reader meets first.
+
+    Read off the RAW KEYMAP, never through the accessor (the M12 lesson)."""
+    import re
+    table = [l for l in _readme().splitlines() if l.startswith("| `")]
+    assert table, "no keybinding table found"
+    documented = set()
+    for line in table:
+        cell = line.split("|")[1]
+        for key in re.findall(r"`([^`]+)`", cell):
+            documented.add(key)
+
+    # the seat's own keys, in the spelling the README uses
+    spelled = {"?": "?", "q": "q", "enter": "Enter", "tab": "Tab",
+               "d,delete": "d", "down,j": "↓", "up,k": "↑",
+               "left,h": "←", "right,l": "→"}
+    for k in KEYMAP:
+        want = spelled.get(k.keys, k.keys)
+        if k.action.startswith("view("):
+            want = k.show                      # the views share one table row
+        assert want in documented, \
+            f"{k.show} ({k.label}) is bound but the README never mentions it"
+
+
+def test_the_readme_does_not_document_a_view_that_was_retired():
+    text = _readme()
+    assert "Columns was retired" in text, "the retirement is not explained"
+    # ...and it is not still offered as a live view in the table
+    assert not re.search(r"^\| `\d` \| \*\*Columns\*\*", text, re.M)
+    for view in VIEWS:
+        label = {"swimlanes": "Lanes", "agenda": "Agenda",
+                 "gantt": "Gantt", "kanban": "Kanban"}[view]
+        assert f"**{label}**" in text, f"{label} is a view but the README omits it"
