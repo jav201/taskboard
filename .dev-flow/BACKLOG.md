@@ -339,3 +339,53 @@ batch (`2026-07-31-batch-02`) is in flight under `/fast-dev-flow`. 345 tests gre
   increment is accepted, but a nearly-empty board still spends more of the
   screen on blank than the design says it should. The third rung buys one row;
   the calm case has more than one row to spend.
+
+## From the closure batch (increments 1-4)
+
+- **`sitting()` beyond the lead: STOPPED, not implemented.** The data exists for
+  every lane (`days_in_phase`), but there is nowhere lawful to put the figure. A
+  stack row's free gap is **exactly 1 cell at every width measured** (60, 80, 96,
+  120, 160) — the geometry expands the field to fill whatever the label and the
+  meter leave, so `12d in phase` cannot be drawn without taking ~13 cells from
+  the field of every project, permanently. Printing it INSIDE the field is worse
+  than clutter: the field is a shared day axis, so a figure sitting at column X
+  reads as belonging to that DATE.
+  And the app's own order of loss already answers the question. `lead_band` sheds
+  its right-hand block from the left and momentum goes FIRST, because "it is
+  context" — on a row with strictly less room than the lead's, momentum is
+  precisely the figure that does not survive. Drawing it anyway would need either
+  a permanent field-width tax on every project or a new mark, and both are design
+  decisions for the owner rather than defects to fix.
+  **Open question if it is ever wanted:** is stagnation worth ~13 cells of every
+  stack lane's curve? If yes, the honest form is the lead's existing figure in the
+  lead's existing tone, and the field shrinks for everyone.
+
+- **The identity-vs-identity collision is NOT curable at 8 hues.** Measured with
+  the dataviz validator, `--pairs all`, both modes: the shipped palette fails
+  three checks (violet↔blue ΔE 0.3 deutan; normal-vision floor 5.4 against a
+  floor of 15). No subset of the current family passes at ANY size down to 5,
+  because `Lightness band` fails listing all eight — the Tailwind-400 family is a
+  tonal step too light for the surface, and it is crowded into the cool half of
+  the wheel exactly because the ration reserved the warm half for severity.
+  Searching a lawful pool (reference-theme slots outside the reserved bands), the
+  ceiling for `--pairs all` in both modes is **four** hues. Even the dataviz
+  reference theme fails all-pairs at 8 — its own docs claim only the *adjacent*
+  pairlist — and 3 of its 8 slots sit inside the app's reserved bands.
+  Mitigating fact: colour is NOT the sole identity channel here. Every project is
+  named in text beside its bar, which is the secondary encoding the palette rules
+  ask for. The failure is real but it is "two projects can share a colour", not
+  "the board is unreadable".
+
+- **Two process findings, both from mutants that stayed green.** A test asserting
+  a thing is ABSENT must assert on text the thing ALWAYS emits — `"nothing late"`
+  passed whether or not the absence line was drawn, because the fixture had late
+  work. And a motion test must use a fixture long enough to observe speed: over a
+  two-cell reach, a packet stepping 3 and one stepping 1 are the same animation
+  (3t mod 2 == t mod 2), so the first version of the gantt-speed law could not
+  have failed.
+
+- **`.gitignore` near-miss.** Rewriting it instead of appending dropped
+  `board.json` — the rule that keeps a local copy of the real board out of the
+  repo. Caught by diffing before the commit. Rewriting a tracked file without
+  reading it first is the whole error; there is no second control that would have
+  caught it.
