@@ -377,27 +377,32 @@ def _strip(markup: str) -> str:
 
 
 def header(title: str, right: str, w: int) -> str:
-    tvis = len(_strip(title))
-    rvis = len(_strip(right))
-    dash = w - 8 - tvis - rvis            # 8 = "╭─ " + " " + " " + " ─╮"
-    if dash < 1:                          # too tight -> drop the right content
+    """THE HEAD ROW. No box: this design commits with RULES, not boxes — the
+    prototype's closure law, which the frame was the last thing failing.
+
+    The row carries facts (what the view is, what it counts) across its whole
+    width; `head_rule` under it is the only box-drawing left, and it is one row
+    rather than a border on all four sides."""
+    tvis, rvis = len(_strip(title)), len(_strip(right))
+    if tvis + rvis + 3 > w:               # too tight -> the right content goes
         right, rvis = "", 0
-        dash = w - 8 - tvis
-    if dash < 1:                          # still tight -> truncate the title itself
-        plain = fit(_strip(title), max(0, w - 6))
-        dash2 = max(0, w - 6 - len(plain))
-        return (c("╭─ ", "frame") + c(plain, "accent", bold=True) + " "
-                + c("─" * dash2, "frame") + c("─╮", "frame"))
-    return (c("╭─ ", "frame") + title + " " + c("─" * dash, "frame") + " "
-            + right + " " + c("─╮", "frame"))
+    if tvis + 2 > w:                      # still tight -> truncate the title
+        return c(fit(_strip(title), w), "accent", bold=True)
+    gap = max(1, w - tvis - rvis - 1)
+    return title + " " * gap + right + " "
+
+
+def head_rule(w: int) -> str:
+    return c("─" * max(0, w), "frame")
 
 
 def line(inner: str, w: int | None = None) -> str:
-    return c("│", "frame") + inner + c("│", "frame")
+    """A body row IS its content now — there are no side borders to add."""
+    return inner
 
 
 def blank_line(w: int) -> str:
-    return line(" " * (w - 2))
+    return " " * w
 
 
 def _border(left: str, fill: str, right: str, junctions: dict[int, str], w: int) -> str:
@@ -410,13 +415,16 @@ def _border(left: str, fill: str, right: str, junctions: dict[int, str], w: int)
 
 
 def bottom(junctions: dict[int, str] | None, w: int) -> str:
-    return _border("╰", "─", "╯", junctions or {}, w)
+    """Kept as a seam for callers, but a frameless view closes with nothing."""
+    return ""
 
 
 def fill_height(lines: list[str], height: int, w: int) -> list[str]:
-    """Pad blank body rows so the frame fills the viewport when content is short."""
+    """Pad blank rows so the view fills the viewport when content is short. The
+    pad goes ABOVE the last row, which is the axis every view closes with."""
+    lines = [x for x in lines if x != ""]          # a frameless close adds none
     if not height or len(lines) >= height:
-        return lines
+        return lines                               # taller than the viewport: it scrolls
     pad = height - len(lines)
     return lines[:-1] + [blank_line(w)] * pad + [lines[-1]]
 
@@ -938,7 +946,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
     what does not fit is counted."""
     today = today or date.today()
     w = _clamp_width(width)
-    inner = w - 2
+    inner = w
     h = height or 24
     lanes, geo, titles, prof, wrows = swimlane_plan(
         board, show_archived, today, w, h)
@@ -970,7 +978,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
     body: list[Row] = []
     shed = 0
     for i, blk in enumerate(blocks):
-        if len(body) + len(blk) > max(0, h - 3):
+        if len(body) + len(blk) > max(0, h - 2):
             shed = len(blocks) - i
             break
         body += blk
@@ -1025,7 +1033,7 @@ def render_agenda(board, show_archived, selected_id, today=None,
     with no due date collect under a 'no date' group at the bottom."""
     today = today or date.today()
     w = _clamp_width(width)
-    inner = w - 2
+    inner = w
 
     tasks = board.visible_tasks(show_archived)
     overdue_n = sum(1 for t in tasks if agenda_bucket(t, today) == "overdue")
@@ -1400,7 +1408,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
     """
     today = today or date.today()
     w = _clamp_width(width)
-    inner = w - 2
+    inner = w
     h = height or 24
     geo = gantt_geometry(inner, h)
 
@@ -1483,7 +1491,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
         lines.append(line(c(fit("  (nothing scheduled — press 'a' to add a task)",
                                 inner), "dim")))
 
-    body = rows[:max(0, h - 3)]
+    body = rows[:max(0, h - 2)]
     shed = len(rows) - len(body)
     for markup, tid in body:
         lines.append(line(markup))
@@ -1590,7 +1598,7 @@ def _matrix_junctions(label_w: int, widths: list[int], mid: str) -> dict[int, st
 
 
 def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_map) -> list[str]:
-    inner = w - 2
+    inner = w
     tasks = board.visible_tasks(show_archived)
     start, widths = _phase_window(board, inner, board.task_by_id(selected_id))
     buckets = phase_buckets(board, tasks)
@@ -1618,7 +1626,7 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
 
 
 def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map) -> list[str]:
-    inner = w - 2
+    inner = w
     tasks = board.visible_tasks(show_archived)
     label_w = max(6, min(14, inner // 5))
     prog_w = 5
@@ -1731,7 +1739,7 @@ def swimlane_plan(board, show_archived, today: date, width: int,
     active = [ln for ln in lanes if not ln.resting]
     titles, prof, wrows = allocate(
         geo, [len(ln.open) for ln in active[1:]],
-        len([ln for ln in lanes if ln.resting]), h - 3 - (2 if active else 0))
+        len([ln for ln in lanes if ln.resting]), h - 2 - (2 if active else 0))
     return lanes, geo, titles, prof, wrows
 
 

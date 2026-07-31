@@ -37,12 +37,8 @@ SRC = pathlib.Path(__file__).parent.parent / "taskboard"
 # (law, home file, a test function that carries it) | ("ADAPTED"/"DROPPED", reason)
 MANIFEST = {
     "law_art/rectangle": ("test_swimlanes.py", "test_every_row_is_exactly_the_requested_width"),
-    "law_art/closure": ("DROPPED", "the prototype draws no box and commits with rules; "
-                                   "this app keeps its frame — no increment was ever "
-                                   "allocated to removing it, and the occupancy census "
-                                   "measures its cost at 7.6 %. See test_the_frame_is_"
-                                   "the_only_chrome_and_it_stays_small and the finding "
-                                   "recorded below."),
+    "law_art/closure": ("test_prism_laws.py",
+                        "test_the_closure_law_is_met_the_design_commits_with_rules"),
     "law_resolution": ("test_wave.py", "test_a_drawn_curve_resolves_below_cell_width"),
     "law_carving/today": ("test_field.py", "test_the_figure_is_drawn_over_the_lattice_and_keeps_the_rule"),
     "law_carving/notch": ("test_wave.py", "test_a_notch_can_never_erase_its_column"),
@@ -214,27 +210,57 @@ def test_no_literal_in_the_source_can_emit_the_second_person():
 # --------------------------------------------------------------------------- #
 # the law that is RED against this app, stated rather than hidden
 # --------------------------------------------------------------------------- #
-def test_the_closure_law_is_knowingly_unmet(tmp_path):
-    """PROTOTYPE LAW: "no box corners — this design commits with rules, not
-    boxes". This app DRAWS A BOX, so the law is red against it, and this test
-    records the real situation instead of pretending in either direction.
+def test_the_closure_law_is_met_the_design_commits_with_rules(tmp_path):
+    """THE PROTOTYPE LAW, AND IT IS NOW GREEN: "no box corners — this design
+    commits with rules, not boxes".
 
-    It is a deviation with a reason: the roadmap allocated no increment to the
-    frame, and the occupancy census measures its cost (7.6 % of every render, and
-    the last thing standing between the extreme load and PROPOSAL §4.3's floor
-    before the meter freed the field). Removing it is a decision, not a slip.
-
-    If the frame is ever removed, THIS test fails — and that is correct: the
-    finding will have been resolved and the manifest entry must move from
-    DROPPED to a real home."""
+    It was the last law red against this app, and the frame was the only thing
+    failing it. Measured on the way out: the box cost 7.6 % of every render, and
+    removing it took chrome to 0.0 % in all four views."""
     b = board(tmp_path)
-    corners = set("╭╮╰╯├┤┬┴┼")
-    framed = []
     for mode in VIEWS:
-        painted = str(render_view(mode, b, False, None, TODAY, width=96, height=30))
-        if set(painted) & corners:
-            framed.append(mode)
-    assert framed == list(VIEWS), (
-        "the box is gone from some views — the closure law may now be portable; "
-        f"still framed: {framed}")
-    assert MANIFEST["law_art/closure"][0] == "DROPPED"
+        rows_ = str(render_view(mode, b, False, None, TODAY,
+                                width=96, height=30)).splitlines()
+        assert not set("".join(rows_)) & set("╭╮╰╯"), f"{mode} still draws a box"
+        for r in rows_:                       # and no side borders either
+            assert r[0] != "│" and r[-1] != "│", f"{mode}: {r[:3]!r}"
+    # KANBAN KEEPS ITS INTERNAL COLUMN RULES (│ between phase columns, with ├┼┤
+    # junctions on its header rule). Those are structure a column view needs —
+    # they say WHICH column — not the enclosing box this law is about. Recorded
+    # in .dev-flow/BACKLOG.md as the one place box-drawing survives.
+    kanban = str(render_view("kanban", b, False, None, TODAY, width=96, height=30))
+    assert "│" in kanban
+    assert MANIFEST["law_art/closure"][0] != "DROPPED"
+
+
+# --------------------------------------------------------------------------- #
+# the frame is gone — and nothing it carried went with it
+# --------------------------------------------------------------------------- #
+def test_the_head_row_still_carries_what_the_frame_title_did(tmp_path):
+    """The box's top rail carried the view's name and its counts. Removing the
+    box may not lose them: the head row is now a full-width row of FACTS, which
+    is why it is not chrome — it earns its cells."""
+    b = board(tmp_path)
+    head = str(render_view("swimlanes", b, False, None, TODAY,
+                           width=96, height=30)).splitlines()[0]
+    assert "TASKBOARD" in head
+    assert re.search(r"\d+ open", head) and re.search(r"\d+ due", head)
+    assert len(head) == 96                       # a row, not a rail
+
+
+def test_the_overflow_counts_survived_the_frame(tmp_path):
+    """`+N not shown` lived inside the box and still has a home: the axis row."""
+    b = board(tmp_path, projects=8, tasks=40, name="over.json")
+    out = str(render_view("swimlanes", b, False, None, TODAY,
+                          width=96, height=12)).splitlines()
+    assert any("not shown" in l for l in out)
+
+
+def test_no_view_is_narrower_than_the_width_it_was_given(tmp_path):
+    """The frame's two columns went back to the content, so a row IS the width."""
+    b = board(tmp_path)
+    for mode in VIEWS:
+        for w in (24, 40, 72, 96, 130):
+            for line in str(render_view(mode, b, False, None, TODAY,
+                                        width=w, height=20)).splitlines():
+                assert len(line) == max(24, w), f"{mode} @ {w}: {len(line)}"

@@ -52,11 +52,11 @@ def rows(b, w=96, h=30):
 
 
 def task_rows(out):
-    return [l for l in out if l.startswith("│▊ ")]
+    return [l for l in out if l.startswith("▊ ")]
 
 
 def title_width(w: int) -> int:
-    inner = w - 2
+    inner = w
     budget = inner - 21
     axis_w = max(12, min(44, (budget * 6) // 10)) if budget >= 20 else 0
     return budget - axis_w
@@ -69,8 +69,9 @@ def test_the_title_clears_the_width_the_design_asked_for():
     """REV5 §0.003 asks for 19 characters at 96 wide, up from its prototype's 12.
     MEASURED here: 30 at 96 and 20 at 72 — this layout was already past the
     target, because its titles were never boxed inside a label column."""
-    assert title_width(96) == 30
-    assert title_width(72) == 20
+    # measured after the frame came off: the two reclaimed columns went here
+    assert title_width(96) == 31
+    assert title_width(72) == 21
     for w in (72, 96, 130):
         assert title_width(w) >= 19, w
 
@@ -81,7 +82,7 @@ def test_a_long_title_is_truncated_visibly_never_silently(tmp_path):
                         due_date=iso(3)))
     line = next(l for l in task_rows(rows(b)) if "ZZZ" in l)
     assert "…" in line
-    assert line.count("Z") == title_width(96) - 1
+    assert line.count("Z") == title_width(96) - 1  # letters + its …
 
 
 # --------------------------------------------------------------------------- #
@@ -92,8 +93,8 @@ def test_the_agenda_row_ends_in_its_due_token_not_a_meter(tmp_path):
     change has to argue with it."""
     b = board(tmp_path)
     for line in task_rows(rows(b)):
-        tail = line[-1 - METER_W:-1]
-        assert re.search(r"(\+\d+d|-\d+d|done|today)\s*$", line[:-1]), line[-14:]
+        tail = line[-METER_W:]
+        assert re.search(r"(\+\d+d|-\d+d|done|today)\s*$", line), line[-14:]
         assert not set(tail) >= {"⣿"}, "the agenda grew a meter"
         assert "⣤" not in tail and "⡇" not in tail
 
@@ -121,10 +122,10 @@ def test_the_rows_are_ordered_by_criticality(tmp_path):
 # the ink ceiling — a ceiling is law, the same as a floor
 # --------------------------------------------------------------------------- #
 def ink_share(line: str) -> float:
-    body = line[1:-1]
-    if not body.strip():
+    """Ink over the row. There is no frame to strip any more — the box is gone."""
+    if not line.strip():
         return 0.0
-    return 100 * sum(1 for ch in body if ch != " " and ch not in FRAME) / len(body)
+    return 100 * sum(1 for ch in line if ch != " " and ch not in FRAME) / len(line)
 
 
 def test_no_agenda_row_crosses_the_ink_ceiling(tmp_path):
@@ -143,8 +144,8 @@ def test_no_agenda_row_crosses_the_ink_ceiling(tmp_path):
 
 def test_the_ceiling_law_can_actually_see_a_dense_row(tmp_path):
     """Anti-vacuity for the law above: a row of solid ink must measure as one."""
-    assert ink_share("│" + "█" * 40 + "│") == 100.0
-    assert ink_share("│" + " " * 40 + "│") == 0.0
+    assert ink_share("█" * 40) == 100.0
+    assert ink_share(" " * 40) == 0.0
 
 
 # --------------------------------------------------------------------------- #

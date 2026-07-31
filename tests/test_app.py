@@ -765,7 +765,7 @@ def test_gantt_handles_undated_tasks(tmp_path):
     assert "GANTT" in out
     assert "floating task" in out
     row = next(l for l in out.splitlines() if "floating task" in l)
-    assert set(row[-1 - METER_W:-1]) == {"·"}      # unmeasured, not overdue
+    assert set(row[-METER_W:]) == {"·"}      # unmeasured, not overdue
 
 
 def test_agenda_handles_undated_tasks(tmp_path):
@@ -1281,10 +1281,11 @@ def test_custom_phases_drive_the_columns(tmp_path):
     assert Board.load(str(path)).phases == phases          # round-trips
 
     out = str(render_kanban(b, False, None, date(2026, 7, 17), width=140)).split("\n")
-    header_row = out[1]                                    # row under the frame title
+    header_row = out[1]                                    # the phase-name row
     for p in phases:
         assert p.upper() in header_row
-    assert header_row.count("│") == len(phases) + 1        # 5 columns -> 4 dividers + 2 edges
+    # the box is gone: only the INTERNAL dividers remain (5 columns -> 4)
+    assert header_row.count("│") == len(phases) - 1
     assert all(len(l) == 140 for l in out)                 # still width-exact
 
 
@@ -1541,8 +1542,8 @@ def test_the_today_rule_spans_every_row(tmp_path):
     b = _gantt_board(tmp_path)
     from taskboard.views import RULE, gantt_geometry
     geo = gantt_geometry(94, 30)
-    col = 1 + geo.label_w + geo.today_dc // 2
-    body = [l for l in _gantt_rows(b) if l.startswith("│▎ ") or l.startswith("│▏ ")]
+    col = geo.label_w + geo.today_dc // 2
+    body = [l for l in _gantt_rows(b) if l.startswith("▎ ") or l.startswith("▏ ")]
     assert len(body) >= 4
     for line in body:
         assert line[col] == RULE or 0x2800 <= ord(line[col]) <= 0x28FF, line[col]
@@ -1580,7 +1581,7 @@ def test_a_reach_carries_identity_and_the_meter_carries_urgency(tmp_path):
     for style in reach_styles:
         assert HEX["over"] not in style and HEX["soon"] not in style
     overdue_row = next(l for l in str(text).split("\n") if "overduetask" in l)
-    assert "▲" in overdue_row[-1 - METER_W:-1]
+    assert "▲" in overdue_row[-METER_W:]
 
 
 def test_gantt_header_counts_past_due(tmp_path):

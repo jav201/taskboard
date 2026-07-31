@@ -117,8 +117,11 @@ def test_every_category_is_actually_populated(tmp_path):
     """Anti-vacuity: a classifier that put everything in one bucket would make
     every floor below meaningless."""
     cen = census(render(tmp_path, "typical"))
-    for key in ("ink", "chrome", "field", "dead"):
+    # chrome is deliberately ZERO now — the box is gone and this design commits
+    # with rules — so the classifier is proved by the three that remain
+    for key in ("ink", "field", "dead"):
         assert cen[key] > 0, f"{key} never occurs — the census is not classifying"
+    assert cen["chrome"] == 0.0, "the frame is back"
 
 
 # --------------------------------------------------------------------------- #
@@ -126,10 +129,13 @@ def test_every_category_is_actually_populated(tmp_path):
 # --------------------------------------------------------------------------- #
 # (marked floor, dead ceiling) — measured 2026-07-30, margin ~5 points each way
 # Re-measured after the due meter freed 6 cells per row into the field (REV5 #18).
+# Re-measured after the FRAME came off (chrome 7.6 % -> 0.0 %). The reclaimed
+# cells sit on the perimeter, so most became blank; the row the bottom border
+# freed was spent on content, which is where the +2.5 points of marked came from.
 FLOORS = {
-    "calm":    (29.0, 63.0),      # measured: marked 34.5, dead 57.9 (was 31.8/60.6)
-    "typical": (43.0, 49.0),      # measured: marked 48.7, dead 43.7 (was 45.4/47.0)
-    "extreme": (42.0, 50.0),      # measured: marked 47.4, dead 45.0 (was 44.7/47.8)
+    "calm":    (29.0, 70.0),      # measured: marked 34.5, dead 65.5
+    "typical": (46.0, 54.0),      # measured: marked 51.2, dead 48.8
+    "extreme": (45.0, 55.0),      # measured: marked 49.9, dead 50.1
 }
 
 
@@ -142,14 +148,13 @@ def test_the_view_holds_its_occupancy_floors(tmp_path):
             f"{load}: {cen['dead']:.1f} % dead, ceiling {dead_ceiling}"
 
 
-def test_the_frame_is_the_only_chrome_and_it_stays_small(tmp_path):
-    """The proposal's target was 0 % chrome, which is unreachable while the box
-    survives — no increment was ever allocated to removing it. What IS committed
-    is that chrome never grows back: it was 12.5-14.2 % and is now ~7.6 %."""
+def test_the_chrome_is_gone(tmp_path):
+    """The proposal's target WAS 0 % chrome and it is now met. It was 12.5-14.2 %
+    in the view this replaced, 7.6 % once the dividers went, and 0.0 % once the
+    box did."""
     for load in LOADS:
         cen = census(render(tmp_path, load))
-        assert cen["chrome"] <= 10.0, f"{load}: chrome {cen['chrome']:.1f} %"
-        assert cen["chrome"] < min(BASELINE[load][1] for load in BASELINE)
+        assert cen["chrome"] == 0.0, f"{load}: chrome {cen['chrome']:.1f} %"
 
 
 def test_no_row_of_the_working_view_says_nothing(tmp_path):
