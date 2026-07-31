@@ -318,3 +318,24 @@ batch (`2026-07-31-batch-02`) is in flight under `/fast-dev-flow`. 345 tests gre
 - Untracked in the working tree, pre-existing and NOT part of this batch:
   `_tui_prism_proposal/` (a concurrent design agent owns it), `.claude/`, `.s19tool/`.
   Decide what to commit / ignore.
+
+## From increment 22b — the REV6 spend ladder
+
+- **A mutation battery can poison `__pycache__`.** M6 mutated `range(0, 4)` to
+  `range(0, 1)` — the SAME number of bytes — and the restore landed inside the
+  same second. Python keys a `.pyc` on (source mtime, source size), so both
+  matched and the cache survived: the next full-suite run executed the MUTANT
+  from a byte-identical working tree, 13 tests failing with no diff to explain
+  them. The hash-verified restore is not sufficient on its own; the batteries
+  must run with `PYTHONDONTWRITEBYTECODE=1`. Batteries live in `%TEMP%` and are
+  rewritten per increment, so this is a habit to keep, not a file to fix.
+- **A clause is not a signature.** `test_the_absence_line_yields_when_rows_were_shed`
+  asserted `"nothing late" not in out`, but the shed fixture HAS late work, so
+  the line reads "12 late" and the assertion held whether or not the line was
+  drawn. Fixed to match the line's own shape. When asserting a thing is ABSENT,
+  assert on text the thing always emits — not on the branch the fixture avoids.
+- **`calm` misses REV6's dead-space number: 55.1 % here vs 50.9 % reported.**
+  Typical (19.2 % vs 25 % ceiling) and extreme (ink-monotone) both hold, so the
+  increment is accepted, but a nearly-empty board still spends more of the
+  screen on blank than the design says it should. The third rung buys one row;
+  the calm case has more than one row to spend.

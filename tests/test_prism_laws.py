@@ -64,13 +64,7 @@ MANIFEST = {
     "law_keybar": ("test_keymap.py", "test_every_seat_entry_reaches_the_widest_bar"),
     "law_legend": ("test_legend.py", "test_no_entry_describes_a_mark_the_view_is_not_drawing"),
     "law_clip": ("test_field.py", "test_a_date_outside_the_window_is_flagged_and_never_silently_clamped"),
-    "law_spend": ("QUEUED", "REV6's spend ladder — the allocator prohibition, the "
-                            "lattice behind title rows, and the absence line. It "
-                            "appeared upstream while the report batch was in flight "
-                            "and is approved as increment 22b, to run after batch-02 "
-                            "closes. Recorded here rather than skipped: this manifest "
-                            "exists so a law added upstream surfaces as a named gap, "
-                            "which is exactly what it did."),
+    "law_spend": ("test_spend.py", "test_the_field_never_grows_while_a_task_is_unnamed"),
 }
 
 

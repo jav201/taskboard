@@ -552,7 +552,15 @@ def allocate(geo: FieldGeo, opens: list[int], n_rest: int,
     ceil = 10 if geo.large else 6
     best, best_score = (0, floor, 1), (-1, -1, -1)
     for titles in range(0, 4):
+        unnamed = sum(max(0, o - titles) for o in opens)
         for wrows in (1, 2):
+            # THE PROHIBITION. The field may NOT grow while a task is still
+            # unnamed: a task the reader cannot see is the most expensive
+            # absence on the screen, and buying resolution first is decoration
+            # paid for with information they never get to read. Name, then
+            # resolve, then say what is not there — in that order and no other.
+            if wrows > 1 and unnamed > 0:
+                continue
             for prof in range(floor, ceil + 1):
                 need = prof + sum(wrows + min(titles, o) for o in opens) + n_rest
                 if need <= room and (need, titles, prof) > best_score:
@@ -804,18 +812,49 @@ def _pad(markup: str, width: int) -> str:
 Row = tuple[str, "str | None"]      # (markup, the task this row names)
 
 
+def lattice_tail(geo: FieldGeo, from_col: int, to_col: int, phase: int = 0) -> str:
+    """The field's own lattice, drawn behind a row that is mostly text.
+
+    NAMING WAS COSTING EMPTINESS: a title row was nearly blank while a field row
+    is lattice, so trading field rows for title rows RAISED dead space — the
+    ladder was right and the result was worse. The cure is that a named row
+    carries the field too, on the same geometry.
+
+    It also buys something nobody asked for: the today boundary becomes ONE
+    CONTINUOUS VERTICAL LINE down the whole panel instead of appearing only on
+    the rows that draw a wave."""
+    out = []
+    rule_col = geo.label_w + geo.today_dc // 2
+    for col in range(max(geo.label_w, from_col), max(geo.label_w, to_col)):
+        i = col - geo.label_w
+        if col == rule_col:
+            out.append(c(RULE_PHASES[phase % len(RULE_PHASES)], "accent"))
+        else:
+            past = (2 * i + 1) < geo.today_dc
+            out.append(c(LATTICE, "ash" if past else "dim"))
+    return "".join(out)
+
+
 def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
-               inner: int, selected: bool) -> Row:
+               inner: int, selected: bool, geo: FieldGeo) -> Row:
+    """A named task: spine, its phase glyph, its title — and the FIELD behind
+    the tail, which is what keeps naming from costing emptiness."""
     due = parse_iso(task.due_date)
     days = (due - today).days if due else None
     cells = due_meter(days, done=board.is_done(task))
     title_w = max(0, inner - 5 - len(cells) - 1)
-    body = escape(fit(clip(task.title, title_w), title_w))
+    shown = clip(task.title, title_w)
+    body = escape(shown)
     if selected:
         body = f"[reverse]{body}[/reverse]"
+    tail_from = 5 + len(shown)
+    tail_to = max(tail_from, inner - len(cells) - 1)
+    gap = " " * max(0, min(geo.label_w, tail_to) - tail_from)
     return ((c("▎", lane.hue) + "  "
              + c(phase_glyph({min(3, board.phase_index(task))}), lane.hue) + " "
-             + c(body, "mut") + " " + meter_markup(cells)), task.id)
+             + c(body, "mut") + gap
+             + lattice_tail(geo, tail_from, tail_to) + " "
+             + meter_markup(cells)), task.id)
 
 
 def stack_block(lane: LaneFacts, geo: FieldGeo, board: Board, today: date,
@@ -831,7 +870,8 @@ def stack_block(lane: LaneFacts, geo: FieldGeo, board: Board, today: date,
     for extra in field[1:]:
         rows.append((c("▎", lane.hue) + " " * (geo.label_w - 1) + extra, None))
     for t in lane_titles(lane, titles):
-        rows.append(_title_row(t, board, lane, today, inner, t.id == selected_id))
+        rows.append(_title_row(t, board, lane, today, inner,
+                               t.id == selected_id, geo))
     return rows
 
 
@@ -901,8 +941,14 @@ def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
         rights.pop(0)
     rw = _rights_w(rights)
     name_w = max(0, inner - 3 - rw)
-    body = fit(clip(lane.name.upper(), name_w), name_w)
-    head = (c("▌ ", lane.hue) + c(escape(body), lane.hue, bold=True) + " "
+    shown = clip(lane.name.upper(), name_w)
+    # the hero's own row carries the field too, so the today line runs the FULL
+    # height of the panel rather than stopping just below the top
+    head_w = 2 + len(shown)
+    tail_to = max(head_w, inner - rw - 1)
+    gap = " " * max(0, min(geo.label_w, tail_to) - head_w)
+    head = (c("▌ ", lane.hue) + c(escape(shown), lane.hue, bold=True) + gap
+            + lattice_tail(geo, head_w, tail_to) + " "
             + "  ".join(c(t, k) for t, k in rights))
     rows: list[Row] = [(head, None)]
 
@@ -917,15 +963,23 @@ def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
             body = _put_cell(row, edge_cell, c("◆", lane.hue))
         rows.append((" " * geo.label_w + body, None))
 
+    # the lead's tail NAMES a task, so it carries the field behind it too —
+    # otherwise it is the one row that breaks the today line
     if lane.late:
         worst = sorted(lane.late, key=lambda t: parse_iso(t.due_date))[0]
         d = (today - parse_iso(worst.due_date)).days
-        tok = f"▲{d}d"
-        w_title = max(0, inner - len(tok) - 3)
-        rows.append(("  " + c(escape(fit(clip(worst.title, w_title), w_title)), "mut")
-                     + " " + c(tok, "over"), worst.id))
+        tok, tid = f"▲{d}d", worst.id
+        label = escape(clip(worst.title, max(0, inner - len(tok) - 4)))
+        shown, tone = label, "mut"
     else:
-        rows.append(("  " + c("nothing late", "dim"), None))
+        tok, tid = "", None
+        shown, tone = escape("nothing late"), "dim"
+    head_w = 2 + len(_strip(shown))
+    tail_to = max(head_w, inner - len(tok) - 1)
+    gap = " " * max(0, min(geo.label_w, tail_to) - head_w)
+    rows.append(("  " + c(shown, tone) + gap
+                 + lattice_tail(geo, head_w, tail_to) + " "
+                 + (c(tok, "over") if tok else ""), tid))
     return rows
 
 
@@ -936,6 +990,29 @@ def _put_cell(row_markup: str, index: int, replacement: str) -> str:
     if 0 <= index < len(parts) - 1:
         parts[index] = replacement.rsplit("[/]", 1)[0]
     return "[/]".join(parts)
+
+
+def absence_line(lanes: list[LaneFacts], today: date, inner: int) -> str:
+    """STEP 3 OF THE SPEND LADDER: when naming is exhausted and resolution is
+    bought, the cells left say WHAT IS NOT THERE.
+
+    A calm board is not an empty screen — it is a board with little to report,
+    and the difference has to be stated. Every clause is a fact about the world
+    (`nothing late`), never about the reader and never a compliment."""
+    n_p = len(lanes)
+    open_n = sum(len(ln.open) for ln in lanes)
+    late = sum(len(ln.late) for ln in lanes)
+    week = sum(1 for ln in lanes for t in ln.open
+               if (d := parse_iso(t.due_date)) and 0 <= (d - today).days <= 7)
+    parts = [f"{n_p} project{'s' if n_p != 1 else ''}",
+             f"{open_n} open" if open_n else "nothing open",
+             f"{late} late" if late else "nothing late",
+             f"{week} due this week" if week else "nothing due this week"]
+    body = " · ".join(parts)
+    if len(body) + 4 > inner:
+        return ""
+    pad = (inner - len(body) - 4) // 2
+    return (" " * pad + c("· ", "frame") + c(body, "mut") + c(" ·", "frame"))
 
 
 def render_swimlanes(board, show_archived, selected_id, today=None,
@@ -988,6 +1065,12 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
         if tid is not None and line_map is not None:
             line_map[tid] = len(lines) - 1
 
+    # the ladder's third step, and only when the first two are exhausted:
+    # nothing was shed, and there are cells the body did not want
+    if not shed and h - len(lines) - 2 >= 1:
+        absence = absence_line(lanes, today, inner)
+        if absence:
+            lines.append(line(_pad(absence, inner)))
     scale = (_scale_with_note(geo, inner, f"+{shed} not shown") if shed
              else _scale_row(geo, inner))
     lines.append(line(_pad(scale, inner)))
@@ -1498,6 +1581,11 @@ def render_gantt(board, show_archived, selected_id, today=None,
         if tid is not None and line_map is not None:
             line_map[tid] = len(lines) - 1
 
+    if not shed and h - len(lines) - 2 >= 1:
+        absence = absence_line([ln for ln in lanes_of(board, show_archived, today)],
+                               today, inner)
+        if absence:
+            lines.append(line(_pad(absence, inner)))
     note = "  ".join(x for x in (
         f"+{shed} not shown" if shed else "",
         f"{archived_done} done archived" if archived_done else "") if x)
