@@ -107,7 +107,7 @@ def test_the_other_views_do_not_breathe(tmp_path):
     """Only the lanes view gained an ambient. Kanban/columns/agenda are still,
     and the gantt keeps the flow packet it already had."""
     b = busy(tmp_path)
-    for mode in ("columns", "agenda", "kanban"):
+    for mode in ("agenda", "kanban"):
         a = str(render_view(mode, b, False, None, TODAY, width=96, height=30, tick=0))
         z = str(render_view(mode, b, False, None, TODAY, width=96, height=30, tick=3))
         assert a == z, f"{mode} changed with the tick"

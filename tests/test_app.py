@@ -45,17 +45,69 @@ async def test_boots_and_seeds(tmp_path):
         assert "TASKBOARD" in board_text(app)
 
 
+def test_the_retired_view_is_gone_from_the_code_entirely():
+    """Columns was retired: kanban is the same phase grid, better drawn, and the
+    audit found columns had no capability of its own. A half-retirement — a
+    renderer nobody can reach, a nav branch nobody calls — is worse than either
+    keeping it or removing it, so this asserts there is no residue."""
+    import pathlib
+    from taskboard import views
+    from taskboard.keymap import KEYMAP, VIEWS
+    assert "columns" not in VIEWS
+    assert "columns" not in views.RENDERERS
+    for name in ("render_columns", "_column_card", "heat_cell"):
+        assert not hasattr(views, name), f"{name} survived the retirement"
+    assert not any("columns" in k.action for k in KEYMAP)
+    src = pathlib.Path(views.__file__).read_text(encoding="utf-8")
+    assert "columns" not in src.lower().replace("dot_columns", "").replace(
+        "dot columns", "").replace("column", "")
+
+
+async def test_two_now_opens_agenda(tmp_path):
+    """The renumbering, stated as a fact a test can hold: 1-4, no gap."""
+    from taskboard.app import VIEW_KEYS, VIEW_ORDER
+    assert VIEW_ORDER == ["swimlanes", "agenda", "gantt", "kanban"]
+    assert VIEW_KEYS == {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban"}
+    app = make_app(tmp_path)
+    async with app.run_test() as pilot:
+        await pilot.press("2")
+        assert app.view_mode == "agenda"
+        assert "AGENDA" in board_text(app)
+
+
+async def test_the_renumbering_is_announced_exactly_once(tmp_path):
+    """Moving `2` in silence is the same sin as hiding a key — so it is said.
+    And said ONCE: a notice that returns every launch becomes noise the user
+    learns to dismiss without reading."""
+    from taskboard.app import RENUMBER_NOTICE_KEY, TaskboardApp
+    board_path = str(tmp_path / "board.json")
+    seen = []
+    app = TaskboardApp(board_path=board_path)
+    app.notify = lambda *a, **k: seen.append(k.get("title", ""))
+    async with app.run_test() as pilot:
+        await pilot.pause()
+    assert [t for t in seen if "renumber" in t.lower()], "the renumbering was silent"
+    assert Board.load(board_path).settings.get(RENUMBER_NOTICE_KEY) is True
+
+    again = TaskboardApp(board_path=board_path)     # a second launch, same board
+    seen2 = []
+    again.notify = lambda *a, **k: seen2.append(k.get("title", ""))
+    async with again.run_test() as pilot:
+        await pilot.pause()
+    assert not [t for t in seen2 if "renumber" in t.lower()], "it said it twice"
+
+
 async def test_all_four_views_switch(tmp_path):
     app = make_app(tmp_path)
     async with app.run_test() as pilot:
         await pilot.press("1")
         assert "TASKBOARD" in board_text(app)   # swimlanes
         await pilot.press("2")
-        assert "COLUMNS" in board_text(app)      # columns
-        await pilot.press("3")
         assert "AGENDA" in board_text(app)       # agenda
-        await pilot.press("4")
+        await pilot.press("3")
         assert "GANTT" in board_text(app)        # gantt
+        await pilot.press("4")
+        assert "KANBAN" in board_text(app)       # kanban
 
 
 async def test_add_task_modal_appears(tmp_path):
@@ -375,39 +427,13 @@ async def test_tiny_size_does_not_crash(tmp_path):
         assert board.content_size.width > 0  # rendered something, no exception
 
 
-async def test_columns_nav_follows_displayed_order_not_board_order(tmp_path):
-    from taskboard.views import nav_model
-    app = make_app(tmp_path)
-    async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.pause()
-        await pilot.press("2")   # columns
-        cols = nav_model("columns", app.board, False)
-        backlog = cols[0]
-        board_order = [t.id for t in app.board.visible_tasks(False)]
-        # the displayed column order differs from flat board order (the old bug)
-        assert backlog != board_order[:len(backlog)]
-
-        app.selected_task_id = backlog[0]
-        app.refresh_view()
-        visited = [app.selected_task_id]
-        for _ in range(len(backlog) - 1):
-            await pilot.press("down")
-            visited.append(app.selected_task_id)
-        # Down visits the BACKLOG column in its displayed order, exactly
-        assert visited == backlog
-        assert all(app.board.task_by_id(t).phase == app.board.phases[0] for t in visited)
-        # and render places them strictly top-to-bottom in that same order
-        idxs = [app._line_map[t] for t in backlog if t in app._line_map]
-        assert idxs == sorted(idxs)
-
-
 async def test_right_moves_to_next_column_first_task(tmp_path):
     from taskboard.views import nav_model
     app = make_app(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.pause()
-        await pilot.press("2")
-        cols = nav_model("columns", app.board, False)
+        await pilot.press("4")
+        cols = nav_model("kanban", app.board, False)
         app.selected_task_id = cols[0][0]
         app.refresh_view()
         await pilot.press("right")
@@ -422,8 +448,8 @@ async def test_up_at_top_of_column_is_noop(tmp_path):
     app = make_app(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.pause()
-        await pilot.press("2")
-        cols = nav_model("columns", app.board, False)
+        await pilot.press("4")
+        cols = nav_model("kanban", app.board, False)
         app.selected_task_id = cols[0][0]
         app.refresh_view()
         await pilot.press("up")                 # already at top
@@ -447,7 +473,7 @@ async def test_agenda_nav_follows_urgency_order(tmp_path):
     app = make_app(tmp_path)
     async with app.run_test(size=(100, 40)) as pilot:
         await pilot.pause()
-        await pilot.press("3")   # agenda
+        await pilot.press("2")   # agenda
         order = nav_model("agenda", app.board, False)[0]
         board_order = [t.id for t in app.board.visible_tasks(False)]
         assert order != board_order              # grouped by urgency, not board order
@@ -468,7 +494,7 @@ async def test_nav_scrolls_selection_into_view_when_overflowing(tmp_path):
     app = make_app(tmp_path)
     async with app.run_test(size=(100, 18)) as pilot:
         await pilot.pause()
-        await pilot.press("3")   # agenda (linear, taller than 18 rows)
+        await pilot.press("2")   # agenda (linear, taller than 18 rows)
         order = nav_model("agenda", app.board, False)[0]
         app.selected_task_id = order[0]
         app.refresh_view()
@@ -483,152 +509,12 @@ async def test_nav_scrolls_selection_into_view_when_overflowing(tmp_path):
         assert top <= idx < top + vp.size.height     # scrolled into view
 
 
-def test_columns_due_token_never_overlaps_title(tmp_path):
-    """One-line redesign: the trailing relative-due token and the title text
-    occupy DISJOINT ranges of the column at every width (the token is flush-right
-    and the title truncates with … to reserve room), and every line == the exact
-    width. (Was test_columns_card_indicators_never_overlap_title — same intent,
-    the ↗/◉ indicators are replaced by the right-aligned due token.)"""
-    from taskboard.models import Board, Project, Task
-    from taskboard.views import render_columns, distribute
-    b = Board.load(str(tmp_path / "b.json"))
-    lp = Project("Platform Reliability and Observability", "rose", "on_track")
-    b.projects.append(lp)
-    # +20d from 2026-07-17 -> a unique "+20d" token identifies this task's row
-    b.add_task(Task("Refactor the whole authentication and onboarding subsystem",
-                    lp.id, "Backlog", "normal", due_date="2026-08-06"))
-    today = date(2026, 7, 17)
-    n = len(b.phases)
-    token = "+20d"
-    seen_token = seen_truncation = False
-    for w in (130, 96, 40, 30, 24):     # wide, WezTerm default, narrow, tiny, MIN
-        lines = str(render_columns(b, False, None, today, width=w, height=0)).split("\n")
-        assert all(len(l) == w for l in lines), f"width {w}: a line != {w}"
-        wc0 = distribute((w - 2) - (n - 1), n)[0]   # first phase column width
-        for l in lines:
-            cell = l[1:1 + wc0]                     # chars inside the first column
-            if not cell.endswith(token):            # only our task's row carries +20d
-                continue
-            seen_token = True
-            body = cell[:-len(token)]               # everything LEFT of the token
-            assert token not in body                # the token lives once, at the right
-            title_part = body[3:]                   # after the heat + chip + space
-            assert "▊" not in title_part            # the chip never bleeds into the title
-            if "…" in title_part:
-                seen_truncation = True
-    assert seen_token        # the token rendered at the wider widths
-    assert seen_truncation   # and the long title was truncated to reserve its room
-    # the render sorted a COPY: board.tasks order is untouched
-    assert b.tasks[-1].title.startswith("Refactor")
-
-
-# --- Fable-5 columns redesign: one-line heat-sorted cards ------------------- #
 def _columns_body(board, today, width=100):
     """The task-bearing body rows of the columns view (between the ├─┤ divider
     and the ╰──╯ bottom): index 3 .. -1 of the rendered lines."""
-    from taskboard.views import render_columns
-    rows = str(render_columns(board, False, None, today, width=width, height=0)).split("\n")
+    from taskboard.views import render_kanban
+    rows = str(render_kanban(board, False, None, today, width=width, height=0)).split("\n")
     return rows, rows[3:-1]
-
-
-def test_columns_cards_are_one_line(tmp_path):
-    """A column with N tasks yields N single-line cards, not 2N: the redesign
-    collapses the old title+meta pair into one row per task (2x density)."""
-    from taskboard.models import Board, Task
-    b = Board([], [], tmp_path / "b.json")            # default phases; empty
-    for i in range(3):
-        b.tasks.append(Task(f"CARD{i}", None, "Backlog", "normal",
-                            due_date=f"2026-07-2{i}"))
-    _, body = _columns_body(b, date(2026, 7, 17))
-    assert len(body) == 3                             # 3 tasks -> 3 rows (not 6)
-    for i in range(3):
-        assert sum(1 for l in body if f"CARD{i}" in l) == 1   # each on its own line
-
-
-def test_columns_heat_glyph_by_urgency(tmp_path):
-    """Each urgency renders its expected heat glyph (with the mapped colour key)
-    as the FIRST cell of the card. The glyph+colour mapping lives in the module
-    HEAT dict; the render places the right glyph at the head of each row."""
-    from taskboard.models import Board, Task
-    from taskboard.views import HEAT, urgency
-    # (a) the mapping itself: urgency -> (glyph, palette-key)
-    assert HEAT == {
-        "overdue": ("█", "over"), "today": ("▓", "soon"), "week": ("▒", "accent"),
-        "later": ("░", "dim"), "none": ("·", "dim"), "done": ("✓", "done")}
-
-    b = Board([], [], tmp_path / "b.json")            # phases Backlog/Doing/Done
-    today = date(2026, 7, 17)
-    b.tasks += [
-        Task("OVER", None, "Backlog", "normal", due_date="2026-07-10"),   # -7  overdue
-        Task("TODAY", None, "Backlog", "normal", due_date="2026-07-17"),  # 0   today
-        Task("WEEK", None, "Backlog", "normal", due_date="2026-07-20"),   # +3  week
-        Task("LATER", None, "Backlog", "normal", due_date="2026-08-06"),  # +20 later
-        Task("NONE", None, "Backlog", "normal"),                          #     no date
-        Task("DONE", None, "Done", "normal"),                             #     last phase
-    ]
-    # urgency really buckets them as intended (guards the mapping's premise)
-    got = {t.title: urgency(t, today, b) for t in b.tasks}
-    assert got == {"OVER": "overdue", "TODAY": "today", "WEEK": "week",
-                   "LATER": "later", "NONE": "none", "DONE": "done"}
-
-    rows, body = _columns_body(b, today, width=100)   # widths -> [32,32,32]
-    # Backlog is column 0 (heat at index 1); Done is column 2 (heat at index 67).
-    # Backlog rows are sorted by due: OVER, TODAY, WEEK, LATER, NONE.
-    assert body[0][1] == "█" and body[0][67] == "✓"   # overdue + the done card
-    assert body[1][1] == "▓"                          # today
-    assert body[2][1] == "▒"                          # this week
-    assert body[3][1] == "░"                          # later
-    assert body[4][1] == "·"                          # no date
-
-
-def test_columns_cards_sorted_by_due(tmp_path):
-    """Inside a column a sooner-due task sits above a later one, and an undated
-    task sinks below both — regardless of board insertion order."""
-    from taskboard.models import Board, Task
-    b = Board([], [], tmp_path / "b.json")
-    b.tasks += [
-        Task("LATER", None, "Backlog", "normal", due_date="2026-08-01"),
-        Task("SOONER", None, "Backlog", "normal", due_date="2026-07-20"),
-        Task("UNDATED", None, "Backlog", "normal"),
-    ]
-    rows, _ = _columns_body(b, date(2026, 7, 17))
-
-    def row_of(title):
-        return next(i for i, l in enumerate(rows) if title in l)
-
-    assert row_of("SOONER") < row_of("LATER") < row_of("UNDATED")
-    # board.tasks itself was NOT reordered (the view sorts a copy)
-    assert [t.title for t in b.tasks] == ["LATER", "SOONER", "UNDATED"]
-
-
-def test_columns_header_shows_late_count(tmp_path):
-    """A column header leads with `N late` in overdue-red when it holds overdue
-    tasks, and omits the figure entirely when it holds none."""
-    from taskboard.models import Board, Task
-    b = Board([], [], tmp_path / "b.json")
-    b.tasks += [
-        Task("O1", None, "Doing", "normal", due_date="2026-07-01"),   # overdue
-        Task("O2", None, "Doing", "normal", due_date="2026-07-05"),   # overdue
-        Task("B1", None, "Backlog", "normal", due_date="2026-08-01"),  # not overdue
-    ]
-    rows, _ = _columns_body(b, date(2026, 7, 17), width=120)
-    header = rows[1]
-    assert "2 late" in header            # the Doing column shows its overdue count
-    assert header.count("late") == 1     # Backlog (0 overdue) omits the figure
-
-
-def test_columns_width_exact_across_widths(tmp_path):
-    """Every rendered line is exactly `width` cells wide at 40/68/100/140 — the
-    heat cell, chip, title and due token must always split the column exactly."""
-    from taskboard.models import Board
-    b = Board.load(str(tmp_path / "b.json"))          # seeded: varied urgencies
-    today = date(2026, 7, 17)
-    for w in (40, 68, 100, 140):
-        from taskboard.views import render_columns
-        lines = str(render_columns(b, False, None, today, width=w, height=0)).split("\n")
-        assert lines, f"width {w}: no output"
-        assert len({len(l) for l in lines}) == 1, f"width {w}: ragged lines"
-        assert all(len(l) == w for l in lines), f"width {w}: a line != {w}"
 
 
 async def test_url_task_open_action(tmp_path, monkeypatch):
@@ -835,7 +721,7 @@ async def test_at_003_images_black_box(tmp_path, monkeypatch):
         # (kanban, not columns: the one-line columns redesign drops card_cell's
         # ▤/↗/◉ indicators; kanban still renders them through the same helper.)
         app.selected_task_id = task.id
-        await pilot.press("5")
+        await pilot.press("4")
         text = board_text(app)
         assert "▤" in text
         # every rendered line is the same width -> the glyph is single-cell
@@ -1342,7 +1228,7 @@ def test_project_progress_is_mean_of_tasks(tmp_path):
 def test_blocked_task_stays_in_its_phase(tmp_path):
     """WHY: blocked is a FLAG, not a phase — a blocked task keeps its place in the
     workflow (and its marker) instead of being parked in a column of its own."""
-    from taskboard.views import phase_buckets, render_columns
+    from taskboard.views import phase_buckets, render_kanban
     b = Board.load(str(tmp_path / "b.json"))            # seeded, default phases
     stuck = Task("STUCK", None, "Doing", "normal", blocked=True)
     b.add_task(stuck)
@@ -1352,7 +1238,7 @@ def test_blocked_task_stays_in_its_phase(tmp_path):
     assert stuck.id in [t.id for t in buckets[doing]]
     assert all(stuck.id not in [t.id for t in bucket]
                for i, bucket in enumerate(buckets) if i != doing)
-    out = str(render_columns(b, False, None, date(2026, 7, 17), width=120))
+    out = str(render_kanban(b, False, None, date(2026, 7, 17), width=120))
     assert "DOING" in out
     assert "BLOCKED" not in out              # no blocked column exists any more
     assert "▲" in out                        # the blocked marker still shows
@@ -1380,7 +1266,7 @@ async def test_modal_sets_phase_and_blocked_and_persists(tmp_path):
 def test_custom_phases_drive_the_columns(tmp_path):
     """WHY: the columns view must be generated FROM the board's phases — five
     custom phases means five column headers, and the list persists to disk."""
-    from taskboard.views import render_columns
+    from taskboard.views import render_kanban
     phases = ["Intake", "Design", "Build", "Review", "Shipped"]
     path = tmp_path / "custom.json"
     b = Board([], [], path, phases=phases)
@@ -1388,7 +1274,7 @@ def test_custom_phases_drive_the_columns(tmp_path):
     b.save()
     assert Board.load(str(path)).phases == phases          # round-trips
 
-    out = str(render_columns(b, False, None, date(2026, 7, 17), width=140)).split("\n")
+    out = str(render_kanban(b, False, None, date(2026, 7, 17), width=140)).split("\n")
     header_row = out[1]                                    # row under the frame title
     for p in phases:
         assert p.upper() in header_row
@@ -1527,7 +1413,7 @@ def test_kanban_matrix_shows_progress_percent(tmp_path):
 async def test_tab_toggles_kanban_presentation(tmp_path):
     app = make_app(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.press("5")
+        await pilot.press("4")
         assert "grouped" in board_text(app)
         assert "prog" not in board_text(app)
         await pilot.press("tab")

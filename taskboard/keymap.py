@@ -26,7 +26,7 @@ from textual.widgets import Static
 
 from .views import HEX
 
-VIEWS = ("swimlanes", "columns", "agenda", "gantt", "kanban")
+VIEWS = ("swimlanes", "agenda", "gantt", "kanban")
 
 
 class Key(NamedTuple):
@@ -42,10 +42,9 @@ class Key(NamedTuple):
 # THE SEAT. Nothing else in the app may declare a key.
 KEYMAP: tuple[Key, ...] = (
     Key("1", "1", "view('swimlanes')", "Lanes"),
-    Key("2", "2", "view('columns')", "Cols"),
-    Key("3", "3", "view('agenda')", "Agenda"),
-    Key("4", "4", "view('gantt')", "Gantt"),
-    Key("5", "5", "view('kanban')", "Kanban"),
+    Key("2", "2", "view('agenda')", "Agenda"),
+    Key("3", "3", "view('gantt')", "Gantt"),
+    Key("4", "4", "view('kanban')", "Kanban"),
     Key("enter", "↵", "details", "Details"),
     Key("a", "a", "add_task", "Add"),
     Key("e", "e", "edit", "Edit"),
