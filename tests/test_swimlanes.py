@@ -57,23 +57,23 @@ def typical(tmp_path):
 def lane_rows(out: list[str]) -> list[str]:
     """The stacked PROJECT rows — a named lane, not one of the task rows under
     it (those carry the same spine but two spaces before their phase glyph)."""
-    return [line for line in out if line.startswith("│▎ ") and line[3] != " "]
+    return [line for line in out if line.startswith("▎ ") and line[2] != " "]
 
 
 def resting_rows(out: list[str]) -> list[str]:
     """Lanes with nothing open: the thin spine."""
-    return [line for line in out if line.startswith("│▏ ")]
+    return [line for line in out if line.startswith("▏ ")]
 
 
 def lead_head(out: list[str]) -> str:
     """The leader's band opens with the heavy spine and a shouted name."""
-    return next(line for line in out if line.startswith("│▌ "))
+    return next(line for line in out if line.startswith("▌ "))
 
 
 def project_blocks(out: list[str]) -> int:
     """Every project on screen, in whichever of its three forms it took."""
     return (len(lane_rows(out)) + len(resting_rows(out))
-            + sum(1 for line in out if line.startswith("│▌ ")))
+            + sum(1 for line in out if line.startswith("▌ ")))
 
 
 def rows_of(b, w=96, h=30, selected=None, line_map=None):
@@ -104,7 +104,7 @@ def test_the_figures_are_flush_right_on_every_lane_row(tmp_path):
     b = typical(tmp_path)
     for w in (40, 72, 96, 130):
         for line in lane_rows(rows_of(b, w, 30)):
-            body = line[1:-1]                       # drop the frame borders
+            body = line                       # drop the frame borders
             assert body == body.rstrip(), f"width {w}: figures not flush right"
 
 
@@ -128,8 +128,8 @@ def test_today_sits_in_the_same_column_on_every_lane(tmp_path):
     """The whole point of a SHARED axis: a day is a column, so two projects'
     marks are comparable by eye. If each row scaled itself, they would not be."""
     b = typical(tmp_path)
-    geo = lane_geometry(94, 30)
-    col = 1 + geo.label_w + geo.today_dc // 2          # +1 for the frame border
+    geo = lane_geometry(96, 30)
+    col = geo.label_w + geo.today_dc // 2          # +1 for the frame border
     out = rows_of(b, 96, 30)
     fielded = [line for line in out
                if len(line) > col and (line[col] == RULE
@@ -168,8 +168,8 @@ def test_a_stacked_row_ends_in_its_due_meter(tmp_path):
     b = typical(tmp_path)
     lane = next(line for line in lane_rows(rows_of(b)) if "Beacon" in line)
     assert "0/1" not in lane and "+40d" not in lane
-    assert lane[-7:-1].strip()                 # the six cells are drawn
-    assert set(lane[-7:-1]) <= set("⣿⡇·▲⣤ ")
+    assert lane[-6:].strip()                 # the six cells are drawn
+    assert set(lane[-6:]) <= set("⣿⡇·▲⣤ ")
 
 
 def test_the_leader_is_the_project_under_the_most_pressure(tmp_path):
@@ -207,12 +207,12 @@ def test_the_leader_gets_a_drawn_field_that_ends_at_its_own_due_date(tmp_path):
     # the diamond marks Atlas's OWN date (+20d), so it must sit near today, far
     # from the right edge — a bench that ran to the edge would also show a ◆
     from taskboard.views import lane_geometry, lanes_of, wave_edge
-    geo = lane_geometry(94, 30)
+    geo = lane_geometry(96, 30)
     lane = next(ln for ln in lanes_of(b, False, TODAY) if ln.name == "Atlas")
-    want = 1 + geo.label_w + min(geo.field_w - 1, wave_edge(lane, geo, TODAY) // 2 + 1)
+    want = geo.label_w + min(geo.field_w - 1, wave_edge(lane, geo, TODAY) // 2 + 1)
     row = next(line for line in band if "◆" in line)
     assert row.index("◆") == want
-    assert want < 1 + geo.label_w + geo.field_w - 3      # not pinned to the edge
+    assert want < geo.label_w + geo.field_w - 3         # not pinned to the edge
     # and nothing of the bench is drawn beyond it
     for line in drawn:
         assert not any(0x2800 <= ord(ch) <= 0x28FF and ch != "⠀"
@@ -511,7 +511,7 @@ def test_the_edge_keeps_its_tone_count_whatever_the_board_holds(tmp_path):
                         "on_track", due_date=iso(i * 3 - 10))
             b.projects.append(p)
             b.tasks.append(Task(f"T{i}", p.id, "Doing", "normal", due_date=iso(i - 5)))
-        geo = lane_geometry(94, 30)
+        geo = lane_geometry(96, 30)
         tones = set()
         for lane in lanes_of(b, False, TODAY):
             tones |= set(re.findall(r"#[0-9a-f]{6}", _figures(lane, geo.figs_w)))
@@ -532,7 +532,7 @@ def test_the_lane_row_ends_in_the_meter_at_every_width(tmp_path):
     b = typical(tmp_path)
     for w in (48, 72, 96, 130):
         for line in lane_rows(rows_of(b, w, 30)):
-            assert set(line[-7:-1]) <= set("⣿⡇·▲⣤ "), f"{w}: {line[-8:]!r}"
+            assert set(line[-6:]) <= set("⣿⡇·▲⣤ "), f"{w}: {line[-8:]!r}"
 
 
 def test_the_freed_band_went_to_the_field(tmp_path):

@@ -78,7 +78,7 @@ def test_nothing_but_the_rule_moves_between_phases(tmp_path):
     eye would be pulled to the wrong thing every second."""
     b = busy(tmp_path)
     geo = lane_geometry(94, 30)
-    rule_col = 1 + geo.label_w + geo.today_dc // 2
+    rule_col = geo.label_w + geo.today_dc // 2
     base = frame(b, 0)
     moved_at_least_once = False
     for tick in range(1, len(RULE_PHASES) * 2):

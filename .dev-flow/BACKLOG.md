@@ -125,6 +125,26 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   23.3 % -> 21.0 %.** Chrome 21.2 % -> 7.8 %. (`c17dded`)
 - ~~The gantt's field redesign is not done.~~ **CLOSED** by `c17dded`.
 
+- **DONE** · The frame removed — the closure law is GREEN and chrome is 0.0 % in
+  lanes and gantt. Marked +2.5 points at typical and extreme (the extreme margin
+  over the 45 % floor went 2.4 -> 4.9). (this batch)
+- ~~The closure law stays red.~~ **CLOSED.**
+
+## Open — raised by removing the frame
+
+- **Most of the reclaimed 7.6 % became DEAD, not marked.** The frame was on the
+  perimeter: the content gained two columns (~0.5 points) and the spent bottom
+  row gave +2.5, but the rest is blank space nothing has been designed to use.
+  It is available headroom, measured and unspent.
+- **Box-drawing survives in two places, deliberately**: kanban's phase-column
+  dividers (chrome 4.4 %) and the agenda's "no date" section rule (7.3 %). They
+  are internal structure — they say WHICH column and WHICH group — not an
+  enclosure. Whether the closure law should eventually reach them is a design
+  question, not an oversight.
+- **`calm` is now 65.5 % dead in lanes and 74.8 % in gantt.** Removing the frame
+  raised both, since a quiet board has nothing to put in the reclaimed cells.
+  Same honest weakness the proposal records for calm.
+
 ## Open — raised by the gantt field redesign
 
 - **The closure law stays red** (`test_the_closure_law_is_knowingly_unmet`): all

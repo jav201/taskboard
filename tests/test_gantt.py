@@ -64,10 +64,10 @@ def geo(w):
 def test_every_row_ends_in_the_six_cell_meter(tmp_path):
     b, _p = fixture(tmp_path)
     out = rows(b)
-    body = [l for l in out if l.startswith("│▎ ") or l.startswith("│▏ ")]
+    body = [l for l in out if l.startswith("▎ ") or l.startswith("▏ ")]
     assert len(body) >= 5
     for line in body:
-        edge = line[-1 - METER_W:-1]
+        edge = line[-METER_W:]
         assert set(edge) <= set("⣿⡇·▲⣤ "), f"{line[-10:]!r} is not a meter"
         # an EMPTY edge is not a meter either — the first version of this law
         # allowed spaces, so deleting the meter altogether kept it green
@@ -79,8 +79,8 @@ def test_finished_work_shows_a_spent_meter_and_rests_in_ash(tmp_path):
     spine, ash, no chip and no severity."""
     b, _p = fixture(tmp_path)
     line = next(l for l in rows(b, 96, 30) if "Old finished" in l)
-    assert set(line[-1 - METER_W:-1]) <= {"⣤", " "} and "⣤" in line
-    assert line.startswith("│▏ ")               # the thin spine
+    assert set(line[-METER_W:]) <= {"⣤", " "} and "⣤" in line
+    assert line.startswith("▏ ")               # the thin spine
     assert "▲" not in line
 
 
@@ -88,7 +88,7 @@ def test_the_project_row_keeps_its_progress_figure(tmp_path):
     b, _p = fixture(tmp_path)
     line = next(l for l in rows(b, 130, 30) if "Atlas" in l)
     assert re.search(r"\d+%", line), line
-    assert set(line[-1 - METER_W:-1]) <= set("⣿⡇·▲⣤ ")
+    assert set(line[-METER_W:]) <= set("⣿⡇·▲⣤ ")
 
 
 def test_the_alert_is_the_meters_cap_and_nothing_else(tmp_path):
@@ -252,7 +252,7 @@ def test_the_separator_rows_are_gone_and_chrome_fell(tmp_path):
     on a five-project board — the single biggest reason this view led the app in
     chrome at 21.2 %. Measured now: under 10 %."""
     out = rows(_load(tmp_path, 5, 21, "t3.json"), 96, 30)
-    assert not any(set(l[1:-1]) == {"┈"} for l in out)
+    assert not any(set(l) == {"┈"} for l in out)
     assert _census(out)["chrome"] < 10.0
 
 
