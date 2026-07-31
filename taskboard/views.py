@@ -549,23 +549,52 @@ def allocate(geo: FieldGeo, opens: list[int], n_rest: int,
     taller stack waves — five equal waves would be a tie of near-equals, and the
     lead would stop being the hero."""
     floor = geo.profile_rows
+    # The bench ceiling is the HERO'S DESIGNED SIZE and stays a constant. The
+    # wave cap of 2 was the arbitrary one, and it is why a CALM board exhausted
+    # the ladder with a third of the panel still void: everything was named,
+    # resolution was at its cap, and eleven rows had nothing they were allowed
+    # to buy. Rung two now stops where it runs out of ROOM or of LEAD, not at a
+    # round number someone typed.
     ceil = 10 if geo.large else 6
+    # Rung one's ceiling is INFORMATION, not a constant: naming beyond the
+    # fullest lane buys nothing, and stopping short of it strands the reader.
+    # The old cap of 3 was a hole — a lane with 8 open tasks could name 3, and
+    # the prohibition then froze the field at one row, so the rest went void.
+    most = max(opens, default=0)
     best, best_score = (0, floor, 1), (-1, -1, -1)
-    for titles in range(0, 4):
+    for titles in range(0, most + 1):
         unnamed = sum(max(0, o - titles) for o in opens)
-        for wrows in (1, 2):
+        for prof in range(floor, ceil + 1):
             # THE PROHIBITION. The field may NOT grow while a task is still
             # unnamed: a task the reader cannot see is the most expensive
             # absence on the screen, and buying resolution first is decoration
             # paid for with information they never get to read. Name, then
             # resolve, then say what is not there — in that order and no other.
-            if wrows > 1 and unnamed > 0:
-                continue
-            for prof in range(floor, ceil + 1):
+            #
+            # And THE LEAD STAYS THE HERO: a stack wave may never reach the
+            # lead's own bench. That is what bounds the field once the room
+            # stops bounding it — five equal waves would be a tie of near-equals.
+            top = 1 if unnamed else max(1, prof - 1)
+            for wrows in range(1, top + 1):
                 need = prof + sum(wrows + min(titles, o) for o in opens) + n_rest
                 if need <= room and (need, titles, prof) > best_score:
                     best_score, best = (need, titles, prof), (titles, prof, wrows)
-    return best
+
+    # RUNG FOUR — the hero absorbs what nothing else can use. Rungs one and two
+    # answer to information, so on a CALM board they both saturate with rows to
+    # spare: everything is named and the wave has reached the lead. Those rows
+    # cannot buy anything, and a taller hero is worth more than void — but ONE
+    # row is left unspent, because rung three still has to say what is not there
+    # and rung four must never outbid a rung above it.
+    # It needs no guard against firing while work is unnamed: if anything were
+    # unnamed then some lane has more open work than `titles`, so buying one
+    # more title would RAISE `need` — and the search maximises `need`. Surplus
+    # and unnamed work cannot coexist. The order is enforced by the search, not
+    # by a condition, and a condition that cannot be false is not a safeguard.
+    titles, prof, wrows = best
+    if best_score[0] > 0:
+        prof += max(0, room - best_score[0] - 1)
+    return titles, prof, wrows
 
 
 def lane_titles(lane: LaneFacts, limit: int) -> list[Task]:
@@ -1067,7 +1096,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
 
     # the ladder's third step, and only when the first two are exhausted:
     # nothing was shed, and there are cells the body did not want
-    if not shed and h - len(lines) - 2 >= 1:
+    if not shed and h - len(lines) - 2 >= 0:
         absence = absence_line(lanes, today, inner)
         if absence:
             lines.append(line(_pad(absence, inner)))
@@ -1581,7 +1610,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
         if tid is not None and line_map is not None:
             line_map[tid] = len(lines) - 1
 
-    if not shed and h - len(lines) - 2 >= 1:
+    if not shed and h - len(lines) - 2 >= 0:
         absence = absence_line([ln for ln in lanes_of(board, show_archived, today)],
                                today, inner)
         if absence:
