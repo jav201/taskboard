@@ -37,13 +37,14 @@ Ribbon {
     color: #8b98a5;
     padding: 0 1;
 }
-Footer {
+/* The key bar is generated from taskboard/keymap.py — the same table that
+   generates BINDINGS, so what it shows and what works cannot drift. */
+KeyBar {
     height: 1;
+    width: 1fr;
     background: #0b0f17;
     color: #8b98a5;
-}
-FooterKey .footer-key--key {
-    color: #2dd4bf;
+    padding: 0 1;
 }
 
 /* ---- modals ---- */

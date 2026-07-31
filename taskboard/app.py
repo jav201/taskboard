@@ -8,14 +8,14 @@ from pathlib import Path
 
 from textual import events
 from textual.app import App, ComposeResult
-from textual.binding import Binding
 from textual.containers import Vertical, VerticalScroll
-from textual.widgets import Footer, Static
+from textual.widgets import Static
 
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      default_board_path)
 from .modals import (ClockModal, ConfirmModal, ImageViewer, PhaseEditor, ProjectModal,
                      ProjectPicker, TaskDetails, TaskModal)
+from .keymap import KeyBar, app_bindings
 from .ribbon import Ribbon
 from .views import nav_model, render_view, valid_url
 
@@ -42,36 +42,13 @@ class TaskboardApp(App):
     CSS_PATH = "taskboard.tcss"
     TITLE = "taskboard"
 
-    BINDINGS = [
-        ("1", "view('swimlanes')", "Lanes"),
-        ("2", "view('columns')", "Cols"),
-        ("3", "view('agenda')", "Agenda"),
-        ("4", "view('gantt')", "Gantt"),
-        ("5", "view('kanban')", "Kanban"),
-        # priority=True so tab reaches us instead of the screen's focus_next;
-        # check_action hands it back to modals (see below).
-        Binding("tab", "toggle_presentation", "Layout", priority=True),
-        ("a", "add_task", "Add"),
-        ("p", "add_project", "Project"),
-        ("P", "manage_projects", "Projects"),
-        ("f", "manage_phases", "Phases"),
-        ("enter", "details", "Details"),
-        ("e", "edit", "Edit"),
-        ("d", "delete", "Del"),
-        ("delete", "delete", "Del"),
-        ("x", "archive", "Archive"),
-        ("v", "toggle_archived", "Show arch"),
-        ("o", "open_url", "Open URL"),
-        ("i", "open_images", "Images"),
-        ("c", "clocks", "Clocks"),
-        # priority=True so these beat the focused VerticalScroll's own arrow-key
-        # scrolling when the board overflows (pitfall A6).
-        Binding("down,j", "cursor(1)", "Down", priority=True),
-        Binding("up,k", "cursor(-1)", "Up", priority=True),
-        Binding("left,h", "hmove(-1)", "Left", priority=True),
-        Binding("right,l", "hmove(1)", "Right", priority=True),
-        ("q", "quit", "Quit"),
-    ]
+    # GENERATED, never hand-written: the same KEYMAP that draws the key bar.
+    # A binding that is not in the seat does not exist, and a binding in the seat
+    # is always on screen. (`priority=True` on tab and the arrows comes from the
+    # seat too: tab must reach us instead of the screen's focus_next, and the
+    # arrows must beat the focused VerticalScroll's own scrolling — pitfall A6.
+    # `check_action` hands them all back to modals; see below.)
+    BINDINGS = app_bindings()
 
     def __init__(self, board_path: str | Path | None = None):
         super().__init__()
@@ -94,9 +71,9 @@ class TaskboardApp(App):
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="viewport"):
             yield BoardView(id="board")
-        with Vertical(id="statusbar"):     # ribbon (top row) + footer (bottom row)
+        with Vertical(id="statusbar"):     # ribbon (top row) + key bar (bottom row)
             yield Ribbon(id="ribbon")
-            yield Footer()
+            yield KeyBar(id="keybar")
 
     def on_mount(self) -> None:
         self._sweep_old_done()
@@ -285,7 +262,13 @@ class TaskboardApp(App):
     def action_view(self, mode: str) -> None:
         if mode in VIEW_ORDER:
             self.view_mode = mode
+            self._refresh_keybar()      # the bar states the CURRENT view's keys
             self.refresh_view()
+
+    def _refresh_keybar(self) -> None:
+        bars = self.query("#keybar")
+        if bars:
+            bars.first(KeyBar).refresh_bar(self.view_mode)
 
     def action_toggle_presentation(self) -> None:
         """Tab flips the kanban view's presentation; a no-op elsewhere."""
