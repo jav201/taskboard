@@ -971,6 +971,30 @@ class Board:
                 moved.append(t)
         return moved
 
+    def unstamped_done(self) -> list[Task]:
+        """Finished work the board has NO completion date for — every task that
+        was already done when `phase_changed` shipped.
+
+        The standing 20-day sweep cannot touch these and never will: an undated
+        task is not old, it is undated, and inventing a date would be the
+        fabrication the momentum increment refused. So they need a DELIBERATE
+        one-time decision instead, which is what `archive_unstamped_done` is."""
+        return [t for t in self.tasks
+                if not t.archived and self.is_done(t) and t.phase_changed is None]
+
+    def archive_unstamped_done(self) -> list[Task]:
+        """Archive that work, once, because the user asked — never on a timer.
+
+        STAMPS NOTHING. A task archived this way keeps its empty
+        `phase_changed`, because the board still does not know when it was
+        finished and writing a date now would make that unknowable forever.
+        It lands in the ordinary archive, so `v` shows it and `x` brings it
+        back like anything else."""
+        moved = self.unstamped_done()
+        for t in moved:
+            t.archived = True
+        return moved
+
     def archivable_report(self, today: date | None = None) -> dict:
         """What the sweep would do, and what it CANNOT know — so the rollout can
         be explained instead of just happening."""

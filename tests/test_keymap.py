@@ -156,7 +156,10 @@ def test_at_a_normal_width_nothing_is_dropped_at_all():
 
 
 def test_the_widest_bars_keep_their_words():
-    entries, _ = fit_bar(200, "swimlanes")
+    """Given enough room every key keeps its word. The full bar measures 214
+    cells with 24 keys aboard, so the law is checked above that — it is a claim
+    about the DEGRADATION having an end, not about any particular width."""
+    entries, _ = fit_bar(240, "swimlanes")
     assert all(label for _s, label in entries)
 
 

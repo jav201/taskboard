@@ -9,6 +9,8 @@ know, and it may not be irreversible.
 import json
 from datetime import date, timedelta
 
+from textual.widgets import Button
+
 from taskboard.models import (AUTO_ARCHIVE_DAYS, Board, Project, Task,
                               days_in_phase)
 from taskboard.views import gantt_tasks, nav_model, render_gantt
@@ -250,3 +252,217 @@ def test_the_gantt_never_lists_an_archived_task_by_default(tmp_path):
     out = str(render_gantt(b, False, None, TODAY, width=120, height=30))
     assert "Done early" not in out
     assert "Done early" in str(render_gantt(b, True, None, TODAY, width=120, height=30))
+
+
+# --------------------------------------------------------------------------- #
+# the DELIBERATE one-time archive, for work that predates the stamp
+#
+# Javier's board is the case increment 10 predicted: every finished task on it
+# was done before `phase_changed` existed, so the standing 20-day sweep moves
+# NOTHING and the feature reads as absent. The timer cannot fix that without
+# inventing dates. A human decision can.
+# --------------------------------------------------------------------------- #
+def test_it_finds_exactly_the_work_the_timer_can_never_reach(tmp_path):
+    """AC1's precondition. The standing sweep skips undated work forever, by
+    design; this is the only thing that can move it, so it must target that set
+    precisely — no dated work, no open work."""
+    b = board(tmp_path, "purge.json")
+    old1 = done_task(b, "Ancient, undated", moved_days_ago=None)
+    old2 = done_task(b, "Also undated", moved_days_ago=None)
+    dated = done_task(b, "Finished last week", moved_days_ago=6)
+    live = Task("Still going", None, "Doing", "normal", due_date=iso(3))
+    b.tasks.append(live)
+    assert {t.id for t in b.unstamped_done()} == {old1.id, old2.id}
+    assert dated.id not in {t.id for t in b.unstamped_done()}
+    assert live.id not in {t.id for t in b.unstamped_done()}
+
+
+def test_the_one_time_archive_never_touches_dated_work(tmp_path):
+    """AC3, and the law that keeps the two paths separate: work with a known
+    completion date belongs to the timer, whatever its age. A purge that swept
+    it too would pull forward a decision the timer had not made."""
+    b = board(tmp_path, "sep.json")
+    fresh = done_task(b, "Finished yesterday", moved_days_ago=1)
+    old = done_task(b, "Finished long ago", moved_days_ago=400)
+    undated = done_task(b, "No date at all", moved_days_ago=None)
+    moved = b.archive_unstamped_done()
+    assert [t.id for t in moved] == [undated.id]
+    assert fresh.archived is False and old.archived is False
+
+
+def test_the_one_time_archive_invents_no_date(tmp_path):
+    """AC4. It stamps NOTHING: the board still does not know when this work was
+    finished, and writing a date now would make that unknowable forever — the
+    same fabrication the momentum increment refused."""
+    b = board(tmp_path, "nostamp.json")
+    t = done_task(b, "Ancient", moved_days_ago=None)
+    b.archive_unstamped_done()
+    assert t.archived is True
+    assert t.phase_changed is None
+    assert days_in_phase(t, TODAY) is None
+
+
+def test_the_one_time_archive_conserves_every_task_and_field(tmp_path):
+    """AC5. Same conservation the timer obeys: nothing is deleted and no field
+    changes but the flag."""
+    b = board(tmp_path, "conserve2.json")
+    t = done_task(b, "Ancient with content", moved_days_ago=None)
+    t.notes = "worth keeping"
+    t.urls = ["https://example.com/x"]
+    t.priority = "high"
+    b.tasks.append(Task("Live", None, "Doing", "normal", due_date=iso(2)))
+    b.save()
+    before = {x["id"]: x for x in json.loads(
+        (tmp_path / "conserve2.json").read_text(encoding="utf-8"))["tasks"]}
+    b.archive_unstamped_done()
+    b.save()
+    after = {x["id"]: x for x in json.loads(
+        (tmp_path / "conserve2.json").read_text(encoding="utf-8"))["tasks"]}
+    assert set(before) == set(after)
+    for tid, row in after.items():
+        differing = {k for k in set(row) | set(before[tid])
+                     if row.get(k) != before[tid].get(k)}
+        assert differing <= {"archived"}, f"{tid} changed {differing}"
+
+
+def test_the_purge_is_reversible_like_any_archive(tmp_path):
+    """AC6. It lands in the ordinary archive — no second store, no new path."""
+    b = board(tmp_path, "rev.json")
+    t = done_task(b, "Ancient", moved_days_ago=None)
+    b.archive_unstamped_done()
+    assert t.id not in [x.id for x in b.visible_tasks(False)]
+    assert t.id in [x.id for x in b.visible_tasks(True)]      # `v` shows it
+    t.archived = False                                         # `x` brings it back
+    assert t.id in [x.id for x in b.visible_tasks(False)]
+
+
+def test_after_the_purge_the_timer_owns_the_future(tmp_path):
+    """AC7, and the point of the whole design: ONE deliberate sweep for the past,
+    and the 20-day rule from then on, because work stamps itself when it moves."""
+    b = board(tmp_path, "future.json")
+    done_task(b, "Ancient", moved_days_ago=None)
+    b.archive_unstamped_done()
+    assert b.unstamped_done() == []
+    t = Task("New work", None, "Doing", "normal", due_date=iso(1))
+    b.tasks.append(t)
+    b.set_task_phase(t, b.phases[-1], TODAY - timedelta(days=AUTO_ARCHIVE_DAYS))
+    assert b.auto_archive_done(TODAY) == [t]
+
+
+async def test_the_purge_says_the_count_before_it_moves_anything(tmp_path):
+    """AC1. It must state what it is about to do, with the RIGHT number, and wait
+    for a yes — an archive that just happens is what erodes trust in one."""
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import ConfirmModal
+    b = board(tmp_path, "flow.json")
+    for i in range(3):
+        done_task(b, f"Ancient {i}", moved_days_ago=None)
+    done_task(b, "Dated", moved_days_ago=2)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "flow.json"))
+    async with app.run_test(size=(100, 30)) as pilot:
+        await pilot.press("X")
+        await pilot.pause()
+        assert isinstance(app.screen, ConfirmModal)
+        assert "3 finished task" in app.screen.message, app.screen.message
+        assert "'v'" in app.screen.message and "'x'" in app.screen.message
+        assert all(not t.archived for t in app.board.tasks)   # nothing moved yet
+        await pilot.press("escape")
+        await pilot.pause()
+        assert all(not t.archived for t in app.board.tasks)   # cancel moves nothing
+
+
+async def test_confirming_the_purge_archives_and_says_so(tmp_path):
+    """AC2."""
+    from taskboard.app import TaskboardApp
+    b = board(tmp_path, "flow2.json")
+    for i in range(2):
+        done_task(b, f"Ancient {i}", moved_days_ago=None)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "flow2.json"))
+    said = []
+    async with app.run_test(size=(100, 30)) as pilot:
+        app.notify = lambda *a, **k: said.append(a[0] if a else "")
+        await pilot.press("X")
+        await pilot.pause()
+        app.screen.query_one("#yes", Button).press()
+        await pilot.pause()
+        assert sum(t.archived for t in app.board.tasks) == 2
+        assert any("2 finished task" in m for m in said), said
+    reloaded = Board.load(str(tmp_path / "flow2.json"))
+    assert sum(t.archived for t in reloaded.tasks) == 2        # persisted
+
+
+async def test_the_purge_says_so_when_there_is_nothing_to_do(tmp_path):
+    """AC8. Silence would read as a broken key."""
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import ConfirmModal
+    b = board(tmp_path, "empty2.json")
+    done_task(b, "Dated", moved_days_ago=3)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "empty2.json"))
+    said = []
+    async with app.run_test(size=(100, 30)) as pilot:
+        app.notify = lambda *a, **k: said.append(k.get("title", ""))
+        await pilot.press("X")
+        await pilot.pause()
+        assert any("Nothing to archive" in t for t in said), said
+        assert not isinstance(app.screen, ConfirmModal)
+
+
+async def test_the_edit_modal_can_archive_the_task_it_has_open(tmp_path):
+    """AC9. The capability where he looked for it — IN ADDITION to `x`, not
+    instead of it."""
+    from textual.widgets import Checkbox
+
+    from taskboard.app import TaskboardApp
+    b = board(tmp_path, "edit.json")
+    t = Task("A task", None, "Doing", "normal", due_date=iso(4))
+    b.tasks.append(t)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "edit.json"))
+    async with app.run_test(size=(100, 40)) as pilot:
+        app.selected_task_id = t.id
+        await pilot.press("e")
+        await pilot.pause()
+        box = app.screen.query_one("#f-archived", Checkbox)
+        assert box.value is False
+        box.value = True
+        app.screen.query_one("#save", Button).press()
+        await pilot.pause()
+        assert app.board.task_by_id(t.id).archived is True
+    assert Board.load(str(tmp_path / "edit.json")).tasks[0].archived is True
+
+
+async def test_x_still_toggles_the_archive_from_the_board(tmp_path):
+    """AC9's other half: the editor control is an ADDITION. `x` keeps working."""
+    from taskboard.app import TaskboardApp
+    b = board(tmp_path, "xkey.json")
+    t = Task("A task", None, "Doing", "normal", due_date=iso(4))
+    b.tasks.append(t)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "xkey.json"))
+    async with app.run_test(size=(100, 30)) as pilot:
+        app.selected_task_id = t.id
+        await pilot.press("x")
+        await pilot.pause()
+        assert app.board.task_by_id(t.id).archived is True
+        # and back: an archived task is HIDDEN, so `x` alone cannot undo itself —
+        # `v` reveals it first. That two-step is exactly what the purge's confirm
+        # text tells the reader ("'v' shows them, 'x' brings one back").
+        await pilot.press("v")
+        await pilot.pause()
+        app.selected_task_id = t.id
+        await pilot.press("x")
+        await pilot.pause()
+        assert app.board.task_by_id(t.id).archived is False
+
+
+def test_the_purge_key_is_in_the_seat_and_on_the_bar():
+    """AC10. The key-bar contract reaches this feature too: a capability whose
+    key is not on screen does not exist."""
+    from taskboard.keymap import KEYMAP, fit_bar
+    entry = next(k for k in KEYMAP if k.action == "purge_done")
+    assert entry.show == "X"
+    shown = {show for show, _label in fit_bar(400, "swimlanes")[0]}
+    assert "X" in shown

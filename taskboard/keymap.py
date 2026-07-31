@@ -50,6 +50,7 @@ KEYMAP: tuple[Key, ...] = (
     Key("e", "e", "edit", "Edit"),
     Key("d,delete", "d", "delete", "Del"),
     Key("x", "x", "archive", "Archive"),
+    Key("X", "X", "purge_done", "Purge done"),
     Key("v", "v", "toggle_archived", "Archived"),
     Key("o", "o", "open_url", "URL"),
     Key("i", "i", "open_images", "Images"),

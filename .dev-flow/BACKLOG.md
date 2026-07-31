@@ -130,6 +130,23 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
   over the 45 % floor went 2.4 -> 4.9). (this batch)
 - ~~The closure law stays red.~~ **CLOSED.**
 
+- **DONE** · The deliberate one-time archive (`X`) + archive from the task
+  editor. Closes the "auto-archive does nothing on Javier's board" carry-over:
+  the timer owns dated work, `X` owns everything older, and neither invents a
+  date. 12 laws, 343 green, 6 mutants killed. (this batch)
+- ~~Auto-archive does nothing on Javier's existing board, by design... he must
+  archive them by hand — or we add an explicit, opt-in one-time action.~~
+  **CLOSED**: that action is `X`.
+
+## Open — raised by the one-time archive
+
+- **`x` cannot undo itself from the board.** Archiving hides the task, so the
+  selection moves on; bringing it back is `v` then `x`. Correct but two-step,
+  and now the confirm text says so explicitly. If it trips people up, an undo
+  toast on the archive notification is the small fix.
+- **The purge is board-wide.** There is no per-project variant; `P` archives a
+  whole project but not "this project's finished work". Nobody has asked.
+
 ## Open — raised by removing the frame
 
 - **Most of the reclaimed 7.6 % became DEAD, not marked.** The frame was on the
