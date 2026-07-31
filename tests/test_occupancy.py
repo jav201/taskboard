@@ -125,10 +125,11 @@ def test_every_category_is_actually_populated(tmp_path):
 # the floors the view is committed to
 # --------------------------------------------------------------------------- #
 # (marked floor, dead ceiling) — measured 2026-07-30, margin ~5 points each way
+# Re-measured after the due meter freed 6 cells per row into the field (REV5 #18).
 FLOORS = {
-    "calm":    (26.0, 66.0),      # measured: marked 31.8, dead 60.6
-    "typical": (40.0, 52.0),      # measured: marked 45.4, dead 47.0
-    "extreme": (39.0, 53.0),      # measured: marked 44.7, dead 47.8
+    "calm":    (29.0, 63.0),      # measured: marked 34.5, dead 57.9 (was 31.8/60.6)
+    "typical": (43.0, 49.0),      # measured: marked 48.7, dead 43.7 (was 45.4/47.0)
+    "extreme": (42.0, 50.0),      # measured: marked 47.4, dead 45.0 (was 44.7/47.8)
 }
 
 
@@ -209,13 +210,12 @@ def test_a_calm_board_now_gets_better_as_it_widens(tmp_path):
     assert wide < narrow, f"calm: {narrow:.1f} % -> {wide:.1f} % dead"
 
 
-def test_the_proposals_own_45_percent_floor_is_met_at_typical_and_missed_at_extreme(tmp_path):
-    """CHARACTERISTIC, and it records a MISS. PROPOSAL.md §4.3 sets "cells with a
-    mark, typical/extreme load: >= 45 %". Measured here: typical 45.4 % (meets),
-    extreme 44.7 % (misses by 0.3 points). The gap is small and real — the frame
-    alone costs ~7.6 % — and pinning it means a later change cannot quietly widen
-    it. Recorded in .dev-flow/BACKLOG.md rather than fixed inside a test."""
-    typical = census(render(tmp_path, "typical"))["marked"]
-    extreme = census(render(tmp_path, "extreme"))["marked"]
-    assert typical >= 45.0
-    assert 43.0 <= extreme < 45.0
+def test_the_proposals_own_45_percent_floor_is_now_met_at_both_loads(tmp_path):
+    """PROPOSAL.md §4.3 sets "cells with a mark, typical/extreme load: >= 45 %".
+
+    This test used to record a MISS: extreme sat at 44.7 %, 0.3 points short.
+    The due meter cured it without anyone aiming at it — collapsing the 13-cell
+    figures band to a 6-cell mark gave the field six more cells per row, and
+    extreme rose to 47.4 %. The law is now the floor itself, not the shortfall."""
+    assert census(render(tmp_path, "typical"))["marked"] >= 45.0
+    assert census(render(tmp_path, "extreme"))["marked"] >= 45.0

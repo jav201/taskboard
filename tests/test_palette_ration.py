@@ -263,13 +263,16 @@ def test_every_view_that_marks_priority_marks_it_with_the_glyph(tmp_path):
     b, p = _board(tmp_path)
     lead = Project("Leader", "sky")
     b.projects.append(lead)
-    b.add_task(Task("Overdue thing", lead.id, "Doing", "normal", due_date="2026-07-01"))
-    b.add_task(Task("Urgent thing", p.id, "Backlog", "high"))
+    # the high-priority task must sit on the LEADING project: `!N` rides the
+    # leader's band now, since that is where a digit earns its cells
+    b.add_task(Task("Overdue thing", lead.id, "Doing", "high", due_date="2026-07-01"))
+    b.add_task(Task("Plain thing", p.id, "Backlog", "normal"))
     marks = {}
     for mode in VIEWS:
         out = render_view(mode, b, False, None, date(2026, 7, 30), width=100, height=30)
         marks[mode] = [(style, txt.strip()) for style, txt in _styles(out)
                        if txt.strip().startswith("!")]
+    # in lanes the count now rides the LEADER's band, not the lane row
     assert marks["swimlanes"] == [(HEX["ink"], "!1")]
     assert marks["kanban"] == [(HEX["ink"], "!")]
     assert marks["agenda"] == marks["gantt"] == []

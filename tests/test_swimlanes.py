@@ -159,13 +159,17 @@ def test_a_project_whose_work_runs_off_the_window_is_marked_not_crushed(tmp_path
 # --------------------------------------------------------------------------- #
 # what the row says
 # --------------------------------------------------------------------------- #
-def test_a_stacked_row_names_the_project_and_shows_its_figures(tmp_path):
-    """(Atlas moved to the leader's band in increment 5, so the figures law is
-    checked on a stacked lane — the form most projects take.)"""
+def test_a_stacked_row_ends_in_its_due_meter(tmp_path):
+    """Was: `0/1` and `+40d`. The whole `n/N !N ▲Nd` group collapsed into the
+    six-cell meter — `n/N` because the project's own wave already draws its
+    progress, and a figure repeating the field beside it is the duplication this
+    edge exists to remove; `!N` moved to the leader's band, where a digit earns
+    its cells. LENGTH IS THE TIME THAT REMAINS, so short means act now."""
     b = typical(tmp_path)
     lane = next(line for line in lane_rows(rows_of(b)) if "Beacon" in line)
-    assert "0/1" in lane            # done / total
-    assert "+40d" in lane           # its own due distance, in the neutral tone
+    assert "0/1" not in lane and "+40d" not in lane
+    assert lane[-7:-1].strip()                 # the six cells are drawn
+    assert set(lane[-7:-1]) <= set("⣿⡇·▲⣤ ")
 
 
 def test_the_leader_is_the_project_under_the_most_pressure(tmp_path):
@@ -231,8 +235,8 @@ def test_a_closed_project_is_never_judged(tmp_path):
     it can be late — its chip is a plain distance in the neutral tone."""
     b = typical(tmp_path)
     delta = [line for line in rows_of(b) if "Delta" in line][0]
-    assert "▲" not in delta
-    assert "-9d" in delta
+    assert "▲" not in delta                    # nothing about it may be judged
+    assert "⣤" in delta or "·" in delta[-7:]    # a spent or unmeasured edge
 
 
 def test_the_lane_names_its_next_due_work_soonest_first(tmp_path):
@@ -273,7 +277,8 @@ def test_severity_has_exactly_one_seat_and_a_date_wears_it(tmp_path):
             if HEX["over"] in str(s.style)]
     assert worn, "vacuous: nothing was painted in the severity hue"
     for seg in worn:
-        assert re.fullmatch(r"▲\d+d|\d+ due", seg), f"severity worn by {seg!r}"
+        # a date distance, the header's count, or the meter's ONE alert glyph
+        assert re.fullmatch(r"▲\d+d|\d+ due|▲", seg), f"severity worn by {seg!r}"
 
 
 def test_the_field_behind_today_is_ash_and_the_lattice_is_never_void(tmp_path):
@@ -432,3 +437,110 @@ def test_the_allocator_spends_the_height_it_is_given(tmp_path):
     assert tall[2] > short[2] or tall[3] > short[3]
     for h in range(12, 46):
         assert len(rows_of(b, 96, h)) == h
+
+
+# --------------------------------------------------------------------------- #
+# the due meter — the right edge (REV4/REV5 #18)
+# --------------------------------------------------------------------------- #
+def test_the_meter_is_shorter_the_sooner_the_work_is_due(tmp_path):
+    """LENGTH IS THE TIME THAT REMAINS, so a SHORT bar means act now. Triage is
+    pre-attentive: nobody reads a number to tell overdue from distant."""
+    from taskboard.views import due_meter
+    def bar(days):                      # the BAR, not the alert cap
+        return sum(1 for g, _t in due_meter(days, done=False) if g in "⣿⡇")
+    assert bar(-3) == 0                 # overdue has no time left to draw
+    assert bar(-3) < bar(0) < bar(4) < bar(20) < bar(200)
+    assert due_meter(-3, done=False)[0][0] == "▲"   # it carries the cap instead
+
+
+def test_the_meter_is_categorical_not_linear(tmp_path):
+    """A linear scale would spend all its resolution on a distant future where
+    nothing is decided — so two dates in the same band draw the same mark."""
+    from taskboard.views import due_meter
+    assert due_meter(3, done=False) == due_meter(7, done=False)        # this week
+    assert due_meter(40, done=False) == due_meter(300, done=False)     # later
+    assert due_meter(3, done=False) != due_meter(20, done=False)       # week vs month
+
+
+def test_finished_work_is_the_whole_meter_in_ash_and_wordless(tmp_path):
+    from taskboard.views import due_meter
+    assert {t for _g, t in due_meter(-99, done=True)} == {"ash"}
+    assert {g for g, _t in due_meter(-99, done=True)} == {"⣤"}
+
+
+def test_undated_work_is_measured_as_nothing_not_as_late(tmp_path):
+    from taskboard.views import due_meter
+    assert {t for _g, t in due_meter(None, done=False)} == {"dim"}
+
+
+def test_overdue_lights_the_one_alert_glyph_and_nothing_else(tmp_path):
+    """Severity keeps its single seat: the `▲` cap, the same glyph the chip used."""
+    from taskboard.views import HEX, due_meter
+    cells = due_meter(-5, done=False)
+    assert cells[0] == ("▲", "over")
+    assert [t for _g, t in cells].count("over") == 1
+    for days in (0, 3, 20, 200, None):
+        assert "over" not in [t for _g, t in due_meter(days, done=False)]
+
+
+def test_the_meter_answers_when_never_whose(tmp_path):
+    """The census caught the first version painting it in each project's hue:
+    the right edge went from 6 tones to 8 because it carried one per project.
+    Identity already travels in the spine at the other end of the same row, so
+    the edge stays neutral however many projects the board holds."""
+    from taskboard.models import PROJECT_COLORS
+    from taskboard.views import HEX, due_meter
+    neutral = {"ash", "mut", "accent", "over", "dim"}
+    tones = set()
+    for days in (-30, -1, 0, 1, 7, 8, 31, 32, 400, None):
+        for done in (False, True):
+            tones |= {t for _g, t in due_meter(days, done=done)}
+    assert tones <= neutral
+    assert not (tones & set(PROJECT_COLORS))
+
+
+def test_the_edge_keeps_its_tone_count_whatever_the_board_holds(tmp_path):
+    """Three projects or thirty, the right band draws the same few tones."""
+    import re
+    from taskboard.models import PROJECT_COLORS
+    from taskboard.views import HEX, _figures, lane_geometry, lanes_of
+    def edge_tones(n):
+        b = board(tmp_path, f"edge{n}.json")
+        for i in range(n):
+            p = Project(f"P{i}", PROJECT_COLORS[i % len(PROJECT_COLORS)],
+                        "on_track", due_date=iso(i * 3 - 10))
+            b.projects.append(p)
+            b.tasks.append(Task(f"T{i}", p.id, "Doing", "normal", due_date=iso(i - 5)))
+        geo = lane_geometry(94, 30)
+        tones = set()
+        for lane in lanes_of(b, False, TODAY):
+            tones |= set(re.findall(r"#[0-9a-f]{6}", _figures(lane, geo.figs_w)))
+        return tones
+    few, many = edge_tones(3), edge_tones(24)
+    # A bigger board reaches more of the FIVE fixed tones — it never invents a
+    # sixth, and it never reaches for an identity hue. That is the whole claim:
+    # the edge's palette is a constant, not a function of how many projects
+    # exist. (The first version of the meter made it one, and the census caught
+    # it going 6 tones -> 8.)
+    neutral = {HEX[k] for k in ("ash", "mut", "accent", "over", "dim")}
+    assert few <= neutral and many <= neutral
+    assert len(many) <= 5
+    assert not (many & {HEX[c] for c in PROJECT_COLORS})
+
+
+def test_the_lane_row_ends_in_the_meter_at_every_width(tmp_path):
+    b = typical(tmp_path)
+    for w in (48, 72, 96, 130):
+        for line in lane_rows(rows_of(b, w, 30)):
+            assert set(line[-7:-1]) <= set("⣿⡇·▲⣤ "), f"{w}: {line[-8:]!r}"
+
+
+def test_the_freed_band_went_to_the_field(tmp_path):
+    """The measured outcome of this increment, stated as a number: the port's
+    figures band reserved 13 (L) / 11 (S) for a group the meter replaced with
+    six cells, and the field took the difference."""
+    from taskboard.views import field_geometry, lane_geometry
+    for w, h, gain in ((96, 30, 6), (72, 24, 4)):
+        port, view = field_geometry(w - 2, h), lane_geometry(w - 2, h)
+        assert view.figs_w == 7
+        assert view.field_w - port.field_w == gain
