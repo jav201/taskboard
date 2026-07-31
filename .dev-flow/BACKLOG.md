@@ -158,12 +158,15 @@ batch (`2026-07-31-batch-02`) is in flight under `/fast-dev-flow`. 345 tests gre
 
 ## Open — process / operator actions
 
-- **`/dev-flow-sync` was never run for batch `2026-07-18-batch-01`.** That batch is
-  now explicitly CLOSED in `state.json` (its work merged and shipped on 2026-07-18);
-  the only unfinished step is uploading its artifacts to the Obsidian vault.
-  **This one is Javier's to run** — it writes to his vault, which is outside this
-  repo and not an agent's call. Until then the batch's artifacts live only in
-  `.dev-flow/`.
+- **DONE** · **`/dev-flow-sync` for batch `2026-07-18-batch-01`** — run 2026-07-31 on
+  Javier's authorization, 13 days after the batch closed. The four phase artifacts
+  plus `06-docs/` (9 files) are now in the vault at
+  `G:\My Drive\ConsultIA\Obsidian_Vaults\AI-Consulting-Brain\01 - Proyectos\taskboard\dev-flow-batches\2026-07-18-batch-01\`,
+  with a frontmatter-carrying `2026-07-18-batch-01-README.md` index and a project
+  `Dashboard.md`. This created the vault's `taskboard` project folder — it had none.
+  `03-increments/` deliberately not synced (vault convention since batch-04), so the
+  increment records remain repo-only. Folder named from the artifacts' own
+  self-identification, NOT `state.json`'s `batch_id` — see the state.json note below.
 
 ## Open — raised by the report batch's Phase 0 (measured)
 
