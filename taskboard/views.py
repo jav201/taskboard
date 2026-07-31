@@ -1255,208 +1255,246 @@ def _flowing(board: Board, task: Task) -> bool:
             and board.phase_index(task) > 0)
 
 
+def _span_bands(project, geo: FieldGeo, today: date, hue: str,
+                progress: float) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
+    """THE SPAN IS THE WAVE, in two bands, and the answer a gantt exists to give
+    comes out of the DIFFERENCE between them.
+
+    top    — the span from start to `◆`: ASH for what has elapsed, the project's
+             own hue for what remains. The old view already measured "how much
+             of the span is gone" and this language already paints "spent": same
+             cut, no new mechanism.
+    bottom — how far the work actually got.
+
+    So THE GAP BETWEEN THE TWO FRONTIERS IS THE SLIP, read as a length. "Am I
+    behind?" is the question a gantt is for, and the old one could not answer it.
+    """
+    span = [(" ", "dim")] * geo.field_w
+    band = [(" ", "dim")] * geo.field_w
+    s = parse_iso(project.start_date)
+    e = parse_iso(project.due_date)
+    if s is None and e is None:
+        return span, band
+
+    def cell_of(d: date) -> tuple[int, bool]:
+        col = day_col(d, today, geo)
+        flagged = isinstance(col, tuple)
+        dc = col[1] if flagged else col
+        return min(geo.field_w - 1, max(0, dc // 2)), flagged
+
+    c0, l_off = cell_of(s or today)
+    c1, r_off = cell_of(e or today)
+    if c1 < c0:
+        c0, c1 = c1, c0
+    today_cell = geo.today_dc // 2
+    for x in range(c0, c1 + 1):
+        span[x] = ("⣿", "ash" if x < today_cell else hue)
+    if e is not None and not r_off:
+        span[c1] = ("◆", hue)
+    if l_off:
+        span[0] = (OFF_LEFT, "mut")
+    if r_off:
+        span[geo.field_w - 1] = (OFF_RIGHT, "mut")
+
+    reached = c0 + int(round((c1 - c0) * max(0.0, min(1.0, progress))))
+    for x in range(c0, min(reached, geo.field_w)):
+        band[x] = ("⣤", hue)
+    if reached > c0:
+        band[min(reached, geo.field_w - 1)] = ("⡄", hue)
+    return span, band
+
+
+def _reach_start(task: Task, geo: FieldGeo, today: date) -> int:
+    """The first field cell this task's reach occupies — everything left of it
+    is empty field the TITLE may spend (REV5 #19's ruling, kept)."""
+    s = parse_iso(task.start_date)
+    e = parse_iso(task.due_date)
+    if s is None and e is None:
+        return geo.field_w
+
+    def cell_of(d):
+        col = day_col(d, today, geo)
+        dc = col[1] if isinstance(col, tuple) else col
+        return min(geo.field_w - 1, max(0, dc // 2))
+
+    return min(cell_of(s or today), cell_of(e or today))
+
+
+def _task_reach(task: Task, board: Board, geo: FieldGeo, today: date,
+                hue: str, tick: int | None = None) -> list[tuple[str, str]]:
+    """A task is a REACH of variable length with its phase glyph at the tip —
+    not a five-cell slab. A mark that cannot vary is not a datum (DATAVIZ 13,
+    which the old week-resolution bar violated: two different tasks drew the
+    same `▬▬▬▬▬`)."""
+    cells = [(" ", "dim")] * geo.field_w
+    s = parse_iso(task.start_date)
+    e = parse_iso(task.due_date)
+    if e is None and s is None:
+        return cells
+
+    def cell_of(d: date) -> int:
+        col = day_col(d, today, geo)
+        dc = col[1] if isinstance(col, tuple) else col
+        return min(geo.field_w - 1, max(0, dc // 2))
+
+    a = cell_of(s or today)
+    b = cell_of(e or today)
+    if b < a:
+        a, b = b, a
+    done = board.is_done(task)
+    tone = "ash" if done else hue
+    for x in range(a, b):
+        cells[x] = ("⣀", tone)
+    cells[b] = (phase_glyph({min(3, board.phase_index(task))}), tone)
+    if not done and tick is not None and b > a and _flowing(board, task):
+        # THE FLOW PACKET, kept from the shipped gantt: work drifts toward its
+        # deadline. It rides the task's own reach now instead of a week slab.
+        cells[a + (tick % max(1, b - a))] = ("▬", "bright")
+    return cells
+
+
+def _band_markup(cells: list[tuple[str, str]], geo: FieldGeo, phase: int = 0,
+                 lattice: bool = True, offset: int = 0) -> str:
+    """Cells to markup, over the field's own lattice — ash behind today, dim
+    ahead — with the today rule where nothing else is drawn."""
+    out = []
+    for j, (glyph, tone) in enumerate(cells):
+        i = j + offset
+        past = (2 * i + 1) < geo.today_dc
+        if glyph == " ":
+            if i == geo.today_dc // 2:
+                out.append(c(RULE_PHASES[phase % len(RULE_PHASES)], "accent"))
+            elif lattice:
+                out.append(c(LATTICE, "ash" if past else "dim"))
+            else:
+                out.append(" ")
+        else:
+            out.append(c(glyph, tone))
+    return "".join(out)
+
+
+def gantt_geometry(inner: int, height: int) -> FieldGeo:
+    """The lanes geometry, with a wider figures band: the gantt's project row
+    carries its progress percent BESIDE the meter, so it needs the percent's
+    cells plus the meter's six. Lanes needs only the meter."""
+    g = lane_geometry(inner, height)
+    want = METER_W + 5                       # ' 20%' + gap + the six-cell meter
+    figs_w = min(want, max(g.figs_w, inner // 5))
+    field_w = max(0, inner - g.label_w - figs_w - 1)
+    dot_w = field_w * 2
+    today_dc = (int(dot_w * 0.30) // 2) * 2
+    return g._replace(figs_w=figs_w, field_w=field_w, dot_w=dot_w,
+                      today_dc=today_dc, today_cell=g.label_w + today_dc // 2)
+
+
 def render_gantt(board, show_archived, selected_id, today=None,
                  width=68, height=0, line_map=None, tick=0) -> Text:
+    """The gantt on the shared day axis: one cell is two days, and the axis
+    INCLUDES THE PAST.
+
+    The old view started its axis on Monday of this week, so a project already
+    overdue drew as an empty row with a `◂` — and the more overdue work a board
+    held, the emptier the view got. That is why it was the one view where MORE
+    data produced LESS used screen (ink fell 23.3 % -> 21.0 % from typical to
+    extreme). An axis with a past is the fix.
+    """
     today = today or date.today()
     w = _clamp_width(width)
     inner = w - 2
-    glabel_w = max(18, min(30, inner // 3))
-    cell = 6
-    meta_w, meta_full = gantt_meta_geometry(inner, glabel_w, cell)
-    # PRE-EXISTING DEFECT, fixed here: the label column had a floor of 18 and the
-    # grid a floor of one week, so below ~30 columns they summed to more than the
-    # frame and every body row came out 2 cells too wide. The label gives way —
-    # it is the only part that can, and width-exactness is this codebase's
-    # oldest law.
-    glabel_w = max(6, min(glabel_w, inner - meta_w - cell))
-    avail = max(0, inner - glabel_w - meta_w)
-    weeks = max(1, min(20, avail // cell)) if avail >= cell else 1
-    grid = weeks * cell
-    trailing = max(0, inner - glabel_w - meta_w - grid)
-    chart_start = today - timedelta(days=today.weekday())   # Monday of this week
-
-    def week_index(d):
-        return None if d is None else (d - chart_start).days // 7
-
-    def bar_cells(s_idx, e_idx, color, char, from_week: int = 0):
-        active = [False] * weeks
-        if s_idx is not None and e_idx is not None:
-            s, e = max(0, min(weeks - 1, s_idx)), max(0, min(weeks - 1, e_idx))
-            if e >= s and e_idx >= 0 and s_idx <= weeks - 1:
-                for i in range(s, e + 1):
-                    active[i] = True
-        out = ""
-        for i in range(from_week, weeks):
-            out += c(char * (cell - 1) + " ", color) if active[i] else " " * cell
-        return out
-
-    def title_weeks(s_idx) -> int:
-        """The empty week columns in front of a task's bar. THE TITLE RUNS OVER
-        THE FIELD — that is where the reader actually reads — and it stops where
-        its own bar starts, so it can never cover the thing it describes."""
-        if s_idx is None:
-            return weeks
-        return max(0, min(weeks, s_idx))
-
-    def _flow_cols(s_idx, e_idx):
-        """Visible columns carrying this bar's "▬" cells, left→right, so a
-        packet can drift along them toward the due ◆."""
-        if s_idx is None or e_idx is None:
-            return []
-        s, e = max(0, min(weeks - 1, s_idx)), max(0, min(weeks - 1, e_idx))
-        if e < s or e_idx < 0 or s_idx > weeks - 1:
-            return []
-        return [i * cell + k for i in range(s, e + 1) for k in range(cell - 1)]
-
-    def project_bar(s_idx, e_idx, color, progress):
-        """ONE continuous bar over the project's span: dense glyphs for the
-        completed share, half-density for the rest, both full-cell and in the
-        project's colour so the bar keeps a constant height end to end. The
-        split comes from the phase weights, not from done/total."""
-        if (s_idx is None or e_idx is None or e_idx < s_idx
-                or e_idx < 0 or s_idx > weeks - 1):
-            return " " * grid
-        s = max(0, min(weeks - 1, s_idx))
-        e = max(0, min(weeks - 1, e_idx))
-        start = s * cell
-        bar_width = (e - s + 1) * cell - 1
-        filled = max(0, min(bar_width, int(round(progress * bar_width))))
-        return (" " * start
-                + c(BAR_DONE * filled + BAR_TODO * (bar_width - filled), color)
-                + " " * (grid - start - bar_width))
-
-    col_today = _gantt_day_col(today, chart_start, weeks, cell)
-    rule = c("┃", "accent")
-
-    projects = board.visible_projects(show_archived)
-    past_due = sum(1 for p in projects
-                   if (d := parse_iso(p.due_date)) is not None and d < today)
-    axis_lbl = f"{weeks}w axis"
-    right = (c(f"▲ {past_due} past due", "over") + c("  " + axis_lbl, "mut")
-             if past_due else c(axis_lbl, "mut"))
-    lines = [header(c("GANTT", "accent", bold=True), right, w)]
-
-    axis = c(fit("", glabel_w), "mut")
-    for wk in range(weeks):
-        lbl = "W" + (chart_start + timedelta(weeks=wk)).strftime("%V")
-        axis += c(fit(lbl, cell), "accent" if wk == 0 else "dim", bold=(wk == 0))
-    # the due FIGURE became the six-cell meter, so the header names what is
-    # actually under it
-    head_txt = "prog    when" if meta_full else "when"
-    meta_head = (c(fit(head_txt, meta_w, "right"), "mut")
-                 if meta_w >= len(head_txt) else " " * meta_w)
-    lines.append(line(axis + " " * trailing + meta_head))
-    lbl_cells = list(" " * grid)                    # the today rule + its small label
-    tag, pos = "today", col_today + 2
-    if pos + len(tag) > grid:
-        pos = max(0, col_today - 1 - len(tag))
-    for k, chx in enumerate(tag):
-        if 0 <= pos + k < grid:
-            lbl_cells[pos + k] = chx
-    label_row = _overlay_cells(c("".join(lbl_cells), "accent"), grid, {col_today: rule})
-    lines.append(line(c(fit("", glabel_w), "dim") + label_row
-                      + " " * trailing + " " * meta_w))
+    h = height or 24
+    geo = gantt_geometry(inner, h)
 
     tasks = board.visible_tasks(show_archived)
-    scheduled_any = False
-    unscheduled: list[Task] = []
+    late_n = sum(1 for t in tasks
+                 if (d := parse_iso(t.due_date)) and d < today and not board.is_done(t))
+    right = (c(f"▲{late_n} past due", "over", bold=True) if late_n
+             else c("nothing past due", "dim"))
+    lines = [header(c("◆ GANTT", "accent", bold=True), right, w)]
 
-    for i, p in enumerate(projects):
-        if i:                                   # a divider BETWEEN project blocks
-            lines.append(line(c("┈" * inner, "frame")))
-        si, ei = week_index(parse_iso(p.start_date)), week_index(parse_iso(p.due_date))
-        if si is not None and ei is not None:
-            scheduled_any = True
+    def band_row(prefix: str, cells: list[tuple[str, str]], figures: str,
+                 offset: int = 0) -> str:
+        # label + field + ONE gap + figures == inner, so the figures stay flush
+        # right; without the gap `_pad` appended it and the meter drifted left
+        return _pad(prefix + _band_markup(cells, geo, 0, offset=offset)
+                    + " " + figures, inner)
+
+    archived_done = sum(1 for t in board.visible_tasks(True)
+                        if t.archived and board.is_done(t))
+    rows: list[Row] = []
+    for p in board.visible_projects(show_archived):
+        own = gantt_tasks(board, tasks, p.id)
         prog = board.project_progress(p.id, show_archived)
-        gcells: dict[int, str] = {}
-        due = parse_iso(p.due_date)
-        dcol = _gantt_day_col(due, chart_start, weeks, cell)
-        if dcol is not None:                         # a due diamond at its date column
-            dcolor = "over" if due < today else "bright"
-            if isinstance(dcol, tuple):              # off-screen -> clamp to the edge
-                gcells[dcol[1]] = c("◂" if dcol[0] == "clampL" else "▸", dcolor)
-            else:
-                gcells[dcol] = c("◆", dcolor)
-        gcells[col_today] = rule                     # the rule wins its own cell
-        bar = _overlay_cells(project_bar(si, ei, p.color, prog), grid, gcells)
-        pmeter = due_meter(days_until(p.due_date, today),
-                           done=p.status == "completed",
-                           width=min(METER_W, meta_w))
-        lines.append(line(c(escape(fit("▐ " + p.name, glabel_w)), p.color, bold=True)
-                          + bar
-                          + " " * trailing
-                          + gantt_meta(p, prog, today,
-                                       max(0, meta_w - len(pmeter)), meta_full)
-                          + meter_markup(pmeter)))
-        for t in gantt_tasks(board, tasks, p.id):
-            ts = week_index(parse_iso(t.start_date) or parse_iso(t.due_date))
-            te = week_index(parse_iso(t.due_date) or parse_iso(t.start_date))
-            if ts is None and te is None:
-                unscheduled.append(t)
-                continue
-            scheduled_any = True
+        span, band = _span_bands(p, geo, today, p.color, prog)
+        label = c("▎ ", p.color) + c(escape(fit(clip(p.name, geo.label_w - 2),
+                                                geo.label_w - 2)), p.color, bold=True)
+        pct = f"{int(round(100 * prog))}%"
+        pct_w = max(0, geo.figs_w - METER_W)
+        pct = pct if pct_w >= len(pct) else ""      # it drops whole, never "…"
+        meter = meter_markup(due_meter(days_until(p.due_date, today),
+                                       done=p.status == "completed",
+                                       width=min(METER_W, geo.figs_w)))
+        rows.append((band_row(label, span,
+                              c(fit(pct, pct_w, "right"), "mut") + meter), None))
+        rows.append((band_row(" " * geo.label_w, band, " " * geo.figs_w), None))
+
+        for t in own:
             sel = t.id == selected_id
-            # THE BAR NAMES ITS PROJECT; THE METER SAYS WHEN. Severity keeps its
-            # one seat on this row — the meter's `▲` cap — so the bar itself no
-            # longer turns red or amber for urgency.
-            bcolor = p.color
-            gcells_t = {col_today: rule}
-            if _flowing(board, t):        # a bright packet drifts toward the due ◆
-                fcols = _flow_cols(ts, te)
-                if fcols:
-                    pcol = fcols[tick % len(fcols)]
-                    if pcol != col_today:      # never fight the today rule
-                        gcells_t[pcol] = c("▬", "bright")
-            skip = title_weeks(ts)
-            over_cells = skip * cell
-            tw = glabel_w - 3 + over_cells
-            shifted = {k - over_cells: v for k, v in gcells_t.items()
-                       if k >= over_cells}
-            tbar = _overlay_cells(bar_cells(ts, te, bcolor, "▬", from_week=skip),
-                                  grid - over_cells, shifted)
+            done = board.is_done(t)
+            reach = _task_reach(t, board, geo, today, p.color, tick)
+            # a finished task rests: thin spine, ash, no chip and no severity
+            spine = c("▏ ", "dim") if done else c("▎ ", p.color)
+            # the title stops at the today rule as well as at its own reach:
+            # the rule is full-height by law, and a title that crossed it would
+            # break the one column every row shares
+            over = max(0, min(_reach_start(t, geo, today), geo.today_dc // 2))
+            tw = geo.label_w - 3 + over
+            title = title_markup(t, tw, sel)
+            reach = reach[over:]
             due = parse_iso(t.due_date)
-            mcells = due_meter((due - today).days if due else None,
-                               done=board.is_done(t),
-                               width=min(METER_W, meta_w))
-            lines.append(line(c("  ", "dim") + title_markup(t, tw, sel) + " "
-                              + tbar + " " * trailing
-                              + fit("", max(0, meta_w - len(mcells)))
-                              + meter_markup(mcells)))
-            if line_map is not None:
-                line_map[t.id] = len(lines) - 1
+            mcells = due_meter(None if done else ((due - today).days if due else None),
+                               done=done, width=min(METER_W, geo.figs_w))
+            rows.append((band_row(spine + " " + title, reach,
+                                  " " * max(0, geo.figs_w - len(mcells))
+                                  + meter_markup(mcells), offset=over), t.id))
 
+    # THE INBOX IS NOT LOST. Tasks with no project were drawn by the old gantt
+    # and must not fall out of the new one just because it iterates projects.
     loose = [t for t in tasks if board.project_by_id(t.project_id) is None]
-    for t in (sort_by_due([t for t in loose if not board.is_done(t)])
-              + sort_by_due([t for t in loose if board.is_done(t)])):
-        ts = week_index(parse_iso(t.start_date) or parse_iso(t.due_date))
-        te = week_index(parse_iso(t.due_date) or parse_iso(t.start_date))
-        if ts is None and te is None:
-            unscheduled.append(t)
-            continue
-        scheduled_any = True
-        u = urgency(t, today, board)
-        bcolor = "over" if u == "overdue" else "soon" if u == "today" else "dim"
-        obar = _overlay_cells(bar_cells(ts, te, bcolor, "▬"), grid, {col_today: rule})
-        lines.append(line(c(escape(fit("▐ " + t.title, glabel_w)), "dim")
-                          + obar + " " * trailing
-                          + " " * meta_w))
-        if line_map is not None:
-            line_map[t.id] = len(lines) - 1
+    if loose:
+        rows.append((_pad(c("▎ ", "dim")
+                          + c(escape(fit("Inbox", geo.label_w - 2)), "dim", bold=True)
+                          + _band_markup([(" ", "dim")] * geo.field_w, geo, 0),
+                          inner), None))
+        for t in (sort_by_due([t for t in loose if not board.is_done(t)])
+                  + sort_by_due([t for t in loose if board.is_done(t)])):
+            done = board.is_done(t)
+            over = max(0, min(_reach_start(t, geo, today), geo.today_dc // 2))
+            reach = _task_reach(t, board, geo, today, "dim", tick)[over:]
+            due = parse_iso(t.due_date)
+            mcells = due_meter(None if done else ((due - today).days if due else None),
+                               done=done, width=min(METER_W, geo.figs_w))
+            rows.append((band_row(
+                (c("▏ ", "dim") if done else c("▎ ", "dim")) + " "
+                + title_markup(t, geo.label_w - 3 + over, t.id == selected_id),
+                reach, " " * max(0, geo.figs_w - len(mcells)) + meter_markup(mcells),
+                offset=over), t.id))
 
-    if not scheduled_any:
-        lines.append(line(c(fit("  (nothing dated — add start/due dates)", inner), "dim")))
+    if not rows:
+        lines.append(line(c(fit("  (nothing scheduled — press 'a' to add a task)",
+                                inner), "dim")))
 
-    if unscheduled:
-        lbl = " UNSCHEDULED "
-        lines.append(line(c(lbl, "later", bold=True)
-                          + c("─" * max(0, inner - len(lbl)), "frame")))
-        for t in unscheduled:
-            sel = t.id == selected_id
-            lines.append(line(" " + c("○", project_color(board, t)) + " "
-                              + title_markup(t, inner - 3, sel)))
-            if line_map is not None:
-                line_map[t.id] = len(lines) - 1
+    body = rows[:max(0, h - 3)]
+    shed = len(rows) - len(body)
+    for markup, tid in body:
+        lines.append(line(markup))
+        if tid is not None and line_map is not None:
+            line_map[tid] = len(lines) - 1
 
+    note = "  ".join(x for x in (
+        f"+{shed} not shown" if shed else "",
+        f"{archived_done} done archived" if archived_done else "") if x)
+    lines.append(line(_pad(_scale_with_note(geo, inner, note) if note
+                           else _scale_row(geo, inner), inner)))
     lines.append(bottom(None, w))
     return Text.from_markup("\n".join(fill_height(lines, height, w)))
 
@@ -1836,14 +1874,25 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         if f["high"]:
             out.append((c("!N", "ink"), "high-priority work still open"))
     if mode == "gantt":
+        # REGENERATED for the field: the span IS the wave, and the answer a
+        # gantt exists to give comes out of the difference between two bands.
         if f["projects"]:
-            out.append((c(BAR_DONE * 2, hue) + c(BAR_TODO * 2, hue),
-                        "project span: dense is done, half-dense is the rest"))
-        if f["tasks"]:
-            out.append((c("▬▬", hue), "a task's own span"))
+            out.append((c("⣿⣿", "ash") + c("⣿⣿", hue),
+                        "the span: ash is elapsed, colour is what remains"))
+        # the progress band only exists once something HAS progressed
+        if any(board.project_progress(p.id, False) > 0 for p in f["projects"]):
+            out.append((c("⣤⣤⡄", hue), "how far the work actually got"))
+            out.append((c("⡄", hue) + c("··", "ash"),
+                        "the gap between the two bands: the slip, as a length"))
         if f["project_due"]:
-            out.append((c("◆", "bright"), "the project's own due date"))
-        out.append((c("┃", "accent"), "today"))
+            out.append((c("◆", hue), "the project's own due date"))
+        out.append((c(RULE, "accent"), "today"))
+        if f["tasks"]:
+            out.append((c("⣀⣀", hue) + c(phase_glyph({1}), hue),
+                        "a task's reach, tipped by its phase"))
+        if f["done"]:
+            out.append((c("▏", "dim") + c("⣀⠒", "ash"),
+                        "finished work, at rest in ash"))
     if mode == "agenda":
         out.append((c("●", "over"), "a task's due date, on the shared day axis"))
         out.append((c("─", "dim"), "its reach: from today to that date"))
