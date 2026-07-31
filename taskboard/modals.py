@@ -865,17 +865,19 @@ class LegendModal(ModalScreen[None]):
     BINDINGS = [("escape", "close", "Close"), ("question_mark", "close", "Close"),
                 ("q", "close", "Close")]
 
-    def __init__(self, mode: str, board: Board, today=None, size=(96, 30)):
+    def __init__(self, mode: str, board: Board, today=None, size=(96, 30),
+                 show_archived: bool = False):
         super().__init__()
         self._mode = mode
         self._board = board
         self._today = today
+        self._show_archived = show_archived
         self._dims = size
 
     def compose(self) -> ComposeResult:
         from .views import legend_entries
         entries = legend_entries(self._mode, self._board, self._today,
-                                 *self._dims)
+                                 *self._dims, show_archived=self._show_archived)
         with VerticalScroll(id="modal-box", classes="modal"):
             yield Label(f"[b]Legend · {self._mode}[/b]", classes="modal-title")
             if not entries:

@@ -17,7 +17,7 @@ from .modals import (ClockModal, ConfirmModal, ImageViewer, LegendModal, PhaseEd
                      ProjectModal, ProjectPicker, TaskDetails, TaskModal)
 from .keymap import KeyBar, app_bindings
 from .ribbon import Ribbon
-from .views import nav_model, render_view, valid_url
+from .views import clip, escape, nav_model, render_view, valid_url
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
 # the ambient's cycle length is this times the number of phases it rotates
@@ -175,7 +175,8 @@ class TaskboardApp(App):
         vps = self.query("#viewport")
         h = vps.first().size.height if vps else 30
         self.push_screen(LegendModal(self.view_mode, self.board,
-                                     size=(w or 96, h or 30)))
+                                     size=(w or 96, h or 30),
+                                     show_archived=self.show_archived))
 
     def action_report(self) -> None:
         """`R` — write an HTML report of the board beside the board file.
@@ -400,11 +401,31 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_archive(self) -> None:
+        """`x` — put a task away, or bring it back. It SAYS SO EITHER WAY.
+
+        The complaint this answers: with `v` off, archiving makes the row vanish,
+        and a row vanishing is indistinguishable from a key that did nothing. The
+        row disappearing IS the effect, but the screen never said which effect it
+        was. So the app states the fact and names the way back — that is also the
+        whole of the "undo" this action needs, since `x` is its own inverse."""
         task = self.selected_task
         if task is None:
             return
         task.archived = not task.archived
         self.board.save()
+        # the title is the user's text and goes through the SAME escape the views
+        # use: a title holding markup must never be able to render as markup here
+        shown = escape(clip(task.title, 40))
+        if task.archived:
+            # WITH `v` OFF THE ROW LEAVES THE SCREEN, and the selection leaves
+            # with it — so `x` on its own no longer targets this task. Saying
+            # "x brings it back" there would be a promise the app does not keep.
+            body = (f'"{shown}" archived · '
+                    + ("x brings it back" if self.show_archived
+                       else "v shows it, then x brings it back"))
+        else:
+            body = f'"{shown}" restored'
+        self.notify(body, title="Archive", severity="information")
         self.refresh_view()
 
     def action_toggle_archived(self) -> None:
