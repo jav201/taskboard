@@ -124,7 +124,7 @@ class TaskboardApp(App):
             where = r.get("backup") or "a .corrupt sidecar"
             self.notify(
                 f"board.json was unreadable; a copy was kept at {where}. "
-                "Started empty — your file was not overwritten.",
+                "Started empty — the original file was not overwritten.",
                 title="Board recovered", severity="error", timeout=10)
         elif r.get("tasks_rescued") or r.get("projects_rescued"):
             n = r.get("tasks_rescued", 0) + r.get("projects_rescued", 0)
