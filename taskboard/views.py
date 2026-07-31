@@ -599,6 +599,11 @@ METER_W = 6            # the right edge of a row, in cells
 _METER_FILL = {"overdue": 0, "today": 1, "week": 2, "month": 4, "later": 6}
 
 
+def days_until(iso: str | None, today: date) -> int | None:
+    d = parse_iso(iso)
+    return (d - today).days if d else None
+
+
 def due_meter(task_or_lane_days: int | None, done: bool, width: int = METER_W
               ) -> list[tuple[str, str]]:
     """The six-cell right edge, as (glyph, tone) cells.
@@ -1258,6 +1263,12 @@ def render_gantt(board, show_archived, selected_id, today=None,
     glabel_w = max(18, min(30, inner // 3))
     cell = 6
     meta_w, meta_full = gantt_meta_geometry(inner, glabel_w, cell)
+    # PRE-EXISTING DEFECT, fixed here: the label column had a floor of 18 and the
+    # grid a floor of one week, so below ~30 columns they summed to more than the
+    # frame and every body row came out 2 cells too wide. The label gives way —
+    # it is the only part that can, and width-exactness is this codebase's
+    # oldest law.
+    glabel_w = max(6, min(glabel_w, inner - meta_w - cell))
     avail = max(0, inner - glabel_w - meta_w)
     weeks = max(1, min(20, avail // cell)) if avail >= cell else 1
     grid = weeks * cell
@@ -1267,7 +1278,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
     def week_index(d):
         return None if d is None else (d - chart_start).days // 7
 
-    def bar_cells(s_idx, e_idx, color, char):
+    def bar_cells(s_idx, e_idx, color, char, from_week: int = 0):
         active = [False] * weeks
         if s_idx is not None and e_idx is not None:
             s, e = max(0, min(weeks - 1, s_idx)), max(0, min(weeks - 1, e_idx))
@@ -1275,9 +1286,17 @@ def render_gantt(board, show_archived, selected_id, today=None,
                 for i in range(s, e + 1):
                     active[i] = True
         out = ""
-        for i in range(weeks):
+        for i in range(from_week, weeks):
             out += c(char * (cell - 1) + " ", color) if active[i] else " " * cell
         return out
+
+    def title_weeks(s_idx) -> int:
+        """The empty week columns in front of a task's bar. THE TITLE RUNS OVER
+        THE FIELD — that is where the reader actually reads — and it stops where
+        its own bar starts, so it can never cover the thing it describes."""
+        if s_idx is None:
+            return weeks
+        return max(0, min(weeks, s_idx))
 
     def _flow_cols(s_idx, e_idx):
         """Visible columns carrying this bar's "▬" cells, left→right, so a
@@ -1321,7 +1340,9 @@ def render_gantt(board, show_archived, selected_id, today=None,
     for wk in range(weeks):
         lbl = "W" + (chart_start + timedelta(weeks=wk)).strftime("%V")
         axis += c(fit(lbl, cell), "accent" if wk == 0 else "dim", bold=(wk == 0))
-    head_txt = "prog   due" if meta_full else "prog"
+    # the due FIGURE became the six-cell meter, so the header names what is
+    # actually under it
+    head_txt = "prog    when" if meta_full else "when"
     meta_head = (c(fit(head_txt, meta_w, "right"), "mut")
                  if meta_w >= len(head_txt) else " " * meta_w)
     lines.append(line(axis + " " * trailing + meta_head))
@@ -1358,10 +1379,15 @@ def render_gantt(board, show_archived, selected_id, today=None,
                 gcells[dcol] = c("◆", dcolor)
         gcells[col_today] = rule                     # the rule wins its own cell
         bar = _overlay_cells(project_bar(si, ei, p.color, prog), grid, gcells)
+        pmeter = due_meter(days_until(p.due_date, today),
+                           done=p.status == "completed",
+                           width=min(METER_W, meta_w))
         lines.append(line(c(escape(fit("▐ " + p.name, glabel_w)), p.color, bold=True)
                           + bar
                           + " " * trailing
-                          + gantt_meta(p, prog, today, meta_w, meta_full)))
+                          + gantt_meta(p, prog, today,
+                                       max(0, meta_w - len(pmeter)), meta_full)
+                          + meter_markup(pmeter)))
         for t in gantt_tasks(board, tasks, p.id):
             ts = week_index(parse_iso(t.start_date) or parse_iso(t.due_date))
             te = week_index(parse_iso(t.due_date) or parse_iso(t.start_date))
@@ -1370,8 +1396,10 @@ def render_gantt(board, show_archived, selected_id, today=None,
                 continue
             scheduled_any = True
             sel = t.id == selected_id
-            u = urgency(t, today, board)
-            bcolor = "over" if u == "overdue" else "soon" if u == "today" else p.color
+            # THE BAR NAMES ITS PROJECT; THE METER SAYS WHEN. Severity keeps its
+            # one seat on this row — the meter's `▲` cap — so the bar itself no
+            # longer turns red or amber for urgency.
+            bcolor = p.color
             gcells_t = {col_today: rule}
             if _flowing(board, t):        # a bright packet drifts toward the due ◆
                 fcols = _flow_cols(ts, te)
@@ -1379,10 +1407,21 @@ def render_gantt(board, show_archived, selected_id, today=None,
                     pcol = fcols[tick % len(fcols)]
                     if pcol != col_today:      # never fight the today rule
                         gcells_t[pcol] = c("▬", "bright")
-            tbar = _overlay_cells(bar_cells(ts, te, bcolor, "▬"), grid, gcells_t)
-            lines.append(line(c("  ", "dim") + title_markup(t, glabel_w - 3, sel) + " "
+            skip = title_weeks(ts)
+            over_cells = skip * cell
+            tw = glabel_w - 3 + over_cells
+            shifted = {k - over_cells: v for k, v in gcells_t.items()
+                       if k >= over_cells}
+            tbar = _overlay_cells(bar_cells(ts, te, bcolor, "▬", from_week=skip),
+                                  grid - over_cells, shifted)
+            due = parse_iso(t.due_date)
+            mcells = due_meter((due - today).days if due else None,
+                               done=board.is_done(t),
+                               width=min(METER_W, meta_w))
+            lines.append(line(c("  ", "dim") + title_markup(t, tw, sel) + " "
                               + tbar + " " * trailing
-                              + " " * meta_w))
+                              + fit("", max(0, meta_w - len(mcells)))
+                              + meter_markup(mcells)))
             if line_map is not None:
                 line_map[t.id] = len(lines) - 1
 

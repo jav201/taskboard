@@ -16,8 +16,8 @@ from taskboard.models import Board, Task
 from taskboard.modals import (CalendarModal, PhaseEditor, TaskDetails, TaskModal,
                               image_block)
 from taskboard.ribbon import Ribbon
-from taskboard.views import (META_FULL_INNER, META_FULL_W, render_agenda,
-                             render_gantt)
+from taskboard.views import (META_FULL_INNER, META_FULL_W, METER_W,
+                             render_agenda, render_gantt)
 
 
 def make_app(tmp_path) -> TaskboardApp:
@@ -1493,9 +1493,11 @@ def test_gantt_bar_uses_dual_density_braille(tmp_path):
     b = _gantt_board(tmp_path)
     row = _project_row(b, "Alpha")
     assert DENSE in row and HALF in row
-    out = "".join(_gantt_rows(b))
+    # the sweep looks at the BAR ZONE only: the due meter at the row's right
+    # edge legitimately uses ⣤ for spent work (REV5 #19)
+    bars = "".join(l[:-1 - METER_W] for l in _gantt_rows(b))
     for bad in BANNED:
-        assert bad not in out, f"{bad!r} is a height-breaking texture"
+        assert bad not in bars, f"{bad!r} is a height-breaking texture"
 
 
 def test_gantt_bar_split_follows_phase_progress(tmp_path):
@@ -1519,14 +1521,16 @@ def test_gantt_bar_extremes(tmp_path):
     beta = next(p for p in b.projects if p.name == "Beta")
     beta.due_date = "2026-08-17"                        # same span as Alpha
     beta_row = _project_row(b, "Beta")
-    assert DENSE not in beta_row and HALF in beta_row
+    assert DENSE not in beta_row[:-1 - METER_W] and HALF in beta_row
 
     alpha = next(p for p in b.projects if p.name == "Alpha")
     for t in [t for t in b.tasks if t.project_id == alpha.id]:
         t.phase = "C"                                   # everything in the last phase
     alpha_row = _project_row(b, "Alpha")
     assert HALF not in alpha_row and DENSE in alpha_row
-    assert alpha_row.count(DENSE) == beta_row.count(HALF)   # same span, same width
+    # counted in the bar zone: the meter at the right edge draws ⣿ too
+    assert (alpha_row[:-1 - METER_W].count(DENSE)
+            == beta_row[:-1 - METER_W].count(HALF))         # same span, same width
 
 
 def test_gantt_shows_due_days_not_invented_estimate(tmp_path):
@@ -1536,16 +1540,23 @@ def test_gantt_shows_due_days_not_invented_estimate(tmp_path):
     Rendered WIDE on purpose: the due figure only exists above META_FULL_INNER."""
     b = _gantt_board(tmp_path)
     wide = META_FULL_INNER + 2                          # inner == META_FULL_INNER
-    assert "due 28d" in _project_row(b, "Alpha", wide)   # 2026-07-20 -> 2026-08-17
+    # Was: `due 28d` as a figure. REV5 #19 replaced the figure with the six-cell
+    # meter — same fact, drawn as length instead of read as a number. What the
+    # law still guards is that NOTHING here is a forecast: the progress percent
+    # and a due-date distance are both facts, and a project with no due date
+    # gets an unmeasured meter rather than an invented one.
+    alpha = _project_row(b, "Alpha", wide)
+    assert re.search(r"\d+%", alpha)                     # phase progress, a fact
+    assert set(alpha[-1 - METER_W:-1]) <= set("⣿⡇·▲⣤ ")   # its when, as length
 
-    beta_row = _project_row(b, "Beta", wide)
-    assert "—" in beta_row                          # dim em-dash placeholder
-    assert "due" not in beta_row
-    assert not re.search(r"\d+d", beta_row)              # no invented day figure
+    beta_row = _project_row(b, "Beta", wide)             # Beta has no due date
+    assert set(beta_row[-1 - METER_W:-1]) == {"·"}        # nothing to measure
+    assert not re.search(r"due \d+d", beta_row)          # no invented day figure
 
     beta = next(p for p in b.projects if p.name == "Beta")
     beta.due_date = "2026-07-13"                        # a week overdue
-    assert "due -7d" in _project_row(b, "Beta", wide)
+    # the overdue fact now reads as the meter's ONE alert glyph, not a number
+    assert "▲" in _project_row(b, "Beta", wide)[-1 - METER_W:-1]
 
 
 def test_gantt_divides_projects(tmp_path):
@@ -1585,16 +1596,24 @@ def test_gantt_meta_column_adapts_to_width(tmp_path):
 
     wide = META_FULL_INNER + 2                       # inner == META_FULL_INNER
     wide_rows = _gantt_rows(b, wide)
-    assert re.search(r"due -?\d+d", _project_row(b, "Alpha", wide))
-    assert "due" in wide_rows[1]                     # the axis row carries the head
+    # Was: the due FIGURE. It became the meter (REV5 #19), so what widens with
+    # the terminal is the progress percent beside it.
+    assert re.search(r"\d+%", _project_row(b, "Alpha", wide))
+    assert "prog" in wide_rows[1]                    # the axis row carries the head
     assert all(len(l) == wide for l in wide_rows)
 
     narrow = META_FULL_INNER - 30                    # clearly below the threshold
     narrow_rows = _gantt_rows(b, narrow)
     alpha_narrow = _project_row(b, "Alpha", narrow)
-    assert "50%" in alpha_narrow                     # the percent survives…
-    assert not re.search(r"due -?\d+d", "".join(narrow_rows))   # …the due figure not
-    assert "due" not in narrow_rows[1]
+    # Was: "the percent survives, the due figure does not". REV5 #19 changed
+    # what the band holds, so the drop order changed with it: at narrow widths
+    # the six-cell METER keeps the band and the percent is what goes. The meter
+    # is the urgency — the thing you act on — and keeping it makes the row's
+    # right edge mean the same thing at every width.
+    assert set(alpha_narrow[-1 - METER_W:-1]) <= set("⣿⡇·▲⣤ ")
+    assert "50%" not in alpha_narrow
+    assert not re.search(r"due -?\d+d", "".join(narrow_rows))
+    assert "prog" not in narrow_rows[1]
     assert all(len(l) == narrow for l in narrow_rows)
 
     # …and dropping it buys real timeline: strictly more week columns than the
@@ -1679,13 +1698,16 @@ def test_gantt_due_diamond_colour_by_pastness(tmp_path):
     assert any(HEX["bright"] in s for s in diamond_styles("Future"))
 
 
-def test_gantt_task_bar_colour_by_urgency(tmp_path):
-    """WHY: a task bar's colour must carry its urgency at a glance — red when
-    overdue, amber when due today, otherwise the PROJECT colour (never grey)."""
+def test_gantt_task_bar_carries_identity_and_the_meter_carries_urgency(tmp_path):
+    """WAS: "a task bar's colour must carry its urgency — red when overdue, amber
+    when due today". REV5 #19 reversed that on purpose. The bar is the project's
+    span, so it wears the project's hue; urgency moved to the meter at the row's
+    edge, where `▲` is severity's single seat. A bar that turned red would put
+    two jobs on one mark again — the exact collision the ration exists to stop."""
     from taskboard.models import Board, Project, Task
     from taskboard.views import HEX
     b = Board([], [], tmp_path / "g.json", phases=["A", "B", "C"])
-    p = Project("P", "cyan", start_date="2026-07-20", due_date="2026-09-30")
+    p = Project("P", "sky", start_date="2026-07-20", due_date="2026-09-30")
     b.projects.append(p)
     b.tasks += [
         Task("overduetask", p.id, "A", start_date="2026-07-20", due_date="2026-07-20"),
@@ -1693,11 +1715,14 @@ def test_gantt_task_bar_colour_by_urgency(tmp_path):
         Task("ontracktask", p.id, "A", start_date="2026-07-27", due_date="2026-08-24"),
     ]
     txt = render_gantt(b, False, None, today=GANTT_MIDWEEK, width=100, height=0)
-    assert any(HEX["over"] in s for s in _bar_styles(txt, "overduetask"))
-    assert any(HEX["soon"] in s for s in _bar_styles(txt, "duetodaytask"))
-    on_track = _bar_styles(txt, "ontracktask")
-    assert any(HEX["cyan"] in s for s in on_track)                       # project colour
-    assert not any(HEX["over"] in s or HEX["soon"] in s for s in on_track)
+    for title in ("overduetask", "duetodaytask", "ontracktask"):
+        styles = _bar_styles(txt, title)
+        assert any(HEX["sky"] in s for s in styles), f"{title}: bar lost its identity"
+        assert not any(HEX["over"] in s for s in styles), f"{title}: bar judges"
+        assert not any(HEX["soon"] in s for s in styles), f"{title}: bar judges"
+    rows = str(txt).splitlines()
+    overdue_row = next(l for l in rows if "overduetask" in l)
+    assert "▲" in overdue_row[-1 - METER_W:-1]      # the urgency, in its one seat
 
 
 def test_gantt_header_counts_past_due(tmp_path):
