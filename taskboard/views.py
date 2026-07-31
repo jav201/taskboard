@@ -284,7 +284,12 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
         # neutral ink tone, which claims neither the identity nor the judging house.
         tokens.append(("!", "ink"))
     if task.images:
-        tokens.append(("▤", "sky"))     # width-1 image indicator, distinct from ↗/!
+        # `mut`, not `sky`: an attachment is an ATTRIBUTE of one task, and `sky`
+        # is an offered PROJECT hue. An identity tone worn by a task attribute
+        # says "this task belongs to the sky project" to anyone reading the
+        # board by colour. Its siblings already sit in neutral houses (↗ accent,
+        # ! ink); this is the quietest of the three and takes the quietest tone.
+        tokens.append(("▤", "mut"))     # width-1 image indicator, distinct from ↗/!
     ind_markup, used = _fit_indicators(tokens, wc - len(prefix))
     title_w = max(0, wc - len(prefix) - used)
     pre = c(prefix, prefix_color) if prefix else ""
