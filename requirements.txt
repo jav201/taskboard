@@ -3,5 +3,12 @@
 textual==8.2.8
 rich==15.0.0
 tzdata==2026.3
+# pillow + textual-image are RUNTIME deps (pyproject declares them): paste-image
+# and the image viewer are features of the app, not extras. They were missing
+# here, so a venv built from this file could not run the suite — five tests in
+# test_app.py failed on ImportError. They are not marked skippable on purpose: a
+# skip would hide a broken install of a feature that is supposed to work.
+pillow==12.2.0
+textual-image==0.13.2
 pytest==9.1.1
 pytest-asyncio==1.4.0

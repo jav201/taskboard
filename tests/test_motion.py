@@ -119,3 +119,75 @@ def test_the_rule_still_breathes_at_the_narrow_step(tmp_path):
             for line in frame(b, tick, 40, 20)
             for c in range(len(line))} & set(RULE_PHASES)
     assert len(seen) >= 2
+
+
+# --------------------------------------------------------------------------- #
+# the gantt's flow packet — the OTHER thing that moves, and it shares the clock
+# --------------------------------------------------------------------------- #
+def gframe(b, tick, w=96, h=30):
+    return str(render_view("gantt", b, False, None, TODAY,
+                           width=w, height=h, tick=tick)).split("\n")
+
+
+def packets(lines):
+    """(row, column) of every flow packet on screen."""
+    return [(r, c) for r, line in enumerate(lines)
+            for c, ch in enumerate(line) if ch == "▬"]
+
+
+def long_reach(tmp_path):
+    """ONE task with a LONG span, in progress. The reach has to be long for the
+    speed to be observable at all: over a two-cell reach, a packet stepping 3
+    cells per tick and one stepping 1 land on the same cells every time (3t mod 2
+    == t mod 2), so a short fixture cannot tell a detached clock from the shared
+    one — it reports green while the animation runs at any speed it likes."""
+    b = Board.load(str(tmp_path / "reach.json"))
+    b.projects.clear()
+    b.tasks.clear()
+    p = Project("Atlas", "lime", "on_track", start_date=iso(-30), due_date=iso(30))
+    b.projects.append(p)
+    b.tasks.append(Task("A long haul", p.id, "Doing", "normal",
+                        start_date=iso(-28), due_date=iso(28)))
+    return b
+
+
+def test_the_gantt_flow_rides_the_ONE_shared_clock(tmp_path):
+    """The lanes view breathes and the gantt flows, and BOTH are driven by the
+    app's single interval — the packet advances exactly ONE cell per tick. That
+    is what makes `TICK_SECONDS` the one number governing every moving thing on
+    screen: change it and both regimes change together. A packet that advanced
+    by two, or by a private constant, would have detached from the clock while
+    still looking animated, and nothing would have caught it."""
+    b = long_reach(tmp_path)
+    a, nxt = packets(gframe(b, 0)), packets(gframe(b, 1))
+    assert a, "fixture must actually draw a flow packet to be a test"
+    assert len(a) == len(nxt), (a, nxt)
+    for (r0, c0), (r1, c1) in zip(a, nxt):
+        assert r0 == r1, f"a packet changed ROW between ticks: {r0} -> {r1}"
+        assert c1 - c0 in (1, 0) or c1 < c0, f"packet jumped {c0} -> {c1}"
+    moved = [c1 - c0 for (_r, c0), (_r1, c1) in zip(a, nxt) if c1 > c0]
+    assert moved, "no packet moved at all between two ticks"
+    assert set(moved) == {1}, f"a packet advanced by {set(moved)} cells per tick"
+    # and over a long run, so a multiplier cannot hide inside a short wrap
+    cols = [packets(gframe(b, t))[0][1] for t in range(10)]
+    steps = {cols[i + 1] - cols[i] for i in range(len(cols) - 1)}
+    assert steps == {1}, f"across ten ticks the packet stepped {steps}, not one cell"
+
+
+def test_the_flow_packet_is_never_faster_than_the_illegal_band(tmp_path):
+    """The same restraint law the today rule answers to, applied to the packet:
+    its perceptual cycle is the time to cross its own reach and wrap, so a SHORT
+    reach is what would make it strobe. A one-cell reach is static (nothing to
+    cross); every longer one must clear 2 s at the shared clock, or it flashes at
+    the reader instead of reading as work in motion."""
+    b = long_reach(tmp_path)
+    seen = set()
+    for tick in range(12):
+        for _row, col in packets(gframe(b, tick)):
+            seen.add(col)
+    # the packet visits >1 column, so it is genuinely moving and its wrap period
+    # is at least that many ticks
+    assert len(seen) > 1, "the packet never moved; this law would be vacuous"
+    cycle_ms = len(seen) * TICK_SECONDS * 1000
+    assert cycle_ms >= 2000, (
+        f"the flow packet wraps every {cycle_ms} ms, inside the 400-2000 ms band")
