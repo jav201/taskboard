@@ -204,7 +204,7 @@ async def test_switching_views_restates_the_keys_for_that_view(tmp_path):
         await pilot.pause()
         tab = next(k for k in KEYMAP if k.action == "toggle_presentation")
         bar = app.query_one("#keybar", KeyBar)
-        await pilot.press("5")                       # kanban
+        await pilot.press("4")                       # kanban
         await pilot.pause()
         assert tab.show in str(bar.render())
         await pilot.press("1")                       # lanes

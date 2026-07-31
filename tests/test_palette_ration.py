@@ -199,7 +199,8 @@ def _styles(text) -> list[tuple[str, str]]:
     return [(str(s.style), text.plain[s.start:s.end]) for s in text.spans]
 
 
-VIEWS = ("swimlanes", "columns", "agenda", "gantt", "kanban")
+# imported from the seat so a retired view cannot linger here
+from taskboard.keymap import VIEWS
 
 
 def _crowded(tmp_path):
@@ -271,4 +272,4 @@ def test_every_view_that_marks_priority_marks_it_with_the_glyph(tmp_path):
                        if txt.strip().startswith("!")]
     assert marks["swimlanes"] == [(HEX["ink"], "!1")]
     assert marks["kanban"] == [(HEX["ink"], "!")]
-    assert marks["columns"] == marks["agenda"] == marks["gantt"] == []
+    assert marks["agenda"] == marks["gantt"] == []

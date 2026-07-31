@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="docs/taskboard.gif" width="660" alt="taskboard — four views"><br>
-  <sub>Swimlanes · Columns · Agenda · Gantt — switch with keys 1–4.</sub>
+  <sub>Lanes · Agenda · Gantt · Kanban — switch with keys 1–4.</sub>
 </p>
 
 
@@ -39,9 +39,12 @@ nothing open **rests** at the bottom. Severity (`▲Nd`) is worn only by a date.
 | Key | View | What it's for |
 |-----|------|---------------|
 | `1` | **Lanes** | One row per project on a shared day axis, **ranked by pressure**: a drawn field for the project that needs you now, a row for the rest, a resting row for anything with nothing open. Shows each project's status (`‖ ╳ ✓`), its `done/total`, its high-priority count `!N`, and how long its work has sat in phase. |
-| `2` | **Columns** | Classic kanban: BACKLOG / DOING / BLOCKED / DONE, project-colored cards, WIP counts, due chips. |
-| `3` | **Agenda** | Tasks grouped by urgency: OVERDUE / TODAY / THIS WEEK / LATER / NO DATE, with braille due-bars. |
-| `4` | **Gantt** | An 8-week time axis; a bar per project (start→due) with its task bars underneath; undated items listed under UNSCHEDULED. |
+| `2` | **Agenda** | Every dated task on one shared day axis, ordered by urgency, each drawing its reach from today to its due date. |
+| `3` | **Gantt** | An 8-week time axis; a bar per project (start→due) with its task bars underneath; undated items listed under UNSCHEDULED. |
+| `4` | **Kanban** | Every task in its phase column, grouped by project. |
+
+> **Columns was retired** — kanban is the same phase grid and loses nothing, so the
+> views renumbered to 1-4. The app says so once, on the first launch after the change.
 
 ## Install as a command
 
@@ -147,9 +150,9 @@ window, then tap it again to go frameless.
 
 | Key | Action |
 |-----|--------|
-| `1` `2` `3` `4` | Switch view (Swimlanes / Columns / Agenda / Gantt) |
-| `↑` `↓` (or `k` `j`) | Move selection **in the current view's on-screen order**. In Columns/Swimlanes this moves *within* the column/lane. |
-| `←` `→` (or `h` `l`) | Move between columns (Columns/Swimlanes) — jumps to the next column's first task. No-op in Agenda/Gantt (single column). |
+| `1` `2` `3` `4` | Switch view (Lanes / Agenda / Gantt / Kanban) |
+| `↑` `↓` (or `k` `j`) | Move selection **in the current view's on-screen order**. In Kanban this moves *within* the phase column. |
+| `←` `→` (or `h` `l`) | Move between phase columns (Kanban) — jumps to the next column's first task. No-op in the single-column views. |
 | `a` | Add task |
 | `p` | Add project |
 | `P` | Manage projects (edit / archive / delete existing projects) |
@@ -162,7 +165,7 @@ window, then tap it again to go frameless.
 | `c` | Choose the two ribbon city clocks (type to find a city) |
 | `q` | Quit |
 
-Navigation follows what you **see**: Down in Columns walks down the current status
+Navigation follows what you **see**: Down in Kanban walks down the current phase
 column (not some unrelated task in data order); Right jumps to the next column. The
 selected task stays highlighted and is scrolled into view.
 

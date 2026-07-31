@@ -24,9 +24,12 @@ from .views import nav_model, render_view, valid_url
 # through — which is why the motion laws read it instead of assuming it.
 TICK_SECONDS = 1.0
 
-VIEW_ORDER = ["swimlanes", "columns", "agenda", "gantt", "kanban"]
-VIEW_KEYS = {"1": "swimlanes", "2": "columns", "3": "agenda", "4": "gantt",
-             "5": "kanban"}
+# Written into board.json the first time the renumbering notice is shown, so it
+# is shown exactly once per board rather than at every launch.
+RENUMBER_NOTICE_KEY = "seen_view_renumber_2026_07"
+
+VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban"]
+VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban"}
 
 
 class BoardView(Static):
@@ -76,6 +79,7 @@ class TaskboardApp(App):
             yield KeyBar(id="keybar")
 
     def on_mount(self) -> None:
+        self._announce_renumbering()
         self._sweep_old_done()
         self._select_first()
         self.refresh_view()
@@ -83,6 +87,19 @@ class TaskboardApp(App):
         # ONE shared clock interval for the whole app (never per-widget).
         self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
+
+    def _announce_renumbering(self) -> None:
+        """Say ONCE that the keys moved. Muscle memory is a real thing a user
+        built, and moving `2` from columns to agenda without a word is the same
+        sin as hiding a key: the screen would stop matching what they know."""
+        if self.board.settings.get(RENUMBER_NOTICE_KEY):
+            return
+        self.board.settings[RENUMBER_NOTICE_KEY] = True
+        self.board.save()
+        self.notify(
+            "The columns view was retired — kanban does the same job better. "
+            "The views are now 1 lanes · 2 agenda · 3 gantt · 4 kanban.",
+            title="View keys renumbered", severity="information", timeout=10)
 
     def _sweep_old_done(self) -> None:
         """Archive long-finished work at startup — and SAY SO. Tasks leaving the
