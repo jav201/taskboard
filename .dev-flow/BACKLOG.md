@@ -375,6 +375,12 @@ batch (`2026-07-31-batch-02`) is in flight under `/fast-dev-flow`. 345 tests gre
   named in text beside its bar, which is the secondary encoding the palette rules
   ask for. The failure is real but it is "two projects can share a colour", not
   "the board is unreadable".
+  **DECIDED 2026-07-31 — Option A accepted by Javier ("Acepto la opción A"): the 8
+  shipped hues stay.** The standing conditions of the acceptance: text remains a
+  mandatory identity channel beside every hue-bearing mark (already law in the
+  report: no figure encodes a project by hue alone), and this item is CLOSED — do
+  not reopen the palette unless the hue family itself changes, at which point the
+  all-pairs measurement above is the gate to re-run.
 
 - **Two process findings, both from mutants that stayed green.** A test asserting
   a thing is ABSENT must assert on text the thing ALWAYS emits — `"nothing late"`
