@@ -12,7 +12,7 @@ them reads a list of forbidden names, so re-adding a colliding hue to
 """
 
 import json
-from datetime import date
+from datetime import date, datetime
 from itertools import permutations
 
 from taskboard.models import (DROPPED_PROJECT_COLORS, PROJECT_COLORS, Board,
@@ -276,3 +276,47 @@ def test_every_view_that_marks_priority_marks_it_with_the_glyph(tmp_path):
     assert marks["swimlanes"] == [(HEX["ink"], "!1")]
     assert marks["kanban"] == [(HEX["ink"], "!")]
     assert marks["agenda"] == marks["gantt"] == []
+
+
+# --------------------------------------------------------------------------- #
+# AC5 — the two long-backlogged violations: marks that wore the wrong house
+# --------------------------------------------------------------------------- #
+def _reserved_hexes() -> set[str]:
+    return {HEX[k] for k in ("over", "soon")}
+
+
+def test_the_week_number_does_not_judge(tmp_path):
+    """The ribbon's ISO week sat in `amber` — the due-today hue, hex for hex
+    (#fbbf24 == `soon`). A week number judges nothing: it names no project and
+    reports no lateness, so wearing severity's tone made the ribbon claim every
+    Monday that something was due. Measured, not name-checked: no reserved hex
+    may appear in the ribbon EXCEPT on a mark that is actually a date."""
+    from taskboard.ribbon import Ribbon
+
+    class _Probe(Ribbon):          # a real Ribbon; only the screen write is stubbed
+        def update(self, renderable="", **kw):
+            return None
+
+    markup = _Probe().update_clock(datetime(2026, 7, 30, 9, 5))
+    assert "W31" in markup, "fixture must actually draw the week it is judging"
+    for hexv in _reserved_hexes():
+        assert hexv not in markup, f"the ribbon wears {hexv}, a judging hue"
+
+
+def test_a_task_attribute_never_wears_an_identity_hue(tmp_path):
+    """`▤` (has images) sat in `sky`, an OFFERED PROJECT HUE. Anyone reading the
+    board by colour was told this task belongs to the sky project. An attribute
+    of a task is not an identity and may not borrow one — the law measures the
+    rendered card against `PROJECT_COLORS`, so any indicator that reaches into
+    the identity house in future fails here whatever it is called."""
+    b = Board.load(str(tmp_path / "attr.json"))
+    p = Project("Anything", "lime", "on_track")
+    b.projects.append(p)
+    t = Task("Has an attachment", p.id, "Doing", "high",
+             images=["/tmp/shot.png"], urls=["http://x.test"])
+    b.tasks.append(t)
+    cell = card_cell(t, b, 60, False)
+    assert "▤" in cell, "fixture must actually draw the mark it is judging"
+    for name in PROJECT_COLORS:
+        assert HEX[name] not in cell, (
+            f"a task attribute is painted {name} ({HEX[name]}), an identity hue")

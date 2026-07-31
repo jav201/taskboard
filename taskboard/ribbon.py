@@ -46,7 +46,11 @@ class Ribbon(Static):
         parts = [
             _c(now.strftime("%H:%M:%S"), "accent", bold=True),
             _c(now.strftime("%a %d %b %Y"), "ink"),
-            _c(week, "amber"),
+            # `mut`, not `amber`: amber IS the due-today hue, hex for hex
+            # (#fbbf24 == `soon`). An ISO week number judges nothing and names
+            # nobody — it is a calendar fact subordinate to the date beside it,
+            # so it sits in the same muted house as the city labels.
+            _c(week, "mut"),
         ]
         for city in (self.clock1_key, self.clock2_key):
             iana = CITY_TO_ZONE.get(city, "UTC")
