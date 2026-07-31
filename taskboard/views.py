@@ -590,28 +590,75 @@ def due_token(task: Task, today: date) -> tuple[str, str]:
     return f"+{n}d", "mut"
 
 
+METER_W = 6            # the right edge of a row, in cells
+
+# The due meter's categories, and the length each one draws. LENGTH IS THE TIME
+# THAT REMAINS, so a SHORT bar means act now — triage without reading a number.
+# The scale is categorical, not linear: a linear one spends all its resolution
+# on a distant future where nothing is decided.
+_METER_FILL = {"overdue": 0, "today": 1, "week": 2, "month": 4, "later": 6}
+
+
+def due_meter(task_or_lane_days: int | None, done: bool, width: int = METER_W
+              ) -> list[tuple[str, str]]:
+    """The six-cell right edge, as (glyph, tone) cells.
+
+    Replaces the whole `n/N  !N  ▲Nd | today | done | —` group. It answers WHEN,
+    never WHOSE — identity already travels in the spine at the other end of the
+    same row — so it is drawn in neutral tones whatever the board holds. The
+    census caught the first version painting it in each project's hue: the right
+    edge went from 6 tones to 8 because it carried one per project.
+
+    Severity keeps its single seat: overdue lights the `▲` cap and nothing else."""
+    if width <= 0:
+        return []
+    if done:                                    # spent, complete, and wordless
+        return [("⣤", "ash")] * width
+    if task_or_lane_days is None:               # no date: nothing to measure
+        return [("·", "dim")] * width
+    d = task_or_lane_days
+    band = ("overdue" if d < 0 else "today" if d == 0 else "week" if d <= 7
+            else "month" if d <= 31 else "later")
+    fill = min(width, _METER_FILL[band])
+    cells: list[tuple[str, str]] = []
+    if band == "overdue":
+        cells.append(("▲", "over"))             # THE one alert glyph
+    else:
+        tone = "accent" if band == "today" else "mut"
+        cells += [("⣿", tone)] * max(0, fill - 1)
+        if fill:
+            cells.append(("⡇", tone))           # the half-cell boundary
+    cells += [("·", "ash")] * (width - len(cells))
+    return cells[:width]
+
+
+def meter_markup(cells: list[tuple[str, str]]) -> str:
+    return "".join(c(g, tone) for g, tone in cells)
+
+
+def lane_due_days(lane: LaneFacts) -> int | None:
+    """What the lane's meter measures: its own due date if it has one, else the
+    soonest thing it still owes."""
+    if lane.due_in is not None:
+        return lane.due_in
+    return None
+
+
 def _figures(lane: LaneFacts, width: int) -> str:
-    """`done/total`, the `!N` of high priority, and the chip — right-aligned in
-    exactly `width` cells. Order of loss when space runs out: `!N` first, then
-    the counts; the chip is last because it is the only thing here that says
-    anything is wrong. [PROPOSAL 4.2]"""
+    """The row's right edge: the due meter, and nothing else.
+
+    `n/N` is gone at the root — the project's own wave already draws its
+    progress, and a figure repeating the field beside it is exactly the
+    duplication this edge exists to remove. `!N` moved to the leader's band,
+    where a digit earns its cells."""
     if width <= 0:
         return ""
-    chip, chip_key = pressure_chip(lane)
-    counts = f"{lane.done_n}/{lane.total}"
-    high = f"!{lane.high}" if lane.high else ""
-    left = counts + (" " + high if high else "")
-    if len(left) + 1 + len(chip) > width:
-        left, high = counts, ""
-    if len(left) + 1 + len(chip) > width:
-        left = ""
-    if len(chip) > width:
-        return c(fit(chip, width, "right"), chip_key)
-    pad = width - len(left) - len(chip)
-    out = ""
-    if left:
-        out += c(counts, "mut") + (" " + c(high, "ink") if high else "")
-    return out + " " * pad + c(chip, chip_key)
+    # A CLOSED project is never judged — nothing is expected of it, so nothing
+    # about it can be late. Its edge is the spent form whatever its dates say.
+    cells = due_meter(None if lane.closed else lane_due_days(lane),
+                      done=lane.closed, width=min(METER_W, width))
+    pad = " " * max(0, width - len(cells))
+    return pad + meter_markup(cells)
 
 
 def _lane_label(lane: LaneFacts, label_w: int) -> str:
@@ -720,7 +767,10 @@ def lane_geometry(inner: int, height: int) -> FieldGeo:
     the field takes exactly what is left."""
     g = field_geometry(inner, height)
     label_w = min(g.label_w, max(6, inner // 3))
-    figs_w = min(g.figs_w, max(4, inner // 3))
+    # THE BAND THE METER FREED. The port reserves 13 (L) / 11 (S) for the old
+    # `n/N !N ▲Nd` group; the meter needs six cells and a space, and the rest
+    # goes to the field — measured at +6 cells (L) and +4 (S).
+    figs_w = min(METER_W + 1, max(4, inner // 3))
     field_w = max(0, inner - label_w - figs_w - 1)
     if (label_w, figs_w, field_w) == (g.label_w, g.figs_w, g.field_w):
         return g
@@ -743,14 +793,16 @@ Row = tuple[str, "str | None"]      # (markup, the task this row names)
 
 def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
                inner: int, selected: bool) -> Row:
-    tok, tok_key = due_token(task, today)
-    title_w = max(0, inner - 5 - len(tok) - 1)
+    due = parse_iso(task.due_date)
+    days = (due - today).days if due else None
+    cells = due_meter(days, done=board.is_done(task))
+    title_w = max(0, inner - 5 - len(cells) - 1)
     body = escape(fit(clip(task.title, title_w), title_w))
     if selected:
         body = f"[reverse]{body}[/reverse]"
     return ((c("▎", lane.hue) + "  "
              + c(phase_glyph({min(3, board.phase_index(task))}), lane.hue) + " "
-             + c(body, "mut") + " " + c(tok, tok_key)), task.id)
+             + c(body, "mut") + " " + meter_markup(cells)), task.id)
 
 
 def stack_block(lane: LaneFacts, geo: FieldGeo, board: Board, today: date,
@@ -784,10 +836,13 @@ def resting_row(lane: LaneFacts, geo: FieldGeo, inner: int) -> Row:
     label = (c("▏", "dim") + " " + c(escape(fit(clip(lane.name, geo.label_w - 5),
                                                 geo.label_w - 5)), "mut") + " "
              + c(STATUS_MARK.get(lane.status, " "), "dim") + " ")
-    tail = fit(word, geo.figs_w, "right")
-    return (label + c("".join(body[:geo.field_w]), "dim")
-            + " " * max(0, inner - geo.label_w - geo.field_w - geo.figs_w)
-            + c(tail, "dim"), None)
+    # A resting row carries NO meter, so its word is not squeezed into the six
+    # cells the meter would have taken — it is right-aligned across everything
+    # the row has left. (`completed` is 9 characters; the band is 7.)
+    span = max(0, inner - geo.label_w)
+    body = "".join(body[:geo.field_w])[:max(0, span - len(word) - 1)]
+    return (label + c(body, "dim") + " " * max(0, span - len(body) - len(word))
+            + c(word, "dim"), None)
 
 
 def sitting(lane: LaneFacts, today: date) -> str:
@@ -826,6 +881,7 @@ def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
     # and the chip goes last because it is the only one that says anything is
     # wrong. [PROPOSAL 4.2, the order of loss]
     rights = [(t, k) for t, k in ((sitting(lane, today), "dim"),
+                                  (f"!{lane.high}" if lane.high else "", "ink"),
                                   (f"{len(lane.open)} open", "mut"),
                                   (chip, chip_key)) if t]
     while rights and 2 + 4 + _rights_w(rights) > inner:
