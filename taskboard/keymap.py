@@ -67,6 +67,7 @@ KEYMAP: tuple[Key, ...] = (
     # Declared LAST on purpose, and drawn FIRST: `universal` is what moves it,
     # not its position here. A universal key must be declarable anywhere in this
     # table and still be the last one standing when the row runs out of width.
+    Key("?", "?", "legend", "Keys", universal=True),
     Key("q", "q", "quit", "Quit", universal=True),
 )
 

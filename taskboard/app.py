@@ -13,8 +13,8 @@ from textual.widgets import Static
 
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      default_board_path)
-from .modals import (ClockModal, ConfirmModal, ImageViewer, PhaseEditor, ProjectModal,
-                     ProjectPicker, TaskDetails, TaskModal)
+from .modals import (ClockModal, ConfirmModal, ImageViewer, LegendModal, PhaseEditor,
+                     ProjectModal, ProjectPicker, TaskDetails, TaskModal)
 from .keymap import KeyBar, app_bindings
 from .ribbon import Ribbon
 from .views import nav_model, render_view, valid_url
@@ -166,6 +166,16 @@ class TaskboardApp(App):
         ribbon = ribbons.first(Ribbon)
         ribbon.clock1_key, ribbon.clock2_key = self.board.get_clocks()
         ribbon.update_clock()
+
+    def action_legend(self) -> None:
+        """`?` — the marks of the CURRENT view, over the view, so the reader
+        does not lose their place."""
+        boards = self.query("#board")
+        w = boards.first(BoardView).size.width if boards else 96
+        vps = self.query("#viewport")
+        h = vps.first().size.height if vps else 30
+        self.push_screen(LegendModal(self.view_mode, self.board,
+                                     size=(w or 96, h or 30)))
 
     def action_clocks(self) -> None:
         k1, k2 = self.board.get_clocks()

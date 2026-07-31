@@ -844,3 +844,36 @@ class TaskDetails(ModalScreen[None]):
 
     def action_close(self) -> None:
         self.dismiss(None)
+
+
+class LegendModal(ModalScreen[None]):
+    """`?` — what the marks on THIS view mean, and only the ones it is drawing.
+
+    The swatches are not drawn here: `views.legend_entries` builds them by
+    calling the very functions the view calls, so this screen cannot describe a
+    mark the renderer stopped painting."""
+
+    BINDINGS = [("escape", "close", "Close"), ("question_mark", "close", "Close"),
+                ("q", "close", "Close")]
+
+    def __init__(self, mode: str, board: Board, today=None, size=(96, 30)):
+        super().__init__()
+        self._mode = mode
+        self._board = board
+        self._today = today
+        self._dims = size
+
+    def compose(self) -> ComposeResult:
+        from .views import legend_entries
+        entries = legend_entries(self._mode, self._board, self._today,
+                                 *self._dims)
+        with VerticalScroll(id="modal-box", classes="modal"):
+            yield Label(f"[b]Legend · {self._mode}[/b]", classes="modal-title")
+            if not entries:
+                yield Label("Nothing is drawn on this board yet.")
+            for swatch, meaning in entries:
+                yield Label(f"{swatch}  {escape(meaning)}")
+            yield Label("[dim]? or esc closes[/dim]", classes="modal-title")
+
+    def action_close(self) -> None:
+        self.dismiss(None)
