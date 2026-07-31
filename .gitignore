@@ -8,3 +8,12 @@ dist/
 board.json
 .pytest_cache/
 debug-*.log
+
+# Local-only working areas, deliberately not committed:
+#   _tui_prism_proposal/ is the design lab a concurrent agent owns. Ignoring it
+#   keeps the tree clean without deciding anything permanent — committing the
+#   lab instead is a one-line change here, and is the alternative if the design
+#   history is ever meant to be published alongside the code.
+_tui_prism_proposal/
+.s19tool/
+.claude/
