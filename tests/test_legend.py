@@ -163,8 +163,9 @@ def test_each_view_gets_its_own_legend(tmp_path):
     sets = {mode: set(swatches(legend_entries(mode, b, TODAY))) for mode in VIEWS}
     assert sets["swimlanes"] != sets["gantt"] != sets["agenda"]
     assert "●" in sets["agenda"] and "●" not in sets["swimlanes"]
-    assert any("⢕" in s for s in sets["gantt"])
-    assert not any("⢕" in s for s in sets["agenda"])
+    # the gantt's marks after the field redesign: the two bands, not a slab
+    assert any("⣿" in s for s in sets["gantt"])
+    assert not any("⣿" in s for s in sets["agenda"])
 
 
 # --------------------------------------------------------------------------- #
