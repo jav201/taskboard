@@ -173,7 +173,8 @@ window, then tap it again to go frameless.
 | `P` | Manage projects (edit / archive / delete existing projects) |
 | `e` | Edit selected task |
 | `d` / `Delete` | Delete selected task (asks to confirm) |
-| `x` | Archive / unarchive selected task |
+| `x` | Archive / unarchive selected task (an archived task hides, so press `v` first to bring one back) |
+| `X` | **Archive finished work the board has no completion date for** — a one-time purge for tasks that were already done before dates were recorded. Says how many and asks first. |
 | `v` | Toggle showing archived items (hidden by default) |
 | `o` | Open the selected task's URLs in your browser (opens all of them) |
 | `i` | Open the inline image viewer for the selected task (rescaled thumbnails) |
@@ -200,12 +201,23 @@ Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink
 terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
 High-priority tasks are marked `!` — a glyph, deliberately not a colour (see below).
 
-**Finished work gets out of the way.** In the gantt, a project lists its open tasks first
-and its done ones at the tail. A task that has been done for **20 days or more is archived
-automatically** at startup — archived, never deleted: press `v` to see archived items and
-`x` to bring one back, and the app tells you when it has swept any. It only archives work
-whose completion date it actually knows (recorded from the moment a task changes phase), so
-tasks finished before this feature existed stay put rather than being guessed about.
+**Finished work gets out of the way**, by two paths that never overlap.
+
+*Automatically, when the date is known.* A task that has been in its done phase for **20 days
+or more is archived at startup** — archived, never deleted. The app says when it has swept
+any. It only counts from the moment a task **changes phase**, because that is when the board
+learns the date.
+
+*Deliberately, for everything older.* Work finished **before dates were recorded has no
+completion date**, and the automatic sweep can never touch it — an undated task is not old,
+it is undated, and guessing a date would be a fabrication. So press **`X`** for a one-time
+purge: it tells you how many such tasks there are, asks, and only then archives them. It
+still **stamps nothing** — those tasks keep their unknown date, honestly.
+
+After that one purge, the 20-day rule handles everything from then on.
+
+Either way the work is **archived, not deleted**: `v` shows archived items, `x` brings one
+back, and you can also tick **Archived** inside the task editor (`e`).
 
 ### Project colours: eight, and why not twelve
 

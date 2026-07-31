@@ -201,6 +201,11 @@ class TaskModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
                 yield Label("Blocked")
                 yield Checkbox("blocked", value=bool(t.blocked) if t else False,
                                id="f-blocked")
+                yield Label("Archived")
+                # the same flag `x` toggles — offered here because this is where
+                # a reader looks for it when the task is already open
+                yield Checkbox("archived", value=bool(t.archived) if t else False,
+                               id="f-archived")
                 yield Label("Priority")
                 yield Select([(p, p) for p in TASK_PRIORITIES],
                              value=(t.priority if t else "normal"),
@@ -290,6 +295,7 @@ class TaskModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
             "project_id": None if proj == NONE_VALUE else proj,
             "phase": self._val("f-phase"),
             "blocked": bool(self.query_one("#f-blocked", Checkbox).value),
+            "archived": bool(self.query_one("#f-archived", Checkbox).value),
             "priority": self._val("f-priority"),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
@@ -534,15 +540,18 @@ class ConfirmModal(ModalScreen[bool]):
 
     BINDINGS = [("escape", "no", "No")]
 
-    def __init__(self, message: str):
+    def __init__(self, message: str, confirm: str = "Delete",
+                 variant: str = "error"):
         super().__init__()
         self.message = message
+        self.confirm = confirm
+        self.variant = variant
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="confirm-box", classes="modal"):
             yield Label(escape(self.message), classes="modal-title")
             with Horizontal(classes="modal-buttons"):
-                yield Button("Delete", variant="error", id="yes")
+                yield Button(self.confirm, variant=self.variant, id="yes")
                 yield Button("Cancel", variant="default", id="no")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:

@@ -345,6 +345,36 @@ class TaskboardApp(App):
         self.board.save()
         self.refresh_view()
 
+    def action_purge_done(self) -> None:
+        """`X` — the ONE-TIME archive of finished work the board has no date for.
+
+        Deliberate, never automatic: it says how many it is about to move and
+        waits for a yes. The standing 20-day sweep cannot reach these tasks —
+        an undated task is not old — so this is the only way they leave the
+        board, and it is the user's decision rather than a timer's."""
+        pending = self.board.unstamped_done()
+        if not pending:
+            self.notify("No finished tasks are missing a completion date.",
+                        title="Nothing to archive", severity="information")
+            return
+        self.push_screen(
+            ConfirmModal(f"{len(pending)} finished task(s) have no completion "
+                         "date, so the automatic sweep can never archive them. "
+                         "Archive them now? They go to the normal archive — "
+                         "'v' shows them, 'x' brings one back.",
+                         confirm="Archive", variant="warning"),
+            self._on_purge_confirmed)
+
+    def _on_purge_confirmed(self, ok: bool | None) -> None:
+        if not ok:
+            return
+        moved = self.board.archive_unstamped_done()
+        self.board.save()
+        self.refresh_view()
+        self.notify(f"{len(moved)} finished task(s) archived. Press 'v' to see "
+                    "them, 'x' to bring one back.",
+                    title="Archived", severity="information", timeout=8)
+
     def action_delete(self) -> None:
         task = self.selected_task
         if task is None:
