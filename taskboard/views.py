@@ -189,7 +189,24 @@ def field_rows(bm: Bitmap, geo: FieldGeo, hue: str, *,
 # ---------------------------------------------------------------------------
 # glyphs
 # ---------------------------------------------------------------------------
+# ARCHIVED IS A STATE, AND IT NEEDED A SEAT. Archived work is SPENT, so it takes
+# the spent house — `ash`, the same tone the field uses for days already gone and
+# the gantt for work at rest. It may not take a hue (a hue NAMES a project) and it
+# may not take `over`/`soon` (those JUDGE, and nothing is expected of archived
+# work, so nothing about it can be late).
+#
+# The glyph is `▣`: a box with its contents put away, which is what archiving is.
+# It is not `✓` — that is DONE, a different fact, and a task can be archived
+# without ever having been finished. Geometric Shapes is the block the app already
+# draws a width-1 indicator from (`▤`, images), so it costs one cell like the rest.
+ARCHIVED_MARK = "▣"
+
+
 def status_glyph(board: Board, task: Task) -> tuple[str, str]:
+    if task.archived:
+        # ahead of `done` and `blocked` on purpose: archived is TERMINAL. A task
+        # that is both archived and overdue is not overdue — it is put away.
+        return (ARCHIVED_MARK, "ash")
     if board.is_done(task):
         return ("✓", "done")
     if task.blocked:
@@ -290,6 +307,10 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
         # board by colour. Its siblings already sit in neutral houses (↗ accent,
         # ! ink); this is the quietest of the three and takes the quietest tone.
         tokens.append(("▤", "mut"))     # width-1 image indicator, distinct from ↗/!
+    if task.archived:
+        # LAST in the list so it is the last thing shed under width pressure —
+        # it is the only token here that says the row is not live work.
+        tokens.append((ARCHIVED_MARK, "ash"))
     ind_markup, used = _fit_indicators(tokens, wc - len(prefix))
     title_w = max(0, wc - len(prefix) - used)
     pre = c(prefix, prefix_color) if prefix else ""
@@ -504,7 +525,11 @@ def lane_facts(board: Board, today: date, name: str, hue: str, status: str,
                due_date: str | None, rows: list[Task]) -> LaneFacts:
     """`rows` are already this lane's tasks — the Inbox is a lane too, and its
     tasks are the ones whose project is missing, not the ones with a matching id."""
-    open_ = [t for t in rows if not board.is_done(t)]
+    # ARCHIVED WORK IS NOT OPEN WORK. Nothing is expected of it, so nothing
+    # about it can be late, it exerts no pressure on the ranking, and it is not
+    # counted among what is still to do. Before this, turning `v` on silently
+    # re-ranked the board and hung a ▲ severity chip on work that was put away.
+    open_ = [t for t in rows if not board.is_done(t) and not t.archived]
     late = [t for t in open_
             if (d := parse_iso(t.due_date)) is not None and d < today]
     pd = parse_iso(due_date)
@@ -608,7 +633,10 @@ def lane_titles(lane: LaneFacts, limit: int) -> list[Task]:
     undated = [t for t in lane.open if parse_iso(t.due_date) is None]
     dated = sorted([t for t in lane.open if parse_iso(t.due_date)],
                    key=lambda t: parse_iso(t.due_date))
-    return (dated + undated)[:max(0, limit)]
+    # archived work is named LAST when there is room left: it is spent, so live
+    # work outranks it for the naming the allocator paid for
+    put_away = [t for t in lane.tasks if t.archived]
+    return (dated + undated + put_away)[:max(0, limit)]
 
 
 def pressure_chip(lane: LaneFacts) -> tuple[str, str]:
@@ -875,7 +903,10 @@ def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
     the tail, which is what keeps naming from costing emptiness."""
     due = parse_iso(task.due_date)
     days = (due - today).days if due else None
-    cells = due_meter(days, done=board.is_done(task))
+    # archived work is SPENT: its meter is the spent form and its title drops to
+    # the spent tone, so a row that is not live work never reads as live work
+    cells = due_meter(None if task.archived else days,
+                      done=board.is_done(task) or task.archived)
     title_w = max(0, inner - 5 - len(cells) - 1)
     shown = clip(task.title, title_w)
     body = escape(shown)
@@ -884,9 +915,11 @@ def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
     tail_from = 5 + len(shown)
     tail_to = max(tail_from, inner - len(cells) - 1)
     gap = " " * max(0, min(geo.label_w, tail_to) - tail_from)
-    return ((c("▎", lane.hue) + "  "
-             + c(phase_glyph({min(3, board.phase_index(task))}), lane.hue) + " "
-             + c(body, "mut") + gap
+    glyph, gcol = ((ARCHIVED_MARK, "ash") if task.archived
+                   else (phase_glyph({min(3, board.phase_index(task))}), lane.hue))
+    return ((c("▎", "ash" if task.archived else lane.hue) + "  "
+             + c(glyph, gcol) + " "
+             + c(body, "ash" if task.archived else "mut") + gap
              + lattice_tail(geo, tail_from, tail_to) + " "
              + meter_markup(cells)), task.id)
 
@@ -1063,8 +1096,11 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
         board, show_archived, today, w, h)
 
     tasks = board.visible_tasks(show_archived)
-    open_n = sum(1 for t in tasks if not board.is_done(t))
-    due_n = sum(1 for t in tasks if urgency(t, today, board) in ("overdue", "today"))
+    # the same law the lanes obey: archived work is not open and is never due,
+    # so pressing `v` may not change what the header says is still to do
+    live = [t for t in tasks if not t.archived]
+    open_n = sum(1 for t in live if not board.is_done(t))
+    due_n = sum(1 for t in live if urgency(t, today, board) in ("overdue", "today"))
     right = c(f"{open_n} open · ", "mut") + c(f"{due_n} due", "over", bold=True)
     lines = [header(c("◆ TASKBOARD", "accent", bold=True), right, w)]
 
@@ -1153,8 +1189,11 @@ def render_agenda(board, show_archived, selected_id, today=None,
     inner = w
 
     tasks = board.visible_tasks(show_archived)
-    overdue_n = sum(1 for t in tasks if agenda_bucket(t, today) == "overdue")
-    today_n = sum(1 for t in tasks if agenda_bucket(t, today) == "today")
+    # archived work is never overdue and never due today: nothing is expected of
+    # it, so pressing `v` may not change what this header says is wrong
+    judged = [t for t in tasks if not t.archived]
+    overdue_n = sum(1 for t in judged if agenda_bucket(t, today) == "overdue")
+    today_n = sum(1 for t in judged if agenda_bucket(t, today) == "today")
     right = (c(f"▲ {overdue_n} overdue", "over", bold=True) + c(" · ", "mut")
              + c(f"{today_n} today", "soon"))
     lines = [header(c("AGENDA", "accent", bold=True), right, w)]
@@ -1212,6 +1251,8 @@ def render_agenda(board, show_archived, selected_id, today=None,
         return cells_markup(cells)
 
     def due_tok(t: Task) -> tuple[str, str]:
+        if t.archived:
+            return "archived", "ash"      # spent: it reports no distance to a date
         if board.is_done(t):
             return "done", "done"
         txt, col = reldue_token(t, today, board)
@@ -1376,7 +1417,9 @@ def _overlay_cells(markup: str, width: int, cells: dict[int, str]) -> str:
 def _flowing(board: Board, task: Task) -> bool:
     """A task is "in progress" — worth animating a flow packet on — when it
     has left the first phase, is not done, and is not blocked."""
-    return (not board.is_done(task) and not task.blocked
+    # and NOT archived: a bar that animates is claiming to be work in motion,
+    # which is the one thing put-away work is not
+    return (not board.is_done(task) and not task.blocked and not task.archived
             and board.phase_index(task) > 0)
 
 
@@ -1565,9 +1608,14 @@ def render_gantt(board, show_archived, selected_id, today=None,
         for t in own:
             sel = t.id == selected_id
             done = board.is_done(t)
-            reach = _task_reach(t, board, geo, today, p.color, tick)
-            # a finished task rests: thin spine, ash, no chip and no severity
-            spine = c("▏ ", "dim") if done else c("▎ ", p.color)
+            reach = _task_reach(t, board, geo, today, "ash" if t.archived
+                                else p.color, tick)
+            # a finished task rests: thin spine, ash, no chip and no severity.
+            # an ARCHIVED one rests harder — it also wears the mark, because
+            # "put away" is a state the reader has to be able to see, and ash
+            # alone is already what elapsed days look like.
+            spine = (c("▏" + ARCHIVED_MARK, "ash") if t.archived
+                     else c("▏ ", "dim") if done else c("▎ ", p.color))
             # the title stops at the today rule as well as at its own reach:
             # the rule is full-height by law, and a title that crossed it would
             # break the one column every row shares
@@ -1576,8 +1624,11 @@ def render_gantt(board, show_archived, selected_id, today=None,
             title = title_markup(t, tw, sel)
             reach = reach[over:]
             due = parse_iso(t.due_date)
-            mcells = due_meter(None if done else ((due - today).days if due else None),
-                               done=done, width=min(METER_W, geo.figs_w))
+            # archived work is spent, so its meter is the spent form: nothing is
+            # expected of it, so nothing about it can be late
+            spent = done or t.archived
+            mcells = due_meter(None if spent else ((due - today).days if due else None),
+                               done=spent, width=min(METER_W, geo.figs_w))
             rows.append((band_row(spine + " " + title, reach,
                                   " " * max(0, geo.figs_w - len(mcells))
                                   + meter_markup(mcells), offset=over), t.id))
@@ -1596,10 +1647,14 @@ def render_gantt(board, show_archived, selected_id, today=None,
             over = max(0, min(_reach_start(t, geo, today), geo.today_dc // 2))
             reach = _task_reach(t, board, geo, today, "dim", tick)[over:]
             due = parse_iso(t.due_date)
-            mcells = due_meter(None if done else ((due - today).days if due else None),
-                               done=done, width=min(METER_W, geo.figs_w))
+            # archived work is spent, so its meter is the spent form: nothing is
+            # expected of it, so nothing about it can be late
+            spent = done or t.archived
+            mcells = due_meter(None if spent else ((due - today).days if due else None),
+                               done=spent, width=min(METER_W, geo.figs_w))
             rows.append((band_row(
-                (c("▏ ", "dim") if done else c("▎ ", "dim")) + " "
+                (c("▏" + ARCHIVED_MARK, "ash") if t.archived
+                 else c("▏ ", "dim") if done else c("▎ ", "dim")) + " "
                 + title_markup(t, geo.label_w - 3 + over, t.id == selected_id),
                 reach, " " * max(0, geo.figs_w - len(mcells)) + meter_markup(mcells),
                 offset=over), t.id))
@@ -1859,8 +1914,13 @@ def swimlane_plan(board, show_archived, today: date, width: int,
     geo = lane_geometry(_clamp_width(width) - 2, h)
     lanes = lanes_of(board, show_archived, today)
     active = [ln for ln in lanes if not ln.resting]
+    # what the ladder pays to NAME is what the view can name: with `v` on the
+    # reader has asked to see archived work, so it becomes nameable and rung one
+    # buys rows for it. With `v` off it is not on screen and costs nothing.
+    nameable = [len(ln.open) + sum(1 for t in ln.tasks if t.archived)
+                for ln in active[1:]]
     titles, prof, wrows = allocate(
-        geo, [len(ln.open) for ln in active[1:]],
+        geo, nameable,
         len([ln for ln in lanes if ln.resting]), h - 2 - (2 if active else 0))
     return lanes, geo, titles, prof, wrows
 
@@ -1958,7 +2018,8 @@ def _meter_swatch(days, done=False) -> str:
 
 
 def legend_entries(mode: str, board: Board, today: date | None = None,
-                   width: int = 96, height: int = 30) -> list[tuple[str, str]]:
+                   width: int = 96, height: int = 30,
+                   show_archived: bool = False) -> list[tuple[str, str]]:
     """(swatch, what it means) for the marks THIS view is currently drawing.
 
     The size is part of the question: the lanes allocator decides how many tasks
@@ -2042,4 +2103,20 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
             out.append((_meter_swatch(None), "meter unlit: no date to measure"))
     if mode == "kanban" and f["high"]:
         out.append((c("!", "ink"), "high-priority task"))
+    # THE NO-GHOST LAW, and archived is its clearest case: the mark exists on
+    # screen only while `v` is on AND something is actually archived. Explaining
+    # a mark the reader cannot see is the same fault as hiding one they can.
+    if show_archived and any(t.archived for t in board.visible_tasks(True)):
+        drawn = True
+        if mode == "swimlanes":
+            # the lanes view NAMES a bounded set, and the lead band names only
+            # its worst-late task — so a board whose only archived work sits in
+            # the lead draws no mark at all, and must not be told about one.
+            # Same test the phase-glyph entries above already apply.
+            lanes_, _g, tt, _pf, _wr = swimlane_plan(board, True, today, width, height)
+            act = [ln for ln in lanes_ if not ln.resting]
+            drawn = any(t.archived for ln in act[1:] for t in lane_titles(ln, tt))
+        if drawn:
+            out.append((c(ARCHIVED_MARK, "ash"),
+                        "archived: put away, not deleted — x brings it back"))
     return out

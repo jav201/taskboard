@@ -466,3 +466,216 @@ def test_the_purge_key_is_in_the_seat_and_on_the_bar():
     assert entry.show == "X"
     shown = {show for show, _label in fit_bar(400, "swimlanes")[0]}
     assert "X" in shown
+
+
+# --------------------------------------------------------------------------- #
+# ARCHIVING MUST BE VISIBLE — at the moment it happens, and at rest
+#
+# The complaint behind these laws: there was no marker for archived tasks, and
+# archiving by key gave no sign the state had taken effect. Two distinct
+# failures — the key said nothing, and the state left no trace — so there are
+# two families of law here.
+# --------------------------------------------------------------------------- #
+import pytest
+
+from taskboard.models import PROJECT_COLORS
+from taskboard.views import (ARCHIVED_MARK, HEX, card_cell, lane_facts,
+                             legend_entries, render_view, status_glyph)
+
+
+def one_of_each(tmp_path, name="vis.json"):
+    """A live task and an archived one, in the same project."""
+    b = board(tmp_path, name)
+    p = Project("Atlas", "lime", "on_track", start_date=iso(-20), due_date=iso(3))
+    q = Project("Beacon", "sky", "on_track", start_date=iso(-10), due_date=iso(20))
+    b.projects += [p, q]
+    # Atlas leads (its own date is nearer), so Beacon is a STACK lane — which is
+    # where the lanes view can name archived work at all. The lead band names
+    # only its worst-late task by design; see the legend's own no-ghost check.
+    b.tasks.append(Task("Ship the ingest path", p.id, "Doing", "high", due_date=iso(2)))
+    b.tasks.append(Task("Beacon live task", q.id, "Doing", "normal", due_date=iso(5)))
+    b.tasks.append(Task("Old spike put away", q.id, "Doing", "normal",
+                        due_date=iso(-6), archived=True))
+    return b, q
+
+
+async def test_archiving_says_so_and_names_the_way_back(tmp_path):
+    """THE COMPLAINT, DIRECTLY. With `v` off, archiving makes the row vanish —
+    and a row vanishing is indistinguishable from a key that did nothing. So the
+    action states the fact. It also names the route back, which is the whole of
+    the undo this needs: `x` is its own inverse, and a user who can read that
+    sentence never has to wonder whether the key took effect."""
+    from taskboard.app import TaskboardApp
+    b, _p = one_of_each(tmp_path, "notify.json")
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "notify.json"))
+    said = []
+    app.notify = lambda msg, **k: said.append(msg)
+    async with app.run_test() as pilot:
+        await pilot.pause()
+        said.clear()
+        app.selected_task_id = app.board.tasks[0].id
+        app.action_archive()
+        await pilot.pause()
+        assert said, "archiving was SILENT — the exact thing being fixed"
+        target = app.board.tasks[0]
+        assert "archived" in said[-1]
+        assert "v shows it, then x brings it back" in said[-1], said[-1]
+        # and the sentence must be TRUE: turn `v` on, put the cursor back on the
+        # row it names, and `x` really does restore it
+        app.show_archived = True
+        app.selected_task_id = target.id
+        app.action_archive()
+        await pilot.pause()
+        assert "restored" in said[-1], said[-1]
+        assert not target.archived, "the promised way back did not work"
+
+
+async def test_the_notify_cannot_be_hijacked_by_a_hostile_title(tmp_path):
+    """The title is the user's text and a notify renders markup. A title holding
+    a colour tag must arrive as CHARACTERS, through the same escape the views
+    use — the hostile-title law, applied to the one new place user text reaches
+    the screen."""
+    from taskboard.app import TaskboardApp
+    b = board(tmp_path, "hostile.json")
+    p = Project("Atlas", "lime", "on_track")
+    b.projects.append(p)
+    b.tasks.append(Task("[bold red]not a tag[/] plain", p.id, "Doing"))
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "hostile.json"))
+    said = []
+    app.notify = lambda msg, **k: said.append(msg)
+    async with app.run_test() as pilot:
+        await pilot.pause()
+        app.selected_task_id = app.board.tasks[0].id
+        app.action_archive()
+        await pilot.pause()
+    assert said, "nothing was said at all"
+    assert "\\[bold red]" in said[-1], said[-1]
+
+
+@pytest.mark.parametrize("mode", ["swimlanes", "agenda", "gantt", "kanban"])
+def test_every_view_marks_an_archived_row(tmp_path, mode):
+    """AT REST. With `v` on, an archived row must be distinguishable from live
+    work in EVERY view that can draw it — one mark, the same mark, everywhere.
+    The failure this replaces was silent: the row simply came back looking
+    exactly like work that was still to do."""
+    b, _p = one_of_each(tmp_path, "m-" + mode + ".json")
+    shown = str(render_view(mode, b, True, None, TODAY, width=92, height=26))
+    hidden = str(render_view(mode, b, False, None, TODAY, width=92, height=26))
+    assert "Old spike put away" in shown, mode + " does not draw archived work"
+    assert "Old spike put away" not in hidden, mode + " draws it with v OFF"
+    assert ARCHIVED_MARK in shown, mode + " draws an archived row with no marker"
+    assert ARCHIVED_MARK not in hidden, mode + " shows the marker when nothing is archived"
+
+
+def test_the_marker_wears_no_hue_and_never_judges(tmp_path):
+    """PRISM: archived is SPENT, so it takes the spent house and only that. It
+    may not wear a project hue (a hue NAMES) and it may not wear over/soon
+    (those JUDGE, and nothing is expected of work that was put away)."""
+    b, _p = one_of_each(tmp_path, "house.json")
+    task = [t for t in b.tasks if t.archived][0]
+    glyph, key = status_glyph(b, task)
+    assert glyph == ARCHIVED_MARK
+    assert key == "ash", "the archived mark wears " + key
+    cell = card_cell(task, b, 60, False)
+    for name in list(PROJECT_COLORS) + ["over", "soon"]:
+        assert HEX[name] not in cell, "an archived row is painted " + name
+
+
+def test_archived_work_is_not_open_work(tmp_path):
+    """The bug the marker uncovered, and the worse half of it. `lane_facts`
+    counted an archived task as OPEN, so pressing `v` silently re-ranked the
+    board, changed what the header said was still to do, and hung a severity
+    chip on work that had been put away."""
+    b, p = one_of_each(tmp_path, "open.json")
+    lane = lane_facts(b, TODAY, p.name, p.color, p.status, p.due_date, b.tasks)
+    assert [t.title for t in lane.open] == ["Ship the ingest path", "Beacon live task"]
+    assert not any(t.archived for t in lane.open), "archived work counted as OPEN"
+    assert not lane.late, "an archived task was counted as LATE"
+    for mode, phrase in (("swimlanes", "2 open"), ("agenda", "0 overdue")):
+        with_v = str(render_view(mode, b, True, None, TODAY, width=92, height=26))
+        without = str(render_view(mode, b, False, None, TODAY, width=92, height=26))
+        assert phrase in with_v and phrase in without, (
+            f"pressing v changed what the {mode} header reports: {phrase!r}")
+
+
+def test_an_archived_bar_does_not_animate(tmp_path):
+    """A moving bar claims to be work in motion, which is the one thing put-away
+    work is not. The flow packet is for tasks actually in progress."""
+    from taskboard.views import _flowing
+    b, _p = one_of_each(tmp_path, "flow.json")
+    archived = [t for t in b.tasks if t.archived][0]
+    assert not _flowing(b, archived)
+    live = [t for t in b.tasks if not t.archived][0]
+    assert _flowing(b, live), "fixture is vacuous: nothing flows even when live"
+
+
+async def test_the_selection_lands_somewhere_sane_when_the_row_vanishes(tmp_path):
+    """The edge the complaint implies: with `v` OFF the archived row disappears,
+    and the cursor must not be left pointing at something no longer on screen."""
+    from taskboard.app import TaskboardApp
+    b, p = one_of_each(tmp_path, "sel.json")
+    b.tasks.append(Task("Another live task", p.id, "Doing", "normal",
+                        due_date=iso(4)))          # somewhere for the cursor to go
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "sel.json"))
+    app.notify = lambda *a, **k: None
+    async with app.run_test() as pilot:
+        await pilot.pause()
+        app.show_archived = False
+        app.selected_task_id = [t for t in app.board.tasks if not t.archived][0].id
+        app.action_archive()                       # the selected row vanishes
+        await pilot.pause()
+        visible = [t.id for t in app.board.visible_tasks(False)]
+        assert visible, "fixture is vacuous: nothing was left to land on"
+        assert app.selected_task_id in visible, "the cursor was left off-list"
+
+
+def test_the_legend_explains_the_marker_only_when_it_is_on_screen(tmp_path):
+    """THE NO-GHOST LAW. The entry appears when `v` is on AND something is
+    actually archived — never otherwise, because explaining a mark the reader
+    cannot see is the same fault as hiding one they can."""
+    b, _p = one_of_each(tmp_path, "leg.json")
+    on = [txt for _sw, txt in legend_entries("swimlanes", b, TODAY, 92, 26,
+                                             show_archived=True)]
+    off = [txt for _sw, txt in legend_entries("swimlanes", b, TODAY, 92, 26,
+                                              show_archived=False)]
+    assert any("archived" in t for t in on), on
+    assert not any("archived" in t for t in off), off
+
+    clean = board(tmp_path, "clean.json")          # `v` on but nothing archived
+    p2 = Project("Solo", "lime", "on_track")
+    clean.projects.append(p2)
+    clean.tasks.append(Task("Live work", p2.id, "Doing"))
+    ghost = [txt for _sw, txt in legend_entries("swimlanes", clean, TODAY, 92, 26,
+                                                show_archived=True)]
+    assert not any("archived" in t for t in ghost), "a ghost entry: nothing is archived"
+
+
+def test_the_legend_stays_quiet_when_lanes_cannot_NAME_the_archived_work(tmp_path):
+    """The subtler ghost, and the reason the entry is not simply gated on `v`.
+    The lanes view names a BOUNDED set: the lead band names only its worst-late
+    task, so on a one-project board the archived row is never drawn there at all.
+    An entry explaining a mark that is not on that screen is exactly the ghost
+    the legend exists to avoid — the same test the phase-glyph entries apply."""
+    b = board(tmp_path, "lead-only.json")
+    p = Project("Solo", "lime", "on_track", start_date=iso(-20), due_date=iso(14))
+    b.projects.append(p)
+    b.tasks.append(Task("Live work", p.id, "Doing", "high", due_date=iso(2)))
+    b.tasks.append(Task("Put away long ago", p.id, "Doing", "normal",
+                        due_date=iso(-6), archived=True))
+    drawn = str(render_view("swimlanes", b, True, None, TODAY, width=92, height=26))
+    assert ARCHIVED_MARK not in drawn, (
+        "fixture is stale: lanes now DOES name the lead's archived work, so this "
+        "law is testing nothing — gate the legend on that instead")
+    entries = [txt for _sw, txt in legend_entries("swimlanes", b, TODAY, 92, 26,
+                                                  show_archived=True)]
+    assert not any("archived" in t for t in entries), (
+        "the legend explains a mark the lanes view never drew")
+    # and the views that DO draw it still get their entry
+    for mode in ("agenda", "gantt", "kanban"):
+        assert ARCHIVED_MARK in str(render_view(mode, b, True, None, TODAY,
+                                                width=92, height=26)), mode
+        assert any("archived" in t for _sw, t in
+                   legend_entries(mode, b, TODAY, 92, 26, show_archived=True)), mode
