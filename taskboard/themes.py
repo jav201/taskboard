@@ -306,7 +306,6 @@ THEMES: dict[str, dict] = {
         hero="ember", frame="none", meter="ember", layout="rail",
         label="Prism", note="two colour systems, one written border · carved ember",
         ground="#0d1117", ink="#e6edf3", mut="#8b98a5", dim="#5b6675",
-        rail="#334154",                        # structure, never a project hue
         accent="#2dd4bf",                      # attention: today, focus, keys
         warn="#fbbf24", alert="#f43f5e",       # JUDGE: due today / overdue
         ash="#6b4a3f",                         # the CONSUMED field -- 4th house
