@@ -15,29 +15,29 @@
 <text x="35.2" y="74.3" fill="#9a9a9a">│</text>
 <text x="43.6" y="74.3" fill="#6fe36f">                              ░░      ▄▄                               </text>
 <text x="640.0" y="74.3" fill="#9a9a9a">│</text>
-<text x="665.2" y="74.3" fill="#6fe36f">▄▄ ▄▄ </text>
-<text x="715.6" y="74.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ ░░ </text>
+<text x="665.2" y="74.3" fill="#6fe36f">▄▄ </text>
+<text x="690.4" y="74.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ ░░ ░░ </text>
 <text x="976.0" y="74.3" fill="#ff6600">│</text>
 <rect x="26.8" y="78.0" width="957.6" height="17.0" fill="#0a120a"/>
 <text x="26.8" y="91.3" fill="#ff6600">│</text>
 <text x="35.2" y="91.3" fill="#9a9a9a">│</text>
-<text x="43.6" y="91.3" fill="#6fe36f">                            ▒▒  ▒▒  ▒▒  ██                             </text>
+<text x="43.6" y="91.3" fill="#6fe36f">                            ▒▒  ▒▒  ██  ██                             </text>
 <text x="640.0" y="91.3" fill="#9a9a9a">│</text>
-<text x="665.2" y="91.3" fill="#6fe36f">▄▄ ▄▄ </text>
-<text x="715.6" y="91.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ ░░ </text>
+<text x="665.2" y="91.3" fill="#6fe36f">▄▄ </text>
+<text x="690.4" y="91.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ ░░ ░░ </text>
 <text x="976.0" y="91.3" fill="#ff6600">│</text>
 <rect x="26.8" y="95.0" width="957.6" height="17.0" fill="#0a120a"/>
 <text x="26.8" y="108.3" fill="#ff6600">│</text>
 <text x="35.2" y="108.3" fill="#9a9a9a">│</text>
-<text x="43.6" y="108.3" fill="#6fe36f">                            ▒▒  ▒▒  ▒▒  ██                             </text>
+<text x="43.6" y="108.3" fill="#6fe36f">                            ▒▒  ▒▒  ██  ██                             </text>
 <text x="640.0" y="108.3" fill="#9a9a9a">│</text>
-<text x="665.2" y="108.3" fill="#6fe36f">▄▄ ▄▄ </text>
-<text x="715.6" y="108.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ ░░ </text>
+<text x="665.2" y="108.3" fill="#6fe36f">▄▄ </text>
+<text x="690.4" y="108.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ ░░ ░░ </text>
 <text x="976.0" y="108.3" fill="#ff6600">│</text>
 <rect x="26.8" y="112.0" width="957.6" height="17.0" fill="#0a120a"/>
 <text x="26.8" y="125.3" fill="#ff6600">│</text>
 <text x="35.2" y="125.3" fill="#9a9a9a">│</text>
-<text x="43.6" y="125.3" fill="#6fe36f">                              ░░      ░░                               </text>
+<text x="43.6" y="125.3" fill="#6fe36f">                              ░░      ▄▄                               </text>
 <text x="640.0" y="125.3" fill="#9a9a9a">│</text>
 <text x="665.2" y="125.3" fill="#6fe36f">▄▄ ▄▄ </text>
 <text x="715.6" y="125.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ ░░ </text>
@@ -45,15 +45,15 @@
 <rect x="26.8" y="129.0" width="957.6" height="17.0" fill="#0a120a"/>
 <text x="26.8" y="142.3" fill="#ff6600">│</text>
 <text x="35.2" y="142.3" fill="#9a9a9a">│</text>
-<text x="43.6" y="142.3" fill="#6fe36f">                            ▒▒  ▒▒  ▒▒  ██                             </text>
+<text x="43.6" y="142.3" fill="#6fe36f">                            ▒▒  ▒▒  ██  ██                             </text>
 <text x="640.0" y="142.3" fill="#9a9a9a">│</text>
-<text x="665.2" y="142.3" fill="#6fe36f">▄▄ ▄▄ ▄▄ </text>
-<text x="740.8" y="142.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ </text>
+<text x="665.2" y="142.3" fill="#6fe36f">▄▄ ▄▄ </text>
+<text x="715.6" y="142.3" fill="#3a3a3a">░░ ░░ ░░ ░░ ░░ ░░ </text>
 <text x="976.0" y="142.3" fill="#ff6600">│</text>
 <rect x="26.8" y="146.0" width="957.6" height="17.0" fill="#0a120a"/>
 <text x="26.8" y="159.3" fill="#ff6600">│</text>
 <text x="35.2" y="159.3" fill="#9a9a9a">│</text>
-<text x="43.6" y="159.3" fill="#6fe36f">                            ▒▒  ▒▒  ▒▒  ██                             </text>
+<text x="43.6" y="159.3" fill="#6fe36f">                            ▒▒  ▒▒  ██  ██                             </text>
 <text x="640.0" y="159.3" fill="#9a9a9a">│</text>
 <text x="665.2" y="159.3" fill="#3a3a3a">LOAD · 8 WK</text>
 <text x="976.0" y="159.3" fill="#ff6600">│</text>
@@ -75,10 +75,10 @@
 <text x="320.8" y="244.3" fill="#3a3a3a">GANTT</text>
 <text x="26.8" y="261.3" fill="#9a9a9a">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="35.2" y="278.3" fill="#9a9a9a">DL</text>
-<text x="60.4" y="278.3" fill="#6fe36f">  7</text>
+<text x="60.4" y="278.3" fill="#6fe36f">  8</text>
 <text x="94.0" y="278.3" fill="#9a9a9a">│NEAREST D</text>
 <text x="194.8" y="278.3" fill="#9a9a9a">OV</text>
-<text x="220.0" y="278.3" fill="#6fe36f">  5</text>
+<text x="220.0" y="278.3" fill="#6fe36f">  6</text>
 <text x="253.6" y="278.3" fill="#9a9a9a">│OVERDUE C</text>
 <text x="354.4" y="278.3" fill="#9a9a9a">WF</text>
 <text x="379.6" y="278.3" fill="#6fe36f">  4</text>
@@ -87,10 +87,10 @@
 <text x="539.2" y="278.3" fill="#6fe36f">  1</text>
 <text x="572.8" y="278.3" fill="#9a9a9a">│BLOCKED</text>
 <text x="673.6" y="278.3" fill="#9a9a9a">BD</text>
-<text x="698.8" y="278.3" fill="#6fe36f">  0</text>
+<text x="698.8" y="278.3" fill="#6fe36f">  9</text>
 <text x="732.4" y="278.3" fill="#9a9a9a">│WORKDAY B</text>
 <text x="833.2" y="278.3" fill="#9a9a9a">FS</text>
-<text x="858.4" y="278.3" fill="#6fe36f"> 59</text>
+<text x="858.4" y="278.3" fill="#6fe36f">134</text>
 <text x="892.0" y="278.3" fill="#9a9a9a">│BOARD FIL</text>
 <text x="26.8" y="295.3" fill="#9a9a9a">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="35.2" y="312.3" fill="#ff6600">[1]</text>
@@ -101,7 +101,7 @@
 <text x="35.2" y="346.3" fill="#9a9a9a">[1]</text>
 <text x="60.4" y="346.3" fill="#f2f2f2"> FIX CHECKOUT 500 ERROR                                                         </text>
 <text x="732.4" y="346.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="346.3" fill="#d92b1a">-7D </text>
+<text x="766.0" y="346.3" fill="#d92b1a">-8D </text>
 <text x="816.4" y="346.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="346.3" fill="#9a9a9a">HIGH</text>
 <text x="892.0" y="346.3" fill="#9a9a9a">ST</text>
@@ -110,7 +110,7 @@
 <text x="35.2" y="363.3" fill="#9a9a9a">[2]</text>
 <text x="60.4" y="363.3" fill="#f2f2f2"> COMPRESS DATABASE BACKUPS                                                      </text>
 <text x="732.4" y="363.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="363.3" fill="#d92b1a">-6D </text>
+<text x="766.0" y="363.3" fill="#d92b1a">-7D </text>
 <text x="816.4" y="363.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="363.3" fill="#9a9a9a">NORM</text>
 <text x="892.0" y="363.3" fill="#9a9a9a">ST</text>
@@ -119,7 +119,7 @@
 <text x="35.2" y="380.3" fill="#9a9a9a">[3]</text>
 <text x="60.4" y="380.3" fill="#f2f2f2"> RENEW TLS CERTIFICATE                                                          </text>
 <text x="732.4" y="380.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="380.3" fill="#d92b1a">-2D </text>
+<text x="766.0" y="380.3" fill="#d92b1a">-3D </text>
 <text x="816.4" y="380.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="380.3" fill="#9a9a9a">HIGH</text>
 <text x="892.0" y="380.3" fill="#9a9a9a">ST</text>
@@ -128,7 +128,7 @@
 <text x="35.2" y="397.3" fill="#9a9a9a">[4]</text>
 <text x="60.4" y="397.3" fill="#f2f2f2"> WRITE API REFERENCE                                                            </text>
 <text x="732.4" y="397.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="397.3" fill="#ffb000">0D  </text>
+<text x="766.0" y="397.3" fill="#d92b1a">-1D </text>
 <text x="816.4" y="397.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="397.3" fill="#9a9a9a">NORM</text>
 <text x="892.0" y="397.3" fill="#9a9a9a">ST</text>
@@ -137,7 +137,7 @@
 <text x="35.2" y="414.3" fill="#9a9a9a">[5]</text>
 <text x="60.4" y="414.3" fill="#f2f2f2"> SHUT DOWN LEGACY SERVERS                                                       </text>
 <text x="732.4" y="414.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="414.3" fill="#ffb000">3D  </text>
+<text x="766.0" y="414.3" fill="#ffb000">2D  </text>
 <text x="816.4" y="414.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="414.3" fill="#9a9a9a">NORM</text>
 <text x="892.0" y="414.3" fill="#9a9a9a">ST</text>
@@ -146,7 +146,7 @@
 <text x="35.2" y="431.3" fill="#9a9a9a">[6]</text>
 <text x="60.4" y="431.3" fill="#f2f2f2"> DEPRECATE V1 ENDPOINTS                                                         </text>
 <text x="732.4" y="431.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="431.3" fill="#9a9a9a">4D  </text>
+<text x="766.0" y="431.3" fill="#ffb000">3D  </text>
 <text x="816.4" y="431.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="431.3" fill="#9a9a9a">HIGH</text>
 <text x="892.0" y="431.3" fill="#9a9a9a">ST</text>
@@ -155,7 +155,7 @@
 <text x="35.2" y="448.3" fill="#9a9a9a">[7]</text>
 <text x="60.4" y="448.3" fill="#f2f2f2"> ADD PUSH NOTIFICATIONS                                                         </text>
 <text x="732.4" y="448.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="448.3" fill="#9a9a9a">13D </text>
+<text x="766.0" y="448.3" fill="#9a9a9a">12D </text>
 <text x="816.4" y="448.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="448.3" fill="#9a9a9a">NORM</text>
 <text x="892.0" y="448.3" fill="#9a9a9a">ST</text>
@@ -191,7 +191,7 @@
 <text x="35.2" y="533.3" fill="#9a9a9a">[1]</text>
 <text x="60.4" y="533.3" fill="#f2f2f2"> DESIGN HOMEPAGE MOCKUPS                                                        </text>
 <text x="732.4" y="533.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="533.3" fill="#d92b1a">-5D </text>
+<text x="766.0" y="533.3" fill="#d92b1a">-6D </text>
 <text x="816.4" y="533.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="533.3" fill="#9a9a9a">NORM</text>
 <text x="892.0" y="533.3" fill="#9a9a9a">ST</text>
@@ -201,7 +201,7 @@
 <text x="35.2" y="550.3" fill="#9a9a9a">[2]</text>
 <text x="60.4" y="550.3" fill="#f2f2f2"> REVIEW PULL REQUESTS                                                           </text>
 <text x="732.4" y="550.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="550.3" fill="#d92b1a">-4D </text>
+<text x="766.0" y="550.3" fill="#d92b1a">-5D </text>
 <text x="816.4" y="550.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="550.3" fill="#9a9a9a">NORM</text>
 <text x="892.0" y="550.3" fill="#9a9a9a">ST</text>
