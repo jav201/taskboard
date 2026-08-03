@@ -127,7 +127,7 @@ async def test_manage_projects_edit_status_persists(tmp_path):
         target = next(p for p in app.board.projects if p.name == "Mobile App")
         assert target.status == "on_track"                 # precondition
         idx = app.board.projects.index(target)
-        await pilot.press("P")                              # open project manager
+        await pilot.press("m")                              # open project manager
         await pilot.pause()
         app.screen.query_one("#proj-list", OptionList).highlighted = idx
         await pilot.press("e")                              # edit highlighted project
@@ -151,7 +151,7 @@ async def test_manage_projects_archive_hides_and_persists(tmp_path):
         assert not target.archived
         assert "Mobile App" in board_text(app)             # visible before archiving
         idx = app.board.projects.index(target)
-        await pilot.press("P")
+        await pilot.press("m")
         await pilot.pause()
         app.screen.query_one("#proj-list", OptionList).highlighted = idx
         await pilot.press("x")                              # archive
@@ -176,7 +176,7 @@ async def test_manage_projects_delete_moves_tasks_to_inbox(tmp_path):
         task_ids = [t.id for t in app.board.tasks if t.project_id == target.id]
         assert task_ids                                     # precondition: it has tasks
         idx = app.board.projects.index(target)
-        await pilot.press("P")
+        await pilot.press("m")
         await pilot.pause()
         app.screen.query_one("#proj-list", OptionList).highlighted = idx
         await pilot.press("d")                              # delete -> ConfirmModal
@@ -199,7 +199,7 @@ async def test_manage_projects_empty_state_no_crash(tmp_path):
         app.board.projects.clear()
         app.board.save()
         app.refresh_view()
-        await pilot.press("P")
+        await pilot.press("m")
         await pilot.pause()
         assert len(app.screen_stack) == 2                   # picker is open
         for key in ("e", "x", "d"):
@@ -218,7 +218,7 @@ async def test_manage_projects_escapes_markup_name(tmp_path):
         await pilot.pause()
         app.screen.query_one("#f-name", Input).value = "[red]boom[/red]"
         await save_open_modal(app, pilot)
-        await pilot.press("P")                              # open manager (builds the list)
+        await pilot.press("m")                              # open manager (builds the list)
         await pilot.pause()
         ol = app.screen.query_one("#proj-list", OptionList)
         prompts = [str(ol.get_option_at_index(i).prompt)
