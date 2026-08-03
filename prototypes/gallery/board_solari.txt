@@ -1,32 +1,32 @@
                                                                                                                       
-                                   ████████                                       5                                   
-                                         ██                                           4                               
-                                       ██                                                                             
-                                  ▔▔▔▔▔▀▀▔▔▔                                                                          
-                                     ██                                                                               
-                                     ██                                                   1   0   0   0   0   0       
-                                     ██                                        LOAD · 8 WK                            
+                                     ████                                         4                                   
+                                   ██    ██                                                                           
+                                   ██    ██                                                                           
+                                  ▔▔▔▀▀▀▀▔▔▔                                                                          
+                                   ██    ██                                           1                               
+                                   ██    ██                                               0   0   0   0   0   0       
+                                     ████                                      LOAD · 8 WK                            
                                                                                                                       
                                   DAYS OVERDUE                                                                        
   DONE 002 OF 015  013%                                                                                               
   09 04 02 LOAD                                                                                                       
    BOARD  lanes  agenda  gantt                                                                                        
-   DEP 7 NEAREST      LATE 5 OVERDUE     BRD 4 WORK IN      HELD 1 BLOCKED     DAY 0 WORKDAY      SKD 59 BOARD FILE   
+   DEP 8 NEAREST      LATE 6 OVERDUE     BRD 4 WORK IN      HELD 1 BLOCKED     DAY 9 WORKDAY      SKD 134 BOARD       
                                                                                                                       
     GATE BACKLOG 09                                                                 STATUS    PROJ          PRI       
    --  FIX CHECKOUT 500 ERROR                                                       HELD      WEBSITE RED…  HIGH      
    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁      
-   06  COMPRESS DATABASE BACKUPS                                                    LATE      DATA WAREHO…  NORM      
+   07  COMPRESS DATABASE BACKUPS                                                    LATE      DATA WAREHO…  NORM      
    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁      
-   02  RENEW TLS CERTIFICATE                                                        LATE      --            HIGH      
+   03  RENEW TLS CERTIFICATE                                                        LATE      --            HIGH      
    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁      
-   00  WRITE API REFERENCE                                                          BOARDING  API PLATFORM  NORM      
+   01  WRITE API REFERENCE                                                          LATE      API PLATFORM  NORM      
    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁      
-   03  SHUT DOWN LEGACY SERVERS                                                     BOARDING  LEGACY SUNS…  NORM      
+   02  SHUT DOWN LEGACY SERVERS                                                     BOARDING  LEGACY SUNS…  NORM      
    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁      
-   04  DEPRECATE V1 ENDPOINTS                                                       ON TIME   API PLATFORM  HIGH      
+   03  DEPRECATE V1 ENDPOINTS                                                       BOARDING  API PLATFORM  HIGH      
    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁      
-   13  ADD PUSH NOTIFICATIONS                                                       ON TIME   MOBILE APP    NORM      
+   12  ADD PUSH NOTIFICATIONS                                                       ON TIME   MOBILE APP    NORM      
    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁      
    --  PLAN Q3 ROADMAP                                                              OPEN      API PLATFORM  NORM      
    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁      

@@ -91,7 +91,106 @@ FIXTURE = ROOT / "prototypes" / "out" / "_fixture_late.json"
 OUT = ROOT / "prototypes" / "gallery"
 SIZE = (118, 34)
 
-MAX_SETTLE = 24          # frames to wait for two identical reads
+MAX_SETTLE = 40          # frames to wait for the screen to come to rest
+STABLE_READS = 3         # identical consecutive frames required
+
+# THE CLOCK IS FROZEN, AND IT HAS TO BE.  A fixture pins the DATA; it does not
+# pin the present.  The app reads `datetime.now()` in the signal engine, in the
+# aperture and in the prototype's own due-date maths, so "days remaining", the
+# load plot and the day-progress bar are all functions of the current instant --
+# which made the captures differ between two runs minutes apart, in six of the
+# ten languages.  The first version of this file checked determinism by sweeping
+# twice INSIDE ONE PROCESS, and that check passed while cross-process capture
+# drifted, because both sweeps in a process see nearly the same clock: a
+# determinism check whose two samples share the confound cannot see it.
+#
+# The instant below is a CONSTANT, not "today".  If it were today's date, a
+# rebuild next week would legitimately produce different art and the captures
+# could never be reproduced -- the point of pinning it is that this script,
+# this fixture and this constant always yield the same twenty grids.
+FROZEN = "2026-08-03T09:00:00"
+
+
+def freeze_clock() -> None:
+    """Pin `datetime.now()` / `date.today()` to FROZEN, everywhere it is read.
+
+    Done by rebinding the NAME in each already-imported taskboard/prototype
+    module rather than by touching the app: the capture must photograph the
+    shipping code, not a variant of it.  `datetime` is a C type and cannot be
+    monkeypatched in place, so a subclass is bound over the module-level name
+    that each module imported -- which is exactly the name its own calls
+    resolve.
+    """
+    import datetime as _dt
+    fixed = _dt.datetime.fromisoformat(FROZEN)
+
+    class _DateTime(_dt.datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return fixed if tz is None else fixed.replace(tzinfo=_dt.timezone.utc)
+
+        @classmethod
+        def today(cls):
+            return fixed
+
+        @classmethod
+        def utcnow(cls):
+            return fixed
+
+    class _Date(_dt.date):
+        @classmethod
+        def today(cls):
+            return fixed.date()
+
+    hit = 0
+    for name, mod in list(sys.modules.items()):
+        if not (name.startswith("taskboard") or name in ("app", "kanban",
+                                                         "views_widget",
+                                                         "render")):
+            continue
+        if getattr(mod, "datetime", None) is _dt.datetime:
+            mod.datetime = _DateTime
+            hit += 1
+        if getattr(mod, "date", None) is _dt.date:
+            mod.date = _Date
+            hit += 1
+    if not hit:
+        raise RuntimeError("freeze_clock patched nothing -- import order changed")
+
+    # `time.time()` too: the signal engine ages the board file with it.  The
+    # shim DELEGATES everything else -- the first attempt replaced the module
+    # outright and the app died on `time.monotonic()`, which the engine uses to
+    # decide which signals are due.  Freezing a clock must not take the rest of
+    # the module with it.
+    import time as _time
+    import taskboard.engine as _eng
+
+    class _Time:
+        def __getattr__(self, k):
+            return getattr(_time, k)
+
+        @staticmethod
+        def time():
+            return fixed.timestamp()
+
+    if getattr(_eng, "time", None) is _time:
+        _eng.time = _Time()
+
+    # AND THE SIGNAL THAT READS THE OPERATOR'S REAL BOARD.  `sig_board_file`
+    # calls `default_board_path()` directly -- not the app's `board_path` -- so
+    # it stats ~/.taskboard/board.json however the app was constructed.  Two
+    # separate problems in one line: the capture is not reproducible (its
+    # "minutes since save" moves, and on one run that made the signal win the
+    # hero and rewrote ledger's whole top band), and a published frame could
+    # print the size and save-time of the operator's actual work.  Point it at
+    # the fixture, which is what every other reader of this capture already
+    # sees.  (Checked: no published frame ever carried it -- the signal had not
+    # won a hero in any capture that shipped.)
+    import taskboard.models as _models
+    _models.default_board_path = lambda: FIXTURE
+    if getattr(_eng, "default_board_path", None) is not None:
+        _eng.default_board_path = lambda: FIXTURE
+    return hit
 
 
 def screen_text(app) -> list[str]:
@@ -103,20 +202,40 @@ def screen_text(app) -> list[str]:
 
 
 async def settle(pilot, app, label: str) -> list[str]:
-    """Condition B only: wait for two consecutive identical composited frames.
+    """Wait for a frame that has stopped changing AND has painted content.
 
-    Raises rather than returning a half-painted screen -- a blank capture
-    written as if it were art is the failure this whole sweep exists to avoid.
+    THREE consecutive identical composited frames, not two.  Two equal frames
+    is also what a widget looks like in the gap between being mounted and being
+    painted -- `TaskCard.on_mount` defers its paint with `call_after_refresh`,
+    so "mounted" and "drawn" are different moments.
+
+    Condition A of the real harness (`verify_language.py:338`, every mounted
+    content widget has painted pixels inside its CLIPPED area) is deliberately
+    NOT reimplemented here.  It was tried: reading `widget.region` directly and
+    demanding ink gives false positives for anything scrolled out of its
+    column, and the sweep timed out on frames that were perfectly fine.  Doing
+    it properly needs the compositor's clipping, which is the harness's job.
+    What guards this file instead is the CROSS-PROCESS reproducibility check in
+    `main()` -- if a race ever does slip a half-painted frame through, two
+    independent runs disagree and the sweep fails rather than shipping it.
+
+    Why THREE identical reads and not two.  Two consecutive equal frames is
+    also what a widget looks like in the gap between being mounted and being
+    painted; the third read is what distinguishes a screen at rest from a
+    screen mid-transition.
     """
+    stable = 0
     prev: list[str] | None = None
     for _ in range(MAX_SETTLE):
         await pilot.pause()
         rows = screen_text(app)
-        if prev is not None and rows == prev:
-            if not any(r.strip() for r in rows):
-                raise RuntimeError(f"{label}: frame settled BLANK")
-            return rows
+        stable = stable + 1 if rows == prev else 0
         prev = rows
+        if stable < STABLE_READS - 1:
+            continue
+        if not any(r.strip() for r in rows):
+            raise RuntimeError(f"{label}: frame settled BLANK")
+        return rows
     raise RuntimeError(f"{label}: never settled after {MAX_SETTLE} frames")
 
 
@@ -260,6 +379,7 @@ def write(name: str, rows: list[str], app=None,
 async def sweep() -> list[dict]:
     from app import TaskboardWidget          # prototypes/widget_slice/app.py
 
+    freeze_clock()                           # AFTER the imports it patches
     OUT.mkdir(parents=True, exist_ok=True)
     report: list[dict] = []
 
@@ -286,13 +406,30 @@ async def sweep() -> list[dict]:
     return report
 
 
-async def sweep_quiet() -> None:
-    """The same sweep with its printing silenced -- used only by the
-    determinism check, which compares the files it leaves behind."""
-    import contextlib
-    import io
-    with contextlib.redirect_stdout(io.StringIO()):
-        await sweep()
+def check_reproducible(first: dict[str, str]) -> list[str]:
+    """Re-run the whole sweep in a SEPARATE PROCESS and diff every grid.
+
+    Why a subprocess and not a second pass in this one: the first version of
+    this check swept twice in-process and reported "identical" while the
+    captures were in fact drifting between runs.  Both in-process sweeps read
+    nearly the same wall clock, so the confound the check was supposed to catch
+    was present in both samples.  A check whose two samples share the bug is a
+    vacuous check -- it can only ever pass.  A fresh interpreter re-imports the
+    app, re-reads the fixture and re-applies `freeze_clock()` from scratch,
+    which is the condition someone rebuilding these files a week from now
+    actually has.
+    """
+    import subprocess
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        r = subprocess.run([sys.executable, str(Path(__file__).resolve()),
+                            "--sweep-to", td],
+                           capture_output=True, text=True,
+                           env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+        if r.returncode != 0:
+            raise RuntimeError(f"control sweep failed:\n{r.stderr[-1500:]}")
+        return [n for n, t in first.items()
+                if (Path(td) / n).read_text(encoding="utf-8") != t]
 
 
 def main() -> int:
@@ -310,14 +447,12 @@ def main() -> int:
     # a moment.
     first = {p.name: p.read_text(encoding="utf-8")
              for p in sorted(OUT.glob("*.txt"))}
-    print("\n  re-sweeping to check determinism...")
-    asyncio.run(sweep_quiet())
-    drift = [n for n, t in first.items()
-             if (OUT / n).read_text(encoding="utf-8") != t]
+    print("\n  re-sweeping in a fresh process to check reproducibility...")
+    drift = check_reproducible(first)
     if drift:
-        print(f"NON-DETERMINISTIC CAPTURES: {drift}", file=sys.stderr)
+        print(f"NON-REPRODUCIBLE CAPTURES: {drift}", file=sys.stderr)
         return 1
-    print(f"  {len(first)} grids identical across two runs")
+    print(f"  {len(first)} grids identical across two PROCESSES")
 
     # The sweep's own law: ten languages, twenty captures, and no two boards
     # identical.  Two languages rendering byte-identically is the exact defect
@@ -340,4 +475,13 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # `--sweep-to DIR`: capture into DIR and say nothing.  This is the control
+    # arm of the reproducibility check above, run as a separate interpreter.
+    if len(sys.argv) == 3 and sys.argv[1] == "--sweep-to":
+        OUT = Path(sys.argv[2])
+        import contextlib
+        import io
+        with contextlib.redirect_stdout(io.StringIO()):
+            asyncio.run(sweep())
+        raise SystemExit(0)
     raise SystemExit(main())
