@@ -256,6 +256,63 @@ def draw(kit, value: str, caption: str, detail: str, tone: str,
 
     lines: list[str] = []
 
+    if style == "ember":
+        # PRISM'S HERO: the numeral is the HOLE, not the drawing.
+        #
+        # Every other hero here PAINTS its figure onto a ground. This one fills
+        # the panel with a solid ember field and CARVES the digits out of it,
+        # so the value exists as the absence of fire. Two things fall out of
+        # that, and both are why it is a mechanism rather than a look:
+        #
+        #   * each cell is field or figure and never both, so the
+        #     two-colours-per-cell law is satisfied BY COMPOSITION instead of
+        #     being policed after the fact;
+        #   * the burnt part of the field is `ash` and the live part is the
+        #     accent, so the hero states the SAME quantity its meter does, in
+        #     the same vocabulary, at a glance and to the digit.
+        from taskboard import wave as WV
+        # the caption and the detail are rows the FIELD may not spend --
+        # a hero that eats its own caption is the oldest trap in this file
+        reserved = (1 if cap else 0) + (1 if det else 0)
+        rows_c = max(2, min(max_rows - reserved, 7))
+        dots_h = rows_c * WV.DOT_ROWS
+        glyph = [WV.FONT_4x7.get(ch, WV.FONT_4x7[" "]) for ch in val]
+        gw = sum(len(g[0]) for g in glyph) + max(0, len(glyph) - 1)
+        scale = max(1, min(3, (width * WV.DOT_COLS) // max(1, gw * 2)))
+        dots_w = width * WV.DOT_COLS
+
+        bm = WV.Bitmap(dots_w, dots_h)
+        for x in range(dots_w):                 # the field, solid
+            bm.fill_to(x, dots_h)
+
+        # carve: turn the glyph's lit dots OFF, centred
+        gh = len(glyph[0]) if glyph else 0
+        y0 = max(0, (dots_h - gh * scale) // 2)
+        x0 = max(0, (dots_w - gw * scale) // 2)
+        cx = x0
+        for g in glyph:
+            for r, line in enumerate(g):
+                for cch, ch in enumerate(line):
+                    if ch != "#":
+                        continue
+                    for dy in range(scale):
+                        for dx in range(scale):
+                            yy, xx = y0 + r * scale + dy, cx + cch * scale + dx
+                            if 0 <= yy < dots_h and 0 <= xx < dots_w:
+                                bm.px[yy][xx] = 0
+            cx += (len(g[0]) + 1) * scale
+
+        ash = st.get("ash", dim)
+        cells = bm.to_braille()
+        for row in cells:
+            lines.append("".join(
+                C(ch, tone if ch != " " else ash) if ch != " "
+                else C("░", ash) for ch in row))
+        lines.append(C(cap, mut))
+        if det:
+            lines.append(C(det, dim))
+        return chr(10).join(lines[:max_rows])
+
     if style == "corgi":
         scr, alu = st.get("screen", tone), st.get("alu", mut)
         inner = max(12, width - 2)
