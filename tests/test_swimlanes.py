@@ -169,7 +169,7 @@ def test_a_stacked_row_ends_in_its_due_meter(tmp_path):
     lane = next(line for line in lane_rows(rows_of(b)) if "Beacon" in line)
     assert "0/1" not in lane and "+40d" not in lane
     assert lane[-6:].strip()                 # the six cells are drawn
-    assert set(lane[-6:]) <= set("⣿⡇·▲⣤ ")
+    assert re.fullmatch(r"·*(▲?\d+d\+?|today|done|—)", lane[-6:]), lane[-6:]
 
 
 def test_the_leader_is_the_project_under_the_most_pressure(tmp_path):
@@ -448,30 +448,60 @@ def test_the_allocator_spends_the_height_it_is_given(tmp_path):
 # --------------------------------------------------------------------------- #
 # the due meter — the right edge (REV4/REV5 #18)
 # --------------------------------------------------------------------------- #
-def test_the_meter_is_shorter_the_sooner_the_work_is_due(tmp_path):
-    """LENGTH IS THE TIME THAT REMAINS, so a SHORT bar means act now. Triage is
-    pre-attentive: nobody reads a number to tell overdue from distant."""
-    from taskboard.views import due_meter
-    def bar(days):                      # the BAR, not the alert cap
-        return sum(1 for g, _t in due_meter(days, done=False) if g in "⣿⡇")
-    assert bar(-3) == 0                 # overdue has no time left to draw
-    assert bar(-3) < bar(0) < bar(4) < bar(20) < bar(200)
-    assert due_meter(-3, done=False)[0][0] == "▲"   # it carries the cap instead
+def test_the_edge_states_the_distance_exactly(tmp_path):
+    """REVERSED DELIBERATELY, and the reason is measurable.
+
+    This law used to read: "LENGTH IS THE TIME THAT REMAINS, so a SHORT bar means
+    act now. Triage is pre-attentive: nobody reads a number to tell overdue from
+    distant." The bar was kept for a while on that argument and then failed the
+    only test that matters, which is use: it stood for a BAND, so four days and
+    five days drew the SAME two cells. The one column whose whole job is "how
+    long have I got" was answering in buckets.
+
+    A number costs the same six cells and separates them. What survives from the
+    old law is everything that was actually load-bearing: the edge is exactly
+    METER_W wide whatever it says, and severity still gets one seat."""
+    from taskboard.views import METER_W, due_meter
+
+    def read(days, done=False):
+        return "".join(g for g, _ in due_meter(days, done=done)).strip("·")
+
+    assert read(4) == "4d" and read(5) == "5d"     # the band drew these the same
+    assert read(0) == "today"
+    assert read(-3) == "▲3d"
+    assert read(None, done=True) == "done"
+    assert read(None) == "—"
+
+    # the alert cap keeps its single seat, and the count beside it stays neutral
+    overdue = due_meter(-3, done=False)
+    assert overdue[-3] == ("▲", "over")
+    assert {tone for g, tone in overdue[-2:]} == {"mut"}
+
+    # and the edge spends exactly its width, so the right margin never goes ragged
+    for days in (None, -999999, -3, 0, 1, 7, 40, 400, 999999):
+        assert len(due_meter(days, done=False)) == METER_W, days
+
 
 
 def test_the_meter_is_categorical_not_linear(tmp_path):
-    """A linear scale would spend all its resolution on a distant future where
-    nothing is decided — so two dates in the same band draw the same mark."""
+    """REVERSED, and this is the law that changed hands. It used to read: "a
+    linear scale would spend all its resolution on a distant future where
+    nothing is decided — so two dates in the same band draw the same mark." The
+    banding was the point, and the cost only shows up in use: the edge could not
+    tell THIS Thursday from NEXT Thursday, which is the distinction the column
+    exists to make. It now says the count, so every distance is its own reading."""
     from taskboard.views import due_meter
-    assert due_meter(3, done=False) == due_meter(7, done=False)        # this week
-    assert due_meter(40, done=False) == due_meter(300, done=False)     # later
-    assert due_meter(3, done=False) != due_meter(20, done=False)       # week vs month
+    assert due_meter(3, done=False) != due_meter(7, done=False)        # was equal
+    assert due_meter(40, done=False) != due_meter(300, done=False)     # was equal
+    assert due_meter(3, done=False) != due_meter(20, done=False)
 
 
 def test_finished_work_is_the_whole_meter_in_ash_and_wordless(tmp_path):
     from taskboard.views import due_meter
+    # ONE TONE still, ground included — finished work must not read as live work.
+    # It is no longer wordless: the edge says what it is, which is the change.
     assert {t for _g, t in due_meter(-99, done=True)} == {"ash"}
-    assert {g for g, _t in due_meter(-99, done=True)} == {"⣤"}
+    assert "".join(g for g, _t in due_meter(-99, done=True)).strip("·") == "done"
 
 
 def test_undated_work_is_measured_as_nothing_not_as_late(tmp_path):
@@ -483,7 +513,9 @@ def test_overdue_lights_the_one_alert_glyph_and_nothing_else(tmp_path):
     """Severity keeps its single seat: the `▲` cap, the same glyph the chip used."""
     from taskboard.views import HEX, due_meter
     cells = due_meter(-5, done=False)
-    assert cells[0] == ("▲", "over")
+    # the reading is right-aligned now, so the cap sits before the count rather
+    # than at cell 0 — what the law is about is that there is exactly ONE seat
+    assert ("▲", "over") in cells
     assert [t for _g, t in cells].count("over") == 1
     for days in (0, 3, 20, 200, None):
         assert "over" not in [t for _g, t in due_meter(days, done=False)]
@@ -538,7 +570,8 @@ def test_the_lane_row_ends_in_the_meter_at_every_width(tmp_path):
     b = typical(tmp_path)
     for w in (48, 72, 96, 130):
         for line in lane_rows(rows_of(b, w, 30)):
-            assert set(line[-6:]) <= set("⣿⡇·▲⣤ "), f"{w}: {line[-8:]!r}"
+            edge = line[-6:]
+            assert re.fullmatch(r"·*(▲?\d+d\+?|today|done|—)", edge), f"{w}: {edge!r}"
 
 
 def test_the_freed_band_went_to_the_field(tmp_path):

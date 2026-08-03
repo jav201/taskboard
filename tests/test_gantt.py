@@ -68,10 +68,11 @@ def test_every_row_ends_in_the_six_cell_meter(tmp_path):
     assert len(body) >= 5
     for line in body:
         edge = line[-METER_W:]
-        assert set(edge) <= set("⣿⡇·▲⣤ "), f"{line[-10:]!r} is not a meter"
-        # an EMPTY edge is not a meter either — the first version of this law
-        # allowed spaces, so deleting the meter altogether kept it green
-        assert set(edge) & set("⣿⡇·▲⣤"), f"{line[-10:]!r} has no meter at all"
+        # a READING now, not a bar. The blank-edge trap the old law caught still
+        # applies: an edge of pure ground says nothing and must not pass.
+        assert re.fullmatch(r"·*(▲?\d+d\+?|today|done|—)", edge), (
+            f"{line[-10:]!r} is not a due reading")
+        assert edge.strip("·"), f"{line[-10:]!r} has no reading at all"
 
 
 def test_finished_work_shows_a_spent_meter_and_rests_in_ash(tmp_path):
@@ -79,7 +80,8 @@ def test_finished_work_shows_a_spent_meter_and_rests_in_ash(tmp_path):
     spine, ash, no chip and no severity."""
     b, _p = fixture(tmp_path)
     line = next(l for l in rows(b, 96, 30) if "Old finished" in l)
-    assert set(line[-METER_W:]) <= {"⣤", " "} and "⣤" in line
+    # finished work: the edge SAYS so, in one tone, over the board's ground
+    assert line[-METER_W:].strip("·") == "done"
     assert line.startswith("▏ ")               # the thin spine
     assert "▲" not in line
 
@@ -88,7 +90,7 @@ def test_the_project_row_keeps_its_progress_figure(tmp_path):
     b, _p = fixture(tmp_path)
     line = next(l for l in rows(b, 130, 30) if "Atlas" in l)
     assert re.search(r"\d+%", line), line
-    assert set(line[-METER_W:]) <= set("⣿⡇·▲⣤ ")
+    assert re.fullmatch(r"·*(▲?\d+d\+?|today|done|—)", line[-METER_W:]), line[-METER_W:]
 
 
 def test_the_alert_is_the_meters_cap_and_nothing_else(tmp_path):

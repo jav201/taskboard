@@ -765,7 +765,8 @@ def test_gantt_handles_undated_tasks(tmp_path):
     assert "GANTT" in out
     assert "floating task" in out
     row = next(l for l in out.splitlines() if "floating task" in l)
-    assert set(row[-METER_W:]) == {"·"}      # unmeasured, not overdue
+    # the edge SAYS there is nothing to measure instead of drawing an empty bar
+    assert row[-METER_W:].strip("·") == "—"
 
 
 def test_agenda_handles_undated_tasks(tmp_path):

@@ -814,37 +814,61 @@ def days_until(iso: str | None, today: date) -> int | None:
     return (d - today).days if d else None
 
 
+def _right(cells: list[tuple[str, str]], width: int,
+           pad_tone: str = "ash") -> list[tuple[str, str]]:
+    """Right-align the reading in the edge's `width` cells, over the board's own
+    ground rather than over blanks.
+
+    The bar this replaced filled its unlit cells with `·`, and the occupancy law
+    counts them: padding with spaces instead would have quietly emptied six cells
+    on every row of the board — the exact dead space the design spent a whole
+    pass removing."""
+    cells = cells[:width]
+    return [("·", pad_tone)] * (width - len(cells)) + cells
+
+
 def due_meter(task_or_lane_days: int | None, done: bool, width: int = METER_W
               ) -> list[tuple[str, str]]:
-    """The six-cell right edge, as (glyph, tone) cells.
+    """The six-cell right edge, as (glyph, tone) cells. IT SAYS THE NUMBER.
 
-    Replaces the whole `n/N  !N  ▲Nd | today | done | —` group. It answers WHEN,
-    never WHOSE — identity already travels in the spine at the other end of the
-    same row — so it is drawn in neutral tones whatever the board holds. The
-    census caught the first version painting it in each project's hue: the right
-    edge went from 6 tones to 8 because it carried one per project.
+    This was a BAR whose length stood for a band of urgency, on the argument
+    that triage is pre-attentive and nobody reads a number to tell overdue from
+    distant. Reversed after living with it: the bar could not tell 4 days from
+    5 — both landed in the same `week` band and drew the same two cells — so the
+    one column whose entire job is "how long have I got" answered in buckets.
+    A number costs the same six cells and is exact.
 
-    Severity keeps its single seat: overdue lights the `▲` cap and nothing else."""
+    It still answers WHEN, never WHOSE: identity travels in the spine at the
+    other end of the row, so this edge stays in neutral tones whatever the board
+    holds. Severity keeps its single seat — overdue lights the `▲` cap, and the
+    count beside it does not."""
     if width <= 0:
         return []
     if done:                                    # spent, complete, and wordless
-        return [("⣤", "ash")] * width
+        return _right([(ch, "ash") for ch in "done"], width, "ash")
     if task_or_lane_days is None:               # no date: nothing to measure
-        return [("·", "dim")] * width
+        return _right([("—", "dim")], width, "dim")
     d = task_or_lane_days
-    band = ("overdue" if d < 0 else "today" if d == 0 else "week" if d <= 7
-            else "month" if d <= 31 else "later")
-    fill = min(width, _METER_FILL[band])
-    cells: list[tuple[str, str]] = []
-    if band == "overdue":
-        cells.append(("▲", "over"))             # THE one alert glyph
-    else:
-        tone = "accent" if band == "today" else "mut"
-        cells += [("⣿", tone)] * max(0, fill - 1)
-        if fill:
-            cells.append(("⡇", tone))           # the half-cell boundary
-    cells += [("·", "ash")] * (width - len(cells))
-    return cells[:width]
+    if d < 0:
+        # the cap wears the severity hue; the number beside it stays neutral, so
+        # `over` keeps meaning exactly one thing on this row
+        return _right([("▲", "over")] + [(ch, "mut") for ch in _days(-d, width - 1)],
+                      width)
+    if d == 0:
+        return _right([(ch, "accent") for ch in "today"], width)
+    return _right([(ch, "mut") for ch in _days(d, width)], width)
+
+
+def _days(n: int, room: int) -> str:
+    """`Nd`, and it never silently truncates: a distance too wide for the edge
+    comes back capped with a `+` so the reading stays true rather than short."""
+    text = f"{n}d"
+    if len(text) <= room:
+        return text
+    cap = 10 ** max(1, room - 2) - 1            # room for the digits, 'd' and '+'
+    return f"{cap}d+"
+
+
 
 
 def meter_markup(cells: list[tuple[str, str]]) -> str:
@@ -2237,8 +2261,9 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
                         "the span: ash is elapsed, colour is what remains"))
         # the progress band only exists once something HAS progressed
         if any(board.project_progress(p.id, False) > 0 for p in f["projects"]):
-            out.append((c("⣤⣤⡄", hue), "how far the work actually got"))
-            out.append((c("⡄", hue) + c("··", "ash"),
+            out.append((c(FIELD_PROGRESS * 2 + FIELD_HALF, hue),
+                        "how far the work actually got"))
+            out.append((c(FIELD_HALF, hue) + c("··", "ash"),
                         "the gap between the two bands: the slip, as a length"))
         if f["project_due"]:
             out.append((c("◆", hue), "the project's own due date"))
@@ -2256,16 +2281,16 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         if f["blocked"]:
             out.append((c("▲", "over"), "blocked"))
     if mode in ("swimlanes", "gantt"):
-        for present, days, label in (("overdue", -1, "overdue — ▲ is the only alert"),
+        for present, days, label in (("overdue", -1, "days overdue — ▲ is the only alert"),
                                      ("today", 0, "due today"),
                                      ("week", 3, "due this week"),
                                      ("later", 40, "due later")):
             if f[present]:
-                out.append((_meter_swatch(days), f"meter: {label}"))
+                out.append((_meter_swatch(days), label))
         if f["done"]:
-            out.append((_meter_swatch(None, done=True), "meter in ash: work spent"))
+            out.append((_meter_swatch(None, done=True), "finished, and no longer counting down"))
         if f["undated"]:
-            out.append((_meter_swatch(None), "meter unlit: no date to measure"))
+            out.append((_meter_swatch(None), "no date to count down to"))
     if mode == "kanban" and f["high"]:
         out.append((c("!", "ink"), "high-priority task"))
     # THE NO-GHOST LAW, and archived is its clearest case: the mark exists on
