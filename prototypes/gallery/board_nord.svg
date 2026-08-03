@@ -4,27 +4,27 @@
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <text x="26.8" y="40.3" fill="#88c0d0">╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮</text>
 <text x="26.8" y="57.3" fill="#88c0d0">│</text>
-<text x="35.2" y="57.3" fill="#bf616a">                                   ██████████</text>
+<text x="35.2" y="57.3" fill="#bf616a">                                     ▐████▌  </text>
 <text x="976.0" y="57.3" fill="#88c0d0">│</text>
 <text x="26.8" y="74.3" fill="#88c0d0">│</text>
-<text x="35.2" y="74.3" fill="#bf616a">                                          ▐██</text>
+<text x="35.2" y="74.3" fill="#bf616a">                                   ██▌    ▐██</text>
 <text x="976.0" y="74.3" fill="#88c0d0">│</text>
 <text x="26.8" y="91.3" fill="#88c0d0">│</text>
-<text x="35.2" y="91.3" fill="#bf616a">                                        ██▌  </text>
+<text x="35.2" y="91.3" fill="#bf616a">                                   ██▌    ▐██</text>
 <text x="976.0" y="91.3" fill="#88c0d0">│</text>
 <text x="26.8" y="108.3" fill="#88c0d0">│</text>
-<text x="35.2" y="108.3" fill="#bf616a">                                        ██▌  </text>
+<text x="35.2" y="108.3" fill="#bf616a">                                     ▐████▌  </text>
 <text x="976.0" y="108.3" fill="#88c0d0">│</text>
 <text x="26.8" y="125.3" fill="#88c0d0">│</text>
-<text x="35.2" y="125.3" fill="#bf616a">                                     ▐██     </text>
+<text x="35.2" y="125.3" fill="#bf616a">                                   ██▌    ▐██</text>
 <text x="976.0" y="125.3" fill="#88c0d0">│</text>
 <text x="26.8" y="142.3" fill="#88c0d0">│</text>
-<text x="35.2" y="142.3" fill="#bf616a">                                     ▐██     </text>
+<text x="35.2" y="142.3" fill="#bf616a">                                   ██▌    ▐██</text>
 <text x="976.0" y="142.3" fill="#88c0d0">│</text>
 <text x="26.8" y="159.3" fill="#88c0d0">│</text>
-<text x="35.2" y="159.3" fill="#bf616a">                                     ▐██     </text>
-<text x="732.4" y="159.3" fill="#7b88a1">█▅▂</text>
-<text x="757.6" y="159.3" fill="#4c566a">░░░░░</text>
+<text x="35.2" y="159.3" fill="#bf616a">                                     ▐████▌  </text>
+<text x="732.4" y="159.3" fill="#7b88a1">█▂</text>
+<text x="749.2" y="159.3" fill="#4c566a">░░░░░░</text>
 <text x="808.0" y="159.3" fill="#4c566a">LOAD · 8 WK</text>
 <text x="976.0" y="159.3" fill="#88c0d0">│</text>
 <text x="26.8" y="176.3" fill="#88c0d0">╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
@@ -40,10 +40,10 @@
 <text x="236.8" y="261.3" fill="#4c566a"> │ </text>
 <text x="262.0" y="261.3" fill="#7b88a1"> gantt</text>
 <text x="35.2" y="295.3" fill="#7b88a1">@</text>
-<text x="52.0" y="295.3" fill="#bf616a">  7</text>
+<text x="52.0" y="295.3" fill="#bf616a">  8</text>
 <text x="85.6" y="295.3" fill="#7b88a1">Nearest dea</text>
 <text x="194.8" y="295.3" fill="#7b88a1">!</text>
-<text x="211.6" y="295.3" fill="#bf616a">  5</text>
+<text x="211.6" y="295.3" fill="#bf616a">  6</text>
 <text x="245.2" y="295.3" fill="#7b88a1">Overdue cou</text>
 <text x="354.4" y="295.3" fill="#7b88a1">~</text>
 <text x="371.2" y="295.3" fill="#ebcb8b">  4</text>
@@ -52,10 +52,10 @@
 <text x="530.8" y="295.3" fill="#ebcb8b">  1</text>
 <text x="564.4" y="295.3" fill="#7b88a1">Blocked</text>
 <text x="673.6" y="295.3" fill="#7b88a1">$</text>
-<text x="690.4" y="295.3" fill="#bf616a">  0</text>
+<text x="690.4" y="295.3" fill="#ebcb8b">  9</text>
 <text x="724.0" y="295.3" fill="#7b88a1">Workday bud</text>
 <text x="833.2" y="295.3" fill="#7b88a1">#</text>
-<text x="850.0" y="295.3" fill="#88c0d0"> 59</text>
+<text x="850.0" y="295.3" fill="#88c0d0">134</text>
 <text x="883.6" y="295.3" fill="#7b88a1">Board file</text>
 <text x="35.2" y="329.3" fill="#7b88a1">BACKLOG</text>
 <text x="102.4" y="329.3" fill="#88c0d0">9▄</text>
@@ -69,26 +69,26 @@
 <text x="413.2" y="380.3" fill="#7b88a1">Website Redesign</text>
 <rect x="26.8" y="384.0" width="268.8" height="17.0" fill="#3b4252"/>
 <text x="52.0" y="397.3" fill="#7b88a1">Compress database bac…</text>
-<text x="245.2" y="397.3" fill="#bf616a">6d!</text>
+<text x="245.2" y="397.3" fill="#bf616a">7d!</text>
 <text x="337.6" y="397.3" fill="#4c566a">PHASE    </text>
 <text x="413.2" y="397.3" fill="#7b88a1">Backlog</text>
 <rect x="26.8" y="401.0" width="268.8" height="17.0" fill="#3b4252"/>
 <text x="52.0" y="414.3" fill="#7b88a1">Renew TLS certificate</text>
-<text x="245.2" y="414.3" fill="#bf616a">2d!</text>
+<text x="245.2" y="414.3" fill="#bf616a">3d!</text>
 <text x="337.6" y="414.3" fill="#4c566a">PRIORITY </text>
 <text x="413.2" y="414.3" fill="#7b88a1">high</text>
 <rect x="26.8" y="418.0" width="268.8" height="17.0" fill="#3b4252"/>
 <text x="52.0" y="431.3" fill="#7b88a1">Write API reference</text>
-<text x="253.6" y="431.3" fill="#ebcb8b">0d</text>
+<text x="245.2" y="431.3" fill="#bf616a">1d!</text>
 <text x="337.6" y="431.3" fill="#4c566a">STATE    </text>
 <text x="413.2" y="431.3" fill="#bf616a">blocked</text>
 <rect x="26.8" y="435.0" width="268.8" height="17.0" fill="#3b4252"/>
 <text x="52.0" y="448.3" fill="#7b88a1">Shut down legacy serve…</text>
-<text x="253.6" y="448.3" fill="#ebcb8b">3d</text>
+<text x="253.6" y="448.3" fill="#ebcb8b">2d</text>
 <rect x="26.8" y="452.0" width="268.8" height="17.0" fill="#3b4252"/>
 <rect x="295.6" y="452.0" width="16.8" height="17.0" fill="#000000"/>
 <text x="52.0" y="465.3" fill="#7b88a1">Deprecate v1 endpoints</text>
-<text x="253.6" y="465.3" fill="#7b88a1">4d</text>
+<text x="253.6" y="465.3" fill="#ebcb8b">3d</text>
 <text x="295.6" y="465.3" fill="#003054">▆▆</text>
 <text x="337.6" y="465.3" fill="#4c566a">PROGRESS </text>
 <text x="413.2" y="465.3" fill="#88c0d0">▇▇▇▇▇▇▇</text>
@@ -97,7 +97,7 @@
 <rect x="26.8" y="469.0" width="268.8" height="17.0" fill="#3b4252"/>
 <rect x="295.6" y="469.0" width="16.8" height="17.0" fill="#000000"/>
 <text x="52.0" y="482.3" fill="#7b88a1">Add push notifications</text>
-<text x="245.2" y="482.3" fill="#7b88a1">13d</text>
+<text x="245.2" y="482.3" fill="#7b88a1">12d</text>
 <rect x="26.8" y="486.0" width="268.8" height="17.0" fill="#3b4252"/>
 <rect x="295.6" y="486.0" width="16.8" height="17.0" fill="#000000"/>
 <text x="52.0" y="499.3" fill="#7b88a1">Plan Q3 roadmap</text>

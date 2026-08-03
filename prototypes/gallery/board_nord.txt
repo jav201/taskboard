@@ -1,12 +1,12 @@
                                                                                                                       
   ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮  
-  │                                   ██████████                                                                   │  
-  │                                          ▐██                                                                   │  
-  │                                        ██▌                                                                     │  
-  │                                        ██▌                                                                     │  
-  │                                     ▐██                                                                        │  
-  │                                     ▐██                                                                        │  
-  │                                     ▐██                                           █▅▂░░░░░ LOAD · 8 WK         │  
+  │                                     ▐████▌                                                                     │  
+  │                                   ██▌    ▐██                                                                   │  
+  │                                   ██▌    ▐██                                                                   │  
+  │                                     ▐████▌                                                                     │  
+  │                                   ██▌    ▐██                                                                   │  
+  │                                   ██▌    ▐██                                                                   │  
+  │                                     ▐████▌                                        █▂░░░░░░ LOAD · 8 WK         │  
   ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯  
                                                                                                                       
   ▇▇▇▇▇▇▇▇▇▇▇▇▇▇░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  13%       
@@ -14,18 +14,18 @@
                                                                                                                       
   ▸board │  lanes │  agenda │  gantt                                                                                  
                                                                                                                       
-   @   7 Nearest dea  !   5 Overdue cou  ~   4 Work in fli  x   1 Blocked      $   0 Workday bud  #  59 Board file    
+   @   8 Nearest dea  !   6 Overdue cou  ~   4 Work in fli  x   1 Blocked      $   9 Workday bud  # 134 Board file    
                                                                                                                       
    BACKLOG 9▄                                                                                                         
    ──────────────────────────          F I X   C H E C K O U T   5 0 0   E R R O R                                    
                                                                                                                       
    ▸ Fix checkout 500 error blk        PROJECT  Website Redesign                                                      
-     Compress database bac… 6d!        PHASE    Backlog                                                               
-     Renew TLS certificate  2d!        PRIORITY high                                                                  
-     Write API reference     0d        STATE    blocked                                                               
-     Shut down legacy serve… 3d                                                                                       
-     Deprecate v1 endpoints  4d   ▆▆   PROGRESS ▇▇▇▇▇▇▇░░░░░░░░░░░░░ 1/3                                              
-     Add push notifications 13d                                                                                       
+     Compress database bac… 7d!        PHASE    Backlog                                                               
+     Renew TLS certificate  3d!        PRIORITY high                                                                  
+     Write API reference    1d!        STATE    blocked                                                               
+     Shut down legacy serve… 2d                                                                                       
+     Deprecate v1 endpoints  3d   ▆▆   PROGRESS ▇▇▇▇▇▇▇░░░░░░░░░░░░░ 1/3                                              
+     Add push notifications 12d                                                                                       
      Plan Q3 roadmap         --                                                                                       
      Update onboarding copy  --                                                                                       
    DOING 4▂                                                                                                           
