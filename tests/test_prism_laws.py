@@ -60,7 +60,7 @@ MANIFEST = {
     "law_motion": ("test_motion.py", "test_nothing_but_the_rule_moves_between_phases"),
     "law_gantt_order": ("test_archive.py", "test_open_work_comes_first_and_finished_work_sinks_to_the_tail"),
     "law_edge_budget": ("test_swimlanes.py", "test_the_edge_keeps_its_tone_count_whatever_the_board_holds"),
-    "law_meter": ("test_swimlanes.py", "test_the_meter_is_shorter_the_sooner_the_work_is_due"),
+    "law_meter": ("test_swimlanes.py", "test_the_edge_states_the_distance_exactly"),
     "law_keybar": ("test_keymap.py", "test_every_seat_entry_reaches_the_widest_bar"),
     "law_legend": ("test_legend.py", "test_no_entry_describes_a_mark_the_view_is_not_drawing"),
     "law_clip": ("test_field.py", "test_a_date_outside_the_window_is_flagged_and_never_silently_clamped"),

@@ -130,10 +130,10 @@ def test_the_meter_swatches_are_the_meter_itself(tmp_path):
     """Not a picture of a meter: the same call the row makes."""
     from taskboard.views import due_meter, meter_markup
     entries = dict((m, s) for s, m in legend_entries("swimlanes", full(tmp_path), TODAY))
-    assert entries["meter: overdue — ▲ is the only alert"] == \
+    assert entries["days overdue — ▲ is the only alert"] == \
         meter_markup(due_meter(-1, done=False))
-    assert entries["meter: due later"] == meter_markup(due_meter(40, done=False))
-    assert entries["meter in ash: work spent"] == \
+    assert entries["due later"] == meter_markup(due_meter(40, done=False))
+    assert entries["finished, and no longer counting down"] == \
         meter_markup(due_meter(None, done=True))
 
 
@@ -164,8 +164,9 @@ def test_each_view_gets_its_own_legend(tmp_path):
     assert sets["swimlanes"] != sets["gantt"] != sets["agenda"]
     assert "●" in sets["agenda"] and "●" not in sets["swimlanes"]
     # the gantt's marks after the field redesign: the two bands, not a slab
-    assert any("⣿" in s for s in sets["gantt"])
-    assert not any("⣿" in s for s in sets["agenda"])
+    from taskboard.views import FIELD_REACH
+    assert any(FIELD_REACH in s for s in sets["gantt"])
+    assert not any(FIELD_REACH in s for s in sets["agenda"])
 
 
 # --------------------------------------------------------------------------- #
