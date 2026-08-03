@@ -260,13 +260,13 @@ def test_the_span_separates_elapsed_from_remaining(tmp_path):
     """The top band's whole job: ASH for what has already gone, the project's
     own hue for what is left. One tone for the whole span would delete the cut
     the second band is measured against."""
-    from taskboard.views import HEX
+    from taskboard.views import HEX, FIELD_REACH
     b = _load(tmp_path, 2, 6, "span.json")
     text = render_gantt(b, False, None, TODAY, width=96, height=30)
     ash = hue = 0
     for s in text.spans:
         seg = text.plain[s.start:s.end]
-        if "⣿" not in seg:
+        if FIELD_REACH not in seg:
             continue
         if HEX["ash"] in str(s.style):
             ash += 1
@@ -289,4 +289,6 @@ def test_two_tasks_of_different_length_draw_different_reaches(tmp_path):
     out = rows(b, 96, 30)
     short = next(l for l in out if "Short one" in l)
     long_ = next(l for l in out if "Long one" in l)
-    assert long_.count("⣀") > short.count("⣀") + 3, (short.count("⣀"), long_.count("⣀"))
+    from taskboard.views import FIELD_TASK
+    assert long_.count(FIELD_TASK) > short.count(FIELD_TASK) + 3, (
+        short.count(FIELD_TASK), long_.count(FIELD_TASK))

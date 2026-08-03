@@ -1525,9 +1525,13 @@ def test_the_two_bands_show_the_slip(tmp_path):
     rows = _gantt_rows(b)
     span = _project_row(b, "Alpha")
     band = rows[rows.index(span) + 1]
-    assert "⣿" in span and "◆" in span             # the span, ending at its date
-    assert "⣤" in band                              # how far the work got
-    assert band.index("⡄") < span.index("◆")        # the gap IS the slip
+    from taskboard.views import FIELD_HALF, FIELD_PROGRESS, FIELD_REACH
+    # by NAME, not by glyph: the field's texture is a design decision that has
+    # changed once already, and these laws are about the two BANDS, not the
+    # characters they happen to be drawn with.
+    assert FIELD_REACH in span and "◆" in span      # the span, ending at its date
+    assert FIELD_PROGRESS in band                   # how far the work got
+    assert band.index(FIELD_HALF) < span.index("◆")  # the gap IS the slip
 
 
 def test_a_project_with_no_progress_draws_no_progress_band(tmp_path):
@@ -1540,13 +1544,17 @@ def test_a_project_with_no_progress_draws_no_progress_band(tmp_path):
 def test_the_today_rule_spans_every_row(tmp_path):
     """Kept from the old design, deliberately: one column every row shares."""
     b = _gantt_board(tmp_path)
-    from taskboard.views import RULE, gantt_geometry
+    from taskboard.views import (FIELD_HALF, FIELD_PHASE_TIP, FIELD_PROGRESS,
+                                 FIELD_REACH, FIELD_TASK, RULE, gantt_geometry)
     geo = gantt_geometry(94, 30)
     col = geo.label_w + geo.today_dc // 2
     body = [l for l in _gantt_rows(b) if l.startswith("▎ ") or l.startswith("▏ ")]
     assert len(body) >= 4
     for line in body:
-        assert line[col] == RULE or 0x2800 <= ord(line[col]) <= 0x28FF, line[col]
+        drawn = {FIELD_REACH, FIELD_PROGRESS, FIELD_TASK, FIELD_HALF,
+                 *FIELD_PHASE_TIP}
+        assert (line[col] == RULE or line[col] in drawn
+                or 0x2800 <= ord(line[col]) <= 0x28FF), line[col]
 
 
 def test_the_due_diamond_marks_the_projects_own_date(tmp_path):
@@ -1589,8 +1597,10 @@ def test_a_reach_carries_identity_and_the_meter_carries_urgency(tmp_path):
         Task("ontracktask", p.id, "A", start_date="2026-07-20", due_date="2026-08-24"),
     ]
     text = render_gantt(b, False, None, today=GANTT_MIDWEEK, width=96, height=30)
+    from taskboard.views import FIELD_PHASE_TIP, FIELD_TASK
+    reach = {FIELD_TASK, *FIELD_PHASE_TIP}
     reach_styles = [str(s.style) for s in text.spans
-                    if set(text.plain[s.start:s.end]) & set("⣀⠤⠒⠉")]
+                    if set(text.plain[s.start:s.end]) & reach]
     assert reach_styles
     for style in reach_styles:
         assert HEX["over"] not in style and HEX["soon"] not in style
