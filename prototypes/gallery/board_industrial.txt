@@ -1,8 +1,8 @@
  ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ 
  │D A Y S   O V E R D U E                                                      ████····························     │ 
- │                                                                             ████████························     │ 
- │7                                                                            ████████························     │ 
- │Fix checkout 500 error                                                       ████████████····················     │ 
+ │                                                                             ████····························     │ 
+ │8                                                                            ████····························     │ 
+ │Fix checkout 500 error                                                       ████████························     │ 
  │                                                                             LOAD · 8 WK                          │ 
  └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ 
                                                                                                                       
@@ -14,21 +14,21 @@
  [1]BOARD [2]lanes [3]agenda [4]gantt                                                                                 
                                                                                                                       
  ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ 
- │ [D]   7 │ NEAREST  [O]   5 │ OVERDUE  [W]   4 │ WORK IN  [B]   1 │ BLOCKED  [$]   0 │ WORKDAY  [F]  59 │ BOARD F │ 
+ │ [D]   8 │ NEAREST  [O]   6 │ OVERDUE  [W]   4 │ WORK IN  [B]   1 │ BLOCKED  [$]   9 │ WORKDAY  [F] 134 │ BOARD F │ 
  └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ 
                                                                                                                       
   ▐▌ [1]BACKLOG                                    [ 9]      ▐▌ [2]DOING             [ 4]      ▐▌ [3]DONE   [ 2]      
                                                                                                                       
-  ▐ 01 ▌ Fix checkout 500 error                   [blk]      ▐01 Design … [5d!]                ▐01 Set up… [done]     
-         [PH:BACK][DUE:-7D][PR:H]                                [PH:DOIN]                         [PH:DONE]          
-  ▐ 02 ▌ Compress database backups                [6d!]      ▐02 Review … [4d!]                ▐02 Migrat… [done]     
-         [PH:BACK][DUE:-6D][PR:N]                                [PH:DOIN]                         [PH:DONE]          
-  ▐ 03 ▌ Renew TLS certificate                    [2d!]      ▐03 Optimize… [1d]                                       
-         [PH:BACK][DUE:-2D][PR:H]                                [PH:DOIN]                                            
-  ▐ 04 ▌ Write API reference                       [0d]      ▐04 Audit de… [7d]                                       
-         [PH:BACK][DUE:0D][PR:N]                          ▁      [PH:DOIN]                                            
-  ▐ 05 ▌ Shut down legacy servers                  [3d]                                                               
-         [PH:BACK][DUE:3D][PR:N]                                                                                      
-  ▐ 06 ▌ Deprecate v1 endpoints                    [4d]                                                               
-         [PH:BACK][DUE:4D][PR:H]                                                                                      
+  ▐ 01 ▌ Fix checkout 500 error                   [blk]      ▐ 01 ▌ Design homepage… [6d!]     ▐01 Set up… [done]     
+         [PH:BACK][DUE:-8D][PR:H]                                   [PH:DOIN][DUE:-6D]             [PH:DONE]          
+  ▐ 02 ▌ Compress database backups                [7d!]      ▐ 02 ▌ Review pull req… [5d!]     ▐02 Migrat… [done]     
+         [PH:BACK][DUE:-7D][PR:N]                                   [PH:DOIN][DUE:-5D]             [PH:DONE]          
+  ▐ 03 ▌ Renew TLS certificate                    [3d!]      ▐ 03 ▌ Optimize image a… [0d]                            
+         [PH:BACK][DUE:-3D][PR:H]                                   [PH:DOIN][DUE:0D]                                 
+  ▐ 04 ▌ Write API reference                      [1d!]      ▐ 04 ▌ Audit dependenci… [6d]                            
+         [PH:BACK][DUE:-1D][PR:N]                         ▁         [PH:DOIN][DUE:6D]                                 
+  ▐ 05 ▌ Shut down legacy servers                  [2d]                                                               
+         [PH:BACK][DUE:2D][PR:N]                                                                                      
+  ▐ 06 ▌ Deprecate v1 endpoints                    [3d]                                                               
+         [PH:BACK][DUE:3D][PR:H]                                                                                      
  1 2 3 4 Views  c Signals  ? Keys  v Size  r Refresh  t Language  g Gallery  q Quit                       ▏^p palette 
