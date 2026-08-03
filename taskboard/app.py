@@ -10,6 +10,8 @@ from textual import events
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Vertical, VerticalScroll
+from textual.keys import format_key
+from textual.screen import ModalScreen
 from textual.widgets import Footer, Static
 
 from .models import IMAGE_EXTS, Board, Project, Task, default_board_path
@@ -30,42 +32,188 @@ class BoardView(Static):
         self.app.refresh_view()
 
 
+def binding_map(screen, shown: bool | None = None) -> list[tuple[str, str, Binding]]:
+    """Every binding that ACTUALLY fires on `screen`, one row per action.
+
+    Derived from `active_bindings`, never from a BINDINGS list: a hand-written
+    hint drifts the moment a binding moves, and a static list cannot know what
+    `check_action` dropped or which screen shadows which key. `format_key` is
+    Textual's own name->glyph table (question_mark -> `?`, escape -> `esc`).
+
+    Aliases are kept, not dropped: a binding written `d,delete` prints as
+    `d/del`. A working key indicated nowhere is the defect this exists to
+    prevent — and the Footer prints only the FIRST key of such a binding.
+    """
+    keys: dict[tuple[str, str], list[str]] = {}
+    firsts: dict[tuple[str, str], Binding] = {}
+    for key, ab in screen.active_bindings.items():
+        b = ab.binding
+        if not ab.enabled or (shown is not None and b.show is not shown):
+            continue
+        ident = (b.action, b.description)
+        keys.setdefault(ident, []).append(key)
+        firsts.setdefault(ident, b)
+    out = []
+    for ident, ks in keys.items():
+        b = firsts[ident]
+        out.append((b.key_display or "/".join(format_key(k) for k in ks),
+                    b.description, b))
+    return out
+
+
+class HelpScreen(ModalScreen[None]):
+    """The `?` tier: the FULL keymap of the surface behind this one.
+
+    The footer can only afford the primaries (29 shown bindings printed 12 at
+    118 columns, with `q Quit` off the right edge). Everything it drops is
+    indicated here, `show=False` bindings included — the motion keys, the
+    aliases, `ctrl+q`. The footer is allowed to carry less only because this
+    carries everything.
+    """
+
+    BINDINGS = [Binding("escape,question_mark,q", "dismiss", "Close",
+                        key_display="esc/?/q")]
+
+    DEFAULT_CSS = """
+    HelpScreen { align: center middle; }
+    #help-box {
+        max-width: 98%; height: auto; max-height: 90%;
+        padding: 1 2; background: #0d1219; border: round #334154;
+    }
+    """
+
+    def __init__(self, shown: list[tuple[str, str]],
+                 hidden: list[tuple[str, str]]) -> None:
+        super().__init__()
+        self.sections = [("ON THIS SCREEN", shown), ("MORE KEYS", hidden)]
+
+    def compose(self) -> ComposeResult:
+        pairs = [p for _, sec in self.sections for p in sec]
+        kw = max((len(k) for k, _ in pairs), default=1)
+        dw = max((len(d) for _, d in pairs), default=1)   # never truncated:
+        w = kw + dw + 1                                   # a clipped word lies
+        cells: list[tuple[str, str, str]] = []            # (plain, markup, sect)
+        for title, sec in self.sections:
+            if not sec:
+                continue
+            cells.append((title, f"[#8b98a5]{title}[/]", ""))
+            cells += [(f"{k:<{kw}} {d}",
+                       f"[#2dd4bf]{k:<{kw}}[/] [#c8d3de]{d}[/]", title)
+                      for k, d in sec]
+            cells.append(("", "", ""))
+        # TWO COLUMNS, balanced by LINES: one column of the full map is ~36
+        # rows on a 30-row screen, and the rows that scrolled off the bottom
+        # were exactly the hidden keys — the defect again, one layer down. The
+        # split may land inside a section, so the heading is repeated: a
+        # keymap running on under someone else's title is a new lie.
+        if 2 * w + 9 <= self.app.size.width:
+            half = (len(cells) + 1) // 2
+            for j in range(max(0, half - 2), min(len(cells), half + 3)):
+                if not cells[j][0] and not cells[j][2]:   # a section boundary
+                    half = j + 1                          # near the balance
+                    break                                 # point: snap to it
+            left, right = cells[:half], cells[half:]
+            if right and right[0][2]:
+                head = f"{right[0][2]} (cont.)"
+                right.insert(0, (head, f"[#8b98a5]{head}[/]", ""))
+        else:
+            left, right = cells, []
+        left += [("", "", "")] * (len(right) - len(left))
+        right += [("", "", "")] * (len(left) - len(right))
+        # this screen's own hint, derived like every other legend here. It rides
+        # ON the title: as its own bottom row it was the line the map's height
+        # pushed off the screen, i.e. the way out was the thing that got clipped
+        hint = " · ".join(f"{d} {t.lower()}"
+                          for d, t, _ in binding_map(self, shown=True))
+        plain = [f"KEYS   {hint}", ""]
+        rows = [f"[#2dd4bf]KEYS[/]   [#8b98a5]{hint}[/]", ""]
+        for (lp, lm, _), (rp, rm, _) in zip(left, right):
+            plain.append(f"{lp:<{w}}   {rp}".rstrip())
+            rows.append(f"{lm}{' ' * (w - len(lp))}   {rm}".rstrip())
+        while rows and not rows[-1]:      # trailing section gaps cost rows the
+            rows.pop()                    # box does not have on a 30-row screen
+            plain.pop()
+        # a scrollable container does not size to its content: measure the map
+        # (the widest PLAIN row) and give the box that width, or the border
+        # closes on an empty 4-column box. +8 = padding, border, and the
+        # scrollbar gutter — without it the last column wraps.
+        box = VerticalScroll(Static("\n".join(rows)), id="help-box")
+        box.styles.width = max(len(p) for p in plain) + 8
+        yield box
+
+    def on_mount(self) -> None:
+        # focus the box so that when the map IS taller than the screen (narrow
+        # widths fall back to one column) the arrows and pgdn can reach its
+        # tail — an unreachable row is an unindicated key
+        self.query_one("#help-box").focus()
+
+
 class TaskboardApp(App):
     """Frameless kanban desktop widget."""
 
     CSS_PATH = "taskboard.tcss"
     TITLE = "taskboard"
 
+    # THE FOOTER IS A BUDGET, not an inventory: at 118 columns Textual's Footer
+    # prints ~12 entries, and it clips the REST off the right edge silently —
+    # `q Quit` was among the casualties (29 shown bindings, 12 printed). So the
+    # primaries are shown and everything else is `show=False` WITH ITS WORDS in
+    # the `?` map. Nothing is hidden that is not printed there.
     BINDINGS = [
         ("1", "view('swimlanes')", "Lanes"),
         ("2", "view('columns')", "Cols"),
         ("3", "view('agenda')", "Agenda"),
         ("4", "view('gantt')", "Gantt"),
         ("5", "view('kanban')", "Kanban"),
-        # priority=True so tab reaches us instead of the screen's focus_next;
-        # check_action hands it back to modals (see below).
-        Binding("tab", "toggle_presentation", "Layout", priority=True),
+        # the APERTURE: the widget posture as a pushed screen (aperture.py) —
+        # ADD beside the five views, views.py untouched (HANDOFF §4 Inc 2)
+        ("6", "aperture", "Widget"),
+        # `? Keys` and `q Quit` are printed BEFORE the letter actions: the
+        # Footer clips from the right at narrow widths, and the two keys that
+        # must never be clipped are the way out and the way to the full map.
+        Binding("question_mark", "help", "Keys"),
+        ("q", "quit", "Quit"),
         ("a", "add_task", "Add"),
-        ("p", "add_project", "Project"),
-        ("P", "manage_projects", "Projects"),
-        ("f", "manage_phases", "Phases"),
-        ("enter", "details", "Details"),
         ("e", "edit", "Edit"),
-        ("d", "delete", "Del"),
-        ("delete", "delete", "Del"),
-        ("x", "archive", "Archive"),
-        ("v", "toggle_archived", "Show arch"),
-        ("o", "open_url", "Open URL"),
-        ("i", "open_images", "Images"),
-        ("c", "clocks", "Clocks"),
+        Binding("d,delete", "delete", "Del"),
+        # ---- the `?` tier: real keys, kept off the footer so it fits --------
+        Binding("enter", "details", "Details", show=False),
+        Binding("x", "archive", "Archive", show=False),
+        Binding("v", "toggle_archived", "Show archived", show=False),
+        Binding("o", "open_url", "Open URL", show=False),
+        Binding("i", "open_images", "Images", show=False),
+        Binding("c", "clocks", "Clocks", show=False),
+        Binding("p", "add_project", "New project", show=False),
+        # `P` (Projects) was the user's reported shift key: SHOWN on the footer
+        # and unreachable without shift. The door is `m` and only `m` — no key
+        # in this app needs shift.
+        Binding("m", "manage_projects", "Projects", show=False),
+        Binding("f", "manage_phases", "Phases", show=False),
+        # priority=True so tab reaches us instead of the screen's focus_next;
+        # check_action hands it back to modals (see below). Kanban-only, so it
+        # spends no footer width.
+        Binding("tab", "toggle_presentation", "Layout", show=False,
+                priority=True),
         # priority=True so these beat the focused VerticalScroll's own arrow-key
         # scrolling when the board overflows (pitfall A6).
-        Binding("down,j", "cursor(1)", "Down", priority=True),
-        Binding("up,k", "cursor(-1)", "Up", priority=True),
-        Binding("left,h", "hmove(-1)", "Left", priority=True),
-        Binding("right,l", "hmove(1)", "Right", priority=True),
-        ("q", "quit", "Quit"),
+        Binding("down,j", "cursor(1)", "Down", show=False, priority=True),
+        Binding("up,k", "cursor(-1)", "Up", show=False, priority=True),
+        Binding("left,h", "hmove(-1)", "Left", show=False, priority=True),
+        Binding("right,l", "hmove(1)", "Right", show=False, priority=True),
     ]
+
+    # keys that act on the BOARD — a surface the aperture replaces. They stayed
+    # live there (`d` opened a delete-confirm for a task nobody could see) and
+    # they were indicated by nothing. FALSE, not None: Textual drops a binding
+    # from `active_bindings` only on `is False`; None leaves it listed and
+    # merely disabled, i.e. a legend entry that does nothing.
+    BOARD_ACTIONS = frozenset({
+        "add_task", "add_project", "manage_projects", "manage_phases",
+        "details", "edit", "delete", "archive", "toggle_archived",
+        "open_url", "open_images", "clocks", "toggle_presentation",
+        "cursor", "hmove"})
+    # `quit` is deliberately NOT in that set: the aperture shadows `q` with its
+    # own Back binding, and ctrl+q must stay the one door out from anywhere.
 
     def __init__(self, board_path: str | Path | None = None):
         super().__init__()
@@ -79,11 +227,26 @@ class TaskboardApp(App):
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
         """While a modal is open, release the board's priority arrow/vim bindings
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
-        receive them instead of moving the hidden board selection."""
+        receive them instead of moving the hidden board selection.
+
+        On the APERTURE the same reasoning goes further: it is not the board, it
+        is the ambient face of it, so every key that edits or navigates the board
+        is dropped there (the aperture is a launcher — press 1-5 to reach the
+        surface those keys belong to)."""
         if (action in ("cursor", "hmove", "toggle_presentation")
                 and len(self.screen_stack) > 1):
             return False
+        if action in self.BOARD_ACTIONS and len(self.screen_stack) > 1:
+            from .aperture import ApertureScreen      # lazy: aperture imports us
+            if isinstance(self.screen, ApertureScreen):
+                return False
         return True
+
+    def action_help(self) -> None:
+        """The `?` tier: the full keymap of the surface in front of the user."""
+        rows = [[(d, t) for d, t, _ in binding_map(self.screen, shown=s)]
+                for s in (True, False)]
+        self.push_screen(HelpScreen(rows[0], rows[1]))
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="viewport"):
@@ -256,6 +419,12 @@ class TaskboardApp(App):
         if mode in VIEW_ORDER:
             self.view_mode = mode
             self.refresh_view()
+
+    def action_aperture(self) -> None:
+        """The widget posture: hero + meter + signal tiles + calendar/queue,
+        rendered through the active design language (t cycles the nine)."""
+        from .aperture import ApertureScreen
+        self.push_screen(ApertureScreen(self.board))
 
     def action_toggle_presentation(self) -> None:
         """Tab flips the kanban view's presentation; a no-op elsewhere."""
