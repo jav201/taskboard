@@ -80,17 +80,25 @@ def test_a_nonsense_search_finds_nothing_rather_than_everything():
 # --------------------------------------------------------------------------- #
 # the picker, driven
 # --------------------------------------------------------------------------- #
-def board() -> Board:
+def board(tmp_path) -> Board:
     p = Project(name="Proj", color="cyan")
     return Board([p], [Task(title="arreglar el parser", project_id=p.id,
-                            phase="Doing")], Path("x.json"), phases=PHASES)
+                            phase="Doing")], tmp_path / "board.json", phases=PHASES)
 
 
-async def test_ctrl_e_inserts_the_glyph_at_the_cursor():
+def app_on(tmp_path) -> TaskboardApp:
+    """NEVER `TaskboardApp()`: the bare constructor loads the REAL board from
+    ~/.taskboard, and `on_mount` SAVES it (the renumber notice). A test that
+    reads a developer's live data is a leak, and one that writes it is worse."""
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    app.board = board(tmp_path)
+    return app
+
+
+async def test_ctrl_e_inserts_the_glyph_at_the_cursor(tmp_path):
     """The whole feature, end to end: open the task editor, Ctrl+E, type a name,
     Enter — and the TITLE FIELD holds the glyph."""
-    app = TaskboardApp()
-    app.board = board()
+    app = app_on(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.press("a")                      # new-task modal
         await pilot.pause()
@@ -111,9 +119,8 @@ async def test_ctrl_e_inserts_the_glyph_at_the_cursor():
         assert ":bug:" not in title.value, "a shortcode was inserted instead of a glyph"
 
 
-async def test_escaping_the_picker_inserts_nothing():
-    app = TaskboardApp()
-    app.board = board()
+async def test_escaping_the_picker_inserts_nothing(tmp_path):
+    app = app_on(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.press("a")
         await pilot.pause()
@@ -128,11 +135,10 @@ async def test_escaping_the_picker_inserts_nothing():
         assert title.value == before, "cancelling still changed the field"
 
 
-async def test_ctrl_e_without_a_text_field_focused_does_not_crash():
+async def test_ctrl_e_without_a_text_field_focused_does_not_crash(tmp_path):
     """A keypress must never be able to take the app down; the modal says why
     instead."""
-    app = TaskboardApp()
-    app.board = board()
+    app = app_on(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.press("a")
         await pilot.pause()
@@ -153,9 +159,8 @@ def test_the_result_cap_is_stated_not_silent():
         "path is unreachable and this guard has gone vacuous")
 
 
-async def test_the_picker_says_when_it_is_showing_only_some():
-    app = TaskboardApp()
-    app.board = board()
+async def test_the_picker_says_when_it_is_showing_only_some(tmp_path):
+    app = app_on(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.press("a")
         await pilot.pause()
@@ -190,12 +195,11 @@ def test_any_pickable_emoji_leaves_the_rows_the_right_width(name):
         assert not bad, f"{mode} with {name}: widths {bad[:4]}"
 
 
-async def test_both_editors_say_the_key_exists():
+async def test_both_editors_say_the_key_exists(tmp_path):
     """This app does not ship keys off-screen: a picker you cannot discover is a
     picker that does not exist. Both text editors announce ctrl+e in their title."""
     from taskboard.modals import ProjectModal
-    app = TaskboardApp()
-    app.board = board()
+    app = app_on(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         for key, screen_type in (("a", TaskModal), ("p", ProjectModal)):
             await pilot.press(key)

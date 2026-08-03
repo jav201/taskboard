@@ -30,6 +30,11 @@ from rich.cells import cell_len
 from taskboard.models import Board, Project, Task
 from taskboard.views import clip, fit, render_view
 
+# These boards are never saved; the path exists only because Board requires
+# one. Naming it makes that explicit instead of leaving a repo-relative
+# landmine for the first test that does call save().
+_UNWRITTEN = Path("__never_written__.json")
+
 PHASES = ["Backlog", "Doing", "Review", "Done"]
 VIEWS = ["swimlanes", "agenda", "gantt", "kanban"]
 
@@ -64,7 +69,7 @@ def board_titled(title: str) -> Board:
              due_date=str(today + timedelta(days=k - 1)))
         for k, phase in enumerate(PHASES)
     ]
-    return Board([p], tasks, Path("x.json"), phases=PHASES)
+    return Board([p], tasks, _UNWRITTEN, phases=PHASES)
 
 
 @pytest.mark.parametrize("name,title", sorted(HOSTILE.items()))
@@ -87,7 +92,7 @@ def test_the_project_name_is_hostile_too(name, title):
     (lane labels, the kanban group heads), so it gets its own pass."""
     p = Project(name=title, color="pink")
     b = Board([p], [Task(title="ordinary", project_id=p.id, phase="Doing")],
-              Path("x.json"), phases=PHASES)
+              _UNWRITTEN, phases=PHASES)
     for mode in VIEWS:
         text = render_view(mode, b, False, None, width=96, height=24,
                            line_map={}, presentation="grouped", tick=0)
