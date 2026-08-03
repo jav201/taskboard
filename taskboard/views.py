@@ -17,6 +17,7 @@ import re
 from datetime import date, timedelta
 from typing import NamedTuple
 
+from rich.cells import cell_len, set_cell_size
 from rich.markup import escape
 from rich.text import Text
 
@@ -63,12 +64,26 @@ def c(text: str, key: str, bold: bool = False) -> str:
 # ---------------------------------------------------------------------------
 # plain-text fitting (width math happens BEFORE escaping / coloring)
 # ---------------------------------------------------------------------------
+def vis(s: str) -> int:
+    """How wide `s` is ON SCREEN, in cells — the only ruler this file may use.
+
+    `len()` counts codepoints and the terminal draws cells, and the two disagree
+    constantly: an emoji and a CJK glyph are 2 cells, a combining mark is 0. A
+    row measured with `len` leans as soon as a human types one of those into a
+    task, and a column layout that leans is the one failure it cannot absorb.
+    Pass PLAIN text — strip the markup first (`_strip`) or the tags get counted."""
+    return cell_len(s)
+
+
 def fit(s: str, width: int, align: str = "left") -> str:
     if width <= 0:
         return ""
-    if len(s) > width:
-        return s[: width - 1] + "…"
-    pad = width - len(s)
+    if vis(s) > width:
+        # `set_cell_size` cuts on a GLYPH boundary (padding a cell when a wide
+        # one straddles the cut), so the result is exactly width-1 cells and can
+        # never come back holding half a character. '…' is the remaining cell.
+        return set_cell_size(s, width - 1) + "…"
+    pad = width - vis(s)
     if align == "right":
         return " " * pad + s
     if align == "center":
@@ -410,7 +425,7 @@ def header(title: str, right: str, w: int) -> str:
     The row carries facts (what the view is, what it counts) across its whole
     width; `head_rule` under it is the only box-drawing left, and it is one row
     rather than a border on all four sides."""
-    tvis, rvis = len(_strip(title)), len(_strip(right))
+    tvis, rvis = vis(_strip(title)), vis(_strip(right))
     if tvis + rvis + 3 > w:               # too tight -> the right content goes
         right, rvis = "", 0
     if tvis + 2 > w:                      # still tight -> truncate the title
@@ -549,8 +564,18 @@ def collapse_runs(markup: str) -> str:
 
 def to_text(lines: list[str], height: int, w: int) -> Text:
     """The ONE seam where a view's markup becomes a Text. Every view closes
-    through here so span economy is not something a new view can forget."""
-    return Text.from_markup(collapse_runs("\n".join(fill_height(lines, height, w))))
+    through here so span economy is not something a new view can forget.
+
+    `emoji=False` is LOAD-BEARING, not a tuning knob. With it on, rich rewrites
+    `:bug:` into a 2-cell glyph INSIDE this call — after every width the row
+    builders computed. `fit` measured 5 cells and the terminal drew 2, so the
+    row came out 3 short and leaned against every other row (measured: 93 in a
+    96-cell view). No amount of correct measuring can reach a substitution that
+    happens downstream of all measuring, so the substitution goes. Emoji still
+    work — you type the glyph itself, which is a real character `vis()` can
+    measure, and the picker inserts exactly that."""
+    return Text.from_markup(collapse_runs("\n".join(fill_height(lines, height, w))),
+                            emoji=False)
 
 
 # ---------------------------------------------------------------------------
@@ -587,7 +612,9 @@ def clip(s: str, w: int) -> str:
     """Truncate with a VISIBLE mark — silent truncation is a lie about width."""
     if w <= 0:
         return ""
-    return s if len(s) <= w else s[:max(0, w - 1)] + "…"
+    if w <= 0:
+        return ""
+    return s if vis(s) <= w else set_cell_size(s, w - 1) + "…"
 
 
 class LaneFacts(NamedTuple):
@@ -962,7 +989,7 @@ def _pad(markup: str, width: int) -> str:
     """Pad a composed row out to `width` visible cells. Never truncates: every
     piece is built to its own exact width, so a short row is a rounding gap and
     a long one is a bug the width tests must catch, not hide."""
-    return markup + " " * max(0, width - len(_strip(markup)))
+    return markup + " " * max(0, width - vis(_strip(markup)))
 
 
 Row = tuple[str, "str | None"]      # (markup, the task this row names)
@@ -1006,7 +1033,7 @@ def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
     body = escape(shown)
     if selected:
         body = f"[reverse]{body}[/reverse]"
-    tail_from = 5 + len(shown)
+    tail_from = 5 + vis(shown)
     tail_to = max(tail_from, inner - len(cells) - 1)
     gap = " " * max(0, min(geo.label_w, tail_to) - tail_from)
     glyph, gcol = ((ARCHIVED_MARK, "ash") if task.archived
@@ -1054,8 +1081,8 @@ def resting_row(lane: LaneFacts, geo: FieldGeo, inner: int) -> Row:
     # cells the meter would have taken — it is right-aligned across everything
     # the row has left. (`completed` is 9 characters; the band is 7.)
     span = max(0, inner - geo.label_w)
-    body = "".join(body[:geo.field_w])[:max(0, span - len(word) - 1)]
-    return (label + c(body, "dim") + " " * max(0, span - len(body) - len(word))
+    body = set_cell_size("".join(body[:geo.field_w]), max(0, span - vis(word) - 1))
+    return (label + c(body, "dim") + " " * max(0, span - vis(body) - vis(word))
             + c(word, "dim"), None)
 
 
@@ -1105,7 +1132,7 @@ def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
     shown = clip(lane.name.upper(), name_w)
     # the hero's own row carries the field too, so the today line runs the FULL
     # height of the panel rather than stopping just below the top
-    head_w = 2 + len(shown)
+    head_w = 2 + vis(shown)
     tail_to = max(head_w, inner - rw - 1)
     gap = " " * max(0, min(geo.label_w, tail_to) - head_w)
     head = (c("▌ ", lane.hue) + c(escape(shown), lane.hue, bold=True) + gap
@@ -1130,13 +1157,13 @@ def lead_band(lane: LaneFacts, geo: FieldGeo, today: date, inner: int,
         worst = sorted(lane.late, key=lambda t: parse_iso(t.due_date))[0]
         d = (today - parse_iso(worst.due_date)).days
         tok, tid = f"▲{d}d", worst.id
-        label = escape(clip(worst.title, max(0, inner - len(tok) - 4)))
+        label = escape(clip(worst.title, max(0, inner - vis(tok) - 4)))
         shown, tone = label, "mut"
     else:
         tok, tid = "", None
         shown, tone = escape("nothing late"), "dim"
-    head_w = 2 + len(_strip(shown))
-    tail_to = max(head_w, inner - len(tok) - 1)
+    head_w = 2 + vis(_strip(shown))
+    tail_to = max(head_w, inner - vis(tok) - 1)
     gap = " " * max(0, min(geo.label_w, tail_to) - head_w)
     rows.append(("  " + c(shown, tone) + gap
                  + lattice_tail(geo, head_w, tail_to) + " "
@@ -1170,9 +1197,9 @@ def absence_line(lanes: list[LaneFacts], today: date, inner: int) -> str:
              f"{late} late" if late else "nothing late",
              f"{week} due this week" if week else "nothing due this week"]
     body = " · ".join(parts)
-    if len(body) + 4 > inner:
+    if vis(body) + 4 > inner:
         return ""
-    pad = (inner - len(body) - 4) // 2
+    pad = (inner - vis(body) - 4) // 2
     return (" " * pad + c("· ", "frame") + c(body, "mut") + c(" ·", "frame"))
 
 
@@ -1245,8 +1272,8 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
 def _scale_with_note(geo: FieldGeo, inner: int, note: str) -> str:
     """The axis, plus what the height could not show. A view that drops rows in
     silence is lying about how much work there is."""
-    base = _strip(_scale_row(geo, inner))[:max(0, inner - len(note) - 1)]
-    return c(base, "dim") + " " * max(0, inner - len(base) - len(note)) + c(note, "mut")
+    base = set_cell_size(_strip(_scale_row(geo, inner)), max(0, inner - vis(note) - 1))
+    return c(base, "dim") + " " * max(0, inner - vis(base) - vis(note)) + c(note, "mut")
 
 
 # ---------------------------------------------------------------------------
@@ -1390,7 +1417,7 @@ def render_agenda(board, show_archived, selected_id, today=None,
     if undated:
         label = " no date "
         lines.append(line(c(label, "dim")
-                          + c("─" * max(0, inner - len(label)), "frame")))
+                          + c("─" * max(0, inner - vis(label)), "frame")))
         for t in undated:
             lines.append(line(row_markup(t, False)))
             if line_map is not None:
