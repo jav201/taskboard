@@ -4879,6 +4879,157 @@ class Darkside(Kit):
     VOICE = {"empty": "nothing here", "no_signals": "no signals — press c"}
 
 
+class Prism(Kit):
+    """Darkside's descendant, and the only language here that was carried by a
+    whole app until it had opinions before it was ever written down.
+
+    IT IS NOT DARKSIDE RECOLOURED, and the difference is a mechanism. Darkside
+    spends its one accent on interactivity and keeps every other mark grey.
+    Prism spends colour TWICE, on two systems, with a BORDER BETWEEN THEM that
+    is written down and measured:
+
+      * IDENTITY hues NAME -- which project a mark belongs to (twelve of them);
+      * SEVERITY hues JUDGE -- `alert` is overdue, `warn` is due today;
+      * the accent CALLS ATTENTION -- today's rule, focus, keys.
+
+    No mark may wear two of those jobs. On main that border is a test, not a
+    convention: `tests/test_palette_ration.py` computes euclidean rgb distance
+    across the whole palette, so re-adding a colliding hue turns it red
+    whatever it is called. It exists because `amber` was once a project colour
+    AND the due-today colour AT THE SAME HEX -- one mark meaning two things in
+    five views. Priority is a GLYPH here (`!2`) rather than a hue precisely
+    because its orange collided with a project's at nine rgb units.
+
+    The second commitment is the EMBER: quantity is a solid field being
+    consumed, not a track being filled, with the frontier at half-cell
+    precision (`meter="ember"`, and the hero carves its numeral out of the same
+    field). Each cell is field or figure and never both, so the
+    two-colours-per-cell law is satisfied BY COMPOSITION instead of policed
+    afterwards.
+    """
+
+    RAIL = "▏"
+    RAIL_W = 3
+
+    def board_layout(self) -> str:
+        """Sections, like its parent: the rail groups a stack vertically by
+        project, and six kanban columns leave ~7 characters of title -- the
+        same measurement that sent darkside to a flat list."""
+        return "sections"
+
+    # the twelve that NAME, resolved from the `ident` token so mutating the
+    # token really does change which hues the board hands out
+    def ident_hues(self):
+        """The identity ramp, read from the `ident` token.
+
+        Values are hexes, and anything that is not one falls back to the muted
+        tier rather than to another identity hue -- a silent substitution here
+        would give two projects the same name, which is the collision the whole
+        ration exists to prevent.
+        """
+        out = []
+        for v in str(self.t.get("ident", "")).split():
+            out.append(v if v.startswith("#") else self.c["mut"])
+        return out
+
+    def ident_of(self, idx: int) -> str:
+        hues = self.ident_hues()
+        return hues[idx % len(hues)] if hues else self.c["mut"]
+
+    @property
+    def rail_width(self):
+        return self.RAIL_W if self.layout == "rail" else 0
+
+    def rail_prefix(self, idx: int = 0):
+        """The rail is the ONE place an identity hue touches structure -- it is
+        the project's own stroke, which is what makes a stack of cards read as
+        belonging to something without spending a border or a label on it."""
+        if self.layout != "rail":
+            return ""
+        return (f"[{self.ident_of(idx)}]{self.RAIL}[/]"
+                + " " * (self.RAIL_W - 1))
+
+    def head(self, name, count, w, idx=0):
+        c = self.c
+        w = max(8, w - self.rail_width)
+        line = (self.rail_prefix(idx)
+                + f"[{c['ink']}]{name[:max(1, w - 4)]}[/] "
+                f"[{c['mut'] if count else c['dim']}]{count}[/]")
+        rule = self.rule_line(w)
+        return line if rule is None else line + chr(10) + rule
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        """The chip JUDGES, so it keeps the severity tone it was handed; the
+        title never takes one. Urgency is weight, not hue -- the hue budget is
+        already spent, and spending it twice is the collision the ration bans.
+        """
+        c = self.c
+        room = max(1, w - len(chip) - 2)
+        body = _fit(title, room)
+        pad = " " * max(0, room - min(len(title), room))
+        return (f"[{c['ink'] if urgent else c['mut']}]{body}[/]{pad} "
+                f"[{tone}]{chip}[/]")
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        rail = self.rail_prefix(idx)
+        w = max(8, w - self.rail_width)
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        d = m.get("days")
+        due = "--" if d is None else f"{d}d"
+        # priority is a GLYPH, never a hue -- see the class docstring
+        pri = "!" * min(2, int(m.get("priority") or 0))
+        parts = [
+            ("  ", "  "),
+            (f"[{self.ident_of(idx)}]{m.get('phase') or '--'}[/]",
+             str(m.get("phase") or "--")),
+            (f"[{c['dim']}] · {due}[/]", f" · {due}"),
+        ]
+        # the priority mark is OMITTED when there is none, never emitted empty:
+        # `_fit_parts` takes (markup, plain) pairs and an empty pair still costs
+        # the fitter a part to reason about
+        if pri:
+            parts.append((f"[{c['ink']}] {pri}[/]", f" {pri}"))
+        sub = _fit_parts(parts, w)
+        return [rail + top, rail + sub]
+
+    def tile_row(self, val, label, tone, w):
+        c = self.c
+        return (f"[{tone}]{val}[/] [{c['mut']}]"
+                f"{label[: max(0, w - len(val) - 2)]}[/]")
+
+    def sect(self, title, note, w, h=0):
+        c = self.c
+        return [f"[{c['ink']}]{title}[/]  [{c['dim']}]{note}[/]", ""]
+
+    def bar(self, span, head=None, tone=None):
+        """A span wears its project's identity hue. It is passive data, so it
+        must never take the accent -- the accent is attention, and a bar that
+        is merely present is not asking for any."""
+        c = self.c
+        if tone in (None, c["accent"]):
+            tone = c["mut"]
+        return "".join(
+            f"[{c['ink']}]█[/]" if (head is not None and head[i])
+            else f"[{tone}]▄[/]" for i in range(span))
+
+    GANTT = ("─", "█", "│", "·", "▄")
+
+    def cal_cell(self, state):
+        c = self.c
+        return {"none": f"[{c['dim']}]··[/]",
+                "over": f"[{c['alert']}]▄▄[/]",
+                "multi": f"[{c['ink']}]▄▄[/]",
+                "one": f"[{c['mut']}]▄▄[/]"}[state]
+
+    def queue_marker(self, i):
+        return f"[{self.ident_of(i)}]▏[/]"
+
+    ICONS = {"deadline": "d", "overdue": "!!", "wip": "w", "blocked": "x",
+             "workday": "$", "boardfile": "f"}
+
+
 class Ledger(Kit):
     """Double-entry bookkeeping — and the ONLY language printed on a LIGHT
     ground, which is what makes it unmistakable once colour is stripped away:
@@ -6460,6 +6611,61 @@ def _pct_n(done, total, bar_w):
     return pct, n
 
 
+def _meter_ember(k, done, total, counts, w):
+    """PRISM'S QUANTITY: a field that is CONSUMED, with a boundary that moves
+    at HALF-CELL precision.
+
+    Every other meter in this registry says an amount by how much of a track
+    is *filled*. This one says it by how much of a solid field is *gone* —
+    the burnt part is `ash`, the part still alight is the accent, and the
+    frontier between them is what carries the datum. That is not a stylistic
+    inversion: it is why the mechanism needs braille and a dot bitmap at all.
+
+    Two dot-columns per cell means the boundary can land INSIDE a cell, so a
+    reading of 47 % on a 20-cell bar is not rounded to the tenth cell — it is
+    drawn at the left half of the tenth. A block meter cannot do that; it
+    quantises the frontier to whole cells, which on a 20-cell bar is a 5 %
+    step. The half-cell is the resolution the language spends its pixel base
+    on ([DENSITY.md] — the base must match the axis that varies).
+
+    `taskboard/wave.py` on main is the engine, ported here unchanged; its own
+    REV1 lit whole braille ROWS and was rejected for exactly this reason.
+    """
+    from taskboard import wave as WV
+    c = k.c
+    bar_w = max(4, w - 10)
+    pct, _ = _pct_n(done, total, bar_w)
+
+    dots_w = bar_w * WV.DOT_COLS
+    burnt = 0 if not total else max(0, min(dots_w, round(dots_w * done / total)))
+
+    # ASH IS NOT A SOLID FIELD, AND THAT IS LAW 1, NOT A PREFERENCE.  The first
+    # version filled both sides to full height and let the TONE carry the
+    # frontier -- so with colour stripped the bar did not move at all, and the
+    # harness said `moved=False`.  It is the same defect the Kimi fork's
+    # grey-on-grey meter died of.  Burnt cells keep only their bottom dot row:
+    # the boundary is a change of SHAPE (solid field -> a residue), and the
+    # colour is confirmation rather than the datum.
+    ASH_ROWS = 1
+    live, ash = WV.Bitmap(dots_w, WV.DOT_ROWS), WV.Bitmap(dots_w, WV.DOT_ROWS)
+    for x in range(dots_w):
+        if x < burnt:
+            ash.fill_to(x, ASH_ROWS)
+        else:
+            live.fill_to(x, WV.DOT_ROWS)
+
+    lit = live.to_braille()[0]
+    spent = ash.to_braille()[0]
+    ash_c = k.t.get("ash", c["dim"])
+    # one cell is field or figure, never both -- so a cell straddling the
+    # frontier is emitted ONCE, in the tier that owns its lit dots
+    bar = "".join(
+        f"[{ash_c}]{spent[i]}[/]" if spent[i] != " " else
+        (f"[{c['accent']}]{lit[i]}[/]" if lit[i] != " " else " ")
+        for i in range(bar_w))
+    return f"{bar} [{c['mut']}]{pct:>3}%[/]"
+
+
 def _meter_blocks(k, done, total, counts, w):
     c = k.c
     bar_w = max(4, w - 10)
@@ -6787,6 +6993,7 @@ def _meter_dimension(k, done, total, counts, w):
 
 
 METERS = {"blocks": _meter_blocks, "dotgrid": _meter_dotgrid,
+          "ember": _meter_ember,
           "lcd": _meter_lcd, "braille": _meter_braille,
           "hairline": _meter_hairline, "boxed": _meter_boxed,
           "decay": _meter_decay, "gradient": _meter_gradient,
@@ -6802,7 +7009,7 @@ METERS = {"blocks": _meter_blocks, "dotgrid": _meter_dotgrid,
 # is still the truth — it just has a seat now.
 KITS = {"naught": Naught, "corgi": Corgi, "instrument": Instrument,
         "swiss": Swiss, "industrial": Industrial,
-        "nord": Nord, "darkside": Darkside, "ledger": Ledger,
+        "nord": Nord, "darkside": Darkside, "prism": Prism, "ledger": Ledger,
         "solari": Solari, "blueprint": Blueprint}
 
 
