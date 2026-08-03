@@ -5846,7 +5846,7 @@ async def main():
     TONE_COLLIDE = set()
 
     check("meter: every mechanism in METERS is censused below",
-          set(MECHS) == set(LG.METERS) and len(MECHS) == 12,
+          set(MECHS) == set(LG.METERS) and len(MECHS) == 13,
           f"{len(MECHS)} mechanisms")
     for m in MECHS:
         k = host(m)
@@ -6669,14 +6669,18 @@ async def main():
         # repeats what `00` against `02` already says.
         "odometer": lambda ch: ch.isdigit(),
     }
-    FLOW_NO_ROW = {"hairline"}
+    # `ember` states its quantity as a FIELD BEING CONSUMED on one row: the
+    # frontier between fire and ash is the whole datum, and a second row would
+    # have to carry buckets the mechanism does not have. Declared here rather
+    # than left to pass quietly, which is what this set is for.
+    FLOW_NO_ROW = {"hairline", "ember"}
     # the two rows that draw ONE CELL PER BUCKET off a level ramp — pass
     # 63's band seats B and C. The other rows either state figures or draw
     # multi-cell buckets, where "one glyph is one bucket" is not the grammar.
     FLOW_RAMPED = {"braille", "step"}
 
     check("flow: every mechanism in METERS is censused on row 1",
-          set(MECHS) == set(LG.METERS) and len(MECHS) == 12,
+          set(MECHS) == set(LG.METERS) and len(MECHS) == 13,
           f"{len(MECHS)} mechanisms")
     _n_excl = _n_incl = 0
     for m in MECHS:
@@ -11925,11 +11929,11 @@ async def main():
     # the direction each language declares, so a renunciation can never be
     # confused with the seat failing to draw.
     section_langs = [n for n in TH.ORDER if LG.kit(n).board_layout() == "sections"]
-    check("the sections branch carries SIX languages — the reach PENDING "
-          "item 7 claims for this seat",
-          len(section_langs) == 6
-          and set(section_langs) == {"corgi", "swiss", "darkside", "ledger",
-                                     "solari", "blueprint"},
+    check("the sections branch carries SEVEN languages — the reach PENDING "
+          "item 7 claims for this seat, plus prism",
+          len(section_langs) == 7
+          and set(section_langs) == {"corgi", "swiss", "darkside", "prism",
+                                     "ledger", "solari", "blueprint"},
           f"{section_langs}")
     for name in section_langs:
         k = LG.kit(name)
