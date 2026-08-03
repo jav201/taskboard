@@ -1446,6 +1446,39 @@ def render_agenda(board, show_archived, selected_id, today=None,
 BAR_DONE = "⣿"     # 8/8 dots — the completed share of a project's span
 BAR_TODO = "⢕"     # 4/8 dots — the remaining share; same family, same height
 
+# --------------------------------------------------------------------------- #
+# the GANTT FIELD's texture — shade, not scatter
+# --------------------------------------------------------------------------- #
+# The field used braille for its bars: reach 8/8 `⣿`, progress 4/8 `⣤`, a task
+# 2/8 `⣀`. Braille buys SUB-CELL RESOLUTION, and a curve needs it — which is why
+# the lanes wave keeps it. A gantt bar is a SPAN: it has a start, an end, and
+# nothing in between to resolve. So the field was paying braille's scatter and
+# buying nothing with it, and the row that pays most is the task row, the most
+# numerous one on screen: 2 dots of 8 read as a dotted line, not as duration.
+#
+# Shade blocks cover the whole cell, so a bar reads as one continuous run, and
+# they keep the three-weight hierarchy the design encodes (reach > progress >
+# task) as three densities instead of three dot-counts. Vocabulary borrowed from
+# s19_app's bands (`█` filled / `░` gap / the ▁▂▃▄▅▆▇█ ramp).
+#
+# `FIELD_HALF` keeps the half-day precision the braille caps carried: a bar that
+# ends mid-cell still says so.
+FIELD_REACH = "█"     # a project's span            (was ⣿)
+FIELD_PROGRESS = "▓"  # how far the work actually got (was ⣤)
+FIELD_TASK = "▒"      # a task's reach              (was ⣀)
+FIELD_HALF = "▌"      # ends mid-cell               (was ⡄)
+
+# The tip that says WHICH PHASE the task is in, in the field's own alphabet.
+# `phase_glyph` keeps encoding phase as a CLIMBING DOT — it is still right for
+# the lanes, where one cell must carry a SET of phases and dots can be OR'd
+# together. A gantt bar carries exactly one, and a braille dot at the end of a
+# shaded run reads as the bar fading out rather than as its tip. Same meaning,
+# rising fill instead of climbing dot, so the tip belongs to the bar it ends.
+# The floor is 3/8, not 1/8: a tip lighter than the bar it ends reads as the
+# bar fading out, which is the exact complaint this whole change answers. The
+# ceiling stops below `█` so the tip can never be mistaken for a reach cell.
+FIELD_PHASE_TIP = ("▃", "▅", "▆", "▇")
+
 
 def gantt_tasks(board: Board, tasks: list[Task], project_id: str | None) -> list[Task]:
     """One project's tasks in the order the gantt lists them: WORK STILL OPEN
@@ -1588,7 +1621,7 @@ def _span_bands(project, geo: FieldGeo, today: date, hue: str,
         c0, c1 = c1, c0
     today_cell = geo.today_dc // 2
     for x in range(c0, c1 + 1):
-        span[x] = ("⣿", "ash" if x < today_cell else hue)
+        span[x] = (FIELD_REACH, "ash" if x < today_cell else hue)
     if e is not None and not r_off:
         span[c1] = ("◆", hue)
     if l_off:
@@ -1598,9 +1631,9 @@ def _span_bands(project, geo: FieldGeo, today: date, hue: str,
 
     reached = c0 + int(round((c1 - c0) * max(0.0, min(1.0, progress))))
     for x in range(c0, min(reached, geo.field_w)):
-        band[x] = ("⣤", hue)
+        band[x] = (FIELD_PROGRESS, hue)
     if reached > c0:
-        band[min(reached, geo.field_w - 1)] = ("⡄", hue)
+        band[min(reached, geo.field_w - 1)] = (FIELD_HALF, hue)
     return span, band
 
 
@@ -1644,8 +1677,8 @@ def _task_reach(task: Task, board: Board, geo: FieldGeo, today: date,
     done = board.is_done(task)
     tone = "ash" if done else hue
     for x in range(a, b):
-        cells[x] = ("⣀", tone)
-    cells[b] = (phase_glyph({min(3, board.phase_index(task))}), tone)
+        cells[x] = (FIELD_TASK, tone)
+    cells[b] = (FIELD_PHASE_TIP[min(3, board.phase_index(task))], tone)
     if not done and tick is not None and b > a and _flowing(board, task):
         # THE FLOW PACKET, kept from the shipped gantt: work drifts toward its
         # deadline. It rides the task's own reach now instead of a week slab.
@@ -2200,7 +2233,7 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         # REGENERATED for the field: the span IS the wave, and the answer a
         # gantt exists to give comes out of the difference between two bands.
         if f["projects"]:
-            out.append((c("⣿⣿", "ash") + c("⣿⣿", hue),
+            out.append((c(FIELD_REACH * 2, "ash") + c(FIELD_REACH * 2, hue),
                         "the span: ash is elapsed, colour is what remains"))
         # the progress band only exists once something HAS progressed
         if any(board.project_progress(p.id, False) > 0 for p in f["projects"]):
@@ -2211,10 +2244,10 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
             out.append((c("◆", hue), "the project's own due date"))
         out.append((c(RULE, "accent"), "today"))
         if f["tasks"]:
-            out.append((c("⣀⣀", hue) + c(phase_glyph({1}), hue),
+            out.append((c(FIELD_TASK * 2, hue) + c(FIELD_PHASE_TIP[1], hue),
                         "a task's reach, tipped by its phase"))
         if f["done"]:
-            out.append((c("▏", "dim") + c("⣀⠒", "ash"),
+            out.append((c("▏", "dim") + c(FIELD_TASK + FIELD_PHASE_TIP[2], "ash"),
                         "finished work, at rest in ash"))
     if mode == "agenda":
         out.append((c("●", "over"), "a task's due date, on the shared day axis"))
