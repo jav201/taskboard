@@ -447,13 +447,24 @@ def blank_line(w: int) -> str:
     return " " * w
 
 
-def _border(left: str, fill: str, right: str, junctions: dict[int, str], w: int) -> str:
-    span = w - 2
-    chars = [fill] * span
+def rule_row(junctions: dict[int, str], w: int) -> str:
+    """The rule under a set of columns, in the SAME coordinates as the columns.
+
+    This replaces a framed builder that reserved column 0 for a `├` and column
+    w-1 for a `┤`, and therefore wrote every junction one cell to the RIGHT of
+    the `│` it was supposed to sit under. That was invisible while the design had
+    side borders and became a visible lean the moment it went frameless: measured
+    at 120 cells, the kanban headers separated at 30·60·90 and the rule crossed
+    at 31·61·91, with two stray corner glyphs the other rows do not have.
+
+    A rule is a body row like any other here — it spends the full width and it
+    owns no edges. `_col_junctions`/`_matrix_junctions` already return content
+    coordinates, so they are used as-is."""
+    chars = ["─"] * w
     for pos, ch in junctions.items():
-        if 0 <= pos < span:
+        if 0 <= pos < w:
             chars[pos] = ch
-    return c(left + "".join(chars) + right, "frame")
+    return c("".join(chars), "frame")
 
 
 def bottom(junctions: dict[int, str] | None, w: int) -> str:
@@ -1905,7 +1916,7 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
     right = c(f"{len(tasks)} tasks", "mut")
     lines = [header(c("KANBAN", "accent", bold=True) + c(" · grouped", "mut"), right, w)]
     lines.append(line(sep.join(_windowed_header(board, start, widths))))
-    lines.append(_border("├", "─", "┤", _col_junctions(widths, "┼"), w))
+    lines.append(rule_row(_col_junctions(widths, "┼"), w))
 
     cols = [_kanban_column_rows(board, buckets[start + i], wc, selected_id, show_archived)
             for i, wc in enumerate(widths)]
@@ -1937,7 +1948,7 @@ def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map
     lines.append(line(fit("", label_w) + sep
                       + sep.join(_windowed_header(board, start, widths)) + sep
                       + c(fit("prog", prog_w, "right"), "hd", bold=True)))
-    lines.append(_border("├", "─", "┤", _matrix_junctions(label_w, widths, "┼"), w))
+    lines.append(rule_row(_matrix_junctions(label_w, widths, "┼"), w))
 
     rows: list[tuple[str, str, str | None, list[Task]]] = [
         (p.name, p.color, p.id, [t for t in tasks if t.project_id == p.id])
@@ -1964,7 +1975,7 @@ def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map
             for t in items:
                 line_map[t.id] = len(lines) - 1
 
-    lines.append(_border("├", "─", "┤", _matrix_junctions(label_w, widths, "┴"), w))
+    lines.append(rule_row(_matrix_junctions(label_w, widths, "┴"), w))
     if selected is None:
         lines.append(line(c(fit("  (no selection)", inner), "dim")))
     else:
