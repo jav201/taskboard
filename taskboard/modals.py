@@ -16,6 +16,8 @@ import os
 from datetime import date, timedelta
 from pathlib import Path
 
+from unicodedata import east_asian_width
+
 from rich._emoji_codes import EMOJI as _RICH_EMOJI
 from rich.cells import cell_len
 from rich.markup import escape
@@ -50,8 +52,40 @@ NONE_VALUE = "__none__"
 # tests/test_emoji_picker.py asserts it is still there and still shaped like this
 # — if a rich upgrade moves it, that goes red on purpose rather than this file
 # quietly falling back to a shorter list nobody notices.
+#
+# ONLY SINGLE-CODEPOINT, EAST-ASIAN-WIDE ENTRIES ARE OFFERED, and that is the
+# whole safety of this feature. The views size every row with `cell_len`, but
+# the TERMINAL is what actually draws it, and for every other class the two
+# disagree — measured over the 3,608 entries rich ships:
+#
+#   1 codepoint, EAW=W     1,483   cell_len 2, Unicode 2   <- offered
+#   skin tones / flags     1,038   base + modifier: a terminal without the
+#                                  modifier draws two glyphs, so 4 cells
+#   ZWJ sequences            718   cell_len says 2, the parts sum to 4 (669 of
+#                                  them), and an unsupported sequence draws 4
+#   1 codepoint, EAW=N/A     337   cell_len says 1, terminals draw emoji at 2
+#   variation selector        22   cell_len says 2, the base character is 1
+#
+# A width the ruler and the glass disagree about is a row that leans, which is
+# exactly what a column layout cannot absorb — and it was seen on a real board
+# before this filter existed. 1,483 is not a compromise: it is every emoji whose
+# width is a fact rather than a negotiation.
+def _unambiguously_wide(glyph: str) -> bool:
+    """One codepoint, and BOTH rulers agree it is two cells.
+
+    Requiring the agreement rather than either ruler alone is what makes this
+    safe, and it is not belt-and-braces: the ten Fitzpatrick skin-tone
+    modifiers (U+1F3FB..U+1F3FF, category Sk) are EAW=W yet measure 0 — they
+    are not emoji at all, they modify the one before them. Unicode alone would
+    have offered ten invisible choices."""
+    return (len(glyph) == 1
+            and east_asian_width(glyph) == "W"
+            and cell_len(glyph) == 2)
+
+
 _EMOJI_CHOICES = sorted(
-    ((name, glyph) for name, glyph in _RICH_EMOJI.items() if cell_len(glyph) >= 1),
+    ((name, glyph) for name, glyph in _RICH_EMOJI.items()
+     if _unambiguously_wide(glyph)),
     key=lambda pair: pair[0])
 
 _EMOJI_BY_NAME = dict(_EMOJI_CHOICES)
