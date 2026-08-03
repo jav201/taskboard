@@ -20,6 +20,8 @@ from datetime import date
 from pathlib import Path
 
 import pytest
+from unicodedata import east_asian_width
+
 from rich.cells import cell_len
 
 from taskboard.app import TaskboardApp
@@ -209,3 +211,47 @@ async def test_both_editors_say_the_key_exists(tmp_path):
             assert "ctrl+e" in title, f"{screen_type.__name__} hides the key: {title!r}"
             await pilot.press("escape")
             await pilot.pause()
+
+
+# --------------------------------------------------------------------------- #
+# the width filter — the reason the picker is safe to use
+# --------------------------------------------------------------------------- #
+def test_every_offered_glyph_measures_the_same_two_ways():
+    """THE LAW THIS FEATURE RESTS ON. The views size rows with `cell_len`, but
+    the TERMINAL draws them, and for whole classes of emoji the two disagree:
+    a ZWJ sequence measures 2 while its parts sum to 4, a variation-selector
+    emoji measures 2 while its base is 1. Where they disagree, the row leans —
+    seen on a real board before this filter existed.
+
+    Note what this test can and cannot do: the suite measures with the SAME
+    ruler the app uses, so a row is 96 cells either way and the invariant in
+    test_cells.py stays green while the screen is visibly wrong. The disagreement
+    is between rich and the glass, which no assertion here can reach. So the
+    filter does not verify the width — it only offers glyphs whose width is not
+    a matter of opinion: one codepoint, Unicode says wide, rich says two."""
+    assert _EMOJI_CHOICES, "the picker has nothing to offer"
+    for name, g in _EMOJI_CHOICES:
+        assert len(g) == 1, f"{name}: {len(g)} codepoints, a sequence"
+        assert east_asian_width(g) == "W", f"{name}: Unicode calls it not-wide"
+        assert cell_len(g) == 2, f"{name}: rich measures {cell_len(g)}"
+        assert cell_len(g) == sum(cell_len(ch) for ch in g), (
+            f"{name}: the whole and its parts disagree")
+
+
+@pytest.mark.parametrize("glyph,why", [
+    ("\U0001F468‍\U0001F692", "ZWJ sequence: parts sum to 4, rich says 2"),
+    ("⚠️", "variation selector: base is 1 cell, rich says 2"),
+    ("\U0001F44D\U0001F3FF", "skin-tone modifier: two glyphs without support"),
+    ("\U0001F3FB", "a lone Fitzpatrick modifier: EAW=W but measures 0"),
+])
+def test_the_ambiguous_classes_are_not_offered(glyph, why):
+    assert glyph not in dict(_EMOJI_CHOICES).values(), f"offered anyway — {why}"
+
+
+def test_the_filter_still_leaves_a_usable_picker():
+    """A safety rule that empties the feature is not a fix. These are the ones a
+    person actually reaches for."""
+    by_name = dict(_EMOJI_CHOICES)
+    for name in ("bug", "rocket", "fire", "tada", "bulb", "wrench", "books"):
+        assert name in by_name, f"{name} was filtered out; the rule is too strict"
+    assert len(_EMOJI_CHOICES) > 1000, f"only {len(_EMOJI_CHOICES)} left"
