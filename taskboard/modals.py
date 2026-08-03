@@ -16,6 +16,8 @@ import os
 from datetime import date, timedelta
 from pathlib import Path
 
+from rich._emoji_codes import EMOJI as _RICH_EMOJI
+from rich.cells import cell_len
 from rich.markup import escape
 
 from textual.app import ComposeResult
@@ -43,6 +45,31 @@ except Exception:          # pragma: no cover - dependency present in prod
     AutoImage = None
 
 NONE_VALUE = "__none__"
+
+# The emoji table ships with rich (no new dependency). It is a PRIVATE module, so
+# tests/test_emoji_picker.py asserts it is still there and still shaped like this
+# — if a rich upgrade moves it, that goes red on purpose rather than this file
+# quietly falling back to a shorter list nobody notices.
+_EMOJI_CHOICES = sorted(
+    ((name, glyph) for name, glyph in _RICH_EMOJI.items() if cell_len(glyph) >= 1),
+    key=lambda pair: pair[0])
+
+_EMOJI_BY_NAME = dict(_EMOJI_CHOICES)
+
+EMOJI_RESULTS = 200        # how many hits the picker draws; it says when it cuts
+
+
+def search_emoji(needle: str) -> list[tuple[str, str]]:
+    """(name, glyph) pairs whose NAME contains `needle`. Space and underscore are
+    the same key stroke here — the table spells them `flexed_biceps`, a human
+    types 'flexed biceps' — and an empty needle is 'show me everything'.
+
+    Exposed for the tests, which is why the picker holds no search logic of its
+    own: the behaviour that decides what you can find is checkable without a UI."""
+    q = needle.strip().lower().replace(" ", "_")
+    if not q:
+        return _EMOJI_CHOICES
+    return [pair for pair in _EMOJI_CHOICES if q in pair[0]]
 
 _WEEK_HEADER = "[dim]Mo Tu We Th Fr Sa Su[/dim]"
 
@@ -128,6 +155,100 @@ class CalendarModal(ModalScreen[str | None]):
         self.dismiss(None)
 
 
+class EmojiPicker(ModalScreen[str | None]):
+    """Find an emoji by NAME and return the glyph. Dismisses with the character
+    on Enter, None on Esc.
+
+    It returns the GLYPH, never the `:shortcode:`. A shortcode is 5+ characters
+    that draw as 2, and the views measure what they are given — a title holding
+    one would size its row wrong (see tests/test_cells.py). The glyph is a real
+    character `views.vis()` can measure, so it costs the layout nothing.
+
+    Zero-width entries are filtered out: they are combining parts, and an emoji
+    you cannot see is one you cannot choose."""
+
+    BINDINGS = [
+        ("escape", "cancel", "Cancel"),
+        Binding("down", "to_list", show=False, priority=True),
+    ]
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="emoji-box", classes="modal"):
+            yield Label("[b]Insert emoji[/b]  —  type to search · ↓ then enter · esc close",
+                        classes="modal-title")
+            yield Input(placeholder="bug · rocket · fuego…", id="emoji-search")
+            yield Label("", id="emoji-count")
+            yield OptionList(id="emoji-list")
+
+    def on_mount(self) -> None:
+        self._show("")
+        self.query_one("#emoji-search", Input).focus()
+
+    def _show(self, needle: str) -> None:
+        hits = search_emoji(needle)
+        shown = hits[:EMOJI_RESULTS]
+        lst = self.query_one("#emoji-list", OptionList)
+        lst.clear_options()
+        # keyed by NAME, not by glyph: names are unique, glyphs are NOT
+        # (`-1` and `__1` are both the same thumbs-down), and duplicate option
+        # ids raise DuplicateID.
+        lst.add_options([Option(f"{g}  {escape(n.replace('_', ' '))}", id=n)
+                         for n, g in shown])
+        # SAY when the list is cut. A picker that silently shows 200 of 900
+        # teaches you the other 700 do not exist.
+        note = (f"{len(hits)} matches · showing the first {len(shown)}"
+                if len(hits) > len(shown) else f"{len(hits)} matches")
+        self.query_one("#emoji-count", Label).update(
+            note if hits else "[dim]no emoji by that name[/dim]")
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        if event.input.id == "emoji-search":
+            self._show(event.value)
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        """Enter in the search box takes the first hit — the common case is
+        'type three letters, take the obvious one' without reaching for arrows."""
+        hits = search_emoji(event.value)
+        if hits:
+            self.dismiss(hits[0][1])
+
+    def action_to_list(self) -> None:
+        self.query_one("#emoji-list", OptionList).focus()
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self.dismiss(_EMOJI_BY_NAME.get(event.option.id))
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class EmojiPickerMixin:
+    """Ctrl+E opens the picker for the focused Input/TextArea and inserts the
+    chosen glyph at the cursor. Same shape as ClipboardPasteMixin: each modal
+    wires the binding itself, this supplies the action.
+
+    The target is captured BEFORE the screen is pushed — pushing moves focus, so
+    reading `app.focused` in the callback would find the picker, not the field."""
+
+    def action_pick_emoji(self) -> None:
+        target = self.app.focused
+        if not isinstance(target, (Input, TextArea)):
+            self.notify("Focus a text field to insert an emoji into.",
+                        severity="warning")
+            return
+        self.app.push_screen(EmojiPicker(),
+                             lambda glyph, t=target: self._insert_emoji(t, glyph))
+
+    def _insert_emoji(self, target, glyph: str | None) -> None:
+        if not glyph:
+            return
+        if isinstance(target, Input):
+            target.insert_text_at_cursor(glyph)
+        else:
+            target.insert(glyph)
+        target.focus()          # the picker took focus; give it back
+
+
 class ClipboardPasteMixin:
     """Reliable Ctrl+V text paste for a modal: reads OS clipboard TEXT and
     inserts it into the focused Input/TextArea. Textual's native paste is
@@ -165,11 +286,13 @@ class DatePickerMixin:
             self.query_one(f"#{field_id}", Input).value = result
 
 
-class TaskModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
+class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
+                ModalScreen[dict | None]):
     """Returns a dict of task fields on save, or None on cancel."""
 
     BINDINGS = [("escape", "cancel", "Cancel"),
-                Binding("ctrl+v", "paste_text", "Paste", priority=True)]
+                Binding("ctrl+v", "paste_text", "Paste", priority=True),
+                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True)]
 
     def __init__(self, board: Board, task: Task | None = None):
         super().__init__()
@@ -186,7 +309,10 @@ class TaskModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
         ]
         proj_value = t.project_id if (t and t.project_id) else NONE_VALUE
         with VerticalScroll(id="modal-box", classes="modal"):
-            yield Label("[b]Edit task[/b]" if t else "[b]New task[/b]", classes="modal-title")
+            # the key is SAID: a picker nobody can find is a picker that does
+            # not exist, and this app does not ship keys off-screen.
+            yield Label(("[b]Edit task[/b]" if t else "[b]New task[/b]")
+                        + "  [dim]· ctrl+e emoji[/dim]", classes="modal-title")
             yield Label("Title")
             yield Input(value=(t.title if t else ""), placeholder="what needs doing",
                         id="f-title")
@@ -306,11 +432,13 @@ class TaskModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
         self.dismiss(data)
 
 
-class ProjectModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None]):
+class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
+                   ModalScreen[dict | None]):
     """Returns a dict of project fields on save, or None on cancel."""
 
     BINDINGS = [("escape", "cancel", "Cancel"),
-                Binding("ctrl+v", "paste_text", "Paste", priority=True)]
+                Binding("ctrl+v", "paste_text", "Paste", priority=True),
+                Binding("ctrl+e", "pick_emoji", "Emoji", priority=True)]
 
     def __init__(self, project: Project | None = None):
         super().__init__()
@@ -319,8 +447,8 @@ class ProjectModal(ClipboardPasteMixin, DatePickerMixin, ModalScreen[dict | None
     def compose(self) -> ComposeResult:
         p = self.project
         with VerticalScroll(id="modal-box", classes="modal"):
-            yield Label("[b]Edit project[/b]" if p else "[b]New project[/b]",
-                        classes="modal-title")
+            yield Label(("[b]Edit project[/b]" if p else "[b]New project[/b]")
+                        + "  [dim]· ctrl+e emoji[/dim]", classes="modal-title")
             yield Label("Name")
             yield Input(value=(p.name if p else ""), placeholder="project name", id="f-name")
             with Grid(classes="modal-grid"):
