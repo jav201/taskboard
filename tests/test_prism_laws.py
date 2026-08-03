@@ -224,8 +224,13 @@ def test_the_closure_law_is_met_the_design_commits_with_rules(tmp_path):
                                 width=96, height=30)).splitlines()
         assert not set("".join(rows_)) & set("╭╮╰╯"), f"{mode} still draws a box"
         for r in rows_:                       # and no side borders either
-            assert r[0] != "│" and r[-1] != "│", f"{mode}: {r[:3]!r}"
-    # KANBAN KEEPS ITS INTERNAL COLUMN RULES (│ between phase columns, with ├┼┤
+            # `├` and `┤` are side borders too. Checking only `│` let the kanban
+            # header rule keep its framed edges long after the frame went, and
+            # with them a one-cell shift: the rule reserved column 0 for `├`, so
+            # every `┼` landed one cell right of the `│` it ruled (30·60·90 ->
+            # 31·61·91 at 120 cells). One glyph named, a whole class missed.
+            assert r[0] not in "│├┤" and r[-1] not in "│├┤", f"{mode}: {r[:3]!r}"
+    # KANBAN KEEPS ITS INTERNAL COLUMN RULES (│ between phase columns, with `┼`
     # junctions on its header rule). Those are structure a column view needs —
     # they say WHICH column — not the enclosing box this law is about. Recorded
     # in .dev-flow/BACKLOG.md as the one place box-drawing survives.
@@ -265,3 +270,45 @@ def test_no_view_is_narrower_than_the_width_it_was_given(tmp_path):
             for line in str(render_view(mode, b, False, None, TODAY,
                                         width=w, height=20)).splitlines():
                 assert len(line) == max(24, w), f"{mode} @ {w}: {len(line)}"
+
+
+def test_the_rule_crosses_exactly_where_the_columns_divide(tmp_path):
+    """A rule under a set of columns has ONE job: say where they divide. It was
+    doing it one cell to the right.
+
+    The builder was inherited from the framed era — it reserved column 0 for a
+    `├` and column w-1 for a `┤`, then wrote the junctions into the span
+    BETWEEN them. While the frame existed those coordinates agreed. Frameless,
+    every row spends the full width, so the rule leaned by one against the row
+    it rules: measured at 120 cells, headers divided at 30·60·90 and the rule
+    crossed at 31·61·91.
+
+    This measures COLUMNS IN CELLS, not character indices — the two disagree the
+    moment a title holds a wide glyph, and it is the cells that are drawn."""
+    from rich.cells import cell_len
+
+    def marks(row: str, glyphs: str) -> list[int]:
+        out, col = [], 0
+        for ch in row:
+            if ch in glyphs:
+                out.append(col)
+            col += cell_len(ch)
+        return out
+
+    b = board(tmp_path)
+    for presentation in ("grouped", "matrix"):
+        for width in (80, 96, 120):
+            rows_ = str(render_view("kanban", b, False, None, TODAY, width=width,
+                                    height=30, presentation=presentation)).splitlines()
+            divides = [marks(r, "│") for r in rows_]
+            divides = [d for d in divides if d]
+            rules = [marks(r, "┼┴") for r in rows_ if set(r) & set("┼┴")]
+            assert divides, f"{presentation} @{width}: no column divisions at all"
+            assert rules, f"{presentation} @{width}: no rule drawn at all"
+            columns = divides[0]
+            for d in divides:
+                assert d == columns, f"{presentation} @{width}: rows divide differently"
+            for r in rules:
+                assert r == columns, (
+                    f"{presentation} @{width}: rule crosses at {r}, "
+                    f"columns divide at {columns}")
