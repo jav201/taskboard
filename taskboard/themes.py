@@ -284,6 +284,45 @@ THEMES: dict[str, dict] = {
         tempo=300, easing="in_out_cubic",      # a slow breath, never a snap
         panel="#121212", focus="#1f1f1f",
     ),
+    # PRISM — Darkside's descendant, and the only language here that was
+    # carried by a whole app before it was written down.  It is NOT Darkside
+    # recoloured: Darkside spends its one accent on interactivity and keeps
+    # everything else grey, while Prism spends colour TWICE, on two systems
+    # with a written border between them.  Every hex below is taken from
+    # `taskboard/views.py` on main, where Prism already ships.
+    #
+    #   IDENTITY hues NAME (which project this is) -- the twelve below.
+    #   SEVERITY hues JUDGE (`alert` overdue, `warn` due today).
+    #   `accent` CALLS ATTENTION (today's rule, focus, keys).
+    #
+    # No mark may wear two of those jobs.  That is a measured law, not a
+    # slogan: `tests/test_palette_ration.py` on main computes euclidean rgb
+    # distance across the whole palette, so re-adding a colliding hue turns it
+    # red whatever the hue is called.  `amber` used to be a project colour AND
+    # the due-today colour at the identical hex -- the same mark meaning two
+    # things in five views -- and that collision is why the border exists.
+    "prism": dict(
+        base="braille",
+        hero="ember", frame="none", meter="ember", layout="rail",
+        label="Prism", note="two colour systems, one written border · carved ember",
+        ground="#0d1117", ink="#e6edf3", mut="#8b98a5", dim="#5b6675",
+        rail="#334154",                        # structure, never a project hue
+        accent="#2dd4bf",                      # attention: today, focus, keys
+        warn="#fbbf24", alert="#f43f5e",       # JUDGE: due today / overdue
+        ash="#6b4a3f",                         # the CONSUMED field -- 4th house
+        bright="#e6edf7", later="#64748b", done="#3f9c6d",
+        sel="solid",
+        tempo=300, easing="in_out_cubic",
+        panel="#161b22", focus="#1f2630",
+        # the twelve that NAME.  Order is the assignment order on main.
+        # The twelve that NAME, as HEXES taken from `views.HEX` on main.  They
+        # are values and not colour names on purpose: a name would have to be
+        # resolved against a table this module does not own, and an
+        # unresolvable name falls back to grey -- which is exactly how an
+        # identity system dies quietly.
+        ident="#a3e635 #4ade80 #38bdf8 #60a5fa #a78bfa #22d3ee "
+              "#fb7185 #fb923c #fbbf24 #818cf8 #e879f9 #f472b6",
+    ),
     # LEDGER — double-entry bookkeeping, and the ONE language printed on a
     # LIGHT ground. That single decision is what makes it unmistakable with
     # the colour stripped away: seven languages glow, this one is read.
@@ -423,7 +462,7 @@ THEMES: dict[str, dict] = {
 # Their lessons stay: brightness-as-channel and decay/gradient mechanisms
 # live on in language.METERS and the skill's laws; the kits are gone.
 ORDER = ["naught", "corgi", "instrument", "swiss", "industrial",
-         "nord", "darkside", "ledger", "solari", "blueprint"]
+         "nord", "darkside", "prism", "ledger", "solari", "blueprint"]
 
 
 def tcss(name: str) -> str:
