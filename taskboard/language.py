@@ -4908,7 +4908,157 @@ class Prism(Kit):
     afterwards.
     """
 
-    RAIL = "▏"
+    # THE COMPONENT SHEET, WRITTEN IN THE LANGUAGE'S OWN MECHANISM.
+    #
+    # Prism says quantity by consuming a field, so its controls say STATE the
+    # same way: by how much of a cell is alight.  The whole table is one ramp
+    # -- ⠄ ⣀ ⣤ ⣶ ⣿ -- and that ramp is not decorative, it is the four dot-rows
+    # of a braille cell, which is the same sub-cell grid the ember meter and
+    # the carved hero are drawn on.  A reader who has understood the meter can
+    # already read every control here, which is what a language IS.
+    #
+    # Two consequences worth naming, because both are laws elsewhere in this
+    # file: the ramp is a SHAPE ladder, so every state survives greyscale
+    # without spending a hue; and the knob is a HALF-CELL mark (⢸ / ⡇), the
+    # only vocabulary here whose grip can sit inside a cell -- the same
+    # half-cell precision the meter's frontier needs, said about position.
+    PART_GLYPHS = {
+        "main": {DEFAULT: "⣀", DISABLED: "⠄"},
+        "indicator": {DEFAULT: "⣿", DISABLED: "⣤"},
+        # THE KNOB IS NEVER THE FILL.  Its first version took `⣿` at focused --
+        # the same glyph as `indicator` -- so the grip vanished into the run it
+        # was supposed to sit on.  Every state below is a BROKEN field (a dot
+        # column missing) precisely so the knob can never be mistaken for a
+        # full cell of fire or for an empty cell of track.
+        "knob": {DEFAULT: "⢸", FOCUSED: "⢿", EDITED: "⣷",
+                 ACTIVE: "⣾", DISABLED: "⠈"},
+        # THE CHECKBOX IS A FIELD WITH A HOLE BURNED IN IT.  Unchecked is an
+        # intact field; checked is the field CARVED -- the same figure-as-
+        # absence the hero uses for its numeral, at one cell.
+        # The WALLS carry the control state and the CENTRE carries the checked
+        # bit -- and the walls are identical between `main` and `knob` in every
+        # state, so the box survives the mark instead of being redrawn by it.
+        "checkbox.main": {DEFAULT: "⣿⣀⣿", FOCUSED: "⣷⣀⣷", ACTIVE: "⣾⣀⣾",
+                          DISABLED: "⠄⠄⠄"},
+        "checkbox.knob": {DEFAULT: "⣿⠀⣿", FOCUSED: "⣷⠀⣷", ACTIVE: "⣾⠀⣾",
+                          DISABLED: "⠄⠀⠄"},
+        # THE RADIO IS THE INVERSE: one lit cell in a dim run.  Checkbox
+        # carves, radio LIGHTS -- so the two families differ in direction, not
+        # in brightness, and a greyscale eye reads which is which.
+        "radio.main": {DEFAULT: "⣀⣀⣀", FOCUSED: "⣤⣤⣤", ACTIVE: "⣶⣶⣶",
+                       DISABLED: "⠄⠄⠄"},
+        "radio.knob": {DEFAULT: "⣀⣿⣀", FOCUSED: "⣤⣿⣤", ACTIVE: "⣶⣿⣶",
+                       DISABLED: "⠄⠁⠄"},
+        # THE BUTTON'S WALLS ARE FIELD AND ITS AIR IS RESIDUE; the press does
+        # not invert, it BREATHES -- the whole control comes alight, which is
+        # the one event in this language that adds fire instead of spending it.
+        "button.main": {DEFAULT: "⣿⣀⣀⣿", FOCUSED: "⣿⣤⣤⣿", ACTIVE: "⣿⣿⣿⣿",
+                        DISABLED: "⠄⠄⠄⠄"},
+        # THE FIELD'S GROUND: walls of fire, paper of ash.  EDITED banks the
+        # paper up a step, so the state a caret lives in is legible in the
+        # instant between two keystrokes.
+        "textfield.main": {DEFAULT: "⣿⠀⣿", FOCUSED: "⣿⣀⣿", EDITED: "⣿⣤⣿",
+                           ACTIVE: "⣿⣶⣿", DISABLED: "⠄⠄⠄"},
+        # the caret is HALF a cell, which is the finest mark this base owns
+        "textfield.caret": {DEFAULT: "⡆"},
+        # A SHAFT IS NOT A SCALE.  The slider's track is every value the knob
+        # could take, so it is the ramp's floor; the scroll bar's shaft is
+        # everywhere the view could BE, so it is drawn as an unlit lattice and
+        # the thumb is the only fire on it.
+        "scrollbar.main": {DEFAULT: "⠒", DISABLED: "⠄"},
+        "scrollbar.indicator": {DEFAULT: "⣿", DISABLED: "⣤"},
+        # THE TWO DIRECTIONS AS TWO HALF-CELLS: the step back lights the left
+        # dot-column, the step forward the right.  Position says direction --
+        # and at an end the ground's half draws instead, so CLAMP and WRAP
+        # differ in shape.
+        "stepper.main": {DEFAULT: "⣀⣀", DISABLED: "⠄⠄"},
+        # ACTIVE stops one dot short of a full column on purpose: `⡇` is a
+        # CLOSED seat in this file (#46 census -- five claimed half-cell fills
+        # and a sixth would be an unaccounted one), and the step reads the same
+        # at ⡆ because what it says is DIRECTION, not extent.
+        "stepper.step": {DEFAULT: "⡀⢀", FOCUSED: "⡄⢠", EDITED: "⡆⢰",
+                         ACTIVE: "⣇⣸", DISABLED: "⠁⠈"},
+    }
+
+    RAMP = ("⣀", "⣤", "⣶", "⣿")
+
+    # THE SPIN IS THE FIELD BREATHING, not a mark travelling round a ring.
+    # Every other language spins something ACROSS positions; Prism has no
+    # position to spare on a one-cell seat, so it spends the axis it does own
+    # -- density -- and the cell pulses up and down its own ramp.  Colour
+    # stripped, it still moves, because the ramp is a shape ladder.
+    SPIN = ("⣀", "⣤", "⣶", "⣿", "⣶", "⣤")
+
+    def plot(self, series, w, h=4, hi=None):
+        """Load as a FIELD BEING EATEN, drawn on the dot grid the ember and the
+        hero share -- so the chart is the same object as the meter, one size up,
+        rather than a second vocabulary the reader has to learn."""
+        from taskboard import wave as WV
+        c = self.c
+        if not series or w < 2:
+            return []          # nothing to burn is no field, not a blank one
+        top = max(1, hi if hi is not None else max(series))
+        cols = min(w, len(series))
+        bm = WV.Bitmap(cols * WV.DOT_COLS, max(1, h) * WV.DOT_ROWS)
+        for i in range(cols):
+            v = series[len(series) - cols + i]
+            lit = max(1, round(bm.h * v / top)) if v else 0
+            for dc in range(WV.DOT_COLS):
+                bm.fill_to(i * WV.DOT_COLS + dc, lit)
+        rows = ["".join(ch if ch != " " else "·" for ch in r)
+                for r in bm.to_braille()]
+        return [f"[{c['accent']}]{r}[/]" for r in rows]
+
+    def gauge(self, val, lo, hi, w=10, tone=None, thr=None):
+        """The read-only twin of the ember: a field consumed to the reading,
+        with the threshold a CARVED gap rather than a second mark -- Prism says
+        \"here\" by taking fire away, which is the same move the hero makes."""
+        c = self.c
+        span = max(1, hi - lo)
+        bar_w = max(3, w)
+        n = max(0, min(bar_w, round(bar_w * (val - lo) / span)))
+        tick = None if thr is None else max(0, min(bar_w - 1,
+                                                   round(bar_w * (thr - lo) / span)))
+        t = tone or c["accent"]
+        cells = []
+        for i in range(bar_w):
+            if i == tick:
+                cells.append(f"[{c['ink']}]⠀[/]")     # the carved gap
+            elif i < n:
+                cells.append(f"[{t}]⣿[/]")
+            else:
+                cells.append(f"[{c['dim']}]⡀[/]")
+        return "".join(cells) + f" [{c['mut']}]{val}[/]"
+
+    # MOTION: THREE STEPS, AND THE NUMBER IS THE CONTROL'S, NOT THE BASE'S.
+    #
+    # Four was tried first, reasoning that a braille cell has four dot-rows so
+    # a field can be consumed in four stages.  The harness refused it and was
+    # right: the switch's knob has THREE SEATS, so a 4-step budget repeats a
+    # frame -- `no flip frame repeats`, a tick spent showing nothing new.  Two
+    # was then tried and repeats as well, because the engine's rounding lands
+    # two of its three moments on the same seat.  Three fills the seats exactly
+    # and is the largest budget this control can actually spend.
+    #
+    # The lesson, worth more than the number: a motion budget is a property of
+    # the CONTROL'S EXTENT, not of the pixel base's depth.  Both are about
+    # resolution and they are not the same quantity.  Sharing the value 3 with
+    # four other languages costs nothing -- what the laws compare is the FRAME
+    # LIST, and Prism's is drawn in its own ramp and its own half-cell grip.
+    #
+    # A custom `flip_frames` travelling by half-cells was written to keep the
+    # four, and thrown away: it ended the switch on a moving frame instead of
+    # at rest, and it re-implemented an engine whose byte-for-byte
+    # reproduction is itself a law here.
+    MOTION_STEPS = 3
+
+    # NOT DARKSIDE'S STROKE.  `▏` is that language's rail and the suite holds
+    # a NEGATIVE law over it -- no other language may carry it -- because a
+    # shared structure device is a shared language wearing two names.  Prism's
+    # is a HEAVIER stroke in the project's own hue: darkside's rail is passive
+    # grey that groups, this one NAMES while it groups, which is the identity
+    # system reaching into structure and the whole reason the ration exists.
+    RAIL = "▎"
     RAIL_W = 3
 
     def board_layout(self) -> str:
