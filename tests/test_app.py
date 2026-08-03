@@ -1556,8 +1556,22 @@ def test_the_due_diamond_marks_the_projects_own_date(tmp_path):
     from taskboard.views import HEX
     b = _gantt_board(tmp_path)
     text = render_gantt(b, False, None, today=GANTT_MIDWEEK, width=96, height=30)
-    worn = [str(s.style) for s in text.spans
-            if text.plain[s.start:s.end].strip() == "◆"]
+    # Locate the diamond by CHARACTER, not by span: a run may legitimately carry
+    # its neighbours (span economy merges same-hue cells), so "a span whose text
+    # is exactly ◆" describes the markup's shape rather than the drawing's.
+    styles: list[str | None] = [None] * len(text.plain)
+    for s in text.spans:
+        for i in range(s.start, min(s.end, len(styles))):
+            styles[i] = str(s.style)
+    worn = []
+    at = 0
+    for row, line in enumerate(text.plain.split("\n")):
+        for col, ch in enumerate(line):
+            # row 0 is the view's own title ('◆ GANTT'), which wears accent and
+            # is not a due date; the diamonds under test live in the field.
+            if ch == "◆" and row > 0:
+                worn.append(styles[at + col])
+        at += len(line) + 1
     assert worn, "no diamond drawn at all"
     for style in worn:
         assert HEX["sky"] in style or HEX["violet"] in style

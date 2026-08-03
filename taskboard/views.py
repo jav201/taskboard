@@ -13,6 +13,7 @@ alignment survives across monospace fonts (M22 ambiguous-glyph trap).
 
 from __future__ import annotations
 
+import re
 from datetime import date, timedelta
 from typing import NamedTuple
 
@@ -457,6 +458,99 @@ def fill_height(lines: list[str], height: int, w: int) -> list[str]:
 
 def _clamp_width(width: int) -> int:
     return max(MIN_WIDTH, int(width) if width else MIN_WIDTH)
+
+
+# ---------------------------------------------------------------------------
+# span economy: say the same colors with fewer runs
+# ---------------------------------------------------------------------------
+# `c()` wraps EVERY cell it colors, so a 60-cell band of one tone leaves 60
+# `[#hex]…[/]` pairs where one would do. That redundancy is not cosmetic: each
+# run becomes its own rich Span, then its own Segment, and Textual stamps a
+# per-run `{"offset": (x, y)}` into each Segment's style meta
+# (textual/content.py). rich's `Style.__hash__` includes `_meta`, so two
+# segments that look identical NEVER compare equal — which means
+# `Strip.simplify()` can merge none of them. The run count we emit is the run
+# count we pay, all the way to the terminal. So we pay it once, here.
+_TAGS = re.compile(r"((\\*)\[([a-z#/@][^[]*?)])")
+
+
+def _tag_name(content: str) -> str:
+    """The name rich matches a closing tag against ('link' of 'link=url')."""
+    return content.partition("=")[0].strip()
+
+
+def collapse_runs(markup: str) -> str:
+    """Drop a close tag that is immediately followed by re-opening the SAME
+    style. Purely syntactic: the rendered text and every character's style are
+    unchanged (tests/test_span_economy.py fixes that), only the run count drops.
+
+    Anything this does not understand is left exactly as it was found — the
+    optimization may under-collapse, but it may never alter what is drawn."""
+    if "[" not in markup:
+        return markup
+    out: list[str] = []
+    stack: list[str] = []          # open tag CONTENTS, outermost first
+    pending: str | None = None     # a close tag held back, awaiting its neighbour
+    pos = 0
+
+    def flush() -> None:
+        """Emit the held close and retire the tag it closes."""
+        nonlocal pending
+        if pending is None:
+            return
+        name = _tag_name(pending[1:])
+        if not name:                                   # bare '[/]' closes the top
+            if stack:
+                stack.pop()
+        else:                                          # named close: innermost match
+            for i in range(len(stack) - 1, -1, -1):
+                if _tag_name(stack[i]) == name:
+                    stack.pop(i)
+                    break
+        out.append(f"[{pending}]")
+        pending = None
+
+    for m in _TAGS.finditer(markup):
+        start, end = m.span()
+        full, escapes, content = m.groups()
+        if start > pos:                                # literal text between tags
+            flush()
+            out.append(markup[pos:start])
+        if escapes and len(escapes) % 2:               # '\[' -> an escaped brace,
+            flush()                                    # literal text, not a tag
+            out.append(full)
+            pos = end
+            continue
+        if escapes:                                    # even backslashes: real tag,
+            flush()                                    # but the slashes are text
+            out.append(escapes)
+        if content.startswith("/"):
+            flush()                                    # a close ends any held close
+            pending = content
+        else:
+            # THE ONE COLLAPSE: the held close retires exactly this style, and
+            # this reopens it verbatim -> both tags are noise. Only when the
+            # closed tag is the one on top, so nesting order is never rewritten.
+            if pending is not None and stack and stack[-1] == content:
+                closing = _tag_name(pending[1:])
+                if not closing or closing == _tag_name(content):
+                    pending = None                     # cancel the pair, keep the
+                    pos = end                          # style open across the seam
+                    continue
+            flush()
+            out.append(f"[{content}]")
+            stack.append(content)
+        pos = end
+
+    flush()
+    out.append(markup[pos:])
+    return "".join(out)
+
+
+def to_text(lines: list[str], height: int, w: int) -> Text:
+    """The ONE seam where a view's markup becomes a Text. Every view closes
+    through here so span economy is not something a new view can forget."""
+    return Text.from_markup(collapse_runs("\n".join(fill_height(lines, height, w))))
 
 
 # ---------------------------------------------------------------------------
@@ -1108,7 +1202,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
         lines.append(line(c(fit("  (no projects — press 'p' to add one)", inner), "dim")))
         lines.append(line(_pad(_scale_row(geo, inner), inner)))
         lines.append(bottom(None, w))
-        return Text.from_markup("\n".join(fill_height(lines, height, w)))
+        return to_text(lines, height, w)
 
     active = [ln for ln in lanes if not ln.resting]
     resting = [ln for ln in lanes if ln.resting]
@@ -1145,7 +1239,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
              else _scale_row(geo, inner))
     lines.append(line(_pad(scale, inner)))
     lines.append(bottom(None, w))
-    return Text.from_markup("\n".join(fill_height(lines, height, w)))
+    return to_text(lines, height, w)
 
 
 def _scale_with_note(geo: FieldGeo, inner: int, note: str) -> str:
@@ -1305,7 +1399,7 @@ def render_agenda(board, show_archived, selected_id, today=None,
     if not dated and not undated:
         lines.append(line(c(fit("  (nothing scheduled — press 'a' to add a task)", inner), "dim")))
     lines.append(bottom(None, w))
-    return Text.from_markup("\n".join(fill_height(lines, height, w)))
+    return to_text(lines, height, w)
 
 
 # ---------------------------------------------------------------------------
@@ -1681,7 +1775,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
     lines.append(line(_pad(_scale_with_note(geo, inner, note) if note
                            else _scale_row(geo, inner), inner)))
     lines.append(bottom(None, w))
-    return Text.from_markup("\n".join(fill_height(lines, height, w)))
+    return to_text(lines, height, w)
 
 
 # ---------------------------------------------------------------------------
@@ -1866,7 +1960,7 @@ def render_kanban(board, show_archived, selected_id, today=None,
     w = _clamp_width(width)
     build = _kanban_matrix if presentation == "matrix" else _kanban_grouped
     lines = build(board, show_archived, selected_id, today, w, height, line_map)
-    return Text.from_markup("\n".join(fill_height(lines, height, w)))
+    return to_text(lines, height, w)
 
 
 # ---------------------------------------------------------------------------
