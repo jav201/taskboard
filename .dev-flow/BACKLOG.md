@@ -3,9 +3,17 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `eec625b` (origin/main) · **Last refresh:** 2026-07-31 (batch-02 open)
-**Status:** the Prism roadmap is complete and SHIPPED; the frame is gone, the report
-batch (`2026-07-31-batch-02`) is in flight under `/fast-dev-flow`. 345 tests green.
+**Base ref:** `bd935ff` (origin/main) · **Last refresh:** 2026-08-03
+**Status:** 707 tests green. Nine commits landed on 2026-08-03 — a render-cost
+pass, a cell-width pass, the emoji picker and three layout defects — recorded in
+"From the 2026-08-03 session" below.
+
+> **The header sat at `eec625b` / 2026-07-31 for a whole day of shipping.** The
+> close step that owns this line did not run when batch-02 closed, which is the
+> failure the carry-over contract exists to prevent, and it is now the second
+> recorded instance (the first: 2026-07-20 operator audit, ~10 batches stale).
+> Nine commits are reconciled below at once; a backlog read between those dates
+> would have reported an empty queue that looked like "nothing pending".
 
 ## Shipped
 
@@ -398,3 +406,77 @@ batch (`2026-07-31-batch-02`) is in flight under `/fast-dev-flow`. 345 tests gre
   repo. Caught by diffing before the commit. Rewriting a tracked file without
   reading it first is the whole error; there is no second control that would have
   caught it.
+
+## From the 2026-08-03 session
+
+Nine commits, `a16608b`..`bd935ff`, all on `main` and pushed. Reconciled in one
+pass because the header had gone a day stale (see the note at the top).
+
+### Shipped
+
+- **DONE** · **Run economy.** The board coloured cell by cell, so a 60-cell band
+  left 60 `[#hex]…[/]` pairs. `Text.from_markup` was **88 % of render time**.
+  `collapse_runs` + `to_text` as the one seam: gantt **139 ms → 0.3 ms** net per
+  keypress, 2,880 → 302 segments, idle tick 4.9 % → 1.1 % of a core. Verified on
+  the real board across 256 configurations, 0 mismatches. (`a16608b`)
+- **DONE** · **Width is measured in cells.** `fit`/`clip`/`header`/`_pad` and ten
+  callers used `len()` — codepoints, not cells. A title holding `:bug:` made its
+  row 93 cells in a 96-cell view. `vis()` is now the only ruler; `set_cell_size`
+  cuts on glyph boundaries. `emoji=False` is load-bearing (see the law below).
+  New `tests/test_cells.py`, 213 cases, failed 136× against the old arithmetic.
+  (`6ddc574`)
+- **DONE** · **Ctrl+E emoji picker** in both text editors, inserting the glyph.
+  (`efe6060`)
+- **DONE** · **Tests stop reading the developer's live board.** `TaskboardApp()`
+  with no path loads `~/.taskboard` and `on_mount` SAVES it. (`38ce312`)
+- **DONE** · **The kanban rule crosses where the columns divide.** Headers split
+  at 30/60/90, the rule crossed at 31/61/91 — a framed-era builder reserving
+  column 0 for `├`. Also closed a hole in the closure law, which checked only
+  `│` and so let `├`/`┤` survive the frameless pass. (`530a7a5`)
+- **DONE** · **The emoji picker offers only unambiguous widths** — 1,483 of
+  3,608. Every other class disagrees between rich and the terminal (ZWJ: 2 vs 4;
+  variation selector: 2 vs 1; EAW=N/A: 1 vs 2). (`ccd4018`)
+- **DONE** · **The gantt field draws in shade, not scatter** — braille bought
+  sub-cell resolution a *span* does not need. Reach `█`, progress `▓`, task `▒`,
+  half `▌`, phase tip as a rising fill. Lanes untouched. (`81dcb66`)
+- **DONE** · **The right edge says the number** — `···▲3d` / `····4d` / `··done`
+  / `·····—`. The bar stood for a BAND, so 4 days and 5 days drew the same two
+  cells. Two laws reversed in place rather than deleted. (`e8dabba`)
+- **DONE** · **Short content stays at the top** — `fill_height` pinned the last
+  row assuming every view closes with an axis; the kanban and the agenda close
+  with a TASK, so 84 kanban and 44 agenda sizes stranded a row at the bottom of
+  the viewport. An axis is now declared. `tests/test_vertical_fill.py`,
+  mutation-checked against both ways of breaking it. (`bd935ff`,
+  `.fast-dev-flow/spec.md`)
+
+### Open — carried from this session
+
+- **Lanes geometry off-by-one.** `lane_geometry(120, …)` reports
+  `today_cell = 44` while the today rule is drawn at column **43**, and
+  `label_w + field_w + figs_w = 119` against a width of 120 — one cell
+  unassigned. Not yet decided whether it is a defect or deliberate
+  compensation; **no view misrenders because of it today**, which is why it was
+  reported rather than "fixed" blind.
+- **`test_win_clipboard_roundtrip` is flaky.** Its restore step
+  (`Set-Clipboard -Value $prior`) raises `PositionalParameterNotFound` and leaves
+  the clipboard in a state that fails the *next* run. Bug in the test, not the
+  code; pre-existing.
+- **The gantt meter vs the field speak two alphabets.** The right-edge reading is
+  now text, but `due_meter` is shared with the lanes, so any further change to it
+  moves both views. Deliberate boundary, recorded so the next reader knows it was
+  a choice.
+- **`emoji=False` is load-bearing and easy to "fix" wrongly.** Re-enabling
+  substitution to support `:shortcodes:` turns
+  `test_a_shortcode_is_drawn_as_itself_not_as_a_glyph` red *and* the row-width
+  invariant with it. Whoever wants shortcodes must substitute BEFORE the width
+  math (13 sites where user text enters the views), not after.
+
+### Open — process (not this repo)
+
+- **`~/.claude/docs/FLOW-VERSION.md` is stale by one control.** `f3d4fba` added
+  **C-46** to `dev-flow-lessons/SKILL.md` (641 lines vs the 620 recorded) and is
+  already pushed, but the manifest still declares `controls: C-1 … C-45` and the
+  pre-C-46 hash. 11/12 files verify byte-for-byte; the twelfth is the manifest's
+  own bookkeeping. Per its own rule — "if you edit a flow file, you own the bump"
+  — this needs a rev2. **Different repo (`claude-config` + `claude-skills`), so
+  it is not fixable from this batch's commit.**
