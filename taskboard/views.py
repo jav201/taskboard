@@ -472,14 +472,28 @@ def bottom(junctions: dict[int, str] | None, w: int) -> str:
     return ""
 
 
-def fill_height(lines: list[str], height: int, w: int) -> list[str]:
-    """Pad blank rows so the view fills the viewport when content is short. The
-    pad goes ABOVE the last row, which is the axis every view closes with."""
+def fill_height(lines: list[str], height: int, w: int,
+                pinned: int = 0) -> list[str]:
+    """Pad blank rows so the view fills the viewport when content is short.
+
+    `pinned` is how many TRAILING rows are an axis that belongs at the bottom of
+    the screen; the pad goes above those and everything else stays at the top.
+
+    It used to be assumed rather than passed — the pad always went above the last
+    row, "which is the axis every view closes with". Two views close with no axis
+    at all, so their last TASK was pinned to the bottom of the viewport with a
+    field of blank rows above it: on a real board, 84 swept kanban sizes and 44
+    agenda sizes stranded a row that way. The lanes and the gantt do close with an
+    axis, which is why they always looked right and the assumption survived. An
+    axis is now something a view SAYS it has."""
     lines = [x for x in lines if x != ""]          # a frameless close adds none
     if not height or len(lines) >= height:
         return lines                               # taller than the viewport: it scrolls
     pad = height - len(lines)
-    return lines[:-1] + [blank_line(w)] * pad + [lines[-1]]
+    keep = pinned if 0 < pinned <= len(lines) else 0
+    if not keep:
+        return lines + [blank_line(w)] * pad
+    return lines[:-keep] + [blank_line(w)] * pad + lines[-keep:]
 
 
 def _clamp_width(width: int) -> int:
@@ -573,7 +587,7 @@ def collapse_runs(markup: str) -> str:
     return "".join(out)
 
 
-def to_text(lines: list[str], height: int, w: int) -> Text:
+def to_text(lines: list[str], height: int, w: int, pinned: int = 0) -> Text:
     """The ONE seam where a view's markup becomes a Text. Every view closes
     through here so span economy is not something a new view can forget.
 
@@ -585,7 +599,7 @@ def to_text(lines: list[str], height: int, w: int) -> Text:
     happens downstream of all measuring, so the substitution goes. Emoji still
     work — you type the glyph itself, which is a real character `vis()` can
     measure, and the picker inserts exactly that."""
-    return Text.from_markup(collapse_runs("\n".join(fill_height(lines, height, w))),
+    return Text.from_markup(collapse_runs("\n".join(fill_height(lines, height, w, pinned))),
                             emoji=False)
 
 
@@ -1264,7 +1278,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
         lines.append(line(c(fit("  (no projects — press 'p' to add one)", inner), "dim")))
         lines.append(line(_pad(_scale_row(geo, inner), inner)))
         lines.append(bottom(None, w))
-        return to_text(lines, height, w)
+        return to_text(lines, height, w, pinned=1)
 
     active = [ln for ln in lanes if not ln.resting]
     resting = [ln for ln in lanes if ln.resting]
@@ -1301,7 +1315,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
              else _scale_row(geo, inner))
     lines.append(line(_pad(scale, inner)))
     lines.append(bottom(None, w))
-    return to_text(lines, height, w)
+    return to_text(lines, height, w, pinned=1)
 
 
 def _scale_with_note(geo: FieldGeo, inner: int, note: str) -> str:
@@ -1870,7 +1884,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
     lines.append(line(_pad(_scale_with_note(geo, inner, note) if note
                            else _scale_row(geo, inner), inner)))
     lines.append(bottom(None, w))
-    return to_text(lines, height, w)
+    return to_text(lines, height, w, pinned=1)
 
 
 # ---------------------------------------------------------------------------
