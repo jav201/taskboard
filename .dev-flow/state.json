@@ -1,94 +1,132 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-07-31-batch-02",
-  "batch_objective": "Generated board report (self-contained HTML), whole board or one project",
-  "current_phase": 0,
-  "phase_status": "routed-to-fast-flow",
+  "batch_id": "2026-08-03-batch-03",
+  "batch_objective": "Lanes: the project row states its demand in text (open / late / next Nd); the cumulative load curve moves to a disclosure row that appears on selection, paid for by the focused project shedding one title.",
+  "current_phase": 5,
+  "phase_status": "approved",
   "iterations_per_phase": {
-    "0": 0,
-    "1": 0,
-    "2": 0,
+    "0": 1,
+    "1": 2,
+    "2": 2,
     "3": 0,
     "4": 0,
     "5": 0,
     "6": 0
   },
   "artifacts": {
+    "0": ".dev-flow/2026-08-03-batch-03/PLAN.md",
     "1": ".dev-flow/01-requirements.md",
+    "1b": ".dev-flow/01b-qa-validation-plan.md",
     "2": ".dev-flow/02-review.md",
-    "3": ".dev-flow/03-increments/",
-    "4": ".dev-flow/04-validation.md",
-    "5": ".dev-flow/05-postmortem.md",
-    "6": ".dev-flow/06-docs/"
+    "2a": ".dev-flow/02-review-architect.md",
+    "2b": ".dev-flow/02-review-qa.md",
+    "5": ".dev-flow/05-postmortem.md"
   },
   "standing_authorization": {
-    "date": "2026-07-18",
-    "autonomy": "End-to-end autonomous; agent self-approves every gate against the objective exit criteria and documents each decision.",
-    "merge": "Commit straight to main (no PR).",
-    "operator_phrasing": "End to end autonomously... Commit straight to main"
+    "date": "2026-08-03",
+    "asked_at": "batch kickoff, Phase 0 (per-batch, never carried)",
+    "autonomy": "operator approves every gate",
+    "merge_authority": false,
+    "operator_phrasing": "Yo apruebo cada gate; yo hago el merge",
+    "close_behaviour": "stop at 'PR opened, CI green'; the operator merges",
+    "decision_recording": "all four: PLAN.md decision log + state.json.decisions_log + 05-postmortem.md + carried to the vault at /dev-flow-sync",
+    "decision_recording_phrasing": "En los cuatro sitios"
   },
-  "decisions_log": [],
-  "obsidian_synced": false,
-  "created_at": "2026-07-31T07:29:19",
-  "routing_note": "Phase 0 routed this batch to /fast-dev-flow per the command's own matrix (internal tool, ~6 files, known path, no regulated context); operator approved 2026-07-31. The spec lives at .fast-dev-flow/spec.md; this file records the routing so the next session is not misled. This batch has no /dev-flow decisions_log entries because it never entered phase 1 - its record is the spec, and it is out of scope for /dev-flow-sync (that command copies the 01/02/04/05/06 artifact set, which /fast-dev-flow does not produce).",
-  "artifacts_note": "WARNING: the artifacts listed above are the /dev-flow PATHS, not this batch's files. The files currently at .dev-flow/01-requirements.md, 02-review.md, 04-validation.md, 05-postmortem.md and 06-docs/ belong to the CLOSED batch 2026-07-18-batch-01 (they say so in their own title lines). This batch has written none of them. Do not read them as the current batch's record.",
-  "closed_batches": [
+  "decisions_log": [
     {
-      "batch_id": "2026-07-18-batch-01",
-      "batch_objective": "Neutral capability-showcasing demo seed; multiple URLs per task; image references with a safe open-in-viewer action",
-      "final_phase": 6,
-      "phase_status": "approved",
-      "closed_at": "2026-07-31",
-      "shipped_at": "2026-07-18",
-      "obsidian_synced": true,
-      "obsidian_path": "G:\\My Drive\\ConsultIA\\Obsidian_Vaults\\AI-Consulting-Brain\\01 - Proyectos\\taskboard\\dev-flow-batches\\2026-07-18-batch-01\\",
-      "artifacts_location": ".dev-flow/01-requirements.md, 02-review.md, 03-increments/, 04-validation.md, 05-postmortem.md, 06-docs/ (still at the .dev-flow root; not moved, so the shipped commits' paths stay valid)",
-      "decisions_log": [
-        {
-          "phase": 1,
-          "date": "2026-07-18",
-          "decision": "approved",
-          "notes": "3 US/7 HLR/23 LLR/3 AT/26 TC; DoR all READY; draft-time citations real; gaps (missing cancelled+archived in seed, 16 author-tokens) noted. Coverage/Certainty/Evidence bar met."
-        },
-        {
-          "phase": 2,
-          "date": "2026-07-18",
-          "decision": "approved",
-          "notes": "0 blockers; 4 majors (F1 test:361 url= kwarg; F2 AT-003 press i; F3 startfile isfile/try-except/UNC guard; F4 drop .svg) folded into Phase 3; 5 minors. Coverage/Certainty/Evidence met."
-        },
-        {
-          "phase": 3,
-          "date": "2026-07-18",
-          "decision": "approved",
-          "notes": "3 increments (f1b9e96 multi-URL, 63f4a22 images, 7532e03 seed) pushed to main. 36 tests green (base 28+8). Seed denylist 0 author tokens (independently rescanned). os.startfile allowlist {png,jpg,jpeg,gif,webp,bmp} no svg + isfile + UNC/file:// refuse + try/except verified. AT-001/002/003 black-box + mutation-checked. Coverage/Certainty/Evidence met."
-        },
-        {
-          "phase": 4,
-          "date": "2026-07-18",
-          "decision": "approved",
-          "notes": "Validation PASS. AT-001/002/003 each reconciled to one node; both layers; ledger 28->36; supersession 0 live .url; 1 minor (modal prefill by inspection); 2 accepted open items. No iterate."
-        },
-        {
-          "phase": 6,
-          "date": "2026-07-18",
-          "decision": "approved",
-          "notes": "Docs done: traceability 0 gaps, functionality, exec-summary, 3 mermaid diagrams. Postmortem: 0 iterations, 10/10 findings closed/accepted. README updated (i binding + all-URLs). Batch complete; artifacts committed to main. 5 carry-forward items for next batch."
-        },
-        {
-          "phase": 6,
-          "date": "2026-07-31",
-          "decision": "close batch",
-          "notes": "batch-01 CLOSED EXPLICITLY on 2026-07-31. It finished 2026-07-18 and its work merged and shipped long since; only the Obsidian vault sync was never run, and that is the operator's call (it touches his vault), so it is recorded in .dev-flow/BACKLOG.md as a named pending item rather than left as a phase status. The file had sat at phase 6 'awaiting-sync' for 13 days, asserting a false project state to every later session (C-44)."
-        },
-        {
-          "phase": 6,
-          "date": "2026-07-31",
-          "decision": "synced-to-obsidian",
-          "notes": "G:\\My Drive\\ConsultIA\\Obsidian_Vaults\\AI-Consulting-Brain\\01 - Proyectos\\taskboard\\dev-flow-batches\\2026-07-18-batch-01\\ - 9 artifacts + generated index README + project Dashboard.md. Created the vault's taskboard project folder (none existed). 03-increments not synced per vault convention. Destination named from the artifacts' self-identification, not this file's batch_id, which had been repurposed for batch-02."
-        }
-      ],
-      "log_gap_note": "No phase-5 entry was ever written, although 05-postmortem.md exists and is complete. The phase ran; only its log line is missing."
+      "phase": 0,
+      "date": "2026-08-03",
+      "decision": "state reconciled",
+      "notes": "state.json still described 2026-07-31-batch-02 at phase 0 'routed-to-fast-flow'; that batch CLOSED via /fast-dev-flow and its spec is archived. Stale state corrected before opening batch-03 — the same defect commit 4e06efa named 'state.json stops describing two batches at once'."
+    },
+    {
+      "phase": 0,
+      "date": "2026-08-03",
+      "decision": "promoted from /fast-dev-flow",
+      "notes": "Operator approved promotion. Trigger: the change is a LAYOUT-ENGINE change, 39 coupled sites via allocate()/swimlane_plan()/stack_block(), and lanes spends its height exactly. Fast-flow spec archived at .fast-dev-flow/archive/2026-08-03-fastflow-02-PROMOTED-spec.md"
+    },
+    {
+      "phase": 0,
+      "date": "2026-08-03",
+      "decision": "kickoff authorization recorded",
+      "notes": "Operator approves every gate and merges the PR himself; NO merge authority granted. Un-asked decisions recorded in all four places. Default posture, stated explicitly."
+    },
+    {
+      "phase": 0,
+      "date": "2026-08-03",
+      "decision": "approved",
+      "notes": "Operator approved Phase 0. Both stories READY; no exit-criteria axis unmet."
+    },
+    {
+      "phase": 1,
+      "date": "2026-08-03",
+      "decision": "approved",
+      "notes": "Operator approved Phase 1 knowing the Evidence axis carries a named gap: LLR-003.5's mutation is not runnable on any current fixture (every busy fixture has open == total). Phase 3 owes a fixture with done work before that mutation may be reported as run."
+    },
+    {
+      "phase": 1,
+      "date": "2026-08-03",
+      "decision": "O-1 ruled: silent refusal",
+      "notes": "When titles==1 the focused project's only title IS the selected task; shedding it would unname the cursor's own row. Operator ruled: refuse silently — the curve simply does not appear. Consequence accepted: US-B does not fire in that configuration. Measured NOT to occur on the operator's real board (titles 8/6/17); reachable on calm shapes."
+    },
+    {
+      "phase": 1,
+      "date": "2026-08-03",
+      "decision": "O-2 ruled: supersede test_spend.py:277",
+      "notes": "Retiring wrows makes the lead's bench the sole consumer of surplus (prof 8->19 @96x30, 10->33 @96x44, executed). That supersedes a law shipped one batch ago whose docstring names this exact outcome as the failure it prevents. Operator ruled SUPERSEDE, on the argument that the law's premise (a 1-row stack lane is STARVED) ceases to hold once that is the lane's designed form. One-way door in the revert-only sense."
+    },
+    {
+      "phase": 1,
+      "date": "2026-08-03",
+      "decision": "orchestrator error corrected",
+      "notes": "PLAN.md asserted views.py:986 was load_curve's only caller. FALSE: report.py:137 is a second caller (the HTML report draws the curve too). My grep swept only views.py."
+    },
+    {
+      "phase": 2,
+      "date": "2026-08-03",
+      "decision": "GATE BLOCKED -> iterate to Phase 1",
+      "notes": "9 distinct blockers across both reviewers. Coverage broken (AT-id collision), Certainty broken (LLR-003.5's predicate is inverted and its threshold false-fails correct code on 3 of 13 occupancy lanes in regime), Evidence broken (occupancy measured only at selected_id=None, the one state US-B never produces)."
+    },
+    {
+      "phase": 2,
+      "date": "2026-08-03",
+      "decision": "O-2 REFINED to option 2",
+      "notes": "Operator ruled: supersede test_spend.py:81 and :277 (their subject `wrows` ceases to exist and their intent is fulfilled or superseded); REPLACE :238 rather than supersede it. Rationale: :238's secondary subject -- an upper bound on `prof` -- SURVIVES the change and becomes more urgent, since retiring `wrows` removes the only bound and `prof` was measured 10->33 at 96x44 (~75% of the panel). Phase 1 owes a new LLR fixing an explicit ceiling on `prof`, threshold MEASURED not predicted (C-39), with :238 rewritten against that ceiling."
+    },
+    {
+      "phase": 2,
+      "date": "2026-08-03",
+      "decision": "orchestrator process fix: AT registry is the orchestrator's",
+      "notes": "The AT-id collision was caused by dispatching two Phase-1 agents in parallel with no shared identifier registry, so each minted AT-001..004 with different subjects. Structural fix: the orchestrator fixes the canonical AT/TC registry BEFORE dispatch, and the Phase-1 iteration runs as a SINGLE agent folding both reviews rather than two in parallel."
+    },
+    {
+      "phase": 1,
+      "date": "2026-08-03",
+      "decision": "approved (iteration 2)",
+      "notes": "All three exit axes met. The iteration found a latent defect that would have shipped: LLR-002.1 charged `prof` while lead_band DRAWS prof+2 (verified independently by the orchestrator: delta +2 constant at prof=3,5,8,12,19). Inert pre-change because wrows absorbed budget; post-change 44 blank rows and '+N not shown' on all 18 renders as specified, 0 and 0 corrected."
+    },
+    {
+      "phase": 1,
+      "date": "2026-08-03",
+      "decision": "O-3 ruled: NO share cap",
+      "notes": "Operator ruled budget ceiling alone. Trade-off accepted and named: at h=60 a calm board shows one project at 87% of the panel. Rationale: 'never pads' is a shipped law with an 0/18 baseline; a share cap would retire it to install another, for rows that are honest magnification. Measured alternative if ever wanted: (2*room)//3 -> bench 58-64%, ~2 blank rows per render."
+    },
+    {
+      "phase": 1,
+      "date": "2026-08-03",
+      "decision": "O-4 NOT RULED - proceeding on the measured default",
+      "notes": "UN-ASKED DECISION, recorded per the kickoff contract. The operator ruled O-3 and did not address O-4 (how the legend learns the disclosure row was drawn). Proceeding on the artifact's measured default; flagged back to the operator in-conversation so it can be corrected before Phase 3 commits to it. Phase 3 is not blocked either way."
+    },
+    {
+      "phase": 2,
+      "date": "2026-08-03",
+      "decision": "CLOSE BATCH without implementing",
+      "notes": "Operator decision after the orchestrator stopped and separated verified fact from agent claim: 12 facts executed by the orchestrator, 6 agent claims refuted (including the headline, which the orchestrator had reported as confirmed on half-verified arithmetic), 6 never contrasted. Root cause: no single verified row cost model, so each agent measured against its own. Next batch scoped to fixing that model alone, no visual change."
     }
-  ]
+  ],
+  "obsidian_synced": false,
+  "created_at": "2026-08-06T11:58:56",
+  "promoted_from": ".fast-dev-flow/archive/2026-08-03-fastflow-02-PROMOTED-spec.md",
+  "batch_closed": "2026-08-03 — closed at Phase 2, nothing implemented"
 }

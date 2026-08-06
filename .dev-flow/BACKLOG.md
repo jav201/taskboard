@@ -480,3 +480,59 @@ pass because the header had gone a day stale (see the note at the top).
   own bookkeeping. Per its own rule — "if you edit a flow file, you own the bump"
   — this needs a rev2. **Different repo (`claude-config` + `claude-skills`), so
   it is not fixable from this batch's commit.**
+
+## From 2026-08-03-batch-03 (CLOSED AT PHASE 2, nothing implemented)
+
+The batch derived a full requirement set for "lanes row states its demand; the curve moves to a
+disclosure row" and closed without code. `taskboard/` and `tests/` are byte-identical to `f237cb3`.
+Full account in `.dev-flow/05-postmortem.md`.
+
+### The next batch, and it is deliberately small
+
+- **FIX AND VERIFY THE ROW COST MODEL, ALONE, WITH NO VISUAL CHANGE.** Every substantive
+  disagreement across two iterations reduced to `room` / `prof` / the lead band's ±2. There is no
+  single verified cost model, so each agent measured against its own and the conflicts only
+  surfaced when a later agent re-derived an earlier one's number. Establish one — executed, pinned
+  by a test, with `views.py:2127`'s `h - 2 - (2 if active else 0)` and `lead_band`'s `prof + 2`
+  reconciled explicitly — and the rest of the design becomes row substitution.
+
+### The design, decided and still standing (do not re-litigate)
+
+- **Mechanism D in the project row** (`N open · ▲N late · next Nd`), **mechanism A on the
+  disclosure row** (the cumulative curve). Operator-decided after seeing A/C/D rendered on the real
+  board; C was rejected as answering the least actionable question.
+- **Option (a)** pays for the disclosure row: the focused project sheds one title.
+- **O-1: silent refusal** when the shed cannot be paid.
+- **O-2 refined to option 2:** supersede `tests/test_spend.py:81` and `:277`; **REPLACE** `:238`
+  with an explicit ceiling on `prof` — its subject (an upper bound on `prof`) survives the change.
+- **O-3: no share cap.** ⚠ **Ruled on an understated number** — the operator was told 87 % of the
+  panel; the band is `(prof+2)/h`, so it is **90 % at h=60 and 95 % at h=120**. The ruling's logic
+  (the panel has only two sinks for surplus) is unaffected, but the next batch must re-present it.
+- **O-4 never ruled** — how the legend learns the disclosure row was drawn.
+
+### Findings that outlived the batch
+
+- **The legend has never described the wave** (verified by sweeping every `out.append` in
+  `legend_entries`). This is the direct cause of the operator's *"I am not certain what they do"*.
+  **Candidate control:** the ghost-mark law verifies that every legend entry is drawn but **not that
+  every drawn mark is explained**. That asymmetry is a hole in a shipped law.
+- **`_figures`' docstring is one of 26 claim-bearing prose lines** that would go false; `grep "own
+  wave"` catches only 3. `views.py:720` and `:2112` are the return contracts of the two functions
+  the change re-signs.
+- **`report.py:122` carries a false claim on disk today** — post-change the report would draw a
+  curve for every project unconditionally while the app draws at most one.
+- **`test_vertical_fill.py` and `test_occupancy.py:93` both render only `selected_id=None`** — so
+  the never-pads law and the occupancy floor are measured in the one state the disclosure row would
+  create. Two files, not one.
+- **`lead_band`, `stack_block`, `project_wave` have zero direct test guards.**
+- `tests/test_span_economy.py` is unmeasured against a ~114→~20 cell swap.
+
+### Process items
+
+- **`~/.claude/docs/FLOW-VERSION.md` is stale by one control.** C-46 landed in `f3d4fba` (pushed)
+  and the manifest still declares `C-1 … C-45` with the pre-C-46 hash. 11 of 12 files verify
+  byte-for-byte. Its own rule: whoever edits a flow file owns the bump. **Different repos**
+  (`claude-config` + `claude-skills`), so not fixable from this one.
+- **Orchestration lesson, encoded:** fix the `AT`/`TC` identifier register BEFORE dispatching
+  parallel agents. Two Phase-1 agents in parallel minted colliding ids and broke the behavioural
+  traceability chain.
