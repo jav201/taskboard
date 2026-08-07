@@ -3,7 +3,7 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `5057c6a` (local HEAD; `origin/main` == `caa4bab`, **5 commits behind**)
+**Base ref:** `5057c6a` (local HEAD; `origin/main` == `caa4bab`, **18 commits behind** — the merge carried the branch's 11 into main's history, so the count is not the 5 commits sitting on top)
 · **Last refresh:** 2026-08-07
 **Status:** **767 tests green** on `main`, with `kanban-variants` MERGED
 (`ecde0da`) and a pre-commit privacy gate wired. Nothing pushed — the operator

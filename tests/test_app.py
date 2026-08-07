@@ -1086,24 +1086,87 @@ def test_clean_clipboard_text_strips_controls_and_caps():
     assert len(_clean_clipboard_text("z" * (_MAX_PASTE_CHARS + 50))) == _MAX_PASTE_CHARS
 
 
+def _ps(*args):
+    import subprocess
+    return subprocess.run(["powershell", "-NoProfile", "-Command", *args],
+                          capture_output=True, text=True)
+
+
+def _ps_literal(s: str) -> str:
+    """`s` as a PowerShell single-quoted literal (a `'` is escaped by doubling).
+
+    Needed because `-Command` joins its arguments into ONE command line, so
+    passing a value with spaces as separate argv elements makes PowerShell read
+    the words after the first as POSITIONAL parameters and fail. The original
+    test did exactly that in its `finally`, unchecked -- which means its restore
+    failed on any clipboard content containing a space, i.e. almost always, and
+    it had been leaving its own sample string in the operator's clipboard on
+    every run."""
+    return "'" + s.replace("'", "''") + "'"
+
+
+def _clipboard_now() -> str:
+    """What the clipboard holds according to PowerShell — an oracle INDEPENDENT
+    of the code under test (ctypes/Win32 here, .NET there). `-Raw` keeps
+    multi-line content intact; stdout still appends one newline of its own."""
+    return _ps("Get-Clipboard -Raw").stdout.rstrip("\r\n")
+
+
 def test_win_clipboard_roundtrip():
     """Proves the 64-bit handle fix on real Windows: a string put on the clipboard
-    reads back intact (the truncated-handle bug returned None or garbage)."""
+    reads back intact (the truncated-handle bug returned None or garbage).
+
+    THIS TEST WAS FLAKY AND THE FLAKINESS WAS ITS OWN, NOT THE CODE'S. It wrote
+    to the machine-global clipboard and asserted the exact string came back, so
+    any other process copying anything in that window turned it red — and the
+    red accused `grab_clipboard_text` of the very bug it was written to guard,
+    because an empty clipboard returns None and `assert None == sample` reads
+    exactly like a regression. Measured 2026-08-07: it failed once inside a full
+    suite run and passed 3/3 in isolation.
+
+    Three separate defects, all in the test:
+
+      1. `check=False` on its own `Set-Clipboard`, so a FAILED SETUP was
+         reported as a failed assertion about the app.
+      2. The restore ran `Set-Clipboard -Value ''` whenever the clipboard had
+         been empty — which errors with "Value cannot be null" and, being
+         unchecked too, silently left the sample string in the operator's
+         clipboard. `$null | Set-Clipboard` is the form that empties it;
+         `Clear-Clipboard` does not exist in Windows PowerShell 5.1.
+      3. `prior` came from `Get-Clipboard` STDOUT, so restoring appended a
+         newline to whatever the operator had copied.
+
+    The race is closed by ORDER, not by sleeping: read with our code FIRST, then
+    ask the oracle. If the oracle still sees the sample after our read, nothing
+    moved during it. If it does not, the clipboard was contended and the attempt
+    is retried rather than blamed on the app. Sustained contention fails loudly
+    and says so, which is a different sentence from "the roundtrip is broken."
+    """
     import sys
-    import subprocess
     if sys.platform != "win32":
         pytest.skip("windows clipboard path only")
-    # save the user's clipboard and restore it afterward (don't clobber it)
-    prior = subprocess.run(["powershell", "-NoProfile", "-Command", "Get-Clipboard"],
-                           capture_output=True, text=True).stdout
+    prior = _clipboard_now()
+    sample = "roundtrip 123 ABC taskboard"
     try:
-        sample = "roundtrip 123 ABC taskboard"
-        subprocess.run(["powershell", "-NoProfile", "-Command", f"Set-Clipboard -Value '{sample}'"],
-                       check=False)
-        assert models.grab_clipboard_text() == sample
+        for _ in range(5):
+            setup = _ps(f"Set-Clipboard -Value {_ps_literal(sample)}")
+            assert setup.returncode == 0, (
+                "SETUP failed — this is the environment, not the code under "
+                f"test: {setup.stderr.strip()!r}")
+            ours = models.grab_clipboard_text()          # our reader first...
+            if _clipboard_now() != sample:               # ...then confirm it held
+                continue
+            assert ours == sample, (
+                "the clipboard held the sample and grab_clipboard_text did not "
+                f"return it: {ours!r} — this IS the handle bug")
+            return
+        pytest.fail("another process held the clipboard on all 5 attempts; "
+                    "grab_clipboard_text was never given a stable value to read")
     finally:
-        subprocess.run(["powershell", "-NoProfile", "-Command", "Set-Clipboard", "-Value", prior],
-                       check=False)
+        if prior:
+            _ps(f"Set-Clipboard -Value {_ps_literal(prior)}")
+        else:
+            _ps("$null | Set-Clipboard")
 
 
 # ---- project palette (8 colours, after the ration) ----------------------- #
