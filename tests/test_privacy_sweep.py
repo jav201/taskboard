@@ -92,11 +92,18 @@ def test_a_clean_tree_reports_nothing(board, tmp_path):
 
 
 def test_an_ordinary_word_from_a_real_name_is_not_a_leak(board, tmp_path):
-    """`Training` and `Homelab` appear inside private names, but on their own
-    they identify nothing. Flagging them would drown the real findings and
-    train the reader to ignore the report -- which is how a sweep stops being
-    read at all. This is the cost side of MIN_PREFIX and it is tested."""
-    f = write(tmp_path, "ok.md", "Training runs nightly on the Homelab GPU box")
+    """`Telemetry` (9 chars) opens a name in this board, but on its own it
+    identifies nothing. Flagging it would drown the real findings and train the
+    reader to ignore the report -- which is how a sweep stops being read at
+    all. This is the cost side of MIN_PREFIX and it is tested.
+
+    THE WORD MUST COME FROM THE FIXTURE OR THIS PROVES NOTHING. An earlier
+    version named words left over from a previous fixture; they matched nothing
+    because they were absent, so the test passed while asserting only that
+    unrelated text is not flagged. `MIN_PREFIX = 3` reddens this version."""
+    assert any(s.startswith("Telemetry") for s in board_strings(board))
+    assert len("Telemetry") < MIN_PREFIX, "the word must sit BELOW the floor"
+    f = write(tmp_path, "ok.md", "Telemetry runs nightly on the GPU box here")
     assert sweep(board, [f]) == {}
 
 
