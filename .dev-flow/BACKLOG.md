@@ -508,7 +508,23 @@ Full account in `.dev-flow/05-postmortem.md`.
 - **O-3: no share cap.** ⚠ **Ruled on an understated number** — the operator was told 87 % of the
   panel; the band is `(prof+2)/h`, so it is **90 % at h=60 and 95 % at h=120**. The ruling's logic
   (the panel has only two sinks for surplus) is unaffected, but the next batch must re-present it.
-- **O-4 never ruled** — how the legend learns the disclosure row was drawn.
+- **O-3 RULED 2026-08-06: no share cap, confirmed after the correction.** The operator was
+  re-presented the corrected figures — the band is `(prof+2)/h`, so **90 % at h=60 and 95 % at
+  h=80**, not the 87 % he first ruled on — *and* the finding that this share is **already shipped
+  behaviour on HEAD** (a calm board's bench is 93.3 % at h=60 today, driven by how many active
+  lanes exist, not by `wrows`). He kept the ruling. Rationale on the record: the panel has only two
+  sinks for surplus, the bench stops informing past ~4 rows (distinct column heights saturate at
+  `prof = 3–4` and are unchanged through 52 while lit dots grow 16×), and the measured alternative
+  `(2·room)//3` buys a 58–64 % bench for **51 blank rows over 24 renders** — retiring the shipped
+  "never pads" law to install another.
+- **O-4 RULED 2026-08-06: the view reports what it drew.** `render_swimlanes` returns what it
+  actually drew through an out-parameter of the same kind as `line_map`, and `legend_entries` reads
+  that answer. Costs four signature changes; the 8 existing call sites keep compiling on a `None`
+  default. Both alternatives rejected on the record: recomputing payability inside `legend_entries`
+  gives **two answers to one question** — the failure `swimlane_plan`'s own docstring names — and
+  weakening the entry to *reachability* shows it when nothing is drawn. Note the gate that does NOT
+  work: `selected_id is not None` is near-always true, because `App._select_first` runs at the top
+  of every `refresh_view`.
 
 ### Findings that outlived the batch
 
