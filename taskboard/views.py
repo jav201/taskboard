@@ -932,9 +932,17 @@ def _lane_label(lane: LaneFacts, label_w: int) -> str:
             + c(STATUS_MARK.get(lane.status, " "), "dim") + " ")
 
 
-def _scale_row(geo: FieldGeo, inner: int) -> str:
-    """The axis says what it measures — without it the field is a stripe.
-    Exactly `inner` cells."""
+def _scale_cells(geo: FieldGeo,
+                 months: dict[int, str] | None = None) -> tuple[list[str], set[int]]:
+    """The axis body as plain cells, plus the columns carrying a month name.
+
+    ONE ROW, TWO SCALES. The day figures answer "how far does this window
+    reach?" and the month names answer "reach until WHEN?" — the operator asked
+    for the second and the row already carried the first. The day figures are the
+    anchors and keep their cells; a month name that cannot stand clear of them
+    (with a blank either side) is dropped WHOLE, which is exactly the rule the
+    day labels themselves already follow. A half-printed month is a wrong date,
+    not a partial one."""
     span = geo.field_w
     body = [" "] * span
     left, right = f"-{geo.today_dc}d", f"+{geo.dot_w - 1 - geo.today_dc}d"
@@ -956,8 +964,45 @@ def _scale_row(geo: FieldGeo, inner: int) -> str:
     elif len(left) + len(right) + 1 <= span:
         place(left, 0)
         place(right, span - len(right))
-    return (" " * geo.label_w + c("".join(body), "dim")
-            + " " * max(0, inner - geo.label_w - span))
+
+    month_cols: set[int] = set()
+    for at in sorted(months or {}):
+        name = months[at]
+        if at < 0 or at + len(name) > span:
+            continue
+        if any(body[at + i] != " " for i in range(-1, len(name) + 1)
+               if 0 <= at + i < span):
+            continue
+        place(name, at)
+        month_cols.update(range(at, at + len(name)))
+    return body, month_cols
+
+
+def _tone_runs(body: list[str], month_cols: set[int]) -> str:
+    """The two scales in two tones, coalesced into runs.
+
+    The months take `mut` and the day figures keep `dim`: the calendar is the
+    coarse gauge a reader lands on first, the day offsets are the fine print
+    under it. Runs are coalesced here rather than per cell so the second tone
+    costs a handful of extra spans, not one per column."""
+    out, i, n = [], 0, len(body)
+    while i < n:
+        j, is_month = i, i in month_cols
+        while j < n and (j in month_cols) == is_month:
+            j += 1
+        out.append(c("".join(body[i:j]), "mut" if is_month else "dim"))
+        i = j
+    return "".join(out)
+
+
+def _scale_row(geo: FieldGeo, inner: int,
+               months: dict[int, str] | None = None) -> str:
+    """The axis says what it measures — without it the field is a stripe.
+    Exactly `inner` cells. With no `months` this is byte-identical to what the
+    views that carry no calendar have always drawn."""
+    body, month_cols = _scale_cells(geo, months)
+    return (" " * geo.label_w + _tone_runs(body, month_cols)
+            + " " * max(0, inner - geo.label_w - geo.field_w))
 
 
 def wave_edge(lane: LaneFacts, geo: FieldGeo, today: date) -> int:
@@ -1327,11 +1372,20 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
     return to_text(lines, height, w, pinned=1)
 
 
-def _scale_with_note(geo: FieldGeo, inner: int, note: str) -> str:
+def _scale_with_note(geo: FieldGeo, inner: int, note: str,
+                     months: dict[int, str] | None = None) -> str:
     """The axis, plus what the height could not show. A view that drops rows in
-    silence is lying about how much work there is."""
-    base = set_cell_size(_strip(_scale_row(geo, inner)), max(0, inner - vis(note) - 1))
-    return c(base, "dim") + " " * max(0, inner - vis(base) - vis(note)) + c(note, "mut")
+    silence is lying about how much work there is.
+
+    The month tone survives the truncation: the mask is by column, so cutting the
+    tail drops trailing columns without recolouring what is left."""
+    body, month_cols = _scale_cells(geo, months)
+    keep = max(0, inner - vis(note) - 1)
+    full = ([" "] * geo.label_w + body
+            + [" "] * max(0, inner - geo.label_w - geo.field_w))
+    full = (full + [" "] * keep)[:keep]
+    base = _tone_runs(full, {i + geo.label_w for i in month_cols})
+    return base + " " * max(0, inner - keep - vis(note)) + c(note, "mut")
 
 
 # ---------------------------------------------------------------------------
@@ -1510,10 +1564,38 @@ BAR_TODO = "⢕"     # 4/8 dots — the remaining share; same family, same heigh
 #
 # `FIELD_HALF` keeps the half-day precision the braille caps carried: a bar that
 # ends mid-cell still says so.
-FIELD_REACH = "█"     # a project's span            (was ⣿)
+# `FIELD_REACH` was `█`, and a full block is what the operator saw as "bloques muy
+# grandes": a long project span drew as an unbroken slab that shouted over every
+# task bar under it and left no room for the guide to show through. The approved
+# prototype (`_prototypes/proto.py:345`) draws the project's reach as a THIN RULE
+# in the project's own hue. The three-weight hierarchy is intact — reach still
+# outranks progress outranks task — the top weight just stopped shouting, and a
+# rule lets the week guide read THROUGH the span instead of being buried by it.
+FIELD_REACH = "━"     # a project's span            (was ⣿, then █)
 FIELD_PROGRESS = "▓"  # how far the work actually got (was ⣤)
 FIELD_TASK = "▒"      # a task's reach              (was ⣀)
 FIELD_HALF = "▌"      # ends mid-cell               (was ⡄)
+
+# THE WEEK GUIDE: the thing the operator said was missing — "no hay gauges de
+# semana y mes", a bar measured against nothing.
+#
+# The prototype rules weeks with `│`. Copying that glyph literally is MEASURED to
+# be wrong here: `│` is in the census FRAME set (`tests/test_gantt.py:192`), the
+# gantt's chrome is 0.0 % today because the frame was deliberately removed, and
+# ~22 guides x ~25 rows would put it near 17 % against a `< 10 %` law. `┆` is a
+# dashed vertical that is not a frame character, is quieter than the today rule
+# `╎` (which must stay the loudest vertical), and no other view's legend uses it.
+#
+# It is painted in THE LATTICE'S OWN TONE — the glyph changes, the colour does
+# not. That is what keeps it ground rather than data, and it is also why it costs
+# ZERO extra runs: `collapse_runs` coalesces by style, not by character.
+FIELD_WEEK = "┆"      # the Monday column, drawn in the lattice's tone
+
+# The gutter between a title and the first bar cell. The title is allowed to
+# spend empty field (the REV5 #19 ruling) and it spent ALL of it, so a truncated
+# title's `…` sat directly against its own bar. Two cells of the field's own
+# lattice, which is already `·`, are the prototype's dot leaders exactly.
+GUTTER = 2
 
 # The tip that says WHICH PHASE the task is in, in the field's own alphabet.
 # `phase_glyph` keeps encoding phase as a CLIMBING DOT — it is still right for
@@ -1733,10 +1815,38 @@ def _task_reach(task: Task, board: Board, geo: FieldGeo, today: date,
     return cells
 
 
+def gantt_gauge(geo: FieldGeo, today: date) -> tuple[frozenset[int], dict[int, str]]:
+    """THE CALENDAR THE BARS ARE MEASURED AGAINST: which field cells begin a week,
+    and which begin a month (with that month's name).
+
+    One cell is two days, so a Monday and the today boundary can land in the SAME
+    cell. The today rule is full-height by law and outranks everything, so a week
+    that collides with it is dropped rather than drawn — two verticals in one
+    column would read as one thicker rule, which is a third meaning nobody
+    declared."""
+    weeks: set[int] = set()
+    months: dict[int, str] = {}
+    today_cell = geo.today_dc // 2
+    for dc in range(min(geo.dot_w, geo.field_w * 2)):
+        cell = dc // 2
+        d = today + timedelta(days=dc - geo.today_dc)
+        if d.weekday() == 0 and cell != today_cell:
+            weeks.add(cell)
+        if d.day == 1 and cell not in months:
+            months[cell] = d.strftime("%b").upper()
+    return frozenset(weeks), months
+
+
 def _band_markup(cells: list[tuple[str, str]], geo: FieldGeo, phase: int = 0,
-                 lattice: bool = True, offset: int = 0) -> str:
+                 lattice: bool = True, offset: int = 0,
+                 weeks: frozenset[int] = frozenset()) -> str:
     """Cells to markup, over the field's own lattice — ash behind today, dim
-    ahead — with the today rule where nothing else is drawn."""
+    ahead — with the today rule where nothing else is drawn.
+
+    `weeks` rules the calendar THROUGH the ground: a week guide replaces the
+    lattice dot in its own cell and wears the lattice's tone, so it never
+    outranks a datum and never covers one — anything drawn takes the cell first.
+    Empty by default, so the views that do not carry a calendar are unchanged."""
     out = []
     for j, (glyph, tone) in enumerate(cells):
         i = j + offset
@@ -1745,7 +1855,8 @@ def _band_markup(cells: list[tuple[str, str]], geo: FieldGeo, phase: int = 0,
             if i == geo.today_dc // 2:
                 out.append(c(RULE_PHASES[phase % len(RULE_PHASES)], "accent"))
             elif lattice:
-                out.append(c(LATTICE, "ash" if past else "dim"))
+                out.append(c(FIELD_WEEK if i in weeks else LATTICE,
+                             "ash" if past else "dim"))
             else:
                 out.append(" ")
         else:
@@ -1791,11 +1902,14 @@ def render_gantt(board, show_archived, selected_id, today=None,
              else c("nothing past due", "dim"))
     lines = [header(c("◆ GANTT", "accent", bold=True), right, w)]
 
+    weeks, months = gantt_gauge(geo, today)
+
     def band_row(prefix: str, cells: list[tuple[str, str]], figures: str,
                  offset: int = 0) -> str:
         # label + field + ONE gap + figures == inner, so the figures stay flush
         # right; without the gap `_pad` appended it and the meter drifted left
-        return _pad(prefix + _band_markup(cells, geo, 0, offset=offset)
+        return _pad(prefix + _band_markup(cells, geo, 0, offset=offset,
+                                          weeks=weeks)
                     + " " + figures, inner)
 
     archived_done = sum(1 for t in board.visible_tasks(True)
@@ -1805,8 +1919,14 @@ def render_gantt(board, show_archived, selected_id, today=None,
         own = gantt_tasks(board, tasks, p.id)
         prog = board.project_progress(p.id, show_archived)
         span, band = _span_bands(p, geo, today, p.color, prog)
-        label = c("▎ ", p.color) + c(escape(fit(clip(p.name, geo.label_w - 2),
-                                                geo.label_w - 2)), p.color, bold=True)
+        # the project row has no `over` to borrow from — its label is already
+        # exactly `label_w` cells — so its gutter comes out of the name's own
+        # clip. `fit` still pads to `label_w - 2`, so the prefix width is
+        # unchanged and the last GUTTER cells are blank by construction.
+        label = c("▎ ", p.color) + c(escape(fit(clip(p.name,
+                                                     geo.label_w - 2 - GUTTER),
+                                                geo.label_w - 2)),
+                                     p.color, bold=True)
         pct = f"{int(round(100 * prog))}%"
         pct_w = max(0, geo.figs_w - METER_W)
         pct = pct if pct_w >= len(pct) else ""      # it drops whole, never "…"
@@ -1830,8 +1950,17 @@ def render_gantt(board, show_archived, selected_id, today=None,
                      else c("▏ ", "dim") if done else c("▎ ", p.color))
             # the title stops at the today rule as well as at its own reach:
             # the rule is full-height by law, and a title that crossed it would
-            # break the one column every row shares
-            over = max(0, min(_reach_start(t, geo, today), geo.today_dc // 2))
+            # break the one column every row shares.
+            #
+            # `- GUTTER` is the fix for the collision the operator reported. The
+            # title used to spend the empty field right up to the first bar cell,
+            # so a truncated title's `…` sat flush against its own reach:
+            # `Telemetry_Ingestion_Name…▬▒▒▅`. Giving the cells back to the field
+            # costs nothing in width (see `band_row`: prefix grows by `over` and
+            # the band shrinks by `over`, for any `over`) and the field already
+            # paints them as `·` — the prototype's dot leaders, for free.
+            over = max(0, min(_reach_start(t, geo, today),
+                              geo.today_dc // 2) - GUTTER)
             tw = geo.label_w - 3 + over
             title = title_markup(t, tw, sel)
             reach = reach[over:]
@@ -1851,12 +1980,14 @@ def render_gantt(board, show_archived, selected_id, today=None,
     if loose:
         rows.append((_pad(c("▎ ", "dim")
                           + c(escape(fit("Inbox", geo.label_w - 2)), "dim", bold=True)
-                          + _band_markup([(" ", "dim")] * geo.field_w, geo, 0),
+                          + _band_markup([(" ", "dim")] * geo.field_w, geo, 0,
+                                         weeks=weeks),
                           inner), None))
         for t in (sort_by_due([t for t in loose if not board.is_done(t)])
                   + sort_by_due([t for t in loose if board.is_done(t)])):
             done = board.is_done(t)
-            over = max(0, min(_reach_start(t, geo, today), geo.today_dc // 2))
+            over = max(0, min(_reach_start(t, geo, today),
+                              geo.today_dc // 2) - GUTTER)
             reach = _task_reach(t, board, geo, today, "dim", tick)[over:]
             due = parse_iso(t.due_date)
             # archived work is spent, so its meter is the spent form: nothing is
@@ -1890,8 +2021,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
     note = "  ".join(x for x in (
         f"+{shed} not shown" if shed else "",
         f"{archived_done} done archived" if archived_done else "") if x)
-    lines.append(line(_pad(_scale_with_note(geo, inner, note) if note
-                           else _scale_row(geo, inner), inner)))
+    lines.append(line(_pad(_scale_with_note(geo, inner, note, months) if note
+                           else _scale_row(geo, inner, months), inner)))
     lines.append(bottom(None, w))
     return to_text(lines, height, w, pinned=1)
 
@@ -2316,6 +2447,26 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         if f["project_due"]:
             out.append((c("◆", hue), "the project's own due date"))
         out.append((c(RULE, "accent"), "today"))
+        # THE GAUGE. A bar measured against nothing is what the operator called
+        # disorder, so the legend has to name what it is measured against.
+        #
+        # Both entries are derived from the SAME functions the view draws with,
+        # at this exact size, so a ghost mark is impossible by construction
+        # rather than by a promise: if the geometry stops placing week guides or
+        # drops every month name, the entry disappears with it. A hard-coded
+        # `"AUG"` would also have passed the ghost test — on the `G` and the `A`
+        # in the header's own `◆ GANTT` — which is a check that cannot fail.
+        ggeo = gantt_geometry(_clamp_width(width), height or 24)
+        gweeks, gmonths = gantt_gauge(ggeo, today)
+        if gweeks:
+            out.append((c(LATTICE + FIELD_WEEK + LATTICE, "dim"),
+                        "the week guide: every dashed rule is a monday"))
+        drawn = _scale_cells(ggeo, gmonths)[1]
+        if drawn:
+            first = min(drawn)
+            out.append((c("".join(_scale_cells(ggeo, gmonths)[0]
+                                  [first:first + 3]), "mut"),
+                        "the month, on the axis under the field"))
         if f["tasks"]:
             out.append((c(FIELD_TASK * 2, hue) + c(FIELD_PHASE_TIP[1], hue),
                         "a task's reach, tipped by its phase"))

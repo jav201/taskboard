@@ -3,10 +3,11 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `3b0f011` (local HEAD; `origin/main` = `6b7c4c3`) · **Last refresh:** 2026-08-06
-**Status:** 725 tests green. Nine commits landed on 2026-08-03 — a render-cost
-pass, a cell-width pass, the emoji picker and three layout defects — recorded in
-"From the 2026-08-03 session" below.
+**Base ref:** `7de3ad6` (local HEAD == `origin/main`, verified by `git rev-parse`)
+· **Last refresh:** 2026-08-07
+**Status:** 730 tests green (725 + 5 from the gantt gauge batch). The gantt
+legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed**
+— Javier pushes and merges.
 
 > **The header sat at `eec625b` / 2026-07-31 for a whole day of shipping.** The
 > close step that owns this line did not run when batch-02 closed, which is the
@@ -16,6 +17,18 @@ pass, a cell-width pass, the emoji picker and three layout defects — recorded 
 > would have reported an empty queue that looked like "nothing pending".
 
 ## Shipped
+
+- **DONE** · `2026-08-06-fastflow-04` — **the gantt gets its gauge.** The three
+  parts of the approved prototype that never shipped when its texture did
+  (`81dcb66`): a 2-cell `GUTTER` so a truncated title stops touching its own bar
+  (measured 0 cells of separation on 5 of 5 long-title rows at 104x30 / 102x16 /
+  96x30 / 120x40, now >= 2 at all four); a **week guide** `┆` at every monday
+  column and **month names** on the bottom axis beside the day figures; and
+  `FIELD_REACH` `█` -> `━`, so a project span is a rule instead of a slab.
+  Occupancy improved (`dead` 23.1 -> 21.5 %, `marked` 76.9 -> 78.5 %, chrome
+  still 0.0); span economy 135 -> 155 runs against a 594.7 ceiling. 5 new tests,
+  **730 green**, 9 mutations each verified to redden their predicate.
+  (local commit — **not pushed**; see `.fast-dev-flow/spec.md`)
 
 - **DONE** · Prism increment 1 — the colour ration: four colliding project hues
   retired (amber 0.0 / cyan 48.3 / orange 51.0 / rose 63.8 from a reserved hue),
@@ -323,6 +336,35 @@ pass, a cell-width pass, the emoji picker and three layout defects — recorded 
 - **`sitting()` reports the lead only.** Every other lane's momentum is computed
   (`days_in_phase`) but not shown; a drawn stagnation channel remains open, and
   it now has data to draw from.
+
+## Open — raised by the gantt gauge batch (`2026-08-06-fastflow-04`)
+
+- **The week guide is dense, and its rhythm is irregular.** One cell is two days,
+  so a week is 3.5 cells and the guides alternate 3 and 4 cells apart:
+  `·┆···┆··┆···┆··┆`. It reads closer to texture than to a ruled gauge. It is the
+  approved prototype's own density and it SHIPPED as approved — but if Javier
+  reads it as noise, the cheap levers are a guide every fortnight, or guides only
+  at month boundaries. **Decide with the render in front of you, not from this
+  line.**
+- **`AUG` is dropped from the axis whenever the month starts within ~3 cells of
+  today.** The day figures are the anchors and a month that cannot stand clear is
+  dropped whole (a half-printed month is a wrong date). At `TODAY = 2026-07-30`
+  the axis reads `-48d  JUL  today  SEP  OCT  NOV +111d` — the month immediately
+  ahead is the one you cannot see. Options if it matters: let the month win over
+  `today` (it has the today RULE in the field already), or shorten the day
+  figures.
+- **`NOV +111d` sits with a single space between them** at 104 wide. The
+  one-blank-either-side rule held, but it is tight; consider two.
+- **`tests/test_gantt.py:121` is dead code** — `set(seg) <= {"⣿","⣤","⡄","⣀"," "}`
+  tests the braille alphabet the field stopped using two batches ago, so the loop
+  body never executes. Found while mapping the laws; NOT fixed here (out of
+  scope). Same class: `tests/test_app.py:1542` (`assert "⣤" not in …`, trivially
+  true).
+- **`tests/test_app.py::test_win_clipboard_roundtrip` is flaky, not broken.** It
+  failed on the first baseline run of this session (`Set-Clipboard` with no
+  clipboard in a non-interactive shell) and passed on every run after. Worth a
+  skip-marker when there is no clipboard, so a baseline count stops depending on
+  which shell ran it.
 
 ## Housekeeping
 

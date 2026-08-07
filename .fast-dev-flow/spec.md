@@ -1,316 +1,344 @@
-# Quick Spec — taskboard · lanes row cost model
+# Quick Spec — taskboard · the gantt gets its gauge
 
 | Field | Value |
 |-------|-------|
-| Batch id | `2026-08-06-fastflow-03` |
-| Base ref | `fa821ae` (**local HEAD; NOT pushed** — `origin/main` = `f237cb3`, verified by `git ls-remote`) |
-| Flow revision | `~/.claude/docs/FLOW-VERSION.md` declares `C-1 … C-45`; **C-46 landed unbumped** in the `claude-skills`/`claude-config` repos. Recorded, not chased — different repos. |
-| Predecessor | `.dev-flow/2026-08-03-batch-03` — CLOSED AT PHASE 2, no code |
+| Batch id | `2026-08-06-fastflow-04` |
+| Base ref | `7de3ad6` — **verified `HEAD == origin/main`** (`git rev-parse HEAD origin/main` → same SHA, after `git fetch --all`) |
+| Predecessor | `.fast-dev-flow/archive/2026-08-06-fastflow-03-spec.md` — CLOSED 2026-08-06 (lanes row cost model, no visual change) |
+| Flow revision | `~/.claude/docs/FLOW-VERSION.md` declares `C-1 … C-45`; C-46 landed unbumped in `claude-skills`/`claude-config` (carried from batch-03, different repos, not chased here) |
 | Language | English |
+| Phase | **C — implemented, validated, committed locally. NOT pushed.** |
 
 ---
 
 ## 1. Objective
 
-Establish, execute and pin **one** row cost model for the lanes view — reconciling `swimlane_plan`'s
-`h - 2 - (2 if active else 0)` with `lead_band`'s `prof + 2` — so that no later batch measures against
-its own. **No visual change.**
+The gantt shows bars measured against **nothing**. Javier:
+
+> *"No estoy viendo en GANTT la implementación que decía el prototipo. Los bloques
+> siguen siendo muy grandes y se empalman con el texto."*
+> …and, from the start: *"atraen la vista a barras sin sentido, no hay gauges de
+> semana y mes"*.
+
+Only the prototype's **texture** shipped (`81dcb66`) — the heavy half. The three
+parts that made `_prototypes/proto.py::hybrid` legible never did. Bring them over:
+a real gutter, a week/month gauge, and a lighter project reach.
+
+**Non-goal:** re-partitioning `label_w`/`field_w`/`figs_w`. See §5 — the change is
+deliberately width-neutral.
 
 ---
 
-## 2. User stories
+## 2. What the prototype actually does (read, then rendered)
 
-- As the **operator**, I want the lanes view's row arithmetic stated once and guarded by a test, so
-  that the next design batch spends rows instead of re-deriving what a row costs.
-- As a **later agent**, I want the model's regime of validity written down, so that I do not report a
-  measurement taken outside that regime as a defect (or a defect as normal).
-
----
-
-## 3. THE COST MODEL — executed, not argued
-
-All figures below come from `_probe_identity.py` / `_probe_cost.py`: **160 renders**, 5 boards
-× 4 widths (72/96/120/200) × 8 heights (10/14/18/24/30/45/60/80), fixed `TODAY = 2026-07-30`,
-boards built in-process (never reads a real board).
-
-### 3.1 The two `2`s are different, and they compose
+`_prototypes/proto.py::hybrid(screen="gantt")`, lines 322-380, rendered to text
+in-session (the `file://` URL is blocked for the browser tool, so the prototype's
+own `Grid` was dumped directly — same pixels, no HTML layer):
 
 ```
-PANEL (h rows)                          BODY
-  1   header                              lead    = prof + 2      [only when active]
-  B   body rows                           stack_i = wrows + min(titles, nameable_i)
-  A   absence line   A ∈ {0,1}            rest    = n_rest
-  1   axis / scale row
-  0   close  (bottom() returns "" — frameless, views.py:470-472)
-
-ALLOCATOR CHARGE   need = prof + Σ(wrows + min(titles, o)) + n_rest
-ROOM               room = h - 2 - 2·[active]     (views.py:2127)
+|  PROJECT / TASK                            AUG         SEP         OCT         NOV         DUE         |
+|  ATLAS PLATFORM                        ━━━━━━━━━━━━━━━━  │  │  │ │  │  │  │ │  │  │     50%            |
+|    Migrate the ingest workers · · · ·    │ ─  │  │  │ │  │  │  │ │  │  │  │ │  │  │               ▲3d  |
+|  ▎ Retire the v1 scheduler  · · · · ·    │ │──│  │  │ │  │  │  │ │  │  │  │ │  │  │                2d  |
 ```
 
-- the `h - 2` is the **panel's own chrome**: header + axis (the close is empty).
-- the `- 2·[active]` is **`lead_band`'s head + tail** — the two rows `prof` does not count.
-
-### 3.2 The five invariants, and the regime they hold in
-
-| id | invariant | in regime (n=124) | all renders (n=160) |
-|----|-----------|-------------------|---------------------|
-| I1 | `BODY == CHARGE + 2·[active]` | **124/124** | 128/160 |
-| I2 | `CHARGE <= ROOM` | **124/124** | 156/160 |
-| I3 | `BODY <= h - 2` | **124/124** | 156/160 |
-| I5 | `0 blank rows` | **124/124** | 128/160 |
-| I6 | `lead == prof + 2` | **124/124** | 160/160 |
-| I7 | `2 + BODY + ABSENCE == h` | **124/124** | 124/160 |
-
-**Regime = (a) the board has ≥1 active lane, and (b) the allocator found a feasible allocation.**
-`lead_band` arity re-measured at `prof = 3, 5, 8, 12, 19, 33 → 5, 7, 10, 14, 21, 35`.
-
-Also executed: `ABSENCE == 1 ⟺ BODY <= h-3 ⟺ slack == 1` — **124/124 agreement**, 48 of 124.
-Rung four's `- 1` (`views.py:772`) is exactly what reserves that row.
-
-### 3.3 The two off-regimes — both real, both previously unmeasured
-
-**OFF-REGIME 1 — no active lane (32/160 renders).** Every project resting.
-`prof` is **charged but never drawn** (`allrest` @ h=14: `room=12 charge=11 prof=9 CHARGED, lead=0
-DRAWN, body=2`), and **the view pads**: 5 / 9 / 13 blank rows at h = 10 / 14 / 18. Rendered panel
-verified line-by-line — rows 4-12 blank, axis correctly pinned at row 13.
-
-> ⚠ **This falsifies a claim on disk.** `tests/test_vertical_fill.py:91` states *"the lanes never pad
-> at all — their allocator spends the whole height it is given, so a pad-shaped assertion would be
-> vacuous exactly there"*. That is the stated justification for the shape of a shipped test, and it
-> is **false on an all-resting board**. The handoff's "Lanes NEVER pads, 0 blank rows at h=30/45/60"
-> was measured only on boards with an active lane.
-
-**OFF-REGIME 2 — allocator infeasible (4/160).** `huge` board @ h=10: no `(titles, prof, wrows)`
-satisfies `need <= room`, so `allocate` returns its floor `(0, floor, 1)`, `charge=10 > room=6`, and
-the renderer **sheds** blocks and prints `+N not shown`. Designed fallback; works.
-
-### 3.4 Verdict
-
-**There is no defect in the cost model.** `views.py:2127`'s subtraction and `lead_band`'s `prof + 2`
-are the two halves of one correct identity; the closed batch's headline claim (#1, "the cost model
-undercharges `prof`") is confirmed **FALSE** by execution, and so is its inverse. What is missing is
-not a fix — it is a **written, guarded statement** of the model and of its regime.
-
----
-
-## 4. Acceptance criteria (observable)
-
-- [ ] **AC-1** — When the lanes view is rendered on a board with ≥1 active lane at a size where the
-      allocator is feasible, `len(lead_band(...)) == prof + 2`, and the sum of the drawn blocks
-      equals `allocate`'s charge plus 2.
-- [ ] **AC-2** — When the same, the drawn body is `<= h - 2` and the rendered panel contains **0**
-      blank rows.
-- [ ] **AC-3** — When the same, `2 + body + absence == h` exactly.
-- [ ] **AC-4** — When every project on the board is resting, the view renders with the axis last and
-      **pads** — and the test states this as the known off-regime rather than asserting it away.
-- [ ] **AC-5** — When `allocate` cannot fit any allocation, the render sheds and says `+N not shown`.
-- [ ] **AC-6** — `taskboard/views.py` and `tests/test_vertical_fill.py` carry no prose asserting the
-      lanes never pad, without its regime.
-- [ ] **AC-7** — The whole existing suite stays green (**baseline: 707 passed**, executed at `fa821ae`).
-
----
-
-## 5. C-40 — the mutation that reddens each criterion (EXECUTED)
-
-Applied by monkeypatch; nothing on disk edited; baseline verified restored after each.
-
-| mutation | what it simulates | reddens |
+| # | Prototype mechanism | Line |
 |---|---|---|
-| **M1** `room = h-2` | the call site forgets to pay for the lead band | I3 (124), I5 (64), I7 (124) |
-| **M2** `room = h-6` | the call site pays for the lead band twice | I5 (112), I7 (112) |
-| **M3** `lead_band → prof+3` | the writer grows a row, charge unchanged | I1 (124), I3 (76), I5 (124), I6 (124), I7 (76) |
-| **M4** rung four drops its `- 1` | no row reserved for the absence line | I3 (76), I5 (56), I7 (76) |
-| **M5** `lead_band → prof+1` | the writer sheds a row, charge unchanged | I1 (124), I5 (48), I6 (124), I7 (48) |
-
-**Every invariant is reddened by ≥1 mutation, and every mutation is caught by ≥1 invariant.**
-
-> **A vacuity trap was found and must be encoded in the test.** Filtering the sample on
-> `feasible = charge <= room` — a quantity *computed from the code under test* — makes **M1 and M4
-> pass vacuously** (M1 leaves `n=0` in-sample; M4 leaves `n=48`). The exclusion of off-regime renders
-> **must be static** (named fixture + height), never derived from the quantity being asserted.
-> Measured both ways; the circular filter is what hid two of five mutations.
+| 1 | dot leaders `"·" if x % 2 else " "` from title end to `FIELD_X-2` — the field starts at a FIXED column | `proto.py:359-360` |
+| 2 | week guide `│` at every Monday column, drawn **before** the bar so the bar overwrites it | `proto.py:337-339` (project) · `353-355` (task) |
+| 3 | month label `%b`.upper() at each month-start column, on the header row | `proto.py:327-330` |
+| 4 | project reach `━` **in the project hue, low weight** — not a slab | `proto.py:345` |
 
 ---
 
-## 6. Premise table (C-43)
+## 3. Acceptance criteria (observable)
+
+| id | criterion |
+|---|---|
+| **AC-1** | When a task's title is long enough to be truncated and its reach starts left of today, the rendered row shall place **at least 2 cells that are not title glyphs** between the last title glyph and the first bar glyph. (Today: 0 — measured, §4 P2'.) |
+| **AC-2** | When a project's name is long enough to be truncated, the same ≥2-cell separation shall hold between the name and the first field glyph. (Today: 0 — `▎ Data Warehou…◂████`, §4 P0.) |
+| **AC-3** | When the window contains a Monday, the field shall draw a week guide in that Monday's cell **on every body row**, in the lattice's own tone, and it shall never occupy the today column. |
+| **AC-4** | When the window contains a 1st-of-month, a header row directly under `◆ GANTT` shall carry that month's 3-letter name starting at that month's cell. |
+| **AC-5** | `FIELD_REACH` shall render as a thin rule, not a full block; `FIELD_PROGRESS`/`FIELD_TASK` are unchanged, so the three-weight hierarchy survives with its top weight lowered. |
+| **AC-6** | Every rendered row shall remain **exactly** the requested width in cells (`rich.cells.cell_len`) at every width/height the suite sweeps. |
+| **AC-7** | The gantt legend shall describe the week guide and the month label, and shall describe no mark the view stopped drawing. |
+
+---
+
+## 4. Premise table (C-43) — every verdict from an EXECUTED probe
+
+Probes: `.fast-dev-flow/probes/_probe_gantt.py`, `_probe_premises.py`,
+`_probe_collision.py`. All boards built in process from `seed_data()` or
+`Project`/`Task` literals; **none reads `~/.taskboard/board.json`**. `TODAY` frozen
+at 2026-07-30.
 
 | Premise | Tier | Verdict | Executed evidence |
 |---|---|---|---|
-| `views.py:2127` passes `h - 2 - (2 if active else 0)` | premise | ✅ TRUE | source read `views.py:2125-2127` |
-| `lead_band` draws `prof + 2`, constant | premise | ✅ TRUE | re-executed at prof=3,5,8,12,19,**33** → 5,7,10,14,21,35 |
-| `bottom()` returns `""` (frameless) | premise | ✅ TRUE | `views.py:470-472` |
-| `fill_height` never truncates | premise | ✅ TRUE | `views.py:490-491` returns `lines` when `len >= height` |
-| The two `2`s compose to one correct identity | hypothesis | ✅ TRUE | I1/I2/I3 124/124 in regime |
-| "The cost model undercharges `prof`" (batch-03 #1) | hypothesis | ❌ **FALSE** | I1 124/124; charge+2 == body exactly |
-| Lanes NEVER pads (0 blank rows) | axiom (shipped law) | ❌ **FALSE — INCOMPLETE** | all-resting board pads 5/9/13 rows at h=10/14/18; law needs its regime, `tests/test_vertical_fill.py:91` |
-| Occupancy 72.3 / 80.9 / 83.8 % vs 45 % floor | premise | ⬜ **NOT RE-EXECUTED** | inherited from `.dev-flow/01-requirements.md`; not load-bearing for this batch |
-| One extra row costs −0.17 ms | premise | ⬜ **NOT RE-EXECUTED** | inherited; no row is added by this batch |
-| `titles` on the real board = 8 / 6 / 17 | premise | ⬜ **NOT RE-EXECUTED, DELIBERATELY** | reading the operator's real board is non-deterministic and a data leak into artifacts; fixtures used instead |
-| `load_curve` has two callers | premise | ✅ TRUE | `taskboard/views.py:986`, `taskboard/report.py:137` |
-| Base `HEAD == origin/main == fa821ae` | premise | ❌ **FALSE** | `git ls-remote origin main` → `f237cb3`; **`fa821ae` is committed but UNPUSHED** |
-| Bench share is 90 % @ h=60 / 95 % @ h=120 | premise | ⚠ **RESTATED** | see §7 |
-| Working tree clean at start | premise | ✅ TRUE | `git status --short` → only my 3 untracked probe files |
-| Baseline suite green | premise | ✅ TRUE | `707 passed in 40.84s` |
+| Base ref `7de3ad6` == `origin/main`, tree clean | premise | ✅ TRUE | `git fetch --all; git rev-parse HEAD origin/main` → both `7de3ad615c5d…`; `git status --short` → empty |
+| Baseline is "725 passing" | premise | ❌ **FALSE** | `python -m pytest tests/ -q` → **`1 failed, 724 passed`**. The failure is `tests/test_app.py::test_win_clipboard_roundtrip` — `Set-Clipboard` has no clipboard in a non-interactive shell (`MissingArgument,…SetClipboardCommand`). **Pre-existing and environmental**, observed before any edit. Working baseline for this batch = **724 pass / 1 env-fail**. |
+| "The gantt truncation collides with the bar, gutter = 0" | hypothesis | ✅ TRUE | `_probe_collision.py` P2': **5 of 5** long-title rows show `…` directly abutting `▬`/`▒`, at **104x30, 102x16, 96x30 and 120x40**. e.g. `▎  Telemetry_Ingestion_Name…▬▒▒▅······╎`. Requires the reach to start LEFT of today; when it starts right of today the today rule already separates them. |
+| "`gantt_geometry(102,16)` → `label_w=12 · field_w=78 · figs_w=11`" | premise | ✅ TRUE | `_probe_premises.py` P1: `102x16: label_w=12 field_w=78 figs_w=11`. Note `large` needs `w>=88 and h>=26`, so at `104x30` it is instead `label_w=15 field_w=77 figs_w=11`. |
+| "The project reach draws as `█`" | premise | ✅ TRUE | `views.py:1513` `FIELD_REACH = "█"`; rendered: `▎ Legacy Sunset······██████████████████◆` |
+| "Occupancy law is `marked >= 45%`, today 72.3/80.9/83.8" | premise | ❌ **FALSE for the gantt** | Those are `tests/test_occupancy.py`, which renders **`"swimlanes"`** (`test_occupancy.py:93`), not the gantt, and its floors are `calm 29 / typical 46 / extreme 45`. The **gantt's** occupancy law is `tests/test_gantt.py:248` `marked >= 68.0` and `:249` `dead <= 25.0`. **Executed now:** typical(5/21) `marked=76.9 ink=26.7 dead=23.1 chrome=0.0`; extreme(8/44) `marked=76.8 ink=27.3 dead=23.2 chrome=0.0`. |
+| Dead-space headroom on the gantt is comfortable | premise | ❌ **FALSE — it is 1.9 points** | `dead=23.1` against the `<= 25.0` ceiling (`test_gantt.py:249`). Any change that converts lattice into blanks has almost no room. |
+| `test_gantt.py:238` `extreme.ink > typical.ink` has a wide margin | premise | ❌ **FALSE — 0.6 points** | `27.3` vs `26.7`. **This is the tightest law this change touches** (see §7 R1). |
+| `test_gantt.py:164` pins title widths to exactly `(27, 30)` | premise | ✅ TRUE | `_probe_collision.py` P4': `near.count('B')+1 = 27`, `far.count('A')+1 = 30` — reproduced exactly. **This test WILL go red** and must be re-pinned deliberately. |
+| Span-economy has headroom for extra runs | premise | ✅ TRUE | P8, gantt @120x40: `runs before=1740 after=135`, ceiling `before/3 = 580.0`. **x4.30 headroom.** |
+| Week guides never land on the today column | premise | ✅ TRUE | P5 at 96x30, 104x30, 120x40: `week cell collides with today? False` at all three. (Code will still guard — the probe is 3 sizes, not a proof.) |
+| The window always contains month boundaries | premise | ✅ TRUE | P5: 96x30 → 5 months (`JUL AUG SEP OCT NOV`) at cells `[5,21,36,51,67]`; 120x40 → 6. Window is 138-186 days wide. |
+| `━` and `┆` are unused by any other view's legend | premise | ✅ TRUE | P7: agenda swatches are exactly `['●','─','┃']`; `'━' present? False`, `'┆' present? False` for gantt/agenda/swimlanes. So `test_legend.py:169` (`FIELD_REACH not in agenda`) survives `█`→`━`. |
+| Every candidate glyph is exactly 1 cell | premise | ✅ TRUE | `cell_len`: `█ ━ ┆ ┊ · ╎ ─ │ ▒ ▓ ▌` → all `1` |
+| The prototype's week guide `│` is safe to copy literally | hypothesis | ❌ **FALSE** | `│` is in the census FRAME set (`test_gantt.py:194`), guarded by `:258` `chrome < 10.0`, and chrome is **0.0 today** — the frame was deliberately removed. ~22 guides x ~25 rows ≈ 17 % chrome. **Must deviate from the prototype's glyph** — see §6 D1. |
+| `test_row_cost.py` touches the gantt | premise | ❌ FALSE | Zero occurrences of "gantt"; imports are swimlanes-only (`test_row_cost.py:43-44`). Not at risk. |
+| `test_vertical_fill.py` touches the gantt | premise | ✅ TRUE | `PINNED = {"gantt": 1}` (`:34`); asserts exactly 1 non-blank row below the blank pad (`:113`). **A month row must go at the TOP, never the bottom.** |
+| Post-change census / title widths / run counts | hypothesis | ❓ **NOT MEASURED** | Cannot be measured before the code exists. Measured and pasted at the Phase-B gate. |
 
 ---
 
-## 7. The bench-share number, re-presented to the operator (O-3)
+## 5. THE WIDTH ARITHMETIC — where this change works or breaks
 
-The operator ruled **O-3 (no share cap)** having been told the bench occupies **87 %** of the panel.
-The postmortem corrected that to 90 % @ h=60 / 95 % @ h=120 — **and framed it as a consequence of the
-proposed change.** Measurement says otherwise.
+**I re-partition nothing. `gantt_geometry` is not touched.** The cell-width law
+(`tests/test_cells.py:83-86`, `cell_len`, widths 68/96/120) is protected by
+construction rather than by re-measurement.
 
-**On HEAD, today, with no change at all**, the lead's bench on a **calm board (one active lane)**:
+The invariant, executed at 7 sizes (P1) — `label_w + field_w + 1 + figs_w == inner`
+holds at 68x24, 96x24, 96x30, 104x30, 102x16, 120x40, 94x30.
 
-| h | 10 | 14 | 18 | 24 | 30 | 45 | 60 | 80 |
-|---|----|----|----|----|----|----|----|----|
-| share | 70.0 % | 71.4 % | 77.8 % | 83.3 % | 86.7 % | 91.1 % | **93.3 %** | **95.0 %** |
+The gutter does **not** come out of that partition. It comes out of `over`, which is
+not a partition term at all — it is a **loan of already-owned field cells to the
+title** (`views.py:1834-1837`, the REV5 #19 ruling). Per row:
 
-Max share by board shape, HEAD: `calm` **95.0 %** · `typical` **73.8 %** · `huge` **44.4 %** ·
-`busy` **41.2 %**. The driver is **how many active lanes exist**, not the pending change: with one
-active lane there is no stack to compete for surplus, so the bench already absorbs it.
+```
+prefix width = spine(2) + " "(1) + title(label_w - 3 + over)   = label_w + over
+band   width = len(reach[over:])                                = field_w - over
+                                                                  ─────────────
+prefix + band                                                   = label_w + field_w
++ " " + figures                                                 = 1 + figs_w
+                                                                  ─────────────
+total                                                           = inner   ∀ over
+```
 
-**The post-change share is `NOT MEASURED`** — that belongs to the batch that retires `wrows`.
-What is measured is that the 90-95 % band **is already shipped behaviour on a calm board**, so
-O-3's ruling was not made on a number the change would introduce.
+**The total is independent of `over`.** So changing
+
+```python
+over = max(0, min(_reach_start(t, geo, today), geo.today_dc // 2))          # now
+over = max(0, min(_reach_start(t, geo, today), geo.today_dc // 2) - GUTTER) # proposed
+```
+
+moves `GUTTER` cells from the title back into the field, where `_band_markup`
+already paints them as `LATTICE` (`views.py:1748`) — **the dot leaders are free,
+because `LATTICE` is already `"·"` (`views.py:117`), the exact glyph the prototype
+uses.** No new leader code, no width change.
+
+The other two changes are width-neutral for simpler reasons:
+
+- **week guide** — replaces one existing lattice cell with one guide cell inside
+  `_band_markup`. 1 cell → 1 cell (`cell_len` verified).
+- **`FIELD_REACH` `█`→`━`** — 1 cell → 1 cell (verified).
+- **month row** — a new *line*, `_pad(…, inner)` like every other. Costs one row of
+  **vertical** budget (`rows[:h-2]` → `rows[:h-3]`), **zero columns**.
+
+The one place the partition *is* consumed differently: **AC-2**, the project row.
+Its label is already exactly `label_w` cells (`fit(clip(name, label_w-2), label_w-2)`
+after a 2-cell spine), so it has no `over` to borrow from. There the gutter must be
+taken from the **name's own clip**: `clip(name, label_w - 2 - GUTTER)` still padded
+by `fit(…, label_w - 2)`, so the prefix stays exactly `label_w`. Width-neutral;
+the project name loses `GUTTER` characters.
+
+**GUTTER = 2**, matching the prototype (leaders stop at `FIELD_X-2`).
 
 ---
 
-## 8. Non-goals (OUT — do not grow this batch)
+## 6. Proposed change set (Phase B — for approval, NOT implemented)
 
-- **No visual change.** The wave does not move. No disclosure row. `_figures` untouched.
-- No change to `allocate`'s search, its rungs, or the returned tuple's arity.
-- No retirement of `wrows`; no touching `tests/test_spend.py:81 / :238 / :277`.
-- O-4 (how the legend learns of the disclosure row) is not opened.
-- The `FLOW-VERSION.md` C-46 bump — different repos, cannot be done from here.
-- Pushing `fa821ae`, or anything else. **The operator merges and pushes.**
+**One increment, 3 files** (limit is 5).
+
+| # | File | Change |
+|---|---|---|
+| D1 | `taskboard/views.py` | `FIELD_REACH = "━"`; add `FIELD_WEEK = "┆"`; add `GUTTER = 2` |
+| D2 | `taskboard/views.py` | `_band_markup`: where a cell is empty and is not the today column, paint `FIELD_WEEK` instead of `LATTICE` if that cell holds a Monday — **in the lattice's own tone** (`ash` past / `dim` ahead) |
+| D3 | `taskboard/views.py` | `render_gantt`: subtract `GUTTER` from `over` (both task loops); clip the project name by `GUTTER`; add the month-label row; `rows[:h-2]` → `rows[:h-3]` |
+| D4 | `taskboard/views.py` | `legend_entries("gantt")`: add the week-guide and month-label entries (AC-7) |
+| D5 | `tests/test_gantt.py` | re-pin `:164` to the measured post-gutter widths, **keeping** the `>` intent assertion at `:163`; add the AC-1/AC-2 gutter test and the AC-3/AC-4 gauge test |
+| D6 | `tests/test_legend.py` | extend the gantt swatch set if D4 requires it |
+
+### D1 — the deliberate deviation from the prototype, and why
+
+The prototype rules weeks with `│`. **Copying it literally is measured to be wrong
+here**: `│` is a census FRAME character, the gantt's chrome is `0.0 %` today, and
+the design deliberately removed the frame. `┆` (U+2506) is a dashed vertical, is
+not in the frame set, is quieter than the today rule `╎`, and is unused by every
+other view's legend (P7). **Painting it in the lattice's own tone** — glyph changes,
+colour does not — is what protects `test_span_economy.py:125`: run coalescing is by
+style, so a same-tone guide costs **zero** extra runs.
+
+This deviation needs Javier's yes: it is a visual difference from the approved
+prototype, chosen because the prototype's own glyph would violate a law the
+prototype was never measured against.
 
 ---
 
-## 9. Proposed change set (Phase B, ≤5 files — for approval, NOT yet implemented)
+## 7. Risks
 
-| # | file | change | kind |
-|---|------|--------|------|
-| 1 | `tests/test_row_cost.py` **(new)** | the pinning test: I1/I2/I3/I5/I6/I7 over the static fixture×size matrix, plus the two off-regimes asserted as themselves (AC-1…AC-5). Static exclusion only. | test |
-| 2 | `taskboard/views.py` | docstring of `allocate` and `swimlane_plan` gains the model + its regime. **Prose only — zero behaviour change.** | doc |
-| 3 | `tests/test_vertical_fill.py` | line 91's false claim corrected to state the regime (AC-6). Assertions untouched. | doc |
-| 4 | `.dev-flow/BACKLOG.md` | reconcile (Phase C, mandatory) | doc |
+- **R1 — the tightest law is `test_gantt.py:238`, `extreme.ink > typical.ink`,
+  margin 0.6 points (27.3 vs 26.7).** Week guides land only on *empty* field cells,
+  and the typical board has more empty cells than the extreme one, so guides raise
+  typical's ink slightly more than extreme's. This is the single most likely red.
+  **Mitigation:** measured first at the Phase-B gate; if it reddens I stop and report
+  rather than weaken the law.
+- **R2 — `dead <= 25.0` sits at 23.1**, 1.9 points of room. The gutter converts title
+  cells (ink) into lattice (field) — both are "marked", so `dead` should not move —
+  but it is measured, not assumed.
+- **R3 — `test_gantt.py:164` will go red by design.** Re-pinning a hard-coded
+  expectation is exactly how a test quietly stops testing; D5 keeps the intent
+  assertion (`far > near`) alongside the new pin.
+- **R4 — `test_app.py:1557`** requires the today column to hold `RULE` or a `FIELD_*`
+  glyph. The guide must never take that column (AC-3 states it; P5 shows it does not
+  happen at 3 sizes; the code will guard anyway).
+- **R5 — one less body row** at every height. At `h=20` the fixture needs 5 rows and
+  has 17; no boundary is near, but `test_gantt.py:68` (`len(body) >= 5`) is the one
+  to watch.
 
-**Recommendation: implement 1-3 as a single increment.** It is one idea, the only executable
-artifact is #1, and #2/#3 are the prose that #1 makes true.
+---
+
+## 8. C-40 — the mutation that reddens each new predicate
+
+Every acceptance test below gets its mutation **executed** at the Phase-B gate; a
+predicate that survives its mutation is inert and will be rewritten.
+
+| Test for | Mutation that must redden it |
+|---|---|
+| AC-1 gutter (task) | `GUTTER = 0` in `views.py` |
+| AC-2 gutter (project) | drop the `- GUTTER` from the project name's `clip` |
+| AC-3 week guide | `FIELD_WEEK = LATTICE` (guide becomes indistinguishable from ground) |
+| AC-3 not-on-today | remove the today-column guard in `_band_markup` |
+| AC-4 month row | return the header row without the month labels |
+| AC-5 lighter reach | `FIELD_REACH = "█"` |
+| AC-6 cell width | already covered by `test_cells.py`; mutation = `GUTTER = 3` with the project clip left at `label_w - 2` |
+
+---
+
+## 9. Non-goals (OUT — do not grow this batch)
+
+- No change to `gantt_geometry`, `lane_geometry`, or `field_geometry`.
+- No change to the swimlanes, agenda, or kanban views.
+- No change to `FIELD_PROGRESS`, `FIELD_TASK`, `FIELD_HALF`, `FIELD_PHASE_TIP`.
+- No fix for `test_win_clipboard_roundtrip` (pre-existing, environmental).
+- No re-language of the bottom axis row (`-46d today +107d` stays).
 
 ---
 
 ## 10. Open questions for the operator
 
-1. **The all-resting pad (§3.3).** Three options: **(a)** document the regime and let the pad stand
-   — the view genuinely has 2 rows of content, and the axis pins correctly; **(b)** stop charging
-   `prof` when there is no active lane (a real behaviour change, out of this batch's "no visual
-   change" scope); **(c)** log it to the backlog untouched. **I recommend (a) + (c).**
-2. **`fa821ae` is unpushed.** The handoff believed it was on `origin/main`. Push is his call.
-3. **Does the bench-share restatement (§7) change the O-3 ruling?** It should not — the number is
-   pre-existing rather than change-induced — but he ruled on 87 % and is owed the corrected figure.
+1. **`┆` instead of the prototype's `│` for the week guide** (§6 D1) — approve the
+   deviation? The prototype's glyph is measured to break `chrome < 10.0`.
+2. **The month row costs one body row** at every height. Acceptable, or should the
+   months share the existing bottom axis row instead?
+3. **GUTTER = 2.** Prototype-faithful. Bigger reads calmer but costs title
+   characters on every task row.
 
 ---
 
 ## 11. Detected security flags
 
-- [ ] Auth / identity · [ ] Secrets / config · [ ] External integrations · [ ] Sensitive data
-- [ ] Destructive DB · [ ] Input / attack surface · [ ] Network / exposure
+Scanned objective + criteria + change set against the fast-flow pattern list.
 
-**`security_required`: `false`** — the batch adds one test file and edits two docstrings. No auth,
-no secrets, no integration, no new input surface, no persistence change. (Same finding as batch-03,
-re-derived rather than inherited.)
+| Category | Match | Note |
+|---|---|---|
+| Auth / identity | none | — |
+| Secrets / config | none | — |
+| External integrations | none | — |
+| Sensitive data | **`~/.taskboard/board.json`** | Not a flow flag, but the batch's hard rule: no artifact may carry the operator's real board. Every probe here builds its board in process; `_probe_gantt.py` uses `seed_data()` with a temp path that is **never written**. Verified by reading the probes, and no probe calls `Board.load` on the real path. |
+| Destructive DB | none | — |
+| Input / surface | none | — |
+| Network / exposure | none | — |
+
+**`security_required: false`.** No new external action surface; the change is
+pure-render.
 
 ---
 
-## 12. Batch status
+## 12. The operator's rulings on §10 (Phase-A gate, APPROVED)
+
+1. **`┆` instead of `│` — ACCEPTED.** The finding was verified independently
+   against `tests/test_gantt.py:192`.
+2. **Months SHARE the bottom axis; no row of their own.** Chosen against advice
+   and settled. Implemented as two scales on one row, in two tones (`mut` for the
+   months, `dim` for the day figures), day figures anchored and month names
+   dropped whole when they cannot stand clear.
+3. **`GUTTER = 2` — ACCEPTED.**
+
+---
+
+## 13. Close — what was measured, after the fact
+
+### 13.1 The laws, re-executed (never predicted)
+
+| law | before | after | verdict |
+|---|---|---|---|
+| `test_gantt.py:248` `marked >= 68.0` (typical) | 76.9 | **78.5** | ✅ |
+| `test_gantt.py:249` `dead <= 25.0` (typical) | 23.1 | **21.5** | ✅ improved |
+| `test_gantt.py:258` `chrome < 10.0` | 0.0 | **0.0** | ✅ `┆` is not a frame char |
+| `test_gantt.py:238` `extreme.ink > typical.ink` | 27.3 > 26.7 | **41.9 > 41.4** | ✅ **R1 did not materialise** |
+| `test_span_economy.py:125` `after < before/3` | 135 < 580.0 | **155 < 594.7** | ✅ same-tone guide cost 20 runs |
+| `test_gantt.py:164` title widths | (27, 30) | **(25, 28)** | 🔁 re-pinned, intent kept |
+| `test_cells.py` cell-width law | green | **green** | ✅ nothing re-partitioned |
+| full suite | 725 collected | **730 passed, 0 failed** | ✅ 725 + 5 new |
+
+The clipboard test failed on the FIRST baseline run and passed on every run since
+— it is flaky, not broken. Recorded in the backlog.
+
+### 13.2 AC-1, the defect itself
+
+`.fast-dev-flow/probes/_probe_collision.py`, long titles whose reach starts left
+of today, at 104x30 / 102x16 / 96x30 / 120x40:
+
+```
+before   ▎  Telemetry_Ingestion_Name…▬▒▒▅······╎        COLLISIONS: 5 of 5
+after    ▎  Telemetry_Ingestion_Na…┆·▬▒▒▅·┆··┆·╎·┆     COLLISIONS: 0
+```
+
+### 13.3 C-40 — every predicate's mutation, EXECUTED
+
+`.fast-dev-flow/probes/_mutate.py` patches `views.py`, runs the one test, reverts.
+**9 of 9 redden.** Two did not on the first pass, and both were real:
+
+- **`FIELD_WEEK = LATTICE` survived** → the guide test would have passed on the
+  lattice's own dots. Fixed by asserting `FIELD_WEEK != LATTICE` first.
+- **removing the today-column guard survived** → `TODAY` is a **Thursday**, so the
+  today cell can never hold a monday and the assertion was vacuous. Fixed by
+  re-asserting the guard at `2026-08-03` (a monday) and `2026-08-02` (a sunday,
+  the other half of the cell).
+
+Two of my own acceptance predicates were also inert as first written: `got >=
+GUTTER` and `tail.endswith(" " * GUTTER)` are both trivially true when `GUTTER`
+is 0 — the exact mutation they exist to catch. Both now use the literal `2`.
+
+### 13.4 What changed
+
+| file | change |
+|---|---|
+| `taskboard/views.py` | `FIELD_REACH` `█`→`━`; new `FIELD_WEEK`, `GUTTER`; new `gantt_gauge`; `_band_markup` takes `weeks`; `_scale_row`/`_scale_with_note` take `months` via new `_scale_cells`/`_tone_runs`; `render_gantt` applies the gutter to task rows and the project name; two legend entries derived from the drawing functions themselves |
+| `tests/test_gantt.py` | `:164` re-pinned to `(25, 28)` with the intent assertion kept above it; 5 new tests (AC-1…AC-5) |
+| `.dev-flow/BACKLOG.md` | batch marked DONE; 5 carries appended; base ref bumped to `7de3ad6` |
+| `.fast-dev-flow/probes/*.py` | 4 probe scripts (repo convention: prior batches' probes are tracked) |
+
+**`gantt_geometry` was not touched.** No re-partition, so the cell-width law was
+never in play — which is what §5 predicted and the green `test_cells.py` confirms.
+
+### 13.5 Open — carried to the backlog, not fixed here
+
+The week guide's density and irregular 3/4-cell rhythm; `AUG` dropped from the
+axis when it collides with `today`; `NOV +111d` one space apart; two dead braille
+assertions found while mapping the laws; the flaky clipboard test.
+
+---
+
+## 14. Batch status
 
 | Field | Value |
-|-------|-------|
-| Current phase | **C — closed, awaiting the operator's merge** |
-| Started | 2026-08-06 |
-| Closed | 2026-08-06 |
-| Promoted to /dev-flow | no |
-| Base ref | moved twice mid-batch: `fa821ae` → `6b7c4c3` (pushed) → `3b0f011`. `taskboard/` and `tests/` are **byte-identical across the move** (`git diff --stat fa821ae 3b0f011 -- taskboard tests` is empty), so every Phase-A measurement stands. |
-
-### Gate rulings (operator, 2026-08-06)
-
-| # | question | ruling |
-|---|---|---|
-| 1 | the all-resting pad | **document the regime, do not change behaviour** |
-| 2 | `fa821ae` unpushed | amended + pushed by the operator; artifacts must never carry his board data |
-| 3 | bench share vs O-3 | **O-3 stands** — no share cap, after both corrections |
-
----
-
-## 13. Close
-
-### What changed
-
-`taskboard/views.py` gains the row cost model in the docstrings of `allocate` (the charge, and
-that it is only half the model) and `swimlane_plan` (the whole identity, the two different `2`s,
-and the regime). **Prose only — proven by comparing the module's AST with every docstring
-stripped, before and after: identical.** `tests/test_row_cost.py` is new and pins the model with
-18 tests. `tests/test_vertical_fill.py` loses a false sentence: *"the lanes never pad at all"* now
-carries the clause that makes it true.
-
-### How it was tested
-
-- `tests/test_row_cost.py` — **18 passed**. Laws L1–L7b in regime (124 cells), L8/L9 off-regime.
-- **Full suite: 707 → 725 passed.** The delta is exactly the 18 new tests; no existing test
-  changed its result.
-- **Mutation testing, C-40, executed on the real source** (`.fast-dev-flow/probes/_mutate_check.py`):
-  all 5 mutations killed, `views.py` restored byte-identical and re-verified green.
-
-| mutation | result |
 |---|---|
-| `room = h-2` — call site never pays for the lead band | **6 failed** |
-| `room = h-6` — call site pays twice | **2 failed** |
-| `lead_band` draws one row more | **7 failed** |
-| `lead_band` draws one row fewer | **5 failed** |
-| rung four drops its `- 1` | **1 failed** |
-
-- Prose claims verified by execution, not assertion: `blank == h - 3 - n_rest` on all-resting
-  boards, checked across 5 lane counts × 4 widths × 8 heights before it was written down.
-
-### Open risks / pending
-
-- **`prof` is billed for a bench nothing draws when no lane is active.** Left deliberately; a fix
-  is a behaviour change. Carried in `.dev-flow/BACKLOG.md`.
-- `project_wave` still has no direct test guard.
-- **`~/.claude/docs/FLOW-VERSION.md` is stale by one control (C-46)** — different repos, not
-  fixable from here. Recorded, not chased.
-- **Candidate control for `dev-flow-lessons`** (not yet pushed upstream, different repo): *an
-  exclusion predicate computed from the code under test is a vacuous check wearing a filter's
-  clothes.* Measured here: it hid 2 of 5 mutations, one of them by emptying the sample entirely.
-
-### Security flags — handling
-
-`security_required: false`, re-derived rather than inherited. Nothing in the change set touches
-auth, secrets, integrations, persistence or input surface: one new test file and two docstrings.
-
-### Suggested commit message
-
-```
-The lanes cost model is one model, and it says which two rows it does not bill
-
-`swimlane_plan` hands the allocator `h - 2 - (2 if active else 0)` and
-`lead_band` draws `prof + 2`. Both were true, neither was written down beside
-the other, and the batch that tried to spend those rows closed at Phase 2
-without code because every reviewer measured against a model of their own.
-
-There was no defect. The two are halves of one identity, and this pins it:
-BODY == need + 2*[active], 2 + BODY + ABSENCE == h, exact on 124 cells. The
-two `2`s are different -- `h - 2` is the panel's chrome, `- 2*[active]` is the
-lead band's head and tail -- which is precisely what a reader collapsing them
-gets wrong, in whichever direction they collapsed.
-
-Also retires a false sentence. "The lanes never pad at all" holds only while a
-project is active; on an all-resting board the bench is billed, never drawn,
-and the view pads exactly `h - 3 - n_rest`. The regime is now stated wherever
-the claim is made. Behaviour is unchanged -- the views.py diff is two
-docstrings, and the AST with docstrings stripped is identical.
-
-707 -> 725 tests. Five mutations of the real source, all killed.
-```
+| Current phase | **C — closed, awaiting Javier's review, push and merge** |
+| Tests | **730 passed, 0 failed** |
+| Commit | local only — **no push, no merge** |
+| Security | `security_required: false`; no artifact carries the operator's board |

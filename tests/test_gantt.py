@@ -148,9 +148,14 @@ def test_a_title_never_covers_its_own_reach(tmp_path):
 def test_a_task_whose_reach_starts_later_gets_a_wider_title(tmp_path):
     """The title still runs over the field (REV5 #19's ruling, kept through the
     field redesign): it spends the empty cells before its own reach, and stops
-    at the today rule so the one column every row shares survives. MEASURED at
-    96 wide: a task starting in the past keeps the label column's 12; one
-    starting later reaches 34."""
+    at the today rule so the one column every row shares survives.
+
+    THE INTENT is the inequality — later reach, wider title — and it is asserted
+    first and on its own, because it is the thing that must stay true. The exact
+    pair beneath it is a pin, and it moved: `GUTTER` now holds two cells back
+    from the title on every row, so both widths dropped by exactly 2 (27 -> 25,
+    30 -> 28). The pin is re-measured, not deleted, so the next change to the
+    title's reach still has to look a human in the eye."""
     b, p = fixture(tmp_path)
     b.tasks.append(Task("A" * 60, p.id, "Backlog", "normal",
                         start_date=iso(9), due_date=iso(16)))
@@ -159,9 +164,9 @@ def test_a_task_whose_reach_starts_later_gets_a_wider_title(tmp_path):
     out = rows(b)
     near = next(l for l in out if "B" * 10 in l)
     far = next(l for l in out if "A" * 10 in l)
-    # measured: 27 for a task already under way, 30 for one starting later
     assert far.count("A") > near.count("B")
-    assert (near.count("B") + 1, far.count("A") + 1) == (27, 30)
+    # measured: 25 for a task already under way, 28 for one starting later
+    assert (near.count("B") + 1, far.count("A") + 1) == (25, 28)
 
 
 def test_the_header_counts_what_is_past_due(tmp_path):
@@ -294,3 +299,145 @@ def test_two_tasks_of_different_length_draw_different_reaches(tmp_path):
     from taskboard.views import FIELD_TASK
     assert long_.count(FIELD_TASK) > short.count(FIELD_TASK) + 3, (
         short.count(FIELD_TASK), long_.count(FIELD_TASK))
+
+
+# --------------------------------------------------------------------------- #
+# THE GAUGE, and the gutter in front of it
+#
+# The operator's complaint, twice over: "los bloques siguen siendo muy grandes y
+# se empalman con el texto", and "no hay gauges de semana y mes". A bar measured
+# against nothing is the disorder; a title flush against its own bar is the
+# collision. Both are measured here rather than described.
+# --------------------------------------------------------------------------- #
+BAR_GLYPHS = set("█▓▒▌▃▅▆▇━◆▬")
+
+
+def gutter_board(tmp_path):
+    """The shape that collided: LONG titles on tasks whose reach starts LEFT of
+    today. When the reach starts to the right, the today rule already sits
+    between title and bar and hides the defect — which is why it survived."""
+    b = board(tmp_path, "gutter.json")
+    p = Project("Machine Learning Platform Team", "cyan", "on_track",
+                start_date=iso(-30), due_date=iso(40))
+    b.projects.append(p)
+    for k, off in enumerate((-4, -8, -12, -20, -2)):
+        b.tasks.append(Task(f"Telemetry_Ingestion_Namespace_Migration_{k}",
+                            p.id, "Doing", "normal",
+                            start_date=iso(off), due_date=iso(off + 6)))
+    return b
+
+
+def first_bar_gutter(line: str) -> int | None:
+    """Cells of non-title ground before the row's first bar glyph, or None when
+    the row draws no bar."""
+    for j, ch in enumerate(line):
+        if ch in BAR_GLYPHS:
+            n = 0
+            while j - 1 - n >= 0 and line[j - 1 - n] in (" ", "·", "┆"):
+                n += 1
+            return n
+    return None
+
+
+def test_a_truncated_title_never_touches_its_own_bar(tmp_path):
+    """AC-1. Before the gutter this measured 0 on 5 of 5 rows at every width:
+    `Telemetry_Ingestion_Name…▬▒▒▅`, the ellipsis flush against the reach."""
+    # the literal 2 is deliberate: `>= GUTTER` would be trivially true when
+    # GUTTER is 0, so the predicate could not fail on the very mutation it
+    # exists to catch
+    for w, h in ((104, 30), (102, 16), (96, 30), (120, 40)):
+        out = rows(gutter_board(tmp_path), w, h)
+        named = [l for l in out if "Telemetry_Ingestion" in l]
+        assert len(named) >= 4, f"{w}x{h}: fixture drew {len(named)} task rows"
+        for l in named:
+            got = first_bar_gutter(l)
+            assert got is not None and got >= 2, (
+                f"{w}x{h}: {got} cells between title and bar, want >= 2\n{l}")
+
+
+def test_a_truncated_project_name_never_touches_the_field(tmp_path):
+    """AC-2. The project row has no borrowed field cells to give back — its
+    label is exactly `label_w` wide — so its gutter comes out of the name's own
+    clip. It read `▎ Data Warehou…◂████` before."""
+    from taskboard.views import gantt_geometry
+    for w, h in ((104, 30), (96, 30)):
+        out = rows(gutter_board(tmp_path), w, h)
+        g = gantt_geometry(w, h)
+        row = next(l for l in out if l.startswith("▎ Machine"))
+        # everything from the name's last glyph to the field's first cell.
+        # literal 2 again — `" " * GUTTER` is the empty string when GUTTER is 0
+        # and `endswith("")` is true of every string alive
+        tail = row[:g.label_w]
+        assert tail.endswith("  "), (
+            f"{w}x{h}: project label {tail!r} has no 2-cell gutter")
+
+
+def test_the_field_is_ruled_by_weeks(tmp_path):
+    """AC-3. The gauge the view never had. Every guide is a monday, it is drawn
+    on the body rows and not just once, and it never takes the today column —
+    two verticals in one cell would read as one thicker rule, a third meaning
+    nobody declared."""
+    from taskboard.views import FIELD_WEEK, LATTICE, gantt_gauge, gantt_geometry
+    # a guide that IS the lattice rules nothing, and every check below would
+    # still pass on the lattice's own dots
+    assert FIELD_WEEK != LATTICE, "the guide is indistinguishable from the ground"
+    b = gutter_board(tmp_path)
+    for w, h in ((104, 30), (96, 30), (120, 40)):
+        g = gantt_geometry(w, h)
+        weeks, _ = gantt_gauge(g, TODAY)
+        assert weeks, f"{w}x{h}: no week guide at all"
+        # every guide cell really is a monday, by the view's own day axis
+        for cell in weeks:
+            days = {TODAY + timedelta(days=dc - g.today_dc)
+                    for dc in (cell * 2, cell * 2 + 1)}
+            assert any(d.weekday() == 0 for d in days), f"cell {cell} is no monday"
+        assert g.today_dc // 2 not in weeks, "a guide took the today column"
+        out = rows(b, w, h)
+        ruled = [l for l in out if FIELD_WEEK in l]
+        assert len(ruled) >= 4, f"{w}x{h}: only {len(ruled)} rows carry the guide"
+
+    # THE GUARD, on a date where it can actually fire. `TODAY` is a Thursday, so
+    # the today cell (which spans today and tomorrow) can never hold a monday and
+    # the assertion above is vacuous on its own — deleting the guard leaves it
+    # green. These two anchors are the cases that make it bite.
+    for anchor in (date(2026, 8, 3),      # a MONDAY: today's own cell
+                   date(2026, 8, 2)):     # a SUNDAY: tomorrow's half of the cell
+        g = gantt_geometry(104, 30)
+        weeks, _ = gantt_gauge(g, anchor)
+        assert g.today_dc // 2 not in weeks, (
+            f"{anchor} ({anchor:%A}): the week guide took the today column")
+
+
+def test_the_axis_names_the_months(tmp_path):
+    """AC-4. Javier chose to put the months on the axis the day figures already
+    own, so this asserts BOTH scales survive on that one row: a month name that
+    could not stand clear was dropped whole, but at least one is drawn and the
+    day figures are untouched."""
+    from taskboard.views import gantt_gauge, gantt_geometry, _scale_cells
+    for w, h in ((104, 30), (96, 30), (120, 40)):
+        g = gantt_geometry(w, h)
+        _, months = gantt_gauge(g, TODAY)
+        body, cols = _scale_cells(g, months)
+        assert cols, f"{w}x{h}: no month name reached the axis"
+        drawn = "".join(body)
+        assert "today" in drawn, f"{w}x{h}: the day scale lost its anchor"
+        # whole names only — never a half-printed month, which is a wrong date
+        for at in sorted(months):
+            if at in cols:
+                assert drawn[at:at + 3] == months[at], (
+                    f"{w}x{h}: {months[at]} came out as {drawn[at:at + 3]!r}")
+        axis = rows(gutter_board(tmp_path), w, h)[-1]
+        assert any(months[at] in axis for at in sorted(months) if at in cols)
+
+
+def test_the_project_reach_is_a_rule_not_a_slab(tmp_path):
+    """AC-5. `█` is what the operator saw as "bloques muy grandes": it buried
+    the guide under it and shouted over every task bar. The three weights still
+    rank reach > progress > task; the top one stopped shouting."""
+    from taskboard.views import FIELD_PROGRESS, FIELD_REACH, FIELD_TASK
+    assert FIELD_REACH != "█", "the slab is back"
+    assert len({FIELD_REACH, FIELD_PROGRESS, FIELD_TASK}) == 3, \
+        "two weights collapsed into one, so the hierarchy is gone"
+    out = rows(gutter_board(tmp_path), 104, 30)
+    span = next(l for l in out if l.startswith("▎ Machine"))
+    assert FIELD_REACH in span and "█" not in span
