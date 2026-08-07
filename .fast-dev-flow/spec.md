@@ -1,48 +1,127 @@
-# Quick Spec — implement the Fable-5 visual redesigns (gantt · columns · agenda)
+# Quick Spec — the live board becomes unreachable from anything committable
+
+**Batch:** `2026-08-07-fastflow-05` · **Base ref:** `82cc256` (branch `kanban-variants`, NOT on the remote)
+**Backup of the pre-rewrite tip:** tag `backup-kanban-variants-20260807` = `338973c`
+**Language:** English · **security_required: TRUE** (see §6)
 
 ## 1. Objective
-Bring the three approved Fable-5 redesigns into the real app: make schedule risk visual in the gantt, collapse columns cards to one heat-sorted line, and turn the agenda into a shared-axis due dot-plot. Reference mockup: artifact c86895c7 / generator tmp/gen_mockup.py.
+
+No file this repository can commit may contain the operator's live board data —
+and that property must be held by **a law that fails**, not by an act that was
+performed once.
+
+Today the leak was removed by hand: strings substituted, a generated capture
+deleted, branch history rewritten, two commits pushed to a public `main`. All of
+it verified, **none of it defended**. `prototypes/capture.py` — the generator
+that produced the leak — was still reading `~/.taskboard/board.json`, so the next
+run would have restored it. That gap, not the strings, is what this batch closes.
 
 ## 2. User stories
-- As a user, I want to see at a glance which projects/tasks have crossed "today" and which are overdue, without reading small "-5d" text.
-- As a user, I want the columns board denser and ordered so the most urgent card is on top of each column.
-- As a user, I want the agenda to show due dates on a time axis so distance = urgency and clusters = crunch weeks.
+
+- As the operator, I want the scripts that write committable artifacts to be
+  **incapable** of reading my live board, so the leak cannot be re-authored.
+- As the operator, I want a **detector that is itself tested against a planted
+  leak**, so "the sweep came back clean" means the sweep can fail.
+- As the operator, I want a stray `git add -A` in `prototypes/` to be unable to
+  commit 892 scratch files.
+- As the operator, I want today's hand work re-checked **by that detector**
+  rather than trusted because I watched it happen.
 
 ## 3. Acceptance criteria (observable)
-- [ ] AC1 GANTT today-rule: a full-height vertical rule (teal `┃`) is drawn at today's column across every project/task row; rows stay width-exact.
-- [ ] AC2 GANTT due diamond: each project shows a `◆` at its due-date position on the timeline — red when the due date is before today, bright otherwise; a project with no due date shows none.
-- [ ] AC3 GANTT task colour: a task bar is red when overdue, amber when due today, else the project colour (no more uniform grey); the header shows a `▲ N past due` count.
-- [ ] AC4 COLUMNS one-line cards: each card is a single line (heat glyph + project colour chip + name + relative due), cards within a phase are sorted by due date (soonest first, undated last), and each column header shows a `N late` count.
-- [ ] AC5 AGENDA dot-plot: every due task is a `●` on one shared day-axis with a today rule; urgency reads from distance to the rule; the OVERDUE/TODAY/THIS-WEEK sub-headers and the braille progress dots are removed; width-exact.
-- [ ] AC6: all existing tests stay green; each new behaviour has a test; the real board is never read/written by tests.
 
-## 4. Validation strategy
-Three increments, one view each (gantt / columns / agenda), each = views.py + tests/test_app.py. Per view: unit/render tests asserting the new glyphs/positions (today-rule column, diamond side of rule for a past-vs-future due, task colour by urgency, one-line card count + sort order, dot positions), plus the existing width-sweep. Manual smoke each increment: render the REAL board (via a copy) and eyeball. Escape hatch: if any single view can't be done inside 2 files or the batch drifts, stop and offer /dev-flow.
+- [ ] **AC1 — capability, not policy.** `prototypes/capture.py` and
+  `prototypes/verify_variants.py` contain **no reference to
+  `default_board_path`**, and each **exits non-zero with a named error** when the
+  fixture is missing, instead of falling back. Observable: run both with the
+  fixture temporarily renamed → non-zero exit, message names the missing fixture;
+  run both with it present → exit 0.
+- [ ] **AC2 — the fixture is in git.** `prototypes/out/_fixture_late.json` is
+  **tracked**. Observable: `git ls-files --error-unmatch` succeeds on it. (Today
+  it is untracked, so AC1's fix depends on a file a fresh clone does not have —
+  and `capture_languages.py` already had this defect.)
+- [ ] **AC3 — the detector can fail.** A sweeper takes a board JSON and a tree
+  and reports every file containing any of its project names / task titles
+  (verbatim, length ≥ 12). Observable, and **both halves are required**: planted
+  a known title into a temp tree → the sweeper **names that file**; a clean temp
+  tree → the sweeper reports **nothing**. A sweeper that returns empty for both
+  fails this criterion.
+- [ ] **AC4 — the sweep is executed and recorded.** AC3's sweeper, run against
+  the operator's real board over the **tracked** trees of `main@caa4bab` and
+  every one of the **6 rewritten commits** on this branch, reports **zero files**.
+  Observable: the executed output is pasted into the closing artifact.
+- [ ] **AC5 — the accident is blocked.** `git add -A` under `prototypes/` cannot
+  stage scratch output. Observable: `git check-ignore` reports the scratch path
+  ignored **and** reports `_fixture_late.json` and the 4 tracked `.svg` **not**
+  ignored.
+- [ ] **AC6 — no artifact carries board data.** No file written by this batch
+  (spec, tests, closing artifact) contains any real board string. Observable: the
+  same sweeper, run over this batch's own diff, reports zero.
+- [ ] **AC7 — the implicit fallback is gone (from P6 coming back FALSE).**
+  `TaskboardWidget.__init__` **requires** an explicit board path; nothing reaches
+  the live board by omission. The one legitimate interactive read —
+  `widget_slice/app.py:1514`'s `__main__` — passes `default_board_path()`
+  **explicitly**, so reading the operator's board is a visible act at exactly one
+  site instead of a default at every site. Observable: `TaskboardWidget()` with no
+  argument **raises**; `verify_ink.py` and `verify_widget.py` (4 sites) name a
+  fixture and still pass; `grep` finds no remaining `TaskboardWidget()` with an
+  empty argument list.
 
-## 5. Non-goals
-- No change to swimlanes or kanban views.
-- No new interaction/keys (these are render changes to existing views on their existing keys 4/2/3).
-- Not guaranteeing 256-colour terminals distinguish every project chip (flagged risk, see below).
+## 4. Out of scope (declared)
 
-## 6. Detected security flags
-- [ ] all clear
-**security_required:** false (pure rendering; no data-model or persistence change; no I/O).
+| item | why |
+|---|---|
+| Merging `kanban-variants` → `main` | operator ruled: **do not merge** (`main`'s `keymap.py` supersedes this branch's inline `HelpScreen`) |
+| Anything on `main` | clean and pushed at `caa4bab`; AC4 only **reads** it |
+| Git author identity for future commits | operator-level config, not a repo change — carried to the backlog |
+| ~~`prototypes/widget_slice/app.py:1146` left as-is~~ | **WITHDRAWN — P6 came back FALSE.** Moved INTO scope as AC7 |
+| Rewriting `main`'s history | needs force-push; operator's call, in the backlog |
 
-## 7. Open design decision (needs the operator)
-The gantt PROGRESS bar: today's bar is the dual-density braille `⣿`(done)/`⢕`(remaining) you tuned over several iterations. Fable-5's proposal replaces it with a solid `█`(done, project colour) + quiet `░`(remaining, dim) track, arguing the new today-rule and due-diamond read better against a calm background (2-colours-per-cell). DECIDED (the operator): OPTION B — keep the ⣿/⢕ dual-density progress bar; add the today-rule + due-diamond + urgency-coloured task bars on top of it.
+## 5. Premise table (C-43)
+
+| Premise | Tier | Verdict | Executed evidence |
+|---|---|---|---|
+| P1 `capture.py` and `verify_variants.py` called `Board.load(default_board_path())` | premise | ✅ TRUE | `grep -rn "default_board_path()" prototypes/` → `capture.py:29`, `verify_variants.py:79` (pre-edit) |
+| P2 `_fixture_late.json` is untracked | premise | ✅ TRUE | `git ls-files --error-unmatch` → fails; `git ls-files prototypes/out/` lists only 4 `.svg` |
+| P3 `.gitignore` does not cover `prototypes/out/` | premise | ✅ TRUE | `git check-ignore -v prototypes/out/_ap43.log` → no match; 892 files show as `??` |
+| P4 The 892 untracked files carry no real board data | premise | ✅ TRUE | sweep: 892 scanned as text, **0 verbatim hits**; 680 token-only hits all generic (`change`, `layout`, `padding`, `verify`); `headroom` spot-checked → `_b41.log` "settle() keeps headroom under its bound", the layout term |
+| P5 `_fixture_late.json` is synthetic | premise | ✅ TRUE | 6 projects / 16 tasks; **0 overlap** with the real board; names `Website Redesign`, `Mobile App`, `API Platform` |
+| P6 `verify_board.py:launch` raises when `board_path is None`, so the automated path never reaches the fallback | **hypothesis** | ❌ **FALSE** | `launch()` does raise — but **four verifiers never call it.** `verify_ink.py:82`, `verify_widget.py:22`, `:63`, `:90` construct `TaskboardWidget()` with **no path**, so they hit the `default_board_path()` fallback and run against the live board. A fifth, `widget_slice/app.py:1514` (`__main__`), does the same. **The guard is reachable-around; the "leave as-is" decision it justified is withdrawn.** This is the row the premise table exists to produce. |
+| P7 The 6 rewritten commits are clean | premise | ✅ TRUE | per-commit `git grep -c` over all 4 strings + `variants.txt` presence → 0 / absent on all 6 |
+| P8 `docs/sample/report-example.html` (tracked, public) is synthetic | premise | ✅ TRUE | 0 verbatim matches; its vocabulary is the fixture family (`Website Redesign`, `Fix checkout 500 error`); the `KServe` token collision is coincidence — the operator's board does hold one task naming that product, and **none of its wording appears in the HTML** (checked by string containment, not quoted here: AC6 forbids this file from carrying it) |
+| P9 No test today would catch a re-leak | **hypothesis** | ✅ TRUE | `grep -rlin "privacy\|leak\|real board\|live board" tests/` → matches are unrelated prose; no assertion over tracked-file content exists |
+| P10 A test that reads `~/.taskboard/board.json` auto-skips where the file is absent | premise | ✅ TRUE by construction | this is why AC3 splits **tested detector** from **executed sweep** — an auto-skipping guard is the vacuous check this repo already recorded as an anti-pattern |
+
+**P6 blocks §4's "leave as-is" row only.** It does not block AC1–AC5.
+
+## 6. Security flags
+
+| pattern | matched | handling |
+|---|---|---|
+| `pii` / `personal data` | ✅ the operator's own task titles and project names | the whole batch is the mitigation; AC4 + AC6 are the evidence |
+| `sanitize` / `escape` | ❌ | — |
+| `secret` / `credential` / `.env` | ❌ | swept today: no email, no handle, no surname in any tracked file |
+
+`security_required: true` → a security pass runs at Phase C against AC4/AC6, and
+the closing artifact states residual risk explicitly.
+
+## 7. Increments (≤5 files each)
+
+1. **The detector, tested against a planted leak** — sweeper + its test (AC3).
+2. **Capability + fixture** — `capture.py`, `verify_variants.py`, track the
+   fixture, test that both refuse the fallback (AC1, AC2).
+3. **The fallback dies** — `widget_slice/app.py` constructor requires a path,
+   `__main__` opts in explicitly, 4 verifier sites named a fixture (AC7).
+4. **The accident** — `.gitignore` with negations, test (AC5); execute AC4/AC6
+   and record.
+
+**4 increments is the fast-flow ceiling** (the escape hatch triggers above 3
+in Phase B). Increment 3 exists only because P6 came back FALSE at the gate. If
+increment 3 turns out to touch more than 5 files, I stop and propose promotion
+to `/dev-flow` rather than widening silently.
 
 ## 8. Batch status
-| Field | Value |
-|-------|-------|
-| Current phase | closed |
-| Started | 2026-07-24 |
-| Notes | 3 view redesigns — at the upper bound of fast-dev-flow (same as the prior batch). Promote to /dev-flow if it drifts. |
 
-
-## 9. Close (2026-07-24)
-Three Fable-5 view redesigns landed, all on main, 121 tests (from a 104 baseline):
-- `169d454` GANTT — full-height teal today-rule across every row, per-project due `◆` diamond (red past / bright future, `◂`/`▸` clamp off-window), task bars coloured by urgency; kept the ⣿/⢕ dual-density bar underneath (the operator's decision) + `▲ N past due` header.
-- `4fd4a1d` COLUMNS — one-line heat cards (`█▓▒░·✓` by urgency + project chip + name + relative due), sorted by due (urgency gradient top-down), `N late` header. 2x density.
-- `cf9a07d` AGENDA — shared-axis due dot-plot with today-rule; distance = urgency, vertical clusters = crunch; dropped the OVERDUE/TODAY/THIS-WEEK headers; undated tasks kept under a `no date` group.
-Verified against a COPY of the real board (28 tasks): all five views width-exact, board never touched. Origin of the design: a Fable-5 agent prototype (artifact c86895c7), approved by the operator.
-Minor follow-ups (not blocking): dead `_URG_BRAILLE`/`AGENDA_GROUPS` in views.py now unused; agenda axis span is fixed (far dates clamp to the edge) — could be made adaptive; two views still titled with their own names is fine now (columns = COLUMNS, kanban = KANBAN).
+| field | value |
+|---|---|
+| Current phase | **A — awaiting approval** |
+| Pushed | **nothing; the operator pushes and merges** |
