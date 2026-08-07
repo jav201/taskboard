@@ -12,6 +12,12 @@ from taskboard import themes as TH         # noqa: E402
 from textual.geometry import Region        # noqa: E402
 
 fails = []
+# The live board is not this measurement's input. Ink fraction is a number that
+# gets PUBLISHED in a table, so measuring it against the operator's tasks makes
+# the table both unreproducible and a disclosure. See tests/test_no_live_board.py.
+FIXTURE = W / "prototypes" / "out" / "_fixture_late.json"
+
+
 def check(name, cond, detail=""):
     print(f"  [{'PASS' if cond else 'FAIL'}] {name}{'  ' + detail if detail else ''}")
     if not cond: fails.append(name)
@@ -19,7 +25,7 @@ def check(name, cond, detail=""):
 async def main():
     print("== DRIVE: size classes, focus, states")
     for size, expect in ((40, "glance"), (60, "widget"), (110, "board")):
-        app = TaskboardWidget()
+        app = TaskboardWidget(board_path=str(FIXTURE))
         async with app.run_test(size=(size, 26)) as pilot:
             await pilot.pause()
             check(f"w={size:<4} -> size class {expect}",
@@ -60,7 +66,7 @@ async def main():
                   kb.display == (expect == "board"), f"display={kb.display}")
 
     print("\n== DRIVE: engine, config screen, empty state")
-    app = TaskboardWidget()
+    app = TaskboardWidget(board_path=str(FIXTURE))
     async with app.run_test(size=(70, 26)) as pilot:
         await pilot.pause()
         eng = app.engine
@@ -87,7 +93,7 @@ async def main():
               repr(txt.strip()[:60]))
 
     print("\n== BUDGET")
-    app = TaskboardWidget()
+    app = TaskboardWidget(board_path=str(FIXTURE))
     async with app.run_test(size=(110, 26)) as pilot:
         await pilot.pause()
         s = []
