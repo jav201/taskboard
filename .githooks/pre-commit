@@ -1,0 +1,5 @@
+#!/bin/sh
+# Refuses a commit whose STAGED content carries the operator's board data.
+# Logic lives in tools/precommit_privacy.py so it can be tested; this file is
+# only the wiring. Enable with:  git config core.hooksPath .githooks
+exec python "$(git rev-parse --show-toplevel)/tools/precommit_privacy.py"
