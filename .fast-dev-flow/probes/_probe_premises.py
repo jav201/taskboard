@@ -29,7 +29,7 @@ def mkboard(name, projects, tasks):
 
 
 def long_title_board():
-    """Javier's reported shape: LONG task titles whose reach starts late."""
+    """The operator's reported shape: LONG task titles whose reach starts late."""
     ps = [Project("Machine Learning Platform", "cyan", "on_track",
                   start_date=iso(-20), due_date=iso(40))]
     ts = [Task("Telemetry_Ingestion_Namespace_Migration", ps[0].id, "Doing",

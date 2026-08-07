@@ -409,7 +409,7 @@ def test_the_field_is_ruled_by_weeks(tmp_path):
 
 
 def test_the_axis_names_the_months(tmp_path):
-    """AC-4. Javier chose to put the months on the axis the day figures already
+    """AC-4. The operator chose to put the months on the axis the day figures already
     own, so this asserts BOTH scales survive on that one row: a month name that
     could not stand clear was dropped whole, but at least one is drawn and the
     day figures are untouched."""

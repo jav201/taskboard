@@ -7,7 +7,7 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
 · **Last refresh:** 2026-08-07
 **Status:** 730 tests green (725 + 5 from the gantt gauge batch). The gantt
 legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed**
-— Javier pushes and merges.
+— the operator pushes and merges.
 
 > **The header sat at `eec625b` / 2026-07-31 for a whole day of shipping.** The
 > close step that owns this line did not run when batch-02 closed, which is the
@@ -152,10 +152,10 @@ legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed*
 - ~~The closure law stays red.~~ **CLOSED.**
 
 - **DONE** · The deliberate one-time archive (`X`) + archive from the task
-  editor. Closes the "auto-archive does nothing on Javier's board" carry-over:
+  editor. Closes the "auto-archive does nothing on the operator's board" carry-over:
   the timer owns dated work, `X` owns everything older, and neither invents a
   date. 12 laws, 343 green, 6 mutants killed. (this batch)
-- ~~Auto-archive does nothing on Javier's existing board, by design... he must
+- ~~Auto-archive does nothing on the operator's existing board, by design... he must
   archive them by hand — or we add an explicit, opt-in one-time action.~~
   **CLOSED**: that action is `X`.
 
@@ -180,7 +180,7 @@ legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed*
 ## Open — process / operator actions
 
 - **DONE** · **`/dev-flow-sync` for batch `2026-07-18-batch-01`** — run 2026-07-31 on
-  Javier's authorization, 13 days after the batch closed. The four phase artifacts
+  the operator's authorization, 13 days after the batch closed. The four phase artifacts
   plus `06-docs/` (9 files) are now in the vault at
   `G:\My Drive\ConsultIA\Obsidian_Vaults\AI-Consulting-Brain\01 - Proyectos\taskboard\dev-flow-batches\2026-07-18-batch-01\`,
   with a frontmatter-carrying `2026-07-18-batch-01-README.md` index and a project
@@ -267,7 +267,7 @@ legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed*
 
 ## Open — raised by the key-bar contract
 
-- **REV5's remaining items are NOT started, by instruction**, pending Javier's
+- **REV5's remaining items are NOT started, by instruction**, pending the operator's
   review of the prototype: the `?` legend popup, the columns retirement, the
   meters, the title widths.
 - **Until a legend key exists, `+N` is the fallback below ~50 columns.** Once `?`
@@ -281,7 +281,7 @@ legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed*
 
 ## Open — raised by the archive increment
 
-- **Auto-archive does nothing on Javier's existing board, by design.** Every
+- **Auto-archive does nothing on the operator's existing board, by design.** Every
   finished task there predates `phase_changed`, so its age is unknown and it is
   left alone (measured: a 30-done legacy board sweeps 0). If he wants the old
   ones gone he must archive them by hand (`x`) — or we add an explicit,
@@ -342,7 +342,7 @@ legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed*
 - **The week guide is dense, and its rhythm is irregular.** One cell is two days,
   so a week is 3.5 cells and the guides alternate 3 and 4 cells apart:
   `·┆···┆··┆···┆··┆`. It reads closer to texture than to a ruled gauge. It is the
-  approved prototype's own density and it SHIPPED as approved — but if Javier
+  approved prototype's own density and it SHIPPED as approved — but if the operator
   reads it as noise, the cheap levers are a guide every fortnight, or guides only
   at month boundaries. **Decide with the render in front of you, not from this
   line.**
@@ -428,7 +428,7 @@ legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed*
   named in text beside its bar, which is the secondary encoding the palette rules
   ask for. The failure is real but it is "two projects can share a colour", not
   "the board is unreadable".
-  **DECIDED 2026-07-31 — Option A accepted by Javier ("Acepto la opción A"): the 8
+  **DECIDED 2026-07-31 — Option A accepted by the operator ("Acepto la opción A"): the 8
   shipped hues stay.** The standing conditions of the acceptance: text remains a
   mandatory identity channel beside every hue-bearing mark (already law in the
   report: no figure encodes a project by hue alone), and this item is CLOSED — do

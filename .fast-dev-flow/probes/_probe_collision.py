@@ -1,6 +1,6 @@
 """P2 redone + P4 fixed + span-economy baseline.
 
-Javier's shape is a LONG title on a task whose reach starts a few cells LEFT of
+The operator's shape is a LONG title on a task whose reach starts a few cells LEFT of
 today: `over` is then the reach start (not the today cap), so the title runs
 right up to the first bar cell with nothing between them.
 

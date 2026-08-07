@@ -3,7 +3,7 @@
 **Status:** CLOSED 2026-07-30 · **Base ref:** `ff5a10b` (main) · **Flow:** fast-dev-flow · **Language:** English
 
 ## 1. Objective
-Javier's board hit the case increment 10's packet predicted: every finished task
+The operator's board hit the case increment 10's packet predicted: every finished task
 on it predates `phase_changed`, so the standing 20-day sweep moves **0 of 30**
 (measured, premise table below) and the feature reads as absent — while the UI
 carries the weight of all that old work. Give him a **deliberate one-time purge**

@@ -13,7 +13,7 @@
 
 ## 1. Objective
 
-The gantt shows bars measured against **nothing**. Javier:
+The gantt shows bars measured against **nothing**. The operator:
 
 > *"No estoy viendo en GANTT la implementación que decía el prototipo. Los bloques
 > siguen siendo muy grandes y se empalman con el texto."*
@@ -172,7 +172,7 @@ other view's legend (P7). **Painting it in the lattice's own tone** — glyph ch
 colour does not — is what protects `test_span_economy.py:125`: run coalescing is by
 style, so a same-tone guide costs **zero** extra runs.
 
-This deviation needs Javier's yes: it is a visual difference from the approved
+This deviation needs the operator's yes: it is a visual difference from the approved
 prototype, chosen because the prototype's own glyph would violate a law the
 prototype was never measured against.
 
@@ -338,7 +338,7 @@ assertions found while mapping the laws; the flaky clipboard test.
 
 | Field | Value |
 |---|---|
-| Current phase | **C — closed, awaiting Javier's review, push and merge** |
+| Current phase | **C — closed, awaiting the operator's review, push and merge** |
 | Tests | **730 passed, 0 failed** |
 | Commit | local only — **no push, no merge** |
 | Security | `security_required: false`; no artifact carries the operator's board |

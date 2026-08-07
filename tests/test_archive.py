@@ -209,7 +209,7 @@ def _mixed(tmp_path):
 
 
 def test_open_work_comes_first_and_finished_work_sinks_to_the_tail(tmp_path):
-    """Javier: "lo que ya está hecho... que se muestren hasta el final de la
+    """The operator: "lo que ya está hecho... que se muestren hasta el final de la
     lista (del proyecto mismo) y las que aún están activas... al tope"."""
     b, p = _mixed(tmp_path)
     order = [t.title for t in gantt_tasks(b, b.visible_tasks(False), p.id)]
@@ -257,7 +257,7 @@ def test_the_gantt_never_lists_an_archived_task_by_default(tmp_path):
 # --------------------------------------------------------------------------- #
 # the DELIBERATE one-time archive, for work that predates the stamp
 #
-# Javier's board is the case increment 10 predicted: every finished task on it
+# The operator's board is the case increment 10 predicted: every finished task on it
 # was done before `phase_changed` existed, so the standing 20-day sweep moves
 # NOTHING and the feature reads as absent. The timer cannot fix that without
 # inventing dates. A human decision can.

@@ -65,7 +65,7 @@ judging hues, `sky` (62.4) and `green` (69.6) would fall too — six drops, not 
 The measured numbers govern, so the law is written as **two bands**: judging hues
 (`over`, `soon`) get the wide band 70; the attention hue (`accent`) gets 55, which
 is the only band that separates the measured pair cyan 48.3 / sky 62.4; `done` gets
-none. That reproduces exactly the four drops Javier approved. The 55 band is
+none. That reproduces exactly the four drops the operator approved. The 55 band is
 calibrated, and its margin is thin — recorded as a risk, not hidden.
 
 **Remap.** Injective assignment minimising total rgb distance (brute-forced over

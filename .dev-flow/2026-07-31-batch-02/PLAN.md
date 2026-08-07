@@ -74,7 +74,7 @@ or of one project, so I can read and share its state outside the TUI."**
 
 ## The format decision — HTML, with the alternative struck
 
-Javier said *"probablemente un svg o un html"*, which delegates the choice.
+The operator said *"probablemente un svg o un html"*, which delegates the choice.
 
 **HTML, because a report is a document, not a picture.** It carries prose, tables
 and several figures at once; it reflows on a phone; text in it is selectable and
