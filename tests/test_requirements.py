@@ -36,10 +36,48 @@ def declared() -> set[str]:
     return out
 
 
+def first_party() -> set[str]:
+    """Top-level packages this repository owns, DISCOVERED not listed.
+
+    It was the hand-written tuple `("taskboard", "tests")`, which is the same
+    shape of defect this file was written to prevent one level up: a list
+    someone maintains by hand. Adding `tools/` reported it as an undeclared
+    third-party distribution, and the tempting fix -- append "tools" -- would
+    have left the next package to hit the same wall.
+    """
+    names = {p.name for p in ROOT.iterdir()
+             if p.is_dir() and (p / "__init__.py").exists()}
+    names.add("tests")
+    return names
+
+
+def source_roots() -> list[pathlib.Path]:
+    """Every first-party package is SCANNED, not just the two that were named.
+
+    `tools/` was outside the sweep when it arrived, so a third-party import
+    added there would have gone undeclared and this law would have said
+    nothing -- silently narrower than its own docstring claims.
+    """
+    return [ROOT / n for n in sorted(first_party()) if (ROOT / n).is_dir()]
+
+
+def test_the_scan_covers_the_packages_it_claims_to():
+    """Guards the discovery above. If `first_party()` ever returns nothing --
+    a renamed layout, a missing `__init__.py` -- every import below becomes
+    third-party or the sweep goes empty, and the law would flip from strict to
+    vacuous without anyone noticing."""
+    fp = first_party()
+    assert {"taskboard", "tests", "tools"} <= fp, fp
+    assert all(p.is_dir() for p in source_roots())
+
+
 def imported() -> dict[str, set[str]]:
     """top-level third-party module -> the files that import it."""
     found: dict[str, set[str]] = {}
-    for path in list((ROOT / "taskboard").rglob("*.py")) + list((ROOT / "tests").rglob("*.py")):
+    paths: list[pathlib.Path] = []
+    for root in source_roots():
+        paths += list(root.rglob("*.py"))
+    for path in paths:
         tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -50,7 +88,7 @@ def imported() -> dict[str, set[str]]:
                 continue
             for name in names:
                 top = name.split(".")[0]
-                if top in STDLIB or top in ("taskboard", "tests") or not top:
+                if top in STDLIB or top in first_party() or not top:
                     continue
                 found.setdefault(top, set()).add(path.name)
     return found
