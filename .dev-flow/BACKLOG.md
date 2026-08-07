@@ -3,11 +3,44 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `7de3ad6` (local HEAD == `origin/main`, verified by `git rev-parse`)
+**Base ref:** `6083c01` (local HEAD; `origin/main` == `caa4bab`, one commit behind)
 · **Last refresh:** 2026-08-07
-**Status:** 730 tests green (725 + 5 from the gantt gauge batch). The gantt
-legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed**
-— the operator pushes and merges.
+**Status:** **739 tests green** on `main`. `6083c01` is committed locally and
+**not pushed** — the operator pushes and merges.
+
+## Open — the privacy work, and what it did NOT close
+
+- **`main`'s HISTORY still carries the operator's board data.** `caa4bab` and
+  `ff733ec` are clean and `6083c01` is clean, but `694f38a` and every commit
+  back to `5ae4d42` (2026-07-24) still contain **two project names and one task
+  title** from the operator's board in
+  `.fast-dev-flow/archive/20260724-025459-spec.md` — not quoted here, because
+  AC6 forbids this file from carrying them and writing this entry tripped that
+  law on its first draft. Run the sweep to see them. **This remote is PUBLIC.**
+  `git log -S` finds them in 6 commits. Excising them needs a history rewrite
+  and a force-push — the operator's call, and GitHub retains unreachable
+  objects for a while afterwards, so forks and caches are not covered by it
+  either. **Verified by `tools/privacy_sweep.py` over every commit in
+  `7de3ad6..caa4bab`.**
+- **`kanban-variants` is NOT merged, deliberately.** Attempted and aborted:
+  **80 files / 44 132 insertions**, 4 conflicts, and it would create
+  `prototypes/` alongside the existing `_prototypes/` while resurrecting the
+  inline `HelpScreen` that `taskboard/keymap.py` replaced. The operator ruled
+  against merging on 2026-08-07 and the measured scope confirms it. **The
+  portable part — the detector — was cherry-picked instead** (`6083c01`). If
+  anything else from that branch is wanted, it is a cherry-pick, not a merge.
+- **The operator's name and address remain in every commit's AUTHOR metadata.**
+  Accepted by the operator for existing commits; he asked that it not appear
+  going forward. That is a git identity change (a GitHub `users.noreply`
+  address), **operator-level config, not a repo change — NOT DONE HERE.**
+- **`docs/sample/report-example.html` was cleared, not fixed.** It is synthetic
+  (fixture vocabulary, 0 verbatim matches) but there is no law tying it to a
+  fixture, so a regenerated sample could quietly come from the live board.
+  `taskboard/report.py` is the writer to watch.
+- **The sweep is a command, not a gate.** Nothing runs `tools/privacy_sweep.py`
+  against the real board automatically, by design — but that means a leak is
+  caught only when someone runs it. A pre-commit hook is the obvious next step
+  and was NOT built.
 
 > **The header sat at `eec625b` / 2026-07-31 for a whole day of shipping.** The
 > close step that owns this line did not run when batch-02 closed, which is the
@@ -17,6 +50,27 @@ legibility batch `2026-08-06-fastflow-04` is committed locally and **not pushed*
 > would have reported an empty queue that looked like "nothing pending".
 
 ## Shipped
+
+- **DONE** · `2026-08-07-fastflow-05` — **the live board becomes unreachable
+  from anything committable.** `tools/privacy_sweep.py` + 8 tests, matching
+  truncated forms down to a stated 10-char floor because the failure that
+  happened was a name reaching a file ONE LETTER short through an ellipsising
+  label column — a first hand scrub replaced the whole token and called six
+  rewritten commits clean while all six still carried it. Tested against a
+  planted leak in both directions, 7 mutations all killing. Executed: main's
+  tracked tree 99 files / 0 leaking. `tests/test_requirements.py` widened
+  (hand-written first-party tuple → discovery; `tools/` had been outside its
+  sweep entirely). **739 green.** (`6083c01`, local — **not pushed**)
+  · *Three defects the flow caught that the hand work had not: the truncated
+  residue in 6 commits; the batch's own spec quoting a real task title; and
+  the detector's own test file using three real project names as fixture
+  constants — invisible to its first sweep because the file was still
+  untracked. Two of the batch's own tests were vacuous on their first mutation
+  run (`board_strings` sort order, and `git check-ignore` answering from the
+  INDEX so every `.gitignore` negation went untested).*
+  · *Branch-side work — capture scripts, the widget constructor, the scratch
+  `.gitignore` — landed on `kanban-variants` (`f5f0e81`, 164 green), which is
+  NOT merged; see above.*
 
 - **DONE** · `2026-08-06-fastflow-04` — **the gantt gets its gauge.** The three
   parts of the approved prototype that never shipped when its texture did
