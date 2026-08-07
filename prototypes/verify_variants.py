@@ -18,7 +18,12 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import kanban_variants as KV               # noqa: E402  (installs the patch)
-from taskboard.models import Board, default_board_path   # noqa: E402
+from taskboard.models import Board   # noqa: E402
+
+# Synthetic on purpose: this benchmark used to time renders of the operator's
+# live board, so its numbers moved with private data nobody reading them could
+# see, and its output named real tasks. Same fixture the captures use.
+FIXTURE = ROOT / "prototypes" / "out" / "_fixture_late.json"
 
 W, H = 118, 30
 CELLS = W * H
@@ -76,7 +81,9 @@ async def drive_check() -> None:
 
 def budget_check() -> None:
     print("\n== BUDGET (tui-design/BUDGET.md)")
-    board = Board.load(default_board_path())
+    if not FIXTURE.exists():
+        raise SystemExit(f"FIXTURE MISSING: {FIXTURE}")
+    board = Board.load(FIXTURE)
     tasks = board.visible_tasks(False)
     sel = tasks[len(tasks) // 3].id if tasks else None
     frame60 = 1e6 / 60

@@ -2,8 +2,14 @@
 
     python prototypes/capture.py
 
-Renders every variant at a realistic viewport against the REAL board data, so
-the comparison is made on real density, not on lorem ipsum.
+THE FIXTURE IS SYNTHETIC AND THAT IS DELIBERATE, for the same reason
+`capture_languages.py` gives: this script WRITES ARTIFACTS that get committed,
+and a render of the operator's live board is not shareable. It used to load
+`default_board_path()` on the argument that real data gives real density --
+and the `out/variants.txt` it produced carried 25 verbatim task titles into
+git, on a public remote's branch, until the history was rewritten on
+2026-08-07. Real density is not worth someone's private work; `_fixture_late`
+is late-skewed, which is the density that actually stresses these variants.
 """
 from __future__ import annotations
 
@@ -16,17 +22,23 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from rich.console import Console
 
-from taskboard.models import Board, default_board_path
+from taskboard.models import Board
 
 W, H = 118, 30
 OUT = ROOT / "prototypes" / "out"
+FIXTURE = OUT / "_fixture_late.json"
 
 
 def capture_all(selected: str | None = None) -> None:
     import kanban_variants as KV
 
     OUT.mkdir(parents=True, exist_ok=True)
-    board = Board.load(default_board_path())
+    if not FIXTURE.exists():
+        raise SystemExit(
+            f"FIXTURE MISSING: {FIXTURE}\n"
+            "Refusing to fall back to the live board: this script writes "
+            "committable artifacts.")
+    board = Board.load(FIXTURE)
     tasks = board.visible_tasks(False)
     # pick a mid-list task so the "selected" state is visible in every variant
     sel = selected or (tasks[len(tasks) // 3].id if tasks else None)
