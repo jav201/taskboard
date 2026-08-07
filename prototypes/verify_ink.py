@@ -38,6 +38,12 @@ FLOOR = 0.35                                        # DENSITY.md, glance surface
 SIZES = (("glance", 40), ("widget", 60), ("board", 110))
 
 
+# The live board is not this measurement's input. Ink fraction is a number that
+# gets PUBLISHED in a table, so measuring it against the operator's tasks makes
+# the table both unreproducible and a disclosure. See tests/test_no_live_board.py.
+FIXTURE = ROOT / "prototypes" / "out" / "_fixture_late.json"
+
+
 def ink_fraction(rows: list[str]) -> tuple[float, int, int]:
     """non-space cells / total cells."""
     total = sum(len(r) for r in rows)
@@ -79,7 +85,7 @@ async def main() -> int:
         row = []
         for cls_name, w in SIZES:
             APP.apply_theme(lang)
-            app = TaskboardWidget()
+            app = TaskboardWidget(board_path=str(FIXTURE))
             async with app.run_test(size=(w, height)) as pilot:
                 await pilot.pause()
                 APP.apply_theme(lang)          # re-apply: mount resets globals
