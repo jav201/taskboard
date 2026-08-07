@@ -62,9 +62,47 @@ safety net until it is no longer needed.
 | P3 a pre-commit hook can see staged content | premise | ❓ pending | must be executed against a real staged leak, not asserted |
 | P4 the backup refs are the only thing holding the pre-rewrite objects | premise | ❓ pending | `git for-each-ref` + reflog check before deleting |
 
-## 5. Batch status
+## 5. Acceptance criteria — executed
+
+| AC | verdict | evidence |
+|---|---|---|
+| AC1 merge with decided conflicts | ✅ | 4 resolved with a stated reason; `taskboard/keymap.py` present, `HelpScreen` count 0 in `taskboard/app.py` |
+| AC2 nothing regresses | ✅ | **767 passed, 0 failed** — but only after 31 failures were worked through; see §6 |
+| AC3 merged tree carries no board data | ✅ | sweep over 177 tracked files → **0** |
+| AC4 the gate refuses a real leak | ✅ | 9 tests, all EXECUTING the hook; and **live in this repo**: staging a file holding a real task title printed COMMIT REFUSED, named the file and the string, created nothing |
+| AC5 the gate fails closed | ✅ | missing board, corrupt board, empty needle set → non-zero with a reason. 5 mutations kill, including the two "waved through" shapes |
+| AC6 future commits drop the address | ✅ | `5057c6a` carries `46639531+jav201@users.noreply.github.com`. **Repo-local only** — the global identity was NOT changed |
+| AC7 safety net removed after it is redundant | ✅ | 4 refs deleted after AC1–AC3, then reflog expire + `gc --prune=now`. **Verified by object id**: the 19 077-byte blob holding 25 real task titles no longer exists, nor does the pre-rewrite branch tip |
+
+## 6. What the merge actually cost
+
+**The conflicts were not where the damage was.** Git auto-merged into **31
+failures**, and the worst was invisible in any diff:
+`prototypes/kanban_variants.py` ran `V.render_kanban = _dispatch` at IMPORT
+time, so importing a prototype rewrote a function inside the shipping package
+for the rest of the process — 22 unrelated failures in `test_vertical_fill.py`,
+green alone and red once anything had imported the prototype. Now an explicit
+`install()`.
+
+The auto-merge had also quietly taken the branch's `m` binding into five of
+main's own modal tests while the app binds `P`, i.e. tests failing against the
+application they test, from a hunk no human resolved.
+
+Three further incompatibilities, each fixed toward main rather than by
+restoring dead code to the shipping module: `_border` and `progress_bar`
+(prototypes pinned to app internals the redesign removed — now local copies),
+and two second-person literals in `taskboard/engine.py` that main's Prism voice
+law forbids.
+
+One of this batch's own tests was environment-dependent:
+`test_the_scratch_yard_is_actually_full` asserted `> 100` files in
+`prototypes/out/`, true in the worktree and false on a fresh checkout. Replaced
+by a durable law tying the ignore rule to `capture.py`'s output directory.
+
+## 7. Batch status
 
 | field | value |
 |---|---|
-| Current phase | **B — implementing** |
-| Pushed | **nothing** |
+| Current phase | **CLOSED 2026-08-07** |
+| Tip | `5057c6a` — 767 green · **not pushed** |
+| Smoke | 4 views + `?` legend open/close; gantt 38 rows all 120 cells; live board untouched |

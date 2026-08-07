@@ -3,12 +3,46 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `6083c01` (local HEAD; `origin/main` == `caa4bab`, one commit behind)
+**Base ref:** `5057c6a` (local HEAD; `origin/main` == `caa4bab`, **5 commits behind**)
 · **Last refresh:** 2026-08-07
-**Status:** **739 tests green** on `main`. `6083c01` is committed locally and
-**not pushed** — the operator pushes and merges.
+**Status:** **767 tests green** on `main`, with `kanban-variants` MERGED
+(`ecde0da`) and a pre-commit privacy gate wired. Nothing pushed — the operator
+pushes.
 
-## Open — the privacy work, and what it did NOT close
+## Open — after `2026-08-07-fastflow-06`
+
+- **`main`'s HISTORY still carries board data, and this is now an ACCEPTED
+  RISK, not a task.** Operator ruling 2026-08-07: *"el main, ni hablar"* — no
+  rewrite, no force-push. Two project names and one task title sit in
+  `.fast-dev-flow/archive/20260724-025459-spec.md` in every commit from
+  `5ae4d42` back-to-front, on a **PUBLIC** remote. The tips are clean and the
+  pre-commit gate stops new ones. Re-open only if the operator changes the
+  ruling.
+- **The global git identity still carries the address.** Repo-local is set
+  (`46639531+jav201@users.noreply.github.com`, verified on `5057c6a`); the
+  global remains `jjgh89@msn.com`, deliberately untouched — changing it retags
+  every repository on the machine, including ones whose remotes may require a
+  verified address. One line when wanted:
+  `git config --global user.email "46639531+jav201@users.noreply.github.com"`
+- **The gate is local only.** `--no-verify` bypasses it, as it bypasses every
+  hook, and a fresh clone must run `git config core.hooksPath .githooks` (a test
+  says so rather than leaving it silent). A server-side or CI equivalent was NOT
+  built.
+- **`prototypes/` and `_prototypes/` now co-exist** on `main` after the merge.
+  Not a defect, but two directories with the same purpose and different
+  vintages is a decision waiting to be made.
+- **8 more app symbols are still imported by `prototypes/kanban_variants.py`**
+  (`HEX`, `blank_line`, `bottom`, `fill_height`, `fit`, `header`, `line`,
+  `phase_buckets`, …). Two of them broke on this merge and became local copies;
+  the rest are the same exposure, unbroken so far.
+- **A stale worktree registration `clipboard-fix`** could not be pruned by
+  `git gc` (permission denied on `.git/worktrees/clipboard-fix`). Harmless,
+  cosmetic, and it will keep printing an error on every gc.
+- **`docs/sample/report-example.html` is clear but ungoverned** — synthetic
+  today, with no law tying it to a fixture. `taskboard/report.py` is the writer
+  to watch.
+
+## Superseded — the privacy work as it stood before the merge
 
 - **`main`'s HISTORY still carries the operator's board data.** `caa4bab` and
   `ff733ec` are clean and `6083c01` is clean, but `694f38a` and every commit
@@ -50,6 +84,23 @@ No `docs/engineering-rules.md` exists in this repo, so this is the default locat
 > would have reported an empty queue that looked like "nothing pending".
 
 ## Shipped
+
+- **DONE** · `2026-08-07-fastflow-06` — **the branch lands and the gate goes
+  up.** `kanban-variants` merged (80 files / 44 132 insertions, 4 conflicts each
+  resolved toward `main` with a stated reason); a **pre-commit hook** that reads
+  the INDEX, refuses a commit carrying board data, and **fails closed** when it
+  cannot read the board; the repo-local author address moved to GitHub
+  `users.noreply`; and the four backup refs deleted after the merge was green,
+  verified by object id — the 19 077-byte blob holding 25 real task titles no
+  longer exists locally. **767 green.** (`ecde0da`…`5057c6a`, local — **not
+  pushed**)
+  · *The merge's real cost was NOT in the conflicts: git auto-merged into 31
+  failures. The worst was invisible in any diff —
+  `prototypes/kanban_variants.py` monkeypatched `views.render_kanban` AT IMPORT
+  TIME, so importing a prototype rewrote a shipping function for the whole
+  process (22 unrelated failures, green in isolation). The auto-merge had also
+  taken the branch's `m` binding into five of main's modal tests while the app
+  binds `P`.*
 
 - **DONE** · `2026-08-07-fastflow-05` — **the live board becomes unreachable
   from anything committable.** `tools/privacy_sweep.py` + 8 tests, matching
