@@ -123,5 +123,47 @@ to `/dev-flow` rather than widening silently.
 
 | field | value |
 |---|---|
-| Current phase | **A — awaiting approval** |
-| Pushed | **nothing; the operator pushes and merges** |
+| Current phase | **CLOSED 2026-08-07** |
+| Branch tip | `f5f0e81` — 164 green · **not pushed** |
+| Landed on `main` | `6083c01` + `b5f30e9` — 739 green · **not pushed** |
+| Merged | **NO — deliberately.** See §10 |
+
+## 9. Acceptance criteria — executed
+
+| AC | verdict | evidence |
+|---|---|---|
+| AC1 capability | ✅ | `capture.py` exits **0** with the fixture, **1** without; `verify_variants.py` prints ALL CHECKS PASSED, exit 0. Symbol absent from both. 4 mutations kill |
+| AC2 fixture in git | ✅ | `git ls-files --error-unmatch` succeeds; it was untracked before this batch |
+| AC3 detector can fail | ✅ | 8 tests, planted leak in both directions; **7 mutations, all killing** |
+| AC4 sweep executed | ✅ | every commit in `b3cc60d..kanban-variants` (11) → **0 leaking**; `main@caa4bab` and `@6083c01` → **0**. `694f38a` and earlier still leak — carried, needs force-push |
+| AC5 accident blocked | ✅ | `git status -uall` 892 → **0**; 4 mutations kill |
+| AC6 no artifact leaks | ✅ **after 3 failures** | the spec, the detector's own test file, and the backlog entry each carried real strings and each was caught by AC3's sweeper |
+| AC7 no implicit fallback | ✅ | `TaskboardWidget()` raises; 4 bypass sites named a fixture; 3 mutations kill. `verify_widget` 105 PASS; `verify_ink` glance column unchanged vs the live board (9/11 below floor **both ways** — pre-existing) |
+
+## 10. Why the merge did not happen
+
+`continua hasta el merge` was attempted and **aborted with measurements**:
+**80 files, 44 132 insertions, 4 conflicts** (`taskboard/app.py`,
+`tests/test_app.py`, `.gitignore`, `.fast-dev-flow/spec.md`). It would place
+`prototypes/` beside the existing `_prototypes/` and resurrect the inline
+`HelpScreen` that `taskboard/keymap.py` replaced — the outcome the operator
+ruled against earlier the same day, now with numbers behind it. The **portable
+part was cherry-picked instead**: the detector is on `main`. Anything else from
+this branch is a cherry-pick, not a merge.
+
+## 11. Self-defects this batch produced
+
+Recorded because they are the batch's own evidence that hand verification is
+not defence:
+
+1. The **first history rewrite was incomplete** — whole-token substitution left
+   a truncated form in all 6 commits. Found by the test suite, not the scrub.
+2. **Two of this batch's own tests were vacuous on their first mutation run**:
+   `board_strings`'s sort order (no nesting pair in the fixture) and every
+   `.gitignore` negation (`git check-ignore` answers from the INDEX, so a
+   tracked file never reports ignored).
+3. **Three artifacts of this batch leaked** — the spec, the detector's test
+   file, the backlog entry. The second was invisible to the first sweep only
+   because the file was still untracked when it ran.
+4. Renaming the detector's fixture **made a passing test vacuous** (it planted
+   words from the old fixture, which then matched nothing).
