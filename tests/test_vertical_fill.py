@@ -87,10 +87,21 @@ def test_a_view_that_declares_an_axis_keeps_it_at_the_bottom(mode, height):
     everything would pass the test above and quietly leave the gantt's day axis
     floating in the middle of the screen with blank rows under it.
 
-    The check is written on the LAST ROW rather than on the pad, because the
-    lanes never pad at all — their allocator spends the whole height it is
+    The check is written on the LAST ROW rather than on the pad, because on this
+    fixture the lanes never pad — their allocator spends the whole height it is
     given, so a pad-shaped assertion would be vacuous exactly there, on the view
-    the report named first."""
+    the report named first.
+
+    "The lanes never pad" HOLDS ONLY WHILE A PROJECT IS ACTIVE, and this file
+    used to say it without that clause. On a board where every project rests
+    there is no lead band to draw, the allocator bills a bench that never
+    appears, and the view pads the remainder: measured `blank == h - 3 - n_rest`,
+    exactly, over 160 renders (5 resting-lane counts × 4 widths × 8 heights). So
+    a one-project board pads 6 rows at h=10 and a two-project board pads 5 — the
+    figure moves with the lane count, which is why the clause and not a number
+    belongs here. The axis is still pinned, so the law THIS test states survives;
+    only the reason given for its shape was too broad.
+    `tests/test_row_cost.py` pins both regimes."""
     text = render_view(mode, short_board(), False, None, width=100,
                        height=height, line_map={}, presentation="grouped", tick=0)
     lines = text.plain.split("\n")
