@@ -8,3 +8,15 @@ dist/
 board.json
 .pytest_cache/
 debug-*.log
+
+# prototypes/out/ is a scratch yard: ~890 throwaway probes, logs and renders
+# accumulate there. It was NOT ignored, so a single `git add -A` would have
+# committed all of them -- and this is the directory a capture writes into, so
+# the one accident and the one leak share a path. Everything is ignored and the
+# few files that are genuinely inputs or reviewed artifacts are named back in.
+prototypes/out/*
+!prototypes/out/_fixture_late.json
+!prototypes/out/kanban-baseline.svg
+!prototypes/out/kanban-flow.svg
+!prototypes/out/kanban-matrix.svg
+!prototypes/out/kanban-triage.svg
