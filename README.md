@@ -21,20 +21,21 @@ widget. Four switchable views over the same data; single dark theme tuned for a 
 Built and verified against **Textual 8.2.8 / rich 15.0.0** (Python 3.12).
 
 ```
-◆ TASKBOARD                                              7 open · 2 due
-▌ WEBSITE REDESIGN                               unaged  !1  3 open  ▲3d
-            ···············╎···⢀⣀⡀◆···························
-            ···············⢠⣤⣤⣤⣼⣿⡇····························
-            ·············⢀⣶⢸⣿⣿⣿⣿⣿⡇····························
-  Fix checkout 500 error                                             ▲3d
-▎ Platfo…   ···············╎·······⣤⣤⣤⣤⣿⣿⣿⣿⣿⣿⣿⡇···············    ⣿⣿⣿⣿⣿⡇
-▎  ⠤ KServe rollout                                               ⣿⣿⣿⡇··
-▎  ⣀ k3s bootstrap                                                ⣿⣿⣿⡇··
-▎ API Pl… ‖ ···············╎·········⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿············    ⣿⣿⣿⣿⣿⡇
-▎  ⣀ Write API reference                                          ⣿⣿⣿⡇··
-▎ Inbox     ···············╎⢸·································    ······
-▎  ⠤ Review pull requests                                         ⣿⡇····
-▏ Data W… ✓  1/1 done · · · · · · · · · · · · · · · · · · · ·  completed
+◆ TASKBOARD                                             13 open · 3 due
+▌ WEBSITE REDESIGN·········╎···················· unaged  !1  3 open  ▲2d
+            ···············⢀⣀⣀⣿⣿⣿⣿⡇◆··························
+            ··············⣰⢸⣿⣿⣿⣿⣿⣿⡇···························
+  Fix checkout 500 error···╎········································ ▲2d
+▎ Mobile…   ···············╎·····⣀⣀⣀⣶⣶⣶⣶⣶⣶⡆···················    ···30d
+▎  ⠤ Audit dependencies····╎····································· ···12d
+▎ API Pl… ‖ ···············╎·⢀⣀⣰⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶············    ···45d
+▎  ⣀ Write API reference···╎····································· ····5d
+▎ Inbox     ···············⢀⣰·································    ·····—
+▎  ⠤ Review pull requests··╎····································· ····1d
+▎ Data W… ✓ ··············⢀╎··································    ··done
+▎  ⠤ Compress database backups··································· ···▲1d
+▎ Legacy… ╳ ···············╎··································    ··done
+▎  ⣀ Shut down legacy servers···································· ····8d
             -30d         today                            +69d
 ```
 
@@ -42,7 +43,8 @@ Every row sits on **one shared axis of days** — `╎` is today, one cell is tw
 two projects' work is comparable by eye. The project under the most pressure leads with a
 drawn field ending in `◆`, its own due date; the rest get a row each; anything with
 nothing open **rests** at the bottom. The right edge of every row is a **six-cell due
-meter**: short means act now, ash means spent, and `▲` is the only alert on the row.
+readout**: it says the number of days — `4d`, `today`, `▲3d` when overdue, `done` when
+finished, `—` when there is no date. `▲` is the only alert on the row.
 
 **There is no box.** The views commit with rules, not borders — every cell of the width
 carries content or field, and the counts that a title bar would have held ride the head
@@ -52,7 +54,7 @@ row instead.
 
 | Key | View | What it's for |
 |-----|------|---------------|
-| `1` | **Lanes** | One row per project on a shared day axis, **ranked by pressure**: a drawn field for the project that needs you now, a row for the rest, a resting row for anything with nothing open. Each row shows the project's status (`‖ ╳ ✓`) and ends in its due meter; the leader's band carries its open count, its high-priority count `!N`, and how long its work has sat in phase. |
+| `1` | **Lanes** | One row per project on a shared day axis, **ranked by pressure**: a drawn field for the project that needs you now, a row for the rest, a resting row for anything with nothing open. Each row shows the project's status (`‖ ╳ ✓`) and ends in its due readout; the leader's band carries its open count, its high-priority count `!N`, and how long its work has sat in phase. |
 | `2` | **Agenda** | Every dated task on one shared day axis, ordered by urgency, each drawing its reach from today to its due date. No meter here on purpose — the row already says the same thing twice, as order and as length. |
 | `3` | **Gantt** | The same day axis, with a **past**: each project is two bands — its span (ash for elapsed, colour for what remains, ending at `◆`) over a progress band, so **the gap between them is the slip**, read as a length. Each task is a reach tipped by its phase glyph; finished work rests in ash at the tail. |
 | `4` | **Kanban** | Every task in its phase column, grouped by project. |
@@ -180,6 +182,7 @@ window, then tap it again to go frameless.
 | `i` | Open the inline image viewer for the selected task (rescaled thumbnails) |
 | `Enter` | Details of the selected task (read-only: every field, notes, URLs, images) |
 | `f` | Manage the board's phases (add / rename / reorder / delete) |
+| `Ctrl+E` | **Insert an emoji** — in the task or project editor, search by name and insert the glyph at the cursor. Only emoji whose width is unambiguous are offered, so a title can never lean its row. |
 | `Tab` | Kanban only: switch between the grouped and matrix layouts |
 | `R` | **Write a report** — a self-contained HTML document of the board, saved beside your board file. It says where it went and does not open it. |
 | `c` | Choose the two ribbon city clocks (type to find a city — accent-blind, so `Sao Paulo` finds `São Paulo`) |
