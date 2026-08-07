@@ -1142,8 +1142,26 @@ class TaskboardWidget(App):
     SIZE_CLASSES = ("glance", "widget", "board")
 
     def __init__(self, board_path=None, forced: str | None = None):
+        """`board_path` is REQUIRED despite the default on the signature.
+
+        It used to fall back to `default_board_path()`, so every construction
+        site that simply forgot the argument silently rendered the operator's
+        live board. `verify_board.py:launch` was written to guard exactly that
+        -- and four verifiers never called `launch`, which is how the fallback
+        stayed reachable while looking guarded. The default stays only so no
+        call site changes shape; passing nothing now raises.
+
+        The one place that legitimately wants the live board -- the `__main__`
+        runner below -- asks for it BY NAME, so reading it is a visible act at
+        one site instead of a default at every site.
+        """
         super().__init__()
-        self.board = Board.load(board_path or default_board_path())
+        if board_path is None:
+            raise ValueError(
+                "TaskboardWidget requires an explicit board_path. Pass a "
+                "fixture, or default_board_path() if you really mean the "
+                "operator's live board.")
+        self.board = Board.load(board_path)
         self.engine = Engine(self.board)
         self.size_class = "widget"
         self.forced = forced
@@ -1511,4 +1529,8 @@ class TaskboardWidget(App):
 
 if __name__ == "__main__":
     forced = sys.argv[1] if len(sys.argv) > 1 else None
-    TaskboardWidget(forced=forced).run()
+    # THE ONE SITE THAT MAY READ THE LIVE BOARD, and it says so. Running the
+    # widget by hand against your own tasks is the point of a widget; doing it
+    # by omission from a capture script is how 25 titles reached a public
+    # remote. Explicit here, forbidden everywhere else.
+    TaskboardWidget(board_path=default_board_path(), forced=forced).run()
