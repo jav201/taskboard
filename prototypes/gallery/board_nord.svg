@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1011.2 598.0" role="img" aria-label="taskboard · nord · board">
+<title>taskboard · nord · board</title>
+<rect width="1011.2" height="598.0" fill="#2e3440"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="26.8" y="40.3" fill="#88c0d0">╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮</text>
+<text x="26.8" y="57.3" fill="#88c0d0">│</text>
+<text x="35.2" y="57.3" fill="#bf616a">                                     ▐████▌  </text>
+<text x="976.0" y="57.3" fill="#88c0d0">│</text>
+<text x="26.8" y="74.3" fill="#88c0d0">│</text>
+<text x="35.2" y="74.3" fill="#bf616a">                                   ██▌    ▐██</text>
+<text x="976.0" y="74.3" fill="#88c0d0">│</text>
+<text x="26.8" y="91.3" fill="#88c0d0">│</text>
+<text x="35.2" y="91.3" fill="#bf616a">                                   ██▌    ▐██</text>
+<text x="976.0" y="91.3" fill="#88c0d0">│</text>
+<text x="26.8" y="108.3" fill="#88c0d0">│</text>
+<text x="35.2" y="108.3" fill="#bf616a">                                     ▐████▌  </text>
+<text x="976.0" y="108.3" fill="#88c0d0">│</text>
+<text x="26.8" y="125.3" fill="#88c0d0">│</text>
+<text x="35.2" y="125.3" fill="#bf616a">                                   ██▌    ▐██</text>
+<text x="976.0" y="125.3" fill="#88c0d0">│</text>
+<text x="26.8" y="142.3" fill="#88c0d0">│</text>
+<text x="35.2" y="142.3" fill="#bf616a">                                   ██▌    ▐██</text>
+<text x="976.0" y="142.3" fill="#88c0d0">│</text>
+<text x="26.8" y="159.3" fill="#88c0d0">│</text>
+<text x="35.2" y="159.3" fill="#bf616a">                                     ▐████▌  </text>
+<text x="732.4" y="159.3" fill="#7b88a1">█▂</text>
+<text x="749.2" y="159.3" fill="#4c566a">░░░░░░</text>
+<text x="808.0" y="159.3" fill="#4c566a">LOAD · 8 WK</text>
+<text x="976.0" y="159.3" fill="#88c0d0">│</text>
+<text x="26.8" y="176.3" fill="#88c0d0">╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="26.8" y="210.3" fill="#88c0d0">▇▇▇▇▇▇▇▇▇▇▇▇▇▇░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</text>
+<text x="908.8" y="210.3" fill="#7b88a1"> 13%</text>
+<text x="26.8" y="227.3" fill="#4c566a">██████████████████████████████████▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂  </text>
+<text x="908.8" y="227.3" fill="#4c566a">flow</text>
+<text x="26.8" y="261.3" fill="#88c0d0">▸board</text>
+<text x="77.2" y="261.3" fill="#4c566a"> │ </text>
+<text x="102.4" y="261.3" fill="#7b88a1"> lanes</text>
+<text x="152.8" y="261.3" fill="#4c566a"> │ </text>
+<text x="178.0" y="261.3" fill="#7b88a1"> agenda</text>
+<text x="236.8" y="261.3" fill="#4c566a"> │ </text>
+<text x="262.0" y="261.3" fill="#7b88a1"> gantt</text>
+<text x="35.2" y="295.3" fill="#7b88a1">@</text>
+<text x="52.0" y="295.3" fill="#bf616a">  8</text>
+<text x="85.6" y="295.3" fill="#7b88a1">Nearest dea</text>
+<text x="194.8" y="295.3" fill="#7b88a1">!</text>
+<text x="211.6" y="295.3" fill="#bf616a">  6</text>
+<text x="245.2" y="295.3" fill="#7b88a1">Overdue cou</text>
+<text x="354.4" y="295.3" fill="#7b88a1">~</text>
+<text x="371.2" y="295.3" fill="#ebcb8b">  4</text>
+<text x="404.8" y="295.3" fill="#7b88a1">Work in fli</text>
+<text x="514.0" y="295.3" fill="#7b88a1">x</text>
+<text x="530.8" y="295.3" fill="#ebcb8b">  1</text>
+<text x="564.4" y="295.3" fill="#7b88a1">Blocked</text>
+<text x="673.6" y="295.3" fill="#7b88a1">$</text>
+<text x="690.4" y="295.3" fill="#ebcb8b">  9</text>
+<text x="724.0" y="295.3" fill="#7b88a1">Workday bud</text>
+<text x="833.2" y="295.3" fill="#7b88a1">#</text>
+<text x="850.0" y="295.3" fill="#88c0d0">134</text>
+<text x="883.6" y="295.3" fill="#7b88a1">Board file</text>
+<text x="35.2" y="329.3" fill="#7b88a1">BACKLOG</text>
+<text x="102.4" y="329.3" fill="#88c0d0">9▄</text>
+<text x="35.2" y="346.3" fill="#4c566a">──────────────────────────</text>
+<text x="337.6" y="346.3" fill="#eceff4">F I X   C H E C K O U T   5 0 0   E R R O R</text>
+<rect x="26.8" y="367.0" width="268.8" height="17.0" fill="#3b4252"/>
+<text x="35.2" y="380.3" fill="#88c0d0">▸</text>
+<text x="43.6" y="380.3" fill="#eceff4"> Fix checkout 500 error </text>
+<text x="245.2" y="380.3" fill="#bf616a">blk</text>
+<text x="337.6" y="380.3" fill="#4c566a">PROJECT  </text>
+<text x="413.2" y="380.3" fill="#7b88a1">Website Redesign</text>
+<rect x="26.8" y="384.0" width="268.8" height="17.0" fill="#3b4252"/>
+<text x="52.0" y="397.3" fill="#7b88a1">Compress database bac…</text>
+<text x="245.2" y="397.3" fill="#bf616a">7d!</text>
+<text x="337.6" y="397.3" fill="#4c566a">PHASE    </text>
+<text x="413.2" y="397.3" fill="#7b88a1">Backlog</text>
+<rect x="26.8" y="401.0" width="268.8" height="17.0" fill="#3b4252"/>
+<text x="52.0" y="414.3" fill="#7b88a1">Renew TLS certificate</text>
+<text x="245.2" y="414.3" fill="#bf616a">3d!</text>
+<text x="337.6" y="414.3" fill="#4c566a">PRIORITY </text>
+<text x="413.2" y="414.3" fill="#7b88a1">high</text>
+<rect x="26.8" y="418.0" width="268.8" height="17.0" fill="#3b4252"/>
+<text x="52.0" y="431.3" fill="#7b88a1">Write API reference</text>
+<text x="245.2" y="431.3" fill="#bf616a">1d!</text>
+<text x="337.6" y="431.3" fill="#4c566a">STATE    </text>
+<text x="413.2" y="431.3" fill="#bf616a">blocked</text>
+<rect x="26.8" y="435.0" width="268.8" height="17.0" fill="#3b4252"/>
+<text x="52.0" y="448.3" fill="#7b88a1">Shut down legacy serve…</text>
+<text x="253.6" y="448.3" fill="#ebcb8b">2d</text>
+<rect x="26.8" y="452.0" width="268.8" height="17.0" fill="#3b4252"/>
+<rect x="295.6" y="452.0" width="16.8" height="17.0" fill="#000000"/>
+<text x="52.0" y="465.3" fill="#7b88a1">Deprecate v1 endpoints</text>
+<text x="253.6" y="465.3" fill="#ebcb8b">3d</text>
+<text x="295.6" y="465.3" fill="#003054">▆▆</text>
+<text x="337.6" y="465.3" fill="#4c566a">PROGRESS </text>
+<text x="413.2" y="465.3" fill="#88c0d0">▇▇▇▇▇▇▇</text>
+<text x="472.0" y="465.3" fill="#4c566a">░░░░░░░░░░░░░</text>
+<text x="589.6" y="465.3" fill="#7b88a1">1/3</text>
+<rect x="26.8" y="469.0" width="268.8" height="17.0" fill="#3b4252"/>
+<rect x="295.6" y="469.0" width="16.8" height="17.0" fill="#000000"/>
+<text x="52.0" y="482.3" fill="#7b88a1">Add push notifications</text>
+<text x="245.2" y="482.3" fill="#7b88a1">12d</text>
+<rect x="26.8" y="486.0" width="268.8" height="17.0" fill="#3b4252"/>
+<rect x="295.6" y="486.0" width="16.8" height="17.0" fill="#000000"/>
+<text x="52.0" y="499.3" fill="#7b88a1">Plan Q3 roadmap</text>
+<text x="253.6" y="499.3" fill="#4c566a">--</text>
+<rect x="26.8" y="503.0" width="268.8" height="17.0" fill="#3b4252"/>
+<rect x="295.6" y="503.0" width="16.8" height="17.0" fill="#000000"/>
+<text x="52.0" y="516.3" fill="#7b88a1">Update onboarding copy</text>
+<text x="253.6" y="516.3" fill="#4c566a">--</text>
+<rect x="295.6" y="520.0" width="16.8" height="17.0" fill="#000000"/>
+<text x="35.2" y="533.3" fill="#7b88a1">DOING</text>
+<text x="85.6" y="533.3" fill="#88c0d0">4▂</text>
+<rect x="295.6" y="537.0" width="16.8" height="17.0" fill="#000000"/>
+<text x="35.2" y="550.3" fill="#4c566a">──────────────────────────</text>
+<rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#3b4252"/>
+<text x="18.4" y="584.3" fill="#88c0d0">1</text>
+<text x="35.2" y="584.3" fill="#88c0d0">2</text>
+<text x="52.0" y="584.3" fill="#88c0d0">3</text>
+<text x="68.8" y="584.3" fill="#88c0d0">4</text>
+<text x="85.6" y="584.3" fill="#e0e0e0">Views</text>
+<text x="136.0" y="584.3" fill="#88c0d0"> c </text>
+<text x="161.2" y="584.3" fill="#e0e0e0">Signals </text>
+<text x="228.4" y="584.3" fill="#88c0d0"> ? </text>
+<text x="253.6" y="584.3" fill="#e0e0e0">Keys </text>
+<text x="295.6" y="584.3" fill="#88c0d0"> v </text>
+<text x="320.8" y="584.3" fill="#e0e0e0">Size </text>
+<text x="362.8" y="584.3" fill="#88c0d0"> r </text>
+<text x="388.0" y="584.3" fill="#e0e0e0">Refresh </text>
+<text x="455.2" y="584.3" fill="#88c0d0"> t </text>
+<text x="480.4" y="584.3" fill="#e0e0e0">Language </text>
+<text x="556.0" y="584.3" fill="#88c0d0"> g </text>
+<text x="581.2" y="584.3" fill="#e0e0e0">Gallery </text>
+<text x="648.4" y="584.3" fill="#88c0d0"> q </text>
+<text x="673.6" y="584.3" fill="#e0e0e0">Quit </text>
+<text x="900.4" y="584.3" fill="#5c616e">▏</text>
+<text x="908.8" y="584.3" fill="#88c0d0">^p</text>
+<text x="925.6" y="584.3" fill="#e0e0e0"> palette</text>
+</g>
+</svg>

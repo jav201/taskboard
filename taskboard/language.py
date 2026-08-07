@@ -1,0 +1,7169 @@
+"""STRUCTURE KITS — the per-language rendering mechanisms.
+
+This module exists because of a measured failure: eight "languages" whose
+structural tokens were consumed only by the hero widget, so cards, column
+heads, meters, agenda, gantt, lanes, calendar and queue rendered identically
+in all eight (PENDING.md item 0). A language that only changes colour is not
+a language (tui-design/LANGUAGES.md).
+
+A Kit is the code form of a language's commitments. Every structural token in
+`themes.py` is read HERE (or by the hero) — the acceptance check is
+`prototypes/verify_language.py`: mutate any structural token and the render
+must change; strip colour from any two languages and they must differ.
+
+Kits also carry the language's colour tokens (`kit["ink"]`…), so call sites
+that only need colour keep working unchanged.
+
+Mechanism map (each row is a commitment, not a glyph swap — LANGUAGES.md):
+
+  naught      dots on a visible lattice; drawn 3x5 count sprites; no frames
+  corgi       hairline aluminium spec-grid; numbered params; LCD segment bars
+  instrument  braille sub-cell dots; round-dot scope register; frameless
+  swiss       structure by space; typographic counts; airy pitch; the board
+              is an EDITORIAL SPREAD on a 3-column type grid under ONE
+              hairline (the masthead rule), not one rule per head
+  industrial  flat function colour; bracketed [chips]; boxed bar; the board
+              is coded FUNCTION PLATES, not framed boxes
+  phosphor    one hue; severity/brightness; CRT decay tails; block cursor
+  nord        the terminal's own idiom, on purpose — conventional bars/heads;
+              the board is a MASTER/DETAIL SPLIT, a compact driving list
+              beside one expanded task whose title is the first fixation
+  bbs         double-line frames; gradient shoulders; solid CP437 ink
+  ledger      PAPER: ruled money columns, dot leaders, tally marks in fives,
+              a band every 5th line, and the red pen reserved for debt
+  solari      SPLIT-FLAP DEPARTURE BOARD: the board is ONE SCHEDULE — task =
+              row, phase = GATE (a reverse-video band), state = a WORD in a
+              status column — quantity is DIGITS on flap cells and never a
+              bar, and the seam `▁` is the only divider on the surface
+  blueprint   CYANOTYPE TECHNICAL DRAWING: the frame stops CONTAINING and
+              starts MEASURING — quantity is a DIMENSION SPAN with its figure
+              standing on the span, metadata hangs off an EXTENSION LEADER,
+              nothing is boxed, held work is HATCHED rather than coloured, and
+              the whole frame budget is spent on one TITLE BLOCK in the bottom
+              corner whose state cell is the sheet's single KNOCKOUT
+"""
+from __future__ import annotations
+
+import copy as _copy
+from datetime import date
+from typing import NamedTuple
+
+from taskboard import bases as BS
+from taskboard import naught as NA
+from taskboard.themes import THEMES
+
+# The MASCOT mask — one creature, drawn through each language's pixel base
+# (Nothing's dot-face idiom; Charm/Claude-Code precedent: a TUI brand has a
+# face). 10x6; each language renders it with its own pixel.
+MASCOT = [
+    ".##....##.",
+    ".##....##.",
+    "..........",
+    "#........#",
+    ".#......#.",
+    "..######..",
+]
+
+# The vertical fill ramp. INDEX 0 IS THE UNLIT TRACK, NOT A SPACE (DATAVIZ
+# law 4 — see the block below): level 1 is one eighth of a cell, the lightest
+# fill this family has, so the unlit mark has to come from outside it, and the
+# leader dot is the faintest mark this module draws.
+RAMP = "·▁▂▃▄▅▆▇█"
+
+# ===========================================================================
+# COVERAGE -> GLYPH — the shared data-viz primitive (DATAVIZ.md; Bodmer P2)
+#
+# Anti-aliasing, translated to a cell grid. On a pixel display a coverage of
+# 0.4 is a BLEND: 40% of the ink mixed into the ground, and the display has
+# 256 steps to spend on it. A CELL HAS NO BLEND. It has a glyph. So coverage
+# stops being an alpha and becomes an INDEX into an ordered ramp, and the two
+# ends of the range are NAMED rather than interpolated:
+#
+#     c <= lo    the cell earned nothing -> ramp[0], the ramp's own UNLIT
+#                glyph. Never a hard-coded space: DATAVIZ law 4 — a ramp
+#                whose index 0 is air renders a flat-zero series as no
+#                surface at all, and the law says track. **THE RAMPS BELOW
+#                SPENT SIXTY PASSES SATISFYING THE LETTER OF THAT SENTENCE
+#                AND NOT ITS CLAIM** — nine of the ten had a SPACE (or
+#                braille's U+2800 BLANK, which is the same defect wearing a
+#                glyph's clothes) sitting at index 0, so "the law says track"
+#                was written directly above ten ramps that drew no track.
+#                Cured in the sixty-first pass: every DATA ramp's index 0 is
+#                now a mark the language already draws for "this position is
+#                empty" on its own meter, and the one exemption is argued
+#                where it lives (`shades`).
+#     c >= hi    the cell is full -> ramp[-1], the terminal glyph.
+#     between    ramp[max(1, round(n*c))] — the ordered middle band, and the
+#                `max(1, ...)` is DATAVIZ law 3, the microbar floor.
+#
+# `lo` DEFAULTS TO 0.0 AND THAT IS A RULING, NOT A PLACEHOLDER. Coverage AA
+# is free to drop faint ink below a threshold — that is what the threshold is
+# for. Law 3 forbids it for DATA: "we have 1 overdue" may not render as "we
+# have none". So on the data axis the only coverage that earns blank is
+# exactly zero, and the `lo` seat is left open for STRUCTURE, which carries
+# no such law. Where the two collide the skill wins, and this is where.
+#
+# ORDERED, DETERMINISTIC, AND **NEVER DITHERED**. The obvious next move from
+# coverage AA is error diffusion: spread the quantisation residue into the
+# next cell, or perturb the index by a hash of the position, and the ramp
+# reads smoother. THIS MODULE REFUSES IT, and the refusal is written here so
+# that nobody re-adds it as an improvement. Two reasons, both about this
+# repo rather than about taste:
+#
+#   1. A position-dependent glyph makes the SAME VALUE draw differently in
+#      two places. Every byte-identity law in `verify_language` becomes
+#      unwritable, and a snapshot suite can no longer say what a render
+#      should be — it can only say what it happened to be.
+#   2. A static surface that re-renders on a tick would CHURN: the dither
+#      pattern moves while the data stands still. That is motion with no
+#      event behind it, which MOTION.md refuses on its own terms.
+#
+# One coverage, one ramp, one glyph, forever.
+# ===========================================================================
+COVER_LO = 0.0                 # at or under this, the cell draws its unlit
+COVER_HI = 1.0                 # at or over this, the cell draws its terminal
+
+# The RAMPS. Named by what they ARE, not by who uses them, because two
+# mechanisms share `phosphor` and the eighths ramp serves both `_pulse` and
+# `plot`. `shades` is here so that this registry and `bases.SHADES` are one
+# definition rather than two copies — the suite asserts they agree, which is
+# what makes the entry a law and not decoration.
+#
+# **INDEX 0 IS A TRACK, AND WHICH TRACK IS NOT A TASTE QUESTION.** The rule
+# the sixty-first pass applied to all ten: the unlit glyph is the mark the
+# language ALREADY DRAWS for an empty position on its own `meter` — so a
+# spark's zero and the meter's unrun track are one idiom and not two — and
+# where that mark already occupies a LIT level, the ramp's own family
+# supplies the step above it rather than a new vocabulary being invented.
+# Two ceilings hold it honest: the unlit carries ink (law 4) and it carries
+# at most a QUARTER of the cell, because a track heavy enough to read as
+# data is worse than no track at all.
+COVER_RAMPS = {
+    # 9 levels, vertical partial fill. `_pulse`'s zero bucket and `plot`'s
+    # partial top cell. See `RAMP` for why the unlit is a leader dot.
+    "eighths":   RAMP,
+    # 5 levels, area fill (bases.shade). **THE ONE DECLARED LAW-4 EXEMPTION,
+    # and it is a semantic one rather than a budget one:** this is the BITMAP
+    # ramp, its cell is a pixel of a SPRITE, and a sprite's ground is ABSENCE
+    # — not a datum worth zero. Inking index 0 would put texture inside every
+    # empty pixel of every mascot. Law 4 is a law about DATA; no `meter`
+    # mechanism routes this row, and `bases.py` owns the definition.
+    "shades":    BS.SHADES,
+    # sub-cell fill — instrument. THIS ROW IS THE DEFINITION of instrument's
+    # unlit: `_meter_braille`'s flow row NAMES `[0]` and `[3]` from here
+    # (#44). Pass 61 chose the glyph by looking at that meter and said so in
+    # this comment, which left the two tied by PROSE and free to drift in
+    # either direction; the source is here and the meter reads it. The blank
+    # it replaces (U+2800) was a real codepoint with zero ink — the law-4
+    # defect wearing a glyph's clothes.
+    "braille":   "⠐⣀⣤⣿",
+    # sub-cell dots — naught's FINE. The ONE ramp that was already right, and
+    # the reason the defect was findable: `⠂` is the lattice mark, and it
+    # separates from level 1 by dot POSITION rather than by dot count.
+    "fine":      "".join(NA.FINE),
+    # the conventional spark — nord (`blocks`) and industrial (`boxed`).
+    # `░` is the track both `_meter_blocks` and `_meter_boxed` already draw
+    # for the unrun part of the bar one row above the spark. It ties level 1
+    # in ink and differs from it in FORM (a texture against a solid foot),
+    # which is the distinction the greyscale law actually asks for.
+    "blocks":    "░▂▅█",
+    # two weights and a BROKEN one — swiss. The meter's track is `─`, but
+    # that glyph is this ramp's level 1 (a measured minimum), so the unlit is
+    # the same rule DASHED: a hairline chart's zero is not the absence of the
+    # rule, it is the rule with nothing standing on it. Levels 2 and 3 still
+    # repeat — a declared two-weight idiom, censused, and the milder half of
+    # what DATAVIZ law 1 names.
+    "hairline":  "┈─━━",
+    # segment height + ghost — corgi. **THE CASE DATAVIZ LAW 1 CITES BY
+    # NAME**, cured: it was `' ▄▄█'`, whose levels 1 and 2 were the same
+    # glyph separated only by TONE, so a third of corgi's range vanished in
+    # greyscale. `░` is corgi's own ghost (`plot`'s lcd branch draws exactly
+    # that for an unlit segment — an LCD segment is never black, it is
+    # faint), and the lit levels now climb in HEIGHT, which is the cure the
+    # skill prescribes in the same sentence.
+    "lcd":       "░▄▆█",
+    # intensity — decay / gradient. The full shade family: a CRT's unlit
+    # phosphor still glows, and `_meter_decay` already draws `░` behind the
+    # head for exactly that reason.
+    "phosphor":  "░▒▓█",
+    # flat grey steps — darkside. `▁` is the language's declared track:
+    # `_meter_step` fills with `█` against a `▁` rail precisely so that fill
+    # and track differ by SHAPE. The step ladder rises above it.
+    "step":      "▁▂▄█",
+    # the leader/line ladder — blueprint. Four real drafting line types:
+    # the leader DOT (which `plot`'s dimension branch already prints, dim,
+    # for an unmeasured column), the broken line, the extension line, the
+    # heavy dimension line. Nothing is ever filled — a drawing marks a
+    # height, it never blocks it in.
+    "dimension": "·╌─━",
+}
+
+# `meter` token -> ramp name. ONE SEAT: the data-viz family already
+# dispatches on `meter`, so this is the same key, not a second vocabulary.
+# `blocks` and `boxed` are absent on purpose — neither declares a spark ramp
+# of its own, so both inherit the conventional one. `tally` is absent because
+# a ledger BUILDS its ramp from its own token (see `Kit.cover_ramp`), and
+# `odometer` is absent because a flap board's quantity is a FIGURE, not a
+# coverage — it does not route at all.
+METER_RAMP = {
+    "dotgrid": "fine", "braille": "braille", "hairline": "hairline",
+    "lcd": "lcd", "decay": "phosphor", "gradient": "phosphor",
+    "step": "step", "dimension": "dimension",
+}
+
+
+def coverage_index(c: float, levels: int,
+                   lo: float = COVER_LO, hi: float = COVER_HI) -> int:
+    """The index a coverage of `c` earns on a ramp of `levels + 1` glyphs.
+
+    This is the primitive; `coverage_to_glyph` is the lookup on top of it.
+    Both exist because the INDEX is the thing — a caller that also picks a
+    TONE from the level (every spark in this module does) must read the same
+    number the glyph came from, and a second inline quantiser beside the
+    first is the defect this pass exists to remove."""
+    if c <= lo:
+        return 0
+    if c >= hi:
+        return levels
+    return max(1, min(levels, round(levels * c)))
+
+
+def coverage_to_glyph(c: float, ramp: str,
+                      lo: float = COVER_LO, hi: float = COVER_HI) -> str:
+    """One cell of coverage `c`, drawn on `ramp`.
+
+    **NEVER DITHERED.** The mapping is ordered, total and deterministic:
+    the same coverage draws the same glyph in every cell of every render, in
+    every process. This module refuses error diffusion and position-hashed
+    perturbation — see the block above `COVER_LO` for the two measured
+    reasons — so a value's glyph never depends on WHERE it is drawn."""
+    return ramp[coverage_index(c, len(ramp) - 1, lo, hi)]
+
+
+def mark(s: str) -> str:
+    """Literal text inside a markup string, escaped so that BOTH parsers this
+    app is read by agree on it.
+
+    `rich.markup.escape` only escapes a `[` that looks like the start of a
+    TAG, and that is where the two disagree: `[ ` and a bare `[` are left
+    alone, rich renders them as literal text, and TEXTUAL — whose own markup
+    parser is what `Static.update` actually uses — swallows the `[/]` that
+    follows as literal text too, so the style never closes and a raw `[/]`
+    reaches the glass. It had been doing exactly that on this app's config
+    screen for four passes (`[[/]█|]` where a bracketed switch was meant),
+    and the suite could not see it because its oracle was rich.
+
+    Escaping EVERY `[` as `\\[` is accepted by both parsers, so this is one
+    string that means one thing on both sides.
+
+    **THIS IS THE ONLY ESCAPING THIS MODULE USES.** The fifty-sixth pass swept
+    the twenty-three `rich.markup.escape` seats that were left (item #25) and
+    dropped the import, so "literal text goes through `mark`" is a rule a grep
+    can check rather than a claim each new call site has to remember. What the
+    sweep found on the way is worth more than the swap: `escape` was not
+    merely leaking a `[/]`, it was DELETING user text. A title typed
+    `[urgent] ship it` is escaped by rich (`[u` looks like a tag to it), but
+    three languages upper-case their titles, and `[URGENT]` does NOT look like
+    a tag to rich — so it went through unescaped and Textual ate it. corgi,
+    solari and blueprint were each printing ` SHIP IT`.
+
+    THE ONE CASE NEITHER ESCAPING CAN CURE, measured rather than assumed:
+    text ending in a single backslash. `escape` doubles it, `mark` does not,
+    and that is the only disagreement between them on text with no `[` in it.
+    It does not matter on the glass, because the seat is always
+    `f"[tone]{...}[/]"` and TEXTUAL reads the `\\` before a `[` as a literal
+    backslash plus an ESCAPED bracket either way — so both escapings print a
+    raw `[/]` there, and no encoding of a trailing backslash was found that
+    both parsers close the tag after (`prototypes/out/_p56_prove.py` §3b
+    searched five). It is a Textual-side limit, it is filed as its own item,
+    and it is not made worse by this sweep."""
+    return s.replace("[", "\\[")
+
+
+def _pulse(counts: list[int], width: int) -> str:
+    """Relative load across buckets as a ramp row (the conventional idiom —
+    nord/industrial keep it; other languages replace the mechanism)."""
+    if not counts or width <= 0:
+        return ""
+    hi = max(counts) or 1
+    per = max(1, width // len(counts))
+    out = []
+    for n in counts:
+        out.append(coverage_to_glyph(n / hi, COVER_RAMPS["eighths"]) * per)
+    return "".join(out)[:width].ljust(width)
+
+
+def _fit(title: str, room: int) -> str:
+    """Truncate-then-escape. Width math must run BEFORE markup escaping."""
+    if room <= 0:
+        return ""
+    cut = title if len(title) <= room else title[: max(0, room - 1)] + "…"
+    return mark(cut)
+
+
+def _resample(series: list[int], n: int) -> list[int]:
+    """REFLOW, never truncate (the Kimi-fork law): when a series is wider
+    than its surface, shrink RESOLUTION and keep every sample — bucket-max,
+    because load peaks are the datum. `series[:w]` silently lied about the
+    tail (the calendar's last week vanished at 21 cells)."""
+    if len(series) <= n or n <= 0:
+        return list(series)
+    step = len(series) / n
+    return [max(series[int(i * step): max(int(i * step) + 1,
+                                          int((i + 1) * step))])
+            for i in range(n)]
+
+
+def _fit_parts(parts: list[tuple[str, str]], w: int) -> str:
+    """Progressive disclosure for metadata rows: `parts` are (markup, plain)
+    pairs joined while their PLAIN width still fits w. A fixed-width detail
+    row WRAPS in a narrow column and the card grows a phantom third row —
+    fields that don't fit are dropped, never folded."""
+    out, used = [], 0
+    for mk, pl in parts:
+        if used + len(pl) > w:
+            break
+        out.append(mk)
+        used += len(pl)
+    return "".join(out)
+
+
+def _span_text(n: int, label: str, fill: str = "─", open_: str = "├",
+               close: str = "┤", clipped: bool = False, brk: str = "╌",
+               outside: bool = True) -> str:
+    """A DIMENSION SPAN: two terminators, a run between them, and the figure
+    standing ON the run — `├──── 03D ────┤`.
+
+    Module level rather than a kit method because the `dimension` METER draws
+    the same object as the `blueprint` kit does, and two implementations of one
+    mechanism is how a language forks its own identity (DATAVIZ.md's dispatch
+    law). Exactly `n` cells whenever the figure fits inside the run.
+
+    Below the width its own label needs, the figure steps OUTSIDE the span
+    rather than being ellipsed into it — which is what a draftsman does with a
+    dimension too small to letter. A caller that reserved an EXACT seat passes
+    `outside=False` and the figure is dropped instead, so the seat is kept.
+
+    `clipped` is the CLIP FLAG (DATAVIZ: clip and flag, never clamp): the run's
+    first cell becomes a BREAK mark, so an off-scale span says it is off-scale
+    and the figure on it stays the truth.
+    """
+    n = max(2, int(n))
+    run = n - 2
+    inner = run - (len(label) + 2)
+    if inner >= 0:
+        left = inner // 2
+        body = (open_ + fill * left + " " + label + " "
+                + fill * (inner - left) + close)
+    elif outside:
+        body = open_ + fill * run + close + " " + label
+    else:
+        body = open_ + fill * run + close
+    if clipped and n >= 3:
+        body = body[0] + brk + body[2:]
+    return body
+
+
+# ===========================================================================
+# THE COMPONENT CONTRACT (tui-design/COMPONENTS.md).
+#
+# Transcribed from LVGL's own part decomposition, which is the one
+# professional corpus that publishes a control's anatomy as DATA rather than
+# as a picture. Two claims, and they are the whole track:
+#
+#   1. PARTS ARE UNIVERSAL. No language may add or remove a part. A language
+#      expresses itself in HOW each part is drawn, never in WHICH parts
+#      exist. `bar` is EXACTLY `slider` minus the knob — the knob is the
+#      affordance of CONTROL, and its absence is what makes a readout.
+#   2. STATES FOLLOW FROM PARTS, so they are DERIVED and not a second
+#      hand-written list. A component with no knob takes no interactive
+#      state: there is nothing to focus, nothing to edit, nothing to press.
+#
+# The state axis is LVGL's canonical six. EDITED is the one the touch world
+# defines and then styles 0 times out of 1848 sampled widgets — "focused AND
+# the arrow keys now mutate the value instead of moving focus". In a keyboard
+# TUI that state is not exotic, it is the centre of the interaction.
+# ===========================================================================
+DEFAULT = "default"
+FOCUSED = "focused"
+EDITED = "edited"
+ACTIVE = "active"
+CHECKED = "checked"
+DISABLED = "disabled"
+STATES = (DEFAULT, FOCUSED, EDITED, ACTIVE, CHECKED, DISABLED)
+
+COMPONENT_PARTS = {
+    "slider": ("main", "indicator", "knob"),
+    "bar": ("main", "indicator"),
+    # THE SWITCH DECLARES THE SAME THREE PARTS AS THE SLIDER, and that is a
+    # finding rather than a copy-paste: a switch is a slider whose range is
+    # boolean, so its ANATOMY is a range control's anatomy. Run the shipped
+    # composer with lo=0, hi=1 and the terminal's conventional switch falls
+    # out with no special case — indicator behind the knob when on, track
+    # ahead of it when off. The registry cannot tell switch from slider
+    # because on the axis the registry measures, they are the same thing.
+    # What differs is the RANGE, and the registry states that as CHECKABLE.
+    "switch": ("main", "indicator", "knob"),
+    # THE CHECKBOX HAS NO INDICATOR, and that absence is the whole increment.
+    # An indicator is an EXTENT — the run between an origin and the value —
+    # and a box with a mark in it has no origin to run from. So the checkbox
+    # is the first component whose value does not choose a POSITION: it
+    # chooses whether the mark is THERE. One registry fact ("indicator" in
+    # parts) is what the composer, the slot count and the chrome all read.
+    "checkbox": ("main", "knob"),
+    # THE RADIO ITEM DECLARES WHAT THE CHECKBOX DECLARES, and the registry is
+    # right to be unable to tell them apart: an ITEM is a well and a mark, no
+    # extent, exactly the checkbox's anatomy. What makes it a radio is not a
+    # part — it is that its bit is not its own. The registry describes ONE
+    # component's parts and has nothing to say about siblings, so the group
+    # invariant lives at `group_states` instead, one level up. Naming that
+    # boundary is the finding: the parts registry is a per-component fact and
+    # a scope larger than a component needs a seat larger than the registry.
+    "radio": ("main", "knob"),
+    # THE BUTTON DECLARES ONE PART, and the decision it forced is whether its
+    # LABEL is a second one. It is not, and the argument is what a part IS:
+    # a slot the LANGUAGE draws, from its own glyph table, in every state.
+    # The label's text comes from the CALLER. A language handed a word it did
+    # not choose can only "draw" it by mangling it — recasing, letterspacing,
+    # bracketing it — and every one of those either destroys the caller's word
+    # or moves the field under it. So text stays OUT of the registry, exactly
+    # where LVGL puts it (a button has `main`; its label is a CHILD object,
+    # never a part), and `main` is the label's GROUND: the walls this language
+    # draws and the field they enclose.
+    #
+    # The falsifiable consequence, which is the reason this is a decision and
+    # not a preference: because the label is content, the state cannot ride on
+    # it, so it must ride on the cells the language owns. A button therefore
+    # spends at least one cell per side on its own walls, the four states are
+    # required to differ in the WALLS' shape, and the label is required to
+    # come back out of the render byte for byte. Had the label been a part,
+    # those two laws would contradict each other.
+    #
+    # NO INDICATOR AND NO KNOB, and that pair is the whole anatomy: nothing is
+    # measured (no extent) and nothing is set (no bit), so there is no value
+    # here at all — the first component in this registry with none. What that
+    # cost the derivation is stated at `actuator` below.
+    "button": ("main",),
+    # THE TEXT FIELD, AND `caret` IS THE FIRST NEW PART SINCE THIS REGISTRY
+    # WAS WRITTEN. The button ruled that TEXT is not a part; the question a
+    # text field asks is the opposite one — the caret is not text, so is it a
+    # part, or is it a STATE of `main`? It is a part, and there are three
+    # reasons, the third of which is structural rather than aesthetic:
+    #
+    #   * IT PASSES THE BAR THE LABEL FAILED. A part is a slot the LANGUAGE
+    #     draws, from its own glyph table, in every state it applies to. The
+    #     caret's glyph is the language's (naught's lit lattice dot, ledger's
+    #     pen, instrument's braille tick), never the caller's, and where it
+    #     stands is state. All three tests, where the label failed all three.
+    #   * A STATE CANNOT PICK OUT ONE CELL. This is the decisive one. In this
+    #     renderer a state is a property of the WHOLE component — `part_glyph`
+    #     takes (part, state) and answers once — so "main, but in EDITED"
+    #     would put a caret in EVERY cell of the field. The only thing that
+    #     distinguishes one cell from its neighbours here is its PART TAG.
+    #     A mark at one of N seats is a part or it is nothing.
+    #   * AND IT IS NOT THE KNOB. Calling it `knob` would have cost no new
+    #     part and would have made `("main", "knob")` — the CHECKBOX's exact
+    #     tuple — mean two different mechanisms: a mark that is either there
+    #     or not, and a mark that is at one of `w` places. Identical parts
+    #     with different anatomies is precisely what this registry exists to
+    #     make impossible (the slider and the switch share a tuple because
+    #     they genuinely share an anatomy).
+    #
+    # `main` IS THE FIELD'S GROUND, and its glyph carries the walls with it —
+    # an ODD string read at three seats: the wall that opens, the RUNE the
+    # paper is made of, the wall that closes (`field_form`). One part, one
+    # string, one tone, because the walls and the paper are one thing: the
+    # ground this language lays under someone else's words. The button's
+    # walls are `main` for the same reason; it needs no ground rune because
+    # it has no interior to spend one on, and this component does.
+    #
+    # THE WALLS ARE NOT OPTIONAL, and that is the button's physics again. A
+    # value may fill every cell of the field, so a field with no cells of its
+    # own would have nowhere to say DISABLED without editing the user's text.
+    # The state rides the walls; the value comes back byte for byte.
+    "textfield": ("main", "caret"),
+    # THE SCROLL BAR DECLARES THE BAR'S EXACT TUPLE, and declaring NO new
+    # part is the whole finding. The caret was a new part because a state
+    # cannot pick out one cell; a thumb is not a new part because a scroll
+    # bar HAS no cell a bar does not have. It is a track and a run on it —
+    # `("main", "indicator")`, twice over, and the registry is right to be
+    # unable to tell the two apart on their parts, exactly as it cannot tell
+    # a slider from a switch or a checkbox from a radio.
+    #
+    # WHAT DIFFERS IS THE VALUE, AND IT DIFFERS IN ARITY. A bar's value is
+    # ONE number and its extent is anchored at the origin: the run measures
+    # `val` and always starts at cell 0. A scroll bar's value is TWO — where
+    # the view is AND how big it is — and its run is anchored nowhere: it
+    # floats, and its LENGTH is the second number made visible. That is the
+    # first thing `value_pos` (one value -> one position) cannot answer, and
+    # it is answered by `view_pos` below rather than by a fourth part.
+    #
+    # THE PARTS REGISTRY CANNOT SEE ARITY, and it never could — parts are
+    # SLOTS. So the fact is DECLARED, at `VIEWED`, which is the same seat
+    # and the same reason CHECKABLE exists: two components sharing a tuple
+    # and differing in what their value IS. CHECKABLE says the value's RANGE
+    # is boolean; VIEWED says the value's ARITY is two. One family, second
+    # member — which is the answer to "a third declared fact is a smell".
+    #
+    # IT IS A READOUT, and that is the derivation's answer rather than a
+    # taste. In THIS keyboard TUI nothing is ever scrolled by grabbing the
+    # bar: the keys act on the CONTAINER and the bar reports where the
+    # container got to. So there is no grip, and `actuator` therefore returns
+    # None, and `component_states` therefore gives DEFAULT and DISABLED and
+    # nothing else — the bar's own two states, reached with zero edits to any
+    # seat. A `knob` added here to make it feel operable would be the dead
+    # metadata this file has refused twice.
+    "scrollbar": ("main", "indicator"),
+    # THE STEPPER, AND ITS FIRST QUESTION IS WHETHER IT IS A COMPONENT AT
+    # ALL. A stepper through a named set and a radio over the same set are
+    # THE SAME CHOICE — one option list, one selected index — so the honest
+    # opening position is that they are one registry entry with two
+    # drawings. They are not, and the reason is the one this registry has
+    # been settling since the switch:
+    #
+    #   * the registry describes ANATOMY. A radio ITEM is a well and a mark
+    #     (`("main", "knob")`); a stepper is a WORD BETWEEN TWO STEPS. Those
+    #     are different slots, drawn from different glyphs, in different
+    #     numbers — a radio set of three draws three wells and a stepper
+    #     draws two affordances whatever the set's size.
+    #   * so this is the INVERSE of every collision this registry has met.
+    #     The switch shares the slider's tuple and differs in its value's
+    #     RANGE; the scroll bar shares the bar's and differs in its ARITY;
+    #     both were separated by a declared fact. Here the parts DIFFER and
+    #     the value model is the SAME — and a shared value model is not a
+    #     registry fact at all, because `group_states` already owns it, one
+    #     level above the registry, exactly where the radio put it.
+    #
+    # TWO ENTRIES, ONE CHOICE MODEL, and the falsifiable half is the second
+    # one: `Kit.stepper` reaches `group_states` with the set's size and its
+    # index, so an out-of-range selection RAISES here for the same reason it
+    # raises there, and the state of the option a stepper SHOWS is the state
+    # of the item a radio MARKS, byte for byte, at every index. Desynchronise
+    # them and the suite says so.
+    #
+    # `step` IS ONE NEW PART AND THE TWO ENDS ARE ITS TWO HALVES. The caret's
+    # argument, re-run and coming out the other way: a state cannot pick out
+    # one cell, so a mark at one of N seats must be a part — but the two
+    # steps are not at N seats, they are at exactly TWO, and a two-cell part
+    # whose glyph is an EVEN string read at its two halves is the convention
+    # this file already uses twice (the button's walls, the field's ground).
+    # Declaring `less` and `more` would have bought two registry entries for
+    # a distinction the cell's POSITION already carries.
+    #
+    # `main` IS WHERE A STEP IS NOT, which is what `main` means everywhere in
+    # this registry — the ground a part stands on. A clamped stepper at its
+    # floor has no step down, so that seat draws GROUND, and the end
+    # behaviour is therefore visible as a PART TAG and hence as a GLYPH and
+    # hence in greyscale. WRAP AND CLAMP DIFFER IN SHAPE, with no new state,
+    # no per-cell state and no colour.
+    #
+    # AND THE SHOWN OPTION IS CONTENT — the button's ruling for the third
+    # time (a label, a value, an option). `has_value` is therefore False and
+    # nothing is printed beside it: what a stepper reports is standing in the
+    # middle of it, in the caller's own bytes.
+    "stepper": ("main", "step"),
+}
+
+# THE GRIPS — the marks a user MOVES, as a registry fact.
+#
+# `actuator` used to read "a knob where one is declared". The caret is a grip
+# and is not a knob: a knob rides a track and reports a MAGNITUDE, a caret
+# rides a field of characters and reports an INDEX. They are different parts
+# for the reason stated at `textfield` above, but they are the same thing to
+# the hand, and to the accent rule — the part under the finger.
+#
+# Two entries and no derivation, deliberately: which parts are grips is not
+# computable from their names, so it is DECLARED, exactly as CHECKABLE is.
+# The alternative was `actuator` growing an `or "caret" in parts`, which
+# hides a registry fact inside a derivation and is how a contract starts
+# accumulating hand lists at its seats instead of in its registry.
+# THE STEPPER ADDED THE THIRD, and it is the cheapest kind of growth this
+# registry has: a tuple gained an entry and no derivation was touched. A step
+# is pressed, so it is the part under the finger, so the accent belongs on it
+# for the reason a knob and a caret get one. `GRIPS` exists precisely so that
+# this is a REGISTRY edit rather than an `or "step" in parts` growing inside
+# `actuator` — which is the shape a contract rots into.
+GRIPS: tuple[str, ...] = ("knob", "caret", "step")
+
+# THE CHECKABLE FACT — one registry entry, two consequences.
+#
+# For an on/off control the value IS the checked bit: "this switch is on" and
+# "this switch's value is hi" are one fact, not two. So declaring a component
+# checkable says (a) CHECKED joins its state axis as a BIT that combines with
+# the control states — LVGL styles CHECKED|PRESSED as first-class and so must
+# we — and (b) it has NO EDITED state, because EDITED means "focused and the
+# arrows now range through the value" and a boolean has no interior to range
+# through. Pressing toggles instantly; that is ACTIVE, not EDITED.
+#
+# Both consequences are DERIVED below from this one tuple. Nothing hand-lists
+# a switch's states, and the next on/off component (checkbox, radio) lands
+# here rather than in a branch.
+#
+# THE CHECKBOX LANDED HERE AND THE DERIVATION DID NOT MOVE. That is the fact
+# the fiftieth pass went looking for: `checkbox` is the first checkable that
+# is NOT a boolean slider — no indicator, no travel, a mark that appears
+# rather than moves — and adding its name to this tuple gave it the whole
+# eight-state product axis with no edit to `component_states`, `control_of`,
+# `with_checked`, `is_checked`, `bool_value`, `state_chain` or
+# `checked_pairs`. What DID have to grow was the composer, and only where it
+# had assumed every component has an extent. The state axis belongs to
+# CHECKABLE; reading a boolean as a POSITION belonged to the switch.
+# AND THE RADIO LANDED HERE TOO, with the derivation still unmoved. Three
+# components now, one axis, zero edits at the seats — but the radio is the
+# first one for which that is NOT the whole story, because a radio item's
+# checked bit is not a fact about the item. `with_checked` survived contact
+# with the invariant by being CALLED FROM `group_states` instead of from a
+# caller: the writer of the bit is unchanged, the AUTHOR of it moved.
+CHECKABLE: tuple[str, ...] = ("switch", "checkbox", "radio")
+
+# THE VIEWED FACT — the second member of CHECKABLE's family, not a third
+# kind of thing.
+#
+# This registry now carries three declarations beside the parts, and they are
+# TWO families rather than three lists. GRIPS is a fact about PARTS (which
+# slot the hand moves). CHECKABLE and VIEWED are facts about the VALUE that
+# the parts cannot show: CHECKABLE says its RANGE is boolean, VIEWED says its
+# ARITY is two — a window is (where the view is, how big it is), and no
+# expression over `("main", "indicator")` can tell that from a bar's single
+# magnitude, because `bar` declares the same tuple.
+#
+# That collision is the proof it must be DECLARED. The registry has met it
+# twice before and answered the same way both times: the switch shares the
+# slider's tuple and is separated by CHECKABLE; the radio shares the
+# checkbox's tuple and is separated one level up at `group_states`. A fact
+# that no derivation can reach is a registry entry or it is a hand list at a
+# seat, and this file has ruled against the second one four times.
+#
+# The falsifiable consequence, which is why this is a decision and not a
+# label: the composer forks on `name in VIEWED` — take the scroll bar out of
+# this tuple and it draws as a BAR, an extent anchored at cell 0 whose length
+# is its position. Every window law goes red at once, and none of them had to
+# name a component to do it.
+VIEWED: tuple[str, ...] = ("scrollbar",)
+
+CHECK_SEP = "+"                            # "checked+focused" — LVGL's OR
+
+
+def is_checked(state: str) -> bool:
+    return CHECKED in state.split(CHECK_SEP)
+
+
+def control_of(state: str) -> str:
+    """The control bit of a possibly-combined state: `checked+focused` ->
+    `focused`, `checked` -> `default`. Every place that used to compare a
+    state for equality asks this instead, so a combination behaves like the
+    control state it carries and no call site grows a branch."""
+    rest = [b for b in state.split(CHECK_SEP) if b != CHECKED]
+    return rest[0] if rest else DEFAULT
+
+
+def with_checked(state: str, on: bool) -> str:
+    """Set or clear the checked bit of a state. This is the only way the bit
+    is ever written, which is why a switch cannot end up claiming CHECKED
+    while its knob sits at the off position."""
+    base = control_of(state)
+    if not on:
+        return base
+    return CHECKED if base == DEFAULT else f"{CHECKED}{CHECK_SEP}{base}"
+
+
+def bool_value(state: str) -> int:
+    """The value a boolean control renders at: its checked bit, as a number
+    the shared value model can take. One expression, so the cells and the
+    label beside them can never read the same switch differently."""
+    return 1 if is_checked(state) else 0
+
+
+def state_chain(state: str) -> tuple[str, ...]:
+    """Glyph-lookup order for a state: the exact combination, then its
+    control bit, then CHECKED, then DEFAULT.
+
+    The control bit is tried BEFORE the checked bit on purpose — a focused
+    switch must look focused whether it is on or off, and checkedness is
+    already carried by the knob's position, which is shape."""
+    keys = [state]
+    ctl = control_of(state)
+    if ctl not in keys:
+        keys.append(ctl)
+    if is_checked(state) and CHECKED not in keys:
+        keys.append(CHECKED)
+    if DEFAULT not in keys:
+        keys.append(DEFAULT)
+    return tuple(keys)
+
+
+def has_value(name: str) -> bool:
+    """Does this component HOLD a value? Derived, from the two registry facts
+    that can carry one: an EXTENT measures a number, and CHECKABLE declares a
+    bit. A component with neither holds nothing.
+
+    Introduced by the button, which is the first component with no value at
+    all, and it is what the label question turns on: a component that holds a
+    value has a READOUT standing beside it (`value_label`, `check_label` — a
+    slider's number, a switch's `ON`, an option's name), and a component that
+    holds none has nothing to report. Its only text is the caller's name for
+    the action, and that stands INSIDE the control. So "the word is outside"
+    and "the word is inside" are the same rule read at two values of one
+    derived fact, rather than two rules with a list of components under
+    each.
+
+    THE STEPPER TOOK THE THIRD TERM, and the pair this now makes with
+    `has_interior` is worth reading as a pair: an INTERIOR is cells a cursor
+    moves between (extent, field, series) and a VALUE is a number or a bit the
+    REGISTRY holds (extent, series, bit). The one term in each that is not in
+    the other is the whole content ruling — a `caret` indexes cells the CALLER
+    fills, so a field has an interior and holds no value; a `step` chooses
+    among seats the registry counts, so a stepper holds one. Its WORD is
+    content and stands inside it, and nothing is printed beside it, which is
+    the button's arrangement reached from the opposite side."""
+    parts = COMPONENT_PARTS[name]
+    return "indicator" in parts or "step" in parts or name in CHECKABLE
+
+
+def has_interior(name: str) -> bool:
+    """Does this component have CELLS THE ARROWS CAN RANGE THROUGH? That is
+    what EDITED requires, and the text field is what forced it to be named.
+
+    The registry declares an interior two ways, and they are two ways of
+    measuring the same run: an EXTENT (`indicator`) is a run measured from an
+    origin, and a FIELD (`caret`) is a run indexed by a mark. Both are cells
+    between which a cursor moves; neither a boolean nor a button has any.
+
+    The button's pass wrote this term as `"indicator" in parts`, and that was
+    true of every component that existed then. It is now read as the concept
+    it was standing in for — which is the same correction the button itself
+    made to `knob` when it meant `the part you grab`. Note what did NOT
+    happen: no new registry fact. Both terms are parts already declared.
+
+    THE STEPPER ADDED A THIRD TERM, and the smell is named rather than
+    denied. Three ways of saying "there is more than one place the value can
+    be": an EXTENT is a run measured from an origin, a FIELD is a run indexed
+    by a mark, and a SERIES is seats reached by stepping. Each term is a PART
+    already in the registry — nothing here is a component name and nothing
+    here is a new declared fact, which is the alternative that was weighed
+    and refused: a `RANGED = ("stepper",)` tuple would be a third family with
+    one member and no derivation able to reach it, which is the dead metadata
+    the fifty-fourth pass warned the next increment about. An enumeration of
+    ANATOMIES is bounded by the registry; a list of NAMES is not."""
+    parts = COMPONENT_PARTS[name]
+    return "indicator" in parts or "caret" in parts or "step" in parts
+
+
+def actuator(name: str | None = None) -> str | None:
+    """THE PART A USER GRABS — `None` for a readout, which has none.
+
+    THE REFINEMENT THE BUTTON FORCED, and it is stated here because it is the
+    one law of this contract that moved. Until now "has a knob" and "is a
+    control" were the same sentence, and three seats said `knob` when they
+    meant *the part you grab*: the state derivation, the tone rule, and four
+    languages' overrides of it. A button has no knob and IS a control, so the
+    sentence had to be split — and it splits on the registry, with no new
+    registry fact and no hand list:
+
+      * a knob is a grip wherever one is declared;
+      * a component that holds a VALUE and has no knob is a READOUT — the
+        indicator reports a number nobody sets, which is exactly the law that
+        made `bar` a readout, unchanged;
+      * a component that holds no value and has no knob has nothing to report
+        and nothing to grip separately, so the whole control is the grip: its
+        ground. That is the button, and it is why `("main",)` takes the
+        control states while `("main", "indicator")` still takes none.
+
+    Giving the button a decorative `knob` part instead would have kept the old
+    one-line law and bought a lie: a part invented to satisfy a derivation is
+    dead metadata, which is the defect this file has cured twice (a hardcoded
+    mechanism makes its token dead metadata again).
+
+    THE TEXT FIELD WIDENED THE FIRST CLAUSE AND NOTHING ELSE. "A knob is a
+    grip wherever one is declared" is now "a GRIP is a grip", read off the
+    `GRIPS` registry tuple — because a caret is a mark the hand moves exactly
+    as a knob is, and the accent belongs on it for the same reason. The other
+    two clauses are untouched, and every other component's answer is
+    byte-identical.
+
+    `None` for `name` is for callers that do not say which component is asking
+    — they get `knob`, the grip of every component that has one, which is what
+    the rule said before it was refined."""
+    if name is None:
+        return "knob"
+    parts = COMPONENT_PARTS[name]
+    for grip in GRIPS:
+        if grip in parts:
+            return grip
+    return None if has_value(name) else parts[0]
+
+
+def component_states(name: str) -> tuple[str, ...]:
+    """Which states apply to `name` — DERIVED from its parts and from
+    CHECKABLE, never hand-listed.
+
+    This is the contract's sharpest edge. `bar` is not "a slider we decided
+    not to make focusable"; it has no knob, so it has no control affordance,
+    so FOCUSED / EDITED / ACTIVE are not states it can be in.
+
+    A CHECKABLE component's axis is the PRODUCT of its control block with the
+    checked bit — the base block first, then the same block with CHECKED set.
+    EDITED is dropped from a checkable's block for the reason stated at
+    CHECKABLE: a boolean has no interior. One seat, and it is the registry.
+
+    TWO EXPRESSIONS, and the button moved both without adding a fact:
+    * the control block is gated on the ACTUATOR, not on the knob — see there
+      for why a one-part valueless component is its own grip;
+    * EDITED is gated on the INTERIOR, positively. It used to read "unless
+      checkable", which was true of every component that had a knob at the
+      time and silently false for a button: the arrows can only range through
+      a value that has an interior. The button read that interior off the
+      EXTENT; the TEXT FIELD has an interior and no extent, so the term is
+      now `has_interior` — the concept the extent was standing in for. Both
+      of its terms are parts already in the registry, and the removal still
+      falls out of CHECKABLE for the switch.
+
+    THE TEXT FIELD IS WHERE EDITED FINALLY MEANS WHAT IT SAYS. On a slider it
+    is "the arrows now move the value"; here it is "the keystrokes now land
+    IN the text", and the caret is the promise of exactly that — which is why
+    the caret is drawn in this state and in no other. FOCUSED is the field
+    selected; EDITED is the field entered."""
+    parts = COMPONENT_PARTS[name]
+    checkable = name in CHECKABLE
+    base = [DEFAULT]
+    if actuator(name):
+        base += [FOCUSED]
+        if has_interior(name) and not checkable:
+            base += [EDITED]
+        base += [ACTIVE]
+    base.append(DISABLED)
+    if not checkable:
+        return tuple(base)
+    return tuple(base) + tuple(with_checked(s, True) for s in base)
+
+
+COMPONENT_STATES = {n: component_states(n) for n in COMPONENT_PARTS}
+
+
+def checked_pairs(name: str) -> tuple[tuple[str, str], ...]:
+    """A checkable component's axis as (unchecked, checked) row units.
+
+    The gallery's seat. What is worth seeing about a switch is what the
+    CHECKED bit DOES at each control state, and a row per state would have
+    cost eight rows in a box that already scrolls (PENDING, forty-eighth
+    pass). Four rows, both bits, derived from the registry."""
+    return tuple((s, with_checked(s, True))
+                 for s in COMPONENT_STATES[name] if not is_checked(s))
+
+
+def group_states(n: int, selected: int, state: str = DEFAULT,
+                 focus: int | None = None) -> tuple[str, ...]:
+    """THE GROUP SEAT — the state of every item in a selection set, derived
+    from ONE index. The first thing in this contract whose scope is larger
+    than a component.
+
+    THE INVARIANT IS STRUCTURAL, not checked. "Exactly one of these is set"
+    is not enforced here; it is UNREPRESENTABLE here, because the bit is
+    computed from `i == selected` and an integer cannot equal two values or
+    none. There is no per-item boolean for a caller to desynchronise, which
+    is why `radio()` takes no `on` argument the way `switch(on)` and
+    `checkbox(on)` do. That missing argument IS the group scope.
+
+    An out-of-range `selected` is the one way to ask for zero marks, and it
+    RAISES rather than clamping: a clamp would silently move the user's
+    selection, and a set with nothing set is not a radio set. The suite's
+    control drives exactly this.
+
+    FOCUS IS A SEPARATE INDEX, and that separation is the state axis the
+    group introduces. The cursor may sit on an item that is not the chosen
+    one — both are on screen at once and both must be readable, which is the
+    sibling-scoped version of the EDITED-is-not-FOCUSED problem. A DISABLED
+    group has no cursor at all: dead controls do not hold focus.
+
+    It names no component, and that is deliberate — a segmented control or a
+    tab bar is the same fact about siblings wearing different glyphs."""
+    n = int(n)
+    if n < 1:
+        raise ValueError("a selection group with no items is not a group")
+    if not 0 <= int(selected) < n:
+        raise ValueError(f"selected {selected} is outside a group of {n}: "
+                         f"a set with nothing set is not a selection")
+    ctl = control_of(state)
+    out = []
+    for i in range(n):
+        if ctl == DISABLED:
+            base = DISABLED
+        elif focus is not None and i == int(focus):
+            base = ctl
+        else:
+            base = DEFAULT
+        out.append(with_checked(base, i == int(selected)))
+    return tuple(out)
+
+
+def value_pos(val: float, lo: float, hi: float, cells: int) -> int:
+    """THE VALUE MODEL — one seat, shared by every language and both
+    components. value -> cell index in [0, cells-1].
+
+    `lo > hi` is an INVERTED scale (LVGL's `_invert`) and needs no branch:
+    the span goes negative and the fraction runs the other way, which is
+    exactly what inversion means. A zero span never divides.
+
+    Ten languages used to carry ten copies of this arithmetic, each with its
+    own off-by-one (`w`, `w - 1`, `w - 2`, `w // 3`), which is the fork
+    defect this repo has cured twice before at the hero."""
+    cells = max(1, int(cells))
+    if cells == 1 or hi == lo:
+        return 0
+    f = (val - lo) / (hi - lo)
+    return max(0, min(cells - 1, round((cells - 1) * f)))
+
+
+def value_at(pos: int, lo: float, hi: float, cells: int) -> float:
+    """The inverse of `value_pos` — the value a cell index stands for.
+
+    The round trip that is exact is POSITION -> value -> position; the other
+    direction quantizes, and a check that claimed otherwise would be lying
+    about what a cell can hold."""
+    cells = max(1, int(cells))
+    if cells == 1:
+        return lo
+    return lo + (hi - lo) * (max(0, min(cells - 1, int(pos))) / (cells - 1))
+
+
+def view_start(total: int, size: int, focus: int | None = None,
+               start: int = 0) -> int:
+    """THE WINDOW MODEL, half one: WHERE THE VIEW LEGALLY IS.
+
+    `start` is clamped into the range a window of `size` can occupy inside
+    `total`, and then moved THE LEAST IT CAN to keep `focus` inside it. A
+    window that jumped to centre the focus would throw away the reading the
+    user already has; a window that did not move at all would let the focus
+    walk off the edge, which is truncation wearing a scroll's clothes.
+
+    THIS EXISTED ALREADY, WITH NO NAME AND NO SEAT. The fifty-third pass
+    computed exactly this arithmetic inline in `Kit.textfield` — five lines
+    that nothing in the registry declared, that no other component could
+    reach, and that the composer alone knew. That is the fork defect this
+    repo has cured three times (the hero's metrics, the head's width, the
+    switch's frames): a measure with one call site is not a measure yet, it
+    is a local variable. The scroll bar is what gave it a second caller, and
+    the second caller is what makes it a seat.
+
+    `focus=None` is "no cursor to keep in view" — the scroll bar's case,
+    where the window is HANDED a start and only needs clamping.
+
+    The arithmetic is unchanged from the fifty-third pass's inline form, and
+    that is asserted rather than asserted-about: the field's window laws are
+    older than this function and they pass untouched."""
+    total, size = max(0, int(total)), max(1, int(size))
+    last = max(0, total - size)
+    start = max(0, min(int(start), last))
+    if focus is not None:
+        f = max(0, min(int(focus), max(0, total - 1)))
+        start = min(start, f)                  # focus above the view: pull up
+        start = max(start, f - size + 1)       # focus below the view: pull down
+    return max(0, min(start, last))
+
+
+def view_pos(start: int, size: int, total: int,
+             cells: int) -> tuple[int, int]:
+    """THE WINDOW MODEL, half two: THE VIEW AS CELLS — `(first cell, span)`.
+
+    The seat `value_pos` cannot be. A magnitude is one number and answers
+    with one position; a window is two and must answer with two, because the
+    span IS the second number made visible — how much of the content you are
+    looking at, read off the thumb's LENGTH. Widening `value_pos`'s return
+    would have made every one of its six callers carry a span they have no
+    use for, so this is a second seat rather than a wider one.
+
+    IT DOES NOT INVENT AN ARITHMETIC, and that is the pass-43 discipline:
+    only the SPAN is computed here, and the POSITION is delegated straight to
+    `value_pos` on the shortened track the thumb leaves behind. So there is
+    still exactly one place in this file that turns a number into a cell
+    index, and a scroll bar's thumb sits where a slider's knob would.
+
+    THE ENDS ARE EXACT, which is where a scroll bar is usually wrong: a
+    window at `start=0` puts the thumb's first cell at 0, and a window at its
+    LAST legal start puts the thumb's last cell at `cells - 1`. The track the
+    position runs over is therefore `cells - span + 1` seats, not `cells` —
+    the off-by-one that leaves a scroll bar unable to say "you are at the
+    bottom" while the content says otherwise.
+
+    A span of at least ONE cell (a thumb that vanishes is not a thumb) and at
+    most `cells` (a window showing everything fills its track, which is the
+    honest way to say "there is nothing to scroll")."""
+    cells = max(1, int(cells))
+    total, size = max(0, int(total)), max(1, int(size))
+    if total <= size:
+        return 0, cells
+    span = max(1, min(cells, round(cells * size / total)))
+    start = view_start(total, size, None, start)
+    return value_pos(start, 0, total - size, cells - span + 1), span
+
+
+def step_index(i: int, n: int, d: int, wrap: bool) -> int | None:
+    """THE END MODEL — the seat a step lands on, or `None` when there is no
+    such seat. The first thing in this contract whose question is what
+    happens at the END of a range rather than what a range IS.
+
+    WRAP VS CLAMP IS AN ARGUMENT, NOT A REGISTRY FACT, and the codebase
+    settled it before this seat existed. A registry fact says something about
+    EVERY instance of a component; this is not true of every stepper, it is
+    true of every RING. The hours of a day wrap; a set of worker groups does
+    not; both are steppers. And the app already holds both readings and
+    chooses per call site by what the range MEANS — `action_cycle_theme` and
+    `action_move` take `% n` because a list of languages and a column of rows
+    are rings, and `action_pick` clamps because "an N-of-M control's ends are
+    where the set ends". A `WRAPPING = ("stepper",)` tuple would be declaring
+    a property of the CALLER'S DATA in the component's registry.
+
+    CLAMP IS THE DEFAULT, and that is the safe reading rather than a taste: a
+    caller who says nothing does not get their choice teleported from the
+    last option to the first. The default lives at the two COMPOSING seats
+    (`Kit.stepper`, `component_cells`) and NOT here, and that is the vacuity
+    prover's finding rather than a preference: this argument had a default
+    too, no caller ever reached it, and a value nothing can observe is the
+    dead metadata this file has refused four times. The seat that DECIDES an
+    end must always be told which end it is deciding.
+
+    ONE SEAT FOR THE RENDER AND THE BEHAVIOUR, which is the whole reason this
+    is a function and not two lines in a composer. The renderer asks it
+    whether a step EXISTS (and draws ground where one does not); a caller
+    asks it where the step GOES. So a stepper cannot draw a live arrow that
+    does nothing — not "does not", cannot, by construction, which is the same
+    discipline that keeps a switch from rendering CHECKED at the off
+    position.
+
+    IT CLAMPS `i` RATHER THAN RAISING, and the raise lives one level up. An
+    out-of-range selection is a real defect and `group_states` is where it is
+    refused, because that is where the CHOICE lives; this is arithmetic, and
+    a renderer that died on a caller's number would take the surface with
+    it."""
+    n = int(n)
+    if n < 1:
+        raise ValueError("a stepper with no seats is not a stepper")
+    i = max(0, min(n - 1, int(i)))
+    j = i + int(d)
+    if wrap:
+        return j % n
+    return j if 0 <= j < n else None
+
+
+# ===========================================================================
+# THE MOTION CONTRACT (tui-design/MOTION.md, and the SquareLine/LVGL corpus:
+# 241 published animations, ZERO of which animate a COLOUR).
+#
+# A MOTION IS A LIST OF RENDER STATES — discrete frames — and not a style
+# transition. That is the terminal's medium stated honestly: there is no
+# sub-cell position, no fractional weight and no interpolation between two
+# glyphs, so anything a spec claims to "ease between" is either quantised to
+# whole cells or is not happening at all. What survives translation into this
+# medium intact is DISCRETE SUBSTITUTION — one glyph replaced by another —
+# which is why the channels are ordered the way they are below.
+#
+# TWO DISJOINT REGIMES, and the gap between them is ILLEGAL:
+#
+#   * TRANSITION — one-shot, a state leaving one rest and arriving at
+#     another, `<= 400 ms`. (Corpus: median 300 ms, p90 600; the 400 ms
+#     ceiling captures 68% of the published one-shots.) Easing biased to
+#     DECELERATION — the corpus runs ease_out over ease_in 5:1 — and in a
+#     medium with no interpolation deceleration is not a curve, it is WHERE
+#     THE TIME IS SPENT: the change happens on the first step and the rest of
+#     the budget is the settle. A transition with a dead lead-in is ease_in
+#     wearing an ease_out's name, and the law says so.
+#   * AMBIENT — looping, period `>= 2000 ms` (corpus median 3000: spinners,
+#     breathing, a caret). A loop in the reading path with a shorter period
+#     is a distraction with a 100% duty cycle (MOTION.md).
+#
+# The 400-2000 ms DEAD ZONE is illegal in both directions: a one-shot slower
+# than 400 ms makes the user wait on the designer's taste, and a loop faster
+# than 2000 ms twitches. A spec that lands there has not decided which regime
+# it is in, and the suite refuses it rather than rounding it to the nearer
+# one.
+#
+# THE CHANNELS — THERE ARE TWO, and the third one this comment used to list
+# was pass 59's finding, kept here because the deletion IS the ruling:
+#   1. GLYPH_FRAME  — discrete substitution. The only continuous-medium
+#                     primitive that survives the translation intact.
+#   2. CELL_POSITION— a mark at a different row/column. Quantised for free,
+#                     because a cell is the only position there is.
+#
+# `DIM_LEVEL` WAS CHANNEL 3 AND IS NOT A CHANNEL IN THIS MEDIUM. A dim ladder
+# has exactly two spellings and neither is its own: written in a 0-255 alpha
+# it is a COLOUR animation, which the rule below forbids outright; written as
+# a density ramp (`█▓▒░`) it is `glyph_frame` under another name — the same
+# discrete substitution, drawn from a ramp that `coverage_to_glyph` now owns.
+# Two channels, and the suite counts two.
+#
+# COLOUR IS NOT A CHANNEL. The corpus is unambiguous — 241 animations, zero
+# animate colour — and it agrees with this contract's standing rule that a
+# state may never ride colour alone. Read as a law over frames it says: TWO
+# CONSECUTIVE FRAMES MUST DIFFER WITH THE COLOUR TAKEN AWAY. Tone may ride
+# along (a frame drawn in ACTIVE carries ACTIVE's accent, and the switch's
+# flip has done exactly that since pass 49) — what it may not do is BE the
+# motion. And no frame builder may name a colour token to pick a frame,
+# which is a source-level rule and is asserted as one.
+# ===========================================================================
+TRANSITION = "transition"
+AMBIENT = "ambient"
+TRANSITION_MAX_MS = 400                # the one-shot ceiling
+AMBIENT_MIN_MS = 2000                  # the loop floor
+AMBIENT_BEATS = 16                     # a loop is N beats of the language's
+#                                        tempo, taken to the floor
+
+# THE MEDIUM'S OWN FLOOR, and it is the only number here that is not a
+# corpus statistic — it is the compositor's refresh period (Textual drives at
+# 60 fps). A frame scheduled under it is not a fast frame, it is a frame the
+# surface COALESCES: the language pays for it, declares it, and the user
+# never sees it. Item #36, filed by the fifty-ninth pass, measured five such
+# steps across the ten languages and cured none of them.
+#
+# IT IS A CEILING ON ELABORATION, NOT ON DURATION, and that split is the
+# whole design. A language owns two things about time — its FRAMES
+# (`MOTION_STEPS`) and its `tempo`. The frames are a CHOICE and the ceiling
+# takes them back where the surface cannot draw them; the tempo is the
+# language's own and is never touched. What is left over — a structure that
+# is under the floor at ZERO elaboration, which only `travel` can be,
+# because only travel's frame count is the DISTANCE's — cannot be trimmed
+# and is not lied about either: the step is floored and the pass runs long.
+REFRESH_MS = 1000 / 60
+
+# THE REGIME IS A FACT ABOUT THE EVENT, NEVER ABOUT THE LANGUAGE. A press is
+# one-shot because pressing is one-shot; a caret loops because a caret has
+# nothing to arrive at. Ten languages may not disagree about that any more
+# than they may disagree about how many parts a slider has — what a language
+# owns is its FRAMES and its TEMPO, which is the same split the parts
+# registry made between anatomy and expression.
+MOTION_EVENTS = {
+    "flip": TRANSITION,                # the switch's knob crossing its track
+    "press": TRANSITION,               # the button's ACTIVE flash
+    "travel": TRANSITION,              # a mark crossing between SIBLINGS
+    "spin": TRANSITION,                # a stepper's option changing
+    "blink": AMBIENT,                  # the caret — the first LOOP
+}
+
+# TRAVEL IS NOT A COMPONENT EVENT, and that is pass 51's finding arriving on
+# the motion axis. The parts registry describes ONE component and has nothing
+# to say about siblings, so "the mark moves from that well to this one" can no
+# more be derived from `COMPONENT_PARTS["radio"]` than the exactly-one
+# invariant could — it is a fact about a SET, and its seat is the group's.
+MOTION_GROUP_EVENTS = ("travel",)
+
+
+def motion_regime(event: str) -> str:
+    """One seat, read by the engine and by the suite."""
+    return MOTION_EVENTS[event]
+
+
+def motion_events(name: str) -> tuple[str, ...]:
+    """Which motions a COMPONENT can have, DERIVED from the parts registry —
+    the same derivation discipline the state axis takes.
+
+    A component that can be pressed has an ACTIVE state; a component whose
+    mark crosses a track is the CHECKABLE one with an indicator; a component
+    with a `step` part spins; a component with a `caret` blinks. No list, and
+    nothing here reads a component's NAME."""
+    parts = COMPONENT_PARTS[name]
+    out = []
+    if ACTIVE in component_states(name):
+        out.append("press")
+    if name in CHECKABLE and "indicator" in parts:
+        out.append("flip")
+    if "step" in parts:
+        out.append("spin")
+    if "caret" in parts:
+        out.append("blink")
+    return tuple(out)
+
+
+class Motion(NamedTuple):
+    """WHAT A MOTION IS: frames, a regime, and one step's duration.
+
+    `frames[0]` IS THE RENDER THE MOTION LEAVES, and it is in the list so a
+    law can measure a motion against its own starting point rather than
+    against a picture the oracle drew. A player does not DRAW it for a
+    transition — it is already on the glass, which is what makes the
+    acknowledgement immediate (MOTION.md: animate the consequence, never the
+    acknowledgement). An AMBIENT has no "already there": it cycles, so every
+    frame including the first is drawn, and the period divides by the frame
+    COUNT rather than by the gaps between them."""
+    frames: tuple[str, ...]
+    regime: str
+    step_ms: float
+    # WHAT THE LANGUAGE ACTUALLY GOT, after the refresh ceiling (#36). It is
+    # `MOTION_STEPS` wherever the surface can draw that many and less where
+    # it cannot, so it is the number every frame-count law must read: a law
+    # written against the declared token asserts what the language ASKED
+    # FOR, and the frames on the glass are what it was GIVEN.
+    elaboration: int = 0
+
+    @property
+    def plays(self) -> tuple[str, ...]:
+        return self.frames[1:] if self.regime == TRANSITION else self.frames
+
+    @property
+    def steps(self) -> int:
+        return len(self.plays)
+
+    @property
+    def total_ms(self) -> float:
+        """One pass for a transition; one PERIOD for an ambient."""
+        return self.step_ms * self.steps
+
+    @property
+    def step_s(self) -> float:
+        return self.step_ms / 1000
+
+
+class Kit:
+    """Base kit = the `nord` language: deliberately the terminal's own
+    conventional idiom (base16 doctrine: it inherits the environment and has
+    no identity of its own). Every other language overrides mechanisms.
+
+    Subclasses MUST route their mechanisms through the structural tokens they
+    declare (`frame`, `numbered`, `dot_w`, `pitch`, `meter`) — a hardcoded
+    mechanism makes its token dead metadata again.
+    """
+
+    def __init__(self, name: str):
+        self.name = name
+        self.t = THEMES[name]
+        t = self.t
+        self.c = {"ink": t["ink"], "mut": t["mut"], "dim": t["dim"],
+                  "accent": t["accent"], "warn": t["warn"], "alert": t["alert"]}
+        # board MOOD, set by the app each redraw ("clear" / "busy" / "alert");
+        # languages with a functional identity element (naught's status face)
+        # read it — identity must MEAN something, not float (user verdict)
+        self.mood = "clear"
+
+    # colour pass-through, so `kit["ink"]` works everywhere tokens did
+    def __getitem__(self, key: str) -> str:
+        return self.c[key]
+
+    @property
+    def frame(self) -> str:
+        return self.t.get("frame", "none")
+
+    @property
+    def numbered(self) -> bool:
+        return bool(self.t.get("numbered"))
+
+    @property
+    def pitch(self) -> int:
+        return int(self.t.get("pitch", 1))
+
+    @property
+    def layout(self) -> str:
+        """The board's INTERNAL structure device (the `layout` token):
+        "flow" — cards stand on the ground, which is what every language did
+        before this token existed — or "rail", a passive left rail that
+        carries the card stack. Base default is "flow", so a language that
+        never declares the token renders exactly as it always did."""
+        return self.t.get("layout", "flow")
+
+    @property
+    def rail_width(self) -> int:
+        """Cells the rail column takes OUT OF the content budget. Zero unless
+        the language declares `layout="rail"` — a rail that widened the row
+        instead of narrowing it would wrap it (VERIFY.md's frame law)."""
+        return 0
+
+    def rail_prefix(self) -> str:
+        """The rail markup a board row is prefixed with. Empty by default."""
+        return ""
+
+    @property
+    def rule_color(self) -> str:
+        return self.c["dim"]
+
+    @property
+    def tick_tone(self) -> str:
+        """The colour of a gauge's THRESHOLD tick. Base: the reserved WARN
+        hue. A language that rations a semantic hue overrides it — ledger's
+        red means debt, and a threshold is not a debt."""
+        return self.c["warn"]
+
+    @property
+    def tempo_s(self) -> float:
+        """Motion pace in seconds (the `tempo` token)."""
+        return int(self.t.get("tempo", 140)) / 1000
+
+    @property
+    def easing(self) -> str:
+        """Motion curve (the `easing` token): linear reads mechanical,
+        out_expo reads like phosphor persistence, out_bounce is loud."""
+        return self.t.get("easing", "out_cubic")
+
+    def display_cap(self, s: str) -> str:
+        """The hero caption's REGISTER — a language commitment, not a token:
+        base = letterspaced caps (swiss/industrial's plain read); darkside
+        overrides to quiet lowercase."""
+        return " ".join(s.upper())
+
+    def rule_line(self, w: int) -> str | None:
+        """The language's structure device, driven by the `frame` token so a
+        mutated token visibly changes EVERY surface that draws a divider."""
+        ch = {"rule": "─", "single": "─", "grid": "─", "double": "═"}.get(self.frame)
+        return None if ch is None else f"[{self.rule_color}]{ch * max(1, w - 1)}[/]"
+
+    # -- structural css: what the language does to widget GEOMETRY ---------
+    def tcss(self) -> str:
+        """Per-language layout rules, appended to the theme stylesheet.
+        Pitch is a real commitment: swiss spends rows the others spend on ink."""
+        # THE SHARED ORIGIN, for every language. A `.kb-card` pays
+        # `padding: 0 1`, so its row starts one cell in from the seat; the head
+        # and the empty state pay the same cell here, and `kanban.py.row_width`
+        # hands all three the same measure. Before this rule the head was
+        # measured apart from its cards and six languages carried a private
+        # compensation for the one-cell lie (PENDING item 4).
+        rules = [".col-head { height: auto; padding-left: 1; }",
+                 ".kb-empty { padding-left: 1; }"]
+        if self.pitch > 1:
+            rules.append(f".kb-card {{ margin-bottom: {self.pitch - 1}; }}")
+        else:
+            rules.append(".kb-card { margin-bottom: 0; }")
+        # MOTION tokens drive the style-transition feel of every interactive
+        # widget: hover/focus fades snap in industrial (60ms linear) and
+        # decay in phosphor (400ms out_expo). Style motion is the cheap class.
+        ms = int(self.t.get("tempo", 140))
+        ease = self.easing
+        rules.append(f".kb-card {{ transition: background {ms}ms {ease}; }}")
+        rules.append(f".tile {{ transition: background {ms}ms {ease}; }}")
+        rules.append(f"#hero {{ transition: background {ms * 2}ms {ease}; }}")
+        return ("\n".join(rules) + "\n" + self.surface()
+                + "\n" + self.composition())
+
+    # -- COMPOSITION: the layout ITSELF as a language commitment ------------
+    def composition(self) -> str:
+        """The axis that keeps eight languages from feeling like one app in
+        eight skins (COMPONENTS.md axis 6): Nothing composes a GRID of small
+        widgets, Swiss one editorial column, TE numbered modules, a CRT lets
+        the readout take the screen. Base (nord): the conventional dashboard
+        skeleton — which is a composition, not an absence of one."""
+        return ""
+
+    # -- SURFACE: what the language does to the GROUND it draws on ----------
+    def surface(self) -> str:
+        """The texture/fill axis (COMPONENTS.md foundations). Flat ground is
+        a decision some languages make (naught: pure black; swiss: emptiness)
+        and others must NOT (bbs: solid panels; phosphor: scanlines) — a
+        language that never touches its surface is one axis short of a look.
+        Base (nord): cool panels behind the columns, the modern-app read."""
+        t = self.t
+        return (f".kb-col {{ background: {t['panel']}; }}\n"
+                f".kb-card {{ background: {t['panel']}; }}")
+
+    # -- board layout: a per-language commitment ---------------------------
+    def board_layout(self) -> str:
+        """"columns" (the kanban default) or "sections" — a flat vertical
+        list of full-width phase sections. Squeezing 6 columns into a narrow
+        composition made darkside's tasks illegible (~7 chars of title); its
+        faithful form is the flat lowercase list."""
+        return "columns"
+
+    # -- column head --------------------------------------------------------
+    def head(self, name: str, count: int, w: int, idx: int = 0) -> str:
+        c = self.c
+        num = f"[{c['accent']}]\\[{idx + 1}][/] " if self.numbered else ""
+        room = w - (4 if self.numbered else 0)
+        load = "" if count == 0 else RAMP[min(8, 1 + count // 3)]
+        line = (num + f"[{c['mut']}]{name.upper()[:max(1, room - 4)]}[/] "
+                f"[{c['accent'] if count else c['dim']}]{count}{load}[/]")
+        rule = self.rule_line(w)
+        return line if rule is None else line + "\n" + rule
+
+    # -- one task card row --------------------------------------------------
+    def card_row(self, title: str, chip: str, tone: str, w: int,
+                 idx: int = 0, urgent: bool = False) -> str:
+        c = self.c
+        room = max(1, w - len(chip) - 2)
+        body = _fit(title, room)
+        pad = " " * max(0, room - min(len(title), room))
+        return f"[{c['ink']}]{body}[/]{pad} [{tone}]{chip}[/]"
+
+    # -- the card as a MINI-WIDGET: per-language anatomy --------------------
+    def card_rows(self, title: str, chip: str, tone: str, w: int,
+                  idx: int = 0, urgent: bool = False,
+                  meta: dict | None = None) -> list[str]:
+        """VARIETY lives here (user verdict: 'falta variedad'): the card is
+        not one layout restyled eight times. Each language commits to its own
+        anatomy — how many rows, WHICH fields it chooses to show, and with
+        what mechanism. Swiss renounces the second row (space is structure);
+        corgi prints a spec line; industrial labels everything; naught stays
+        on the lattice. Base (nord): the terminal's two-line list convention
+        — title row + dim metadata row (project · phase)."""
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        bits = [x for x in ((m.get("proj") or "")[:max(4, w - 16)],
+                            m.get("phase", "")) if x]
+        plain = ("  " + " · ".join(bits))[:max(1, w)]
+        return [top, f"[{c['dim']}]{mark(plain) if bits else ' '}[/]"]
+
+    # -- one signal tile row ------------------------------------------------
+    def tile_row(self, val: str, label: str, tone: str, w: int) -> str:
+        c = self.c
+        room = w - len(val) - 1
+        lab = c["dim"] if room < 6 else c["mut"]
+        return f"[{tone}]{val}[/] [{lab}]{label[:max(0, room)]}[/]"
+
+    # -- the progress meter (<= 2 rows) -------------------------------------
+    def meter(self, done: int, total: int, counts: list[int], w: int) -> str:
+        """Dispatched on the `meter` token, so the quantity MECHANISM is a
+        swappable commitment (mutating the token swaps the mechanism)."""
+        fn = METERS.get(self.t.get("meter", "blocks"), _meter_blocks)
+        return fn(self, done, total, counts, w)
+
+    # -- a view section header (AGENDA / GANTT / SWIMLANES) -----------------
+    def sect(self, title: str, note: str, w: int, h: int = 0) -> list[str]:
+        """`h` is the surface's ROW BUDGET. Display typography (axis 3) is a
+        luxury a surface must afford: languages that draw their titles
+        (naught dots, bbs block letters, instrument braille) do so only when
+        h pays for it, and fall back to type when it doesn't. Languages that
+        RENOUNCE drawn type (swiss, corgi, industrial, phosphor, nord — they
+        print, letterspace or label) ignore h: renouncing is a decision.
+        Base (nord): the terminal's typographic convention."""
+        c = self.c
+        return [f"[{c['accent']}]{title}[/]  [{c['mut']}]{note}[/]", ""]
+
+    # -- quantity bar for agenda buckets / lanes ----------------------------
+    def bar(self, span: int, head=None, tone: str | None = None) -> str:
+        """`head` is the travelling-packet mask (or None when the bar is
+        static). The LENGTH is data; only the packet animates."""
+        tone = tone or self.c["accent"]
+        body = "".join("█" if (head is None or head[i]) else "▓"
+                       for i in range(span))
+        return f"[{tone}]{body}[/]"
+
+    # -- gantt glyphs: (bar-fill, packet, axis-week, axis-day, due-marker) --
+    GANTT = ("▬", "█", "│", "·", "◆")
+
+    # -- calendar day cell (2 cells wide) -----------------------------------
+    def cal_cell(self, state: str) -> str:
+        c = self.c
+        return {"none": f"[{c['dim']}]░░[/]",
+                "over": f"[{c['alert']}]██[/]",
+                "multi": f"[{c['accent']}]██[/]",
+                "one": f"[{c['warn']}]▓▓[/]"}[state]
+
+    # -- queue "UP NEXT" row marker ----------------------------------------
+    def queue_marker(self, i: int) -> str:
+        c = self.c
+        return (f"[{c['accent']}]\\[{i + 1}][/]" if self.numbered
+                else f"[{c['dim']}]·[/]")
+
+    # ======================================================================
+    # THE COMPONENT LIBRARY (tui-design/COMPONENTS.md). A language whose
+    # CONTROLS render identically is still a recolour — these are the parts
+    # the user touches. Base = the terminal's own conventions (nord).
+    # Anatomy is shared (track / fill / knob / state); mechanism is the
+    # language's. Every state must survive greyscale (glyph + colour).
+    # ======================================================================
+    CUR = "▸"                              # selection cursor
+    SPIN = ("▖", "▘", "▝", "▗")            # quadrant spin — matches nord's base
+
+    # ------------------------------------------------------------------
+    # THE VALUE FAMILY — slider, bar and switch, from the parts registry.
+    #
+    # A language declares GLYPHS (`PART_GLYPHS`), a slot separator and
+    # optional chrome; the composition, the value model and the state axis
+    # are shared. That is the contract: which parts exist is not a language's
+    # decision, how they are drawn is nothing else.
+    #
+    # NAME COLLISION, said out loud: `Kit.bar()` was already taken by the
+    # agenda/gantt/lanes quantity SPAN (a run of `span` cells, no value, no
+    # scale), which has ten overrides and two view call sites. The registry
+    # keeps LVGL's name `bar`; the method that draws it is `readbar()`. One
+    # object, two names, and this comment is the only place that hurts.
+    # ------------------------------------------------------------------
+    SLOT_SEP = ""                          # air between slots
+    COMP_CHROME = ("", "")                 # fixed open/close, NOT parts
+    PART_GLYPHS = {
+        "main": {DEFAULT: "─", DISABLED: "╌"},
+        "indicator": {DEFAULT: "█", DISABLED: "▒"},
+        "knob": {DEFAULT: "▌", FOCUSED: "▐", EDITED: "◆",
+                 ACTIVE: "▓", DISABLED: "╳"},
+        # A COMPONENT-SCOPED SEAT: `component.part` wins over the bare
+        # `part`. The checkbox needs one because its parts are a BOX and a
+        # MARK, not a track and a grip — drawing a box with the slider's `─`
+        # would be a picture of a slider. The scope is additive: a component
+        # that declares nothing here still draws through the shared parts,
+        # which is why nothing in the value family moved.
+        #
+        # nord is the terminal's own idiom, so its checkbox is the one every
+        # terminal already writes: `[ ]` / `[x]`. The BOX carries the control
+        # state (bracket weight, nord's own knob vocabulary) and the MARK
+        # carries the checked bit — two channels, neither of them colour.
+        "checkbox.main": {DEFAULT: "[ ]", FOCUSED: "▐ ▌", ACTIVE: "▓ ▓",
+                          DISABLED: "╌ ╌"},
+        "checkbox.knob": {DEFAULT: "[x]", FOCUSED: "▐x▌", ACTIVE: "▓x▓",
+                          DISABLED: "╌╳╌"},
+        # THE RADIO WELL IS ROUND WHERE THE CHECKBOX IS SQUARE — LVGL's own
+        # distinction, and the terminal already writes it: `[x]` is a box you
+        # tick, `(o)` is one of a set. nord inherits the environment, so it
+        # inherits the convention too. The control state rides the bracket
+        # weight exactly as it does on the checkbox; what changes is the
+        # FAMILY, which is the channel a greyscale eye reads.
+        "radio.main": {DEFAULT: "( )", FOCUSED: "< >", ACTIVE: "« »",
+                       DISABLED: "(╌)"},
+        "radio.knob": {DEFAULT: "(o)", FOCUSED: "<o>", ACTIVE: "«●»",
+                       DISABLED: "(╳)"},
+        # THE BUTTON'S WALLS — ONE part, ONE slot, and the glyph is BOTH
+        # sides of the control: it is split in half and the label stands
+        # between them. An even width, so the halves are halves; one width
+        # across all four states, so the field cannot move under the word.
+        #
+        # nord inherits the terminal's own button, `[ Save ]`, and puts the
+        # state where its checkbox puts it: the bracket's weight. The PRESS
+        # eats the air — `▓▓Save▓▓` — which is a shape event on the two cells
+        # that touch the label, and the closest a text cell comes to the
+        # inversion a real button flashes.
+        "button.main": {DEFAULT: "[  ]", FOCUSED: "▐  ▌", ACTIVE: "▓▓▓▓",
+                        DISABLED: "╌  ╌"},
+        # THE FIELD'S GROUND — an ODD string: wall, RUNE, wall. nord inherits
+        # the terminal's own input, `[ ... ]`, and puts the state where its
+        # button puts it: the bracket's weight. EDITED additionally lays a
+        # RULED LINE under the paper, so the state a caret lives in is
+        # readable even in the instant between two keystrokes.
+        "textfield.main": {DEFAULT: "[ ]", FOCUSED: "▐ ▌", EDITED: "▐▁▌",
+                           ACTIVE: "▓ ▓", DISABLED: "╌╌╌"},
+        # the terminal's own bar cursor, in its own column
+        "textfield.caret": {DEFAULT: "▏"},
+        # THE SHAFT AND THE THUMB, and they are SCOPED for a reason that is
+        # not decoration: a slider's track is a SCALE (every cell is a value
+        # the knob could take) and a scroll bar's track is a SHAFT (every
+        # cell is somewhere the view could be). They are drawn side by side
+        # in the gallery, and a language that drew them identically would be
+        # claiming the two mean the same thing. TWO STATES ONLY, because a
+        # readout has two — the table cannot declare a FOCUSED shaft even by
+        # accident, since the composer would never ask for one.
+        #
+        # nord inherits the environment, so it inherits Textual's own
+        # scrollbar vocabulary: a shaded shaft with a solid block riding it.
+        "scrollbar.main": {DEFAULT: "░", DISABLED: "╌"},
+        "scrollbar.indicator": {DEFAULT: "█", DISABLED: "▒"},
+        # THE TWO STEPS AS ONE EVEN STRING — the button's walls convention,
+        # read for direction instead of for sides: the first half is the step
+        # BACK and the second half is the step FORWARD. One declaration, two
+        # cells, and the cell's POSITION is what says which way it goes.
+        #
+        # `stepper.main` IS THE GROUND WHERE A STEP IS NOT, and it is the
+        # whole end-behaviour channel: a clamped stepper at its floor draws
+        # this string's left half instead of the step's, so WRAP and CLAMP
+        # differ in SHAPE and a greyscale eye can tell a floor from a middle.
+        # The two strings are the SAME WIDTH in every state, which is what
+        # keeps the word from moving when an end dies (Bodmer T2: reserve the
+        # widest form).
+        #
+        # nord inherits the environment, so it takes the terminal's own spin
+        # marks and puts the state where its other controls put it: the
+        # weight of the mark under the finger.
+        "stepper.main": {DEFAULT: "··", DISABLED: "╌╌"},
+        "stepper.step": {DEFAULT: "-+", FOCUSED: "◂▸", EDITED: "◄►",
+                         ACTIVE: "◀▶", DISABLED: "╳╳"},
+    }
+
+    def part_key(self, name: str | None, part: str) -> str:
+        """The glyph table a part is drawn from, scoped to its component.
+
+        One lookup, and the fallback is deliberate: a language that declares
+        no `checkbox.knob` still renders SOMETHING (its slider's grip) rather
+        than raising. The suite is what says that is wrong — a law, not a
+        crash, because a crash in a renderer takes the whole surface with it
+        and a mutation that kills the suite reports no reds at all."""
+        scoped = f"{name}.{part}"
+        return scoped if scoped in self.PART_GLYPHS else part
+
+    def comp_chrome(self, name: str) -> tuple[str, str]:
+        """Chrome fixes THE ENDS OF A TRACK — industrial's brackets round its
+        slider, blueprint's datum terminator opening its dimension. A
+        component with no indicator has no track, so it has no ends to fix;
+        where such a component has a box, the box is inside its own glyphs.
+        Same registry fact as the composer reads, one seat."""
+        return self.COMP_CHROME if "indicator" in COMPONENT_PARTS[name] \
+            else ("", "")
+
+    def part_glyph(self, part: str, state: str, name: str | None = None) -> str:
+        """The slot this language draws for `part` in `state`. Falls back
+        along the state's BITS — exact combination, then its control bit,
+        then CHECKED, then DEFAULT — so a language declares only the states
+        it wants to speak about and a combination behaves like the control
+        state it carries.
+
+        No language declares a CHECKED glyph and none needs to: on a switch
+        the checked bit is carried by the knob's POSITION, which the shared
+        value model moves for free. Shape, in all ten, for nothing."""
+        table = self.PART_GLYPHS[self.part_key(name, part)]
+        for key in state_chain(state):
+            if key in table:
+                return table[key]
+        return table[DEFAULT]
+
+    def part_tone(self, part: str, state: str, name: str | None = None) -> str:
+        """Colour is the SECOND channel and never the only one. The accent is
+        spent on the part under the finger — everything passive is grey, which
+        is naught's ration and darkside's law at the same time.
+
+        THE PART UNDER THE FINGER IS THE ACTUATOR, not literally the knob.
+        This rule said `knob` for four passes because every control had one;
+        the button's grip is its own ground, so a focused button would have
+        rendered entirely dim — the accent law's letter kept and its meaning
+        lost. One word changed, at the seat, and every other component's tones
+        are byte-identical (the shipped accent laws are the proof)."""
+        c = self.c
+        state = control_of(state)
+        if state == DISABLED:
+            return c["dim"]
+        if part == "indicator":
+            return c["mut"]
+        if part != actuator(name):
+            return c["dim"]
+        return c["accent"] if state in (FOCUSED, EDITED, ACTIVE) else c["ink"]
+
+    def part_slots(self, name: str, w: int) -> int:
+        """How many slots fit in `w` cells. Read by the render AND by the
+        acceptance check, so "the parts tile the region" is true by
+        construction rather than re-derived in the oracle.
+
+        A component with NO INDICATOR gets exactly ONE slot, and the width
+        request dies at that boundary. Cells are what an EXTENT spends; a
+        mark needs a seat, not a run. Two slots would be two boxes, and a
+        wide box would be a track wearing a checkbox's name — the same
+        confusion the parts registry exists to make impossible.
+
+        A component with a CARET is the opposite case and gets exactly `w`:
+        its cells are COLUMNS OF TEXT, one character each, and `w` is how
+        many of them the caller has room for. That is not an extent's budget
+        (cells a value may spend) but a WINDOW (cells the value is seen
+        through), and it is the first time this contract has had one.
+
+        A component with a STEP gets exactly TWO, and `w` dies at that
+        boundary the way it dies at a checkbox's: the two seats are the two
+        DIRECTIONS, and there is no third way out of a range. A stepper's `w`
+        is a minimum for the WORD it shows, which is the caller's and is
+        measured where the caller's text is measured, not here."""
+        if "caret" in COMPONENT_PARTS[name]:
+            return max(1, int(w))
+        if "step" in COMPONENT_PARTS[name]:
+            return 2
+        if "indicator" not in COMPONENT_PARTS[name]:
+            return 1
+        sw = len(self.part_glyph("main", DEFAULT, name))
+        sep = len(self.SLOT_SEP)
+        o, cl = self.comp_chrome(name)
+        room = max(0, w - len(o) - len(cl))
+        return max(2, (room + sep) // (sw + sep))
+
+    def field_form(self, state: str, name: str) -> tuple[str, str, str]:
+        """A FIELD'S GROUND, as one glyph string read at three seats: the wall
+        that opens it, the RUNE its paper is made of, and the wall that closes
+        it. An ODD length, so the two walls are halves of what is left when
+        the rune is taken out of the middle — the same "the walls are halves"
+        convention the button states as an EVEN length, said for a component
+        that has an interior between them.
+
+        One string rather than three declarations because it is one decision:
+        a language does not choose its walls and its paper separately, it
+        chooses the ground it lays under someone else's words."""
+        g = self.part_glyph("main", state, name)
+        h = len(g) // 2
+        return g[:h], g[h], g[h + 1:]
+
+    def component_cells(self, name: str, val: float, lo: float, hi: float,
+                        w: int = 10, state: str = DEFAULT,
+                        wrap: bool = False,
+                        caret: int | None = None,
+                        size: int | None = None
+                        ) -> list[tuple[str, str, str]]:
+        """THE ONE RENDERER: `[(part, glyph, tone)]`, one entry per slot.
+
+        Returning cells TAGGED with their part is what lets the acceptance
+        check read a part's extent off the render itself instead of
+        recomputing the width arithmetic in the oracle — the duplicated-render
+        defect that cost pass 46 a hundred and fifty-eight false mismatches.
+
+        Bodmer T4: the whole region is composed here, including its own
+        ground, and written once. Nothing clears and redraws.
+
+        `caret` IS A SECOND PIECE OF STATE, and it is the first one this
+        renderer has needed. A slider is one number; a field is a value AND
+        an insertion index, and the index is not derivable from the value —
+        two identical strings can be under edit at two different places. So
+        it arrives as its own argument rather than riding `val`, which is
+        also what keeps `has_value` honest: the registry holds no number for
+        a text field, because a text field's value is CONTENT.
+
+        `size` IS THE SECOND HALF OF A WINDOW, and it arrives the same way
+        and for the same reason: the caret's precedent, applied to the other
+        component whose value will not fit in one number. `val` carries where
+        the view starts and `hi` carries how long the content is; `size`
+        carries how much of it is on screen. A window has no `lo` to choose —
+        content starts where it starts and there is no scrolling above the
+        top — so the scale is `[0, hi]` and that is stated, not smuggled.
+
+        Omitted, it means THE WHOLE CONTENT IS VISIBLE (a full thumb), which
+        is the honest reading of "nobody said" rather than an exception: a
+        renderer that raised on a missing number would take the surface down
+        with it.
+
+        `wrap` IS A RANGE WORD, NOT A THIRD PIECE OF STATE, and the fifty-
+        fourth pass's warning is answered by that distinction rather than by
+        ignoring it. `caret` and `size` default to `None` because they are
+        STATE the caller may or may not have — where the pen is, how much is
+        in view — and a third of those would mean restructuring. `wrap`
+        defaults to `False` because it is a fact about the SCALE, standing
+        beside `lo` and `hi`: whether the range closes on itself. It says
+        nothing about where the value is, and the suite asserts exactly that
+        boundary off `inspect.signature` — the optional STATE arguments are
+        still the two the text field and the scroll bar bought."""
+        if state not in COMPONENT_STATES[name]:
+            state = DEFAULT
+        if val is None or not has_value(name):
+            # A boolean control has no value independent of its checked bit,
+            # so `val=None` means READ IT OFF THE STATE. That is the only way
+            # `switch()` calls this, and it is why a switch can never render
+            # CHECKED with its knob at the off position: there is one source.
+            # Motion passes an explicit fraction instead (`flip_frames`),
+            # because a frame mid-travel is a FRAME and not a state.
+            #
+            # NOT guarded by `name in CHECKABLE`, and the mutation table is
+            # why: with the guard, taking `switch` out of CHECKABLE made this
+            # raise TypeError and KILLED the suite on its first render, so a
+            # dead run reported no reds at all. Substituting unconditionally
+            # makes that mutation draw a WRONG switch instead of no switch,
+            # and the greyscale laws then say so a hundred times over.
+            #
+            # AND A COMPONENT WITH NO VALUE CANNOT BE HANDED ONE. `has_value`
+            # is a registry fact, so a caller passing a number to a button
+            # does not move anything: there is no part for a value to reach.
+            # The suite drives exactly that, because without this term the
+            # value would pick a PRESENCE and the button would grow a mark it
+            # never declared.
+            val, lo, hi = bool_value(state), 0, 1
+        parts = COMPONENT_PARTS[name]
+        cells = self.part_slots(name, w)
+        out = []
+        if "caret" in parts:
+            # A WINDOW: the cells are COLUMNS, and the mark is at an INDEX
+            # the caller hands in — not a position computed from a value.
+            # This is the third anatomy, and the registry is what forks it,
+            # exactly as it forks the other two.
+            #
+            # The mark's glyph is its own; a column with no mark on it is
+            # `main` and wears the FORM'S RUNE rather than the whole form,
+            # because `main` here is a ground that repeats and the walls are
+            # the same string's ends (`field_form`). One part, read twice.
+            _, rune, _ = self.field_form(state, name)
+            return [("caret", self.part_glyph("caret", state, name),
+                     self.part_tone("caret", state, name))
+                    if caret is not None and i == int(caret)
+                    else ("main", rune, self.part_tone("main", state, name))
+                    for i in range(cells)]
+        if "step" in parts:
+            # A SERIES OF SEATS — the FIFTH anatomy, and the registry forks
+            # it the way it forks the other four. Nothing is measured and
+            # nothing is indexed: the value picks a SEAT, and what the
+            # language draws is the two ways OUT of that seat.
+            #
+            # THE END BEHAVIOUR IS THE PART TAG. `step_index` is asked
+            # whether the step exists, and a seat with no step is GROUND —
+            # `main`, the word this registry uses for exactly that everywhere
+            # else. So a clamped stepper at its floor draws ground where its
+            # step was, a wrapping one never does, and the difference is a
+            # GLYPH before it is anything else. No new state, no per-cell
+            # state, and no colour.
+            #
+            # ONE GLYPH STRING, TWO HALVES, and the halves are the two
+            # DIRECTIONS — the button's walls convention read for direction
+            # instead of for sides. Which half a cell draws is its POSITION,
+            # which is the one thing a part tag cannot say and does not have
+            # to: there are exactly two seats and no third way out of a
+            # range.
+            i, n = int(val) - int(lo), int(hi) - int(lo) + 1
+            out = []
+            for slot, d in ((0, -1), (1, 1)):
+                p = "main" if step_index(i, n, d, wrap) is None else "step"
+                g = self.part_glyph(p, state, name)
+                h = len(g) // 2
+                out.append((p, g[:h] if slot == 0 else g[h:],
+                            self.part_tone(p, state, name)))
+            return out
+        if name in VIEWED:
+            # A WINDOW ON A TRACK — the FOURTH anatomy, and the registry is
+            # what forks it, exactly as it forks the other three. The parts
+            # are an extent's parts and the mechanism is not an extent's: the
+            # run is anchored NOWHERE (it floats to where the view is) and
+            # its LENGTH is the second number, not a repeat of the first.
+            #
+            # `view_pos` answers both at once because both are the value.
+            # Read the branch above it to see the difference stated in code:
+            # there, one number picks a position and the run is everything
+            # behind it; here, two numbers pick a run and there is ground on
+            # BOTH sides of it.
+            pos, span = view_pos(val, hi if size is None else size, hi, cells)
+            out = ["indicator" if pos <= i < pos + span else "main"
+                   for i in range(cells)]
+        elif "indicator" in parts:
+            # AN EXTENT: the value picks a POSITION, the cells behind it are
+            # the measured run, the cells ahead of it are the ground.
+            n = value_pos(val, lo, hi, cells)
+            knob = "knob" in parts
+            for i in range(cells):
+                if knob and i == n:
+                    out.append("knob")
+                elif i < n or (not knob and i == n):
+                    out.append("indicator")
+                else:
+                    out.append("main")
+        else:
+            # NO EXTENT: nothing runs between an origin and the mark, so the
+            # value cannot pick a position — it picks PRESENCE. The same
+            # shared value model answers it (top of the range or not), so an
+            # inverted scale still inverts and no second arithmetic is born.
+            #
+            # This branch reads the REGISTRY, not the component's name, which
+            # is the difference between the contract growing an anatomy and
+            # the composer growing a special case. `checkbox` appears nowhere
+            # in it, and the source-level law in the suite says so.
+            marked = value_pos(val, lo, hi, 2) == 1
+            out = ["knob" if marked and i == 0 else "main"
+                   for i in range(cells)]
+        return [(p, self.part_glyph(p, state, name),
+                 self.part_tone(p, state, name)) for p in out]
+
+    def value_label(self, val, state: str = DEFAULT) -> str:
+        """The readout. NOT a part — LVGL's slider has three parts and none of
+        them is a number; this is a label standing beside the component, which
+        is why the mechanism-invariance law is measured on the cells alone."""
+        return f" [{self.c['mut']}]{val}[/]"
+
+    CHECK_WORDS: tuple[str, str] | None = None      # (off, on) printed word
+
+    def check_label(self, on: bool, state: str = DEFAULT) -> str:
+        """`value_label`'s boolean seat — the switch's printed WORD.
+
+        Not a part, for the same reason a slider's number is not: it stands
+        BESIDE the component. Four languages were already using this seat
+        when they shipped `ON`, `--`, `posted` and `OFF` inside their switch
+        strings; here it is declared instead of drawn, and the base spends
+        nothing, because position already carries the reading."""
+        if not self.CHECK_WORDS:
+            return ""
+        return (f" [{self.check_tone(on, state)}]"
+                f"{mark(self.CHECK_WORDS[1 if on else 0])}[/]")
+
+    def check_tone(self, on: bool, state: str) -> str:
+        """The tone of a control's WORD — lit when set, muted when not, dim
+        when dead. One seat because the components print a word here for
+        different reasons: the switch and the checkbox print the language's
+        own on/off word, a radio item prints the OPTION'S name, and a button
+        prints the caller's name for its action, which is why it asks with
+        `on=True` — a button's word is not a state, it is always there. Same
+        rule, different text, and the third caller needed no new branch."""
+        c = self.c
+        return (c["dim"] if control_of(state) == DISABLED
+                else c["ink"] if on else c["mut"])
+
+    def _component_body(self, name: str, val, lo, hi, w: int,
+                        state: str, size: int | None = None) -> str:
+        """The control ITSELF — cells, separators and chrome, no label.
+
+        Split out from `_component` because the label is the one thing a
+        radio item cannot inherit: the word beside it is the option's, so
+        `check_label` would print `ON` next to `fast`."""
+        cells = self.component_cells(name, val, lo, hi, w, state, size=size)
+        sep = mark(self.SLOT_SEP)
+        body = sep.join(f"[{t}]{mark(g)}[/]" for _, g, t in cells)
+        o, cl = self.comp_chrome(name)
+        d = self.c["dim"]
+        if o:
+            body = f"[{d}]{mark(o)}[/]" + body
+        if cl:
+            body += f"[{d}]{mark(cl)}[/]"
+        return body
+
+    def _component(self, name: str, val, lo, hi, w: int, state: str,
+                   size: int | None = None) -> str:
+        if val is None:                    # the label reads the same value
+            val, lo, hi = bool_value(state), 0, 1
+        body = self._component_body(name, val, lo, hi, w, state, size)
+        if name in VIEWED:
+            # NO READOUT, AND IT IS THE ARITY AGAIN — the same fact showing
+            # up at the second seat. `value_label` prints ONE number, and a
+            # window is two: printing one of them would name the position and
+            # hide the size, or name the size and hide the position. There is
+            # nothing to append that would not be a half-truth, and the thumb
+            # is already saying both at once — this is the first component
+            # whose value IS its own readout.
+            return body
+        if name in CHECKABLE:
+            return body + self.check_label(is_checked(state), state)
+        return body + self.value_label(val, state)
+
+    def slider(self, val: int, lo: int, hi: int, w: int = 10,
+               state: str = DEFAULT) -> str:
+        """main + indicator + knob. The knob is the affordance of control."""
+        return self._component("slider", val, lo, hi, w, state)
+
+    def readbar(self, val: int, lo: int, hi: int, w: int = 10,
+                state: str = DEFAULT) -> str:
+        """main + indicator. A slider with the knob taken away is a readout —
+        that ONE missing part is the whole difference between operating a
+        value and being told one."""
+        return self._component("bar", val, lo, hi, w, state)
+
+    def scrollbar(self, start: int, size: int, total: int, w: int = 12,
+                  state: str = DEFAULT) -> str:
+        """main + indicator, on a value that is a WINDOW — the readout whose
+        indicator has a POSITION as well as an extent, which is the first
+        time in this contract that either of those has been true.
+
+        THREE NUMBERS IN, TWO OUT. `start` and `size` are the value; `total`
+        is its scale, the way `hi` is a slider's. There is no `lo`, and its
+        absence is the anatomy: content begins where it begins.
+
+        NO STATE ARGUMENT WORTH FOUR VALUES — the registry gives this
+        component DEFAULT and DISABLED and nothing else, because it has no
+        grip. In a keyboard TUI the keys scroll the CONTAINER and the bar
+        reports where the container got to; nothing here is ever grabbed. A
+        FOCUSED scroll bar would be advertising an affordance the app does
+        not have, which is the exact defect the bar's missing knob was the
+        first cure for.
+
+        AND IT DRAWS ALONG A ROW BECAUSE THE CALLER LAYS IT OUT. What this
+        composes is a LIST OF CELLS; which axis they are stacked on is not a
+        fact the language owns, any more than `bar` owns one. A vertical
+        scroll bar is the same cells down a column. If a language ever wants
+        a DIFFERENT glyph vertically it needs an axis fact in the registry
+        and none has asked for one — see PENDING, priced rather than built.
+
+        NOT A REPLACEMENT FOR TEXTUAL'S OWN CHROME, said out loud. The
+        surfaces that really scroll here (the gallery box) are Textual
+        containers that draw and drag their own scrollbars; overriding those
+        means fighting the framework's widget, and the only channel a
+        language could honestly take from them in TCSS is COLOUR, which is
+        the one channel this contract forbids a state to ride alone. So this
+        component is GALLERY-ONLY, exactly as the text field is, and for a
+        reason that is stated rather than hidden behind a demo."""
+        return self._component("scrollbar", int(start), 0, int(total), w,
+                               state, size=int(size))
+
+    def switch(self, on: bool, w: int = 3, state: str = DEFAULT) -> str:
+        """main + indicator + knob, on a range of exactly two positions.
+
+        The checked bit is written HERE and read by the composer, so `on` and
+        `state` cannot disagree: pass `state=FOCUSED` and you get
+        `checked+focused` or `focused`, never a checked switch pointing off.
+
+        Ten languages used to carry ten hand-drawn switches; nine of them had
+        no knob at all, so the one thing a switch is — a control whose grip
+        MOVES — was the one thing the axis was not saying."""
+        return self._component("switch", None, 0, 1, w, with_checked(state, on))
+
+    def checkbox(self, on: bool, state: str = DEFAULT) -> str:
+        """main + knob, and no track between them: a box, and a mark that is
+        either in it or not.
+
+        NO WIDTH ARGUMENT, and that is the anatomy talking rather than a
+        convenience. `w` is how many cells an EXTENT may spend; a checkbox
+        has no extent, so there is nothing for a caller to budget. Asking for
+        a wider one would be asking for a wider box, and a wide box with a
+        mark loose in it is a track — which is the switch, one method up.
+
+        The bit is written the same way the switch writes it (`with_checked`,
+        one seat), so the same law holds by construction: a checkbox cannot
+        render CHECKED with an empty box."""
+        return self._component("checkbox", None, 0, 1, 1,
+                               with_checked(state, on))
+
+    def button(self, label: str, w: int = 0, state: str = DEFAULT) -> str:
+        """main, and NOTHING else — the control with no value.
+
+        The label is CONTENT, not a part (see the registry entry). The one
+        slot this component composes is the language's WALLS; they are split
+        in half and the caller's word stands between them, on the field they
+        enclose. So the state rides the walls, which the language owns, and
+        the word comes back out byte for byte, which the caller owns.
+
+        `w` IS A MINIMUM, not a width. A checkbox took no width argument at
+        all because it has no extent to spend cells on; a button has a FIELD,
+        and a caller with a row of them needs their fields to agree. Below the
+        label's own width it does nothing — a button cannot truncate the word
+        it exists to name, because the word is the only thing that says what
+        pressing it will do.
+
+        NO READOUT is appended, and that is `has_value` rather than a decision
+        taken here: there is no number and no bit to report, so `value_label`
+        and `check_label` have nothing to say about a button."""
+        (_, walls, tone), = self.component_cells("button", None, 0, 1, 1,
+                                                 state)
+        half = len(walls) // 2
+        text = str(label).center(max(int(w), len(str(label))))
+        return (f"[{tone}]{mark(walls[:half])}[/]"
+                f"[{self.check_tone(True, state)}]{mark(text)}[/]"
+                f"[{tone}]{mark(walls[half:])}[/]")
+
+    def textfield(self, value: str = "", caret: int | None = None,
+                  w: int = 12, state: str = DEFAULT,
+                  placeholder: str = "", caret_on: bool = True) -> str:
+        """main + caret — the first component with a cursor INSIDE it.
+
+        THE VALUE IS CONTENT, which is the button's ruling applied to a
+        value instead of a label: it comes back out of the render byte for
+        byte, never recased, never letterspaced, and NEVER SHORTENED. The
+        language draws the ground it lies on and the mark that says where the
+        next keystroke lands, and nothing else.
+
+        THE CARET TAKES A COLUMN OF ITS OWN, and that is the content law
+        choosing the mechanism rather than taste choosing it. A block caret
+        sitting ON a character hides that character — so the value would not
+        come back whole, and the only way to keep it readable underneath
+        would be reverse video, which is COLOUR and this contract's states
+        may never ride colour alone. A bar between two columns costs one cell
+        and keeps every byte.
+
+        THE WINDOW, and it is where a text field stops being a button. A
+        value longer than the field is not truncated: the VIEW moves. The
+        window slides the least it can to keep the caret inside, so every
+        index of the value is reachable — which is the honest form of "no
+        character is ever lost", and it is asked of every index in the suite
+        rather than asserted here.
+
+        THE PLACEHOLDER IS CONTENT TOO, and it is separated from the value by
+        TONE — the one place in this contract where colour carries the whole
+        distinction, said out loud rather than hidden. Shape is not available:
+        the placeholder is the caller's words and may not be bracketed or
+        recased any more than the value may. And the distinction must exist,
+        because a field showing `search` that the user typed and a field
+        showing `search` that is merely suggesting are two different states of
+        the model. It is not a STATE distinction, which is what the
+        "never colour alone" law governs; it is set-versus-unset, and that is
+        `check_tone` for the fourth time — lit when the user put it there,
+        muted when the field did.
+
+        `caret_on` IS THE BLINK'S OFF FRAME, and it is a MOTION argument on a
+        render seat rather than a sixth state. A blink is not a state — the
+        field is being edited in both frames — so it may not enter the state
+        axis, and the one thing it changes is the GLYPH in the caret's own
+        column: the mark, or the rune the field's paper is made of. The
+        column stays the caret's, drawn in the caret's tone, so the value
+        does not move under the blink and the two frames differ in exactly
+        one character. That is the ambient regime's whole channel."""
+        text, ph = str(value), str(placeholder)
+        w = max(1, int(w))
+        editing = control_of(state) == EDITED
+        shown = text or ph
+        cols: list[str | None] = list(shown)
+        cpos = None
+        if editing:
+            want = len(text) if caret is None else int(caret)
+            cpos = 0 if not text else max(0, min(len(text), want))
+            cols.insert(cpos, None)        # the caret's own column
+        # THE WINDOW IS THE SHARED SEAT'S NOW, not this method's. These five
+        # lines used to be computed here, which made them a local variable
+        # with a view's name: nothing declared them, and the one other
+        # component whose value is a window could not have reached them.
+        start = view_start(len(cols), w, cpos)
+        view = cols[start:start + w]
+        cells = self.component_cells("textfield", None, 0, 1, w, state,
+                                     caret=None if cpos is None
+                                     else cpos - start)
+        op, rune, cl = self.field_form(state, "textfield")
+        lit = self.check_tone(bool(text) or not ph, state)
+        ground = self.part_tone("main", state, "textfield")
+        body = []
+        for i, (part, glyph, tone) in enumerate(cells):
+            ch = view[i] if i < len(view) else None
+            if part == "caret" or ch is None:
+                if part == "caret" and not caret_on:
+                    glyph = rune
+                body.append(f"[{tone}]{mark(glyph)}[/]")
+            else:
+                body.append(f"[{lit}]{mark(ch)}[/]")
+        return (f"[{ground}]{mark(op)}[/]" + "".join(body)
+                + f"[{ground}]{mark(cl)}[/]")
+
+    GROUP_SEP = "  "                       # air between a group's items
+
+    def radio_items(self, options, selected: int, state: str = DEFAULT,
+                    focus: int | None = None) -> list[str]:
+        """A SELECTION SET, one markup string per item: the well, the mark,
+        and the option's own name.
+
+        NO `on` ARGUMENT ANYWHERE, and that absence is the increment. The
+        switch and the checkbox are handed their bit; a radio item's bit is
+        computed by `group_states` from the group's single index, so the two
+        ways this render could lie — no item marked, two items marked — are
+        not reachable from here. The invariant is upstream of the drawing.
+
+        The word beside an item is the OPTION, not `CHECK_WORDS`: `ON` next
+        to `fast` would be the language answering a question nobody asked.
+        The tone rule is still the shared one (`check_tone`)."""
+        sts = group_states(len(options), selected, state, focus)
+        return [self._component_body("radio", None, 0, 1, 1, st)
+                + f" [{self.check_tone(is_checked(st), st)}]{mark(o)}[/]"
+                for o, st in zip(options, sts)]
+
+    def radio_group(self, options, selected: int, state: str = DEFAULT,
+                    focus: int | None = None) -> str:
+        """The set as one row. Sibling of `radio_items` the way `switch` is a
+        sibling of `checkbox`: a call, not a decision."""
+        return self.GROUP_SEP.join(
+            self.radio_items(options, selected, state, focus))
+
+    def stepper(self, options, selected: int, w: int = 0,
+                state: str = DEFAULT, wrap: bool = False) -> str:
+        """main + step — THE SAME CHOICE AS A RADIO, DRAWN THE OTHER WAY.
+
+        A radio shows every option and marks one; a stepper shows the marked
+        one and offers the two ways off it. Same option list, same single
+        index, and the seat that owns that index is the same one: this
+        method reaches `group_states`, so an out-of-range selection RAISES
+        here for the reason it raises there, and the state of the option this
+        shows is the state of the item a radio would MARK — byte for byte,
+        at every index. Two mechanisms, one choice model, and the second half
+        of that sentence is a law rather than a claim.
+
+        NO `on` ARGUMENT, for the group's reason: the bit is computed from
+        the index, so a stepper cannot show an option that is not the chosen
+        one. What it CAN be handed is an index the set does not have, and
+        that is where the group seat refuses it.
+
+        THE WORD IS CONTENT — the button's ruling for the third time. It
+        comes back out byte for byte, never recased and NEVER SHORTENED, and
+        it is centred on a field reserved for the WIDEST option in the set,
+        so spinning through the set cannot move the control's edges (Bodmer
+        T2: reserve the widest form, then nothing reflows). `w` is a MINIMUM
+        under that, exactly as it is on a button.
+
+        WRAP IS THE CALLER'S, and this method does not decide it: what the
+        range MEANS is not a fact about steppers. It is passed straight to
+        the composer, where it decides whether an end seat has a step or
+        GROUND — which is why a clamped stepper at its floor SHOWS its floor
+        and a wrapping one shows nothing of the kind."""
+        opts = [str(o) for o in options]
+        i = int(selected)
+        st = group_states(len(opts), i, state, focus=i)[i]
+        cells = self.component_cells("stepper", i, 0, len(opts) - 1, 1,
+                                     state, wrap=wrap)
+        field = max(int(w), max(len(o) for o in opts))
+        word = opts[i].center(field)
+        return "".join(f"[{t}]{mark(g)}[/]" for _, g, t in cells[:1]) \
+            + f"[{self.check_tone(is_checked(st), st)}]{mark(word)}[/]" \
+            + "".join(f"[{t}]{mark(g)}[/]" for _, g, t in cells[1:])
+
+    # -- spinner: indeterminate progress, precomputed frames ----------------
+    def spinner(self, tick: int) -> str:
+        return f"[{self.c['mut']}]{self.SPIN[tick % len(self.SPIN)]}[/]"
+
+    # ======================================================================
+    # MOTION — ONE ENGINE, FIVE EVENTS (the motion contract, above).
+    #
+    # `MOTION_STEPS` is the language's whole motion CHARACTER, and it is one
+    # number because the other half of the character is a token it already
+    # declares: the frames are what the language elaborates, the `tempo`
+    # token is how long they take. Swiss renounces with 0 — and renouncing
+    # ELABORATION is not renouncing the event: a transition still has two
+    # frames, because a one-frame transition is not a transition, it is a
+    # cut. That floor is the engine's, not the language's.
+    #
+    # This token used to be called `FLIP_STEPS` and belonged to the switch.
+    # It governs five events now and the rename is the increment: a language
+    # that elaborated its switch and cut its button would be two languages.
+    # ======================================================================
+    MOTION_STEPS = 1                       # intermediate frames; 0 renounces
+
+    def motion_frames(self, component: str, event: str, *,
+                      _steps: int | None = None, **kw) -> Motion:
+        """THE ONE MOTION SEAT: a list of RENDERS, its regime, and a step.
+
+        Every frame is a LEGAL RENDER composed by the component seats this
+        contract already has — a motion never draws; it asks the same seats
+        for the same control at intermediate values. That is what keeps a
+        frame from going stale the way the eight hand-authored `flip_frames`
+        did (pass 49 deleted them as pictures of a dead switch): a frame that
+        is a render cannot animate between two widths a component no longer
+        has.
+
+        THE REGIME AND THE DURATION ARE DERIVED, and neither is reachable
+        from a language. The regime comes off the EVENT; the duration comes
+        off the regime and the language's `tempo` token. A transition's
+        WHOLE pass is one tempo, split evenly across the gaps between its
+        frames — which is byte-for-byte the arithmetic the config screen has
+        driven the switch flip with since pass 49, now stated once instead of
+        living in a caller.
+
+        AND THE ELABORATION IS CEILINGED BY THE SURFACE (#36). A transition's
+        one tempo is split across the gaps between its frames, so a language
+        that elaborates hard at a short tempo derives a step under the
+        compositor's own period and schedules frames that will be coalesced.
+        The ceiling ASKS THE BUILDER rather than restating each event's gap
+        arithmetic here: it drops one step at a time and rebuilds until the
+        derived step clears the floor. That is the difference between a
+        ceiling and a second copy of the builders' shape — `press` adds one
+        gap per step, `travel` adds one per WELL CROSSED, `spin` and `flip`
+        one per mid frame, and a closed form would have to know all four and
+        go stale the day a fifth event lands.
+
+        AND IT ASKS THROUGH THE TOKEN, NOT THROUGH A PARAMETER. The first
+        form of this gave every builder a `steps=` argument and the suite
+        stopped at the first mutant: the battery's whole method is to
+        SUBCLASS a builder, and a ceiling that makes every override grow an
+        argument is a ceiling that taxes the instrument measuring it. What
+        the ceiling varies is the language's own `MOTION_STEPS`, so it varies
+        exactly that — on a copy, so nothing is mutated — and every builder,
+        overridden or not, is asked the question in the only vocabulary it
+        already speaks.
+
+        `_steps` is THE MEASUREMENT DOOR and nothing else may use it: it
+        forces an elaboration and skips the ceiling, so a law can build the
+        frame list the ceiling refused and show that its raw step really is
+        under the floor. A ceiling nothing can build the other side of is a
+        claim about arithmetic, not a measurement."""
+        regime = motion_regime(event)
+        if event in MOTION_GROUP_EVENTS:
+            fn = self._motion_travel
+        else:
+            if event not in motion_events(component):
+                raise ValueError(f"{component} has no {event!r} motion")
+            fn = getattr(self, f"_motion_{event}")
+        ms = int(self.t.get("tempo", 140))
+        if regime == AMBIENT:
+            # AN AMBIENT HAS NO ELABORATION TO CEILING, and that is the
+            # regime split doing its work rather than an exemption. A loop's
+            # period is floored at 2000 ms and divided by the frame COUNT, so
+            # its step clears the refresh floor by two orders of magnitude —
+            # and the caret's builder takes no step count at all, because
+            # what would a third frame of a blink be. Its elaboration is 0
+            # because it HAS none, not because it was taken away.
+            frames = fn(component, **kw)
+            return Motion(tuple(frames), regime,
+                          max(AMBIENT_MIN_MS, ms * AMBIENT_BEATS)
+                          / len(frames), 0)
+        n = max(0, self.MOTION_STEPS if _steps is None else _steps)
+
+        def build(steps):
+            k = _copy.copy(self)
+            k.MOTION_STEPS = steps      # an INSTANCE token, shadowing the
+            return getattr(k, fn.__name__)(component, **kw)   # language's
+
+        if _steps is None:
+            while n and ms / max(1, len(build(n)) - 1) < REFRESH_MS:
+                n -= 1
+        frames = build(n)
+        # THE FLOOR IS ABSOLUTE AND THE CEILING IS NOT ITS ONLY LEG. At zero
+        # elaboration what is left is STRUCTURE — travel's wells — and a
+        # language cannot renounce those. Where the structure alone is under
+        # the floor the pass RUNS LONG rather than claiming a step the
+        # surface will not draw. That leg fires for no shipped fixture and
+        # for solari at a distance of three wells, which is measured.
+        step = max(ms / max(1, len(frames) - 1), REFRESH_MS)
+        return Motion(tuple(frames), regime, step, n)
+
+    def _motion_flip(self, name: str, on: bool = True, w: int = 3,
+                     state: str = DEFAULT) -> list[str]:
+        """The knob CROSSING the track. The mid frames pass an explicit
+        fraction, which is the one caller allowed to: a frame in mid-travel
+        is a frame, not a state."""
+        n = max(0, self.MOTION_STEPS)
+        out = [self._component(name, None, 0, 1, w,
+                               with_checked(state, not on))]
+        for i in range(1, n + 1):
+            f = i / (n + 1)
+            out.append(self._component(name, f if on else 1 - f,
+                                       0, 1, w, ACTIVE))
+        return out + [self._component(name, None, 0, 1, w,
+                                      with_checked(state, on))]
+
+    def flip_frames(self, on: bool, w: int = 3) -> list[str]:
+        """The switch's flip, as the caller that predates the engine wants
+        it: the frames it has to DRAW. Kept as a seat because its caller is
+        already showing frame 0."""
+        return list(self.motion_frames("switch", "flip", on=on, w=w).plays)
+
+    def _motion_press(self, name: str, label: str = "", w: int = 0,
+                      state: str = DEFAULT) -> list[str]:
+        """THE PRESS: a HOLD and a RELEASE, and the first debt this contract
+        owed the motion axis.
+
+        Its anchor and its rest are THE SAME RENDER, which is what a press
+        is: nothing survives it. (A flip, a travel and a spin all land
+        somewhere else — that difference is a law, not a comment.) So the
+        only thing motion can say here is WHEN the control lets go, and the
+        deceleration bias says: not at the start. The extreme is reached on
+        the first drawn frame — the acknowledgement is immediate — and the
+        remaining budget is the hold before the release lands on the last.
+        A language with more steps holds longer; swiss, which renounces,
+        gets the two-frame minimum, which is a flash and a release. A
+        language the refresh ceiling takes down to zero gets the same two
+        frames — by measurement rather than by declaration, which is the
+        only difference between swiss and solari here (#36)."""
+        n = max(0, self.MOTION_STEPS)
+        rest = self._press_render(name, label, w, state)
+        hot = self._press_render(name, label, w, ACTIVE)
+        return [rest] + [hot] * (1 + n) + [rest]
+
+    def _press_render(self, name: str, label: str, w: int, state: str) -> str:
+        """A press is asked of the REGISTRY, not of a component's name: a
+        component whose only part is `main` is all ground, so the caller's
+        word stands between its walls and `button` is how it is composed.
+        Anything else is composed as the control it is."""
+        if COMPONENT_PARTS[name] == ("main",):
+            return self.button(label, w, state)
+        return self._component_body(name, None, 0, 1, max(1, int(w) or 1),
+                                    state)
+
+    def _motion_travel(self, name: str, options=(), old: int = 0,
+                       new: int = 0, state: str = DEFAULT) -> list[str]:
+        """THE MARK CROSSING BETWEEN SIBLINGS — a transition whose scope is a
+        SET, which no other motion in this contract has.
+
+        THE FRAME COUNT IS THE DISTANCE'S, not the language's, and that is
+        the group scope talking: the mark passes every well between the two
+        it joins whether or not a language elaborates, because those wells
+        are THERE. What the language chooses is whether the mark is ever seen
+        OFF a well — the in-transit sample. Renouncing (`MOTION_STEPS = 0`)
+        makes the mark hop well to well; elaborating shows it between them.
+
+        THE IN-TRANSIT FRAME MARKS NOTHING, and it does not come out of
+        `group_states`. That seat exists to make "exactly one item is marked"
+        unreachable-to-violate, and this frame violates it on purpose — which
+        is legal for exactly the reason pass 49 gave the switch's mid frames:
+        a frame between two states is a FRAME, not a state. The invariant is
+        about where a group RESTS.
+
+        THIS IS THE ONE BUILDER THE REFRESH CEILING CANNOT FULLY GOVERN, and
+        the reason is the group scope again: the wells are the DISTANCE's, so
+        zero elaboration still costs one gap per well crossed. A travel long
+        enough at a tempo short enough is under the floor with nothing left
+        to renounce — see `motion_frames`, where the step is floored and the
+        pass runs long rather than the wells being dropped (#36)."""
+        opts = [str(o) for o in options]
+        n = max(0, self.MOTION_STEPS)
+        st = control_of(state)
+
+        def transit() -> str:
+            return self.GROUP_SEP.join(
+                self._component_body(name, None, 0, 1, 1, st)
+                + f" [{self.check_tone(False, st)}]{mark(o)}[/]" for o in opts)
+
+        old, new = int(old), int(new)
+        out = [self.radio_group(opts, old, state, focus=old)]
+        d = 1 if new >= old else -1
+        for k in range(old + d, new + d, d):
+            if n:
+                out.append(transit())
+            out.append(self.radio_group(opts, k, state, focus=k))
+        if len(out) == 1:                  # old == new: nothing travelled
+            out.append(out[0])
+        return out
+
+    def _motion_spin(self, name: str, options=(), old: int = 0, new: int = 0,
+                     w: int = 0, state: str = DEFAULT,
+                     wrap: bool = False) -> list[str]:
+        """THE OPTION CHANGING, and solari's heritage is the whole design.
+
+        WHAT STANDS BETWEEN THE TWO WORDS IS THE LANGUAGE'S OWN `SPIN` — the
+        frame-motion token every language already declares for its spinner.
+        Nothing is hand-authored here and nothing is invented: on a split-flap
+        board that token is a cell mid-turn, so the in-transit frames ARE the
+        riffle; on the terminal's own idiom they are the spinner marks; a
+        language that renounces motion never draws one. Each cell takes the
+        token one phase further along, so the field reads as a wave rather
+        than as ten copies of one glyph.
+
+        THE STEPS ARE DRAWN AT THE DESTINATION, because the value has already
+        moved — the key press changed the model, and what is catching up is
+        the WORD. So the frame diff is the word's cells and nothing else, and
+        the field cannot breathe: the in-transit word is exactly as wide as
+        the widest option, which is the width the control already reserved."""
+        opts = [str(o) for o in options]
+        old, new = int(old), int(new)
+        field = max(int(w), max(len(o) for o in opts))
+        out = [self.stepper(opts, old, w, state, wrap)]
+        for s in range(max(0, self.MOTION_STEPS)):
+            blur = "".join(self.SPIN[(s + i) % len(self.SPIN)]
+                           for i in range(field))[:field]
+            spun = list(opts)
+            spun[new] = blur
+            out.append(self.stepper(spun, new, w, state, wrap))
+        return out + [self.stepper(opts, new, w, state, wrap)]
+
+    def _motion_blink(self, name: str, value: str = "",
+                      caret: int | None = None, w: int = 12,
+                      state: str = EDITED, placeholder: str = "") -> list[str]:
+        """THE CARET — the contract's FIRST AMBIENT, and the one motion here
+        with nothing to arrive at.
+
+        TWO FRAMES, and the diff is ONE CELL'S GLYPH: the caret's column
+        wears the language's caret mark, then the RUNE its paper is made of.
+        The tone does not move — not "does not happen to", cannot: the column
+        is drawn from the caret's own tone in both frames, so this motion
+        satisfies the strict reading of the colour rule and not merely the
+        law's. Which is the point: the corpus animates 241 things and none of
+        them is a colour, and the first loop this contract ships had better
+        be the proof rather than the exception."""
+        return [self.textfield(value, caret, w, state, placeholder,
+                               caret_on=on) for on in (True, False)]
+
+    # -- tabs: the view switcher. Active on two channels (cursor + colour) --
+    def tabs(self, options: list[str], active: str) -> str:
+        c = self.c
+        out = []
+        for o in options:
+            if o == active:
+                out.append(f"[{c['accent']}]{self.CUR}{o}[/]")
+            else:
+                out.append(f"[{c['mut']}] {o}[/]")
+        return f"[{c['dim']}] │ [/]".join(out)
+
+    # ======================================================================
+    # IDENTITY — mascot, wordmark, voice (COMPONENTS.md). The axis that
+    # separates a THEME from a BRAND (Charm, Claude Code, Nothing).
+    # ======================================================================
+    VOICE = {"empty": "empty", "no_signals": "No signals enabled."}
+
+    def _bitmap(self, mask: list[str]) -> list[list[int]]:
+        return [[1 if ch == "#" else 0 for ch in row] for row in mask]
+
+    def mascot(self) -> list[str]:
+        """The creature, drawn through this language's pixel base — same
+        mask, eight different pixels."""
+        base = self.t.get("base", "block")
+        if base == "segment":              # digits-only base: fall back chunky
+            base = "block"
+        sx, sy = BS.BASE_SCALE.get(base, (1, 1))
+        rows = BS.render(BS.scale(self._bitmap(MASCOT), sx, sy), base)
+        return [f"[{self.c['accent']}]{r}[/]" for r in rows]
+
+    def wordmark(self, text: str) -> list[str]:
+        """Display type: a short word drawn through the language's base,
+        using the 3x5 dot alphabet. Languages that renounce drawn type
+        (swiss, corgi) override with their typographic treatment."""
+        base = self.t.get("base", "block")
+        if base == "segment":
+            base = "block"
+        sx, sy = BS.BASE_SCALE.get(base, (1, 1))
+        bm = BS.scale(BS.from_font(text.upper(), NA._ALPHA, gap=1), sx, sy)
+        return [f"[{self.c['ink']}]{r}[/]" for r in BS.render(bm, base)]
+
+    def empty(self, w: int) -> str:
+        """The empty state carries the brand: mascot + this language's voice."""
+        rows = self.mascot() if w >= 14 else []
+        return "\n".join(rows + [f"[{self.c['dim']}] {self.VOICE['empty']}[/]"])
+
+    # ======================================================================
+    # ICONOGRAPHY (COMPONENTS.md axis 4) — one shared vocabulary of domain
+    # kinds, one MECHANISM per language. Base (nord): plain ASCII, the
+    # terminal-native idiom (htop/lazygit).
+    # ======================================================================
+    ICONS = {"deadline": "@", "overdue": "!", "wip": "~", "blocked": "x",
+             "workday":"$", "boardfile":"#"}
+
+    def icon(self, kind: str) -> str:
+        g = self.ICONS.get(kind, "")
+        return f"[{self.c['mut']}]{g}[/]" if g else ""
+
+    # ======================================================================
+    # DATA-VIZ (axis 7): a sparkline drawn with the language's own QUANTITY
+    # mechanism — dispatched on the `meter` token, so the series wears the
+    # same family as the meter (dots / braille / hairline / shades / bars).
+    # ======================================================================
+    def cover_ramp(self) -> str:
+        """THE ONE SEAT that says what this language's coverage ramp is.
+
+        **AND EVERY SEAT THAT ASKS THE QUESTION ASKS IT HERE (#45).** Five
+        `_meter_*` functions and three of `plot`'s branches used to name a
+        `COVER_RAMPS` row directly. That is not a shortcut, it is a second
+        answer: a mechanism is REACHED through the `meter` token, so a row
+        named inside it is this method's dispatch re-typed by hand, and a
+        language that changed mechanism would move its spark and leave its
+        meter behind. Byte-identical when it was cured (308 + 120 render
+        strings, zero moved) precisely because the two agreed — which is what
+        made it hygiene rather than a defect, and is also why nothing but a
+        law would ever have kept them agreeing.
+
+        Dispatched on `meter`, like everything else in the data-viz family,
+        so a mechanism's ramp is a registry row rather than a literal inside
+        each drawing method. `tally` is the one language that BUILDS its
+        ramp — a ledger's terminal glyph is the mark it counts with, which
+        is a theme token — and that is why this is a method and not a dict
+        lookup at the call site.
+
+        THE LEDGER'S UNLIT IS ITS LEADER DOT, and that is where its ramp was
+        wrong: `_meter_tally` prints `·` for every position it has not
+        counted yet, so the leader is the TRACK — but the ramp had it at
+        level 1 and drew air below it. The mark under the terminal is that
+        same mark HOLLOW: pencilled in, not posted."""
+        mech = self.t.get("meter", "blocks")
+        if mech == "tally":
+            return "·:▫" + self.t.get("tally", "▪")
+        return COVER_RAMPS[METER_RAMP.get(mech, "blocks")]
+
+    def spark(self, series: list[int], w: int, hi: int | None = None) -> str:
+        """`hi` is the SHARED ceiling: sibling sparklines must pass the same
+        one, or each self-normalizes and the pair is silently incomparable
+        (DATAVIZ.md). Tiny nonzero values keep a 1-step floor — a microbar
+        must differ from absence in greyscale.
+
+        THE GLYPH IS `coverage_to_glyph`, IN EVERY BRANCH THAT HAS ONE. What
+        differs per mechanism below is the TONE, which is a second channel;
+        the ramp itself is `cover_ramp()` and no branch names one. The one
+        branch with no coverage in it at all is `odometer`, whose quantity is
+        a printed FIGURE — see there."""
+        c = self.c
+        if not series or w <= 0:
+            return ""
+        pts = _resample(series, w)
+        top = hi if hi and hi > 0 else (max(pts) or 1)
+        cov = [0.0 if n <= 0 else n / top for n in pts]     # coverage per cell
+        lv = [coverage_index(x, 3) for x in cov]            # 4 levels
+        mech = self.t.get("meter", "blocks")
+        if mech == "odometer":             # DIGITS, never bars: the level is
+            # printed on the cell face, so the series is READ rather than
+            # estimated and greyscale carries it without help. THE ONE
+            # MECHANISM THAT DOES NOT ROUTE — it is asked for a FIGURE, not
+            # for a coverage, and it never reaches the ramp at all.
+            face = self.t.get("flap")
+            on_ = f" on {face}" if face else ""
+            return "".join(f"[{(c['ink'] if v else c['dim'])}{on_}]{v}[/]"
+                           for v in lv)
+        ramp = self.cover_ramp()
+        gl = [coverage_to_glyph(x, ramp) for x in cov]
+        if mech == "dotgrid":              # the FINE dot scale: a spark is
+            # data, so it wears the small sub-cell dots (0-3 per cell) —
+            # Nothing mixes dot sizes; the large lattice stays for structure
+            return "".join(
+                f"[{c['ink'] if v > 1 else (c['mut'] if v else c['dim'])}]"
+                f"{g}[/]" for v, g in zip(lv, gl))
+        if mech == "braille":              # sub-cell columns
+            return "".join(f"[{c['accent'] if v else c['dim']}]"
+                           f"{g}[/]" for v, g in zip(lv, gl))
+        if mech == "hairline":             # two weights over a BROKEN rule —
+            # zero used to be absence here, which is the one thing a data
+            # scale may not spend it on (DATAVIZ law 4)
+            return "".join(f"[{c['accent'] if v > 1 else c['dim']}]"
+                           f"{g}[/]" for v, g in zip(lv, gl))
+        if mech == "lcd":                  # segment bars: height + ghost
+            s = self.t.get("screen", c["accent"])
+            return "".join(f"[{s if v > 1 else c['dim']}]{g}[/]"
+                           for v, g in zip(lv, gl))
+        if mech in ("decay", "gradient"):  # intensity ramp
+            return "".join(f"[{c['accent'] if v else c['dim']}]"
+                           f"{g}[/]" for v, g in zip(lv, gl))
+        if mech == "step":                 # achromatic grey steps, by SHAPE
+            return "".join(f"[{c['mut'] if v else c['dim']}]"
+                           f"{g}[/]" for v, g in zip(lv, gl))
+        if mech == "dimension":            # the EXTENSION-LINE ladder: a
+            # leader dot, a broken line, an extension line, a heavy one. Four
+            # SHAPES and not one filled cell — a drawing marks a height, it
+            # never blocks it in
+            return "".join(
+                f"[{c['ink'] if v > 2 else (c['mut'] if v else c['dim'])}]"
+                f"{g}[/]" for v, g in zip(lv, gl))
+        if mech == "tally":                # a COUNTED series, not a measured
+            # one: the ramp climbs in printed WEIGHT (which is a coverage,
+            # and routes), from the leader dot the meter leaves on an
+            # uncounted position to the tally mark itself. The GROUPS a
+            # ledger draws elsewhere are counts and do not route.
+            return "".join(f"[{c['ink'] if v > 1 else (c['mut'] if v else c['dim'])}]"
+                           f"{g}[/]" for v, g in zip(lv, gl))
+        return "".join(f"[{c['accent'] if v else c['dim']}]"
+                       f"{g}[/]" for v, g in zip(lv, gl))
+
+    # -- plot: a column chart, h rows tall, in the meter's family -----------
+    def plot(self, series: list[int], w: int, h: int = 4,
+             hi: int | None = None) -> list[str]:
+        """Axis-7, second primitive: a series as h rows of columns, drawn
+        with the language's quantity mechanism (same dispatch as meter/spark).
+        Nothing's widget sheet is the model — its step counts, screen time and
+        week schedule are ALL the same dot lattice: the chart wears the
+        language, not a chart library's look. Levels ride on SHAPE (column
+        height), never colour alone — the greyscale law applies to data.
+
+        NOT ONE PER-ROW BRANCH DECIDES A LEVEL, and #40d's census is what
+        established it. Every branch is handed `v` — the column's height —
+        and decides only lit/unlit against its own row index, which is the
+        boolean the skill's refusal table already names ("lit/unlit per ROW
+        is a boolean, not a coverage"). The LEVEL is decided ONCE per column,
+        above the branches, by `coverage_index` — which it used to decide by
+        a RE-TYPED COPY of that function in three places. DATAVIZ law 3 names
+        exactly that: "nine inline copies are nine chances to lose it, and
+        one copy means spending the floor reds this law in every language at
+        once." It did not, measured: each copy carried its own `max(1, ...)`,
+        so the floor was safe by being in three places rather than by being
+        in its seat."""
+        c = self.c
+        if not series or w <= 0 or h <= 0:
+            return []
+        series = _resample(series, max(1, w // 2))   # reflow before drawing
+        mech = self.t.get("meter", "blocks")
+        top = hi if hi and hi > 0 else (max(series) or 1)
+        if mech == "braille":
+            # columns through the braille base: 4 sub-rows per cell; the
+            # unlit lattice stays faintly visible (one ink — braille's cost)
+            cells = max(1, w // len(series))
+            dh = h * 4
+            lv = [coverage_index(v / top, dh) for v in series]
+            bm = [[1 if dh - r <= v else 0
+                   for v in lv for _ in range(cells * 2)]
+                  for r in range(dh)]
+            return [f"[{c['accent']}]{row}[/]"
+                    for row in BS.render(bm, "braille",
+                                         off=self.cover_ramp()[0])]
+        per = max(1, w // len(series))
+        rows = []
+        for r in range(h):
+            pos = h - 1 - r                    # 0 = the baseline row
+            out = []
+            for x in series:
+                v = coverage_index(x / top, h)
+                if mech == "dotgrid":          # lit dots on the lattice
+                    lit = pos < v
+                    g = min(int(self.t.get("gap", 1)), max(0, per - 1))
+                    cell = (NA.ON if lit else NA.OFF) + " " * g
+                    out.append(f"[{c['ink'] if lit else c['dim']}]"
+                               f"{cell * max(1, per // (1 + g))}[/]")
+                elif mech == "lcd":            # segment stacks with ghosts —
+                    # THE SAME TWO GLYPHS `_meter_lcd` DRAWS, from the same
+                    # place: the ramp's unlit and its first lit level. This
+                    # branch already had the pair right (an unlit stack is
+                    # `░░`, never black) and the meter did not; asking the
+                    # ONE SEAT is what makes that one definition instead of
+                    # two that happen to agree (#40d, the plot half of #45).
+                    lit = pos < v
+                    r_ = self.cover_ramp()
+                    seg = (r_[1] if lit else r_[0]) * 2 + (
+                        " " if per > 2 else "")
+                    tone = self.t.get("screen", c["accent"]) if lit else c["dim"]
+                    out.append(f"[{tone}]{seg * max(1, per // (3 if per > 2 else 2))}[/]")
+                elif mech == "hairline":       # the line alone — swiss
+                    on = v and pos == v - 1
+                    g = ("━" if on else ("─" if pos == 0 else " ")) * per
+                    out.append(f"[{c['ink'] if on else c['dim']}]{g}[/]")
+                elif mech == "decay":          # bright head, phosphor body
+                    if pos < v - 1:
+                        out.append(f"[{c['mut']}]{'▓' * per}[/]")
+                    elif v and pos == v - 1:
+                        out.append(f"[{c['ink']}]{'█' * per}[/]")
+                    else:
+                        out.append(f"[{c['dim']}]{'░' * per}[/]")
+                elif mech == "gradient":       # solid ink, gradient shoulder
+                    if pos < v - 1:
+                        out.append(f"[{c['accent']}]{'█' * per}[/]")
+                    elif v and pos == v - 1:
+                        out.append(f"[{c['accent']}]{'▓' * per}[/]")
+                    elif pos == v:
+                        out.append(f"[{c['dim']}]{'▒' * per}[/]")
+                    else:
+                        out.append(" " * per)
+                elif mech == "boxed":          # block columns on a dot grid
+                    lit = pos < v
+                    out.append(f"[{c['accent'] if lit else c['dim']}]"
+                               f"{('█' if lit else '·') * per}[/]")
+                elif mech == "tally":          # printed marks stacked in a
+                    # column, standing on a leader-dot baseline — a ledger
+                    # counts its columns, it does not fill them
+                    mk = self.t.get("tally", "▪")
+                    if pos < v:
+                        out.append(f"[{c['ink']}]{mk * per}[/]")
+                    elif pos == 0:
+                        out.append(f"[{c['dim']}]{'·' * per}[/]")
+                    else:
+                        out.append(" " * per)
+                elif mech == "odometer":       # a DIGIT LADDER: the sample's
+                    # own figure stands at its height and the cells under it
+                    # stay ground. Position ranks the columns, the figure
+                    # states the value, and no bar is ever drawn (DATAVIZ law
+                    # 5 — position alone is not a reading)
+                    face = self.t.get("flap")
+                    on_ = f" on {face}" if face else ""
+                    if v and pos == v - 1:
+                        fig = str(x)
+                        if len(fig) > per:
+                            fig = "9" * per   # CLIPPED, never clamped
+                        out.append(f"[{c['ink']}{on_}]{fig.rjust(per)}[/]")
+                    elif not v and pos == 0:
+                        out.append(f"[{c['dim']}]{'0'.rjust(per)}[/]")
+                    else:
+                        out.append(" " * per)
+                elif mech == "dimension":      # a DOTTED extension line rising
+                    # to the MARK at its measured height. The column is never
+                    # filled: on a drawing a height is stated by a mark on a
+                    # leader, and the mark is the only ink the sample earns
+                    if v and pos == v - 1:
+                        out.append(f"[{c['ink']}]{'─' * per}[/]")
+                    elif pos < v - 1:
+                        out.append(f"[{c['mut']}]{'·' * per}[/]")
+                    elif pos == 0:
+                        out.append(f"[{c['dim']}]{'·' * per}[/]")
+                    else:
+                        out.append(" " * per)
+                elif mech == "step":           # flat grey columns, a step
+                    # baseline, and NO accent — darkside's passive data
+                    if pos < v:
+                        out.append(f"[{c['mut']}]{'█' * per}[/]")
+                    elif pos == 0:
+                        out.append(f"[{c['dim']}]{'▁' * per}[/]")
+                    else:
+                        out.append(" " * per)
+                else:                          # blocks: partial-glyph res
+                    # the ONE branch of `plot` with a coverage in it: the top
+                    # cell of a column is a FRACTION of a cell, which is
+                    # exactly what the primitive is for. Every other branch
+                    # above decides lit/unlit per ROW — a boolean, not a
+                    # coverage — and so does not route.
+                    #
+                    # AND THE RAMP HERE IS `eighths`, NOT `cover_ramp()`, on
+                    # purpose: a fraction of ONE cell needs eight sub-levels
+                    # and the language's own ramp has three, so routing this
+                    # to the seat would MOVE CELLS (3/8 draws `▃` here and
+                    # `▂` there). A refusal named as loudly as the routes.
+                    u = coverage_index(x / top, h * 8)
+                    full, part = divmod(u, 8)
+                    if pos < full:
+                        out.append(f"[{c['accent']}]{'█' * per}[/]")
+                    elif pos == full and part:
+                        g = coverage_to_glyph(part / 8, COVER_RAMPS["eighths"])
+                        out.append(f"[{c['accent']}]{g * per}[/]")
+                    elif pos == 0:
+                        # #40, AND IT WAS ONE BRANCH RATHER THAN THE FOUR THE
+                        # item named. Measured across all twelve mechanisms
+                        # (`_p62_prove.py` §3): `boxed`, `dotgrid` and
+                        # `decay` draw their unlit lattice down the WHOLE
+                        # column, six others stand on a baseline, and this
+                        # was the only one where a zero column was h rows of
+                        # air — `plot([0,0,0,0], …)` in nord drew nothing at
+                        # all (DATAVIZ law 4). The mark is the track
+                        # `_meter_blocks` draws one row above and the ramp's
+                        # own unlit, so the chart's zero and the meter's zero
+                        # are one idiom. REACHED ONLY BY A ZERO COLUMN: any
+                        # u > 0 lands on `full` or on the partial cell.
+                        out.append(f"[{c['dim']}]"
+                                   f"{self.cover_ramp()[0] * per}[/]")
+                    else:
+                        out.append(" " * per)
+            rows.append("".join(out))
+        return rows
+
+    # -- gauge: a read-only KPI dial — value against its range --------------
+    def gauge(self, val: int, lo: int, hi: int, w: int = 10,
+              tone: str | None = None, thr: int | None = None) -> str:
+        """Track + needle + optional THRESHOLD TICK + readout, in the meter's
+        family. The read-only twin of the slider: the slider is input, the
+        gauge is a measurement. Laws (DATAVIZ.md): the needle differs from
+        the track in GREYSCALE; the tick differs from BOTH; the gauge always
+        STATES its value (Nothing prints numerals beside its dot charts —
+        the step counter); a zero range never raises."""
+        c = self.c
+        raw_tone = tone
+        tone = tone or c["accent"]
+        span = max(1, hi - lo)
+        mech = self.t.get("meter", "blocks")
+
+        def pos(x, cells):
+            return max(0, min(cells - 1, round((cells - 1) * (x - lo) / span)))
+
+        if mech == "dotgrid":
+            g = int(self.t.get("gap", 1))
+            cells = max(3, w // (g + 1))
+            n, tn = pos(val, cells), (None if thr is None else pos(thr, cells))
+            # default needle is INK, not accent — a calm gauge carries no red
+            ntone = raw_tone or c["ink"]
+            out = []
+            for i in range(cells):
+                if i == n:
+                    out.append(f"[{ntone}]{NA.ON}[/]")
+                elif tn is not None and i == tn:
+                    # tick in GREY: shape marks it (▝ off-lattice), red is
+                    # not spent on a marker — the Nothing ration
+                    out.append(f"[{c['mut']}]▝[/]")
+                else:
+                    out.append(f"[{c['dim']}]{NA.OFF}[/]")
+            return (" " * g).join(out) + f" [{c['mut']}]{val}[/]"
+        if mech == "lcd":
+            segs = max(3, w // 3)
+            n, tn = pos(val, segs), (None if thr is None else pos(thr, segs))
+            body = []
+            for i in range(segs):
+                if i == n:
+                    body.append(f"[{self.t.get('screen', tone)}]██ [/]")
+                elif tn is not None and i == tn:
+                    body.append(f"[{c['warn']}]▀▀ [/]")  # top-bar tick segment
+                else:
+                    body.append(f"[{c['dim']}]▄▄ [/]")
+            return "".join(body) + f"[{self.t.get('alu', c['mut'])}]\\[{val:>2}][/]"
+        # linear track mechanisms: (track, needle, tick, needle tone, readout)
+        LIN = {
+            "braille":  ("⠒", "⣿", "⠸", tone, f" [{c['mut']}]{val}[/]"),
+            "hairline": ("─", "│", "╷", c["ink"], f"  [{c['mut']}]{val}[/]"),
+            "decay":    ("░", "█", "│", c["ink"], f" [{c['mut']}]{val}[/]"),
+            "gradient": ("═", "■", "╪", c["warn"], f" [{c['warn']}]{val}[/]"),
+            "boxed":    ("·", "▌", "|", tone, f" [{c['mut']}]{val}[/]"),
+            "step":     ("─", "O", "╷", c["ink"], f" [{c['mut']}]{val}[/]"),
+            "tally":    ("·", self.t.get("tally", "▪"), "|", c["ink"],
+                         f"  [{c['mut']}]{val}[/]"),
+            # a flap board's gauge is a flap INDICATOR on a dotted track and
+            # the figure beside it — never a filled length
+            "odometer": ("·", "▼", "|", c["ink"], f" [{c['mut']}]{val}[/]"),
+            # a drawing's gauge is an UNMEASURED leader (dots) with the
+            # measured point marked by a dimension TERMINATOR, and the
+            # threshold by a BREAK. Three shapes, no fill anywhere
+            "dimension": ("·", "┤", "╌", c["ink"], f"  [{c['mut']}]{val}[/]"),
+        }
+        track, needle, tick, ntone, readout = LIN.get(
+            mech, ("─", "█", "┼", tone, f" [{c['mut']}]{val}[/]"))
+        n, tn = pos(val, w), (None if thr is None else pos(thr, w))
+        cells = [(track, c["dim"])] * w
+        if mech == "decay":                    # phosphor: the needle trails
+            tail = min(n, 3)
+            for j, g in enumerate("░▒▓"[3 - tail:] if tail else ""):
+                cells[n - tail + j] = (g, c["mut"])
+        if tn is not None and tn != n:
+            cells[tn] = (tick, self.tick_tone)
+        cells[n] = (needle, ntone)
+        body = "".join(f"[{t}]{g}[/]" for g, t in cells)
+        if mech == "boxed":
+            body = f"[{c['dim']}]\\[[/]{body}[{c['dim']}]][/]"
+        return body + readout
+
+
+class Naught(Kit):
+    """Everything on one visible dot lattice; quantity is discrete lit dots,
+    never a filled bar; the count is a DRAWN 3x5 sprite; no frames at all."""
+
+    @property
+    def dot_w(self) -> int:
+        return int(self.t.get("dot_w", 2))
+
+    @property
+    def gap(self) -> int:
+        """Lattice PITCH: cells of air between dots. 0 = dense LED panel —
+        the round pixel carries its own air (user: gap-1 felt too sparse)."""
+        return max(0, int(self.t.get("gap", 1)))
+
+    @property
+    def lattice(self) -> bool:
+        """The `layout` token: "lattice" composes the BOARD on the visible dot
+        grid — the head's count is a drawn 3x5 sprite standing on unlit dots,
+        the card's gap is closed by dot leaders, and the card's second row
+        rides the lattice. Anything else (the base default "flow") lets the
+        cards stand on the ground as plain typographic rows. Same dispatch
+        shape as darkside's rail and ledger's ruling, so the composition
+        belongs to the TOKEN and not to the class name — the dots that carry
+        QUANTITY (the dotgrid meter, the calendar, the icons) answer to their
+        own tokens and stay."""
+        return self.layout == "lattice"
+
+    def tcss(self) -> str:
+        # drawn count sprites make the head a 5-row region
+        return super().tcss() + "\n.col-head { margin-bottom: 0; }"
+
+    def surface(self):
+        # pure black IS the surface — plus ONE texture block: the meter
+        # panel wears a faint cross-hatch (a texture swatch reads as denser
+        # pixels; kept near-black so it grounds, never competes)
+        return (".kb-col { background: #000000; }\n"
+                ".kb-card { background: #000000; }\n"
+                "#meter { hatch: cross #101010 35%; }")
+
+    def composition(self):
+        # a grid of small WIDGETS on black — the Nothing home screen: the
+        # meter is its own panel BESIDE the hero, not a strip under it
+        return """
+        Screen.sz-board #top { layout: horizontal; height: 11; }
+        Screen.sz-board #top #hero { width: 1fr; }
+        Screen.sz-board #top #meter { width: 32; height: auto;
+                                      margin-top: 1; margin-left: 2; }
+        """
+
+    def head(self, name: str, count: int, w: int, idx: int = 0) -> str:
+        if not self.lattice:
+            return super().head(name, count, w, idx)
+        c = self.c
+        cap = f"[{c['mut']}]{name.upper()[:max(1, w - 1)]}[/]"
+        # the count as a 3x5 dot sprite on its own visible lattice — the
+        # "count chips as dot columns" commitment. THE STROKE (user verdict
+        # 2026-07-27: the drawn letters read "hard to read, somewhat
+        # separated"): the sprite stands on the CONTINUOUS lattice, so its
+        # letters are parted by unlit dots and never by blank cells, and its
+        # pixel is x2 — every stroke two cells wide, the 1:2 cell aspect
+        # given back. This is the seat the user actually reads; the hero's
+        # dense type is the same mechanism at a seat no row budget reaches.
+        # PROGRESSIVE, because a sprite wider than its column would WRAP and
+        # cost the board a whole card row: x2 where the column pays for it,
+        # x1 (the width the sparse form already had) where it does not.
+        digits = str(min(99, count))
+        dw = max(1, self.dot_w)
+        sx = 2 if NA.plain_width(digits, dw, self.gap, 2, True) <= w - 1 else 1
+        rows = NA.label(digits, c["ink"] if count else c["dim"], c["dim"],
+                        dot_w=dw, gap=self.gap, sx=sx, fill=True)
+        rule = self.rule_line(w)
+        return "\n".join([cap] + rows + ([] if rule is None else [rule]))
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        if not self.lattice:
+            return super().card_row(title, chip, tone, w, idx, urgent)
+        c = self.c
+        dot = f"[{tone if urgent else c['dim']}]{NA.ON if urgent else NA.OFF}[/] "
+        room = max(1, w - len(chip) - 4)
+        body = _fit(title, room)
+        # dot leaders keep the row on the lattice instead of blank cells
+        unit = NA.OFF + " " * self.gap
+        lead = unit * ((room - min(len(title), room)) // len(unit) + 1)
+        lead = lead[: max(0, room - min(len(title), room))]
+        return (dot + f"[{c['ink']}]{body}[/][{c['dim']}]{lead}[/] "
+                f"[{tone}]{chip}[/]")
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        if not self.lattice:
+            return super().card_rows(title, chip, tone, w, idx, urgent, meta)
+        # row 2 stays ON THE LATTICE: phase progress as lit dots (the drawn
+        # 3x5 sprite needs 5 rows — at 2 rows the honest form is the dot
+        # meter), plus the state as the language's 2-dot icon
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        n = max(1, min(int(m.get("n_phases", 4)), max(1, (w - 8) // 2)))
+        pi = max(0, int(m.get("phase_idx", 0)))
+        dots = " ".join(
+            f"[{c['ink'] if i <= pi else c['dim']}]"
+            f"{NA.ON if i <= pi else NA.OFF}[/]" for i in range(n))
+        state = ("blocked" if m.get("blocked")
+                 else "overdue" if (m.get("days") is not None
+                                    and m["days"] < 0 and not m.get("done"))
+                 else "wip")
+        return [top, f"  {dots}  {self.icon(state)}"]
+
+    def tile_row(self, val, label, tone, w):
+        c = self.c
+        return (f"[{tone}]{NA.ON}[/] [{tone}]{val}[/] "
+                f"[{c['mut']}]{label[: max(0, w - len(val) - 4)]}[/]")
+
+    def sect(self, title, note, w, h=0):
+        c = self.c
+        # DISPLAY TYPE: the title drawn on the lattice in the 3x5 dot
+        # alphabet — the same mechanism as the head counts and the wordmark —
+        # when the surface's row budget affords its 5 rows. Same progressive
+        # stroke as the head: x2 where the measure pays for it, x1 where it
+        # does not, and type where even that would not fit.
+        if h >= 16:
+            for sx in (2, 1):
+                if NA.plain_width(title, 1, self.gap, sx, True) <= w - 2:
+                    return (NA.label(title, c["ink"], c["dim"], dot_w=1,
+                                     gap=self.gap, sx=sx, fill=True)
+                            + [f"[{c['mut']}]{note}[/]", ""])
+        lattice = ((NA.OFF + " " * self.gap) * w)[: max(1, w - 1)]
+        return [f"[{c['ink']}]{title}[/]  [{c['mut']}]{note}[/]",
+                self.rule_line(w) or f"[{c['dim']}]{lattice}[/]"]
+
+    def bar(self, span, head=None, tone=None):
+        # discrete dots with the lattice rhythm; the packet BRIGHTENS one dot.
+        # Default is INK — red arrives only when a caller passes an alarm tone
+        c = self.c
+        tone = tone or c["ink"]
+        pitch = self.gap + 1
+        out = []
+        for i in range(span):
+            if self.gap and i % pitch:     # the rhythm gap between dots
+                out.append(" ")
+            elif head is not None and head[i]:
+                out.append(f"[{c['mut']}]{NA.ON}[/]")
+            else:
+                out.append(f"[{tone}]{NA.ON}[/]")
+        return "".join(out)
+
+    GANTT = ("◦", "∙", "│", " ", "∙")      # lit dot travels the round lattice
+
+    def cal_cell(self, state):
+        c = self.c
+        # red ONLY on the overdue day — the Nothing calendar's exact ration
+        return {"none": f"[{c['dim']}]{NA.OFF} [/]",
+                "over": f"[{c['alert']}]{NA.ON} [/]",
+                "multi": f"[{c['ink']}]{NA.ON} [/]",
+                "one": f"[{c['mut']}]{NA.ON} [/]"}[state]
+
+    def queue_marker(self, i):
+        return f"[{self.c['dim']}]{NA.OFF}[/]"
+
+    # icons are 2-dot lattice patterns — ROUND, everything stays on the grid
+    ICONS = {"deadline": "∙◦", "overdue": "∙∙", "wip": "◦∙", "blocked": "◦◦",
+             "workday":"∙ ", "boardfile":"◦ "}
+
+    # Nothing's toggle is a FILL INVERSION, never a knob (the widget sheet:
+    # active pill = solid, off = outline). State = lit vs unlit lattice —
+    # monochrome: the shape channel carries it, red is not spent here.
+    CUR = NA.ON
+
+    @property
+    def SPIN(self):                        # dot chase at the lattice pitch
+        g = " " * self.gap
+        return tuple(g.join(NA.ON if j == i else NA.OFF for j in range(4))
+                     for i in range(4))
+
+    # the value family on the lattice: every part is a ROUND dot, and the
+    # knob is a dot with an EYE — the old knob was the lit dot in a brighter
+    # grey, which is a colour-only knob, and at value 0 there was no knob on
+    # the screen at all (COMPONENTS.md's 2-channel law, failed twice).
+    PART_GLYPHS = {
+        "main": {DEFAULT: NA.OFF, DISABLED: "·"},
+        "indicator": {DEFAULT: NA.ON, DISABLED: NA.OFF},
+        "knob": {DEFAULT: "◉", FOCUSED: "◍", EDITED: "◎",
+                 ACTIVE: "●", DISABLED: "◌"},
+        # THE LATTICE HAS NO CHROME, so this checkbox has no box — ONE dot,
+        # hollow or inked. The renunciation is deliberate and it has a
+        # measured cost: the containment law ("the mark cannot escape its
+        # box") degrades here to span-equality, because a one-cell box has no
+        # interior to keep the mark inside of. Wrapping the dot in brackets
+        # to satisfy a law would be drawing another language's checkbox.
+        "checkbox.main": {DEFAULT: "◦", FOCUSED: "○", ACTIVE: "◌",
+                          DISABLED: "·"},
+        "checkbox.knob": {DEFAULT: "◉", FOCUSED: "●", ACTIVE: "◍",
+                          DISABLED: "◎"},
+        # THE ONE LANGUAGE THAT CANNOT AFFORD THE ROUND-VS-SQUARE
+        # DISTINCTION, and saying so is the point. Nine languages separate a
+        # radio from a checkbox by SHAPE FAMILY — round well, square box.
+        # naught's entire vocabulary is the lattice dot: both are round
+        # because everything here is round, so the distinction it can afford
+        # is WITHIN the family — the checkbox is a dot filled, the radio is a
+        # ring with a centre. The per-state pair still differs from the
+        # checkbox's in every state, which is the law; the family does not,
+        # which is the honest reading.
+        "radio.main": {DEFAULT: "○", FOCUSED: "◌", ACTIVE: "◦",
+                       DISABLED: "⋅"},
+        "radio.knob": {DEFAULT: "⊙", FOCUSED: "⊚", ACTIVE: "●",
+                       DISABLED: "⊗"},
+        # the key is a LATTICE seat: unlit dots hold the word, and lighting
+        # them is the whole language's mechanism. The press fills all four —
+        # the round pixel at full brightness, no red anywhere (the ration).
+        "button.main": {DEFAULT: "◦  ◦", FOCUSED: "○  ○", ACTIVE: "●●●●",
+                        DISABLED: "⋅  ⋅"},
+        # A LATTICE SEAT: unlit dots hold the field open and the paper IS the
+        # lattice. EDITED tightens the weave, because that is the state the
+        # words are landing in.
+        "textfield.main": {DEFAULT: "◦·◦", FOCUSED: "○·○", EDITED: "○∙○",
+                           ACTIVE: "●·●", DISABLED: "⋅⋅⋅"},
+        # the one LIT dot in the lattice — naught marks by lighting, never by
+        # colour, and the red ration reaches this seat through the actuator
+        "textfield.caret": {DEFAULT: "◉"},
+        # THE DOT COLUMN, which is the mechanism the skill names for this
+        # language and it is the lattice doing what it already does: the
+        # shaft is the lattice at its faintest pitch and the view is the run
+        # of pixels at FULL SIZE. Position and extent on one channel — dot
+        # size — because that is the only channel this language has and it
+        # has never needed a second.
+        "scrollbar.main": {DEFAULT: "·", DISABLED: "⋅"},
+        "scrollbar.indicator": {DEFAULT: "●", DISABLED: "◦"},
+        # THE LANGUAGE THAT CANNOT DRAW AN ARROW, and saying so is the point
+        # again. Nine languages point their steps; this vocabulary is one
+        # round pixel at a size, and a chevron would be another language's
+        # mark. So the DIRECTION is carried by the SEAT — the step on the
+        # left is the step back — and the pixel carries the state, which is
+        # what this lattice has always done. The end is a dot going out: at a
+        # clamped floor the left seat drops to the unlit lattice and the eye
+        # reads a wall, not a colour.
+        "stepper.main": {DEFAULT: "··", DISABLED: "⋅⋅"},
+        "stepper.step": {DEFAULT: "●●", FOCUSED: "○○", EDITED: "◍◍",
+                         ACTIVE: "◉◉", DISABLED: "◌◌"},
+    }
+
+    def part_tone(self, part, state, name=None):
+        """THE RATION OVERRULES THE BASE GRIP RULE, and this language's own
+        test is what settled it. The base spends `accent` on a knob under
+        interaction; naught's accent IS red and red is reserved for alerts,
+        and a knob under the finger is not an alert. The switch's ACTIVE
+        flip frames are the first cell where the two rules met, and the calm
+        surface went red the moment they did.
+
+        Nothing is lost: the knob's five SHAPES (◉ ◍ ◎ ● ◌) carry the state
+        on their own, which is the two-channel law satisfied on the channel
+        this language can actually afford.
+
+        It asks the ACTUATOR now, so the ration reaches the button too — whose
+        grip is its own ground, and which would otherwise have put red back on
+        a calm surface the moment a button was focused."""
+        if part == actuator(name) and control_of(state) != DISABLED:
+            return self.c["ink"]
+        return super().part_tone(part, state, name)
+
+    @property
+    def SLOT_SEP(self) -> str:
+        return " " * self.gap
+
+    def spinner(self, tick):
+        return f"[{self.c['ink']}]{self.SPIN[tick % len(self.SPIN)]}[/]"
+
+    # the lattice fills dot by dot — discrete, no easing. THREE steps, not
+    # two: at three slots a two-step flip lands the knob on the same cell
+    # twice and spends a tick showing the same frame (the pairwise-distinct
+    # law caught it).
+    MOTION_STEPS = 3
+
+    def tabs(self, options, active):
+        c = self.c
+        out = []
+        for o in options:
+            dot = NA.ON if o == active else NA.OFF
+            tone = c["ink"] if o == active else c["mut"]
+            out.append(f"[{c['ink'] if o == active else c['dim']}]{dot}[/] "
+                       f"[{tone}]{o.upper() if o == active else o}[/]")
+        return "  ".join(out)
+
+    # ------------------------------------------------------------------
+    # IDENTITY with a JOB (user verdict: the generic mascot was "sin fondo
+    # y sentido"). Nothing's dot-face reads DEVICE state; this one reads
+    # the BOARD: clear (nothing overdue) · busy (open work) · alert
+    # (something overdue). Ground = the unlit lattice behind it; the alarm
+    # is carried by SHAPE (the expression), not by red.
+    # ------------------------------------------------------------------
+    FACES = {
+        "clear": (".........",
+                  "..#...#..",
+                  ".........",
+                  ".#.....#.",
+                  "..#####.."),
+        "busy":  (".........",
+                  "..#...#..",
+                  ".........",
+                  "..#####..",
+                  "........."),
+        "alert": ("..#...#..",
+                  ".........",
+                  "...###...",
+                  "..#...#..",
+                  "...###..."),
+    }
+
+    def face(self, mood: str | None = None) -> list[str]:
+        c = self.c
+        g = " " * self.gap
+        mask = self.FACES.get(mood or self.mood, self.FACES["clear"])
+        return ["".join(
+            f"[{c['ink']}]{NA.ON}{g}[/]" if ch == "#" else
+            f"[{c['dim']}]{NA.OFF}{g}[/]" for ch in mr).rstrip()
+            for mr in mask]
+
+    def mascot(self):
+        return self.face()
+
+    def wordmark(self, text):
+        # drawn through the LATTICE alphabet — round dots, never block slabs
+        c = self.c
+        return NA.label(text, c["ink"], c["dim"], dot_w=1, gap=self.gap)
+
+
+class Corgi(Kit):
+    """Teenage-Engineering grammar: hairline aluminium rules with square
+    junctions, numbered functional params, all-caps letterspaced labels,
+    quantity as LCD SEGMENT BARS (the mark is a bar, not a dot).
+
+    The board is ONE FULL-WIDTH MODE SURFACE (`layout="strip"`): a numbered
+    MODE STRIP names every mode and lights the one on screen, and under it the
+    board mode is a single spec sheet — full-width numbered param rows whose
+    values stand in engraved slots that align down the whole page. Under any
+    other `layout` the previous 3-column composition comes back byte for byte
+    (`_flow_*`)."""
+
+    # ======================================================================
+    # THE PARAM STRIP. Every cell position below is computed in ONE place
+    # (`slots()`), which the renderer AND every acceptance check read — the
+    # `Ledger.cols` / `Swiss.grid` / `Nord.panes` / `Instrument.reticle`
+    # precedent, so "every row's values stand in the same cells" is true by
+    # construction rather than by coincidence.
+    # ======================================================================
+    # WHICH PARAMS, and the one that was DELETED. The flow sub-row printed
+    # DUE / PH / PR. `PH` is gone here and its absence is the point: under a
+    # SECTIONS board the phase is stated by the section head one row above,
+    # so `PH BACKLOG` on every row of the BACKLOG section is a CONSTANT — the
+    # exact defect the trace pass named in instrument's sub-row. `ST` takes
+    # its cells and varies (a blocked task inside DOING reads BLK beside its
+    # open siblings). The right-flushed chip is gone too: it said `3d` / `blk`
+    # / `done`, which DUE and ST now state in engraved slots instead of in a
+    # free position, so no field was lost when the card lost a row.
+    PARAMS = (("DUE", 4), ("PR", 4), ("ST", 4))   # (engraved code, value w)
+    NUM_W = 4            # the row's `[n] ` param number — TE numbers its rows
+    SLOT_GAP = 2         # air between engraved slots. Air is the separator:
+                         # a rule glyph here would be `Ledger.RULE_V` (`│`),
+                         # whose dispatch check ("money-column rules render
+                         # IFF layout=ruled") is what caught instrument
+                         # borrowing a divider. Alignment is corgi's grid.
+    TITLE_MIN = 24       # the narrowest measure that still holds a task title
+                         # intact (swiss's MEASURE_MIN, measured on the same
+                         # seeded fixture: its titles run 19-24 characters).
+    # The strip's own ceiling. `#tabs` is `width: 1fr` inside `#ap`'s
+    # `padding: 1 2`, so its narrowest live seat is the widget class at 46
+    # screen cells => 42 (measured at 46/50/60/79/80/96/118). The full strip
+    # comes out at 41 for the app's four modes — ONE cell of headroom, which
+    # is exactly why the tier ladder below exists rather than a comment.
+    STRIP_MAX = 42
+    LIT = "▄"            # the tight tier's lit-segment mark. Tier 1 spends
+                         # letterspacing on the active mode and cannot afford
+                         # this glyph too; tier 2 spends the glyph instead.
+                         # Either way the active mode carries a channel that
+                         # survives greyscale, never colour alone.
+
+    @property
+    def alu(self) -> str:
+        return self.t.get("alu", self.c["mut"])
+
+    @property
+    def screen(self) -> str:
+        return self.t.get("screen", self.c["accent"])
+
+    @property
+    def striped(self) -> bool:
+        """The `layout` token, dispatched — the same shape as darkside's
+        `rail_width`, naught's `lattice` and instrument's `traced`. A
+        hardcoded mode strip would make the token dead metadata again
+        (PENDING item 0)."""
+        return self.layout == "strip"
+
+    @property
+    def rule_color(self) -> str:
+        return self.alu                    # TE rules are aluminium, always
+
+    def surface(self):
+        # the DISPLAY REGION: machine output lives on green-black glass
+        return (super().surface()
+                + "\n#hero { background: #0a120a; }"
+                + "\n#meter { background: #0a120a; }")
+
+    def board_layout(self):
+        # "each mode takes over the screen": the board mode is ONE surface,
+        # not three scrolling columns. Measured on the seeded fixture at
+        # 80x30 — the columns board cut EVERY title ("RENEW TLS CERTIF…3d")
+        # and had room for two of the four params; the spec sheet prints all
+        # seven backlog titles intact with all three.
+        return "sections" if self.striped else super().board_layout()
+
+    def composition(self):
+        if not self.striped:
+            return self._flow_composition()
+        # THE MODE SURFACE TAKES THE SCREEN, and it is paid for out of dead
+        # air rather than out of the hero. Two changes, both derived from the
+        # same argument — on a TE panel the HAIRLINE is the separator, so a
+        # blank row above a rule is a separator drawn twice:
+        #   * every module that carries a `border-top` gives up its
+        #     `margin-top` (measured: the board region goes 9 rows -> 12 at
+        #     30 screen rows, +33%, and that is what lets one section print
+        #     all seven of its rows);
+        #   * `.col-head` gives up its `margin-bottom` for the same reason —
+        #     the head's own aluminium rule already separates it from the
+        #     rows under it (instrument's "the reticle pays for itself").
+        # `#tabs` is the one module that GAINS a row, and that is a defect
+        # fix, not a cost: `widget.tcss` gives it `height: 1` and this
+        # composition puts a `border-top` on it, so the border ate the
+        # widget's only content row and corgi's tab strip rendered NOWHERE at
+        # any size (measured on the 118x30 frame — `[1] B O A R D` was in the
+        # renderable and on no screen row). Height 2 = the rule + the strip.
+        return """
+        #meter { border-top: solid #9a9a9a; margin-top: 0; }
+        #tabs { border-top: solid #9a9a9a; margin-top: 0; height: 2; }
+        #tiles { border-top: solid #9a9a9a; margin-top: 0; }
+        Screen.sz-board #tiles { height: 2; }
+        #view { border-top: solid #9a9a9a; margin-top: 0; }
+        #kb { border-top: solid #9a9a9a; margin-top: 0; }
+        .col-head { margin-bottom: 0; }
+        """
+
+    def _flow_composition(self):
+        # numbered MODULES divided by aluminium spec-sheet rules
+        return """
+        #meter { border-top: solid #9a9a9a; }
+        #tabs { border-top: solid #9a9a9a; }
+        #tiles { border-top: solid #9a9a9a; }
+        Screen.sz-board #tiles { height: 2; }
+        #view { border-top: solid #9a9a9a; }
+        #kb { border-top: solid #9a9a9a; }
+        """
+
+    VOICE = {"empty": "\\[0] NO TASKS", "no_signals": "\\[!] NO SIGNAL SOURCES"}
+
+    def head(self, name, count, w, idx=0):
+        c = self.c
+        num = f"[{c['accent']}]\\[{idx + 1}][/] " if self.numbered else ""
+        cap = " ".join(name.upper()[: max(1, (w - 8) // 2)])
+        line = (num + f"[{c['ink']}]{cap}[/] "
+                f"[{self.screen if count else c['dim']}]{count:>2}[/]")
+        rule = self.rule_line(w)
+        return line if rule is None else line + "\n" + rule
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        c = self.c
+        num = (f"[{self.alu}]\\[{idx + 1}][/]" if self.numbered
+               else f"[{self.alu}]│[/]")
+        used = 4 if self.numbered else 2
+        room = max(1, w - len(chip) - used - 1)
+        body = _fit(title.upper(), room)
+        pad = " " * max(0, room - min(len(title), room))
+        return f"{num} [{c['ink']}]{body}[/]{pad}[{tone}]{chip}[/]"
+
+    def slots(self, w: int) -> list[tuple[int, str, int]]:
+        """(origin, engraved code, value width) per param slot on a row of `w`
+        content cells — right-flushed, so every row on the page shares one
+        geometry and the values read down as columns.
+
+        THE DROP RULE, derived from the constants rather than tabulated: take
+        the declared params and, while the title measure would come out under
+        `TITLE_MIN`, RENOUNCE the rightmost one — never crush it, never wrap
+        it. With every slot renounced there is no strip left, `[]` comes back,
+        and the caller falls to the two-row flow card, which is the form the
+        strip replaced and can therefore never be worse than it (swiss's grid
+        law). The thresholds fall straight out: 56 cells for all three, 47 for
+        DUE+PR, 38 for DUE alone."""
+        for n in range(len(self.PARAMS), 0, -1):
+            fields = self.PARAMS[:n]
+            block = (sum(len(lab) + 1 + vw for lab, vw in fields)
+                     + self.SLOT_GAP * (n - 1))
+            if w - self.NUM_W - self.SLOT_GAP - block >= self.TITLE_MIN:
+                out, x = [], w - block
+                for lab, vw in fields:
+                    out.append((x, lab, vw))
+                    x += len(lab) + 1 + vw + self.SLOT_GAP
+                return out
+        return []
+
+    def _param_values(self, meta: dict) -> dict[str, str]:
+        m = meta or {}
+        d = m.get("days")
+        return {"DUE": "--" if d is None else f"{d}D",
+                "PR": (m.get("prio") or "-").upper(),
+                "ST": ("DONE" if m.get("done")
+                       else "BLK" if m.get("blocked") else "OPEN")}
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        if not self.striped:
+            return self._flow_card_rows(title, chip, tone, w, idx, urgent,
+                                        meta)
+        sl = self.slots(w)
+        if not sl:
+            return self._flow_card_rows(title, chip, tone, w, idx, urgent,
+                                        meta)
+        c = self.c
+        vals = self._param_values(meta or {})
+        room = max(1, sl[0][0] - self.NUM_W - self.SLOT_GAP)
+        body = _fit(title.upper(), room)
+        pad = " " * max(0, room - min(len(title), room))
+        # the SEVERITY lands on the reading, not on a free-floating chip: DUE
+        # is the only param whose value carries a meaning outside the sheet.
+        # `numbered` still gates the row number here — the strip is a NEW
+        # composition, not a licence to stop reading a token the rest of the
+        # language reads. Unnumbered, the slot stays as INDENT: the title
+        # column must not shift, or the page loses the alignment it is for.
+        num = (f"[{self.alu}]\\[{idx + 1}][/] " if self.numbered
+               else " " * self.NUM_W)
+        parts = [f"{num}[{c['ink']}]{body}[/]{pad}" + " " * self.SLOT_GAP]
+        tones = {"DUE": tone, "PR": c["mut"], "ST": self.screen}
+        for i, (_, lab, vw) in enumerate(sl):
+            gap = " " * (self.SLOT_GAP if i + 1 < len(sl) else 0)
+            parts.append(f"[{self.alu}]{lab}[/] "
+                         f"[{tones[lab]}]{vals[lab][:vw].ljust(vw)}[/]{gap}")
+        return ["".join(parts)]
+
+    def _flow_card_rows(self, title, chip, tone, w, idx=0, urgent=False,
+                        meta=None):
+        # the spec-sheet line: engraved 2-letter codes in aluminium, values
+        # on the screen-green display — a TE param row, not a subtitle
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        d = m.get("days")
+        due = "--" if d is None else f"{d}D"
+        ph = (m.get("phase") or "--")[:7].upper()
+        pr = (m.get("prio") or "-")[:1].upper()
+        sub = _fit_parts([
+            ("    ", "    "),
+            (f"[{self.alu}]DUE[/] [{self.screen}]{due:<4}[/]", f"DUE {due:<4}"),
+            (f"[{self.alu}]PH[/] [{c['ink']}]{ph}[/] ", f"PH {ph} "),
+            (f"[{self.alu}]PR[/] [{c['mut']}]{pr}[/]", f"PR {pr}"),
+        ], w)
+        return [top, sub]
+
+    def tile_row(self, val, label, tone, w):
+        c = self.c
+        room = max(0, w - len(val) - 3)
+        return (f"[{self.screen}]{val}[/] [{self.alu}]│[/]"
+                f"[{c['mut']}]{label.upper()[:room]}[/]")
+
+    def sect(self, title, note, w, h=0):
+        # drawn type RENOUNCED: TE prints and engraves, it does not draw
+        c = self.c
+        head = (f"[{c['accent']}]\\[{title[0]}][/] [{c['ink']}]"
+                f"{' '.join(title)}[/]  [{c['mut']}]{note.upper()}[/]")
+        return [head, self.rule_line(w) or ""]
+
+    def bar(self, span, head=None, tone=None):
+        tone = tone or self.screen
+        out = []
+        for i in range(span):
+            if i % 3 == 2:
+                out.append(" ")
+            elif head is not None and head[i]:
+                out.append(f"[{self.c['ink']}]▄[/]")
+            else:
+                out.append(f"[{tone}]▄[/]")
+        return "".join(out)
+
+    GANTT = ("▄", "█", "│", "·", "▌")
+
+    def cal_cell(self, state):
+        c = self.c
+        return {"none": f"[{c['dim']}]▄▄[/]",
+                "over": f"[{c['alert']}]▄▄[/]",
+                "multi": f"[{self.screen}]▄▄[/]",
+                "one": f"[{c['accent']}]▄▄[/]"}[state]
+
+    # TE prints LABELS, not pictograms: engraved 2-letter codes in aluminium
+    ICONS = {"deadline": "DL", "overdue": "OV", "wip": "WF", "blocked": "BL",
+             "workday":"BD", "boardfile":"FS"}
+
+    def icon(self, kind):
+        g = self.ICONS.get(kind, "")
+        return f"[{self.alu}]{g}[/]" if g else ""
+
+    # a hardware toggle with a PRINTED label — state is written, not implied
+    CUR = "▐"
+    SPIN = ("▀", "▐", "▄", "▌")            # segment sweep: bars, not dots
+
+    # the hardware toggle's PRINTED label survives as the declared word —
+    # this language states every reading in figures beside the control
+    CHECK_WORDS = ("--", "ON")
+
+    # LCD segments: the reading rides on segment HEIGHT, not on lit-vs-ghost.
+    # The old slider drew the SAME `▄▄` for the passed segments and the
+    # remaining ones and separated them by hue alone — greyscale it and the
+    # value disappeared (DATAVIZ.md's note on LCD sparks, exactly).
+    SLOT_SEP = " "
+    PART_GLYPHS = {
+        "main": {DEFAULT: "▁▁", DISABLED: "··"},
+        "indicator": {DEFAULT: "▄▄", DISABLED: "▁▁"},
+        "knob": {DEFAULT: "██", FOCUSED: "▀▀", EDITED: "▓▓",
+                 ACTIVE: "▒▒", DISABLED: "╳╳"},
+        # the LCD's check is a segment DRIVEN, not a tick drawn: the box is
+        # the baseline segment, the mark is the same cell at full height.
+        # Two segment cells wide, so the containment law is span-equality
+        # here too — a two-cell box is a frame with no interior.
+        "checkbox.main": {DEFAULT: "▁▁", FOCUSED: "▔▔", ACTIVE: "▂▂",
+                          DISABLED: "··"},
+        "checkbox.knob": {DEFAULT: "██", FOCUSED: "▛▜", ACTIVE: "▓▓",
+                          DISABLED: "▒▒"},
+        # THE LED BESIDE THE LABEL, which is what this hardware actually
+        # does: a parameter is CHOSEN by a lamp lighting next to its printed
+        # name, while a setting is DRIVEN by a segment. Cell one is the
+        # segment carrying the control state, cell two is the lamp carrying
+        # the choice — so the two channels sit in two different cells and
+        # neither is a colour.
+        "radio.main": {DEFAULT: "▁◦", FOCUSED: "▔◦", ACTIVE: "▂◦",
+                       DISABLED: "·◦"},
+        "radio.knob": {DEFAULT: "▁●", FOCUSED: "▔●", ACTIVE: "▂●",
+                       DISABLED: "·◌"},
+        # an ENGRAVED KEY: this language draws in doubled cells, so both
+        # shoulders are two cells wide and the label sits in the milled
+        # channel between them. Pressed = the shoulders swell (▄▄), which is
+        # the same segment vocabulary its slider and checkbox already speak.
+        "button.main": {DEFAULT: "▁▁▁▁", FOCUSED: "▔▔▔▔", ACTIVE: "▄▄▄▄",
+                        DISABLED: "····"},
+        # FIVE cells, because this language doubles: two cells of wall a side
+        # and the rune in the middle. The words sit in a milled channel.
+        "textfield.main": {DEFAULT: "▁▁·▁▁", FOCUSED: "▔▔·▔▔",
+                           EDITED: "▔▔▁▔▔", ACTIVE: "▄▄·▄▄",
+                           DISABLED: "·····"},
+        "textfield.caret": {DEFAULT: "▌"},
+        # A SEGMENT BANK, doubled like everything this language draws: the
+        # shaft is the GHOST (a segment present but not driven, which is what
+        # an LCD shows where nothing is on) and the view is the same cells
+        # DRIVEN to full. The reading rides segment presence, never hue —
+        # this language's own recorded defect, twice cured.
+        "scrollbar.main": {DEFAULT: "░░", DISABLED: "··"},
+        "scrollbar.indicator": {DEFAULT: "██", DISABLED: "▒▒"},
+        # THE PARAMETER KEYS, and this is the component this language was
+        # waiting for: a TE panel spins its numbered parameters with two keys
+        # beside the readout, which is a stepper and has never been anything
+        # else. Doubled like everything here — two cells a side — and the
+        # reading rides SEGMENT HEIGHT, never hue, which is this language's
+        # own twice-cured defect.
+        #
+        # THE DEAD KEY IS A GHOST SEGMENT: present, not driven, exactly what
+        # an LCD shows where nothing is on. So a clamped stepper at its floor
+        # reads `▁▁ lo ▄▄` — the key is still in the panel and it is plainly
+        # not lit, which is what a hardware end stop looks like.
+        "stepper.main": {DEFAULT: "▁▁▁▁", DISABLED: "····"},
+        "stepper.step": {DEFAULT: "▄▄▄▄", FOCUSED: "▀▀▀▀", EDITED: "▓▓▓▓",
+                         ACTIVE: "████", DISABLED: "╳╳╳╳"},
+    }
+
+    def part_tone(self, part, state, name=None):
+        # the screen hue is the lit segment's own colour, not an accent.
+        # `control_of` and not `state`: a COMBINED state (checked+disabled)
+        # is still disabled, and comparing the raw string let the lit hue
+        # survive a dead control until the switch's laws said so.
+        if part == "indicator" and control_of(state) != DISABLED:
+            return self.screen
+        return super().part_tone(part, state, name)
+
+    def value_label(self, val, state=DEFAULT):
+        # a numbered language STATES the parameter, in the aluminium register
+        return f"[{self.alu}]\\[{val:>2}][/]"
+
+    def spinner(self, tick):
+        return f"[{self.screen}]{self.SPIN[tick % len(self.SPIN)]}[/]"
+
+    # one ghost frame, then the state — a mechanical snap, not a fade
+    MOTION_STEPS = 1
+
+    def _strip(self, options, active, spaced: bool) -> tuple[str, int]:
+        """One tier of the mode strip, with the PLAIN width it costs.
+
+        The numbers are not decoration: `[1]`..`[4]` are the app's own view
+        bindings, so the strip is a picture of the device's numbered buttons
+        and pressing the number really does what the strip says."""
+        c = self.c
+        out, plain = [], []
+        for i, o in enumerate(options):
+            on = o == active
+            lab = " ".join(o.upper()) if (on and spaced) else o.upper()
+            mark = "" if spaced else (self.LIT if on else "")
+            out.append(f"[{self.screen if on else self.alu}]\\[{i + 1}][/]"
+                       f"[{self.screen if on else c['dim']}]{mark}{lab}[/]")
+            plain.append(f"[{i + 1}]{mark}{lab}")
+        return " ".join(out), len(" ".join(plain))
+
+    def tabs(self, options, active):
+        if not self.striped:
+            return self._flow_tabs(options, active)
+        # THE MODE STRIP. A TE panel shows its buttons at all times and
+        # commits ONE SCREEN to the mode they select — the previous form
+        # renounced the buttons as well as the screen, which left three of
+        # the four modes invisible (NAVIGATION.md tier 1: nothing is
+        # discoverable until you show it).
+        #
+        # THREE TIERS, each keeping TWO channels on "which mode is on screen"
+        # so the answer never rides on colour alone: letterspacing while it
+        # fits, a lit segment when it does not, and — if even the tight form
+        # would overflow its seat — the previous active-only form, which is
+        # the composition this one replaced.
+        for spaced in (True, False):
+            mk, n = self._strip(options, active, spaced)
+            if n <= self.STRIP_MAX:
+                return mk
+        return self._flow_tabs(options, active)
+
+    def _flow_tabs(self, options, active):
+        # "each mode takes over the screen" — no persistent nav chrome. The
+        # tab strip COMMITS to showing only the active mode, numbered.
+        c = self.c
+        i = options.index(active) if active in options else 0
+        return (f"[{c['accent']}]\\[{i + 1}][/] "
+                f"[{c['ink']}]{' '.join(active.upper())}[/]")
+
+
+class Instrument(Kit):
+    """Round-dot scope: braille sub-cell dots carry quantity at 2x4 the cell
+    resolution; the unlit lattice stays faintly visible; no frames.
+
+    The board is the SCOPE SCREEN (`layout="trace"`): every phase head carries
+    a labelled DAY RETICLE, and every task hangs a braille trace sample off it
+    — same origin, same cells, one cell per day. Under any other `layout` the
+    previous bench-readout composition comes back byte-for-byte.
+    """
+
+    # HALF IS COMPOSED, NOT CHOSEN (#46): the full cell's left sub-column OR
+    # the lattice's right one, so a half-filled cell still shows the track it
+    # has not reached. Its right sub-column is UNRUN, and the two-unlit
+    # verdict's rule is that a half-cell fill inks every ADDRESSABLE
+    # sub-column. Asserted as that composition in the suite rather than
+    # pinned as a literal — a glyph a law can only compare to itself is a
+    # spelling, not a rule.
+    BLANK, FULL, HALF, LATT = "⠐", "⣿", "⡗", "⠒"
+
+    # ======================================================================
+    # THE RETICLE. Every cell position below is computed in ONE place
+    # (`reticle()`), which the head, the trace row and the acceptance checks
+    # all read — the `Ledger.cols` / `Swiss.grid` / `Nord.panes` precedent, so
+    # "the ticks and the samples share the same cells" is true by construction
+    # rather than by coincidence.
+    # ======================================================================
+    # ONE CELL IS ONE DAY, and that scale is a CONSTANT rather than a token.
+    # A per-column scale is exactly the "siblings lie" failure DATAVIZ.md law 2
+    # names: a 3-day task must be three cells long in the widest column AND in
+    # the narrowest. Width buys HORIZON, never resolution. (A `days_per_cell`
+    # knob was written and then deleted — it was always 1, nothing asked for
+    # it, and its label arithmetic divided where it would have had to multiply,
+    # so it was a latent bug wearing a generality's clothes.)
+    TICK_EVERY = 7       # the week — the unit a task board is actually read in
+    HORIZON = 21         # three weeks, and the same horizon in every column
+                         # that can afford it. Beyond it a sample is CLIPPED
+                         # and flagged, never clamped onto the last cell.
+    IND = 2              # the trace row's indent (the sub-row's existing one)
+    VAL_W = 4            # the widest reading the row ever states ("-12d")
+    SPAN_MIN = 9         # underflow cell + origin + one whole week + its tick.
+                         # Below this there is no SCALE, only a stub, so the
+                         # reticle is RENOUNCED and the bench readout returns.
+    # THE HEAD/CARD BUDGET MISMATCH IS GONE (PENDING item 4, cured at the
+    # source): `kanban.py.row_width` hands the head the card's own measure and
+    # `.col-head { padding-left: 1 }` gives it the card's own origin. This
+    # language used to need TWO constants here — an origin pad and a length
+    # trim of four — because the two jobs had different wrong answers. The
+    # axis now takes the whole measure it is given and is indented by the
+    # trace's own indent, nothing more.
+    # The graticule is DASHED, and that is not taste: a solid `│` is already
+    # ledger's money-column rule (`Ledger.RULE_V`), and its dispatch check —
+    # "money-column rules render IFF layout=ruled" — went red the moment this
+    # field borrowed the glyph. A graticule should read fainter than a divider
+    # anyway, so the collision and the correct form point the same way.
+    AXIS, ORIGIN, TICK, GRAT = "─", "├", "┴", "┊"
+    OVER = "⠿"           # off-scale HIGH. A glyph the fill itself never emits
+                         # (the fill knows only FULL / HALF / LATT), so it can
+                         # never be confused with a sample that merely reaches
+                         # the last cell.
+
+    @property
+    def traced(self) -> bool:
+        """The `layout` token, dispatched — the same shape as darkside's
+        `rail_width` and industrial's `panel`. A hardcoded reticle would make
+        the token dead metadata again (PENDING item 0)."""
+        return self.layout == "trace"
+
+    @property
+    def tick_ink(self) -> str:
+        """The graticule's stroke. NOT `tick_tone`, which is Kit's gauge
+        THRESHOLD colour and answers a different question."""
+        return self.t.get("tick", self.c["dim"])
+
+    @property
+    def unit_ink(self) -> str:
+        return self.t.get("unit", self.c["mut"])
+
+    def reticle(self, w: int) -> tuple[int, list[int]]:
+        """The scope's geometry for a row of `w` content cells: how many cells
+        the field takes, and which of them carry a week tick.
+
+        Cell 0 is the UNDERFLOW cell — strictly left of the origin, where an
+        overdue sample is flagged. The origin is cell 1, and day `d` lands on
+        cell `1 + d`. A field narrower than `SPAN_MIN` returns `(0, [])`: the
+        trace is renounced rather than crushed."""
+        span = min(w - self.IND - 1 - self.VAL_W, self.HORIZON + 2)
+        if span < self.SPAN_MIN:
+            return 0, []
+        return span, [1 + k * self.TICK_EVERY
+                      for k in range(1, self.HORIZON // self.TICK_EVERY + 1)
+                      if 1 + k * self.TICK_EVERY < span]
+
+    @staticmethod
+    def _runs(cells: list[tuple[str, str]]) -> str:
+        """Coalesce a per-cell (glyph, tone) field into markup runs. Emitting
+        a tag per cell would triple the markup a 23-cell field costs on every
+        card, every redraw."""
+        out, buf, tone = [], "", None
+        for ch, tn in cells:
+            if tn != tone:
+                if buf:
+                    out.append(f"[{tone}]{buf}[/]")
+                buf, tone = "", tn
+            buf += ch
+        if buf:
+            out.append(f"[{tone}]{buf}[/]")
+        return "".join(out)
+
+    def axis_row(self, w: int) -> str:
+        """The reticle itself: the origin, the week ticks, and each tick's unit
+        label right-flushed against it. Empty when the field is renounced."""
+        span, ticks = self.reticle(w)
+        if not span:
+            return ""
+        tk, un = self.tick_ink, self.unit_ink
+        cells = [(self.AXIS, tk) for _ in range(span)]
+        cells[1] = (self.ORIGIN, tk)
+        for x in ticks:
+            cells[x] = (self.TICK, tk)
+            lab = f"{x - 1}d"
+            if x - len(lab) >= 2:              # never write over the origin
+                for i, ch in enumerate(lab):
+                    cells[x - len(lab) + i] = (ch, un)
+        return self._runs(cells)
+
+    def trace_row(self, w: int, meta: dict | None = None) -> str | None:
+        """One task's sample, hung off the same reticle its head draws.
+
+        MONOTONE FILL FROM A FIXED ORIGIN, never a needle: the bar grows from
+        cell 1 rightwards, so length is the reading and the eye compares
+        lengths down the column. Out-of-range samples are CLIPPED AND FLAGGED
+        at the boundary — clamping an overdue task onto the origin would print
+        it as "due today", and clamping a far one onto the last cell would make
+        it indistinguishable from a task that really is at the horizon."""
+        span, ticks = self.reticle(w)
+        if not span:
+            return None
+        c = self.c
+        cells = [(self.LATT, self.tick_ink) for _ in range(span)]
+        for x in ticks:
+            cells[x] = (self.GRAT, self.tick_ink)
+        d = (meta or {}).get("days")
+        if d is None:
+            read = "--"                        # no signal: the field stays dark
+        else:
+            read = f"{d}d"
+            if d < 0:
+                cells[0] = (self.FULL, c["alert"])       # off-scale LOW
+            else:
+                # microbar floor (DATAVIZ law 3): DUE TODAY is an event, and a
+                # zero-length bar would print it as nothing at all
+                dots = max(1, 2 * d)
+                full, half = divmod(dots, 2)
+                last = span - 1
+                if 1 + full + (1 if half else 0) > last:  # off-scale HIGH
+                    for x in range(1, last):
+                        cells[x] = (self.FULL, c["accent"])
+                    cells[last] = (self.OVER, c["accent"])
+                else:
+                    for x in range(1, 1 + full):
+                        cells[x] = (self.FULL, c["accent"])
+                    if half:
+                        cells[1 + full] = (self.HALF, c["accent"])
+        return (" " * self.IND + self._runs(cells)
+                + f" [{self.unit_ink}]{read}[/]")
+
+    def composition(self):
+        # a bench instrument: symmetric, inset, the trace centred
+        css = """
+        #ap { margin: 0 3; }
+        Screen.sz-board #hero { margin: 0 8; }
+        """
+        if self.traced:
+            # THE RETICLE PAYS FOR ITSELF. The axis row costs the head a
+            # second row, and the blank row `.col-head` spends below it is
+            # what that row is FOR — a reticle already separates a legend from
+            # the traces under it. Without this the board lost a card to the
+            # fold; with it the vertical cost of the whole composition is zero
+            # (measured: 4 complete cards per column before and after).
+            css += "\n        .col-head { margin-bottom: 0; }\n        "
+        return css
+
+    def head(self, name, count, w, idx=0):
+        if not self.traced:
+            return self._flow_head(name, count, w, idx)
+        # THE SCOPE'S LEGEND: the phase names its channel, STATES its count
+        # (DATAVIZ law 5 — position is not a reading), and the reticle runs
+        # under it. The flow head's 4-cell spark SATURATES at four, so a phase
+        # of 7 and a phase of 4 drew the same four cells; a real axis replaces
+        # a bar that could not tell them apart.
+        c = self.c
+        n = str(count)
+        room = max(1, w - len(n) - 1)
+        nm = name.upper()[:room]
+        line = (f"[{c['mut']}]{nm}[/]{' ' * (room - len(nm))} "
+                f"[{c['accent'] if count else c['dim']}]{n}[/]")
+        ax = self.axis_row(w)
+        # ALWAYS TWO ROWS, even when the scale is renounced. A kanban is read
+        # ACROSS its columns, so a head that shrank to one row in the narrow
+        # column started that column's card stack a row above its neighbours'
+        # — measured on the 80-cell board, and it read as a broken board
+        # rather than as a decision. The renounced form is a blank row, not a
+        # stub axis: a baseline with no gradations would advertise a scale the
+        # samples beside it do not use.
+        return line + "\n" + (" " * self.IND + ax if ax else " ")
+
+    def _flow_head(self, name, count, w, idx=0):
+        c = self.c
+        spark = self.FULL * min(4, count) + self.LATT * max(0, 4 - min(4, count))
+        return (f"[{c['mut']}]{name.upper()[:max(1, w - 7)]}[/] "
+                f"[{c['accent'] if count else c['dim']}]{count}[/]"
+                f"[{c['dim']}]{spark}[/]")
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        c = self.c
+        dot = f"[{tone if urgent else c['dim']}]{'⣿' if urgent else '⠂'}[/] "
+        room = max(1, w - len(chip) - 4)
+        body = _fit(title, room)
+        lead = ("·" * max(0, room - min(len(title), room)))
+        return (dot + f"[{c['ink']}]{body}[/][{c['dim']}]{lead}[/] "
+                f"[{tone}]{chip}[/]")
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        if not self.traced:
+            return self._flow_card_rows(title, chip, tone, w, idx, urgent, meta)
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        row = self.trace_row(w, meta)
+        if row is None:
+            # THE NARROW TIER. Below `SPAN_MIN` there is no scale to hang a
+            # sample off, so the reticle is renounced and the bench readout
+            # returns — the degrade lands on the form the trace replaced and
+            # can therefore never be worse than it (swiss's grid law).
+            return self._flow_card_rows(title, chip, tone, w, idx, urgent, meta)
+        return [top, row]
+
+    def _flow_card_rows(self, title, chip, tone, w, idx=0, urgent=False,
+                        meta=None):
+        # a bench readout: phase progress as a braille half-cell bar (sub-cell
+        # precision is this language's whole point), due beside it
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        n = max(1, int(m.get("n_phases", 4)))
+        pi = max(0, int(m.get("phase_idx", 0)))
+        cells = 6
+        dots = max(0, min(cells * 2, round(cells * 2 * (pi + 1) / n)))
+        full, half = divmod(dots, 2)
+        # THE THREE GLYPHS COME OFF THE SEAT, all three. This row read
+        # `self.LATT` and re-spelled the other two, which is the #45 shape at
+        # one-third strength: #46 had to be applied in three places instead
+        # of one, and the third place is a module-level MECHANISM that this
+        # language does not own. Two of the three are now the same seat.
+        bar = (f"[{c['accent']}]{self.FULL * full}{self.HALF * half}[/]"
+               f"[{c['dim']}]{self.LATT * (cells - full - half)}[/]")
+        d = m.get("days")
+        due = "--" if d is None else f"{d}d"
+        sub = _fit_parts([("  ", "  "), (bar, " " * cells),
+                          (f" [{c['mut']}]{due}[/]", f" {due}")], w)
+        return [top, sub]
+
+    def tile_row(self, val, label, tone, w):
+        c = self.c
+        return (f"[{tone}]⠿[/] [{tone}]{val}[/] "
+                f"[{c['mut']}]{label[: max(0, w - len(val) - 4)]}[/]")
+
+    def sect(self, title, note, w, h=0):
+        c = self.c
+        # DISPLAY TYPE, clinical register: the title through the braille base
+        # UNSCALED — 3x5 dots pack into 2 rows of sub-cell type. Small,
+        # precise, cheap enough that h>=10 affords it.
+        if h >= 10:
+            bm = BS.from_font(title, NA._ALPHA, gap=1)
+            if len(bm[0]) // 2 <= w - 10:
+                rows = [f"[{c['ink']}]{r}[/]" for r in BS.render(bm, "braille")]
+                rows[-1] += f"  [{c['mut']}]{note}[/]"
+                return rows + [self.rule_line(w)
+                               or f"[{c['dim']}]{self.LATT * max(1, w - 1)}[/]"]
+        return [f"[{c['accent']}]⣿[/] [{c['ink']}]{title}[/]  "
+                f"[{c['mut']}]{note}[/]",
+                self.rule_line(w) or f"[{c['dim']}]{self.LATT * max(1, w - 1)}[/]"]
+
+    def bar(self, span, head=None, tone=None):
+        c = self.c
+        tone = tone or c["accent"]
+        body = "".join(
+            f"[{c['ink']}]{self.FULL}[/]" if (head is not None and head[i])
+            else f"[{tone}]⠶[/]" for i in range(span))
+        return body
+
+    GANTT = ("⠒", "⣿", "⡇", "⠄", "⣿")
+
+    def cal_cell(self, state):
+        c = self.c
+        return {"none": f"[{c['dim']}]{self.LATT} [/]",
+                "over": f"[{c['alert']}]{self.FULL} [/]",
+                "multi": f"[{c['accent']}]{self.FULL} [/]",
+                "one": f"[{c['warn']}]⠶ [/]"}[state]
+
+    # abstract braille patterns — clinical, dot-coded
+    ICONS = {"deadline": "⠙", "overdue": "⠮", "wip": "⠿", "blocked": "⠺",
+             "workday":"⠳", "boardfile":"⠋"}
+
+    CUR = "⣿"
+    SPIN = ("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧")     # the round-dot classic
+
+    # the braille register. The old slider had no knob at all — a filled run
+    # and nothing to grab — so it was a BAR wearing a slider's name, which is
+    # the exact confusion the parts registry exists to make impossible.
+    PART_GLYPHS = {
+        "main": {DEFAULT: "⠒", DISABLED: "⠁"},
+        "indicator": {DEFAULT: "⣿", DISABLED: "⠶"},
+        "knob": {DEFAULT: "⡇", FOCUSED: "⢸", EDITED: "⠿",
+                 ACTIVE: "⣤", DISABLED: "⠄"},
+        # one register CELL, sparse or driven. Braille's sub-cell grid is
+        # already the box: the eight dots are the interior, so this language
+        # needs no bracket to contain a mark. Span-equality carries the
+        # containment law here, the same renunciation naught makes.
+        "checkbox.main": {DEFAULT: "⠒", FOCUSED: "⠛", ACTIVE: "⠤",
+                          DISABLED: "⠁"},
+        "checkbox.knob": {DEFAULT: "⣿", FOCUSED: "⣶", ACTIVE: "⣤",
+                          DISABLED: "⠿"},
+        # A REGISTER READ AS A RING, not as a level. The checkbox drives the
+        # cell from the bottom up (a quantity reaching full); the radio sets
+        # the cell's OUTER dots and leaves the middle, which in braille is
+        # the closest thing to a round well the sub-cell grid can hold. One
+        # cell, so the containment law is span-equality here as it is for the
+        # checkbox — stated, not smuggled.
+        "radio.main": {DEFAULT: "⠐", FOCUSED: "⠰", ACTIVE: "⠘",
+                       DISABLED: "⠈"},
+        "radio.knob": {DEFAULT: "⠶", FOCUSED: "⠾", ACTIVE: "⠷",
+                       DISABLED: "⠦"},
+        # RAILS, in the clinical register: a braille column each side, the
+        # word between them like a reading between two graticule marks. The
+        # press BOTTOMS OUT — the rails gain their lower dots (⣇ ⣸) — which
+        # is a travel this language can show without moving the label.
+        "button.main": {DEFAULT: "⠇  ⠸", FOCUSED: "⠧  ⠼", ACTIVE: "⣇⣀⣀⣸",
+                        DISABLED: "⠄  ⠄"},
+        # braille RAILS with a braille RULE between them, clinical register:
+        # the field is a measured span and the words lie along it.
+        "textfield.main": {DEFAULT: "⠇⠒⠸", FOCUSED: "⠧⠒⠼", EDITED: "⠧⠤⠼",
+                           ACTIVE: "⣇⠒⣸", DISABLED: "⠄⠁⠄"},
+        # a full-height braille tick — this language's own index mark
+        "textfield.caret": {DEFAULT: "⡇"},
+        # THE REGISTER READ AS A TRAVERSE: the shaft is the baseline rail
+        # (one dot row, the instrument's zero) and the view is the register
+        # DRIVEN FULL. Clinical, and it is the same sub-cell channel this
+        # language spends on every quantity it has ever drawn.
+        "scrollbar.main": {DEFAULT: "⠄", DISABLED: "⠁"},
+        "scrollbar.indicator": {DEFAULT: "⣿", DISABLED: "⠿"},
+        # THE REGISTER'S DETENTS — a braille column each side, weighted to
+        # the side it steps toward, so the sub-cell grid carries the
+        # direction the way it carries everything else here. The state is how
+        # many dot rows are driven; the dead detent is the baseline rail this
+        # instrument reads zero as.
+        "stepper.main": {DEFAULT: "⠁⠁", DISABLED: "⠈⠈"},
+        "stepper.step": {DEFAULT: "⡄⢠", FOCUSED: "⡆⢰", EDITED: "⡇⢸",
+                         ACTIVE: "⣇⣸", DISABLED: "⠄⠄"},
+    }
+
+    def spinner(self, tick):
+        return f"[{self.c['accent']}]{self.SPIN[tick % len(self.SPIN)]}[/]"
+
+    # the dots ROLL through the track — braille's half-cell precision
+    MOTION_STEPS = 3
+
+    def tabs(self, options, active):
+        c = self.c
+        return "  ".join(
+            f"[{c['accent']}]⣿[/][{c['ink']}]{o.upper()}[/]" if o == active
+            else f"[{c['dim']}]⠂[/][{c['mut']}]{o}[/]" for o in options)
+
+
+class Swiss(Kit):
+    """Structure by alignment and emptiness. ONE hairline rule. No boxes, no
+    markers, no drawn type — counts are typographic, space is the divider.
+
+    The board is an EDITORIAL SPREAD (`layout="editorial"`): every entry is
+    set on a type GRID of `columns` columns — subject · byline · figure — and
+    the single hairline is the masthead rule under the LEADING phase, not one
+    rule per head. Under any other `layout` the previous full-width flow rows
+    come back, byte for byte (`_flow_*`)."""
+
+    # THE GRID. Two constants decide everything, so the drop rule is derived
+    # rather than tabulated:
+    #   GUTTER      cells of air between columns. Air is this language's
+    #               divider, so the gutter is what a rule would have been.
+    #   MEASURE_MIN the narrowest column that still holds a task title. Below
+    #               it a title is cut mid-phrase, which is what "illegible"
+    #               measured as on the darkside board (~7 chars). The seeded
+    #               board's titles run 19-24 characters; 24 is the measure at
+    #               which none of them is cut.
+    GUTTER = 3
+    MEASURE_MIN = 24
+
+    @property
+    def editorial(self) -> bool:
+        """The grid, dispatched on the token — the same shape as
+        `Darkside.rail_width`, `Naught.lattice` and `Industrial.panel`. A
+        hardcoded grid would make `layout` dead metadata (PENDING item 0)."""
+        return self.layout == "editorial"
+
+    def grid(self, w: int) -> list[tuple[int, int]]:
+        """(origin, measure) per column at `w` cells — ONE function, read by
+        the renderer AND by the acceptance check, so "the elements and the
+        columns share the same cells" is true by construction (Ledger.cols'
+        precedent).
+
+        THE DROP RULE, stated so it can be disproved: take the declared column
+        count, and while a column would come out narrower than MEASURE_MIN,
+        RENOUNCE one — 3 -> 2 -> 1. Never wrap, never crush. Which element
+        goes with the column is declared in `_entry`."""
+        n = max(1, int(self.t.get("columns", 3)))
+        while n > 1 and (w - self.GUTTER * (n - 1)) // n < self.MEASURE_MIN:
+            n -= 1
+        cw = max(1, (w - self.GUTTER * (n - 1)) // n)
+        return [(i * (cw + self.GUTTER), cw) for i in range(n)]
+
+    def _spread(self, w: int, placed: list[tuple[int, str, str]]) -> str:
+        """Set `placed` — (column index, markup, plain) — on the grid, each
+        element flush left at its column's ORIGIN.
+
+        Flush left, not flush right, and that is a decision: the head is given
+        a different measure from the cards (kanban.py budgets the head
+        `avail - 4` and the card its own content box), so a right-flushed
+        figure would land in a different cell in the head than in the entries
+        under it. The origins are identical at both measures; the right edges
+        are not. Alignment is this language's whole structure, so the grid —
+        not the page edge — is what everything is set against."""
+        cols = self.grid(w)
+        out, x = "", 0
+        for ci, mk, pl in placed:
+            if not pl or ci >= len(cols):
+                continue
+            ox, cw = cols[ci]
+            if ox < x:                     # never overlap: air is structure
+                continue
+            out += " " * (ox - x) + mk
+            x = ox + min(len(pl), cw)
+        return out
+
+    def head(self, name, count, w, idx=0):
+        if not self.editorial:
+            return self._flow_head(name, count, w, idx)
+        c = self.c
+        # the leading cell used to be paid HERE, in the markup, because the
+        # head was measured apart from its spread. It is the seat's now
+        # (`.col-head { padding-left: 1 }`, base tcss) and the masthead simply
+        # takes the measure it is given.
+        m = max(6, w)
+        cols = self.grid(m)
+        cnt = f"{count}" if count else ""
+        if len(cols) == 1:
+            line = self._flow_head_line(name, count, m)
+        else:
+            cap = " ".join(name.upper())[: cols[0][1]]
+            line = self._spread(
+                m, [(0, f"[{c['ink']}]{cap}[/]", cap),
+                    (len(cols) - 1, f"[{c['mut']}]{cnt}[/]", cnt)])
+        # ONE HAIRLINE FOR THE WHOLE SPREAD. The rule is the masthead's, so it
+        # is drawn under the LEADING phase and nowhere else — a rule under
+        # every head is four rules, which is what this language spent before
+        # and what its own note ("one rule") already denied.
+        rule = self.rule_line(m) if idx == 0 else None
+        return line if rule is None else line + "\n" + rule
+
+    def _flow_head_line(self, name, count, w):
+        c = self.c
+        cap = " ".join(name.upper()[: max(1, (w - 4) // 2)])
+        line = f"[{c['ink']}]{cap}[/]"
+        cnt = f"{count}" if count else ""
+        gap = max(1, w - len(cap) - len(cnt) - 2)
+        return line + " " * gap + f"[{c['mut']}]{cnt}[/]"
+
+    def _flow_head(self, name, count, w, idx=0):
+        line = self._flow_head_line(name, count, w)
+        rule = self.rule_line(w)
+        return line if rule is None else line + "\n" + rule
+
+    def _entry(self, title, chip, tone, w, proj=""):
+        """One entry, set on the grid. THE COLUMN ROLES, and the order they
+        are renounced in:
+
+          3 columns  subject (the title) · byline (the project) · figure
+          2 columns  subject · figure — the BYLINE goes first: it is the only
+                     one of the three that is neither the thing named nor its
+                     datum (the ledger tile's law: a clipped row keeps its
+                     figure)
+          1 column   the flow row itself, verbatim — the drop rule degrades
+                     towards the form it replaced, so the floor tier can never
+                     be worse than what was there before."""
+        c = self.c
+        cols = self.grid(w)
+        n = len(cols)
+        if n == 1:
+            return self._flow_card_row(title, chip, tone, w)
+        t = _fit(title, cols[0][1])
+        placed = [(0, f"[{c['ink']}]{t}[/]", title[: cols[0][1]])]
+        if n >= 3 and proj:
+            p = proj[: cols[1][1]]
+            placed.append((1, f"[{c['mut']}]{mark(p)}[/]", p))
+        ch = chip[: cols[-1][1]]
+        placed.append((n - 1, f"[{tone}]{ch}[/]", ch))
+        return self._spread(w, placed)
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        if not self.editorial:
+            return self._flow_card_row(title, chip, tone, w, idx, urgent)
+        return self._entry(title, chip, tone, w)
+
+    def _flow_card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        c = self.c
+        room = max(1, w - len(chip) - 2)
+        body = _fit(title, room)
+        pad = " " * max(0, room - min(len(title), room))
+        # flush-left title, flush-right chip, NOTHING between — the space is
+        # the structure. Urgency rides the chip alone.
+        return f"[{c['ink']}]{body}[/]{pad} [{tone}]{chip}[/]"
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        # the second row is RENOUNCED: swiss already spends a whole row of
+        # space between cards (pitch) — metadata would be ornament. One row,
+        # and the renunciation is the commitment (verified as such).
+        #
+        # The grid is what lets the entry carry its BYLINE anyway: the project
+        # takes a COLUMN, not a row. The renunciation is unchanged.
+        if not self.editorial:
+            return [self._flow_card_row(title, chip, tone, w, idx, urgent)]
+        return [self._entry(title, chip, tone, w, (meta or {}).get("proj", ""))]
+
+    def tile_row(self, val, label, tone, w):
+        c = self.c
+        room = max(0, w - len(val) - 2)
+        return f"[{c['mut']}]{label[:room]}[/] [{tone}]{val}[/]"
+
+    def sect(self, title, note, w, h=0):
+        # drawn type RENOUNCED: letterspace and weight ARE the display face
+        c = self.c
+        return ([f"[{c['ink']}]{' '.join(title)}[/]   [{c['mut']}]{note}[/]"]
+                + ([self.rule_line(w)] if self.rule_line(w) else []) + [""])
+
+    def bar(self, span, head=None, tone=None):
+        tone = tone or self.c["accent"]
+        body = "".join("━" if (head is None or head[i]) else "─"
+                       for i in range(span))
+        return f"[{tone}]{body}[/]"
+
+    GANTT = ("─", "━", "│", " ", "┃")
+
+    def cal_cell(self, state):
+        c = self.c
+        return {"none": f"[{c['dim']}]· [/]",
+                "over": f"[{c['alert']}]━━[/]",
+                "multi": f"[{c['accent']}]━━[/]",
+                "one": f"[{c['mut']}]──[/]"}[state]
+
+    # typographic controls: weight and space, no boxes, no ornament
+    def surface(self):
+        return ""                          # emptiness is the surface
+
+    def board_layout(self):
+        return "sections"                  # the editorial list, not columns
+
+    def composition(self):
+        # the narrow editorial MEASURE is the ambient register (a text
+        # column); data surfaces take the full page — the same posture split
+        # that made darkside's tasks legible again. Flush-left stays: the
+        # margin is the structure.
+        # at BOARD size the ambient block YIELDS rows to the data (hero 9,
+        # tiles one row): airy chrome that buries the board under the fold
+        # is not airiness, it is a broken surface (30-row screens showed
+        # zero cards). The tiles-as-list commitment lives at widget size.
+        return """
+        #ap { margin: 0 0 0 4; }
+        #top, #tiles, #tabs, #queue, #ap-panel { max-width: 78; }
+        Screen.sz-board #hero { height: 9; }
+        Screen.sz-widget #tiles { layout: vertical; height: auto; }
+        """
+
+    def mascot(self):
+        return []                          # no ornament — swiss renounces it
+
+    def wordmark(self, text):
+        c = self.c
+        return [f"[{c['ink']}]{' '.join(text.upper())}[/]",
+                f"[{c['dim']}]{'─' * max(1, len(text) * 2 - 1)}[/]"]
+
+    MOTION_STEPS = 0                         # motion renounced — a decision
+
+    ICONS = {}                             # no pictograms — the WORD is the icon
+
+    VOICE = {"empty": "nothing here", "no_signals": "no signals enabled"}
+
+    CUR = "━"
+    SPIN = (".", "..", "...", " ")          # a walking period
+
+    # structure by WEIGHT, which is what a hairline language has instead of
+    # ornament: the passed extent is the heavy rule, the rest is the light
+    # one. The old slider drew the same `─` on both sides of the knob — a
+    # slider with no indicator, i.e. two parts where the registry says three.
+    PART_GLYPHS = {
+        "main": {DEFAULT: "─", DISABLED: "┈"},
+        "indicator": {DEFAULT: "━", DISABLED: "┅"},
+        "knob": {DEFAULT: "│", FOCUSED: "┃", EDITED: "▮",
+                 ACTIVE: "█", DISABLED: "┆"},
+        # WEIGHT is this language's only ornament, so the box is two rules
+        # and the state is how heavy they are. The mark is set INSIDE them,
+        # which is the containment law non-vacuous: the two rules survive
+        # every state and only the interior changes.
+        "checkbox.main": {DEFAULT: "│ │", FOCUSED: "┃ ┃", ACTIVE: "█ █",
+                          DISABLED: "┆ ┆"},
+        "checkbox.knob": {DEFAULT: "│▪│", FOCUSED: "┃▪┃", ACTIVE: "█▮█",
+                          DISABLED: "┆·┆"},
+        # THE TYPOGRAPHIC DISTINCTION, which this language of all ten is
+        # entitled to make: a square bullet marks a box, a ROUND bullet marks
+        # a choice. The rules shorten to half-height ticks so the well reads
+        # lighter than the box beside it — Swiss separates by weight, and it
+        # is spending weight here rather than inventing an ornament.
+        "radio.main": {DEFAULT: "╵ ╵", FOCUSED: "╹ ╹", ACTIVE: "▀ ▀",
+                       DISABLED: "╎ ╎"},
+        "radio.knob": {DEFAULT: "╵•╵", FOCUSED: "╹•╹", ACTIVE: "▀●▀",
+                       DISABLED: "╎·╎"},
+        # THE ONE LANGUAGE THAT WOULD RENOUNCE THE WALLS AND CANNOT. Space is
+        # this language's structure and a bare word would be the honest swiss
+        # button — but the label is the CALLER's and may not be restyled, so
+        # with the walls gone the four states would separate on colour alone,
+        # which is the one thing forbidden here. It takes the thinnest mark
+        # that carries a state: a rule each side, thickening under the finger.
+        "button.main": {DEFAULT: "│  │", FOCUSED: "┃  ┃", ACTIVE: "█  █",
+                        DISABLED: "┆  ┆"},
+        # THE LANGUAGE THAT WOULD RENOUNCE THE WALLS AND CANNOT, a second
+        # time. A bare line of words is the honest swiss field — but a value
+        # may fill every cell, so a walled-off field is the only place a full
+        # one can say DISABLED without colour. It takes the thinnest rule that
+        # carries a state, and it leaves the paper BLANK: the only language
+        # here that spends nothing at all on its ground.
+        "textfield.main": {DEFAULT: "│ │", FOCUSED: "┃ ┃", EDITED: "┃·┃",
+                           ACTIVE: "█ █", DISABLED: "┆ ┆"},
+        "textfield.caret": {DEFAULT: "▏"},
+        # WEIGHT, the only ornament this language owns, spent on a shaft this
+        # time: the track is the lightest rule it can draw and the view is
+        # the heaviest. No box, no shading — a scroll bar here is one rule
+        # whose weight changes where you are.
+        "scrollbar.main": {DEFAULT: "┄", DISABLED: "·"},
+        "scrollbar.indicator": {DEFAULT: "▬", DISABLED: "─"},
+        # THE TYPOGRAPHIC MARK AGAIN, which this language of ten is entitled
+        # to take: a chevron is a piece of punctuation before it is an
+        # ornament, so a stepper here is set the way a printer would set it —
+        # the guillemet family, opening under the finger. The end is SPACE
+        # doing the work space does everywhere in this language: the mark is
+        # simply not set, and the word does not move because the field was
+        # reserved for it.
+        "stepper.main": {DEFAULT: "··", DISABLED: "╎╎"},
+        "stepper.step": {DEFAULT: "‹›", FOCUSED: "◃▹", EDITED: "◂▸",
+                         ACTIVE: "██", DISABLED: "┆┆"},
+    }
+
+    def value_label(self, val, state=DEFAULT):
+        return f"  [{self.c['mut']}]{val}[/]"
+
+    def spinner(self, tick):
+        return f"[{self.c['mut']}]{self.SPIN[tick % len(self.SPIN)]:<3}[/]"
+
+    def tabs(self, options, active):
+        c = self.c
+        return "   ".join(
+            f"[{c['ink']}]{' '.join(o.upper())}[/]" if o == active
+            else f"[{c['mut']}]{o}[/]" for o in options)
+
+
+class Industrial(Kit):
+    """Flat functional colour on grey; everything is labelled and bracketed;
+    numbered because modes have numbers. Structure is the FUNCTION PLATE
+    (`layout="panel"`): the head rule is gone, a phase is a plate legend, and
+    every task is a solid plate-toned block stamped with its two-digit code.
+    Under any other `layout` the previous boxed composition comes back."""
+
+    # the plate "▐ nn ▌ " and its tight form "▐nn " (the narrow tier). Both
+    # come OUT OF the content budget, exactly like the card's padding — a
+    # plate that widened the row would wrap it (VERIFY.md's frame law).
+    #
+    # THE TIGHT TIER STILL CARRIES ITS CODE. The first render renounced the
+    # code below the threshold, and the board showed two adjacent columns
+    # wearing different plates — which reads as a bug, not a decision. A
+    # signature that is only present on the wide columns is not a signature,
+    # so the narrow tier gives up three cells of plate, never the number.
+    PLATE_W = 7
+    SHORT_W = 4
+    TAB_W = 3                                  # the legend's "▐▌ " tab
+    CODE_MIN = 24
+
+    @property
+    def panel(self) -> bool:
+        """The plate composition, dispatched on the token — the same shape as
+        `Darkside.rail_width` and `Naught.lattice`. A hardcoded plate would
+        make `layout` dead metadata again (PENDING item 0)."""
+        return self.layout == "panel"
+
+    @property
+    def plate(self) -> str:
+        return self.t.get("plate", self.c["dim"])
+
+    def plate_w(self, w: int) -> int:
+        """How wide the plate WILL be at this measure — asked before it is
+        drawn, so a caller can budget the row rather than discover the
+        overflow (naught's `plain_width` lesson)."""
+        return self.PLATE_W if w >= self.CODE_MIN else self.SHORT_W
+
+    def plate_stamp(self, idx: int, tone: str, w: int) -> str:
+        """The plate's left edge, colour-coded by FUNCTION (the tone the card
+        already carries: warn for urgent, mut for the rest) and stamped with
+        the card's position code. Two digits, so a stack of plates reads as a
+        run; the code wraps at 100, which no column reaches."""
+        c = self.c
+        code = f"[{c['mut']}]{(idx + 1) % 100:02d}[/]"
+        if w < self.CODE_MIN:
+            return f"[{tone}]▐[/]{code} "
+        return f"[{tone}]▐[/] {code} [{tone}]▌[/] "
+
+    def head(self, name, count, w, idx=0):
+        if not self.panel:
+            return self._flow_head(name, count, w, idx)
+        # THE PLATE LEGEND: the phase names its plate stack from a solid band,
+        # and the rule that used to divide them is gone — the ground does that
+        # job now (HIERARCHY.md ranks a shared background above a rule).
+        #
+        # The leading cell is the SEAT's now (`.col-head { padding-left: 1 }`,
+        # base tcss). It used to be paid here in the markup, because paying it
+        # in TCSS while `kanban.py` still measured the head apart from its
+        # cards left this legend — which fills its measure exactly — no slack
+        # to absorb the narrower box, and it WRAPPED. `row_width` hands the
+        # head the card's own measure now, so the box is never the tighter one.
+        c = self.c
+        w = max(6, w)
+        budget = w - self.TAB_W - 5
+        # the legend renounces its number before it crushes the phase name:
+        # a legend with no name names nothing
+        num, nw = ("", 0)
+        if self.numbered and budget >= 4:
+            num, nw = f"[{c['accent']}]\\[{idx + 1}][/]", 3
+        room = max(1, budget - nw)
+        nm = name.upper()[:room]
+        pad = " " * (room - len(nm))
+        return (f"[on {self.plate}][{c['accent']}]▐▌[/] {num}"
+                f"[{c['ink']}]{nm}[/]{pad} [{c['mut']}]\\[{count:>2}][/][/]")
+
+    def _flow_head(self, name, count, w, idx=0):
+        c = self.c
+        num = f"[{c['accent']}]\\[{idx + 1}][/]" if self.numbered else ""
+        room = max(1, w - 9)
+        line = (num + f"[{c['ink']}]{name.upper()[:room]}[/] "
+                f"[{c['mut']}]\\[{count:>2}][/]")
+        rule = self.rule_line(w)
+        return line if rule is None else line + "\n" + rule
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        if not self.panel:
+            return self._flow_card_row(title, chip, tone, w, idx, urgent)
+        c = self.c
+        pw = self.plate_w(w)
+        inner = max(1, w - pw)
+        # the chip is DATA and is budgeted first; the title absorbs the loss
+        # (app.py's measured lesson: a clipped row keeps its figure)
+        tag = chip[: max(0, inner - 4)]
+        tail = f" [{tone}]\\[{tag}][/]" if tag else ""
+        room = max(0, inner - (len(tag) + 3 if tag else 0))
+        body = _fit(title, room)
+        pad = " " * (room - min(len(title), room))
+        return (f"[on {self.plate}]{self.plate_stamp(idx, tone, w)}"
+                f"[{c['ink']}]{body}[/]{pad}{tail}[/]")
+
+    def _flow_card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        c = self.c
+        mark = f"[{tone}]▪[/] " if urgent else f"[{c['dim']}]▪[/] "
+        room = max(1, w - len(chip) - 6)
+        body = _fit(title, room)
+        pad = " " * max(0, room - min(len(title), room))
+        return mark + f"[{c['ink']}]{body}[/]{pad} [{tone}]\\[{chip}][/]"
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        if not self.panel:
+            return self._flow_card_rows(title, chip, tone, w, idx, urgent, meta)
+        # the tag row hangs under the plate's right edge and wears the same
+        # ground, so a task reads as ONE block rather than two rows
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        pw = self.plate_w(w)
+        inner = max(1, w - pw)
+        d = m.get("days")
+        due = "--" if d is None else f"{d}D"
+        ph = (m.get("phase") or "--")[:4].upper()
+        pr = (m.get("prio") or "-")[:1].upper()
+        sub, used = "", 0
+        for mk, pl in ((f"[{c['mut']}]\\[PH:{ph}][/]", f"[PH:{ph}]"),
+                       (f"[{c['mut']}]\\[DUE:{due}][/]", f"[DUE:{due}]"),
+                       (f"[{c['mut']}]\\[PR:{pr}][/]", f"[PR:{pr}]")):
+            if used + len(pl) > inner:
+                break
+            sub += mk
+            used += len(pl)
+        return [top, f"[on {self.plate}]{' ' * pw}{sub}"
+                     f"{' ' * (inner - used)}[/]"]
+
+    def _flow_card_rows(self, title, chip, tone, w, idx=0, urgent=False,
+                        meta=None):
+        # everything labelled, everything bracketed — the machine tag row
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        d = m.get("days")
+        due = "--" if d is None else f"{d}D"
+        ph = (m.get("phase") or "--")[:4].upper()
+        pr = (m.get("prio") or "-")[:1].upper()
+        sub = _fit_parts([
+            ("  ", "  "),
+            (f"[{c['mut']}]\\[PH:{ph}][/]", f"[PH:{ph}]"),
+            (f"[{c['mut']}]\\[DUE:{due}][/]", f"[DUE:{due}]"),
+            (f"[{c['mut']}]\\[PR:{pr}][/]", f"[PR:{pr}]"),
+        ], w)
+        return [top, sub]
+
+    def tile_row(self, val, label, tone, w):
+        c = self.c
+        room = max(0, w - len(val) - 5)
+        return (f"[{tone}]{val}[/] [{c['dim']}]│[/] "
+                f"[{c['mut']}]{label[:room].upper()}[/]")
+
+    def sect(self, title, note, w, h=0):
+        # drawn type RENOUNCED: a machine panel labels, it does not draw
+        c = self.c
+        return [f"[{c['mut']}]\\[[/][{c['ink']}]{title}[/][{c['mut']}]][/]  "
+                f"[{c['mut']}]{note}[/]", self.rule_line(w) or ""]
+
+    GANTT = ("▬", "█", "│", "·", "◆")
+
+    def cal_cell(self, state):
+        c = self.c
+        return {"none": f"[{c['dim']}]░░[/]",
+                "over": f"[{c['alert']}]██[/]",
+                "multi": f"[{c['accent']}]██[/]",
+                "one": f"[{c['warn']}]▓▓[/]"}[state]
+
+    def composition(self):
+        # a compact machine panel: nothing floats, the readouts are BOXED
+        return """
+        #ap { padding: 0 1; }
+        Screen.sz-board #hero { height: 7; min-height: 7; }
+        #meter { border: solid #4a4a4a; height: 4; }
+        Screen.sz-board #tiles { border: solid #4a4a4a; height: 3; }
+        """
+
+    # bracketed single-letter codes — labelled, like everything here
+    ICONS = {"deadline": "\\[D]", "overdue": "\\[O]", "wip": "\\[W]",
+             "blocked": "\\[B]", "workday":"\\[$]", "boardfile":"\\[F]"}
+
+    # everything labelled, everything bracketed
+    CUR = "▪"
+    # THE FOURTH MARK IS NOT A BACKSLASH, and that is a measured defect
+    # rather than a taste. `\` is the ONE character that cannot stand at the
+    # end of a markup string's literal text (PENDING #31): both parsers read
+    # it as escaping the `[` of the close tag, so `[tone]\[/]` prints a raw
+    # `[/]` and closes nothing — and this spinner is emitted exactly that way
+    # (`Kit.spinner`), so industrial's spinner row was putting `[/]` on the
+    # gallery and the aperture every fourth frame. Found by the motion pass,
+    # which consumes `SPIN` as a language's in-transit glyph and would have
+    # inherited it. The rotation is unchanged; only the glyph that carries it
+    # is one this app can print.
+    SPIN = ("|", "/", "-", "╲")
+
+    # one tick between states — a relay clicking, 60ms
+    MOTION_STEPS = 1
+
+    # bracketed and CODED, the way this language labels everything: the knob
+    # is an ASCII code, the family of its switch (`[X]` / `[ ]`). The old
+    # slider drew a filled run inside brackets and no knob — a boxed BAR.
+    COMP_CHROME = ("[", "]")
+    PART_GLYPHS = {
+        "main": {DEFAULT: "·", DISABLED: "-"},
+        "indicator": {DEFAULT: "█", DISABLED: "░"},
+        "knob": {DEFAULT: "|", FOCUSED: "I", EDITED: "X",
+                 ACTIVE: "#", DISABLED: "x"},
+        # the ASCII checkbox this language was already quoting when its
+        # SWITCH drew `[X]` / `[ ]` — a coded mark in a fixed box, which is
+        # what a checkbox IS and what a switch is not. The box loses its
+        # square brackets when the control is dead: round brackets are this
+        # vocabulary's way of saying "not an input".
+        "checkbox.main": {DEFAULT: "[ ]", FOCUSED: "[_]", ACTIVE: "[-]",
+                          DISABLED: "(-)"},
+        "checkbox.knob": {DEFAULT: "[X]", FOCUSED: "[#]", ACTIVE: "[*]",
+                          DISABLED: "(x)"},
+        # THE ROTARY SELECTOR, and it could NOT take the round bracket every
+        # other language's radio takes: this vocabulary has already spent
+        # round brackets on "not an input" (see the checkbox's DISABLED row).
+        # A language's own declared law overrules the family convention, so
+        # the selector is angled instead — and the DISABLED radio keeps the
+        # round bracket, because here that means dead and it still does.
+        "radio.main": {DEFAULT: "< >", FOCUSED: "<_>", ACTIVE: "<->",
+                       DISABLED: "(-)"},
+        "radio.knob": {DEFAULT: "<O>", FOCUSED: "<#>", ACTIVE: "<@>",
+                       DISABLED: "(o)"},
+        # THE PLATE, which this language already stamps on every card
+        # (`▐ nn ▌`) — the button is that plate with a word on it instead of
+        # a number. The seat idiom carries the state exactly as the checkbox's
+        # does: `_` seated, `#` struck, and the DISABLED plate keeps the round
+        # bracket, because in this vocabulary round brackets mean dead.
+        "button.main": {DEFAULT: "▐  ▌", FOCUSED: "▐__▌", ACTIVE: "▐##▌",
+                        DISABLED: "(--)"},
+        # THE PLATE with a machined face — the same ▐ ▌ it stamps on every
+        # card. The paper is punched with its own dot; the dead plate keeps
+        # the round bracket, because here round brackets mean dead.
+        "textfield.main": {DEFAULT: "▐·▌", FOCUSED: "▐_▌", EDITED: "▐-▌",
+                           ACTIVE: "▐#▌", DISABLED: "(-)"},
+        "textfield.caret": {DEFAULT: "|"},
+        # ASCII AND CODED, this language's whole register, and its bracketed
+        # chrome fixes the ends of the shaft exactly as it fixes its
+        # slider's — the same `comp_chrome` seat, reached by the same
+        # registry fact (an indicator is declared, so there is a track with
+        # ends). The travelled run is hatched; the view is struck.
+        "scrollbar.main": {DEFAULT: "-", DISABLED: "."},
+        "scrollbar.indicator": {DEFAULT: "#", DISABLED: "="},
+        # ASCII AND CODED, and the ROUND BRACKET LAW reaches this component
+        # too: this vocabulary spends `( )` on "not an input", so a dead
+        # stepper wears it and a live one is angled. The end stop is the
+        # bare seat dot the track is made of — no bracket at all, because a
+        # step that does not exist is not a dead control, it is an absent
+        # one, and this language distinguishes those.
+        "stepper.main": {DEFAULT: "..", DISABLED: "--"},
+        "stepper.step": {DEFAULT: "<>", FOCUSED: "{}", EDITED: "[]",
+                         ACTIVE: "##", DISABLED: "()"},
+    }
+
+    def tabs(self, options, active):
+        # active mode in caps, the rest lowercase — state readable without
+        # colour (the 2-channel law, COMPONENTS.md)
+        c = self.c
+        return " ".join(
+            f"[{c['accent']}]\\[{i + 1}][/]"
+            + (f"[{c['ink']}]{o.upper()}[/]" if o == active
+               else f"[{c['mut']}]{o}[/]")
+            for i, o in enumerate(options))
+
+
+class Nord(Kit):
+    """The terminal's own conventional idiom (base16 doctrine) — everything
+    nord renders is inherited from `Kit`, which was WRITTEN as nord, and that
+    stays true. This subclass exists for exactly one commitment: the board is
+    a MASTER/DETAIL SPLIT (`layout="split"`).
+
+    Why the split, measured rather than asserted: colour-stripped at 118x30
+    nord had NO first fixation. Ranked by ink cells and by the weighted
+    channel sum 0.2126R+0.7152G+0.0722B, the brightest ink on screen belonged
+    to TEN repeated card titles (238.7, 200 cells) and the only isolated
+    element — the hero numeral — came FIFTH (117.7, 25 cells) behind the load
+    plot standing beside it in the same panel (181.2, 61 cells). Nothing won
+    area AND brightness AND isolation, which is HIERARCHY.md's self-check.
+
+    The split gives the eye one subject. HIERARCHY.md's sidebar+detail
+    pattern is quoted here because its wording is load-bearing: "a narrow
+    list (25-30 %) driving a wide detail pane. THE LIST KEEPS SELECTION
+    STATE; the detail pane is the only thing that changes." Selection is
+    constitutive of the pattern, so the detail follows the real cursor
+    (`KanbanBoard.on_card_focused`) — a static default would have been an
+    imitation of the pattern, not the pattern.
+
+    Under any other `layout` every method below falls through to `super()`,
+    i.e. the base kit, and nord renders byte-for-byte as it always did."""
+
+    # HIERARCHY.md's own figure for a driving list. A LAW of the pattern, not
+    # a choice this language gets to make — so it is a constant, not a token.
+    SHARE = 0.30
+    # the gutter is SPACE, not a rule: HIERARCHY.md ranks proximity above a
+    # stroke, and nord already spends its one `frame="rule"` under the heads.
+    GUTTER = 3
+
+    @property
+    def split(self) -> bool:
+        return self.layout == "split"
+
+    @property
+    def floors(self) -> tuple[int, int]:
+        """(master floor, detail floor) in cells, from the `split` token."""
+        m, d = self.t.get("split", (28, 34))
+        return int(m), int(d)
+
+    def panes(self, w: int) -> tuple[int, int]:
+        """THE geometry seat: the renderer and the acceptance checks both read
+        this, so "the panes and the checks agree" is true by construction
+        rather than by two copies of the arithmetic (the `Ledger.cols` /
+        `Swiss.grid` precedent).
+
+        Returns `(master, detail)` where the master owns columns
+        `[0, master)`, the gutter `[master, master + GUTTER)`, and the detail's
+        CONTENT begins at `master + GUTTER`. `detail == 0` is the degrade:
+        below `master_floor + GUTTER + detail_floor` the split is RENOUNCED
+        and the master takes the full width. It is never wrapped — a wrapped
+        pane costs the board a card row, which is the trap the panel legend
+        and the ledger page both sprang."""
+        mf, df = self.floors
+        if w < mf + self.GUTTER + df:
+            return (max(1, w), 0)
+        m = max(mf, round(w * self.SHARE))
+        d = w - m - self.GUTTER
+        if d < df:                     # the detail buys its measure back
+            m, d = w - self.GUTTER - df, df
+        return (m, d)
+
+    def board_layout(self):
+        return "split" if self.split else super().board_layout()
+
+    def composition(self):
+        if not self.split:
+            return super().composition()        # "" — the byte-exact restore
+        mf, df = self.floors
+        return f"""
+        .kb-split {{ height: 1fr; }}
+        .kb-master {{ min-width: {mf}; height: 1fr; }}
+        .kb-detail {{ min-width: {df}; height: 1fr; padding: 0 0 0 {self.GUTTER}; }}
+        """
+
+    # -- the MASTER row: one task, one row, the cursor on the driven one ----
+    def master_row(self, title: str, chip: str, tone: str, w: int,
+                   cursor: bool = False) -> str:
+        """Compact by commitment: the list is not the subject, so it renounces
+        the base kit's second (metadata) row — that field now has a whole pane.
+
+        The brightness ladder is what makes the detail title winnable
+        (HIERARCHY.md: dim -> normal -> bright, and stop at three): unselected
+        rows are `mut`, the driven row is `ink`, and NOTHING here is bold.
+        Bold ink is spent once, in the detail title, and that is the entire
+        mechanism behind law 03 holding in this view."""
+        c = self.c
+        lead = f"[{c['accent']}]{self.CUR}[/] " if cursor else "  "
+        room = max(1, w - 2 - len(chip) - 1)
+        body = _fit(title, room)
+        pad = " " * max(0, room - min(len(title), room))
+        hue = c["ink"] if cursor else c["mut"]
+        return f"{lead}[{hue}]{body}[/]{pad} [{tone}]{chip}[/]"
+
+    # -- the DETAIL pane: one task, expanded, and the screen's fixation -----
+    def detail_rows(self, title: str, chip: str, tone: str, w: int,
+                    meta: dict | None = None) -> list[str]:
+        """The title is THE first fixation, and it wins all three levers on
+        purpose:
+
+          area       — letterspaced through `display_cap()`, the base kit's
+                       own display register, so it occupies ~2x the cells of
+                       any master row's title
+          brightness — the only BOLD ink anywhere on the board
+          isolation  — a blank row above and below it, and nothing else in
+                       either pane has both
+
+        Quantity below is nord's `meter="blocks"` family (the same filled/
+        unfilled block pair `_meter_blocks` draws), because a language that
+        shows quantity with a second mechanism has two."""
+        c = self.c
+        m = meta or {}
+        cap = max(1, (w + 1) // 2)          # letterspacing doubles the width
+        cut = title if len(title) <= cap else title[: max(1, cap - 1)] + "…"
+        rows = ["", f"[{c['ink']} bold]{mark(self.display_cap(cut))}[/]", ""]
+
+        def field(label: str, value: str, hue: str) -> str:
+            if not value:
+                return ""
+            room = max(1, w - 10)
+            return (f"[{c['dim']}]{label.upper()[:9]:<9}[/]"
+                    f"[{hue}]{mark(value[:room])}[/]")
+
+        idx = int(m.get("phase_idx", 0)) + 1
+        n = max(1, int(m.get("n_phases", 1)))
+        bar_w = max(4, min(20, w - 16))
+        lit = max(0, min(bar_w, round(bar_w * idx / n)))
+        state = ("done" if m.get("done") else
+                 "blocked" if m.get("blocked") else "open")
+        # the chip is a due chip OR a state word ("blk"/"done"/"--"), and a
+        # state word printed under a DUE label is a lie the render caught:
+        # "DUE  blk" was on screen. The state has its own field below.
+        due = "" if chip in ("blk", "done", "--") else chip
+        for line in (field("project", m.get("proj", ""), c["mut"]),
+                     field("phase", m.get("phase", ""), c["mut"]),
+                     field("due", due, tone),
+                     field("priority", str(m.get("prio", "")), c["mut"]),
+                     field("state", state,
+                           c["alert"] if state == "blocked" else c["mut"])):
+            if line:
+                rows.append(line)
+        rows.append("")
+        rows.append(f"[{c['dim']}]{'PROGRESS':<9}[/]"
+                    f"[{c['accent']}]{'▇' * lit}[/]"
+                    f"[{c['dim']}]{'░' * (bar_w - lit)}[/]"
+                    f" [{c['mut']}]{idx}/{n}[/]")
+        return rows
+
+
+class Darkside(Kit):
+    """Moonshot's language (ported from the Kimi fork, then held to this
+    repo's laws): achromatic greys; the ONE accent (KMBlue) is spent
+    EXCLUSIVELY on interactive affordances — the knob, the switch state, the
+    active tab. Passive data is grey STEPS whose levels ride on SHAPE (the
+    fork's grey-on-grey meter died in greyscale — fixed here). Depth is a
+    background grey-step, never a border. Lowercase register; identity is a
+    date-driven moon doodle on a deliberately recessive wordmark."""
+
+    PHASES = ("( )", "(.)", "(o)", "(O)", "(o)", "(.)")
+
+    RAIL = "▏"
+    RAIL_W = 3                             # the stroke plus two cells of air
+
+    @property
+    def rail_width(self):
+        return self.RAIL_W if self.layout == "rail" else 0
+
+    def rail_prefix(self):
+        """The passive left rail: ONE stroke that groups a phase's card stack
+        under its head. It is the third grouping mechanism (a rule), chosen
+        over the fourth (a border) on purpose — the border stays reserved for
+        focus, so it keeps meaning something. Grey from the `rail` token:
+        KMBlue is interaction, and structure is never interaction."""
+        if self.layout != "rail":
+            return ""
+        return (f"[{self.t.get('rail', self.c['dim'])}]{self.RAIL}[/]"
+                + " " * (self.RAIL_W - 1))
+
+    def doodle(self) -> str:
+        from datetime import date
+        return self.PHASES[date.today().day % len(self.PHASES)]
+
+    def display_cap(self, s: str) -> str:
+        return s.lower()                   # never letterspaced, never caps
+
+    def head(self, name, count, w, idx=0):
+        c = self.c
+        # the head rides the rail too, so the stroke runs unbroken from the
+        # phase name down through its cards — one group, one edge
+        w = max(8, w - self.rail_width)
+        line = (self.rail_prefix()
+                + f"[{c['ink']}]{name.lower()[:max(1, w - 4)]}[/] "
+                f"[{c['mut'] if count else c['dim']}]{count}[/]")
+        rule = self.rule_line(w)
+        return line if rule is None else line + "\n" + rule
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        c = self.c
+        room = max(1, w - len(chip) - 2)
+        body = _fit(title.lower(), room)
+        pad = " " * max(0, room - min(len(title), room))
+        # urgency = FULL INK on the title + the semantic chip; no marker glyph
+        return (f"[{c['ink'] if urgent else c['mut']}]{body}[/]{pad} "
+                f"[{tone}]{chip}[/]")
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        # the rail is subtracted from the content budget exactly like the
+        # card's own padding: it must narrow the text, never widen the row
+        rail = self.rail_prefix()
+        w = max(8, w - self.rail_width)
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        d = m.get("days")
+        due = "--" if d is None else f"d{d}"
+        sub = _fit_parts([
+            ("  ", "  "),
+            (f"[{c['dim']}]{(m.get('phase') or '--').lower()}[/]",
+             (m.get("phase") or "--").lower()),
+            (f"[{c['dim']}] · {due}[/]", f" · {due}"),
+        ], w)
+        return [rail + top, rail + sub]
+
+    def tile_row(self, val, label, tone, w):
+        c = self.c
+        return (f"[{tone}]{val}[/] [{c['mut']}]"
+                f"{label.lower()[: max(0, w - len(val) - 2)]}[/]")
+
+    def sect(self, title, note, w, h=0):
+        # drawn type RENOUNCED — quiet lowercase is the whole register
+        c = self.c
+        return [f"[{c['ink']}]{title.lower()}[/]  [{c['dim']}]{note.lower()}[/]",
+                ""]
+
+    def bar(self, span, head=None, tone=None):
+        c = self.c
+        # passive data never wears the accent — remap it to a grey step
+        if tone in (None, c["accent"]):
+            tone = c["mut"]
+        return "".join(
+            f"[{c['ink']}]o[/]" if (head is not None and head[i])
+            else f"[{tone}]▄[/]" for i in range(span))
+
+    GANTT = ("─", "O", "│", "·", "o")
+
+    def cal_cell(self, state):
+        c = self.c
+        return {"none": f"[{c['dim']}]··[/]",
+                "over": f"[{c['alert']}]oo[/]",
+                "multi": f"[{c['ink']}]oo[/]",
+                "one": f"[{c['mut']}]oo[/]"}[state]
+
+    def queue_marker(self, i):
+        return f"[{self.c['dim']}]·[/]"
+
+    # lowercase ascii, and the double-bang is the fork's own chip idiom
+    ICONS = {"deadline": "d", "overdue": "!!", "wip": "w", "blocked": "x",
+             "workday": "$", "boardfile": "f"}
+
+    CUR = "O"
+    SPIN = (".", "o", "O", "o")            # one breathing dot
+
+    def spinner(self, tick):
+        c = self.c
+        tones = (c["dim"], c["mut"], c["ink"], c["mut"])
+        i = tick % len(self.SPIN)
+        return f"[{tones[i]}]{self.SPIN[i]}[/]"
+
+    MOTION_STEPS = 3                         # two steps repeat a frame here
+
+    # the port's language keeps its position-first reading — but the passed
+    # extent is now a grey STEP rather than the same track, because "no fill"
+    # was this language renouncing a part, and a part is not a language's to
+    # renounce. The step is achromatic; KMBlue still reaches only the knob.
+    PART_GLYPHS = {
+        "main": {DEFAULT: "─", DISABLED: "╌"},
+        "indicator": {DEFAULT: "▬", DISABLED: "▁"},
+        "knob": {DEFAULT: "O", FOCUSED: "◎", EDITED: "◆",
+                 ACTIVE: "●", DISABLED: "x"},
+        # the PORT, which is this language's one shape, with the plug in it
+        # or the socket empty. The port's walls change with the state and
+        # survive it — containment is non-vacuous here.
+        "checkbox.main": {DEFAULT: "( )", FOCUSED: "[ ]", ACTIVE: "{ }",
+                          DISABLED: "╌ ╌"},
+        "checkbox.knob": {DEFAULT: "(O)", FOCUSED: "[◎]", ACTIVE: "{●}",
+                          DISABLED: "╌x╌"},
+        # THE SECOND LANGUAGE THAT COULD NOT TAKE THE ROUND WELL, for the
+        # opposite reason to industrial's: here the round bracket is already
+        # the PORT, this language's one shape, and the checkbox is standing
+        # in it. So the radio is the port seen edge-on — chevrons that close
+        # on the chosen item. Same law, different collision.
+        "radio.main": {DEFAULT: "‹ ›", FOCUSED: "« »", ACTIVE: "▶ ◀",
+                       DISABLED: "┄ ┄"},
+        "radio.knob": {DEFAULT: "‹◦›", FOCUSED: "«◉»", ACTIVE: "▶●◀",
+                       DISABLED: "┄▫┄"},
+        # FILL INVERSION, this language's declared idiom, run as a ramp: the
+        # shoulders go bar -> block as the control comes alive, and the
+        # PRESS is the full block. No border is drawn around anything (this
+        # language's law) — the shoulders are a weight, not a box — and the
+        # accent it spends here is spent on interaction, which is the only
+        # thing it spends it on.
+        "button.main": {DEFAULT: "▬  ▬", FOCUSED: "▮  ▮", ACTIVE: "█  █",
+                        DISABLED: "╌  ╌"},
+        # FILL INVERSION as a ramp, bar → block, and no border is drawn (its
+        # law) — the ends are a WEIGHT. The paper is unlit; the caret is this
+        # language's own EDITED knob, the one mark it spends accent on.
+        "textfield.main": {DEFAULT: "▬ ▬", FOCUSED: "▮ ▮", EDITED: "▮·▮",
+                           ACTIVE: "█ █", DISABLED: "╌╌╌"},
+        "textfield.caret": {DEFAULT: "◆"},
+        # FILL INVERSION, declared idiom, on a shaft: the unseen content is
+        # the thinnest seat this language draws and the view is the full
+        # block. Nothing is boxed (its law), so the shaft has no ends — the
+        # inversion IS the boundary.
+        "scrollbar.main": {DEFAULT: "▁", DISABLED: "┄"},
+        "scrollbar.indicator": {DEFAULT: "█", DISABLED: "▬"},
+        # THE PORT SEEN EDGE-ON, which is the shape this language already
+        # gave its radio — and it is the same choice wearing the other
+        # mechanism, so it is right that it wears the same mark. FILL
+        # INVERSION carries the state (chevron -> block under the press) and
+        # NOTHING IS BOXED, its law, which survives the sixth component. The
+        # end is the unlit seat: the inversion IS the boundary here too.
+        "stepper.main": {DEFAULT: "▁▁", DISABLED: "┄┄"},
+        "stepper.step": {DEFAULT: "◂▸", FOCUSED: "◄►", EDITED: "◀▶",
+                         ACTIVE: "██", DISABLED: "╌╌"},
+    }
+
+    def part_tone(self, part, state, name=None):
+        """The GRIP is the interaction, so it wears KMBlue in every live
+        state — this language spends its one accent on nothing else. But a
+        DISABLED grip is not interaction, and `control_of` is what makes a
+        COMBINED `checked+disabled` say so; the raw comparison that stood
+        here let a dead control keep its accent.
+
+        The grip and not the knob: a button is nothing BUT interaction, and
+        this language's one rule would have missed it."""
+        if part == actuator(name) and control_of(state) != DISABLED:
+            return self.c["accent"]
+        return super().part_tone(part, state, name)
+
+    def tabs(self, options, active):
+        c = self.c
+        return "  ".join(
+            f"[{c['accent']}](O)[/][{c['ink']}]{o.lower()}[/]" if o == active
+            else f"[{c['dim']}]( )[/][{c['mut']}]{o.lower()}[/]"
+            for o in options)
+
+    def surface(self):
+        # depth by GREY-STEP background, never a border
+        t = self.t
+        return (f".kb-col {{ background: {t['panel']}; }}\n"
+                f".kb-card {{ background: {t['panel']}; }}\n"
+                "#hero { background: #0a0a0a; }")
+
+    def board_layout(self):
+        return "sections"                  # the flat lowercase list
+
+    def composition(self):
+        # composition PER POSTURE, not one cage: the centred 46-col column
+        # is the AMBIENT register (hero/meter/tiles/queue — Moonshot's chat
+        # column); data surfaces (the board, the views) get the full width.
+        # A global max-width made tasks "casi ilegible" (user verdict).
+        # the head carries the rail too, so it must sit on the card's own
+        # left padding — one cell out and the "edge" is a zigzag. This
+        # language declared that inset itself; it is the BASE kit's rule now
+        # (every language needs it), so the local copy is gone.
+        return """
+        Screen.sz-board #ap, Screen.sz-widget #ap {
+            align-horizontal: center; }
+        #top, #tiles, #tabs, #queue, #ap-panel {
+            max-width: 46; width: 1fr; }
+        """
+
+    def mascot(self):
+        return []                          # identity is the doodle, recessive
+
+    def wordmark(self, text):
+        wm = self.t.get("wordmark", self.c["mut"])
+        return [f"[{wm}]{self.doodle()} {text.lower()}[/]"]
+
+    VOICE = {"empty": "nothing here", "no_signals": "no signals — press c"}
+
+
+class Prism(Kit):
+    """Darkside's descendant, and the only language here that was carried by a
+    whole app until it had opinions before it was ever written down.
+
+    IT IS NOT DARKSIDE RECOLOURED, and the difference is a mechanism. Darkside
+    spends its one accent on interactivity and keeps every other mark grey.
+    Prism spends colour TWICE, on two systems, with a BORDER BETWEEN THEM that
+    is written down and measured:
+
+      * IDENTITY hues NAME -- which project a mark belongs to (twelve of them);
+      * SEVERITY hues JUDGE -- `alert` is overdue, `warn` is due today;
+      * the accent CALLS ATTENTION -- today's rule, focus, keys.
+
+    No mark may wear two of those jobs. On main that border is a test, not a
+    convention: `tests/test_palette_ration.py` computes euclidean rgb distance
+    across the whole palette, so re-adding a colliding hue turns it red
+    whatever it is called. It exists because `amber` was once a project colour
+    AND the due-today colour AT THE SAME HEX -- one mark meaning two things in
+    five views. Priority is a GLYPH here (`!2`) rather than a hue precisely
+    because its orange collided with a project's at nine rgb units.
+
+    The second commitment is the EMBER: quantity is a solid field being
+    consumed, not a track being filled, with the frontier at half-cell
+    precision (`meter="ember"`, and the hero carves its numeral out of the same
+    field). Each cell is field or figure and never both, so the
+    two-colours-per-cell law is satisfied BY COMPOSITION instead of policed
+    afterwards.
+    """
+
+    # THE COMPONENT SHEET, WRITTEN IN THE LANGUAGE'S OWN MECHANISM.
+    #
+    # Prism says quantity by consuming a field, so its controls say STATE the
+    # same way: by how much of a cell is alight.  The whole table is one ramp
+    # -- ⠄ ⣀ ⣤ ⣶ ⣿ -- and that ramp is not decorative, it is the four dot-rows
+    # of a braille cell, which is the same sub-cell grid the ember meter and
+    # the carved hero are drawn on.  A reader who has understood the meter can
+    # already read every control here, which is what a language IS.
+    #
+    # Two consequences worth naming, because both are laws elsewhere in this
+    # file: the ramp is a SHAPE ladder, so every state survives greyscale
+    # without spending a hue; and the knob is a HALF-CELL mark (⢸ / ⡇), the
+    # only vocabulary here whose grip can sit inside a cell -- the same
+    # half-cell precision the meter's frontier needs, said about position.
+    PART_GLYPHS = {
+        "main": {DEFAULT: "⣀", DISABLED: "⠄"},
+        "indicator": {DEFAULT: "⣿", DISABLED: "⣤"},
+        # THE KNOB IS NEVER THE FILL.  Its first version took `⣿` at focused --
+        # the same glyph as `indicator` -- so the grip vanished into the run it
+        # was supposed to sit on.  Every state below is a BROKEN field (a dot
+        # column missing) precisely so the knob can never be mistaken for a
+        # full cell of fire or for an empty cell of track.
+        "knob": {DEFAULT: "⢸", FOCUSED: "⢿", EDITED: "⣷",
+                 ACTIVE: "⣾", DISABLED: "⠈"},
+        # THE CHECKBOX IS A FIELD WITH A HOLE BURNED IN IT.  Unchecked is an
+        # intact field; checked is the field CARVED -- the same figure-as-
+        # absence the hero uses for its numeral, at one cell.
+        # The WALLS carry the control state and the CENTRE carries the checked
+        # bit -- and the walls are identical between `main` and `knob` in every
+        # state, so the box survives the mark instead of being redrawn by it.
+        "checkbox.main": {DEFAULT: "⣿⣀⣿", FOCUSED: "⣷⣀⣷", ACTIVE: "⣾⣀⣾",
+                          DISABLED: "⠄⠄⠄"},
+        "checkbox.knob": {DEFAULT: "⣿⠀⣿", FOCUSED: "⣷⠀⣷", ACTIVE: "⣾⠀⣾",
+                          DISABLED: "⠄⠀⠄"},
+        # THE RADIO IS THE INVERSE: one lit cell in a dim run.  Checkbox
+        # carves, radio LIGHTS -- so the two families differ in direction, not
+        # in brightness, and a greyscale eye reads which is which.
+        "radio.main": {DEFAULT: "⣀⣀⣀", FOCUSED: "⣤⣤⣤", ACTIVE: "⣶⣶⣶",
+                       DISABLED: "⠄⠄⠄"},
+        "radio.knob": {DEFAULT: "⣀⣿⣀", FOCUSED: "⣤⣿⣤", ACTIVE: "⣶⣿⣶",
+                       DISABLED: "⠄⠁⠄"},
+        # THE BUTTON'S WALLS ARE FIELD AND ITS AIR IS RESIDUE; the press does
+        # not invert, it BREATHES -- the whole control comes alight, which is
+        # the one event in this language that adds fire instead of spending it.
+        "button.main": {DEFAULT: "⣿⣀⣀⣿", FOCUSED: "⣿⣤⣤⣿", ACTIVE: "⣿⣿⣿⣿",
+                        DISABLED: "⠄⠄⠄⠄"},
+        # THE FIELD'S GROUND: walls of fire, paper of ash.  EDITED banks the
+        # paper up a step, so the state a caret lives in is legible in the
+        # instant between two keystrokes.
+        "textfield.main": {DEFAULT: "⣿⠀⣿", FOCUSED: "⣿⣀⣿", EDITED: "⣿⣤⣿",
+                           ACTIVE: "⣿⣶⣿", DISABLED: "⠄⠄⠄"},
+        # the caret is HALF a cell, which is the finest mark this base owns
+        "textfield.caret": {DEFAULT: "⡆"},
+        # A SHAFT IS NOT A SCALE.  The slider's track is every value the knob
+        # could take, so it is the ramp's floor; the scroll bar's shaft is
+        # everywhere the view could BE, so it is drawn as an unlit lattice and
+        # the thumb is the only fire on it.
+        "scrollbar.main": {DEFAULT: "⠒", DISABLED: "⠄"},
+        "scrollbar.indicator": {DEFAULT: "⣿", DISABLED: "⣤"},
+        # THE TWO DIRECTIONS AS TWO HALF-CELLS: the step back lights the left
+        # dot-column, the step forward the right.  Position says direction --
+        # and at an end the ground's half draws instead, so CLAMP and WRAP
+        # differ in shape.
+        "stepper.main": {DEFAULT: "⣀⣀", DISABLED: "⠄⠄"},
+        # ACTIVE stops one dot short of a full column on purpose: `⡇` is a
+        # CLOSED seat in this file (#46 census -- five claimed half-cell fills
+        # and a sixth would be an unaccounted one), and the step reads the same
+        # at ⡆ because what it says is DIRECTION, not extent.
+        "stepper.step": {DEFAULT: "⡀⢀", FOCUSED: "⡄⢠", EDITED: "⡆⢰",
+                         ACTIVE: "⣇⣸", DISABLED: "⠁⠈"},
+    }
+
+    RAMP = ("⣀", "⣤", "⣶", "⣿")
+
+    # THE SPIN IS THE FIELD BREATHING, not a mark travelling round a ring.
+    # Every other language spins something ACROSS positions; Prism has no
+    # position to spare on a one-cell seat, so it spends the axis it does own
+    # -- density -- and the cell pulses up and down its own ramp.  Colour
+    # stripped, it still moves, because the ramp is a shape ladder.
+    SPIN = ("⣀", "⣤", "⣶", "⣿", "⣶", "⣤")
+
+    def plot(self, series, w, h=4, hi=None):
+        """Load as a FIELD BEING EATEN, drawn on the dot grid the ember and the
+        hero share -- so the chart is the same object as the meter, one size up,
+        rather than a second vocabulary the reader has to learn."""
+        from taskboard import wave as WV
+        c = self.c
+        if not series or w < 2:
+            return []          # nothing to burn is no field, not a blank one
+        top = max(1, hi if hi is not None else max(series))
+        cols = min(w, len(series))
+        bm = WV.Bitmap(cols * WV.DOT_COLS, max(1, h) * WV.DOT_ROWS)
+        for i in range(cols):
+            v = series[len(series) - cols + i]
+            lit = max(1, round(bm.h * v / top)) if v else 0
+            for dc in range(WV.DOT_COLS):
+                bm.fill_to(i * WV.DOT_COLS + dc, lit)
+        rows = ["".join(ch if ch != " " else "·" for ch in r)
+                for r in bm.to_braille()]
+        return [f"[{c['accent']}]{r}[/]" for r in rows]
+
+    def gauge(self, val, lo, hi, w=10, tone=None, thr=None):
+        """The read-only twin of the ember: a field consumed to the reading,
+        with the threshold a CARVED gap rather than a second mark -- Prism says
+        \"here\" by taking fire away, which is the same move the hero makes."""
+        c = self.c
+        span = max(1, hi - lo)
+        bar_w = max(3, w)
+        n = max(0, min(bar_w, round(bar_w * (val - lo) / span)))
+        tick = None if thr is None else max(0, min(bar_w - 1,
+                                                   round(bar_w * (thr - lo) / span)))
+        t = tone or c["accent"]
+        cells = []
+        for i in range(bar_w):
+            if i == tick:
+                cells.append(f"[{c['ink']}]⠀[/]")     # the carved gap
+            elif i < n:
+                cells.append(f"[{t}]⣿[/]")
+            else:
+                cells.append(f"[{c['dim']}]⡀[/]")
+        return "".join(cells) + f" [{c['mut']}]{val}[/]"
+
+    # MOTION: THREE STEPS, AND THE NUMBER IS THE CONTROL'S, NOT THE BASE'S.
+    #
+    # Four was tried first, reasoning that a braille cell has four dot-rows so
+    # a field can be consumed in four stages.  The harness refused it and was
+    # right: the switch's knob has THREE SEATS, so a 4-step budget repeats a
+    # frame -- `no flip frame repeats`, a tick spent showing nothing new.  Two
+    # was then tried and repeats as well, because the engine's rounding lands
+    # two of its three moments on the same seat.  Three fills the seats exactly
+    # and is the largest budget this control can actually spend.
+    #
+    # The lesson, worth more than the number: a motion budget is a property of
+    # the CONTROL'S EXTENT, not of the pixel base's depth.  Both are about
+    # resolution and they are not the same quantity.  Sharing the value 3 with
+    # four other languages costs nothing -- what the laws compare is the FRAME
+    # LIST, and Prism's is drawn in its own ramp and its own half-cell grip.
+    #
+    # A custom `flip_frames` travelling by half-cells was written to keep the
+    # four, and thrown away: it ended the switch on a moving frame instead of
+    # at rest, and it re-implemented an engine whose byte-for-byte
+    # reproduction is itself a law here.
+    MOTION_STEPS = 3
+
+    # NOT DARKSIDE'S STROKE.  `▏` is that language's rail and the suite holds
+    # a NEGATIVE law over it -- no other language may carry it -- because a
+    # shared structure device is a shared language wearing two names.  Prism's
+    # is a HEAVIER stroke in the project's own hue: darkside's rail is passive
+    # grey that groups, this one NAMES while it groups, which is the identity
+    # system reaching into structure and the whole reason the ration exists.
+    RAIL = "▎"
+    RAIL_W = 3
+
+    def board_layout(self) -> str:
+        """Sections, like its parent: the rail groups a stack vertically by
+        project, and six kanban columns leave ~7 characters of title -- the
+        same measurement that sent darkside to a flat list."""
+        return "sections"
+
+    # the twelve that NAME, resolved from the `ident` token so mutating the
+    # token really does change which hues the board hands out
+    def ident_hues(self):
+        """The identity ramp, read from the `ident` token.
+
+        Values are hexes, and anything that is not one falls back to the muted
+        tier rather than to another identity hue -- a silent substitution here
+        would give two projects the same name, which is the collision the whole
+        ration exists to prevent.
+        """
+        out = []
+        for v in str(self.t.get("ident", "")).split():
+            out.append(v if v.startswith("#") else self.c["mut"])
+        return out
+
+    def ident_of(self, idx: int) -> str:
+        hues = self.ident_hues()
+        return hues[idx % len(hues)] if hues else self.c["mut"]
+
+    @property
+    def rail_width(self):
+        return self.RAIL_W if self.layout == "rail" else 0
+
+    def rail_prefix(self, idx: int = 0):
+        """The rail is the ONE place an identity hue touches structure -- it is
+        the project's own stroke, which is what makes a stack of cards read as
+        belonging to something without spending a border or a label on it."""
+        if self.layout != "rail":
+            return ""
+        return (f"[{self.ident_of(idx)}]{self.RAIL}[/]"
+                + " " * (self.RAIL_W - 1))
+
+    def head(self, name, count, w, idx=0):
+        c = self.c
+        w = max(8, w - self.rail_width)
+        line = (self.rail_prefix(idx)
+                + f"[{c['ink']}]{name[:max(1, w - 4)]}[/] "
+                f"[{c['mut'] if count else c['dim']}]{count}[/]")
+        rule = self.rule_line(w)
+        return line if rule is None else line + chr(10) + rule
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        """The chip JUDGES, so it keeps the severity tone it was handed; the
+        title never takes one. Urgency is weight, not hue -- the hue budget is
+        already spent, and spending it twice is the collision the ration bans.
+        """
+        c = self.c
+        room = max(1, w - len(chip) - 2)
+        body = _fit(title, room)
+        pad = " " * max(0, room - min(len(title), room))
+        return (f"[{c['ink'] if urgent else c['mut']}]{body}[/]{pad} "
+                f"[{tone}]{chip}[/]")
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        rail = self.rail_prefix(idx)
+        w = max(8, w - self.rail_width)
+        top = self.card_row(title, chip, tone, w, idx, urgent)
+        m = meta or {}
+        c = self.c
+        d = m.get("days")
+        due = "--" if d is None else f"{d}d"
+        # priority is a GLYPH, never a hue -- see the class docstring
+        pri = "!" * min(2, int(m.get("priority") or 0))
+        parts = [
+            ("  ", "  "),
+            (f"[{self.ident_of(idx)}]{m.get('phase') or '--'}[/]",
+             str(m.get("phase") or "--")),
+            (f"[{c['dim']}] · {due}[/]", f" · {due}"),
+        ]
+        # the priority mark is OMITTED when there is none, never emitted empty:
+        # `_fit_parts` takes (markup, plain) pairs and an empty pair still costs
+        # the fitter a part to reason about
+        if pri:
+            parts.append((f"[{c['ink']}] {pri}[/]", f" {pri}"))
+        sub = _fit_parts(parts, w)
+        return [rail + top, rail + sub]
+
+    def tile_row(self, val, label, tone, w):
+        c = self.c
+        return (f"[{tone}]{val}[/] [{c['mut']}]"
+                f"{label[: max(0, w - len(val) - 2)]}[/]")
+
+    def sect(self, title, note, w, h=0):
+        c = self.c
+        return [f"[{c['ink']}]{title}[/]  [{c['dim']}]{note}[/]", ""]
+
+    def bar(self, span, head=None, tone=None):
+        """A span wears its project's identity hue. It is passive data, so it
+        must never take the accent -- the accent is attention, and a bar that
+        is merely present is not asking for any."""
+        c = self.c
+        if tone in (None, c["accent"]):
+            tone = c["mut"]
+        return "".join(
+            f"[{c['ink']}]█[/]" if (head is not None and head[i])
+            else f"[{tone}]▄[/]" for i in range(span))
+
+    GANTT = ("─", "█", "│", "·", "▄")
+
+    def cal_cell(self, state):
+        c = self.c
+        return {"none": f"[{c['dim']}]··[/]",
+                "over": f"[{c['alert']}]▄▄[/]",
+                "multi": f"[{c['ink']}]▄▄[/]",
+                "one": f"[{c['mut']}]▄▄[/]"}[state]
+
+    def queue_marker(self, i):
+        return f"[{self.ident_of(i)}]▏[/]"
+
+    ICONS = {"deadline": "d", "overdue": "!!", "wip": "w", "blocked": "x",
+             "workday": "$", "boardfile": "f"}
+
+
+class Ledger(Kit):
+    """Double-entry bookkeeping — and the ONLY language printed on a LIGHT
+    ground, which is what makes it unmistakable once colour is stripped away:
+    seven languages glow, this one is read.
+
+    Commitments:
+
+    * structure is RULED MONEY COLUMNS, never boxes. Every rule position is
+      computed in ONE place (`cols()`), which both the renderer and the
+      acceptance check read — so "the rules and the content share the same
+      cells" is true by construction and provable by assertion;
+    * every gap between a name and its figure closes with DOT LEADERS. On a
+      ledger page space is either earned or filled, because an open gap is
+      where a figure could be forged;
+    * quantity is TALLY marks in groups of five (`meter="tally"`) — the
+      mechanism used when you COUNT rather than measure;
+    * every 5th line of the page carries the band tint, the way ruled paper
+      is printed: the aid that lets an eye cross 80 cells without losing its
+      row;
+    * selection is a MARGIN mechanism — the row's tint plus its weight, never
+      a border (`sel="none"` spends no border at all, so the page keeps its
+      one strongest divider unspent);
+    * the RED PEN is literal debt: the alert hue appears on OVERDUE entries
+      and nowhere else. A page with nothing owed is ink on paper.
+    """
+
+    LEAD = "·"
+    RULE_V, RULE_SUB, RULE_HEAD = "│", "─", "═"
+    GUTTER = 3                             # folio: two figures and a cell of air
+    ACCT_W = 10                            # the account column (the phase)
+    FIG_W = 6                              # the figure column, right-aligned
+    BAND_EVERY = 5                         # every 5th line of the page tints
+    ICON_W = 4                             # the printed icon plus its air
+    CUR = "▶"                              # the marker in the margin
+    SPIN = ("▪···", "▪▪··", "▪▪▪·", "▪▪▪▪")   # the tally being written
+
+    # printed abbreviations, the register a ledger actually uses
+    ICONS = {"deadline": "due", "overdue": "o/d", "wip": "w/p",
+             "blocked": "hld", "workday": "day", "boardfile": "led"}
+
+    VOICE = {"empty": "nil balance", "no_signals": "no accounts posted"}
+
+    @property
+    def tally(self) -> str:
+        return self.t.get("tally", "▪")
+
+    @property
+    def ruled(self) -> bool:
+        """The `layout` token: "ruled" posts the entries between vertical
+        money-column rules; anything else (the base default "flow") lets them
+        stand on the page as plain leadered text — the same dispatch shape as
+        darkside's rail, so the token is the mechanism, not the class name."""
+        return self.layout == "ruled"
+
+    @property
+    def rule_color(self) -> str:
+        return self.t.get("rule", self.c["dim"])
+
+    @property
+    def tick_tone(self) -> str:
+        return self.c["mut"]               # red is debt; a threshold is not
+
+    def display_cap(self, s: str) -> str:
+        # tight caps, never letterspaced: the money columns already do the
+        # spacing, and a ledger sets its captions to fit them
+        return s.upper()
+
+    # -- THE RULING ---------------------------------------------------------
+    def cols(self, w: int) -> tuple[list[int], list[int]]:
+        """The page's ruling for a row of `w` cells: the cells the vertical
+        rules land on, and the field widths between them. Narrow pages
+        RENOUNCE columns rather than crush them — the account goes first, the
+        figure second, and the description is never squeezed below 6 cells."""
+        w = max(8, w)
+        g, acct, fig = self.GUTTER, self.ACCT_W, self.FIG_W
+        desc = w - g - acct - fig - 4
+        if desc < 8:                       # renounce the account column
+            acct = 0
+            desc = w - g - fig - 3
+        if desc < 6:                       # then the figure column
+            fig = 0
+            desc = w - g - 2
+        fields = [g, max(1, desc)] + ([acct] if acct else []) \
+            + ([fig] if fig else [])
+        pos, x = [], 0
+        for f in fields:
+            x += f
+            pos.append(x)
+            x += 1                         # the rule occupies its own cell
+        return pos, fields
+
+    def _banded(self, line: int) -> bool:
+        """Ruled paper is printed with a tint every 5th LINE — lines, not
+        entries: a posting spends two of them (debit, contra)."""
+        return line % self.BAND_EVERY == self.BAND_EVERY - 1
+
+    @staticmethod
+    def _cell(text: str, width: int, right: bool = False) -> str:
+        """Plain text fitted to `width` cells. Width math runs BEFORE escaping
+        (the module's standing rule)."""
+        t = text if len(text) <= width else text[: max(0, width - 1)] + "…"
+        pad = " " * (width - len(t))
+        return (pad + mark(t)) if right else (mark(t) + pad)
+
+    def _leadered(self, text: str, width: int) -> str:
+        """`name ···········` — the gap between a name and the rule that
+        closes its column is FILLED. This is the language's whole typographic
+        argument, so it lives in one function."""
+        t = text if len(text) <= width else text[: max(0, width - 1)] + "…"
+        room = width - len(t)
+        if room >= 2:
+            return mark(t) + " " + self.LEAD * (room - 1)
+        return mark(t) + " " * room
+
+    def _post(self, w: int, folio: str, desc: str, acct: str, fig: str,
+              desc_tone: str, fig_tone: str, acct_tone: str | None = None,
+              band: bool = False) -> str:
+        """POST one line into the ruling. Every field is placed by `cols()`,
+        so a row can never disagree with the rules that divide it."""
+        c = self.c
+        w = max(8, w)
+        _, fields = self.cols(w)
+        rule = (f"[{self.rule_color}]{self.RULE_V}[/]" if self.ruled else " ")
+        marks = [f"[{c['mut']}]{self._cell(folio, fields[0] - 1, True)} [/]",
+                 f"[{desc_tone}] {self._leadered(desc, fields[1] - 1)}[/]"]
+        rest = list(fields[2:])
+        if len(rest) == 2:                 # the account column survived
+            marks.append(f"[{acct_tone or c['mut']}] "
+                         f"{self._cell(acct, rest[0] - 1)}[/]")
+        if rest:                           # the figure column survived
+            marks.append(f"[{fig_tone}] "
+                         f"{self._cell(fig, rest[-1] - 1, True)}[/]")
+        row = "".join(m + rule for m in marks)
+        if band:
+            row = f"[on {self.t.get('band', self.t['panel'])}]{row}[/]"
+        return row
+
+    def rule_line(self, w):
+        """The SUB rule, at FULL width. A ledger's rules run the whole
+        measure — a rule that stops short is a rule you can post past."""
+        if self.frame != "ruled":
+            return super().rule_line(w)
+        return f"[{self.rule_color}]{self.RULE_SUB * max(1, w)}[/]"
+
+    def head_rule(self, w: int) -> str | None:
+        if self.frame != "ruled":
+            return super().rule_line(w)
+        return f"[{self.rule_color}]{self.RULE_HEAD * max(1, w)}[/]"
+
+    # -- the account heading ------------------------------------------------
+    def head(self, name, count, w, idx=0):
+        """A heading is not a posting, so it carries no money columns: the
+        account's folio and name, the leaders, its balance as a figure, and
+        the `═` head rule under it."""
+        c = self.c
+        w = max(8, w)
+        folio = f"{idx + 1:>2} " if self.numbered else ""
+        fig = "nil" if not count else f"{count} entries"
+        body = self._leadered(folio + name.upper(), max(1, w - len(fig) - 1))
+        line = (f"[{c['ink']}]{body}[/] "
+                f"[{c['mut'] if count else c['dim']}]{fig}[/]")
+        rule = self.head_rule(w)
+        return line if rule is None else line + "\n" + rule
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        return self._post(w, f"{idx + 1}" if self.numbered else "",
+                          title, "", chip, self.c["ink"], tone,
+                          band=self._banded(2 * idx))
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        """DOUBLE ENTRY: nothing is posted once. The debit line charges the
+        task to its phase account and states the figure; the CONTRA line
+        under it carries the counter-account (the project) and the state
+        code, indented the way a bookkeeper indents a credit."""
+        c = self.c
+        m = meta or {}
+        overdue = (m.get("days") is not None and m["days"] < 0
+                   and not m.get("done"))
+        state = ("hld" if m.get("blocked") else "o/d" if overdue
+                 else "due" if m.get("days") is not None else "w/p")
+        debit = self._post(
+            w, f"{idx + 1}" if self.numbered else "", title,
+            (m.get("phase") or "").lower(), chip,
+            c["ink"], tone, band=self._banded(2 * idx))
+        contra = self._post(
+            w, "", "  " + (m.get("proj") or "--"),
+            (m.get("prio") or "").lower(), state,
+            c["mut"], c["alert"] if overdue else c["mut"], c["dim"],
+            band=self._banded(2 * idx + 1))
+        return [debit, contra]
+
+    def tile_row(self, val, label, tone, w):
+        """The figure is posted in the MARGIN and the account name follows it,
+        the way a running balance is written. Figure FIRST, against this
+        language's own right-hand habit, because a tile is clipped from the
+        right (app.py's measured lesson: a 14-char label cropped every value
+        off the widest size class) — and a ledger that loses its figure has
+        lost the point. The gap that closes is the one after the name.
+
+        The row is built to `w - ICON_W - 1`, not to `w`: this language draws
+        a 3-cell printed icon in front of every tile, and filling a row to its
+        full width is exactly what makes a prefix WRAP it (measured in the
+        aperture, where the tiles are one auto-height Static). Reserving the
+        icon's cells is the same move as darkside's rail — a mechanism pays
+        for itself out of the content budget, it never widens the row."""
+        c = self.c
+        room = max(1, w - len(val) - self.ICON_W - 2)
+        return (f"[{tone}]{val}[/] "
+                f"[{c['mut']}]{self._leadered(label.upper(), room)}[/]")
+
+    def sect(self, title, note, w, h=0):
+        # drawn display type RENOUNCED: a ledger prints, it does not draw
+        c = self.c
+        w = max(8, w)
+        body = self._leadered(title.upper(), max(1, w - len(note) - 1))
+        return [f"[{c['ink']}]{body}[/] [{c['mut']}]{mark(note)}[/]",
+                self.rule_line(w) or ""]
+
+    def bar(self, span, head=None, tone=None):
+        """The bar is a TALLY: marks in groups of five, the group break drawn
+        by the air between them. Passive quantity is ink, never the pen."""
+        c = self.c
+        tone = tone or c["mut"]
+        out = []
+        for i in range(span):
+            if i % 6 == 5:
+                out.append(" ")
+            elif head is not None and head[i]:
+                out.append(f"[{c['ink']}]{self.tally}[/]")
+            else:
+                out.append(f"[{tone}]{self.tally}[/]")
+        return "".join(out)
+
+    GANTT = ("·", "▪", "│", " ", "▪")      # leaders ruled, postings marked
+
+    def cal_cell(self, state):
+        c = self.c
+        mk = self.tally
+        return {"none": f"[{c['dim']}]··[/]",
+                "over": f"[{c['alert']}]{mk}{mk}[/]",   # the red pen: debt
+                "multi": f"[{c['ink']}]{mk}{mk}[/]",
+                "one": f"[{c['mut']}]{mk}·[/]"}[state]
+
+    def queue_marker(self, i):
+        # the folio number, TWO cells and no period. HISTORY: this width was
+        # once also a dodge — the queue row was built as marker + 1 + (w - 8)
+        # + 5, which closes on w only for a 2-cell marker, so any wider one
+        # overflowed. The forty-fifth pass CURED THAT AT THE SOURCE:
+        # `aperture._queue_markup` now MEASURES the markers (`hero.vis_w`) and
+        # the widest in the batch sets the column. Two cells is therefore a
+        # free typographic choice now, not a constraint — widen it if the
+        # ledger wants three, the row will follow.
+        c = self.c
+        return (f"[{c['mut']}]{i + 1:>2}[/]" if self.numbered
+                else f"[{c['dim']}]{self.LEAD}[/]")
+
+    def icon(self, kind):
+        """The ONLY icon that wears the red pen is `overdue` — the rest are
+        printed abbreviations in grey ink."""
+        g = self.ICONS.get(kind, "")
+        if not g:
+            return ""
+        tone = self.c["alert"] if kind == "overdue" else self.c["mut"]
+        return f"[{tone}]{g}[/]"
+
+    # a ledger RECONCILES: an account is posted or it is open, and it says
+    # so in words. Two channels — the knob's position and the printed word —
+    # and colour carries neither.
+    CHECK_WORDS = ("open  ", "posted")
+
+    MOTION_STEPS = 1
+
+    # the unmeasured remainder is LEADERS, the measured extent is RULED, and
+    # the mark posted at the value is the tally. The old slider drew leader
+    # dots on both sides of the mark in two greys — an indicator separated
+    # from the track by hue alone, which is the defect this language's own
+    # meter was fixed for two passes ago.
+    PART_GLYPHS = {
+        "main": {DEFAULT: "·", DISABLED: "╌"},
+        "indicator": {DEFAULT: "─", DISABLED: "┄"},
+        "knob": {DEFAULT: "▪", FOCUSED: "▶", EDITED: "◆",
+                 ACTIVE: "●", DISABLED: "▫"},
+        # a RULED CELL in a column, struck when the line is posted. The
+        # focused row grows this language's tally pointer on the left rule —
+        # the rules still bracket the mark, so the cross cannot escape them.
+        # The printed word (`open` / `posted`) rides beside it through
+        # CHECK_WORDS, exactly as it does on the switch: one seat, two
+        # components, no second declaration.
+        "checkbox.main": {DEFAULT: "│ │", FOCUSED: "▶ │", ACTIVE: "▶·│",
+                          DISABLED: "╌ ╌"},
+        "checkbox.knob": {DEFAULT: "│×│", FOCUSED: "▶×│", ACTIVE: "▶●│",
+                          DISABLED: "╌▫╌"},
+        # THE BALLOT COLUMN. A ledger's checkbox is a cell STRUCK; its radio
+        # is a cell POSTED — one entry against a ruled column of accounts,
+        # exactly one of which can carry the figure. The right rule goes
+        # dotted so the two controls are distinguishable at a glance in a
+        # column of rows, and the tally pointer still grows on focus.
+        #
+        # AND THIS IS WHERE `CHECK_WORDS` STOPS. The switch and the checkbox
+        # print `open`/`posted` beside them; a radio item prints the OPTION's
+        # name instead, so ledger's own word never appears on a radio. That
+        # is not a language losing a feature — it is the group scope: the
+        # word beside an item names the item, and only the group knows it.
+        "radio.main": {DEFAULT: "┊ ┊", FOCUSED: "▶ ┊", ACTIVE: "▶·┊",
+                       DISABLED: "╌ ┊"},
+        "radio.knob": {DEFAULT: "┊●┊", FOCUSED: "▶●┊", ACTIVE: "▶◉┊",
+                       DISABLED: "╌▫┊"},
+        # AN ENTRY IN THE LEDGER: the word sits in a ruled cell. The tally
+        # pointer arrives when the cursor does (the same ▶ its checkbox and
+        # radio grow), and the press CLOSES the entry on both sides — a line
+        # posted, which is this language's whole metaphor for an action taken.
+        "button.main": {DEFAULT: "│  │", FOCUSED: "▶  │", ACTIVE: "▶  ◀",
+                        DISABLED: "╌  ╌"},
+        # A RULED COLUMN, and the paper is the DOT LEADER this language rules
+        # every gap with. The tally pointer arrives with the cursor and the
+        # entry CLOSES on both sides when it is posted.
+        #
+        # The caret is NOT the gap in the leader, which was the first idea and
+        # is wrong for a stated reason: a gap is a SPACE, and a space is the
+        # one character the user's own value certainly contains. A mark that
+        # can be confused with content is not a mark.
+        "textfield.main": {DEFAULT: "│·│", FOCUSED: "▶·│", EDITED: "▶∙│",
+                           ACTIVE: "▶·◀", DISABLED: "╌╌╌"},
+        "textfield.caret": {DEFAULT: "▏"},
+        # THE RULED COLUMN, which is how this language shows a long document
+        # already: the pages you are not on are column rules, the pages you
+        # are on are the RULED EXTENT it posts every measured thing with. A
+        # ledger scrolls through a book of entries and says which leaf.
+        "scrollbar.main": {DEFAULT: "┊", DISABLED: "╌"},
+        "scrollbar.indicator": {DEFAULT: "▬", DISABLED: "▫"},
+        # CARRIED FORWARD AND BROUGHT BACK — a ledger's two directions have
+        # names, and they are the rules that close an entry on the side it
+        # came from. The tally pointer arrives with the cursor, exactly as it
+        # does on this language's checkbox, radio and button; the press posts
+        # the figure. An end is a RULED column with nothing to carry into: a
+        # dotted rule, which in this vocabulary is a line that is not an
+        # entry.
+        "stepper.main": {DEFAULT: "┊┊", DISABLED: "▫▫"},
+        "stepper.step": {DEFAULT: "▪▪", FOCUSED: "◀▶", EDITED: "◆◆",
+                         ACTIVE: "●●", DISABLED: "╌╌"},
+    }
+
+    def value_label(self, val, state=DEFAULT):
+        # a ledger always states the figure
+        return f" [{self.c['mut']}]{val}[/]"
+
+    def tabs(self, options, active):
+        c = self.c
+        return f"[{self.rule_color}] {self.RULE_V} [/]".join(
+            f"[{c['ink']}]{self.tally} {o.upper()}[/]" if o == active
+            else f"[{c['dim']}]{self.LEAD} {o}[/]" for o in options)
+
+    def mascot(self):
+        return []                          # a ledger keeps no pet
+
+    def wordmark(self, text):
+        # the LETTERHEAD: the name ruled above and below, the way a bound
+        # book prints the account it belongs to
+        c = self.c
+        cap = " ".join(text.upper())
+        n = max(1, len(cap))
+        return [f"[{self.rule_color}]{self.RULE_HEAD * n}[/]",
+                f"[{c['ink']}]{cap}[/]",
+                f"[{self.rule_color}]{self.RULE_SUB * n}[/]"]
+
+    def board_layout(self):
+        return "sections"                  # a ledger is a page, not columns
+
+    def surface(self):
+        """PAPER — the one light ground in the set. Every surface the board
+        touches has to carry it or the dark ambient bleeds through as a
+        patch, INCLUDING the scrollbar, which no colour token reaches."""
+        t = self.t
+        return (f".kb-col, .kb-card, .kb-flat, #ap, #top, #kb, #view,\n"
+                f"#meter, #tiles, #tabs, #queue, #cfg-title, #cfg-scroll\n"
+                f"    {{ background: {t['ground']}; }}\n"
+                f".kb-flat, .kb-col, #cfg-scroll {{\n"
+                f"    scrollbar-background: {t['focus']};\n"
+                f"    scrollbar-background-hover: {t['focus']};\n"
+                f"    scrollbar-background-active: {t['focus']};\n"
+                f"    scrollbar-color: {t['rule']};\n"
+                f"    scrollbar-color-hover: {t['mut']};\n"
+                f"    scrollbar-color-active: {t['ink']}; }}")
+
+    def composition(self):
+        """THE PAGE: the head rule tight against the entries it rules, and the
+        head sitting on the same left edge as the card content — one cell out
+        and the ruling zigzags (darkside's measured lesson).
+
+        It spends NO rule on the page's outer margin, and that is a decision,
+        not an omission: changing `#ap`'s padding changes every region's
+        WIDTH, and a region that is re-measured a frame after its rows were
+        built wraps them. Every row of this language is filled to its full
+        measure by leaders, so it is the one language with no slack to absorb
+        a stale width — measured in the aperture, where a 3-cell margin
+        folded the whole queue.
+
+        The focus rules are structural, not cosmetic: widget.tcss shifts a
+        focused row's padding to make room for a focus BORDER, and this
+        language spends no border — left alone, the ruling would jump one
+        cell sideways on the focused row. Focus is carried by the row's tint
+        and its weight instead.
+
+        """
+        return """
+        .col-head { margin-bottom: 0; }
+        .kb-card:focus { padding: 0 1; }
+        .tile:focus { padding: 0 1; }
+        Screen.sz-board #hero { height: 7; min-height: 7; }
+        """
+
+
+class Solari(Kit):
+    """THE SPLIT-FLAP DEPARTURE BOARD. The product becomes ONE SCHEDULE: a
+    task is a ROW, a phase is a GATE, and the task's state is a WORD in a
+    status column.
+
+    Commitments, each of which is a mechanism below and not a note:
+
+    * **quantity is DIGITS in flap cells, never a bar** (`meter="odometer"`).
+      No other language in the set states a figure where the others draw a
+      length, and it is the reason a departure board is legible at fifty
+      metres: you read `07`, you do not estimate a bar. DATAVIZ.md law 1 is
+      satisfied by construction — a 3 and a 7 differ in SHAPE with every
+      colour stripped away;
+    * **the SEAM is the whole divider vocabulary.** `frame="flaps"` says the
+      structure device is the cell FACE a character is flipped onto, so this
+      language spends no rule at all: `rule_line()` returns None and every
+      schedule row closes with one `▁` in the `seam` tone;
+    * **headers are BANDS in reverse video** (`band="reverse"`), EXACTLY as
+      wide as the seams under them. Band and seam are both cut from one
+      geometry seat (`fields()`), so "the band matches the seam grid" is true
+      by construction rather than by inspection;
+    * **TABULAR fields, padded to their widest content.** Every column is a
+      fixed width and every figure is zero-padded, so nothing on the page
+      moves sideways when a value changes (Bodmer T1/T2 — the anti-jiggle
+      law, and the reason a flap board can be read while it is flipping);
+    * **amber is RATIONED to selection and to values in flight** (a task
+      inside its boarding window). A calm page carries none. Red is narrower
+      still: it appears on LATE and nowhere else.
+
+    The ITEM field is deliberately the ONE field with no colour tag on it: it
+    inherits the widget's colour, which is what lets the selection band invert
+    it (`.kb-card:focus` sets ground-on-amber) instead of printing cream on
+    amber at 1.8:1.
+    """
+
+    SEAM = "▁"
+    GAP = 2                                # cells of air between fields
+    DUE_W, STAT_W, PROJ_W, PRI_W = 2, 8, 12, 4
+    # the priority vocabulary (models.TASK_PRIORITIES), abbreviated to the
+    # field rather than ellipsed into it: `NORMAL` truncated at 4 reads
+    # `NOR…`, which is a word the board never has to print
+    PRIO = {"low": "LOW", "normal": "NORM", "high": "HIGH"}
+    ITEM_MIN = 24                          # a title below this is not useful
+    # THE DECLARED REFLOW DROP ORDER (the law this language exists to show):
+    # a narrower page SHEDS whole columns in this order and never truncates
+    # ITEM below its floor, never wraps, never squeezes a fixed field.
+    #
+    # STATUS is last and it is in the list on purpose. The first draft stopped
+    # at `("proj", "pri")` and let the row fall back to the BASE kit below the
+    # floor — measured, that made solari render nord's card anatomy at 28
+    # cells, which the pairwise check caught. A language may renounce a
+    # COLUMN; it may not renounce being itself. DUE (the digits) and the seam
+    # survive every tier.
+    DROP = ("proj", "pri", "stat")
+    CAPS = {"stat": "STATUS", "proj": "PROJ", "pri": "PRI"}
+
+    CUR = "▼"                              # the flap indicator
+    SPIN = ("▔", "▀", "▄", "▁")            # one cell falling, a flap turning
+
+    # the board's own vocabulary: departures, not tasks
+    ICONS = {"deadline": "DEP", "overdue": "LATE", "wip": "BRD",
+             "blocked": "HELD", "workday": "DAY", "boardfile": "SKD"}
+
+    VOICE = {"empty": "NO DEPARTURES", "no_signals": "NO SIGNALS SCHEDULED"}
+
+    # the status column, keyed by the state kanban.py already computed. The
+    # widest word is 8 cells and the field is 8 cells: the column is sized to
+    # its widest content, not to the value on screen (anti-jiggle).
+    STATUS = {"done": "DEPARTED", "blocked": "HELD", "late": "LATE",
+              "flight": "BOARDING", "ontime": "ON TIME", "open": "OPEN"}
+    BOARDING = 3                           # days: inside this, in flight
+
+    # ---- tokens -----------------------------------------------------------
+    @property
+    def flap(self) -> str:
+        """The cell face. Passive structure, one step off the ground."""
+        return self.t.get("flap", self.t["panel"])
+
+    @property
+    def seam_tone(self) -> str:
+        return self.t.get("seam", self.c["dim"])
+
+    @property
+    def flapped(self) -> bool:
+        """The `frame` token. "flaps" is not a rule glyph — it is the cell
+        face, so this language's frame turns FACES on and rules off."""
+        return self.frame == "flaps"
+
+    @property
+    def scheduled(self) -> bool:
+        """The `layout` token. Anything but "schedule" (the base default
+        "flow" included) gives back the generic composition, byte for byte."""
+        return self.layout == "schedule"
+
+    @property
+    def banded(self) -> bool:
+        return self.t.get("band") == "reverse"
+
+    def rule_line(self, w):
+        """A flap board has no rules. The seam is the only divider it owns,
+        and it is drawn by the row that closes, not by the head."""
+        return None if self.flapped else super().rule_line(w)
+
+    # ---- the flap cell ----------------------------------------------------
+    def cell(self, text: str, tone: str | None = None,
+             face: str | None = None) -> str:
+        """One or more characters flipped onto the cell FACE. With the frame
+        token off the face goes away and the figures stay — the digits are the
+        datum, the face is the structure.
+
+        `face` is how this language spends SEVERITY (see `_tones`)."""
+        tone = tone or self.c["ink"]
+        bg = face or self.flap
+        return f"[{tone}{' on ' + bg if self.flapped else ''}]{mark(text)}[/]"
+
+    def band_row(self, text: str, w: int) -> str:
+        """REVERSE VIDEO, exactly `w` cells. Ink is the ground and the ground
+        is the ink — the one treatment a flap board uses to head a block, and
+        the reason it never needs a rule."""
+        w = max(1, w)
+        body = text[:w] + " " * max(0, w - len(text))
+        return f"[{self.t['ground']} on {self.c['ink']}]{mark(body)}[/]"
+
+    def seam(self, w: int) -> str:
+        return f"[{self.seam_tone}]{self.SEAM * max(1, w)}[/]"
+
+    @staticmethod
+    def _pad(text: str, n: int, right: bool = False) -> str:
+        """Exactly `n` cells. Width math runs BEFORE escaping (module rule)."""
+        if n <= 0:
+            return ""
+        t = text if len(text) <= n else text[: max(0, n - 1)] + "…"
+        pad = " " * (n - len(t))
+        return (pad + mark(t)) if right else (mark(t) + pad)
+
+    # ---- ONE GEOMETRY SEAT ------------------------------------------------
+    def fields(self, w: int) -> list[tuple[int, str, int]]:
+        """The schedule's columns for a row of `w` cells: `(origin, code,
+        width)`, filling the measure EXACTLY. Read by the row renderer, by the
+        band and by every acceptance check — the `Ledger.cols` / `Swiss.grid`
+        / `Nord.panes` / `Instrument.reticle` / `Corgi.slots` precedent.
+
+        Narrow pages SHED whole columns in the declared `DROP` order and stop:
+        below the floor the schedule is RENOUNCED (returns `[]`) and the row
+        degrades to the generic two-line card, which can never be worse than
+        the form it replaced (swiss's grid law). ITEM is never cut below
+        `ITEM_MIN` and no fixed field is ever squeezed.
+
+        GATE is not a column, deliberately: under a sections board every row
+        of a block shares one phase, so a GATE column would print the same
+        word down the whole block — the constant-column defect the corgi pass
+        deleted. The BAND states the gate once, which is what a real flap
+        board does.
+        """
+        spec = [("due", self.DUE_W), ("item", 0), ("stat", self.STAT_W),
+                ("proj", self.PROJ_W), ("pri", self.PRI_W)]
+        for dropped in range(len(self.DROP) + 1):
+            gone = set(self.DROP[:dropped])
+            cols = [(c, n) for c, n in spec if c not in gone]
+            fixed = (sum(n for c, n in cols if c != "item")
+                     + self.GAP * (len(cols) - 1))
+            item = w - fixed
+            if item < self.ITEM_MIN:
+                continue
+            out, x = [], 0
+            for c, n in cols:
+                n = item if c == "item" else n
+                out.append((x, c, n))
+                x += n + self.GAP
+            return out
+        return []
+
+    # ---- the state, read from the chip kanban.py already computed ---------
+    @staticmethod
+    def _read(chip: str) -> tuple[int | None, str]:
+        """`(days, state)` from the chip. One derivation path for the whole
+        language: the chip IS the task state (kanban.py computes it from the
+        due date, the blocked flag and the done column), so deriving the
+        status word from it can never disagree with the row beside it."""
+        c = (chip or "").strip()
+        if c == "done":
+            return None, "done"
+        if c == "blk":
+            return None, "blocked"
+        late = c.endswith("!")
+        body = c[:-1] if late else c
+        if body.endswith("d") and body[:-1].lstrip("-").isdigit():
+            n = int(body[:-1])
+            if late:
+                return n, "late"
+            return n, ("flight" if n <= Solari.BOARDING else "ontime")
+        return None, "open"
+
+    def _tones(self, state: str) -> tuple[str, str, str]:
+        """`(due FACE, due ink, status ink)`.
+
+        **SEVERITY IS THE CELL FACE, NEVER THE INK.** On a flap board a
+        boarding departure LIGHTS UP — it does not print its letters in a
+        different colour — and that is not only faithful, it is what makes
+        the selection band legible. Measured, and the reason this method
+        was rewritten: with severity on the ink, the selected row painted a
+        `#f5a300` word on a `#f5a300` ground (1:1, invisible), and the calm
+        fields came out at 1.8:1. With severity on the face, every glyph on a
+        schedule row is neutral (ink · mut · dim), so inverting the row's
+        ground can never hide a word, and the two channels the state needs
+        are the LIT FACE and the STATUS WORD — never colour alone.
+
+        Amber therefore appears on exactly two things in this whole language:
+        a departure in flight, and the row you have selected.
+        """
+        c = self.c
+        calm, flap = self.t.get("calm", c["ink"]), self.flap
+        gnd = self.t["ground"]
+        return {"done": (flap, c["dim"], c["dim"]),
+                "blocked": (flap, c["mut"], c["mut"]),
+                "late": (c["alert"], gnd, c["mut"]),
+                "flight": (c["accent"], gnd, c["mut"]),
+                "ontime": (flap, calm, c["mut"]),
+                "open": (flap, c["mut"], c["mut"])}[state]
+
+    def _due(self, days: int | None) -> str:
+        """The odometer figure, DUE_W cells, zero-padded and tabular. CLIPPED,
+        never clamped: past the field's range it reads `9+`, a form the normal
+        fill can never emit, so a far-off date is never printed as a near
+        one. The SIGN is not spent here — the status word carries `LATE`, and
+        a two-channel reading beats a minus sign nobody sees."""
+        n = self.DUE_W
+        if days is None:
+            return "-" * n
+        d = abs(int(days))
+        top = 10 ** n - 1
+        return f"{d:0{n}d}" if d <= top else "9" * (n - 1) + "+"
+
+    # ---- the schedule row -------------------------------------------------
+    def _sched_row(self, title, chip, tone, w, meta) -> str | None:
+        fs = self.fields(w)
+        if not fs:
+            return None
+        c, m = self.c, (meta or {})
+        days, state = self._read(chip)
+        face, dtone, stone = self._tones(state)
+        out = []
+        for i, (x, code, n) in enumerate(fs):
+            if code == "due":
+                out.append(self.cell(self._due(days), dtone, face))
+            elif code == "item":
+                # THE ONE UNTAGGED FIELD: it inherits the widget's colour, so
+                # the selection band inverts it instead of printing cream on
+                # amber (see the class docstring)
+                out.append(self._pad(title.upper(), n))
+            elif code == "stat":
+                out.append(f"[{stone}]{self._pad(self.STATUS[state], n)}[/]")
+            elif code == "proj":
+                out.append(f"[{c['mut']}]"
+                           f"{self._pad((m.get('proj') or '--').upper(), n)}[/]")
+            else:                          # pri
+                raw = (m.get("prio") or "").lower()
+                p = self.PRIO.get(raw, (raw or "--").upper()[:n])
+                out.append(f"[{c['mut']}]{self._pad(p, n)}[/]")
+            if i < len(fs) - 1:
+                out.append(" " * self.GAP)
+        return "".join(out)
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        if not self.scheduled:
+            return super().card_row(title, chip, tone, w, idx, urgent)
+        row = self._sched_row(title, chip, tone, w, None)
+        return row if row is not None else super().card_row(
+            title, chip, tone, w, idx, urgent)
+
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        """TWO rows and the second one is the SEAM. A departure board's whole
+        grid is the gap between rows — one `▁` the width of the row, and
+        nothing else on the page divides anything."""
+        if not self.scheduled:
+            return super().card_rows(title, chip, tone, w, idx, urgent, meta)
+        row = self._sched_row(title, chip, tone, w, meta)
+        if row is None:                    # renounced: the generic form back
+            return super().card_rows(title, chip, tone, w, idx, urgent, meta)
+        return [row, self.seam(w)]
+
+    # ---- the gate band ----------------------------------------------------
+    def head(self, name, count, w, idx=0):
+        """The phase becomes a GATE and the gate is a BAND: reverse video,
+        the gate's name, its load as an odometer figure, and the captions of
+        the columns that survived, each standing on its own field origin — so
+        the band advertises exactly the geometry the rows under it use."""
+        if not (self.scheduled and self.banded):
+            return super().head(name, count, w, idx)
+        w = max(1, w)
+        fs = self.fields(w)
+        if not fs:
+            return super().head(name, count, w, idx)
+        line = [" "] * w
+        # the gate's own text stops one cell short of the first CAPTIONED
+        # field; when every captioned field has been shed it may run the
+        # whole measure
+        capped = [x for x, code, _ in fs if code in self.CAPS]
+        gate = f" GATE {name.upper()} {min(count, 99):02d} "
+        gate = gate[: max(1, (capped[0] - 1) if capped else w)]
+        line[:len(gate)] = list(gate)
+        for x, code, n in fs:
+            cap = self.CAPS.get(code)
+            if cap:
+                line[x: x + len(cap)] = list(cap[:n])
+        return self.band_row("".join(line), w)
+
+    # ---- the view section header -----------------------------------------
+    def sect(self, title, note, w, h=0):
+        """Drawn display type RENOUNCED — a flap board sets everything in the
+        one cell height it owns, so `h` buys nothing and that is a decision."""
+        w = max(1, w)
+        return [self.band_row(f" {title.upper()}  {note.upper()} ", w),
+                self.seam(w)]
+
+    # ---- quantity everywhere else ----------------------------------------
+    def bar(self, span, head=None, tone=None):
+        """NOT a bar. The bucket's quantity is its FIGURE, flipped onto flap
+        cells and then padded out to the slot the caller reserved — the length
+        is a seat, never the reading. `head` (the travelling packet) marks the
+        figure as a value IN FLIGHT, which is the one other thing amber is
+        spent on."""
+        c = self.c
+        span = max(1, span)
+        n = min(span, 99)
+        s = f"{n:02d}"[:span]
+        lit = head is not None and any(head[:span])
+        return (self.cell(s, c["accent"] if lit else (tone or c["ink"]))
+                + " " * max(0, span - len(s)))
+
+    GANTT = ("▁", "▀", "│", " ", "▼")      # the seam, a flipping cell, a flag
+
+    def cal_cell(self, state):
+        c = self.c
+        # severity is the FACE here too, so the calendar and the schedule
+        # spend their one loud colour the same way
+        return {"none": f"[{c['dim']}]--[/]",
+                "over": self.cell("!!", self.t["ground"], c["alert"]),
+                "multi": self.cell("2+", c["ink"]),
+                "one": self.cell("01", c["mut"])}[state]
+
+    def queue_marker(self, i):
+        # TWO cells, tabular, like every other figure on this board. It used
+        # to also be the safe width — the queue row's `- 8` arithmetic only
+        # closed on a 2-cell marker — but the forty-fifth pass made that row
+        # measure its markers (`aperture._queue_markup` via `hero.vis_w`), so
+        # the overflow is gone and this width is now pure typography.
+        return self.cell(f"{min(i + 1, 99):02d}", self.c["mut"])
+
+    def tile_row(self, val, label, tone, w):
+        """The figure is flipped first and the account name follows it: on a
+        departure board the number is the thing you look for."""
+        c = self.c
+        v = (val or "").strip() or "--"
+        room = max(1, w - len(v) - 1)
+        return (self.cell(v, tone) + " "
+                + f"[{c['mut']}]{self._pad(label.upper(), room)}[/]")
+
+    # ---- the components ---------------------------------------------------
+    # the flap board STATES the mode; the word is the flap's face
+    CHECK_WORDS = ("OFF", "ON ")
+
+    # the flaps SETTLE left to right — three frames, no recompute
+    MOTION_STEPS = 3
+
+    # a flap board never draws a filled length, so the indicator is the row
+    # of flaps ALREADY TURNED — a seam, not a bar — and the figure is stated
+    # on a flap cell the way this board states every quantity. The old
+    # slider drew the same dot on both sides of the knob: no indicator.
+    PART_GLYPHS = {
+        "main": {DEFAULT: "·", DISABLED: "╌"},
+        "indicator": {DEFAULT: "▁", DISABLED: "▫"},
+        "knob": {DEFAULT: "▼", FOCUSED: "▲", EDITED: "◆",
+                 ACTIVE: "█", DISABLED: "▽"},
+        # ONE FLAP, turned or not. The seams above and below the flap are
+        # the box; the character on its face is the mark. A split-flap board
+        # never fills a length, and here it does not have to — the checkbox
+        # is the one component in the family whose reading is a face.
+        "checkbox.main": {DEFAULT: "▁ ▁", FOCUSED: "▔ ▔", ACTIVE: "▁·▁",
+                          DISABLED: "╌ ╌"},
+        "checkbox.knob": {DEFAULT: "▁▼▁", FOCUSED: "▔▲▔", ACTIVE: "▁█▁",
+                          DISABLED: "╌▽╌"},
+        # THE WHOLE CARD versus the split one. A checkbox here is a flap with
+        # a gap between its seams — the box you look into. A radio is a card
+        # whose seam runs UNBROKEN across it, because a departures board does
+        # not tick a box, it turns one card in a rank to show the chosen
+        # destination. Same three cells, different reading, and the seam is a
+        # SHAPE before it is a colour.
+        "radio.main": {DEFAULT: "▁▁▁", FOCUSED: "▔▔▔", ACTIVE: "▂▂▂",
+                       DISABLED: "╌╌╌"},
+        "radio.knob": {DEFAULT: "▁●▁", FOCUSED: "▔◉▔", ACTIVE: "▂█▂",
+                       DISABLED: "╌▫╌"},
+        # A CARD IN THE ROW, seams top and bottom: the word is printed on the
+        # flap. Focus lifts the seam to the card's top edge, and the press is
+        # the flap CAUGHT MID-TURN (▂) — this language's one mechanism, spent
+        # here on an action instead of on a value.
+        "button.main": {DEFAULT: "▁  ▁", FOCUSED: "▔  ▔", ACTIVE: "▂  ▂",
+                        DISABLED: "╌  ╌"},
+        # A CARD IN THE ROW: seams above and below, and the paper between
+        # them. The press is the flap caught mid-turn, exactly as on the
+        # button, so the two components read as one mechanism.
+        "textfield.main": {DEFAULT: "▁·▁", FOCUSED: "▔·▔", EDITED: "▔▁▔",
+                           ACTIVE: "▂·▂", DISABLED: "╌╌╌"},
+        "textfield.caret": {DEFAULT: "▮"},
+        # THE RANK OF CARDS, which is the only thing this board has ever
+        # drawn: the cards not yet reached are showing their SEAM, and the
+        # run you are looking at has TURNED. A split-flap board never fills a
+        # length and does not have to here — the window is a block of flaps
+        # that have flipped, which is a shape before it is a tone.
+        "scrollbar.main": {DEFAULT: "▔", DISABLED: "╌"},
+        "scrollbar.indicator": {DEFAULT: "▄", DISABLED: "▫"},
+        # THE RANK TURNING, one card either way — which is the only motion
+        # this board has and the reason a stepper suits it: a departures
+        # board does not show you the whole schedule, it turns to the entry
+        # you asked for. The flap points the way it will turn; the press
+        # catches it mid-turn (█), this language's one mechanism. At an end
+        # there is no card behind the last one, so the seat is the bare SEAM.
+        "stepper.main": {DEFAULT: "▁▁", DISABLED: "╌╌"},
+        "stepper.step": {DEFAULT: "▲▼", FOCUSED: "▴▾", EDITED: "◆◆",
+                         ACTIVE: "██", DISABLED: "▽▽"},
+    }
+
+    def part_tone(self, part, state, name=None):
+        """AMBER is spent on interaction, and the GRIP is the interaction —
+        `control_of`, so a COMBINED `checked+disabled` is still dead."""
+        if part == actuator(name) and control_of(state) != DISABLED:
+            return self.c["accent"]
+        return super().part_tone(part, state, name)
+
+    def value_label(self, val, state=DEFAULT):
+        return " " + self.cell(f"{max(0, min(99, int(val))):02d}",
+                               self.c["ink"])
+
+    def tabs(self, options, active):
+        """The mode on screen takes the BAND; the rest are printed small.
+        Two channels — reverse video AND case — so it survives greyscale."""
+        c = self.c
+        return "".join(
+            self.band_row(f" {o.upper()} ", len(o) + 2) if o == active
+            else f"[{c['mut']}] {o.lower()} [/]" for o in options)
+
+    def icon(self, kind):
+        """RED only on LATE. Every other departure code is printed in grey."""
+        g = self.ICONS.get(kind, "")
+        if not g:
+            return ""
+        tone = self.c["alert"] if kind == "overdue" else self.c["mut"]
+        return f"[{tone}]{g}[/]"
+
+    def display_cap(self, s: str) -> str:
+        return s.upper()                   # tight caps: a flap cell is a cell
+
+    def mascot(self):
+        return []                          # a departure board keeps no pet
+
+    def wordmark(self, text):
+        # the board's own header, in the one treatment it owns
+        cap = " ".join(text.upper())
+        return [self.band_row(f" {cap} ", len(cap) + 2)]
+
+    # ---- composition ------------------------------------------------------
+    def board_layout(self):
+        return "sections" if self.scheduled else "columns"
+
+    def surface(self):
+        """FLAT. The flap face is drawn per cell in markup, so no region may
+        carry a panel of its own — a panelled column behind flap cells is two
+        grounds fighting, and the seam stops reading as the only divider."""
+        t = self.t
+        # the scrollbar is toned to the SEAM on purpose: Textual draws its
+        # thumb with the `▁▂▃…` ramp, so a brighter one reads as a stray seam
+        # mark standing outside the grid (seen in the render at 118). Hover
+        # and drag lift it to full ink, so the affordance is not renounced.
+        return (f".kb-col, .kb-card, .kb-flat {{ background: {t['ground']}; }}\n"
+                f".kb-flat, .kb-col {{\n"
+                f"    scrollbar-background: {t['ground']};\n"
+                f"    scrollbar-color: {t['seam']};\n"
+                f"    scrollbar-color-hover: {t['ink']};\n"
+                f"    scrollbar-color-active: {t['accent']}; }}")
+
+    def composition(self):
+        """THE SCHEDULE'S ROW GRID, and every rule here is anti-jiggle.
+
+        The band sits TIGHT on the rows it heads (`margin-bottom: 0`), because
+        a blank row under a band is a second divider and this language has
+        exactly one. The air goes ABOVE the band instead, where it groups
+        gates rather than separating rows.
+
+        THE ROW BUDGET comes from the same law, not from a density wish:
+        widget.tcss spends `margin-top: 1` above `#meter`, `#tiles`, `#tabs`
+        and `#kb`, and under this language a blank row IS a divider drawn in
+        air — which contradicts the one thing solari says about itself. The
+        four are reclaimed and exactly ONE row of air is given back, to
+        `.col-head`, where it groups GATES instead of separating rows.
+        Measured: the board region goes 10 rows to 14 at 30 screen rows, and
+        the schedule prints 6 departures instead of 4.
+
+        `.kb-card:focus` is the SELECTION BAND: the row's ground goes amber
+        and its ink goes to the ground colour. Its padding is restored to the
+        unfocused value on purpose — widget.tcss shifts it to make room for a
+        focus BORDER, and a language that spends no border would otherwise
+        have every selected row jump one cell sideways, which is the exact
+        jiggle a tabular board exists to prevent.
+        """
+        t = self.t
+        return f"""
+        #meter, #tiles, #tabs, #kb, #view {{ margin-top: 0; }}
+        .col-head {{ margin-top: 1; margin-bottom: 0; }}
+        .kb-card:focus {{ background: {t['accent']}; color: {t['ground']};
+                          padding: 0 1; }}
+        .tile:focus {{ padding: 0 1; }}
+        """
+
+
+class Blueprint(Kit):
+    """THE CYANOTYPE TECHNICAL DRAWING. The frame stops CONTAINING and starts
+    MEASURING: not one element on this sheet is boxed, and every quantity is a
+    DIMENSION SPAN with its figure standing on the span itself.
+
+    Commitments, each of which is a mechanism below and not a note:
+
+    * **quantity is a DIMENSION SPAN** (`meter="dimension"`). `├──── 03D ────┤`
+      — the run measures and the figure states, so the reading never depends on
+      estimating a length. The scale is a CONSTANT (`SCALE_DAYS` for a due
+      span, `SCALE_COUNT` for a head's load), which is what makes DATAVIZ.md
+      law 2 true by construction: a kit method sees one row at a time and can
+      never be handed its siblings' maximum, so a shared ceiling has to be
+      declared rather than derived. Two spans anywhere on the sheet are
+      comparable because neither was normalized to itself;
+    * **NOTHING IS BOXED, at any width.** `layout="field"` lays items on an
+      open field and hangs their metadata off an EXTENSION LEADER
+      (`·── PROJ ── BACKLOG ── HIGH`). The only box-drawing glyphs this
+      language draws are `─ ━ ├ ┤ ╌` (the dimension vocabulary), `┌ ┐ └ ┘`
+      (registration marks) and the hatch — TEN, and not one of them is a
+      vertical stroke or a rectangle junction, so a containing box here is not
+      merely absent: it is unconstructable. (A terminator may stand alone in a
+      two-cell seat — the calendar day — where a span does not fit. That is a
+      renunciation, and it is the only place it happens.);
+    * **the whole frame budget is ONE TITLE BLOCK** (`frame="titleblock"`), a
+      3-row stamp docked to the bottom corner carrying the sheet's identity,
+      its revision date, its work tally and its state. Its two rules are the
+      only strokes on the page;
+    * **emphasis is KNOCKOUT** (`knockout=True`): exactly ONE element per view
+      reverses to a pale ground with dark ink, and it is the title block's
+      STATE cell. That is the first-fixation law here, and it is why chroma
+      stays near zero — `ink`, `mut` and `dim` are one cyan family and the
+      silhouette is carried by spans, leaders and the block;
+    * **held work is HATCHED, never coloured** (`hatch="╱"`), so blocked reads
+      with the colour stripped away and costs none of the rationed chroma;
+    * **alert is spent on OVERDUE and nothing else.** A calm sheet carries zero
+      `alert`.
+
+    **The knockout is the title block's cell rather than the most overdue ITEM,
+    and that is a deviation with a mechanical reason.** A kit method is handed
+    one card at a time and has no cross-card knowledge, so "the single most
+    urgent item" cannot be identified without ranking the cards in `kanban.py`
+    (the shape of nord's selection problem). The one seat that DOES see the
+    whole board is `Kit.mood`, which the app computes from the real task list,
+    and the title block is where it lands. A per-item knockout is the named
+    follow-up.
+    """
+
+    OPEN, CLOSE = "├", "┤"                 # the dimension terminators
+    EXT = "─"                              # the extension / span line
+    LEAD = "·"                             # the leader's origin dot
+    BREAK = "╌"                            # the CLIP flag: this span is off-scale
+    REG = ("┌", "┐", "└", "┘")             # the registration marks
+    GAP = 2                                # cells of air between fields
+    SPAN_W = 16                            # the dimension field
+    SCALE_DAYS = 14                        # THE SHARED CEILING for a due span
+    SCALE_COUNT = 12                       # ... and for a head's load span
+    ITEM_MIN = 20                          # a title below this is not useful
+    TB_ROWS = 3                            # the title block's height
+    TB_MIN = 42                            # the narrowest live `#tabs` seat
+    # THE TITLE BLOCK'S DECLARED DROP ORDER. STATE never drops: it is the
+    # knockout, and the knockout is this sheet's first fixation.
+    TB_DROP = ("sheet", "rev", "work")
+    SHEET = "TASKBOARD"
+    STATE = {"alert": "OVERDUE", "busy": "IN WORK", "clear": "CLEAR"}
+    PRIO = {"low": "LOW", "normal": "NORM", "high": "HIGH"}
+
+    CUR = "┌"                              # the registration mark, one corner
+    SPIN = ("┌", "┐", "┘", "└")            # a registration mark walking a box
+
+    ICONS = {"deadline": "DIM", "overdue": "OVR", "wip": "WIP",
+             "blocked": "", "workday": "DAY", "boardfile": "SHT"}
+
+    VOICE = {"empty": "NO ITEMS ON SHEET", "no_signals": "NO SIGNALS SPECIFIED"}
+
+    # what the title block last learned about the board: `(done, total, w)`.
+    # A class default so an un-driven kit renders honestly instead of raising.
+    _sheet: tuple[int | None, int | None, int] = (None, None, TB_MIN)
+
+    # ---- tokens -----------------------------------------------------------
+    @property
+    def hatch(self) -> str:
+        """The stroke a HELD span is filled with. A shape, not a hue."""
+        return self.t.get("hatch", "╱")
+
+    @property
+    def knockout(self) -> bool:
+        return bool(self.t.get("knockout"))
+
+    @property
+    def titled(self) -> bool:
+        """The `frame` token. "titleblock" is not a rule glyph — it moves the
+        whole frame budget into the bottom-corner stamp, so this language's
+        frame turns the BLOCK on and every other stroke off."""
+        return self.frame == "titleblock"
+
+    @property
+    def fielded(self) -> bool:
+        """The `layout` token. Anything but "field" (the base default "flow"
+        included) gives back the generic composition, byte for byte."""
+        return self.layout == "field"
+
+    def rule_line(self, w):
+        """The sheet rules nothing. The title block owns the only two strokes
+        on the page, and a card is never boxed."""
+        return None if self.titled else super().rule_line(w)
+
+    # ---- the dimension span -----------------------------------------------
+    def dimension(self, n: int, label: str, fill: str | None = None,
+                  clipped: bool = False, outside: bool = True) -> str:
+        """This language's own span, drawn through the shared mechanism."""
+        return _span_text(n, label, fill or self.EXT, self.OPEN, self.CLOSE,
+                          clipped, self.BREAK, outside)
+
+    @staticmethod
+    def _pad(text: str, n: int, right: bool = False) -> str:
+        """Exactly `n` cells. Width math runs BEFORE escaping (module rule)."""
+        if n <= 0:
+            return ""
+        t = text if len(text) <= n else text[: max(0, n - 1)] + "…"
+        pad = " " * (n - len(t))
+        return (pad + mark(t)) if right else (mark(t) + pad)
+
+    @staticmethod
+    def _read(chip: str) -> tuple[int | None, str]:
+        """`(days, state)` from the chip. One derivation path for the whole
+        language: the chip IS the task state (kanban.py computes it from the
+        due date, the blocked flag and the done column), so the span and the
+        row beside it can never disagree."""
+        c = (chip or "").strip()
+        if c == "done":
+            return None, "done"
+        if c == "blk":
+            return None, "blocked"
+        late = c.endswith("!")
+        body = c[:-1] if late else c
+        if body.endswith("d") and body[:-1].lstrip("-").isdigit():
+            return int(body[:-1]), ("late" if late else "due")
+        return None, "none"
+
+    def _cells(self, days: int, ceiling: int | None = None) -> int:
+        """Cells the span occupies, on the SHARED scale. The ceiling is a
+        CONSTANT and not the siblings' maximum, because a kit method is handed
+        one row at a time — declaring the scale is the only way two spans on
+        one page can be compared (DATAVIZ.md law 2)."""
+        top = ceiling or self.SCALE_DAYS
+        d = min(abs(int(days)), top)
+        inner = round((self.SPAN_W - 2) * d / top)
+        if d and inner == 0:
+            inner = 1                      # MICROBAR FLOOR (DATAVIZ law 3):
+            # a one-day span must not round down onto the zero-day span
+        return inner + 2
+
+    @staticmethod
+    def _fig(days: int) -> str:
+        d = abs(int(days))
+        return f"{d:02d}" if d <= 99 else "99+"
+
+    def _span(self, days: int | None, state: str) -> tuple[str, str]:
+        """`(the span, exactly SPAN_W cells, its tone)`.
+
+        HELD wears the HATCH and keeps the field's full width: a held item has
+        no schedule to measure, so its span states a CONDITION rather than a
+        quantity — and the hatch is a SHAPE, so the reading survives greyscale
+        and spends none of this language's rationed colour. ALERT appears here
+        and only here, on a span that is genuinely past its date."""
+        c = self.c
+        if state == "blocked":
+            return (self._pad(self.dimension(self.SPAN_W, "HELD", self.hatch),
+                              self.SPAN_W), c["mut"])
+        if state == "done":
+            return (self._pad(self.dimension(self.SPAN_W, "DONE"),
+                              self.SPAN_W), c["dim"])
+        if days is None:
+            # an UNDIMENSIONED feature: a leader running to a note, and
+            # deliberately not a zero-length span — absence is not a measure
+            return (self._pad(f"{self.LEAD}{self.EXT} NO DATE", self.SPAN_W),
+                    c["dim"])
+        clipped = abs(int(days)) > self.SCALE_DAYS
+        late = state == "late"
+        lab = self._fig(days) + ("D!" if late else "D")
+        tone = (c["alert"] if late
+                else (c["warn"] if 0 <= days <= 3 else self.t.get("calm",
+                                                                  c["ink"])))
+        return (self._pad(self.dimension(self._cells(days), lab,
+                                         clipped=clipped), self.SPAN_W), tone)
+
+    # ---- ONE GEOMETRY SEAT -------------------------------------------------
+    def field(self, w: int) -> list[tuple[int, str, int]]:
+        """The sheet's columns for a row of `w` cells: `(origin, code, width)`,
+        filling the measure EXACTLY. Read by the card, by the HEAD and by every
+        acceptance check — the `Ledger.cols` / `Swiss.grid` / `Nord.panes` /
+        `Instrument.reticle` / `Corgi.slots` / `Solari.fields` precedent, and
+        the reason a head's span and its items' spans stand on one column.
+
+        THE DECLARED DEGRADE, in two steps and no more: below
+        `ITEM_MIN + GAP + SPAN_W` the DIMENSION FIELD is renounced whole (the
+        reading moves onto the extension leader — the sheet loses a dimension,
+        never the datum); below `ITEM_MIN` the sheet itself is renounced and
+        the row falls back to the generic card, which can never be worse than
+        the form it replaced (swiss's grid law). A span is never squeezed:
+        a run shorter than its own terminators cannot measure anything.
+        """
+        item = w - self.SPAN_W - self.GAP
+        if item >= self.ITEM_MIN:
+            return [(0, "item", item), (item + self.GAP, "span", self.SPAN_W)]
+        if w >= self.ITEM_MIN:
+            return [(0, "item", w)]
+        return []
+
+    # ---- the item on the field --------------------------------------------
+    def card_rows(self, title, chip, tone, w, idx=0, urgent=False, meta=None):
+        """TWO rows: the item with its dimension, and the EXTENSION LEADER that
+        carries its metadata. The leader is where this language's air went —
+        a drawing annotates its white space rather than leaving it blank, which
+        is why `pitch` is 1 and not the 2 an airy language would take."""
+        if not self.fielded:
+            return super().card_rows(title, chip, tone, w, idx, urgent, meta)
+        fs = self.field(w)
+        if not fs:
+            return super().card_rows(title, chip, tone, w, idx, urgent, meta)
+        c, m = self.c, (meta or {})
+        days, state = self._read(chip)
+        span, stone = self._span(days, state)
+        codes = [code for _, code, _ in fs]
+        top = f"[{c['ink']}]{self._pad(title.upper(), fs[0][2])}[/]"
+        if "span" in codes:
+            top += " " * self.GAP + f"[{stone}]{span}[/]"
+        # the leader, with progressive disclosure: fields that do not fit are
+        # DROPPED, never folded (a wrapped leader grows the card a phantom row)
+        parts: list[tuple[str, str]] = []
+        if "span" not in codes:
+            sp = span.strip()
+            parts.append((f"[{stone}]{mark(sp)}[/]", sp))
+        for v in ((m.get("proj") or "").upper(), (m.get("phase") or "").upper(),
+                  self.PRIO.get((m.get("prio") or "").lower(), "")):
+            if v:
+                parts.append((f"[{c['mut']}]{mark(v)}[/]", v))
+        lead = f"{self.LEAD}{self.EXT * 2} "
+        sep = f" {self.EXT * 2} "
+        out, used, room = [], 0, w - len(lead)
+        for mk, pl in parts:
+            step = len(pl) + (len(sep) if out else 0)
+            if used + step > room:
+                break
+            if out:
+                out.append(f"[{c['mut']}]{sep}[/]")
+            out.append(mk)
+            used += step
+        return [top, f"[{c['mut']}]{lead}[/]" + "".join(out)]
+
+    def card_row(self, title, chip, tone, w, idx=0, urgent=False):
+        # the guards are repeated rather than delegated: `Kit.card_rows` calls
+        # `self.card_row`, so a card_row that answered by calling card_rows
+        # would recurse forever on the degraded path
+        if not self.fielded or not self.field(w):
+            return super().card_row(title, chip, tone, w, idx, urgent)
+        return self.card_rows(title, chip, tone, w, idx, urgent, None)[0]
+
+    # ---- the phase head ----------------------------------------------------
+    def head(self, name, count, w, idx=0):
+        """The phase is a FEATURE on the sheet and its load is DIMENSIONED, on
+        the same geometry seat the items under it use — so the head's span and
+        the items' spans stand in one column and the page reads as one drawing.
+
+        The two spans carry different QUANTITIES (items vs days) on different
+        constants, which is what a drawing does when it dimensions two things
+        on one column; what they share is the origin, not the scale."""
+        if not (self.fielded and self.titled):
+            return super().head(name, count, w, idx)
+        fs = self.field(w)
+        if not fs:
+            return super().head(name, count, w, idx)
+        c = self.c
+        fig = f"{min(count, 99):02d}"
+        tone = c["ink"] if count else c["dim"]
+        if len(fs) > 1:
+            sp = self.dimension(self._cells(count, self.SCALE_COUNT), fig,
+                                clipped=count > self.SCALE_COUNT)
+            return (f"[{c['mut']}]{self._pad(name.upper(), fs[0][2])}[/]"
+                    + " " * self.GAP
+                    + f"[{tone}]{self._pad(sp, self.SPAN_W)}[/]")
+        # the DIMENSION is renounced, the COUNT is not: the figure stands tight
+        # against the name, which is where a drawing puts a note it has no room
+        # to dimension. An empty phase still reads `00`.
+        n = fs[0][2]
+        return (f"[{c['mut']}]{self._pad(name.upper(), n - len(fig) - 1)}[/] "
+                f"[{tone}]{fig}[/]")
+
+    # ---- the view section header ------------------------------------------
+    def sect(self, title, note, w, h=0):
+        """Drawn display type RENOUNCED — a drawing letters everything at one
+        height, so `h` buys nothing and that is a decision. The note hangs off
+        the title on a leader, like every other annotation here."""
+        c = self.c
+        return [f"[{c['ink']}]{mark(title.upper())}[/]  "
+                f"[{c['mut']}]{self.LEAD}{self.EXT * 2} "
+                f"{mark(note.upper())}[/]", ""]
+
+    # ---- quantity everywhere else -----------------------------------------
+    def bar(self, span, head=None, tone=None):
+        """NOT a fill — a dimension span exactly as wide as the seat the caller
+        reserved, with the count on it. The travelling packet is one cell of
+        the run drawn as a BREAK: a drawing animates by moving a mark along a
+        line, it never lights the line up."""
+        c = self.c
+        n = max(1, span)
+        if n < 3:
+            return f"[{tone or c['ink']}]{(self.OPEN + self.CLOSE)[:n]}[/]"
+        body = list(self.dimension(n, f"{min(n, 99):02d}", outside=False))
+        if head is not None:
+            for i in range(1, n - 1):
+                if i < len(head) and head[i] and body[i] == self.EXT:
+                    body[i] = self.BREAK
+                    break
+        return f"[{tone or c['ink']}]{''.join(body)}[/]"
+
+    GANTT = ("─", "╌", "┤", "·", "┐")      # extension line, break, terminator
+
+    def cal_cell(self, state):
+        """A calendar day is a TWO-CELL seat, which is narrower than any span
+        this language can draw, so the terminator stands alone and the span is
+        renounced — the one place that happens, and it is a renunciation, not
+        a box. All four states differ in SHAPE: the render at 60 caught an
+        earlier draft where `over` and `multi` were the same glyph pair in
+        different hues, which is a state readable in colour alone."""
+        c = self.c
+        return {"none": f"[{c['dim']}]{self.LEAD * 2}[/]",
+                "one": f"[{c['mut']}]{self.EXT}{self.CLOSE}[/]",
+                "multi": f"[{c['ink']}]{self.OPEN}{self.CLOSE}[/]",
+                # a BROKEN span: this day is past its date
+                "over": f"[{c['alert']}]{self.BREAK}{self.CLOSE}[/]"}[state]
+
+    def queue_marker(self, i):
+        c = self.c
+        return (f"[{c['mut']}]{min(i + 1, 99):02d}[/]" if self.numbered
+                else f"[{c['mut']}]{self.LEAD}{self.EXT}[/]")
+
+    def tile_row(self, val, label, tone, w):
+        """The reading first, on a leader running to its name."""
+        c = self.c
+        v = (val or "").strip() or "--"
+        room = max(1, w - len(v) - 4)
+        return (f"[{tone}]{mark(v)}[/] [{c['dim']}]{self.EXT * 2}[/] "
+                f"[{c['mut']}]{self._pad(label.upper(), room)}[/]")
+
+    # ---- the title block ---------------------------------------------------
+    def meter(self, done, total, counts, w):
+        """THE TITLE BLOCK'S WORK CELL AND ITS MEASURE, learned here.
+
+        A kit method is handed one surface at a time; this is the ONE call the
+        app makes with the board's whole tally and with the aperture's content
+        width, and `tabs()` (which is handed neither) is updated immediately
+        after it in `app._after_hero`. So the block reads its figures from the
+        same redraw that drew the meter, and never from the previous one.
+        Before the first meter call the cell honestly reads `--/--` and the
+        block falls back to its narrowest live seat — the `self.mood`
+        precedent: render-pipeline state, declared and degrading."""
+        self._sheet = (done, total, max(self.TB_MIN, int(w)))
+        return super().meter(done, total, counts, w)
+
+    def _mode_strip(self, options, active) -> tuple[str, str, tuple[int, int]]:
+        """`(plain, markup, (left, right))` — the modes, the one on screen in
+        caps, and the two cells its REGISTRATION MARKS stand on."""
+        c = self.c
+        plain, parts, reg = " ", [" "], (-1, -1)
+        for i, o in enumerate(options):
+            if i:
+                plain += "  "
+                parts.append("  ")
+            word = o.upper() if o == active else o.lower()
+            if o == active:
+                reg = (len(plain) - 1, len(plain) + len(word))
+                parts.append(f"[{c['ink']}]{mark(word)}[/]")
+            else:
+                parts.append(f"[{c['mut']}]{mark(word)}[/]")
+            plain += word
+        return plain, "".join(parts), reg
+
+    def _state_cell(self) -> tuple[str, bool]:
+        """`(text, knocked)`. The board MOOD is the only board-wide fact a kit
+        is given, and the app derives it from the real task list (anything
+        overdue and not done).
+
+        TWO CHANNELS, which is why the token owns the SHAPE as well as the
+        reverse video: under `knockout` the state is DIMENSIONED — a real span
+        with the word riding on it — and reverse video is then spent on
+        ATTENTION alone. Reverse video is a ground colour and nothing else, so
+        a knockout that carried no shape would be a state readable in colour
+        only (COMPONENTS.md's two-channel law), and it would vanish from every
+        greyscale check in this suite.
+
+        The reverse fires on `alert` alone, so a sheet with nothing overdue
+        carries no reversed cell at all — and still states its condition."""
+        word = self.STATE.get(self.mood, "CLEAR")
+        if self.knockout:
+            return (self.dimension(len(word) + 4, word),
+                    self.mood == "alert")
+        return (f" {word} ", False)
+
+    def block_cells(self, w: int, strip_w: int) -> list[tuple[str, str, bool]]:
+        """The title block's `(caption, value, knocked)` cells at width `w`,
+        and the declared order a narrow sheet SHEDS them in."""
+        done, total, _ = self._sheet
+        work = ("--/--" if total is None
+                else f"{min(done, 99):02d}/{min(total, 99):02d}")
+        state, knocked = self._state_cell()
+        spec = [("sheet", ("SHEET", self.SHEET, False)),
+                ("rev", ("REV", date.today().isoformat(), False)),
+                ("work", ("WORK", work, False)),
+                ("state", ("", state, knocked))]
+        for dropped in range(len(self.TB_DROP) + 1):
+            gone = set(self.TB_DROP[:dropped])
+            cells = [v for code, v in spec if code not in gone]
+            if strip_w + self.GAP + self.block_w(cells) <= w:
+                return cells
+        return [spec[-1][1]]
+
+    def block_w(self, cells) -> int:
+        return (sum(len(cap) + 1 + len(val) if cap else len(val)
+                    for cap, val, _ in cells)
+                + self.GAP * max(0, len(cells) - 1))
+
+    def title_block(self, options, active, w: int) -> list[str]:
+        """THE SHEET'S TITLE BLOCK — three rows, and the only frame this
+        language spends. Two rules bracket a row of cells; the mode on screen
+        is bracketed by REGISTRATION MARKS instead of a border, which is the
+        selection mechanism this language owns (`┌ ┐` above, `└ ┘` below —
+        four separate corners that never join, so nothing here is a box).
+
+        THE DECLARED LADDER, when the sheet is too narrow for all of it:
+        tier 1 sheds title-block cells in `TB_DROP` order; tier 2 gives up the
+        modes the sheet is NOT on (the block is the sheet's identity and may
+        not be cut for a nav row); tier 3 renounces the strip entirely and
+        keeps the STATE, because the state is the knockout.
+        """
+        c = self.c
+        w = max(12, int(w))
+        strip, strip_mk, reg = self._mode_strip(options, active)
+        cells = self.block_cells(w, len(strip))
+        if len(strip) + self.GAP + self.block_w(cells) > w:
+            strip, strip_mk, reg = self._mode_strip([active], active)
+        if len(strip) + self.GAP + self.block_w(cells) > w:
+            strip, strip_mk, reg = "", "", (-1, -1)
+        bw = self.block_w(cells)
+        x = max(0, w - bw)
+        if strip:
+            x = max(x, len(strip) + self.GAP)
+        # the two rules — from the block's own origin to the sheet's edge —
+        # and the registration marks, which never touch them
+        top = [" "] * w
+        bot = [" "] * w
+        for i in range(min(x, w), w):
+            top[i] = bot[i] = self.EXT
+        lx, rx = reg
+        if 0 <= lx and rx < x:
+            top[lx], top[rx] = self.REG[0], self.REG[1]
+            bot[lx], bot[rx] = self.REG[2], self.REG[3]
+
+        def paint(row: list[str]) -> str:
+            out, i = [], 0
+            while i < w:
+                ch = row[i]
+                j = i
+                while j < w and row[j] == ch:
+                    j += 1
+                if ch == " ":
+                    out.append(" " * (j - i))
+                elif ch == self.EXT:
+                    out.append(f"[{c['mut']}]{ch * (j - i)}[/]")
+                else:
+                    out.append(f"[{c['ink']}]{ch * (j - i)}[/]")
+                i = j
+            return "".join(out)
+
+        body = []
+        for n, (cap, val, knocked) in enumerate(cells):
+            if n:
+                body.append(" " * self.GAP)
+            if cap:
+                body.append(f"[{c['mut']}]{cap}[/] [{c['ink']}]{mark(val)}[/]")
+            elif knocked:
+                # KNOCKOUT: the cell reverses — pale ground, dark ink. Exactly
+                # one of these exists on a view, and it is the first fixation.
+                body.append(f"[{self.t['ground']} on {c['ink']}]"
+                            f"{mark(val)}[/]")
+            else:
+                body.append(f"[{c['mut']}]{mark(val)}[/]")
+        mid = strip_mk + " " * max(0, x - len(strip)) + "".join(body)
+        return [paint(top), mid, paint(bot)]
+
+    def tabs(self, options, active):
+        if not (self.fielded and self.titled):
+            return super().tabs(options, active)
+        return "\n".join(self.title_block(options, active, self._sheet[2]))
+
+    # ---- the components ----------------------------------------------------
+    # the span is DRAWN IN, terminator first
+    MOTION_STEPS = 2
+
+    # A DIMENSION BEING SET. The opening terminator is fixed chrome (a datum
+    # does not move), the extension line is the measured extent, the closing
+    # terminator is the knob, and the unmeasured remainder is leader dots.
+    # Nothing is filled and nothing is boxed, which is this sheet's law.
+    COMP_CHROME = (OPEN, "")
+    PART_GLYPHS = {
+        "main": {DEFAULT: LEAD, DISABLED: BREAK},
+        "indicator": {DEFAULT: EXT, DISABLED: "┄"},
+        "knob": {DEFAULT: CLOSE, FOCUSED: "╡", EDITED: "╪",
+                 ACTIVE: "┫", DISABLED: "╎"},
+        # NOTHING IS BOXED ON THIS SHEET, and the checkbox does not get to
+        # break that. So it is not a box: it is a DATUM between two
+        # terminators, blank until the note is entered. The mark sits between
+        # the terminators, which satisfies containment without a box ever
+        # being drawn — the law is about the mark staying inside its main,
+        # not about brackets.
+        "checkbox.main": {DEFAULT: "├ ┤", FOCUSED: "╞ ╡", ACTIVE: "┣ ┫",
+                          DISABLED: "╎ ╎"},
+        "checkbox.knob": {DEFAULT: "├╪┤", FOCUSED: "╞╪╡", ACTIVE: "┣╪┫",
+                          DISABLED: "╎╌╎"},
+        # THE DATUM TURNED INWARD. The checkbox's terminators point out (a
+        # dimension measured across a gap); the radio's point IN, which on a
+        # drawing is a callout selecting one item from a schedule. Nothing is
+        # boxed here and nothing is boxed here either — the law survives the
+        # new component, which is what a language law is for.
+        "radio.main": {DEFAULT: "┤ ├", FOCUSED: "╡ ╞", ACTIVE: "┫ ┣",
+                       DISABLED: "╏ ╏"},
+        "radio.knob": {DEFAULT: "┤○├", FOCUSED: "╡◉╞", ACTIVE: "┫●┣",
+                       DISABLED: "╏╌╏"},
+        # A TITLE-BLOCK CELL: two extension lines with the callout between
+        # them, which is how this language bounds anything at all — nothing
+        # is BOXED here, and two verticals are a dimension, not a box. The
+        # datum thickens with the state, its declared weight ramp.
+        "button.main": {DEFAULT: "├  ┤", FOCUSED: "╞  ╡", ACTIVE: "┣  ┫",
+                        DISABLED: "╎  ╎"},
+        # A TITLE-BLOCK CELL between two extension lines — nothing is boxed
+        # here, and two verticals are a dimension, not a box. The caret is
+        # this language's own EDITED knob, the datum tick.
+        "textfield.main": {DEFAULT: "├·┤", FOCUSED: "╞·╡", EDITED: "╞╌╡",
+                           ACTIVE: "┣·┫", DISABLED: "╎╌╎"},
+        "textfield.caret": {DEFAULT: "╪"},
+        # A DIMENSION ON A LONG SHEET, and NOTHING IS FILLED — this sheet's
+        # law survives the new component, which is what a language law is
+        # for. The unseen length is the leader this drawing rules every gap
+        # with; the length in view is the EXTENSION LINE at drawing weight,
+        # and its opening terminator is the datum the chrome already fixes.
+        "scrollbar.main": {DEFAULT: LEAD, DISABLED: BREAK},
+        "scrollbar.indicator": {DEFAULT: "━", DISABLED: "─"},
+        # TERMINATORS TURNED INWARD ON A SCHEDULE — the callout this sheet
+        # already uses to pick one item out of a list, given the second
+        # direction a stepper needs. NOTHING IS FILLED AND NOTHING IS BOXED,
+        # the sheet's law, surviving its sixth component: the weight ramp is
+        # the whole state channel. Where the schedule ends there is no
+        # terminator to draw, only the LEADER this drawing rules every gap
+        # with.
+        "stepper.main": {DEFAULT: LEAD + LEAD, DISABLED: BREAK + BREAK},
+        "stepper.step": {DEFAULT: "┤├", FOCUSED: "╡╞", EDITED: "╪╪",
+                         ACTIVE: "┫┣", DISABLED: "╏╏"},
+    }
+
+    def icon(self, kind):
+        """HELD is the HATCH itself — the one icon in this vocabulary that is a
+        texture rather than a code.
+
+        NO ICON IS EVER ALERT, and that is the ration taken literally rather
+        than loosely. An icon is a LABEL: the `overdue` code captions a tile
+        whose count may be zero, and a red `OVR` standing beside `0` is the
+        hue meaning "this word is about lateness" instead of "this thing is
+        late" — measured on the calm board, where it was the only alert cell
+        on the frame. Alert is spent on the SPAN of a row that is genuinely
+        past its date, and nowhere else at all."""
+        if kind == "blocked":
+            return f"[{self.c['mut']}]{self.hatch * 2}[/]"
+        g = self.ICONS.get(kind, "")
+        return f"[{self.c['mut']}]{g}[/]" if g else ""
+
+    def display_cap(self, s: str) -> str:
+        return s.upper()                   # drafting letters everything in caps
+
+    def wordmark(self, text):
+        """Display type: the sheet's own title, DIMENSIONED."""
+        cap = " ".join(text.upper())
+        return [f"[{self.c['ink']}]"
+                f"{self.dimension(len(cap) + 4, cap)}[/]"]
+
+    # ---- composition -------------------------------------------------------
+    def board_layout(self):
+        return "sections" if self.fielded else "columns"
+
+    def surface(self):
+        """FLAT. A panel behind a card IS a containing box drawn in background
+        (HIERARCHY.md ranks a shared ground as a grouping CONTAINER), and this
+        language's whole claim is that nothing on the sheet is contained."""
+        if not self.fielded:
+            return super().surface()
+        t = self.t
+        return (f".kb-col, .kb-card, .kb-flat {{ background: {t['ground']}; }}\n"
+                f".kb-flat, .kb-col {{\n"
+                f"    scrollbar-background: {t['ground']};\n"
+                f"    scrollbar-color: {t['dim']};\n"
+                f"    scrollbar-color-hover: {t['mut']};\n"
+                f"    scrollbar-color-active: {t['ink']}; }}")
+
+    def composition(self):
+        """THE SHEET, and the title block DOCKED to its bottom corner.
+
+        `#tabs` is the seat the mode strip already had; under this language it
+        becomes the title block, which is where an engineering drawing keeps
+        its identity. Docking is what puts it in the CORNER instead of above
+        the field.
+
+        THE ROW BUDGET, and it is paid rather than borrowed: the block takes
+        `TB_ROWS` where the strip took `margin-top: 1` plus one content row, so
+        it is one row dearer. `#kb` gives up its own `margin-top` to pay for
+        it, and that is not a density wish — `.col-head` already spends a row
+        of air ABOVE itself (where it groups features instead of separating a
+        head from its items), so `#kb`'s margin would stack a second blank row
+        on the first. A separator drawn twice is corgi's argument, and it is
+        the same argument here.
+
+        `.kb-card:focus` restores the unfocused padding on purpose: widget.tcss
+        shifts it to make room for a focus BORDER, and a language that spends
+        no border (`sel="none"`) would otherwise have every selected row jump
+        one cell sideways — the exact jiggle a dimensioned sheet exists to
+        prevent (the solari precedent).
+
+        Gated on `frame`, not merely written: the dock IS the title block's
+        seat, so a language whose frame is no longer "titleblock" must give the
+        generic composition back byte for byte — otherwise the token would be
+        half dead metadata, live in the render and dead in the layout.
+        """
+        if not self.titled:
+            return super().composition()
+        t = self.t
+        return f"""
+        #tabs {{ dock: bottom; height: {self.TB_ROWS}; margin-top: 0; }}
+        #kb {{ margin-top: 0; }}
+        .col-head {{ margin-top: 1; margin-bottom: 0; }}
+        .kb-card:focus {{ background: {t['focus']}; padding: 0 1; }}
+        .tile:focus {{ padding: 0 1; }}
+        """
+
+
+# ---------------------------------------------------------------------------
+# QUANTITY MECHANISMS — dispatched on the `meter` token. Each is a different
+# STRUCTURE (discrete dots on a lattice / LCD ghost segments / sub-cell braille
+# / one hairline / bracketed box / CRT decay ramp / gradient shoulder /
+# conventional blocks), not one bar with different glyph pairs.
+# ---------------------------------------------------------------------------
+def _pct_n(done, total, bar_w):
+    pct = 0 if not total else round(100 * done / total)
+    n = 0 if not total else max(0, min(bar_w, round(bar_w * done / total)))
+    return pct, n
+
+
+def _meter_ember(k, done, total, counts, w):
+    """PRISM'S QUANTITY: a field that is CONSUMED, with a boundary that moves
+    at HALF-CELL precision.
+
+    Every other meter in this registry says an amount by how much of a track
+    is *filled*. This one says it by how much of a solid field is *gone* —
+    the burnt part is `ash`, the part still alight is the accent, and the
+    frontier between them is what carries the datum. That is not a stylistic
+    inversion: it is why the mechanism needs braille and a dot bitmap at all.
+
+    Two dot-columns per cell means the boundary can land INSIDE a cell, so a
+    reading of 47 % on a 20-cell bar is not rounded to the tenth cell — it is
+    drawn at the left half of the tenth. A block meter cannot do that; it
+    quantises the frontier to whole cells, which on a 20-cell bar is a 5 %
+    step. The half-cell is the resolution the language spends its pixel base
+    on ([DENSITY.md] — the base must match the axis that varies).
+
+    `taskboard/wave.py` on main is the engine, ported here unchanged; its own
+    REV1 lit whole braille ROWS and was rejected for exactly this reason.
+    """
+    from taskboard import wave as WV
+    c = k.c
+    bar_w = max(4, w - 10)
+    pct, _ = _pct_n(done, total, bar_w)
+
+    dots_w = bar_w * WV.DOT_COLS
+    burnt = 0 if not total else max(0, min(dots_w, round(dots_w * done / total)))
+
+    # ASH IS NOT A SOLID FIELD, AND THAT IS LAW 1, NOT A PREFERENCE.  The first
+    # version filled both sides to full height and let the TONE carry the
+    # frontier -- so with colour stripped the bar did not move at all, and the
+    # harness said `moved=False`.  It is the same defect the Kimi fork's
+    # grey-on-grey meter died of.  Burnt cells keep only their bottom dot row:
+    # the boundary is a change of SHAPE (solid field -> a residue), and the
+    # colour is confirmation rather than the datum.
+    ASH_ROWS = 1
+    live, ash = WV.Bitmap(dots_w, WV.DOT_ROWS), WV.Bitmap(dots_w, WV.DOT_ROWS)
+    for x in range(dots_w):
+        if x < burnt:
+            ash.fill_to(x, ASH_ROWS)
+        else:
+            live.fill_to(x, WV.DOT_ROWS)
+
+    lit = live.to_braille()[0]
+    spent = ash.to_braille()[0]
+    ash_c = k.t.get("ash", c["dim"])
+    # one cell is field or figure, never both -- so a cell straddling the
+    # frontier is emitted ONCE, in the tier that owns its lit dots
+    bar = "".join(
+        f"[{ash_c}]{spent[i]}[/]" if spent[i] != " " else
+        (f"[{c['accent']}]{lit[i]}[/]" if lit[i] != " " else " ")
+        for i in range(bar_w))
+    return f"{bar} [{c['mut']}]{pct:>3}%[/]"
+
+
+def _meter_blocks(k, done, total, counts, w):
+    c = k.c
+    bar_w = max(4, w - 10)
+    pct, n = _pct_n(done, total, bar_w)
+    bar = "▇" * n + "░" * (bar_w - n)
+    return (f"[{c['accent']}]{bar}[/] [{c['mut']}]{pct:>3}%[/]\n"
+            f"[{c['dim']}]{_pulse(counts, bar_w)}[/] [{c['dim']}]flow[/]")
+
+
+def _meter_dotgrid(k, done, total, counts, w):
+    c = k.c
+    dot_w = int(k.t.get("dot_w", 2))
+    g = int(k.t.get("gap", 1))
+    avail = max(8, w - 8)
+    cells = max(4, avail // max(1, dot_w + g))
+    pct, _ = _pct_n(done, total, 1)
+    return (NA.dot_meter(done, total, cells, c["ink"], c["dim"], gap=g)
+            + f" [{c['mut']}]{pct:>3}%[/]\n"
+            + NA.dot_heat(counts, max(2, (avail - 6) // max(1, 1 + g)),
+                          c["ink"], c["mut"], c["dim"], gap=g)
+            + f" [{c['dim']}]flow[/]")
+
+
+def _meter_lcd(k, done, total, counts, w):
+    # LCD ghost segments: unlit segments render faint, never disappear — AND
+    # THEY DIFFER FROM THE LIT ONES IN SHAPE. They did not: both were `▄▄` in
+    # two tones, which is the case DATAVIZ law 1 cites BY NAME, and colour
+    # stripped it made the bar `▄▄ ` * segs at EVERY value — a quantity row
+    # carrying no reading at all without colour, for as long as this
+    # mechanism has existed.
+    #
+    # The pair is the `lcd` ramp's own unlit and its first lit level, and the
+    # meter asks `cover_ramp()` for it — THE ONE SEAT that answers "which
+    # ramp is this language's" (#45). Naming the registry ROW was pass 62's
+    # convention and it was one answer too many: a mechanism reached through
+    # the `meter` token asking a second question keyed on the same token is
+    # two seats for one fact. It still does not ROUTE: a segment is lit or it
+    # is not, and a boolean is not a coverage.
+    c = k.c
+    ramp = k.cover_ramp()
+    ghost_g, seg_g = ramp[0], ramp[1]
+    screen = k.t.get("screen", c["accent"])
+    alu = k.t.get("alu", c["mut"])
+    segs = max(4, (w - 12) // 3)
+    pct, n = _pct_n(done, total, segs)
+    lit = f"[{screen}]" + f"{seg_g * 2} " * n + "[/]"
+    ghost = f"[{c['dim']}]" + f"{ghost_g * 2} " * (segs - n) + "[/]"
+    flow = " ".join(
+        f"[{alu}]\\[{i + 1}][/][{screen if x else c['dim']}]{x}[/]"
+        for i, x in enumerate(counts))
+    return lit + ghost + f"[{c['mut']}]\\[{pct:>3}%][/]\n" + flow
+
+
+def _meter_braille(k, done, total, counts, w):
+    # 2 dot-columns per cell -> half-cell precision; unlit lattice visible
+    c = k.c
+    ramp = k.cover_ramp()
+    cells = max(4, w - 10)
+    pct, _ = _pct_n(done, total, 1)
+    dots = 0 if not total else max(0, min(cells * 2,
+                                          round(cells * 2 * done / total)))
+    full, half = divmod(dots, 2)
+    # THE BAR'S UNLIT IS `⠒` (dots 2+5) AND THE FLOW ROW'S IS THE REGISTRY'S
+    # (dot 5) — two unlit glyphs one row apart, which looks like the #45
+    # disease one level down and is NOT. DECLARED: one unlit idiom at TWO
+    # RESOLUTIONS. The bar is a HALF-CELL fill (`⣿` fills both sub-columns of
+    # a cell, the half cell only the left), so it addresses two sub-columns
+    # per cell and a track that inks one of them leaves the other drawing
+    # nothing at the very scale the bar can fill — which is what #46 was, one
+    # cell wide, and is cured below. The flow row draws one bucket per cell with
+    # no sub-division, so ONE dot is its empty. Checkable rather than
+    # rhetorical, and asserted: the bar's unlit IS the flow row's unlit
+    # MIRRORED into the other sub-column — dot 5 | its mirror dot 2 == dots
+    # 2+5. Both clear law 4's two ceilings (0.250 and 0.125 ink, against a
+    # quarter-cell limit).
+    #
+    # THE GLYPH IS SPELLED BY NUMBER HERE ON PURPOSE. Pass 64's law says this
+    # function's source no longer spells the registry's unlit; writing the
+    # ARGUMENT for it in a comment would have reddened that law, and the fix
+    # for a red is never to narrow the law that found it.
+    #
+    # WHAT THE SAME ARGUMENT SAYS ABOUT THE HALF CELL (#46, cured here). The
+    # half cell's right sub-column is UNRUN, so by the rule above it is track
+    # and must carry the track's dot; the glyph that used to sit here carried
+    # zero, which made the one cell where the run ends the one cell whose
+    # empty sub-column drew nothing. The cured glyph is not CHOSEN, it is
+    # COMPOSED out of the two glyphs this mechanism already has — the full
+    # cell's left sub-column OR the track's right sub-column — which is why
+    # it is spelled by number in the law and not by taste here.
+    #
+    # ITS TONE IS THE RUN'S, and that is a decision rather than an accident.
+    # A cell is one glyph and carries one tone, so the sub-cell resolution
+    # the FILL has, the TONE does not: whichever span the half cell joins,
+    # one of its two sub-columns is painted in the other's colour. It joins
+    # the LIT run, because the lit sub-column is the DATUM and the track dot
+    # is chrome, and a fill that under-reads its own quantity by half a cell
+    # to keep chrome the right colour has the priority backwards.
+    bar = (f"[{c['accent']}]{'⣿' * full}{'⡗' * half}[/]"
+           f"[{c['dim']}]{'⠒' * (cells - full - half)}[/]")
+    hi = max(counts) if counts else 1
+    # THE TWO ENDS OF THIS ROW ARE THE REGISTRY ROW'S TWO ENDS, AND THE
+    # COUPLING RAN BACKWARDS: pass 61 chose the braille row's unlit by
+    # looking at THIS meter and recorded the fact in a comment, so two
+    # literals were tied by prose and either side could drift. The registry
+    # is the definition and this row READS it (#44) — through `cover_ramp()`,
+    # the one seat, rather than by naming the row (#45). The row name is not
+    # spelled here at all, comment included: a source law a COMMENT can walk
+    # around is not a source law (pass 61's quote-style finding, one shape on).
+    #
+    # The MIDDLE level stays this row's own: a 3-level flow row on a 4-level
+    # coverage ramp is not a copy of it, and `⠶` is a level the registry does
+    # not carry. The BAR above is a different mechanism (a half-cell fill on
+    # a lattice track) and keeps its own three glyphs.
+    flow = "".join(ramp[3] if n > (hi or 1) * 0.66 else ("⠶" if n else ramp[0])
+                   for n in counts)
+    return (bar + f" [{c['mut']}]{pct:>3}%[/]\n"
+            f"[{c['dim']}]{flow}[/] [{c['dim']}]flow[/]")
+
+
+def _meter_hairline(k, done, total, counts, w):
+    # one hairline; NO flow row — swiss spends the row on emptiness
+    c = k.c
+    bar_w = max(4, w - 10)
+    pct, n = _pct_n(done, total, bar_w)
+    return (f"[{c['accent']}]{'━' * n}[/][{c['dim']}]{'─' * (bar_w - n)}[/]"
+            f" [{c['mut']}]{pct:>3}[/][{c['dim']}]%[/]\n")
+
+
+def _meter_boxed(k, done, total, counts, w):
+    c = k.c
+    bar_w = max(4, w - 12)
+    pct, n = _pct_n(done, total, bar_w)
+    bar = (f"[{c['dim']}]\\[[/][{c['accent']}]{'█' * n}[/]"
+           f"[{c['dim']}]{'░' * (bar_w - n)}][/]")
+    return (bar + f" [{c['mut']}]{pct:>3}%[/]\n"
+            f"[{c['dim']}]{_pulse(counts, bar_w)}[/] [{c['dim']}]flow[/]")
+
+
+def _meter_decay(k, done, total, counts, w):
+    # CRT persistence: bright at the head, fading behind it
+    c = k.c
+    ramp = k.cover_ramp()
+    bar_w = max(4, w - 10)
+    pct, n = _pct_n(done, total, bar_w)
+    tail = min(n, 2)
+    # THE PERSISTENCE TAIL IS THE PHOSPHOR RAMP, INDEXED BY DISTANCE FROM THE
+    # HEAD RATHER THAN BY COVERAGE — so it asks the ONE SEAT for the row (#45;
+    # the sixty-first pass's cure gave the two the same four glyphs and the
+    # duplicate literal was found by the law that counts them) and it still
+    # does not ROUTE, because a position is not a coverage.
+    #
+    # THE TAIL USED TO REACH THE TRACK'S OWN GLYPH (pass 62's census). It was
+    # four cells, so its dimmest was `░` — the very glyph the unrun track
+    # draws, separated from it by TONE ALONE, which is DATAVIZ law 1's defect
+    # and put a HOLE in the run in greyscale: `▓▓▓░▒▓█`, an ink dip and then
+    # a rise. The tail now starts ABOVE the track and the older trace glows
+    # one level under it, so the bar is MONOTONE in ink across all three
+    # tones: track `░` < trace `▒` < tail `▓█`.
+    body = ramp[4 - tail:] if tail else ""
+    bar = (f"[{c['mut']}]{ramp[1] * max(0, n - tail)}[/]"
+           f"[{c['ink']}]{body}[/]"
+           f"[{c['dim']}]{ramp[0] * (bar_w - n)}[/]")
+    return (bar + f" [{c['mut']}]{pct:>3}%[/]\n"
+            f"[{c['dim']}]{_pulse(counts, bar_w)}[/] [{c['dim']}]flow[/]")
+
+
+def _meter_gradient(k, done, total, counts, w):
+    # THE BAR IS THE PHOSPHOR RAMP READ DOWNWARD: a run of full cells, a
+    # shoulder fading out of it, and the ramp's own unlit as the TRACK.
+    #
+    # The track was literal SPACES — DATAVIZ law 4, the defect pass 61 cured
+    # on nine ramps, alive at the mechanism next door: a flat-zero meter
+    # rendered as nothing at all. And the shoulder ENDED on the glyph the
+    # track now draws, so its last step would have vanished into it; two
+    # cells now, because the third step IS the track.
+    c = k.c
+    ramp = k.cover_ramp()          # the ONE seat, never a second answer
+    bar_w = max(4, w - 10)
+    pct, n = _pct_n(done, total, bar_w)
+    # A FADE OUT OF A RUN OF LENGTH ZERO IS A PHANTOM READING. The shoulder
+    # drew `▓▒░` at 0% against a blank track, so the row said "a little" when
+    # the datum said "none" — the opposite half of law 4, and the reason the
+    # cure for a missing track is not simply "ink the blanks".
+    sh = ramp[2:0:-1][: max(0, min(2, bar_w - n))] if n else ""
+    bar = (f"[{c['accent']}]{ramp[3] * n}{sh}[/]"
+           f"[{c['dim']}]{ramp[0] * max(0, bar_w - n - len(sh))}[/]")
+    hi = max(counts) if counts else 1
+    # the flow row is the same ramp indexed by relative load. It spelled it
+    # BACKWARDS, which is a second definition wearing a disguise the
+    # literal-count law cannot see — byte-identical, now named.
+    flow = "".join(ramp[min(3, round(3 * x / (hi or 1)))] * 2 for x in counts)
+    return (bar + f" [{c['warn']}]{pct:>3}%[/]\n"
+            f"[{c['mut']}]{flow}[/] [{c['dim']}]flow[/]")
+
+
+def _meter_step(k, done, total, counts, w):
+    # achromatic: fill vs track differ by SHAPE (█ vs ▁) — the fork's
+    # grey-on-grey version vanished in greyscale (DATAVIZ.md law 1)
+    c = k.c
+    bar_w = max(4, w - 10)
+    pct, n = _pct_n(done, total, bar_w)
+    bar = f"[{c['mut']}]{'█' * n}[/][{c['dim']}]{'▁' * (bar_w - n)}[/]"
+    hi = max(counts) if counts else 1
+    # THE FLOW ROW DREW ITS LEVELS AS `. o O` AND THIS ROW'S OWN CAPTION IS
+    # THE WORD `flow`. Colour-stripped, `O.oo flow` carries FIVE marks of
+    # that ramp for FOUR buckets: a reader scanning the row with the
+    # mechanism's own marks reads a PHANTOM level-1 bucket out of the
+    # caption — the same family of defect as `gradient`'s phantom shoulder,
+    # where a fade out of an empty run said "a little" while the datum said
+    # "none". It was the ONE flow row in the twelve whose data alphabet met
+    # its own prose, and the space in front of the caption is not a boundary
+    # a reader can trust: FIVE of the twelve rows put spaces INSIDE the data
+    # run (`dimension`, `dotgrid`, `lcd`, `odometer`, `tally`), so "the run
+    # is the first space-free token" is not a rule this family supports.
+    #
+    # THE COLLISION WAS THE SYMPTOM; the defect under it is that this row
+    # had a PRIVATE alphabet at all. `. o O` is darkside's MOTION and
+    # IDENTITY family — `SPIN`, the `PHASES` doodle, the port `(o)` — and
+    # this language's declared DATA ramp is the step ladder the registry
+    # names for it — the row its own `spark` draws, asked for through
+    # `cover_ramp()`. The row is data, so it reads the declared row: three
+    # levels off a four-level ladder, `[0]` unlit, `[3]` terminal, and the
+    # middle band
+    # takes the MIDDLE of the cell rather than the step next to the track,
+    # because "not empty and not top" should not look nearly empty.
+    #
+    # The unlit is now the mark the bar one row above already draws for an
+    # empty position (pass 61's rule, verbatim), and no level is a LETTER,
+    # so no caption this row could ever carry can collide with its data.
+    ramp = k.cover_ramp()
+    flow = "".join(ramp[3] if x > (hi or 1) * 0.66 else (ramp[2] if x
+                                                        else ramp[0])
+                   for x in counts)
+    return (bar + f" [{c['dim']}]{pct:>3}%[/]\n"
+            f"[{c['mut']}]{flow}[/] [{c['dim']}]flow[/]")
+
+
+def _meter_tally(k, done, total, counts, w):
+    # COUNTED, not measured: marks in groups of five, the group break drawn
+    # by air. Unlit positions keep a leader dot, so fill and track differ by
+    # SHAPE and not by colour (DATAVIZ law 1) — and the leaders are the same
+    # mechanism that closes every other gap on the page.
+    c = k.c
+    mark = k.t.get("tally", "▪")
+    lead = "·"
+    # five marks + one cell of air per group, and SIX groups is the ceiling:
+    # past thirty marks nobody counts, they estimate — and estimating is what
+    # a bar is for. A tally that long has stopped being a tally.
+    room = max(11, w - 10)
+    cells = max(5, min(30, (room // 6) * 5))
+    pct, n = _pct_n(done, total, cells)
+    body = []
+    for i in range(cells):
+        if i and i % 5 == 0:
+            body.append(" ")
+        body.append(f"[{c['ink']}]{mark}[/]" if i < n
+                    else f"[{c['dim']}]{lead}[/]")
+    # the flow row posts each phase's count as its own tally, between rules
+    nb = max(1, min(len(counts) or 1, max(1, (w - 8) // 8)))
+    flow = f"[{c['dim']}] │ [/]".join(
+        f"[{c['mut']}]{mark * min(5, x)}[/][{c['dim']}]{lead * (5 - min(5, x))}[/]"
+        for x in _resample(counts, nb))
+    # the figure sits TIGHT against its marks and the rest of the row is
+    # margin. Dot leaders exist to bind a name to a DISTANT figure; here the
+    # figure is already adjacent, so leaders would be ornament — and filling
+    # the gap with the same dot the unlit tally uses would hide where the
+    # count ends (measured: the groups of five stopped being readable).
+    return ("".join(body) + f" [{c['mut']}]{pct:>3}%[/]\n"
+            + flow + f" [{c['dim']}]flow[/]")
+
+
+def _meter_odometer(k, done, total, counts, w):
+    # DIGITS, never bars — the one mechanism in the set that STATES the
+    # quantity instead of drawing its length. Every figure is zero-padded to
+    # its field's width, so the row never moves sideways as the numbers change
+    # (the anti-jiggle law), and greyscale carries the reading for free: a 3
+    # and a 7 differ in shape with no colour at all (DATAVIZ law 1).
+    c = k.c
+    face = k.t.get("flap")
+    on_ = f" on {face}" if face else ""
+
+    def od(n, width=3, tone=None):
+        s = f"{min(max(0, n), 10 ** width - 1):0{width}d}"
+        return "".join(f"[{tone or c['ink']}{on_}]{d}[/]" for d in s)
+
+    pct = 0 if not total else round(100 * done / total)
+    first = (f"[{c['mut']}]DONE [/]" + od(done)
+             + f"[{c['mut']}] OF [/]" + od(total)
+             + f"[{c['mut']}]  [/]" + od(pct) + f"[{c['mut']}]%[/]")
+    # the load row posts every phase's count as its own two-cell odometer, the
+    # way a board lists the gates it is holding. REFLOWED, never truncated:
+    # the last gate must survive a narrow row.
+    nb = max(1, min(len(counts) or 1, max(1, (w - 8) // 5)))
+    load = f"[{c['dim']}] [/]".join(
+        od(x, 2, c["mut"] if x else c["dim"]) for x in _resample(counts, nb))
+    return first + "\n" + load + f" [{c['dim']}]LOAD[/]"
+
+
+def _meter_dimension(k, done, total, counts, w):
+    # THE FRAME MEASURES. The run is the quantity and the figure stands ON the
+    # run, so the reading never rides on estimating a length — and nothing is
+    # ever filled, which is what keeps this mechanism inside a drawing's
+    # vocabulary. Written through `_span_text` rather than the kit, so the
+    # mechanism belongs to the TOKEN and any theme may adopt it (the dispatch
+    # law: a chart wears the language, never a chart library's look).
+    c = k.c
+    pct = 0 if not total else round(100 * done / total)
+    room = max(8, w - 12)
+    n = 2 if not total else max(2, min(room, 2 + round((room - 2) * done / total)))
+    lab = f"{min(done, 99):02d}/{min(total, 99):02d} {pct:>3}%"
+    first = (f"[{c['mut']}]WORK [/][{c['ink']}]{_span_text(n, lab)}[/]")
+    # the load row dimensions every phase on ONE shared ceiling, so the phases
+    # are comparable to each other and to nothing else (DATAVIZ law 2)
+    nb = max(1, min(len(counts) or 1, max(1, (w - 8) // 10)))
+    hi = max(counts) if counts else 1
+    # `outside=True` is load-bearing here: a span too short to letter would
+    # otherwise DROP its figure, and a meter that stops stating its value has
+    # stopped being a reading (DATAVIZ.md law 5). The figure steps out; the
+    # length still ranks the phases.
+    load = " ".join(
+        f"[{c['mut'] if x else c['dim']}]"
+        f"{_span_text(2 + (0 if not x else max(1, round(6 * x / (hi or 1)))), f'{min(x, 99):02d}')}[/]"
+        for x in _resample(counts, nb))
+    return first + "\n" + load + f" [{c['dim']}]LOAD[/]"
+
+
+METERS = {"blocks": _meter_blocks, "dotgrid": _meter_dotgrid,
+          "ember": _meter_ember,
+          "lcd": _meter_lcd, "braille": _meter_braille,
+          "hairline": _meter_hairline, "boxed": _meter_boxed,
+          "decay": _meter_decay, "gradient": _meter_gradient,
+          "step": _meter_step, "tally": _meter_tally,
+          "odometer": _meter_odometer, "dimension": _meter_dimension}
+
+
+# phosphor and bbs retired 2026-07-26 (user curation); their decay/gradient
+# meter mechanisms stay in METERS as library options any theme may adopt
+# nord mapped to the bare `Kit` until 2026-07-27: the base class WAS nord, so
+# nord was the one language that could not own a composition without changing
+# all eight. `Nord(Kit)` overrides nothing but the split, so that inheritance
+# is still the truth — it just has a seat now.
+KITS = {"naught": Naught, "corgi": Corgi, "instrument": Instrument,
+        "swiss": Swiss, "industrial": Industrial,
+        "nord": Nord, "darkside": Darkside, "prism": Prism, "ledger": Ledger,
+        "solari": Solari, "blueprint": Blueprint}
+
+
+def kit(name: str) -> Kit:
+    """The active language's structure kit. Unknown names get the base
+    (terminal-conventional) kit rather than raising — lenient like the model."""
+    return KITS.get(name, Kit)(name)
