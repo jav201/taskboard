@@ -28,13 +28,30 @@ pushes.
 
 ## Open — after `2026-08-07-fastflow-06`
 
-- **`main`'s HISTORY still carries board data, and this is now an ACCEPTED
-  RISK, not a task.** Operator ruling 2026-08-07: *"el main, ni hablar"* — no
-  rewrite, no force-push. Two project names and one task title sit in
-  `.fast-dev-flow/archive/20260724-025459-spec.md` in every commit from
-  `5ae4d42` back-to-front, on a **PUBLIC** remote. The tips are clean and the
-  pre-commit gate stops new ones. Re-open only if the operator changes the
-  ruling.
+- **`main`'s HISTORY WAS REWRITTEN on 2026-08-07 — and that did NOT fully close
+  it.** Operator reversed the earlier "ni hablar" ruling as a deliberate
+  exception, on the grounds that this repository is where the rule was learned.
+  All **119 commits** were rewritten with the same synthetic names the tip
+  already carried, prefix-aware to 10 characters; verified commit-by-commit with
+  `tools/privacy_sweep.py`: **119/119 clean, 0 leaking files**. The tip's tree is
+  byte-identical to the pre-rewrite tag — the code did not change, only the
+  history. Force-pushed with `--force-with-lease`.
+
+  **WHAT REMAINS, MEASURED AFTER THE PUSH, NOT ASSUMED.** The old commits are
+  still reachable on GitHub by SHA: `eec3c8c`, `694f38a` and `ec8c940` all
+  answer the API, and the leaked file downloads (2 545 bytes) at `694f38a`.
+  They are not linked from anything and cannot be found by browsing, but "hard
+  to find" is not "gone". Two things actually close it:
+    1. **A GitHub Support request** to purge cached views and unreachable
+       objects — the documented remedy, and the operator's to file.
+    2. Making the repository private, which cuts anonymous API access
+       immediately.
+  Until one of those, treat the old SHAs as public.
+
+  **The local tag `pre-rewrite-20260807` still holds the pre-rewrite history**,
+  including the leaked strings. Kept on purpose as the safety net for a
+  same-day rewrite; delete it once the operator is satisfied.
+
 - **The global git identity still carries the address.** Repo-local is set
   (`46639531+jav201@users.noreply.github.com`, verified on `5057c6a`); the
   global remains `jjgh89@msn.com`, deliberately untouched — changing it retags
