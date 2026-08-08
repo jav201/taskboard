@@ -1581,21 +1581,44 @@ def test_gantt_axis_includes_the_past(tmp_path):
     assert re.search(r"-\d+d", scale), scale        # the window reaches backwards
 
 
-def test_the_two_bands_show_the_slip(tmp_path):
-    """The answer a gantt exists to give: the top band is the span (ash for
-    elapsed, identity for what remains) and the band beneath is how far the work
-    actually got, so THE GAP BETWEEN THEM IS THE SLIP, read as a length."""
+def test_the_slip_is_the_gap_from_the_dot_to_the_diamond(tmp_path):
+    """The answer a gantt exists to give, now in ONE row.
+
+    WAS `test_the_two_bands_show_the_slip`, and the claim has not changed: the
+    span runs ash-then-identity to its `◆`, a second mark says how far the work
+    actually got, and THE GAP BETWEEN THEM IS THE SLIP read as a length. What
+    changed on 2026-08-07 is that the second mark stopped being a whole row of
+    `▓▓▓▌` under the span and became one cell ON it — the operator's "en vez del
+    cuadro sombreado, una línea y el círculo", which also handed the freed row
+    back to the tasks he could not see.
+
+    The law is rewritten rather than deleted because it still HAS a subject.
+    Deleting it would have been the cheap way to a green suite and would have
+    left the view's whole reason for existing unasserted."""
+    b = _gantt_board(tmp_path)
+    span = _project_row(b, "Alpha")
+    from taskboard.views import PROGRESS_DOT, FIELD_REACH
+    # by NAME, not by glyph: the field's texture is a design decision that has
+    # changed twice now, and this law is about the MARKS, not the characters
+    # they happen to be drawn with today.
+    assert FIELD_REACH in span and "◆" in span      # the span, ending at its date
+    assert PROGRESS_DOT in span                     # how far the work got
+    assert span.index(PROGRESS_DOT) < span.index("◆")   # the gap IS the slip
+
+
+def test_the_project_costs_exactly_one_field_row(tmp_path):
+    """The row the tasks got back. A second row per project is what made the
+    view run out of space, so its absence is asserted directly rather than
+    inferred from the slip law above still passing."""
     b = _gantt_board(tmp_path)
     rows = _gantt_rows(b)
     span = _project_row(b, "Alpha")
-    band = rows[rows.index(span) + 1]
-    from taskboard.views import FIELD_HALF, FIELD_PROGRESS, FIELD_REACH
-    # by NAME, not by glyph: the field's texture is a design decision that has
-    # changed once already, and these laws are about the two BANDS, not the
-    # characters they happen to be drawn with.
-    assert FIELD_REACH in span and "◆" in span      # the span, ending at its date
-    assert FIELD_PROGRESS in band                   # how far the work got
-    assert band.index(FIELD_HALF) < span.index("◆")  # the gap IS the slip
+    below = rows[rows.index(span) + 1]
+    from taskboard.views import FIELD_PROGRESS
+    assert FIELD_PROGRESS not in below, (
+        "a shaded progress row is back under the project")
+    # and it is a TASK row that follows, not blank filler
+    assert below.strip(), "the project is followed by an empty row"
 
 
 def test_a_project_with_no_progress_draws_no_progress_band(tmp_path):

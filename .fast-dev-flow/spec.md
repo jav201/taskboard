@@ -1,108 +1,120 @@
-# Quick Spec — `2026-08-07-fastflow-06`: land the branch, gate the sweep
+# Quick Spec — `2026-08-07-fastflow-07`: the gantt gets a line and a rationed circle
 
-**Base ref:** `b5f30e9` (main, local; `origin/main` == `caa4bab`, 2 behind)
-**Branch to merge:** `kanban-variants` @ `9e94013` (164 green)
-**Language:** English · **security_required: TRUE** (personal data)
+**Base ref:** `c25d8e1` (main == `origin/main`, clean) · **Language:** English
+**security_required: FALSE** (no flag fired — see §6)
 
 ## 1. Objective
 
-Execute the five operator decisions of 2026-08-07, in the order that keeps a
-safety net until it is no longer needed.
+Ship variant **A′** and the **rationed pulse**, both chosen by the operator from
+prototypes he saw rendered:
 
-| # | decision | verbatim | effect |
+1. The project's progress mark stops being a second row of shaded blocks
+   (`▓▓▓▌`) and becomes a **circle riding on the reach line**. The band row at
+   `taskboard/views.py:1938` goes away — that is the row the tasks get back.
+2. The span line goes **thin**.
+3. Task textures lighten: `▒`→line, `▌`→`╴`, phase tips `▃▅▆▇`→`○◔◑◕`.
+4. The circle **pulses only when the project is BEHIND** — progress below the
+   elapsed fraction of its span. Every other circle stays `●`, still.
+
+## 2. THE BLOCKER, measured before any code
+
+Lightening every texture moves the occupancy numbers, and two laws break.
+Measured with `tests/test_gantt.py`'s **own** `_census` on its **own** fixtures
+at 96×30, current code vs a patched module:
+
+| law | today | A′+L with `─` | A′+L with `╌` |
 |---|---|---|---|
-| 1 | main's history rewrite | *"el main, ni hablar"* | **NOT DONE.** The leak stays in `main`'s history back to `5ae4d42` on a PUBLIC remote. Recorded as an **accepted risk**, not an open task |
-| 2 | merge `kanban-variants` → `main` | *"Sí quiero el merge"* | **DO IT**, full merge, 4 conflicts resolved deliberately |
-| 3 | git identity for future commits | *"OK"* + earlier *"en el futuro que no aparezca"* | set a `users.noreply` author address so new commits stop carrying the address |
-| 4 | pre-commit gate | *"Construye"* | a hook that runs the sweep and **refuses the commit** on a hit |
-| 5 | backup refs | *"Borra si ya cumplieron su propósito"* | delete **after** the merge is verified, never before |
+| `marked >= 68.0` (typical) | 78.5 | **67.8 ✗** | **72.9 ✓** |
+| `chrome < 10.0` (typical) | 0.0 | 5.0 | **0.0** |
+| `dead <= 25.0` (typical) | 21.5 | **27.1 ✗** | **27.1 ✗** |
+| `dead` (EXTREME) | 21.5 | 20.0 | **20.0** |
+| `marked` (EXTREME) | 78.5 | 74.8 | **80.0** |
 
-## 2. Acceptance criteria (observable)
+**Two independent causes, and they need different answers.**
 
-- [ ] **AC1 — the merge lands with its conflicts decided, not defaulted.** All 4
-  conflicted paths resolved with a stated reason; `taskboard/app.py` keeps
-  **main's** `keymap.py` implementation, because the operator ruled the branch's
-  inline `HelpScreen` superseded. Observable: no conflict markers anywhere, and
-  `taskboard/keymap.py` still present and imported after the merge.
-- [ ] **AC2 — nothing regresses.** The merged tree runs **both** suites' contents
-  green. Observable: one `pytest` run over the merged `tests/`, count stated,
-  0 failed.
-- [ ] **AC3 — the merged tree carries no board data.** Observable:
-  `tools/privacy_sweep.py` over every tracked file of the merge commit → **0**.
-- [ ] **AC4 — the gate refuses a real leak.** A pre-commit hook runs the sweep on
-  STAGED content and exits non-zero on a hit. Observable, both directions: stage
-  a file containing a real title → commit is **refused** and the file is named;
-  stage a clean file → commit proceeds. Tested by executing the hook, not by
-  reading it.
-- [ ] **AC5 — the gate cannot be satisfied by doing nothing.** If the sweep
-  errors, or the board file is absent, the hook must **fail closed with a
-  message**, never pass silently. Observable: run it with the board path pointed
-  at a missing file → non-zero.
-- [ ] **AC6 — future commits stop carrying the address.** Observable:
-  `git config user.email` returns a `users.noreply` address, and a test commit's
-  `%ae` shows it. Existing commits untouched (decision 1 by extension).
-- [ ] **AC7 — the safety net is removed only after it is redundant.** The four
-  refs are deleted **after** AC1–AC3 pass, and the deletion is reported with what
-  each held.
+### 2a. `─` is counted as FURNITURE
 
-## 3. Out of scope
+`_census`'s frame set is `╭─╮│╰╯├┤┬┴┼` and `─` is in it. Using it for a span
+reclassifies data-ink as chrome, which is where the whole 5.0 and most of the
+`marked` loss comes from. Same defect class as the `│`-vs-`┆` decision this
+project already took for the week guide.
 
-| item | why |
-|---|---|
-| Rewriting `main`'s history | decision 1: *"ni hablar"* |
-| Pushing anything | the operator pushes |
-| A server-side / CI gate | the hook is local; a bypassed `--no-verify` is not covered and this is stated, not hidden |
+**Rendered, `╌` and `┄` are worse**: both are dashed, so they compete with the
+`┆` guides and the `·` lattice and the span stops reading as a continuous
+duration. The glyph is not the thing that is wrong — the census is.
 
-## 4. Premise table (C-43)
+### 2b. `dead` rises because the freed rows are SLACK, not waste
+
+Typical (5 projects / 21 tasks) at 96×30 no longer has enough content to fill
+the viewport, so 27.1 % is blank. On EXTREME (8 / 44) the same code measures
+**20.0 %, better than today's 21.5 %**. The law cannot tell "wasting screen"
+from "ran out of content", and this design makes that distinction matter for
+the first time.
+
+## 3. Acceptance criteria (observable)
+
+- [ ] **AC1 — the row comes back.** At 104×26 on the synthetic board the view
+  draws **0** `+N not shown` where today it draws 1, and every task fits.
+  Observable: the rendered text contains no `not shown` figure.
+- [ ] **AC2 — one row per project.** No project contributes a second field row.
+  Observable: project rows == number of visible projects.
+- [ ] **AC3 — the circle marks progress.** At progress `p` the circle sits at
+  the cell `p` of the way along the span, and `◆` still marks due. Observable
+  at p = 0.0 / 0.5 / 1.0 with a fixture, cell index asserted.
+- [ ] **AC4 — the pulse is RATIONED.** On a board where one project is behind
+  and others are not, exactly **one** circle changes glyph across a tick cycle.
+  **And on a board where NO project is behind, NOTHING changes between ticks.**
+  Both halves required: the second is what stops the pulse becoming ambient.
+- [ ] **AC5 — the pulse obeys the house motion laws.** Cycle ≥ 2 s at the app's
+  own `TICK_SECONDS` (no private constant), glyph-only, and **no style changes
+  between ticks**. Observable by comparing `text.spans` across a cycle.
+- [ ] **AC6 — width is still exact.** Every row is exactly `width` cells at
+  80/96/104/120, with the ambiguous-width circles on screen.
+- [ ] **AC7 — the occupancy laws pass, or are amended with their numbers.** No
+  threshold is retuned silently; any amendment carries the measurement and the
+  reason in the test's own docstring.
+
+## 4. Open decisions — these block Phase B
+
+| # | decision | options |
+|---|---|---|
+| **O-1** | ~~the span glyph~~ **RESOLVED WITHOUT THE AMENDMENT.** Splitting the two rules (`FIELD_REACH` `─` solid, `FIELD_TASK` `╌` dashed) restored the reach > task hierarchy AND moved most `─` cells out of the census frame set: chrome 5.0 → 3.1, marked 67.8 → **69.8**, over its floor. The census was never touched. |
+| ~~O-1 (original options)~~ | the span glyph | **(a)** keep `─` and amend `_census`: this app is frameless (chrome is 0.0 precisely because the frame was removed), so `─` here is always data. Guard the amendment with a law that reddens if box CORNERS `╭╮╰╯` ever reappear, i.e. if a frame comes back. **(b)** use `╌` — numbers pass untouched, but the span reads dashed and competes with the field. **Recommend (a):** the render is what the operator approved, and the census is the thing that is now wrong. |
+| **O-2** | the `dead` law | **(a)** narrow it to what it means: assert `dead <= 25` on a board whose content EXCEEDS the viewport (where slack is impossible), and on a short board assert instead that **nothing is hidden** — the property that actually matters there. **(b)** relax the threshold to 28. **Recommend (a):** (b) is a law weakened because it became inconvenient, which is how laws die. |
+
+## 5. Premise table (C-43)
 
 | Premise | Tier | Verdict | Executed evidence |
 |---|---|---|---|
-| P1 the merge has exactly 4 conflicts | premise | ✅ TRUE | `git merge --no-commit` → `.fast-dev-flow/spec.md`, `.gitignore`, `taskboard/app.py`, `tests/test_app.py`; 80 files / 44 132 insertions |
-| P2 `main`'s `taskboard/keymap.py` supersedes the branch's inline `HelpScreen` | **hypothesis** | ❓ pending | to be executed: both must not co-exist after the merge, and `tests/test_keymap.py` must still pass |
-| P3 a pre-commit hook can see staged content | premise | ❓ pending | must be executed against a real staged leak, not asserted |
-| P4 the backup refs are the only thing holding the pre-rewrite objects | premise | ❓ pending | `git for-each-ref` + reflog check before deleting |
+| P1 the band row is at `views.py:1938` | premise | ✅ TRUE | `grep -n 'band_row(" " \* geo.label_w'` → 1938 |
+| P2 `_span_bands` takes no tick | premise | ✅ TRUE | `views.py:1720-1721`, signature ends at `progress: float` |
+| P3 lightening the textures breaks occupancy laws | **hypothesis** | ✅ TRUE | the table in §2, run through `test_gantt._census` on `test_gantt._load` fixtures |
+| P4 `─` is in the census frame set | premise | ✅ TRUE | `test_gantt.py:198` `frame = set("╭─╮│╰╯├┤┬┴┼")`; swapping to `╌` moves chrome 5.0 → 0.0 and marked 67.8 → 72.9 |
+| P5 the blank rows are slack, not waste | **hypothesis** | ✅ TRUE | EXTREME fixture: dead **20.0** vs today's 21.5, marked **80.0** vs 78.5 — with more content the same code is DENSER than today |
+| P6 `● ◉ ◎` are width-1 but East-Asian AMBIGUOUS | premise | ✅ TRUE | `cell_len` = 1 for all three; `east_asian_width` = A for `●◎`, N for `◉`. **Not new exposure**: `◆ ━ ▓ ▒ ▌ ┆ ▲` already ship and are all A |
+| P7 the gantt already has a moving element | premise | ✅ TRUE | `tests/test_motion.py:124-175` — the flow packet `▬` advances exactly one cell per tick |
+| P8 `TICK_SECONDS = 1.0`, `RULE_PHASES` has 4 phases | premise | ✅ TRUE | executed import: cycle = 4000 ms, clears the 2000 ms illegal band |
+| P9 the prototype's 15/0/3 reproduces | **hypothesis** | ✅ TRUE | `_prototypes/gantt_line_circle.py` at 104×26: drawn 15, hidden 0, blank 3 vs today 14/1/0 |
 
-## 5. Acceptance criteria — executed
+## 6. Security flags
 
-| AC | verdict | evidence |
-|---|---|---|
-| AC1 merge with decided conflicts | ✅ | 4 resolved with a stated reason; `taskboard/keymap.py` present, `HelpScreen` count 0 in `taskboard/app.py` |
-| AC2 nothing regresses | ✅ | **767 passed, 0 failed** — but only after 31 failures were worked through; see §6 |
-| AC3 merged tree carries no board data | ✅ | sweep over 177 tracked files → **0** |
-| AC4 the gate refuses a real leak | ✅ | 9 tests, all EXECUTING the hook; and **live in this repo**: staging a file holding a real task title printed COMMIT REFUSED, named the file and the string, created nothing |
-| AC5 the gate fails closed | ✅ | missing board, corrupt board, empty needle set → non-zero with a reason. 5 mutations kill, including the two "waved through" shapes |
-| AC6 future commits drop the address | ✅ | `5057c6a` carries `46639531+jav201@users.noreply.github.com`. **Repo-local only** — the global identity was NOT changed |
-| AC7 safety net removed after it is redundant | ✅ | 4 refs deleted after AC1–AC3, then reflog expire + `gc --prune=now`. **Verified by object id**: the 19 077-byte blob holding 25 real task titles no longer exists, nor does the pre-rewrite branch tip |
+No pattern fired. This batch renders glyphs from already-loaded data: no auth,
+no secrets, no integration, no new input surface, no persistence change.
+`security_required: false`. The privacy gate stays live regardless
+(`core.hooksPath .githooks`) and no artifact of this batch may carry board data.
 
-## 6. What the merge actually cost
+## 7. Increments (≤5 files each)
 
-**The conflicts were not where the damage was.** Git auto-merged into **31
-failures**, and the worst was invisible in any diff:
-`prototypes/kanban_variants.py` ran `V.render_kanban = _dispatch` at IMPORT
-time, so importing a prototype rewrote a function inside the shipping package
-for the rest of the process — 22 unrelated failures in `test_vertical_fill.py`,
-green alone and red once anything had imported the prototype. Now an explicit
-`install()`.
+1. **The row and the circle** — `_span_bands` returns a span carrying `●`, the
+   band row goes, the thin span lands (AC1–AC3) + tests.
+2. **The rationed pulse** — `tick` threaded, behind-ness computed, glyph cycle
+   (AC4–AC5) + the `test_motion.py` amendment.
+3. **The laws** — occupancy re-measured and O-1/O-2 landed as amendments with
+   their numbers (AC6–AC7).
 
-The auto-merge had also quietly taken the branch's `m` binding into five of
-main's own modal tests while the app binds `P`, i.e. tests failing against the
-application they test, from a hunk no human resolved.
-
-Three further incompatibilities, each fixed toward main rather than by
-restoring dead code to the shipping module: `_border` and `progress_bar`
-(prototypes pinned to app internals the redesign removed — now local copies),
-and two second-person literals in `taskboard/engine.py` that main's Prism voice
-law forbids.
-
-One of this batch's own tests was environment-dependent:
-`test_the_scratch_yard_is_actually_full` asserted `> 100` files in
-`prototypes/out/`, true in the worktree and false on a fresh checkout. Replaced
-by a durable law tying the ignore rule to `capture.py`'s output directory.
-
-## 7. Batch status
+## 8. Batch status
 
 | field | value |
 |---|---|
-| Current phase | **CLOSED 2026-08-07** |
-| Tip | `5057c6a` — 767 green · **not pushed** |
-| Smoke | 4 views + `?` legend open/close; gantt 38 rows all 120 cells; live board untouched |
+| Current phase | **B — increment 1 landed, increment 2 (the pulse) next** |
+| Pushed | nothing |

@@ -163,10 +163,22 @@ def test_each_view_gets_its_own_legend(tmp_path):
     sets = {mode: set(swatches(legend_entries(mode, b, TODAY))) for mode in VIEWS}
     assert sets["swimlanes"] != sets["gantt"] != sets["agenda"]
     assert "●" in sets["agenda"] and "●" not in sets["swimlanes"]
-    # the gantt's marks after the field redesign: the two bands, not a slab
-    from taskboard.views import FIELD_REACH
+    # THE DISCRIMINATOR IS THE TASK REACH, NOT THE PROJECT SPAN, and the reason
+    # is a design convergence rather than a bug. This used to assert that
+    # `FIELD_REACH` appeared in the gantt and NOT in the agenda -- true only
+    # while the gantt's span was the HEAVY `━` and the agenda's reach the light
+    # `─`. The 2026-08-07 redesign made the gantt's span thin, so both views now
+    # draw `─` for "a reach", which is one mark meaning one thing in two places:
+    # exactly what a legend register is for. Asserting the old inequality would
+    # have forced the two views apart to keep a test green.
+    #
+    # `FIELD_TASK` still separates them: only the gantt draws a task's own reach.
+    from taskboard.views import FIELD_REACH, FIELD_TASK
     assert any(FIELD_REACH in s for s in sets["gantt"])
-    assert not any(FIELD_REACH in s for s in sets["agenda"])
+    assert any(FIELD_TASK in s for s in sets["gantt"])
+    assert not any(FIELD_TASK in s for s in sets["agenda"])
+    assert FIELD_TASK != FIELD_REACH, (
+        "the two rules collapsed into one; the hierarchy reach > task is gone")
 
 
 # --------------------------------------------------------------------------- #
