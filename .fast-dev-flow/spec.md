@@ -114,7 +114,38 @@ no secrets, no integration, no new input surface, no persistence change.
 
 ## 8. Batch status
 
+| AC | verdict | evidence |
+|---|---|---|
+| AC1 no `+N not shown` | ✅ | 104x26 demo board: absent. Old shape hid 1 |
+| AC2 one row per project | ✅ | 5 project rows for 5 projects |
+| AC3 the circle is a READING | ✅ | `_span_bands` at p = 0.0/.25/.5/.75/1.0: on the start cell at 0, on the `◆` cell at 1, monotone between |
+| AC4 the pulse is rationed | ✅ | one behind + one on time -> exactly 1 breathes; behind removed -> 8 ticks byte-identical |
+| AC5 house motion laws | ✅ | 4 x `TICK_SECONDS` = 4 s; one phase per tick through a distinguishable alphabet; styles identical across 8 ticks |
+| AC6 width exact | ✅ | 80 / 96 / 104 / 120, every row, with the pulse on screen |
+| AC7 occupancy | ✅ | `marked` 69.8 (floor 68). `dead` moved to the fixture where it means what it says; both amendments carry their numbers in their own docstrings |
+
+## 9. Batch status
+
 | field | value |
 |---|---|
-| Current phase | **B — increments 1 and 2 landed; Phase C next** |
-| Pushed | nothing |
+| Current phase | **CLOSED 2026-08-07** |
+| Tip | `main` local, 776 green, **not pushed** |
+| Smoke | 4 views + `?` legend; gantt 38 rows all 120 cells; live board untouched |
+
+## 10. What the harness found that review would not have
+
+1. Both rules were `─` for one commit — the hierarchy reach > task collapsed.
+2. Removing the band row made the TODAY RULE vanish from the view; the legend's
+   ghost-mark law named it immediately.
+3. `test_the_pulse_rides_the_ONE_shared_clock` could not see a private
+   multiplier, because `PULSE_PHASES` is a palindrome and `tick*3` through a
+   palindrome yields the identical sequence. The symmetry that makes the motion
+   read as a breath is what blinded the observable.
+4. The substitute alphabet was first four digits — and the view is full of
+   numerals, so the counter counted the axis.
+5. `test_backlog_bar_is_static_across_ticks` was narrowed wrong twice: onto
+   plain text (dropping the recolour channel the packet uses) and onto tick 0
+   vs 7 on a seven-cell reach (`0 % 7 == 7 % 7`). **That aliasing pre-dated this
+   batch**: the law passed because the gate held, not because it could see.
+6. `test_nothing_is_hidden...` was first written at a size where the NEW shape
+   hides too — it asserted something false and said so on its first run.
