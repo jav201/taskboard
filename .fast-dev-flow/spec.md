@@ -116,5 +116,5 @@ no secrets, no integration, no new input surface, no persistence change.
 
 | field | value |
 |---|---|
-| Current phase | **B — increment 1 landed, increment 2 (the pulse) next** |
+| Current phase | **B — increments 1 and 2 landed; Phase C next** |
 | Pushed | nothing |

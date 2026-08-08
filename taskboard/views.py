@@ -1602,6 +1602,24 @@ FIELD_HALF = "╴"      # ends mid-cell               (was ⡄, then ▌)
 # what the two-row design existed to show, and it shows it in half the rows.
 PROGRESS_DOT = "●"
 
+# AND IT BREATHES, BUT ONLY WHEN IT HAS SOMETHING TO SAY.
+#
+# The gantt was already not still: the flow packet crosses a task's reach one
+# cell per tick. A second motion therefore has to earn its place, and an
+# ambient that ran on every project would be five circles competing with nine
+# packets while carrying no information at all.
+#
+# So the pulse is RATIONED the way this codebase rations red: a circle breathes
+# only where the work sits LEFT of where the calendar says it should be. Motion
+# then means "this one is slipping", and a board with nothing behind it is
+# completely still.
+#
+# Four phases on the app's one shared clock, same as `RULE_PHASES`: `●◉◎◉` is a
+# breath rather than a blink — weight rises and falls and the cycle closes — and
+# 4 x TICK_SECONDS clears the >= 2 s floor below which an ambient reads as a
+# fault flashing. Glyph only; the hue never moves.
+PULSE_PHASES = ("●", "◉", "◎", "◉")
+
 # THE WEEK GUIDE: the thing the operator said was missing — "no hay gauges de
 # semana y mes", a bar measured against nothing.
 #
@@ -1751,7 +1769,8 @@ def _flowing(board: Board, task: Task) -> bool:
 
 
 def _span_bands(project, geo: FieldGeo, today: date, hue: str,
-                progress: float) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
+                progress: float, tick: int = 0
+                ) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
     """THE SPAN IS THE WAVE, and the answer a gantt exists to give is a LENGTH
     along it.
 
@@ -1821,8 +1840,38 @@ def _span_bands(project, geo: FieldGeo, today: date, hue: str,
     # other row -- the dot says something only this row knows.
     dot = min(max(reached, c0), min(c1, geo.field_w - 1))
     if 0 <= dot < geo.field_w:
-        span[dot] = (PROGRESS_DOT, hue)
+        span[dot] = (_progress_glyph(c0, c1, today_cell, progress, tick), hue)
     return span, band
+
+
+def _behind(c0: int, c1: int, today_cell: int, progress: float) -> bool:
+    """Is the work LEFT of where the calendar says it should be?
+
+    Compared in the span's own coordinates rather than in days, so it answers
+    the question the reader is actually asking of THIS row: the dot is behind
+    when it sits left of the today rule crossing the same span.
+
+    A project whose span has not started, or has already ended, is never
+    behind: `elapsed` clamps to [0, 1] and a zero-length span short-circuits,
+    so neither can produce a pulse from arithmetic alone.
+
+    The 0.02 margin is not decoration. Progress and elapsed are both quantised
+    to whole cells, so a project exactly on schedule lands within a cell of
+    itself and would otherwise flicker in and out of "behind" as the day moves
+    — motion that means nothing, which is the one thing the ration exists to
+    prevent."""
+    if c1 <= c0:
+        return False
+    elapsed = max(0.0, min(1.0, (today_cell - c0) / (c1 - c0)))
+    return progress < elapsed - 0.02
+
+
+def _progress_glyph(c0: int, c1: int, today_cell: int, progress: float,
+                    tick: int) -> str:
+    """`PROGRESS_DOT` at rest; a phase of the breath when the work is behind."""
+    if not _behind(c0, c1, today_cell, progress):
+        return PROGRESS_DOT
+    return PULSE_PHASES[tick % len(PULSE_PHASES)]
 
 
 def _reach_start(task: Task, geo: FieldGeo, today: date) -> int:
@@ -1977,7 +2026,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
     for p in board.visible_projects(show_archived):
         own = gantt_tasks(board, tasks, p.id)
         prog = board.project_progress(p.id, show_archived)
-        span, band = _span_bands(p, geo, today, p.color, prog)
+        span, band = _span_bands(p, geo, today, p.color, prog, tick)
         # the project row has no `over` to borrow from — its label is already
         # exactly `label_w` cells — so its gutter comes out of the name's own
         # clip. `fit` still pads to `label_w - 2`, so the prefix width is

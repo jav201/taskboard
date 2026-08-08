@@ -64,13 +64,69 @@ def test_packet_moves_as_the_tick_advances():
     assert len(frames) > 1                       # the packet drifts, not frozen
 
 
+def _task_row(text, title: str) -> str:
+    """The one rendered row carrying `title`, WITH ITS ANSI INTACT.
+
+    Styled, not plain, and the reason is this module's own opening sentence:
+    the packet is a RECOLOUR, not a glyph swap. Written first against
+    `str(text)`, this helper made `test_backlog_bar_is_static_across_ticks`
+    survive a mutation that animates a backlog bar — the exact defect it
+    forbids — because a recolour leaves the characters identical. Narrowing the
+    law's surface is fine; narrowing away the channel the law reads is not.
+    """
+    rows = [ln for ln in _styled(text).split("\n") if title in ln]
+    assert len(rows) == 1, f"expected exactly one row for {title!r}, got {rows}"
+    return rows[0]
+
+
 def test_backlog_bar_is_static_across_ticks():
-    """A not-started task must not animate, or on-bar motion would stop being a
-    reliable 'in progress' signal."""
+    """A not-started TASK must not animate, or on-bar motion would stop being a
+    reliable 'in progress' signal.
+
+    NARROWED FROM WHOLE-FRAME EQUALITY ON 2026-08-07, and the narrowing is the
+    suspicious kind, so here is why it is not a law being loosened to fit.
+
+    The subject has always been the task's own bar — the docstring says so and
+    the module header says so. Whole-frame equality was a PROXY for it, exact
+    only while nothing else in the gantt moved. The project's progress circle
+    now breathes when its work sits behind the calendar, and this fixture's
+    project IS behind: one Backlog task, span already three days in. Its circle
+    pulsing is the new signal working, not the old one breaking.
+
+    So the assertion moved onto the row it was always about.
+    `test_the_narrowed_comparison_can_still_see_a_bar_move` is the proof the
+    narrowing kept its teeth.
+
+
+    A SWEEP, NOT TWO TICKS, AND THAT PART IS A REPAIR RATHER THAN A NARROWING.
+    The law compared tick 0 against tick 7 on a fixture whose reach is about
+    SEVEN CELLS, so a packet stepping one cell per tick lands on the same cell
+    at both — `0 % 7 == 7 % 7`. Mutating the in-progress gate open, which makes
+    a backlog bar animate, SURVIVED that comparison: it passed because the gate
+    held, not because it could see. Sweeping consecutive ticks removes the
+    aliasing."""
     b = _board([_backlog()])
-    a = _styled(views.render_gantt(b, False, "t2", today=TODAY, width=80, tick=0))
-    z = _styled(views.render_gantt(b, False, "t2", today=TODAY, width=80, tick=7))
-    assert a == z
+    rows = {_task_row(views.render_gantt(b, False, "t2", today=TODAY, width=80,
+                                         tick=k), "later")
+            for k in range(6)}
+    assert len(rows) == 1, "a not-started task's bar moved with the tick"
+
+
+def test_the_narrowed_comparison_can_still_see_a_bar_move():
+    """The control for the narrowing above, and it must NOT be a skip.
+
+    Moving an assertion onto a smaller surface is only honest if that surface
+    can still register the thing being forbidden. Same helper, same comparison,
+    pointed at a task that is SUPPOSED to animate: if `_task_row` could not see
+    a packet drift, `test_backlog_bar_is_static_across_ticks` would have become
+    a law that passes because it looks at nothing."""
+    b = _board([_doing()])
+    rows = {_task_row(views.render_gantt(b, False, "t1", today=TODAY, width=80,
+                                         tick=k), "shipping")
+            for k in range(6)}
+    assert len(rows) > 1, (
+        "the row-scoped comparison cannot see a moving packet; the narrowed "
+        "static law would be vacuous")
 
 
 def test_flow_preserves_gantt_row_width():
