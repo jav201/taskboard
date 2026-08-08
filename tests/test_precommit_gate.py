@@ -140,3 +140,53 @@ def test_the_hook_wired_in_this_repo_points_at_the_script():
                          capture_output=True, text=True).stdout.strip()
     assert got == ".githooks", (
         f"core.hooksPath is {got!r}; run: git config core.hooksPath .githooks")
+
+
+# --------------------------------------------------------------------------- #
+# the CI gate — the half of the protection that a fresh clone cannot skip
+# --------------------------------------------------------------------------- #
+def test_ci_actually_runs_the_suite_and_enables_the_hooks():
+    """A workflow that stops invoking the suite is a green tick over nothing,
+    and nothing else in the repository would notice.
+
+    Two claims, both load-bearing:
+      * it RUNS pytest — otherwise CI enforces no law at all;
+      * it sets `core.hooksPath` — CI is a fresh clone every time, so without
+        that step `test_the_hook_wired_in_this_repo_points_at_the_script` fails
+        there and the obvious "fix" is to weaken that law instead of doing the
+        setup it exists to demand.
+
+    Parsed as YAML rather than grepped, so a command mentioned in a comment
+    cannot satisfy it."""
+    import re
+    import yaml   # declared in requirements.txt — and it was NOT, on the
+                  # first draft of this test. `test_requirements.py` named
+                  # the file and the missing dist on the next run.
+    wf = ROOT / ".github" / "workflows" / "ci.yml"
+    assert wf.is_file(), "the CI workflow is gone"
+    spec = yaml.safe_load(wf.read_text(encoding="utf-8"))
+    runs = [s.get("run", "") for s in spec["jobs"]["suite"]["steps"]]
+    # INVOKED, not merely mentioned. `any("pytest" in r)` was the first version
+    # and a mutation replacing the step with `echo 'no pytest here'` SURVIVED
+    # it — the word was in the string, so the substring test was satisfied by a
+    # command that runs nothing.
+    assert any(re.match(r"(python -m )?pytest\b", r.strip()) for r in runs), (
+        f"CI never INVOKES the suite: {runs}")
+    assert any("core.hooksPath" in r for r in runs), (
+        f"CI does not enable the repository's hooks: {runs}")
+
+
+def test_ci_tests_the_python_floor_the_project_promises():
+    """`pyproject.toml` says >= 3.10. A gate that only exercises the version on
+    the author's machine does not test that promise, and the promise is what a
+    fresh clone relies on."""
+    import re
+    import yaml
+    floor = re.search(r'requires-python\s*=\s*">=\s*([\d.]+)"',
+                      (ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    assert floor, "pyproject no longer declares requires-python"
+    spec = yaml.safe_load((ROOT / ".github" / "workflows" / "ci.yml")
+                          .read_text(encoding="utf-8"))
+    versions = spec["jobs"]["suite"]["strategy"]["matrix"]["python-version"]
+    assert floor.group(1) in versions, (
+        f"pyproject promises >= {floor.group(1)}; CI runs {versions}")
