@@ -2,7 +2,14 @@
 name = "taskboard"
 version = "0.1.0"
 description = "A frameless kanban desktop-widget task board built in Textual."
-requires-python = ">=3.10"
+# 3.12, not 3.10, and the difference was a FALSE PROMISE until CI ran.
+# `textual-image==0.13.2` requires >=3.12, so a 3.10 or 3.11 environment
+# cannot even install this project's pinned dependencies -- pip refuses
+# before a single test runs. The floor is raised to what is true rather
+# than the dependency loosened, because textual-image is a RUNTIME dep
+# (the image viewer) and unpinning it to reach an older Python would
+# trade a real feature for a version nobody is using.
+requires-python = ">=3.12"
 dependencies = ["textual", "tzdata", "pillow>=10.3.0", "textual-image>=0.13"]
 
 [project.optional-dependencies]
