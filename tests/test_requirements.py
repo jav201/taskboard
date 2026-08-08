@@ -24,7 +24,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 STDLIB = set(sys.stdlib_module_names)
 
 # import name -> distribution name, where they differ
-DIST = {"PIL": "pillow", "textual_image": "textual-image", "zoneinfo": "tzdata"}
+DIST = {"PIL": "pillow", "textual_image": "textual-image",
+        "zoneinfo": "tzdata", "yaml": "pyyaml"}
 
 
 def declared() -> set[str]:

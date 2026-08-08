@@ -1,0 +1,59 @@
+# WHAT THIS GATE CAN AND CANNOT DO, said up front so nobody reads a green tick
+# as more than it is.
+#
+# CAN: enforce the STRUCTURAL half of the privacy work, which is where the leak
+# of 2026-08-07 actually came from — that no artifact-writing script can reach
+# `default_board_path()`, that the scratch yard stays ignored, that the widget
+# refuses to guess a board, and that the sweeper itself still detects a planted
+# leak. Those are ordinary tests and they run here on every push.
+#
+# CANNOT: run the content sweep. Its needle list is the operator's own board,
+# and putting that in CI secrets would hand the private data to a third party —
+# the exact opposite of the point. The content sweep stays local, in the
+# pre-commit hook and in `tools/privacy_sweep.py` run by hand.
+#
+# So this catches the CAUSE and the local hook catches the SYMPTOM. Neither
+# alone is the whole thing, and saying which is which is the difference between
+# a gate and a decoration.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # the floor `pyproject.toml` declares, and the version this is developed
+        # on. A gate that only tests the dev version does not test the promise.
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install pinned deps
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+
+      - name: Enable the repository's hooks
+        # NOT decoration. `core.hooksPath` is per-clone config that git will not
+        # set on its own — deliberately, since a repo that activates its own
+        # hooks on clone is a supply-chain attack. A fresh clone is therefore
+        # UNPROTECTED until someone runs this, and CI is a fresh clone every
+        # time, so `test_the_hook_wired_in_this_repo_points_at_the_script` fails
+        # here without it. Running it makes this workflow the executable
+        # documentation of the one setup step a new machine needs.
+        run: git config core.hooksPath .githooks
+
+      - name: Run the suite
+        # No `-x`: a run that stops at the first failure hides how much else
+        # broke, and on a cross-platform gate that count is the information.
+        run: python -m pytest -q

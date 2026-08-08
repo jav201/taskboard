@@ -634,7 +634,8 @@ async def test_open_images_allowlist_and_isfile(tmp_path, monkeypatch):
     app = make_app(tmp_path)
     async with app.run_test() as pilot:
         started = []
-        monkeypatch.setattr("taskboard.app.os.startfile", started.append)
+        monkeypatch.setattr("taskboard.app.os.startfile", started.append,
+                        raising=False)   # absent off Windows; see line ~848
         t = Task("imgs", None, "Backlog", "normal", images=[
             str(real),                      # existing .png  -> opened
             str(tmp_path / "gone.png"),     # allowed ext, missing file -> skip
@@ -728,7 +729,8 @@ async def test_at_003_images_black_box(tmp_path, monkeypatch):
         assert len({len(l) for l in text.split("\n") if l}) == 1
         # pressing the actual `i` binding routes each ref safely
         started, browsed = [], []
-        monkeypatch.setattr("taskboard.app.os.startfile", started.append)
+        monkeypatch.setattr("taskboard.app.os.startfile", started.append,
+                        raising=False)   # absent off Windows; see line ~848
         monkeypatch.setattr("taskboard.app.webbrowser.open", browsed.append)
         app.open_all_images_raw(app.selected_task)
         assert started == [str(real_png)]                       # existing image only

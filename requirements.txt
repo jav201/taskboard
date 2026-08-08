@@ -12,3 +12,9 @@ pillow==12.2.0
 textual-image==0.13.2
 pytest==9.1.1
 pytest-asyncio==1.4.0
+# pyyaml parses .github/workflows/ci.yml in tests/test_precommit_gate.py. A CI
+# workflow that stopped invoking the suite would be a green tick over nothing,
+# and grepping the file would let a command mentioned in a COMMENT satisfy the
+# law -- so it is parsed. Test-only, and this file's header says test deps
+# belong here.
+pyyaml==6.0.3
