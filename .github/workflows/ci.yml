@@ -28,9 +28,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # the floor `pyproject.toml` declares, and the version this is developed
-        # on. A gate that only tests the dev version does not test the promise.
-        python-version: ["3.10", "3.12"]
+        # the floor `pyproject.toml` declares. It said 3.10 and the first CI run
+        # proved that false -- `textual-image` needs >=3.12 and pip refused to
+        # install at all. The floor is now 3.12 and this matrix is what keeps
+        # the two honest with each other.
+        python-version: ["3.12"]
 
     steps:
       - uses: actions/checkout@v4
