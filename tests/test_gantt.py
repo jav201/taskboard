@@ -490,3 +490,39 @@ def test_the_project_reach_is_a_rule_not_a_slab(tmp_path):
     out = rows(gutter_board(tmp_path), 104, 30)
     span = next(l for l in out if l.startswith("▎ Machine"))
     assert FIELD_REACH in span and "█" not in span
+
+
+def test_the_circle_sits_at_the_progress_fraction_of_the_span(tmp_path):
+    """AC3. The dot is not merely SOMEWHERE before the diamond — it is a
+    reading, and where it lands is the whole claim.
+
+    Asserted through `_span_bands` rather than by hunting the rendered row,
+    because the row also carries the today rule, the week guides and the
+    lattice, and a law that has to find its subject among those tests the
+    search as much as the mechanism.
+
+    0.0 and 1.0 are the ends and they are what a clamp bug moves first: a dot
+    floating past `◆`, or one drifting left of a span that has not started,
+    would both read as a mark belonging to nothing."""
+    from taskboard.models import Board, Project
+    from taskboard.views import PROGRESS_DOT, gantt_geometry, _span_bands
+    b = Board.load(str(tmp_path / "frac.json"))
+    b.projects.clear(); b.tasks.clear()
+    p = Project("Span", "lime", "on_track",
+                start_date=(TODAY - timedelta(days=20)).isoformat(),
+                due_date=(TODAY + timedelta(days=20)).isoformat())
+    geo = gantt_geometry(96, 30)
+    seen = {}
+    for prog in (0.0, 0.25, 0.5, 0.75, 1.0):
+        span, _ = _span_bands(p, geo, TODAY, "lime", prog, 0)
+        cells = [i for i, (g, _t) in enumerate(span) if g == PROGRESS_DOT]
+        assert len(cells) == 1, (prog, cells)
+        seen[prog] = cells[0]
+    ends = [i for i, (g, _t) in enumerate(span) if g != " "]
+    c0, c1 = min(ends), max(ends)
+    assert seen[0.0] == c0, (seen, c0)          # at the start, on the start
+    assert seen[1.0] == c1, (seen, c1)          # at the end, on the `◆` cell
+    # and MONOTONE in between, which is what "it is a reading" means
+    order = [seen[k] for k in (0.0, 0.25, 0.5, 0.75, 1.0)]
+    assert order == sorted(order), order
+    assert len(set(order)) > 2, f"the dot barely moves across the span: {order}"

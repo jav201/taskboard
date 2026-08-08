@@ -3,11 +3,28 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `5057c6a` (local HEAD; `origin/main` == `caa4bab`, **18 commits behind** — the merge carried the branch's 11 into main's history, so the count is not the 5 commits sitting on top)
+**Base ref:** `b7e47b8` (local HEAD; `origin/main` == `c25d8e1`, **2 commits behind**)
 · **Last refresh:** 2026-08-07
-**Status:** **767 tests green** on `main`, with `kanban-variants` MERGED
+**Status:** **776 tests green** on `main`, with `kanban-variants` MERGED
 (`ecde0da`) and a pre-commit privacy gate wired. Nothing pushed — the operator
 pushes.
+
+## Open — after `2026-08-07-fastflow-07`
+
+- **`chrome` is 3.1 %, not 0.0, and 3.1 % of it is a LIE.** `_census`'s frame
+  set contains `─`, and the gantt now draws a project's span with it, so data
+  ink is counted as furniture. The law (`chrome < 10.0`) passes comfortably and
+  was NOT amended — splitting the two rules moved most of those cells to `╌`
+  and made the amendment unnecessary. Left as-is deliberately; re-open if a
+  future design pushes chrome near its ceiling, because the number will run out
+  before the furniture does.
+- **The pulse's ration has no UI.** A reader who never sees a circle breathe
+  cannot tell "nothing is behind" from "the feature is broken". The legend names
+  the resting `●` only.
+- **`PULSE_PHASES` is a palindrome and that hides arithmetic.** Any future law
+  written against the shipped glyphs will be blind to a tick multiplier the same
+  way this batch's first version was. The lesson is local to this constant and
+  is recorded in `test_the_pulse_rides_the_ONE_shared_clock_and_clears_the_floor`.
 
 ## Open — after `2026-08-07-fastflow-06`
 
@@ -84,6 +101,23 @@ pushes.
 > would have reported an empty queue that looked like "nothing pending".
 
 ## Shipped
+
+- **DONE** · `2026-08-07-fastflow-07` — **the gantt gets a line and a rationed
+  circle.** Progress stops being a second shaded row and becomes one cell on the
+  span; the freed row goes back to the tasks (at 104x28 with 5 projects / 21
+  tasks the old shape **hid 4**, this one hides none). Span `─` solid, task `╌`
+  dashed, phase tips `○◔◑◕`. The circle **breathes only where the work is behind
+  its calendar** — same clock, same >= 2 s floor, no colour moves, and a board
+  with nothing behind it is completely still. **776 green.**
+  (`9601e84`, `b7e47b8` — local, **not pushed**)
+  · *Six defects the harness found and review would not have — including a law
+  that could not see a private tick multiplier because the breath's glyph
+  sequence is a palindrome, and a pre-existing aliasing bug in
+  `test_backlog_bar_is_static_across_ticks` (tick 0 vs 7 on a seven-cell reach)
+  that had been passing for the wrong reason. Full list in
+  `.fast-dev-flow/spec.md` §10.*
+  · *The planned census amendment (O-1) was never made: splitting the two rules
+  moved chrome 5.0 -> 3.1 and `marked` 67.8 -> 69.8 on its own.*
 
 - **DONE** · `2026-08-07-fastflow-06` — **the branch lands and the gate goes
   up.** `kanban-variants` merged (80 files / 44 132 insertions, 4 conflicts each
