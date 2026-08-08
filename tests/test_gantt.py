@@ -248,10 +248,59 @@ def test_more_data_no_longer_produces_less_screen(tmp_path):
 
 def test_the_carrying_fraction_clears_what_rev3_measured(tmp_path):
     """REV3 measured 71.1 % of cells carrying at typical load. Measured here:
-    71.4 %. The floor is set just under it, with margin for honest variation."""
+    71.4 %. The floor is set just under it, with margin for honest variation.
+
+    `marked` survives the 2026-08-07 redesign untouched (69.8 %, measured). The
+    `dead` half moved OUT of this test — see the two below — because the design
+    made a distinction this fixture cannot express."""
     typical = _census(rows(_load(tmp_path, 5, 21, "t2.json"), 96, 30))
     assert typical["marked"] >= 68.0, typical["marked"]
-    assert typical["dead"] <= 25.0, typical["dead"]
+
+
+def test_emptiness_is_bounded_where_the_content_could_actually_fill_the_screen(tmp_path):
+    """`dead <= 25` MEANT "this view does not waste screen", and it measured that
+    correctly for as long as every fixture overflowed its viewport.
+
+    The 2026-08-07 redesign gave each project one field row instead of two, and
+    the typical fixture (5 projects / 21 tasks) stopped being able to fill 96x30
+    at all: its emptiness went 21.5 % -> 27.1 %, not because the view got
+    wasteful but because it RAN OUT OF CONTENT. On the extreme fixture — where
+    slack is impossible — the same code measures 20.0 %, BETTER than the 21.5 %
+    the old design managed.
+
+    So the threshold is kept, at its original value, and pointed at the fixture
+    where it still means what it says. Relaxing it to 28 would have been the
+    other option and it is the wrong one: a law loosened until the code passes
+    stops being a law. `test_nothing_is_hidden_when_the_content_fits` carries
+    what actually matters on the short board."""
+    extreme = _census(rows(_load(tmp_path, 8, 44, "dead_e.json"), 96, 30))
+    assert extreme["dead"] <= 25.0, extreme["dead"]
+    # and the fixture must really overflow, or this is the same vacuum by
+    # another route
+    out = rows(_load(tmp_path, 8, 44, "dead_e2.json"), 96, 30)
+    assert any("not shown" in line for line in out), (
+        "the extreme fixture no longer overflows; this law went vacuous")
+
+
+def test_nothing_is_hidden_where_the_old_two_row_shape_hid_work(tmp_path):
+    """The operator's actual complaint, pinned at a size where it is a REAL
+    difference and not a tautology.
+
+    MEASURED both ways before this was written, because a "nothing is hidden"
+    law is worthless at a size where nothing was ever hidden:
+
+        5 projects / 21 tasks, 104x28 — old shape hid 4 tasks, new hides 0
+                                104x30 — old shape hid 2 tasks, new hides 0
+                                104x32 — old shape already fitted
+
+    28 is therefore the size that carries the claim. Written first at 104x26,
+    where the NEW shape hides too (5 projects and 21 tasks genuinely do not fit
+    26 rows) — the law was asserting something false and said so immediately.
+    Blank rows below the content are slack; a task the view declines to draw is
+    the defect."""
+    out = rows(_load(tmp_path, 5, 21, "fits.json"), 104, 28)
+    assert not any("not shown" in line for line in out), (
+        "the gantt is hiding rows at a size where its content fits")
 
 
 def test_the_separator_rows_are_gone_and_chrome_fell(tmp_path):

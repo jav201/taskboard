@@ -1571,10 +1571,36 @@ BAR_TODO = "⢕"     # 4/8 dots — the remaining share; same family, same heigh
 # in the project's own hue. The three-weight hierarchy is intact — reach still
 # outranks progress outranks task — the top weight just stopped shouting, and a
 # rule lets the week guide read THROUGH the span instead of being buried by it.
-FIELD_REACH = "━"     # a project's span            (was ⣿, then █)
+#
+# 2026-08-07 — THE SHADED BAND IS GONE AND THE WEIGHTS DROPPED AGAIN. The
+# operator, seeing the `━`/`▓▓▓▌` pair shipped above: "las barras de tiempo
+# mejoraron pero siguen siendo muy grandes... en vez del cuadro sombreado, opta
+# por lo que se prototipó, una línea y el círculo". Approved from a rendered
+# prototype (`_prototypes/gantt_line_circle.py`, variant A′).
+#
+# `FIELD_PROGRESS`/`FIELD_HALF` no longer draw a second row under each project:
+# progress is now ONE CELL, `PROGRESS_DOT`, riding on the span itself. They are
+# kept because a task's own reach still ends mid-cell and still says so.
+#
+# THE TWO RULES MUST NOT BE THE SAME RULE. Both were `─` for one commit and
+# `test_the_project_reach_is_a_rule_not_a_slab` caught it immediately — "two
+# weights collapsed into one". The hierarchy reach > task is load-bearing: a
+# project's span has to out-rank the task bars living under it. Solid `─` for
+# the span, dashed `╌` for a task, so the rank survives the loss of shading.
+#
+# Splitting them also paid for itself in the census: `─` is in `_census`'s
+# frame set and a task reach is most of the field's cells, so moving tasks off
+# it took chrome 5.0 -> 3.1 and `marked` 67.8 -> 69.8, back over its floor,
+# with no amendment to the law at all.
+FIELD_REACH = "─"     # a project's span            (was ⣿, █, then ━)
 FIELD_PROGRESS = "▓"  # how far the work actually got (was ⣤)
-FIELD_TASK = "▒"      # a task's reach              (was ⣀)
-FIELD_HALF = "▌"      # ends mid-cell               (was ⡄)
+FIELD_TASK = "╌"      # a task's reach              (was ⣀, ▒, briefly ─)
+FIELD_HALF = "╴"      # ends mid-cell               (was ⡄, then ▌)
+
+# WHERE THE WORK ACTUALLY IS, in one cell instead of a whole row. The gap
+# between this and the project's `◆` is the slip, read as a LENGTH — which is
+# what the two-row design existed to show, and it shows it in half the rows.
+PROGRESS_DOT = "●"
 
 # THE WEEK GUIDE: the thing the operator said was missing — "no hay gauges de
 # semana y mes", a bar measured against nothing.
@@ -1606,7 +1632,14 @@ GUTTER = 2
 # The floor is 3/8, not 1/8: a tip lighter than the bar it ends reads as the
 # bar fading out, which is the exact complaint this whole change answers. The
 # ceiling stops below `█` so the tip can never be mistaken for a reach cell.
-FIELD_PHASE_TIP = ("▃", "▅", "▆", "▇")
+#
+# 2026-08-07 — the rising-fill BLOCKS became rising-fill CIRCLES. The bar they
+# end is a rule now, not a shaded run, so a block tip reads as a lump on a
+# wire; a filling circle is the same "how far through its phases" reading in
+# the same one cell, and it rhymes with the project's own `PROGRESS_DOT`
+# instead of shouting over it. Order still climbs, so the floor/ceiling
+# argument above survives the change of alphabet.
+FIELD_PHASE_TIP = ("○", "◔", "◑", "◕")
 
 
 def gantt_tasks(board: Board, tasks: list[Task], project_id: str | None) -> list[Task]:
@@ -1719,17 +1752,25 @@ def _flowing(board: Board, task: Task) -> bool:
 
 def _span_bands(project, geo: FieldGeo, today: date, hue: str,
                 progress: float) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
-    """THE SPAN IS THE WAVE, in two bands, and the answer a gantt exists to give
-    comes out of the DIFFERENCE between them.
+    """THE SPAN IS THE WAVE, and the answer a gantt exists to give is a LENGTH
+    along it.
 
-    top    — the span from start to `◆`: ASH for what has elapsed, the project's
-             own hue for what remains. The old view already measured "how much
-             of the span is gone" and this language already paints "spent": same
-             cut, no new mechanism.
-    bottom — how far the work actually got.
+    The span runs from start to `◆`: ASH for what has elapsed, the project's own
+    hue for what remains. `PROGRESS_DOT` marks how far the work actually got.
+    THE GAP BETWEEN THE DOT AND THE DIAMOND IS THE SLIP. "Am I behind?" is the
+    question a gantt is for, and the old view could not answer it.
 
-    So THE GAP BETWEEN THE TWO FRONTIERS IS THE SLIP, read as a length. "Am I
-    behind?" is the question a gantt is for, and the old one could not answer it.
+    IT USED TO TAKE TWO ROWS AND NOW IT TAKES ONE. `band` was a second field row
+    per project, filled with `▓▓▓▌`, and the operator's complaint was both that
+    it shouted ("siguen siendo muy grandes") and that the view ran out of room
+    ("no puedo ver el resto de tareas"). Those were the same defect: at 104x26
+    on the demo board the old shape drew 14 task rows and HID one; this shape
+    draws 15, hides none, and has three rows to spare.
+
+    `band` is still returned, and still all blanks, because `band_row` and the
+    callers' width arithmetic are written around a (prefix, band, suffix)
+    triple. Returning it empty keeps that contract with no width change; the
+    caller simply no longer emits a row for it.
     """
     span = [(" ", "dim")] * geo.field_w
     band = [(" ", "dim")] * geo.field_w
@@ -1758,11 +1799,29 @@ def _span_bands(project, geo: FieldGeo, today: date, hue: str,
     if r_off:
         span[geo.field_w - 1] = (OFF_RIGHT, "mut")
 
+    # THE TODAY RULE CROSSES THE SPAN. `band_row` paints the rule only into a
+    # BLANK cell -- "anything drawn takes the cell first" -- so a long span used
+    # to occlude it and the second row was where it still showed through. With
+    # that row gone the rule could vanish from the view entirely, and
+    # `test_no_entry_describes_a_mark_the_view_is_not_drawing` said so at once:
+    # the legend named a mark nobody drew. Blanking one cell of plain span line
+    # gives it back, and a calendar boundary crossing a bar is what a gantt is
+    # supposed to look like.
+    if c0 <= today_cell <= c1 and 0 <= today_cell < geo.field_w:
+        span[today_cell] = (" ", "dim")
+
     reached = c0 + int(round((c1 - c0) * max(0.0, min(1.0, progress))))
-    for x in range(c0, min(reached, geo.field_w)):
-        band[x] = (FIELD_PROGRESS, hue)
-    if reached > c0:
-        band[min(reached, geo.field_w - 1)] = (FIELD_HALF, hue)
+    # clamped INTO the span: at progress 0 the dot sits on the start cell and at
+    # 1.0 on the `◆`, so it can never float in empty field where it would read
+    # as a mark belonging to nothing.
+    #
+    # The dot is written AFTER the rule's cell is cleared, so when the work has
+    # got exactly as far as today the dot wins. That is the right order: the
+    # rule says where today is, and the reader can already see that from every
+    # other row -- the dot says something only this row knows.
+    dot = min(max(reached, c0), min(c1, geo.field_w - 1))
+    if 0 <= dot < geo.field_w:
+        span[dot] = (PROGRESS_DOT, hue)
     return span, band
 
 
@@ -1935,7 +1994,10 @@ def render_gantt(board, show_archived, selected_id, today=None,
                                        width=min(METER_W, geo.figs_w)))
         rows.append((band_row(label, span,
                               c(fit(pct, pct_w, "right"), "mut") + meter), None))
-        rows.append((band_row(" " * geo.label_w, band, " " * geo.figs_w), None))
+        # NO SECOND ROW. `band` used to be emitted here as `▓▓▓▌`; progress now
+        # rides the span as one cell, and this line's absence IS the room the
+        # tasks got back — the operator's "no puedo ver el resto de tareas".
+        del band
 
         for t in own:
             sel = t.id == selected_id
@@ -2438,12 +2500,16 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         if f["projects"]:
             out.append((c(FIELD_REACH * 2, "ash") + c(FIELD_REACH * 2, hue),
                         "the span: ash is elapsed, colour is what remains"))
-        # the progress band only exists once something HAS progressed
+        # the progress mark only exists once something HAS progressed. It was a
+        # whole second row (`▓▓▌`) and the legend described it as such; the row
+        # is gone and the legend has to stop naming a mark nobody draws — which
+        # is exactly what `test_no_entry_describes_a_mark_the_view_is_not_drawing`
+        # said the moment the row went.
         if any(board.project_progress(p.id, False) > 0 for p in f["projects"]):
-            out.append((c(FIELD_PROGRESS * 2 + FIELD_HALF, hue),
-                        "how far the work actually got"))
-            out.append((c(FIELD_HALF, hue) + c("··", "ash"),
-                        "the gap between the two bands: the slip, as a length"))
+            out.append((c(PROGRESS_DOT, hue), "how far the work actually got"))
+            out.append((c(FIELD_REACH + PROGRESS_DOT + FIELD_REACH, hue)
+                        + c("◆", hue),
+                        "the gap from the dot to ◆: the slip, as a length"))
         if f["project_due"]:
             out.append((c("◆", hue), "the project's own due date"))
         out.append((c(RULE, "accent"), "today"))
