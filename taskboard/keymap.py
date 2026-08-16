@@ -45,9 +45,16 @@ KEYMAP: tuple[Key, ...] = (
     Key("2", "2", "view('agenda')", "Agenda"),
     Key("3", "3", "view('gantt')", "Gantt"),
     Key("4", "4", "view('kanban')", "Kanban"),
+    # the APERTURE: the widget posture as a pushed screen (aperture.py) —
+    # ADD beside the four views, views.py untouched (HANDOFF §4 Inc 2)
+    Key("6", "6", "aperture", "Widget"),
     Key("enter", "↵", "details", "Details"),
     Key("a", "a", "add_task", "Add"),
     Key("e", "e", "edit", "Edit"),
+    Key("[", "[", "phase_move(-1)", "Phase−"),
+    Key("]", "]", "phase_move(1)", "Phase+"),
+    Key("!", "!", "prio_cycle", "Prio"),
+    Key("b", "b", "toggle_blocked", "Blocked"),
     Key("d,delete", "d", "delete", "Del"),
     Key("x", "x", "archive", "Archive"),
     Key("X", "X", "purge_done", "Purge done"),
@@ -59,6 +66,28 @@ KEYMAP: tuple[Key, ...] = (
     Key("f", "f", "manage_phases", "Phases"),
     Key("c", "c", "clocks", "Clocks"),
     Key("R", "R", "report", "Report"),
+    # `s`/`g` reshape kanban columns only, so — like Tab below — they are only
+    # claimed there: advertised where they work, guarded no-ops everywhere else.
+    Key("s", "s", "kanban_sort", "Sort", views=("kanban",)),
+    Key("g", "g", "kanban_group", "Group", views=("kanban",)),
+    # `z` collapses THE LAST phase column to one `✓ N` row — same kanban-only
+    # scoping as its sort/group siblings, but it needs no selection and fires
+    # from anywhere in the view (§6.5 AMD-02).
+    Key("z", "z", "collapse_toggle", "Collapse", views=("kanban",)),
+    # `F` focuses ONE project (kanban-scoped like its siblings); the escape
+    # companion leaves it — and is a guarded no-op with no focus active, so it
+    # never eats another screen's escape (§6.5 AMD-03).
+    Key("F", "F", "focus_cycle", "Focus", views=("kanban",)),
+    # `=` is an ALIAS of `+` in ONE entry (the `"d,delete"` precedent, §6.5
+    # AMD-06) — never a separate "set to today" key. `+`/`-`/`u` act on the
+    # selected task, so — like `[` `]` `!` `b` — they are live in every view.
+    Key("+,=", "+", "due_bump(1)", "Due+"),
+    Key("-", "-", "due_bump(-1)", "Due-"),
+    Key("u", "u", "undo", "Undo"),
+    # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
+    # derives from the board in ANY view, so — like `R` — it is not scoped.
+    Key("S", "S", "standup", "Standup"),
+    Key("escape", "esc", "focus_exit", "Focus off", views=("kanban",)),
     # Tab only does something in kanban, so it is only claimed there — a key
     # advertised everywhere that answers in one place is the same lie in reverse.
     Key("tab", "⇥", "toggle_presentation", "Layout", priority=True, views=("kanban",)),
@@ -131,10 +160,21 @@ def key_bar_plain(width: int, view: str) -> str:
     return body + _note(entries, dropped, width)
 
 
+def _mshow(text: str) -> str:
+    """Textual-markup escape for the ONE hostile glyph a key show can hold.
+
+    Neither `rich.markup.escape` nor `textual.markup.escape` touches a bare
+    `[` (both only neutralize tag-LOOKING sequences), but the Content parser
+    reads `[#hex][[/]` as the literal text `[[/]` — three phantom cells the
+    fit math never counted, so a bar that "fit" overflowed its row and the
+    last key silently clipped (measured 2026-08-15, kanban bar at 118)."""
+    return text.replace("[", "\\[")
+
+
 def render_key_bar(width: int, view: str) -> str:
     """The bar as markup: keys in the attention hue, words in the quiet one."""
     entries, dropped = fit_bar(width, view)
-    out = [f"[{HEX['accent']}]{show}[/]" + (f" [{HEX['mut']}]{label}[/]" if label else "")
+    out = [f"[{HEX['accent']}]{_mshow(show)}[/]" + (f" [{HEX['mut']}]{_mshow(label)}[/]" if label else "")
            for show, label in entries]
     markup = SEP.join(out)
     note = _note(entries, dropped, width)

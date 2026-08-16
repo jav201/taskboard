@@ -239,3 +239,78 @@ async def test_the_legend_follows_the_view_the_reader_is_on(tmp_path):
             assert app.screen._mode == mode
             await pilot.press("escape")
             await pilot.pause()
+
+
+
+# --------------------------------------------------------------------------- #
+# the KEYS section (LLR-012.2): what the narrow bar drops stays one `?` away
+# --------------------------------------------------------------------------- #
+def _legend_modal_rows(app) -> list[str]:
+    """The KEYS section's rendered rows, read off the mounted modal: from the
+    `Keys` header to the closing hint."""
+    from textual.widgets import Label
+    lines = [str(lbl.render()).strip() for lbl in app.screen.query(Label)]
+    rows = lines[lines.index("Keys") + 1:]
+    return rows[:rows.index("? or esc closes")]
+
+
+def _seat_live(view: str) -> list[str]:
+    """The expected rows, computed off the RAW seat — never through the
+    `bar_keys` accessor the modal consumes, or the test would certify the
+    accessor against itself."""
+    live = [k for k in KEYMAP if k.views is None or view in k.views]
+    live = sorted(live, key=lambda k: not k.universal)
+    return [f"{k.show}  {k.label}" for k in live]
+
+
+async def test_the_legend_lists_exactly_the_current_views_live_keys(tmp_path):
+    """LLR-012.2: the KEYS section is DERIVED from the same seat the bar
+    reads — it lists the view's live keys, every one of them, in bar order,
+    and none the seat does not declare for that view. Exact equality is the
+    pin: when the kanban-scoped keys of the later increments (`s g z F`, the
+    `escape` companion) land in the seat, this test extends to them with no
+    edit — and any hand-written row reddens it at once."""
+    from taskboard.app import TaskboardApp
+    b = full(tmp_path)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "full.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        for key, view in (("4", "kanban"), ("1", "swimlanes")):
+            await pilot.press(key)
+            await pilot.pause()
+            await pilot.press("question_mark")
+            await pilot.pause()
+            assert _legend_modal_rows(app) == _seat_live(view), view
+            await pilot.press("escape")
+            await pilot.pause()
+
+
+async def test_the_legends_keys_follow_the_views_scope(tmp_path):
+    """The discriminating limbs: kanban's rows include the kanban-scoped
+    `tab` and the batch's new quick keys; the lanes' rows show neither `tab`
+    nor a key the seat scopes away — a KEYS section hand-written for one view
+    fails one of the two."""
+    from taskboard.app import TaskboardApp
+    b = full(tmp_path)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "full.json"))
+    tab = next(k for k in KEYMAP if k.action == "toggle_presentation")
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        await pilot.press("question_mark")
+        await pilot.pause()
+        rows = _legend_modal_rows(app)
+        assert any(r.startswith(tab.show) for r in rows)
+        for show in ("[", "]", "!", "b"):
+            assert any(r.startswith(show) for r in rows), show
+        await pilot.press("escape")
+        await pilot.pause()
+        await pilot.press("1")
+        await pilot.pause()
+        await pilot.press("question_mark")
+        await pilot.pause()
+        rows = _legend_modal_rows(app)
+        assert not any(r.startswith(tab.show) for r in rows)
+        await pilot.press("escape")
+        await pilot.pause()

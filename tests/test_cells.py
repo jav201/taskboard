@@ -162,3 +162,89 @@ def test_a_literal_emoji_survives_and_is_measured():
                        line_map={}, presentation="grouped", tick=0)
     assert WIDE in text.plain, "the emoji the user chose did not reach the screen"
     assert all(cell_len(l) == 96 for l in text.plain.split("\n") if l.strip())
+
+
+# --------------------------------------------------------------------------- #
+# the card aging token (batch-04 R-06, HLR-006/LLR-006.1 — TC-009)
+# --------------------------------------------------------------------------- #
+def _aging_cell_board() -> Board:
+    p = Project("Proj", "cyan")
+    return Board([p], [], _UNWRITTEN, phases=PHASES)
+
+
+def _stamped(title, phase, stamp_days, project, archived=False):
+    return Task(title=title, project_id=project.id, phase=phase,
+                phase_changed=None if stamp_days is None
+                else str(date.today() - timedelta(days=stamp_days)),
+                archived=archived)
+
+
+def test_card_cell_aging_token_follows_the_stamp_and_never_lies():
+    """TC-009 (HLR-006/LLR-006.1): the `·Nd` aging token — N =
+    `days_in_phase(task, today)` off `phase_changed` — rides the card's
+    right-indicator budget INSIDE the exact-`wc` contract, in the quiet dim
+    house. Pins: stamped today → `·0d` (zero is a KNOWN age); stamped N days
+    ago → `·Nd`, N recomputed by the seat's own rule; None stamp → NO token
+    (unknown is not zero — a pre-field board must not light up as all-fresh);
+    done task → NO token (done work rests — its age is not WIP information);
+    the tone is dim, never a judging hue. RED counterfactuals (each limb
+    names its mutation): None rendered as 0 → the unstamped card paints `·0d`
+    → the unstamped limb red; the done-suppression dropped → the done card
+    paints `·9d` → the done limb red (EXECUTED, see increment-008 §4); age
+    read from `start_date`/`due_date` instead of `phase_changed` → the
+    recomputed-N limb red."""
+    from rich.text import Text
+
+    from taskboard.models import days_in_phase
+    from taskboard.views import HEX, card_cell
+    today = date.today()
+    b = _aging_cell_board()
+    p = b.projects[0]
+
+    def plain(markup):
+        return Text.from_markup(markup).plain
+
+    fresh = _stamped("fresh", "Doing", 0, p)
+    aged = _stamped("aged", "Doing", 5, p)
+    unstamped = _stamped("quiet", "Doing", None, p)
+    resting = _stamped("resting", "Done", 9, p)
+
+    # the N=0 boundary: stamped TODAY reads `·0d` — zero is a KNOWN age
+    assert "·0d" in plain(card_cell(fresh, b, 30, False, today=today))
+    # the N limb: recomputed through the seat's own rule, never a literal
+    n = days_in_phase(aged, today)
+    assert n is not None and f"·{n}d" in plain(card_cell(aged, b, 30, False,
+                                                        today=today))
+    # unknown is not zero: no stamp, no token — and no lying `·0d` above all
+    assert "·" not in plain(card_cell(unstamped, b, 30, False, today=today))
+    # done work rests: a stamped DONE card renders no token either
+    assert "·" not in plain(card_cell(resting, b, 30, False, today=today))
+    # the tone is the dim house (where date distances live), never a judge
+    cell = card_cell(aged, b, 30, False, today=today)
+    assert HEX["dim"] in cell
+    assert HEX["over"] not in cell and HEX["soon"] not in cell
+
+
+def test_card_cell_aging_token_sheds_before_the_archived_mark():
+    """TC-009 width limb: under width pressure the aging token sheds BEFORE
+    the archived mark (the LLR-006.1 ordering — the archived mark is the last
+    thing shed, the only token saying the row is not live work), and EVERY
+    width still returns exactly `wc` cells, multi-cell token included. RED:
+    the token listed after the archived mark (shedding order flipped) → the
+    narrow-width limb red; the token's cost mis-measured as a flat 2 cells →
+    the width sweep red."""
+    from rich.text import Text
+
+    from taskboard.views import ARCHIVED_MARK, card_cell
+    today = date.today()
+    b = _aging_cell_board()
+    t = _stamped("put away", "Doing", 5, b.projects[0], archived=True)
+    for wc in range(1, 40):
+        cell = card_cell(t, b, wc, False, today=today)
+        assert cell_len(Text.from_markup(cell).plain) == wc, \
+            f"wc={wc}: an aged card is not width-exact"
+    narrow = Text.from_markup(card_cell(t, b, 5, False, today=today)).plain
+    assert ARCHIVED_MARK in narrow      # the not-live-work mark survives...
+    assert "·5d" not in narrow          # ...and the aging token shed first
+    wide = Text.from_markup(card_cell(t, b, 30, False, today=today)).plain
+    assert ARCHIVED_MARK in wide and "·5d" in wide

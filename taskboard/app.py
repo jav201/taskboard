@@ -4,17 +4,21 @@ from __future__ import annotations
 
 import os
 import webbrowser
+from datetime import date
 from pathlib import Path
 
 from textual import events
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.containers import Vertical, VerticalScroll
+from textual.keys import format_key
+from textual.screen import ModalScreen
 from textual.widgets import Static
 
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
-                     default_board_path)
+                     bump_due, default_board_path, next_priority)
 from .modals import (ClockModal, ConfirmModal, ImageViewer, LegendModal, PhaseEditor,
-                     ProjectModal, ProjectPicker, TaskDetails, TaskModal)
+                     ProjectModal, ProjectPicker, StandupModal, TaskDetails, TaskModal)
 from .keymap import KeyBar, app_bindings
 from .ribbon import Ribbon
 from .views import clip, escape, nav_model, render_view, valid_url
@@ -39,6 +43,121 @@ class BoardView(Static):
         self.app.refresh_view()
 
 
+def binding_map(screen, shown: bool | None = None) -> list[tuple[str, str, Binding]]:
+    """Every binding that ACTUALLY fires on `screen`, one row per action.
+
+    Derived from `active_bindings`, never from a BINDINGS list: a hand-written
+    hint drifts the moment a binding moves, and a static list cannot know what
+    `check_action` dropped or which screen shadows which key. `format_key` is
+    Textual's own name->glyph table (question_mark -> `?`, escape -> `esc`).
+
+    Aliases are kept, not dropped: a binding written `d,delete` prints as
+    `d/del`. A working key indicated nowhere is the defect this exists to
+    prevent — and a collapsed hint prints only the FIRST key of such a binding.
+    """
+    keys: dict[tuple[str, str], list[str]] = {}
+    firsts: dict[tuple[str, str], Binding] = {}
+    for key, ab in screen.active_bindings.items():
+        b = ab.binding
+        if not ab.enabled or (shown is not None and b.show is not shown):
+            continue
+        ident = (b.action, b.description)
+        keys.setdefault(ident, []).append(key)
+        firsts.setdefault(ident, b)
+    out = []
+    for ident, ks in keys.items():
+        b = firsts[ident]
+        out.append((b.key_display or "/".join(format_key(k) for k in ks),
+                    b.description, b))
+    return out
+
+
+class HelpScreen(ModalScreen[None]):
+    """The `?` tier: the FULL keymap of the surface behind this one.
+
+    The key bar can only afford the primaries; everything it drops is
+    indicated here, `show=False` bindings included — the motion keys, the
+    aliases, `ctrl+q`. The bar is allowed to carry less only because this
+    carries everything.
+    """
+
+    BINDINGS = [Binding("escape,question_mark,q", "dismiss", "Close",
+                        key_display="esc/?/q")]
+
+    DEFAULT_CSS = """
+    HelpScreen { align: center middle; }
+    #help-box {
+        max-width: 98%; height: auto; max-height: 90%;
+        padding: 1 2; background: #0d1219; border: round #334154;
+    }
+    """
+
+    def __init__(self, shown: list[tuple[str, str]],
+                 hidden: list[tuple[str, str]]) -> None:
+        super().__init__()
+        self.sections = [("ON THIS SCREEN", shown), ("MORE KEYS", hidden)]
+
+    def compose(self) -> ComposeResult:
+        pairs = [p for _, sec in self.sections for p in sec]
+        kw = max((len(k) for k, _ in pairs), default=1)
+        dw = max((len(d) for _, d in pairs), default=1)   # never truncated:
+        w = kw + dw + 1                                   # a clipped word lies
+        cells: list[tuple[str, str, str]] = []            # (plain, markup, sect)
+        for title, sec in self.sections:
+            if not sec:
+                continue
+            cells.append((title, f"[#8b98a5]{title}[/]", ""))
+            cells += [(f"{k:<{kw}} {d}",
+                       f"[#2dd4bf]{k:<{kw}}[/] [#c8d3de]{d}[/]", title)
+                      for k, d in sec]
+            cells.append(("", "", ""))
+        # TWO COLUMNS, balanced by LINES: one column of the full map is ~36
+        # rows on a 30-row screen, and the rows that scrolled off the bottom
+        # were exactly the hidden keys — the defect again, one layer down. The
+        # split may land inside a section, so the heading is repeated: a
+        # keymap running on under someone else's title is a new lie.
+        if 2 * w + 9 <= self.app.size.width:
+            half = (len(cells) + 1) // 2
+            for j in range(max(0, half - 2), min(len(cells), half + 3)):
+                if not cells[j][0] and not cells[j][2]:   # a section boundary
+                    half = j + 1                          # near the balance
+                    break                                 # point: snap to it
+            left, right = cells[:half], cells[half:]
+            if right and right[0][2]:
+                head = f"{right[0][2]} (cont.)"
+                right.insert(0, (head, f"[#8b98a5]{head}[/]", ""))
+        else:
+            left, right = cells, []
+        left += [("", "", "")] * (len(right) - len(left))
+        right += [("", "", "")] * (len(left) - len(right))
+        # this screen's own hint, derived like every other legend here. It rides
+        # ON the title: as its own bottom row it was the line the map's height
+        # pushed off the screen, i.e. the way out was the thing that got clipped
+        hint = " · ".join(f"{d} {t.lower()}"
+                          for d, t, _ in binding_map(self, shown=True))
+        plain = [f"KEYS   {hint}", ""]
+        rows = [f"[#2dd4bf]KEYS[/]   [#8b98a5]{hint}[/]", ""]
+        for (lp, lm, _), (rp, rm, _) in zip(left, right):
+            plain.append(f"{lp:<{w}}   {rp}".rstrip())
+            rows.append(f"{lm}{' ' * (w - len(lp))}   {rm}".rstrip())
+        while rows and not rows[-1]:      # trailing section gaps cost rows the
+            rows.pop()                    # box does not have on a 30-row screen
+            plain.pop()
+        # a scrollable container does not size to its content: measure the map
+        # (the widest PLAIN row) and give the box that width, or the border
+        # closes on an empty 4-column box. +8 = padding, border, and the
+        # scrollbar gutter — without it the last column wraps.
+        box = VerticalScroll(Static("\n".join(rows)), id="help-box")
+        box.styles.width = max(len(p) for p in plain) + 8
+        yield box
+
+    def on_mount(self) -> None:
+        # focus the box so that when the map IS taller than the screen (narrow
+        # widths fall back to one column) the arrows and pgdn can reach its
+        # tail — an unreachable row is an unindicated key
+        self.query_one("#help-box").focus()
+
+
 class TaskboardApp(App):
     """Frameless kanban desktop widget."""
 
@@ -58,17 +177,52 @@ class TaskboardApp(App):
         self.board = Board.load(board_path or default_board_path())
         self.view_mode = "swimlanes"
         self.kanban_presentation = "grouped"
+        self.kanban_sort = "project"       # session-level view state (LLR-003.2):
+        self.kanban_group = "project"      # never persisted, survives view hops
+        self.kanban_collapsed = False      # session-level too (LLR-007.1): THE
+                                           # LAST phase only — a working posture,
+                                           # not board data (§6.2 D-4)
+        self.focused_project_id: str | None = None   # session-level (LLR-008.1):
+                                           # the kanban project focus — None off
+        self._undo_stack: list[dict] = []  # session LIFO of pre-mutation
+                                           # snapshots (LLR-010.1) — never a
+                                           # file format, gone on restart
         self.show_archived = False
         self.selected_task_id: str | None = None
         self._tick_n = 0                 # drives the gantt flow packet
 
+    # keys that act on the BOARD — a surface the aperture replaces. They stayed
+    # live there (`d` opened a delete-confirm for a task nobody could see) and
+    # they were indicated by nothing. FALSE, not None: Textual drops a binding
+    # from `active_bindings` only on `is False`; None leaves it listed and
+    # merely disabled, i.e. a legend entry that does nothing.
+    BOARD_ACTIONS = frozenset({
+        "add_task", "add_project", "manage_projects", "manage_phases",
+        "details", "edit", "delete", "archive", "purge_done", "report",
+        "toggle_archived", "open_url", "open_images", "clocks",
+        "phase_move", "prio_cycle", "toggle_blocked",
+        "kanban_sort", "kanban_group", "collapse_toggle",
+        "focus_cycle", "focus_exit", "due_bump", "undo", "standup",
+        "toggle_presentation", "cursor", "hmove"})
+    # `quit` is deliberately NOT in that set: the aperture shadows `q` with its
+    # own Back binding, and ctrl+q must stay the one door out from anywhere.
+
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
         """While a modal is open, release the board's priority arrow/vim bindings
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
-        receive them instead of moving the hidden board selection."""
+        receive them instead of moving the hidden board selection.
+
+        On the APERTURE the same reasoning goes further: it is not the board, it
+        is the ambient face of it, so every key that edits or navigates the board
+        is dropped there (the aperture is a launcher — press 1-4 to reach the
+        surface those keys belong to)."""
         if (action in ("cursor", "hmove", "toggle_presentation")
                 and len(self.screen_stack) > 1):
             return False
+        if action in self.BOARD_ACTIONS and len(self.screen_stack) > 1:
+            from .aperture import ApertureScreen      # lazy: aperture imports us
+            if isinstance(self.screen, ApertureScreen):
+                return False
         return True
 
     def compose(self) -> ComposeResult:
@@ -157,7 +311,11 @@ class TaskboardApp(App):
         bw.update(render_view(self.view_mode, self.board, self.show_archived,
                               self.selected_task_id, width=bw.size.width or 0, height=h,
                               line_map=self._line_map,
-                              presentation=self.kanban_presentation, tick=self._tick_n))
+                              presentation=self.kanban_presentation, tick=self._tick_n,
+                              kanban_sort=self.kanban_sort,
+                              kanban_group=self.kanban_group,
+                              kanban_collapsed=self.kanban_collapsed,
+                              kanban_focus=self.focused_project_id))
 
     def _apply_clock_settings(self) -> None:
         ribbons = self.query("#ribbon")
@@ -169,7 +327,15 @@ class TaskboardApp(App):
 
     def action_legend(self) -> None:
         """`?` — the marks of the CURRENT view, over the view, so the reader
-        does not lose their place."""
+        does not lose their place. On the APERTURE it is that surface's full
+        KEYMAP instead (HelpScreen): a legend of board marks would describe a
+        screen the user is not looking at."""
+        from .aperture import ApertureScreen      # lazy: aperture imports us
+        if isinstance(self.screen, ApertureScreen):
+            rows = [[(d, t) for d, t, _ in binding_map(self.screen, shown=s)]
+                    for s in (True, False)]
+            self.push_screen(HelpScreen(rows[0], rows[1]))
+            return
         boards = self.query("#board")
         w = boards.first(BoardView).size.width if boards else 96
         vps = self.query("#viewport")
@@ -177,6 +343,12 @@ class TaskboardApp(App):
         self.push_screen(LegendModal(self.view_mode, self.board,
                                      size=(w or 96, h or 30),
                                      show_archived=self.show_archived))
+
+    def action_aperture(self) -> None:
+        """`6` — the widget posture as a pushed screen (ADD, don't replace):
+        the ambient face of the board, and a launcher back into the views."""
+        from .aperture import ApertureScreen      # lazy: aperture imports us
+        self.push_screen(ApertureScreen(self.board))
 
     def action_report(self) -> None:
         """`R` — write an HTML report of the board beside the board file.
@@ -187,6 +359,13 @@ class TaskboardApp(App):
         out = write_report(self.board)
         self.notify(f"Report written to {out}", title="Report",
                     severity="information", timeout=10)
+
+    def action_standup(self) -> None:
+        """`S` — the week in one modal: what moved and what closed, per
+        project, derived from `phase_changed` alone. Nothing is stored for
+        this, and the modal mutates nothing — it is a reading, not an edit."""
+        self.push_screen(StandupModal(self.board,
+                                      show_archived=self.show_archived))
 
     def action_clocks(self) -> None:
         k1, k2 = self.board.get_clocks()
@@ -208,7 +387,12 @@ class TaskboardApp(App):
         boards = self.query("#board")
         bw = boards.first(BoardView).size.width if boards else 0
         return nav_model(self.view_mode, self.board, self.show_archived,
-                         width=bw or 68, height=h)
+                         width=bw or 68, height=h,
+                         kanban_sort=self.kanban_sort,
+                         kanban_group=self.kanban_group,
+                         kanban_collapsed=self.kanban_collapsed,
+                         kanban_focus=self.focused_project_id,
+                         presentation=self.kanban_presentation)
 
     def _nav_flat(self) -> list[str]:
         return [tid for col in self._nav_columns() for tid in col]
@@ -217,7 +401,13 @@ class TaskboardApp(App):
         """Selection must be a currently-visible task (data validity). It may
         not be individually navigable in a compact view (e.g. a non-first
         swimlane task) — navigation snaps to nav order on the next key."""
-        ids = [t.id for t in self.board.visible_tasks(self.show_archived)]
+        tasks = self.board.visible_tasks(self.show_archived)
+        if self.view_mode == "kanban" and self.focused_project_id is not None:
+            # A focused board draws ONE project's cards; the selection may not
+            # rest on a task the filter hides (hidden-but-navigable is the
+            # F-3 trap in a new costume, HLR-008).
+            tasks = [t for t in tasks if t.project_id == self.focused_project_id]
+        ids = [t.id for t in tasks]
         if self.selected_task_id not in ids:
             self.selected_task_id = ids[0] if ids else None
 
@@ -262,8 +452,123 @@ class TaskboardApp(App):
             ci += delta
         # no non-empty column that direction -> no-op
 
+    def action_phase_move(self, delta: int) -> None:
+        """`[` / `]` — move the selected task one phase back/forward, dated.
+
+        The move routes through `set_task_phase`, the ONLY seat allowed to
+        write the `phase_changed` stamp (assigning `task.phase` here would
+        leave the stamp behind and momentum unknowable). Both ends clamp to a
+        silent no-op: no wrap, no re-stamp, no save, no re-render — a key that
+        did nothing by design says nothing."""
+        task = self.selected_task
+        if task is None:
+            return
+        idx = self.board.phase_index(task) + delta
+        idx = max(0, min(idx, len(self.board.phases) - 1))
+        snap = self._snapshot(task)      # BEFORE the mutation (LLR-010.1); a
+        if self.board.set_task_phase(task, self.board.phases[idx]):
+            self._undo_stack.append(snap)  # clamped end is a no-op — nothing
+            self.board.save()              # executed, nothing recorded
+            self.refresh_view()
+
+    def action_prio_cycle(self) -> None:
+        """`!` — cycle the selected task's priority low→normal→high→low."""
+        task = self.selected_task
+        if task is None:
+            return
+        self._undo_stack.append(self._snapshot(task))
+        task.priority = next_priority(task.priority)
+        self.board.save()
+        self.refresh_view()
+
+    def action_toggle_blocked(self) -> None:
+        """`b` — flip the selected task's blocked flag (card prefix ▲/▊)."""
+        task = self.selected_task
+        if task is None:
+            return
+        self._undo_stack.append(self._snapshot(task))
+        task.blocked = not task.blocked
+        self.board.save()
+        self.refresh_view()
+
+    def action_due_bump(self, delta: int) -> None:
+        """`+` / `=` (delta +1 — ONE aliased seat entry, §6.5 AMD-06) and `-`
+        (delta −1): move the selected task's due date one day — from its own
+        date, or from today when undated (LLR-009.1, the base lives in the
+        `bump_due` seat). Not view-scoped: it acts on the selection, like the
+        other quick keys."""
+        task = self.selected_task
+        if task is None:
+            return
+        self._undo_stack.append(self._snapshot(task))
+        bump_due(task, delta, date.today())
+        self.board.save()
+        self.refresh_view()
+
+    # ---- undo (LLR-010.1: a session LIFO of single-task snapshots) ---------
+    # The covered domain is EXACTLY the quick keys of §3.0 plus archive `x`
+    # and delete `d` (§6.5 AMD-05). Collapse/sort/group/focus are VIEW state —
+    # they mutate nothing, so there is nothing to undo. A modal add records
+    # NOTHING: creation is deliberate, deletion covers the destructive path.
+    _UNDO_FIELDS = ("phase", "phase_changed", "priority", "blocked",
+                    "due_date", "archived")
+
+    def _snapshot(self, task: Task, *, deleted: bool = False) -> dict:
+        """The pre-mutation state of ONE task: the six mutable fields VERBATIM
+        — the stamp included, because restoring `phase` without `phase_changed`
+        would fabricate a fresh-looking card (the models.py:1016 honesty rule).
+        A delete keeps the FULL task object and its position, so the
+        resurrection brings back the SAME id — a copy with a new id would
+        break line_map, nav and every later undo."""
+        entry = {"task_id": task.id,
+                 "fields": {f: getattr(task, f) for f in self._UNDO_FIELDS}}
+        if deleted:
+            entry["task"] = task
+            entry["index"] = self.board.tasks.index(task)
+        return entry
+
+    def action_undo(self) -> None:
+        """`u` — restore the most recent not-yet-undone single-task mutation.
+
+        LIFO, and an undo is NOT a new mutation (it pushes nothing, so `u`
+        after `u` walks the stack down, never oscillates). A deleted task
+        counts as restorable — its full snapshot re-inserts it with its
+        original id; an entry whose task was PURGED since the snapshot (the
+        one destructive route undo does not cover) is skipped; an empty or
+        fully-stale stack says so through the notification channel and
+        writes nothing."""
+        while self._undo_stack:
+            entry = self._undo_stack.pop()
+            task = self.board.task_by_id(entry["task_id"])
+            if task is None:
+                gone = entry.get("task")
+                if gone is None:
+                    continue            # purged since the snapshot: stale, skip
+                idx = min(entry["index"], len(self.board.tasks))
+                self.board.tasks.insert(idx, gone)   # SAME object, SAME id
+                task = gone
+            else:
+                for f, v in entry["fields"].items():
+                    setattr(task, f, v)
+            self.board.save()
+            self.selected_task_id = task.id
+            self.refresh_view()
+            return
+        self.notify("Nothing to undo.", title="Undo", severity="information")
+
     # ---- rendering ---------------------------------------------------------
+    def _validate_focus(self) -> None:
+        """A focus naming a project that is no longer visible — archived or
+        deleted mid-session — drops to off on the next refresh (LLR-008.1),
+        never strands the board behind a filter nothing can leave."""
+        if self.focused_project_id is None:
+            return
+        visible = {p.id for p in self.board.visible_projects(self.show_archived)}
+        if self.focused_project_id not in visible:
+            self.focused_project_id = None
+
     def refresh_view(self) -> None:
+        self._validate_focus()
         self._select_first()
         boards = self.query("#board")
         if not boards:
@@ -276,7 +581,11 @@ class TaskboardApp(App):
         content = render_view(self.view_mode, self.board, self.show_archived,
                               self.selected_task_id, width=w, height=h,
                               line_map=self._line_map,
-                              presentation=self.kanban_presentation, tick=self._tick_n)
+                              presentation=self.kanban_presentation, tick=self._tick_n,
+                              kanban_sort=self.kanban_sort,
+                              kanban_group=self.kanban_group,
+                              kanban_collapsed=self.kanban_collapsed,
+                              kanban_focus=self.focused_project_id)
         board_widget.update(content)
         self._scroll_selected_into_view()
 
@@ -314,6 +623,80 @@ class TaskboardApp(App):
             return
         self.kanban_presentation = ("matrix" if self.kanban_presentation == "grouped"
                                     else "grouped")
+        self.refresh_view()
+
+    def action_kanban_sort(self) -> None:
+        """`s` — cycle the kanban column sort project→priority→due→recent;
+        a no-op in every other view (the bar never advertises it there)."""
+        if self.view_mode != "kanban":
+            return
+        modes = ("project", "priority", "due", "recent")
+        self.kanban_sort = modes[(modes.index(self.kanban_sort) + 1) % len(modes)]
+        self.refresh_view()
+
+    def action_kanban_group(self) -> None:
+        """`g` — cycle the kanban column grouping project→priority→horizon;
+        a no-op in every other view (same guard as the sort cycle)."""
+        if self.view_mode != "kanban":
+            return
+        modes = ("project", "priority", "horizon")
+        self.kanban_group = modes[(modes.index(self.kanban_group) + 1) % len(modes)]
+        self.refresh_view()
+
+    def action_collapse_toggle(self) -> None:
+        """`z` — collapse THE LAST phase column to one `✓ N` summary row, or
+        restore it. Session-level, needs NO selection, fires from anywhere in
+        the kanban view (§6.5 AMD-02: the target is positional — the last
+        phase in `board.phases` — never the selected task's phase); a no-op
+        in every other view (same guard as the sort/group cycles)."""
+        if self.view_mode != "kanban":
+            return
+        self.kanban_collapsed = not self.kanban_collapsed
+        if self.kanban_collapsed:
+            self._relocate_out_of_collapsed()
+        self.refresh_view()
+
+    def _relocate_out_of_collapsed(self) -> None:
+        """A selection inside the just-collapsed terminal phase moves to the
+        nearest visible task — the nearest non-empty column's FIRST card, the
+        exact `action_hmove` landing rule — so the cursor never rests on a
+        task the board no longer draws (HLR-007/LLR-007.1)."""
+        task = self.selected_task
+        if task is None or self.board.phase_index(task) != len(self.board.phases) - 1:
+            return
+        for col in reversed(self._nav_columns()):   # terminal phase already absent
+            if col:
+                self.selected_task_id = col[0]
+                return
+        self.selected_task_id = None
+
+    def action_focus_cycle(self) -> None:
+        """`F` — cycle the kanban project focus through the visible projects
+        in `board.visible_projects` order and then OFF (None); a view-guarded
+        no-op outside kanban (the `action_toggle_presentation` precedent).
+        Inbox is not a focus target (§6.2 D-5): focusing hides project-less
+        tasks along with every other project. The filter itself lives in the
+        shared ordering seat — this only holds the input."""
+        if self.view_mode != "kanban":
+            return
+        ids = [p.id for p in self.board.visible_projects(self.show_archived)]
+        cycle = ids + [None]
+        try:
+            nxt = cycle[(cycle.index(self.focused_project_id) + 1) % len(cycle)]
+        except ValueError:
+            nxt = cycle[0]              # a stale focus restarts the walk
+        self.focused_project_id = nxt
+        self.refresh_view()
+
+    def action_focus_exit(self) -> None:
+        """escape — clear an ACTIVE focus in the kanban view, and do NOTHING
+        otherwise (§6.5 AMD-03): with no focus active this is a guard no-op,
+        so the companion binding never eats another screen's or posture's
+        escape (every modal and the aperture bind their own, and screen
+        bindings answer before this app-level one)."""
+        if self.view_mode != "kanban" or self.focused_project_id is None:
+            return
+        self.focused_project_id = None
         self.refresh_view()
 
     # ---- task CRUD ---------------------------------------------------------
@@ -396,6 +779,7 @@ class TaskboardApp(App):
     def _on_delete(self, task: Task, ok: bool) -> None:
         if not ok:
             return
+        self._undo_stack.append(self._snapshot(task, deleted=True))
         self.board.delete_task(task.id)
         self.selected_task_id = None
         self.refresh_view()
@@ -406,11 +790,13 @@ class TaskboardApp(App):
         The complaint this answers: with `v` off, archiving makes the row vanish,
         and a row vanishing is indistinguishable from a key that did nothing. The
         row disappearing IS the effect, but the screen never said which effect it
-        was. So the app states the fact and names the way back — that is also the
-        whole of the "undo" this action needs, since `x` is its own inverse."""
+        was. So the app states the fact and names the way back — and since the
+        batch-04 undo shipped, `u` also reverses it (LLR-010.1: archive is in
+        the undo domain), so the pre-flip state is snapshotted first."""
         task = self.selected_task
         if task is None:
             return
+        self._undo_stack.append(self._snapshot(task))
         task.archived = not task.archived
         self.board.save()
         # the title is the user's text and goes through the SAME escape the views
