@@ -12,7 +12,7 @@ from textual.widgets import Button, Input, OptionList, Select, Static, TextArea
 
 from taskboard import models, modals
 from taskboard.app import BoardView, TaskboardApp
-from taskboard.models import Board, Task
+from taskboard.models import Board, Project, Task
 from taskboard.modals import (CalendarModal, PhaseEditor, TaskDetails, TaskModal,
                               image_block)
 from taskboard.ribbon import Ribbon
@@ -2184,3 +2184,1855 @@ def test_agenda_width_exact_across_widths(tmp_path):
         lines = str(render_agenda(b, False, sel, today=AGENDA_TODAY,
                                   width=w, height=30)).splitlines()
         assert all(len(l) == w for l in lines), f"agenda {w}: a line != {w}"
+
+
+# --------------------------------------------------------------------------- #
+# quick keys: `[`/`]` phase move, `!` priority, `b` blocked (batch-04 R-01/R-02)
+# --------------------------------------------------------------------------- #
+def _key_for(action: str) -> str:
+    """The physical key bound to `action`, read off the seat — never typed as
+    a literal, so the test follows the seat if the key ever moves."""
+    from taskboard.keymap import KEYMAP
+    return next(k for k in KEYMAP if k.action == action).keys.split(",")[0]
+
+
+def _ops_board(tmp_path, *tasks, name="ops.json") -> Board:
+    """The quick-key AT fixture: ONE project, FOUR phases — a middle with two
+    neighbours, so a wrong-target move is distinguishable from a correct one.
+    Saved to disk: the app loads it for real, and the reload limbs (C-12)
+    re-read that same file."""
+    p = Project("Alpha", "sky")
+    b = Board([p], list(tasks), tmp_path / name,
+              phases=["Backlog", "Doing", "Review", "Done"])
+    for t in tasks:
+        t.project_id = p.id
+    b.save()
+    return b
+
+
+def _painted_column(app, title: str) -> str:
+    """Which painted kanban column holds `title` — read off the painted text
+    ALONE (C-32): the phase-name header's x-offsets bracket the card's
+    x-offset. No internal recompute anchors this end."""
+    lines = board_text(app).split("\n")
+    hdr = next(l for l in lines
+               if all(p.upper() in l for p in app.board.phases))
+    offs = sorted((hdr.index(p.upper()), p) for p in app.board.phases)
+    x = next(l for l in lines if title in l).index(title)
+    return next(p for off, p in reversed(offs) if off <= x)
+
+
+def _card_row(app, title: str) -> str:
+    """The one painted line holding `title` — marker searches are confined to
+    it, because `!` and the box glyphs legitimately appear elsewhere."""
+    return next(l for l in board_text(app).split("\n") if title in l)
+
+
+async def test_phase_move_forward_dates_the_move(tmp_path):
+    """AT-001 (HLR-001): `]` on a mid-phase task renders the card in the next
+    column, and the move is DATED — the reloaded board shows the new phase
+    with today's stamp. RED counterfactuals: the action missing (the tree's
+    exact pre-increment state — executable RED from day one), or the mutation
+    never saved (the reload limb fails)."""
+    today = date.today().isoformat()
+    task = Task("Widget", None, "Doing", phase_changed=None)
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")                  # kanban: the columns are the readout
+        await pilot.pause()
+        assert _painted_column(app, "Widget") == "Doing"     # pre-state companion
+        await pilot.press(_key_for("phase_move(1)"))
+        await pilot.pause()
+        assert _painted_column(app, "Widget") == "Review"
+        reloaded = Board.load(board.path).task_by_id(task.id)
+        assert reloaded.phase == "Review"
+        assert reloaded.phase_changed == today
+
+
+async def test_phase_move_round_trip_restamps_and_the_ends_are_silent_no_ops(tmp_path):
+    """AT-002 (HLR-001, the AMD-01 round-trip): `]` advances and stamps; `[`
+    returns and RE-DATES (the clock restarts); only AFTER that live forward
+    drive, the first-phase `[` is a no-op that neither moves, re-stamps, nor
+    even writes the file — sequenced this way a dead `[` cannot pass the
+    no-op limb. RED counterfactuals: (a) `task.phase` assigned directly,
+    bypassing `set_task_phase` — stamp limbs red while phase limbs stay green
+    (the F-2 trap); (b) clamp missing — index -1 wraps to the last phase;
+    (c) clamp that still re-stamps; (d) mutation without `board.save()`."""
+    today = date.today().isoformat()
+    task = Task("Widget", None, "Doing", phase_changed=None)
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    fwd, back = _key_for("phase_move(1)"), _key_for("phase_move(-1)")
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        t = app.board.task_by_id(task.id)
+        # BOTH companions BEFORE any key, or the stamp assertions have no
+        # discriminating gap
+        assert t.phase == "Doing"
+        assert t.phase_changed is None
+        # the live forward drive: phase advances AND the stamp is written
+        await pilot.press(fwd)
+        await pilot.pause()
+        assert t.phase == "Review"
+        assert t.phase_changed == today
+        r = Board.load(board.path).task_by_id(task.id)
+        assert (r.phase, r.phase_changed) == ("Review", today)   # persisted (C-12)
+        # backdate the stamp, or "the clock restarts" is unreadable: a `[`
+        # that moves WITHOUT re-stamping is caught only against a stale stamp
+        t.phase_changed = "2000-01-01"
+        app.board.save()
+        await pilot.press(back)
+        await pilot.pause()
+        assert t.phase == "Doing"
+        assert t.phase_changed == today                 # RE-DATED, not merely kept
+        # the sequenced no-op: first phase, `[` — never run first
+        await pilot.press(back)                         # Doing -> Backlog, live
+        await pilot.pause()
+        assert t.phase == "Backlog"
+        stamp, blob = t.phase_changed, board.path.read_bytes()
+        await pilot.press(back)                         # the clamp: silent no-op
+        await pilot.pause()
+        assert t.phase == "Backlog"                     # no wrap
+        assert t.phase_changed == stamp                 # no re-stamp
+        assert board.path.read_bytes() == blob          # not even saved
+        # the other end, symmetric
+        for _ in range(3):
+            await pilot.press(fwd)
+            await pilot.pause()
+        assert t.phase == "Done"
+        stamp, blob = t.phase_changed, board.path.read_bytes()
+        await pilot.press(fwd)
+        await pilot.pause()
+        assert t.phase == "Done" and t.phase_changed == stamp
+        assert board.path.read_bytes() == blob
+        # the empty boundary: no selection -> no-op, no write
+        app.selected_task_id = None
+        await pilot.press(back)
+        await pilot.pause()
+        assert t.phase == "Done"
+        assert board.path.read_bytes() == blob
+
+
+async def test_phase_move_clamps_unknown_phase_into_bucket_zero(tmp_path):
+    """TC-001 (HLR-001/LLR-001.1): a task in an UNKNOWN phase reads as bucket
+    0 (`phase_index` fallback; `phase_buckets`, views.py:616) — `[` clamps it
+    to the FIRST phase instead of wrapping to the last (a missing clamp lands
+    it in Done: the RED), `]` advances it one step from bucket 0. The fixture
+    swaps the app's board for an in-memory one because `Board.load` snaps
+    unknown phases at load (models.py:868-869) — that snap is a different
+    seat, and this test pins the LIVE-path fallback."""
+    task = Task("Widget", None, "Doing")
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        ghost = Task("Ghost", None, "Nowhere", phase_changed=None)
+        app.board = Board(board.projects, [ghost], board.path,
+                          phases=["Backlog", "Doing", "Review", "Done"])
+        app.selected_task_id = ghost.id
+        app.refresh_view()
+        await pilot.press(_key_for("phase_move(-1)"))
+        await pilot.pause()
+        assert ghost.phase == "Backlog"     # bucket 0 + clamp, never a wrap
+        assert ghost.phase_changed == date.today().isoformat()
+        ghost.phase = "Nowhere"             # re-seat the unknown
+        ghost.phase_changed = None
+        await pilot.press(_key_for("phase_move(1)"))
+        await pilot.pause()
+        assert ghost.phase == "Doing"       # bucket 0 + one step forward
+
+
+async def test_prio_cycle_walks_the_declared_order_and_paints_the_marker(tmp_path):
+    """AT-003 (HLR-002): from default `normal`, `!` once -> high and the card
+    row shows the `!` token; twice more closes the full cycle
+    high -> low -> normal with the token gone. RED counterfactuals: cycle
+    direction inverted (normal -> low first) fails the very first limb; no
+    persist fails the reload limbs."""
+    task = Task("Widget", None, "Doing")            # priority defaults to normal
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        key = _key_for("prio_cycle")
+        assert "!" not in _card_row(app, "Widget")      # normal paints no marker
+        await pilot.press(key)
+        await pilot.pause()
+        assert app.board.task_by_id(task.id).priority == "high"
+        assert "!" in _card_row(app, "Widget")
+        assert Board.load(board.path).task_by_id(task.id).priority == "high"
+        await pilot.press(key)                          # wraps high -> low
+        await pilot.pause()
+        assert app.board.task_by_id(task.id).priority == "low"
+        assert "!" not in _card_row(app, "Widget")
+        await pilot.press(key)                          # low -> normal: cycle closed
+        await pilot.pause()
+        assert Board.load(board.path).task_by_id(task.id).priority == "normal"
+        assert "!" not in _card_row(app, "Widget")
+
+
+async def test_toggle_blocked_flips_the_flag_and_the_card_prefix(tmp_path):
+    """AT-004 (HLR-002): `b` -> row prefix `▲` and JSON `blocked` true; `b`
+    again -> prefix `▊` and false. RED counterfactuals: a toggle that writes
+    but never clears fails the second limb; a render branch that stops
+    switching the prefix fails the prefix limbs."""
+    task = Task("Widget", None, "Doing", blocked=False)
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        key = _key_for("toggle_blocked")
+        assert "▊" in _card_row(app, "Widget")
+        assert "▲" not in _card_row(app, "Widget")
+        await pilot.press(key)
+        await pilot.pause()
+        assert app.board.task_by_id(task.id).blocked is True
+        assert "▲" in _card_row(app, "Widget")
+        assert "▊" not in _card_row(app, "Widget")
+        assert Board.load(board.path).task_by_id(task.id).blocked is True
+        await pilot.press(key)
+        await pilot.pause()
+        assert Board.load(board.path).task_by_id(task.id).blocked is False
+        assert "▊" in _card_row(app, "Widget")
+        assert "▲" not in _card_row(app, "Widget")
+
+
+# --------------------------------------------------------------------------- #
+# kanban sort/group modes: the ONE `kanban_order` seat, the `s`/`g` cycles,
+# and the nav/render parity oracle (batch-04 R-03/R-04, HLR-003/HLR-004)
+# --------------------------------------------------------------------------- #
+def _mode_board(tmp_path, name="modes.json") -> Board:
+    """The sort/group fixture (AT-005…008, TC-005/006): FOUR phases with
+    Review EMPTY (the empty-column case), TWO projects, and a Doing column
+    crafted so the four sort orders are pairwise distinct with a deliberate
+    tie in every key. Titles are short, unique and substring-free, so a
+    painted-text search can never confuse one card for another — and no title
+    is a substring of a project or group name."""
+    from datetime import timedelta
+    pa, pb = Project("ProjA", "violet"), Project("ProjB", "cyan")
+    today = date.today()
+
+    def iso(delta):
+        return (today + timedelta(days=delta)).isoformat()
+
+    tasks = [
+        Task("k01", pa.id, "Doing", "high", due_date=iso(9), phase_changed=iso(-6)),
+        Task("k02", pa.id, "Doing", "normal", due_date=iso(2), phase_changed=iso(-1)),
+        Task("k03", pb.id, "Doing", "high", due_date=None, phase_changed=iso(-3)),
+        Task("k04", pb.id, "Doing", "normal", due_date=None,
+             phase_changed=None, blocked=True),
+        Task("k05", pa.id, "Doing", "low", due_date=iso(4), phase_changed=None),
+        Task("k06", pa.id, "Done", "normal", due_date=iso(30), phase_changed=iso(-2)),
+        Task("k07", pb.id, "Done", "low", due_date=None, phase_changed=None),
+        Task("k08", pa.id, "Backlog", "high", due_date=iso(-1), phase_changed=iso(-4)),
+        Task("k09", pb.id, "Backlog", "low", due_date=None, phase_changed=None),
+    ]
+    b = Board([pa, pb], tasks, tmp_path / name,
+              phases=["Backlog", "Doing", "Review", "Done"])
+    b.save()
+    return b
+
+
+def _painted_kanban(app):
+    """The painted kanban, recovered from the PAINTED TEXT ALONE (the parity
+    oracle's anchor end, 01b §4 step 1 — never from `phase_buckets` or any
+    internal recompute, which would make the oracle a second copy of the
+    suspect). Column membership comes from the phase-header row's `│`
+    separator positions; cards are located by title (unique by fixture).
+
+    Returns (drawn phase names, per-column row lists) where each row is
+    ("h", group-header text) or ("t", task title)."""
+    lines = board_text(app).split("\n")
+    hdr_i = next(i for i, l in enumerate(lines)
+                 if all(p.upper() in l for p in app.board.phases))
+    hdr = lines[hdr_i]
+    seps = [x for x, ch in enumerate(hdr) if ch == "│"]
+    bounds = ([(-1, seps[0])]
+              + [(seps[i], seps[i + 1]) for i in range(len(seps) - 1)]
+              + [(seps[-1], len(hdr))])
+    names = [next(p for p in app.board.phases if p.upper() in hdr[lo + 1:hi])
+             for lo, hi in bounds]
+    cols: list[list[tuple[str, str]]] = [[] for _ in bounds]
+    end = next((i for i in range(hdr_i + 1, len(lines)) if "┴" in lines[i]),
+               len(lines))
+    for l in lines[hdr_i + 2:end]:              # skip the ┼ rule row
+        for ci, (lo, hi) in enumerate(bounds):
+            seg = l[lo + 1:hi]
+            if seg.strip().startswith("▐"):
+                cols[ci].append(("h", seg.strip()[1:].strip()))
+                continue
+            hit = [t.title for t in app.board.tasks if t.title in seg]
+            assert len(hit) <= 1, f"ambiguous painted segment {seg!r}"
+            cols[ci].extend(("t", w) for w in hit)
+    return names, cols
+
+
+def _painted_card_ids(app, cols):
+    by_title = {t.title: t.id for t in app.board.tasks}
+    return [[by_title[w] for kind, w in col if kind == "t"] for col in cols]
+
+
+async def _assert_kanban_parity(app, pilot):
+    """01b §4, the whole law: after any mode change AND after any arrow press,
+    the order the cursor walks is the order the screen paints. Anchored in the
+    painted text; `app._nav_columns()` is the other end. Companions:
+    non-emptiness (≥ 2 columns) and union-coverage of every visible task, so
+    an unpainted board cannot satisfy `[] == []` vacuously. The `line_map`
+    agreement at the end is a labelled regression PIN (step 6), not the gate."""
+    names, cols = _painted_kanban(app)
+    assert names == list(app.board.phases)      # nothing windowed at 120 cells
+    painted = _painted_card_ids(app, cols)
+    nav = app._nav_columns()
+    assert len(nav) == len(painted)
+    for ci, (p_col, n_col) in enumerate(zip(painted, nav)):
+        assert p_col == n_col, \
+            f"column {ci} ({names[ci]}): painted {p_col} != nav {n_col}"
+    assert sum(1 for col in painted if col) >= 2, "vacuous: nothing painted"
+    visible = {t.id for t in app.board.visible_tasks(app.show_archived)}
+    assert {i for col in painted for i in col} == visible
+    # arrow walk: down follows the PAINTED-next; right lands on the first
+    # painted card of the next non-empty painted column
+    first = next(ci for ci, col in enumerate(painted) if len(col) >= 2)
+    app.selected_task_id = painted[first][0]
+    app.refresh_view()
+    await pilot.pause()
+    await pilot.press("down")
+    assert app.selected_task_id == painted[first][1]
+    await pilot.press("right")
+    nxt = next(ci for ci in range(first + 1, len(painted)) if painted[ci])
+    assert app.selected_task_id == painted[nxt][0]
+    # REGRESSION PIN (not the gate): the line_map still agrees with the paint
+    text = board_text(app).split("\n")
+    for tid, li in app._line_map.items():
+        assert app.board.task_by_id(tid).title in text[li]
+    return painted
+
+
+async def test_kanban_parity_painted_text_oracle(tmp_path):
+    """TC-006 (HLR-003/HLR-004, 01b §4 — the batch's central oracle): painted
+    order == nav order per column, plus the arrow walk, swept after EVERY `s`
+    press (4 modes), after EVERY `g` press (3 modes), and across the full
+    4x3 sort-by-group cross-product. RED counterfactual (EXECUTED, see
+    increment-006): nav fed a different ordering than the renderer (the nav
+    branch reverted to raw `_kanban_groups` order) → the per-column assertion
+    goes red, and `down` moves the cursor off the visually-next card → the
+    walk assertion goes red."""
+    board = _mode_board(tmp_path)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        s_key, g_key = _key_for("kanban_sort"), _key_for("kanban_group")
+        for _ in range(4):                  # after every `s` press
+            await _assert_kanban_parity(app, pilot)
+            await pilot.press(s_key)
+            await pilot.pause()
+        assert app.kanban_sort == "project"             # the cycle closed
+        for _ in range(3):                  # after every `g` press
+            await _assert_kanban_parity(app, pilot)
+            await pilot.press(g_key)
+            await pilot.pause()
+        assert app.kanban_group == "project"
+        for sort in ("project", "priority", "due", "recent"):   # the full
+            for group in ("project", "priority", "horizon"):    # cross-product
+                app.kanban_sort, app.kanban_group = sort, group
+                app.refresh_view()
+                await pilot.pause()
+                await _assert_kanban_parity(app, pilot)
+
+
+async def test_kanban_sort_cycles_and_names_the_mode(tmp_path):
+    """AT-005 (HLR-003): `s` cycles project→priority→due→recent→project; the
+    painted Doing column follows each mode's RULE (recomputed from the
+    fixture, never hand-listed); the header names every non-default mode and
+    stays bare at the default. The fixture guard (four pairwise-distinct
+    expected orders) runs FIRST — a palindrome fixture would be green on a
+    mode-skipping mutant. RED counterfactuals: renderer not wired to the mode
+    (order assertion red); sort mutating the model (the model-order companion
+    red); cycle skipping a mode (a press lands on the wrong rule's order)."""
+    board = _mode_board(tmp_path)
+    doing = [t for t in board.tasks if t.phase == "Doing"]
+    groups = [[t for t in doing if t.project_id == p.id]
+              for p in board.visible_projects(False)]
+
+    def expected(sort):                     # the stated rule, restated plainly
+        if sort == "priority":
+            rank = {"high": 0, "normal": 1, "low": 2}
+
+            def key(t):
+                return (not t.blocked, rank[t.priority],
+                        t.due_date is None, t.due_date or "9999")
+        elif sort == "due":
+            def key(t):
+                return (not t.blocked, t.due_date is None, t.due_date or "9999")
+        elif sort == "recent":
+            def key(t):
+                return (t.phase_changed is None, t.phase_changed or "")
+        else:
+            key = None
+        out = []
+        for items in groups:
+            if sort == "recent":            # desc, None last, ties stable
+                out += sorted(items, key=lambda t: t.phase_changed or "",
+                              reverse=True)
+            elif key is not None:
+                out += sorted(items, key=key)       # stable: ties keep board
+            else:
+                out += items                        # project: board order
+        return [t.id for t in out]
+
+    orders = {m: expected(m) for m in ("project", "priority", "due", "recent")}
+    assert len({tuple(o) for o in orders.values()}) == 4, "palindrome fixture"
+    model_order = [t.id for t in board.tasks]
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        assert "sort:" not in board_text(app).split("\n")[0]   # default unnamed
+        s_key = _key_for("kanban_sort")
+        for mode in ("priority", "due", "recent", "project"):
+            await pilot.press(s_key)
+            await pilot.pause()
+            assert app.kanban_sort == mode
+            header_line = board_text(app).split("\n")[0]
+            if mode == "project":
+                assert "sort:" not in header_line      # cycle closed, bare
+            else:
+                assert f"sort: {mode}" in header_line
+            names, cols = _painted_kanban(app)
+            painted = _painted_card_ids(app, cols)
+            assert painted[names.index("Doing")] == orders[mode]
+        # the sort is a VIEW concern: the model order never moved (C-12 limb:
+        # the file on disk agrees — a view sort that saved would show here)
+        assert [t.id for t in board.tasks] == model_order
+        assert [t.id for t in Board.load(board.path).tasks] == model_order
+
+
+async def test_kanban_sort_parity_arrow_walk(tmp_path):
+    """AT-006 (HLR-003): sort `priority` + grouping `priority` (one `s`, one
+    `g`), then ↓ twice — the selection is `nav_model`'s third entry of that
+    column, AND that task's title is the third card the screen paints there.
+    RED counterfactual (EXECUTED): the nav branch reverted to raw
+    `_kanban_groups` order → the two ends name different thirds."""
+    board = _mode_board(tmp_path)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        await pilot.press(_key_for("kanban_sort"))
+        await pilot.pause()
+        await pilot.press(_key_for("kanban_group"))
+        await pilot.pause()
+        from taskboard.views import nav_model
+        cols = nav_model("kanban", app.board, False,
+                         kanban_sort="priority", kanban_group="priority")
+        ci = next(i for i, col in enumerate(cols) if len(col) >= 3)
+        app.selected_task_id = cols[ci][0]
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press("down")
+        await pilot.press("down")
+        assert app.selected_task_id == cols[ci][2]
+        names, painted_cols = _painted_kanban(app)     # the rendered-text limb
+        painted = _painted_card_ids(app, painted_cols)
+        assert painted[ci][2] == cols[ci][2]
+
+
+async def test_kanban_group_cycles_headers_and_membership(tmp_path):
+    """AT-007 (HLR-004): `g` cycles project→priority→horizon→project. Under
+    horizon, each column's painted group headers are EXACTLY the rule-derived
+    non-empty set (incl. the trailing `Done` group), in canonical order; every
+    card sits under its rule-derived header (nearest header above); the union
+    under all headers is the column's whole task set (a silently dropped group
+    cannot satisfy the quantifier); project headers are GONE. RED
+    counterfactuals: cosmetic grouping (headers change, membership doesn't) →
+    per-card membership red; an empty group drawing a header → header-set
+    equality red; a mode dropped from the cycle → header-set mismatch red."""
+    board = _mode_board(tmp_path)
+    today = date.today()
+
+    def horizon_of(t):                      # the stated rule, restated plainly
+        if t.phase == board.phases[-1]:
+            return "Done"
+        if t.due_date is None:
+            return "No date"
+        delta = (date.fromisoformat(t.due_date) - today).days
+        if delta < 0:
+            return "Overdue"
+        return "This week" if delta <= 7 else "Later"
+
+    def priority_of(t):
+        return {"high": "High", "normal": "Normal", "low": "Low"}[t.priority]
+
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        g_key = _key_for("kanban_group")
+        for mode, rule, canon in (
+                ("priority", priority_of, ["High", "Normal", "Low"]),
+                ("horizon", horizon_of,
+                 ["Overdue", "This week", "Later", "No date", "Done"]),
+                ("project", None, None)):
+            await pilot.press(g_key)
+            await pilot.pause()
+            assert app.kanban_group == mode
+            text = board_text(app)
+            names, cols = _painted_kanban(app)
+            if mode == "project":                   # the cycle closed
+                assert "ProjA" in text and "ProjB" in text
+                assert "Overdue" not in text and "No date" not in text
+                continue
+            header_line = text.split("\n")[0]
+            assert f"group: {mode}" in header_line
+            for ci, col in enumerate(cols):
+                tasks = [t for t in board.tasks
+                         if t.phase == names[ci] and t.title in
+                         {w for kind, w in col if kind == "t"}]
+                headers = [w for kind, w in col if kind == "h"]
+                want = [h for h in canon if any(rule(t) == h for t in tasks)]
+                assert headers == want, f"column {names[ci]}: {headers} != {want}"
+                above = None                        # membership: nearest header
+                for kind, w in col:
+                    if kind == "h":
+                        above = w
+                    else:
+                        t = next(t for t in tasks if t.title == w)
+                        assert rule(t) == above, \
+                            f"{w} sits under {above}, belongs in {rule(t)}"
+                assert {t.title for t in tasks} == \
+                    {w for kind, w in col if kind == "t"}   # completeness
+            assert "ProjA" not in text and "ProjB" not in text
+
+
+async def test_kanban_group_parity_arrow_walk(tmp_path):
+    """AT-008 (HLR-004): under `horizon` grouping, → then ↓ land on the nav
+    model's computed targets — and those tasks' titles are painted in the
+    same columns. RED counterfactual: the nav branch bypassing `kanban_order`
+    for grouped modes → target and paint disagree."""
+    board = _mode_board(tmp_path)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        g_key = _key_for("kanban_group")
+        await pilot.press(g_key)
+        await pilot.press(g_key)                    # horizon
+        await pilot.pause()
+        from taskboard.views import nav_model
+        cols = nav_model("kanban", app.board, False, kanban_group="horizon")
+        app.selected_task_id = cols[0][0]           # Backlog's first card
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press("right")                  # skips the empty Review
+        nxt = next(ci for ci in range(1, len(cols)) if cols[ci])
+        assert app.selected_task_id == cols[nxt][0]
+        await pilot.press("down")
+        assert app.selected_task_id == cols[nxt][1]
+        names, painted_cols = _painted_kanban(app)  # the rendered-text limb
+        painted = _painted_card_ids(app, painted_cols)
+        assert painted[nxt][1] == cols[nxt][1]
+
+
+def test_kanban_order_sort_modes_are_stable_and_distinct(tmp_path):
+    """TC-005 (LLR-003.1, §6.5 AMD-09): every sort mode is STABLE — a tie the
+    mode's own keys leave open keeps the board's pre-sort order. One project,
+    one column, six tasks with a deliberate tie in EVERY key; expected orders
+    recomputed from the fixture by the stated rules and asserted pairwise
+    distinct FIRST (a fixture where two modes coincide reads green on a
+    mode-skipping mutant). RED counterfactuals: sort by title → derived-order
+    mismatch; unstable/reversed tie handling → the tie limbs red; `recent`
+    reading None as oldest-first or as 0 → the None-sink limb red."""
+    from datetime import timedelta
+    from taskboard.views import kanban_order
+    today = date.today()
+
+    def iso(delta):
+        return (today + timedelta(days=delta)).isoformat()
+
+    p = Project("ProjS", "violet")
+    tasks = [
+        Task("s1", p.id, "Doing", "high", due_date=iso(3), phase_changed=iso(-4)),
+        Task("s2", p.id, "Doing", "high", due_date=iso(1), phase_changed=iso(-1)),
+        Task("s3", p.id, "Doing", "normal", due_date=None, phase_changed=iso(-3)),
+        Task("s4", p.id, "Doing", "normal", due_date=None, phase_changed=None),
+        Task("s5", p.id, "Doing", "low", due_date=iso(1), phase_changed=None),
+        Task("s6", p.id, "Doing", "normal", due_date=iso(5),
+             phase_changed=None, blocked=True),
+    ]
+    b = Board([p], tasks, tmp_path / "s.json", phases=["Backlog", "Doing", "Done"])
+    titles = lambda mode: [t.title for g in
+                           kanban_order(b, tasks, False, group="project",
+                                        sort=mode)
+                           for t in g[2]]
+    orders = {m: titles(m) for m in ("project", "priority", "due", "recent")}
+    assert len({tuple(o) for o in orders.values()}) == 4, "palindrome fixture"
+    assert orders["project"] == ["s1", "s2", "s3", "s4", "s5", "s6"]
+    # blocked first; high→normal→low; priority ties by due (s2 before s1);
+    # undated sink; the undated normal tie keeps board order (s3 before s4)
+    assert orders["priority"] == ["s6", "s2", "s1", "s3", "s4", "s5"]
+    # blocked first; due ascending; the due tie (+1/+1) keeps board order
+    # (s2 before s5); undated sink, board order kept (s3 before s4)
+    assert orders["due"] == ["s6", "s2", "s5", "s1", "s3", "s4"]
+    # phase_changed descending, None last, None ties in board order (s4,s5,s6)
+    assert orders["recent"] == ["s2", "s3", "s1", "s4", "s5", "s6"]
+
+
+def test_kanban_order_default_reproduces_kanban_groups(tmp_path):
+    """TC-005 regression PIN (LLR-003.1): `group="project", sort="project"`
+    reproduces today's exact `_kanban_groups` output — same (name, color,
+    tasks) tuples, Inbox last included — so the seat change is invisible in
+    the default mode. RED: any reordering inside the new seat (even a 'helpful'
+    sort) → tuple mismatch."""
+    from taskboard.views import _kanban_groups, kanban_order, phase_buckets
+    b = _mode_board(tmp_path)
+    for bucket in phase_buckets(b, b.visible_tasks(False)):
+        assert kanban_order(b, bucket, False) == _kanban_groups(b, bucket, False)
+
+
+def test_kanban_order_is_pure_and_unknown_phase_falls_to_bucket_zero(tmp_path):
+    """TC-005 (HLR-003 boundary catalog): `kanban_order` does no I/O and
+    mutates nothing — the board's task order is byte-equal after calls in
+    every mode (the 'view sort reorders board.tasks' mutation reddens the
+    LAST assertion); a task in an unknown phase lands in the FIRST nav
+    column through the shared seat (`phase_buckets`' bucket-0 fallback).
+    RED: any append/remove/reorder side-effect → model-order assertion red."""
+    from taskboard.views import kanban_order, nav_model
+    b = _mode_board(tmp_path)
+    before = [t.id for t in b.tasks]
+    tasks = b.visible_tasks(False)
+    for sort in ("project", "priority", "due", "recent"):
+        for group in ("project", "priority", "horizon"):
+            kanban_order(b, tasks, False, group=group, sort=sort)
+    assert [t.id for t in b.tasks] == before
+    stray = Task("k10", None, "Nope")       # unknown phase, no project (Inbox)
+    b.add_task(stray)
+    cols = nav_model("kanban", b, False)
+    assert stray.id in cols[0]
+    assert all(stray.id not in col for col in cols[1:])
+
+
+def test_kanban_order_horizon_boundaries_and_done_group(tmp_path):
+    """TC-005 + TC-007 boundaries (LLR-004.1, §6.5 AMD-04/D-11): due today−1 →
+    Overdue; today → This week; today+7 → This week; today+8 → Later; None →
+    No date; a last-phase task — even with a FUTURE due — lands in the
+    trailing `Done` group (dim tone, `phase_changed`-descending, unknown
+    stamps sunk); empty groups emit no header. RED counterfactuals: boundary
+    off-by-one (`< 7` for `<= 7`) → the +7 limb red; `done` read from the due
+    date instead of the phase → the future-due limb red; Done sorted by due →
+    the pinned-order limb red."""
+    from datetime import timedelta
+    from taskboard.views import kanban_order
+    today = date.today()
+
+    def iso(n):
+        return (today + timedelta(days=n)).isoformat()
+
+    p = Project("ProjH", "violet")
+    tasks = [
+        Task("hb1", p.id, "Doing", due_date=iso(-1)),
+        Task("hb2", p.id, "Doing", due_date=iso(0)),
+        Task("hb3", p.id, "Doing", due_date=iso(7)),
+        Task("hb4", p.id, "Doing", due_date=iso(8)),
+        Task("hb5", p.id, "Doing"),                          # undated
+        Task("hb6", p.id, "Done", due_date=iso(30), phase_changed=iso(-1)),
+        Task("hb7", p.id, "Done", phase_changed=None),
+    ]
+    b = Board([p], tasks, tmp_path / "h.json", phases=["Backlog", "Doing", "Done"])
+    groups = kanban_order(b, tasks, False, group="horizon", today=today)
+    assert [g[0] for g in groups] == ["Overdue", "This week", "Later",
+                                      "No date", "Done"]
+    member = {n: [t.title for t in ts] for n, _c, ts in groups}
+    assert member["Overdue"] == ["hb1"]
+    assert member["This week"] == ["hb2", "hb3"]    # today AND exactly +7
+    assert member["Later"] == ["hb4"]               # exactly +8
+    assert member["No date"] == ["hb5"]
+    assert member["Done"] == ["hb6", "hb7"]         # stamped first, None sunk
+    assert {n: col for n, col, _ts in groups}["Done"] == "dim"
+    no_later = [t for t in tasks if t.title != "hb4"]
+    groups2 = kanban_order(b, no_later, False, group="horizon", today=today)
+    assert "Later" not in [g[0] for g in groups2]   # empty group: no ghost
+
+
+def test_kanban_mode_actions_are_registered_and_guarded(tmp_path):
+    """§3.0 / LLR-012.1 four-seat registration for `s`/`g`: a kanban-scoped
+    KEYMAP entry each (placed before the arrow block), a real action on the
+    app, and BOARD_ACTIONS membership (what drops them on the aperture).
+    RED: entry after the arrow block → the placement assertion red; action
+    missing from BOARD_ACTIONS → the frozenset limb red (the aperture probe
+    below is the behavioural half)."""
+    from taskboard.app import TaskboardApp
+    from taskboard.keymap import KEYMAP
+    by_action = {k.action: k for k in KEYMAP}
+    arrow_at = next(i for i, k in enumerate(KEYMAP) if k.action == "cursor(1)")
+    for action in ("kanban_sort", "kanban_group"):
+        entry = by_action[action]
+        assert entry.views == ("kanban",)
+        assert KEYMAP.index(entry) < arrow_at
+        assert action in TaskboardApp.BOARD_ACTIONS
+        assert callable(getattr(TaskboardApp, f"action_{action}"))
+
+
+async def test_kanban_mode_keys_are_noops_outside_kanban(tmp_path):
+    """§3.0 view guard (the `action_toggle_presentation` precedent): `s`/`g`
+    outside the kanban view change NOTHING — not the mode state, not a pixel.
+    A key acting where the bar never advertised it is the same lie in
+    reverse. RED: guard dropped → the mode state flips in swimlanes."""
+    app = TaskboardApp(board_path=str(tmp_path / "g.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()                         # swimlanes
+        before = board_text(app)
+        for key in (_key_for("kanban_sort"), _key_for("kanban_group")):
+            await pilot.press(key)
+            await pilot.pause()
+        assert app.kanban_sort == "project"
+        assert app.kanban_group == "project"
+        assert board_text(app) == before
+
+
+async def test_kanban_mode_keys_are_dead_on_the_aperture(tmp_path):
+    """HLR-012 limb for `s`/`g` (the PLAN's named aperture risk, executable):
+    with the aperture on top, pressing `s`/`g` leaves the mode state AND the
+    board file byte-unchanged — `check_action` drops them before they reach
+    the hidden board. RED: action missing from BOARD_ACTIONS → the key acts
+    on the hidden board and the state assertion fails."""
+    app = TaskboardApp(board_path=str(tmp_path / "a.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        blob = Path(app.board.path).read_bytes()
+        await pilot.press("6")                      # the aperture
+        await pilot.pause()
+        for key in (_key_for("kanban_sort"), _key_for("kanban_group")):
+            await pilot.press(key)
+            await pilot.pause()
+        assert app.kanban_sort == "project"
+        assert app.kanban_group == "project"
+        assert Path(app.board.path).read_bytes() == blob
+
+
+# --------------------------------------------------------------------------- #
+# WIP limits in the kanban phase header (batch-04 R-05, HLR-005 / LLR-005.2,
+# §6.5 AMD-08) — the model half (getter/setter/rename) lives in
+# tests/test_momentum.py
+# --------------------------------------------------------------------------- #
+def _hex_span_covers(rendered, fragment: str, hex_color: str) -> bool:
+    """True when a span carrying `hex_color` covers `fragment` in the rendered
+    Content — the EMITTED form (C-42), never a re-render. Colors are compared
+    as parsed textual Colors: a substring check on the style would be vacuous
+    (the foreground renders as `Color(244, 63, 94)`, never as the hex)."""
+    from textual.color import Color
+    want = Color.parse(hex_color)
+    plain = str(rendered)
+    at = plain.find(fragment)
+    assert at >= 0, f"{fragment!r} is not painted at all"
+    for s in rendered.spans:
+        fg = getattr(s.style, "foreground", None)
+        if (s.start <= at and s.end >= at + len(fragment)
+                and fg is not None and fg == want):
+            return True
+    return False
+
+
+async def test_kanban_wip_header_shows_count_over_default_limit(tmp_path):
+    """AT-009 (HLR-005): with the DEFAULT limit (Doing <= 3, nothing written
+    into settings) the Doing header paints ` n/3`, n recomputed from the
+    fixture. Exactly AT the limit the tag is calm; one task over, the fraction
+    burns in the `over` tone — the boundary pair is asserted on the emitted
+    spans, so an off-by-one (`>=`) reddens the at-limit limb while the over
+    limb stays green. RED counterfactuals: header paints the bare count only
+    (fraction assertion red); burn at `>=` (at-limit span limb red —
+    EXECUTED, see increment-007)."""
+    from taskboard.views import HEX
+    phases = ["Backlog", "Doing", "Review", "Done"]
+    doing = [Task(f"wip{i}", None, "Doing") for i in range(3)]
+    b = Board([], doing + [Task("other", None, "Review")], tmp_path / "w.json",
+              phases=phases)
+    b.save()
+    app = TaskboardApp(board_path=str(b.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")                          # kanban
+        await pilot.pause()
+        limit = app.board.wip_limit("Doing")
+        assert limit == 3                            # the operator-approved default
+        assert "wip_limits" not in app.board.settings  # ...NOT materialized on read
+        n = len([t for t in app.board.visible_tasks(app.show_archived)
+                 if t.phase == "Doing"])
+        assert n == limit                            # the at-limit pre-state
+        tag = f"{n}/{limit}"
+        rendered = app.query_one("#board", Static).render()
+        assert tag in str(rendered)
+        assert not _hex_span_covers(rendered, tag, HEX["over"])   # calm AT limit
+        app.board.add_task(Task("wip-over", None, "Doing"))
+        app.refresh_view()
+        await pilot.pause()
+        tag2 = f"{n + 1}/{limit}"
+        rendered = app.query_one("#board", Static).render()
+        assert tag2 in str(rendered)
+        assert _hex_span_covers(rendered, tag2, HEX["over"])      # burns OVER
+
+
+async def test_kanban_wip_header_honors_a_non_default_limit(tmp_path):
+    """AT-010 (HLR-005, C-10): the SAME shape with settings carrying a
+    non-default limit (Doing <= 2) paints ` n/2` — never the shipped
+    default — while a sibling phase with NO configured limit paints its bare
+    count with no fraction. RED: the default map consulted even when the
+    setting exists (paints n/3 -> both fraction limbs red; this is why the
+    fixture is settings-driven)."""
+    phases = ["Backlog", "Doing", "Review", "Done"]
+    tasks = [Task(f"lim{i}", None, "Doing") for i in range(4)]
+    tasks += [Task("loose", None, "Backlog")]
+    b = Board([], tasks, tmp_path / "w2.json",
+              settings={"wip_limits": {"Doing": 2}}, phases=phases)
+    b.save()
+    app = TaskboardApp(board_path=str(b.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        n = len([t for t in app.board.visible_tasks(app.show_archived)
+                 if t.phase == "Doing"])
+        assert f"{n}/2" in board_text(app)           # the OPERATOR's limit
+        assert f"{n}/3" not in board_text(app)       # not the shipped default
+        hdr = next(l for l in board_text(app).split("\n")
+                   if all(p.upper() in l for p in phases))
+        backlog_cell = next(seg for seg in hdr.split("│") if "BACKLOG" in seg)
+        bare = len([t for t in app.board.visible_tasks(app.show_archived)
+                    if t.phase == "Backlog"])
+        assert "/" not in backlog_cell               # no fraction when unlimited
+        assert f" {bare}" in backlog_cell            # ...just the bare count
+
+
+def test_windowed_header_wip_tag_tones_and_boundaries(tmp_path):
+    """TC-008 (LLR-005.2) boundary table over n in {0, limit-1, limit,
+    limit+1} with the limit from a SETTINGS dict (not the default), plus the
+    None-limit case: ` n/limit` when limited, bare ` n` when not; the tag
+    burns in the `over` tone ONLY when STRICTLY over — exactly at the limit
+    is calm (the off-by-one limb, reddened by the `>=` mutation). The tag is
+    laid out last: it survives at MIN_COL while the name truncates first."""
+    from taskboard.views import HEX, MIN_COL, _strip, _windowed_header, vis
+    limit = 2                                        # NON-default (C-10)
+    for count in (0, limit - 1, limit, limit + 1):
+        b = Board([], [Task(f"w{i}", None, "Doing") for i in range(count)],
+                  tmp_path / f"h{count}.json",
+                  settings={"wip_limits": {"Doing": limit}},
+                  phases=["Backlog", "Doing", "Done"])
+        doing_i = b.phases.index("Doing")
+        cells = _windowed_header(b, 0, [40, 40, 40], b.visible_tasks(False))
+        assert f"{count}/{limit}" in cells[doing_i]     # the fraction, recomputed
+        assert (HEX["over"] in cells[doing_i]) == (count > limit)
+        assert all(vis(_strip(cell)) == 40 for cell in cells)   # width-exact
+    # no-limit phase: bare count, no fraction (asserted on the STRIPPED text —
+    # the markup's own `[/]` closers would make a raw `/` search vacuous)
+    b = Board([], [Task("x", None, "Backlog")], tmp_path / "hn.json",
+              phases=["Backlog", "Doing", "Done"])
+    cells = _windowed_header(b, 0, [40, 40, 40], b.visible_tasks(False))
+    assert "/" not in _strip(cells[0]) and " 1" in _strip(cells[0])
+    # the tag survives at MIN_COL width (a long phase name truncates first)
+    long_phases = ["Backlog-beyond-all-measure", "Doing", "Done"]
+    b2 = Board([], [Task("y", None, "Doing")], tmp_path / "hs.json",
+               phases=long_phases)
+    narrow = _windowed_header(b2, 0, [MIN_COL] * 3, b2.visible_tasks(False))
+    assert all(vis(_strip(cell)) == MIN_COL for cell in narrow)
+    assert "/3" in narrow[1]                          # the default-limit tag held
+
+
+# --------------------------------------------------------------------------- #
+# card aging (batch-04 R-06, HLR-006 — AT-011) and terminal-phase collapse
+# (R-07, HLR-007/LLR-007.1, §6.5 AMD-02 — AT-012, TC-010)
+# --------------------------------------------------------------------------- #
+def _aging_board(tmp_path, name="aging.json") -> Board:
+    """The aging/collapse fixture (AT-011, AT-012): FOUR phases so the
+    terminal one has a NON-EMPTY Review neighbour (the relocation target),
+    three tasks resting in the terminal phase (N recomputed, never a
+    literal), and titles free of `·` and digits so a token search can never
+    match a title. Stamps stay well inside AUTO_ARCHIVE_DAYS so the boot
+    sweep cannot touch them."""
+    from datetime import timedelta
+    p = Project("ProjA", "violet")
+    today = date.today()
+
+    def iso(delta):
+        return (today + timedelta(days=delta)).isoformat()
+
+    tasks = [
+        Task("alpha", p.id, "Backlog", "normal", phase_changed=iso(-2)),
+        Task("bravo", p.id, "Doing", "normal", phase_changed=iso(-5)),
+        Task("charlie", p.id, "Doing", "normal", phase_changed=None),
+        Task("delta", p.id, "Review", "normal", phase_changed=iso(-1)),
+        Task("echo", p.id, "Done", "normal", phase_changed=iso(-9)),
+        Task("foxtrot", p.id, "Done", "normal", phase_changed=iso(-3)),
+        Task("golf", p.id, "Done", "normal", phase_changed=None),
+    ]
+    b = Board([p], tasks, tmp_path / name,
+              phases=["Backlog", "Doing", "Review", "Done"])
+    b.save()
+    return b
+
+
+async def test_kanban_aging_token_renders_only_for_dated_open_cards(tmp_path):
+    """AT-011 (HLR-006): a card stamped 5 days ago renders `·5d` in its
+    painted row; a never-stamped card renders NO token; a done card stamped
+    9 days ago renders NO token either (done work rests — its age is not
+    work-in-progress information). N is recomputed through `days_in_phase`,
+    never a literal; rows are located by title, never by index. RED
+    counterfactuals: token derived from `start_date`/`due_date` instead of
+    `phase_changed` → the recomputed-N limb red; None rendered as `·0d` →
+    the unstamped limb red; the done-suppression dropped → the done limb
+    red (EXECUTED, see increment-008 §4)."""
+    from taskboard.models import days_in_phase
+    board = _aging_board(tmp_path)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        text = board_text(app)
+        by_title = {t.title: t for t in board.tasks}
+
+        def card_of(title):
+            """The one painted COLUMN SEGMENT holding this card — a line is
+            the whole board (several columns), so a token search must be
+            confined to the card's own cell or a neighbour's token leaks in."""
+            hits = [seg for l in text.split("\n") for seg in l.split("│")
+                    if title in seg]
+            assert len(hits) == 1, f"{title}: expected one painted card: {hits}"
+            return hits[0]
+
+        dated, undated, done = (by_title[w]
+                                for w in ("bravo", "charlie", "echo"))
+        n = days_in_phase(dated, date.today())
+        assert n is not None and f"·{n}d" in card_of("bravo")
+        assert not re.search(r"·\d+d", card_of("charlie")), \
+            "an unstamped card painted an age — unknown is not zero"
+        assert not re.search(r"·\d+d", card_of("echo")), \
+            "a done card painted an age — done work rests"
+
+
+async def test_kanban_collapse_toggles_the_terminal_phase_and_restores(tmp_path):
+    """AT-012 (HLR-007, §6.5 AMD-02) — both directions, both satisfiable.
+    (a) selection OUTSIDE the terminal phase: `z` leaves the terminal column
+    with exactly one `✓ N` summary row (N recomputed from the fixture), none
+    of its titles painted, every other column byte-identical, the nav model
+    SKIPPING the phase (absent, not empty — painted/nav parity holds over
+    the surviving columns), and no arrow walk landing on its tasks; `z`
+    again, from there, restores the render BYTE-EXACTLY. (b) selection
+    INSIDE the terminal phase: `z` relocates it to the nearest non-empty
+    column's first card (the `action_hmove` landing rule) and the summary
+    row still renders. RED counterfactuals: collapse filters the render but
+    not the nav model → the parity/nav limbs red; N hardcoded or counting
+    archived with `v` off → the recomputed-N limb red; keyed to the SELECTED
+    task's phase (the superseded design) → every terminal-column limb red;
+    the nav column EMPTIED instead of dropped → the nav-shape limb red
+    (EXECUTED, see increment-008 §4)."""
+    board = _aging_board(tmp_path)
+    terminal = [t for t in board.tasks if board.is_done(t)]
+    terminal_ids = {t.id for t in terminal}
+    assert len(terminal) >= 2, "vacuous fixture: nothing to collapse"
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        z = _key_for("collapse_toggle")
+
+        # ---- (a) selection outside the terminal phase ---------------------
+        before = board_text(app)
+        assert app.selected_task_id not in terminal_ids
+        # every other column UNCHANGED, asserted on the painted text per
+        # column (the 01b §4 anchor machinery): a raw line-by-line compare
+        # cannot work here — the collapsed column is SHORTER, so the frame's
+        # rows below it shift up — but each surviving column's painted rows
+        # (headers and cards, in order) must be exactly what they were
+        names0, cols0 = _painted_kanban(app)
+        await pilot.press(z)
+        await pilot.pause()
+        text = board_text(app)
+        n = len([t for t in board.visible_tasks(app.show_archived)
+                 if board.is_done(t)])
+        summary = [l for l in text.split("\n") if f"✓ {n}" in l]
+        assert len(summary) == 1, f"expected one `✓ {n}` summary row: {summary}"
+        for t in terminal:
+            assert t.title not in text, f"{t.title} still painted under collapse"
+        names, cols = _painted_kanban(app)
+        assert names == names0 == list(board.phases)   # headers untouched
+        assert cols[:-1] == cols0[:-1], \
+            "collapse leaked into a neighbouring column"
+        assert [r for r in cols[-1] if r[0] == "t"] == [], \
+            "the collapsed column still paints cards"
+        # the nav model SKIPS the phase — absent, not empty — and parity
+        # holds over the surviving columns (01b §4 in the collapsed state,
+        # LLR-007.1's "parity oracle covers ≥ 1 collapsed combination")
+        nav = app._nav_columns()
+        assert len(nav) == len(board.phases) - 1, \
+            "the collapsed phase must be ABSENT from the nav model, not empty"
+        assert not terminal_ids & {tid for col in nav for tid in col}
+        assert _painted_card_ids(app, cols)[:-1] == nav, \
+            "painted order != nav order in the collapsed state"
+        # restore is BYTE-EXACT, from anywhere (the selection never moved)
+        await pilot.press(z)
+        await pilot.pause()
+        assert board_text(app) == before, "restore is not byte-exact"
+        # the arrow walk never lands the highlight on a terminal task
+        await pilot.press(z)
+        await pilot.pause()
+        for key in ("right", "right", "right", "down", "down", "left"):
+            await pilot.press(key)
+            assert app.selected_task_id not in terminal_ids, \
+                f"{key}: the cursor reached a task the board no longer draws"
+        await pilot.press(z)                    # restore for limb (b)
+        await pilot.pause()
+
+        # ---- (b) selection inside the terminal phase ----------------------
+        for _ in range(3):                        # walk right into Done
+            await pilot.press("right")
+        sel = app.selected_task
+        assert sel is not None and board.is_done(sel), \
+            "the fixture walk did not land inside the terminal phase"
+        await pilot.press(z)
+        await pilot.pause()
+        expected = next(t for t in board.tasks if t.phase == board.phases[-2])
+        assert app.selected_task_id == expected.id, \
+            "the selection did not relocate to the nearest visible task"
+        assert f"✓ {n}" in board_text(app), "the summary row did not render"
+
+
+def test_kanban_collapsed_column_shape_and_nav_exclusion(tmp_path):
+    """TC-010 (HLR-007/LLR-007.1), white-box: for the collapsed terminal
+    phase, `_kanban_column_rows` emits EXACTLY ONE `(markup, None)` row —
+    `✓ N`, N the phase's visible count recomputed — and the kanban
+    `nav_model` branch contributes NOTHING for it: the column is ABSENT, not
+    empty — while a genuinely EMPTY phase (Review in this fixture) KEEPS its
+    empty column (the ux B-1 distinction: an empty nav column is still a
+    place, a collapsed one no longer exists). The flag also flows THROUGH
+    the shared seat: `kanban_order(collapsed=True)` returns no groups. The
+    selection-relocation pin of TC-010 is the behavioural limb — AT-012(b)
+    above (folded, V-5). RED: collapse empties the nav column instead of
+    dropping it → the nav-length/`full[:-1]` limbs red (EXECUTED, see
+    increment-008 §4); summary count hardcoded or counting archived → the
+    recomputed-N limb red; the row given a task id → the None limb red (the
+    row would be selectable)."""
+    from rich.text import Text
+    from rich.cells import cell_len
+
+    from taskboard.views import _kanban_column_rows, kanban_order, nav_model
+    board = _mode_board(tmp_path)               # Review is EMPTY by design
+    terminal = [t for t in board.visible_tasks(False) if board.is_done(t)]
+    assert terminal, "vacuous fixture: the terminal phase is empty"
+
+    rows = _kanban_column_rows(board, terminal, 24, None, False,
+                               collapsed=True)
+    assert len(rows) == 1, f"a collapsed column emitted {len(rows)} rows"
+    markup, tid = rows[0]
+    assert tid is None, "the summary row must be non-selectable"
+    plain = Text.from_markup(markup).plain
+    assert plain.strip() == f"✓ {len(terminal)}"
+    assert cell_len(plain) == 24, "the summary row is not width-exact"
+
+    # the flag is an INPUT TO THE SEAT (LLR-007.1), on both paths
+    assert kanban_order(board, terminal, False, collapsed=True) == []
+    assert kanban_order(board, terminal, False) != []
+
+    full = nav_model("kanban", board, False)
+    collapsed = nav_model("kanban", board, False, kanban_collapsed=True)
+    assert len(full) == len(board.phases)
+    review_i = board.phases.index("Review")
+    assert full[review_i] == [], "fixture guard: Review must be empty"
+    assert collapsed == full[:-1], \
+        "the nav model with collapse is not exactly full-minus-terminal"
+    assert collapsed[review_i] == [], \
+        "a genuinely EMPTY phase lost its column — absent is not empty"
+
+
+def test_matrix_presentation_nav_ignores_the_modes_like_the_render(tmp_path):
+    """Phase-4 PDR ruling (the 3-carry divergence: sort/group Inc-006,
+    collapse Inc-008, focus Inc-009 — matrix render routes BEFORE the mode
+    seat, so a nav that honors the modes parks the cursor on cards the screen
+    does not draw, the F-3 trap in miniature). Rule: in matrix BOTH seats
+    ignore sort/group/collapse/focus, so the nav walks exactly what the
+    matrix draws. RED: nav keeping the focus filter under matrix → the
+    includes-every-visible-task limb red; nav dropping the terminal phase
+    under matrix+collapsed → the terminal-present limb red."""
+    from taskboard.views import nav_model
+    board = _mode_board(tmp_path)
+    proj_b = next(p for p in board.projects if p.name == "ProjB")
+    b_tasks = {t.id for t in board.visible_tasks(False)
+               if t.project_id == proj_b.id}
+    all_visible = {t.id for t in board.visible_tasks(False)}
+    assert b_tasks and b_tasks < all_visible, "vacuous fixture guard"
+
+    grouped = nav_model("kanban", board, False, kanban_focus=proj_b.id,
+                        presentation="grouped")
+    assert {tid for col in grouped for tid in col} == b_tasks, \
+        "grouped+focus must show ONLY the focused project's cards"
+
+    matrix = nav_model("kanban", board, False, kanban_focus=proj_b.id,
+                       kanban_collapsed=True, kanban_sort="due",
+                       kanban_group="horizon", presentation="matrix")
+    flat = {tid for col in matrix for tid in col}
+    assert flat == all_visible, \
+        "matrix nav must walk exactly what the matrix draws (modes ignored)"
+    assert len(matrix) == len(board.phases), \
+        "matrix nav keeps the terminal column even with the collapse flag on"
+
+
+def test_collapse_action_is_registered_and_guarded(tmp_path):
+    """§3.0 four-seat registration for `z` (the `s`/`g` precedent): a
+    kanban-scoped KEYMAP entry placed before the arrow block, a real action
+    on the app, and BOARD_ACTIONS membership (what drops it on the
+    aperture). RED: entry after the arrow block → the placement limb red;
+    action missing from BOARD_ACTIONS → the frozenset limb red (the aperture
+    probe below is the behavioural half)."""
+    from taskboard.keymap import KEYMAP
+    by_action = {k.action: k for k in KEYMAP}
+    entry = by_action["collapse_toggle"]
+    assert entry.keys == "z"
+    assert entry.views == ("kanban",)
+    arrow_at = next(i for i, k in enumerate(KEYMAP) if k.action == "cursor(1)")
+    assert KEYMAP.index(entry) < arrow_at
+    assert "collapse_toggle" in TaskboardApp.BOARD_ACTIONS
+    assert callable(getattr(TaskboardApp, "action_collapse_toggle"))
+
+
+async def test_collapse_key_is_a_noop_outside_kanban(tmp_path):
+    """§3.0 view guard (the `action_toggle_presentation` precedent): `z`
+    outside the kanban view changes NOTHING — not the flag, not a pixel. A
+    key acting where the bar never advertised it is the same lie in
+    reverse. RED: guard dropped → the flag flips in swimlanes."""
+    app = TaskboardApp(board_path=str(tmp_path / "guard.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()                         # swimlanes
+        before = board_text(app)
+        await pilot.press(_key_for("collapse_toggle"))
+        await pilot.pause()
+        assert app.kanban_collapsed is False
+        assert board_text(app) == before
+
+
+async def test_collapse_key_is_dead_on_the_aperture(tmp_path):
+    """The PLAN's named aperture risk, for `z`: with the aperture on top,
+    pressing `z` leaves the collapse flag AND the board file byte-unchanged
+    — `check_action` drops BOARD_ACTIONS there. RED: the action missing from
+    BOARD_ACTIONS → the key acts on the hidden board → the flag limb red."""
+    app = TaskboardApp(board_path=str(tmp_path / "ap.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        blob = Path(app.board.path).read_bytes()
+        await pilot.press("6")                      # the aperture
+        await pilot.pause()
+        await pilot.press(_key_for("collapse_toggle"))
+        await pilot.pause()
+        assert app.kanban_collapsed is False
+        assert Path(app.board.path).read_bytes() == blob
+
+
+# ---------------------------------------------------------------------------
+# Inc 5 — focus mode (R-08), due-date bump keys (R-09), undo (R-10)
+# ---------------------------------------------------------------------------
+def _focus_board(tmp_path, name="focus.json") -> Board:
+    """The focus fixture (AT-013, TC-011): THREE projects so "no other
+    project renders" quantifies over ≥ 2 others, plus one project-less task
+    — Inbox is NEVER a focus target (§6.2 D-5), so any focus hides it.
+    Titles unique and substring-free; FOUR phases so focused tasks can sit
+    in different columns."""
+    pa, pb, pc = (Project("AlphaP", "sky"), Project("BetaP", "lime"),
+                  Project("GammaP", "pink"))
+    tasks = [
+        Task("alfa1", pa.id, "Doing"),
+        Task("alfa2", pa.id, "Review"),
+        Task("beta1", pb.id, "Doing"),
+        Task("gama1", pc.id, "Backlog"),
+        Task("loose1", None, "Doing"),      # Inbox: hidden by ANY focus
+    ]
+    b = Board([pa, pb, pc], tasks, tmp_path / name,
+              phases=["Backlog", "Doing", "Review", "Done"])
+    b.save()
+    return b
+
+
+async def test_focus_cycle_filters_the_board_and_escape_restores(tmp_path):
+    """AT-013 (HLR-008): one `F` leaves only the first visible project's
+    titles on screen and names it in the header; the next `F` reaches a
+    DIFFERENT project; the Inbox task hides under any focus (D-5); cycling
+    past the last project turns the focus OFF (full board, unnamed header);
+    `escape` with an active focus restores every title and un-names the
+    header; `escape` with NO focus active is a pure no-op (byte-identical
+    paint) and never eats a modal's own escape (§6.5 AMD-03). Nav
+    companion: under focus the nav model covers EXACTLY the rendered tasks
+    — a filter that hides cards but leaves them navigable parks the cursor
+    on an undrawn task (the F-3 trap in a new costume). RED
+    counterfactuals: focus filters render but not nav → the nav limb red;
+    header does not name the focus → the header limb red; escape SWALLOWED
+    without an active focus (a priority binding) → the modal limb red
+    (EXECUTED, see increment-009 §4)."""
+    board = _focus_board(tmp_path)
+    pa, pb, pc = board.projects
+    titles = [t.title for t in board.tasks]
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        f_key, esc = _key_for("focus_cycle"), _key_for("focus_exit")
+
+        def header() -> str:
+            return board_text(app).split("\n")[0]
+
+        # ---- one F: only AlphaP renders, the header names it ---------------
+        await pilot.press(f_key)
+        await pilot.pause()
+        assert app.focused_project_id == pa.id
+        text = board_text(app)
+        assert "alfa1" in text and "alfa2" in text
+        for gone in ("beta1", "gama1", "loose1"):
+            assert gone not in text, f"{gone} still painted under a focus"
+        assert pa.name in header() and "focus" in header()
+        # the nav companion: exactly the rendered tasks are navigable
+        nav_ids = {i for col in app._nav_columns() for i in col}
+        assert nav_ids == {t.id for t in board.tasks if t.project_id == pa.id}
+        assert app.selected_task_id in nav_ids
+
+        # ---- cycle: a DIFFERENT project, same law --------------------------
+        await pilot.press(f_key)
+        await pilot.pause()
+        assert app.focused_project_id == pb.id
+        text = board_text(app)
+        assert "beta1" in text
+        for gone in ("alfa1", "alfa2", "gama1", "loose1"):
+            assert gone not in text
+        assert pb.name in header()
+
+        # ---- past the last project: focus OFF, the full board returns ------
+        await pilot.press(f_key)                        # GammaP
+        await pilot.pause()
+        assert app.focused_project_id == pc.id
+        await pilot.press(f_key)                        # ...and then off
+        await pilot.pause()
+        assert app.focused_project_id is None
+        text = board_text(app)
+        for w in titles:
+            assert w in text, f"{w} not restored after the cycle closed"
+        assert "focus" not in header()
+
+        # ---- escape exits ONLY an active focus -----------------------------
+        await pilot.press(f_key)
+        await pilot.pause()
+        assert app.focused_project_id == pa.id
+        await pilot.press(esc)
+        await pilot.pause()
+        assert app.focused_project_id is None
+        text = board_text(app)
+        for w in titles:
+            assert w in text, f"{w} not restored by escape"
+        assert "focus" not in header()
+
+        # ---- passthrough: no focus -> escape is a pure no-op ---------------
+        before = board_text(app)
+        await pilot.press(esc)
+        await pilot.pause()
+        assert app.focused_project_id is None
+        assert board_text(app) == before
+
+        # ---- ...and it never eats a modal's escape (§6.5 AMD-03) -----------
+        app.selected_task_id = board.tasks[0].id
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press(_key_for("delete"))           # the confirm modal
+        await pilot.pause()
+        assert len(app.screen_stack) > 1
+        await pilot.press(esc)
+        await pilot.pause()
+        assert len(app.screen_stack) == 1, \
+            "escape was swallowed before the modal could see it"
+        assert board.task_by_id(board.tasks[0].id) is not None  # not deleted
+
+
+async def test_focus_cycle_order_seat_filter_and_archived_drop(tmp_path):
+    """TC-011 (HLR-008/LLR-008.1), white-box pins beyond AT-013: the cycle
+    order is EXACTLY `visible_projects` order ending in None and closing the
+    loop; the filter lives in the shared ordering SEAT (`kanban_order` takes
+    the focus as an INPUT, like collapse — never a parallel filter); a focus
+    naming a project archived mid-session drops to None on the next refresh;
+    both actions are guarded no-ops outside the kanban view."""
+    from taskboard.views import kanban_order
+    board = _focus_board(tmp_path)
+    pa, pb, pc = board.projects
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        order = []
+        for _ in range(4):                          # one FULL cycle, to off
+            app.action_focus_cycle()
+            order.append(app.focused_project_id)
+        assert order == [pa.id, pb.id, pc.id, None]
+        # the filter is an INPUT TO THE SEAT (the LLR-003.1 one-seat law)
+        tasks = board.visible_tasks(False)
+        focused = kanban_order(board, tasks, False, focus=pb.id)
+        got = {t.id for _n, _c, items in focused for t in items}
+        assert got == {t.id for t in tasks if t.project_id == pb.id}
+        assert got != {t.id for t in tasks}, "vacuous: the filter hid nothing"
+        # archived mid-session: the focus drops on the next refresh
+        app.focused_project_id = pc.id
+        app.board.projects[2].archived = True       # the app's OWN board —
+        app.board.save()                            # the fixture is its load
+        app.refresh_view()
+        await pilot.pause()
+        assert app.focused_project_id is None
+        # guarded no-ops outside kanban (the bar never advertises them there)
+        await pilot.press("1")
+        await pilot.pause()
+        app.action_focus_cycle()
+        assert app.focused_project_id is None
+        app.action_focus_exit()
+        assert app.focused_project_id is None
+
+
+def test_focus_due_undo_actions_are_registered_and_guarded(tmp_path):
+    """§3.0 four-seat registration for `F` / `+,=` / `-` / `u` / escape:
+    KEYMAP entries (kanban-scoped where §3.0 says so, global where it does
+    not) placed BEFORE the arrow block, real actions on the app,
+    BOARD_ACTIONS membership (what drops them on the aperture). The `=`
+    alias is ONE `"+,="` entry driving `due_bump(1)` — never a second key,
+    never a set-to-today (§6.5 AMD-06). RED: the alias split into two
+    entries → the single-entry limb red; an entry after the arrow block →
+    the placement limb red; an action missing from BOARD_ACTIONS → the
+    aperture probe below is the behavioural half."""
+    from taskboard.keymap import KEYMAP
+    by_action = {k.action: k for k in KEYMAP}
+    assert by_action["due_bump(1)"].keys == "+,="       # ONE aliased entry
+    assert by_action["due_bump(-1)"].keys == "-"
+    assert by_action["undo"].keys == "u"
+    assert by_action["focus_cycle"].keys == "F"
+    assert by_action["focus_cycle"].views == ("kanban",)
+    assert by_action["focus_exit"].keys == "escape"
+    assert by_action["focus_exit"].views == ("kanban",)
+    assert by_action["due_bump(1)"].views is None       # selection-scoped,
+    assert by_action["undo"].views is None              # like the other
+    arrow_at = next(i for i, k in enumerate(KEYMAP)     # quick keys
+                    if k.action == "cursor(1)")
+    for action in ("focus_cycle", "due_bump(1)", "due_bump(-1)", "undo",
+                   "focus_exit"):
+        assert KEYMAP.index(by_action[action]) < arrow_at, action
+    for action in ("focus_cycle", "focus_exit", "due_bump", "undo"):
+        assert action in TaskboardApp.BOARD_ACTIONS, action
+    for method in ("action_focus_cycle", "action_focus_exit",
+                   "action_due_bump", "action_undo"):
+        assert callable(getattr(TaskboardApp, method)), method
+
+
+async def test_focus_due_undo_keys_are_dead_on_the_aperture(tmp_path):
+    """The PLAN's named aperture risk for the Inc-5 keys: with the aperture
+    on top, `F` `+` `-` `u` leave the focus, the undo stack AND the board
+    file untouched — `check_action` drops BOARD_ACTIONS there. (escape is
+    the aperture's OWN pop binding, so it is not in this probe's set.)
+    RED: an action missing from BOARD_ACTIONS → its key acts on the hidden
+    board → the corresponding limb red."""
+    board = _ops_board(tmp_path, Task("Widget", None, "Doing",
+                                      due_date="2026-01-01"))
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        await pilot.press("6")                          # the aperture
+        await pilot.pause()
+        blob = Path(app.board.path).read_bytes()
+        for key in (_key_for("focus_cycle"), _key_for("due_bump(1)"),
+                    _key_for("due_bump(-1)"), _key_for("undo")):
+            await pilot.press(key)
+            await pilot.pause()
+        assert app.focused_project_id is None
+        assert app._undo_stack == []
+        assert Path(app.board.path).read_bytes() == blob
+        assert app.board.tasks[0].due_date == "2026-01-01"
+
+
+async def test_due_bump_moves_dated_and_undated_tasks_forward(tmp_path):
+    """AT-014 (HLR-009): `+` on a task due in 5 days persists today+6
+    (reloaded JSON, C-12) and the due readout renders `+6d`; `+` on an
+    UNDATED task bases on today → today+1, readout `+1d`. The key is
+    pressed on the kanban (the shipped surface); the relative due token is
+    read in the AGENDA view — the one surface that paints `reldue_token`
+    (the kanban card has no due readout; flagged in increment-009 §6).
+    Expected dates are recomputed from `date.today()` at assert time,
+    never chained from earlier assertions. RED counterfactuals: the bump
+    applied to `start_date` or never saved → the JSON limbs red; no
+    re-render → the painted-token limbs red while the model limbs stay
+    green."""
+    from datetime import timedelta
+    today = date.today()
+    dated = Task("dated1", None, "Doing",
+                 due_date=(today + timedelta(days=5)).isoformat())
+    plain = Task("plain1", None, "Doing", due_date=None)
+    board = _ops_board(tmp_path, dated, plain)
+    app = TaskboardApp(board_path=str(board.path))
+    plus = _key_for("due_bump(1)")
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+
+        app.selected_task_id = dated.id
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press(plus)
+        await pilot.pause()
+        want = (today + timedelta(days=6)).isoformat()
+        assert Board.load(board.path).task_by_id(dated.id).due_date == want
+        await pilot.press("2")                          # agenda: the token
+        await pilot.pause()
+        assert "+6d" in _card_row(app, "dated1")
+        await pilot.press("4")
+        await pilot.pause()
+
+        app.selected_task_id = plain.id
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press(plus)
+        await pilot.pause()
+        want = (today + timedelta(days=1)).isoformat()
+        assert Board.load(board.path).task_by_id(plain.id).due_date == want
+        await pilot.press("2")
+        await pilot.pause()
+        assert "+1d" in _card_row(app, "plain1")
+
+
+async def test_due_bump_minus_and_the_equals_alias(tmp_path):
+    """AT-015 (HLR-009, §6.5 AMD-06): `-` moves a dated task one day
+    EARLIER; `=` behaves EXACTLY as `+` — dated task +1 day, undated task
+    today+1 — the alias is BOUND, not just shown (the seat's ONE `"+,="`
+    entry, pinned in the registration node). The today boundary: a task
+    due TODAY bumped `-` crosses to yesterday and the painted token flips
+    to the overdue `-1d` form — a clamp-at-today mutation reddens exactly
+    that limb. RED counterfactual: `=` implementing the superseded
+    set-to-today → the +1 limbs red."""
+    from datetime import timedelta
+
+    from taskboard.keymap import KEYMAP
+    today = date.today()
+    minus = Task("minus1", None, "Doing",
+                 due_date=(today + timedelta(days=5)).isoformat())
+    alias = Task("alias1", None, "Doing",
+                 due_date=(today + timedelta(days=5)).isoformat())
+    loose = Task("loose1", None, "Doing", due_date=None)
+    edge = Task("edgecase1", None, "Doing", due_date=today.isoformat())
+    board = _ops_board(tmp_path, minus, alias, loose, edge)
+    app = TaskboardApp(board_path=str(board.path))
+    minus_key = _key_for("due_bump(-1)")
+    # the alias, read off the seat's ONE entry — never typed as a literal
+    eq = next(k for k in KEYMAP if k.action == "due_bump(1)").keys.split(",")[1]
+    assert eq == "=", "the seat no longer aliases `=` to `+`"
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+
+        async def bump(tid, key):
+            app.selected_task_id = tid
+            app.refresh_view()
+            await pilot.pause()
+            await pilot.press(key)
+            await pilot.pause()
+
+        await bump(minus.id, minus_key)
+        want = (today + timedelta(days=4)).isoformat()
+        assert Board.load(board.path).task_by_id(minus.id).due_date == want
+
+        await bump(alias.id, eq)                        # `=` IS `+`
+        want = (today + timedelta(days=6)).isoformat()
+        assert Board.load(board.path).task_by_id(alias.id).due_date == want
+
+        await bump(loose.id, eq)                        # undated: base today
+        want = (today + timedelta(days=1)).isoformat()
+        assert Board.load(board.path).task_by_id(loose.id).due_date == want
+
+        await bump(edge.id, minus_key)                  # across the boundary
+        want = (today - timedelta(days=1)).isoformat()
+        assert Board.load(board.path).task_by_id(edge.id).due_date == want
+        await pilot.press("2")                          # agenda: the token
+        await pilot.pause()
+        assert "-1d" in _card_row(app, "edgecase1"), \
+            "the token did not flip to the overdue form"
+
+
+async def test_undo_restores_the_phase_and_its_stamp_verbatim(tmp_path):
+    """AT-016 (HLR-010): `]` moves + stamps; `u` puts the card back in its
+    original column AND restores the pre-mutation stamp VERBATIM — None
+    included (reloaded JSON, C-12). Restoring the phase but leaving the
+    fresh stamp is the cheap wrong implementation, and only the stamp limb
+    catches it. RED counterfactual: undo restores `phase` but not
+    `phase_changed` (or vice versa) → the JSON limbs red."""
+    task = Task("Widget", None, "Doing", phase_changed=None)
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        assert _painted_column(app, "Widget") == "Doing"    # pre-state
+        await pilot.press(_key_for("phase_move(1)"))
+        await pilot.pause()
+        assert _painted_column(app, "Widget") == "Review"
+        assert Board.load(board.path).task_by_id(task.id).phase_changed \
+            is not None
+        await pilot.press(_key_for("undo"))
+        await pilot.pause()
+        assert _painted_column(app, "Widget") == "Doing"
+        reloaded = Board.load(board.path).task_by_id(task.id)
+        assert reloaded.phase == "Doing"
+        assert reloaded.phase_changed is None, \
+            "the phase came back but the stamp stayed — a half-restore"
+
+
+async def test_undo_covers_archive_and_delete_but_not_modal_add(tmp_path):
+    """AT-016b (HLR-010, §6.5 AMD-05): `x` on a live task then `u` restores
+    `archived` to False (reloaded JSON); `d`+confirm then `u` resurrects
+    the task with the SAME id — id equality is the discriminating
+    assertion, a resurrected copy breaks line_map, nav and every later
+    undo; a task added through the MODAL is NOT undoable: `u` after it
+    fires the nothing-to-undo notification and the added task STAYS.
+    RED counterfactuals (EXECUTED, see increment-009 §4):
+    resurrect-with-new-id → the id limb red; modal add pushing an undo
+    entry whose undo removes the task → the stays-put limb red."""
+    task = Task("Widget", None, "Doing")
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+
+        # archive `x`, undone
+        app.selected_task_id = task.id
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press(_key_for("archive"))
+        await pilot.pause()
+        assert Board.load(board.path).task_by_id(task.id).archived is True
+        await pilot.press(_key_for("undo"))
+        await pilot.pause()
+        assert Board.load(board.path).task_by_id(task.id).archived is False
+
+        # delete `d` + confirm, undone -> back with the SAME id
+        app_task = app.board.task_by_id(task.id)    # the app's own instance
+        app.selected_task_id = task.id
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press(_key_for("delete"))
+        await pilot.pause()
+        app.screen.query_one("#yes", Button).press()
+        await pilot.pause()
+        assert Board.load(board.path).task_by_id(task.id) is None
+        await pilot.press(_key_for("undo"))
+        await pilot.pause()
+        reloaded = Board.load(board.path).task_by_id(task.id)
+        assert reloaded is not None, "the delete was not undone"
+        assert reloaded.id == task.id, "resurrected with a NEW id — a copy"
+        assert app.board.task_by_id(task.id) is app_task, \
+            "resurrected as a re-instantiated copy, not the same object"
+
+        # a modal add is NOT undoable: `u` says so and the task STAYS
+        seen = []
+        app.notify = lambda *a, **k: seen.append(k.get("title", ""))
+        await pilot.press("a")
+        await pilot.pause()
+        app.screen.query_one("#f-title", Input).value = "MODALTASK"
+        await save_open_modal(app, pilot)
+        assert any(t.title == "MODALTASK" for t in app.board.tasks)
+        await pilot.press(_key_for("undo"))
+        await pilot.pause()
+        assert "Undo" in seen, "no nothing-to-undo notification fired"
+        assert any(t.title == "MODALTASK"
+                   for t in Board.load(board.path).tasks), \
+            "a modal add was undone — creation is deliberate (AMD-05)"
+
+
+async def test_undo_is_lifo_and_the_empty_stack_says_so(tmp_path):
+    """AT-017 (HLR-010): `!` then `b` then `u` undoes the BLOCKED flag
+    first (LIFO — the priority is still high); the second `u` restores
+    the priority; the third finds the stack EMPTY: the board file is
+    byte-untouched and the nothing-to-undo notification fires. RED
+    counterfactuals: FIFO pop order → the first-pop limbs red; an
+    empty-pop mutating state → the byte-equality limb red."""
+    task = Task("Widget", None, "Doing")                # normal, unblocked
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    seen = []
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        app.selected_task_id = task.id
+        app.refresh_view()
+        await pilot.pause()
+        t = app.board.task_by_id(task.id)
+        await pilot.press(_key_for("prio_cycle"))
+        await pilot.pause()
+        assert t.priority == "high"
+        await pilot.press(_key_for("toggle_blocked"))
+        await pilot.pause()
+        assert t.blocked is True
+        await pilot.press(_key_for("undo"))
+        await pilot.pause()
+        assert t.blocked is False, "LIFO violated: blocked not undone first"
+        assert t.priority == "high", "LIFO violated: priority undone first"
+        await pilot.press(_key_for("undo"))
+        await pilot.pause()
+        assert t.priority == "normal"
+        assert t.blocked is False
+        # the empty stack: no write, no mutation, and it SAYS so
+        app.notify = lambda *a, **k: seen.append(k.get("title", ""))
+        blob = Path(app.board.path).read_bytes()
+        await pilot.press(_key_for("undo"))
+        await pilot.pause()
+        assert Path(app.board.path).read_bytes() == blob, "empty pop wrote"
+        assert "Undo" in seen, "no nothing-to-undo notification fired"
+        assert t.priority == "normal" and t.blocked is False
+
+
+async def test_undo_stack_snapshot_stale_skip_and_no_write_on_empty(tmp_path):
+    """TC-013 (HLR-010/LLR-010.1), white-box pins beyond the ATs (selector
+    `-k undo_stack`): an empty pop fires the notification and writes
+    NOTHING — twice, so a phantom entry cannot hide behind the first pop;
+    the snapshot records the six mutable fields VERBATIM, None stamp
+    included; an entry whose task was PURGED since the snapshot (the one
+    destructive route undo does not cover) is SKIPPED without raising —
+    the same notification, no crash, no resurrection."""
+    task = Task("Widget", None, "Doing", phase_changed=None)
+    board = _ops_board(tmp_path, task)
+    app = TaskboardApp(board_path=str(board.path))
+    seen = []
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        # empty stack: notification + no write, twice (no phantom entry)
+        app.notify = lambda *a, **k: seen.append(k.get("title", ""))
+        blob = Path(app.board.path).read_bytes()
+        for _ in range(2):
+            app.action_undo()
+            await pilot.pause()
+        assert seen == ["Undo", "Undo"]
+        assert Path(app.board.path).read_bytes() == blob
+        # the snapshot is field-verbatim, None stamp included
+        app.selected_task_id = task.id
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press(_key_for("prio_cycle"))
+        await pilot.pause()
+        entry = app._undo_stack[-1]
+        assert entry["task_id"] == task.id
+        assert entry["fields"] == {"phase": "Doing", "phase_changed": None,
+                                   "priority": "normal", "blocked": False,
+                                   "due_date": None, "archived": False}
+        # purged since the snapshot -> the entry is SKIPPED, no raise
+        app.board.delete_task(task.id)      # the route undo does not cover
+        await pilot.pause()
+        app.action_undo()
+        await pilot.pause()
+        assert app._undo_stack == []
+        assert seen[-1] == "Undo", "the stale entry was not skipped cleanly"
+        assert Board.load(board.path).task_by_id(task.id) is None
+
+
+# --------------------------------------------------------------------------- #
+# weekly standup modal on `S` (batch-04 R-11, HLR-011 / LLR-011.1 / LLR-011.2)
+# --------------------------------------------------------------------------- #
+def _modal_lines(app) -> list[str]:
+    """The pushed modal's text, line by line — the labels the reader sees,
+    read off the pushed screen's own widgets (never a re-render of the
+    board underneath)."""
+    from textual.widgets import Label
+    return [str(w.render()) for w in app.screen.query(Label)]
+
+
+def _standup_window_members(tasks, today):
+    """The rule-derived window set, RESTATED from HLR-011 (never computed by
+    calling `standup_query` — that would make the oracle a second copy of the
+    suspect): visible tasks stamped with today-7 <= phase_changed <= today,
+    a None or corrupt stamp OUT."""
+    from datetime import timedelta
+
+    from taskboard.models import parse_iso
+    week_ago = today - timedelta(days=7)
+    return {t.title for t in tasks if not t.archived
+            and (d := parse_iso(t.phase_changed)) is not None
+            and week_ago <= d <= today}
+
+
+def test_standup_action_is_registered_and_guarded(tmp_path):
+    """§3.0 / LLR-012.1 four-seat registration for `S`: a global KEYMAP entry
+    (the standup reads the board in ANY view, like `R` — not kanban-scoped)
+    placed BEFORE the arrow block, a real `action_standup` on the app, and
+    BOARD_ACTIONS membership (what drops it on the aperture — AT-019 below is
+    the behavioural half). RED: entry after the arrow block → the placement
+    limb red; action missing from BOARD_ACTIONS → the frozenset limb red."""
+    from taskboard.keymap import KEYMAP
+    by_action = {k.action: k for k in KEYMAP}
+    entry = by_action["standup"]
+    assert entry.keys == "S"
+    assert entry.views is None                    # global, like `R`
+    arrow_at = next(i for i, k in enumerate(KEYMAP)
+                    if k.action == "cursor(1)")
+    assert KEYMAP.index(entry) < arrow_at
+    assert "standup" in TaskboardApp.BOARD_ACTIONS
+    assert callable(getattr(TaskboardApp, "action_standup"))
+
+
+async def test_standup_modal_lists_the_week_grouped_and_marked(tmp_path):
+    """AT-018 (HLR-011): `S` opens a modal listing this week's movers grouped
+    per project — moved rows wear `→`, closed rows wear `✓`, each project
+    closes with its recomputed `closed/total` line — and NOTHING outside the
+    window appears: the exactly-7-days stamp is IN, 8 and 10 days are OUT,
+    the never-stamped task is OUT. Esc dismisses and the modal mutated
+    nothing (the board file is byte-unchanged across open+close). RED
+    counterfactuals: window off-by-one (`>` for `>=` → the 7d task out; an
+    8-day window → the 8d task in) → the boundary limbs red; a None stamp
+    read as 0 → the never-stamped task leaks in → the exclusion limb red;
+    membership read from a stored field instead of `phase_changed` → the
+    inclusion limbs red; done counted off a literal "Done" instead of the
+    terminal phase → the ✓ limb red on a renamed phase; count arithmetic
+    off → the recomputed fraction limb red."""
+    from datetime import timedelta
+    today = date.today()
+
+    def iso(n: int) -> str:
+        return (today + timedelta(days=n)).isoformat()
+
+    alpha = Project("Alpha", "sky")
+    beta = Project("Beta", "lime")
+    tasks = [
+        Task("MOVEDTODAY", alpha.id, "Review", phase_changed=iso(0)),
+        Task("CLOSEDWEEK", alpha.id, "Done", phase_changed=iso(-5)),
+        Task("BOUNDARY7", alpha.id, "Doing", phase_changed=iso(-7)),
+        Task("OUTEIGHT", alpha.id, "Backlog", phase_changed=iso(-8)),
+        Task("BETAMOVED", beta.id, "Doing", phase_changed=iso(-2)),
+        Task("OUTTEN", beta.id, "Doing", phase_changed=iso(-10)),
+        Task("NEVERMOVED", beta.id, "Doing", phase_changed=None),
+    ]
+    board = Board([alpha, beta], tasks, tmp_path / "s.json",
+                  phases=["Backlog", "Doing", "Review", "Done"])
+    board.save()
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        blob = Path(app.board.path).read_bytes()
+        await pilot.press(_key_for("standup"))
+        await pilot.pause()
+        from taskboard.modals import StandupModal
+        assert isinstance(app.screen, StandupModal)
+        lines = _modal_lines(app)
+        text = "\n".join(lines)
+
+        # inclusion: the week's movers, each UNDER its own project header
+        for title, header in (("MOVEDTODAY", "Alpha"), ("CLOSEDWEEK", "Alpha"),
+                              ("BOUNDARY7", "Alpha"), ("BETAMOVED", "Beta")):
+            assert title in text, f"{title} is missing from the standup"
+            hi = next(i for i, l in enumerate(lines) if f"▐ {header}" in l)
+            ti = next(i for i, l in enumerate(lines) if title in l)
+            assert hi < ti, f"{title} is not under the {header} header"
+
+        # the marks: closed wears ✓, moved wears → with its current phase
+        assert any(l.startswith("  ✓ CLOSEDWEEK") for l in lines), \
+            "the closed task did not get its ✓"
+        for moved, phase in (("MOVEDTODAY", "Review"), ("BOUNDARY7", "Doing"),
+                             ("BETAMOVED", "Doing")):
+            assert any(l.startswith(f"  → {moved}") and phase in l
+                       for l in lines), f"{moved} did not get its → {phase}"
+
+        # the per-project count line, RECOMPUTED from the fixture by the
+        # stated rule (terminal phase = closed), never hand-listed
+        for project in (alpha, beta):
+            members = [t for t in tasks if t.project_id == project.id
+                       and t.title in _standup_window_members(tasks, today)]
+            closed = sum(1 for t in members if t.phase == board.phases[-1])
+            assert f"{closed}/{len(members)} closed this week" in text, \
+                f"{project.name}'s count line is wrong or missing"
+
+        # the discriminating negatives: 8d OUT, 10d OUT, never-stamped OUT
+        for title in ("OUTEIGHT", "OUTTEN", "NEVERMOVED"):
+            assert title not in text, f"{title} leaked into the week"
+
+        # completeness companion: the modal's task set IS the rule-derived
+        # window set — a fixture task added later is covered by the rule,
+        # and nothing hand-listed lets a leak slip by
+        shown = {t.title for t in tasks if t.title in text}
+        assert shown == _standup_window_members(tasks, today)
+
+        # esc dismisses; the modal mutated NOTHING across open + close
+        await pilot.press("escape")
+        await pilot.pause()
+        assert len(app.screen_stack) == 1, "escape did not dismiss the standup"
+        assert Path(app.board.path).read_bytes() == blob, \
+            "a read-only modal wrote to the board file"
+
+
+async def test_standup_modal_empty_week_says_so_in_one_line(tmp_path):
+    """AT-018 empty limb (HLR-011 boundary catalog): a board where nothing
+    moved inside the window gets ONE honest line — no invented motion, no
+    ghost project sections. RED counterfactuals: the empty message dropped
+    → the message limb red; a None stamp read as 0 → the unstamped task
+    appears and the message vanishes → both limbs red."""
+    from datetime import timedelta
+    today = date.today()
+    old = Task("OLDSTAMP", None, "Doing",
+               phase_changed=(today - timedelta(days=30)).isoformat())
+    never = Task("NEVERSTAMPED", None, "Doing", phase_changed=None)
+    board = _ops_board(tmp_path, old, never, name="empty.json")
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press(_key_for("standup"))
+        await pilot.pause()
+        lines = _modal_lines(app)
+        text = "\n".join(lines)
+        assert "Nothing moved this week." in text, \
+            "the empty week does not say so"
+        assert not any("▐" in l for l in lines), \
+            "a ghost project section on an empty week"
+        assert "OLDSTAMP" not in text and "NEVERSTAMPED" not in text
+
+
+async def test_all_batch_keys_are_dead_on_the_aperture(tmp_path):
+    """AT-019 (HLR-012): the FULL §3.0 key set — `[` `]` `!` `b` `s` `g` `z`
+    `F` `+` `-` `=` `u` `S`, every physical key read off the seat (aliases
+    included, never typed as literals) — is dead while the aperture is on
+    top: the aperture stays the top screen, the mode/focus/undo state is
+    untouched, and the board file is BYTE-EQUAL afterwards. The boundary
+    limb: `escape` then pops the aperture itself (its own binding, not the
+    kanban focus-exit). RED counterfactual: an action missing from
+    BOARD_ACTIONS (delete one frozenset member) → its key reaches the
+    hidden board — a mutation key changes the file (the byte-equality limb
+    red), `S` pushes its modal over the aperture (the screen-identity limb
+    red)."""
+    from taskboard.aperture import ApertureScreen
+    from taskboard.keymap import KEYMAP
+    # the §3.0 actions — the physical keys are DERIVED from the seat below,
+    # so a re-keyed binding is followed, never hard-coded (the `=` alias of
+    # `+` rides along through the entry's own alias list)
+    batch_actions = ("phase_move(-1)", "phase_move(1)", "prio_cycle",
+                     "toggle_blocked", "kanban_sort", "kanban_group",
+                     "collapse_toggle", "focus_cycle", "due_bump(1)",
+                     "due_bump(-1)", "undo", "standup")
+    keys = [phys for action in batch_actions
+            for phys in next(k for k in KEYMAP if k.action == action)
+            .keys.split(",")]
+    assert len(keys) == 13, keys                  # the full §3.0 set, `=` too
+    task = Task("Widget", None, "Doing", due_date="2026-01-01")
+    board = _ops_board(tmp_path, task, name="ap13.json")
+    app = TaskboardApp(board_path=str(board.path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        await pilot.press("6")                      # the aperture
+        await pilot.pause()
+        assert isinstance(app.screen, ApertureScreen)
+        blob = Path(app.board.path).read_bytes()
+        for key in keys:
+            await pilot.press(key)
+            await pilot.pause()
+            assert isinstance(app.screen, ApertureScreen), \
+                f"{key!r} reached past the aperture (top: {app.screen!r})"
+        assert Path(app.board.path).read_bytes() == blob, \
+            "a key mutated the hidden board through the aperture"
+        assert app.kanban_sort == "project" and app.kanban_group == "project"
+        assert app.kanban_collapsed is False
+        assert app.focused_project_id is None
+        assert app._undo_stack == []
+        assert app.board.task_by_id(task.id).due_date == "2026-01-01"
+        # boundary: escape is the aperture's OWN binding — it pops it
+        await pilot.press("escape")
+        await pilot.pause()
+        assert len(app.screen_stack) == 1, "escape did not pop the aperture"
+        assert Path(app.board.path).read_bytes() == blob

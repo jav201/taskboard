@@ -48,6 +48,15 @@ DROPPED_PROJECT_COLORS = {
 PROJECT_STATUSES = ("on_track", "paused", "cancelled", "completed")
 TASK_PRIORITIES = ("low", "normal", "high")
 
+
+def next_priority(p: str) -> str:
+    """One step through TASK_PRIORITIES, wrapping at the end. An unknown value
+    counts as the default (`normal`) — coerced at load, but a caller holding a
+    pre-coercion string still gets a member of the declared order back."""
+    if p not in TASK_PRIORITIES:
+        return "normal"
+    return TASK_PRIORITIES[(TASK_PRIORITIES.index(p) + 1) % len(TASK_PRIORITIES)]
+
 # Finished work stops being news. A task that has been in its done phase this
 # long is archived automatically — but ONLY when the board knows when it was
 # finished (see Board.auto_archive_done).
@@ -56,6 +65,12 @@ AUTO_ARCHIVE_DAYS = 20
 # Tasks move through an ORDERED list of phases owned by the board; progress is
 # positional (phase index / last index), so a board can define its own workflow.
 DEFAULT_PHASES = ("Backlog", "Doing", "Done")
+
+# The operator-approved WIP-limit policy (HLR-005, §6.5 AMD-08): when a board's
+# settings carry no `wip_limits` entry for a phase, the limit reads from THIS
+# map — the default is never written into settings by a READ, so a board file
+# is never rewritten just by being looked at.
+DEFAULT_WIP_LIMITS = {"Doing": 3}
 # legacy task.status -> (phase, blocked) ; kept forever so old boards keep loading
 LEGACY_STATUS = {"backlog": ("Backlog", False), "doing": ("Doing", False),
                  "active": ("Doing", False), "blocked": ("Doing", True),
@@ -618,6 +633,18 @@ def parse_iso(value: str | None) -> date | None:
         return None
 
 
+def bump_due(task: "Task", delta: int, today: date) -> None:
+    """Move `task.due_date` `delta` days and write it back as ISO text.
+
+    The base is the task's OWN date, or `today` when there is no readable
+    one: an undated task and a corrupt stored string both parse to None
+    (`parse_iso` leniency), and None means the bump starts from today —
+    never from an invented epoch. Pure bar the one field write; the caller
+    saves (the `set_task_phase` convention)."""
+    base = parse_iso(task.due_date) or today
+    task.due_date = (base + timedelta(days=delta)).isoformat()
+
+
 def _extra_keys(d: dict, known: set[str]) -> dict:
     """Every key we don't model, kept verbatim so a load->save round-trip never
     drops data another (older/newer) version of the app wrote."""
@@ -907,6 +934,50 @@ class Board:
         self.settings["clock2"] = clock2
         self.save()
 
+    # ---- WIP limits (kanban phase headers, HLR-005 / LLR-005.1) -------------
+    def wip_limit(self, phase: str) -> int | None:
+        """The WIP limit for `phase`, or None when the phase is unlimited.
+
+        PURE (§6.5 AMD-08): no write side-effects and no read-time
+        materialization — this getter NEVER touches `self.settings` and never
+        saves, so reading a limit can never dirty a hand-edited board file.
+        An operator-set value in `settings["wip_limits"]` wins when it coerces
+        to a positive int; anything else (absent, non-numeric, non-positive, or
+        keyed to a phase the board does not have) is ignored and falls through
+        to the operator-approved default map {"Doing": 3}, then to None.
+        `set_wip_limit` is the ONLY write path."""
+        if phase not in self.phases:
+            return None
+        limits = self.settings.get("wip_limits")
+        if isinstance(limits, dict) and phase in limits:
+            try:
+                value = int(limits[phase])
+            except (TypeError, ValueError):
+                value = 0
+            if value > 0:
+                return value
+        return DEFAULT_WIP_LIMITS.get(phase)
+
+    def set_wip_limit(self, phase: str, limit) -> None:
+        """THE ONLY write path for WIP limits — validation and coercion live
+        here, never in the getter. A value that coerces to a positive int sets
+        the phase's limit; anything else CLEARS it, so there is no way to
+        persist a value the getter would have to guess at. The caller saves
+        (the add_phase/rename_phase precedent)."""
+        limits = dict(self.settings.get("wip_limits") or {})
+        try:
+            value = int(limit)
+        except (TypeError, ValueError):
+            value = 0
+        if value > 0:
+            limits[phase] = value
+        else:
+            limits.pop(phase, None)
+        if limits:
+            self.settings["wip_limits"] = limits
+        else:
+            self.settings.pop("wip_limits", None)
+
     # ---- lookups -----------------------------------------------------------
     def project_by_id(self, pid: str | None) -> Project | None:
         if pid is None:
@@ -1055,7 +1126,9 @@ class Board:
     def rename_phase(self, old: str, new: str) -> bool:
         """Rename a phase AND move every task that referenced it. Without the
         second half the tasks would be orphaned and silently demoted to the
-        first phase on the next load."""
+        first phase on the next load. A WIP limit set on the phase migrates
+        with it (§6.5 AMD-08), so a rename can never orphan an operator-set
+        limit either."""
         new = str(new).strip()
         if not new or old not in self.phases:
             return False
@@ -1065,6 +1138,9 @@ class Board:
         for t in self.tasks:
             if t.phase == old:
                 t.phase = new
+        limits = self.settings.get("wip_limits")
+        if isinstance(limits, dict) and old in limits:
+            limits[new] = limits.pop(old)
         return True
 
     def delete_phase(self, name: str, reassign_to: str | None = None) -> bool:
@@ -1095,6 +1171,36 @@ class Board:
             return False
         self.phases.insert(j, self.phases.pop(i))
         return True
+
+
+def standup_query(board: "Board", today: date,
+                  show_archived: bool) -> list[tuple[str, list[tuple["Task", bool]]]]:
+    """The weekly standup, derived ONLY from `phase_changed` (LLR-011.1) —
+    nothing new is stored, so a board that never recorded a move honestly has
+    no week to report.
+
+    Returns `(project name, [(task, done), ...])` groups for the visible tasks
+    stamped inside the window `today-7 <= phase_changed <= today` — the
+    boundary day is IN, eight days ago is OUT, and a None or corrupt stamp is
+    OUT (`parse_iso` already reads both as unknown). Groups follow
+    `visible_projects` order, anything not under a visible project lands in
+    the Inbox LAST, and empty groups simply do not appear (no ghost headers —
+    the legend's law applied to the week). `done` is read off
+    `board.is_done`, the same seat the board itself uses."""
+    week_ago = today - timedelta(days=7)
+    moved = [t for t in board.visible_tasks(show_archived)
+             if (d := parse_iso(t.phase_changed)) is not None
+             and week_ago <= d <= today]
+    groups: list[tuple[str, list[tuple[Task, bool]]]] = []
+    for p in board.visible_projects(show_archived):
+        items = [(t, board.is_done(t)) for t in moved if t.project_id == p.id]
+        if items:
+            groups.append((p.name, items))
+    grouped = {t.id for _name, items in groups for t, _d in items}
+    inbox = [(t, board.is_done(t)) for t in moved if t.id not in grouped]
+    if inbox:
+        groups.append(("Inbox", inbox))
+    return groups
 
 
 def seed_data() -> tuple[list[Project], list[Task]]:

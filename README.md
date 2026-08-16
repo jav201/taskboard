@@ -58,6 +58,7 @@ row instead.
 | `2` | **Agenda** | Every dated task on one shared day axis, ordered by urgency, each drawing its reach from today to its due date. No meter here on purpose — the row already says the same thing twice, as order and as length. |
 | `3` | **Gantt** | The same day axis, with a **past**: each project is two bands — its span (ash for elapsed, colour for what remains, ending at `◆`) over a progress band, so **the gap between them is the slip**, read as a length. Each task is a reach tipped by its phase glyph; finished work rests in ash at the tail. |
 | `4` | **Kanban** | Every task in its phase column, grouped by project. |
+| `6` | **Widget (aperture)** | The ambient face of the board, as a pushed screen: hero + meter + signal tiles + due calendar + up-next queue, rendered through the active design language (`t` cycles all 11). The number keys `1`-`4` exit *into* that view — the aperture is a launcher, the views are what you operate. |
 
 > **Columns was retired** — kanban is the same phase grid and loses nothing, so the
 > views renumbered to 1-4. The app says so once, on the first launch after the change.
@@ -174,6 +175,18 @@ window, then tap it again to go frameless.
 | `p` | Add project |
 | `P` | Manage projects (edit / archive / delete existing projects) |
 | `e` | Edit selected task |
+| `[` `]` | Move the selected task one phase back / forward — the move is **dated** (it restarts the card's in-phase clock). Already at the first / last phase? A silent no-op: no wrap, no re-dating. |
+| `!` | Cycle the selected task's priority low → normal → high → low (high shows the `!` marker on the card) |
+| `b` | Toggle the selected task's blocked flag (blocked cards wear the `▲` prefix instead of `▊`) |
+| `s` | Kanban only: cycle the column sort — project → priority → due → recent (the header names the active mode, e.g. `· sort: due`) |
+| `g` | Kanban only: cycle the column grouping — project → priority → horizon (group headers drawn inside each column, e.g. `Overdue`, `This week`, `No date`) |
+| `z` | Kanban only: collapse the terminal phase column to one `✓ N` summary row (N = how many tasks rest there — on the terminal phase, every one of them is done). Works from anywhere, needs no selection; press `z` again to restore the column. |
+| `F` | Kanban only: cycle a **project focus** — only that project's cards render and the header names it (`· focus: Name`). Steps through the visible projects in order, then back to the full board. |
+| `esc` | Kanban only: leave the project focus (does nothing when no focus is active, so it never eats another screen's escape) |
+| `+` / `=` | Due date one day **later** (an undated task starts from today) |
+| `-` | Due date one day **earlier** |
+| `u` | **Undo** the last quick mutation — phase move, priority, blocked, due-date bump, archive, or delete (a deleted task returns with its same id). Adding a task is deliberate and is not undoable; an empty history says so. |
+| `S` | **Weekly standup** — a read-only modal of what moved (`→`) and what closed (`✓`) in the last 7 days, grouped per project with a `closed/total` line each. Derived entirely from the move date the board already records; a quiet week says so in one honest line. Closes on `S`, `q`, or `esc`. |
 | `d` / `Delete` | Delete selected task (asks to confirm) |
 | `x` | Archive / unarchive selected task (an archived task hides, so press `v` first to bring one back) |
 | `X` | **Archive finished work the board has no completion date for** — a one-time purge for tasks that were already done before dates were recorded. Says how many and asks first. |

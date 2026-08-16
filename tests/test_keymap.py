@@ -20,8 +20,8 @@ import re
 from textual.binding import Binding
 
 from taskboard.app import TaskboardApp
-from taskboard.keymap import (KEYMAP, VIEWS, app_bindings, bar_keys, fit_bar,
-                              key_bar_plain, render_key_bar)
+from taskboard.keymap import (KEYMAP, SEP, VIEWS, app_bindings, bar_keys,
+                              fit_bar, key_bar_plain, render_key_bar)
 
 # Read straight off the seat. Not through any function this file is testing.
 RAW_ACTIONS = [k.action for k in KEYMAP]
@@ -148,19 +148,95 @@ def test_keys_that_cannot_fit_are_counted_never_swallowed():
         [k for k in KEYMAP if k.views is None or "swimlanes" in k.views])
 
 
+def _seat_order(view: str) -> list:
+    """The bar's reading order, computed off the RAW seat — live keys for the
+    view, universals first. This re-derives the sort from the tuple's own data
+    instead of asking `bar_keys` (the accessor under test) what it thinks."""
+    live = [k for k in KEYMAP if k.views is None or view in k.views]
+    return sorted(live, key=lambda k: not k.universal)
+
+
 def test_at_a_normal_width_nothing_is_dropped_at_all():
-    """The size the app's own wezterm.lua ships, and the one the user sees."""
+    """The size the app's own wezterm.lua ships, and the one the user sees.
+
+    AMENDED LAW (requirements §6.5 AMD-03 — the P-14 stale-constant ruling
+    applied to the 96-cell law). The old law, "at 96 nothing is dropped at
+    all", was falsified by measurement: the no-word bar is 85 cells
+    (swimlanes/agenda/gantt, 29 keys) and 88 (kanban, 30 keys) TODAY, and the
+    batch's remaining keys take the kanban bar past 96, where zero drops is
+    impossible under any scoping. The amended law, asserted at 96 AND across
+    the degradation sweep:
+
+      1. WORDS shed before keys — if any key is dropped, no word survives.
+      2. Every dropped key is COUNTED on the bar as `+N`, and N is EXACT:
+         live-from-the-seat minus shown, never the accessor's own say-so.
+      3. Universal keys (`?`/`q`) drop LAST — while anything shows, they show.
+      4. The muscle-aliased ARROWS (and tab) drop BEFORE the batch's new
+         keys: wherever any of `⇥ ↓ ↑ ← →` is still shown, `[` `]` `!` `b`
+         are all still shown (the AMD-03 placement rule, enforced as
+         behavior, not as declaration order).
+      5. Nothing drops at the width that fits all no-word keys.
+
+    MEASUREMENT METHOD (recorded per the P-14 ruling): every expected width
+    below is DERIVED from the raw KEYMAP tuple at assert time —
+    `len(SEP.join(...))` over `_seat_order(view)` — so the constants can
+    never silently go stale again. Executed values at writing (2026-08-15,
+    30 KEYMAP entries): no-word 85/85/85/88 cells; full-word 273/273/273/283
+    (see test_the_widest_bars_keep_their_words)."""
+    arrows_and_tab = {"⇥", "↓", "↑", "←", "→"}
+    new_keys = {"[", "]", "!", "b"}
+    universals = set(RAW_UNIVERSAL)
+    assert universals, "the seat declares no universal key"
     for view in VIEWS:
-        entries, dropped = fit_bar(96, view)
-        assert dropped == 0, f"{view} @ 96 hides {dropped} key(s)"
+        live = _seat_order(view)
+        bare = len(SEP.join(k.show for k in live))      # (5)'s derived width
+        entries, dropped = fit_bar(bare, view)
+        assert dropped == 0 and len(entries) == len(live), \
+            f"{view} @ {bare} (derived no-word width) hides {dropped} key(s)"
+        # ...and the derivation is TIGHT: one cell less, something goes
+        assert fit_bar(bare - 1, view)[1] > 0, \
+            f"{view}: {bare} is not the real no-word width — {bare - 1} fits too"
+        for width in (96, bare - 1, 40):
+            entries, dropped = fit_bar(width, view)
+            text = key_bar_plain(width, view)
+            shown = {s for s, _label in entries}
+            # (2) the count is exact, and said on the bar
+            assert len(entries) + dropped == len(live)
+            if dropped:
+                m = re.search(r"\+(\d+)$", text)
+                assert m and int(m.group(1)) == dropped, f"{view} @ {width}: {text!r}"
+                # (1) words shed before keys
+                assert not any(label for _s, label in entries), \
+                    f"{view} @ {width}: dropped {dropped} key(s) with words still shown"
+                # (3) universals drop last
+                assert universals <= shown, f"{view} @ {width}: a universal fell first"
+            # (4) arrows drop before the new keys
+            if shown & arrows_and_tab:
+                assert new_keys <= shown, \
+                    f"{view} @ {width}: a new key dropped while an arrow still shows"
 
 
 def test_the_widest_bars_keep_their_words():
-    """Given enough room every key keeps its word. The full bar measures 214
-    cells with 24 keys aboard, so the law is checked above that — it is a claim
-    about the DEGRADATION having an end, not about any particular width."""
-    entries, _ = fit_bar(240, "swimlanes")
-    assert all(label for _s, label in entries)
+    """Given enough room every key keeps its word — the degradation has an
+    END. The claim is about the end EXISTING, not about any particular width,
+    so the width is MEASURED, never predicted (the P-14 stale-constant
+    ruling: the old constant, 240 from a 24-key/214-cell era, went stale
+    silently and read green on a lie for weeks).
+
+    MEASUREMENT METHOD: the full-word width is derived from the raw seat at
+    assert time — `len(SEP.join(f"{show} {label}"))` over `_seat_order(view)`
+    — 273 cells (the three 29-key views) / 283 (kanban, 30 keys) as executed
+    2026-08-15. The tightness limb (one cell short, a word is gone) proves
+    the derived number is the real edge, not a padded one."""
+    for view in VIEWS:
+        live = _seat_order(view)
+        full = len(SEP.join(f"{k.show} {k.label}" for k in live))
+        entries, dropped = fit_bar(full, view)
+        assert dropped == 0 and len(entries) == len(live)
+        assert all(label for _s, label in entries), f"{view} @ {full}: a word shed early"
+        entries_short, _ = fit_bar(full - 1, view)
+        assert not all(label for _s, label in entries_short), \
+            f"{view}: {full} is padded — {full - 1} already keeps every word"
 
 
 # --------------------------------------------------------------------------- #
@@ -286,7 +362,8 @@ def test_the_readme_keybinding_table_matches_the_seat():
 
     # the seat's own keys, in the spelling the README uses
     spelled = {"?": "?", "q": "q", "enter": "Enter", "tab": "Tab",
-               "d,delete": "d", "down,j": "↓", "up,k": "↑",
+               "d,delete": "d", "+,=": "+", "escape": "esc",
+               "down,j": "↓", "up,k": "↑",
                "left,h": "←", "right,l": "→"}
     for k in KEYMAP:
         want = spelled.get(k.keys, k.keys)

@@ -278,17 +278,20 @@ def title_markup(task: Task, width: int, selected: bool, arrow: bool = True) -> 
 
 
 def _fit_indicators(tokens: list[tuple[str, str]], budget: int) -> tuple[str, int]:
-    """Right-aligned indicator glyphs, each rendered as ' <glyph>' (2 cells).
+    """Right-aligned indicator glyphs, each rendered as ' <glyph>'.
 
     Keeps as many as fit within `budget`, dropping from the LEFT (so the
     rightmost/most-important marker survives when space is tight). Returns
-    (markup, used_width). `tokens` is [(glyph, color_key), ...]."""
+    (markup, used_width). `tokens` is [(glyph, color_key), ...]; a token's
+    cost is 1 + its own cell width, so a multi-cell token (the aging `·Nd`,
+    LLR-006.1) sheds under width pressure exactly like its 1-cell siblings."""
     kept: list[tuple[str, str]] = []
     cost = 0
     for glyph, col in reversed(tokens):
-        if cost + 2 <= budget:
+        w = 1 + cell_len(glyph)
+        if cost + w <= budget:
             kept.insert(0, (glyph, col))
-            cost += 2
+            cost += w
         else:
             break
     markup = "".join(c(" " + g, col) for g, col in kept)
@@ -297,11 +300,17 @@ def _fit_indicators(tokens: list[tuple[str, str]], budget: int) -> tuple[str, in
 
 def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
               prefix: str = "", prefix_color: str = "mut",
-              allow_priority: bool = True) -> str:
-    """A width-exact card: `prefix` + truncated title + right indicators (↗ !).
+              allow_priority: bool = True, today: date | None = None) -> str:
+    """A width-exact card: `prefix` + truncated title + right indicators
+    (↗ ! ▤ ·Nd ▣).
 
     Title is truncated with … so it can NEVER share a cell with the trailing
-    indicators, at any width down to 0. Always returns exactly `wc` cells."""
+    indicators, at any width down to 0. Always returns exactly `wc` cells.
+    The `·Nd` aging token (HLR-006, LLR-006.1) is how long the task has sat
+    in its current phase — `days_in_phase` off `phase_changed` — shown only
+    while the task is NOT done and the stamp is KNOWN (None is unknown, never
+    zero: an unstamped card renders no token rather than a lying `·0d`, and
+    done work rests — its age is not work-in-progress information)."""
     if wc <= 0:
         return ""
     if wc < len(prefix):
@@ -323,6 +332,13 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
         # board by colour. Its siblings already sit in neutral houses (↗ accent,
         # ! ink); this is the quietest of the three and takes the quietest tone.
         tokens.append(("▤", "mut"))     # width-1 image indicator, distinct from ↗/!
+    if not board.is_done(task):
+        age = days_in_phase(task, today or date.today())
+        if age is not None:
+            # Age is a FACT about sitting still, not a judgement on it — the
+            # quiet dim house (the same house date distances wear), never a
+            # severity hue and never a project colour.
+            tokens.append((f"·{age}d", "dim"))
     if task.archived:
         # LAST in the list so it is the last thing shed under width pressure —
         # it is the only token here that says the row is not live work.
@@ -2162,19 +2178,36 @@ def _phase_window(board: Board, grid: int, selected: Task | None,
     return start, distribute(grid - (fits - 1), fits)
 
 
-def _windowed_header(board: Board, start: int, widths: list[int]) -> list[str]:
-    """Phase-name header cells, with `◀ N` / `N ▶` counts for hidden phases."""
+def _windowed_header(board: Board, start: int, widths: list[int],
+                     tasks: list[Task]) -> list[str]:
+    """Phase-name header cells, with `◀ N` / `N ▶` counts for hidden phases.
+
+    Every cell ends with the WIP tag (HLR-005, LLR-005.2): ` n/limit` when the
+    phase has a limit, bare ` n` when it does not — `n` counted from
+    `phase_buckets` over the view's visible tasks. The tag is laid out LAST
+    and the phase name is truncated BEFORE it, so the count survives width
+    pressure (the tag-last layout of the approved proto). It burns in the
+    `over` tone ONLY when strictly over the limit — exactly AT the limit is
+    calm (the off-by-one is the cheapest mutation here)."""
     n, end = len(board.phases), start + len(widths)
+    buckets = phase_buckets(board, tasks)
     cells = []
     for i, wc in enumerate(widths):
+        phase = board.phases[start + i]
+        count = len(buckets[start + i])
+        limit = board.wip_limit(phase)
+        tag = f" {count}/{limit}" if limit is not None else f" {count}"
+        tone = "over" if (limit is not None and count > limit) else "mut"
         pre = f"◀ {start} " if (i == 0 and start > 0) else ""
         suf = f" {n - end} ▶" if (i == len(widths) - 1 and end < n) else ""
         avail = wc - len(pre) - len(suf)
         if avail < 1:                       # no room for a label -> markers only
             cells.append(c(fit((pre + suf).strip(), wc), "mut"))
             continue
+        name_w = max(0, avail - vis(tag))   # the tag survives width pressure
         cells.append(c(pre, "mut")
-                     + c(escape(fit(board.phases[start + i].upper(), avail)), "hd", bold=True)
+                     + c(escape(fit(phase.upper(), name_w)), "hd", bold=True)
+                     + c(fit(tag, avail - name_w), tone)
                      + c(suf, "mut"))
     return cells
 
@@ -2192,19 +2225,119 @@ def _kanban_groups(board, tasks, show_archived) -> list[tuple[str, str, list[Tas
     return groups
 
 
+# --- THE ONE ordering seat (HLR-003/HLR-004, LLR-003.1) -----------------------
+# Sort and group modes are VIEW state, held on the app and passed in. This seat
+# answers "in what order do this column's tasks appear" for BOTH the renderer
+# and the navigator — the batch's named trap is a second ordering site that
+# silently keeps the default, so there is exactly one function and two callers.
+_KANBAN_SORT_MODES = ("project", "priority", "due", "recent")
+_KANBAN_GROUP_MODES = ("project", "priority", "horizon")
+_PRIO_RANK = {"high": 0, "normal": 1, "low": 2}
+
+
+def _recent_first(tasks: list[Task]) -> list[Task]:
+    """`phase_changed` newest first, unknown stamps sunk, ties in board order
+    (ISO date stamps sort lexicographically; sorted() is stable, and `reverse`
+    does not disturb equal keys). None is UNKNOWN and sinks — never read as 0."""
+    return sorted(tasks, key=lambda t: t.phase_changed or "", reverse=True)
+
+
+def kanban_order(board, tasks, show_archived, *, group="project",
+                 sort="project", collapsed=False, focus=None,
+                 today=None) -> list[tuple[str, str, list[Task]]]:
+    """The ordered `(name, color, tasks)` groups for ONE kanban column, under
+    the active group/sort modes. Pure: no I/O, no mutation of `board`/`tasks`.
+
+    Sort (intra-group, ALL modes STABLE — a tie the keys leave open keeps the
+    board's pre-sort order, §6.5 AMD-09): `project` = board order as given;
+    `priority` = blocked first, then high→normal→low, ties by due (undated
+    sink); `due` = `sort_by_due` semantics with blocked first; `recent` =
+    `_recent_first`. Group: `project` = `_kanban_groups` verbatim (Inbox
+    last); `priority` = High/Normal/Low; `horizon` = Overdue/This week/Later/
+    No date by `urgency()`, plus a trailing `Done` group — dim tone, its OWN
+    pinned `phase_changed`-desc order regardless of the sort mode (§6.5
+    AMD-04/D-11: `urgency()` reports done before reading any date). Empty
+    groups are omitted — an empty group header is a ghost mark."""
+    if collapsed:            # a collapsed column contributes NOTHING (R-07)
+        return []
+    if focus is not None:    # a project focus hides every other project (R-08)
+        tasks = [t for t in tasks if t.project_id == focus]
+    pinned: str | None = None
+    if group == "priority":
+        groups = [(label, color, [t for t in tasks if t.priority == value])
+                  for value, label, color in (("high", "High", "over"),
+                                              ("normal", "Normal", "mut"),
+                                              ("low", "Low", "dim"))]
+        groups = [g for g in groups if g[2]]
+    elif group == "horizon":
+        today = today or date.today()
+        buckets: dict[str, list[Task]] = {"overdue": [], "week": [],
+                                          "later": [], "none": [], "done": []}
+        for t in tasks:
+            u = urgency(t, today, board)
+            buckets["week" if u == "today" else u].append(t)
+        groups = [(label, color, buckets[key])
+                  for key, label, color in (("overdue", "Overdue", "over"),
+                                            ("week", "This week", "accent"),
+                                            ("later", "Later", "mut"),
+                                            ("none", "No date", "dim"))]
+        groups = [g for g in groups if g[2]]
+        if buckets["done"]:
+            pinned = "Done"
+            groups.append(("Done", "dim", _recent_first(buckets["done"])))
+    else:                    # "project" — today's grouping, Inbox last
+        groups = _kanban_groups(board, tasks, show_archived)
+    if sort == "project":
+        return groups
+    if sort == "recent":
+        def order(items: list[Task]) -> list[Task]:
+            return _recent_first(items)
+    elif sort == "priority":
+        def order(items: list[Task]) -> list[Task]:
+            return sorted(items, key=lambda t: (
+                not t.blocked, _PRIO_RANK.get(t.priority, 1),
+                parse_iso(t.due_date) is None,
+                parse_iso(t.due_date) or date.max))
+    else:                    # "due" — sort_by_due semantics, blocked first
+        def order(items: list[Task]) -> list[Task]:
+            return sorted(items, key=lambda t: (
+                not t.blocked, parse_iso(t.due_date) is None,
+                parse_iso(t.due_date) or date.max))
+    return [(name, color, items if name == pinned else order(items))
+            for name, color, items in groups]
+
+
 def _kanban_column_rows(board, tasks, wc, selected_id,
-                        show_archived) -> list[tuple[str, str | None]]:
-    """(markup, task-id) rows for ONE phase column: a coloured project header
-    followed by EVERY one of that project's tasks in this phase."""
+                        show_archived, *, group="project", sort="project",
+                        collapsed=False, focus=None,
+                        today=None) -> list[tuple[str, str | None]]:
+    """(markup, task-id) rows for ONE phase column: a coloured group header
+    followed by EVERY one of that group's tasks in this phase, in THE shared
+    seat's order (`kanban_order` — never a second ordering). A COLLAPSED
+    column (LLR-007.1: only ever THE LAST phase, §6.5 AMD-02) emits exactly
+    one `(markup, None)` summary row — `✓ N`, N the phase's visible task
+    count — the existing non-selectable row convention, no new row kind.
+    The flag still goes THROUGH the seat: collapsed, `kanban_order` returns
+    no groups, so the loop below contributes zero rows and the summary is
+    the only one."""
     rows: list[tuple[str, str | None]] = []
-    for name, color, items in _kanban_groups(board, tasks, show_archived):
+    for name, color, items in kanban_order(board, tasks, show_archived,
+                                           group=group, sort=sort,
+                                           collapsed=collapsed, focus=focus,
+                                           today=today):
         rows.append((c("▐ ", color) + c(escape(fit(name, max(0, wc - 2))), color, bold=True),
                      None))
         for t in items:
             rows.append((card_cell(t, board, wc, t.id == selected_id,
                                    prefix="▲ " if t.blocked else "▊ ",
                                    prefix_color="over" if t.blocked
-                                   else project_color(board, t)), t.id))
+                                   else project_color(board, t),
+                                   today=today), t.id))
+    if collapsed:
+        # `✓` is the done mark and the done house is its only honest home —
+        # and on the terminal phase every visible task IS done, so the mark
+        # never lies (HLR-007).
+        rows.append((c(fit(f"✓ {len(tasks)}", wc), "done"), None))
     return rows
 
 
@@ -2228,19 +2361,39 @@ def _matrix_junctions(label_w: int, widths: list[int], mid: str) -> dict[int, st
     return j
 
 
-def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_map) -> list[str]:
+def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_map,
+                    *, sort="project", group="project", collapsed=False,
+                    focus=None) -> list[str]:
     inner = w
     tasks = board.visible_tasks(show_archived)
+    focused = board.project_by_id(focus) if focus is not None else None
+    if focused is not None:
+        # The cards are filtered by the seat (kanban_order); scoping the
+        # INPUT here keeps the header counts and the task tally describing
+        # what the board actually draws — a tally of hidden cards is a lie.
+        tasks = [t for t in tasks if t.project_id == focus]
     start, widths = _phase_window(board, inner, board.task_by_id(selected_id))
     buckets = phase_buckets(board, tasks)
     sep = c("│", "frame")
 
     right = c(f"{len(tasks)} tasks", "mut")
-    lines = [header(c("KANBAN", "accent", bold=True) + c(" · grouped", "mut"), right, w)]
-    lines.append(line(sep.join(_windowed_header(board, start, widths))))
+    mode = c(" · grouped", "mut")
+    if sort != "project":        # a non-default mode is NAMED (LLR-003.2) —
+        mode += c(f" · sort: {sort}", "mut")     # an unnamed mode is a lie
+    if group != "project":
+        mode += c(f" · group: {group}", "mut")
+    if focused is not None:      # the focus is a mode too: it is NAMED (R-08),
+        mode += (c(" · focus: ", "mut")          # with the user's own text
+                 + c(escape(focused.name), "mut"))  # escaped like everywhere
+    lines = [header(c("KANBAN", "accent", bold=True) + mode, right, w)]
+    lines.append(line(sep.join(_windowed_header(board, start, widths, tasks))))
     lines.append(rule_row(_col_junctions(widths, "┼"), w))
 
-    cols = [_kanban_column_rows(board, buckets[start + i], wc, selected_id, show_archived)
+    last = len(board.phases) - 1
+    cols = [_kanban_column_rows(board, buckets[start + i], wc, selected_id,
+                                show_archived, group=group, sort=sort,
+                                collapsed=collapsed and start + i == last,
+                                focus=focus, today=today)
             for i, wc in enumerate(widths)]
     max_rows = max((len(col) for col in cols), default=0)
     if max_rows == 0:
@@ -2268,7 +2421,7 @@ def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map
     right = c(f"{len(tasks)} tasks", "mut")
     lines = [header(c("KANBAN", "accent", bold=True) + c(" · matrix", "mut"), right, w)]
     lines.append(line(fit("", label_w) + sep
-                      + sep.join(_windowed_header(board, start, widths)) + sep
+                      + sep.join(_windowed_header(board, start, widths, tasks)) + sep
                       + c(fit("prog", prog_w, "right"), "hd", bold=True)))
     lines.append(rule_row(_matrix_junctions(label_w, widths, "┼"), w))
 
@@ -2315,11 +2468,18 @@ def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map
 
 
 def render_kanban(board, show_archived, selected_id, today=None,
-                  width=68, height=0, line_map=None, presentation="grouped") -> Text:
+                  width=68, height=0, line_map=None, presentation="grouped",
+                  sort="project", group="project", collapsed=False,
+                  focus=None) -> Text:
     today = today or date.today()
     w = _clamp_width(width)
-    build = _kanban_matrix if presentation == "matrix" else _kanban_grouped
-    lines = build(board, show_archived, selected_id, today, w, height, line_map)
+    if presentation == "matrix":     # matrix presentation sorting: out of scope
+        lines = _kanban_matrix(board, show_archived, selected_id, today, w,
+                               height, line_map)
+    else:
+        lines = _kanban_grouped(board, show_archived, selected_id, today, w,
+                                height, line_map, sort=sort, group=group,
+                                collapsed=collapsed, focus=focus)
     return to_text(lines, height, w)
 
 
@@ -2335,10 +2495,14 @@ RENDERERS = {
 
 
 def render_view(mode, board, show_archived, selected_id, today=None,
-                width=68, height=0, line_map=None, presentation="grouped", tick=0) -> Text:
+                width=68, height=0, line_map=None, presentation="grouped", tick=0,
+                kanban_sort="project", kanban_group="project",
+                kanban_collapsed=False, kanban_focus=None) -> Text:
     if mode == "kanban":
         return render_kanban(board, show_archived, selected_id, today, width, height,
-                             line_map, presentation)
+                             line_map, presentation, sort=kanban_sort,
+                             group=kanban_group, collapsed=kanban_collapsed,
+                             focus=kanban_focus)
     if mode == "gantt":
         return render_gantt(board, show_archived, selected_id, today, width, height,
                             line_map, tick=tick)
@@ -2419,15 +2583,43 @@ def swimlane_nav(board, show_archived, today: date, width: int,
 
 
 def nav_model(mode, board, show_archived, today=None, width: int = 68,
-              height: int = 0) -> list[list[str]]:
+              height: int = 0, *, kanban_sort="project",
+              kanban_group="project", kanban_collapsed=False,
+              kanban_focus=None, presentation="grouped") -> list[list[str]]:
     today = today or date.today()
     tasks = board.visible_tasks(show_archived)
 
-    if mode == "kanban":       # same phase columns, but in project-grouped order
-        ordered: list[Task] = []
-        for _, _, items in _kanban_groups(board, tasks, show_archived):
-            ordered += items
-        return [[t.id for t in bucket] for bucket in phase_buckets(board, ordered)]
+    if mode == "kanban":       # the phase columns, in THE shared seat's order
+        # The matrix presentation renders through `_kanban_matrix`, which does
+        # NOT consume the modes (render_kanban routes it before the seat): if
+        # nav honored sort/group/collapse/focus there, the cursor could park
+        # on a task the screen does not draw — the F-3 trap, carried three
+        # times (sort/group Inc-006, collapse Inc-008, focus Inc-009) and
+        # ruled at Phase 4: in matrix BOTH seats ignore the modes, so the nav
+        # walks exactly what the matrix draws.
+        if presentation == "matrix":
+            kanban_sort, kanban_group = "project", "project"
+            kanban_collapsed, kanban_focus = False, None
+        # A collapsed terminal phase is ABSENT from the nav model — not an
+        # empty column (LLR-007.1): a column that IS there but holds nothing
+        # is still a place the horizontal walk can reason about; the collapsed
+        # one no longer exists. The flag goes through the seat here too —
+        # and so does the focus (R-08): a filter that hid cards from the
+        # render but left them in the nav model would park the cursor on a
+        # task the board does not draw.
+        cols = []
+        last = len(board.phases) - 1
+        for i, bucket in enumerate(phase_buckets(board, tasks)):
+            is_collapsed = kanban_collapsed and i == last
+            groups = kanban_order(board, bucket, show_archived,
+                                  group=kanban_group, sort=kanban_sort,
+                                  collapsed=is_collapsed, focus=kanban_focus,
+                                  today=today)
+            if is_collapsed:
+                continue
+            cols.append([t.id for _name, _color, items in groups
+                         for t in items])
+        return cols
 
     if mode == "swimlanes":
         # ONE column: the view is a stack of lanes, and the only selectable
