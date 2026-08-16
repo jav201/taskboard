@@ -1037,6 +1037,7 @@ class LegendModal(ModalScreen[None]):
         self._dims = size
 
     def compose(self) -> ComposeResult:
+        from .keymap import bar_keys
         from .views import legend_entries
         entries = legend_entries(self._mode, self._board, self._today,
                                  *self._dims, show_archived=self._show_archived)
@@ -1046,7 +1047,53 @@ class LegendModal(ModalScreen[None]):
                 yield Label("Nothing is drawn on this board yet.")
             for swatch, meaning in entries:
                 yield Label(f"{swatch}  {escape(meaning)}")
+            # KEYS: the view's LIVE keys, derived from the same seat the bar
+            # reads — never hand-written, so a key the narrow bar drops (and
+            # counts as +N) is still discoverable one `?` away.
+            yield Label("[b]Keys[/b]", classes="modal-title")
+            for k in bar_keys(self._mode):
+                yield Label(f"{k.show}  {escape(k.label)}")
             yield Label("[dim]? or esc closes[/dim]", classes="modal-title")
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
+class StandupModal(ModalScreen[None]):
+    """`S` — the week in one read: what moved and what closed, per project.
+
+    Every line is composed at open time from `standup_query`, which reads the
+    ONE stamp the board already keeps (`phase_changed`) — nothing is stored
+    for this modal, so it can never describe a week the board did not live.
+    Read-only by construction: the only action here is close."""
+
+    BINDINGS = [("escape", "close", "Close"), ("q", "close", "Close"),
+                ("S", "close", "Close")]
+
+    def __init__(self, board: Board, today=None, show_archived: bool = False):
+        super().__init__()
+        self._board = board
+        self._today = today or date.today()
+        self._show_archived = show_archived
+
+    def compose(self) -> ComposeResult:
+        from .models import standup_query
+        groups = standup_query(self._board, self._today, self._show_archived)
+        with VerticalScroll(id="modal-box", classes="modal"):
+            yield Label(f"[b]Standup · week ending {self._today.isoformat()}[/b]",
+                        classes="modal-title")
+            if not groups:
+                # the honest empty week — one line, no invented motion
+                yield Label("Nothing moved this week.")
+            for name, items in groups:
+                yield Label(f"[b]▐ {escape(name)}[/b]", classes="modal-title")
+                for task, done in items:
+                    mark = "✓" if done else "→"
+                    yield Label(f"  {mark} {escape(task.title)}"
+                                f" [dim]{escape(task.phase)}[/dim]")
+                closed = sum(1 for _t, d in items if d)
+                yield Label(f"  [dim]{closed}/{len(items)} closed this week[/dim]")
+            yield Label("[dim]S or esc closes[/dim]", classes="modal-title")
 
     def action_close(self) -> None:
         self.dismiss(None)
