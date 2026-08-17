@@ -182,8 +182,8 @@ window, then tap it again to go frameless.
 | `s` | Kanban only: cycle the column sort — project → priority → due → recent (the header names the active mode, e.g. `· sort: due`) |
 | `g` | Kanban only: cycle the column grouping — project → priority → horizon (group headers drawn inside each column, e.g. `Overdue`, `This week`, `No date`) |
 | `z` | Kanban only: collapse the terminal phase column to one `✓ N` summary row (N = how many tasks rest there — on the terminal phase, every one of them is done). Works from anywhere, needs no selection; press `z` again to restore the column. |
-| `F` | Kanban only: cycle a **project focus** — only that project's cards render and the header names it (`· focus: Name`). Steps through the visible projects in order, then back to the full board. |
-| `esc` | Kanban only: leave the project focus (does nothing when no focus is active, so it never eats another screen's escape) |
+| `F` | Kanban / Gantt: cycle a **project focus** — only that project's rows/cards render and the header names it (`· focus: Name`). Steps through the visible projects in order, then back to the full board. |
+| `esc` | Kanban / Gantt: leave the project focus (does nothing when no focus is active, so it never eats another screen's escape) |
 | `+` / `=` | Due date one day **later** (an undated task starts from today) |
 | `-` | Due date one day **earlier** |
 | `u` | **Undo** the last quick mutation — phase move, priority, blocked, due-date bump, archive, or delete (a deleted task returns with its same id). Adding a task is deliberate and is not undoable; an empty history says so. |

@@ -655,7 +655,7 @@ _PROJECT_KEYS = {"id", "name", "color", "status", "archived", "start_date", "due
                  "extra"}
 _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
               "due_date", "notes", "urls", "images", "archived", "extra",
-              "phase_changed",
+              "phase_changed", "depends_on",
               "status", "url"}          # last two: legacy, consumed by the migration
 
 
@@ -765,6 +765,7 @@ class Task:
     images: list[str] = field(default_factory=list)
     archived: bool = False
     blocked: bool = False
+    depends_on: list[str] = field(default_factory=list)
     # ISO date this task last CHANGED PHASE. None on every task that existed
     # before the field did, and on every task that has never moved — the board
     # has no history, so this can only ever start counting from now. `None`
@@ -809,6 +810,8 @@ class Task:
                 urls=urls,
                 images=images,
                 archived=bool(d.get("archived", False)),
+                depends_on=[str(x) for x in d.get("depends_on")]
+                if isinstance(d.get("depends_on"), list) else [],
                 # additive; absent -> unknown, never back-filled with a guess
                 phase_changed=(d.get("phase_changed")
                                if isinstance(d.get("phase_changed"), str) else None),

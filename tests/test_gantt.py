@@ -47,8 +47,9 @@ def fixture(tmp_path):
     return b, p
 
 
-def rows(b, w=96, h=20):
-    return str(render_gantt(b, False, None, TODAY, width=w, height=h)).split("\n")
+def rows(b, w=96, h=20, focus=None):
+    return str(render_gantt(b, False, None, TODAY, width=w, height=h,
+                            focus=focus)).split("\n")
 
 
 def geo(w):
@@ -79,7 +80,8 @@ def test_finished_work_shows_a_spent_meter_and_rests_in_ash(tmp_path):
     """Active at the top, finished at the tail, and the finished row RESTS: thin
     spine, ash, no chip and no severity."""
     b, _p = fixture(tmp_path)
-    line = next(l for l in rows(b, 96, 30) if "Old finished" in l)
+    title_prefix = b.tasks[3].title[:10]
+    line = next(l for l in rows(b, 96, 30) if title_prefix in l)
     # finished work: the edge SAYS so, in one tone, over the board's ground
     assert line[-METER_W:].strip("·") == "done"
     assert line.startswith("▏ ")               # the thin spine
@@ -109,13 +111,13 @@ def test_the_alert_is_the_meters_cap_and_nothing_else(tmp_path):
 
 def test_a_bar_never_wears_an_urgency_hue(tmp_path):
     """The span and the reaches may only ever wear an identity hue, the ash of
-    elapsed time, or the flow packet's bright."""
+    elapsed time, the flow packet's bright, or the batch-06 priority hues."""
     from taskboard.models import PROJECT_COLORS
     b, _p = fixture(tmp_path)
     text = render_gantt(b, False, None, TODAY, width=96, height=20)
-    lawful = {HEX[c] for c in PROJECT_COLORS} | {HEX["bright"], HEX["dim"],
-                                                HEX["accent"], HEX["frame"],
-                                                HEX["ash"], HEX["mut"]}
+    lawful = ({HEX[c] for c in PROJECT_COLORS}
+              | {HEX["bright"], HEX["dim"], HEX["accent"], HEX["frame"],
+                 HEX["ash"], HEX["mut"], HEX["rose"], HEX["sky"]})
     for s in text.spans:
         seg = text.plain[s.start:s.end]
         if seg and set(seg) <= {"⣿", "⣤", "⡄", "⣀", " "} and seg.strip():
@@ -165,8 +167,9 @@ def test_a_task_whose_reach_starts_later_gets_a_wider_title(tmp_path):
     near = next(l for l in out if "B" * 10 in l)
     far = next(l for l in out if "A" * 10 in l)
     assert far.count("A") > near.count("B")
-    # measured: 25 for a task already under way, 28 for one starting later
-    assert (near.count("B") + 1, far.count("A") + 1) == (25, 28)
+    # measured: 22 for a task already under way, 25 for one starting later
+    # (3 cells now reserved for the dependency indicator, visible or blank)
+    assert (near.count("B") + 1, far.count("A") + 1) == (22, 25)
 
 
 def test_the_header_counts_what_is_past_due(tmp_path):
@@ -526,3 +529,84 @@ def test_the_circle_sits_at_the_progress_fraction_of_the_span(tmp_path):
     order = [seen[k] for k in (0.0, 0.25, 0.5, 0.75, 1.0)]
     assert order == sorted(order), order
     assert len(set(order)) > 2, f"the dot barely moves across the span: {order}"
+
+# --------------------------------------------------------------------------- #
+# batch-06: priority hue, milestone, dependency, focus (gantt semantics)
+# --------------------------------------------------------------------------- #
+def test_task_reach_wears_priority_hue(tmp_path):
+    """High priority draws rose, normal sky, low mut; done rests in ash."""
+    from taskboard.views import _task_reach, gantt_geometry
+    b = board(tmp_path, "prio.json")
+    p = Project("P", "lime", "on_track",
+                start_date=iso(-10), due_date=iso(40))
+    b.projects.append(p)
+    b.tasks += [
+        Task("High", p.id, "Doing", "high", start_date=iso(2), due_date=iso(8)),
+        Task("Normal", p.id, "Doing", "normal", start_date=iso(2), due_date=iso(8)),
+        Task("Low", p.id, "Doing", "low", start_date=iso(2), due_date=iso(8)),
+        Task("Done", p.id, "Done", "high", start_date=iso(2), due_date=iso(8)),
+    ]
+    gg = gantt_geometry(96, 30)
+    tones = {}
+    for t in b.tasks:
+        cells = _task_reach(t, b, gg, TODAY, p.color)
+        drawn = [(g, tone) for g, tone in cells if g != " "]
+        assert drawn, t.title
+        tones[t.title] = drawn[0][1]
+    assert tones["High"] == "rose"
+    assert tones["Normal"] == "sky"
+    assert tones["Low"] == "mut"
+    assert tones["Done"] == "ash"
+
+
+def test_milestone_renders_as_a_single_diamond(tmp_path):
+    """A task whose start equals due renders as one ◆ cell, not a span."""
+    from taskboard.views import _task_reach, gantt_geometry
+    b = board(tmp_path, "milestone.json")
+    p = Project("P", "lime", "on_track",
+                start_date=iso(-10), due_date=iso(40))
+    b.projects.append(p)
+    b.tasks.append(Task("Milestone", p.id, "Doing", "normal",
+                        start_date=iso(5), due_date=iso(5)))
+    gg = gantt_geometry(96, 30)
+    cells = _task_reach(b.tasks[0], b, gg, TODAY, p.color)
+    drawn = [(g, tone) for g, tone in cells if g != " "]
+    assert len(drawn) == 1
+    assert drawn[0][0] == "◆"
+
+
+def test_dependency_indicator_shows_when_task_has_depends_on(tmp_path):
+    """Tasks with depends_on append the └─► marker in the gantt row."""
+    b, p = fixture(tmp_path)
+    b.tasks[0].depends_on = ["other-task-id"]
+    out = rows(b, 96, 30)
+    title_prefix = b.tasks[0].title[:15]
+    line = next(l for l in out if title_prefix in l)
+    assert "└─►" in line, line
+    line_no_dep = next(l for l in out if b.tasks[1].title[:15] in l)
+    assert "└─►" not in line_no_dep, line_no_dep
+
+
+def test_gantt_focus_hides_other_projects_and_inbox(tmp_path):
+    """focus=project_id renders only that project and drops inbox rows."""
+    from taskboard.models import Project, Task
+    b = board(tmp_path, "focus.json")
+    p1 = Project("Alpha", "lime", "on_track",
+                 start_date=iso(-10), due_date=iso(20))
+    p2 = Project("Beta", "sky", "on_track",
+                 start_date=iso(-10), due_date=iso(20))
+    b.projects += [p1, p2]
+    b.tasks += [
+        Task("Alpha task", p1.id, "Doing", "normal",
+             start_date=iso(1), due_date=iso(5)),
+        Task("Beta task", p2.id, "Doing", "normal",
+             start_date=iso(1), due_date=iso(5)),
+        Task("Loose task", None, "Doing", "normal",
+             start_date=iso(1), due_date=iso(5)),
+    ]
+    out = rows(b, 96, 30, focus=p1.id)
+    text = "\n".join(out)
+    assert "Alpha task" in text
+    assert "Beta task" not in text
+    assert "Loose task" not in text
+    assert "focused" in text.lower()

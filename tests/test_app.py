@@ -531,7 +531,7 @@ async def test_url_task_open_action(tmp_path, monkeypatch):
 async def test_url_renders_link_and_arrow(tmp_path):
     app = make_app(tmp_path)
     async with app.run_test() as pilot:
-        await pilot.press("3")  # agenda shows titles wide enough
+        await pilot.press("2")  # agenda shows titles wide enough
         assert "↗" in board_text(app)
 
 
@@ -623,6 +623,21 @@ def test_task_images_model(tmp_path):
     board.add_task(Task("img", None, "Backlog", "normal", images=refs))
     t = next(t for t in Board.load(p).tasks if t.title == "img")
     assert t.images == refs
+
+
+def test_task_depends_on_model(tmp_path):
+    """TC-00X (LLR-001.1/001.2): default_factory list + round-trip for task dependencies."""
+    from taskboard.models import Board, Task
+    assert Task("t").depends_on == []
+    assert Task("a").depends_on is not Task("b").depends_on
+    assert Task.from_dict({"title": "x", "depends_on": ["a", "b"]}).depends_on == ["a", "b"]
+    assert Task.from_dict({"title": "x"}).depends_on == []
+    assert Task.from_dict({"title": "x", "depends_on": "nope"}).depends_on == []
+    p = str(tmp_path / "b.json")
+    board = Board.load(p)
+    board.add_task(Task("child", None, "Backlog", "normal", depends_on=["p1", "p2"]))
+    t = next(t for t in Board.load(p).tasks if t.title == "child")
+    assert t.depends_on == ["p1", "p2"]
 
 
 async def test_open_images_allowlist_and_isfile(tmp_path, monkeypatch):
@@ -3501,9 +3516,9 @@ def test_focus_due_undo_actions_are_registered_and_guarded(tmp_path):
     assert by_action["due_bump(-1)"].keys == "-"
     assert by_action["undo"].keys == "u"
     assert by_action["focus_cycle"].keys == "F"
-    assert by_action["focus_cycle"].views == ("kanban",)
+    assert by_action["focus_cycle"].views == ("kanban", "gantt")
     assert by_action["focus_exit"].keys == "escape"
-    assert by_action["focus_exit"].views == ("kanban",)
+    assert by_action["focus_exit"].views == ("kanban", "gantt")
     assert by_action["due_bump(1)"].views is None       # selection-scoped,
     assert by_action["undo"].views is None              # like the other
     arrow_at = next(i for i, k in enumerate(KEYMAP)     # quick keys
