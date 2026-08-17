@@ -55,7 +55,7 @@ marked `pinned` (and projects marked `pinned`) appear. Three presentations:
 
 | node | suite | last run | result |
 |---|---|---|---|
-| tests/ | pytest | 2026-08-17 | 848 passed |
+| tests/ | pytest | 2026-08-17 | 850 passed |
 
 ## Decision log
 
@@ -66,3 +66,5 @@ marked `pinned` (and projects marked `pinned`) appear. Three presentations:
 | 2026-08-17 | View key `5`; presentations cycled with `Tab` inside the view | orchestrator default |
 | 2026-08-17 | Colour highlights rendered only (not persisted) to limit scope | orchestrator default |
 | 2026-08-17 | `Tab` handled by a single `toggle_presentation` action that dispatches to kanban or focus; avoids duplicate key in seat | implementation |
+| 2026-08-17 | Focus card title kept left; emoji ribbon moved to right edge so title reads cleanly | operator feedback |
+| 2026-08-17 | Inline note highlights: `==yellow==`, `!!red!!`, `++green++` rendered in Focus Board only | operator feedback |
