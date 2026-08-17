@@ -26,7 +26,7 @@ from textual.widgets import Static
 
 from .views import HEX
 
-VIEWS = ("swimlanes", "agenda", "gantt", "kanban")
+VIEWS = ("swimlanes", "agenda", "gantt", "kanban", "focus")
 
 # Category hues for the layered "more" bar. Each group is drawn with its own
 # attention colour so the reader can parse the dense row at a glance.
@@ -68,6 +68,7 @@ KEYMAP: tuple[Key, ...] = (
     Key("2", "2", "view('agenda')", "Agenda", primary=True, group="views"),
     Key("3", "3", "view('gantt')", "Gantt", primary=True, group="views"),
     Key("4", "4", "view('kanban')", "Kanban", primary=True, group="views"),
+    Key("5", "5", "view('focus')", "Focus", primary=True, group="views"),
     # the APERTURE: the widget posture as a pushed screen (aperture.py) —
     # ADD beside the four views, views.py untouched (HANDOFF §4 Inc 2)
     Key("6", "6", "aperture", "Widget", group="views"),
@@ -81,6 +82,8 @@ KEYMAP: tuple[Key, ...] = (
     Key("X", "X", "purge_done", "Purge done", group="task"),
     Key("v", "v", "toggle_archived", "Archived", group="task"),
     Key("u", "u", "undo", "Undo", group="task"),
+    Key("t", "t", "pin_toggle", "Pin task", group="task"),
+    Key("T", "T", "project_pin_toggle", "Pin proj", group="task"),
 
     # -- phase / priority -----------------------------------------------------
     Key("[", "[", "phase_move(-1)", "Phase−", group="phase"),
@@ -106,9 +109,10 @@ KEYMAP: tuple[Key, ...] = (
     # another screen's escape (§6.5 AMD-03).
     Key("F", "F", "focus_cycle", "Focus", views=("kanban", "gantt"), group="kanban"),
     Key("escape", "esc", "focus_exit", "Focus off", views=("kanban", "gantt"), group="kanban"),
-    # Tab only does something in kanban, so it is only claimed there — a key
-    # advertised everywhere that answers in one place is the same lie in reverse.
-    Key("tab", "⇥", "toggle_presentation", "Layout", priority=True, views=("kanban",), primary=True, group="nav"),
+    # Tab does something in kanban and focus, so it is claimed in both — the
+    # action itself (toggle_presentation) decides which view state to cycle.
+    Key("tab", "⇥", "toggle_presentation", "Layout", priority=True,
+        views=("kanban", "focus"), primary=True, group="nav"),
 
     # -- misc -----------------------------------------------------------------
     Key("o", "o", "open_url", "URL", group="misc"),

@@ -74,13 +74,15 @@ def test_every_shown_key_has_a_real_action_on_the_app():
 
 
 def test_a_view_specific_key_is_only_shown_where_it_works():
-    """`tab` flips the kanban presentation and is a no-op everywhere else. A key
-    advertised in a view where it does nothing is the same lie in reverse."""
+    """`tab` flips the kanban layout or cycles the Focus Board; a no-op
+    everywhere else. A key advertised in a view where it does nothing is the same
+    lie in reverse."""
     tab = next(k for k in KEYMAP if k.action == "toggle_presentation")
-    assert tab.views == ("kanban",)
-    assert tab.show in {s for s, _ in fit_bar(400, "kanban")[0]}
+    assert tab.views == ("kanban", "focus")
+    for view in ("kanban", "focus"):
+        assert tab.show in {s for s, _ in fit_bar(400, view)[0]}, view
     for view in VIEWS:
-        if view != "kanban":
+        if view not in ("kanban", "focus"):
             assert tab.show not in {s for s, _ in fit_bar(400, view)[0]}, view
 
 
@@ -398,5 +400,5 @@ def test_the_readme_does_not_document_a_view_that_was_retired():
     assert not re.search(r"^\| `\d` \| \*\*Columns\*\*", text, re.M)
     for view in VIEWS:
         label = {"swimlanes": "Lanes", "agenda": "Agenda",
-                 "gantt": "Gantt", "kanban": "Kanban"}[view]
+                 "gantt": "Gantt", "kanban": "Kanban", "focus": "Focus"}[view]
         assert f"**{label}**" in text, f"{label} is a view but the README omits it"

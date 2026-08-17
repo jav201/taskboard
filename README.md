@@ -58,10 +58,11 @@ row instead.
 | `2` | **Agenda** | Every dated task on one shared day axis, ordered by urgency, each drawing its reach from today to its due date. No meter here on purpose — the row already says the same thing twice, as order and as length. |
 | `3` | **Gantt** | The same day axis, with a **past**: each project is two bands — its span (ash for elapsed, colour for what remains, ending at `◆`) over a progress band, so **the gap between them is the slip**, read as a length. Each task is a reach tipped by its phase glyph; finished work rests in ash at the tail. |
 | `4` | **Kanban** | Every task in its phase column, grouped by project. |
-| `6` | **Widget (aperture)** | The ambient face of the board, as a pushed screen: hero + meter + signal tiles + due calendar + up-next queue, rendered through the active design language (`t` cycles all 11). The number keys `1`-`4` exit *into* that view — the aperture is a launcher, the views are what you operate. |
+| `5` | **Focus** | Pinned tasks and tasks of pinned projects: a reading-and-annotation surface with three layouts (card stream, inspector split, image-first). Press `t` to pin a task, `T` to pin its whole project. |
+| `6` | **Widget (aperture)** | The ambient face of the board, as a pushed screen: hero + meter + signal tiles + due calendar + up-next queue, rendered through the active design language. The number keys `1`-`5` exit *into* that view — the aperture is a launcher, the views are what you operate. |
 
 > **Columns was retired** — kanban is the same phase grid and loses nothing, so the
-> views renumbered to 1-4. The app says so once, on the first launch after the change.
+> views renumbered to 1-5. The app says so once, on the first launch after the change.
 
 ## Install as a command
 
@@ -192,12 +193,14 @@ window, then tap it again to go frameless.
 | `x` | Archive / unarchive selected task (an archived task hides, so press `v` first to bring one back) |
 | `X` | **Archive finished work the board has no completion date for** — a one-time purge for tasks that were already done before dates were recorded. Says how many and asks first. |
 | `v` | Toggle showing archived items (hidden by default) |
+| `t` | Pin / unpin the selected task (appears in the Focus Board) |
+| `T` | Pin / unpin the whole project of the selected task (all its tasks appear in the Focus Board; does nothing for Inbox tasks) |
 | `o` | Open the selected task's URLs in your browser (opens all of them) |
 | `i` | Open the inline image viewer for the selected task (rescaled thumbnails) |
 | `Enter` | Details of the selected task (read-only: every field, notes, URLs, images) |
 | `f` | Manage the board's phases (add / rename / reorder / delete) |
 | `Ctrl+E` | **Insert an emoji** — in the task or project editor, search by name and insert the glyph at the cursor. Only emoji whose width is unambiguous are offered, so a title can never lean its row. |
-| `Tab` | Kanban only: switch between the grouped and matrix layouts |
+| `Tab` | Kanban: switch between grouped and matrix layouts. Focus Board: cycle card stream → inspector split → image-first. |
 | `R` | **Write a report** — a self-contained HTML document of the board, saved beside your board file. It says where it went and does not open it. |
 | `c` | Choose the two ribbon city clocks (type to find a city — accent-blind, so `Sao Paulo` finds `São Paulo`) |
 | `q` | Quit |

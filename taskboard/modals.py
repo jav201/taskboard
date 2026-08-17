@@ -366,6 +366,9 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                 # a reader looks for it when the task is already open
                 yield Checkbox("archived", value=bool(t.archived) if t else False,
                                id="f-archived")
+                yield Label("Pinned")
+                yield Checkbox("pinned", value=bool(t.pinned) if t else False,
+                               id="f-pinned")
                 yield Label("Priority")
                 yield Select([(p, p) for p in TASK_PRIORITIES],
                              value=(t.priority if t else "normal"),
@@ -456,6 +459,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
             "phase": self._val("f-phase"),
             "blocked": bool(self.query_one("#f-blocked", Checkbox).value),
             "archived": bool(self.query_one("#f-archived", Checkbox).value),
+            "pinned": bool(self.query_one("#f-pinned", Checkbox).value),
             "priority": self._val("f-priority"),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
@@ -494,6 +498,9 @@ class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                 yield Select([(s, s) for s in PROJECT_STATUSES],
                              value=(p.status if p else "on_track"),
                              allow_blank=False, id="f-status")
+                yield Label("Pinned")
+                yield Checkbox("pinned", value=bool(p.pinned) if p else False,
+                               id="f-pinned")
                 yield Label("Start (YYYY-MM-DD)")
                 with Horizontal(classes="date-row"):
                     yield Input(value=(p.start_date or "" if p else ""), placeholder="optional",
@@ -528,6 +535,7 @@ class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
             "name": self._val("f-name") or "Untitled",
             "color": self._val("f-color"),
             "status": self._val("f-status"),
+            "pinned": bool(self.query_one("#f-pinned", Checkbox).value),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
         }

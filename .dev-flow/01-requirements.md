@@ -1,148 +1,86 @@
-# Requirements Document — taskboard — Batch 2026-08-17-batch-06
+:batch: 2026-08-17-batch-07
+:project: taskboard
+:language: en
 
-> **Artifact language:** English (`state.json.language = en`).
-> **Base ref:** `8b73920` (= `origin/main`, HEAD, merge-base — RC-1 PASS).
-> **Normative convention:** `shall` is binding and appears ONLY inside HLR/LLR **Statement** lines. `should` never appears inside one.
+# Requirements — Focus Board
 
----
+## 1. Scope
 
-## 1. Introduction
+A new view, **Focus Board**, for tasks (and whole projects) the user has marked for
+tracking and detail work. It is a reading-and-annotation surface, not an editor:
+all mutations route through the existing task/project modals and quick keys.
 
-### 1.1 Purpose
+## 2. User stories and acceptance criteria
 
-Define the change that gives the gantt view task-level semantics: priority as
-bar colour, milestones as diamond glyphs, dependencies as a visible indicator,
-and a project-focus filter to control density.
+### US-01 Pin/unpin a task
+**As a** taskboard user  
+**I want** to mark or unmark the selected task as pinned  
+**So that** it appears in (or leaves) the Focus Board.
 
-### 1.2 Scope
+**AC1.** Pressing `t` toggles `task.pinned` for the selected task.  
+**AC2.** The pinned flag persists to `board.json` and survives reload.  
+**AC3.** The task editor shows a checkbox for `pinned`.  
+**AC4.** A pinned task renders with a ⭐ indicator in views that show it.
 
-**In scope**
-- `taskboard/models.py`: add `depends_on: list[str]` to `Task` with safe
-  load/save/migration.
-- `taskboard/views.py`: `_task_reach`, `render_gantt`, `render_view`.
-- `taskboard/app.py`: extend `focus_cycle` / `focus_exit` to gantt.
-- `taskboard/keymap.py`: bind `F` and `esc` focus actions for the gantt view.
-- `README.md`: key-binding table update.
+### US-02 Pin/unpin a project
+**As a** taskboard user  
+**I want** to mark or unmark a whole project as pinned  
+**So that** all its tasks appear in the Focus Board at once.
 
-**Out of scope, explicitly**
-- A UI editor for dependencies in `TaskModal`.
-- New board actions unrelated to gantt semantics.
-- Darkside, ledger, prism, keybar, or palette follow-ups.
+**AC1.** Pressing `T` toggles `project.pinned` for the selected task's project.  
+**AC2.** All tasks of a pinned project are included in the Focus Board.  
+**AC3.** A task pinned individually AND belonging to a pinned project appears once.  
+**AC4.** Unpinning a project does not unpin individually pinned tasks from other projects.
 
-### 1.3 Definitions
+### US-03 Card stream presentation
+**As a** Focus Board user  
+**I want** pinned tasks rendered as vertical cards  
+**So that** I can read notes, dates and image counts at a glance.
 
-| Term | Definition |
-|------|------------|
-| Milestone | A task whose `start_date` equals its `due_date` (and both are present). |
-| Dependency indicator | A small rendered hint that a task has one or more downstream dependents. |
-| Focus filter | The existing `focused_project_id` mechanism, extended from kanban to gantt. |
+**AC1.** The default Focus Board (`5`) shows the card stream.  
+**AC2.** Each card shows: project spine, title, due readout, note snippet, image count, URL count, emoji row.  
+**AC3.** Emoji row supports: ❗ alert, ❓ question, ⭐ important, ⏰ due soon, 📋 has notes, ☐/☑ checklist items.  
+**AC4.** Cards are ordered by project then due date; Inbox last.
 
----
+### US-04 Inspector split presentation
+**As a** Focus Board user  
+**I want** a two-pane layout  
+**So that** I can read full notes and preview images of the selected pinned task.
 
-## 2. High-level requirements
+**AC1.** `Tab` inside Focus Board cycles card stream → inspector split → image-first.  
+**AC2.** The left pane lists pinned tasks; the right pane shows the selected task's details.  
+**AC3.** The detail pane shows: full notes, image thumbnails/names, URLs, checklist, due readout.  
+**AC4.** `i` opens the existing ImageViewer for the selected task.
 
-### HLR-001 — Priority-coloured task bars
+### US-05 Image-first presentation
+**As a** Focus Board user  
+**I want** pinned tasks with images to surface first  
+**So that** visual material is scannable.
 
-- **Statement:** When the gantt renders a task row, the bar **shall** wear a hue
-  derived from the task's `priority`.
-- **Acceptance (black-box):**
-  - `high` priority renders in rose.
-  - `normal` priority renders in sky.
-  - `low` priority renders in muted grey.
-  - Project rows remain in the project's own colour.
+**AC1.** The image-first presentation groups pinned tasks into "with images" and "without images".  
+**AC2.** Each image task shows a thumbnail placeholder and image count.  
+**AC3.** Tasks without images are listed compactly below.
 
-### HLR-002 — Milestone rendering
+## 3. Functional requirements
 
-- **Statement:** When a task is a milestone, the gantt **shall** render a single
-  diamond glyph at its date cell instead of a span.
-- **Acceptance (black-box):** A milestone task with `start_date == due_date`
-  shows `◆` at that cell and no span.
+- FR-01 `Task` shall have a `pinned: bool` field, default `False`.
+- FR-02 `Project` shall have a `pinned: bool` field, default `False`.
+- FR-03 Both flags shall round-trip through JSON load/save.
+- FR-04 `render_focus` shall accept `presentation` (`"cards"`, `"inspector"`, `"images"`).
+- FR-05 Focus Board content shall be the union of: individually pinned tasks + tasks whose project is pinned.
+- FR-06 The view shall respect `show_archived`: archived pinned tasks are hidden unless `v` is active.
 
-### HLR-003 — Dependency indicator
+## 4. Interface requirements
 
-- **Statement:** When a task has a non-empty `depends_on` list, the gantt
-  **shall** display a dependency indicator beside the task row.
-- **Acceptance (black-box):** A task with `depends_on` shows `└─►` after its
-  bar; a task without it does not.
+- IR-01 Key `5` enters Focus Board.
+- IR-02 `t` toggles pin on the selected task.
+- IR-03 `T` toggles pin on the selected task's project.
+- IR-04 `Tab` cycles the three presentations.
+- IR-05 `i` opens the ImageViewer for the selected task.
+- IR-06 `esc` exits Focus Board to the previous view.
 
-### HLR-004 — Gantt project-focus filter
+## 5. Out of scope
 
-- **Statement:** The gantt **shall** support the same project-focus filter as
-  kanban, bound to `F` to cycle and `esc` to clear.
-- **Acceptance (black-box):** Pressing `F` in gantt cycles visible projects and
-  hides other projects' rows; the header names the focused project; `esc`
-  restores all rows.
-
----
-
-## 3. Low-level requirements
-
-### LLR-001.1 — `Task.depends_on` field
-
-- **Statement:** `Task` **shall** expose a `depends_on: list[str]` attribute
-  defaulting to an empty list.
-
-### LLR-001.2 — `depends_on` persistence
-
-- **Statement:** `Board.save` **shall** persist `depends_on`; `Board.load`
-  **shall** default missing values to `[]` without raising.
-
-### LLR-002.1 — Priority-to-hue mapping
-
-- **Statement:** `_task_reach` **shall** map `priority` to a hue before
-  identity/project colour: `high` → rose, `normal` → sky, `low` → mut.
-
-### LLR-002.2 — Milestone short-circuit
-
-- **Statement:** `_task_reach` **shall** detect `start_date == due_date` and
-  return a single-cell diamond instead of a span.
-
-### LLR-003.1 — Dependency indicator placement
-
-- **Statement:** `render_gantt` **shall** append the dependency indicator to a
-  task row when `task.depends_on` is non-empty.
-
-### LLR-004.1 — Focus wiring
-
-- **Statement:** `action_focus_cycle` and `action_focus_exit` **shall** act on
-  gantt in addition to kanban.
-
-### LLR-004.2 — Focus render parameter
-
-- **Statement:** `render_gantt` **shall** accept a `focus` parameter and omit
-  non-focused projects' rows when it is set.
-
-### LLR-004.3 — Keymap visibility
-
-- **Statement:** `README.md` **shall** document `F` and `esc` as active in the
-  gantt view.
-
----
-
-## 4. User stories / acceptance tests
-
-| US | Observable outcome | Shipped surface | AT |
-|---|---|---|---|
-| US-1 | High-priority task bar is rose | `render_gantt` output | `test_gantt_priority_colours` |
-| US-2 | Milestone draws a diamond | `render_gantt` output | `test_gantt_milestone_diamond` |
-| US-3 | Dependency indicator appears | `render_gantt` output | `test_gantt_dependency_indicator` |
-| US-4 | Focus filter hides other projects | `App.run_test()` | `test_gantt_focus_filter` |
-
----
-
-## 5. Validation strategy
-
-- **Layer B (black-box AT):** drive `App.run_test()` for the focus filter.
-- **Layer A (white-box):** assert rendered markup colours and glyphs in
-  `tests/test_gantt.py`; assert model persistence in `tests/test_models.py`.
-- **Ratified stack:** `pytest` + `pytest-asyncio`.
-- **Gate:** `pytest tests/ -q` 0 failures, 0 skips.
-
----
-
-## 6. Open risks
-
-- The existing `test_a_bar_never_wears_an_urgency_hue` will be updated to allow
-  priority hues.
-- Removing task due meters changes the right-edge law; tests will be updated to
-  assert the new marker set.
+- Persisting colour highlights inside task text.
+- Inline image pixel rendering (terminal-dependent); preview is a placeholder strip.
+- Pinning from the project manager modal.
