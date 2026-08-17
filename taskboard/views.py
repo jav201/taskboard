@@ -2219,6 +2219,33 @@ _FOCUS_EMOJI = {
 }
 
 
+# Highlight syntax for notes inside the Focus Board. The delimiters are chosen
+# to be easy to type and unlikely to collide with ordinary markdown/URLs.
+_HIGHLIGHT_RE = re.compile(r"==(.*?)==|!!(.*?)!!|\+\+(.*?)\+\+")
+
+
+def _highlight_markup(text: str) -> str:
+    """Render ==text== (yellow), !!text!! (red), ++text++ (green). The
+    non-highlighted text is returned in the 'mut' tone so the caller can use the
+    result directly without wrapping it again."""
+    parts: list[str] = []
+    last = 0
+    for m in _HIGHLIGHT_RE.finditer(text):
+        if m.start() > last:
+            parts.append(c(escape(text[last:m.start()]), "mut"))
+        inner = escape(m.group(1) or m.group(2) or m.group(3))
+        if m.group(1) is not None:
+            parts.append(c(inner, "soon"))
+        elif m.group(2) is not None:
+            parts.append(c(inner, "over"))
+        else:
+            parts.append(c(inner, "green"))
+        last = m.end()
+    if last < len(text):
+        parts.append(c(escape(text[last:]), "mut"))
+    return "".join(parts) if parts else c(escape(text), "mut")
+
+
 def _focus_emojis(task: Task, today: date) -> str:
     """The emoji row for a focus card: pinned, severity, notes, checklist."""
     emojis: list[str] = []
@@ -2244,7 +2271,7 @@ def _focus_emojis(task: Task, today: date) -> str:
 
 
 def _focus_note_snippet(notes: str, width: int) -> str:
-    """First non-empty note line, truncated; empty -> empty string."""
+    """First non-empty note line with inline highlights; empty -> empty string."""
     if not notes or not notes.strip():
         return ""
     lines = [ln.strip() for ln in notes.splitlines() if ln.strip()]
@@ -2253,7 +2280,7 @@ def _focus_note_snippet(notes: str, width: int) -> str:
     text = lines[0]
     if len(lines) > 1:
         text += " …"
-    return c(escape(clip(text, width)), "mut")
+    return _highlight_markup(clip(text, width))
 
 
 def _focus_attachments(task: Task, width: int) -> str:
@@ -2293,7 +2320,11 @@ def _focus_detail_lines(board: Board, task: Task, today: date, width: int) -> li
     out.append(c(escape(fit("Notes", width)), "hd", bold=True))
     if notes:
         for ln in notes.splitlines()[:8]:
-            out.append(c(escape(fit(clip(ln.strip(), width), width)), "mut"))
+            stripped = ln.strip()
+            if stripped:
+                plain = clip(stripped, width)
+                rendered = _highlight_markup(plain)
+                out.append(rendered + " " * max(0, width - vis(plain)))
     else:
         out.append(c(escape(fit("No notes", width)), "dim"))
 
@@ -2329,16 +2360,21 @@ def _focus_cards(board: Board, tasks: list[Task], selected_id: str | None,
         p = board.project_by_id(t.project_id)
         pcol = p.color if p else "dim"
         spine = c("▌" if sel else "▎", pcol)
-        lines.append(line(spine + " " + title_markup(t, max(0, inner - 3), sel)))
+        emojis = _focus_emojis(t, today)
+        emoji_w = vis(emojis) if emojis else 0
+        # title keeps its own space; emojis ride the right edge as a ribbon
+        title_w = max(0, inner - 3 - emoji_w - (1 if emojis else 0))
+        title_row = spine + " " + title_markup(t, title_w, sel)
+        if emojis:
+            pad = inner - (3 + title_w + 1 + emoji_w)
+            title_row += " " * max(0, pad) + c(emojis, "ink")
+        lines.append(line(title_row))
         if line_map is not None:
             line_map[t.id] = len(lines) - 1
 
         dt, dcol = date_chip(t, today, board)
         sg, sgcol = status_glyph(board, t)
-        emojis = _focus_emojis(t, today)
         meta = c(dt, dcol) + "  " + c(sg, sgcol)
-        if emojis:
-            meta += "  " + c(emojis, "ink")
         lines.append(line("  " + meta))
 
         note = _focus_note_snippet(t.notes, max(0, inner - 4))
