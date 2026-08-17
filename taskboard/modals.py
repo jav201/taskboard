@@ -1097,3 +1097,92 @@ class StandupModal(ModalScreen[None]):
 
     def action_close(self) -> None:
         self.dismiss(None)
+
+
+class CommandPalette(ModalScreen[None]):
+    """`?` — search every command by name or key and run it without memorising.
+
+    The list is derived from `KEYMAP`, so a command that is added to the seat
+    appears here automatically and a removed one disappears."""
+
+    BINDINGS = [("escape", "close", "Close"), ("question_mark", "close", "Close"),
+                ("q", "close", "Close"), ("down", "cursor_down", ""),
+                ("up", "cursor_up", ""), ("enter", "run", "")]
+
+    DEFAULT_CSS = """
+    CommandPalette { align: center middle; }
+    #palette-box {
+        width: 80; max-width: 95%;
+        height: auto; max-height: 80%;
+        padding: 1 2;
+        background: #0d1219;
+        border: round #334154;
+    }
+    #palette-input { border: tall #1b2431; background: #0b111a; }
+    #palette-input:focus { border: tall #2dd4bf; }
+    #palette-list { height: auto; max-height: 20; border: none; background: #0d1219; }
+    #palette-list > .option-list--option-highlighted {
+        background: #1b2431; color: #e6edf3;
+    }
+    """
+
+    def __init__(self, commands: list[tuple[str, str, str]]) -> None:
+        super().__init__()
+        self._all = commands
+        self._filtered = list(commands)
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="palette-box"):
+            yield Input(placeholder="type a command...", id="palette-input")
+            yield OptionList(*self._option_lines(self._filtered), id="palette-list")
+            yield Label("[dim]esc/?/q close · ↓↑ select · ↵ run[/dim]",
+                        classes="modal-title")
+
+    def on_mount(self) -> None:
+        self.query_one("#palette-input", Input).focus()
+
+    def _option_lines(self, commands: list[tuple[str, str, str]]) -> list[str]:
+        return [f"{show}  {escape(label)}" for show, label, _action in commands]
+
+    def _refresh_list(self) -> None:
+        lst = self.query_one("#palette-list", OptionList)
+        lst.clear_options()
+        lines = self._option_lines(self._filtered)
+        if lines:
+            lst.add_options(lines)
+        else:
+            lst.add_options(["[dim]no matches[/dim]"])
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        text = event.value.lower()
+        self._filtered = [c for c in self._all
+                          if text in c[1].lower() or text in c[0].lower()]
+        self._refresh_list()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        """Enter while typing runs the highlighted command without leaving the
+        keyboard."""
+        if event.input.id == "palette-input":
+            self.action_run()
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        """Enter/click on the list runs the selected command."""
+        self.action_run()
+
+    def action_cursor_down(self) -> None:
+        self.query_one("#palette-list", OptionList).action_cursor_down()
+
+    def action_cursor_up(self) -> None:
+        self.query_one("#palette-list", OptionList).action_cursor_up()
+
+    def action_run(self) -> None:
+        if not self._filtered:
+            return
+        lst = self.query_one("#palette-list", OptionList)
+        idx = lst.highlighted if lst.highlighted is not None else 0
+        if 0 <= idx < len(self._filtered):
+            _show, _label, action = self._filtered[idx]
+            self.dismiss(action)
+
+    def action_close(self) -> None:
+        self.dismiss(None)

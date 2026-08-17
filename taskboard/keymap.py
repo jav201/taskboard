@@ -28,6 +28,19 @@ from .views import HEX
 
 VIEWS = ("swimlanes", "agenda", "gantt", "kanban")
 
+# Category hues for the layered "more" bar. Each group is drawn with its own
+# attention colour so the reader can parse the dense row at a glance.
+GROUP_HUE = {
+    "system": "amber",
+    "views": "violet",
+    "nav": "mut",
+    "task": "accent",
+    "phase": "sky",
+    "kanban": "cyan",
+    "date": "orange",
+    "misc": "green",
+}
+
 
 class Key(NamedTuple):
     keys: str                       # what Textual binds — may be an alias list
@@ -37,69 +50,85 @@ class Key(NamedTuple):
     universal: bool = False         # sorts first, dropped last
     priority: bool = False          # Textual priority binding
     views: tuple[str, ...] | None = None    # None = live in every view
+    primary: bool = False           # shown in the compact primary layer
+    group: str = "misc"             # category used by the more-layer grouping
 
 
 # THE SEAT. Nothing else in the app may declare a key.
+# Primary layer: only the essentials a daily user needs. More layer: everything,
+# grouped by category and tinted so the eye can travel.
 KEYMAP: tuple[Key, ...] = (
-    Key("1", "1", "view('swimlanes')", "Lanes"),
-    Key("2", "2", "view('agenda')", "Agenda"),
-    Key("3", "3", "view('gantt')", "Gantt"),
-    Key("4", "4", "view('kanban')", "Kanban"),
+    # -- system / layer -------------------------------------------------------
+    Key("?", "?", "legend", "Map", universal=True, primary=True, group="system"),
+    Key(";", ";", "layer_toggle", "More", universal=True, primary=True, group="system"),
+    Key("q", "q", "quit", "Quit", universal=True, primary=True, group="system"),
+
+    # -- views ----------------------------------------------------------------
+    Key("1", "1", "view('swimlanes')", "Lanes", primary=True, group="views"),
+    Key("2", "2", "view('agenda')", "Agenda", primary=True, group="views"),
+    Key("3", "3", "view('gantt')", "Gantt", primary=True, group="views"),
+    Key("4", "4", "view('kanban')", "Kanban", primary=True, group="views"),
     # the APERTURE: the widget posture as a pushed screen (aperture.py) —
     # ADD beside the four views, views.py untouched (HANDOFF §4 Inc 2)
-    Key("6", "6", "aperture", "Widget"),
-    Key("enter", "↵", "details", "Details"),
-    Key("a", "a", "add_task", "Add"),
-    Key("e", "e", "edit", "Edit"),
-    Key("[", "[", "phase_move(-1)", "Phase−"),
-    Key("]", "]", "phase_move(1)", "Phase+"),
-    Key("!", "!", "prio_cycle", "Prio"),
-    Key("b", "b", "toggle_blocked", "Blocked"),
-    Key("d,delete", "d", "delete", "Del"),
-    Key("x", "x", "archive", "Archive"),
-    Key("X", "X", "purge_done", "Purge done"),
-    Key("v", "v", "toggle_archived", "Archived"),
-    Key("o", "o", "open_url", "URL"),
-    Key("i", "i", "open_images", "Images"),
-    Key("p", "p", "add_project", "New proj"),
-    Key("P", "P", "manage_projects", "Projects"),
-    Key("f", "f", "manage_phases", "Phases"),
-    Key("c", "c", "clocks", "Clocks"),
-    Key("R", "R", "report", "Report"),
+    Key("6", "6", "aperture", "Widget", group="views"),
+
+    # -- task -----------------------------------------------------------------
+    Key("enter", "↵", "details", "Details", primary=True, group="task"),
+    Key("a", "a", "add_task", "Add", primary=True, group="task"),
+    Key("e", "e", "edit", "Edit", primary=True, group="task"),
+    Key("d,delete", "d", "delete", "Del", primary=True, group="task"),
+    Key("x", "x", "archive", "Archive", group="task"),
+    Key("X", "X", "purge_done", "Purge done", group="task"),
+    Key("v", "v", "toggle_archived", "Archived", group="task"),
+    Key("u", "u", "undo", "Undo", group="task"),
+
+    # -- phase / priority -----------------------------------------------------
+    Key("[", "[", "phase_move(-1)", "Phase−", group="phase"),
+    Key("]", "]", "phase_move(1)", "Phase+", group="phase"),
+    Key("!", "!", "prio_cycle", "Prio", group="phase"),
+    Key("b", "b", "toggle_blocked", "Blocked", group="phase"),
+
+    # -- date -----------------------------------------------------------------
+    Key("+,=", "+", "due_bump(1)", "Due+", group="date"),
+    Key("-", "-", "due_bump(-1)", "Due-", group="date"),
+
+    # -- kanban-only ----------------------------------------------------------
     # `s`/`g` reshape kanban columns only, so — like Tab below — they are only
     # claimed there: advertised where they work, guarded no-ops everywhere else.
-    Key("s", "s", "kanban_sort", "Sort", views=("kanban",)),
-    Key("g", "g", "kanban_group", "Group", views=("kanban",)),
+    Key("s", "s", "kanban_sort", "Sort", views=("kanban",), group="kanban"),
+    Key("g", "g", "kanban_group", "Group", views=("kanban",), group="kanban"),
     # `z` collapses THE LAST phase column to one `✓ N` row — same kanban-only
     # scoping as its sort/group siblings, but it needs no selection and fires
     # from anywhere in the view (§6.5 AMD-02).
-    Key("z", "z", "collapse_toggle", "Collapse", views=("kanban",)),
+    Key("z", "z", "collapse_toggle", "Collapse", views=("kanban",), group="kanban"),
     # `F` focuses ONE project (kanban-scoped like its siblings); the escape
     # companion leaves it — and is a guarded no-op with no focus active, so it
     # never eats another screen's escape (§6.5 AMD-03).
-    Key("F", "F", "focus_cycle", "Focus", views=("kanban",)),
-    # `=` is an ALIAS of `+` in ONE entry (the `"d,delete"` precedent, §6.5
-    # AMD-06) — never a separate "set to today" key. `+`/`-`/`u` act on the
-    # selected task, so — like `[` `]` `!` `b` — they are live in every view.
-    Key("+,=", "+", "due_bump(1)", "Due+"),
-    Key("-", "-", "due_bump(-1)", "Due-"),
-    Key("u", "u", "undo", "Undo"),
-    # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
-    # derives from the board in ANY view, so — like `R` — it is not scoped.
-    Key("S", "S", "standup", "Standup"),
-    Key("escape", "esc", "focus_exit", "Focus off", views=("kanban",)),
+    Key("F", "F", "focus_cycle", "Focus", views=("kanban",), group="kanban"),
+    Key("escape", "esc", "focus_exit", "Focus off", views=("kanban",), group="kanban"),
     # Tab only does something in kanban, so it is only claimed there — a key
     # advertised everywhere that answers in one place is the same lie in reverse.
-    Key("tab", "⇥", "toggle_presentation", "Layout", priority=True, views=("kanban",)),
-    Key("down,j", "↓", "cursor(1)", "Down", priority=True),
-    Key("up,k", "↑", "cursor(-1)", "Up", priority=True),
-    Key("left,h", "←", "hmove(-1)", "Left", priority=True),
-    Key("right,l", "→", "hmove(1)", "Right", priority=True),
-    # Declared LAST on purpose, and drawn FIRST: `universal` is what moves it,
-    # not its position here. A universal key must be declarable anywhere in this
-    # table and still be the last one standing when the row runs out of width.
-    Key("?", "?", "legend", "Keys", universal=True),
-    Key("q", "q", "quit", "Quit", universal=True),
+    Key("tab", "⇥", "toggle_presentation", "Layout", priority=True, views=("kanban",), primary=True, group="nav"),
+
+    # -- misc -----------------------------------------------------------------
+    Key("o", "o", "open_url", "URL", group="misc"),
+    Key("i", "i", "open_images", "Images", group="misc"),
+    Key("p", "p", "add_project", "New proj", group="misc"),
+    Key("P", "P", "manage_projects", "Projects", group="misc"),
+    Key("f", "f", "manage_phases", "Phases", group="misc"),
+    Key("c", "c", "clocks", "Clocks", group="misc"),
+    Key("R", "R", "report", "Report", group="misc"),
+    # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
+    # derives from the board in ANY view, so — like `R` — it is not scoped.
+    Key("S", "S", "standup", "Standup", group="misc"),
+
+    # -- navigation -----------------------------------------------------------
+    # Declared LAST on purpose, and drawn FIRST in the more layer: `universal`
+    # is what moves them, not their position here.
+    Key("down,j", "↓", "cursor(1)", "Down", priority=True, primary=True, group="nav"),
+    Key("up,k", "↑", "cursor(-1)", "Up", priority=True, primary=True, group="nav"),
+    Key("left,h", "←", "hmove(-1)", "Left", priority=True, group="nav"),
+    Key("right,l", "→", "hmove(1)", "Right", priority=True, group="nav"),
 )
 
 
@@ -108,16 +137,34 @@ def app_bindings() -> list[Binding]:
     return [Binding(k.keys, k.action, k.label, priority=k.priority) for k in KEYMAP]
 
 
-def bar_keys(view: str) -> list[Key]:
-    """The keys live in `view`, universal ones first. The other half.
-
-    Sorted stably, so the declaration order is the reading order within each
-    group and the bar does not reshuffle itself as the user switches views."""
+def _layer_keys(view: str, layer: str) -> list[Key]:
+    """Keys to display in `layer` for `view`, universal ones first."""
     live = [k for k in KEYMAP if k.views is None or view in k.views]
+    if layer == "primary":
+        live = [k for k in live if k.primary]
     return sorted(live, key=lambda k: not k.universal)
 
 
+def bar_keys(view: str, layer: str = "more") -> list[Key]:
+    """The keys live in `view` and `layer`, universal ones first.
+
+    Sorted stably, so the declaration order is the reading order within each
+    group and the bar does not reshuffle itself as the user switches views or
+    layers."""
+    return _layer_keys(view, layer)
+
+
+def palette_commands(view: str) -> list[tuple[str, str, str]]:
+    """All commands reachable from `view` as (show, label, action).
+
+    The command palette lists these and runs the action string when one is
+    selected. Universal commands sort first so the most reliable doors out
+    (quit, palette itself) are always at the top."""
+    return [(k.show, k.label, k.action) for k in bar_keys(view, "more")]
+
+
 SEP = "  "
+GROUP_SEP = "  "
 
 
 def _width(entries: list[tuple[str, str]], dropped: int) -> int:
@@ -125,13 +172,13 @@ def _width(entries: list[tuple[str, str]], dropped: int) -> int:
     return len(body) + (len(f" +{dropped}") if dropped else 0)
 
 
-def fit_bar(width: int, view: str) -> tuple[list[tuple[str, str]], int]:
+def fit_bar(width: int, view: str, layer: str = "more") -> tuple[list[tuple[str, str]], int]:
     """(what the bar shows, how many keys did not fit) at `width` cells.
 
     Degradation, in order: the WORDS go first, from the right, one at a time.
     Only when every word is gone and the keys THEMSELVES still overflow does a
     key drop — and then it is counted, never silently swallowed."""
-    entries = [[k.show, k.label] for k in bar_keys(view)]
+    entries = [[k.show, k.label] for k in bar_keys(view, layer)]
     for i in range(len(entries) - 1, -1, -1):
         if _width([tuple(e) for e in entries], 0) <= width:
             break
@@ -153,9 +200,9 @@ def _note(entries: list[tuple[str, str]], dropped: int, width: int) -> str:
     return note if body + len(note) <= width else ""
 
 
-def key_bar_plain(width: int, view: str) -> str:
+def key_bar_plain(width: int, view: str, layer: str = "more") -> str:
     """Exactly what a reader sees, as plain text."""
-    entries, dropped = fit_bar(width, view)
+    entries, dropped = fit_bar(width, view, layer)
     body = SEP.join(f"{show} {label}".strip() for show, label in entries)
     return body + _note(entries, dropped, width)
 
@@ -171,11 +218,27 @@ def _mshow(text: str) -> str:
     return text.replace("[", "\\[")
 
 
-def render_key_bar(width: int, view: str) -> str:
-    """The bar as markup: keys in the attention hue, words in the quiet one."""
-    entries, dropped = fit_bar(width, view)
-    out = [f"[{HEX['accent']}]{_mshow(show)}[/]" + (f" [{HEX['mut']}]{_mshow(label)}[/]" if label else "")
-           for show, label in entries]
+def render_key_bar(width: int, view: str, layer: str = "more") -> str:
+    """The bar as markup: keys tinted by category, words in the quiet one."""
+    entries, dropped = fit_bar(width, view, layer)
+    if layer == "primary":
+        out = [f"[{HEX['accent']}]{_mshow(show)}[/]" + (f" [{HEX['mut']}]{_mshow(label)}[/]" if label else "")
+               for show, label in entries]
+        markup = SEP.join(out)
+        note = _note(entries, dropped, width)
+        return markup + (f"[{HEX['dim']}]{note}[/]" if note else "")
+
+    # more layer: colour each key by its group. We recover the Key from the
+    # show token (shows are unique) so the colour matches the source row.
+    show_to_key = {k.show: k for k in bar_keys(view, "more")}
+    out = []
+    for show, label in entries:
+        k = show_to_key.get(show)
+        hue = GROUP_HUE.get(k.group, "accent") if k else "accent"
+        part = f"[{HEX[hue]}]{_mshow(show)}[/]"
+        if label:
+            part += f" [{HEX['mut']}]{_mshow(label)}[/]"
+        out.append(part)
     markup = SEP.join(out)
     note = _note(entries, dropped, width)
     return markup + (f"[{HEX['dim']}]{note}[/]" if note else "")
@@ -186,6 +249,7 @@ class KeyBar(Static):
     view change, so what it shows is never a snapshot of an older state."""
 
     view_mode: str = "swimlanes"
+    bar_layer: str = "primary"
 
     def on_mount(self) -> None:
         self.refresh_bar()
@@ -193,10 +257,14 @@ class KeyBar(Static):
     def on_resize(self, event) -> None:
         self.refresh_bar()
 
+    def set_layer(self, layer: str) -> None:
+        self.bar_layer = layer
+        self.refresh_bar()
+
     def refresh_bar(self, view: str | None = None) -> str:
         if view is not None:
             self.view_mode = view
         width = self.content_size.width or self.size.width
-        markup = render_key_bar(max(0, width), self.view_mode)
+        markup = render_key_bar(max(0, width), self.view_mode, self.bar_layer)
         self.update(markup)
         return markup

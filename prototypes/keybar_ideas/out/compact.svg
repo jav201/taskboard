@@ -1,0 +1,64 @@
+<svg class="rich-terminal" viewBox="0 0 1482 74.4" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generated with Rich https://www.textualize.io -->
+    <style>
+
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Regular");
+        font-style: normal;
+        font-weight: 400;
+    }
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Bold");
+        font-style: bold;
+        font-weight: 700;
+    }
+
+    .terminal-1602086959-matrix {
+        font-family: Fira Code, monospace;
+        font-size: 20px;
+        line-height: 24.4px;
+        font-variant-east-asian: full-width;
+    }
+
+    .terminal-1602086959-title {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: arial;
+    }
+
+    .terminal-1602086959-r1 { fill: #334154 }
+.terminal-1602086959-r2 { fill: #fbbf24 }
+.terminal-1602086959-r3 { fill: #c5c8c6 }
+.terminal-1602086959-r4 { fill: #fb7185 }
+.terminal-1602086959-r5 { fill: #a78bfa;font-weight: bold }
+.terminal-1602086959-r6 { fill: #a78bfa }
+.terminal-1602086959-r7 { fill: #2dd4bf }
+.terminal-1602086959-r8 { fill: #8b98a5 }
+.terminal-1602086959-r9 { fill: #2dd4bf;font-weight: bold }
+.terminal-1602086959-r10 { fill: #38bdf8 }
+    </style>
+
+    <defs>
+    <clipPath id="terminal-1602086959-clip-terminal">
+      <rect x="0" y="0" width="1463.0" height="23.4" />
+    </clipPath>
+    
+    </defs>
+
+    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1480" height="72.4" rx="8"/><text class="terminal-1602086959-title" fill="#c5c8c6" text-anchor="middle" x="740" y="27">B&#160;·&#160;una&#160;fila&#160;compacta&#160;con&#160;badges&#160;de&#160;categoría</text>
+            <g transform="translate(26,22)">
+            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
+            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
+            <circle cx="44" cy="0" r="7" fill="#28c840"/>
+            </g>
+        
+    <g transform="translate(9, 41)" clip-path="url(#terminal-1602086959-clip-terminal)">
+    
+    <g class="terminal-1602086959-matrix">
+    <text class="terminal-1602086959-r1" x="0" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">▐</text><text class="terminal-1602086959-r2" x="12.2" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">?</text><text class="terminal-1602086959-r2" x="36.6" y="20" textLength="48.8" clip-path="url(#terminal-1602086959-line-0)">keys</text><text class="terminal-1602086959-r1" x="85.4" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">▌</text><text class="terminal-1602086959-r4" x="122" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">q</text><text class="terminal-1602086959-r4" x="146.4" y="20" textLength="48.8" clip-path="url(#terminal-1602086959-line-0)">quit</text><text class="terminal-1602086959-r1" x="219.6" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">│</text><text class="terminal-1602086959-r5" x="256.2" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">1</text><text class="terminal-1602086959-r6" x="268.4" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">-</text><text class="terminal-1602086959-r5" x="280.6" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">4</text><text class="terminal-1602086959-r6" x="305" y="20" textLength="61" clip-path="url(#terminal-1602086959-line-0)">views</text><text class="terminal-1602086959-r5" x="390.4" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">6</text><text class="terminal-1602086959-r6" x="414.8" y="20" textLength="73.2" clip-path="url(#terminal-1602086959-line-0)">widget</text><text class="terminal-1602086959-r1" x="512.4" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">│</text><text class="terminal-1602086959-r7" x="549" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">↵</text><text class="terminal-1602086959-r8" x="573.4" y="20" textLength="48.8" clip-path="url(#terminal-1602086959-line-0)">open</text><text class="terminal-1602086959-r7" x="646.6" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">a</text><text class="terminal-1602086959-r8" x="671" y="20" textLength="36.6" clip-path="url(#terminal-1602086959-line-0)">add</text><text class="terminal-1602086959-r7" x="732" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">e</text><text class="terminal-1602086959-r8" x="756.4" y="20" textLength="48.8" clip-path="url(#terminal-1602086959-line-0)">edit</text><text class="terminal-1602086959-r4" x="829.6" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">d</text><text class="terminal-1602086959-r8" x="854" y="20" textLength="36.6" clip-path="url(#terminal-1602086959-line-0)">del</text><text class="terminal-1602086959-r1" x="915" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">│</text><text class="terminal-1602086959-r9" x="951.6" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">[</text><text class="terminal-1602086959-r8" x="976" y="20" textLength="36.6" clip-path="url(#terminal-1602086959-line-0)">ph-</text><text class="terminal-1602086959-r9" x="1037" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">]</text><text class="terminal-1602086959-r8" x="1061.4" y="20" textLength="36.6" clip-path="url(#terminal-1602086959-line-0)">ph+</text><text class="terminal-1602086959-r7" x="1122.4" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">!</text><text class="terminal-1602086959-r8" x="1146.8" y="20" textLength="48.8" clip-path="url(#terminal-1602086959-line-0)">prio</text><text class="terminal-1602086959-r7" x="1220" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">b</text><text class="terminal-1602086959-r8" x="1244.4" y="20" textLength="36.6" clip-path="url(#terminal-1602086959-line-0)">blk</text><text class="terminal-1602086959-r1" x="1305.4" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">│</text><text class="terminal-1602086959-r10" x="1342" y="20" textLength="61" clip-path="url(#terminal-1602086959-line-0)">s/g/z</text><text class="terminal-1602086959-r10" x="1415.2" y="20" textLength="48.8" clip-path="url(#terminal-1602086959-line-0)">kanb</text><text class="terminal-1602086959-r3" x="1464" y="20" textLength="12.2" clip-path="url(#terminal-1602086959-line-0)">
+</text>
+    </g>
+    </g>
+</svg>
