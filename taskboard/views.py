@@ -2205,20 +2205,6 @@ def render_gantt(board, show_archived, selected_id, today=None,
 # view: FOCUS  (pinned tasks and tasks of pinned projects, three presentations)
 # ---------------------------------------------------------------------------
 
-# Emoji annotations used in the card stream. Every glyph here is a single
-# codepoint whose width `cell_len` reports as 2, matching the ruler the rest of
-# the UI uses (M22 ambiguous-glyph trap).
-_FOCUS_EMOJI = {
-    "pinned": "⭐",
-    "alert": "❗",
-    "question": "❓",
-    "soon": "⏰",
-    "notes": "📋",
-    "todo": "☐",
-    "done": "☑",
-}
-
-
 # Highlight syntax for notes inside the Focus Board. The delimiters are chosen
 # to be easy to type and unlikely to collide with ordinary markdown/URLs.
 _HIGHLIGHT_RE = re.compile(r"==(.*?)==|!!(.*?)!!|\+\+(.*?)\+\+")
@@ -2244,30 +2230,6 @@ def _highlight_markup(text: str) -> str:
     if last < len(text):
         parts.append(c(escape(text[last:]), "mut"))
     return "".join(parts) if parts else c(escape(text), "mut")
-
-
-def _focus_emojis(task: Task, today: date) -> str:
-    """The emoji row for a focus card: pinned, severity, notes, checklist."""
-    emojis: list[str] = []
-    if task.pinned:
-        emojis.append(_FOCUS_EMOJI["pinned"])
-    if task.priority == "high":
-        emojis.append(_FOCUS_EMOJI["alert"])
-    notes = task.notes or ""
-    if notes.strip():
-        emojis.append(_FOCUS_EMOJI["notes"])
-    if "?" in notes:
-        emojis.append(_FOCUS_EMOJI["question"])
-    d = parse_iso(task.due_date)
-    if d is not None and 0 <= (d - today).days <= 3:
-        emojis.append(_FOCUS_EMOJI["soon"])
-    open_boxes = len(re.findall(r"^\s*[-*]\s+\[ \]", notes, re.M))
-    done_boxes = len(re.findall(r"^\s*[-*]\s+\[[xX]\]", notes, re.M))
-    if open_boxes:
-        emojis.append(_FOCUS_EMOJI["todo"])
-    if done_boxes:
-        emojis.append(_FOCUS_EMOJI["done"])
-    return " ".join(emojis)
 
 
 def _focus_note_snippet(notes: str, width: int) -> str:
@@ -2360,15 +2322,7 @@ def _focus_cards(board: Board, tasks: list[Task], selected_id: str | None,
         p = board.project_by_id(t.project_id)
         pcol = p.color if p else "dim"
         spine = c("▌" if sel else "▎", pcol)
-        emojis = _focus_emojis(t, today)
-        emoji_w = vis(emojis) if emojis else 0
-        # title keeps its own space; emojis ride the right edge as a ribbon
-        title_w = max(0, inner - 3 - emoji_w - (1 if emojis else 0))
-        title_row = spine + " " + title_markup(t, title_w, sel)
-        if emojis:
-            pad = inner - (3 + title_w + 1 + emoji_w)
-            title_row += " " * max(0, pad) + c(emojis, "ink")
-        lines.append(line(title_row))
+        lines.append(line(spine + " " + title_markup(t, max(0, inner - 3), sel)))
         if line_map is not None:
             line_map[t.id] = len(lines) - 1
 
@@ -3170,16 +3124,9 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         pinned = focus_tasks(board, show_archived)
         if pinned:
             out.append((c("▎", hue), "project spine (colour = project)"))
-            out.append((c("⭐", "ink"), "pinned task"))
-            if any(t.priority == "high" for t in pinned):
-                out.append((c("❗", "ink"), "high-priority task"))
-            if any((t.notes or "").strip() for t in pinned):
-                out.append((c("📋", "mut"), "task has notes"))
-            notes = "\n".join(t.notes or "" for t in pinned)
-            if re.search(r"^\s*[-*]\s+\[ \]", notes, re.M):
-                out.append((c("☐", "mut"), "open checklist item"))
-            if re.search(r"^\s*[-*]\s+\[[xX]\]", notes, re.M):
-                out.append((c("☑", "mut"), "done checklist item"))
+            out.append((c("==text==", "soon"), "highlight: yellow / warning"))
+            out.append((c("!!text!!", "over"), "highlight: red / attention"))
+            out.append((c("++text++", "green"), "highlight: green / resolved"))
             if any(t.images for t in pinned):
                 out.append((c("▤", "mut"), "task has images"))
     if mode in ("swimlanes", "gantt"):
