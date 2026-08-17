@@ -33,8 +33,9 @@ TICK_SECONDS = 1.0
 # is shown exactly once per board rather than at every launch.
 RENUMBER_NOTICE_KEY = "seen_view_renumber_2026_07"
 
-VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban"]
-VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban"}
+VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus"]
+VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
+             "5": "focus"}
 
 
 class BoardView(Static):
@@ -183,6 +184,8 @@ class TaskboardApp(App):
         self.kanban_collapsed = False      # session-level too (LLR-007.1): THE
                                            # LAST phase only — a working posture,
                                            # not board data (§6.2 D-4)
+        self.focus_presentation = "cards"  # session-level (batch-07): cards /
+                                           # inspector / images
         self.focused_project_id: str | None = None   # session-level (LLR-008.1):
                                            # the kanban project focus — None off
         self._undo_stack: list[dict] = []  # session LIFO of pre-mutation
@@ -204,7 +207,8 @@ class TaskboardApp(App):
         "phase_move", "prio_cycle", "toggle_blocked",
         "kanban_sort", "kanban_group", "collapse_toggle",
         "focus_cycle", "focus_exit", "due_bump", "undo", "standup",
-        "toggle_presentation", "cursor", "hmove"})
+        "toggle_presentation", "cursor", "hmove",
+        "pin_toggle", "project_pin_toggle"})
     # `quit` is deliberately NOT in that set: the aperture shadows `q` with its
     # own Back binding, and ctrl+q must stay the one door out from anywhere.
 
@@ -317,7 +321,8 @@ class TaskboardApp(App):
                               kanban_group=self.kanban_group,
                               kanban_collapsed=self.kanban_collapsed,
                               kanban_focus=self.focused_project_id,
-                              gantt_focus=self.focused_project_id))
+                              gantt_focus=self.focused_project_id,
+                              focus_presentation=self.focus_presentation))
 
     def _apply_clock_settings(self) -> None:
         ribbons = self.query("#ribbon")
@@ -403,7 +408,8 @@ class TaskboardApp(App):
                          kanban_collapsed=self.kanban_collapsed,
                          kanban_focus=self.focused_project_id,
                          gantt_focus=self.focused_project_id,
-                         presentation=self.kanban_presentation)
+                         presentation=self.kanban_presentation,
+                         focus_presentation=self.focus_presentation)
 
     def _nav_flat(self) -> list[str]:
         return [tid for col in self._nav_columns() for tid in col]
@@ -522,7 +528,7 @@ class TaskboardApp(App):
     # they mutate nothing, so there is nothing to undo. A modal add records
     # NOTHING: creation is deliberate, deletion covers the destructive path.
     _UNDO_FIELDS = ("phase", "phase_changed", "priority", "blocked",
-                    "due_date", "archived")
+                    "due_date", "archived", "pinned")
 
     def _snapshot(self, task: Task, *, deleted: bool = False) -> dict:
         """The pre-mutation state of ONE task: the six mutable fields VERBATIM
@@ -597,7 +603,8 @@ class TaskboardApp(App):
                               kanban_group=self.kanban_group,
                               kanban_collapsed=self.kanban_collapsed,
                               kanban_focus=self.focused_project_id,
-                              gantt_focus=self.focused_project_id)
+                              gantt_focus=self.focused_project_id,
+                              focus_presentation=self.focus_presentation)
         board_widget.update(content)
         self._scroll_selected_into_view()
 
@@ -630,11 +637,43 @@ class TaskboardApp(App):
             bars.first(KeyBar).refresh_bar(self.view_mode)
 
     def action_toggle_presentation(self) -> None:
-        """Tab flips the kanban view's presentation; a no-op elsewhere."""
-        if self.view_mode != "kanban":
+        """Tab flips the kanban layout or cycles the Focus Board presentations;
+        a no-op elsewhere."""
+        if self.view_mode == "kanban":
+            self.kanban_presentation = ("matrix" if self.kanban_presentation == "grouped"
+                                        else "grouped")
+            self.refresh_view()
+        elif self.view_mode == "focus":
+            modes = ("cards", "inspector", "images")
+            self.focus_presentation = modes[(modes.index(self.focus_presentation) + 1)
+                                            % len(modes)]
+            self.refresh_view()
+
+    def action_pin_toggle(self) -> None:
+        """`t` — pin/unpin the selected task so it appears in the Focus Board."""
+        task = self.selected_task
+        if task is None:
             return
-        self.kanban_presentation = ("matrix" if self.kanban_presentation == "grouped"
-                                    else "grouped")
+        self._undo_stack.append(self._snapshot(task))
+        task.pinned = not task.pinned
+        self.board.save()
+        self.refresh_view()
+
+    def action_project_pin_toggle(self) -> None:
+        """`T` — pin/unpin the whole project of the selected task."""
+        task = self.selected_task
+        if task is None:
+            return
+        proj = self.board.project_by_id(task.project_id)
+        if proj is None:
+            self.notify("Inbox tasks have no project to pin.", title="Pin project",
+                        severity="information")
+            return
+        proj.pinned = not proj.pinned
+        self.board.save()
+        shown = escape(clip(proj.name, 40))
+        self.notify(f'"{shown}" {"pinned" if proj.pinned else "unpinned"}',
+                    title="Pin project", severity="information")
         self.refresh_view()
 
     def action_kanban_sort(self) -> None:

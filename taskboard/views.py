@@ -406,6 +406,24 @@ def sort_by_due(tasks: list[Task]) -> list[Task]:
                                         parse_iso(t.due_date) or date.max))
 
 
+def focus_tasks(board: Board, show_archived: bool) -> list[Task]:
+    """The Focus Board's content: individually pinned tasks plus every task of
+    a pinned project. Each task appears once, archived filtered by the viewer."""
+    tasks = board.visible_tasks(show_archived)
+    pinned_project_ids = {p.id for p in board.visible_projects(show_archived)
+                          if p.pinned}
+    return [t for t in tasks if t.pinned or t.project_id in pinned_project_ids]
+
+
+def _focus_sort_key(board: Board, show_archived: bool, t: Task, today: date):
+    """Order pinned tasks by project (board order) then due date; Inbox last."""
+    projects = board.visible_projects(show_archived)
+    p_index = next((i for i, p in enumerate(projects) if p.id == t.project_id),
+                   len(projects))
+    d = parse_iso(t.due_date)
+    return (p_index, d is None, d or date.max)
+
+
 _URG_COLOR = {"overdue": "over", "today": "soon", "week": "later",
               "later": "later", "none": "dim", "done": "done"}
 
@@ -2184,6 +2202,289 @@ def render_gantt(board, show_archived, selected_id, today=None,
 
 
 # ---------------------------------------------------------------------------
+# view: FOCUS  (pinned tasks and tasks of pinned projects, three presentations)
+# ---------------------------------------------------------------------------
+
+# Emoji annotations used in the card stream. Every glyph here is a single
+# codepoint whose width `cell_len` reports as 2, matching the ruler the rest of
+# the UI uses (M22 ambiguous-glyph trap).
+_FOCUS_EMOJI = {
+    "pinned": "⭐",
+    "alert": "❗",
+    "question": "❓",
+    "soon": "⏰",
+    "notes": "📋",
+    "todo": "☐",
+    "done": "☑",
+}
+
+
+def _focus_emojis(task: Task, today: date) -> str:
+    """The emoji row for a focus card: pinned, severity, notes, checklist."""
+    emojis: list[str] = []
+    if task.pinned:
+        emojis.append(_FOCUS_EMOJI["pinned"])
+    if task.priority == "high":
+        emojis.append(_FOCUS_EMOJI["alert"])
+    notes = task.notes or ""
+    if notes.strip():
+        emojis.append(_FOCUS_EMOJI["notes"])
+    if "?" in notes:
+        emojis.append(_FOCUS_EMOJI["question"])
+    d = parse_iso(task.due_date)
+    if d is not None and 0 <= (d - today).days <= 3:
+        emojis.append(_FOCUS_EMOJI["soon"])
+    open_boxes = len(re.findall(r"^\s*[-*]\s+\[ \]", notes, re.M))
+    done_boxes = len(re.findall(r"^\s*[-*]\s+\[[xX]\]", notes, re.M))
+    if open_boxes:
+        emojis.append(_FOCUS_EMOJI["todo"])
+    if done_boxes:
+        emojis.append(_FOCUS_EMOJI["done"])
+    return " ".join(emojis)
+
+
+def _focus_note_snippet(notes: str, width: int) -> str:
+    """First non-empty note line, truncated; empty -> empty string."""
+    if not notes or not notes.strip():
+        return ""
+    lines = [ln.strip() for ln in notes.splitlines() if ln.strip()]
+    if not lines:
+        return ""
+    text = lines[0]
+    if len(lines) > 1:
+        text += " …"
+    return c(escape(clip(text, width)), "mut")
+
+
+def _focus_attachments(task: Task, width: int) -> str:
+    """Image / URL counts, or empty when the task has neither."""
+    parts: list[str] = []
+    if task.images:
+        parts.append(c(f"▤ {len(task.images)} image{'s' if len(task.images) != 1 else ''}",
+                       "mut"))
+    if task.urls:
+        parts.append(c(f"↗ {len(task.urls)} url{'s' if len(task.urls) != 1 else ''}",
+                       "accent"))
+    if not parts:
+        return ""
+    body = "  ".join(parts)
+    # truncate as a unit so counts never read as a lie
+    return c(escape(clip(body, width)), "mut") if vis(body) > width else body
+
+
+def _focus_detail_lines(board: Board, task: Task, today: date, width: int) -> list[str]:
+    """Right-pane lines for the inspector presentation. Each line is exactly
+    `width` visual cells once markup is stripped."""
+    out: list[str] = []
+    p = board.project_by_id(task.project_id)
+    pname = p.name if p else "Inbox"
+    pcol = p.color if p else "dim"
+
+    out.append(c(escape(fit(clip(task.title, width), width)), "ink", bold=True))
+
+    dt, dcol = date_chip(task, today, board)
+    sg, sgcol = status_glyph(board, task)
+    meta = (c(f"Project: {escape(fit(clip(pname, max(0, width - 24)), max(0, width - 24)))}",
+              pcol)
+            + "  " + c(dt, dcol) + "  " + c(sg, sgcol))
+    out.append(meta + " " * max(0, width - vis(_strip(meta))))
+
+    notes = (task.notes or "").strip()
+    out.append(c(escape(fit("Notes", width)), "hd", bold=True))
+    if notes:
+        for ln in notes.splitlines()[:8]:
+            out.append(c(escape(fit(clip(ln.strip(), width), width)), "mut"))
+    else:
+        out.append(c(escape(fit("No notes", width)), "dim"))
+
+    if task.urls:
+        out.append(c(escape(fit("URLs", width)), "hd", bold=True))
+        for u in task.urls[:5]:
+            out.append(c(escape(fit(clip(u, width), width)), "accent"))
+
+    if task.images:
+        out.append(c(escape(fit(f"Images ({len(task.images)})", width)), "hd", bold=True))
+        for img in task.images[:5]:
+            out.append(c(escape(fit(clip(img, width), width)), "mut"))
+
+    open_boxes = len(re.findall(r"^\s*[-*]\s+\[ \]", notes, re.M))
+    done_boxes = len(re.findall(r"^\s*[-*]\s+\[[xX]\]", notes, re.M))
+    if open_boxes or done_boxes:
+        out.append(c(escape(fit(f"Checklist: {done_boxes}/{open_boxes + done_boxes}",
+                                width)),
+                     "hd", bold=True))
+
+    return out
+
+
+def _focus_cards(board: Board, tasks: list[Task], selected_id: str | None,
+                 today: date, inner: int, line_map: dict | None) -> list[str]:
+    """Card-stream presentation: one vertical card per pinned task."""
+    lines: list[str] = []
+    if not tasks:
+        return [line(c(fit("  (no pinned tasks — press 't' on a task to pin it)",
+                           inner), "dim"))]
+    for t in tasks:
+        sel = t.id == selected_id
+        p = board.project_by_id(t.project_id)
+        pcol = p.color if p else "dim"
+        spine = c("▌" if sel else "▎", pcol)
+        lines.append(line(spine + " " + title_markup(t, max(0, inner - 3), sel)))
+        if line_map is not None:
+            line_map[t.id] = len(lines) - 1
+
+        dt, dcol = date_chip(t, today, board)
+        sg, sgcol = status_glyph(board, t)
+        emojis = _focus_emojis(t, today)
+        meta = c(dt, dcol) + "  " + c(sg, sgcol)
+        if emojis:
+            meta += "  " + c(emojis, "ink")
+        lines.append(line("  " + meta))
+
+        note = _focus_note_snippet(t.notes, max(0, inner - 4))
+        if note:
+            lines.append(line("  " + note))
+
+        att = _focus_attachments(t, max(0, inner - 4))
+        if att:
+            lines.append(line("  " + att))
+
+        lines.append(line(c("─" * max(0, inner), "frame")))
+    return lines
+
+
+def _focus_inspector(board: Board, tasks: list[Task], selected_id: str | None,
+                     today: date, inner: int, line_map: dict | None) -> list[str]:
+    """Two-pane presentation: list left, detail right."""
+    lines: list[str] = []
+    if not tasks:
+        return [line(c(fit("  (no pinned tasks — press 't' on a task to pin it)",
+                           inner), "dim"))]
+
+    ids = {t.id for t in tasks}
+    selected = board.task_by_id(selected_id)
+    if selected is None or selected.id not in ids:
+        selected = tasks[0]
+
+    left_w = max(12, inner // 3)
+    right_w = inner - left_w - 1
+    sep = c("│", "frame")
+
+    left_rows: list[tuple[str, str]] = []
+    for t in tasks:
+        sel = t.id == selected.id
+        p = board.project_by_id(t.project_id)
+        pcol = p.color if p else "dim"
+        spine = c("▌" if sel else "▎", pcol)
+        left_rows.append((spine + " " + title_markup(t, max(0, left_w - 3), sel),
+                          t.id))
+
+    right_lines = _focus_detail_lines(board, selected, today, max(0, right_w))
+
+    max_rows = max(len(left_rows), len(right_lines))
+    for i in range(max_rows):
+        lpart, tid = left_rows[i] if i < len(left_rows) else (" " * left_w, None)
+        rpart = right_lines[i] if i < len(right_lines) else " " * right_w
+        lines.append(line(lpart + sep + rpart))
+        if tid is not None and line_map is not None:
+            line_map[tid] = len(lines) - 1
+    return lines
+
+
+def _focus_image_card(board: Board, t: Task, selected_id: str | None,
+                      today: date, inner: int) -> list[str]:
+    """A compact card for the image-first presentation."""
+    sel = t.id == selected_id
+    p = board.project_by_id(t.project_id)
+    pcol = p.color if p else "dim"
+    spine = c("▌" if sel else "▎", pcol)
+    dt, dcol = date_chip(t, today, board)
+    title = title_markup(t, max(0, inner - 4 - 6), sel)
+    row1 = spine + " " + title + " " + c(fit(dt, 6, "right"), dcol)
+    img_text = f"🖼 {len(t.images)} image{'s' if len(t.images) != 1 else ''}"
+    row2 = "  " + c(escape(clip(img_text, max(0, inner - 4))), "mut")
+    return [line(row1), line(row2)]
+
+
+def _focus_compact_card(board: Board, t: Task, selected_id: str | None,
+                        today: date, inner: int) -> list[str]:
+    """A single-line card for image-first tasks without images."""
+    sel = t.id == selected_id
+    p = board.project_by_id(t.project_id)
+    pcol = p.color if p else "dim"
+    spine = c("▌" if sel else "▎", pcol)
+    dt, dcol = date_chip(t, today, board)
+    title = title_markup(t, max(0, inner - 4 - 6), sel)
+    return [line(spine + " " + title + " " + c(fit(dt, 6, "right"), dcol))]
+
+
+def _focus_images(board: Board, tasks: list[Task], selected_id: str | None,
+                  today: date, inner: int, line_map: dict | None) -> list[str]:
+    """Image-first presentation: tasks with images lead, then compact rows."""
+    lines: list[str] = []
+    if not tasks:
+        return [line(c(fit("  (no pinned tasks — press 't' on a task to pin it)",
+                           inner), "dim"))]
+
+    with_img = [t for t in tasks if t.images]
+    without = [t for t in tasks if not t.images]
+
+    if with_img:
+        label = f" with images ({len(with_img)}) "
+        lines.append(line(c(label, "hd")
+                          + c("─" * max(0, inner - vis(label)), "frame")))
+        for t in with_img:
+            base = len(lines)
+            for cl in _focus_image_card(board, t, selected_id, today, inner):
+                lines.append(cl)
+            if line_map is not None:
+                line_map[t.id] = base
+
+    if without:
+        label = f" without images ({len(without)}) "
+        lines.append(line(c(label, "hd")
+                          + c("─" * max(0, inner - vis(label)), "frame")))
+        for t in without:
+            base = len(lines)
+            for cl in _focus_compact_card(board, t, selected_id, today, inner):
+                lines.append(cl)
+            if line_map is not None:
+                line_map[t.id] = base
+
+    return lines
+
+
+def render_focus(board, show_archived, selected_id, today=None,
+                 width=68, height=0, line_map=None, presentation="cards") -> Text:
+    """The Focus Board: pinned tasks and tasks of pinned projects.
+
+    Three presentations:
+      * "cards"    — vertical cards with spine, dates, note snippet, attachments
+      * "inspector"— two-pane list + detail
+      * "images"   — image tasks first, then compact list
+    """
+    today = today or date.today()
+    w = _clamp_width(width)
+    inner = w
+    tasks = focus_tasks(board, show_archived)
+    tasks.sort(key=lambda t: _focus_sort_key(board, show_archived, t, today))
+
+    right = c(f"{len(tasks)} pinned", "mut")
+    title = c("◆ FOCUS", "accent", bold=True) + c(f" · {presentation}", "mut")
+    lines = [header(title, right, w)]
+
+    if presentation == "inspector":
+        lines += _focus_inspector(board, tasks, selected_id, today, inner, line_map)
+    elif presentation == "images":
+        lines += _focus_images(board, tasks, selected_id, today, inner, line_map)
+    else:
+        lines += _focus_cards(board, tasks, selected_id, today, inner, line_map)
+
+    lines.append(bottom(None, w))
+    return to_text(lines, height, w)
+
+
+# ---------------------------------------------------------------------------
 # view: KANBAN  (one column per phase with EVERY task, grouped by project;
 #                `tab` switches to a project x phase matrix)
 # ---------------------------------------------------------------------------
@@ -2520,6 +2821,7 @@ RENDERERS = {
     "agenda": render_agenda,
     "gantt": render_gantt,
     "kanban": render_kanban,
+    "focus": render_focus,
 }
 
 
@@ -2527,7 +2829,10 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                 width=68, height=0, line_map=None, presentation="grouped", tick=0,
                 kanban_sort="project", kanban_group="project",
                 kanban_collapsed=False, kanban_focus=None,
-                gantt_focus=None) -> Text:
+                gantt_focus=None, focus_presentation="cards") -> Text:
+    if mode == "focus":
+        return render_focus(board, show_archived, selected_id, today, width, height,
+                            line_map, presentation=focus_presentation)
     if mode == "kanban":
         return render_kanban(board, show_archived, selected_id, today, width, height,
                              line_map, presentation, sort=kanban_sort,
@@ -2616,9 +2921,14 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
               height: int = 0, *, kanban_sort="project",
               kanban_group="project", kanban_collapsed=False,
               kanban_focus=None, gantt_focus=None,
-              presentation="grouped") -> list[list[str]]:
+              presentation="grouped", focus_presentation="cards") -> list[list[str]]:
     today = today or date.today()
     tasks = board.visible_tasks(show_archived)
+
+    if mode == "focus":
+        pinned = focus_tasks(board, show_archived)
+        pinned.sort(key=lambda t: _focus_sort_key(board, show_archived, t, today))
+        return [[t.id for t in pinned]]
 
     if mode == "kanban":       # the phase columns, in THE shared seat's order
         # The matrix presentation renders through `_kanban_matrix`, which does
@@ -2820,6 +3130,22 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         out.append((c("┃", "accent"), "today"))
         if f["blocked"]:
             out.append((c("▲", "over"), "blocked"))
+    if mode == "focus":
+        pinned = focus_tasks(board, show_archived)
+        if pinned:
+            out.append((c("▎", hue), "project spine (colour = project)"))
+            out.append((c("⭐", "ink"), "pinned task"))
+            if any(t.priority == "high" for t in pinned):
+                out.append((c("❗", "ink"), "high-priority task"))
+            if any((t.notes or "").strip() for t in pinned):
+                out.append((c("📋", "mut"), "task has notes"))
+            notes = "\n".join(t.notes or "" for t in pinned)
+            if re.search(r"^\s*[-*]\s+\[ \]", notes, re.M):
+                out.append((c("☐", "mut"), "open checklist item"))
+            if re.search(r"^\s*[-*]\s+\[[xX]\]", notes, re.M):
+                out.append((c("☑", "mut"), "done checklist item"))
+            if any(t.images for t in pinned):
+                out.append((c("▤", "mut"), "task has images"))
     if mode in ("swimlanes", "gantt"):
         for present, days, label in (("overdue", -1, "days overdue — ▲ is the only alert"),
                                      ("today", 0, "due today"),

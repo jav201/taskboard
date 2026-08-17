@@ -651,10 +651,10 @@ def _extra_keys(d: dict, known: set[str]) -> dict:
     return {k: v for k, v in d.items() if k not in known}
 
 
-_PROJECT_KEYS = {"id", "name", "color", "status", "archived", "start_date", "due_date",
-                 "extra"}
+_PROJECT_KEYS = {"id", "name", "color", "status", "archived", "pinned", "start_date",
+                 "due_date", "extra"}
 _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
-              "due_date", "notes", "urls", "images", "archived", "extra",
+              "due_date", "notes", "urls", "images", "archived", "pinned", "extra",
               "phase_changed", "depends_on",
               "status", "url"}          # last two: legacy, consumed by the migration
 
@@ -733,6 +733,7 @@ class Project:
     color: str = "violet"
     status: str = "on_track"
     archived: bool = False
+    pinned: bool = False
     start_date: str | None = None
     due_date: str | None = None
     extra: dict = field(default_factory=dict)
@@ -746,6 +747,7 @@ class Project:
             color=project_color_on_load(d.get("color")),
             status=d.get("status") if d.get("status") in PROJECT_STATUSES else "on_track",
             archived=bool(d.get("archived", False)),
+            pinned=bool(d.get("pinned", False)),
             start_date=d.get("start_date"),
             due_date=d.get("due_date"),
             extra=_extra_keys(d, _PROJECT_KEYS),
@@ -764,6 +766,7 @@ class Task:
     urls: list[str] = field(default_factory=list)
     images: list[str] = field(default_factory=list)
     archived: bool = False
+    pinned: bool = False
     blocked: bool = False
     depends_on: list[str] = field(default_factory=list)
     # ISO date this task last CHANGED PHASE. None on every task that existed
@@ -810,6 +813,7 @@ class Task:
                 urls=urls,
                 images=images,
                 archived=bool(d.get("archived", False)),
+                pinned=bool(d.get("pinned", False)),
                 depends_on=[str(x) for x in d.get("depends_on")]
                 if isinstance(d.get("depends_on"), list) else [],
                 # additive; absent -> unknown, never back-filled with a guess

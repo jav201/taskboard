@@ -64,10 +64,11 @@ def test_the_retired_view_is_gone_from_the_code_entirely():
 
 
 async def test_two_now_opens_agenda(tmp_path):
-    """The renumbering, stated as a fact a test can hold: 1-4, no gap."""
+    """The renumbering, stated as a fact a test can hold: 1-5, no gap."""
     from taskboard.app import VIEW_KEYS, VIEW_ORDER
-    assert VIEW_ORDER == ["swimlanes", "agenda", "gantt", "kanban"]
-    assert VIEW_KEYS == {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban"}
+    assert VIEW_ORDER == ["swimlanes", "agenda", "gantt", "kanban", "focus"]
+    assert VIEW_KEYS == {"1": "swimlanes", "2": "agenda", "3": "gantt",
+                         "4": "kanban", "5": "focus"}
     app = make_app(tmp_path)
     async with app.run_test() as pilot:
         await pilot.press("2")
@@ -108,6 +109,8 @@ async def test_all_four_views_switch(tmp_path):
         assert "GANTT" in board_text(app)        # gantt
         await pilot.press("4")
         assert "KANBAN" in board_text(app)       # kanban
+        await pilot.press("5")
+        assert "FOCUS" in board_text(app)        # focus
 
 
 async def test_add_task_modal_appears(tmp_path):
@@ -3830,7 +3833,8 @@ async def test_undo_stack_snapshot_stale_skip_and_no_write_on_empty(tmp_path):
         assert entry["task_id"] == task.id
         assert entry["fields"] == {"phase": "Doing", "phase_changed": None,
                                    "priority": "normal", "blocked": False,
-                                   "due_date": None, "archived": False}
+                                   "due_date": None, "archived": False,
+                                   "pinned": False}
         # purged since the snapshot -> the entry is SKIPPED, no raise
         app.board.delete_task(task.id)      # the route undo does not cover
         await pilot.pause()
