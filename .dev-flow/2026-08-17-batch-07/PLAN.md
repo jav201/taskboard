@@ -68,3 +68,4 @@ marked `pinned` (and projects marked `pinned`) appear. Three presentations:
 | 2026-08-17 | `Tab` handled by a single `toggle_presentation` action that dispatches to kanban or focus; avoids duplicate key in seat | implementation |
 | 2026-08-17 | Focus card title kept left; emoji ribbon moved to right edge so title reads cleanly | operator feedback |
 | 2026-08-17 | Inline note highlights: `==yellow==`, `!!red!!`, `++green++` rendered in Focus Board only | operator feedback |
+| 2026-08-17 | Automatic emoji ribbon removed; emojis are user-controlled inside notes | operator feedback |
