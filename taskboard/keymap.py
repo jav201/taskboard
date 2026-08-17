@@ -101,11 +101,11 @@ KEYMAP: tuple[Key, ...] = (
     # scoping as its sort/group siblings, but it needs no selection and fires
     # from anywhere in the view (§6.5 AMD-02).
     Key("z", "z", "collapse_toggle", "Collapse", views=("kanban",), group="kanban"),
-    # `F` focuses ONE project (kanban-scoped like its siblings); the escape
-    # companion leaves it — and is a guarded no-op with no focus active, so it
-    # never eats another screen's escape (§6.5 AMD-03).
-    Key("F", "F", "focus_cycle", "Focus", views=("kanban",), group="kanban"),
-    Key("escape", "esc", "focus_exit", "Focus off", views=("kanban",), group="kanban"),
+    # `F` focuses ONE project (kanban and gantt); the escape companion leaves
+    # it — and is a guarded no-op with no focus active, so it never eats
+    # another screen's escape (§6.5 AMD-03).
+    Key("F", "F", "focus_cycle", "Focus", views=("kanban", "gantt"), group="kanban"),
+    Key("escape", "esc", "focus_exit", "Focus off", views=("kanban", "gantt"), group="kanban"),
     # Tab only does something in kanban, so it is only claimed there — a key
     # advertised everywhere that answers in one place is the same lie in reverse.
     Key("tab", "⇥", "toggle_presentation", "Layout", priority=True, views=("kanban",), primary=True, group="nav"),

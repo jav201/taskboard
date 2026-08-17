@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Focus Board — prototype</title>
+<style>
+:root {
+  --bg: #0d1219;
+  --panel: #111827;
+  --frame: #334154;
+  --ink: #e6edf3;
+  --mut: #8b98a5;
+  --dim: #5b6675;
+  --accent: #2dd4bf;
+  --rose: #fb7185;
+  --amber: #fbbf24;
+  --green: #4ade80;
+  --sky: #38bdf8;
+  --ash: #6b4a3f;
+  --done: #3f9c6d;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  line-height: 1.55;
+  padding: 2rem 1.5rem;
+}
+.wrap { max-width: 1100px; margin: 0 auto; }
+h1 { color: var(--accent); margin: 0 0 .25rem; }
+h2 { color: var(--ink); margin-top: 2.5rem; border-bottom: 1px solid var(--frame); padding-bottom: .4rem; }
+h3 { color: var(--sky); margin-top: 1.5rem; }
+p { color: var(--mut); max-width: 80ch; }
+ul { color: var(--mut); }
+li { margin: .35rem 0; }
+.term {
+  background: var(--panel);
+  border: 1px solid var(--frame);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  font-family: "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
+  font-size: 14px;
+  line-height: 1.35;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--ink);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+.term .bg { color: var(--mut); }
+.term .accent { color: var(--accent); }
+.term .rose { color: var(--rose); }
+.term .amber { color: var(--amber); }
+.term .green { color: var(--green); }
+.term .sky { color: var(--sky); }
+.term .mut { color: var(--mut); }
+.term .dim { color: var(--dim); }
+.term .done { color: var(--done); }
+.term .ash { color: var(--ash); }
+.term .hl-red { background: rgba(251,113,133,.18); color: var(--rose); }
+.term .hl-yellow { background: rgba(251,191,36,.18); color: var(--amber); }
+.term .hl-green { background: rgba(74,222,128,.18); color: var(--green); }
+.term .spine-lime { color: #a3e635; }
+.term .spine-sky { color: #38bdf8; }
+.term .spine-violet { color: #a78bfa; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--frame);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.card h4 { margin: 0 0 .5rem; color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; margin: .75rem 0; }
+.legend span { color: var(--mut); }
+.badge {
+  display: inline-block;
+  padding: .15rem .45rem;
+  border-radius: 4px;
+  font-size: .85rem;
+  background: var(--frame);
+  color: var(--ink);
+  margin-right: .4rem;
+}
+.note {
+  border-left: 3px solid var(--frame);
+  padding-left: .9rem;
+  margin: 1rem 0;
+  color: var(--mut);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Focus Board — prototipos</h1>
+<p>
+Vista nueva para <strong>seguimiento y recolección de detalles</strong>: solo las tareas marcadas
+(<code>pinned</code>) aparecen aquí. Cada fila muestra fechas, notas, imágenes, URLs y un set de
+emoji rápidos. El usuario puede pintar palabras en <span class="hl-yellow">amarillo</span>,
+<span class="hl-red">rojo</span> o <span class="hl-green">verde</span> para resaltar decisiones,
+bloqueos o acuerdos.
+</p>
+
+<div class="legend">
+  <span>❗ alerta / bloqueo</span>
+  <span>❓ duda pendiente</span>
+  <span>⭐ importante</span>
+  <span>⏰ vencimiento cercano</span>
+  <span>📋 tiene notas</span>
+  <span>☑ hecho / ☐ pendiente</span>
+</div>
+
+<div class="note">
+<strong>Bindings propuestos:</strong>
+<code>t</code> pin/unpin tarea seleccionada ·
+<code>T</code> pin/unpin proyecto completo ·
+<code>i</code> abrir visor de imágenes de la tarea ·
+<code>o</code> abrir imágenes/URLs en app del sistema ·
+<code>enter</code> abrir detalles (ya existe) ·
+<code>esc</code> salir del focus board.
+El flag también se edita en el modal de tarea como checkbox <code>[ ] pinned</code>.
+</div>
+
+<h2>Variante A — Card stream</h2>
+<p>Cada tarea es una tarjeta vertical. Buena para leer notas largas y ver muchos metadatos a la vez.</p>
+
+<div class="term"><span class="accent">◆ FOCUS BOARD</span>  <span class="mut">3 pinned · 1 blocked · 2 due this week</span>
+
+<span class="spine-lime">▎</span> <span class="accent">Website Redesign</span>  <span class="mut">· project pinned</span>
+<span class="spine-lime">▎</span> ❗⭐ <span class="hl-red">Fix checkout 500 error</span>        <span class="mut">▲2d</span>
+<span class="spine-lime">▎</span>    <span class="mut">Doing · 2026-07-24 → 2026-07-28</span>
+<span class="spine-lime">▎</span>    <span class="mut">❓ waiting for Stripe webhook docs</span>
+<span class="spine-lime">▎</span>    <span class="mut">📋 2 notes · ↗ 1 url</span>
+<span class="spine-lime">▎</span>    🖼 <span class="mut">1 image</span>  <span class="dim">[▄▀▄▀▄▀▄▀]</span>  <span class="mut">· press i to view</span>
+<span class="spine-lime">▎</span>
+<span class="spine-sky">▎</span> <span class="accent">API Platform</span>
+<span class="spine-sky">▎</span> ⭐ <span class="hl-yellow">Write API reference</span>           <span class="mut">12d</span>
+<span class="spine-sky">▎</span>    <span class="mut">Backlog · 2026-08-10 → 2026-08-17</span>
+<span class="spine-sky">▎</span>    <span class="mut">☑ outline approved · ☐ publish to ReadMe</span>
+<span class="spine-sky">▎</span>    <span class="mut">📋 4 notes · ↗ 3 urls · 🖼 0 images</span>
+<span class="spine-sky">▎</span>
+<span class="spine-violet">▎</span> <span class="accent">Data Warehouse</span>
+<span class="spine-violet">▎</span> ⏰ <span class="hl-green">Compress database backups</span>     <span class="mut">today</span>
+<span class="spine-violet">▎</span>    <span class="mut">Doing · 2026-08-17 → 2026-08-17</span>
+<span class="spine-violet">▎</span>    <span class="mut">☑ script ready · ☑ S3 bucket created</span>
+<span class="spine-violet">▎</span>    🖼 <span class="mut">2 images</span>  <span class="dim">[▀▄▀▄▀▄▀▄] [▄▀▄▀▄▀▄▀]</span>
+
+<span class="dim">[t] pin task  [T] pin project  [i] images  [enter] details  [esc] back</span>
+</div>
+
+<h2>Variante B — Dense tracker</h2>
+<p>Una tabla compacta: una fila por tarea, columnas de emoji y highlights de color. Máxima densidad.</p>
+
+<div class="term"><span class="accent">◆ FOCUS BOARD</span>  <span class="mut">dense · 3 pinned</span>
+
+<span class="mut">FLAG  PROJECT            TASK                         DUE     NOTES</span>
+<span class="spine-lime">▎</span> ❗⭐ <span class="hl-red">Website Redesign</span>  Fix checkout 500 error        <span class="rose">▲2d</span>    <span class="mut">❓ Stripe docs</span>
+<span class="spine-sky">▎</span> ⭐   <span class="hl-yellow">API Platform</span>      Write API reference             <span class="amber">12d</span>    <span class="mut">☑ outline</span>
+<span class="spine-violet">▎</span> ⏰   <span class="hl-green">Data Warehouse</span>    Compress database backups     <span class="green">today</span>  <span class="mut">☑ script ☑ bucket</span>
+
+<span class="dim">[t] toggle pin  [T] pin project  [enter] details  [esc] back</span>
+</div>
+
+<h2>Variante C — Inspector split</h2>
+<p>Izquierda: lista de tareas pinned. Derecha: detalles de la selección con notas completas, imágenes miniatura y checklist.</p>
+
+<div class="term"><span class="accent">◆ FOCUS BOARD</span>  <span class="mut">inspector · pinned only</span>
+
+<span class="accent">FIX CHECKOUT 500 ERROR</span>                         <span class="mut">▲2d · Doing</span>
+<span class="spine-lime">▎ Website Redesign</span>  <span class="mut">2026-07-24 → 2026-07-28</span>
+
+❗ <span class="hl-red">Bloqueo:</span> el error solo se reproduce en producción.
+❓ <span class="hl-yellow">Pendiente:</span> confirmar si el webhook de Stripe incluye `idempotency-key`.
+⭐ Decidido: implementar retry con backoff exponencial.
+
+<span class="mut">Checklist</span>
+☑ reproducir error en logs
+☐ escribir test de regresión
+☐ deploy a staging
+
+<span class="mut">Images · 🖼 1</span>
+<span class="dim">[▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀]</span>  <span class="mut">screenshot_500.png</span>
+<span class="mut">press i to enlarge · o to open raw</span>
+
+<span class="mut">Notas · 📋 2 · ↗ 1</span>
+
+<span class="dim">[↑↓] move  [t] unpin  [i] images  [enter] edit  [esc] back</span>
+</div>
+
+<h2>Variante D — Image-first board</h2>
+<p>Las tareas con imágenes se muestran con una miniatura visible siempre; las que no tienen imagen quedan en una lista secundaria. Útil cuando las imágenes son la señal principal (diseño, bugs visuales, screenshots).</p>
+
+<div class="term"><span class="accent">◆ FOCUS BOARD</span>  <span class="mut">image-first · 3 pinned · 2 with images</span>
+
+<span class="mut">WITH IMAGES</span>
+<span class="spine-lime">▎</span> <span class="dim">[▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀]</span>  <span class="hl-red">Fix checkout 500 error</span>
+<span class="spine-lime">▎</span> <span class="mut">Website Redesign · ▲2d · 🖼 1</span>
+<span class="spine-violet">▎</span> <span class="dim">[▀▄▀▄▀▄▀▄▀▄▀▄▀▄▀▄]</span>  <span class="hl-green">Compress database backups</span>
+<span class="spine-violet">▎</span> <span class="mut">Data Warehouse · today · 🖼 2</span>
+
+<span class="mut">WITHOUT IMAGES</span>
+<span class="spine-sky">▎</span> ⭐ <span class="hl-yellow">Write API reference</span>  <span class="mut">API Platform · 12d</span>
+
+<span class="dim">[↑↓] move  [i] view image  [o] open raw  [t] unpin  [esc] back</span>
+</div>
+
+<h2>Recomendación de diseño</h2>
+<div class="grid">
+  <div class="card">
+    <h4>Usa A cuando…</h4>
+    <p>El uso principal es <strong>leer</strong>: notas largas, contexto, imágenes como adjunto visible. Menos tareas en pantalla pero más información por tarea.</p>
+  </div>
+  <div class="card">
+    <h4>Usa B cuando…</h4>
+    <p>El uso principal es <strong>rastrear</strong> muchas tareas a la vez: daily standup, revisión rápida. Las imágenes se indican con contador; no se previsualizan.</p>
+  </div>
+  <div class="card">
+    <h4>Usa C cuando…</h4>
+    <p>El uso principal es <strong>investigar una tarea</strong>: notas completas, checklist e imágenes en un panel de preview. Requiere más ancho.</p>
+  </div>
+  <div class="card">
+    <h4>Usa D cuando…</h4>
+    <p>El uso principal es <strong>revisar material visual</strong>: screenshots, mockups, fotos. Las tareas con imagen lideran la vista; las demás quedan abajo.</p>
+  </div>
+</div>
+
+<h2>Decisiones pendientes</h2>
+<ul>
+  <li>¿Tecla para entrar a la vista? Propuesta: <code>5</code> o <code>ctrl+f</code>.</li>
+  <li>¿Nombre del flag? <code>pinned</code>, <code>tracked</code>, <code>followed</code> o <code>starred</code>.</li>
+  <li>¿Los highlights de color se guardan en la tarea o son decoración temporal?</li>
+  <li>¿La vista incluye tareas archivadas pinned o solo activas?</li>
+  <li>¿Mostrar miniaturas reales inline (requiere terminal gráfica: WezTerm) o solo indicadores?</li>
+  <li>¿En el inspector, preview de todas las imágenes o solo la primera?</li>
+  <li>¿Variante D separa por "con/sin imagen" o filtra solo las que tienen imagen?</li>
+</ul>
+
+<h2>Próximo paso</h2>
+<p>Elige una variante (o mezcla) y defino el modelo + bindings; luego la implemento como batch-07.</p>
+
+</div>
+</body>
+</html>

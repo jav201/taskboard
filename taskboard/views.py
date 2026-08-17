@@ -1906,12 +1906,21 @@ def _reach_start(task: Task, geo: FieldGeo, today: date) -> int:
     return min(cell_of(s or today), cell_of(e or today))
 
 
+def _priority_hue(priority: str) -> str:
+    """Hue for a task bar in the gantt: priority is the primary semantic channel."""
+    return {"high": "rose", "normal": "sky", "low": "mut"}.get(priority, "sky")
+
+
 def _task_reach(task: Task, board: Board, geo: FieldGeo, today: date,
                 hue: str, tick: int | None = None) -> list[tuple[str, str]]:
     """A task is a REACH of variable length with its phase glyph at the tip —
     not a five-cell slab. A mark that cannot vary is not a datum (DATAVIZ 13,
     which the old week-resolution bar violated: two different tasks drew the
-    same `▬▬▬▬▬`)."""
+    same `▬▬▬▬▬`).
+
+    Since batch-06 the bar wears the task's PRIORITY hue (high=rose, normal=sky,
+    low=mut). Done/archived tasks still rest in ash. Milestones — tasks whose
+    start equals due — render as a single diamond instead of a span."""
     cells = [(" ", "dim")] * geo.field_w
     s = parse_iso(task.start_date)
     e = parse_iso(task.due_date)
@@ -1928,7 +1937,11 @@ def _task_reach(task: Task, board: Board, geo: FieldGeo, today: date,
     if b < a:
         a, b = b, a
     done = board.is_done(task)
-    tone = "ash" if done else hue
+    tone = "ash" if done else _priority_hue(task.priority)
+    # milestone: a single diamond at the date cell
+    if s is not None and e is not None and s == e and 0 <= a < geo.field_w:
+        cells[a] = ("◆", tone)
+        return cells
     for x in range(a, b):
         cells[x] = (FIELD_TASK, tone)
     cells[b] = (FIELD_PHASE_TIP[min(3, board.phase_index(task))], tone)
@@ -2003,7 +2016,8 @@ def gantt_geometry(inner: int, height: int) -> FieldGeo:
 
 
 def render_gantt(board, show_archived, selected_id, today=None,
-                 width=68, height=0, line_map=None, tick=0) -> Text:
+                 width=68, height=0, line_map=None, tick=0,
+                 focus: str | None = None) -> Text:
     """The gantt on the shared day axis: one cell is two days, and the axis
     INCLUDES THE PAST.
 
@@ -2012,6 +2026,9 @@ def render_gantt(board, show_archived, selected_id, today=None,
     held, the emptier the view got. That is why it was the one view where MORE
     data produced LESS used screen (ink fell 23.3 % -> 21.0 % from typical to
     extreme). An axis with a past is the fix.
+
+    `focus` is a project id; when set, only that project (and its tasks) are
+    rendered. Inbox rows are hidden while a focus is active.
     """
     today = today or date.today()
     w = _clamp_width(width)
@@ -2022,9 +2039,16 @@ def render_gantt(board, show_archived, selected_id, today=None,
     tasks = board.visible_tasks(show_archived)
     late_n = sum(1 for t in tasks
                  if (d := parse_iso(t.due_date)) and d < today and not board.is_done(t))
+    focus_name = ""
+    if focus:
+        proj = board.project_by_id(focus)
+        focus_name = f" (focused: {proj.name})" if proj else " (focused)"
     right = (c(f"▲{late_n} past due", "over", bold=True) if late_n
              else c("nothing past due", "dim"))
-    lines = [header(c("◆ GANTT", "accent", bold=True), right, w)]
+    title = c("◆ GANTT", "accent", bold=True)
+    if focus_name:
+        title += c(focus_name, "mut")
+    lines = [header(title, right, w)]
 
     weeks, months = gantt_gauge(geo, today)
 
@@ -2040,6 +2064,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
                         if t.archived and board.is_done(t))
     rows: list[Row] = []
     for p in board.visible_projects(show_archived):
+        if focus and p.id != focus:
+            continue
         own = gantt_tasks(board, tasks, p.id)
         prog = board.project_progress(p.id, show_archived)
         span, band = _span_bands(p, geo, today, p.color, prog, tick)
@@ -2089,7 +2115,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
             over = max(0, min(_reach_start(t, geo, today),
                               geo.today_dc // 2) - GUTTER)
             tw = geo.label_w - 3 + over
-            title = title_markup(t, tw, sel)
+            dep = c("└─►", "mut") if t.depends_on else "   "
+            title = title_markup(t, max(0, tw - 3), sel) + dep
             reach = reach[over:]
             due = parse_iso(t.due_date)
             # archived work is spent, so its meter is the spent form: nothing is
@@ -2103,8 +2130,9 @@ def render_gantt(board, show_archived, selected_id, today=None,
 
     # THE INBOX IS NOT LOST. Tasks with no project were drawn by the old gantt
     # and must not fall out of the new one just because it iterates projects.
+    # When a project focus is active, inbox rows are hidden to match kanban focus.
     loose = [t for t in tasks if board.project_by_id(t.project_id) is None]
-    if loose:
+    if loose and not focus:
         rows.append((_pad(c("▎ ", "dim")
                           + c(escape(fit("Inbox", geo.label_w - 2)), "dim", bold=True)
                           + _band_markup([(" ", "dim")] * geo.field_w, geo, 0,
@@ -2122,10 +2150,11 @@ def render_gantt(board, show_archived, selected_id, today=None,
             spent = done or t.archived
             mcells = due_meter(None if spent else ((due - today).days if due else None),
                                done=spent, width=min(METER_W, geo.figs_w))
+            dep = c("└─►", "mut") if t.depends_on else "   "
             rows.append((band_row(
                 (c("▏" + ARCHIVED_MARK, "ash") if t.archived
                  else c("▏ ", "dim") if done else c("▎ ", "dim")) + " "
-                + title_markup(t, geo.label_w - 3 + over, t.id == selected_id),
+                + title_markup(t, max(0, geo.label_w - 3 + over - 3), t.id == selected_id) + dep,
                 reach, " " * max(0, geo.figs_w - len(mcells)) + meter_markup(mcells),
                 offset=over), t.id))
 
@@ -2497,7 +2526,8 @@ RENDERERS = {
 def render_view(mode, board, show_archived, selected_id, today=None,
                 width=68, height=0, line_map=None, presentation="grouped", tick=0,
                 kanban_sort="project", kanban_group="project",
-                kanban_collapsed=False, kanban_focus=None) -> Text:
+                kanban_collapsed=False, kanban_focus=None,
+                gantt_focus=None) -> Text:
     if mode == "kanban":
         return render_kanban(board, show_archived, selected_id, today, width, height,
                              line_map, presentation, sort=kanban_sort,
@@ -2505,7 +2535,7 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                              focus=kanban_focus)
     if mode == "gantt":
         return render_gantt(board, show_archived, selected_id, today, width, height,
-                            line_map, tick=tick)
+                            line_map, tick=tick, focus=gantt_focus)
     if mode == "swimlanes":
         return render_swimlanes(board, show_archived, selected_id, today, width,
                                 height, line_map, tick=tick)
@@ -2585,7 +2615,8 @@ def swimlane_nav(board, show_archived, today: date, width: int,
 def nav_model(mode, board, show_archived, today=None, width: int = 68,
               height: int = 0, *, kanban_sort="project",
               kanban_group="project", kanban_collapsed=False,
-              kanban_focus=None, presentation="grouped") -> list[list[str]]:
+              kanban_focus=None, gantt_focus=None,
+              presentation="grouped") -> list[list[str]]:
     today = today or date.today()
     tasks = board.visible_tasks(show_archived)
 
@@ -2636,12 +2667,15 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
     if mode == "gantt":
         order, unscheduled = [], []
         for p in board.visible_projects(show_archived):
+            if gantt_focus is not None and p.id != gantt_focus:
+                continue
             for t in gantt_tasks(board, tasks, p.id):
                 (order if _is_dated(t) else unscheduled).append(t.id)
         loose = [t for t in tasks if board.project_by_id(t.project_id) is None]
-        for t in (sort_by_due([t for t in loose if not board.is_done(t)])
-                  + sort_by_due([t for t in loose if board.is_done(t)])):
-            (order if _is_dated(t) else unscheduled).append(t.id)
+        if gantt_focus is None:
+            for t in (sort_by_due([t for t in loose if not board.is_done(t)])
+                      + sort_by_due([t for t in loose if board.is_done(t)])):
+                (order if _is_dated(t) else unscheduled).append(t.id)
         return [order + unscheduled]
 
     return [[t.id for t in tasks]]

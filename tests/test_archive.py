@@ -349,11 +349,20 @@ def test_after_the_purge_the_timer_owns_the_future(tmp_path):
     assert b.auto_archive_done(TODAY) == [t]
 
 
-async def test_the_purge_says_the_count_before_it_moves_anything(tmp_path):
+async def test_the_purge_says_the_count_before_it_moves_anything(tmp_path, monkeypatch):
     """AC1. It must state what it is about to do, with the RIGHT number, and wait
     for a yes — an archive that just happens is what erodes trust in one."""
+    from taskboard import app as app_module
     from taskboard.app import TaskboardApp
     from taskboard.modals import ConfirmModal
+
+    class FakeDate:
+        @staticmethod
+        def today():
+            return TODAY
+    monkeypatch.setattr(app_module, "date", FakeDate)
+    from taskboard import models as models_module
+    monkeypatch.setattr(models_module, "date", FakeDate)
     b = board(tmp_path, "flow.json")
     for i in range(3):
         done_task(b, f"Ancient {i}", moved_days_ago=None)

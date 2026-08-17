@@ -316,7 +316,8 @@ class TaskboardApp(App):
                               kanban_sort=self.kanban_sort,
                               kanban_group=self.kanban_group,
                               kanban_collapsed=self.kanban_collapsed,
-                              kanban_focus=self.focused_project_id))
+                              kanban_focus=self.focused_project_id,
+                              gantt_focus=self.focused_project_id))
 
     def _apply_clock_settings(self) -> None:
         ribbons = self.query("#ribbon")
@@ -401,6 +402,7 @@ class TaskboardApp(App):
                          kanban_group=self.kanban_group,
                          kanban_collapsed=self.kanban_collapsed,
                          kanban_focus=self.focused_project_id,
+                         gantt_focus=self.focused_project_id,
                          presentation=self.kanban_presentation)
 
     def _nav_flat(self) -> list[str]:
@@ -411,10 +413,10 @@ class TaskboardApp(App):
         not be individually navigable in a compact view (e.g. a non-first
         swimlane task) — navigation snaps to nav order on the next key."""
         tasks = self.board.visible_tasks(self.show_archived)
-        if self.view_mode == "kanban" and self.focused_project_id is not None:
+        if self.focused_project_id is not None and self.view_mode in ("kanban", "gantt"):
             # A focused board draws ONE project's cards; the selection may not
             # rest on a task the filter hides (hidden-but-navigable is the
-            # F-3 trap in a new costume, HLR-008).
+            # F-3 trap in a new costume, HLR-008). The same holds in gantt.
             tasks = [t for t in tasks if t.project_id == self.focused_project_id]
         ids = [t.id for t in tasks]
         if self.selected_task_id not in ids:
@@ -594,7 +596,8 @@ class TaskboardApp(App):
                               kanban_sort=self.kanban_sort,
                               kanban_group=self.kanban_group,
                               kanban_collapsed=self.kanban_collapsed,
-                              kanban_focus=self.focused_project_id)
+                              kanban_focus=self.focused_project_id,
+                              gantt_focus=self.focused_project_id)
         board_widget.update(content)
         self._scroll_selected_into_view()
 
@@ -680,13 +683,13 @@ class TaskboardApp(App):
         self.selected_task_id = None
 
     def action_focus_cycle(self) -> None:
-        """`F` — cycle the kanban project focus through the visible projects
-        in `board.visible_projects` order and then OFF (None); a view-guarded
-        no-op outside kanban (the `action_toggle_presentation` precedent).
-        Inbox is not a focus target (§6.2 D-5): focusing hides project-less
-        tasks along with every other project. The filter itself lives in the
-        shared ordering seat — this only holds the input."""
-        if self.view_mode != "kanban":
+        """`F` — cycle the project focus through the visible projects in
+        `board.visible_projects` order and then OFF (None); live in kanban and
+        gantt, a view-guarded no-op elsewhere. Inbox is not a focus target
+        (§6.2 D-5): focusing hides project-less tasks along with every other
+        project. The filter itself lives in the shared ordering seat — this
+        only holds the input."""
+        if self.view_mode not in ("kanban", "gantt"):
             return
         ids = [p.id for p in self.board.visible_projects(self.show_archived)]
         cycle = ids + [None]
@@ -698,12 +701,12 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_focus_exit(self) -> None:
-        """escape — clear an ACTIVE focus in the kanban view, and do NOTHING
-        otherwise (§6.5 AMD-03): with no focus active this is a guard no-op,
-        so the companion binding never eats another screen's or posture's
-        escape (every modal and the aperture bind their own, and screen
-        bindings answer before this app-level one)."""
-        if self.view_mode != "kanban" or self.focused_project_id is None:
+        """escape — clear an ACTIVE project focus in kanban or gantt, and do
+        NOTHING otherwise (§6.5 AMD-03): with no focus active this is a guard
+        no-op, so the companion binding never eats another screen's or
+        posture's escape (every modal and the aperture bind their own, and
+        screen bindings answer before this app-level one)."""
+        if self.view_mode not in ("kanban", "gantt") or self.focused_project_id is None:
             return
         self.focused_project_id = None
         self.refresh_view()
