@@ -137,3 +137,41 @@ def test_render_focus_presentations_smoke():
                                 width=80, height=24, presentation=pres))
         assert "FOCUS" in text
         assert "task with note" in text
+
+
+def test_focus_emojis_are_aligned_to_the_right_not_beside_title():
+    """The emoji ribbon rides the right edge of the card, separated from the
+    title by whitespace, so the title reads cleanly."""
+    from taskboard.models import Project, Task
+    from datetime import date
+    p = Project("P1", "sky")
+    t = Task("Clean title", p.id, "Doing", "high", pinned=True,
+             notes="- [ ] a\n- [x] b")
+    board = Board([p], [t], path=__import__("pathlib").Path("/dev/null"))
+    rendered = render_focus(board, False, t.id, today=date.today(),
+                            width=60, height=10, presentation="cards")
+    text = str(rendered)
+    title_row = next((ln for ln in text.splitlines() if "Clean title" in ln), "")
+    assert title_row
+    idx_title = title_row.index("Clean title")
+    idx_emoji = title_row.index("⭐")
+    # emojis are far to the right of the title text
+    assert idx_emoji > idx_title + len("Clean title") + 5
+    assert "❗" in text
+
+
+def test_note_highlights_are_rendered():
+    """==yellow== / !!red== / ++green++ inside notes become colour spans."""
+    from taskboard.models import Project, Task
+    from datetime import date
+    from taskboard.views import HEX
+    p = Project("P1", "sky")
+    t = Task("task", p.id, pinned=True,
+             notes="==amarillo== !!rojo!! ++verde++")
+    board = Board([p], [t], path=__import__("pathlib").Path("/dev/null"))
+    rendered = render_focus(board, False, t.id, today=date.today(),
+                            width=80, height=10, presentation="cards")
+    markup = rendered.markup
+    assert HEX["soon"] in markup   # yellow
+    assert HEX["over"] in markup   # red
+    assert HEX["green"] in markup  # green
