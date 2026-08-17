@@ -167,7 +167,8 @@ window, then tap it again to go frameless.
 
 | Key | Action |
 |-----|--------|
-| `?` | **Legend** — what every mark on the *current* view means (it only ever explains marks that are actually on screen) |
+| `?` | **Command palette** — search every command by name and run it without memorising the key |
+| `;` | **More keys** — toggle the footer between the compact primary layer and the full grouped layer |
 | `1` `2` `3` `4` | Switch view (Lanes / Agenda / Gantt / Kanban) |
 | `↑` `↓` (or `k` `j`) | Move selection **in the current view's on-screen order**. In Kanban this moves *within* the phase column. |
 | `←` `→` (or `h` `l`) | Move between phase columns (Kanban) — jumps to the next column's first task. No-op in the single-column views. |

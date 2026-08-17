@@ -205,9 +205,9 @@ def test_the_legend_key_is_universal_so_it_can_never_be_dropped():
     assert entry.show == "?"
 
 
-async def test_pressing_question_mark_opens_the_legend_over_the_view(tmp_path):
+async def test_pressing_question_mark_opens_the_command_palette(tmp_path):
     from taskboard.app import TaskboardApp
-    from taskboard.modals import LegendModal
+    from taskboard.modals import CommandPalette
     b = full(tmp_path)
     b.save()
     app = TaskboardApp(board_path=str(tmp_path / "full.json"))
@@ -216,17 +216,18 @@ async def test_pressing_question_mark_opens_the_legend_over_the_view(tmp_path):
         await pilot.pause()
         await pilot.press("question_mark")
         await pilot.pause()
-        assert isinstance(app.screen, LegendModal)
-        assert app.screen._mode == "gantt"           # the CURRENT view's legend
+        assert isinstance(app.screen, CommandPalette)
         assert len(app.screen_stack) > 1             # drawn over, not instead of
         await pilot.press("escape")
         await pilot.pause()
-        assert not isinstance(app.screen, LegendModal)
+        assert not isinstance(app.screen, CommandPalette)
 
 
-async def test_the_legend_follows_the_view_the_reader_is_on(tmp_path):
+async def test_the_palette_follows_the_view_the_reader_is_on(tmp_path):
+    """The palette lists only the commands live in the current view."""
     from taskboard.app import TaskboardApp
-    from taskboard.modals import LegendModal
+    from taskboard.modals import CommandPalette
+    from textual.widgets import OptionList
     b = full(tmp_path)
     b.save()
     app = TaskboardApp(board_path=str(tmp_path / "full.json"))
@@ -236,7 +237,13 @@ async def test_the_legend_follows_the_view_the_reader_is_on(tmp_path):
             await pilot.pause()
             await pilot.press("question_mark")
             await pilot.pause()
-            assert app.screen._mode == mode
+            palette = app.screen
+            assert isinstance(palette, CommandPalette)
+            lst = palette.query_one("#palette-list", OptionList)
+            rows = [str(o.prompt) for o in lst.options]
+            expected = {k.show for k in KEYMAP if k.views is None or mode in k.views}
+            shown = {r.split()[0] for r in rows}
+            assert expected <= shown, f"{mode}: missing {expected - shown}"
             await pilot.press("escape")
             await pilot.pause()
 
@@ -245,31 +252,26 @@ async def test_the_legend_follows_the_view_the_reader_is_on(tmp_path):
 # --------------------------------------------------------------------------- #
 # the KEYS section (LLR-012.2): what the narrow bar drops stays one `?` away
 # --------------------------------------------------------------------------- #
-def _legend_modal_rows(app) -> list[str]:
-    """The KEYS section's rendered rows, read off the mounted modal: from the
-    `Keys` header to the closing hint."""
-    from textual.widgets import Label
-    lines = [str(lbl.render()).strip() for lbl in app.screen.query(Label)]
-    rows = lines[lines.index("Keys") + 1:]
-    return rows[:rows.index("? or esc closes")]
+def _palette_rows(app) -> list[str]:
+    """The palette's option rows, read off the mounted CommandPalette."""
+    from textual.widgets import OptionList
+    lst = app.screen.query_one("#palette-list", OptionList)
+    return [str(o.prompt) for o in lst.options]
 
 
 def _seat_live(view: str) -> list[str]:
     """The expected rows, computed off the RAW seat — never through the
-    `bar_keys` accessor the modal consumes, or the test would certify the
+    `bar_keys` accessor the palette consumes, or the test would certify the
     accessor against itself."""
     live = [k for k in KEYMAP if k.views is None or view in k.views]
     live = sorted(live, key=lambda k: not k.universal)
     return [f"{k.show}  {k.label}" for k in live]
 
 
-async def test_the_legend_lists_exactly_the_current_views_live_keys(tmp_path):
-    """LLR-012.2: the KEYS section is DERIVED from the same seat the bar
-    reads — it lists the view's live keys, every one of them, in bar order,
-    and none the seat does not declare for that view. Exact equality is the
-    pin: when the kanban-scoped keys of the later increments (`s g z F`, the
-    `escape` companion) land in the seat, this test extends to them with no
-    edit — and any hand-written row reddens it at once."""
+async def test_the_palette_lists_exactly_the_current_views_live_keys(tmp_path):
+    """LLR-012.2: the PALETTE is DERIVED from the same seat the bar reads —
+    it lists the view's live keys, every one of them, in bar order, and none
+    the seat does not declare for that view. Exact equality is the pin."""
     from taskboard.app import TaskboardApp
     b = full(tmp_path)
     b.save()
@@ -280,16 +282,15 @@ async def test_the_legend_lists_exactly_the_current_views_live_keys(tmp_path):
             await pilot.pause()
             await pilot.press("question_mark")
             await pilot.pause()
-            assert _legend_modal_rows(app) == _seat_live(view), view
+            assert _palette_rows(app) == _seat_live(view), view
             await pilot.press("escape")
             await pilot.pause()
 
 
-async def test_the_legends_keys_follow_the_views_scope(tmp_path):
-    """The discriminating limbs: kanban's rows include the kanban-scoped
-    `tab` and the batch's new quick keys; the lanes' rows show neither `tab`
-    nor a key the seat scopes away — a KEYS section hand-written for one view
-    fails one of the two."""
+async def test_the_palette_keys_follow_the_views_scope(tmp_path):
+    """The discriminating limbs: kanban's palette includes the kanban-scoped
+    `tab` and the batch's new quick keys; the lanes' palette shows neither
+    `tab` nor a key the seat scopes away."""
     from taskboard.app import TaskboardApp
     b = full(tmp_path)
     b.save()
@@ -300,7 +301,7 @@ async def test_the_legends_keys_follow_the_views_scope(tmp_path):
         await pilot.pause()
         await pilot.press("question_mark")
         await pilot.pause()
-        rows = _legend_modal_rows(app)
+        rows = _palette_rows(app)
         assert any(r.startswith(tab.show) for r in rows)
         for show in ("[", "]", "!", "b"):
             assert any(r.startswith(show) for r in rows), show
@@ -310,7 +311,71 @@ async def test_the_legends_keys_follow_the_views_scope(tmp_path):
         await pilot.pause()
         await pilot.press("question_mark")
         await pilot.pause()
-        rows = _legend_modal_rows(app)
+        rows = _palette_rows(app)
         assert not any(r.startswith(tab.show) for r in rows)
         await pilot.press("escape")
         await pilot.pause()
+
+
+async def test_the_palette_filters_commands_by_name_or_key(tmp_path):
+    """Typing in the palette narrows the list by label or key show."""
+    from taskboard.app import TaskboardApp
+    from textual.widgets import Input, OptionList
+    b = full(tmp_path)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "full.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("question_mark")
+        await pilot.pause()
+        inp = app.screen.query_one("#palette-input", Input)
+        await pilot.press("q", "u", "i", "t")
+        await pilot.pause()
+        rows = _palette_rows(app)
+        assert rows, "filtering quit should keep at least the quit row"
+        assert all("quit" in r.lower() or "q" in r.lower() for r in rows)
+        await pilot.press("escape")
+        await pilot.pause()
+
+
+async def test_the_palette_runs_a_selected_command(tmp_path):
+    """Enter on a palette item executes its action."""
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import CommandPalette
+    from textual.widgets import Input
+    b = full(tmp_path)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "full.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("1")
+        await pilot.pause()
+        assert app.view_mode == "swimlanes"
+        await pilot.press("question_mark")
+        await pilot.pause()
+        assert isinstance(app.screen, CommandPalette)
+        inp = app.screen.query_one("#palette-input", Input)
+        await pilot.press("k", "a", "n", "b", "a", "n")
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+        assert not isinstance(app.screen, CommandPalette)
+        assert app.view_mode == "kanban"
+
+
+async def test_the_palette_closes_without_running(tmp_path):
+    """esc, ? and q close the palette and leave the board untouched."""
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import CommandPalette
+    b = full(tmp_path)
+    b.save()
+    app = TaskboardApp(board_path=str(tmp_path / "full.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("1")
+        await pilot.pause()
+        original_mode = app.view_mode
+        await pilot.press("question_mark")
+        await pilot.pause()
+        assert isinstance(app.screen, CommandPalette)
+        await pilot.press("escape")
+        await pilot.pause()
+        assert not isinstance(app.screen, CommandPalette)
+        assert app.view_mode == original_mode

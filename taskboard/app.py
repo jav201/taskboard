@@ -17,9 +17,10 @@ from textual.widgets import Static
 
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      bump_due, default_board_path, next_priority)
-from .modals import (ClockModal, ConfirmModal, ImageViewer, LegendModal, PhaseEditor,
-                     ProjectModal, ProjectPicker, StandupModal, TaskDetails, TaskModal)
-from .keymap import KeyBar, app_bindings
+from .modals import (ClockModal, CommandPalette, ConfirmModal, ImageViewer, LegendModal,
+                     PhaseEditor, ProjectModal, ProjectPicker, StandupModal, TaskDetails,
+                     TaskModal)
+from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
 from .views import clip, escape, nav_model, render_view, valid_url
 
@@ -326,23 +327,31 @@ class TaskboardApp(App):
         ribbon.update_clock()
 
     def action_legend(self) -> None:
-        """`?` — the marks of the CURRENT view, over the view, so the reader
-        does not lose their place. On the APERTURE it is that surface's full
-        KEYMAP instead (HelpScreen): a legend of board marks would describe a
-        screen the user is not looking at."""
+        """`?` — the command palette: search every binding by name or key and
+        run it. On the APERTURE it remains that surface's full KEYMAP
+        (HelpScreen): a palette of board commands would describe a screen the
+        user is not looking at."""
         from .aperture import ApertureScreen      # lazy: aperture imports us
         if isinstance(self.screen, ApertureScreen):
             rows = [[(d, t) for d, t, _ in binding_map(self.screen, shown=s)]
                     for s in (True, False)]
             self.push_screen(HelpScreen(rows[0], rows[1]))
             return
-        boards = self.query("#board")
-        w = boards.first(BoardView).size.width if boards else 96
-        vps = self.query("#viewport")
-        h = vps.first().size.height if vps else 30
-        self.push_screen(LegendModal(self.view_mode, self.board,
-                                     size=(w or 96, h or 30),
-                                     show_archived=self.show_archived))
+        self.push_screen(CommandPalette(palette_commands(self.view_mode)),
+                         callback=self._on_palette_run)
+
+    async def _on_palette_run(self, action: str | None) -> None:
+        """Execute the action selected from the palette, if any."""
+        if not action:
+            return
+        await self.run_action(action)
+
+    def action_layer_toggle(self) -> None:
+        """`;` -- toggle the keybar between its compact primary layer and the
+        grouped more-layer. The state lives on the KeyBar so it survives view
+        switches and resizes."""
+        keybar = self.query_one("#keybar", KeyBar)
+        keybar.set_layer("more" if keybar.layer == "primary" else "primary")
 
     def action_aperture(self) -> None:
         """`6` — the widget posture as a pushed screen (ADD, don't replace):

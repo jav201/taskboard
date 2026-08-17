@@ -245,23 +245,33 @@ def test_the_widest_bars_keep_their_words():
 def test_the_rendered_markup_carries_every_key_the_fit_chose():
     for view in VIEWS:
         for width in (24, 48, 72, 96, 140):
-            entries, _ = fit_bar(width, view)
-            markup = render_key_bar(width, view)
-            for show, _label in entries:
-                assert show in markup, f"{view} @ {width}: {show} missing"
+            for layer in ("primary", "more"):
+                entries, _ = fit_bar(width, view, layer)
+                markup = render_key_bar(width, view, layer)
+                for show, _label in entries:
+                    assert show in markup, f"{view} @ {width} ({layer}): {show} missing"
 
 
 def test_keys_and_words_wear_different_tones_and_neither_judges():
-    """The bar names capabilities; it judges nothing, so no severity hue."""
+    """The bar names capabilities; it judges nothing, so no severity hue.
+
+    Primary layer uses one attention hue for keys and one quiet hue for words.
+    The more layer tints each group, but words still stay quiet. Severity hues
+    (over, rose) never appear."""
     from taskboard.views import HEX
-    markup = render_key_bar(140, "swimlanes")
-    assert HEX["accent"] in markup and HEX["mut"] in markup
-    assert HEX["over"] not in markup and HEX["soon"] not in markup
+    primary = render_key_bar(140, "swimlanes", "primary")
+    assert HEX["accent"] in primary and HEX["mut"] in primary
+    more = render_key_bar(400, "swimlanes", "more")
+    assert HEX["mut"] in more          # labels stay quiet
+    assert HEX["over"] not in more and HEX["rose"] not in more
 
 
 async def test_the_app_paints_its_keys_instead_of_a_blank_row(tmp_path):
     """The regression that started this: Textual's Footer rendered an empty row
-    while 24 bindings were live. The bar is painted, and it says the real keys."""
+    while 24 bindings were live. The bar is painted, and it says the real keys.
+
+    With the layered bar the primary layer is what paints by default; every
+    primary global key must be visible, and the layer toggle must switch layers."""
     from taskboard.keymap import KeyBar
     app = TaskboardApp(board_path=str(tmp_path / "b.json"))
     async with app.run_test(size=(120, 30)) as pilot:
@@ -272,8 +282,16 @@ async def test_the_app_paints_its_keys_instead_of_a_blank_row(tmp_path):
         painted = "".join(s.text for s in strips[bar.region.y:bar.region.y + 1])
         assert painted.strip(), "the key row is blank — the old defect is back"
         for k in KEYMAP:
-            if k.views is None:
+            if k.views is None and k.primary:
                 assert k.show in painted, f"{k.show} ({k.label}) is not on screen"
+        # toggling to the more layer reveals more keys than the primary layer.
+        await pilot.press("semicolon")
+        await pilot.pause()
+        strips = app.screen._compositor.render_strips(app.screen.size)
+        painted_more = "".join(s.text for s in strips[bar.region.y:bar.region.y + 1])
+        primary_count = sum(1 for k in KEYMAP if k.views is None and k.primary and k.show in painted)
+        more_count = sum(1 for k in KEYMAP if k.views is None and k.show in painted_more)
+        assert more_count > primary_count, "more layer did not reveal extra keys"
 
 
 async def test_switching_views_restates_the_keys_for_that_view(tmp_path):
