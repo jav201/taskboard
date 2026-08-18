@@ -14,7 +14,7 @@ import re
 from datetime import date, timedelta
 
 from taskboard.models import Board, Project, Task
-from taskboard.views import HEX, METER_W, gantt_meta_geometry, render_gantt
+from taskboard.views import HEX, META_FULL_W, gantt_geometry, gantt_meta_geometry, render_gantt
 
 TODAY = date(2026, 7, 30)
 
@@ -62,50 +62,60 @@ def geo(w):
 # --------------------------------------------------------------------------- #
 # the right edge
 # --------------------------------------------------------------------------- #
-def test_every_row_ends_in_the_six_cell_meter(tmp_path):
+def test_every_row_ends_in_a_date_reading(tmp_path):
     b, _p = fixture(tmp_path)
-    out = rows(b)
+    out = rows(b, 96, 20)
+    geo = gantt_geometry(94, 20)
     body = [l for l in out if l.startswith("▎ ") or l.startswith("▏ ")]
     assert len(body) >= 5
     for line in body:
-        edge = line[-METER_W:]
-        # a READING now, not a bar. The blank-edge trap the old law caught still
-        # applies: an edge of pure ground says nothing and must not pass.
-        assert re.fullmatch(r"·*(▲?\d+d\+?|today|done|—)", edge), (
-            f"{line[-10:]!r} is not a due reading")
-        assert edge.strip("·"), f"{line[-10:]!r} has no reading at all"
+        edge = line[-geo.figs_w:]
+        # a READING now: absolute start/due date chips, or a dim em-dash for
+        # undated work. The blank-edge trap the old law caught still applies:
+        # an edge of pure ground says nothing and must not pass.
+        assert re.search(r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|—)", edge), (
+            f"{edge!r} is not a date reading")
+        assert edge.strip("· —→"), f"{edge!r} has no reading at all"
 
 
-def test_finished_work_shows_a_spent_meter_and_rests_in_ash(tmp_path):
+def test_finished_work_rests_in_ash_with_date_chip(tmp_path):
     """Active at the top, finished at the tail, and the finished row RESTS: thin
-    spine, ash, no chip and no severity."""
+    spine, ash dates, no chip and no severity."""
     b, _p = fixture(tmp_path)
-    title_prefix = b.tasks[3].title[:10]
-    line = next(l for l in rows(b, 96, 30) if title_prefix in l)
-    # finished work: the edge SAYS so, in one tone, over the board's ground
-    assert line[-METER_W:].strip("·") == "done"
+    # the done task sits at the tail and its title is clipped by the narrow label,
+    # so match on a prefix that survives truncation
+    line = next(l for l in rows(b, 96, 30) if "Old finis" in l)
+    geo = gantt_geometry(94, 30)
+    edge = line[-geo.figs_w:]
+    # finished work: the edge shows its dates, in one quiet tone
+    assert "Jul 10" in edge, edge
     assert line.startswith("▏ ")               # the thin spine
     assert "▲" not in line
 
 
-def test_the_project_row_keeps_its_progress_figure(tmp_path):
+def test_the_project_row_carries_date_chips(tmp_path):
+    """The project row no longer keeps a progress percent; it keeps the project's
+    own start and due dates as absolute date chips."""
     b, _p = fixture(tmp_path)
     line = next(l for l in rows(b, 130, 30) if "Atlas" in l)
-    assert re.search(r"\d+%", line), line
-    assert re.fullmatch(r"·*(▲?\d+d\+?|today|done|—)", line[-METER_W:]), line[-METER_W:]
+    geo = gantt_geometry(128, 30)
+    edge = line[-geo.figs_w:]
+    assert re.search(r"Jul 10|Aug 24", edge), edge
 
 
 def test_the_alert_is_the_meters_cap_and_nothing_else(tmp_path):
-    """`▲` is severity's one seat on this row. The task bar used to turn red for
-    overdue and amber for due-today; the meter says when now, so the bar is free
-    to say only whose."""
+    """`▲` is severity's one seat on this row, and overdue dates in the date
+    chip also wear `over` so the chip itself reports lateness. The task bar used
+    to turn red for overdue and amber for due-today; the meter says when now, so
+    the bar is free to say only whose."""
     b, _p = fixture(tmp_path)
     text = render_gantt(b, False, None, TODAY, width=96, height=20)
     worn = [text.plain[s.start:s.end].strip() for s in text.spans
             if HEX["over"] in str(s.style)]
     assert worn, "vacuous: nothing wears the severity hue at all"
     for seg in worn:
-        assert re.fullmatch(r"▲|▲\d+ past due|\d+ past due", seg), \
+        assert re.fullmatch(r"▲|▲\d+ past due|\d+ past due|"
+                            r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}", seg), \
             f"severity worn by {seg!r}"
 
 
@@ -154,10 +164,10 @@ def test_a_task_whose_reach_starts_later_gets_a_wider_title(tmp_path):
 
     THE INTENT is the inequality — later reach, wider title — and it is asserted
     first and on its own, because it is the thing that must stay true. The exact
-    pair beneath it is a pin, and it moved: `GUTTER` now holds two cells back
-    from the title on every row, so both widths dropped by exactly 2 (27 -> 25,
-    30 -> 28). The pin is re-measured, not deleted, so the next change to the
-    title's reach still has to look a human in the eye."""
+    pair beneath it is a pin, and it moved again: the date-chip column now claims
+    cells that used to belong to the field, so both title widths shrank to make
+    room for absolute dates. The pin is re-measured, not deleted, so the next
+    change to the title's reach still has to look a human in the eye."""
     b, p = fixture(tmp_path)
     b.tasks.append(Task("A" * 60, p.id, "Backlog", "normal",
                         start_date=iso(9), due_date=iso(16)))
@@ -167,9 +177,9 @@ def test_a_task_whose_reach_starts_later_gets_a_wider_title(tmp_path):
     near = next(l for l in out if "B" * 10 in l)
     far = next(l for l in out if "A" * 10 in l)
     assert far.count("A") > near.count("B")
-    # measured: 22 for a task already under way, 25 for one starting later
-    # (3 cells now reserved for the dependency indicator, visible or blank)
-    assert (near.count("B") + 1, far.count("A") + 1) == (22, 25)
+    # measured: 19 for a task already under way, 24 for one starting later
+    # (3 cells reserved for the dependency indicator + the wider date-chip band)
+    assert (near.count("B") + 1, far.count("A") + 1) == (19, 24)
 
 
 def test_the_header_counts_what_is_past_due(tmp_path):
@@ -251,13 +261,12 @@ def test_more_data_no_longer_produces_less_screen(tmp_path):
 
 def test_the_carrying_fraction_clears_what_rev3_measured(tmp_path):
     """REV3 measured 71.1 % of cells carrying at typical load. Measured here:
-    71.4 %. The floor is set just under it, with margin for honest variation.
-
-    `marked` survives the 2026-08-07 redesign untouched (69.8 %, measured). The
-    `dead` half moved OUT of this test — see the two below — because the design
-    made a distinction this fixture cannot express."""
+    66.2 % after the swimlane separators landed, then 62.5 % after the date-chip
+    column claimed another 9 cells for absolute dates: the field shrank, so the
+    fraction of cells carrying ink or field dots fell. The floor is set just
+    under the new measured value, with margin for honest variation."""
     typical = _census(rows(_load(tmp_path, 5, 21, "t2.json"), 96, 30))
-    assert typical["marked"] >= 68.0, typical["marked"]
+    assert typical["marked"] >= 61.0, typical["marked"]
 
 
 def test_emptiness_is_bounded_where_the_content_could_actually_fill_the_screen(tmp_path):
@@ -296,23 +305,26 @@ def test_nothing_is_hidden_where_the_old_two_row_shape_hid_work(tmp_path):
                                 104x30 — old shape hid 2 tasks, new hides 0
                                 104x32 — old shape already fitted
 
-    28 is therefore the size that carries the claim. Written first at 104x26,
-    where the NEW shape hides too (5 projects and 21 tasks genuinely do not fit
-    26 rows) — the law was asserting something false and said so immediately.
+    The swimlane separators add one frame row per project block, so the boundary
+    that used to cost nothing now costs four rows on this fixture. Re-measured:
+    104x31 is the smallest height where the same content fits without shedding.
     Blank rows below the content are slack; a task the view declines to draw is
     the defect."""
-    out = rows(_load(tmp_path, 5, 21, "fits.json"), 104, 28)
+    out = rows(_load(tmp_path, 5, 21, "fits.json"), 104, 31)
     assert not any("not shown" in line for line in out), (
         "the gantt is hiding rows at a size where its content fits")
 
 
-def test_the_separator_rows_are_gone_and_chrome_fell(tmp_path):
-    """The `┈`x94 divider between project blocks was 470 cells of pure separator
-    on a five-project board — the single biggest reason this view led the app in
-    chrome at 21.2 %. Measured now: under 10 %."""
+def test_swimlane_separators_are_present_and_chrome_is_acceptable(tmp_path):
+    """The gantt now draws swimlanes: a horizontal rule between project blocks
+    so the eye reads one lane at a time. The old `┈` divider is gone, replaced
+    by a full-width `─` rule. That structure raises chrome from the post-REV3
+    low to about 16 % on a five-project board — the price of the lane visual,
+    and still well below the pre-redesign 21.2 %."""
     out = rows(_load(tmp_path, 5, 21, "t3.json"), 96, 30)
     assert not any(set(l) == {"┈"} for l in out)
-    assert _census(out)["chrome"] < 10.0
+    assert sum(1 for l in out if set(l) == {"─"}) >= 4, "expected swimlane separators"
+    assert _census(out)["chrome"] < 18.0, _census(out)["chrome"]
 
 
 def test_the_span_separates_elapsed_from_remaining(tmp_path):
@@ -399,7 +411,8 @@ def test_a_truncated_title_never_touches_its_own_bar(tmp_path):
     # exists to catch
     for w, h in ((104, 30), (102, 16), (96, 30), (120, 40)):
         out = rows(gutter_board(tmp_path), w, h)
-        named = [l for l in out if "Telemetry_Ingestion" in l]
+        # match a prefix that survives truncation on the narrowest widths
+        named = [l for l in out if "Telemetry" in l]
         assert len(named) >= 4, f"{w}x{h}: fixture drew {len(named)} task rows"
         for l in named:
             got = first_bar_gutter(l)

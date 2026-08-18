@@ -1708,15 +1708,15 @@ def gantt_tasks(board: Board, tasks: list[Task], project_id: str | None) -> list
             + sort_by_due([t for t in rows if board.is_done(t)]))
 
 
-META_FULL_W = 14        # ' 62% due 28d' — percent AND due figure
-META_PCT_W = 6          # ' 62%'         — percent alone
+META_FULL_W = 20        # 'Jul 14 → Aug 17' — start/due date chips
+META_PCT_W = 6          # ' 62%'              — percent alone, narrow terminals
 META_FULL_INNER = 90    # below this the timeline needs those cells more
 
 
 def gantt_meta_geometry(inner: int, glabel_w: int, cell: int) -> tuple[int, bool]:
     """Width of the figures column right of the bars, and whether it carries the
-    due figure. The due date is the first thing to go on a narrow terminal: it
-    costs ~8 cells, which is more than a whole week column of timeline."""
+    date chips. On a narrow terminal the chips drop and the column falls back to
+    the progress percent alone."""
     full = inner >= META_FULL_INNER
     want = META_FULL_W if full else META_PCT_W
     return min(want, max(0, inner - glabel_w - cell)), full
@@ -1747,6 +1747,53 @@ def gantt_meta(project, progress: float, today: date, width: int,
         return c(fit(pct, width, "right"), project.color, bold=True)
     return (" " * (width - len(plain)) + c(pct, project.color, bold=True)
             + " " + c(due, due_col))
+
+
+def _gantt_date_chip(iso: str | None, today: date,
+                     spent: bool = False) -> tuple[str, str]:
+    """Absolute-date chip: 'Aug 17' and a tone keyed to overdue/today/future.
+
+    Returns (label, color_key). None dates render as a dim em-dash. Spent work
+    (done/archived) rests in ash so a finished task never flashes red."""
+    if spent:
+        d = parse_iso(iso) if iso else None
+        label = d.strftime("%b %d").replace(" 0", " ") if d else "—"
+        return label, "ash"
+    if iso is None:
+        return "—", "dim"
+    d = parse_iso(iso)
+    if d is None:
+        return "—", "dim"
+    label = d.strftime("%b %d").replace(" 0", " ")
+    delta = (d - today).days
+    if delta < 0:
+        return label, "over"
+    if delta == 0:
+        return label, "soon"
+    return label, "mut"
+
+
+def _gantt_date_pair(start_iso: str | None, due_iso: str | None, today: date,
+                     width: int, spent: bool = False) -> str:
+    """Right-aligned 'start → due' chip for the gantt tail.
+
+    Falls back through shorter forms when space is tight: full pair, then only
+    the due date, then a truncated due date. The result is always exactly
+    `width` visible cells (or empty when width is 0)."""
+    if width <= 0:
+        return ""
+    s_lab, s_tone = _gantt_date_chip(start_iso, today, spent)
+    d_lab, d_tone = _gantt_date_chip(due_iso, today, spent)
+    candidates = [
+        (f"{s_lab} → {d_lab}", c(s_lab, s_tone) + " → " + c(d_lab, d_tone)),
+        (f"— → {d_lab}", c("—", "dim") + " → " + c(d_lab, d_tone)),
+        (d_lab, c(d_lab, d_tone)),
+    ]
+    for plain, markup in candidates:
+        if vis(plain) <= width:
+            return " " * (width - vis(plain)) + markup
+    # even the due date alone does not fit: truncate it visibly
+    return c(fit(d_lab, width), d_tone)
 
 
 def _gantt_day_col(d, chart_start, weeks, cell):
@@ -2021,12 +2068,11 @@ def _band_markup(cells: list[tuple[str, str]], geo: FieldGeo, phase: int = 0,
 
 
 def gantt_geometry(inner: int, height: int) -> FieldGeo:
-    """The lanes geometry, with a wider figures band: the gantt's project row
-    carries its progress percent BESIDE the meter, so it needs the percent's
-    cells plus the meter's six. Lanes needs only the meter."""
+    """The lanes geometry, with a wider figures band: the gantt's row now
+    carries start/due date chips when the terminal is wide enough, otherwise
+    it falls back to the progress percent alone."""
     g = lane_geometry(inner, height)
-    want = METER_W + 5                       # ' 20%' + gap + the six-cell meter
-    figs_w = min(want, max(g.figs_w, inner // 5))
+    figs_w, _ = gantt_meta_geometry(inner, g.label_w, 8)
     field_w = max(0, inner - g.label_w - figs_w - 1)
     dot_w = field_w * 2
     today_dc = (int(dot_w * 0.30) // 2) * 2
@@ -2081,10 +2127,21 @@ def render_gantt(board, show_archived, selected_id, today=None,
 
     archived_done = sum(1 for t in board.visible_tasks(True)
                         if t.archived and board.is_done(t))
+
+    def lane_sep() -> Row:
+        """A full-width horizontal rule that closes one swimlane and opens the
+        next. It costs one row, but it is the lane: without it every project runs
+        into the next and the eye has no place to rest between groups."""
+        return (c("─" * inner, "frame"), None)
+
     rows: list[Row] = []
+    first_block = True
     for p in board.visible_projects(show_archived):
         if focus and p.id != focus:
             continue
+        if not first_block:
+            rows.append(lane_sep())
+        first_block = False
         own = gantt_tasks(board, tasks, p.id)
         prog = board.project_progress(p.id, show_archived)
         span, band = _span_bands(p, geo, today, p.color, prog, tick)
@@ -2096,14 +2153,12 @@ def render_gantt(board, show_archived, selected_id, today=None,
                                                      geo.label_w - 2 - GUTTER),
                                                 geo.label_w - 2)),
                                      p.color, bold=True)
-        pct = f"{int(round(100 * prog))}%"
-        pct_w = max(0, geo.figs_w - METER_W)
-        pct = pct if pct_w >= len(pct) else ""      # it drops whole, never "…"
-        meter = meter_markup(due_meter(days_until(p.due_date, today),
-                                       done=p.status == "completed",
-                                       width=min(METER_W, geo.figs_w)))
-        rows.append((band_row(label, span,
-                              c(fit(pct, pct_w, "right"), "mut") + meter), None))
+        # DATE CHIPS replace the old percent + due-meter tail: exact start and
+        # due dates are more precise than a relative offset, which was the user's
+        # request for the gantt scale.
+        tail = _gantt_date_pair(p.start_date, p.due_date, today, geo.figs_w,
+                                spent=p.status == "completed")
+        rows.append((band_row(label, span, tail), None))
         # NO SECOND ROW. `band` used to be emitted here as `▓▓▓▌`; progress now
         # rides the span as one cell, and this line's absence IS the room the
         # tasks got back — the operator's "no puedo ver el resto de tareas".
@@ -2137,21 +2192,20 @@ def render_gantt(board, show_archived, selected_id, today=None,
             dep = c("└─►", "mut") if t.depends_on else "   "
             title = title_markup(t, max(0, tw - 3), sel) + dep
             reach = reach[over:]
-            due = parse_iso(t.due_date)
-            # archived work is spent, so its meter is the spent form: nothing is
-            # expected of it, so nothing about it can be late
-            spent = done or t.archived
-            mcells = due_meter(None if spent else ((due - today).days if due else None),
-                               done=spent, width=min(METER_W, geo.figs_w))
-            rows.append((band_row(spine + " " + title, reach,
-                                  " " * max(0, geo.figs_w - len(mcells))
-                                  + meter_markup(mcells), offset=over), t.id))
+            # archived work is spent, so its dates rest in ash: nothing is
+            # expected of it, so nothing about it can be late.
+            tail = _gantt_date_pair(t.start_date, t.due_date, today, geo.figs_w,
+                                    spent=done or t.archived)
+            rows.append((band_row(spine + " " + title, reach, tail, offset=over), t.id))
 
     # THE INBOX IS NOT LOST. Tasks with no project were drawn by the old gantt
     # and must not fall out of the new one just because it iterates projects.
     # When a project focus is active, inbox rows are hidden to match kanban focus.
     loose = [t for t in tasks if board.project_by_id(t.project_id) is None]
     if loose and not focus:
+        if not first_block:
+            rows.append(lane_sep())
+        first_block = False
         rows.append((_pad(c("▎ ", "dim")
                           + c(escape(fit("Inbox", geo.label_w - 2)), "dim", bold=True)
                           + _band_markup([(" ", "dim")] * geo.field_w, geo, 0,
@@ -2163,19 +2217,16 @@ def render_gantt(board, show_archived, selected_id, today=None,
             over = max(0, min(_reach_start(t, geo, today),
                               geo.today_dc // 2) - GUTTER)
             reach = _task_reach(t, board, geo, today, "dim", tick)[over:]
-            due = parse_iso(t.due_date)
-            # archived work is spent, so its meter is the spent form: nothing is
-            # expected of it, so nothing about it can be late
-            spent = done or t.archived
-            mcells = due_meter(None if spent else ((due - today).days if due else None),
-                               done=spent, width=min(METER_W, geo.figs_w))
+            # archived work is spent, so its dates rest in ash: nothing is
+            # expected of it, so nothing about it can be late.
+            tail = _gantt_date_pair(t.start_date, t.due_date, today, geo.figs_w,
+                                    spent=done or t.archived)
             dep = c("└─►", "mut") if t.depends_on else "   "
             rows.append((band_row(
                 (c("▏" + ARCHIVED_MARK, "ash") if t.archived
                  else c("▏ ", "dim") if done else c("▎ ", "dim")) + " "
                 + title_markup(t, max(0, geo.label_w - 3 + over - 3), t.id == selected_id) + dep,
-                reach, " " * max(0, geo.figs_w - len(mcells)) + meter_markup(mcells),
-                offset=over), t.id))
+                reach, tail, offset=over), t.id))
 
     if not rows:
         lines.append(line(c(fit("  (nothing scheduled — press 'a' to add a task)",

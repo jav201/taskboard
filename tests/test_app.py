@@ -775,9 +775,9 @@ async def test_markup_injection_is_escaped(tmp_path):
 def test_gantt_handles_undated_tasks(tmp_path):
     """Was: undated tasks were listed under an UNSCHEDULED heading. The field
     has no separate section — an undated task draws its row like any other, with
-    an empty reach and a meter that says there is NOTHING TO MEASURE rather than
-    implying a date. It is still on screen, which is what the law was for."""
-    from taskboard.views import METER_W
+    an empty reach and a date chip that says there is NOTHING TO MEASURE rather
+    than implying a date. It is still on screen, which is what the law was for."""
+    from taskboard.views import gantt_geometry
     board = Board.load(str(tmp_path / "b.json"))  # seeded
     board.add_task(Task("floating task", None, "Backlog", "normal"))
     out = str(render_gantt(board, False, None, today=date(2026, 7, 17),
@@ -785,8 +785,9 @@ def test_gantt_handles_undated_tasks(tmp_path):
     assert "GANTT" in out
     assert "floating task" in out
     row = next(l for l in out.splitlines() if "floating task" in l)
-    # the edge SAYS there is nothing to measure instead of drawing an empty bar
-    assert row[-METER_W:].strip("·") == "—"
+    geo = gantt_geometry(118, 60)
+    # the edge SAYS there is nothing to measure: both start and due are unknown
+    assert "— → —" in row[-geo.figs_w:].strip("·"), row[-geo.figs_w:]
 
 
 def test_agenda_handles_undated_tasks(tmp_path):
@@ -1649,10 +1650,15 @@ def test_a_project_with_no_progress_draws_no_progress_band(tmp_path):
 
 
 def test_the_today_rule_spans_every_row(tmp_path):
-    """Kept from the old design, deliberately: one column every row shares."""
+    """Kept from the old design, deliberately: one column every row shares.
+
+    The date-chip column narrowed the field, so a task whose due date already
+    passed may end before the today column; in that cell the lattice ground
+    (not blank space) is the honest reading."""
     b = _gantt_board(tmp_path)
     from taskboard.views import (FIELD_HALF, FIELD_PHASE_TIP, FIELD_PROGRESS,
-                                 FIELD_REACH, FIELD_TASK, RULE, gantt_geometry)
+                                 FIELD_REACH, FIELD_TASK, LATTICE, RULE,
+                                 gantt_geometry)
     geo = gantt_geometry(94, 30)
     col = geo.label_w + geo.today_dc // 2
     body = [l for l in _gantt_rows(b) if l.startswith("▎ ") or l.startswith("▏ ")]
@@ -1660,7 +1666,7 @@ def test_the_today_rule_spans_every_row(tmp_path):
     for line in body:
         drawn = {FIELD_REACH, FIELD_PROGRESS, FIELD_TASK, FIELD_HALF,
                  *FIELD_PHASE_TIP}
-        assert (line[col] == RULE or line[col] in drawn
+        assert (line[col] == RULE or line[col] == LATTICE or line[col] in drawn
                 or 0x2800 <= ord(line[col]) <= 0x28FF), line[col]
 
 
@@ -1695,7 +1701,7 @@ def test_the_due_diamond_marks_the_projects_own_date(tmp_path):
 
 def test_a_reach_carries_identity_and_the_meter_carries_urgency(tmp_path):
     from taskboard.models import Board, Project, Task
-    from taskboard.views import HEX, METER_W
+    from taskboard.views import HEX, gantt_geometry
     b = Board([], [], tmp_path / "g2.json", phases=["A", "B", "C"])
     p = Project("P", "sky", start_date="2026-07-06", due_date="2026-09-30")
     b.projects.append(p)
@@ -1712,7 +1718,13 @@ def test_a_reach_carries_identity_and_the_meter_carries_urgency(tmp_path):
     for style in reach_styles:
         assert HEX["over"] not in style and HEX["soon"] not in style
     overdue_row = next(l for l in str(text).split("\n") if "overduetask" in l)
-    assert "▲" in overdue_row[-METER_W:]
+    geo = gantt_geometry(94, 30)
+    # urgency now lives in the overdue date chip, not in a ▲ cap
+    assert "Jul 13" in overdue_row[-geo.figs_w:], overdue_row[-geo.figs_w:]
+    # and that chip wears the severity hue
+    chip_styles = [str(s.style) for s in text.spans
+                   if "Jul 13" in text.plain[s.start:s.end]]
+    assert any(HEX["over"] in st for st in chip_styles), chip_styles
 
 
 def test_gantt_header_counts_past_due(tmp_path):
