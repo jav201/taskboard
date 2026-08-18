@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import re
 from datetime import date, timedelta
+from pathlib import Path
 from typing import NamedTuple
 
 from rich.cells import cell_len, set_cell_size
@@ -2343,6 +2344,217 @@ def _focus_cards(board: Board, tasks: list[Task], selected_id: str | None,
     return lines
 
 
+def _image_thumbnail_markup(path: str, width: int = 18, height: int = 4) -> str:
+    """Render a local image as a tiny half-block thumbnail in Rich markup.
+
+    Returns an empty string for remote URLs, missing files, or any load error.
+    The caller decides whether to fall back to a text counter.
+    """
+    if not path or valid_url(path):
+        return ""
+    p = Path(path)
+    if not p.is_file():
+        return ""
+    try:
+        from PIL import Image as PilImage
+        img = PilImage.open(p).convert("RGB")
+        img = img.resize((width, height))
+    except Exception:          # malformed image, missing codec, etc.
+        return ""
+    rows: list[str] = []
+    for y in range(0, height, 2):
+        parts: list[str] = []
+        for x in range(width):
+            r1, g1, b1 = img.getpixel((x, y))
+            if y + 1 < height:
+                r2, g2, b2 = img.getpixel((x, y + 1))
+            else:
+                r2 = g2 = b2 = 0
+            fg = f"#{r1:02x}{g1:02x}{b1:02x}"
+            bg = f"#{r2:02x}{g2:02x}{b2:02x}"
+            parts.append(f"[{fg} on {bg}]▀[/]")
+        rows.append("".join(parts))
+    return "\n".join(rows)
+
+
+def _focus_tiles(board: Board, tasks: list[Task], selected_id: str | None,
+                 today: date, inner: int, line_map: dict | None) -> list[str]:
+    """Tile-grid presentation: large, dense project-framed cards.
+
+    Each tile is 58 cells wide and 11 rows tall, grouped under project headers.
+    It shows title, project, priority/status, phase, dates, three note lines
+    with highlights, checklist progress, and either a tiny half-block image
+    thumbnail or attachment names.
+    """
+    lines: list[str] = []
+    if not tasks:
+        return [line(c(fit("  (no pinned tasks — press 't' on a task to pin it)",
+                           inner), "dim"))]
+
+    TILE_W = 58
+    GAP = 1
+    cols = max(1, inner // (TILE_W + GAP))
+    content_w = TILE_W - 1          # space left of the right-hand frame/border
+
+    def pad_right(markup: str, width: int) -> str:
+        stripped = _strip(markup)
+        pad = width - vis(stripped)
+        if pad > 0:
+            return markup + " " * pad
+        return markup
+
+    def tile_lines(t: Task) -> list[str]:
+        sel = t.id == selected_id
+        p = board.project_by_id(t.project_id)
+        pcol = p.color if p else "dim"
+        pname = p.name if p else "Inbox"
+
+        top = c("█" * TILE_W, pcol) if sel else c("─" * TILE_W, pcol)
+        bottom = c("█" * TILE_W, pcol) if sel else c("━" * TILE_W, pcol)
+        spine = c("█" if sel else "▌", pcol)
+
+        title = title_markup(t, content_w - 1, sel, arrow=False)
+        title_line = spine + " " + title
+
+        sg, sgcol = status_glyph(board, t)
+        flags = [c(sg, sgcol)]
+        if t.priority == "high":
+            flags.append(c("high", "over"))
+        if t.blocked:
+            flags.append(c("blocked", "over"))
+        if t.archived:
+            flags.append(c("arch", "ash"))
+        project_line = (spine + " "
+                        + pad_right(c(escape(fit(clip(pname, 22), 22)), pcol)
+                                    + "  "
+                                    + "  ".join(flags), content_w - 1))
+
+        dt, dcol = date_chip(t, today, board)
+        date_parts = [c(escape(fit(clip(t.phase or "", 16), 16)), "mut"),
+                      c(dt, dcol)]
+        if t.start_date:
+            date_parts.append(c(f"start {t.start_date}", "dim"))
+        if t.due_date:
+            date_parts.append(c(f"due {t.due_date}", dcol))
+        phase_line = spine + " " + pad_right("  ".join(date_parts), content_w - 1)
+
+        note_rows: list[str] = []
+        if t.notes:
+            for nl in [ln.strip() for ln in t.notes.splitlines() if ln.strip()][:3]:
+                note_rows.append(_highlight_markup(clip(nl, content_w - 2)))
+        note_rows += [""] * (3 - len(note_rows))
+        note_lines = []
+        for nr in note_rows:
+            note_lines.append(spine + " "
+                              + pad_right(nr if nr else c("·", "dim"),
+                                          content_w - 1))
+
+        notes = (t.notes or "").strip()
+        open_boxes = len(re.findall(r"^\s*[-*]\s+\[ \]", notes, re.M))
+        done_boxes = len(re.findall(r"^\s*[-*]\s+\[[xX]\]", notes, re.M))
+        checklist_parts: list[str] = []
+        if open_boxes or done_boxes:
+            checklist_parts.append(c(f"☑ {done_boxes}/{open_boxes + done_boxes}", "hd"))
+            for ln in notes.splitlines():
+                m = re.match(r"^\s*[-*]\s+\[ \]\s*(.*)", ln)
+                if m:
+                    item = m.group(1).strip()
+                    checklist_parts.append(c(escape(clip(item, 28)), "mut"))
+                    break
+        checklist_line = (spine + " "
+                          + pad_right("  ".join(checklist_parts) if checklist_parts
+                                      else c("·", "dim"), content_w - 1))
+
+        # Try a tiny half-block thumbnail for the first local image; fall back
+        # to text counters for URLs / missing files.
+        media_lines: list[str] = []
+        thumb_rendered = False
+        if t.images:
+            candidate = Path(t.images[0])
+            if not candidate.is_file() and board.path:
+                candidate = board.image_dir(t.id) / t.images[0]
+            if candidate.is_file():
+                thumb = _image_thumbnail_markup(str(candidate), width=18, height=4)
+                if thumb:
+                    for tl in thumb.splitlines():
+                        media_lines.append(spine + " "
+                                           + pad_right(tl, content_w - 1))
+                    thumb_rendered = True
+
+        if not thumb_rendered:
+            attach_lines: list[str] = []
+            if t.images:
+                attach_lines.append(f"▤ {len(t.images)} image{'s' if len(t.images) != 1 else ''}")
+                first_img = Path(t.images[0]).name
+                attach_lines.append(escape(fit(clip(first_img, content_w - 4), content_w - 4)))
+            elif t.urls:
+                attach_lines.append(f"↗ {len(t.urls)} url{'s' if len(t.urls) != 1 else ''}")
+                first_url = escape(clip(t.urls[0], content_w - 4))
+                attach_lines.append(first_url)
+            if attach_lines:
+                media_lines.append(spine + " "
+                                   + pad_right(c(attach_lines[0], "mut"),
+                                               content_w - 1))
+                media_lines.append(spine + " "
+                                   + pad_right(c(attach_lines[1],
+                                                  "accent" if t.urls else "mut"),
+                                               content_w - 1))
+            else:
+                media_lines.append(spine + " "
+                                   + pad_right(c("·", "dim"), content_w - 1))
+
+        # keep every tile exactly the same height
+        while len(media_lines) < 2:
+            media_lines.append(spine + " " + " " * (content_w - 1))
+
+        return [top, title_line, project_line, phase_line,
+                note_lines[0], note_lines[1], note_lines[2],
+                checklist_line, media_lines[0], media_lines[1], bottom]
+
+    last_project_id = None
+    for i in range(0, len(tasks), cols):
+        row_tasks = tasks[i:i + cols]
+        first = row_tasks[0]
+
+        # project header when the owning project changes
+        if first.project_id != last_project_id:
+            p = board.project_by_id(first.project_id)
+            pcol = p.color if p else "dim"
+            pname = p.name if p else "Inbox"
+            header = c(f"▐ {escape(pname)}", pcol, bold=True)
+            header_pad = " " * max(0, inner - vis(_strip(header)))
+            lines.append(line(header + c(header_pad, "frame")))
+            last_project_id = first.project_id
+
+        n = len(row_tasks)
+        row_tile_lines = [tile_lines(t) for t in row_tasks]
+
+        # Distribute leftover width as extra space BETWEEN tiles, never as
+        # trailing padding. Rich strips trailing spaces on markup lines, which
+        # was making the grid ragged on rows that ended with styled text.
+        fixed_w = n * TILE_W + (n - 1) * GAP
+        slack = max(0, inner - fixed_w)
+        gaps = n - 1
+        if gaps:
+            base, rem = divmod(slack, gaps)
+            gap_widths = [GAP + base + (1 if j < rem else 0) for j in range(gaps)]
+        else:
+            gap_widths = []
+
+        if line_map is not None:
+            for t in row_tasks:
+                line_map[t.id] = len(lines)
+        for r in range(11):
+            parts = [tl[r] for tl in row_tile_lines]
+            combined = ""
+            for j, part in enumerate(parts):
+                combined += part
+                if j < len(parts) - 1:
+                    combined += " " * gap_widths[j]
+            lines.append(line(combined))
+    return lines
+
+
 def _focus_inspector(board: Board, tasks: list[Task], selected_id: str | None,
                      today: date, inner: int, line_map: dict | None) -> list[str]:
     """Two-pane presentation: list left, detail right."""
@@ -2445,11 +2657,11 @@ def _focus_images(board: Board, tasks: list[Task], selected_id: str | None,
 
 
 def render_focus(board, show_archived, selected_id, today=None,
-                 width=68, height=0, line_map=None, presentation="cards") -> Text:
+                 width=68, height=0, line_map=None, presentation="tiles") -> Text:
     """The Focus Board: pinned tasks and tasks of pinned projects.
 
     Three presentations:
-      * "cards"    — vertical cards with spine, dates, note snippet, attachments
+      * "tiles"    — responsive tile grid with project-coloured frames
       * "inspector"— two-pane list + detail
       * "images"   — image tasks first, then compact list
     """
@@ -2467,7 +2679,9 @@ def render_focus(board, show_archived, selected_id, today=None,
         lines += _focus_inspector(board, tasks, selected_id, today, inner, line_map)
     elif presentation == "images":
         lines += _focus_images(board, tasks, selected_id, today, inner, line_map)
-    else:
+    elif presentation == "tiles":
+        lines += _focus_tiles(board, tasks, selected_id, today, inner, line_map)
+    else:  # legacy "cards" alias, kept for old tests / external callers
         lines += _focus_cards(board, tasks, selected_id, today, inner, line_map)
 
     lines.append(bottom(None, w))

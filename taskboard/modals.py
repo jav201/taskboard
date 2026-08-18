@@ -35,7 +35,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      Board, Project, Task, _new_id, city_names,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image)
-from .views import valid_url
+from .views import _highlight_markup, valid_url
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
 # detects the terminal's graphics support by QUERYING the terminal, which only
@@ -383,7 +383,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                     yield Input(value=(t.due_date or "" if t else ""), placeholder="optional",
                                 id="f-due", classes="date-input")
                     yield Button("📅", id="cal-f-due", classes="cal-btn")
-            yield Label("Notes")
+            yield Label("Notes  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
             notes_area = TextArea(t.notes if t else "", id="f-notes")
             notes_area.styles.height = 5   # 1fr TextArea would collapse in the auto modal
             yield notes_area
@@ -1003,8 +1003,11 @@ class TaskDetails(ModalScreen[None]):
                 yield Label(escape(t.start_date or "—"))
                 yield Label("Due")
                 yield Label(escape(t.due_date or "—"))
-            yield Label("[b]Notes[/b]")
-            yield Static(escape(t.notes) if t.notes else "[dim]—[/dim]")
+            yield Label("[b]Notes[/b]  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
+            if t.notes:
+                yield Static(_highlight_markup(t.notes))
+            else:
+                yield Static("[dim]—[/dim]")
             yield Label("[b]URLs[/b]")
             if t.urls:
                 for u in t.urls:

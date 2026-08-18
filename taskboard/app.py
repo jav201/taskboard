@@ -184,7 +184,7 @@ class TaskboardApp(App):
         self.kanban_collapsed = False      # session-level too (LLR-007.1): THE
                                            # LAST phase only — a working posture,
                                            # not board data (§6.2 D-4)
-        self.focus_presentation = "cards"  # session-level (batch-07): cards /
+        self.focus_presentation = "tiles"  # session-level (batch-07): tiles /
                                            # inspector / images
         self.focused_project_id: str | None = None   # session-level (LLR-008.1):
                                            # the kanban project focus — None off
@@ -644,7 +644,7 @@ class TaskboardApp(App):
                                         else "grouped")
             self.refresh_view()
         elif self.view_mode == "focus":
-            modes = ("cards", "inspector", "images")
+            modes = ("tiles", "inspector", "images")
             self.focus_presentation = modes[(modes.index(self.focus_presentation) + 1)
                                             % len(modes)]
             self.refresh_view()

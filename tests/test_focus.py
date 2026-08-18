@@ -64,7 +64,7 @@ async def test_focus_tab_cycles_presentations(tmp_path):
         await pilot.press("t")
         await pilot.press("5")
         await pilot.pause()
-        assert app.focus_presentation == "cards"
+        assert app.focus_presentation == "tiles"
         text1 = _board_text(app)
         assert "FOCUS" in text1
         await pilot.press("tab")
@@ -132,7 +132,7 @@ def test_render_focus_presentations_smoke():
              pinned=True,
              notes="- [ ] todo\n- [x] done", images=["a.png"], urls=["https://x.co"])
     board = Board([p], [t], path=__import__("pathlib").Path("/dev/null"))
-    for pres in ("cards", "inspector", "images"):
+    for pres in ("tiles", "cards", "inspector", "images"):
         text = str(render_focus(board, False, t.id, today=date.today(),
                                 width=80, height=24, presentation=pres))
         assert "FOCUS" in text
@@ -146,10 +146,10 @@ def test_note_highlights_are_rendered():
     from taskboard.views import HEX
     p = Project("P1", "sky")
     t = Task("task", p.id, pinned=True,
-             notes="==amarillo== !!rojo!! ++verde++")
+             notes="==a== !!b!! ++c++")
     board = Board([p], [t], path=__import__("pathlib").Path("/dev/null"))
     rendered = render_focus(board, False, t.id, today=date.today(),
-                            width=80, height=10, presentation="cards")
+                            width=80, height=10, presentation="tiles")
     markup = rendered.markup
     assert HEX["soon"] in markup   # yellow
     assert HEX["over"] in markup   # red
@@ -164,6 +164,6 @@ def test_emojis_inside_notes_appear_in_focus():
     t = Task("task", p.id, pinned=True, notes="revisar con ⚠️ o ✅")
     board = Board([p], [t], path=__import__("pathlib").Path("/dev/null"))
     text = str(render_focus(board, False, t.id, today=date.today(),
-                            width=80, height=10, presentation="cards"))
+                            width=80, height=10, presentation="tiles"))
     assert "⚠️" in text
     assert "✅" in text
