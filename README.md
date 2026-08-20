@@ -184,7 +184,8 @@ window, then tap it again to go frameless.
 | `g` | Kanban only: cycle the column grouping — project → priority → horizon (group headers drawn inside each column, e.g. `Overdue`, `This week`, `No date`) |
 | `z` | Kanban only: collapse the terminal phase column to one `✓ N` summary row (N = how many tasks rest there — on the terminal phase, every one of them is done). Works from anywhere, needs no selection; press `z` again to restore the column. |
 | `F` | Kanban / Gantt: cycle a **project focus** — only that project's rows/cards render and the header names it (`· focus: Name`). Steps through the visible projects in order, then back to the full board. |
-| `esc` | Kanban / Gantt: leave the project focus (does nothing when no focus is active, so it never eats another screen's escape) |
+| `esc` | Kanban / Gantt: leave the project focus (does nothing when no focus is active, so it never eats another screen's escape). When a search filter is active, `esc` clears the filter first. |
+| `/` | Kanban / Gantt: filter tasks live by title / project / notes. The bar shows `hits/total`; `esc` clears it. |
 | `+` / `=` | Due date one day **later** (an undated task starts from today) |
 | `-` | Due date one day **earlier** |
 | `u` | **Undo** the last quick mutation — phase move, priority, blocked, due-date bump, archive, or delete (a deleted task returns with its same id). Adding a task is deliberate and is not undoable; an empty history says so. |
@@ -200,7 +201,7 @@ window, then tap it again to go frameless.
 | `Enter` | Details of the selected task (read-only: every field, notes, URLs, images) |
 | `f` | Manage the board's phases (add / rename / reorder / delete) |
 | `Ctrl+E` | **Insert an emoji** — in the task or project editor, search by name and insert the glyph at the cursor. Only emoji whose width is unambiguous are offered, so a title can never lean its row. |
-| `Tab` | Kanban: switch between grouped and matrix layouts. Focus Board: cycle tile grid → inspector split → image-first. |
+| `Tab` | Kanban: cycle grouped → matrix → lanes layouts. Focus Board: cycle tile grid → inspector split → image-first → review queue → stale-first. |
 | `R` | **Write a report** — a self-contained HTML document of the board, saved beside your board file. It says where it went and does not open it. |
 | `c` | Choose the two ribbon city clocks (type to find a city — accent-blind, so `Sao Paulo` finds `São Paulo`) |
 | `q` | Quit |

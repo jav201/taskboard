@@ -77,6 +77,16 @@ async def test_focus_tab_cycles_presentations(tmp_path):
         assert app.focus_presentation == "images"
         text3 = _board_text(app)
         assert "with images" in text3 or "without images" in text3
+        await pilot.press("tab")
+        await pilot.pause()
+        assert app.focus_presentation == "review"
+        text4 = _board_text(app)
+        assert "QUEUE" in text4
+        await pilot.press("tab")
+        await pilot.pause()
+        assert app.focus_presentation == "stale"
+        text5 = _board_text(app)
+        assert "stale first" in text5
 
 
 async def test_focus_respects_archived_toggle(tmp_path):
@@ -167,3 +177,41 @@ def test_emojis_inside_notes_appear_in_focus():
                             width=80, height=10, presentation="tiles"))
     assert "⚠️" in text
     assert "✅" in text
+
+
+# ---- Increment 2 · Focus follow-up ---------------------------------------- #
+def test_stale_order_sinks_unknown_stamps():
+    """Tasks with no phase_changed stamp sink in stale_order; they are never
+    read as age 0."""
+    from datetime import date, timedelta
+    from taskboard.views import stale_order
+    from taskboard.models import Project, Task
+    today = date(2026, 7, 17)
+    p = Project("P1", "sky")
+    old = Task("old", p.id, pinned=True,
+               phase_changed=(today - timedelta(days=10)).isoformat())
+    unknown = Task("unknown", p.id, pinned=True, phase_changed=None)
+    board = Board([p], [old, unknown], path=__import__("pathlib").Path("/dev/null"))
+    ordered = stale_order(board, [old, unknown], today)
+    assert [t.title for t in ordered] == ["old", "unknown"]
+
+
+def test_render_focus_review_and_stale_smoke():
+    from datetime import date, timedelta
+    from taskboard.models import Project, Task
+    from taskboard.views import render_focus
+    today = date(2026, 7, 17)
+    p = Project("P1", "sky")
+    t = Task("task", p.id, pinned=True,
+             notes="==warn== !!block!! ++ok++",
+             phase_changed=(today - timedelta(days=5)).isoformat())
+    board = Board([p], [t], path=__import__("pathlib").Path("/dev/null"))
+    review = str(render_focus(board, False, t.id, today=today,
+                              width=100, height=24, presentation="review"))
+    assert "FOCUS" in review
+    assert "QUEUE" in review
+    assert t.title in review
+    stale = str(render_focus(board, False, t.id, today=today,
+                             width=100, height=24, presentation="stale"))
+    assert "stale first" in stale
+    assert t.title in stale

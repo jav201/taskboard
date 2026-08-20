@@ -13,13 +13,16 @@ alignment survives across monospace fonts (M22 ambiguous-glyph trap).
 
 from __future__ import annotations
 
+import copy
 import re
 from datetime import date, timedelta
 from pathlib import Path
 from typing import NamedTuple
 
 from rich.cells import cell_len, set_cell_size
+from rich.console import Console
 from rich.markup import escape
+from rich.style import Style
 from rich.text import Text
 
 from .models import Board, Task, days_in_phase, parse_iso
@@ -423,6 +426,30 @@ def _focus_sort_key(board: Board, show_archived: bool, t: Task, today: date):
                    len(projects))
     d = parse_iso(t.due_date)
     return (p_index, d is None, d or date.max)
+
+
+def stale_order(board: Board, tasks: list[Task], today: date,
+                show_archived: bool = False) -> list[Task]:
+    """Project groups ordered by their stalest task; tasks stale-first inside
+    the group; Inbox last. Unknown `phase_changed` stamps sink — never read
+    as zero."""
+    def age(t: Task) -> int:
+        a = days_in_phase(t, today)
+        return a if a is not None else -1
+
+    order: list[str | None] = [p.id for p in board.visible_projects(show_archived)]
+    order.append(None)
+    groups: dict[str | None, list[Task]] = {key: [] for key in order}
+    for t in tasks:
+        key = t.project_id if board.project_by_id(t.project_id) else None
+        groups.setdefault(key, []).append(t)
+    keyed = [(max((age(t) for t in groups[k]), default=-1), k)
+             for k in order if groups.get(k)]
+    keyed.sort(key=lambda x: (-x[0], x[1] is None))
+    out: list[Task] = []
+    for _, k in keyed:
+        out.extend(sorted(groups[k], key=age, reverse=True))
+    return out
 
 
 _URG_COLOR = {"overdue": "over", "today": "soon", "week": "later",
@@ -2429,7 +2456,8 @@ def _image_thumbnail_markup(path: str, width: int = 18, height: int = 4) -> str:
 
 
 def _focus_tiles(board: Board, tasks: list[Task], selected_id: str | None,
-                 today: date, inner: int, line_map: dict | None) -> list[str]:
+                 today: date, inner: int, line_map: dict | None,
+                 show_project_headers: bool = True) -> list[str]:
     """Tile-grid presentation: large, dense project-framed cards.
 
     Each tile is 58 cells wide and 11 rows tall, grouped under project headers.
@@ -2568,7 +2596,7 @@ def _focus_tiles(board: Board, tasks: list[Task], selected_id: str | None,
         first = row_tasks[0]
 
         # project header when the owning project changes
-        if first.project_id != last_project_id:
+        if show_project_headers and first.project_id != last_project_id:
             p = board.project_by_id(first.project_id)
             pcol = p.color if p else "dim"
             pname = p.name if p else "Inbox"
@@ -2604,6 +2632,241 @@ def _focus_tiles(board: Board, tasks: list[Task], selected_id: str | None,
                     combined += " " * gap_widths[j]
             lines.append(line(combined))
     return lines
+
+
+def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
+                  today: date, inner: int, line_map: dict | None) -> list[str]:
+    """Review queue: one task full-size left, the rest in a stale-first rail."""
+    lines: list[str] = []
+    if not tasks:
+        return [line(c(fit("  (no pinned tasks — press 't' on a task to pin it)",
+                           inner), "dim"))]
+
+    ordered = stale_order(board, tasks, today)
+    try:
+        idx = next(i for i, t in enumerate(ordered) if t.id == selected_id)
+    except StopIteration:
+        idx = 0
+    t = ordered[idx]
+    p = board.project_by_id(t.project_id)
+    pcol = p.color if p else "dim"
+    pname = p.name if p else "Inbox"
+
+    w_l = min(64, max(24, inner // 2 - 2))
+    gap = 3 if inner - w_l - 3 >= 12 else 1
+    w_r = max(12, inner - w_l - gap)
+    spine = c("█", pcol)
+
+    def pad_m(markup: str, width: int) -> str:
+        pad = width - vis(_strip(markup))
+        return markup + " " * max(0, pad)
+
+    left_rows: list[str] = [c("█" * w_l, pcol)]
+    left_rows.append(spine + " " + c(escape(fit(t.title, w_l - 3)), "ink", bold=True))
+    left_rows.append(spine)
+    sg, sgcol = status_glyph(board, t)
+    flags = [c(sg, sgcol)]
+    if t.priority == "high":
+        flags.append(c("high", "over"))
+    if t.blocked:
+        flags.append(c("blocked", "over"))
+    left_rows.append(spine + " " + pad_m(
+        c(escape(fit(clip(pname, 22), 22)), pcol) + "  " + "  ".join(flags),
+        w_l - 1))
+    dt, dcol = date_chip(t, today, board)
+    when = [c(escape(fit(clip(t.phase or "", 16), 16)), "mut"), c(dt, dcol)]
+    if t.start_date:
+        when.append(c(f"start {t.start_date}", "dim"))
+    if t.due_date:
+        when.append(c(f"due {t.due_date}", dcol))
+    left_rows.append(spine + " " + pad_m("  ".join(when), w_l - 1))
+    left_rows.append(spine)
+    note_lines = [ln.strip() for ln in (t.notes or "").splitlines()
+                  if ln.strip() and not re.match(r"^\s*[-*]\s+\[", ln)]
+    for ln_txt in note_lines[:6]:
+        left_rows.append(spine + " " + _highlight_markup(clip(ln_txt, w_l - 3)))
+    if not note_lines:
+        left_rows.append(spine + " " + c("·", "dim"))
+    open_items = [m.group(1).strip()
+                  for m in (re.match(r"^\s*[-*]\s+\[ \]\s*(.*)", ln)
+                            for ln in (t.notes or "").splitlines()) if m]
+    done_n = len(re.findall(r"^\s*[-*]\s+\[[xX]\]",
+                            t.notes or "", re.M))
+    if open_items or done_n:
+        left_rows.append(spine)
+        left_rows.append(spine + " " + c(f"☑ {done_n}/{done_n + len(open_items)}", "hd"))
+        for item in open_items[:3]:
+            left_rows.append(spine + " " + c(escape(clip(item, w_l - 5)), "mut"))
+    attach = _focus_attachments(t, w_l - 3)
+    if attach:
+        left_rows.append(spine)
+        left_rows.append(spine + " " + attach)
+    left_rows.append(c("━" * w_l, pcol))
+
+    rail_rows: list[tuple[str, str | None]] = [
+        (c("QUEUE — stale first", "dim"), None),
+        ("", None),
+    ]
+    for i, q in enumerate(ordered):
+        rail_rows.append((card_cell(q, board, w_r, False,
+                                    prefix="▸ " if i == idx else "▊ ",
+                                    prefix_color="accent" if i == idx
+                                    else project_color(board, q),
+                                    today=today), q.id))
+
+    title = c("◆ FOCUS", "accent", bold=True) + c(" · review", "mut")
+    right = c(f"{idx + 1}/{len(ordered)} · stale first", "mut")
+    lines = [header(title, right, inner)]
+    selected_line = 1
+    n_rows = max(len(left_rows), len(rail_rows))
+    for r in range(n_rows):
+        lft = pad_m(left_rows[r], w_l) if r < len(left_rows) else " " * w_l
+        rgt, tid = rail_rows[r] if r < len(rail_rows) else ("", None)
+        lines.append(line(lft + " " * gap + pad_m(rgt, w_r)))
+        if line_map is not None:
+            if tid and tid != t.id:
+                line_map[tid] = len(lines) - 1
+    if line_map is not None:
+        line_map[t.id] = selected_line
+    return lines
+
+
+def _focus_stale(board: Board, tasks: list[Task], selected_id: str | None,
+                 today: date, inner: int, line_map: dict | None) -> list[str]:
+    """Stale-first tiles: the shipped tile grid reordered by `stale_order`,
+    with a pressure strip and project headers suppressed so the order is honest."""
+    lines: list[str] = []
+    if not tasks:
+        return [line(c(fit("  (no pinned tasks — press 't' on a task to pin it)",
+                           inner), "dim"))]
+
+    overdue = [t for t in tasks if urgency(t, today, board) == "overdue"]
+    stale = [t for t in tasks
+             if (days_in_phase(t, today) or 0) >= 7 and not board.is_done(t)]
+    title = c("◆ FOCUS", "accent", bold=True) + c(" · stale first", "mut")
+    right = c(f"{len(tasks)} pinned", "mut")
+    lines = [header(title, right, inner)]
+    lines.append(line(c(f"▲ {len(overdue)} overdue", "over")
+                      + c("    ", "dim")
+                      + c(f"■ {len(stale)} sitting ≥7d", "soon")
+                      + c("    ordered by days in phase", "dim")))
+    ordered = stale_order(board, tasks, today)
+    lines += _focus_tiles(board, ordered, selected_id, today, inner, line_map,
+                          show_project_headers=False)
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# view: SEARCH overlay (used by kanban + gantt)
+# ---------------------------------------------------------------------------
+_SEARCH_CONSOLE = Console(force_terminal=True, color_system="truecolor",
+                          width=9999, height=9999)
+_SEARCH_CONT = Style(dim=True)
+
+
+def matches(task: Task, board: Board, q: str) -> str | None:
+    """Why a task matches, strongest first: title > project > notes."""
+    p = board.project_by_id(task.project_id)
+    if q in task.title.lower():
+        return "title"
+    if p is not None and q in p.name.lower():
+        return "project"
+    if q in (task.notes or "").lower():
+        return "notes"
+    return None
+
+
+def filtered_board(board: Board, query: str, show_archived: bool) -> Board:
+    """A shallow Board whose tasks/projects are the query's hits.
+
+    The real views render it untouched; this is the seat of filtering so the
+    tally and the hidden lanes stay coherent by construction."""
+    q = query.lower()
+    proxy = copy.copy(board)
+    proxy.tasks = [t for t in board.visible_tasks(show_archived)
+                   if matches(t, board, q)]
+    keep = {t.project_id for t in proxy.tasks}
+    proxy.projects = [p for p in board.visible_projects(show_archived)
+                      if p.id in keep]
+    return proxy
+
+
+def filter_bar(query: str, hits: int, total: int, w: int) -> list[str]:
+    """The `/` bar: query + cursor left, tally right."""
+    left = c("/", "accent", bold=True) + " " + escape(query) + c("▌", "accent")
+    right = c(f"{hits}/{total} tasks", "mut") + c(" · esc clears", "dim")
+    return [header(left, right, w), head_rule(w)]
+
+
+def _search_to_grid(text: Text, w: int, h: int) -> list[list[list]]:
+    """A rendered Text -> (char, style) grid, one cell per screen column."""
+    grid: list[list[list]] = []
+    for ln in text.split("\n"):
+        row: list[list] = []
+        for seg in ln.render(_SEARCH_CONSOLE):
+            for ch in seg.text:
+                if ch == "\n":
+                    continue
+                row.append([ch, seg.style])
+                for _ in range(cell_len(ch) - 1):
+                    row.append(["", _SEARCH_CONT])
+        grid.append((row + [[" ", None]] * w)[:w])
+    while len(grid) < h:
+        grid.append([[" ", None]] * w)
+    return grid[:h]
+
+
+def _search_grid_text(grid: list[list[list]]) -> Text:
+    """Grid back to a Text, merging same-style runs."""
+    t = Text()
+    for ri, row in enumerate(grid):
+        run: list[str] = []
+        run_st = None
+        for ch, st in row + [["", _SEARCH_CONT]]:
+            if st is not run_st:
+                if run:
+                    t.append("".join(run), style=run_st)
+                run, run_st = ([], None) if st is _SEARCH_CONT else ([ch], st)
+            else:
+                run.append(ch)
+        if ri < len(grid) - 1:
+            t.append("\n")
+    return t
+
+
+def _highlight_grid(grid: list[list[list]], query: str) -> None:
+    """Reverse-video every case-insensitive occurrence of `query`."""
+    q = query.lower()
+    if not q:
+        return
+    for row in grid:
+        s = "".join(ch for ch, _ in row).lower()
+        start = 0
+        while True:
+            i = s.find(q, start)
+            if i < 0:
+                break
+            for j in range(i, min(i + len(q), len(row))):
+                ch, st = row[j]
+                if st is _SEARCH_CONT:
+                    continue
+                row[j][1] = (Style.combine([st, Style(reverse=True)])
+                             if st else Style(reverse=True))
+            start = i + len(q)
+
+
+def _apply_search_overlay(text: Text, query: str, hits: int, total: int,
+                          w: int) -> Text:
+    """Insert the `/` bar under the view header and reverse-lit matches."""
+    lines = text.split("\n")
+    h = len(lines)
+    grid = _search_to_grid(text, w, h)
+    _highlight_grid(grid, query)
+    bar_text = Text.from_markup("\n".join(filter_bar(query, hits, total, w)),
+                                emoji=False)
+    bar_grid = _search_to_grid(bar_text, w, 2)
+    grid = [grid[0]] + bar_grid + grid[1:]
+    return _search_grid_text(grid)
 
 
 def _focus_inspector(board: Board, tasks: list[Task], selected_id: str | None,
@@ -2711,15 +2974,27 @@ def render_focus(board, show_archived, selected_id, today=None,
                  width=68, height=0, line_map=None, presentation="tiles") -> Text:
     """The Focus Board: pinned tasks and tasks of pinned projects.
 
-    Three presentations:
+    Presentations:
       * "tiles"    — responsive tile grid with project-coloured frames
       * "inspector"— two-pane list + detail
       * "images"   — image tasks first, then compact list
+      * "review"   — one full-size task + stale-first queue rail
+      * "stale"    — tile grid ordered stale-first with a pressure strip
     """
     today = today or date.today()
     w = _clamp_width(width)
     inner = w
     tasks = focus_tasks(board, show_archived)
+
+    if presentation == "review":
+        lines = _focus_review(board, tasks, selected_id, today, inner, line_map)
+        lines.append(bottom(None, w))
+        return to_text(lines, height, w)
+    if presentation == "stale":
+        lines = _focus_stale(board, tasks, selected_id, today, inner, line_map)
+        lines.append(bottom(None, w))
+        return to_text(lines, height, w)
+
     tasks.sort(key=lambda t: _focus_sort_key(board, show_archived, t, today))
 
     right = c(f"{len(tasks)} pinned", "mut")
@@ -3052,6 +3327,121 @@ def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map
     return lines
 
 
+def _kanban_cell_order(board, tasks, sort, today):
+    """Flat ordering for the cards inside ONE lane×phase cell."""
+    if sort == "project":
+        return list(tasks)
+    if sort == "recent":
+        return _recent_first(tasks)
+    if sort == "priority":
+        return sorted(tasks, key=lambda t: (
+            not t.blocked, _PRIO_RANK.get(t.priority, 1),
+            parse_iso(t.due_date) is None,
+            parse_iso(t.due_date) or date.max))
+    # "due" — sort_by_due semantics, blocked first
+    return sorted(tasks, key=lambda t: (
+        not t.blocked, parse_iso(t.due_date) is None,
+        parse_iso(t.due_date) or date.max))
+
+
+def _kanban_lanes(board, show_archived, selected_id, today, w, height, line_map,
+                  *, sort="project", group="project", collapsed=False,
+                  focus=None) -> list[str]:
+    """Third kanban presentation: lanes (one per active group) × phase columns.
+
+    The lane is the current `kanban_group` (`project`, `priority` or `horizon`).
+    Empty lanes are omitted, overflowing cells close with `+N more`, and every
+    card keeps the real `card_cell` indicators."""
+    inner = w
+    tasks = board.visible_tasks(show_archived)
+    focused = board.project_by_id(focus) if focus is not None else None
+    if focused is not None:
+        tasks = [t for t in tasks if t.project_id == focus]
+    selected = board.task_by_id(selected_id)
+    label_w = 18
+    grid_w = max(0, inner - label_w - 1)
+    start, widths = _phase_window(board, grid_w, selected)
+    n_ph = len(widths)
+    sep = c("│", "frame")
+    juncs = _matrix_junctions(label_w, widths, "┼")
+    feet = {k: "┴" for k in juncs}
+
+    lanes = kanban_order(board, tasks, show_archived, group=group, sort=sort,
+                         collapsed=collapsed, focus=focus, today=today)
+
+    right = c(f"{len(tasks)} tasks", "mut")
+    mode = c(" · lanes", "mut")
+    if group != "project":
+        mode += c(f" · group: {group}", "mut")
+    if sort != "project":
+        mode += c(f" · sort: {sort}", "mut")
+    if focused is not None:
+        mode += (c(" · focus: ", "mut")
+                 + c(escape(focused.name), "mut"))
+    lines = [header(c("KANBAN", "accent", bold=True) + mode, right, w)]
+    lines.append(line(" " * label_w + sep
+                      + sep.join(_windowed_header(board, start, widths, tasks))))
+    lines.append(rule_row(juncs, w))
+
+    ph_idx = {ph: i for i, ph in enumerate(board.phases)}
+    max_needed = 0
+    lane_buckets: list[list[list[Task]]] = []
+    for _name, _color, lane_tasks in lanes:
+        buckets: list[list[Task]] = [[] for _ in range(n_ph)]
+        for t in lane_tasks:
+            pidx = ph_idx.get(t.phase, 0) - start
+            if 0 <= pidx < n_ph:
+                buckets[pidx].append(t)
+        for b in buckets:
+            b[:] = _kanban_cell_order(board, b, sort, today)
+            max_needed = max(max_needed, len(b))
+        lane_buckets.append(buckets)
+
+    chrome = 4  # header + phase header + rule + bottom rule
+    if height <= chrome or not lanes:
+        lane_h = max(1, max_needed)
+    else:
+        avail = max(0, height - chrome - (len(lanes) - 1))
+        lane_h = max(1, avail // max(1, len(lanes)))
+
+    for li, ((name, color, _lane_tasks), buckets) in enumerate(zip(lanes, lane_buckets)):
+        def cell_rows(bucket: list[Task], wc: int) -> list[tuple[str, str | None]]:
+            cap = lane_h
+            shown = bucket if len(bucket) <= cap else bucket[:cap - 1]
+            rows: list[tuple[str, str | None]] = [
+                (card_cell(t, board, wc, t.id == selected_id,
+                           prefix="▊ ",
+                           prefix_color=project_color(board, t),
+                           today=today), t.id)
+                for t in shown]
+            if len(bucket) > cap:
+                rows.append((c(fit(f"+{len(bucket) - cap + 1} more", wc), "dim"), None))
+            rows += [(" " * wc, None)] * (lane_h - len(rows))
+            return rows[:lane_h]
+
+        cells = [cell_rows(buckets[i], widths[i]) for i in range(n_ph)]
+        for r in range(lane_h):
+            if r == 0:
+                label = (c("▐ ", color)
+                         + c(escape(fit(name.upper(), label_w - 2)), color, bold=True))
+            elif r == 1:
+                label = c(fit(f"  {len(_lane_tasks)}", label_w), "dim")
+            else:
+                label = " " * label_w
+            row = label + sep + sep.join(cells[i][r][0] for i in range(n_ph))
+            lines.append(line(row))
+            if line_map is not None:
+                for i in range(n_ph):
+                    tid = cells[i][r][1]
+                    if tid:
+                        line_map[tid] = len(lines) - 1
+        if li < len(lanes) - 1:
+            lines.append(rule_row(juncs, w))
+
+    lines.append(rule_row(feet, w))
+    return lines
+
+
 def render_kanban(board, show_archived, selected_id, today=None,
                   width=68, height=0, line_map=None, presentation="grouped",
                   sort="project", group="project", collapsed=False,
@@ -3061,6 +3451,10 @@ def render_kanban(board, show_archived, selected_id, today=None,
     if presentation == "matrix":     # matrix presentation sorting: out of scope
         lines = _kanban_matrix(board, show_archived, selected_id, today, w,
                                height, line_map)
+    elif presentation == "lanes":
+        lines = _kanban_lanes(board, show_archived, selected_id, today, w,
+                              height, line_map, sort=sort, group=group,
+                              collapsed=collapsed, focus=focus)
     else:
         lines = _kanban_grouped(board, show_archived, selected_id, today, w,
                                 height, line_map, sort=sort, group=group,
@@ -3084,16 +3478,41 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                 width=68, height=0, line_map=None, presentation="grouped", tick=0,
                 kanban_sort="project", kanban_group="project",
                 kanban_collapsed=False, kanban_focus=None,
-                gantt_focus=None, focus_presentation="cards") -> Text:
+                gantt_focus=None, focus_presentation="cards",
+                search_query: str | None = None) -> Text:
+    query = (search_query or "").strip()
+    w = _clamp_width(width)
     if mode == "focus":
         return render_focus(board, show_archived, selected_id, today, width, height,
                             line_map, presentation=focus_presentation)
     if mode == "kanban":
+        if query:
+            fb = filtered_board(board, query, show_archived)
+            total = len(board.visible_tasks(show_archived))
+            hits = len(fb.visible_tasks(show_archived))
+            text = render_kanban(fb, show_archived, selected_id, today, width, height,
+                                 line_map, presentation, sort=kanban_sort,
+                                 group=kanban_group, collapsed=kanban_collapsed,
+                                 focus=kanban_focus)
+            if line_map is not None:
+                for tid in list(line_map.keys()):
+                    line_map[tid] += 2
+            return _apply_search_overlay(text, query, hits, total, w)
         return render_kanban(board, show_archived, selected_id, today, width, height,
                              line_map, presentation, sort=kanban_sort,
                              group=kanban_group, collapsed=kanban_collapsed,
                              focus=kanban_focus)
     if mode == "gantt":
+        if query:
+            fb = filtered_board(board, query, show_archived)
+            total = len(board.visible_tasks(show_archived))
+            hits = len(fb.visible_tasks(show_archived))
+            text = render_gantt(fb, show_archived, selected_id, today, width, height,
+                                line_map, tick=tick, focus=gantt_focus)
+            if line_map is not None:
+                for tid in list(line_map.keys()):
+                    line_map[tid] += 2
+            return _apply_search_overlay(text, query, hits, total, w)
         return render_gantt(board, show_archived, selected_id, today, width, height,
                             line_map, tick=tick, focus=gantt_focus)
     if mode == "swimlanes":
@@ -3173,7 +3592,8 @@ def swimlane_nav(board, show_archived, today: date, width: int,
 
 
 def nav_model(mode, board, show_archived, today=None, width: int = 68,
-              height: int = 0, *, kanban_sort="project",
+              height: int = 0, *, selected_id: str | None = None,
+              kanban_sort="project",
               kanban_group="project", kanban_collapsed=False,
               kanban_focus=None, gantt_focus=None,
               presentation="grouped", focus_presentation="cards") -> list[list[str]]:
@@ -3182,6 +3602,9 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
 
     if mode == "focus":
         pinned = focus_tasks(board, show_archived)
+        if focus_presentation in ("review", "stale"):
+            ordered = stale_order(board, pinned, today, show_archived)
+            return [[t.id for t in ordered]]
         pinned.sort(key=lambda t: _focus_sort_key(board, show_archived, t, today))
         return [[t.id for t in pinned]]
 
@@ -3203,6 +3626,28 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
         # and so does the focus (R-08): a filter that hid cards from the
         # render but left them in the nav model would park the cursor on a
         # task the board does not draw.
+        if presentation == "lanes":
+            label_w = 18
+            grid_w = max(0, width - label_w - 1)
+            selected = board.task_by_id(selected_id)
+            start, widths = _phase_window(board, grid_w, selected)
+            lanes = kanban_order(board, tasks, show_archived,
+                                 group=kanban_group, sort=kanban_sort,
+                                 collapsed=kanban_collapsed, focus=kanban_focus,
+                                 today=today)
+            ph_idx = {ph: i for i, ph in enumerate(board.phases)}
+            cols = [[] for _ in widths]
+            for _name, _color, lane_tasks in lanes:
+                buckets = [[] for _ in widths]
+                for t in lane_tasks:
+                    pidx = ph_idx.get(t.phase, 0) - start
+                    if 0 <= pidx < len(widths):
+                        buckets[pidx].append(t)
+                for i, bucket in enumerate(buckets):
+                    bucket = _kanban_cell_order(board, bucket, kanban_sort, today)
+                    cols[i].extend(t.id for t in bucket)
+            return cols
+
         cols = []
         last = len(board.phases) - 1
         for i, bucket in enumerate(phase_buckets(board, tasks)):
