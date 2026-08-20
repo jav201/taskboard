@@ -109,6 +109,7 @@ KEYMAP: tuple[Key, ...] = (
     # another screen's escape (§6.5 AMD-03).
     Key("F", "F", "focus_cycle", "Focus", views=("kanban", "gantt"), group="kanban"),
     Key("escape", "esc", "focus_exit", "Focus off", views=("kanban", "gantt"), group="kanban"),
+    Key("/", "/", "search", "Search", views=("kanban", "gantt"), group="kanban"),
     # Tab does something in kanban and focus, so it is claimed in both — the
     # action itself (toggle_presentation) decides which view state to cycle.
     Key("tab", "⇥", "toggle_presentation", "Layout", priority=True,

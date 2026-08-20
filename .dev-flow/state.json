@@ -1,9 +1,9 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-08-17-batch-07",
-  "batch_objective": "Focus Board: a new pinned-only view for tracking and detail work, with three presentations (card stream, inspector split, image-first), emoji annotations, colour highlights, and quick pinning of tasks and projects.",
-  "current_phase": 0,
+  "batch_id": "2026-08-18-batch-08",
+  "batch_objective": "Next-level interactions: Kanban lanes (second axis), Focus Board follow-up presentations (review queue + stale-first tiles), and global live search/filter `/` on kanban and gantt — no model changes.",
+  "current_phase": 6,
   "phase_status": "approved",
   "iterations_per_phase": {
     "0": 1,
@@ -12,56 +12,49 @@
     "3": 0,
     "4": 0,
     "5": 0,
-    "6": 0
+    "6": 1
   },
   "artifacts": {
-    "0": ".dev-flow/2026-08-17-batch-07/PLAN.md",
-    "1": ".dev-flow/01-requirements.md",
-    "5": ".dev-flow/2026-08-17-batch-07/05-postmortem.md"
+    "0": ".dev-flow/2026-08-18-batch-08/PLAN.md",
+    "6": ".dev-flow/2026-08-18-batch-08/PLAN.md"
   },
   "standing_authorization": {
-    "date": "2026-08-17",
-    "asked_at": "batch kickoff, Phase 0 (per previous operator approval to continue after batch-06 close)",
-    "autonomy": "end-to-end autonomous within the approved three-view scope",
-    "merge_authority": true,
-    "operator_phrasing": "si, cerremos el batch 6 y continuemos con esta nueva implementación; approve / llévalo hasta merge (carried from batch-06 kickoff)",
-    "close_behaviour": "agent merges once full suite is green and final review packet is clean",
-    "decision_recording": "PLAN.md decision log + state.json.decisions_log + 05-postmortem.md",
-    "decision_recording_phrasing": "recorded in the batch PLAN and postmortem"
+    "date": "2026-08-18",
+    "asked_at": "operator directed implementation from handoff-next-level.md with /dev-flow",
+    "autonomy": "end-to-end autonomous within the approved handoff scope",
+    "merge_authority": false,
+    "operator_phrasing": "vamos a implementar desde aquí con /dev-flow",
+    "close_behaviour": "agent reports completion; commits require explicit operator order",
+    "decision_recording": "PLAN.md decision log + state.json.decisions_log",
+    "decision_recording_phrasing": "recorded in the batch PLAN and state"
   },
   "decisions_log": [
     {
       "phase": 0,
-      "date": "2026-08-17",
+      "date": "2026-08-18",
       "decision": "batch opened",
-      "notes": "Operator approved implementing all three Focus Board variants (A card stream, C inspector split, D image-first) after batch-06 closed. Prototype at prototypes/focus-board-prototype.html."
+      "notes": "Operator directed implementation from handoff-next-level.md using /dev-flow. Variants chosen: unified kanban lanes, Focus review + stale-first, live search filter (3A)."
     },
     {
       "phase": 0,
-      "date": "2026-08-17",
-      "decision": "flag name: pinned",
-      "notes": "Chosen over tracked/starred/followed for brevity and to match the common idiom. Applied to Task and Project."
+      "date": "2026-08-18",
+      "decision": "search_query is session-level and never persisted",
+      "notes": "The filter is view state, not board data; it is cleared on restart."
     },
     {
       "phase": 0,
-      "date": "2026-08-17",
-      "decision": "view key: 5",
-      "notes": "Views 1-4 are lanes/agenda/gantt/kanban; 5 is the next free digit and is not claimed by the aperture (6)."
-    },
-    {
-      "phase": 0,
-      "date": "2026-08-17",
-      "decision": "single Tab action for kanban and focus",
-      "notes": "Avoided a duplicate `tab` key in KEYMAP by having `toggle_presentation` dispatch to kanban layout swap or focus presentation cycle."
+      "date": "2026-08-18",
+      "decision": "filtered_board returns a shallow Board copy",
+      "notes": "Real renderers draw the proxy unchanged, keeping the filter in one seat."
     },
     {
       "phase": 6,
-      "date": "2026-08-17",
-      "decision": "batch merged",
-      "notes": "Full suite green: 848 passed. Commit pushed to origin/main."
+      "date": "2026-08-18",
+      "decision": "batch implementation complete",
+      "notes": "Full suite green: 860 passed (849 baseline + 11 new tests). README keybinding table updated. No commit/push performed pending operator order."
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-08-17T16:35:18",
-  "batch_closed": "2026-08-17"
+  "created_at": "2026-08-18T17:30:00",
+  "batch_closed": "2026-08-18"
 }

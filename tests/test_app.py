@@ -1512,8 +1512,11 @@ async def test_tab_toggles_kanban_presentation(tmp_path):
         assert app.kanban_presentation == "matrix"
         assert "prog" in board_text(app)        # only the matrix has a prog column
         await pilot.press("tab")
-        assert app.kanban_presentation == "grouped"
+        assert app.kanban_presentation == "lanes"
+        assert "lanes" in board_text(app)
         assert "prog" not in board_text(app)
+        await pilot.press("tab")
+        assert app.kanban_presentation == "grouped"
 
 
 def test_kanban_width_exact_across_widths(tmp_path):
@@ -4067,3 +4070,145 @@ async def test_all_batch_keys_are_dead_on_the_aperture(tmp_path):
         await pilot.pause()
         assert len(app.screen_stack) == 1, "escape did not pop the aperture"
         assert Path(app.board.path).read_bytes() == blob
+
+
+# ---- Increment 3 · Global search `/` -------------------------------------- #
+def test_matches_by_title_project_notes():
+    from pathlib import Path
+    from taskboard.views import matches
+    from taskboard.models import Project, Task
+    p = Project("Alpha", "cyan")
+    t = Task("find me", p.id, notes="hidden note here")
+    board = Board([p], [t], path=Path("/dev/null"))
+    assert matches(t, board, "find") == "title"
+    assert matches(t, board, "alpha") == "project"
+    assert matches(t, board, "hidden") == "notes"
+    assert matches(t, board, "nope") is None
+
+
+async def test_search_filters_kanban(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        before = board_text(app)
+        # search for a term that should narrow the board
+        target = next(t for t in app.board.tasks if t.title.startswith("Design"))
+        await pilot.press("/")
+        await pilot.pause()
+        app.screen.query_one("#f-text", Input).value = target.title.split()[0].lower()
+        await save_open_modal(app, pilot)
+        after = board_text(app)
+        assert app.search_query == target.title.split()[0].lower()
+        assert target.title in after
+        assert "/" in after and "tasks" in after
+        # escaping clears the filter first
+        await pilot.press("escape")
+        await pilot.pause()
+        assert app.search_query is None
+
+
+async def test_search_esc_clears_focus_after_query(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        # set a project focus and a search query
+        app.focused_project_id = app.board.projects[0].id
+        app.search_query = "design"
+        app.refresh_view()
+        await pilot.pause()
+        assert app.focused_project_id is not None
+        assert app.search_query is not None
+        await pilot.press("escape")
+        await pilot.pause()
+        assert app.search_query is None
+        assert app.focused_project_id is not None
+        await pilot.press("escape")
+        await pilot.pause()
+        assert app.focused_project_id is None
+
+
+async def test_search_empty_query_clears_filter(tmp_path):
+    app = make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        app.search_query = "something"
+        app.refresh_view()
+        await pilot.press("/")
+        await pilot.pause()
+        app.screen.query_one("#f-text", Input).value = ""
+        await save_open_modal(app, pilot)
+        assert app.search_query is None
+
+
+# ---- Increment 1 · Kanban lanes -------------------------------------------- #
+def test_kanban_lanes_render_by_project(tmp_path):
+    from taskboard.views import render_kanban
+    b = _kanban_board(tmp_path)
+    out = str(render_kanban(b, False, None, date(2026, 7, 17),
+                            width=160, height=0, presentation="lanes",
+                            group="project", sort="project"))
+    assert "lanes" in out.lower()
+    assert "ALPHA" in out
+    assert "BETA" in out
+    assert "INBOX" in out
+    for title in ("KA one", "KA two", "KB blocked", "Loose one"):
+        assert title in out
+
+
+def test_kanban_lanes_render_by_priority(tmp_path):
+    from taskboard.views import render_kanban
+    b = _kanban_board(tmp_path)
+    # give tasks distinct priorities so every lane has something
+    for t in b.tasks:
+        if t.title.startswith("KA"):
+            t.priority = "high"
+        elif t.title.startswith("KB"):
+            t.priority = "normal"
+        else:
+            t.priority = "low"
+    b.save()
+    out = str(render_kanban(b, False, None, date(2026, 7, 17),
+                            width=160, height=0, presentation="lanes",
+                            group="priority", sort="priority"))
+    assert "HIGH" in out
+    assert "NORMAL" in out
+    assert "LOW" in out
+
+
+def test_kanban_lanes_omit_empty_lanes(tmp_path):
+    from taskboard.views import render_kanban
+    b = _kanban_board(tmp_path)
+    out = str(render_kanban(b, False, None, date(2026, 7, 17),
+                            width=160, height=0, presentation="lanes",
+                            group="priority", sort="project"))
+    # only "normal" priority exists in the fixture; high/low lanes are empty
+    assert "NORMAL" in out
+    assert "HIGH" not in out
+    assert "LOW" not in out
+
+
+def test_kanban_lanes_overflow_cells(tmp_path):
+    from taskboard.views import render_kanban
+    b = _kanban_board(tmp_path)
+    # squeeze height so the Alpha/Backlog cell cannot show its 3 tasks
+    out = str(render_kanban(b, False, None, date(2026, 7, 17),
+                            width=160, height=12, presentation="lanes",
+                            group="project", sort="project"))
+    assert "+" in out and "more" in out
+
+
+def test_kanban_lanes_nav_columns_match_render(tmp_path):
+    from taskboard.views import nav_model
+    b = _kanban_board(tmp_path)
+    cols = nav_model("kanban", b, False, width=160, height=12,
+                     presentation="lanes", kanban_group="project",
+                     kanban_sort="project")
+    flat = [tid for col in cols for tid in col]
+    for t in b.tasks:
+        assert t.id in flat, f"{t.title} missing from lanes nav model"
+    # the first column is the visible Backlog phase; Alpha lane comes before Inbox
+    assert cols[0].index(next(t.id for t in b.tasks if t.title == "KA one")) \
+        < cols[0].index(next(t.id for t in b.tasks if t.title == "Loose one"))

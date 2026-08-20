@@ -19,10 +19,10 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      bump_due, default_board_path, next_priority)
 from .modals import (ClockModal, CommandPalette, ConfirmModal, ImageViewer, LegendModal,
                      PhaseEditor, ProjectModal, ProjectPicker, StandupModal, TaskDetails,
-                     TaskModal)
+                     TaskModal, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
-from .views import clip, escape, nav_model, render_view, valid_url
+from .views import clip, escape, filtered_board, nav_model, render_view, valid_url
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
 # the ambient's cycle length is this times the number of phases it rotates
@@ -192,6 +192,7 @@ class TaskboardApp(App):
                                            # snapshots (LLR-010.1) — never a
                                            # file format, gone on restart
         self.show_archived = False
+        self.search_query: str | None = None   # session-level filter (LLR-003.2)
         self.selected_task_id: str | None = None
         self._tick_n = 0                 # drives the gantt flow packet
 
@@ -322,7 +323,8 @@ class TaskboardApp(App):
                               kanban_collapsed=self.kanban_collapsed,
                               kanban_focus=self.focused_project_id,
                               gantt_focus=self.focused_project_id,
-                              focus_presentation=self.focus_presentation))
+                              focus_presentation=self.focus_presentation,
+                              search_query=self.search_query))
 
     def _apply_clock_settings(self) -> None:
         ribbons = self.query("#ribbon")
@@ -401,8 +403,10 @@ class TaskboardApp(App):
         h = vps.first().size.height if vps else 0
         boards = self.query("#board")
         bw = boards.first(BoardView).size.width if boards else 0
-        return nav_model(self.view_mode, self.board, self.show_archived,
+        board = self._view_board()
+        return nav_model(self.view_mode, board, self.show_archived,
                          width=bw or 68, height=h,
+                         selected_id=self.selected_task_id,
                          kanban_sort=self.kanban_sort,
                          kanban_group=self.kanban_group,
                          kanban_collapsed=self.kanban_collapsed,
@@ -418,7 +422,8 @@ class TaskboardApp(App):
         """Selection must be a currently-visible task (data validity). It may
         not be individually navigable in a compact view (e.g. a non-first
         swimlane task) — navigation snaps to nav order on the next key."""
-        tasks = self.board.visible_tasks(self.show_archived)
+        board = self._view_board()
+        tasks = board.visible_tasks(self.show_archived)
         if self.focused_project_id is not None and self.view_mode in ("kanban", "gantt"):
             # A focused board draws ONE project's cards; the selection may not
             # rest on a task the filter hides (hidden-but-navigable is the
@@ -574,6 +579,13 @@ class TaskboardApp(App):
         self.notify("Nothing to undo.", title="Undo", severity="information")
 
     # ---- rendering ---------------------------------------------------------
+    def _view_board(self) -> Board:
+        """The board the CURRENT view renders from: the real board, or a shallow
+        filtered copy when a search query is active in kanban/gantt."""
+        if not self.search_query or self.view_mode not in ("kanban", "gantt"):
+            return self.board
+        return filtered_board(self.board, self.search_query, self.show_archived)
+
     def _validate_focus(self) -> None:
         """A focus naming a project that is no longer visible — archived or
         deleted mid-session — drops to off on the next refresh (LLR-008.1),
@@ -604,7 +616,8 @@ class TaskboardApp(App):
                               kanban_collapsed=self.kanban_collapsed,
                               kanban_focus=self.focused_project_id,
                               gantt_focus=self.focused_project_id,
-                              focus_presentation=self.focus_presentation)
+                              focus_presentation=self.focus_presentation,
+                              search_query=self.search_query)
         board_widget.update(content)
         self._scroll_selected_into_view()
 
@@ -640,11 +653,12 @@ class TaskboardApp(App):
         """Tab flips the kanban layout or cycles the Focus Board presentations;
         a no-op elsewhere."""
         if self.view_mode == "kanban":
-            self.kanban_presentation = ("matrix" if self.kanban_presentation == "grouped"
-                                        else "grouped")
+            modes = ("grouped", "matrix", "lanes")
+            self.kanban_presentation = modes[(modes.index(self.kanban_presentation) + 1)
+                                             % len(modes)]
             self.refresh_view()
         elif self.view_mode == "focus":
-            modes = ("tiles", "inspector", "images")
+            modes = ("tiles", "inspector", "images", "review", "stale")
             self.focus_presentation = modes[(modes.index(self.focus_presentation) + 1)
                                             % len(modes)]
             self.refresh_view()
@@ -740,14 +754,35 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_focus_exit(self) -> None:
-        """escape — clear an ACTIVE project focus in kanban or gantt, and do
-        NOTHING otherwise (§6.5 AMD-03): with no focus active this is a guard
-        no-op, so the companion binding never eats another screen's or
-        posture's escape (every modal and the aperture bind their own, and
-        screen bindings answer before this app-level one)."""
-        if self.view_mode not in ("kanban", "gantt") or self.focused_project_id is None:
+        """escape — clear an ACTIVE search query first, then an ACTIVE project
+        focus in kanban or gantt, and do NOTHING otherwise (§6.5 AMD-03)."""
+        if self.view_mode not in ("kanban", "gantt"):
+            return
+        if self.search_query:
+            self.search_query = None
+            self.refresh_view()
+            return
+        if self.focused_project_id is None:
             return
         self.focused_project_id = None
+        self.refresh_view()
+
+    def action_search(self) -> None:
+        """`/` — prompt for a live filter query; applies to kanban and gantt.
+
+        An empty query clears the filter. The filtered board is a shallow copy,
+        so the underlying data is never touched."""
+        if self.view_mode not in ("kanban", "gantt"):
+            return
+        self.push_screen(TextPrompt("Filter tasks", initial=self.search_query or "",
+                                    placeholder="type to filter…"),
+                         self._on_search_set)
+
+    def _on_search_set(self, query: str | None) -> None:
+        """Apply the filter query, treating an empty string as 'clear'."""
+        if query is None:
+            return
+        self.search_query = query.strip() or None
         self.refresh_view()
 
     # ---- task CRUD ---------------------------------------------------------
