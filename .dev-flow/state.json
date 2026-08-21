@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-08-18-batch-08",
-  "batch_objective": "Next-level interactions: Kanban lanes (second axis), Focus Board follow-up presentations (review queue + stale-first tiles), and global live search/filter `/` on kanban and gantt — no model changes.",
+  "batch_id": "2026-08-19-batch-09",
+  "batch_objective": "Lanes retícula G2: implement the swimlanes grid presentation (mercury spine + sediment bar) with 2D navigation and Tab cycling, keeping waves as an alternative.",
   "current_phase": 6,
   "phase_status": "approved",
   "iterations_per_phase": {
@@ -15,46 +15,52 @@
     "6": 1
   },
   "artifacts": {
-    "0": ".dev-flow/2026-08-18-batch-08/PLAN.md",
-    "6": ".dev-flow/2026-08-18-batch-08/PLAN.md"
+    "0": ".dev-flow/2026-08-19-batch-09/PLAN.md",
+    "6": ".dev-flow/2026-08-19-batch-09/PLAN.md"
   },
   "standing_authorization": {
-    "date": "2026-08-18",
-    "asked_at": "operator directed implementation from handoff-next-level.md with /dev-flow",
+    "date": "2026-08-19",
+    "asked_at": "operator directed implementation from handoff-lanes-grid.md with /dev-flow",
     "autonomy": "end-to-end autonomous within the approved handoff scope",
     "merge_authority": false,
-    "operator_phrasing": "vamos a implementar desde aquí con /dev-flow",
+    "operator_phrasing": "Kisto, ahora vamos a codificar desde aquí con /dev-flow",
     "close_behaviour": "agent reports completion; commits require explicit operator order",
-    "decision_recording": "PLAN.md decision log + state.json.decisions_log",
+    "decision_recording": "PLAN.md decision log + state.json decisions_log",
     "decision_recording_phrasing": "recorded in the batch PLAN and state"
   },
   "decisions_log": [
     {
       "phase": 0,
-      "date": "2026-08-18",
+      "date": "2026-08-19",
       "decision": "batch opened",
-      "notes": "Operator directed implementation from handoff-next-level.md using /dev-flow. Variants chosen: unified kanban lanes, Focus review + stale-first, live search filter (3A)."
+      "notes": "Operator directed implementation from handoff-lanes-grid.md using /dev-flow. Variant chosen: G2 grid 2×3."
     },
     {
       "phase": 0,
-      "date": "2026-08-18",
-      "decision": "search_query is session-level and never persisted",
-      "notes": "The filter is view state, not board data; it is cleared on restart."
+      "date": "2026-08-19",
+      "decision": "lanes_presentation is session-level and never persisted",
+      "notes": "View state, not board data; default is grid, waves is the Tab alternative."
     },
     {
       "phase": 0,
-      "date": "2026-08-18",
-      "decision": "filtered_board returns a shallow Board copy",
-      "notes": "Real renderers draw the proxy unchanged, keeping the filter in one seat."
+      "date": "2026-08-19",
+      "decision": "start_in lives in LaneFacts only",
+      "notes": "lane_facts receives Project.start_date keyword-only; models.py unchanged."
+    },
+    {
+      "phase": 0,
+      "date": "2026-08-19",
+      "decision": "Entrance animation deferred",
+      "notes": "Grid ships static with sweep=1.0; the 4-frame out-cubic sweep from the handoff is a future optional increment."
     },
     {
       "phase": 6,
-      "date": "2026-08-18",
+      "date": "2026-08-19",
       "decision": "batch implementation complete",
-      "notes": "Full suite green: 860 passed (849 baseline + 11 new tests). README keybinding table updated. No commit/push performed pending operator order."
+      "notes": "Full suite green: 877 passed (860 baseline + 17 new tests). README keybinding table updated. No commit/push performed pending operator order."
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-08-18T17:30:00",
-  "batch_closed": "2026-08-18"
+  "created_at": "2026-08-19T03:43:14",
+  "batch_closed": "2026-08-19"
 }

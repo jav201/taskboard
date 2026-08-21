@@ -201,7 +201,7 @@ window, then tap it again to go frameless.
 | `Enter` | Details of the selected task (read-only: every field, notes, URLs, images) |
 | `f` | Manage the board's phases (add / rename / reorder / delete) |
 | `Ctrl+E` | **Insert an emoji** — in the task or project editor, search by name and insert the glyph at the cursor. Only emoji whose width is unambiguous are offered, so a title can never lean its row. |
-| `Tab` | Kanban: cycle grouped → matrix → lanes layouts. Focus Board: cycle tile grid → inspector split → image-first → review queue → stale-first. |
+| `Tab` | Kanban: cycle grouped → matrix → lanes layouts. Focus Board: cycle tile grid → inspector split → image-first → review queue → stale-first. Lanes: cycle grid 2×N ↔ classic waves. |
 | `R` | **Write a report** — a self-contained HTML document of the board, saved beside your board file. It says where it went and does not open it. |
 | `c` | Choose the two ribbon city clocks (type to find a city — accent-blind, so `Sao Paulo` finds `São Paulo`) |
 | `q` | Quit |

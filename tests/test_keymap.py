@@ -74,15 +74,15 @@ def test_every_shown_key_has_a_real_action_on_the_app():
 
 
 def test_a_view_specific_key_is_only_shown_where_it_works():
-    """`tab` flips the kanban layout or cycles the Focus Board; a no-op
-    everywhere else. A key advertised in a view where it does nothing is the same
-    lie in reverse."""
+    """`tab` flips the kanban layout, cycles the Focus Board, or switches
+    swimlanes grid/waves; a no-op elsewhere. A key advertised in a view where it
+    does nothing is the same lie in reverse."""
     tab = next(k for k in KEYMAP if k.action == "toggle_presentation")
-    assert tab.views == ("kanban", "focus")
-    for view in ("kanban", "focus"):
+    assert tab.views == ("kanban", "focus", "swimlanes")
+    for view in ("kanban", "focus", "swimlanes"):
         assert tab.show in {s for s, _ in fit_bar(400, view)[0]}, view
     for view in VIEWS:
-        if view not in ("kanban", "focus"):
+        if view not in ("kanban", "focus", "swimlanes"):
             assert tab.show not in {s for s, _ in fit_bar(400, view)[0]}, view
 
 
@@ -306,9 +306,9 @@ async def test_switching_views_restates_the_keys_for_that_view(tmp_path):
         await pilot.press("4")                       # kanban
         await pilot.pause()
         assert tab.show in str(bar.render())
-        await pilot.press("1")                       # lanes
+        await pilot.press("1")                       # lanes (grid)
         await pilot.pause()
-        assert tab.show not in str(bar.render())
+        assert tab.show in str(bar.render())
 
 
 # --------------------------------------------------------------------------- #

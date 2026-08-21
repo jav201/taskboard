@@ -289,8 +289,8 @@ async def test_the_palette_lists_exactly_the_current_views_live_keys(tmp_path):
 
 async def test_the_palette_keys_follow_the_views_scope(tmp_path):
     """The discriminating limbs: kanban's palette includes the kanban-scoped
-    `tab` and the batch's new quick keys; the lanes' palette shows neither
-    `tab` nor a key the seat scopes away."""
+    `tab` and the batch's new quick keys; swimlanes now includes `tab` too,
+    but still scopes away keys that do not work there."""
     from taskboard.app import TaskboardApp
     b = full(tmp_path)
     b.save()
@@ -312,7 +312,7 @@ async def test_the_palette_keys_follow_the_views_scope(tmp_path):
         await pilot.press("question_mark")
         await pilot.pause()
         rows = _palette_rows(app)
-        assert not any(r.startswith(tab.show) for r in rows)
+        assert any(r.startswith(tab.show) for r in rows)
         await pilot.press("escape")
         await pilot.pause()
 

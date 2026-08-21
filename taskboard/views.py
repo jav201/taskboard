@@ -718,6 +718,7 @@ class LaneFacts(NamedTuple):
     today_n: int
     high: int
     due_in: int | None
+    start_in: int | None
     worst: int
 
     @property
@@ -730,7 +731,8 @@ class LaneFacts(NamedTuple):
 
 
 def lane_facts(board: Board, today: date, name: str, hue: str, status: str,
-               due_date: str | None, rows: list[Task]) -> LaneFacts:
+               due_date: str | None, rows: list[Task], *,
+               start_date: str | None = None) -> LaneFacts:
     """`rows` are already this lane's tasks — the Inbox is a lane too, and its
     tasks are the ones whose project is missing, not the ones with a matching id."""
     # ARCHIVED WORK IS NOT OPEN WORK. Nothing is expected of it, so nothing
@@ -742,6 +744,8 @@ def lane_facts(board: Board, today: date, name: str, hue: str, status: str,
             if (d := parse_iso(t.due_date)) is not None and d < today]
     pd = parse_iso(due_date)
     due_in = (pd - today).days if pd else None
+    ps = parse_iso(start_date)
+    start_in = (ps - today).days if ps else None
     worst = max(((today - parse_iso(t.due_date)).days for t in late), default=0)
     if due_in is not None and due_in < 0 and open_:
         worst = max(worst, -due_in)
@@ -751,7 +755,7 @@ def lane_facts(board: Board, today: date, name: str, hue: str, status: str,
         total=len(rows),
         today_n=sum(1 for t in open_ if parse_iso(t.due_date) == today),
         high=sum(1 for t in open_ if t.priority == "high"),
-        due_in=due_in, worst=worst)
+        due_in=due_in, start_in=start_in, worst=worst)
 
 
 def lane_pressure(lane: LaneFacts) -> tuple:
@@ -769,12 +773,277 @@ def lanes_of(board: Board, show_archived: bool, today: date) -> list[LaneFacts]:
     nobody expects anything from (cancelled, completed)."""
     tasks = board.visible_tasks(show_archived)
     out = [lane_facts(board, today, p.name, p.color, p.status, p.due_date,
-                      [t for t in tasks if t.project_id == p.id])
+                      [t for t in tasks if t.project_id == p.id],
+                      start_date=p.start_date)
            for p in board.visible_projects(show_archived)]
     inbox = [t for t in tasks if board.project_by_id(t.project_id) is None]
     if inbox:
-        out.append(lane_facts(board, today, "Inbox", "dim", "on_track", None, inbox))
+        out.append(lane_facts(board, today, "Inbox", "dim", "on_track", None,
+                              inbox, start_date=None))
     return sorted(out, key=lambda ln: (ln.resting, ln.closed, lane_pressure(ln)))
+
+
+# ---------------------------------------------------------------------------
+# Lanes grid presentation (variant G2) — ported from prototypes/lanes_gauge
+# ---------------------------------------------------------------------------
+GRID_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def _shade_hex(hex6: str, k: float) -> str:
+    """A brightness tier of a hex — the honest 'shader': flat per facet."""
+    r = min(255, int(int(hex6[1:3], 16) * k))
+    g = min(255, int(int(hex6[3:5], 16) * k))
+    b = min(255, int(int(hex6[5:7], 16) * k))
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def _noise(x: int, y: int) -> float:
+    """Deterministic per-dot hash in [0,1) — the sand grain."""
+    n = (x * 374761393 + y * 668265263) & 0xFFFFFFFF
+    n = (n ^ (n >> 13)) * 1274126177 & 0xFFFFFFFF
+    return ((n ^ (n >> 16)) & 0xFFFF) / 65536
+
+
+def _grid_chip(t: Task, today: date) -> tuple[str, str]:
+    d = parse_iso(t.due_date)
+    if d is None:
+        return "—", "dim"
+    txt = f"{GRID_MONTHS[d.month - 1]} {d.day}"
+    delta = (d - today).days
+    if delta < 0:
+        return txt, "over"
+    if delta == 0:
+        return txt, "accent"
+    if delta <= 7:
+        return txt, "soon"
+    return txt, "mut"
+
+
+def _grid_list_order(lane: LaneFacts) -> list[Task]:
+    dated = [t for t in lane.open if parse_iso(t.due_date)]
+    undated = [t for t in lane.open if not parse_iso(t.due_date)]
+    return sorted(dated, key=lambda t: parse_iso(t.due_date)) + undated
+
+
+def _grid_c_hub(lane: LaneFacts, today: date) -> tuple[str, int | None]:
+    """(hub markup, next-due offset or None) — shared by the whole family."""
+    dues = [(parse_iso(t.due_date) - today).days
+            for t in lane.open if parse_iso(t.due_date)]
+    if not dues:
+        return c(f"{len(lane.open)} open · no dates", "dim"), None
+    days = min(dues)
+    nxt = min((t for t in lane.open if parse_iso(t.due_date)),
+              key=lambda t: parse_iso(t.due_date))
+    d = parse_iso(nxt.due_date)
+    chip = f"{GRID_MONTHS[d.month - 1]} {d.day}"
+    hub = (c(chip, "over") + c(f" ▲{-days}d", "over") if days < 0
+           else c(chip, "accent" if days == 0 else "mut"))
+    return hub + c(f" ·{len(lane.open)}", "dim"), days
+
+
+def _grid_sediment_rows(lane: LaneFacts, today: date, col_w: int,
+                        sweep: float = 1.0):
+    """E3 · the sediment bar: the countdown window as a 2-row textured band."""
+    span = (-7, 21)
+    frac_of = lambda d: (d - span[0]) / (span[1] - span[0])   # noqa: E731
+    hub, days = _grid_c_hub(lane, today)
+    target = (frac_of(max(span[0], min(span[1], days))) * sweep
+              if days is not None else None)
+    today_i = round(frac_of(0) * (col_w - 1))
+    bar, studs = [], [" "] * col_w
+    off_l = off_r = 0
+    for i in range(col_w):
+        f = i / (col_w - 1)
+        d = span[0] + (span[1] - span[0]) * f
+        zone = HEX["over"] if d < 0 else HEX["soon"] if d < 7 else HEX["dim"]
+        if i == today_i:
+            bar.append(c("╎", "accent"))
+        elif target is not None and f <= target:
+            n = _noise(i, 11)
+            g = "▓" if n < 0.34 else "▒" if n < 0.67 else "░"
+            bar.append(f"[{_shade_hex(zone, 0.9 + 0.35 * _noise(i, 5))}]{g}[/]")
+        else:
+            bar.append(c("·", "dim"))
+    for t in lane.open:
+        d = parse_iso(t.due_date)
+        if d is None:
+            continue
+        f = frac_of((d - today).days)
+        if not (0 <= f <= 1):
+            off_l += 1 if f < 0 else 0
+            off_r += 1 if f > 1 else 0
+            continue
+        tone = ("over" if d < today else "accent" if d == today
+                else lane.hue)
+        studs[round(f * (col_w - 1))] = c("▄", tone)
+    labels = (c(f"{span[0]}d", "dim"), c(f"+{span[1]}d", "dim"))
+    return ["".join(bar), "".join(studs)], (off_l, off_r), hub, labels
+
+
+def _grid_task_row(t: Task, board: Board, lane: LaneFacts, wc: int,
+                   selected: bool, today: date) -> str:
+    """The roomier row: prefix, title, then indicators AND the absolute date."""
+    prefix = "▲ " if t.blocked else "▊ "
+    pcol = "over" if t.blocked else lane.hue
+    right: list[tuple[str, str]] = []
+    if t.priority == "high" and not board.is_done(t):
+        right.append(("!", "ink"))
+    if t.images:
+        right.append(("▤", "mut"))
+    if t.urls:
+        right.append(("↗", "accent"))
+    right.append(_grid_chip(t, today))
+    rw = sum(vis(x) for x, _ in right) + len(right)
+    title_w = max(0, wc - len(prefix) - rw - 1)
+    shown = clip(t.title, title_w)
+    body = escape(shown)
+    if selected:
+        body = f"[reverse]{body}[/reverse]"
+    pad = " " * max(0, wc - len(prefix) - vis(shown) - rw - 1)
+    return (c(prefix, pcol) + c(body, "mut") + pad + " "
+            + " ".join(c(x, k) for x, k in right))
+
+
+def _grid_col_header(lane: LaneFacts, wc: int) -> str:
+    return (c("▐ ", lane.hue)
+            + c(escape(fit(clip(lane.name, wc - 2), wc - 2)),
+                lane.hue, bold=True))
+
+
+def _grid_center(markup: str, wc: int) -> str:
+    pad = max(0, wc - vis(_strip(markup)))
+    return " " * (pad // 2) + markup + " " * (pad - pad // 2)
+
+
+def _grid_panel_rows(lane: LaneFacts, board: Board, today: date, wc: int,
+                     n_rows: int, selected_id: str | None,
+                     sweep: float = 1.0) -> list[Row]:
+    """One panel's content rows (WITHOUT the mercury prefix)."""
+    bar_rows, (off_l, off_r), hub, labels = _grid_sediment_rows(
+        lane, today, wc, sweep)
+    head = (_grid_col_header(lane, wc - 5)
+            + c(fit(f"{len(lane.open)}", 4, "right"), lane.hue))
+    rows: list[Row] = [(head, None)]
+    rows += [(r, None) for r in bar_rows]
+    rows.append((_grid_center(hub, wc), None))
+    if labels:
+        lft, rgt = labels
+        if off_l:
+            lft = c("◂ ", "mut") + lft
+        if off_r:
+            rgt = rgt + c(" ▸", "mut")
+        rows.append((lft + " " * max(1, wc - vis(_strip(lft))
+                                       - vis(_strip(rgt))) + rgt, None))
+    tasks = _grid_list_order(lane)
+    room = n_rows - len(rows) - 1                    # footer is pinned
+    shown_t = tasks if len(tasks) <= room else tasks[:max(0, room - 1)]
+    for t in shown_t:
+        rows.append((_grid_task_row(t, board, lane, wc, t.id == selected_id,
+                                    today), t.id))
+    if len(tasks) > len(shown_t):
+        rows.append((c(fit(f"+{len(tasks) - len(shown_t)} more", wc), "dim"),
+                     None))
+    rows = rows[:n_rows - 1]
+    rows += [("", None)] * (n_rows - 1 - len(rows))
+    rows.append((c(f"{lane.done_n}/{lane.total} done", "dim"), None))
+    return rows
+
+
+def _grid_mercury_cell(lane: LaneFacts, today: date, r: int, n_rows: int,
+                       sweep: float = 1.0) -> str:
+    """The panel spine, 2 cells per panel row: start bottom, due top."""
+    start = (today + timedelta(days=lane.start_in)) if lane.start_in is not None else None
+    due = (today + timedelta(days=lane.due_in)) if lane.due_in is not None else None
+    if r == 0:
+        return "  "
+    if not (start and due and due > start):
+        return " " + c("│", "dim")
+    span = (due - start).days
+    top, bot = 1, n_rows - 1
+    f = 1 - (r - top) / max(1, bot - top)
+    f_today = 1 - ((today - start).days / span) * sweep
+    rail, rail_tone = "│", "dim"
+    for t in lane.open:
+        d = parse_iso(t.due_date)
+        if d is None:
+            continue
+        ft = 1 - (d - start).days / span
+        if abs(ft - f) * max(1, bot - top) < 1.0:
+            rail, rail_tone = "▪", ("over" if d < today else
+                                    "accent" if d == today else lane.hue)
+    if f_today < 0:
+        if r == top:
+            return f"[{HEX['over']}]▲[/]" + c(rail, rail_tone)
+        return (f"[{_shade_hex(HEX['over'], 0.85 + 0.2 * _noise(r, 7))}]█[/]"
+                + c(rail, rail_tone))
+    if f >= f_today - 1e-9:
+        return (f"[{_shade_hex(HEX.get(lane.hue, HEX['mut']), 0.85 + 0.2 * _noise(r, 7))}]█[/]"
+                + c(rail, rail_tone))
+    if abs(f - f_today) * max(1, bot - top) < 1.0:
+        return " " + c("╎", "accent")
+    return " " + c(rail, rail_tone)
+
+
+def _grid_render(board: Board, show_archived: bool,
+                 selected_id: str | None, today: date,
+                 width: int, height: int, sweep: float = 1.0,
+                 line_map: dict[str, int] | None = None) -> Text:
+    """The grid: 2×3 panels with mercury spine + sediment bar + task rows."""
+    today = today or date.today()
+    w = _clamp_width(width)
+    inner = w
+    h = height or 24
+    lanes = list(lanes_of(board, show_archived, today))
+
+    n_cols = max(1, min(2, inner // 19))
+    col_w = (inner - (n_cols - 1)) // n_cols
+    layers_n = max(1, -(-len(lanes) // n_cols))
+    cap = n_cols * layers_n
+    shown, hidden = lanes[:cap], lanes[cap:]
+
+    tasks = board.visible_tasks(show_archived)
+    live = [t for t in tasks if not t.archived]
+    open_n = sum(1 for t in live if not board.is_done(t))
+    due_n = sum(1 for t in live
+                if (d := parse_iso(t.due_date)) is not None
+                and (d - today).days <= 0 and not board.is_done(t))
+    right = c(f"{open_n} open · ", "mut") + c(f"{due_n} due", "over", bold=True)
+    if hidden:
+        right = c(f"+{len(hidden)} lanes ", "dim") + right
+    lines = [header(c("◆ TASKBOARD", "accent", bold=True)
+                    + c(f" · grid {n_cols}×{layers_n}", "mut"), right, w)]
+
+    body = h - 1
+    panel_h = (body - (layers_n - 1)) // layers_n
+    sep = c("│", "frame")
+    pw = col_w - 3
+
+    for li in range(layers_n):
+        chunk = shown[li * n_cols:(li + 1) * n_cols]
+        panels: list[tuple[LaneFacts, list[Row]]] = []
+        for lane in chunk:
+            rows = _grid_panel_rows(lane, board, today, pw, panel_h,
+                                    selected_id, sweep)
+            panels.append((lane, rows))
+        for r_ in range(panel_h):
+            parts = []
+            for lane, rows in panels:
+                prefix = _grid_mercury_cell(lane, today, r_, panel_h, sweep)
+                markup, tid = rows[r_] if r_ < len(rows) else ("", None)
+                parts.append(prefix + " " + _pad(markup, pw))
+            for _ in range(n_cols - len(panels)):
+                parts.append(" " * (col_w - 1))
+            lines.append(line(_pad(sep.join(parts), inner)))
+            if line_map is not None:
+                for lane, rows in panels:
+                    _, tid = rows[r_] if r_ < len(rows) else ("", None)
+                    if tid is not None:
+                        line_map[tid] = len(lines) - 1
+        if li < layers_n - 1:
+            lines.append(line(c("─" * inner, "frame")))
+    lines.append(bottom(None, w))
+    return to_text(lines, h, w, pinned=0)
 
 
 def allocate(geo: FieldGeo, opens: list[int], n_rest: int,
@@ -1369,12 +1638,21 @@ def absence_line(lanes: list[LaneFacts], today: date, inner: int) -> str:
 
 
 def render_swimlanes(board, show_archived, selected_id, today=None,
-                     width=68, height=0, line_map=None, tick=0) -> Text:
+                     width=68, height=0, line_map=None, tick=0,
+                     presentation="waves") -> Text:
     """Lanes: projects RANKED by pressure on one shared axis of days. The one
     that needs you now gets a drawn field; the rest get a row each; the ones
     with nothing open rest at the bottom. Nothing is ever dropped in silence —
-    what does not fit is counted."""
+    what does not fit is counted.
+
+    Presentations:
+      * "waves" — the classic stacked lanes (default).
+      * "grid"  — 2×3 panel grid with mercury spine + sediment bar.
+    """
     today = today or date.today()
+    if presentation == "grid":
+        return _grid_render(board, show_archived, selected_id, today,
+                            width, height, line_map=line_map)
     w = _clamp_width(width)
     inner = w
     h = height or 24
@@ -3478,7 +3756,8 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                 width=68, height=0, line_map=None, presentation="grouped", tick=0,
                 kanban_sort="project", kanban_group="project",
                 kanban_collapsed=False, kanban_focus=None,
-                gantt_focus=None, focus_presentation="cards",
+                gantt_focus=None, lanes_presentation="waves",
+                focus_presentation="cards",
                 search_query: str | None = None) -> Text:
     query = (search_query or "").strip()
     w = _clamp_width(width)
@@ -3517,7 +3796,8 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                             line_map, tick=tick, focus=gantt_focus)
     if mode == "swimlanes":
         return render_swimlanes(board, show_archived, selected_id, today, width,
-                                height, line_map, tick=tick)
+                                height, line_map, tick=tick,
+                                presentation=lanes_presentation)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 
@@ -3589,6 +3869,25 @@ def swimlane_nav(board, show_archived, today: date, width: int,
     for lane in active[1:]:
         out += [t.id for t in lane_titles(lane, titles)]
     return out
+
+
+def grid_nav(board, show_archived, today: date, width: int,
+             height: int) -> list[list[str]]:
+    """2D nav for the grid presentation: one column per panel x-position,
+    tasks ordered top-to-bottom across layers exactly as the renderer draws."""
+    lanes = lanes_of(board, show_archived, today)
+    inner = _clamp_width(width) - 2
+    h = height or 24
+    n_cols = max(1, min(2, inner // 19))
+    layers_n = max(1, -(-len(lanes) // n_cols))
+    cap = n_cols * layers_n
+    shown = lanes[:cap]
+    cols: list[list[str]] = [[] for _ in range(n_cols)]
+    for li in range(layers_n):
+        chunk = shown[li * n_cols:(li + 1) * n_cols]
+        for x, lane in enumerate(chunk):
+            cols[x] += [t.id for t in _grid_list_order(lane)]
+    return cols
 
 
 def nav_model(mode, board, show_archived, today=None, width: int = 68,
@@ -3663,6 +3962,10 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
         return cols
 
     if mode == "swimlanes":
+        # The renderer and the navigator MUST read from the same seat; the
+        # grid lays panels in 2D columns, while waves keeps the classic stack.
+        if presentation == "grid":
+            return grid_nav(board, show_archived, today, width, height)
         # ONE column: the view is a stack of lanes, and the only selectable
         # things in it are the tasks it NAMES, in the order it names them — the
         # lead's worst late task first, then each stacked lane's titles. The
