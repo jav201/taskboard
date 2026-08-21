@@ -186,6 +186,8 @@ class TaskboardApp(App):
                                            # not board data (§6.2 D-4)
         self.focus_presentation = "tiles"  # session-level (batch-07): tiles /
                                            # inspector / images
+        self.lanes_presentation = "grid"   # session-level (batch-09): grid /
+                                           # waves
         self.focused_project_id: str | None = None   # session-level (LLR-008.1):
                                            # the kanban project focus — None off
         self._undo_stack: list[dict] = []  # session LIFO of pre-mutation
@@ -323,6 +325,7 @@ class TaskboardApp(App):
                               kanban_collapsed=self.kanban_collapsed,
                               kanban_focus=self.focused_project_id,
                               gantt_focus=self.focused_project_id,
+                              lanes_presentation=self.lanes_presentation,
                               focus_presentation=self.focus_presentation,
                               search_query=self.search_query))
 
@@ -404,6 +407,12 @@ class TaskboardApp(App):
         boards = self.query("#board")
         bw = boards.first(BoardView).size.width if boards else 0
         board = self._view_board()
+        if self.view_mode == "kanban":
+            presentation = self.kanban_presentation
+        elif self.view_mode == "swimlanes":
+            presentation = self.lanes_presentation
+        else:
+            presentation = "grouped"
         return nav_model(self.view_mode, board, self.show_archived,
                          width=bw or 68, height=h,
                          selected_id=self.selected_task_id,
@@ -412,7 +421,7 @@ class TaskboardApp(App):
                          kanban_collapsed=self.kanban_collapsed,
                          kanban_focus=self.focused_project_id,
                          gantt_focus=self.focused_project_id,
-                         presentation=self.kanban_presentation,
+                         presentation=presentation,
                          focus_presentation=self.focus_presentation)
 
     def _nav_flat(self) -> list[str]:
@@ -616,6 +625,7 @@ class TaskboardApp(App):
                               kanban_collapsed=self.kanban_collapsed,
                               kanban_focus=self.focused_project_id,
                               gantt_focus=self.focused_project_id,
+                              lanes_presentation=self.lanes_presentation,
                               focus_presentation=self.focus_presentation,
                               search_query=self.search_query)
         board_widget.update(content)
@@ -650,8 +660,8 @@ class TaskboardApp(App):
             bars.first(KeyBar).refresh_bar(self.view_mode)
 
     def action_toggle_presentation(self) -> None:
-        """Tab flips the kanban layout or cycles the Focus Board presentations;
-        a no-op elsewhere."""
+        """Tab flips the kanban layout, cycles the Focus Board presentations,
+        or switches swimlanes grid/waves; a no-op elsewhere."""
         if self.view_mode == "kanban":
             modes = ("grouped", "matrix", "lanes")
             self.kanban_presentation = modes[(modes.index(self.kanban_presentation) + 1)
@@ -660,6 +670,11 @@ class TaskboardApp(App):
         elif self.view_mode == "focus":
             modes = ("tiles", "inspector", "images", "review", "stale")
             self.focus_presentation = modes[(modes.index(self.focus_presentation) + 1)
+                                            % len(modes)]
+            self.refresh_view()
+        elif self.view_mode == "swimlanes":
+            modes = ("grid", "waves")
+            self.lanes_presentation = modes[(modes.index(self.lanes_presentation) + 1)
                                             % len(modes)]
             self.refresh_view()
 

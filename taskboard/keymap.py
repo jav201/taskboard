@@ -110,10 +110,11 @@ KEYMAP: tuple[Key, ...] = (
     Key("F", "F", "focus_cycle", "Focus", views=("kanban", "gantt"), group="kanban"),
     Key("escape", "esc", "focus_exit", "Focus off", views=("kanban", "gantt"), group="kanban"),
     Key("/", "/", "search", "Search", views=("kanban", "gantt"), group="kanban"),
-    # Tab does something in kanban and focus, so it is claimed in both — the
-    # action itself (toggle_presentation) decides which view state to cycle.
+    # Tab does something in kanban, focus and swimlanes, so it is claimed in
+    # all three — the action itself (toggle_presentation) decides which view
+    # state to cycle.
     Key("tab", "⇥", "toggle_presentation", "Layout", priority=True,
-        views=("kanban", "focus"), primary=True, group="nav"),
+        views=("kanban", "focus", "swimlanes"), primary=True, group="nav"),
 
     # -- misc -----------------------------------------------------------------
     Key("o", "o", "open_url", "URL", group="misc"),
