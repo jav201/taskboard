@@ -1,30 +1,23 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-08-19-batch-09",
-  "batch_objective": "Lanes retícula G2: implement the swimlanes grid presentation (mercury spine + sediment bar) with 2D navigation and Tab cycling, keeping waves as an alternative.",
-  "current_phase": 6,
-  "phase_status": "approved",
+  "batch_id": "2026-08-24-batch-10",
+  "batch_objective": "Cuantificar el movimiento del trabajo: US-A transitions log (history.jsonl append-only) + US-B flow view (cycle time, phase x week heatmap, weekly throughput) + US-D dependency intelligence (block becomes linked task, chain-N token, unblock-first sort, gantt critical chain). Desk loop (US-C) deferred to its own batch.",
+  "current_phase": 0,
+  "phase_status": "awaiting-gate",
   "iterations_per_phase": {
-    "0": 1,
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 0,
-    "6": 1
+    "0": 0
   },
   "artifacts": {
-    "0": ".dev-flow/2026-08-19-batch-09/PLAN.md",
-    "6": ".dev-flow/2026-08-19-batch-09/PLAN.md"
+    "0": ".dev-flow/2026-08-24-batch-10/PLAN.md"
   },
   "standing_authorization": {
-    "date": "2026-08-19",
-    "asked_at": "operator directed implementation from handoff-lanes-grid.md with /dev-flow",
-    "autonomy": "end-to-end autonomous within the approved handoff scope",
-    "merge_authority": false,
-    "operator_phrasing": "Kisto, ahora vamos a codificar desde aquí con /dev-flow",
-    "close_behaviour": "agent reports completion; commits require explicit operator order",
+    "date": "2026-08-24",
+    "asked_at": "operator chose batch packaging, log location and authorization at intake",
+    "autonomy": "end-to-end autonomous within the approved batch scope",
+    "merge_authority": true,
+    "operator_phrasing": "Autónomo + commits autorizados; push sigue a la orden",
+    "close_behaviour": "commits authorized per increment; push requires explicit operator order",
     "decision_recording": "PLAN.md decision log + state.json decisions_log",
     "decision_recording_phrasing": "recorded in the batch PLAN and state"
   },
@@ -58,9 +51,22 @@
       "date": "2026-08-19",
       "decision": "batch implementation complete",
       "notes": "Full suite green: 877 passed (860 baseline + 17 new tests). README keybinding table updated. No commit/push performed pending operator order."
+    },
+    {
+      "phase": 0,
+      "date": "2026-08-24",
+      "decision": "batch-10 opened: US-A transitions log + US-B flow view + US-D dependency intelligence; US-C (desk loop) deferred (cross-repo). RC-1 PASS at b56d9d5. Log lives in ~/.taskboard/history.jsonl sidecar. Autonomous + commits authorized, push on order.",
+      "notes": "Block-becomes-task flow in US-D is the operator's own extension."
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-08-19T03:43:14",
-  "batch_closed": "2026-08-19"
+  "created_at": "2026-08-24T00:00:00",
+  "mode_history": [
+    {
+      "batch_id": "2026-08-19-batch-09",
+      "mode": "core",
+      "closed_at": "2026-08-19"
+    }
+  ],
+  "mode": "core"
 }
