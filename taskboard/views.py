@@ -306,7 +306,7 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
               prefix: str = "", prefix_color: str = "mut",
               allow_priority: bool = True, today: date | None = None) -> str:
     """A width-exact card: `prefix` + truncated title + right indicators
-    (↗ ! ▤ ·Nd ▣).
+    (↗ ! ▤ ·Nd +Nd ▣).
 
     Title is truncated with … so it can NEVER share a cell with the trailing
     indicators, at any width down to 0. Always returns exactly `wc` cells.
@@ -343,6 +343,17 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
             # quiet dim house (the same house date distances wear), never a
             # severity hue and never a project colour.
             tokens.append((f"·{age}d", "dim"))
+    if not task.archived:
+        # The deadline countdown (operator, 2026-08-24): days until the due
+        # date rides EVERY dated card, the last phase included — a done card
+        # keeps the FACT in the quiet dim house, never a judging hue
+        # (reldue_token's include_done seat). Listed just before the archived
+        # mark, so only ▣ is shed later than it. Put-away work shows nothing:
+        # an archived task has no live deadline.
+        dtok, dcol = reldue_token(task, today or date.today(), board,
+                                  include_done=True)
+        if dtok:
+            tokens.append((dtok, dcol))
     if task.archived:
         # LAST in the list so it is the last thing shed under width pressure —
         # it is the only token here that says the row is not live work.
@@ -386,20 +397,27 @@ HEAT = {
 }
 
 
-def reldue_token(task: Task, today: date, board: Board) -> tuple[str, str]:
+def reldue_token(task: Task, today: date, board: Board, *,
+                 include_done: bool = False) -> tuple[str, str]:
     """A short relative-due token + color-key: '-2d' / 'today' / '+5d', or ''
-    when the task has no due date (or is done). Colored by the same urgency."""
+    when the task has no due date (or is done). Colored by the same urgency.
+
+    `include_done` (kanban cards, operator 2026-08-24): a DONE task keeps the
+    FACT of its deadline but not the JUDGEMENT — the same text in the quiet
+    dim house, never over/soon/accent, because nothing is expected of
+    finished work. The default keeps the old law: done returns ''."""
     u = urgency(task, today, board)
     d = parse_iso(task.due_date)
-    if d is None or u in ("none", "done"):
+    if d is None or u == "none" or (u == "done" and not include_done):
         return "", "dim"
     delta = (d - today).days
+    resting = u == "done"
     if delta < 0:
-        return f"{delta}d", "over"        # the minus sign is already in the number
+        return f"{delta}d", ("dim" if resting else "over")
     if delta == 0:
-        return "today", "soon"
+        return "today", ("dim" if resting else "soon")
     if delta <= 7:
-        return f"+{delta}d", "accent"
+        return f"+{delta}d", ("dim" if resting else "accent")
     return f"+{delta}d", "dim"
 
 

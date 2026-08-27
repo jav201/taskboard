@@ -248,3 +248,95 @@ def test_card_cell_aging_token_sheds_before_the_archived_mark():
     assert "·5d" not in narrow          # ...and the aging token shed first
     wide = Text.from_markup(card_cell(t, b, 30, False, today=today)).plain
     assert ARCHIVED_MARK in wide and "·5d" in wide
+
+
+# --------------------------------------------------------------------------- #
+# the card deadline countdown (operator 2026-08-24: last-phase cards lost it)
+# --------------------------------------------------------------------------- #
+def _dated(title, phase, project, delta, archived=False):
+    return Task(title=title, project_id=project.id, phase=phase,
+                due_date=str(date.today() + timedelta(days=delta)),
+                archived=archived)
+
+
+def test_card_cell_shows_the_deadline_countdown_on_every_dated_card():
+    """The kanban card never carried a deadline indicator — the only day
+    token it had (`·Nd`, days IN phase) is suppressed on the terminal phase
+    by the done-rests law, so a card in the last phase went bare. The
+    countdown rides EVERY dated card now, the last phase included: live work
+    wears the urgency houses (reldue_token's seats: over / soon / accent /
+    dim past a week); done work keeps the FACT but never the JUDGEMENT — the
+    same text in the quiet dim house. Undated and archived cards paint
+    nothing: no date is no countdown, and put-away work has no live deadline.
+    RED counterfactuals: the done card suppressed → the `+3d` limb red; the
+    done card judged → the over/soon/accent limb red; archived painted → the
+    archived limb red."""
+    import re
+
+    from rich.text import Text
+
+    from taskboard.views import HEX, card_cell
+    today = date.today()
+    b = _aging_cell_board()
+    p = b.projects[0]
+
+    def plain(markup):
+        return Text.from_markup(markup).plain
+
+    live_soon = _dated("live soon", "Doing", p, 4)
+    cell = card_cell(live_soon, b, 40, False, today=today)
+    assert "+4d" in plain(cell) and HEX["accent"] in cell
+
+    live_late = _dated("live late", "Doing", p, -2)
+    cell = card_cell(live_late, b, 40, False, today=today)
+    assert "-2d" in plain(cell) and HEX["over"] in cell
+
+    live_today = _dated("live today", "Doing", p, 0)
+    cell = card_cell(live_today, b, 40, False, today=today)
+    assert "today" in plain(cell) and HEX["soon"] in cell
+
+    live_far = _dated("live far", "Doing", p, 30)
+    cell = card_cell(live_far, b, 40, False, today=today)
+    assert "+30d" in plain(cell) and HEX["dim"] in cell
+
+    # the reported limb: the LAST phase keeps the countdown...
+    done_task = _dated("done dated", "Done", p, 3)
+    cell = card_cell(done_task, b, 40, False, today=today)
+    assert "+3d" in plain(cell), "a last-phase card lost its deadline"
+    # ...as FACT, not judgement — the quiet dim house, never a judging hue
+    assert HEX["dim"] in cell
+    assert HEX["over"] not in cell and HEX["soon"] not in cell
+    assert HEX["accent"] not in cell
+
+    # no date is no countdown
+    undated = Task(title="no date", project_id=p.id, phase="Doing")
+    cell = plain(card_cell(undated, b, 40, False, today=today))
+    assert not re.search(r"[+-]?\d+d\b", cell) and "today" not in cell
+
+    # put-away work has no live deadline (and the spent-mark law holds)
+    away = _dated("put away", "Doing", p, -3, archived=True)
+    cell = card_cell(away, b, 40, False, today=today)
+    assert "-3d" not in plain(cell)
+    assert HEX["over"] not in cell and HEX["soon"] not in cell
+
+
+def test_card_cell_deadline_token_keeps_the_width_contract():
+    """The countdown rides the SAME right-indicator budget: multi-cell token,
+    exact `wc` at every width, shedding from the left so it outlives every
+    token but ▣."""
+    from rich.text import Text
+
+    from taskboard.views import card_cell
+    today = date.today()
+    b = _aging_cell_board()
+    t = _dated("dated card", "Doing", b.projects[0], 6)
+    for wc in range(1, 40):
+        cell = card_cell(t, b, wc, False, today=today)
+        assert cell_len(Text.from_markup(cell).plain) == wc, \
+            f"wc={wc}: a dated card is not width-exact"
+    narrow = Text.from_markup(card_cell(t, b, 3, False, today=today)).plain
+    assert "+6d" not in narrow        # shed whole under pressure, never clipped
+    at_cost = Text.from_markup(card_cell(t, b, 4, False, today=today)).plain
+    assert "+6d" in at_cost           # kept the moment its 4 cells fit
+    wide = Text.from_markup(card_cell(t, b, 40, False, today=today)).plain
+    assert "+6d" in wide
