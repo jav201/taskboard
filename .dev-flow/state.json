@@ -3,13 +3,15 @@
   "language": "en",
   "batch_id": "2026-08-24-batch-10",
   "batch_objective": "Cuantificar el movimiento del trabajo: US-A transitions log (history.jsonl append-only) + US-B flow view (cycle time, phase x week heatmap, weekly throughput) + US-D dependency intelligence (block becomes linked task, chain-N token, unblock-first sort, gantt critical chain). Desk loop (US-C) deferred to its own batch.",
-  "current_phase": 0,
-  "phase_status": "awaiting-gate",
+  "current_phase": 1,
+  "phase_status": "complete",
   "iterations_per_phase": {
-    "0": 0
+    "0": 0,
+    "1": 0
   },
   "artifacts": {
-    "0": ".dev-flow/2026-08-24-batch-10/PLAN.md"
+    "0": ".dev-flow/2026-08-24-batch-10/PLAN.md",
+    "1": ".dev-flow/2026-08-24-batch-10/PLAN.md#phase-1"
   },
   "standing_authorization": {
     "date": "2026-08-24",
@@ -57,6 +59,12 @@
       "date": "2026-08-24",
       "decision": "batch-10 opened: US-A transitions log + US-B flow view + US-D dependency intelligence; US-C (desk loop) deferred (cross-repo). RC-1 PASS at b56d9d5. Log lives in ~/.taskboard/history.jsonl sidecar. Autonomous + commits authorized, push on order.",
       "notes": "Block-becomes-task flow in US-D is the operator's own extension."
+    },
+    {
+      "phase": 1,
+      "date": "2026-08-24",
+      "decision": "Phase 1 requirements derived: HLR/AT per story, draft-time verified symbols (set_phase/add_task/key7 free). unblock sort: blocked tasks SINK (decision). Critical chain = accent house.",
+      "notes": "Writers census executed; delete_phase unstamped reassignment recorded as pre-existing observation, out of scope."
     }
   ],
   "obsidian_synced": false,
