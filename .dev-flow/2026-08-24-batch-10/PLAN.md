@@ -178,3 +178,110 @@ Every named symbol verified on disk at draft time (set_phase/add_task/
 action_toggle_blocked/keymap keys 1-6 taken, 7 free). Every AT names its RED
 arm. No acceptance value matches a phantom constant (C-36): tones
 (over/soon/accent/dim/mut) are the palette's defined keys.
+
+---
+
+# Phase 2 — review (two agents, parallel): findings FOLDED
+
+Verdict: NOT clean at arrival — 7 blockers across the two reviews. All folded
+below; no story changes scope. Reviewers' verified-true claims stand.
+
+## Blockers folded
+
+- **F-B1 (symbol).** The stamping seat is `Board.set_task_phase`
+  (models.py:1089), NOT `set_phase` (does not exist). Every HLR reading
+  "through `set_phase`" now reads `set_task_phase`. `add_task` =
+  models.py:1103.
+- **F-B2 (census).** The writers census adds the two load-path writers —
+  `Task.from_dict` (models.py:806) and load-time canonicalization
+  (models.py:903) — both repair paths, declared non-logged.
+- **F-B3 (undo).** `_UNDO_FIELDS` (app.py:544) gains `depends_on`, snapshotted
+  as a COPY (the current by-reference capture would alias the appended list).
+  The snapshot moves INTO the modal callback (commit time), or a cancelled
+  prompt leaves a stale snapshot. AT-D1's undo limb is scoped: undo restores
+  the blocked task's `blocked` + `depends_on`; the created blocker PERSISTS
+  (a modal add records nothing — AMD-05 precedent).
+- **F-B4 (sort seats).** `unblock` is an EXPLICIT branch in BOTH
+  `kanban_order` (views.py:3457 `else:"due"` trap) AND `_kanban_cell_order`
+  (views.py:3637) — renderer/nav parity (the F-3 law); an unknown mode must
+  never silently render due-order.
+- **F-B5 (`b` semantics).** `b` on an unblocked task now opens the blocker
+  prompt (when candidates exist) instead of flipping the flag. Two pinned
+  tests are intentionally REWRITTEN to the new flow (declared):
+  `test_toggle_blocked_flips_the_flag_and_the_card_prefix`
+  (test_app.py:2408) and the undo-LIFO test (test_app.py:3797). When no
+  candidate blocker exists (single-task board), `b` flips without prompting.
+- **F-B6 (dirty DAG law).** `depends_on` is untrusted: edges only over known
+  task ids (unknown id = no edge); longest-chain and `unblocks_count` carry
+  visited-set cycle safety (A↔B hand-edited boards cannot hang a render).
+  Folded into HLR-D2/D4.
+- **F-B7 (prompt copy).** App UI strings are English; the prompt is
+  "What blocks it?" (not the Spanish draft). Batch artifacts stay `en`.
+
+## Notices folded (mechanisms now specified)
+
+1. **Hook seat = models.py.** The append lives INSIDE `set_task_phase` /
+   `add_task` — one seat, all callers (incl. the edit modal, app.py:837).
+   Increment 1's file list corrected.
+2. `history.append` does its own `mkdir(parents=True, exist_ok=True)`.
+3. **Injectable clock:** `at=None → now` parameter; tests never read the wall
+   clock. Two-clock fact declared: `phase_changed` is a date; the flow view
+   buckets from `at` (datetime), never from `phase_changed`.
+4. **Phase-name drift semantics (documented, not discovered):** cycle/heatmap
+   key on phase NAME and fragment across renames (accepted); throughput
+   counts `to` == the CURRENT terminal phase and history predating phase
+   edits is approximate (accepted); a re-opened task entering the terminal
+   phase again counts again (throughput = completions).
+5. **⛓N slot:** indicator order becomes `[↗ ! ▤ ·Nd +Nd ⛓N ▣]` — this
+   SUPERSEDES the countdown's "only ▣ sheds later" comment; the card_cell
+   docstring, the countdown comment, and the test docstring
+   (test_cells.py:326) are updated in the same increment. Bare `⛓` (U+26D3,
+   NO VS16) — pinned by execution: `cell_len("⛓")==1`, with VS16 it's 2.
+6. **View plumbing:** `flow` gets explicit branches in `render_view` (no
+   swimlanes fallback), `nav_model` (no selectable rows), `VIEW_ORDER`, and
+   the aperture (key 7 handled/swallowed there — aperture.py:51 binds 1-6).
+7. **Flow legend is state-aware** (test_legend.py:84 iterates VIEWS): the
+   empty-history render paints no ramp, so `legend_entries("flow")` only
+   claims swatches the current render actually shows (ghost-mark law).
+8. **AT hardening:** fixtures tmp_path-rooted (never `_UNWRITTEN` for hooked
+   boards — the hook writes beside the board file). AT-A3's unwritable
+   mechanism = a DIRECTORY at the history path (portable on Windows) or
+   monkeypatch; `HISTORY_ERROR` surface = module global + one-shot `notify`
+   on append failure (assertion targets the global AND the notify mock).
+   AT-A4 gains a valid-JSON-wrong-shape line (`{"task": 1}` → skipped).
+   AT-B1 pins: even-n median renders one decimal (`2.5d`); enter→exit
+   granularity = whole days by date diff of `at`; transcript uses fixture
+   titles only. AT-B2's glyph-absence pins the flow BODY only. AT-B3 pins
+   the string "en curso n=1". AT-D3's fixture asserts its order is DISTINCT
+   from project/priority/due/recent first (the palindrome-fixture law).
+   AT-D4: bars may wear accent only (test_gantt.py:128-130 already lawful);
+   the assert-worn idiom (test_gantt.py:115) adopted.
+9. **Security (C-family):** history records carry ids + phase names +
+   timestamps, NEVER titles (the 2026-08-07 leak class). Reader's
+   skip-and-count IS the concurrency story (no O_APPEND atomicity on
+   Windows). `render_flow` phase labels are untrusted input → escaped /
+   intersected with `board.phases` at render (the repo's escape-at-render
+   seat). Permissions match board.json (declared exposure, no hardening).
+   The blocker prompt inherits `TextPrompt`/`ConfirmModal` escaping; the
+   pick-existing list escapes titles (verify vs ProjectPicker at impl).
+10. **Intake correction (honesty):** `test_win_clipboard_roundtrip` PASSED
+    at the Phase-2 baseline run — the intake note "reproduced failing on
+    clean tree" was true at intake time (two consecutive failures) but is
+    intermittent; recorded as environmental flake, excluded by convention,
+    NOT a batch signal either way.
+
+## Reviewer-verified OK (stands)
+
+card_cell width contract safe with ⛓N (shed-by-construction); `unblock`
+contradicts no pinned law (per-mode docstrings); gantt chain via the existing
+3-cell `└─►` seat toned accent + header suffix (zero-layout-change), guarded
+→ byte-identical no-deps render; log record suffices for all three artifacts;
+sidecar law consistent with load/save/engine watcher; seed data bypasses
+`add_task` (a fresh board logs nothing — honest).
+
+## Phase-2 gate record
+
+Blockers found → folded here → plan amended. Authorization is autonomous
+(commits authorized), so the gate proceeds on the recorded fold; the `b`
+semantics change is the operator's own approved story (intake: "un block se
+vuelve tarea").
