@@ -79,3 +79,102 @@ historias → rigor ya declarado. F: backlog refrescado hoy.
 | 2026-08-24 | log en sidecar `~/.taskboard/history.jsonl` append-only | operator |
 | 2026-08-24 | autonomía + commits por incremento autorizados; push a la orden | operator |
 | 2026-08-24 | el flujo bloqueo→tarea nace del operador: "un block se vuelve tarea" | operator |
+
+---
+
+# Phase 1 — Requirements (derived 2026-08-24, draft-time verified)
+
+## US-A — transitions log (`taskboard/history.py`, new)
+
+Writers census (C-15.1, executed): `task.phase` is written by `set_phase`
+(models.py:1094-1101 — the ONLY stamper of `phase_changed`, its docstring says
+so), `rename_phase` (1147 — a rename is not movement), `delete_phase` (1166 —
+reassigns WITHOUT stamping; pre-existing, recorded as observation, out of
+scope). **The log hooks `set_phase` + `add_task` (1102) only**; rename/delete
+are admin operations, declared non-logged.
+
+- **HLR-A1.** The system shall append one JSON record to
+  `<board_dir>/history.jsonl` on every phase transition through `set_phase`,
+  carrying `task` (id), `from`, `to`, `at` (ISO, seconds).
+- **HLR-A2.** `add_task` shall append a creation record (`from`: null).
+- **HLR-A3.** The writer shall never raise and never block the board mutation;
+  a failed append sets `HISTORY_ERROR` (desk's JOURNAL_ERROR pattern) — silent
+  loss presenting as clean is worse than a visible error.
+- **HLR-A4.** The reader shall never raise: missing file = empty history;
+  malformed lines are skipped and counted; the count is exposed.
+- **HLR-A5.** `board.json` format is unchanged; reading the board never
+  touches history (sidecar law — operator decision).
+
+**Acceptance (black-box):**
+- AT-A1: app phase-move on a fixture board appends exactly one line with the
+  four fields; `at` parses. *(RED arm: kill the append.)*
+- AT-A2: `add_task` appends `from=null`. *(RED arm: skip creation hook.)*
+- AT-A3: unwritable history path → the move succeeds, `HISTORY_ERROR` set, no
+  exception. *(RED arm: raise instead of swallow.)*
+- AT-A4: file with 2 good + 1 corrupt line → 2 records, `skipped == 1`, no
+  raise. *(RED arm: drop the skip counter.)*
+
+## US-B — flow view (key `7` — verified free: keymap.py:67-74 occupies 1-6)
+
+- **HLR-B1.** Cycle time per phase = median days over CLOSED intervals
+  (enter→exit pairs in history); a phase with only open intervals shows
+  "en curso n=N", never a number — an open interval is not a cycle.
+- **HLR-B2.** Heatmap phase × week (8 weeks, current rightmost): cell
+  intensity = task-days spent in that phase that week, block ramp `░▒▓█`.
+- **HLR-B3.** Throughput = tasks whose `to` is the terminal phase, per week,
+  8 weeks, mini bar strip + total.
+- **HLR-B4.** No history → the view states "sin historia aún — se construye
+  desde hoy" and nothing else (no zero-metric theater); exactly one
+  transition → renders, no division by zero.
+- **HLR-B5.** Width-exactness contract holds (the repo law); `7` is wired in
+  the ONE keymap seat; keybar and legend show it.
+
+**Acceptance:**
+- AT-B1: fixture history with known intervals → the three artifacts carry the
+  computed values; transcript executed in Phase 3 and pasted into the
+  increment packet. *(RED arm: fixture with different numbers.)*
+- AT-B2: empty history → the sentence, no metric glyphs.
+- AT-B3: single transition → renders without error.
+- AT-B4: width sweep cell-exact (1..120); keymap contains key `7` →
+  `view('flow')`.
+
+## US-D — dependency intelligence
+
+- **HLR-D1.** `b` on an unblocked task shall ask "¿qué lo bloquea?": create a
+  new task or pick an existing one; the system sets `blocked=True` on the
+  blocked task and appends the blocker id to its `depends_on`. `b` on a
+  blocked task unblocks without asking. Covered by the undo stack (LLR-010.1
+  precedent: snapshot BEFORE the mutation).
+- **HLR-D2.** A card shall show `⛓N` when N≥1 open tasks depend on it (it
+  unblocks N): neutral `mut` tone, omitted at 0, rides the shared indicator
+  budget with the shed law (listed after `·Nd`/`+Nd`, before `▣`).
+- **HLR-D3.** Kanban sort mode `unblock`: descending unblock count, stable
+  ties; **blocked tasks sink** — an ordering whose point is "what frees the
+  board" may not lead with work that cannot start (decision recorded; the
+  blocked-first law of `priority`/`due` is not extended here).
+- **HLR-D4.** Gantt shall highlight the longest `depends_on` chain among open
+  tasks (accent house; header names it: `cadena crítica · N`); a board with
+  no dependencies renders byte-identical to before.
+
+**Acceptance:**
+- AT-D1: block flow wires `depends_on` + `blocked`, creates or links the
+  blocker; undo restores. *(RED arm: link not written.)*
+- AT-D2: `⛓` absent at N=0, `⛓2` at N=2, width-exact sweep with the token.
+- AT-D3: fixture order under `unblock`; blocked task sinks.
+- AT-D4: a 3-long chain highlights exactly those 3 tasks; no-deps render
+  byte-identical.
+
+## IFC (C-54) Part A
+
+`history.jsonl` (SOURCE) → `history.read_history` → `views.flow_*`
+computations → `render_flow` (SINK, key 7) · `report.py` is a declared FUTURE
+consumer, untouched this batch. `depends_on` (SOURCE, models) →
+`unblocks_count` → `card_cell` token + kanban `unblock` seat + gantt chain
+(SINKS). No node without an owning requirement.
+
+## Phase-1 self-check
+
+Every named symbol verified on disk at draft time (set_phase/add_task/
+action_toggle_blocked/keymap keys 1-6 taken, 7 free). Every AT names its RED
+arm. No acceptance value matches a phantom constant (C-36): tones
+(over/soon/accent/dim/mut) are the palette's defined keys.
