@@ -40,7 +40,7 @@ su propio batch por ser cross-repo (decisión del operador).
 | id | story | status | observable outcome |
 |---|---|---|---|
 | US-A | **Log de transiciones.** Como operador quiero que cada cambio de fase de una tarea quede registrado (tarea, origen, destino, fecha ISO) en `history.jsonl` append-only, para cuantificar el movimiento del trabajo. | READY | Mover una tarea de fase agrega una línea con los 4 campos; board sin historia funciona idéntico; una línea corrupta no tumba la lectura (never-raises, patrón `read_journal` de desk). |
-| US-B | **Vista de flujo.** Como operador quiero una vista con ciclo mediano por fase, heatmap fase×semana de dónde envejece el trabajo, y throughput semanal — derivados del log — para ver dónde se atora el trabajo. | READY (depende de US-A) | Nueva vista (tecla) renderiza los tres artefactos desde el log; board sin historia declara "sin historia aún — se construye desde hoy" (empty state que nombra su origen); todo número derivado de fixtures ejecutados. |
+| US-B | **Vista de flujo.** Como operador quiero una vista con ciclo mediano por fase, heatmap fase×semana de dónde envejece el trabajo, y throughput semanal — derivados del log — para ver dónde se atora el trabajo. | DONE | Nueva vista (tecla 7) renderiza los tres artefactos desde el log; board sin historia declara "sin historia aún — se construye desde hoy" (empty state que nombra su origen); todo número derivado de fixtures ejecutados. |
 | US-D | **Dependencias inteligentes.** Como operador quiero que al bloquear una tarea me pregunte qué la bloquea y eso se vuelva una tarea enlazada (`depends_on`), ver qué desbloquea cada tarea (`⛓N`), ordenar unblock-first, y ver la cadena crítica en gantt. | READY | `b` sobre una tarea ofrece crear/enlazar el bloqueante; las tarjetas muestran `⛓N` (N = tareas que desbloquea); nuevo sort `unblock` en kanban; gantt resalta la cadena de dependencias más larga. |
 
 Sin historias REFINE/SPIKE/OUT en este batch — las tres cierran los tres ejes
@@ -354,3 +354,69 @@ assert 1 == 2
 
 ### Suggested commit message
 `batch-10 inc-1: transitions log (history.py) hooked into set_task_phase/add_task`
+
+## Increment 2 — US-B: flow view (key `7`)
+
+**Status:** complete. **Commit:** *pending*.
+
+### What changed
+- `taskboard/views.py`:
+  - `_FLOW_WEEKS`, `_FLOW_RAMP`, `_flow_parse_at`, `_flow_week_key`, `_flow_last_weeks`, `_flow_intervals`, `_flow_cycle_times`, `_flow_heatmap`, `_flow_throughput`, `_flow_ramp_char`, `_flow_format_median`.
+  - `render_flow`: read-only dashboard of cycle time (median whole days per closed interval; "en curso n=N" for open-only phases), phase×week heatmap (block ramp `░▒▓█`), weekly throughput (counts + bar + total). Empty history shows only the pinned sentence; width-exact down to `MIN_WIDTH`.
+  - Explicit branches in `render_view`, `nav_model`, `legend_entries` for `mode == "flow"`.
+- `taskboard/app.py`: `VIEW_ORDER` ends with `"flow"`; `VIEW_KEYS` adds `"7": "flow"`.
+- `taskboard/keymap.py`: `Key("7", "7", "view('flow')", "Flow", primary=True, group="views")`.
+- `taskboard/aperture.py`: `Binding("7", "jump('flow')", "Flow", group=VIEWS)`.
+- `README.md`: keybinding table documents `7` → Flow.
+
+### Tests added (`tests/test_flow_view.py`)
+- `test_flow_renders_cycle_heatmap_and_throughput` — AT-B1.
+- `test_flow_empty_history_shows_sentence_and_no_ramp` — AT-B2.
+- `test_flow_single_transition_renders_and_shows_open` — AT-B3.
+- `test_flow_width_sweep_is_cell_exact` — AT-B4.
+- `test_key_7_switches_to_flow_view` — key wiring.
+- `test_flow_nav_model_has_no_selectable_rows` — nav parity.
+
+### Fixes applied during increment
+- Padded `THROUGHPUT` section header to viewport width.
+- Widened cycle value column so `"en curso n=N"` fits without truncation.
+- Updated width-sweep assertion to honor `MIN_WIDTH` clamping.
+- Corrected AT-B1 expectation: `Doing` shows `3d` (two closed intervals), not `"en curso n=1"`.
+- Updated `test_two_now_opens_agenda` and README keybinding table for the new view.
+
+### Mutation evidence (RED arms)
+Each AT was temporarily broken in the expected way, run, and restored exactly.
+
+**AT-B1 RED — fixture dates changed to 1-day Backlog / 4-day Doing:**
+```
+tests/test_flow_view.py::test_flow_renders_cycle_heatmap_and_throughput FAILED
+E       AssertionError: assert '2d' in 'FLOW ...'
+```
+*Failure:* the computed medians shifted, so the pinned expectations no longer matched.
+
+**AT-B2 RED — empty-state body rendered a ramp glyph:**
+```
+tests/test_flow_view.py::test_flow_empty_history_shows_sentence_and_no_ramp FAILED
+E       assert not True
+```
+*Failure:* the body contained `░`, violating the "no metric glyphs" empty-state contract.
+
+**AT-B3 RED — open-interval label changed from "en curso" to "abierto":**
+```
+tests/test_flow_view.py::test_flow_single_transition_renders_and_shows_open FAILED
+E       AssertionError: assert 'en curso n=1' in 'FLOW ...'
+```
+*Failure:* the only-open-phase path no longer emitted the required string.
+
+**AT-B4 RED — CYCLE header no longer padded to viewport width:**
+```
+tests/test_flow_view.py::test_flow_width_sweep_is_cell_exact[1] FAILED
+E           assert 5 == 24
+```
+*Failure:* the section header was shorter than the clamped viewport width.
+
+### Suite status after increment
+`python -m pytest tests/ -q` → **1011 passed** (886 after inc-1 + 125 new flow tests; 2 previously-failing assertions updated for the new view). `test_win_clipboard_roundtrip` not flagged.
+
+### Suggested commit message
+`batch-10 inc-2: flow view (key 7) — cycle time, phase×week heatmap, weekly throughput`

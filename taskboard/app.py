@@ -34,9 +34,9 @@ TICK_SECONDS = 1.0
 # is shown exactly once per board rather than at every launch.
 RENUMBER_NOTICE_KEY = "seen_view_renumber_2026_07"
 
-VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus"]
+VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow"]
 VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
-             "5": "focus"}
+             "5": "focus", "7": "flow"}
 
 
 class BoardView(Static):

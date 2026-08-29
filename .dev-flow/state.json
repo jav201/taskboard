@@ -9,7 +9,7 @@
     "0": 0,
     "1": 0,
     "2": 1,
-    "3": 1
+    "3": 2
   },
   "artifacts": {
     "0": ".dev-flow/2026-08-24-batch-10/PLAN.md",
@@ -87,6 +87,12 @@
       "date": "2026-08-29",
       "decision": "Increment 1 complete: history.py transitions log hooked into set_task_phase/add_task with app warning surface.",
       "notes": "6 new tests in tests/test_history.py; full suite 886 passed; RED-arm mutation evidence recorded in PLAN.md."
+    },
+    {
+      "phase": 3,
+      "date": "2026-08-29",
+      "decision": "Increment 2 complete: flow view (key 7) with cycle time, phase×week heatmap, weekly throughput.",
+      "notes": "6 new tests in tests/test_flow_view.py; full suite 1011 passed; RED-arm mutation evidence recorded in PLAN.md. README keybinding table and VIEW_ORDER/VIEW_KEYS updated."
     }
   ],
   "obsidian_synced": false,

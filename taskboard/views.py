@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import copy
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import NamedTuple
 
@@ -25,6 +25,7 @@ from rich.markup import escape
 from rich.style import Style
 from rich.text import Text
 
+from . import history
 from .models import Board, Task, days_in_phase, parse_iso
 from .wave import DOT_ROWS, Bitmap, load_curve
 
@@ -3311,6 +3312,283 @@ def render_focus(board, show_archived, selected_id, today=None,
 
 
 # ---------------------------------------------------------------------------
+# view: FLOW  (cycle time, heatmap, throughput — derived from history.jsonl)
+# ---------------------------------------------------------------------------
+_FLOW_WEEKS = 8
+_FLOW_RAMP = (" ", "░", "▒", "▓", "█")
+
+
+def _flow_parse_at(value: str) -> datetime | None:
+    """Parse an ISO timestamp from the log; a malformed one is ignored."""
+    try:
+        return datetime.fromisoformat(value)
+    except (ValueError, TypeError):
+        return None
+
+
+def _flow_week_key(d: date) -> str:
+    """ISO week key used for every bucket: ``2026-W33``."""
+    return d.strftime("%G-W%V")
+
+
+def _flow_last_weeks(today: date, n: int = _FLOW_WEEKS) -> list[str]:
+    """The last ``n`` ISO weeks ending at ``today``, current rightmost."""
+    weeks: list[str] = []
+    d = today
+    for _ in range(n):
+        weeks.append(_flow_week_key(d))
+        d -= timedelta(weeks=1)
+    weeks.reverse()
+    return weeks
+
+
+def _flow_intervals(records: list[dict]) -> dict[str, list[tuple[str, datetime, datetime | None]]]:
+    """Per task, ordered list of (phase, start, end) intervals.
+
+    A record opens an interval in its ``to`` phase; the task's next record
+    closes it.  The final interval is open and closes at "now"."""
+    by_task: dict[str, list[dict]] = {}
+    for r in records:
+        by_task.setdefault(r.get("task", ""), []).append(r)
+    intervals: dict[str, list[tuple[str, datetime, datetime | None]]] = {}
+    for tid, recs in by_task.items():
+        recs = [r for r in recs if _flow_parse_at(r.get("at", "")) is not None]
+        recs.sort(key=lambda r: _flow_parse_at(r["at"]))  # type: ignore[arg-type]
+        task_intervals: list[tuple[str, datetime, datetime | None]] = []
+        for i, r in enumerate(recs):
+            start = _flow_parse_at(r["at"])
+            end = _flow_parse_at(recs[i + 1]["at"]) if i + 1 < len(recs) else None
+            task_intervals.append((r.get("to", ""), start, end))  # type: ignore[arg-type]
+        intervals[tid] = task_intervals
+    return intervals
+
+
+def _flow_cycle_times(intervals: dict[str, list[tuple[str, datetime, datetime | None]]],
+                      phases: list[str]) -> dict[str, tuple[float | None, int]]:
+    """Median whole days per phase over closed intervals; open-count when none.
+
+    Returns ``{phase: (median_days, open_count)}``.  ``median_days`` is ``None``
+    when the phase has no closed interval; ``open_count`` is then the number of
+    still-open intervals (so the view can say "en curso n=N")."""
+    closed: dict[str, list[int]] = {p: [] for p in phases}
+    open_n: dict[str, int] = {p: 0 for p in phases}
+    for task_intervals in intervals.values():
+        for phase, start, end in task_intervals:
+            if phase not in closed:
+                continue
+            if end is None:
+                open_n[phase] += 1
+            else:
+                days = (end.date() - start.date()).days
+                if days >= 0:
+                    closed[phase].append(days)
+    result: dict[str, tuple[float | None, int]] = {}
+    for phase in phases:
+        vals = sorted(closed[phase])
+        if vals:
+            n = len(vals)
+            median = float(vals[n // 2]) if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2.0
+            result[phase] = (median, 0)
+        else:
+            result[phase] = (None, open_n[phase])
+    return result
+
+
+def _flow_heatmap(intervals: dict[str, list[tuple[str, datetime, datetime | None]]],
+                  phases: list[str], weeks: list[str]) -> dict[str, list[float]]:
+    """Task-days per phase per ISO week over the last ``_FLOW_WEEKS`` weeks."""
+    values: dict[str, list[float]] = {p: [0.0] * len(weeks) for p in phases}
+    index = {w: i for i, w in enumerate(weeks)}
+    now = datetime.now()
+    for task_intervals in intervals.values():
+        for phase, start, end in task_intervals:
+            if phase not in values:
+                continue
+            end_dt = end or now
+            d = start.date()
+            last = end_dt.date()
+            while d <= last:
+                wk = _flow_week_key(d)
+                if wk in index:
+                    values[phase][index[wk]] += 1.0
+                d += timedelta(days=1)
+    return values
+
+
+def _flow_throughput(records: list[dict], terminal_phase: str,
+                     weeks: list[str]) -> list[int]:
+    """Tasks whose ``to`` phase is the current terminal phase, per week."""
+    counts = [0] * len(weeks)
+    index = {w: i for i, w in enumerate(weeks)}
+    for r in records:
+        if r.get("to") != terminal_phase:
+            continue
+        at = _flow_parse_at(r.get("at", ""))
+        if at is None:
+            continue
+        wk = _flow_week_key(at.date())
+        if wk in index:
+            counts[index[wk]] += 1
+    return counts
+
+
+def _flow_ramp_char(value: float, max_val: float) -> str:
+    """One of the four block-ramp glyphs, or a space for zero."""
+    if max_val <= 0 or value <= 0:
+        return _FLOW_RAMP[0]
+    ratio = value / max_val
+    if ratio < 0.25:
+        return _FLOW_RAMP[1]
+    if ratio < 0.5:
+        return _FLOW_RAMP[2]
+    if ratio < 0.75:
+        return _FLOW_RAMP[3]
+    return _FLOW_RAMP[4]
+
+
+def _flow_format_median(median: float) -> str:
+    """Even-n median keeps one decimal; odd-n renders as an integer."""
+    if median == int(median):
+        return f"{int(median)}d"
+    return f"{median:.1f}d"
+
+
+def render_flow(board, show_archived, selected_id, today=None,
+                width=68, height=0, line_map=None) -> Text:
+    """A read-only dashboard of work movement: cycle time, heatmap, throughput.
+
+    Derived entirely from the append-only ``history.jsonl`` sidecar.  With no
+    history the body states the fact honestly in one sentence and draws no
+    metric glyphs; with even a single transition it renders all three artifacts.
+    Phase labels are untrusted input — intersected with ``board.phases`` and
+    escaped at render."""
+    today = today or date.today()
+    w = _clamp_width(width)
+    inner = w
+
+    records, _skipped = history.read(board.path)
+    known = {t.id for t in board.visible_tasks(True)}
+    records = [r for r in records if r.get("task") in known]
+
+    lines = [header(c("FLOW", "accent", bold=True), "", w)]
+    lines.append(head_rule(w))
+
+    if not records:
+        msg = "sin historia aún — se construye desde hoy"
+        lines.append(line(c(fit(escape(msg), inner), "mut")))
+        lines.append(bottom(None, w))
+        return to_text(lines, height, w)
+
+    # phases that actually appear in history, in the board's declared order
+    history_phases = {r.get("to") for r in records}
+    phases = [p for p in board.phases if p in history_phases]
+    if not phases:
+        phases = list(board.phases)
+
+    weeks = _flow_last_weeks(today)
+    intervals = _flow_intervals(records)
+    cycle = _flow_cycle_times(intervals, phases)
+    heatmap = _flow_heatmap(intervals, phases, weeks)
+    terminal = board.phases[-1] if board.phases else ""
+    throughput = _flow_throughput(records, terminal, weeks)
+
+    # ---- cycle time ---------------------------------------------------------
+    lines.append(line(c(fit("CYCLE", inner), "hd", bold=True)))
+    cycle_label_w = max(8, inner - 17)  # leaves room for "en curso n=N"
+    for phase in phases:
+        median, open_n = cycle.get(phase, (None, 0))
+        if median is not None:
+            value = _flow_format_median(median)
+            value_col = "ink"
+        elif open_n:
+            value = f"en curso n={open_n}"
+            value_col = "mut"
+        else:
+            value = "—"
+            value_col = "dim"
+        left = "  " + fit(phase, cycle_label_w)
+        right_w = max(4, inner - vis(left) - 1)
+        right = fit(value, right_w, "right")
+        lines.append(line(c(left, "ink") + " " + c(right, value_col)))
+
+    # ---- heatmap ------------------------------------------------------------
+    lines.append(line(c(fit("HEATMAP", inner), "hd", bold=True)))
+    max_val = max((v for vals in heatmap.values() for v in vals), default=0)
+    label_w = min(10, max(4, inner // 5))
+    data_start = label_w + 1
+    data_w = max(0, inner - data_start)
+    if data_w >= _FLOW_WEEKS:
+        # week-number header ("26 27 ...") if it fits
+        if data_w >= _FLOW_WEEKS * 2 - 1:
+            nums = [wk.split("-W")[1] for wk in weeks]
+            parts = []
+            pos = 0
+            for i, num in enumerate(nums):
+                parts.append(num)
+                pos += 2
+                if i < len(nums) - 1 and pos < data_w:
+                    parts.append(" ")
+                    pos += 1
+            header_row = " " * data_start + "".join(parts)
+            lines.append(line(c(fit(header_row, inner), "mut")))
+        for phase in phases:
+            vals = heatmap.get(phase, [0.0] * len(weeks))
+            cells = []
+            pos = 0
+            for i, v in enumerate(vals):
+                cells.append(_flow_ramp_char(v, max_val))
+                pos += 1
+                if i < len(vals) - 1 and pos < data_w:
+                    cells.append(" ")
+                    pos += 1
+            row = fit(phase, label_w) + " " + "".join(cells)
+            lines.append(line(c(fit(row, inner), "mut")))
+
+    # ---- throughput ---------------------------------------------------------
+    lines.append(line(c(fit("THROUGHPUT", inner), "hd", bold=True)))
+    total = sum(throughput)
+    max_tp = max(throughput) if throughput else 0
+    if data_w >= _FLOW_WEEKS:
+        nums = [wk.split("-W")[1] for wk in weeks]
+        parts = []
+        pos = 0
+        for i, num in enumerate(nums):
+            parts.append(num)
+            pos += 2
+            if i < len(nums) - 1 and pos < data_w:
+                parts.append(" ")
+                pos += 1
+        header_row = " " * data_start + "".join(parts)
+        lines.append(line(c(fit(header_row, inner), "mut")))
+        count_cells = []
+        pos = 0
+        for i, n in enumerate(throughput):
+            s = str(n)
+            count_cells.append(s)
+            pos += len(s)
+            if i < len(throughput) - 1 and pos < data_w:
+                count_cells.append(" ")
+                pos += 1
+        count_row = " " * data_start + "".join(count_cells)
+        lines.append(line(c(fit(count_row, inner), "ink")))
+        bar_cells = []
+        pos = 0
+        for i, n in enumerate(throughput):
+            bar_cells.append(_flow_ramp_char(float(n), float(max_tp)) if max_tp else " ")
+            pos += 1
+            if i < len(throughput) - 1 and pos < data_w:
+                bar_cells.append(" ")
+                pos += 1
+        bar_row = " " * data_start + "".join(bar_cells)
+        lines.append(line(c(fit(bar_row, inner), "accent")))
+    summary = f"total {total}"
+    lines.append(line(c(fit(summary, inner, "right"), "mut")))
+
+    lines.append(bottom(None, w))
+    return to_text(lines, height, w)
+
+
+# ---------------------------------------------------------------------------
 # view: KANBAN  (one column per phase with EVERY task, grouped by project;
 #                `tab` switches to a project x phase matrix)
 # ---------------------------------------------------------------------------
@@ -3767,6 +4045,7 @@ RENDERERS = {
     "gantt": render_gantt,
     "kanban": render_kanban,
     "focus": render_focus,
+    "flow": render_flow,
 }
 
 
@@ -3816,6 +4095,9 @@ def render_view(mode, board, show_archived, selected_id, today=None,
         return render_swimlanes(board, show_archived, selected_id, today, width,
                                 height, line_map, tick=tick,
                                 presentation=lanes_presentation)
+    if mode == "flow":
+        return render_flow(board, show_archived, selected_id, today, width, height,
+                           line_map)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 
@@ -3924,6 +4206,9 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
             return [[t.id for t in ordered]]
         pinned.sort(key=lambda t: _focus_sort_key(board, show_archived, t, today))
         return [[t.id for t in pinned]]
+
+    if mode == "flow":         # read-only dashboard: no selectable rows
+        return []
 
     if mode == "kanban":       # the phase columns, in THE shared seat's order
         # The matrix presentation renders through `_kanban_matrix`, which does
@@ -4151,6 +4436,13 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         out.append((c("┃", "accent"), "today"))
         if f["blocked"]:
             out.append((c("▲", "over"), "blocked"))
+    if mode == "flow":
+        records, _ = history.read(board.path)
+        if records:
+            out.append((c("3.5d", "ink"), "median days in phase (closed intervals)"))
+            out.append((c("en curso n=1", "mut"), "open intervals: not a cycle yet"))
+            out.append((c("░▒▓█", "mut"), "heatmap: task-days per phase × week"))
+            out.append((c("█", "accent"), "throughput: tasks reaching the terminal phase"))
     if mode == "focus":
         pinned = focus_tasks(board, show_archived)
         if pinned:
