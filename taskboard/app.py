@@ -15,6 +15,7 @@ from textual.keys import format_key
 from textual.screen import ModalScreen
 from textual.widgets import Static
 
+from . import history
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      bump_due, default_board_path, next_priority)
 from .modals import (ClockModal, CommandPalette, ConfirmModal, ImageViewer, LegendModal,
@@ -197,6 +198,7 @@ class TaskboardApp(App):
         self.search_query: str | None = None   # session-level filter (LLR-003.2)
         self.selected_task_id: str | None = None
         self._tick_n = 0                 # drives the gantt flow packet
+        self._last_history_error: str | None = None  # suppress duplicate warnings
 
     # keys that act on the BOARD — a surface the aperture replaces. They stayed
     # live there (`d` opened a delete-confirm for a task nobody could see) and
@@ -483,6 +485,16 @@ class TaskboardApp(App):
             ci += delta
         # no non-empty column that direction -> no-op
 
+    def _warn_history_error(self) -> None:
+        """Surface a history-append failure once per distinct message.
+
+        The global is left in place so the failure is discoverable; the app
+        only nags the operator when the message changes."""
+        err = history.HISTORY_ERROR
+        if err and err != self._last_history_error:
+            self.notify(err, title="Transition log", severity="warning")
+            self._last_history_error = err
+
     def action_phase_move(self, delta: int) -> None:
         """`[` / `]` — move the selected task one phase back/forward, dated.
 
@@ -500,6 +512,7 @@ class TaskboardApp(App):
         if self.board.set_task_phase(task, self.board.phases[idx]):
             self._undo_stack.append(snap)  # clamped end is a no-op — nothing
             self.board.save()              # executed, nothing recorded
+            self._warn_history_error()
             self.refresh_view()
 
     def action_prio_cycle(self) -> None:
@@ -838,6 +851,7 @@ class TaskboardApp(App):
                 continue
             setattr(task, k, v)
         self.board.save()
+        self._warn_history_error()
         self.refresh_view()
 
     def action_purge_done(self) -> None:
