@@ -3,17 +3,19 @@
   "language": "en",
   "batch_id": "2026-08-24-batch-10",
   "batch_objective": "Cuantificar el movimiento del trabajo: US-A transitions log (history.jsonl append-only) + US-B flow view (cycle time, phase x week heatmap, weekly throughput) + US-D dependency intelligence (block becomes linked task, chain-N token, unblock-first sort, gantt critical chain). Desk loop (US-C) deferred to its own batch.",
-  "current_phase": 2,
-  "phase_status": "awaiting-handoff",
+  "current_phase": 3,
+  "phase_status": "in_progress",
   "iterations_per_phase": {
     "0": 0,
     "1": 0,
-    "2": 1
+    "2": 1,
+    "3": 1
   },
   "artifacts": {
     "0": ".dev-flow/2026-08-24-batch-10/PLAN.md",
     "1": ".dev-flow/2026-08-24-batch-10/PLAN.md#phase-1",
-    "2": ".dev-flow/2026-08-24-batch-10/PLAN.md#phase-2"
+    "2": ".dev-flow/2026-08-24-batch-10/PLAN.md#phase-2",
+    "3": ".dev-flow/2026-08-24-batch-10/PLAN.md#phase-3"
   },
   "standing_authorization": {
     "date": "2026-08-24",
@@ -79,6 +81,12 @@
       "date": "2026-08-24",
       "decision": "Autonomous run paused by operator before Phase 3 inc-1 (delegated implementation interrupted with no tree changes). Continuation packaged as handoff-batch-10.md: 4 increments fully specced, verification law, close protocol.",
       "notes": "state.json current_phase=2 complete; resume at Phase 3 increment 1."
+    },
+    {
+      "phase": 3,
+      "date": "2026-08-29",
+      "decision": "Increment 1 complete: history.py transitions log hooked into set_task_phase/add_task with app warning surface.",
+      "notes": "6 new tests in tests/test_history.py; full suite 886 passed; RED-arm mutation evidence recorded in PLAN.md."
     }
   ],
   "obsidian_synced": false,

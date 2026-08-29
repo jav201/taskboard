@@ -16,6 +16,8 @@ from datetime import date, timedelta
 from pathlib import Path
 from uuid import uuid4
 
+from . import history
+
 # --- enumerations (kept as plain strings; validated leniently at the edges) ---
 # THE COLOUR RATION. A project hue NAMES (which project); the app's reserved hues
 # JUDGE (over #f43f5e = overdue, soon #fbbf24 = due today) or CALL ATTENTION
@@ -1096,12 +1098,15 @@ class Board:
         phase = self.canonical_phase(phase)
         if phase == task.phase:
             return False
+        old_phase = task.phase
         task.phase = phase
         task.phase_changed = (today or date.today()).isoformat()
+        history.append(self.path, {"task": task.id, "from": old_phase, "to": phase})
         return True
 
     def add_task(self, task: Task) -> None:
         self.tasks.append(task)
+        history.append(self.path, {"task": task.id, "from": None, "to": task.phase})
         self.save()
 
     def add_project(self, project: Project) -> None:

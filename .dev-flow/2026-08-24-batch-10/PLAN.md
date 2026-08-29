@@ -285,3 +285,72 @@ Blockers found → folded here → plan amended. Authorization is autonomous
 (commits authorized), so the gate proceeds on the recorded fold; the `b`
 semantics change is the operator's own approved story (intake: "un block se
 vuelve tarea").
+
+---
+
+# Phase 3 — Implementation
+
+## Increment 1 — US-A: transitions log
+
+**Status:** complete. **Commit:** *pending*.
+
+### What changed
+- New module `taskboard/history.py`:
+  - `HISTORY_ERROR` module global (desk JOURNAL_ERROR pattern).
+  - `history_path(board_path) -> Path` — sidecar `history.jsonl` beside `board.json`.
+  - `append(board_path, record, at=None) -> dict | None` — fills ISO `at`, creates parent dirs, writes one JSON line; OSError sets `HISTORY_ERROR` and returns `None` (never raises).
+  - `read(board_path) -> tuple[list[dict], int]` — missing file returns `([], 0)`; blank lines ignored; invalid JSON or wrong-shape lines skipped and counted.
+- `taskboard/models.py`:
+  - `Board.set_task_phase` appends `{"task": id, "from": old, "to": phase}` on actual moves.
+  - `Board.add_task` appends creation record `{"task": id, "from": None, "to": phase}` before saving.
+- `taskboard/app.py`:
+  - Imports `history`; tracks `_last_history_error`.
+  - `_warn_history_error()` surfaces new `HISTORY_ERROR` messages once via `notify(..., severity="warning")`.
+  - Called after `action_phase_move` and `_on_task_edited` so the operator sees append failures without the board mutation aborting.
+
+### Tests added (`tests/test_history.py`)
+- `test_phase_move_appends_one_transition` — AT-A1.
+- `test_add_task_appends_creation_record` — AT-A2.
+- `test_history_error_is_surfaced_without_aborting_move` — AT-A3.
+- `test_read_skips_malformed_lines_and_counts_them` — AT-A4.
+- `test_read_missing_file_returns_empty_history` — guard.
+- `test_append_sets_and_clears_history_error` — guard.
+
+### Mutation evidence (RED arms)
+Each AT was temporarily broken in the expected way, run, and restored exactly.
+
+**AT-A1 RED — append in `set_task_phase` killed:**
+```
+tests/test_history.py::test_phase_move_appends_one_transition FAILED
+assert 0 == 1
+where 0 = len([])
+```
+*Failure:* no history line written after the phase move.
+
+**AT-A2 RED — creation hook in `add_task` skipped:**
+```
+tests/test_history.py::test_add_task_appends_creation_record FAILED
+assert 0 == 1
+where 0 = len([])
+```
+*Failure:* adding a task wrote no creation record.
+
+**AT-A3 RED — `history.append` raised instead of swallowing:**
+```
+tests/test_history.py::test_history_error_is_surfaced_without_aborting_move FAILED
+PermissionError: [Errno 13] Permission denied: ...\history.jsonl
+```
+*Failure:* the unwritable history path aborted the app action, proving the swallow is load-bearing.
+
+**AT-A4 RED — skip counter dropped:**
+```
+tests/test_history.py::test_read_skips_malformed_lines_and_counts_them FAILED
+assert 1 == 2
+```
+*Failure:* malformed lines were still skipped but no longer counted, so `skipped` under-reported corruption.
+
+### Suite status after increment
+`python -m pytest tests/ -q` → **886 passed** (880 baseline + 6 new). `test_win_clipboard_roundtrip` not flagged; environmental flake convention stands.
+
+### Suggested commit message
+`batch-10 inc-1: transitions log (history.py) hooked into set_task_phase/add_task`
