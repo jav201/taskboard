@@ -60,6 +60,7 @@ row instead.
 | `4` | **Kanban** | Every task in its phase column, grouped by project. |
 | `5` | **Focus** | Pinned tasks and tasks of pinned projects: a reading-and-annotation surface with three layouts (card stream, inspector split, image-first). Press `t` to pin a task, `T` to pin its whole project. |
 | `6` | **Widget (aperture)** | The ambient face of the board, as a pushed screen: hero + meter + signal tiles + due calendar + up-next queue, rendered through the active design language. The number keys `1`-`5` exit *into* that view — the aperture is a launcher, the views are what you operate. |
+| `7` | **Flow** | A read-only dashboard of work movement: median cycle time per phase, a phase×week heatmap, and weekly throughput. Driven entirely by the board's `history.jsonl` sidecar. |
 
 > **Columns was retired** — kanban is the same phase grid and loses nothing, so the
 > views renumbered to 1-5. The app says so once, on the first launch after the change.
