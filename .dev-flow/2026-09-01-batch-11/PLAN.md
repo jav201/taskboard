@@ -146,3 +146,81 @@ requirement.
 Every named symbol is either new (`team_sync` module) or already exists and
 verified (`Board`, `render_*` family, `keymap.py`, `aperture.py`). Every AT
 names its RED arm. UI strings stay in the app's register (English).
+
+
+---
+
+# Phase 3 — Implementation
+
+## Increment 1 — US-T1 parte 1: módulo `taskboard/team_sync.py`
+
+**Status:** complete. **Commit:** *pending*.
+
+### What changed
+- New module `taskboard/team_sync.py`:
+  - `TeamState` dataclass: shared directory, user id, authoritative `team.json`
+    config, pulled foreign files, last push timestamp.
+  - `load_config()` — reads `team.json`, validates required keys (`version`,
+    `phases`, `roster`, `projects`), adopts newer versions; never raises.
+  - `push(board)` — writes `board.<user>.json` with only team-project tasks,
+    stamps `pushed_at` and `owner`; personal tasks are filtered out before
+    write.
+  - `pull()` — reads teammates' files, skips malformed/non-dict/non-list tasks,
+    reloads `team.json`; never raises (missing directory returns `False`).
+  - `sync(board)` — push then pull, each half independent.
+  - `foreign_tasks()` — parses foreign tasks into `Task` objects with
+    `extra["_owner"]` set; skips unparseable entries and tasks with non-string
+    titles.
+  - `sync_age(uid)` — minutes since last push, or `None`.
+  - `apply_config_to_board(board)` — inherits authoritative phases and shared
+    projects into the local board; personal projects remain untouched.
+- No app wiring yet; integration with `TaskboardApp` is increment 2.
+
+### Tests added (`tests/test_team_sync.py`)
+- `test_team_state_from_settings_returns_none_when_no_shared_dir` — guard.
+- `test_load_config_reads_valid_team_json` — AT-T1.
+- `test_load_config_ignores_invalid_and_missing` — never-raise law.
+- `test_push_writes_only_team_project_tasks` — personal leak law.
+- `test_push_includes_pushed_at_and_owner` — AT-T1.
+- `test_pull_reads_other_member_files_and_skips_malformed` — AT-T1.
+- `test_sync_push_then_pull` — end-to-end two-machine sync in tmp_path.
+- `test_foreign_tasks_skip_unparseable_entries` — foreign untrusted law.
+- `test_apply_config_updates_phases_and_projects` — AT-T2.
+- `test_apply_config_updates_existing_project_fields` — authoritative update.
+- `test_sync_age_computed_from_pushed_at` — AT-T3.
+- `test_pull_tolerates_missing_shared_dir` — never-raise law.
+
+### Mutation evidence (RED arms)
+Each AT was temporarily broken in the expected way, run, and restored exactly.
+
+**AT-T1 RED — personal-task filter killed:**
+```
+tests/test_team_sync.py::test_push_writes_only_team_project_tasks FAILED
+E   AssertionError: assert 2 == 1
+```
+*Failure:* without the team-project filter, the personal task was written to
+`board.jav.json`, breaking the "personal never leaks" law.
+
+**AT-T1 RED — `_read_json` raised instead of swallowing:**
+```
+tests/test_team_sync.py::test_load_config_ignores_invalid_and_missing FAILED
+E   FileNotFoundError: [Errno 2] No such file or directory: ...\team.json
+```
+*Failure:* a missing `team.json` aborted `load_config` instead of being treated
+as an absent config.
+
+**AT-T1 RED — `pull` raised on a missing shared directory:**
+```
+tests/test_team_sync.py::test_pull_tolerates_missing_shared_dir FAILED
+E   FileNotFoundError: [WinError 3] The system cannot find the path specified: ...\absent
+```
+*Failure:* without the `OSError` guard around `iterdir`, an absent shared
+directory crashed the sync read path.
+
+### Suite status after increment
+`python -m pytest tests/ -q` → **1036 passed** (1024 after batch-10 close + 12
+new team-sync tests). `test_win_clipboard_roundtrip` not flagged;
+environmental flake convention stands.
+
+### Suggested commit message
+`batch-11 inc-1: team_sync module (team.json, per-person files, never-raises)`
