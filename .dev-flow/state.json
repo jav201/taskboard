@@ -9,7 +9,7 @@
     "0": 1,
     "1": 0,
     "2": 0,
-    "3": 0,
+    "3": 1,
     "4": 0,
     "5": 0,
     "6": 0
@@ -201,6 +201,12 @@
       "date": "2026-09-01",
       "decision": "batch-12 opened: in-app Setup + per-view help family + keybar per-view law + initial-sync fix",
       "notes": "Operator directed implementation from handoff-batch-12-setup-help.md using /dev-flow. Standing authorization confirmed."
+    },
+    {
+      "phase": 3,
+      "date": "2026-09-01",
+      "decision": "Increment 1 complete: initial team sync on mount for configured identity.",
+      "notes": "Added _run_team_sync() before _start_team_daemon() in _init_team_mode; 1 new test in tests/test_setup_help.py; full suite 1285 passed."
     }
   ],
   "obsidian_synced": false,

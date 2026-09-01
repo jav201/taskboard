@@ -307,6 +307,7 @@ class TaskboardApp(App):
             return
         self.team_state.load_config()
         if self.team_state.user_id:
+            self._run_team_sync()
             self._start_team_daemon()
             return
         roster = self.team_state.roster()
