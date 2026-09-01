@@ -295,3 +295,86 @@ flake convention stands.
 
 ### Suggested commit message
 `batch-11 inc-2: daemon + first-run identity + staleness helpers`
+
+---
+
+## Increment 3 — US-T2 parte 1: V3 standup strip renderer + keymap + classification filter chrome
+
+**Status:** complete.
+
+### What changed
+- `taskboard/views.py`:
+  - New `render_team_filter_chrome(active)` helper returning the segmented control
+    `todo · equipo · personal` with the active segment in `accent` and the rest in
+    `dim`. Semantics documented in the docstring.
+  - New `render_standup` renderer for the V3 team home view:
+    - One row per roster member from `team_state.roster()`.
+    - Each row shows member name, `▰▱` load bar (open task count vs max 5),
+      top task title + phase, and sync age.
+    - Operator row carries an accent spine `▌`; teammate rows carry their roster
+      hue spine `▎`.
+    - Stale rows (sync age > tolerance) wear the `over` tone; non-stale wear `mut`.
+    - Foreign tasks come from `team_state.foreign_tasks()`; operator tasks come
+      from the local `board`.
+    - Team-mode-off body says "team mode off — set a shared directory".
+  - `render_view` dispatches `"standup"` and passes `team_state`/`team_filter`.
+  - `nav_model` returns no selectable rows for `"standup"` (like `"flow"`).
+  - `legend_entries` adds standup-specific marks and shows the filter chrome.
+- `taskboard/app.py`:
+  - `VIEW_ORDER`/`VIEW_KEYS` extended with `"standup"` → key `8`.
+  - Session-level `team_filter` state, default `"equipo"`.
+  - `action_team_filter_cycle()` cycles `todo → equipo → personal` and refreshes.
+  - `refresh_view()` and `_repaint_flow()` pass `team_state`/`team_filter` into
+    `render_view`.
+  - `_nav_columns()` passes `team_state`/`team_filter` into `nav_model`.
+- `taskboard/keymap.py`: added primary key `8` for `view('standup')`.
+- `taskboard/aperture.py`: added launcher binding `8 → jump('standup')`.
+- `README.md`: documented the `8` **Standup** view in the keybinding table.
+
+### Tests added (`tests/test_team_views.py`)
+- `test_team_filter_chrome_highlights_active_segment` — chrome renders the three
+  segments and highlights exactly one.
+- `test_standup_renders_one_row_per_member_and_own_row_identifiable` — AT-T4:
+  two-member roster renders both names; operator row carries the accent spine.
+- `test_standup_flags_stale_member_in_over_tone` — AT-T4 stale limb: an old
+  foreign push renders the row in the `over` tone.
+- `test_standup_filter_changes_top_task_source` — AT-T4 filter limb: a team task
+  and a personal task for the operator produce different top tasks under each
+  filter mode.
+- `test_standup_width_sweep_is_cell_exact` — width sweep 1..120 asserts
+  `cell_len(line) == width` for every row.
+- `test_standup_nav_model_has_no_selectable_rows` — V3 has no cursor rows.
+- `test_standup_key_8_switches_view` — app pilot test: pressing `8` switches to
+  standup view.
+- `test_action_team_filter_cycle` — session filter cycles through the three
+  modes.
+
+### Mutation evidence (RED arms)
+Each AT was temporarily broken in the expected way, run, and restored exactly.
+
+**AT-T4 RED — stale tone disabled:**
+```
+tests/test_team_views.py::test_standup_flags_stale_member_in_over_tone FAILED
+E   AssertionError: stale row should wear the over tone
+E   assert '#f43f5e' in '[#fbbf24]\\u258e[/#fbbf24] [#8b98a5]Ana ...'
+```
+*Failure:* forcing `tone = "mut"` for every row made a 60-minute-old teammate
+render in the muted house instead of `over`, so stale status would be invisible.
+
+**AT-T4 RED — filter cycle stuck on "todo":**
+```
+tests/test_team_views.py::test_action_team_filter_cycle FAILED
+E   AssertionError: assert 'todo' == 'personal'
+```
+*Failure:* with the cycle replaced by `self.team_filter = "todo"`, the action
+never advanced the filter, so the chrome and the underlying task subset would
+stay locked on the first mode.
+
+### Suite status after increment
+`python -m pytest tests/test_team_sync.py tests/test_team_views.py -q` → **127 passed**.
+`python -m pytest tests/ -q` → **1167 passed** (1040 after inc-2 + 127 new team-view tests;
+width sweep accounts for 120 of the new tests). `test_win_clipboard_roundtrip` not flagged;
+environmental flake convention stands.
+
+### Suggested commit message
+`batch-11 inc-3: V3 standup view + key 8 + classification filter`
