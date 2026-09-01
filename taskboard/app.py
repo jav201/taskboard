@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import webbrowser
 from datetime import date
@@ -23,7 +24,7 @@ from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
                      StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
-from .team_sync import TeamState
+from .team_sync import TeamState, probe_setup_health
 from .views import clip, escape, filtered_board, nav_model, render_view, valid_url
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
@@ -563,7 +564,15 @@ class TaskboardApp(App):
         return self.board.task_by_id(self.selected_task_id)
 
     def action_cursor(self, delta: int) -> None:
-        """Up/Down: move WITHIN the current column (no jump off the ends)."""
+        """Up/Down: move WITHIN the current column (no jump off the ends), or
+        move the setup cursor up/down within the active section."""
+        if self.view_mode == "setup" and self._setup_state is not None:
+            section, row, max_rows = self._setup_cursor_item()
+            new_row = max(0, min(max_rows - 1, row + delta))
+            if new_row != row:
+                self._setup_state["cursor_row"] = new_row
+                self.refresh_view()
+            return
         cols = self._nav_columns()
         loc = self._locate(cols)
         if loc is None:
@@ -848,24 +857,242 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_setup_save(self) -> None:
-        """`ctrl+s` in setup view: commit staged changes (implemented in inc-3)."""
-        self.notify("Setup save not yet implemented.", title="Setup",
-                    severity="information")
+        """`ctrl+s` in setup view: commit staged changes to team.json and
+        board.settings, then sync and return to the previous view."""
+        if self._setup_state is None:
+            return
+        state = self._setup_state
+        enabled = state.get("enabled", False)
+        shared_dir = state.get("shared_dir", "").strip()
+        interval_minutes = state.get("interval_minutes", 30)
+        user_id = state.get("user_id")
+
+        self.board.settings["team_shared_dir"] = shared_dir if enabled else ""
+        self.board.settings["team_user_id"] = user_id if enabled else None
+        self.board.settings["team_sync_interval"] = interval_minutes
+
+        if enabled and shared_dir:
+            from .team_sync import _write_json
+            path = Path(shared_dir)
+            path.mkdir(parents=True, exist_ok=True)
+            team_json_path = path / "team.json"
+            existing = None
+            try:
+                existing = json.loads(team_json_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                pass
+            version = 1
+            if isinstance(existing, dict) and isinstance(existing.get("version"), int):
+                version = existing["version"] + 1
+
+            team_projects = []
+            for p in state.get("projects", []):
+                if not p.get("shared"):
+                    continue
+                team_projects.append({
+                    "id": p.get("id"),
+                    "name": p.get("name"),
+                    "color": p.get("color"),
+                    "status": p.get("status", "on_track"),
+                    "template": p.get("template", ""),
+                })
+            team_data = {
+                "version": version,
+                "phases": (existing.get("phases") if isinstance(existing, dict) else None)
+                           or ["Backlog", "Doing", "Review", "Done"],
+                "template": (existing.get("template") if isinstance(existing, dict) else None)
+                            or {"fields": ["title", "assignee", "due", "priority"]},
+                "projects": team_projects,
+                "roster": [{"id": r.get("id"), "name": r.get("name"), "hue": r.get("hue", "mut")}
+                           for r in state.get("roster", [])],
+                "sync_tolerance_minutes": interval_minutes,
+            }
+            _write_json(team_json_path, team_data)
+
+            # Re-initialize team state with new settings and sync once.
+            self.team_state = TeamState.from_settings(shared_dir, user_id)
+            if self.team_state is not None:
+                self.team_state.load_config()
+                self.team_state.user_id = user_id
+                self._run_team_sync()
+
+        self.board.save()
+        self._setup_state = None
+        self.view_mode = self._pre_setup_view
+        self._refresh_keybar()
+        self.refresh_view()
+
+    def _setup_cursor_item(self) -> tuple[str, int, int]:
+        """Return (section_name, row_index, max_rows) for the current setup cursor."""
+        if self._setup_state is None:
+            return ("", 0, 0)
+        sec = self._setup_state.get("cursor_section", 0)
+        row = self._setup_state.get("cursor_row", 0)
+        equipo_max = 5
+        proj_max = max(1, len(self._setup_state.get("projects", [])))
+        roster_max = max(1, len(self._setup_state.get("roster", [])))
+        if sec == 0:
+            return ("equipo", row, equipo_max)
+        if sec == 1:
+            return ("proyectos", row, proj_max)
+        return ("roster", row, roster_max)
 
     def action_setup_section(self) -> None:
-        """`tab` cycles the active section in setup (implemented in inc-3)."""
+        """`tab` cycles the active section in setup."""
+        if self._setup_state is None:
+            return
+        self._setup_state["cursor_section"] = (self._setup_state.get("cursor_section", 0) + 1) % 3
+        self._setup_state["cursor_row"] = 0
+        self.refresh_view()
 
     def action_setup_edit(self) -> None:
-        """`enter` edits the selected setup row (implemented in inc-3)."""
+        """`enter` edits the selected setup row."""
+        if self._setup_state is None:
+            return
+        section, row, _ = self._setup_cursor_item()
+        if section == "equipo" and row == 1:
+            self.push_screen(TextPrompt("Shared directory", placeholder="path",
+                                        value=self._setup_state.get("shared_dir", "")),
+                             self._on_setup_folder_edited)
+        elif section == "equipo" and row == 3:
+            self.push_screen(TextPrompt("Sync interval (minutes)", placeholder="5..120",
+                                        value=str(self._setup_state.get("interval_minutes", 30))),
+                             self._on_setup_interval_edited)
+        elif section == "proyectos":
+            projects = self._setup_state.get("projects", [])
+            if 0 <= row < len(projects):
+                self.push_screen(TextPrompt("Project name", placeholder="name",
+                                            value=projects[row].get("name", "")),
+                                 lambda name: self._on_setup_project_name_edited(row, name))
+        elif section == "roster":
+            roster = self._setup_state.get("roster", [])
+            if 0 <= row < len(roster):
+                self.push_screen(TextPrompt("Member name", placeholder="name",
+                                            value=roster[row].get("name", "")),
+                                 lambda name: self._on_setup_member_name_edited(row, name))
+
+    def _on_setup_folder_edited(self, value: str | None) -> None:
+        if value is None or self._setup_state is None:
+            return
+        self._setup_state["shared_dir"] = value.strip()
+        self.refresh_view()
+
+    def _clamp_interval(self, value: str | None) -> int | None:
+        """Parse and clamp a setup interval string to 5..120 minutes."""
+        if value is None:
+            return None
+        try:
+            minutes = int(value.strip())
+        except ValueError:
+            return None
+        return min(120, max(5, minutes))
+
+    def _on_setup_interval_edited(self, value: str | None) -> None:
+        if self._setup_state is None:
+            return
+        minutes = self._clamp_interval(value)
+        if minutes is None:
+            return
+        self._setup_state["interval_minutes"] = minutes
+        self.refresh_view()
+
+    def _on_setup_project_name_edited(self, idx: int, value: str | None) -> None:
+        if value is None or self._setup_state is None:
+            return
+        projects = self._setup_state.get("projects", [])
+        if 0 <= idx < len(projects):
+            projects[idx]["name"] = value.strip() or projects[idx].get("id", "")
+            self.refresh_view()
+
+    def _on_setup_member_name_edited(self, idx: int, value: str | None) -> None:
+        if value is None or self._setup_state is None:
+            return
+        roster = self._setup_state.get("roster", [])
+        if 0 <= idx < len(roster):
+            roster[idx]["name"] = value.strip() or roster[idx].get("id", "")
+            self.refresh_view()
 
     def action_setup_toggle(self) -> None:
-        """`space` toggles the selected setup control (implemented in inc-3)."""
+        """`space` toggles the selected setup control."""
+        if self._setup_state is None:
+            return
+        section, row, _ = self._setup_cursor_item()
+        if section == "equipo" and row == 0:
+            self._setup_state["enabled"] = not self._setup_state.get("enabled", False)
+        elif section == "equipo" and row == 4:
+            # cycle identity through roster + None
+            roster = self._setup_state.get("roster", [])
+            ids = [None] + [r.get("id") for r in roster if r.get("id")]
+            current = self._setup_state.get("user_id")
+            try:
+                nxt = ids[(ids.index(current) + 1) % len(ids)]
+            except ValueError:
+                nxt = ids[0] if ids else None
+            self._setup_state["user_id"] = nxt
+        elif section == "proyectos":
+            projects = self._setup_state.get("projects", [])
+            if 0 <= row < len(projects):
+                projects[row]["shared"] = not projects[row].get("shared", False)
+        self.refresh_view()
 
     def action_setup_add(self) -> None:
-        """`a` adds a roster member or project in setup (implemented in inc-3)."""
+        """`a` adds a roster member or project in setup."""
+        if self._setup_state is None:
+            return
+        section, row, _ = self._setup_cursor_item()
+        if section == "roster":
+            self.push_screen(TextPrompt("New member id", placeholder="id"),
+                             self._on_setup_member_added)
+        elif section == "proyectos":
+            self.push_screen(TextPrompt("New project id", placeholder="id"),
+                             self._on_setup_project_added)
+
+    def _on_setup_member_added(self, value: str | None) -> None:
+        if not value or self._setup_state is None:
+            return
+        uid = value.strip().lower()
+        roster = self._setup_state.setdefault("roster", [])
+        if any(r.get("id") == uid for r in roster):
+            self.notify(f"Member '{uid}' already exists.", title="Setup",
+                        severity="warning")
+            return
+        roster.append({"id": uid, "name": uid, "hue": "mut"})
+        self.refresh_view()
+
+    def _on_setup_project_added(self, value: str | None) -> None:
+        if not value or self._setup_state is None:
+            return
+        pid = value.strip().lower()
+        projects = self._setup_state.setdefault("projects", [])
+        if any(p.get("id") == pid for p in projects):
+            self.notify(f"Project '{pid}' already exists.", title="Setup",
+                        severity="warning")
+            return
+        from .models import PROJECT_COLORS
+        projects.append({"id": pid, "name": pid, "color": PROJECT_COLORS[0],
+                         "status": "on_track", "template": "", "shared": False})
+        self.refresh_view()
 
     def action_setup_remove(self) -> None:
-        """`x` removes a roster member or project in setup (implemented in inc-3)."""
+        """`x` removes a roster member or project in setup."""
+        if self._setup_state is None:
+            return
+        section, row, _ = self._setup_cursor_item()
+        if section == "roster":
+            roster = self._setup_state.get("roster", [])
+            if 0 <= row < len(roster):
+                removed = roster.pop(row)
+                # clear user_id if it was the removed member
+                if self._setup_state.get("user_id") == removed.get("id"):
+                    self._setup_state["user_id"] = None
+                self._setup_state["cursor_row"] = max(0, row - 1)
+                self.refresh_view()
+        elif section == "proyectos":
+            projects = self._setup_state.get("projects", [])
+            if 0 <= row < len(projects):
+                projects.pop(row)
+                self._setup_state["cursor_row"] = max(0, row - 1)
+                self.refresh_view()
 
     def action_team_filter_cycle(self) -> None:
         """Cycle the team-view classification filter: todo → equipo → personal.

@@ -133,18 +133,21 @@ RED arm verified by temporarily removing `"0"` from `VIEW_KEYS`: the view-switch
 
 ## Increment 3 — US-S2 parte 2: health checks y edición staged
 
-**Status:** planned.
+**Status:** complete. **Commit:** `TBD`.
 
 ### Changes
-- `taskboard/team_sync.py`: config template helper; `probe_shared_dir` health probes.
-- `taskboard/app.py`: save/discard and mutation actions.
-- `taskboard/views.py`: draw ✓/⚠ with `!` fallback.
+- `taskboard/team_sync.py`: added `probe_setup_health` with advisory checks for folder exists/writable/lag, team.json parse, identity, sync age, roster.
+- `taskboard/app.py`: `import json`; setup mutations (tab section, enter edit via TextPrompt, space toggle, a/x add/remove roster/project, ctrl+s save); `action_cursor` moves setup cursor; `action_setup_save` writes team.json with version bump + board.settings + re-initializes team state.
+- `taskboard/views.py`: `render_setup` draws cursor highlight, health check ✓/! per row.
 
 ### Tests
-- `test_setup_save_writes_team_json_and_settings`
-- `test_setup_esc_leaves_files_unchanged`
-- `test_setup_warning_on_unwritable_dir`
-- `test_setup_stepper_clamps_interval`
+- `tests/test_setup_help.py::test_setup_save_writes_team_json_and_settings`
+- `tests/test_setup_help.py::test_setup_esc_leaves_files_unchanged`
+- `tests/test_setup_help.py::test_probe_setup_health_flags_unwritable_shared_path`
+- `tests/test_setup_help.py::test_setup_stepper_clamps_interval`
+
+### Mutation evidence
+RED arm verified by temporarily returning `(True, "ok")` for all checks: the unwritable-path test failed.
 
 ## Increment 4 — US-S3: per-view help family
 
