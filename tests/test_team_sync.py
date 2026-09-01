@@ -1,14 +1,17 @@
-"""Tests for batch-11 increment 1: team_sync module."""
+"""Tests for batch-11 increment 1 and 2: team_sync module + app integration."""
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
 
+from taskboard.app import TaskboardApp
+from taskboard.modals import TeamIdentityPicker
 from taskboard.models import Board, Project, Task
-from taskboard.team_sync import TEAM_FILENAME, TeamState
+from taskboard.team_sync import TEAM_FILENAME, TeamState, _utc_now_iso, sync_tone
 
 
 def _team_config() -> dict:
@@ -244,3 +247,112 @@ def test_sync_age_computed_from_pushed_at(tmp_path):
 def test_pull_tolerates_missing_shared_dir(tmp_path):
     state = TeamState(tmp_path / "absent")
     assert state.pull() is False
+
+
+# --------------------------------------------------------------------------- #
+# AT-T2/T3: app integration — first-run identity, daemon, staleness tone
+# --------------------------------------------------------------------------- #
+def _board_with_settings(tmp_path, name="board.json", **settings) -> Board:
+    board = Board.load(str(tmp_path / name))
+    board.settings.update(settings)
+    board.save()
+    return board
+
+
+async def test_first_run_team_mode_prompts_identity_and_syncs(tmp_path):
+    shared_dir = tmp_path / "shared"
+    _write_team(shared_dir)
+    (shared_dir / "board.ana.json").write_text(
+        json.dumps({
+            "user": "ana",
+            "pushed_at": _utc_now_iso(),
+            "tasks": [{"title": "Ana task", "project_id": "web", "phase": "Doing"}],
+        }), encoding="utf-8"
+    )
+    board_path = tmp_path / "board.json"
+    board = Board.load(str(board_path))
+    board.settings["team_shared_dir"] = str(shared_dir)
+    board.save()
+
+    app = TaskboardApp(board_path=str(board_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        assert isinstance(app.screen, TeamIdentityPicker)
+        ol = app.screen.query_one("#identity-list")
+        assert ol.option_count == 2
+        ol.highlighted = 0          # select "jav"
+        await pilot.press("enter")
+        await pilot.pause()
+
+    assert app.board.settings["team_user_id"] == "jav"
+    assert app.team_state is not None
+    assert app.team_state.user_id == "jav"
+    titles = [t.title for t, _ in app.team_state.foreign_tasks()]
+    assert "Ana task" in titles
+
+
+async def test_daemon_sync_pulls_foreign_tasks(tmp_path):
+    shared_dir = tmp_path / "shared"
+    _write_team(shared_dir)
+    board_path = tmp_path / "board.json"
+    board = Board.load(str(board_path))
+    board.settings["team_shared_dir"] = str(shared_dir)
+    board.settings["team_user_id"] = "jav"
+    board.save()
+
+    app = TaskboardApp(board_path=str(board_path), team_sync_interval=0.01)
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        assert app.team_state is not None
+        assert app.team_state.foreign_tasks() == []
+
+        # teammate pushes after the app is already running
+        (shared_dir / "board.ana.json").write_text(
+            json.dumps({
+                "user": "ana",
+                "pushed_at": _utc_now_iso(),
+                "tasks": [{"title": "Ana task", "project_id": "web", "phase": "Doing"}],
+            }), encoding="utf-8"
+        )
+        await pilot.pause(0.05)
+        titles = [t.title for t, _ in app.team_state.foreign_tasks()]
+        assert "Ana task" in titles
+
+
+def test_team_mode_off_when_no_shared_dir(tmp_path):
+    board_path = tmp_path / "board.json"
+    board = Board.load(str(board_path))
+    board.save()
+    app = TaskboardApp(board_path=str(board_path))
+    assert app.team_state is None
+
+
+def test_sync_tone_flags_stale_by_config_or_default(tmp_path):
+    _write_team(tmp_path)
+    state = TeamState(tmp_path, user_id="jav")
+    state.load_config()
+
+    now = datetime.now(timezone.utc)
+    # fresh -> mut
+    fresh = (now - timedelta(minutes=10)).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    (tmp_path / "board.ana.json").write_text(
+        json.dumps({"user": "ana", "pushed_at": fresh, "tasks": []}), encoding="utf-8"
+    )
+    state.pull()
+    assert sync_tone(state, "ana") == "mut"
+
+    # stale by default 45 min tolerance
+    stale = (now - timedelta(minutes=60)).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    (tmp_path / "board.ana.json").write_text(
+        json.dumps({"user": "ana", "pushed_at": stale, "tasks": []}), encoding="utf-8"
+    )
+    state.pull()
+    assert sync_tone(state, "ana") == "over"
+
+    # config tolerance overrides default (version bump so it is adopted)
+    cfg = _team_config()
+    cfg["version"] = 4
+    cfg["sync_tolerance_minutes"] = 90
+    _write_team(tmp_path, cfg)
+    state.load_config()
+    assert sync_tone(state, "ana") == "mut"

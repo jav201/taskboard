@@ -154,7 +154,7 @@ names its RED arm. UI strings stay in the app's register (English).
 
 ## Increment 1 — US-T1 parte 1: módulo `taskboard/team_sync.py`
 
-**Status:** complete. **Commit:** *pending*.
+**Status:** complete. **Commit:** `f390205`.
 
 ### What changed
 - New module `taskboard/team_sync.py`:
@@ -224,3 +224,74 @@ environmental flake convention stands.
 
 ### Suggested commit message
 `batch-11 inc-1: team_sync module (team.json, per-person files, never-raises)`
+
+---
+
+## Increment 2 — US-T1 parte 2: daemon timer + first-run identity + staleness helpers
+
+**Status:** complete. **Commit:** `473e903`.
+
+### What changed
+- `taskboard/app.py`:
+  - `TaskboardApp` now owns a `team_state: TeamState | None` and a configurable
+    `team_sync_interval` (keyword-only, default 1800 s, overridable for tests).
+  - `on_mount()` calls `_init_team_mode()` after the existing startup sequence.
+  - `_init_team_mode()` reads `board.settings["team_shared_dir"]` and
+    `board.settings["team_user_id"]`.  Team mode is OFF when no shared dir is
+    configured.
+  - First-run team mode: shared dir set but no `team_user_id` pushes
+    `TeamIdentityPicker` with the roster loaded from `team.json`.
+  - `_on_identity_picked()` persists `team_user_id` in settings, creates the
+    `TeamState`, runs an initial sync, applies config to the board, saves the
+    board, and refreshes the view.
+  - `_start_team_daemon()` schedules `_team_sync_tick()` via `set_interval`.
+  - `_team_sync_tick()` calls `TeamState.sync()`, `apply_config_to_board()`, and
+    refreshes the view; any exception is caught and surfaced as a warning
+    notification so the daemon never crashes the app.
+- `taskboard/modals.py`:
+  - New `TeamIdentityPicker` modal (modeled on `BlockerPicker`) lists roster
+    members and returns the selected member id or `None` on cancel.
+- `taskboard/team_sync.py`:
+  - New `sync_tone(team_state, user_id, default_tolerance_minutes=45)` helper:
+    returns `"over"` when sync age exceeds the tolerance (read from
+    `team.json["sync_tolerance_minutes"]` if present), else `"mut"`.
+
+### Tests added (`tests/test_team_sync.py`)
+- `test_first_run_team_mode_prompts_identity_and_syncs` — AT-T1 first-run:
+  missing `team_user_id` opens `TeamIdentityPicker`; selecting a member persists
+  the setting and pulls foreign tasks into `app.team_state.foreign_tasks()`.
+- `test_daemon_sync_pulls_foreign_tasks` — AT-T1 daemon: a tiny
+  `team_sync_interval` pulls a teammate's file that appears after the app has
+  mounted.
+- `test_team_mode_off_when_no_shared_dir` — AT-T1 guard: no `team_shared_dir`
+  means `app.team_state` is `None`.
+- `test_sync_tone_flags_stale_by_config_or_default` — AT-T3 staleness tone:
+  fresh `"mut"`, stale default `"over"`, config tolerance overrides default.
+
+### Mutation evidence (RED arms)
+Each AT was temporarily broken in the expected way, run, and restored exactly.
+
+**AT-T1 RED — identity prompt killed:**
+```
+tests/test_team_sync.py::test_first_run_team_mode_prompts_identity_and_syncs FAILED
+E   AssertionError: assert False
+E    +  where False = isinstance(Screen(id='_default'), TeamIdentityPicker)
+```
+*Failure:* without pushing `TeamIdentityPicker`, first-run team mode dismissed
+itself and the user was never asked to pick an identity.
+
+**AT-T3 RED — staleness tolerance disabled:**
+```
+tests/test_team_sync.py::test_sync_tone_flags_stale_by_config_or_default FAILED
+E   AssertionError: assert 'mut' == 'over'
+```
+*Failure:* `sync_tone` returned `"mut"` for a 60-minute-old sync, so stale lanes
+would never wear the overdue tone.
+
+### Suite status after increment
+`python -m pytest tests/ -q` → **1040 passed** (1036 after inc-1 + 4 new
+increment-2 tests). `test_win_clipboard_roundtrip` not flagged; environmental
+flake convention stands.
+
+### Suggested commit message
+`batch-11 inc-2: daemon + first-run identity + staleness helpers`

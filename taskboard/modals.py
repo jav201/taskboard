@@ -708,6 +708,49 @@ class BlockerPicker(ModalScreen[str | None]):
         self.dismiss(None)
 
 
+class TeamIdentityPicker(ModalScreen[str | None]):
+    """First-run team mode: ask the user to pick their identity from the roster.
+
+    Returns the selected member ``id``, or ``None`` if cancelled.  The roster
+    is the already-validated list from ``TeamState.roster()``.
+    """
+
+    BINDINGS = [("escape", "cancel", "Cancel")]
+
+    def __init__(self, roster: list[dict]):
+        super().__init__()
+        self._roster = roster
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="identity-box", classes="modal"):
+            yield Label("[b]Operator identity[/b]  —  pick from the team roster",
+                        classes="modal-title")
+            yield OptionList(id="identity-list")
+
+    def on_mount(self) -> None:
+        ol = self.query_one("#identity-list", OptionList)
+        for member in self._roster:
+            uid = member.get("id")
+            if not isinstance(uid, str):
+                continue
+            name = member.get("name", uid)
+            ol.add_option(Option(escape(str(name)), id=uid))
+        if ol.option_count:
+            ol.highlighted = 0
+            ol.focus()
+
+    def action_move(self, delta: int) -> None:
+        ol = self.query_one("#identity-list", OptionList)
+        cur = ol.highlighted if ol.highlighted is not None else 0
+        ol.highlighted = max(0, min(ol.option_count - 1, cur + delta))
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self.dismiss(event.option.id)
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
 class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
     """Pick the two ribbon clocks by CITY (type to find one). Returns city names."""
 
