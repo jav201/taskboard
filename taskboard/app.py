@@ -20,9 +20,10 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      bump_due, default_board_path, next_priority)
 from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
                      ImageViewer, LegendModal, PhaseEditor, ProjectModal, ProjectPicker,
-                     StandupModal, TaskDetails, TaskModal, TextPrompt)
+                     StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
+from .team_sync import TeamState
 from .views import clip, escape, filtered_board, nav_model, render_view, valid_url
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
@@ -175,7 +176,8 @@ class TaskboardApp(App):
     # `check_action` hands them all back to modals; see below.)
     BINDINGS = app_bindings()
 
-    def __init__(self, board_path: str | Path | None = None):
+    def __init__(self, board_path: str | Path | None = None, *,
+                 team_sync_interval: float = 1800.0):
         super().__init__()
         self.board = Board.load(board_path or default_board_path())
         self.view_mode = "swimlanes"
@@ -199,6 +201,8 @@ class TaskboardApp(App):
         self.selected_task_id: str | None = None
         self._tick_n = 0                 # drives the gantt flow packet
         self._last_history_error: str | None = None  # suppress duplicate warnings
+        self.team_sync_interval = team_sync_interval
+        self.team_state: TeamState | None = None
 
     # keys that act on the BOARD — a surface the aperture replaces. They stayed
     # live there (`d` opened a delete-confirm for a task nobody could see) and
@@ -251,6 +255,7 @@ class TaskboardApp(App):
         # ONE shared clock interval for the whole app (never per-widget).
         self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
+        self._init_team_mode()
 
     def _announce_renumbering(self) -> None:
         """Say ONCE that the keys moved. Muscle memory is a real thing a user
@@ -296,6 +301,68 @@ class TaskboardApp(App):
                 f"{n} item(s) had an unreadable format and were recovered "
                 "(see their notes). Nothing was lost.",
                 title="Tasks recovered", severity="warning", timeout=10)
+
+    # ---- team sync ---------------------------------------------------------
+    def _init_team_mode(self) -> None:
+        """Enter team mode if ``board.settings["team_shared_dir"]`` is set.
+
+        If the user has no ``team_user_id`` yet, ask them to pick from the
+        roster before any sync runs.  A missing or unparseable ``team.json``
+        cannot identify them, so team mode stays off until the directory is
+        healthy.
+        """
+        shared_dir = self.board.settings.get("team_shared_dir")
+        user_id = self.board.settings.get("team_user_id")
+        self.team_state = TeamState.from_settings(shared_dir, user_id)
+        if self.team_state is None:
+            return
+        self.team_state.load_config()
+        if self.team_state.user_id:
+            self._start_team_daemon()
+            return
+        roster = self.team_state.roster()
+        if roster:
+            self.push_screen(TeamIdentityPicker(roster), self._on_identity_picked)
+        else:
+            # roster-less shared dir cannot identify the owner
+            self.team_state = None
+
+    def _on_identity_picked(self, user_id: str | None) -> None:
+        """Persist the chosen identity, run an initial sync, and start daemon."""
+        if user_id is None or self.team_state is None:
+            self.team_state = None
+            return
+        self.board.settings["team_user_id"] = user_id
+        self.team_state.user_id = user_id
+        self._run_team_sync()
+        self.board.save()
+        self.refresh_view()
+        self._start_team_daemon()
+
+    def _start_team_daemon(self) -> None:
+        """Schedule the periodic pull/push cycle when team mode is active."""
+        if self.team_state is None or not self.team_state.user_id:
+            return
+        self.set_interval(self.team_sync_interval, self._team_sync_tick)
+
+    def _run_team_sync(self) -> None:
+        """One sync pass: push/pull then inherit authoritative config."""
+        if self.team_state is None:
+            return
+        self.team_state.sync(self.board)
+        self.team_state.apply_config_to_board(self.board)
+
+    def _team_sync_tick(self) -> None:
+        """Daemon callback.  Never crashes the app; a failure surfaces as a
+        warning notification and the next tick tries again."""
+        if self.team_state is None:
+            return
+        try:
+            self._run_team_sync()
+            self.refresh_view()
+        except Exception as exc:
+            self.notify(f"Team sync failed: {exc}", title="Team sync",
+                        severity="warning")
 
     # ---- clock -------------------------------------------------------------
     def _tick(self) -> None:

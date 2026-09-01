@@ -258,3 +258,23 @@ class TeamState:
                     board.projects.append(Project.from_dict(pd))
                 except Exception:
                     continue
+
+
+def sync_tone(team_state: TeamState | None, user_id: str,
+              default_tolerance_minutes: int = 45) -> str:
+    """Staleness tone for ``user_id``: ``"over"`` when the last push is older
+    than the tolerance, otherwise ``"mut"``.
+
+    The tolerance defaults to 45 minutes and may be overridden by
+    ``team.json["sync_tolerance_minutes"]``.
+    """
+    if team_state is None:
+        return "mut"
+    tolerance = default_tolerance_minutes
+    cfg_tolerance = team_state.config.get("sync_tolerance_minutes")
+    if isinstance(cfg_tolerance, int) and cfg_tolerance > 0:
+        tolerance = cfg_tolerance
+    age = team_state.sync_age(user_id)
+    if age is None:
+        return "mut"
+    return "over" if age > tolerance else "mut"
