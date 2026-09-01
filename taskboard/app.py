@@ -958,23 +958,23 @@ class TaskboardApp(App):
         section, row, _ = self._setup_cursor_item()
         if section == "equipo" and row == 1:
             self.push_screen(TextPrompt("Shared directory", placeholder="path",
-                                        value=self._setup_state.get("shared_dir", "")),
+                                        initial=self._setup_state.get("shared_dir", "")),
                              self._on_setup_folder_edited)
         elif section == "equipo" and row == 3:
             self.push_screen(TextPrompt("Sync interval (minutes)", placeholder="5..120",
-                                        value=str(self._setup_state.get("interval_minutes", 30))),
+                                        initial=str(self._setup_state.get("interval_minutes", 30))),
                              self._on_setup_interval_edited)
         elif section == "proyectos":
             projects = self._setup_state.get("projects", [])
             if 0 <= row < len(projects):
                 self.push_screen(TextPrompt("Project name", placeholder="name",
-                                            value=projects[row].get("name", "")),
+                                            initial=projects[row].get("name", "")),
                                  lambda name: self._on_setup_project_name_edited(row, name))
         elif section == "roster":
             roster = self._setup_state.get("roster", [])
             if 0 <= row < len(roster):
                 self.push_screen(TextPrompt("Member name", placeholder="name",
-                                            value=roster[row].get("name", "")),
+                                            initial=roster[row].get("name", "")),
                                  lambda name: self._on_setup_member_name_edited(row, name))
 
     def _on_setup_folder_edited(self, value: str | None) -> None:

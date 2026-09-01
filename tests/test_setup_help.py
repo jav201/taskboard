@@ -299,3 +299,102 @@ async def test_help_modal_question_mark_opens_command_palette(tmp_path):
         await pilot.press("escape")
         await pilot.pause()
         assert isinstance(app.screen, HelpModal)
+
+
+# --------------------------------------------------------------------------- #
+# US-S2 parte 3: setup commands are executable
+# --------------------------------------------------------------------------- #
+async def test_setup_enter_edits_shared_directory(tmp_path):
+    """Pressing Enter on the shared-directory row opens a TextPrompt and the
+    edited value is written back into staged state."""
+    from textual.widgets import Input
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import TextPrompt
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("0")
+        await pilot.pause()
+        app._setup_state["cursor_row"] = 1   # carpeta compartida
+        await pilot.press("enter")
+        await pilot.pause()
+        assert isinstance(app.screen, TextPrompt)
+        inp = app.screen.query_one("#f-text", Input)
+        inp.value = "D:/equipo/shared"
+        await pilot.press("enter")
+        await pilot.pause()
+        assert app._setup_state["shared_dir"] == "D:/equipo/shared"
+
+
+async def test_setup_enter_edits_sync_interval(tmp_path):
+    """Pressing Enter on the sync-interval row edits the staged interval."""
+    from textual.widgets import Input
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import TextPrompt
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("0")
+        await pilot.pause()
+        app._setup_state["cursor_row"] = 3   # sync cada
+        await pilot.press("enter")
+        await pilot.pause()
+        assert isinstance(app.screen, TextPrompt)
+        inp = app.screen.query_one("#f-text", Input)
+        inp.value = "45"
+        await pilot.press("enter")
+        await pilot.pause()
+        assert app._setup_state["interval_minutes"] == 45
+
+
+async def test_setup_space_toggles_team_mode_enabled(tmp_path):
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("0")
+        await pilot.pause()
+        app._setup_state["cursor_row"] = 0   # modo equipo
+        before = app._setup_state.get("enabled", False)
+        await pilot.press("space")
+        await pilot.pause()
+        assert app._setup_state["enabled"] is not before
+
+
+async def test_setup_a_adds_project_row(tmp_path):
+    from textual.widgets import Input
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import TextPrompt
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("0")
+        await pilot.pause()
+        # move to proyectos section
+        app._setup_state["cursor_section"] = 1
+        app._setup_state["cursor_row"] = 0
+        await pilot.press("a")
+        await pilot.pause()
+        assert isinstance(app.screen, TextPrompt)
+        inp = app.screen.query_one("#f-text", Input)
+        inp.value = "mobile"
+        await pilot.press("enter")
+        await pilot.pause()
+        assert any(p.get("id") == "mobile" for p in app._setup_state["projects"])
+
+
+async def test_setup_x_removes_roster_row(tmp_path):
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("0")
+        await pilot.pause()
+        app._setup_state["cursor_section"] = 2
+        app._setup_state["roster"] = [
+            {"id": "jav", "name": "Javier", "hue": "sky"},
+            {"id": "ana", "name": "Ana", "hue": "amber"},
+        ]
+        app._setup_state["cursor_row"] = 1   # ana
+        await pilot.press("x")
+        await pilot.pause()
+        assert [r["id"] for r in app._setup_state["roster"]] == ["jav"]
+        assert app._setup_state["cursor_row"] == 0
