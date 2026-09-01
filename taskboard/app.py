@@ -20,7 +20,7 @@ from . import history
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      bump_due, default_board_path, next_priority)
 from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
-                     ImageViewer, LegendModal, PhaseEditor, ProjectModal, ProjectPicker,
+                     HelpModal, ImageViewer, PhaseEditor, ProjectModal, ProjectPicker,
                      StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
@@ -461,10 +461,16 @@ class TaskboardApp(App):
         ribbon.update_clock()
 
     def action_legend(self) -> None:
-        """`?` — the command palette: search every binding by name or key and
-        run it."""
-        self.push_screen(CommandPalette(palette_commands(self.view_mode)),
-                         callback=self._on_palette_run)
+        """`?` — the per-view help modal: usage, legend, example and keys.
+
+        From the help modal: `m` opens the full keymap, `?` opens the command
+        palette.
+        """
+        self.push_screen(HelpModal(self.view_mode, self.board,
+                                   today=date.today(), size=self.size,
+                                   show_archived=self.show_archived,
+                                   team_state=self.team_state,
+                                   team_filter=self.team_filter))
 
     async def _on_palette_run(self, action: str | None) -> None:
         """Execute the action selected from the palette, if any."""

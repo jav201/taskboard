@@ -25,6 +25,7 @@ from rich.markup import escape
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal, VerticalScroll
+from textual.keys import format_key
 from textual.screen import ModalScreen
 from textual.suggester import SuggestFromList
 from textual.widgets import (Button, Checkbox, Input, Label, OptionList, Select, Static,
@@ -35,6 +36,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      Board, Project, Task, _new_id, city_names,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image)
+from .keymap import palette_commands
 from .views import _highlight_markup, valid_url
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
@@ -1114,43 +1116,91 @@ class TaskDetails(ModalScreen[None]):
         self.dismiss(None)
 
 
-class LegendModal(ModalScreen[None]):
-    """`?` — what the marks on THIS view mean, and only the ones it is drawing.
+class HelpModal(ModalScreen[None]):
+    """`?` — the per-view help family: what the view is for, how to read it,
+    and what keys work inside it.
 
-    The swatches are not drawn here: `views.legend_entries` builds them by
-    calling the very functions the view calls, so this screen cannot describe a
-    mark the renderer stopped painting."""
+    The left side carries the USAGE copy (one section per view), the right side
+    carries the live legend, an annotated example, and the view's own keybar.
+    From here `m` opens the FULL keymap and `?` opens the command palette.
+    """
 
-    BINDINGS = [("escape", "close", "Close"), ("question_mark", "close", "Close"),
-                ("q", "close", "Close")]
+    BINDINGS = [
+        Binding("escape,q", "close", "Close", key_display="esc/q"),
+        Binding("question_mark", "palette", "Palette"),
+        Binding("m", "map", "Map"),
+    ]
+
+    DEFAULT_CSS = """
+    HelpModal { align: center middle; }
+    #help-modal-box {
+        width: 110; max-width: 95%; height: auto; max-height: 90%;
+        padding: 1 2; background: #0d1219; border: round #334154;
+    }
+    #help-modal-box .modal-title { margin: 0 0 1 0; }
+    #help-left { width: 48; height: auto; }
+    #help-right { width: 1fr; height: auto; }
+    """
 
     def __init__(self, mode: str, board: Board, today=None, size=(96, 30),
-                 show_archived: bool = False):
+                 show_archived: bool = False,
+                 team_state=None, team_filter: str = "equipo"):
         super().__init__()
         self._mode = mode
         self._board = board
         self._today = today
         self._show_archived = show_archived
         self._dims = size
+        self._team_state = team_state
+        self._team_filter = team_filter
 
     def compose(self) -> ComposeResult:
         from .keymap import bar_keys
-        from .views import legend_entries
+        from .views import help_example, help_usage, legend_entries
         entries = legend_entries(self._mode, self._board, self._today,
-                                 *self._dims, show_archived=self._show_archived)
-        with VerticalScroll(id="modal-box", classes="modal"):
-            yield Label(f"[b]Legend · {self._mode}[/b]", classes="modal-title")
-            if not entries:
-                yield Label("Nothing is drawn on this board yet.")
-            for swatch, meaning in entries:
-                yield Label(f"{swatch}  {escape(meaning)}")
-            # KEYS: the view's LIVE keys, derived from the same seat the bar
-            # reads — never hand-written, so a key the narrow bar drops (and
-            # counts as +N) is still discoverable one `?` away.
-            yield Label("[b]Keys[/b]", classes="modal-title")
-            for k in bar_keys(self._mode):
-                yield Label(f"{k.show}  {escape(k.label)}")
-            yield Label("[dim]? or esc closes[/dim]", classes="modal-title")
+                                 *self._dims, show_archived=self._show_archived,
+                                 team_state=self._team_state,
+                                 team_filter=self._team_filter)
+        example, example_meaning = help_example(self._mode)
+        with VerticalScroll(id="help-modal-box"):
+            yield Label(f"[b]Help · {self._mode}[/b]", classes="modal-title")
+            with Horizontal():
+                with VerticalScroll(id="help-left"):
+                    yield Label("[b]Uso[/b]", classes="modal-title")
+                    for heading, bullets in help_usage(self._mode):
+                        yield Label(f"[u]{escape(heading)}[/u]")
+                        for bullet in bullets:
+                            yield Label(f"  • {escape(bullet)}")
+                with VerticalScroll(id="help-right"):
+                    if entries:
+                        yield Label("[b]Leyenda[/b]", classes="modal-title")
+                        for swatch, meaning in entries:
+                            yield Label(f"{swatch}  {escape(meaning)}")
+                    if example:
+                        yield Label("[b]Ejemplo[/b]", classes="modal-title")
+                        yield Label(example)
+                        yield Label(f"[dim]{escape(example_meaning)}[/dim]")
+                    yield Label("[b]Teclas[/b]", classes="modal-title")
+                    for k in bar_keys(self._mode):
+                        yield Label(f"{k.show}  {escape(k.label)}")
+            yield Label("[dim]m mapa completo · ? paleta · esc/q cierra[/dim]",
+                        classes="modal-title")
+
+    def action_palette(self) -> None:
+        self.app.push_screen(CommandPalette(palette_commands(self._mode)),
+                             self.app._on_palette_run)
+
+    def action_map(self) -> None:
+        from .app import HelpScreen
+        shown, hidden = [], []
+        for b in self.app.BINDINGS:
+            keys = b.key_display or "/".join(format_key(k)
+                                             for k in b.key.split(","))
+            if b.show is False:
+                hidden.append((keys, b.description))
+            else:
+                shown.append((keys, b.description))
+        self.app.push_screen(HelpScreen(shown, hidden))
 
     def action_close(self) -> None:
         self.dismiss(None)

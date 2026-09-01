@@ -205,9 +205,9 @@ def test_the_legend_key_is_universal_so_it_can_never_be_dropped():
     assert entry.show == "?"
 
 
-async def test_pressing_question_mark_opens_the_command_palette(tmp_path):
+async def test_pressing_question_mark_opens_help_modal(tmp_path):
     from taskboard.app import TaskboardApp
-    from taskboard.modals import CommandPalette
+    from taskboard.modals import CommandPalette, HelpModal
     b = full(tmp_path)
     b.save()
     app = TaskboardApp(board_path=str(tmp_path / "full.json"))
@@ -216,11 +216,18 @@ async def test_pressing_question_mark_opens_the_command_palette(tmp_path):
         await pilot.pause()
         await pilot.press("question_mark")
         await pilot.pause()
-        assert isinstance(app.screen, CommandPalette)
+        assert isinstance(app.screen, HelpModal)
         assert len(app.screen_stack) > 1             # drawn over, not instead of
-        await pilot.press("escape")
+        # the palette is reachable from the help modal with another `?`
+        await pilot.press("question_mark")
         await pilot.pause()
-        assert not isinstance(app.screen, CommandPalette)
+        assert isinstance(app.screen, CommandPalette)
+        await pilot.press("escape")                  # close palette
+        await pilot.pause()
+        assert isinstance(app.screen, HelpModal)
+        await pilot.press("escape")                  # close help modal
+        await pilot.pause()
+        assert not isinstance(app.screen, HelpModal)
 
 
 async def test_the_palette_follows_the_view_the_reader_is_on(tmp_path):
@@ -235,7 +242,7 @@ async def test_the_palette_follows_the_view_the_reader_is_on(tmp_path):
         for key, mode in (("1", "swimlanes"), ("2", "agenda"), ("4", "kanban")):
             await pilot.press(key)
             await pilot.pause()
-            await pilot.press("question_mark")
+            await pilot.press("question_mark", "question_mark")
             await pilot.pause()
             palette = app.screen
             assert isinstance(palette, CommandPalette)
@@ -244,7 +251,7 @@ async def test_the_palette_follows_the_view_the_reader_is_on(tmp_path):
             expected = {k.show for k in KEYMAP if k.views is None or mode in k.views}
             shown = {r.split()[0] for r in rows}
             assert expected <= shown, f"{mode}: missing {expected - shown}"
-            await pilot.press("escape")
+            await pilot.press("escape", "escape")
             await pilot.pause()
 
 
@@ -273,6 +280,7 @@ async def test_the_palette_lists_exactly_the_current_views_live_keys(tmp_path):
     it lists the view's live keys, every one of them, in bar order, and none
     the seat does not declare for that view. Exact equality is the pin."""
     from taskboard.app import TaskboardApp
+    from taskboard.modals import CommandPalette
     b = full(tmp_path)
     b.save()
     app = TaskboardApp(board_path=str(tmp_path / "full.json"))
@@ -280,10 +288,11 @@ async def test_the_palette_lists_exactly_the_current_views_live_keys(tmp_path):
         for key, view in (("4", "kanban"), ("1", "swimlanes")):
             await pilot.press(key)
             await pilot.pause()
-            await pilot.press("question_mark")
+            await pilot.press("question_mark", "question_mark")
             await pilot.pause()
+            assert isinstance(app.screen, CommandPalette)
             assert _palette_rows(app) == _seat_live(view), view
-            await pilot.press("escape")
+            await pilot.press("escape", "escape")
             await pilot.pause()
 
 
@@ -292,6 +301,7 @@ async def test_the_palette_keys_follow_the_views_scope(tmp_path):
     `tab` and the batch's new quick keys; swimlanes now includes `tab` too,
     but still scopes away keys that do not work there."""
     from taskboard.app import TaskboardApp
+    from taskboard.modals import CommandPalette
     b = full(tmp_path)
     b.save()
     app = TaskboardApp(board_path=str(tmp_path / "full.json"))
@@ -299,41 +309,45 @@ async def test_the_palette_keys_follow_the_views_scope(tmp_path):
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.press("4")
         await pilot.pause()
-        await pilot.press("question_mark")
+        await pilot.press("question_mark", "question_mark")
         await pilot.pause()
+        assert isinstance(app.screen, CommandPalette)
         rows = _palette_rows(app)
         assert any(r.startswith(tab.show) for r in rows)
         for show in ("[", "]", "!", "b"):
             assert any(r.startswith(show) for r in rows), show
-        await pilot.press("escape")
+        await pilot.press("escape", "escape")
         await pilot.pause()
         await pilot.press("1")
         await pilot.pause()
-        await pilot.press("question_mark")
+        await pilot.press("question_mark", "question_mark")
         await pilot.pause()
+        assert isinstance(app.screen, CommandPalette)
         rows = _palette_rows(app)
         assert any(r.startswith(tab.show) for r in rows)
-        await pilot.press("escape")
+        await pilot.press("escape", "escape")
         await pilot.pause()
 
 
 async def test_the_palette_filters_commands_by_name_or_key(tmp_path):
     """Typing in the palette narrows the list by label or key show."""
     from taskboard.app import TaskboardApp
-    from textual.widgets import Input, OptionList
+    from taskboard.modals import CommandPalette
+    from textual.widgets import Input
     b = full(tmp_path)
     b.save()
     app = TaskboardApp(board_path=str(tmp_path / "full.json"))
     async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.press("question_mark")
+        await pilot.press("question_mark", "question_mark")
         await pilot.pause()
+        assert isinstance(app.screen, CommandPalette)
         inp = app.screen.query_one("#palette-input", Input)
         await pilot.press("q", "u", "i", "t")
         await pilot.pause()
         rows = _palette_rows(app)
         assert rows, "filtering quit should keep at least the quit row"
         assert all("quit" in r.lower() or "q" in r.lower() for r in rows)
-        await pilot.press("escape")
+        await pilot.press("escape", "escape")
         await pilot.pause()
 
 
@@ -349,7 +363,7 @@ async def test_the_palette_runs_a_selected_command(tmp_path):
         await pilot.press("1")
         await pilot.pause()
         assert app.view_mode == "swimlanes"
-        await pilot.press("question_mark")
+        await pilot.press("question_mark", "question_mark")
         await pilot.pause()
         assert isinstance(app.screen, CommandPalette)
         inp = app.screen.query_one("#palette-input", Input)
@@ -372,7 +386,7 @@ async def test_the_palette_closes_without_running(tmp_path):
         await pilot.press("1")
         await pilot.pause()
         original_mode = app.view_mode
-        await pilot.press("question_mark")
+        await pilot.press("question_mark", "question_mark")
         await pilot.pause()
         assert isinstance(app.screen, CommandPalette)
         await pilot.press("escape")

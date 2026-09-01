@@ -4803,6 +4803,137 @@ def _meter_swatch(days, done=False) -> str:
     return meter_markup(due_meter(days, done=done))
 
 
+# ---------------------------------------------------------------------------
+# per-view help copy — the usage text and annotated example for each view.
+# The authoritative copy lives in prototypes/team_sync/generate.py; this is
+# the runtime mirror used by HelpModal.
+# ---------------------------------------------------------------------------
+def help_usage(mode: str) -> list[tuple[str, list[str]]]:
+    """(section heading, bullet lines) for the active view's help."""
+    if mode == "kanban":
+        return [
+            ("para qué es", ["operar el trabajo: mover tareas entre fases,",
+                             "agrupar por proyecto, prioridad u horizonte."]),
+            ("lo primero que haces", ["j/k baja y sube · ↵ abre la tarjeta.",
+                                      "luego: s orden · g grupo · z pliega."]),
+            ("los números de la tarjeta", ["·Nd = días EN la fase (envejecimiento)",
+                                           "+Nd = días HASTA el deadline (countdown)",
+                                           "⛓N = N tareas dependen de ésta"]),
+        ]
+    if mode == "swimlanes":
+        return [
+            ("para qué es", ["mirar el board de un vistazo: el proyecto con más",
+                             "presión primero, con su campo de carga dibujado."]),
+            ("lo primero que haces", ["leer el campo del líder — la curva termina",
+                                      "en ◆ (su due date). luego: tab layout."]),
+            ("las marcas", ["◆ = due date del proyecto en la curva",
+                            "· lattice = campo sin trabajo (ground, no dato)",
+                            "ceniza = proyectos en reposo"]),
+        ]
+    if mode == "agenda":
+        return [
+            ("para qué es", ["escanear qué vence: cada tarea fechada es un ●",
+                             "sobre UN eje de días compartido."]),
+            ("lo primero que haces", ["leer la distancia de cada ● a la regla",
+                                      "de hoy ╎ — el orden ya dice la urgencia."]),
+            ("las marcas", ["● = una tarea en su día",
+                            "╎ = hoy (respira lento, siempre la misma columna)",
+                            "sin medidor a propósito: la fila ya lo dice dos veces"]),
+        ]
+    if mode == "gantt":
+        return [
+            ("para qué es", ["comparar plan vs realidad: el span del proyecto",
+                             "como regla, el progreso como ● encima."]),
+            ("lo primero que haces", ["el hueco entre la regla y el ● ES el slip,",
+                                      "leído como longitud, no como número."]),
+            ("las marcas", ["─ span del proyecto · ● su progreso",
+                            "╌ reach de tarea con tip ○◔◑◕ = su fase",
+                            "cadena crítica en accent (batch-10)"]),
+        ]
+    if mode == "focus":
+        return [
+            ("para qué es", ["leer y anotar: lo que TÚ pineaste, sin el ruido",
+                             "del resto del board."]),
+            ("lo primero que haces", ["tab cambia de presentación (tiles, inspector,",
+                                      "imágenes, review, stale). p pinea lo seleccionado."]),
+            ("las presentaciones", ["tiles = tarjetas · inspector = master/detail",
+                                    "stale = lo que lleva quieto demasiado"]),
+        ]
+    if mode == "flow":
+        return [
+            ("para qué es", ["cuantificar el MOVIMIENTO: cuánto tarda el trabajo",
+                             "por fase, dónde envejece, cuánto se completa."]),
+            ("lo primero que haces", ["la heatmap: la celda más cargada es donde",
+                                      "el trabajo se atora. sin historia: 'se construye hoy'."]),
+            ("los números", ["ciclo = mediana de días por fase (intervalos cerrados)",
+                             "en curso n=N = intervalos abiertos, nunca un número",
+                             "throughput = completadas por semana"]),
+        ]
+    if mode == "standup":
+        return [
+            ("para qué es", ["la vista de equipo que se MIRA: carga, frente",
+                             "actual y frescura del dato por persona."]),
+            ("lo primero que haces", ["una fila por persona; lo stale se juzga,",
+                                      "no se esconde. ↵ abre su tablero (read-only)."]),
+            ("las marcas", ["▰▱ = carga (tareas en Doing)",
+                            "la edad del sync siempre visible a la derecha",
+                            "rojo = pasó la tolerancia (45 min)"]),
+        ]
+    if mode == "people":
+        return [
+            ("para qué es", ["operar la visibilidad conjunta: el eje de las",
+                              "lanes es QUIÉN, no el proyecto."]),
+            ("lo primero que haces", ["tu fila arriba, editable; las demás con ◦",
+                                      "read-only. f cicla todo·equipo·personal."]),
+            ("las marcas", ["◦ = read-only (de un compañero)",
+                            "la edad del sync viaja en el rótulo de la persona",
+                            "el countdown +Nd funciona igual que en kanban"]),
+        ]
+    if mode == "setup":
+        return [
+            ("para qué es", ["configurar el equipo dentro de la app: shared dir,",
+                             "intervalo, identidad, proyectos compartidos y roster."]),
+            ("lo primero que haces", ["navega con tab/j/k; ↵ edita; espacio alterna;",
+                                      "a agrega · x quita. ctrl+s guarda · esc cancela."]),
+            ("los checks", ["✓ = verificado · ! = necesita atención",
+                            "son asesorios: nunca bloquean la edición",
+                            "se re-computan al abrir y tras ctrl+s"]),
+        ]
+    return []
+
+
+def help_example(mode: str) -> tuple[str, str]:
+    """(annotated example line, what it means) for the active view."""
+    if mode == "kanban":
+        return ("▊ sync daemon ↗ ! ·3d +4d ⛓2",
+                "↗ url · ! alta · 3d en fase · vence en 4d · desbloquea 2")
+    if mode == "swimlanes":
+        return ("▎ platform ████▒░◆ 12d",
+                "la curva es la carga; el aire antes del ◆ es lo que no cabe")
+    if mode == "agenda":
+        return ("────●──╎──●────●──",
+                "la distancia al ╎ ES la urgencia; nada más hace falta")
+    if mode == "gantt":
+        return ("├───────●·······┤",
+                "el aire entre el ● y el borde derecho es trabajo por hacer")
+    if mode == "focus":
+        return ("▊ escribir el ADR ◔ ·12d",
+                "pineada hace 12 días sin tocar — el stale la está nombrando")
+    if mode == "flow":
+        return ("Doing ░▒▓█▓▒░░",
+                "la semana 4 en Doing cargó todo — ahí se atoró el board")
+    if mode == "standup":
+        return ("▐ ana ▰▰▱▱▱ 2 doing · landing hero · hace 3 h",
+                "su dato tiene 3 horas — léelo con esa antigüedad en mente")
+    if mode == "people":
+        return ("▐ ANA hace 12 min · landing hero ◦ -3d",
+                "de ella, read-only, vence en 3 días, dato de hace 12 min")
+    if mode == "setup":
+        return ("▌ D:/equipo/taskboard  ✓  existe y es escribible",
+                "cada fila muestra su check y su nota")
+    return ("", "")
+
+
 def legend_entries(mode: str, board: Board, today: date | None = None,
                    width: int = 96, height: int = 30,
                    show_archived: bool = False,

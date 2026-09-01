@@ -44,21 +44,48 @@ def test_every_binding_the_app_has_comes_from_the_seat():
     assert len(TaskboardApp.BINDINGS) == len(KEYMAP)
 
 
-def test_every_seat_entry_reaches_the_widest_bar():
-    """Given room, the bar shows ALL of them — no key is decoration-only."""
+def test_every_bar_key_reaches_the_widest_bar():
+    """Given room, the bar shows every key whose `bar` flag is True — no key
+    that is supposed to be drawn is decoration-only."""
     for view in VIEWS:
         shown = {show for show, _label in fit_bar(400, view)[0]}
-        expected = {k.show for k in KEYMAP if k.views is None or view in k.views}
+        expected = {k.show for k in KEYMAP
+                    if (k.views is None or view in k.views) and k.bar}
         assert shown == expected, f"{view}: {expected - shown} never displayed"
         assert fit_bar(400, view)[1] == 0
 
 
-def test_the_lanes_bar_shows_every_universal_and_global_key():
+def test_the_lanes_bar_shows_every_universal_key():
     """Stated concretely for the default view, against the raw table."""
     shown = {show for show, _ in fit_bar(400, "swimlanes")[0]}
     for k in KEYMAP:
-        if k.views is None:
+        if k.views is None and k.bar:
             assert k.show in shown, f"{k.show} ({k.label}) is live but not shown"
+
+
+GLOBAL_ACTIONS = {"open_url", "open_images", "add_project", "manage_projects",
+                  "manage_phases", "clocks", "report", "standup"}
+
+
+def test_global_commands_are_palette_only_not_in_the_bar():
+    """Global commands stay bound and reachable from `?`, but never claim a
+    bar slot in any view."""
+    for view in VIEWS:
+        bar_shows = {k.show for k in KEYMAP
+                     if (k.views is None or view in k.views) and k.bar}
+        for k in KEYMAP:
+            if action_name(k.action) in GLOBAL_ACTIONS:
+                assert not k.bar, f"{k.show} is bar=True but is a global command"
+                assert k.show not in bar_shows, \
+                    f"{k.show} ({k.label}) appears in the {view} bar"
+
+
+def test_the_palette_includes_palette_only_globals():
+    from taskboard.keymap import palette_commands
+    for view in VIEWS:
+        palette = {action_name(a) for _s, _l, a in palette_commands(view)}
+        for action in GLOBAL_ACTIONS:
+            assert action in palette, f"{action} missing from {view} palette"
 
 
 # --------------------------------------------------------------------------- #
@@ -113,7 +140,8 @@ def test_words_are_dropped_before_any_key_is():
     """The law: a key without its word is still discoverable; a key that is not
     there is not. So while ANY word survives, every key must survive."""
     for view in VIEWS:
-        total = len([k for k in KEYMAP if k.views is None or view in k.views])
+        total = len([k for k in KEYMAP
+                     if (k.views is None or view in k.views) and k.bar])
         for width in range(0, 200):
             entries, dropped = fit_bar(width, view)
             words_left = sum(1 for _s, label in entries if label)
@@ -147,14 +175,16 @@ def test_keys_that_cannot_fit_are_counted_never_swallowed():
     assert re.search(r"\+\d+$", text), text
     assert int(re.search(r"\+(\d+)$", text).group(1)) == dropped
     assert len(entries) + dropped == len(
-        [k for k in KEYMAP if k.views is None or "swimlanes" in k.views])
+        [k for k in KEYMAP
+         if (k.views is None or "swimlanes" in k.views) and k.bar])
 
 
 def _seat_order(view: str) -> list:
-    """The bar's reading order, computed off the RAW seat — live keys for the
-    view, universals first. This re-derives the sort from the tuple's own data
-    instead of asking `bar_keys` (the accessor under test) what it thinks."""
-    live = [k for k in KEYMAP if k.views is None or view in k.views]
+    """The bar's reading order, computed off the RAW seat — bar-visible live
+    keys for the view, universals first. This re-derives the sort from the
+    tuple's own data instead of asking `bar_keys` (the accessor under test)."""
+    live = [k for k in KEYMAP
+            if (k.views is None or view in k.views) and k.bar]
     return sorted(live, key=lambda k: not k.universal)
 
 
