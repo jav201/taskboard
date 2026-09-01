@@ -278,3 +278,99 @@ def sync_tone(team_state: TeamState | None, user_id: str,
     if age is None:
         return "mut"
     return "over" if age > tolerance else "mut"
+
+
+def probe_setup_health(staged: dict, team_state: TeamState | None) -> dict[str, tuple[bool, str]]:
+    """Advisory health checks for the setup screen.
+
+    Returns a dict mapping a row key to ``(ok, note)``.  These checks never
+    block editing; they are displayed beside each row and recomputed on open
+    and after save.
+    """
+    checks: dict[str, tuple[bool, str]] = {}
+    shared_dir_str = staged.get("shared_dir", "")
+    shared_dir = Path(shared_dir_str) if shared_dir_str else None
+    user_id = staged.get("user_id")
+
+    # modo / team.json parse
+    team_data: dict | None = None
+    if shared_dir is not None:
+        team_data = _read_json(shared_dir / TEAM_FILENAME)
+    roster: list[dict] = []
+    if isinstance(team_data, dict):
+        roster = [r for r in team_data.get("roster", [])
+                  if isinstance(r, dict) and isinstance(r.get("id"), str)]
+    team_json_ok = (
+        isinstance(team_data, dict)
+        and isinstance(team_data.get("phases"), list) and team_data["phases"]
+        and isinstance(team_data.get("projects"), list) and team_data["projects"]
+        and bool(roster)
+    )
+    checks["modo"] = (
+        team_json_ok,
+        f"team.json válido, v{team_data.get('version', '?')}" if team_json_ok
+        else "team.json falta o es inválido",
+    )
+
+    # carpeta compartida
+    if shared_dir is None or not shared_dir_str:
+        checks["carpeta"] = (False, "sin configurar")
+    elif not shared_dir.exists():
+        checks["carpeta"] = (False, "no existe")
+    elif not shared_dir.is_dir():
+        checks["carpeta"] = (False, "no es un directorio")
+    else:
+        try:
+            from uuid import uuid4
+            probe = shared_dir / f".taskboard_probe_{uuid4().hex}"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+            checks["carpeta"] = (True, "existe y es escribible")
+        except OSError as exc:
+            checks["carpeta"] = (False, f"no es escribible: {exc}")
+
+    # alcance / lag
+    if shared_dir is not None and shared_dir.exists() and shared_dir.is_dir():
+        import time
+        start = time.monotonic()
+        try:
+            list(shared_dir.iterdir())
+            elapsed = time.monotonic() - start
+            if elapsed > 5.0:
+                checks["alcance"] = (False, f"el remote tarda {elapsed:.1f}s")
+            else:
+                checks["alcance"] = (True, f"alcance OK ({elapsed:.1f}s)")
+        except OSError as exc:
+            checks["alcance"] = (False, f"no alcanzable: {exc}")
+    else:
+        checks["alcance"] = (False, "sin carpeta")
+
+    # sync cada / last sync
+    tolerance = 45
+    if isinstance(team_data, dict):
+        cfg_tol = team_data.get("sync_tolerance_minutes")
+        if isinstance(cfg_tol, int) and cfg_tol > 0:
+            tolerance = cfg_tol
+    if team_state is not None and team_state.user_id and team_state.last_push_at:
+        age = team_state.sync_age(team_state.user_id)
+        if age is None:
+            checks["sync"] = (False, "sin timestamp de sync")
+        elif age > tolerance:
+            checks["sync"] = (False, f"último sync hace {age} min (tolerancia {tolerance})")
+        else:
+            checks["sync"] = (True, f"último sync hace {age} min")
+    else:
+        checks["sync"] = (False, "sin sync aún")
+
+    # mi identidad
+    if not user_id:
+        checks["identidad"] = (False, "sin identidad")
+    elif roster and any(r.get("id") == user_id for r in roster):
+        checks["identidad"] = (True, f"escribe solo board.{user_id}.json")
+    else:
+        checks["identidad"] = (False, "identidad no está en roster")
+
+    # roster
+    checks["roster"] = (bool(roster), f"{len(roster)} miembro(s)")
+
+    return checks

@@ -9,7 +9,7 @@
     "0": 1,
     "1": 0,
     "2": 0,
-    "3": 2,
+    "3": 3,
     "4": 0,
     "5": 0,
     "6": 0
@@ -213,6 +213,12 @@
       "date": "2026-09-01",
       "decision": "Increment 2 complete: Setup view scaffold (key 0, render_setup, staging, esc returns).",
       "notes": "Added setup view to VIEW_ORDER/VIEW_KEYS; render_setup in views.py; keymap key 0 + space/ctrl+s + escape scoped to setup; README updated; tests/test_app.py updated; full suite 1288 passed."
+    },
+    {
+      "phase": 3,
+      "date": "2026-09-01",
+      "decision": "Increment 3 complete: Setup health checks + staged editing (save/esc/mutations).",
+      "notes": "Added probe_setup_health; setup mutations via TextPrompt; action_setup_save writes team.json version bump + board.settings; render_setup shows cursor and checks; full suite 1292 passed."
     }
   ],
   "obsidian_synced": false,

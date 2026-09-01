@@ -4419,7 +4419,8 @@ def render_view(mode, board, show_archived, selected_id, today=None,
         return render_people(board, show_archived, selected_id, today, width, height,
                              line_map, team_state=team_state, team_filter=team_filter)
     if mode == "setup":
-        return render_setup(setup_state, board, width=width, height=height)
+        return render_setup(setup_state, board, width=width, height=height,
+                            team_state=team_state)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 
@@ -4513,9 +4514,11 @@ def grid_nav(board, show_archived, today: date, width: int,
 
 
 def render_setup(setup_state: dict | None, board, width: int = 68,
-                 height: int = 0) -> Text:
+                 height: int = 0, *, team_state: TeamState | None = None) -> Text:
     """The in-app team setup screen.  It edits a staged copy of the team
     configuration; nothing on disk changes until `ctrl+s` commits."""
+    from .team_sync import probe_setup_health
+
     w = _clamp_width(width)
     state = setup_state or {}
     enabled = bool(state.get("enabled"))
@@ -4524,6 +4527,9 @@ def render_setup(setup_state: dict | None, board, width: int = 68,
     user_id = state.get("user_id")
     projects = state.get("projects", [])
     roster = state.get("roster", [])
+    cursor_section = state.get("cursor_section", 0)
+    cursor_row = state.get("cursor_row", 0)
+    checks = probe_setup_health(state, team_state)
 
     # Header
     lines: list[Text] = []
@@ -4532,59 +4538,72 @@ def render_setup(setup_state: dict | None, board, width: int = 68,
     lines.append(Text("─" * w, style=HEX["dim"]))
     lines.append(Text())
 
-    grid = Table.grid(expand=False)
-    grid.add_column(width=24)
-    grid.add_column(width=30)
-    grid.add_column(width=4)
-    grid.add_column()
-
     def section(name: str) -> None:
-        grid.add_row(Text(), Text(), Text(), Text())
-        grid.add_row(Text(f"  {name}", style=f"bold {HEX['accent']}"),
-                     Text(), Text(), Text())
+        lines.append(Text())
+        lines.append(Text(f"  {name}", style=f"bold {HEX['accent']}"))
 
-    def row(label: str, control: Text, check: tuple[str, str] | None,
-             note: str = "") -> None:
-        cells = [Text(f"  {label}", style=HEX["mut"]), control]
-        if check is None:
-            cells.append(Text(""))
-        else:
+    def fmt_check(key: str) -> tuple[str, str] | None:
+        if key not in checks:
+            return None
+        ok, note = checks[key]
+        glyph = "✓" if ok else "!"
+        tone = "accent" if ok else "soon"
+        return (glyph, tone), note
+
+    def row(label: str, control: Text, check_key: str | None,
+            selected: bool = False) -> None:
+        check, note = (None, "") if check_key is None else fmt_check(check_key)
+        glyph = ""
+        tone = "mut"
+        if check is not None:
             glyph, tone = check
-            cells.append(Text(glyph, style=HEX.get(tone, tone)))
-        cells.append(Text(note, style=HEX["dim"]))
-        grid.add_row(*cells)
+        prefix = "> " if selected else "  "
+        label_text = Text.assemble((prefix, HEX["accent"] if selected else ""),
+                                   (label, f"bold {HEX['ink']}" if selected else HEX["mut"]))
+        check_text = Text(glyph, style=HEX.get(tone, tone))
+        # pad to columns: label ~24, control ~30, check ~4
+        line = Text.assemble(
+            (fit(str(label_text), 24), ""),
+            (" ", ""),
+            (fit(str(control), 30), ""),
+            (" ", ""),
+            (fit(str(check_text), 4), ""),
+            (" ", ""),
+            (note, HEX["dim"]),
+        )
+        lines.append(line)
 
-    ok_check = ("✓", "accent")
+    equipo_rows = [
+        ("modo equipo",
+         Text.assemble(
+             (" on ", f"bold #0b0f14 on {HEX['accent']}" if enabled else HEX["mut"]),
+             ("  off", HEX["mut"] if enabled else f"bold #0b0f14 on {HEX['accent']}")),
+         "modo"),
+        ("carpeta compartida",
+         Text.assemble(("▌", HEX["accent"]), (shared_dir or "—", HEX["ink"])),
+         "carpeta"),
+        ("  alcance",
+         Text(""),
+         "alcance"),
+        ("sync cada",
+         Text.assemble((" - ", HEX["accent"]),
+                       (str(interval), HEX["ink"]),
+                       (" + ", HEX["accent"]),
+                       ("min", HEX["mut"])),
+         "sync"),
+        ("mi identidad",
+         (Text.assemble((f" {user_id} ", f"bold #0b0f14 on {HEX.get(next((r.get('hue', 'mut') for r in roster if r.get('id') == user_id), 'mut'), HEX['mut'])}"))
+          if user_id and roster else Text("—", style=HEX["mut"])),
+         "identidad"),
+    ]
 
     section("equipo")
-    mode_text = Text.assemble(
-        (" on ", f"bold #0b0f14 on {HEX['accent']}" if enabled else HEX["mut"]),
-        ("  off", HEX["mut"] if enabled else f"bold #0b0f14 on {HEX['accent']}")
-    )
-    row("modo equipo", mode_text, ok_check if enabled else None,
-        "team mode" if enabled else "off")
-    folder_control = Text.assemble(("▌", HEX["accent"]),
-                                   (shared_dir or "—", HEX["ink"]))
-    row("carpeta compartida", folder_control,
-        ok_check if shared_dir else None,
-        "seteado" if shared_dir else "sin configurar")
-    stepper = Text.assemble((" - ", HEX["accent"]),
-                            (str(interval), HEX["ink"]),
-                            (" + ", HEX["accent"]),
-                            ("min", HEX["mut"]))
-    row("sync cada", stepper, ok_check, "minutos")
-    if user_id and roster:
-        member = next((r for r in roster if r.get("id") == user_id), None)
-        hue = HEX.get(member.get("hue", "mut"), HEX["mut"]) if member else HEX["mut"]
-        identity = Text.assemble((f" {user_id} ", f"bold #0b0f14 on {hue}"))
-    else:
-        identity = Text("—", style=HEX["mut"])
-    row("mi identidad", identity,
-        ok_check if user_id else None,
-        "seleccionada" if user_id else "sin seleccionar")
+    for i, (label, control, check_key) in enumerate(equipo_rows):
+        row(label, control, check_key,
+            selected=(cursor_section == 0 and cursor_row == i))
 
     section("proyectos del equipo")
-    for proj in projects:
+    for i, proj in enumerate(projects):
         shared = bool(proj.get("shared"))
         name = proj.get("name", proj.get("id", "?"))
         color = proj.get("color", "mut")
@@ -4594,28 +4613,20 @@ def render_setup(setup_state: dict | None, board, width: int = 68,
             ("   hue ", HEX["mut"]),
             ("██", color_hex),
         )
-        row(f"▐ {name}", control,
-            ok_check if shared else None,
-            proj.get("template") or "")
+        row(f"▐ {name}", control, None,
+            selected=(cursor_section == 1 and cursor_row == i))
 
     section("roster")
-    for member in roster:
+    for i, member in enumerate(roster):
         mid = member.get("id", "")
         name = member.get("name", mid)
         hue = HEX.get(member.get("hue", "mut"), HEX["mut"])
-        row(f"██ {mid}",
-            Text.assemble((f"{name:<10}", HEX["ink"]),
-                          (" hue ", HEX["mut"]),
-                          ("██", hue)),
-            ok_check)
+        control = Text.assemble((f"{name:<10}", HEX["ink"]),
+                                (" hue ", HEX["mut"]),
+                                ("██", hue))
+        row(f"██ {mid}", control, "roster" if i == 0 else None,
+            selected=(cursor_section == 2 and cursor_row == i))
 
-    console = Console(record=True, width=w, height=max(1, height or 1),
-                      force_terminal=True,
-                      file=open(os.devnull, "w", encoding="utf-8"))
-    console.print(grid)
-    setup_text = Text.from_ansi(console.export_text())
-
-    lines.append(setup_text)
     lines.append(Text())
     lines.append(Text("─" * w, style=HEX["dim"]))
     lines.append(Text.assemble(

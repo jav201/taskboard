@@ -10,7 +10,7 @@ import pytest
 
 from taskboard.app import TaskboardApp
 from taskboard.models import Board
-from taskboard.team_sync import TEAM_FILENAME
+from taskboard.team_sync import TEAM_FILENAME, probe_setup_health
 
 
 def _team_config() -> dict:
@@ -121,6 +121,7 @@ async def test_setup_renders_grid_with_sections(tmp_path):
         assert "Javier" in text
 
 
+
 async def test_setup_esc_returns_to_previous_view(tmp_path):
     app = TaskboardApp(board_path=str(tmp_path / "board.json"))
     async with app.run_test(size=(120, 40)) as pilot:
@@ -134,3 +135,86 @@ async def test_setup_esc_returns_to_previous_view(tmp_path):
         await pilot.press("escape")
         await pilot.pause()
         assert app.view_mode == "kanban"
+
+
+async def test_setup_save_writes_team_json_and_settings(tmp_path):
+    shared_dir = tmp_path / "shared"
+    board_path = tmp_path / "board.json"
+    board = Board.load(str(board_path))
+    board.save()
+
+    app = TaskboardApp(board_path=str(board_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("0")
+        await pilot.pause()
+        # enable team mode and set shared dir
+        app._setup_state["enabled"] = True
+        app._setup_state["shared_dir"] = str(shared_dir)
+        app._setup_state["interval_minutes"] = 15
+        app._setup_state["user_id"] = "jav"
+        app._setup_state["roster"] = [
+            {"id": "jav", "name": "Javier", "hue": "sky"},
+        ]
+        await pilot.press("ctrl+s")
+        await pilot.pause()
+
+        assert app.view_mode == "swimlanes"
+        assert app.board.settings.get("team_shared_dir") == str(shared_dir)
+        assert app.board.settings.get("team_user_id") == "jav"
+        assert app.board.settings.get("team_sync_interval") == 15
+        assert (shared_dir / "team.json").exists()
+        data = json.loads((shared_dir / "team.json").read_text(encoding="utf-8"))
+        assert data["version"] == 1
+        assert data["sync_tolerance_minutes"] == 15
+        assert [r["id"] for r in data["roster"]] == ["jav"]
+
+
+async def test_setup_esc_leaves_files_unchanged(tmp_path):
+    board_path = tmp_path / "board.json"
+    board = Board.load(str(board_path))
+    board.save()
+
+    app = TaskboardApp(board_path=str(board_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        # capture bytes after the app has done its initial saves
+        before = board_path.read_bytes()
+        await pilot.press("0")
+        await pilot.pause()
+        app._setup_state["shared_dir"] = "/some/path"
+        app._setup_state["roster"] = [{"id": "x", "name": "X", "hue": "mut"}]
+        await pilot.press("escape")
+        await pilot.pause()
+
+        assert board_path.read_bytes() == before
+
+
+def test_setup_stepper_clamps_interval():
+    from pathlib import Path
+    app = TaskboardApp(board_path=str(Path("/tmp/nonexistent_board_for_test.json")))
+    assert app._clamp_interval("3") == 5
+    assert app._clamp_interval("200") == 120
+    assert app._clamp_interval("45") == 45
+    assert app._clamp_interval("abc") is None
+
+
+# --------------------------------------------------------------------------- #
+# US-S2 parte 2: health checks
+# --------------------------------------------------------------------------- #
+def test_probe_setup_health_flags_unwritable_shared_path(tmp_path):
+    # point shared dir at an existing file: it exists but is not a writable dir
+    shared_path = tmp_path / "not_a_dir.txt"
+    shared_path.write_text("i am a file", encoding="utf-8")
+    staged = {
+        "enabled": True,
+        "shared_dir": str(shared_path),
+        "interval_minutes": 30,
+        "user_id": "jav",
+        "projects": [],
+        "roster": [{"id": "jav", "name": "Javier", "hue": "sky"}],
+    }
+    checks = probe_setup_health(staged, None)
+    ok, note = checks["carpeta"]
+    assert not ok
+    assert "directorio" in note.lower() or "directory" in note.lower()
