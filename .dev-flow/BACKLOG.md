@@ -3,12 +3,13 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `3a11eb0` (local HEAD ahead of `origin/main`)
+**Base ref:** `33eb4bf` (local HEAD == `origin/main`)
 · **Last refresh:** 2026-09-01
-**Status:** **1298 tests green** locally. Batch-12 (in-app Setup, per-view help,
-keybar per-view law, initial-sync fix) committed and ready to push. V4 report,
-V5 templates, V6 batch-email and V7 chains deferred. `test_win_clipboard_roundtrip`
-remains an intermittent environmental flake.
+**Status:** **1303 tests green** on `main`. Batch-12 (in-app Setup, per-view help,
+keybar per-view law, initial-sync fix) shipped, plus a post-close hotfix for the
+Setup `TextPrompt` bug and missing executable-command ATs. V4 report, V5 templates,
+V6 batch-email and V7 chains deferred. `test_win_clipboard_roundtrip` remains an
+intermittent environmental flake.
 
 ## Open — after `2026-08-07-fastflow-07`
 
