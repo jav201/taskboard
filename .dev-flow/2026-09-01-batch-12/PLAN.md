@@ -190,11 +190,17 @@ RED arm verified by temporarily returning `(True, "ok")` for all checks: the unw
 - Clipboard flake not observed; none of the failures were environmental.
 - Mutation evidence recorded per increment in this PLAN.
 
+- Push only on explicit order.
+
 # Phase 5 — Close
 
-**Status:** in progress.
+**Status:** complete.
 
-- Reconcile files; keep `prototypes/*` untracked.
-- Update `state.json` and `.dev-flow/BACKLOG.md`.
-- Push/merge only on explicit operator order.
-- Push only on explicit order.
+- Working files reconciled; `prototypes/*` remains untracked exploratory work.
+- `state.json` and `.dev-flow/BACKLOG.md` updated.
+
+# Phase 6 — Push
+
+**Status:** complete.
+
+- Pushed to `origin/main`: `ff4bb7e..fd33658`.
