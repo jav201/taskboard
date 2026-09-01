@@ -3,7 +3,7 @@
   "language": "en",
   "batch_id": "2026-09-01-batch-12",
   "batch_objective": "In-app Setup view (key 0), per-view help family, keybar per-view law, and initial team-sync-on-mount fix.",
-  "current_phase": 4,
+  "current_phase": 6,
   "phase_status": "complete",
   "iterations_per_phase": {
     "0": 1,
@@ -238,6 +238,18 @@
       "date": "2026-09-01",
       "decision": "Phase 4 validation complete.",
       "notes": "Full suite 1298 passed; test_prism_laws.py oracle updated for law_keybar; test_report.py oracle updated for palette-only report key; no environmental failures."
+    },
+    {
+      "phase": 5,
+      "date": "2026-09-01",
+      "decision": "Phase 5 close complete.",
+      "notes": "Working files reconciled; prototypes/* remain untracked exploratory work. PLAN.md, state.json and BACKLOG.md updated."
+    },
+    {
+      "phase": 6,
+      "date": "2026-09-01",
+      "decision": "Batch-12 pushed to origin/main.",
+      "notes": "Pushed at operator order: main ff4bb7e..fd33658."
     }
   ],
   "obsidian_synced": false,
