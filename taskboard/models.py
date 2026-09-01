@@ -1273,3 +1273,22 @@ def seed_data() -> tuple[list[Project], list[Task]]:
         Task("Review pull requests", None, "Doing", "normal", due_date=iso(1)),
     ]
     return projects, tasks
+
+
+def unblocks_count(board: Board, task: Task) -> int:
+    """How many OPEN tasks directly depend on ``task``.
+
+    Dangling ids in ``depends_on`` are ignored, and done/archived dependents do
+    not count — they no longer need unblocking.  Direct edges only: a task that
+    depends on a dependent of ``task`` is not counted here (that is the critical
+    chain's job in increment 4)."""
+    tid = task.id
+    count = 0
+    for t in board.tasks:
+        if t is task:
+            continue
+        if board.is_done(t) or t.archived:
+            continue
+        if tid in t.depends_on:
+            count += 1
+    return count

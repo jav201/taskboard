@@ -18,9 +18,9 @@ from textual.widgets import Static
 from . import history
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      bump_due, default_board_path, next_priority)
-from .modals import (ClockModal, CommandPalette, ConfirmModal, ImageViewer, LegendModal,
-                     PhaseEditor, ProjectModal, ProjectPicker, StandupModal, TaskDetails,
-                     TaskModal, TextPrompt)
+from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
+                     ImageViewer, LegendModal, PhaseEditor, ProjectModal, ProjectPicker,
+                     StandupModal, TaskDetails, TaskModal, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
 from .views import clip, escape, filtered_board, nav_model, render_view, valid_url
@@ -526,12 +526,65 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_toggle_blocked(self) -> None:
-        """`b` — flip the selected task's blocked flag (card prefix ▲/▊)."""
+        """`b` — block the selected task (with a blocker task) or unblock it.
+
+        Blocking asks "What blocks it?" when there are candidate tasks.  The
+        operator can create a new blocker or pick an existing open task; the
+        blocked task gets ``blocked=True`` and the blocker id appended to
+        ``depends_on``.  Cancelling the prompt leaves no snapshot on the undo
+        stack.  With no candidates (single-task board) the flag flips directly.
+        Unblocking flips the flag back without asking, preserving ``depends_on``
+        so undo can restore it."""
         task = self.selected_task
         if task is None:
             return
+        if task.blocked:
+            self._undo_stack.append(self._snapshot(task))
+            task.blocked = False
+            self.board.save()
+            self.refresh_view()
+            return
+        candidates = [t for t in self.board.tasks
+                      if t is not task
+                      and not self.board.is_done(t)
+                      and not t.archived]
+        if not candidates:
+            # no candidate blocker -> plain flip, no prompt
+            self._undo_stack.append(self._snapshot(task))
+            task.blocked = True
+            self.board.save()
+            self.refresh_view()
+            return
+        self.push_screen(BlockerPicker(self.board, task.id),
+                         lambda result: self._on_blocker_picked(task, result))
+
+    def _on_blocker_picked(self, task: Task, result: str | None) -> None:
+        """Commit the blocker choice: cancelled prompts leave no snapshot."""
+        if result is None:
+            return
+        if result == "__new__":
+            self.push_screen(TextPrompt("New blocker title", placeholder="title"),
+                             lambda title: self._on_new_blocker(task, title))
+            return
+        blocker = self.board.task_by_id(result)
+        if blocker is None:
+            return
         self._undo_stack.append(self._snapshot(task))
-        task.blocked = not task.blocked
+        task.blocked = True
+        task.depends_on = [*task.depends_on, blocker.id]
+        self.board.save()
+        self.refresh_view()
+
+    def _on_new_blocker(self, task: Task, title: str | None) -> None:
+        """Create a new blocker task, persist it, and link it."""
+        if not title:
+            return
+        self._undo_stack.append(self._snapshot(task))
+        phase = self.board.phases[0] if self.board.phases else "Backlog"
+        blocker = Task(title, project_id=task.project_id, phase=phase)
+        self.board.add_task(blocker)
+        task.blocked = True
+        task.depends_on = [*task.depends_on, blocker.id]
         self.board.save()
         self.refresh_view()
 
@@ -555,7 +608,7 @@ class TaskboardApp(App):
     # they mutate nothing, so there is nothing to undo. A modal add records
     # NOTHING: creation is deliberate, deletion covers the destructive path.
     _UNDO_FIELDS = ("phase", "phase_changed", "priority", "blocked",
-                    "due_date", "archived", "pinned")
+                    "due_date", "archived", "pinned", "depends_on")
 
     def _snapshot(self, task: Task, *, deleted: bool = False) -> dict:
         """The pre-mutation state of ONE task: the six mutable fields VERBATIM
@@ -564,8 +617,13 @@ class TaskboardApp(App):
         A delete keeps the FULL task object and its position, so the
         resurrection brings back the SAME id — a copy with a new id would
         break line_map, nav and every later undo."""
-        entry = {"task_id": task.id,
-                 "fields": {f: getattr(task, f) for f in self._UNDO_FIELDS}}
+        fields: dict[str, object] = {}
+        for f in self._UNDO_FIELDS:
+            v = getattr(task, f)
+            if f == "depends_on":
+                v = list(v)          # snapshot as a COPY; the blocked flow mutates the list
+            fields[f] = v
+        entry = {"task_id": task.id, "fields": fields}
         if deleted:
             entry["task"] = task
             entry["index"] = self.board.tasks.index(task)
@@ -719,11 +777,11 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_kanban_sort(self) -> None:
-        """`s` — cycle the kanban column sort project→priority→due→recent;
+        """`s` — cycle the kanban column sort project→priority→due→recent→unblock;
         a no-op in every other view (the bar never advertises it there)."""
         if self.view_mode != "kanban":
             return
-        modes = ("project", "priority", "due", "recent")
+        modes = ("project", "priority", "due", "recent", "unblock")
         self.kanban_sort = modes[(modes.index(self.kanban_sort) + 1) % len(modes)]
         self.refresh_view()
 

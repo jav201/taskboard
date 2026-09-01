@@ -665,6 +665,49 @@ class ProjectPicker(ModalScreen[None]):
         self.dismiss(None)
 
 
+class BlockerPicker(ModalScreen[str | None]):
+    """Pick an existing task that blocks the selected one, or choose to create a
+    new blocker.  Returns the chosen task id, the sentinel ``"__new__"``, or
+    ``None`` on cancel.  Candidate titles are escaped (A1); the blocked task
+    itself and any done/archived tasks are excluded."""
+
+    BINDINGS = [("escape", "cancel", "Cancel")]
+
+    def __init__(self, board: Board, blocked_task_id: str):
+        super().__init__()
+        self.board = board
+        self.blocked_task_id = blocked_task_id
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="blocker-box", classes="modal"):
+            yield Label("[b]What blocks it?[/b]  —  pick a task or create a new blocker",
+                        classes="modal-title")
+            yield OptionList(id="blocker-list")
+
+    def on_mount(self) -> None:
+        ol = self.query_one("#blocker-list", OptionList)
+        ol.add_option(Option("(create new blocker)", id="__new__"))
+        for t in self.board.tasks:
+            if t.id == self.blocked_task_id:
+                continue
+            if self.board.is_done(t) or t.archived:
+                continue
+            ol.add_option(Option(escape(t.title), id=t.id))
+        ol.highlighted = 0
+        ol.focus()
+
+    def action_move(self, delta: int) -> None:
+        ol = self.query_one("#blocker-list", OptionList)
+        cur = ol.highlighted if ol.highlighted is not None else 0
+        ol.highlighted = max(0, min(ol.option_count - 1, cur + delta))
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self.dismiss(event.option.id)
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
 class ClockModal(ClipboardPasteMixin, ModalScreen[dict | None]):
     """Pick the two ribbon clocks by CITY (type to find one). Returns city names."""
 
