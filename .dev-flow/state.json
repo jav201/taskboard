@@ -194,8 +194,8 @@
     {
       "phase": 6,
       "date": "2026-09-01",
-      "decision": "Cleanup committed.",
-      "notes": "git add -A && git commit performed; push deferred pending operator order."
+      "decision": "Cleanup pushed to origin/main.",
+      "notes": "git add -A && git commit performed; push executed at operator order: main b7f3516..b3d990f."
     }
   ],
   "obsidian_synced": false,
