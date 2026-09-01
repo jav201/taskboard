@@ -74,6 +74,7 @@ KEYMAP: tuple[Key, ...] = (
     Key("6", "6", "aperture", "Widget", group="views"),
     Key("7", "7", "view('flow')", "Flow", primary=True, group="views"),
     Key("8", "8", "view('standup')", "Standup", primary=True, group="views"),
+    Key("9", "9", "view('people')", "People", primary=True, group="views"),
 
     # -- task -----------------------------------------------------------------
     Key("enter", "↵", "details", "Details", primary=True, group="task"),
