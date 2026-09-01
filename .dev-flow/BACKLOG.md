@@ -3,13 +3,13 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `0cf0e72` (local HEAD; `origin/main` == `c25d8e1`, batch-10
+**Base ref:** `2eda873` (local HEAD; `origin/main` == `e831250`, batch-11
 commits ahead)
-· **Last refresh:** 2026-08-29
-**Status:** **1024 tests green** on batch-10 branch. US-A transitions log,
-US-B flow view (key 7), and US-D dependency intelligence (block→task, ⛓N,
-unblock-first sort, gantt critical chain) implemented. US-C desk loop deferred
-to its own batch (cross-repo). Nothing pushed — the operator pushes.
+· **Last refresh:** 2026-09-01
+**Status:** **1290 tests green** on batch-11 branch. Batch-11 team sync spine
+(US-T1 sync core + US-T2 V3 standup / V2 people lanes) implemented; V4 report,
+V5 templates, V6 batch-email and V7 chains deferred. `test_win_clipboard_roundtrip`
+remains an intermittent environmental flake. Nothing pushed — the operator pushes.
 
 ## Open — after `2026-08-07-fastflow-07`
 
@@ -41,6 +41,20 @@ to its own batch (cross-repo). Nothing pushed — the operator pushes.
   batch.
 - **No new carry-overs.** All batch-10 acceptance tests pass (1024 total);
   mutation evidence recorded in `.dev-flow/2026-08-24-batch-10/PLAN.md`.
+
+## Shipped — batch-11 (`2eda873`, 2026-09-01)
+
+- **US-T1 sync core:** `taskboard/team_sync.py` with `TeamState`
+  (load/push/pull/sync), one file per person (`board.<user>.json`),
+  `team.json` authority, first-run identity picker, daemon cadence, staleness
+  helper; personal tasks never leave the machine.
+- **US-T2 team views:** V3 standup strip (key `8`) and V2 people lanes
+  (key `9`) with `todo · equipo · personal` classification filter; foreign
+  cards carry read-only marks.
+- **Deferred:** V4 project report, V5 per-project templates, V6 batch-email,
+  V7 task chains + day-shift cascade.
+- **No new carry-overs.** All batch-11 acceptance tests pass (1290 total);
+  mutation evidence recorded in `.dev-flow/2026-09-01-batch-11/PLAN.md`.
 
 ## Open — after `2026-08-07-fastflow-06`
 

@@ -3,8 +3,8 @@
   "language": "en",
   "batch_id": "2026-09-01-batch-11",
   "batch_objective": "taskboard goes team: US-T1 sync core (shared-dir config, per-person files, team.json authority, first-run identity, staleness) + US-T2 team views (V3 standup home + V2 people lanes + todo/equipo/personal classification filter). V4 report, V5 templates, V6 batch-email and V7 chains deferred to later batches.",
-  "current_phase": 0,
-  "phase_status": "in_progress",
+  "current_phase": 6,
+  "phase_status": "complete",
   "iterations_per_phase": {
     "0": 0,
     "1": 0,
@@ -152,7 +152,25 @@
       "phase": 3,
       "date": "2026-09-01",
       "decision": "Increment 4 complete: V2 people lanes + key 9 + filter parity.",
-      "notes": "render_people in views.py draws one lane per roster member with header (name + sync age + accent spine for operator) and card_cell cards; foreign cards carry read-only ◦ mark via new card_cell readonly parameter; nav_model returns selectable rows; legend_entries documents people marks; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 9; README table updated; tests/test_team_views.py extended with 5 new tests (251 total); full suite 1291 passed; RED-arm mutation evidence recorded in PLAN.md."
+      "notes": "render_people in views.py draws one lane per roster member with header (name + sync age + accent spine for operator) and card_cell cards; foreign cards carry read-only ◦ mark via new card_cell readonly parameter; nav_model returns selectable rows; legend_entries documents people marks; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 9; README table updated; tests/test_team_views.py extended with 5 new tests (251 total); full suite 1290 passed plus 1 environmental clipboard flake; RED-arm mutation evidence recorded in PLAN.md."
+    },
+    {
+      "phase": 4,
+      "date": "2026-09-01",
+      "decision": "Phase 4 validation complete.",
+      "notes": "Full suite 1290 passed plus 1 environmental test_win_clipboard_roundtrip flake (re-run alone still failed; convention excludes it); per-AT verification table recorded in PLAN.md."
+    },
+    {
+      "phase": 5,
+      "date": "2026-09-01",
+      "decision": "Phase 5 postmortem complete.",
+      "notes": "Working-file reconciliation: all batch-11 files committed; untracked prototypes/* remain parallel exploratory work. Lessons: prototypes validate state machine but product needs file I/O/validation; view parity requires explicit branches in every seat; re-use card_cell for width contract."
+    },
+    {
+      "phase": 6,
+      "date": "2026-09-01",
+      "decision": "Phase 6 docs complete; batch-11 closed locally.",
+      "notes": "README keybinding table updated for keys 8/9; BACKLOG.md refreshed to base ref 2eda873 with shipped summary and V4/V5/V6/V7 deferral. No push performed pending operator order."
     }
   ],
   "obsidian_synced": false,

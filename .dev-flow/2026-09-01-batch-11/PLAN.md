@@ -446,3 +446,86 @@ environmental flake convention stands.
 
 ### Suggested commit message
 `batch-11 inc-4: V2 people lanes + key 9 + filter parity`
+
+
+---
+
+# Phase 4 — Validation
+
+**Status:** complete.
+
+## Full-suite run
+
+```
+python -m pytest tests/ -q
+1290 passed, 1 failed in 81.92s (0:01:21)
+FAILED tests/test_app.py::test_win_clipboard_roundtrip
+```
+
+The single failure is the pre-existing environmental clipboard flake: the test's
+own `Set-Clipboard` setup failed with an ExternalException. Re-running it alone
+failed the same way. Per repo convention this is NOT a batch signal.
+
+## Per-AT verification table
+
+| AT | Requirement | Test location | Result | RED arm evidence (PLAN.md) |
+|---|---|---|---|---|
+| AT-T1 | Load team.json, push/pull per-person files | `tests/test_team_sync.py` (load_config, push, pull, sync, malformed skips) | pass | Inc-1: personal-task filter killed, `_read_json` raised, `pull` raised on missing dir |
+| AT-T2 | team.json version bump inherited | `tests/test_team_sync.py::test_apply_config_updates_phases_and_projects` | pass | Inc-1: existing project fields updated |
+| AT-T3 | Staleness computed and surfaced | `tests/test_team_sync.py::test_sync_age_computed_from_pushed_at`, `test_pull_tolerates_missing_shared_dir` | pass | Inc-2: staleness tolerance disabled |
+| AT-T4 | V3 standup renders rows per member | `tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable` | pass | Inc-3: stale tone disabled, filter parity killed |
+| AT-T5 | V2 people lanes by person with read-only marks | `tests/test_team_views.py::test_people_lanes_render_by_person_with_readonly_marks` | pass | Inc-4: read-only mark disabled, filter parity killed, nav rows removed |
+
+## Cross-cutting checks
+
+- **Personal never leaks:** `TeamState.push` filters by `team_project_ids`; AT-T1
+  RED arm proves the filter is load-bearing.
+- **Foreign files are untrusted:** `_read_json`, `pull`, and `foreign_tasks` skip
+  malformed entries; never raise.
+- **Palette/width law:** V3/V2 reuse `card_cell` and lane geometry; width sweep
+  (1..120) passes.
+
+---
+
+# Phase 5 — Postmortem
+
+**Status:** complete.
+
+## Working-file reconciliation
+
+```
+$ git status --short
+?? prototypes/city/
+?? prototypes/lanes_load/
+?? prototypes/mapper/
+?? prototypes/team_sync/
+?? prototypes/vista/
+```
+
+All batch-11 implementation, plan and state changes are committed. The untracked
+`prototypes/*` directories belong to parallel exploratory work and were not
+committed as part of this batch.
+
+## Lessons
+
+1. **Prototypes answer questions; they are not the product.** `proto.py`
+   validated the sync state machine, but the shipped module needed a real
+   `TeamState` with file I/O, validation, and board alignment.
+2. **View parity is a law, not a nice-to-have.** Every new view needed explicit
+   branches in `render_view`, `nav_model`, `legend_entries`, `VIEW_ORDER`,
+   `VIEW_KEYS`, `keymap.py`, and `aperture.py`.
+3. **Re-use existing render contracts.** Extending `card_cell` with a
+   `readonly` flag kept the people-lanes width contract for free.
+
+---
+
+# Phase 6 — Docs
+
+**Status:** complete.
+
+- `README.md` updated in increments 3 and 4 to document keys `8` (Standup) and
+  `9` (People) in the keybinding table.
+- `.dev-flow/BACKLOG.md` refreshed with batch-11 base ref and a "Shipped —
+  batch-11" section summarizing the spine and deferred V4/V5/V6/V7 work.
+- No public API docs beyond README/keybinding; UI strings are in the app's
+  English register.
