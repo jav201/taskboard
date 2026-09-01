@@ -3,11 +3,13 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `b7e47b8` (local HEAD; `origin/main` == `c25d8e1`, **2 commits behind**)
-· **Last refresh:** 2026-08-07
-**Status:** **776 tests green** on `main`, with `kanban-variants` MERGED
-(`ecde0da`) and a pre-commit privacy gate wired. Nothing pushed — the operator
-pushes.
+**Base ref:** `0cf0e72` (local HEAD; `origin/main` == `c25d8e1`, batch-10
+commits ahead)
+· **Last refresh:** 2026-08-29
+**Status:** **1024 tests green** on batch-10 branch. US-A transitions log,
+US-B flow view (key 7), and US-D dependency intelligence (block→task, ⛓N,
+unblock-first sort, gantt critical chain) implemented. US-C desk loop deferred
+to its own batch (cross-repo). Nothing pushed — the operator pushes.
 
 ## Open — after `2026-08-07-fastflow-07`
 
@@ -25,6 +27,20 @@ pushes.
   written against the shipped glyphs will be blind to a tick multiplier the same
   way this batch's first version was. The lesson is local to this constant and
   is recorded in `test_the_pulse_rides_the_ONE_shared_clock_and_clears_the_floor`.
+
+## Shipped — batch-10 (`0cf0e72`, 2026-08-29)
+
+- **US-A transitions log:** append-only `history.jsonl` sidecar, hooked into
+  `set_task_phase` and `add_task`, never raises.
+- **US-B flow view:** key `7`, cycle time per phase, phase×week heatmap,
+  weekly throughput, honest empty state.
+- **US-D dependency intelligence:** blocking a task creates/links a blocker
+  task (`depends_on`), `⛓N` token, `unblock` sort, gantt critical chain
+  highlight.
+- **Deferred:** US-C desk loop remains cross-repo and out of scope for this
+  batch.
+- **No new carry-overs.** All batch-10 acceptance tests pass (1024 total);
+  mutation evidence recorded in `.dev-flow/2026-08-24-batch-10/PLAN.md`.
 
 ## Open — after `2026-08-07-fastflow-06`
 
