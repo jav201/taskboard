@@ -1,0 +1,180 @@
+# PLAN — 2026-09-01-batch-12 · taskboard: in-app Setup + per-view help
+
+**Batch objective.** Implementar la configuración de equipo dentro de la aplicación (Setup, tecla `0`) con health checks, la familia de ayuda por vista (`?` muestra la ayuda de la vista activa), y ajustar la barra para que solo muestre las teclas de la vista actual.
+
+**Scope:** US-S1 (initial sync on mount) + US-S2 (Setup in-app) + US-S3 (per-view help) + US-S4 (keybar per-view law). V4/V5/V6/V7 siguen diferidos.
+
+**Mode:** `core`. Language: `en` (artefactos técnicos) / `es` (conversación y PLAN).
+
+## Verified at intake
+
+- **Base-currency (RC-1):** local `main` == `origin/main` == `ff4bb7e` después del push de cleanup-aperture. El handoff de batch-12 ya está commiteado como `9dda458`.
+- **Suite green:** 1284 passed (`python -m pytest tests/ -q`). `test_win_clipboard_roundtrip` es flake ambiental pre-existente; se excluye por convención.
+- **Design prototype:** `prototypes/team_sync/generate.py` contiene el copy autorizado para V8 setup y V9 help family.
+- **Keybinding `0` verified free** tras la limpieza del aperture/widget.
+
+## Operator decisions at intake (locked)
+
+| pregunta | decisión |
+|---|---|
+| Setup como vista o modal | **Vista** (`view_mode == "setup"`, tecla `0`) para que el KeyBar propio sea visible. |
+| Per-view help | `?` abre ayuda de la vista activa; `m` dentro de ella abre el mapa completo (`HelpScreen`); `?` dentro de la ayuda abre la paleta de comandos (`CommandPalette`). |
+| Keybar law | Solo teclas de la vista actual + universales (`?`, `q`, `;`); comandos globales (`o`, `i`, `p`, `P`, `f`, `c`, `R`, `S`) viven en `?`/palette, no en la barra. |
+| Health checks | Asesorias: nunca bloquean edición; se re-computan al abrir y tras `ctrl+s`. `⚠` usa fallback `!` si no está cubierto. |
+| Staged editing | Setup muta estado *staged* en memoria; `ctrl+s` escribe `team.json` (version bump) + `board.settings`; `esc` descarta y vuelve a la vista previa. |
+
+## Stories
+
+| id | story | observable outcome |
+|---|---|---|
+| US-S1 | Initial sync on mount. | `_init_team_mode` llama `_run_team_sync()` antes de `_start_team_daemon()` cuando `team_user_id` ya está seteado. |
+| US-S2 | Setup in-app. | Vista `setup` (tecla `0`) con grid editable; `ctrl+s` persiste; `esc` cancela; checks ✓/⚠. |
+| US-S3 | Per-view help family. | `LegendModal` → `HelpModal`; copy de `generate.py` para 8 vistas + setup; `m` abre `HelpScreen`. |
+| US-S4 | Keybar per-view law. | Nuevo flag `bar` en `Key`; comandos globales ocultos de la barra pero presentes en palette. |
+
+## Increment plan
+
+| inc | content | source files |
+|---|---|---|
+| 1 | US-S1: one-liner initial sync + pilot test. | `taskboard/app.py` |
+| 2 | US-S2 parte 1: Setup como vista (`"setup"` en `VIEW_ORDER`/`VIEW_KEYS`, `render_setup`, keymap `0`, staging). | `taskboard/app.py`, `taskboard/views.py`, `taskboard/keymap.py` |
+| 3 | US-S2 parte 2: health checks, staged edits, save/discard, mutaciones. | `taskboard/app.py`, `taskboard/views.py`, `taskboard/team_sync.py` |
+| 4 | US-S3: per-view help (`HelpModal`), full-keymap second tier, copy de `generate.py`. | `taskboard/modals.py`, `taskboard/app.py`, `taskboard/views.py` |
+| 5 | US-S4: keybar audit — `bar` flag, global commands palette-only, tests/README. | `taskboard/keymap.py`, `tests/test_keymap.py`, `README.md` |
+
+## Decision log
+
+| date | decision | by |
+|---|---|---|
+| 2026-09-01 | batch-12 opened from handoff; packaging S1+S2+S3+S4 | operator |
+| 2026-09-01 | Setup implemented as a view to keep KeyBar contract | plan |
+| 2026-09-01 | Global commands moved to palette-only via `bar=False` flag | plan |
+
+---
+
+# Phase 0 — Intake
+
+**Status:** complete.
+
+Packaging approved: **batch-12 = US-S1 + US-S2 + US-S3 + US-S4**. Deferred: V4/V5/V6/V7.
+
+---
+
+# Phase 1 — Requirements
+
+## US-S1 — initial sync on mount
+
+- **HLR-S1.1.** When `board.settings["team_user_id"]` is already set on mount, `_init_team_mode` runs one sync immediately before starting the daemon.
+
+**AT:** mount `TaskboardApp` with configured identity + peer file → standup shows peer immediately.
+
+## US-S2 — Setup in-app
+
+- **HLR-S2.1.** Setup is a full-screen view bound to key `0`; entering it stages current team config in memory.
+- **HLR-S2.2.** Layout: label col 24 · control col 30 · check col 4 · note col; sections `equipo`, `proyectos del equipo`, `roster`.
+- **HLR-S2.3.** Editable fields: modo equipo, carpeta compartida, sync cada (stepper 5..120 min), mi identidad, project rows (shared/hue/template), roster rows (id/name/hue; `a` add, `x` remove).
+- **HLR-S2.4.** Advisory health checks per row; re-run on open and `ctrl+s`.
+- **HLR-S2.5.** `ctrl+s` commits (team.json version bump + board.settings + sync + save); `esc` discards and returns to previous view.
+
+**ATs:** save writes files; unwritable dir shows warning; esc leaves files unchanged; stepper clamps.
+
+## US-S3 — per-view help family
+
+- **HLR-S3.1.** `?` opens `HelpModal` for the active view.
+- **HLR-S3.2.** Legend from `legend_entries`; keys from `fit_bar`; no hand-maintained lists.
+- **HLR-S3.3.** Usage copy from `generate.py` for 9 modes.
+- **HLR-S3.4.** `m` opens `HelpScreen`; `?` opens `CommandPalette`; `esc` closes.
+
+**ATs:** `?` from each view names it; legend has no ghosts; help keys ⊆ `fit_bar`; `m` reaches full keymap.
+
+## US-S4 — keybar per-view law
+
+- **HLR-S4.1.** Footer bar shows only view-local + universal keys.
+- **HLR-S4.2.** Global commands remain bound and reachable via `?`/palette, but not drawn in bar.
+- **HLR-S4.3.** `Key` gets `bar: bool`; `bar_keys`/`fit_bar` respect it; `palette_commands` includes all live keys.
+
+**ATs:** global commands absent from bar but in palette; README still documents every bound key.
+
+---
+
+# Phase 3 — Implementation
+
+## Increment 1 — US-S1: initial sync on mount
+
+**Status:** planned.
+
+### Changes
+- `taskboard/app.py` `_init_team_mode`: when `team_state.user_id` is set, call `self._run_team_sync()` before `self._start_team_daemon()`.
+
+### Tests
+- `test_configured_identity_syncs_on_mount`: pilot test; peer appears in standup immediately.
+
+## Increment 2 — US-S2 parte 1: Setup como vista
+
+**Status:** planned.
+
+### Changes
+- `taskboard/app.py`: add `"setup"` to `VIEW_ORDER`/`VIEW_KEYS`; staging attrs; `action_setup_*` handlers.
+- `taskboard/keymap.py`: add `0` view key and setup-scoped edit keys.
+- `taskboard/views.py`: `render_setup`; dispatch in `render_view`; `nav_model("setup") -> []`.
+
+### Tests
+- `test_setup_key_0_switches_view`
+- `test_setup_renders_grid_with_sections`
+
+## Increment 3 — US-S2 parte 2: health checks y edición staged
+
+**Status:** planned.
+
+### Changes
+- `taskboard/team_sync.py`: config template helper; `probe_shared_dir` health probes.
+- `taskboard/app.py`: save/discard and mutation actions.
+- `taskboard/views.py`: draw ✓/⚠ with `!` fallback.
+
+### Tests
+- `test_setup_save_writes_team_json_and_settings`
+- `test_setup_esc_leaves_files_unchanged`
+- `test_setup_warning_on_unwritable_dir`
+- `test_setup_stepper_clamps_interval`
+
+## Increment 4 — US-S3: per-view help family
+
+**Status:** planned.
+
+### Changes
+- `taskboard/modals.py`: refactor `LegendModal` → `HelpModal`.
+- `taskboard/app.py`: `action_legend` pushes `HelpModal`; callbacks for `m` and `?`.
+- `taskboard/views.py`: `help_usage` / `help_example` for 9 modes.
+
+### Tests
+- `test_help_opens_for_each_view`
+- `test_help_legend_no_ghost_marks`
+- `test_help_keys_subset_of_fit_bar`
+- `test_help_map_reaches_full_keymap`
+
+## Increment 5 — US-S4: keybar per-view law
+
+**Status:** planned.
+
+### Changes
+- `taskboard/keymap.py`: `bar` flag; global commands `bar=False`; `palette_commands` includes all live keys.
+- `tests/test_keymap.py`: update oracles; add global-not-in-bar test.
+- `README.md`: document key `0` and updated bar.
+
+### Tests
+- `test_global_commands_in_palette_not_bar`
+- `test_setup_keys_only_in_setup_bar`
+
+---
+
+# Phase 4 — Validation
+
+- `python -m pytest tests/ -q` green.
+- Clipboard flake re-run alone; report if still fails.
+- Mutation evidence per AT recorded.
+
+# Phase 5 — Close
+
+- Reconcile files; keep `prototypes/*` untracked.
+- Update `state.json` and `.dev-flow/BACKLOG.md`.
+- Push only on explicit order.
