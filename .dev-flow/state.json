@@ -9,7 +9,7 @@
     "0": 0,
     "1": 0,
     "2": 0,
-    "3": 3
+    "3": 4
   },
   "artifacts": {
     "0": ".dev-flow/2026-09-01-batch-11/PLAN.md",
@@ -147,6 +147,12 @@
       "date": "2026-09-01",
       "decision": "Increment 3 complete: V3 standup view + key 8 + classification filter.",
       "notes": "render_standup in views.py draws one row per roster member with load bar, top task + phase, sync age, accent spine for operator, over tone for stale rows; render_team_filter_chrome helper; team_filter session state and action_team_filter_cycle in app.py; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 8; README table updated; tests/test_team_views.py added (127 tests including width sweep); full suite 1167 passed; RED-arm mutation evidence recorded in PLAN.md."
+    },
+    {
+      "phase": 3,
+      "date": "2026-09-01",
+      "decision": "Increment 4 complete: V2 people lanes + key 9 + filter parity.",
+      "notes": "render_people in views.py draws one lane per roster member with header (name + sync age + accent spine for operator) and card_cell cards; foreign cards carry read-only ◦ mark via new card_cell readonly parameter; nav_model returns selectable rows; legend_entries documents people marks; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 9; README table updated; tests/test_team_views.py extended with 5 new tests (251 total); full suite 1291 passed; RED-arm mutation evidence recorded in PLAN.md."
     }
   ],
   "obsidian_synced": false,

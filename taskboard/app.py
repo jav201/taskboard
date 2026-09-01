@@ -35,9 +35,9 @@ TICK_SECONDS = 1.0
 # is shown exactly once per board rather than at every launch.
 RENUMBER_NOTICE_KEY = "seen_view_renumber_2026_07"
 
-VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup"]
+VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people"]
 VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
-             "5": "focus", "7": "flow", "8": "standup"}
+             "5": "focus", "7": "flow", "8": "standup", "9": "people"}
 
 
 class BoardView(Static):
@@ -802,8 +802,8 @@ class TaskboardApp(App):
     def action_team_filter_cycle(self) -> None:
         """Cycle the team-view classification filter: todo → equipo → personal.
 
-        The filter is session-level and survives view hops. It only affects the
-        team views (V3 standup now, V2 people lanes in increment 4)."""
+        The filter is session-level and survives view hops. It affects both
+        team views (V3 standup and V2 people lanes)."""
         modes = ("todo", "equipo", "personal")
         self.team_filter = modes[(modes.index(self.team_filter) + 1) % len(modes)]
         self.refresh_view()

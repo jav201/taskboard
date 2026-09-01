@@ -378,3 +378,71 @@ environmental flake convention stands.
 
 ### Suggested commit message
 `batch-11 inc-3: V3 standup view + key 8 + classification filter`
+
+---
+
+## Increment 4 — US-T2 parte 2: V2 people lanes renderer + read-only marks + filter parity
+
+**Status:** complete.
+
+### What changed
+- `taskboard/views.py`:
+  - New `render_people` renderer for the V2 people-lanes view:
+    - One lane per roster member, stacked vertically.
+    - Lane header shows member name and sync age; operator lane carries an accent spine `▌` and bold label.
+    - Cards are rendered with `card_cell`, indented by two cells under the header.
+    - Foreign cards (any lane that is not the operator's) carry a read-only `◦` mark in `mut` tone.
+    - Tasks are filtered by the current `team_filter` (`todo`/`equipo`/`personal`) using the shared `_member_tasks_for_filter` helper.
+  - `card_cell` gained an optional `readonly` boolean parameter; when true, a `◦` token is added to the indicator cluster.
+  - `RENDERERS`, `render_view`, `nav_model`, and `legend_entries` extended with `"people"`.
+- `taskboard/keymap.py`: added primary key `9` for `view('people')`.
+- `taskboard/aperture.py`: added launcher binding `9 → jump('people')`.
+- `taskboard/app.py`:
+  - `VIEW_ORDER`/`VIEW_KEYS` extended with `"people"` → key `9`.
+  - `action_team_filter_cycle` docstring updated to note the filter affects both standup and people views.
+- `README.md`: documented the `9` **People** view in the keybinding table.
+- `tests/test_app.py`: updated `test_two_now_opens_agenda` to include the new `people` entry in `VIEW_ORDER`/`VIEW_KEYS`.
+
+### Tests added (`tests/test_team_views.py`)
+- `test_people_lanes_render_by_person_with_readonly_marks` — AT-T5: two-member team renders lanes for both members; foreign card carries `◦` and operator card does not.
+- `test_people_filter_changes_visible_tasks` — filter parity: operator lane shows the correct task under `equipo` vs `personal`.
+- `test_people_nav_model_has_selectable_rows` — nav parity: people view returns a single selectable column with task ids in screen order.
+- `test_key_9_switches_to_people_view` — app-level pilot test pressing `9` switches to people view.
+- `test_people_width_sweep_is_cell_exact` — width sweep 1..120 asserts `cell_len(line) == width` for every row.
+
+### Mutation evidence (RED arms)
+Each AT was temporarily broken in the expected way, run, and restored exactly.
+
+**AT-T5 RED — read-only mark disabled:**
+```
+tests/test_team_views.py::test_people_lanes_render_by_person_with_readonly_marks FAILED
+E   AssertionError: foreign card should carry the read-only mark
+E   assert '\u25e6' in '  Ana team task                                                                 '
+```
+*Failure:* forcing `card_cell` to ignore the `readonly` flag left foreign cards visually identical to operator cards, breaking the read-only merge surface.
+
+**AT-T5 RED — filter parity killed:**
+```
+tests/test_team_views.py::test_people_filter_changes_visible_tasks FAILED
+E   AssertionError: assert 'Personal task' not in 'PEOPLE ...'
+tests/test_team_views.py::test_standup_filter_changes_top_task_source FAILED
+E   AssertionError: assert 'Team task' in 'STANDUP ...'
+```
+*Failure:* with `_member_tasks_for_filter` returning the unfiltered task list, both people lanes and standup showed tasks from the wrong classification world.
+
+**AT-T5 RED — nav rows removed:**
+```
+tests/test_team_views.py::test_people_nav_model_has_selectable_rows FAILED
+E   AssertionError: people nav should return one selectable column
+E   assert [] == [['8ca2bcc1']]
+```
+*Failure:* treating the people view like a read-only dashboard (empty nav model) made its tasks unreachable by cursor navigation, violating F-3 law.
+
+### Suite status after increment
+`python -m pytest tests/test_team_views.py -q` → **251 passed**.
+`python -m pytest tests/ -q` → **1291 passed** (1167 after inc-3 + 124 new increment-4 tests;
+width sweep accounts for 120 of the new tests). `test_win_clipboard_roundtrip` not flagged;
+environmental flake convention stands.
+
+### Suggested commit message
+`batch-11 inc-4: V2 people lanes + key 9 + filter parity`

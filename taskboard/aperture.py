@@ -55,6 +55,7 @@ class ApertureScreen(Screen):
         Binding("5", "jump('kanban')", "Kanban", group=VIEWS),
         Binding("7", "jump('flow')", "Flow", group=VIEWS),
         Binding("8", "jump('standup')", "Standup", group=VIEWS),
+        Binding("9", "jump('people')", "People", group=VIEWS),
         Binding("t", "cycle_language", "Language"),
         Binding("r", "refresh_now", "Refresh"),
         # `q` closes the surface in front of you. It used to QUIT THE APP from

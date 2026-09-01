@@ -64,11 +64,11 @@ def test_the_retired_view_is_gone_from_the_code_entirely():
 
 
 async def test_two_now_opens_agenda(tmp_path):
-    """The renumbering, stated as a fact a test can hold: 1-5, no gap; flow is 7."""
+    """The view numbering: 1-5, no gap; flow is 7, standup 8, people 9."""
     from taskboard.app import VIEW_KEYS, VIEW_ORDER
-    assert VIEW_ORDER == ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup"]
+    assert VIEW_ORDER == ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people"]
     assert VIEW_KEYS == {"1": "swimlanes", "2": "agenda", "3": "gantt",
-                         "4": "kanban", "5": "focus", "7": "flow", "8": "standup"}
+                         "4": "kanban", "5": "focus", "7": "flow", "8": "standup", "9": "people"}
     app = make_app(tmp_path)
     async with app.run_test() as pilot:
         await pilot.press("2")

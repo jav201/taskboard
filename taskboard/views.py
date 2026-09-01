@@ -307,7 +307,8 @@ def _fit_indicators(tokens: list[tuple[str, str]], budget: int) -> tuple[str, in
 def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
               prefix: str = "", prefix_color: str = "mut",
               allow_priority: bool = True, today: date | None = None,
-              unblocks: dict[str, int] | None = None) -> str:
+              unblocks: dict[str, int] | None = None,
+              readonly: bool = False) -> str:
     """A width-exact card: `prefix` + truncated title + right indicators
     (↗ ! ▤ ·Nd +Nd ⛓N ▣).
 
@@ -329,6 +330,10 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
     tokens: list[tuple[str, str]] = []
     if has_url(task):
         tokens.append(("↗", "accent"))
+    if readonly:
+        # Foreign team cards are merged read-only; the mark sits in the quiet
+        # mut house so it never competes with urgency or project colour.
+        tokens.append(("◦", "mut"))
     if allow_priority and task.priority == "high" and not board.is_done(task):
         # THE GLYPH HOUSE. High priority used to be a ◉ in `amber` — the exact hex
         # (#fbbf24) the app uses for "due today". Two meanings, one colour, so the
@@ -3782,6 +3787,88 @@ def render_standup(board, show_archived, selected_id, today=None,
 
 
 # ---------------------------------------------------------------------------
+# view: PEOPLE  (V2 people lanes — axis is WHO, not project)
+# ---------------------------------------------------------------------------
+def render_people(board, show_archived, selected_id, today=None,
+                  width=68, height=0, line_map=None,
+                  team_state: TeamState | None = None,
+                  team_filter: str = "equipo") -> Text:
+    """The V2 people-lanes view: one lane per roster member.
+
+    Each lane header names the member and shows their sync age; the operator's
+    own lane carries an accent spine and a bold label. Cards below the header
+    are drawn with ``card_cell``; foreign cards carry the read-only ``◦`` mark
+    in the quiet mut house. The classification filter changes which tasks are
+    visible in each lane without touching the merged model.
+    """
+    today = today or date.today()
+    w = _clamp_width(width)
+    inner = w
+
+    chrome = render_team_filter_chrome(team_filter)
+    lines = [header(c("PEOPLE", "accent", bold=True) + c(" · ", "mut") + chrome,
+                    "", w)]
+    lines.append(head_rule(w))
+
+    if team_state is None:
+        msg = "team mode off — set a shared directory"
+        lines.append(line(c(fit(escape(msg), inner), "mut")))
+        lines.append(bottom(None, w))
+        return to_text(lines, height, w)
+
+    roster = team_state.roster()
+    if not roster:
+        msg = "no roster — check team.json"
+        lines.append(line(c(fit(escape(msg), inner), "mut")))
+        lines.append(bottom(None, w))
+        return to_text(lines, height, w)
+
+    names = team_state.member_names()
+    hues = team_state.member_hues()
+    prefix_w = 2
+
+    for member in roster:
+        uid = member["id"]
+        name = escape(names.get(uid, uid))
+        hue = hues.get(uid, "mut")
+        is_self = uid == team_state.user_id
+
+        tasks = _member_tasks_for_filter(board, team_state, uid, team_filter)
+        tasks = sort_by_due(tasks)
+
+        if uid == team_state.user_id:
+            age = _self_sync_age_minutes(team_state)
+        else:
+            age = team_state.sync_age(uid)
+        age_text = _format_sync_age(age)
+        tone = sync_tone(team_state, uid)
+
+        # lane header: spine + name + sync age
+        prefix = c("▌", "accent") + " " if is_self else c("▎", hue) + " "
+        right = c(age_text, "over" if tone == "over" else "dim")
+        right_w = vis(age_text)
+        name_w = max(0, inner - prefix_w - 1 - right_w)
+        name_field = c(fit(name, name_w), tone, bold=is_self)
+        header_row = prefix + name_field + " " + right
+        lines.append(line(header_row))
+
+        if not tasks:
+            lines.append(line("  " + c(fit("—", max(0, inner - prefix_w)), "dim")))
+        else:
+            for t in tasks:
+                readonly = not is_self
+                card = card_cell(t, board, max(0, inner - prefix_w),
+                                 t.id == selected_id, today=today,
+                                 readonly=readonly)
+                lines.append(line("  " + card))
+                if line_map is not None:
+                    line_map[t.id] = len(lines) - 1
+
+    lines.append(bottom(None, w))
+    return to_text(lines, height, w)
+
+
+# ---------------------------------------------------------------------------
 # view: KANBAN  (one column per phase with EVERY task, grouped by project;
 #                `tab` switches to a project x phase matrix)
 # ---------------------------------------------------------------------------
@@ -4267,6 +4354,7 @@ RENDERERS = {
     "focus": render_focus,
     "flow": render_flow,
     "standup": render_standup,
+    "people": render_people,
 }
 
 
@@ -4324,6 +4412,9 @@ def render_view(mode, board, show_archived, selected_id, today=None,
     if mode == "standup":
         return render_standup(board, show_archived, selected_id, today, width, height,
                               line_map, team_state=team_state, team_filter=team_filter)
+    if mode == "people":
+        return render_people(board, show_archived, selected_id, today, width, height,
+                             line_map, team_state=team_state, team_filter=team_filter)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 
@@ -4434,6 +4525,15 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
             return [[t.id for t in ordered]]
         pinned.sort(key=lambda t: _focus_sort_key(board, show_archived, t, today))
         return [[t.id for t in pinned]]
+
+    if mode == "people":
+        ids: list[str] = []
+        for member in team_state.roster():
+            uid = member["id"]
+            tasks = _member_tasks_for_filter(board, team_state, uid, team_filter)
+            tasks = sort_by_due(tasks)
+            ids.extend(t.id for t in tasks)
+        return [ids]
 
     if mode in ("flow", "standup"):  # read-only dashboards: no selectable rows
         return []
@@ -4677,6 +4777,13 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         out.append((c("▌", "accent"), "operator row"))
         out.append((c("▎", "mut"), "teammate row"))
         out.append((c("▰▱", "mut"), "open task load"))
+        if team_state is not None:
+            out.append((render_team_filter_chrome(team_filter),
+                        "classification filter"))
+    if mode == "people":
+        out.append((c("▌", "accent"), "operator lane"))
+        out.append((c("▎", "mut"), "teammate lane"))
+        out.append((c("◦", "mut"), "foreign card: read-only"))
         if team_state is not None:
             out.append((render_team_filter_chrome(team_filter),
                         "classification filter"))
