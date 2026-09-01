@@ -3,19 +3,20 @@
   "language": "en",
   "batch_id": "2026-09-01-batch-12",
   "batch_objective": "In-app Setup view (key 0), per-view help family, keybar per-view law, and initial team-sync-on-mount fix.",
-  "current_phase": 0,
+  "current_phase": 4,
   "phase_status": "complete",
   "iterations_per_phase": {
     "0": 1,
     "1": 0,
     "2": 0,
     "3": 3,
-    "4": 0,
+    "4": 1,
     "5": 0,
     "6": 0
   },
   "artifacts": {
-    "0": ".dev-flow/2026-09-01-batch-12/PLAN.md"
+    "0": ".dev-flow/2026-09-01-batch-12/PLAN.md",
+    "4": ".dev-flow/2026-09-01-batch-12/PLAN.md"
   },
   "standing_authorization": {
     "date": "2026-09-01",
@@ -219,6 +220,24 @@
       "date": "2026-09-01",
       "decision": "Increment 3 complete: Setup health checks + staged editing (save/esc/mutations).",
       "notes": "Added probe_setup_health; setup mutations via TextPrompt; action_setup_save writes team.json version bump + board.settings; render_setup shows cursor and checks; full suite 1292 passed."
+    },
+    {
+      "phase": 3,
+      "date": "2026-09-01",
+      "decision": "Increment 4 complete: per-view help family (LegendModal -> HelpModal).",
+      "notes": "HelpModal shows usage (left), legend/example/keys (right); `m` opens HelpScreen, `?` opens CommandPalette; help_usage/help_example cover 9 modes; tests/test_legend.py updated; full suite 1298 passed."
+    },
+    {
+      "phase": 3,
+      "date": "2026-09-01",
+      "decision": "Increment 5 complete: keybar per-view law (bar flag + palette-only globals).",
+      "notes": "Key gets `bar` flag; global commands (o,i,p,P,f,c,R,S) are palette-only; bar_keys filters bar=True while palette_commands lists all live keys; README notes per-view footer; full suite 1298 passed."
+    },
+    {
+      "phase": 4,
+      "date": "2026-09-01",
+      "decision": "Phase 4 validation complete.",
+      "notes": "Full suite 1298 passed; test_prism_laws.py oracle updated for law_keybar; test_report.py oracle updated for palette-only report key; no environmental failures."
     }
   ],
   "obsidian_synced": false,

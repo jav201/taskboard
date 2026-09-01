@@ -151,7 +151,7 @@ RED arm verified by temporarily returning `(True, "ok")` for all checks: the unw
 
 ## Increment 4 — US-S3: per-view help family
 
-**Status:** planned.
+**Status:** complete. **Commit:** `3a11eb0` (merged with inc-5).
 
 ### Changes
 - `taskboard/modals.py`: refactor `LegendModal` → `HelpModal`.
@@ -159,34 +159,42 @@ RED arm verified by temporarily returning `(True, "ok")` for all checks: the unw
 - `taskboard/views.py`: `help_usage` / `help_example` for 9 modes.
 
 ### Tests
-- `test_help_opens_for_each_view`
-- `test_help_legend_no_ghost_marks`
-- `test_help_keys_subset_of_fit_bar`
-- `test_help_map_reaches_full_keymap`
+- `tests/test_setup_help.py::test_question_mark_opens_per_view_help_modal`
+- `tests/test_setup_help.py::test_help_modal_shows_usage_legend_example_and_keys`
+- `tests/test_setup_help.py::test_help_modal_m_opens_full_keymap`
+- `tests/test_setup_help.py::test_help_modal_question_mark_opens_command_palette`
+- `tests/test_legend.py` updated for the new `?` → HelpModal → `?` palette flow.
 
 ## Increment 5 — US-S4: keybar per-view law
 
-**Status:** planned.
+**Status:** complete. **Commit:** `3a11eb0` (merged with inc-4).
 
 ### Changes
 - `taskboard/keymap.py`: `bar` flag; global commands `bar=False`; `palette_commands` includes all live keys.
-- `tests/test_keymap.py`: update oracles; add global-not-in-bar test.
-- `README.md`: document key `0` and updated bar.
+- `tests/test_keymap.py`: update oracles; add global-not-in-bar and palette-includes-globals tests.
+- `tests/test_prism_laws.py`: update `law_keybar` oracle to renamed bar test.
+- `tests/test_report.py`: report key is palette-only.
+- `README.md`: document the per-view footer and palette-only globals.
 
 ### Tests
-- `test_global_commands_in_palette_not_bar`
-- `test_setup_keys_only_in_setup_bar`
+- `tests/test_keymap.py::test_global_commands_are_palette_only_not_in_the_bar`
+- `tests/test_keymap.py::test_the_palette_includes_palette_only_globals`
 
 ---
 
 # Phase 4 — Validation
 
-- `python -m pytest tests/ -q` green.
-- Clipboard flake re-run alone; report if still fails.
-- Mutation evidence per AT recorded.
+**Status:** complete.
+
+- `python -m pytest tests/ -q` green: **1298 passed**.
+- Clipboard flake not observed; none of the failures were environmental.
+- Mutation evidence recorded per increment in this PLAN.
 
 # Phase 5 — Close
 
+**Status:** in progress.
+
 - Reconcile files; keep `prototypes/*` untracked.
 - Update `state.json` and `.dev-flow/BACKLOG.md`.
+- Push/merge only on explicit operator order.
 - Push only on explicit order.

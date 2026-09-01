@@ -3,12 +3,12 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `b3d990f` (local HEAD == `origin/main`)
+**Base ref:** `3a11eb0` (local HEAD ahead of `origin/main`)
 · **Last refresh:** 2026-09-01
-**Status:** **1284 tests green** on `main`. Batch-11 team sync spine shipped;
-aperture/widget removed and key `6` freed. V4 report, V5 templates, V6
-batch-email and V7 chains deferred. `test_win_clipboard_roundtrip` remains an
-intermittent environmental flake.
+**Status:** **1298 tests green** locally. Batch-12 (in-app Setup, per-view help,
+keybar per-view law, initial-sync fix) committed and ready to push. V4 report,
+V5 templates, V6 batch-email and V7 chains deferred. `test_win_clipboard_roundtrip`
+remains an intermittent environmental flake.
 
 ## Open — after `2026-08-07-fastflow-07`
 
@@ -54,6 +54,22 @@ intermittent environmental flake.
   V7 task chains + day-shift cascade.
 - **No new carry-overs.** All batch-11 acceptance tests pass (1290 total);
   mutation evidence recorded in `.dev-flow/2026-09-01-batch-11/PLAN.md`.
+
+## Shipped — batch-12 (`3a11eb0`, 2026-09-01)
+
+- **US-S1 initial sync on mount:** configured identities sync immediately on
+  mount, before the daemon's first tick.
+- **US-S2 in-app Setup:** full-screen Setup view on key `0`, editable shared
+  directory / sync interval / identity / shared projects / roster, advisory
+  health checks, `ctrl+s` commit, `esc` discard.
+- **US-S3 per-view help family:** `?` opens `HelpModal` for the active view
+  (usage + live legend + example + keys); `m` opens the full keymap;
+  `?` inside help opens the command palette.
+- **US-S4 keybar per-view law:** new `bar` flag on `Key`; global commands
+  (`o`, `i`, `p`, `P`, `f`, `c`, `R`, `S`) are bound but palette-only; the
+  footer shows only view-local + universal keys.
+- **No new carry-overs.** All batch-12 acceptance tests pass (1298 total);
+  mutation evidence recorded in `.dev-flow/2026-09-01-batch-12/PLAN.md`.
 
 ## Open — after `2026-08-07-fastflow-06`
 
