@@ -169,8 +169,8 @@
     {
       "phase": 6,
       "date": "2026-09-01",
-      "decision": "Phase 6 docs complete; batch-11 closed locally.",
-      "notes": "README keybinding table updated for keys 8/9; BACKLOG.md refreshed to base ref 2eda873 with shipped summary and V4/V5/V6/V7 deferral. No push performed pending operator order."
+      "decision": "Phase 6 docs complete; batch-11 pushed to origin/main.",
+      "notes": "README keybinding table updated for keys 8/9; BACKLOG.md refreshed to base ref 2eda873 with shipped summary and V4/V5/V6/V7 deferral. Push executed at operator order: main e831250..6aec6bf."
     }
   ],
   "obsidian_synced": false,
