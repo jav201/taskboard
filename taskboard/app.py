@@ -205,11 +205,10 @@ class TaskboardApp(App):
         self.team_state: TeamState | None = None
         self.team_filter: str = "equipo"   # session-level classification filter
 
-    # keys that act on the BOARD — a surface the aperture replaces. They stayed
-    # live there (`d` opened a delete-confirm for a task nobody could see) and
-    # they were indicated by nothing. FALSE, not None: Textual drops a binding
-    # from `active_bindings` only on `is False`; None leaves it listed and
-    # merely disabled, i.e. a legend entry that does nothing.
+    # keys that act on the BOARD. They stay live on pushed screens (e.g. a
+    # modal) and were indicated by nothing. FALSE, not None: Textual drops a
+    # binding from `active_bindings` only on `is False`; None leaves it listed
+    # and merely disabled, i.e. a legend entry that does nothing.
     BOARD_ACTIONS = frozenset({
         "add_task", "add_project", "manage_projects", "manage_phases",
         "details", "edit", "delete", "archive", "purge_done", "report",
@@ -219,25 +218,14 @@ class TaskboardApp(App):
         "focus_cycle", "focus_exit", "due_bump", "undo", "standup",
         "toggle_presentation", "cursor", "hmove",
         "pin_toggle", "project_pin_toggle"})
-    # `quit` is deliberately NOT in that set: the aperture shadows `q` with its
-    # own Back binding, and ctrl+q must stay the one door out from anywhere.
 
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
         """While a modal is open, release the board's priority arrow/vim bindings
         so the modal's own widgets (e.g. the ProjectPicker list, Select dropdowns)
-        receive them instead of moving the hidden board selection.
-
-        On the APERTURE the same reasoning goes further: it is not the board, it
-        is the ambient face of it, so every key that edits or navigates the board
-        is dropped there (the aperture is a launcher — press 1-4 to reach the
-        surface those keys belong to)."""
+        receive them instead of moving the hidden board selection."""
         if (action in ("cursor", "hmove", "toggle_presentation")
                 and len(self.screen_stack) > 1):
             return False
-        if action in self.BOARD_ACTIONS and len(self.screen_stack) > 1:
-            from .aperture import ApertureScreen      # lazy: aperture imports us
-            if isinstance(self.screen, ApertureScreen):
-                return False
         return True
 
     def compose(self) -> ComposeResult:
@@ -411,15 +399,7 @@ class TaskboardApp(App):
 
     def action_legend(self) -> None:
         """`?` — the command palette: search every binding by name or key and
-        run it. On the APERTURE it remains that surface's full KEYMAP
-        (HelpScreen): a palette of board commands would describe a screen the
-        user is not looking at."""
-        from .aperture import ApertureScreen      # lazy: aperture imports us
-        if isinstance(self.screen, ApertureScreen):
-            rows = [[(d, t) for d, t, _ in binding_map(self.screen, shown=s)]
-                    for s in (True, False)]
-            self.push_screen(HelpScreen(rows[0], rows[1]))
-            return
+        run it."""
         self.push_screen(CommandPalette(palette_commands(self.view_mode)),
                          callback=self._on_palette_run)
 
@@ -435,12 +415,6 @@ class TaskboardApp(App):
         switches and resizes."""
         keybar = self.query_one("#keybar", KeyBar)
         keybar.set_layer("more" if keybar.layer == "primary" else "primary")
-
-    def action_aperture(self) -> None:
-        """`6` — the widget posture as a pushed screen (ADD, don't replace):
-        the ambient face of the board, and a launcher back into the views."""
-        from .aperture import ApertureScreen      # lazy: aperture imports us
-        self.push_screen(ApertureScreen(self.board))
 
     def action_report(self) -> None:
         """`R` — write an HTML report of the board beside the board file.

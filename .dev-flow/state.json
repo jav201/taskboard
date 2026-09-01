@@ -1,28 +1,29 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-09-01-batch-11",
-  "batch_objective": "taskboard goes team: US-T1 sync core (shared-dir config, per-person files, team.json authority, first-run identity, staleness) + US-T2 team views (V3 standup home + V2 people lanes + todo/equipo/personal classification filter). V4 report, V5 templates, V6 batch-email and V7 chains deferred to later batches.",
+  "batch_id": "2026-09-01-cleanup-aperture",
+  "batch_objective": "Remove the aperture/widget feature completely and free the 6 keybinding.",
   "current_phase": 6,
   "phase_status": "complete",
   "iterations_per_phase": {
     "0": 0,
     "1": 0,
     "2": 0,
-    "3": 4
+    "3": 1,
+    "4": 0,
+    "5": 0,
+    "6": 1
   },
   "artifacts": {
-    "0": ".dev-flow/2026-09-01-batch-11/PLAN.md",
-    "1": ".dev-flow/2026-09-01-batch-11/PLAN.md#phase-1",
-    "2": ".dev-flow/2026-09-01-batch-11/PLAN.md#phase-2",
-    "3": ".dev-flow/2026-09-01-batch-11/PLAN.md#phase-3"
+    "0": ".dev-flow/2026-09-01-cleanup-aperture/PLAN.md",
+    "3": ".dev-flow/2026-09-01-cleanup-aperture/PLAN.md#increment-1"
   },
   "standing_authorization": {
     "date": "2026-09-01",
     "asked_at": "operator directed continuation from handoff-batch-11-team-sync.md and confirmed 'vamos ahora'",
     "autonomy": "end-to-end autonomous within the approved batch scope",
     "merge_authority": true,
-    "operator_phrasing": "Autónomo + commits autorizados; push sigue a la orden",
+    "operator_phrasing": "Aut\u00f3nomo + commits autorizados; push sigue a la orden",
     "close_behaviour": "commits authorized per increment; push requires explicit operator order",
     "decision_recording": "PLAN.md decision log + state.json decisions_log",
     "decision_recording_phrasing": "recorded in the batch PLAN and state"
@@ -32,7 +33,7 @@
       "phase": 0,
       "date": "2026-08-19",
       "decision": "batch opened",
-      "notes": "Operator directed implementation from handoff-lanes-grid.md using /dev-flow. Variant chosen: G2 grid 2×3."
+      "notes": "Operator directed implementation from handoff-lanes-grid.md using /dev-flow. Variant chosen: G2 grid 2\u00d73."
     },
     {
       "phase": 0,
@@ -73,7 +74,7 @@
     {
       "phase": 2,
       "date": "2026-08-24",
-      "decision": "Phase 2 review (2 agents parallel): 7 blockers folded — set_task_phase symbol, census, undo depends_on copy + commit-time snapshot, unblock explicit in both sort seats, b-modal breaks 2 pinned tests (declared rewrite), dirty-DAG law, English prompt copy. Notices folded: hook in models.py, injectable clock, shed order [.. +Nd ⛓N ▣] supersedes countdown comment, flow legend state-aware.",
+      "decision": "Phase 2 review (2 agents parallel): 7 blockers folded \u2014 set_task_phase symbol, census, undo depends_on copy + commit-time snapshot, unblock explicit in both sort seats, b-modal breaks 2 pinned tests (declared rewrite), dirty-DAG law, English prompt copy. Notices folded: hook in models.py, injectable clock, shed order [.. +Nd \u26d3N \u25a3] supersedes countdown comment, flow legend state-aware.",
       "notes": "clipboard flake corrected: passed at Phase-2 baseline; intermittent environmental."
     },
     {
@@ -91,20 +92,20 @@
     {
       "phase": 3,
       "date": "2026-08-29",
-      "decision": "Increment 2 complete: flow view (key 7) with cycle time, phase×week heatmap, weekly throughput.",
+      "decision": "Increment 2 complete: flow view (key 7) with cycle time, phase\u00d7week heatmap, weekly throughput.",
       "notes": "6 new tests in tests/test_flow_view.py; full suite 1011 passed; RED-arm mutation evidence recorded in PLAN.md. README keybinding table and VIEW_ORDER/VIEW_KEYS updated."
     },
     {
       "phase": 3,
       "date": "2026-08-29",
-      "decision": "Increment 3 complete: block-becomes-task flow + ⛓N token + unblock sort.",
+      "decision": "Increment 3 complete: block-becomes-task flow + \u26d3N token + unblock sort.",
       "notes": "8 new tests in tests/test_dependencies.py; full suite 1019 passed; RED-arm mutation evidence recorded in PLAN.md. Existing kanban sort-cycle oracle and undo snapshot test updated."
     },
     {
       "phase": 3,
       "date": "2026-08-29",
       "decision": "Increment 4 complete: gantt critical chain.",
-      "notes": "critical_chain helper in models.py; render_gantt highlights the longest open dependency chain via the existing └─► seat (accent) and a header suffix; 5 new tests in tests/test_dependencies.py; full suite 1024 passed; RED-arm mutation evidence recorded in PLAN.md."
+      "notes": "critical_chain helper in models.py; render_gantt highlights the longest open dependency chain via the existing \u2514\u2500\u25ba seat (accent) and a header suffix; 5 new tests in tests/test_dependencies.py; full suite 1024 passed; RED-arm mutation evidence recorded in PLAN.md."
     },
     {
       "phase": 4,
@@ -152,7 +153,7 @@
       "phase": 3,
       "date": "2026-09-01",
       "decision": "Increment 4 complete: V2 people lanes + key 9 + filter parity.",
-      "notes": "render_people in views.py draws one lane per roster member with header (name + sync age + accent spine for operator) and card_cell cards; foreign cards carry read-only ◦ mark via new card_cell readonly parameter; nav_model returns selectable rows; legend_entries documents people marks; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 9; README table updated; tests/test_team_views.py extended with 5 new tests (251 total); full suite 1290 passed plus 1 environmental clipboard flake; RED-arm mutation evidence recorded in PLAN.md."
+      "notes": "render_people in views.py draws one lane per roster member with header (name + sync age + accent spine for operator) and card_cell cards; foreign cards carry read-only \u25e6 mark via new card_cell readonly parameter; nav_model returns selectable rows; legend_entries documents people marks; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 9; README table updated; tests/test_team_views.py extended with 5 new tests (251 total); full suite 1290 passed plus 1 environmental clipboard flake; RED-arm mutation evidence recorded in PLAN.md."
     },
     {
       "phase": 4,
@@ -171,6 +172,30 @@
       "date": "2026-09-01",
       "decision": "Phase 6 docs complete; batch-11 pushed to origin/main.",
       "notes": "README keybinding table updated for keys 8/9; BACKLOG.md refreshed to base ref 2eda873 with shipped summary and V4/V5/V6/V7 deferral. Push executed at operator order: main e831250..6aec6bf."
+    },
+    {
+      "phase": 0,
+      "date": "2026-09-01",
+      "decision": "cleanup-aperture opened",
+      "notes": "Operator directed removal of aperture/widget and freeing of key 6."
+    },
+    {
+      "phase": 3,
+      "date": "2026-09-01",
+      "decision": "Increment 1 complete: aperture/widget removed and key 6 freed.",
+      "notes": "Deleted taskboard/aperture.py, prototypes/widget_slice/, and dead modules hero.py/language.py/engine.py/themes.py/motion.py/naught.py/bases.py; removed action_aperture and aperture checks from app.py; removed 6 binding from keymap.py; updated README.md and tests; full suite 1284 passed."
+    },
+    {
+      "phase": 4,
+      "date": "2026-09-01",
+      "decision": "Phase 4 validation complete.",
+      "notes": "Full suite 1284 passed; RED-arm mutation evidence recorded in PLAN.md."
+    },
+    {
+      "phase": 6,
+      "date": "2026-09-01",
+      "decision": "Cleanup committed.",
+      "notes": "git add -A && git commit performed; push deferred pending operator order."
     }
   ],
   "obsidian_synced": false,
@@ -185,6 +210,11 @@
       "batch_id": "2026-08-24-batch-10",
       "mode": "core",
       "closed_at": "2026-08-29"
+    },
+    {
+      "batch_id": "2026-09-01-batch-11",
+      "mode": "core",
+      "closed_at": "2026-09-01"
     }
   ],
   "mode": "core"

@@ -2899,10 +2899,9 @@ def test_kanban_order_horizon_boundaries_and_done_group(tmp_path):
 def test_kanban_mode_actions_are_registered_and_guarded(tmp_path):
     """§3.0 / LLR-012.1 four-seat registration for `s`/`g`: a kanban-scoped
     KEYMAP entry each (placed before the arrow block), a real action on the
-    app, and BOARD_ACTIONS membership (what drops them on the aperture).
+    app, and BOARD_ACTIONS membership.
     RED: entry after the arrow block → the placement assertion red; action
-    missing from BOARD_ACTIONS → the frozenset limb red (the aperture probe
-    below is the behavioural half)."""
+    missing from BOARD_ACTIONS → the frozenset limb red."""
     from taskboard.app import TaskboardApp
     from taskboard.keymap import KEYMAP
     by_action = {k.action: k for k in KEYMAP}
@@ -2930,26 +2929,6 @@ async def test_kanban_mode_keys_are_noops_outside_kanban(tmp_path):
         assert app.kanban_sort == "project"
         assert app.kanban_group == "project"
         assert board_text(app) == before
-
-
-async def test_kanban_mode_keys_are_dead_on_the_aperture(tmp_path):
-    """HLR-012 limb for `s`/`g` (the PLAN's named aperture risk, executable):
-    with the aperture on top, pressing `s`/`g` leaves the mode state AND the
-    board file byte-unchanged — `check_action` drops them before they reach
-    the hidden board. RED: action missing from BOARD_ACTIONS → the key acts
-    on the hidden board and the state assertion fails."""
-    app = TaskboardApp(board_path=str(tmp_path / "a.json"))
-    async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.pause()
-        blob = Path(app.board.path).read_bytes()
-        await pilot.press("6")                      # the aperture
-        await pilot.pause()
-        for key in (_key_for("kanban_sort"), _key_for("kanban_group")):
-            await pilot.press(key)
-            await pilot.pause()
-        assert app.kanban_sort == "project"
-        assert app.kanban_group == "project"
-        assert Path(app.board.path).read_bytes() == blob
 
 
 # --------------------------------------------------------------------------- #
@@ -3317,10 +3296,9 @@ def test_matrix_presentation_nav_ignores_the_modes_like_the_render(tmp_path):
 def test_collapse_action_is_registered_and_guarded(tmp_path):
     """§3.0 four-seat registration for `z` (the `s`/`g` precedent): a
     kanban-scoped KEYMAP entry placed before the arrow block, a real action
-    on the app, and BOARD_ACTIONS membership (what drops it on the
-    aperture). RED: entry after the arrow block → the placement limb red;
-    action missing from BOARD_ACTIONS → the frozenset limb red (the aperture
-    probe below is the behavioural half)."""
+    on the app, and BOARD_ACTIONS membership. RED: entry after the arrow
+    block → the placement limb red; action missing from BOARD_ACTIONS → the
+    frozenset limb red."""
     from taskboard.keymap import KEYMAP
     by_action = {k.action: k for k in KEYMAP}
     entry = by_action["collapse_toggle"]
@@ -3345,23 +3323,6 @@ async def test_collapse_key_is_a_noop_outside_kanban(tmp_path):
         await pilot.pause()
         assert app.kanban_collapsed is False
         assert board_text(app) == before
-
-
-async def test_collapse_key_is_dead_on_the_aperture(tmp_path):
-    """The PLAN's named aperture risk, for `z`: with the aperture on top,
-    pressing `z` leaves the collapse flag AND the board file byte-unchanged
-    — `check_action` drops BOARD_ACTIONS there. RED: the action missing from
-    BOARD_ACTIONS → the key acts on the hidden board → the flag limb red."""
-    app = TaskboardApp(board_path=str(tmp_path / "ap.json"))
-    async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.pause()
-        blob = Path(app.board.path).read_bytes()
-        await pilot.press("6")                      # the aperture
-        await pilot.pause()
-        await pilot.press(_key_for("collapse_toggle"))
-        await pilot.pause()
-        assert app.kanban_collapsed is False
-        assert Path(app.board.path).read_bytes() == blob
 
 
 # ---------------------------------------------------------------------------
@@ -3528,13 +3489,12 @@ async def test_focus_cycle_order_seat_filter_and_archived_drop(tmp_path):
 def test_focus_due_undo_actions_are_registered_and_guarded(tmp_path):
     """§3.0 four-seat registration for `F` / `+,=` / `-` / `u` / escape:
     KEYMAP entries (kanban-scoped where §3.0 says so, global where it does
-    not) placed BEFORE the arrow block, real actions on the app,
-    BOARD_ACTIONS membership (what drops them on the aperture). The `=`
-    alias is ONE `"+,="` entry driving `due_bump(1)` — never a second key,
-    never a set-to-today (§6.5 AMD-06). RED: the alias split into two
-    entries → the single-entry limb red; an entry after the arrow block →
-    the placement limb red; an action missing from BOARD_ACTIONS → the
-    aperture probe below is the behavioural half."""
+    not) placed BEFORE the arrow block, real actions on the app, and
+    BOARD_ACTIONS membership. The `=` alias is ONE `"+,="` entry driving
+    `due_bump(1)` — never a second key, never a set-to-today (§6.5 AMD-06).
+    RED: the alias split into two entries → the single-entry limb red; an
+    entry after the arrow block → the placement limb red; an action missing
+    from BOARD_ACTIONS → the frozenset limb red."""
     from taskboard.keymap import KEYMAP
     by_action = {k.action: k for k in KEYMAP}
     assert by_action["due_bump(1)"].keys == "+,="       # ONE aliased entry
@@ -3556,32 +3516,6 @@ def test_focus_due_undo_actions_are_registered_and_guarded(tmp_path):
     for method in ("action_focus_cycle", "action_focus_exit",
                    "action_due_bump", "action_undo"):
         assert callable(getattr(TaskboardApp, method)), method
-
-
-async def test_focus_due_undo_keys_are_dead_on_the_aperture(tmp_path):
-    """The PLAN's named aperture risk for the Inc-5 keys: with the aperture
-    on top, `F` `+` `-` `u` leave the focus, the undo stack AND the board
-    file untouched — `check_action` drops BOARD_ACTIONS there. (escape is
-    the aperture's OWN pop binding, so it is not in this probe's set.)
-    RED: an action missing from BOARD_ACTIONS → its key acts on the hidden
-    board → the corresponding limb red."""
-    board = _ops_board(tmp_path, Task("Widget", None, "Doing",
-                                      due_date="2026-01-01"))
-    app = TaskboardApp(board_path=str(board.path))
-    async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.press("4")
-        await pilot.pause()
-        await pilot.press("6")                          # the aperture
-        await pilot.pause()
-        blob = Path(app.board.path).read_bytes()
-        for key in (_key_for("focus_cycle"), _key_for("due_bump(1)"),
-                    _key_for("due_bump(-1)"), _key_for("undo")):
-            await pilot.press(key)
-            await pilot.pause()
-        assert app.focused_project_id is None
-        assert app._undo_stack == []
-        assert Path(app.board.path).read_bytes() == blob
-        assert app.board.tasks[0].due_date == "2026-01-01"
 
 
 async def test_due_bump_moves_dated_and_undated_tasks_forward(tmp_path):
@@ -3896,9 +3830,9 @@ def test_standup_action_is_registered_and_guarded(tmp_path):
     """§3.0 / LLR-012.1 four-seat registration for `S`: a global KEYMAP entry
     (the standup reads the board in ANY view, like `R` — not kanban-scoped)
     placed BEFORE the arrow block, a real `action_standup` on the app, and
-    BOARD_ACTIONS membership (what drops it on the aperture — AT-019 below is
-    the behavioural half). RED: entry after the arrow block → the placement
-    limb red; action missing from BOARD_ACTIONS → the frozenset limb red."""
+    BOARD_ACTIONS membership. RED: entry after the arrow block → the
+    placement limb red; action missing from BOARD_ACTIONS → the frozenset
+    limb red."""
     from taskboard.keymap import KEYMAP
     by_action = {k.action: k for k in KEYMAP}
     entry = by_action["standup"]
@@ -4023,60 +3957,6 @@ async def test_standup_modal_empty_week_says_so_in_one_line(tmp_path):
         assert not any("▐" in l for l in lines), \
             "a ghost project section on an empty week"
         assert "OLDSTAMP" not in text and "NEVERSTAMPED" not in text
-
-
-async def test_all_batch_keys_are_dead_on_the_aperture(tmp_path):
-    """AT-019 (HLR-012): the FULL §3.0 key set — `[` `]` `!` `b` `s` `g` `z`
-    `F` `+` `-` `=` `u` `S`, every physical key read off the seat (aliases
-    included, never typed as literals) — is dead while the aperture is on
-    top: the aperture stays the top screen, the mode/focus/undo state is
-    untouched, and the board file is BYTE-EQUAL afterwards. The boundary
-    limb: `escape` then pops the aperture itself (its own binding, not the
-    kanban focus-exit). RED counterfactual: an action missing from
-    BOARD_ACTIONS (delete one frozenset member) → its key reaches the
-    hidden board — a mutation key changes the file (the byte-equality limb
-    red), `S` pushes its modal over the aperture (the screen-identity limb
-    red)."""
-    from taskboard.aperture import ApertureScreen
-    from taskboard.keymap import KEYMAP
-    # the §3.0 actions — the physical keys are DERIVED from the seat below,
-    # so a re-keyed binding is followed, never hard-coded (the `=` alias of
-    # `+` rides along through the entry's own alias list)
-    batch_actions = ("phase_move(-1)", "phase_move(1)", "prio_cycle",
-                     "toggle_blocked", "kanban_sort", "kanban_group",
-                     "collapse_toggle", "focus_cycle", "due_bump(1)",
-                     "due_bump(-1)", "undo", "standup")
-    keys = [phys for action in batch_actions
-            for phys in next(k for k in KEYMAP if k.action == action)
-            .keys.split(",")]
-    assert len(keys) == 13, keys                  # the full §3.0 set, `=` too
-    task = Task("Widget", None, "Doing", due_date="2026-01-01")
-    board = _ops_board(tmp_path, task, name="ap13.json")
-    app = TaskboardApp(board_path=str(board.path))
-    async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.press("4")
-        await pilot.pause()
-        await pilot.press("6")                      # the aperture
-        await pilot.pause()
-        assert isinstance(app.screen, ApertureScreen)
-        blob = Path(app.board.path).read_bytes()
-        for key in keys:
-            await pilot.press(key)
-            await pilot.pause()
-            assert isinstance(app.screen, ApertureScreen), \
-                f"{key!r} reached past the aperture (top: {app.screen!r})"
-        assert Path(app.board.path).read_bytes() == blob, \
-            "a key mutated the hidden board through the aperture"
-        assert app.kanban_sort == "project" and app.kanban_group == "project"
-        assert app.kanban_collapsed is False
-        assert app.focused_project_id is None
-        assert app._undo_stack == []
-        assert app.board.task_by_id(task.id).due_date == "2026-01-01"
-        # boundary: escape is the aperture's OWN binding — it pops it
-        await pilot.press("escape")
-        await pilot.pause()
-        assert len(app.screen_stack) == 1, "escape did not pop the aperture"
-        assert Path(app.board.path).read_bytes() == blob
 
 
 # ---- Increment 3 · Global search `/` -------------------------------------- #
