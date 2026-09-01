@@ -101,13 +101,16 @@ Packaging approved: **batch-12 = US-S1 + US-S2 + US-S3 + US-S4**. Deferred: V4/V
 
 ## Increment 1 — US-S1: initial sync on mount
 
-**Status:** planned.
+**Status:** complete. **Commit:** `TBD`.
 
 ### Changes
 - `taskboard/app.py` `_init_team_mode`: when `team_state.user_id` is set, call `self._run_team_sync()` before `self._start_team_daemon()`.
 
 ### Tests
-- `test_configured_identity_syncs_on_mount`: pilot test; peer appears in standup immediately.
+- `tests/test_setup_help.py::test_configured_identity_syncs_on_mount`: pilot test; peer appears in standup immediately.
+
+### Mutation evidence
+RED arm verified by temporarily removing the new `_run_team_sync()` call: test failed because Ana's task did not appear until a daemon tick. Restored.
 
 ## Increment 2 — US-S2 parte 1: Setup como vista
 
