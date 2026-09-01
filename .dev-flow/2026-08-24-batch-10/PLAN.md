@@ -498,3 +498,77 @@ dependency tests; 3 existing assertions updated for the new `unblock` sort and
 
 ### Suggested commit message
 `batch-10 inc-3: block-becomes-task flow + ⛓N + unblock sort`
+
+
+## Increment 4 — US-D part 2: gantt critical chain
+
+**Status:** complete. **Commit:** *pending*.
+
+### What changed
+- `taskboard/models.py`: `critical_chain(board: Board) -> list[str]` — longest
+  dependency chain among open tasks (not done, not archived). Edges only over
+  known task ids; dangling ids ignored; hand-edited cycles cannot hang the
+  renderer because every DFS path carries a visited set. Returns `[]` when no
+  chain of length ≥2 exists.
+- `taskboard/views.py`:
+  - `render_gantt` computes `chain = critical_chain(board)` and a `chain_ids`
+    lookup once per render.
+    - Header gains ` · cadena crítica N` in `accent` when a chain exists.
+    - The existing 3-cell `└─►` dependency seat at the project-task row and the
+      inbox row is toned `accent` for chain members, `mut` otherwise.
+  - The `if chain:` guard keeps the no-dependency render byte-identical to
+    before.
+
+### Tests added (`tests/test_dependencies.py`)
+- `test_critical_chain_finds_longest_open_chain` — pins the longest chain and
+  the deterministic tie-breaker.
+- `test_critical_chain_ignores_done_archived_and_dangling` — only open, known
+  edges count.
+- `test_critical_chain_cycle_safe` — a hand-edited A↔B cycle terminates without
+  repeating nodes.
+- `test_gantt_critical_chain_highlights_exactly_three_linked_tasks` — AT-D4:
+  header names length 3 and exactly the three chain members wear the accent
+  arrow; a non-chain dependent keeps `mut`.
+- `test_gantt_no_dependencies_has_no_chain_header_or_accent_arrow` — AT-D4:
+  dangling `depends_on` keeps the arrow glyph but does not form a chain, so no
+  header suffix and the arrow remains `mut`.
+
+### Mutation evidence (RED arms)
+Each AT was temporarily broken in the expected way, run, and restored exactly.
+
+**AT-D4 RED — longest-chain tie-breaker reversed:**
+```
+tests/test_dependencies.py::test_critical_chain_finds_longest_open_chain FAILED
+E   AssertionError: assert ['a', 'd', 'e'] == ['a', 'b', 'c']
+
+tests/test_dependencies.py::test_gantt_critical_chain_highlights_exactly_three_linked_tasks FAILED
+E   AssertionError: 'AChain' arrow is not accent
+```
+*Failure:* with the tie-breaker flipped, the alternative length-3 branch
+(`a → d → e`) was selected instead of the expected critical chain, so the
+wrong tasks were highlighted.
+
+**AT-D4 RED — chain-member accent tone disabled:**
+```
+tests/test_dependencies.py::test_gantt_critical_chain_highlights_exactly_three_linked_tasks FAILED
+E   AssertionError: 'AChain' arrow is not accent
+```
+*Failure:* the dependency arrow stayed `mut` for chain members, so the gantt
+no longer visually distinguished the critical chain.
+
+**AT-D4 RED — cycle guard removed:**
+```
+timeout 5 python -m pytest tests/test_dependencies.py::test_critical_chain_cycle_safe -q
+exit=124
+```
+*Failure:* without the `if nxt in seen: continue` guard, the hand-edited
+A↔B cycle caused infinite recursion and the test runner was killed by the
+5-second timeout.
+
+### Suite status after increment
+`python -m pytest tests/ -q` → **1024 passed** (1019 after inc-3 + 5 new
+critical-chain tests). `test_win_clipboard_roundtrip` not flagged;
+environmental flake convention stands.
+
+### Suggested commit message
+`batch-10 inc-4: gantt critical chain`

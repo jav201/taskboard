@@ -1292,3 +1292,52 @@ def unblocks_count(board: Board, task: Task) -> int:
         if tid in t.depends_on:
             count += 1
     return count
+
+
+def critical_chain(board: Board) -> list[str]:
+    """The longest open-task dependency chain, or ``[]`` when there are none.
+
+    A chain is a sequence of open tasks where each task unblocks the next
+    (``next.depends_on`` contains the previous task's id).  Dangling ids are
+    ignored, and a hand-edited cycle cannot hang the renderer because every
+    search path keeps a visited set.
+    """
+    open_tasks = [t for t in board.visible_tasks(False) if not board.is_done(t)]
+    open_ids = {t.id for t in open_tasks}
+    if len(open_ids) < 2:
+        return []
+
+    dependents: dict[str, list[str]] = {tid: [] for tid in open_ids}
+    for t in open_tasks:
+        for dep_id in t.depends_on:
+            if dep_id in open_ids and dep_id != t.id:
+                dependents[dep_id].append(t.id)
+    for dep_list in dependents.values():
+        dep_list.sort()
+
+    def longest_from(start: str) -> list[str]:
+        best = [start]
+
+        def extend(current: str, path: list[str], seen: set[str]):
+            nonlocal best
+            for nxt in dependents.get(current, []):
+                if nxt in seen:
+                    continue
+                new_path = path + [nxt]
+                if len(new_path) > len(best) or (
+                    len(new_path) == len(best) and new_path < best
+                ):
+                    best = new_path
+                extend(nxt, new_path, seen | {nxt})
+
+        extend(start, [start], {start})
+        return best
+
+    best_chain: list[str] = []
+    for tid in sorted(open_ids):
+        chain = longest_from(tid)
+        if len(chain) > len(best_chain) or (
+            len(chain) == len(best_chain) and chain < best_chain
+        ):
+            best_chain = chain
+    return best_chain if len(best_chain) >= 2 else []

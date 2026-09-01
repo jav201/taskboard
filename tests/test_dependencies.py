@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
@@ -12,8 +12,8 @@ from rich.text import Text
 from taskboard.app import TaskboardApp
 from taskboard.keymap import KEYMAP
 from taskboard.modals import BlockerPicker, TextPrompt
-from taskboard.models import Board, Project, Task, unblocks_count
-from taskboard.views import _kanban_cell_order, card_cell, kanban_order
+from taskboard.models import Board, Project, Task, critical_chain, unblocks_count
+from taskboard.views import HEX, _kanban_cell_order, card_cell, kanban_order, render_gantt
 
 
 def _key_for(action: str) -> str:
@@ -220,3 +220,122 @@ def test_unblock_cell_order_is_distinct_from_other_sorts(tmp_path):
     # under unblock, the task with a dependent (a) sorts before the one that
     # depends on it (d) because a has an unblock count > 0
     assert orders["unblock"].index(a.id) < orders["unblock"].index(d.id)
+
+
+# --------------------------------------------------------------------------- #
+# AT-D4: critical chain in gantt
+# --------------------------------------------------------------------------- #
+def test_critical_chain_finds_longest_open_chain(tmp_path):
+    p = Project("P", "sky")
+    a = Task("A", project_id=p.id, phase="Doing", id="a")
+    b = Task("B", project_id=p.id, phase="Doing", depends_on=[a.id], id="b")
+    c = Task("C", project_id=p.id, phase="Backlog", depends_on=[b.id], id="c")
+    # another length-3 branch from a so the deterministic tie-break is exercised
+    d = Task("D", project_id=p.id, phase="Backlog", depends_on=[a.id], id="d")
+    e = Task("E", project_id=p.id, phase="Backlog", depends_on=[d.id], id="e")
+    board = Board([p], [a, b, c, d, e], tmp_path / "board.json")
+    board.save()
+    chain = critical_chain(board)
+    assert chain == [a.id, b.id, c.id]
+
+
+def test_critical_chain_ignores_done_archived_and_dangling(tmp_path):
+    p = Project("P", "sky")
+    a = Task("A", project_id=p.id, phase="Doing")
+    b = Task("B", project_id=p.id, phase="Doing", depends_on=[a.id])
+    done = Task("Done", project_id=p.id, phase="Done", depends_on=[a.id])
+    archived = Task("Archived", project_id=p.id, phase="Doing",
+                    archived=True, depends_on=[a.id])
+    dangling = Task("Dangling", project_id=p.id, phase="Backlog",
+                    depends_on=["missing"])
+    board = Board([p], [a, b, done, archived, dangling], tmp_path / "board.json")
+    board.save()
+    assert critical_chain(board) == [a.id, b.id]
+
+
+def test_critical_chain_cycle_safe(tmp_path):
+    p = Project("P", "sky")
+    a = Task("A", project_id=p.id, phase="Doing")
+    b = Task("B", project_id=p.id, phase="Doing", depends_on=[a.id])
+    # hand-edited back-edge creates a cycle
+    a.depends_on = [b.id]
+    board = Board([p], [a, b], tmp_path / "board.json")
+    board.save()
+    # must terminate and must not claim a chain longer than the two nodes
+    chain = critical_chain(board)
+    assert len(chain) <= 2
+    assert not any(chain.count(tid) > 1 for tid in chain)
+
+
+def test_gantt_critical_chain_highlights_exactly_three_linked_tasks(tmp_path):
+    today = date(2026, 8, 15)
+    p = Project("P", "sky",
+                start_date=(today - timedelta(days=5)).isoformat(),
+                due_date=(today + timedelta(days=15)).isoformat())
+    a = Task("AChain", project_id=p.id, phase="Doing", id="a",
+             start_date=today.isoformat(),
+             due_date=(today + timedelta(days=2)).isoformat())
+    b = Task("BChain", project_id=p.id, phase="Doing", depends_on=[a.id], id="b",
+             start_date=(today + timedelta(days=3)).isoformat(),
+             due_date=(today + timedelta(days=5)).isoformat())
+    c = Task("CChain", project_id=p.id, phase="Backlog", depends_on=[b.id], id="c",
+             start_date=(today + timedelta(days=6)).isoformat(),
+             due_date=(today + timedelta(days=8)).isoformat())
+    d = Task("DChain", project_id=p.id, phase="Backlog", depends_on=[a.id], id="d",
+             start_date=(today + timedelta(days=6)).isoformat(),
+             due_date=(today + timedelta(days=8)).isoformat())
+    e = Task("EChain", project_id=p.id, phase="Backlog", depends_on=[d.id], id="e",
+             start_date=(today + timedelta(days=9)).isoformat(),
+             due_date=(today + timedelta(days=11)).isoformat())
+    board = Board([p], [a, b, c, d, e], tmp_path / "board.json")
+    board.save()
+    text = render_gantt(board, False, None, today, width=96, height=20)
+    assert "cadena crítica 3" in text.plain
+
+    accent = HEX["accent"]
+    mut = HEX["mut"]
+
+    def arrow_style(title):
+        idx = text.plain.find(title)
+        assert idx != -1, f"{title!r} not rendered"
+        arrow_idx = text.plain.find("└─►", idx)
+        assert arrow_idx != -1, f"{title!r} dependency arrow not rendered"
+        return [s for s in text.spans
+                if s.start <= arrow_idx < s.end
+                and (accent in str(s.style) or mut in str(s.style))]
+
+    for title in ("AChain", "BChain", "CChain"):
+        spans = arrow_style(title)
+        assert spans, f"{title!r} arrow has no expected tone"
+        assert all(accent in str(s.style) for s in spans), \
+            f"{title!r} arrow is not accent"
+
+    d_spans = arrow_style("DChain")
+    assert d_spans, "DChain arrow has no expected tone"
+    assert all(mut in str(s.style) for s in d_spans), \
+        "non-chain dependency arrow changed tone"
+
+
+def test_gantt_no_dependencies_has_no_chain_header_or_accent_arrow(tmp_path):
+    today = date(2026, 8, 15)
+    p = Project("P", "sky",
+                start_date=(today - timedelta(days=5)).isoformat(),
+                due_date=(today + timedelta(days=15)).isoformat())
+    # dangling id keeps the arrow glyph on screen but does not form a chain
+    a = Task("A", project_id=p.id, phase="Doing", depends_on=["missing"],
+             start_date=today.isoformat(),
+             due_date=(today + timedelta(days=2)).isoformat())
+    b = Task("B", project_id=p.id, phase="Backlog",
+             start_date=(today + timedelta(days=3)).isoformat(),
+             due_date=(today + timedelta(days=5)).isoformat())
+    board = Board([p], [a, b], tmp_path / "board.json")
+    board.save()
+    text = render_gantt(board, False, None, today, width=96, height=20)
+    assert "cadena crítica" not in text.plain
+
+    arrow_idx = text.plain.find("└─►")
+    assert arrow_idx != -1
+    accent = HEX["accent"]
+    assert not any(accent in str(s.style) and s.start <= arrow_idx < s.end
+                   for s in text.spans), \
+        "arrow wore accent when no critical chain exists"
