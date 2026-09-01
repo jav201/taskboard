@@ -3,12 +3,12 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `6aec6bf` (local HEAD == `origin/main`)
+**Base ref:** `b3d990f` (local HEAD == `origin/main`)
 · **Last refresh:** 2026-09-01
-**Status:** **1290 tests green** on `main`. Batch-11 team sync spine
-(US-T1 sync core + US-T2 V3 standup / V2 people lanes) shipped and pushed;
-V4 report, V5 templates, V6 batch-email and V7 chains deferred.
-`test_win_clipboard_roundtrip` remains an intermittent environmental flake.
+**Status:** **1284 tests green** on `main`. Batch-11 team sync spine shipped;
+aperture/widget removed and key `6` freed. V4 report, V5 templates, V6
+batch-email and V7 chains deferred. `test_win_clipboard_roundtrip` remains an
+intermittent environmental flake.
 
 ## Open — after `2026-08-07-fastflow-07`
 
