@@ -3,8 +3,8 @@
   "language": "en",
   "batch_id": "2026-08-24-batch-10",
   "batch_objective": "Cuantificar el movimiento del trabajo: US-A transitions log (history.jsonl append-only) + US-B flow view (cycle time, phase x week heatmap, weekly throughput) + US-D dependency intelligence (block becomes linked task, chain-N token, unblock-first sort, gantt critical chain). Desk loop (US-C) deferred to its own batch.",
-  "current_phase": 3,
-  "phase_status": "in_progress",
+  "current_phase": 6,
+  "phase_status": "complete",
   "iterations_per_phase": {
     "0": 0,
     "1": 0,
@@ -105,6 +105,24 @@
       "date": "2026-08-29",
       "decision": "Increment 4 complete: gantt critical chain.",
       "notes": "critical_chain helper in models.py; render_gantt highlights the longest open dependency chain via the existing └─► seat (accent) and a header suffix; 5 new tests in tests/test_dependencies.py; full suite 1024 passed; RED-arm mutation evidence recorded in PLAN.md."
+    },
+    {
+      "phase": 4,
+      "date": "2026-08-29",
+      "decision": "Phase 4 validation complete.",
+      "notes": "Full suite 1024 passed; per-AT verification table recorded in PLAN.md; win-clipboard flake convention stands."
+    },
+    {
+      "phase": 5,
+      "date": "2026-08-29",
+      "decision": "Phase 5 postmortem complete.",
+      "notes": "Working-file reconciliation: all batch-10 files committed; untracked prototypes/* belong to parallel batch-11 work. Lessons: deterministic ids for tie-break tests, cycle guard load-bearing, guarded render paths preserve byte-identical contracts."
+    },
+    {
+      "phase": 6,
+      "date": "2026-08-29",
+      "decision": "Phase 6 docs complete; batch-10 closed.",
+      "notes": "BACKLOG.md refreshed to base ref 0cf0e72 with shipped summary and US-C deferral. README already updated in inc-2. No push performed pending operator order."
     }
   ],
   "obsidian_synced": false,

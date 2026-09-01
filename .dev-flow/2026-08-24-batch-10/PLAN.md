@@ -572,3 +572,97 @@ environmental flake convention stands.
 
 ### Suggested commit message
 `batch-10 inc-4: gantt critical chain`
+
+
+---
+
+# Phase 4 — Validation
+
+**Status:** complete.
+
+## Full-suite run
+
+```
+python -m pytest tests/ -q
+1024 passed in 82.40s (0:01:22)
+```
+
+`tests/test_app.py::test_win_clipboard_roundtrip` did not flag in this run;
+it is treated as an intermittent environmental flake per repo convention.
+
+## Per-AT verification table
+
+| AT | Requirement | Test location | Result | RED arm evidence (PLAN.md) |
+|---|---|---|---|---|
+| AT-A1 | Phase move appends one transition | `tests/test_history.py::test_phase_move_appends_one_transition` | pass | Increment 1 — "append in set_task_phase killed" |
+| AT-A2 | `add_task` appends creation record | `tests/test_history.py::test_add_task_appends_creation_record` | pass | Increment 1 — "creation hook in add_task skipped" |
+| AT-A3 | Unwritable history path does not abort move | `tests/test_history.py::test_history_error_is_surfaced_without_aborting_move` | pass | Increment 1 — "history.append raised instead of swallowing" |
+| AT-A4 | Malformed history lines skipped and counted | `tests/test_history.py::test_read_skips_malformed_lines_and_counts_them` | pass | Increment 1 — "skip counter dropped" |
+| AT-B1 | Flow view renders cycle/heatmap/throughput | `tests/test_flow_view.py::test_flow_renders_cycle_heatmap_and_throughput` | pass | Increment 2 — "fixture dates changed" |
+| AT-B2 | Empty history shows sentence and no ramp | `tests/test_flow_view.py::test_flow_empty_history_shows_sentence_and_no_ramp` | pass | Increment 2 — "empty-state body rendered a ramp glyph" |
+| AT-B3 | Single transition renders without error | `tests/test_flow_view.py::test_flow_single_transition_renders_and_shows_open` | pass | Increment 2 — "open-interval label changed" |
+| AT-B4 | Width sweep cell-exact and key 7 wired | `tests/test_flow_view.py::test_flow_width_sweep_is_cell_exact` / `test_key_7_switches_to_flow_view` | pass | Increment 2 — "CYCLE header no longer padded" |
+| AT-D1 | Block flow wires depends_on + blocked, undo restores | `tests/test_dependencies.py::test_block_flow_links_existing_task_and_undo_restores` / `test_block_flow_creates_new_blocker_and_undo_restores` | pass | Increment 3 — "blocker id not appended to depends_on" |
+| AT-D2 | ⛓N token presence/absence and width contract | `tests/test_dependencies.py::test_unblocks_token_absent_at_zero_and_present_at_two` / `test_unblocks_token_keeps_width_contract` | pass | Increment 3 — "⛓N token threshold raised" |
+| AT-D3 | Unblock sort: blocked sinks, count desc | `tests/test_dependencies.py::test_unblock_sort_puts_blocked_last_and_orders_by_count` / `test_unblock_cell_order_is_distinct_from_other_sorts` | pass | Increment 3 — "blocked tasks floated" |
+| AT-D4 | Gantt critical chain highlights exactly longest chain | `tests/test_dependencies.py::test_gantt_critical_chain_highlights_exactly_three_linked_tasks` / `test_gantt_no_dependencies_has_no_chain_header_or_accent_arrow` | pass | Increment 4 — "longest-chain tie-breaker reversed", "accent tone disabled", "cycle guard removed" |
+
+## Cross-cutting checks
+
+- **Byte-identical no-deps guard:** `render_gantt` only emits the header suffix
+  and accent arrow when `critical_chain(board)` returns a non-empty chain;
+  the dangling-id test in AT-D4 verifies the fallback arrow stays `mut`.
+- **Cycle safety:** `critical_chain` uses a per-path visited set; the RED arm
+  shows the renderer hangs without it on a hand-edited A↔B cycle.
+- **Palette law:** the only new hue on the gantt is `accent` on the existing
+  `└─►` seat; bars retain their identity/project hues (verified by
+  `tests/test_gantt.py::test_a_bar_never_wears_an_urgency_hue`).
+
+
+---
+
+# Phase 5 — Postmortem
+
+**Status:** complete.
+
+## Working-file reconciliation
+
+```
+$ git status --short
+?? prototypes/city/
+?? prototypes/lanes_load/
+?? prototypes/mapper/
+?? prototypes/team_sync/
+?? prototypes/vista/
+```
+
+All batch-10 touched files are committed in `0cf0e72`. The untracked
+`prototypes/*` directories belong to a parallel batch-11 exploration and are
+NOT part of this batch. No uncommitted batch-10 changes remain; no reverts
+were needed.
+
+## Lessons
+
+1. **Deterministic fixtures need deterministic ids.** The critical-chain
+   tie-breaker test initially passed/failed depending on random UUID ordering;
+   pinning task ids made the RED arm reliable.
+2. **Cycle safety is not hypothetical.** Removing the visited-set guard caused
+   an immediate hang on a 2-node hand-edited cycle; the guard pays for itself.
+3. **Guarded render paths preserve byte-identical contracts.** The `if chain:`
+   check keeps no-dependency gantt output identical to pre-batch-10, which a
+   dedicated AT can verify through the dangling-id fallback.
+
+---
+
+# Phase 6 — Docs
+
+**Status:** complete.
+
+- `.dev-flow/BACKLOG.md` refreshed with new base ref `0cf0e72`, test count
+  (1024 green), and a "Shipped — batch-10" section summarizing scope and
+  deferring US-C.
+- `README.md` was already updated in increment 2 for the new `7` Flow view
+  keybinding and the `unblock` sort key; no further README changes were needed
+  for the gantt critical chain.
+- No new public API or operator-facing keybindings in increment 4, so no
+  additional user docs required.
