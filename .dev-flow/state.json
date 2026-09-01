@@ -9,7 +9,7 @@
     "0": 0,
     "1": 0,
     "2": 0,
-    "3": 2
+    "3": 3
   },
   "artifacts": {
     "0": ".dev-flow/2026-09-01-batch-11/PLAN.md",
@@ -141,6 +141,12 @@
       "date": "2026-09-01",
       "decision": "Increment 2 complete: daemon timer + first-run identity + staleness helpers.",
       "notes": "TaskboardApp integrates TeamState; first-run team mode prompts TeamIdentityPicker; team_sync_interval constructor keyword for tests; _team_sync_tick catches exceptions and surfaces warning notifications; sync_tone staleness helper; 4 new tests in tests/test_team_sync.py; full suite 1040 passed; RED-arm mutation evidence recorded in PLAN.md."
+    },
+    {
+      "phase": 3,
+      "date": "2026-09-01",
+      "decision": "Increment 3 complete: V3 standup view + key 8 + classification filter.",
+      "notes": "render_standup in views.py draws one row per roster member with load bar, top task + phase, sync age, accent spine for operator, over tone for stale rows; render_team_filter_chrome helper; team_filter session state and action_team_filter_cycle in app.py; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 8; README table updated; tests/test_team_views.py added (127 tests including width sweep); full suite 1167 passed; RED-arm mutation evidence recorded in PLAN.md."
     }
   ],
   "obsidian_synced": false,

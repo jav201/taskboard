@@ -27,6 +27,7 @@ from rich.text import Text
 
 from . import history
 from .models import Board, Task, critical_chain, days_in_phase, parse_iso, unblocks_count
+from .team_sync import TeamState, sync_tone
 from .wave import DOT_ROWS, Bitmap, load_curve
 
 # --- palette (hexes from the approved mockup; all survive rich quantization) --
@@ -3607,6 +3608,180 @@ def render_flow(board, show_archived, selected_id, today=None,
 
 
 # ---------------------------------------------------------------------------
+# team classification filter chrome (V2/V3)
+# ---------------------------------------------------------------------------
+TEAM_FILTER_MODES = ("todo", "equipo", "personal")
+
+
+def render_team_filter_chrome(active: str) -> str:
+    """The segmented control `todo · equipo · personal` as markup.
+
+    The active segment wears the accent house; the others wear the quiet dim
+    house. The separator is neutral so the three segments read as one control.
+
+    Semantics of each mode when applied to a member's task list:
+
+    * ``todo`` — every visible task, regardless of project.
+    * ``equipo`` — only tasks whose ``project_id`` is in the authoritative
+      ``team.json`` shared project list.
+    * ``personal`` — only tasks whose ``project_id`` is NOT in the shared
+      project list (including Inbox / project-less tasks).
+    """
+    out: list[str] = []
+    for mode in TEAM_FILTER_MODES:
+        tone = "accent" if mode == active else "dim"
+        out.append(c(mode, tone))
+    return " · ".join(out)
+
+
+def _member_tasks_for_filter(board: Board, team_state: TeamState,
+                             uid: str, team_filter: str):
+    """The tasks that belong to ``uid`` after applying the classification filter.
+
+    The operator's own tasks come from the local ``board``; everyone else's come
+    from ``team_state.foreign_tasks()`` filtered by owner.  The filter semantics
+    are documented in ``render_team_filter_chrome``.
+    """
+    team_ids = team_state.team_project_ids()
+    if uid == team_state.user_id:
+        tasks = list(board.tasks)
+    else:
+        tasks = [t for t, owner in team_state.foreign_tasks() if owner == uid]
+    if team_filter == "todo":
+        return tasks
+    if team_filter == "equipo":
+        return [t for t in tasks if t.project_id in team_ids]
+    if team_filter == "personal":
+        return [t for t in tasks if t.project_id not in team_ids]
+    return tasks
+
+
+def _self_sync_age_minutes(team_state: TeamState) -> int | None:
+    """Minutes since the operator's own last push, or None if never pushed."""
+    pushed_at = team_state.last_push_at
+    if not isinstance(pushed_at, str):
+        return None
+    try:
+        from datetime import datetime, timezone
+        dt = datetime.fromisoformat(pushed_at.replace("Z", "+00:00"))
+        return int((datetime.now(timezone.utc) - dt).total_seconds() // 60)
+    except ValueError:
+        return None
+
+
+def _format_sync_age(age: int | None) -> str:
+    """A short, width-honest age label."""
+    if age is None:
+        return "—"
+    if age < 60:
+        return f"{age}m"
+    return f"{age // 60}h{age % 60:02d}"
+
+
+# ---------------------------------------------------------------------------
+# view: STANDUP  (V3 team home — one row per roster member)
+# ---------------------------------------------------------------------------
+def render_standup(board, show_archived, selected_id, today=None,
+                   width=68, height=0, line_map=None,
+                   team_state: TeamState | None = None,
+                   team_filter: str = "equipo") -> Text:
+    """The V3 team home: one row per roster member.
+
+    Each row shows the member name, a load bar (``▰▱``) of open team tasks
+    against a sensible maximum, the member's top open task title + phase, and
+    the sync age. The operator's own row carries an accent spine. Stale rows
+    wear the ``over`` tone; fresh rows wear ``mut``.
+
+    When team mode is off ``team_state`` is ``None`` and the body says so.
+    """
+    today = today or date.today()
+    w = _clamp_width(width)
+    inner = w
+
+    chrome = render_team_filter_chrome(team_filter)
+    lines = [header(c("STANDUP", "accent", bold=True) + c(" · ", "mut") + chrome,
+                    "", w)]
+    lines.append(head_rule(w))
+
+    if team_state is None:
+        msg = "team mode off — set a shared directory"
+        lines.append(line(c(fit(escape(msg), inner), "mut")))
+        lines.append(bottom(None, w))
+        return to_text(lines, height, w)
+
+    roster = team_state.roster()
+    if not roster:
+        msg = "no roster — check team.json"
+        lines.append(line(c(fit(escape(msg), inner), "mut")))
+        lines.append(bottom(None, w))
+        return to_text(lines, height, w)
+
+    names = team_state.member_names()
+    hues = team_state.member_hues()
+    max_load = 5
+    load_bar_w = max_load
+
+    for member in roster:
+        uid = member["id"]
+        name = escape(names.get(uid, uid))
+        hue = hues.get(uid, "mut")
+        is_self = uid == team_state.user_id
+
+        tasks = _member_tasks_for_filter(board, team_state, uid, team_filter)
+        open_tasks = [t for t in tasks if not board.is_done(t)]
+        load = min(len(open_tasks), max_load)
+        bar = "▰" * load + "▱" * (max_load - load)
+
+        # top task: first open task by due date, or first task overall if none open
+        candidates = sort_by_due(open_tasks) if open_tasks else sort_by_due(tasks)
+        top = candidates[0] if candidates else None
+
+        if uid == team_state.user_id:
+            age = _self_sync_age_minutes(team_state)
+        else:
+            age = team_state.sync_age(uid)
+        age_text = _format_sync_age(age)
+
+        tone = sync_tone(team_state, uid)
+        # the operator's own row is identifiable by an accent spine
+        prefix = c("▌", "accent") + " " if is_self else c("▎", hue) + " "
+        prefix_w = 2
+
+        # right side: sync age, with a little breathing room
+        right = c(age_text, "over" if tone == "over" else "dim")
+        right_w = vis(age_text)
+
+        # name column: generous but not greedy
+        name_w = min(12, max(4, inner - prefix_w - load_bar_w - 1 - right_w - 1 - 1))
+        name_field = c(fit(name, name_w), tone, bold=is_self)
+
+        # task column fills the rest
+        task_x = prefix_w + name_w + 1 + load_bar_w + 1
+        task_w = max(0, inner - task_x - right_w - 1)
+        if top is not None:
+            phase = escape(str(top.phase))
+            tail = f" · {phase}"
+            tail_w = vis(tail)
+            title_w = max(0, task_w - tail_w)
+            title = escape(fit(top.title, title_w))
+            task_field = c(title, tone) + c(tail, "dim")
+        else:
+            task_field = c(fit("—", task_w), "dim")
+
+        row = prefix + name_field + " " + c(bar, "mut") + " " + task_field
+        # pad to inner exactly, then append right with one space
+        row_vis = vis(_strip(row))
+        pad = max(0, inner - row_vis - right_w - 1)
+        if pad:
+            row += " " * pad
+        row += " " + right
+        lines.append(line(row))
+
+    lines.append(bottom(None, w))
+    return to_text(lines, height, w)
+
+
+# ---------------------------------------------------------------------------
 # view: KANBAN  (one column per phase with EVERY task, grouped by project;
 #                `tab` switches to a project x phase matrix)
 # ---------------------------------------------------------------------------
@@ -4091,6 +4266,7 @@ RENDERERS = {
     "kanban": render_kanban,
     "focus": render_focus,
     "flow": render_flow,
+    "standup": render_standup,
 }
 
 
@@ -4100,7 +4276,9 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                 kanban_collapsed=False, kanban_focus=None,
                 gantt_focus=None, lanes_presentation="waves",
                 focus_presentation="cards",
-                search_query: str | None = None) -> Text:
+                search_query: str | None = None,
+                team_state: TeamState | None = None,
+                team_filter: str = "equipo") -> Text:
     query = (search_query or "").strip()
     w = _clamp_width(width)
     if mode == "focus":
@@ -4143,6 +4321,9 @@ def render_view(mode, board, show_archived, selected_id, today=None,
     if mode == "flow":
         return render_flow(board, show_archived, selected_id, today, width, height,
                            line_map)
+    if mode == "standup":
+        return render_standup(board, show_archived, selected_id, today, width, height,
+                              line_map, team_state=team_state, team_filter=team_filter)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 
@@ -4240,7 +4421,9 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
               kanban_sort="project",
               kanban_group="project", kanban_collapsed=False,
               kanban_focus=None, gantt_focus=None,
-              presentation="grouped", focus_presentation="cards") -> list[list[str]]:
+              presentation="grouped", focus_presentation="cards",
+              team_state: TeamState | None = None,
+              team_filter: str = "equipo") -> list[list[str]]:
     today = today or date.today()
     tasks = board.visible_tasks(show_archived)
 
@@ -4252,7 +4435,7 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
         pinned.sort(key=lambda t: _focus_sort_key(board, show_archived, t, today))
         return [[t.id for t in pinned]]
 
-    if mode == "flow":         # read-only dashboard: no selectable rows
+    if mode in ("flow", "standup"):  # read-only dashboards: no selectable rows
         return []
 
     if mode == "kanban":       # the phase columns, in THE shared seat's order
@@ -4385,7 +4568,9 @@ def _meter_swatch(days, done=False) -> str:
 
 def legend_entries(mode: str, board: Board, today: date | None = None,
                    width: int = 96, height: int = 30,
-                   show_archived: bool = False) -> list[tuple[str, str]]:
+                   show_archived: bool = False,
+                   team_state: TeamState | None = None,
+                   team_filter: str = "equipo") -> list[tuple[str, str]]:
     """(swatch, what it means) for the marks THIS view is currently drawing.
 
     The size is part of the question: the lanes allocator decides how many tasks
@@ -4488,6 +4673,13 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
             out.append((c("en curso n=1", "mut"), "open intervals: not a cycle yet"))
             out.append((c("░▒▓█", "mut"), "heatmap: task-days per phase × week"))
             out.append((c("█", "accent"), "throughput: tasks reaching the terminal phase"))
+    if mode == "standup":
+        out.append((c("▌", "accent"), "operator row"))
+        out.append((c("▎", "mut"), "teammate row"))
+        out.append((c("▰▱", "mut"), "open task load"))
+        if team_state is not None:
+            out.append((render_team_filter_chrome(team_filter),
+                        "classification filter"))
     if mode == "focus":
         pinned = focus_tasks(board, show_archived)
         if pinned:

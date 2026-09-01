@@ -35,9 +35,9 @@ TICK_SECONDS = 1.0
 # is shown exactly once per board rather than at every launch.
 RENUMBER_NOTICE_KEY = "seen_view_renumber_2026_07"
 
-VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow"]
+VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup"]
 VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
-             "5": "focus", "7": "flow"}
+             "5": "focus", "7": "flow", "8": "standup"}
 
 
 class BoardView(Static):
@@ -203,6 +203,7 @@ class TaskboardApp(App):
         self._last_history_error: str | None = None  # suppress duplicate warnings
         self.team_sync_interval = team_sync_interval
         self.team_state: TeamState | None = None
+        self.team_filter: str = "equipo"   # session-level classification filter
 
     # keys that act on the BOARD — a surface the aperture replaces. They stayed
     # live there (`d` opened a delete-confirm for a task nobody could see) and
@@ -396,7 +397,9 @@ class TaskboardApp(App):
                               gantt_focus=self.focused_project_id,
                               lanes_presentation=self.lanes_presentation,
                               focus_presentation=self.focus_presentation,
-                              search_query=self.search_query))
+                              search_query=self.search_query,
+                              team_state=self.team_state,
+                              team_filter=self.team_filter))
 
     def _apply_clock_settings(self) -> None:
         ribbons = self.query("#ribbon")
@@ -491,7 +494,9 @@ class TaskboardApp(App):
                          kanban_focus=self.focused_project_id,
                          gantt_focus=self.focused_project_id,
                          presentation=presentation,
-                         focus_presentation=self.focus_presentation)
+                         focus_presentation=self.focus_presentation,
+                         team_state=self.team_state,
+                         team_filter=self.team_filter)
 
     def _nav_flat(self) -> list[str]:
         return [tid for col in self._nav_columns() for tid in col]
@@ -765,7 +770,9 @@ class TaskboardApp(App):
                               gantt_focus=self.focused_project_id,
                               lanes_presentation=self.lanes_presentation,
                               focus_presentation=self.focus_presentation,
-                              search_query=self.search_query)
+                              search_query=self.search_query,
+                              team_state=self.team_state,
+                              team_filter=self.team_filter)
         board_widget.update(content)
         self._scroll_selected_into_view()
 
@@ -791,6 +798,15 @@ class TaskboardApp(App):
             self.view_mode = mode
             self._refresh_keybar()      # the bar states the CURRENT view's keys
             self.refresh_view()
+
+    def action_team_filter_cycle(self) -> None:
+        """Cycle the team-view classification filter: todo → equipo → personal.
+
+        The filter is session-level and survives view hops. It only affects the
+        team views (V3 standup now, V2 people lanes in increment 4)."""
+        modes = ("todo", "equipo", "personal")
+        self.team_filter = modes[(modes.index(self.team_filter) + 1) % len(modes)]
+        self.refresh_view()
 
     def _refresh_keybar(self) -> None:
         bars = self.query("#keybar")
