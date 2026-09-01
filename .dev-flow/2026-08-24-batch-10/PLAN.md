@@ -420,3 +420,81 @@ E           assert 5 == 24
 
 ### Suggested commit message
 `batch-10 inc-2: flow view (key 7) — cycle time, phase×week heatmap, weekly throughput`
+
+## Increment 3 — US-D part 1: block-becomes-task flow + ⛓N + unblock sort
+
+**Status:** complete. **Commit:** *pending*.
+
+### What changed
+- `taskboard/app.py`:
+  - Reworked `action_toggle_blocked`: unblocking flips directly; blocking asks
+    "What blocks it?" when candidate tasks exist, otherwise flips directly.
+  - Added `_on_blocker_picked` and `_on_new_blocker` callbacks: snapshot at
+    commit time, set `blocked=True`, append blocker id to `depends_on`; the
+    created blocker persists (modal add is not undoable).
+  - `_UNDO_FIELDS` gained `"depends_on"`; `_snapshot` copies the list so the
+    undo stack is not aliased by later mutations.
+- `taskboard/modals.py`: new `BlockerPicker` modal listing "(create new blocker)"
+  plus open candidate tasks; escaped titles; dismisses with blocker id,
+  `"__new__"`, or `None`.
+- `taskboard/models.py`: `unblocks_count(board, task)` — direct open dependents
+  only, ignores dangling ids and done/archived tasks.
+- `taskboard/views.py`:
+  - `card_cell` indicator order is now `[↗ ! ▤ ·Nd +Nd ⛓N ▣]`; the bare `⛓`
+    (U+26D3, no VS16) is a one-cell `mut`-tone token.  Counts are computed once
+    per render pass and passed via the new `unblocks` parameter.
+  - `kanban_order` and `_kanban_cell_order` gained explicit `"unblock"` branches:
+    unblocked tasks with the most dependents first, blocked tasks sink, stable
+    ties.
+- `tests/test_dependencies.py`: AT-D1 (existing/new blocker + undo), AT-D2
+  (⛓N presence/absence + width contract), AT-D3 (unblock sort order + parity).
+- `tests/test_app.py`: updated the kanban sort-cycle oracle and parity test for
+  the new `unblock` mode; updated the undo snapshot field assertion to include
+  `depends_on`.
+- `tests/test_cells.py`: updated the countdown-token docstring to reflect the
+  new shed order.
+
+### Tests added (`tests/test_dependencies.py`)
+- `test_block_flow_links_existing_task_and_undo_restores` — AT-D1 existing.
+- `test_block_flow_creates_new_blocker_and_undo_restores` — AT-D1 new.
+- `test_unblock_on_blocked_task_flips_without_prompt` — single-task guard.
+- `test_unblocks_count_direct_open_dependents_only` — model helper.
+- `test_unblocks_token_absent_at_zero_and_present_at_two` — AT-D2 presence.
+- `test_unblocks_token_keeps_the_width_contract` — AT-D2 width sweep.
+- `test_unblock_sort_puts_blocked_last_and_orders_by_count` — AT-D3 seat.
+- `test_unblock_cell_order_is_distinct_from_other_sorts` — AT-D3 nav parity.
+
+### Mutation evidence (RED arms)
+Each AT was temporarily broken in the expected way, run, and restored exactly.
+
+**AT-D1 RED — blocker id not appended to `depends_on`:**
+```
+tests/test_dependencies.py::test_block_flow_links_existing_task_and_undo_restores FAILED
+E           AssertionError: assert '<blocker-id>' in []
+```
+*Failure:* the blocked task flipped to `blocked=True` but its `depends_on` list
+stayed empty, so the link was not recorded.
+
+**AT-D2 RED — ⛓N token threshold raised:**
+```
+tests/test_dependencies.py::test_unblocks_token_absent_at_zero_and_present_at_two FAILED
+E       AssertionError: assert '⛓2' in 'Hub                                today'
+```
+*Failure:* the token required more than 10 dependents before rendering, so a
+hub with two dependents showed no chain glyph.
+
+**AT-D3 RED — blocked tasks floated instead of sinking:**
+```
+tests/test_dependencies.py::test_unblock_sort_puts_blocked_last_and_orders_by_count FAILED
+E       assert '<blocked-id>' == '<last-id>'
+```
+*Failure:* reversing the blocked tie-breaker put the blocked task at the top of
+the unblock sort instead of the bottom.
+
+### Suite status after increment
+`python -m pytest tests/ -q` → **1019 passed** (1011 after inc-2 + 8 new
+dependency tests; 3 existing assertions updated for the new `unblock` sort and
+`depends_on` snapshot). `test_win_clipboard_roundtrip` not flagged.
+
+### Suggested commit message
+`batch-10 inc-3: block-becomes-task flow + ⛓N + unblock sort`

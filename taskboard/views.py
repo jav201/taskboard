@@ -26,7 +26,7 @@ from rich.style import Style
 from rich.text import Text
 
 from . import history
-from .models import Board, Task, days_in_phase, parse_iso
+from .models import Board, Task, days_in_phase, parse_iso, unblocks_count
 from .wave import DOT_ROWS, Bitmap, load_curve
 
 # --- palette (hexes from the approved mockup; all survive rich quantization) --
@@ -305,9 +305,10 @@ def _fit_indicators(tokens: list[tuple[str, str]], budget: int) -> tuple[str, in
 
 def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
               prefix: str = "", prefix_color: str = "mut",
-              allow_priority: bool = True, today: date | None = None) -> str:
+              allow_priority: bool = True, today: date | None = None,
+              unblocks: dict[str, int] | None = None) -> str:
     """A width-exact card: `prefix` + truncated title + right indicators
-    (↗ ! ▤ ·Nd +Nd ▣).
+    (↗ ! ▤ ·Nd +Nd ⛓N ▣).
 
     Title is truncated with … so it can NEVER share a cell with the trailing
     indicators, at any width down to 0. Always returns exactly `wc` cells.
@@ -315,7 +316,11 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
     in its current phase — `days_in_phase` off `phase_changed` — shown only
     while the task is NOT done and the stamp is KNOWN (None is unknown, never
     zero: an unstamped card renders no token rather than a lying `·0d`, and
-    done work rests — its age is not work-in-progress information)."""
+    done work rests — its age is not work-in-progress information).
+
+    `unblocks` is a precomputed ``{task_id: count}`` map so a render pass pays
+    for the dependency count once, not per card (O(tasks²) trap).  When it is
+    omitted the helper computes the count directly (used by unit tests)."""
     if wc <= 0:
         return ""
     if wc < len(prefix):
@@ -348,13 +353,18 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
         # The deadline countdown (operator, 2026-08-24): days until the due
         # date rides EVERY dated card, the last phase included — a done card
         # keeps the FACT in the quiet dim house, never a judging hue
-        # (reldue_token's include_done seat). Listed just before the archived
-        # mark, so only ▣ is shed later than it. Put-away work shows nothing:
-        # an archived task has no live deadline.
+        # (reldue_token's include_done seat). Listed before the dependency and
+        # archived marks, so both are shed later than it. Put-away work shows
+        # nothing: an archived task has no live deadline.
         dtok, dcol = reldue_token(task, today or date.today(), board,
                                   include_done=True)
         if dtok:
             tokens.append((dtok, dcol))
+    # dependency unblock count: tasks waiting on this one.  The bare ⛓ is
+    # U+26D3 with NO VS16 so it costs one cell (cell_len("⛓") == 1).
+    n = unblocks.get(task.id) if unblocks is not None else unblocks_count(board, task)
+    if n:
+        tokens.append((f"⛓{n}", "mut"))
     if task.archived:
         # LAST in the list so it is the last thing shed under width pressure —
         # it is the only token here that says the row is not live work.
@@ -2940,6 +2950,7 @@ def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
                            inner), "dim"))]
 
     ordered = stale_order(board, tasks, today)
+    unblocks = {t.id: unblocks_count(board, t) for t in ordered}
     try:
         idx = next(i for i, t in enumerate(ordered) if t.id == selected_id)
     except StopIteration:
@@ -3009,7 +3020,8 @@ def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
                                     prefix="▸ " if i == idx else "▊ ",
                                     prefix_color="accent" if i == idx
                                     else project_color(board, q),
-                                    today=today), q.id))
+                                    today=today,
+                                    unblocks=unblocks), q.id))
 
     title = c("◆ FOCUS", "accent", bold=True) + c(" · review", "mut")
     right = c(f"{idx + 1}/{len(ordered)} · stale first", "mut")
@@ -3664,7 +3676,7 @@ def _kanban_groups(board, tasks, show_archived) -> list[tuple[str, str, list[Tas
 # answers "in what order do this column's tasks appear" for BOTH the renderer
 # and the navigator — the batch's named trap is a second ordering site that
 # silently keeps the default, so there is exactly one function and two callers.
-_KANBAN_SORT_MODES = ("project", "priority", "due", "recent")
+_KANBAN_SORT_MODES = ("project", "priority", "due", "recent", "unblock")
 _KANBAN_GROUP_MODES = ("project", "priority", "horizon")
 _PRIO_RANK = {"high": 0, "normal": 1, "low": 2}
 
@@ -3686,7 +3698,8 @@ def kanban_order(board, tasks, show_archived, *, group="project",
     board's pre-sort order, §6.5 AMD-09): `project` = board order as given;
     `priority` = blocked first, then high→normal→low, ties by due (undated
     sink); `due` = `sort_by_due` semantics with blocked first; `recent` =
-    `_recent_first`. Group: `project` = `_kanban_groups` verbatim (Inbox
+    `_recent_first`; `unblock` = unblocked tasks with the most dependents first,
+    blocked tasks sink. Group: `project` = `_kanban_groups` verbatim (Inbox
     last); `priority` = High/Normal/Low; `horizon` = Overdue/This week/Later/
     No date by `urgency()`, plus a trailing `Done` group — dim tone, its OWN
     pinned `phase_changed`-desc order regardless of the sort mode (§6.5
@@ -3732,6 +3745,15 @@ def kanban_order(board, tasks, show_archived, *, group="project",
                 not t.blocked, _PRIO_RANK.get(t.priority, 1),
                 parse_iso(t.due_date) is None,
                 parse_iso(t.due_date) or date.max))
+    elif sort == "unblock":
+        # board-wide dependency counts, computed once per call
+        counts = {t.id: unblocks_count(board, t)
+                  for t in board.tasks
+                  if not board.is_done(t) and not t.archived}
+
+        def order(items: list[Task]) -> list[Task]:
+            return sorted(items, key=lambda t: (
+                t.blocked, -counts.get(t.id, 0)))
     else:                    # "due" — sort_by_due semantics, blocked first
         def order(items: list[Task]) -> list[Task]:
             return sorted(items, key=lambda t: (
@@ -3744,7 +3766,7 @@ def kanban_order(board, tasks, show_archived, *, group="project",
 def _kanban_column_rows(board, tasks, wc, selected_id,
                         show_archived, *, group="project", sort="project",
                         collapsed=False, focus=None,
-                        today=None) -> list[tuple[str, str | None]]:
+                        today=None, unblocks=None) -> list[tuple[str, str | None]]:
     """(markup, task-id) rows for ONE phase column: a coloured group header
     followed by EVERY one of that group's tasks in this phase, in THE shared
     seat's order (`kanban_order` — never a second ordering). A COLLAPSED
@@ -3766,7 +3788,8 @@ def _kanban_column_rows(board, tasks, wc, selected_id,
                                    prefix="▲ " if t.blocked else "▊ ",
                                    prefix_color="over" if t.blocked
                                    else project_color(board, t),
-                                   today=today), t.id))
+                                   today=today,
+                                   unblocks=unblocks), t.id))
     if collapsed:
         # `✓` is the done mark and the done house is its only honest home —
         # and on the terminal phase every visible task IS done, so the mark
@@ -3808,6 +3831,10 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
         tasks = [t for t in tasks if t.project_id == focus]
     start, widths = _phase_window(board, inner, board.task_by_id(selected_id))
     buckets = phase_buckets(board, tasks)
+    # dependency counts are a board-wide fact: compute once, use everywhere.
+    all_open = [t for t in board.tasks
+                if not board.is_done(t) and not t.archived]
+    unblocks = {t.id: unblocks_count(board, t) for t in all_open}
     sep = c("│", "frame")
 
     right = c(f"{len(tasks)} tasks", "mut")
@@ -3827,7 +3854,8 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
     cols = [_kanban_column_rows(board, buckets[start + i], wc, selected_id,
                                 show_archived, group=group, sort=sort,
                                 collapsed=collapsed and start + i == last,
-                                focus=focus, today=today)
+                                focus=focus, today=today,
+                                unblocks=unblocks)
             for i, wc in enumerate(widths)]
     max_rows = max((len(col) for col in cols), default=0)
     if max_rows == 0:
@@ -3912,6 +3940,12 @@ def _kanban_cell_order(board, tasks, sort, today):
             not t.blocked, _PRIO_RANK.get(t.priority, 1),
             parse_iso(t.due_date) is None,
             parse_iso(t.due_date) or date.max))
+    if sort == "unblock":
+        counts = {t.id: unblocks_count(board, t)
+                  for t in board.tasks
+                  if not board.is_done(t) and not t.archived}
+        return sorted(tasks, key=lambda t: (
+            t.blocked, -counts.get(t.id, 0)))
     # "due" — sort_by_due semantics, blocked first
     return sorted(tasks, key=lambda t: (
         not t.blocked, parse_iso(t.due_date) is None,
@@ -3942,6 +3976,10 @@ def _kanban_lanes(board, show_archived, selected_id, today, w, height, line_map,
 
     lanes = kanban_order(board, tasks, show_archived, group=group, sort=sort,
                          collapsed=collapsed, focus=focus, today=today)
+    # dependency counts are a board-wide fact: compute once, use everywhere.
+    all_open = [t for t in board.tasks
+                if not board.is_done(t) and not t.archived]
+    unblocks = {t.id: unblocks_count(board, t) for t in all_open}
 
     right = c(f"{len(tasks)} tasks", "mut")
     mode = c(" · lanes", "mut")
@@ -3986,7 +4024,8 @@ def _kanban_lanes(board, show_archived, selected_id, today, w, height, line_map,
                 (card_cell(t, board, wc, t.id == selected_id,
                            prefix="▊ ",
                            prefix_color=project_color(board, t),
-                           today=today), t.id)
+                           today=today,
+                           unblocks=unblocks), t.id)
                 for t in shown]
             if len(bucket) > cap:
                 rows.append((c(fit(f"+{len(bucket) - cap + 1} more", wc), "dim"), None))

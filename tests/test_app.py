@@ -2462,6 +2462,8 @@ def _mode_board(tmp_path, name="modes.json") -> Board:
         Task("k08", pa.id, "Backlog", "high", due_date=iso(-1), phase_changed=iso(-4)),
         Task("k09", pb.id, "Backlog", "low", due_date=None, phase_changed=None),
     ]
+    # one dependency so the unblock sort has a distinct order from the others
+    tasks[0].depends_on = [tasks[4].id]
     b = Board([pa, pb], tasks, tmp_path / name,
               phases=["Backlog", "Doing", "Review", "Done"])
     b.save()
@@ -2546,8 +2548,8 @@ async def _assert_kanban_parity(app, pilot):
 async def test_kanban_parity_painted_text_oracle(tmp_path):
     """TC-006 (HLR-003/HLR-004, 01b §4 — the batch's central oracle): painted
     order == nav order per column, plus the arrow walk, swept after EVERY `s`
-    press (4 modes), after EVERY `g` press (3 modes), and across the full
-    4x3 sort-by-group cross-product. RED counterfactual (EXECUTED, see
+    press (5 modes), after EVERY `g` press (3 modes), and across the full
+    5x3 sort-by-group cross-product. RED counterfactual (EXECUTED, see
     increment-006): nav fed a different ordering than the renderer (the nav
     branch reverted to raw `_kanban_groups` order) → the per-column assertion
     goes red, and `down` moves the cursor off the visually-next card → the
@@ -2558,7 +2560,7 @@ async def test_kanban_parity_painted_text_oracle(tmp_path):
         await pilot.press("4")
         await pilot.pause()
         s_key, g_key = _key_for("kanban_sort"), _key_for("kanban_group")
-        for _ in range(4):                  # after every `s` press
+        for _ in range(5):                  # after every `s` press
             await _assert_kanban_parity(app, pilot)
             await pilot.press(s_key)
             await pilot.pause()
@@ -2568,8 +2570,8 @@ async def test_kanban_parity_painted_text_oracle(tmp_path):
             await pilot.press(g_key)
             await pilot.pause()
         assert app.kanban_group == "project"
-        for sort in ("project", "priority", "due", "recent"):   # the full
-            for group in ("project", "priority", "horizon"):    # cross-product
+        for sort in ("project", "priority", "due", "recent", "unblock"):   # full
+            for group in ("project", "priority", "horizon"):               # cross-product
                 app.kanban_sort, app.kanban_group = sort, group
                 app.refresh_view()
                 await pilot.pause()
@@ -2603,6 +2605,11 @@ async def test_kanban_sort_cycles_and_names_the_mode(tmp_path):
         elif sort == "recent":
             def key(t):
                 return (t.phase_changed is None, t.phase_changed or "")
+        elif sort == "unblock":
+            counts = {t.id: models.unblocks_count(board, t) for t in doing}
+
+            def key(t):
+                return (t.blocked, -counts.get(t.id, 0))
         else:
             key = None
         out = []
@@ -2616,8 +2623,8 @@ async def test_kanban_sort_cycles_and_names_the_mode(tmp_path):
                 out += items                        # project: board order
         return [t.id for t in out]
 
-    orders = {m: expected(m) for m in ("project", "priority", "due", "recent")}
-    assert len({tuple(o) for o in orders.values()}) == 4, "palindrome fixture"
+    orders = {m: expected(m) for m in ("project", "priority", "due", "recent", "unblock")}
+    assert len({tuple(o) for o in orders.values()}) == 5, "palindrome fixture"
     model_order = [t.id for t in board.tasks]
     app = TaskboardApp(board_path=str(board.path))
     async with app.run_test(size=(120, 40)) as pilot:
@@ -2625,7 +2632,7 @@ async def test_kanban_sort_cycles_and_names_the_mode(tmp_path):
         await pilot.pause()
         assert "sort:" not in board_text(app).split("\n")[0]   # default unnamed
         s_key = _key_for("kanban_sort")
-        for mode in ("priority", "due", "recent", "project"):
+        for mode in ("priority", "due", "recent", "unblock", "project"):
             await pilot.press(s_key)
             await pilot.pause()
             assert app.kanban_sort == mode
@@ -3849,7 +3856,7 @@ async def test_undo_stack_snapshot_stale_skip_and_no_write_on_empty(tmp_path):
         assert entry["fields"] == {"phase": "Doing", "phase_changed": None,
                                    "priority": "normal", "blocked": False,
                                    "due_date": None, "archived": False,
-                                   "pinned": False}
+                                   "pinned": False, "depends_on": []}
         # purged since the snapshot -> the entry is SKIPPED, no raise
         app.board.delete_task(task.id)      # the route undo does not cover
         await pilot.pause()

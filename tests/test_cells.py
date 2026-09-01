@@ -323,7 +323,7 @@ def test_card_cell_shows_the_deadline_countdown_on_every_dated_card():
 def test_card_cell_deadline_token_keeps_the_width_contract():
     """The countdown rides the SAME right-indicator budget: multi-cell token,
     exact `wc` at every width, shedding from the left so it outlives every
-    token but ▣."""
+    token but ⛓N and ▣."""
     from rich.text import Text
 
     from taskboard.views import card_cell
