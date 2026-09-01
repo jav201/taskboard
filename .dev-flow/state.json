@@ -1,25 +1,25 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-08-24-batch-10",
-  "batch_objective": "Cuantificar el movimiento del trabajo: US-A transitions log (history.jsonl append-only) + US-B flow view (cycle time, phase x week heatmap, weekly throughput) + US-D dependency intelligence (block becomes linked task, chain-N token, unblock-first sort, gantt critical chain). Desk loop (US-C) deferred to its own batch.",
-  "current_phase": 6,
-  "phase_status": "complete",
+  "batch_id": "2026-09-01-batch-11",
+  "batch_objective": "taskboard goes team: US-T1 sync core (shared-dir config, per-person files, team.json authority, first-run identity, staleness) + US-T2 team views (V3 standup home + V2 people lanes + todo/equipo/personal classification filter). V4 report, V5 templates, V6 batch-email and V7 chains deferred to later batches.",
+  "current_phase": 0,
+  "phase_status": "in_progress",
   "iterations_per_phase": {
     "0": 0,
     "1": 0,
-    "2": 1,
-    "3": 4
+    "2": 0,
+    "3": 0
   },
   "artifacts": {
-    "0": ".dev-flow/2026-08-24-batch-10/PLAN.md",
-    "1": ".dev-flow/2026-08-24-batch-10/PLAN.md#phase-1",
-    "2": ".dev-flow/2026-08-24-batch-10/PLAN.md#phase-2",
-    "3": ".dev-flow/2026-08-24-batch-10/PLAN.md#phase-3"
+    "0": ".dev-flow/2026-09-01-batch-11/PLAN.md",
+    "1": ".dev-flow/2026-09-01-batch-11/PLAN.md#phase-1",
+    "2": ".dev-flow/2026-09-01-batch-11/PLAN.md#phase-2",
+    "3": ".dev-flow/2026-09-01-batch-11/PLAN.md#phase-3"
   },
   "standing_authorization": {
-    "date": "2026-08-24",
-    "asked_at": "operator chose batch packaging, log location and authorization at intake",
+    "date": "2026-09-01",
+    "asked_at": "operator directed continuation from handoff-batch-11-team-sync.md and confirmed 'vamos ahora'",
     "autonomy": "end-to-end autonomous within the approved batch scope",
     "merge_authority": true,
     "operator_phrasing": "Autónomo + commits autorizados; push sigue a la orden",
@@ -121,17 +121,28 @@
     {
       "phase": 6,
       "date": "2026-08-29",
-      "decision": "Phase 6 docs complete; batch-10 closed.",
-      "notes": "BACKLOG.md refreshed to base ref 0cf0e72 with shipped summary and US-C deferral. README already updated in inc-2. No push performed pending operator order."
+      "decision": "Phase 6 docs complete; batch-10 pushed to origin/main.",
+      "notes": "BACKLOG.md refreshed to base ref 0cf0e72 with shipped summary and US-C deferral. README already updated in inc-2. Push executed at operator order: main b56d9d5..e831250."
+    },
+    {
+      "phase": 0,
+      "date": "2026-09-01",
+      "decision": "batch-11 opened: team sync spine (US-T1 + US-T2); V4/V5/V6/V7 deferred.",
+      "notes": "Design prototyped in prototypes/team_sync/. Intake decisions locked: one file per person, only team projects sync, team.json authoritative, roster assignees. Standing authorization confirmed by operator."
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-08-24T00:00:00",
+  "created_at": "2026-09-01T00:00:00",
   "mode_history": [
     {
       "batch_id": "2026-08-19-batch-09",
       "mode": "core",
       "closed_at": "2026-08-19"
+    },
+    {
+      "batch_id": "2026-08-24-batch-10",
+      "mode": "core",
+      "closed_at": "2026-08-29"
     }
   ],
   "mode": "core"
