@@ -217,6 +217,11 @@ window, then tap it again to go frameless.
 | `c` | Choose the two ribbon city clocks (type to find a city — accent-blind, so `Sao Paulo` finds `São Paulo`) |
 | `q` | Quit |
 
+**The footer is per-view.** It shows the keys that work in the current view plus the
+universal keys (`?`, `;`, `q`). Global commands such as `o`, `i`, `p`, `P`, `f`, `c`, `R`, and `S`
+remain bound and are always reachable through the `?` command palette, so nothing is
+hidden — only the bar's drawing is scoped to the view.
+
 Navigation follows what you **see**: Down in Kanban walks down the current phase
 column (not some unrelated task in data order); Right jumps to the next column. The
 selected task stays highlighted and is scrolled into view.

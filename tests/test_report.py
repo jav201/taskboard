@@ -281,10 +281,12 @@ def test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one(tmp_path):
 # AC9 — the key, and the contract it owes
 # --------------------------------------------------------------------------- #
 def test_the_report_key_is_in_the_seat():
-    from taskboard.keymap import KEYMAP, fit_bar
+    from taskboard.keymap import KEYMAP, fit_bar, palette_commands
     entry = next(k for k in KEYMAP if k.action == "report")
     assert entry.show == "R"
-    assert "R" in {show for show, _label in fit_bar(400, "swimlanes")[0]}
+    assert entry.bar is False
+    assert "R" not in {show for show, _label in fit_bar(400, "swimlanes")[0]}
+    assert any(action == "report" for _s, _l, action in palette_commands("swimlanes"))
 
 
 async def test_pressing_R_writes_the_report_and_reports_the_path(tmp_path, monkeypatch):

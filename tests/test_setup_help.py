@@ -218,3 +218,84 @@ def test_probe_setup_health_flags_unwritable_shared_path(tmp_path):
     ok, note = checks["carpeta"]
     assert not ok
     assert "directorio" in note.lower() or "directory" in note.lower()
+
+
+# --------------------------------------------------------------------------- #
+# US-S3: per-view help family
+# --------------------------------------------------------------------------- #
+def _label_texts(screen) -> list[str]:
+    from textual.widgets import Label
+    return [str(label.render()) for label in screen.query(Label)]
+
+
+async def test_question_mark_opens_per_view_help_modal(tmp_path):
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import HelpModal
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("4")           # kanban
+        await pilot.pause()
+        await pilot.press("question_mark")
+        await pilot.pause()
+        assert isinstance(app.screen, HelpModal)
+        assert app.screen._mode == "kanban"
+        texts = _label_texts(app.screen)
+        assert any("Help · kanban" in t for t in texts)
+
+
+async def test_help_modal_shows_usage_legend_example_and_keys(tmp_path):
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import HelpModal
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("question_mark")
+        await pilot.pause()
+        assert isinstance(app.screen, HelpModal)
+        texts = _label_texts(app.screen)
+        assert any("Uso" in t for t in texts)
+        assert any("Leyenda" in t for t in texts)
+        assert any("Ejemplo" in t for t in texts)
+        assert any("Teclas" in t for t in texts)
+        # the usage copy comes from the per-view register
+        assert any("para qué es" in t for t in texts)
+
+
+async def test_help_modal_m_opens_full_keymap(tmp_path):
+    from taskboard.app import TaskboardApp, HelpScreen
+    from taskboard.modals import HelpModal
+    from textual.widgets import Static
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("question_mark")
+        await pilot.pause()
+        assert isinstance(app.screen, HelpModal)
+        await pilot.press("m")
+        await pilot.pause()
+        assert isinstance(app.screen, HelpScreen)
+        static = app.screen.query_one("#help-box Static", Static)
+        text = str(static.render())
+        assert "ON THIS SCREEN" in text
+        # the full map contains both primary and alias keys
+        assert "Map" in text
+        assert "Quit" in text
+        assert "Down" in text
+
+
+async def test_help_modal_question_mark_opens_command_palette(tmp_path):
+    from taskboard.app import TaskboardApp
+    from taskboard.modals import CommandPalette, HelpModal
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("question_mark")
+        await pilot.pause()
+        assert isinstance(app.screen, HelpModal)
+        await pilot.press("question_mark")
+        await pilot.pause()
+        assert isinstance(app.screen, CommandPalette)
+        await pilot.press("escape")
+        await pilot.pause()
+        assert isinstance(app.screen, HelpModal)

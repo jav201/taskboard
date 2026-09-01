@@ -52,6 +52,7 @@ class Key(NamedTuple):
     views: tuple[str, ...] | None = None    # None = live in every view
     primary: bool = False           # shown in the compact primary layer
     group: str = "misc"             # category used by the more-layer grouping
+    bar: bool = True                # shown in the docked key bar (False = palette-only)
 
 
 # THE SEAT. Nothing else in the app may declare a key.
@@ -118,16 +119,18 @@ KEYMAP: tuple[Key, ...] = (
         views=("kanban", "focus", "swimlanes"), primary=True, group="nav"),
 
     # -- misc -----------------------------------------------------------------
-    Key("o", "o", "open_url", "URL", group="misc"),
-    Key("i", "i", "open_images", "Images", group="misc"),
-    Key("p", "p", "add_project", "New proj", group="misc"),
-    Key("P", "P", "manage_projects", "Projects", group="misc"),
-    Key("f", "f", "manage_phases", "Phases", group="misc"),
-    Key("c", "c", "clocks", "Clocks", group="misc"),
-    Key("R", "R", "report", "Report", group="misc"),
+    # Global commands: always bound, reachable from `?`/palette, but not drawn
+    # in the per-view key bar — the bar's real estate belongs to the view.
+    Key("o", "o", "open_url", "URL", group="misc", bar=False),
+    Key("i", "i", "open_images", "Images", group="misc", bar=False),
+    Key("p", "p", "add_project", "New proj", group="misc", bar=False),
+    Key("P", "P", "manage_projects", "Projects", group="misc", bar=False),
+    Key("f", "f", "manage_phases", "Phases", group="misc", bar=False),
+    Key("c", "c", "clocks", "Clocks", group="misc", bar=False),
+    Key("R", "R", "report", "Report", group="misc", bar=False),
     # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
     # derives from the board in ANY view, so — like `R` — it is not scoped.
-    Key("S", "S", "standup", "Standup", group="misc"),
+    Key("S", "S", "standup", "Standup", group="misc", bar=False),
 
     # -- navigation -----------------------------------------------------------
     # Declared LAST on purpose, and drawn FIRST in the more layer: `universal`
@@ -149,30 +152,36 @@ def app_bindings() -> list[Binding]:
     return [Binding(k.keys, k.action, k.label, priority=k.priority) for k in KEYMAP]
 
 
+def _live_keys(view: str) -> list[Key]:
+    """Every key live in `view`, regardless of layer or bar flag."""
+    return [k for k in KEYMAP if k.views is None or view in k.views]
+
+
 def _layer_keys(view: str, layer: str) -> list[Key]:
     """Keys to display in `layer` for `view`, universal ones first."""
-    live = [k for k in KEYMAP if k.views is None or view in k.views]
+    live = _live_keys(view)
     if layer == "primary":
         live = [k for k in live if k.primary]
     return sorted(live, key=lambda k: not k.universal)
 
 
 def bar_keys(view: str, layer: str = "more") -> list[Key]:
-    """The keys live in `view` and `layer`, universal ones first.
+    """The keys drawn in the per-view key bar: view-local + universal, with
+    `bar=False` global commands kept for the palette only.
 
     Sorted stably, so the declaration order is the reading order within each
     group and the bar does not reshuffle itself as the user switches views or
     layers."""
-    return _layer_keys(view, layer)
+    return [k for k in _layer_keys(view, layer) if k.bar]
 
 
 def palette_commands(view: str) -> list[tuple[str, str, str]]:
     """All commands reachable from `view` as (show, label, action).
 
-    The command palette lists these and runs the action string when one is
-    selected. Universal commands sort first so the most reliable doors out
-    (quit, palette itself) are always at the top."""
-    return [(k.show, k.label, k.action) for k in bar_keys(view, "more")]
+    The palette lists every live key, including palette-only globals, and runs
+    the action string when one is selected. Universal commands sort first so
+    the most reliable doors out (quit, palette itself) are always at the top."""
+    return [(k.show, k.label, k.action) for k in _layer_keys(view, "more")]
 
 
 SEP = "  "
