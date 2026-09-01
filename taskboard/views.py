@@ -26,7 +26,7 @@ from rich.style import Style
 from rich.text import Text
 
 from . import history
-from .models import Board, Task, days_in_phase, parse_iso, unblocks_count
+from .models import Board, Task, critical_chain, days_in_phase, parse_iso, unblocks_count
 from .wave import DOT_ROWS, Bitmap, load_curve
 
 # --- palette (hexes from the approved mockup; all survive rich quantization) --
@@ -2436,6 +2436,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
     geo = gantt_geometry(inner, h)
 
     tasks = board.visible_tasks(show_archived)
+    chain = critical_chain(board)
+    chain_ids = set(chain)
     late_n = sum(1 for t in tasks
                  if (d := parse_iso(t.due_date)) and d < today and not board.is_done(t))
     focus_name = ""
@@ -2447,6 +2449,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
     title = c("◆ GANTT", "accent", bold=True)
     if focus_name:
         title += c(focus_name, "mut")
+    if chain:
+        title += c(f" · cadena crítica {len(chain)}", "accent")
     lines = [header(title, right, w)]
 
     weeks, months = gantt_gauge(geo, today)
@@ -2523,7 +2527,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
             over = max(0, min(_reach_start(t, geo, today),
                               geo.today_dc // 2) - GUTTER)
             tw = geo.label_w - 3 + over
-            dep = c("└─►", "mut") if t.depends_on else "   "
+            dep = (c("└─►", "accent" if t.id in chain_ids else "mut")
+                   if t.depends_on else "   ")
             title = title_markup(t, max(0, tw - 3), sel) + dep
             reach = reach[over:]
             # archived work is spent, so its dates rest in ash: nothing is
@@ -2555,7 +2560,8 @@ def render_gantt(board, show_archived, selected_id, today=None,
             # expected of it, so nothing about it can be late.
             tail = _gantt_date_pair(t.start_date, t.due_date, today, geo.figs_w,
                                     spent=done or t.archived)
-            dep = c("└─►", "mut") if t.depends_on else "   "
+            dep = (c("└─►", "accent" if t.id in chain_ids else "mut")
+                   if t.depends_on else "   ")
             rows.append((band_row(
                 (c("▏" + ARCHIVED_MARK, "ash") if t.archived
                  else c("▏ ", "dim") if done else c("▎ ", "dim")) + " "
