@@ -69,9 +69,6 @@ KEYMAP: tuple[Key, ...] = (
     Key("3", "3", "view('gantt')", "Gantt", primary=True, group="views"),
     Key("4", "4", "view('kanban')", "Kanban", primary=True, group="views"),
     Key("5", "5", "view('focus')", "Focus", primary=True, group="views"),
-    # the APERTURE: the widget posture as a pushed screen (aperture.py) —
-    # ADD beside the four views, views.py untouched (HANDOFF §4 Inc 2)
-    Key("6", "6", "aperture", "Widget", group="views"),
     Key("7", "7", "view('flow')", "Flow", primary=True, group="views"),
     Key("8", "8", "view('standup')", "Standup", primary=True, group="views"),
     Key("9", "9", "view('people')", "People", primary=True, group="views"),
