@@ -83,3 +83,54 @@ async def test_configured_identity_syncs_on_mount(tmp_path):
         text = str(app.query_one("#board").render())
         assert "Ana" in text
         assert "Ana team task" in text
+
+
+# --------------------------------------------------------------------------- #
+# US-S2: Setup view scaffold
+# --------------------------------------------------------------------------- #
+async def test_setup_key_0_switches_view(tmp_path):
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        assert app.view_mode == "swimlanes"
+        await pilot.press("0")
+        await pilot.pause()
+        assert app.view_mode == "setup"
+        text = str(app.query_one("#board").render())
+        assert "SETUP" in text
+
+
+async def test_setup_renders_grid_with_sections(tmp_path):
+    shared_dir = tmp_path / "shared"
+    _write_team(shared_dir)
+    board_path = tmp_path / "board.json"
+    board = Board.load(str(board_path))
+    board.settings["team_shared_dir"] = str(shared_dir)
+    board.settings["team_user_id"] = "jav"
+    board.save()
+
+    app = TaskboardApp(board_path=str(board_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("0")
+        await pilot.pause()
+        text = str(app.query_one("#board").render())
+        assert "equipo" in text
+        assert "proyectos del equipo" in text
+        assert "roster" in text
+        assert "Javier" in text
+
+
+async def test_setup_esc_returns_to_previous_view(tmp_path):
+    app = TaskboardApp(board_path=str(tmp_path / "board.json"))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("4")   # kanban
+        await pilot.pause()
+        assert app.view_mode == "kanban"
+        await pilot.press("0")   # setup
+        await pilot.pause()
+        assert app.view_mode == "setup"
+        await pilot.press("escape")
+        await pilot.pause()
+        assert app.view_mode == "kanban"

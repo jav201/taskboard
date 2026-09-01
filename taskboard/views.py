@@ -14,6 +14,7 @@ alignment survives across monospace fonts (M22 ambiguous-glyph trap).
 from __future__ import annotations
 
 import copy
+import os
 import re
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -23,6 +24,7 @@ from rich.cells import cell_len, set_cell_size
 from rich.console import Console
 from rich.markup import escape
 from rich.style import Style
+from rich.table import Table
 from rich.text import Text
 
 from . import history
@@ -4366,7 +4368,8 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                 focus_presentation="cards",
                 search_query: str | None = None,
                 team_state: TeamState | None = None,
-                team_filter: str = "equipo") -> Text:
+                team_filter: str = "equipo",
+                setup_state: dict | None = None) -> Text:
     query = (search_query or "").strip()
     w = _clamp_width(width)
     if mode == "focus":
@@ -4415,6 +4418,8 @@ def render_view(mode, board, show_archived, selected_id, today=None,
     if mode == "people":
         return render_people(board, show_archived, selected_id, today, width, height,
                              line_map, team_state=team_state, team_filter=team_filter)
+    if mode == "setup":
+        return render_setup(setup_state, board, width=width, height=height)
     fn = RENDERERS.get(mode, render_swimlanes)
     return fn(board, show_archived, selected_id, today, width, height, line_map)
 
@@ -4507,6 +4512,125 @@ def grid_nav(board, show_archived, today: date, width: int,
     return cols
 
 
+def render_setup(setup_state: dict | None, board, width: int = 68,
+                 height: int = 0) -> Text:
+    """The in-app team setup screen.  It edits a staged copy of the team
+    configuration; nothing on disk changes until `ctrl+s` commits."""
+    w = _clamp_width(width)
+    state = setup_state or {}
+    enabled = bool(state.get("enabled"))
+    shared_dir = state.get("shared_dir", "")
+    interval = state.get("interval_minutes", 30)
+    user_id = state.get("user_id")
+    projects = state.get("projects", [])
+    roster = state.get("roster", [])
+
+    # Header
+    lines: list[Text] = []
+    lines.append(Text.assemble(("SETUP", f"bold {HEX['ink']}"),
+                               (" · equipo · proyectos · roster", HEX["mut"])))
+    lines.append(Text("─" * w, style=HEX["dim"]))
+    lines.append(Text())
+
+    grid = Table.grid(expand=False)
+    grid.add_column(width=24)
+    grid.add_column(width=30)
+    grid.add_column(width=4)
+    grid.add_column()
+
+    def section(name: str) -> None:
+        grid.add_row(Text(), Text(), Text(), Text())
+        grid.add_row(Text(f"  {name}", style=f"bold {HEX['accent']}"),
+                     Text(), Text(), Text())
+
+    def row(label: str, control: Text, check: tuple[str, str] | None,
+             note: str = "") -> None:
+        cells = [Text(f"  {label}", style=HEX["mut"]), control]
+        if check is None:
+            cells.append(Text(""))
+        else:
+            glyph, tone = check
+            cells.append(Text(glyph, style=HEX.get(tone, tone)))
+        cells.append(Text(note, style=HEX["dim"]))
+        grid.add_row(*cells)
+
+    ok_check = ("✓", "accent")
+
+    section("equipo")
+    mode_text = Text.assemble(
+        (" on ", f"bold #0b0f14 on {HEX['accent']}" if enabled else HEX["mut"]),
+        ("  off", HEX["mut"] if enabled else f"bold #0b0f14 on {HEX['accent']}")
+    )
+    row("modo equipo", mode_text, ok_check if enabled else None,
+        "team mode" if enabled else "off")
+    folder_control = Text.assemble(("▌", HEX["accent"]),
+                                   (shared_dir or "—", HEX["ink"]))
+    row("carpeta compartida", folder_control,
+        ok_check if shared_dir else None,
+        "seteado" if shared_dir else "sin configurar")
+    stepper = Text.assemble((" - ", HEX["accent"]),
+                            (str(interval), HEX["ink"]),
+                            (" + ", HEX["accent"]),
+                            ("min", HEX["mut"]))
+    row("sync cada", stepper, ok_check, "minutos")
+    if user_id and roster:
+        member = next((r for r in roster if r.get("id") == user_id), None)
+        hue = HEX.get(member.get("hue", "mut"), HEX["mut"]) if member else HEX["mut"]
+        identity = Text.assemble((f" {user_id} ", f"bold #0b0f14 on {hue}"))
+    else:
+        identity = Text("—", style=HEX["mut"])
+    row("mi identidad", identity,
+        ok_check if user_id else None,
+        "seleccionada" if user_id else "sin seleccionar")
+
+    section("proyectos del equipo")
+    for proj in projects:
+        shared = bool(proj.get("shared"))
+        name = proj.get("name", proj.get("id", "?"))
+        color = proj.get("color", "mut")
+        color_hex = HEX.get(color, color)
+        control = Text.assemble(
+            (" compartido ", f"bold #0b0f14 on {HEX['accent']}" if shared else HEX["mut"]),
+            ("   hue ", HEX["mut"]),
+            ("██", color_hex),
+        )
+        row(f"▐ {name}", control,
+            ok_check if shared else None,
+            proj.get("template") or "")
+
+    section("roster")
+    for member in roster:
+        mid = member.get("id", "")
+        name = member.get("name", mid)
+        hue = HEX.get(member.get("hue", "mut"), HEX["mut"])
+        row(f"██ {mid}",
+            Text.assemble((f"{name:<10}", HEX["ink"]),
+                          (" hue ", HEX["mut"]),
+                          ("██", hue)),
+            ok_check)
+
+    console = Console(record=True, width=w, height=max(1, height or 1),
+                      force_terminal=True,
+                      file=open(os.devnull, "w", encoding="utf-8"))
+    console.print(grid)
+    setup_text = Text.from_ansi(console.export_text())
+
+    lines.append(setup_text)
+    lines.append(Text())
+    lines.append(Text("─" * w, style=HEX["dim"]))
+    lines.append(Text.assemble(
+        ("tab", HEX["accent"]), (" sección   ", HEX["mut"]),
+        ("↵", HEX["accent"]), (" edita   ", HEX["mut"]),
+        ("espacio", HEX["accent"]), (" alterna   ", HEX["mut"]),
+        ("a", HEX["accent"]), (" agrega   ", HEX["mut"]),
+        ("x", HEX["accent"]), (" quita   ", HEX["mut"]),
+        ("ctrl+s", HEX["accent"]), (" guarda   ", HEX["mut"]),
+        ("esc", HEX["accent"]), (" cancela", HEX["mut"]),
+    ))
+
+    return Text("\n").join(lines)
+
+
 def nav_model(mode, board, show_archived, today=None, width: int = 68,
               height: int = 0, *, selected_id: str | None = None,
               kanban_sort="project",
@@ -4518,6 +4642,8 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
     today = today or date.today()
     tasks = board.visible_tasks(show_archived)
 
+    if mode == "setup":
+        return []
     if mode == "focus":
         pinned = focus_tasks(board, show_archived)
         if focus_presentation in ("review", "stale"):

@@ -72,6 +72,7 @@ KEYMAP: tuple[Key, ...] = (
     Key("7", "7", "view('flow')", "Flow", primary=True, group="views"),
     Key("8", "8", "view('standup')", "Standup", primary=True, group="views"),
     Key("9", "9", "view('people')", "People", primary=True, group="views"),
+    Key("0", "0", "view('setup')", "Setup", primary=True, group="views"),
 
     # -- task -----------------------------------------------------------------
     Key("enter", "↵", "details", "Details", primary=True, group="task"),
@@ -108,7 +109,7 @@ KEYMAP: tuple[Key, ...] = (
     # it — and is a guarded no-op with no focus active, so it never eats
     # another screen's escape (§6.5 AMD-03).
     Key("F", "F", "focus_cycle", "Focus", views=("kanban", "gantt"), group="kanban"),
-    Key("escape", "esc", "focus_exit", "Focus off", views=("kanban", "gantt"), group="kanban"),
+    Key("escape", "esc", "focus_exit", "Focus off", views=("kanban", "gantt", "setup"), group="kanban"),
     Key("/", "/", "search", "Search", views=("kanban", "gantt"), group="kanban"),
     # Tab does something in kanban, focus and swimlanes, so it is claimed in
     # all three — the action itself (toggle_presentation) decides which view
@@ -135,6 +136,11 @@ KEYMAP: tuple[Key, ...] = (
     Key("up,k", "↑", "cursor(-1)", "Up", priority=True, primary=True, group="nav"),
     Key("left,h", "←", "hmove(-1)", "Left", priority=True, group="nav"),
     Key("right,l", "→", "hmove(1)", "Right", priority=True, group="nav"),
+
+    # -- setup-only -----------------------------------------------------------
+    # tab/enter/a/x reuse their board bindings and dispatch on view_mode.
+    Key("space", "␣", "setup_toggle", "Toggle", views=("setup",), group="setup"),
+    Key("ctrl+s", "^s", "setup_save", "Save", views=("setup",), group="setup"),
 )
 
 

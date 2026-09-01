@@ -114,16 +114,22 @@ RED arm verified by temporarily removing the new `_run_team_sync()` call: test f
 
 ## Increment 2 — US-S2 parte 1: Setup como vista
 
-**Status:** planned.
+**Status:** complete. **Commit:** `TBD`.
 
 ### Changes
-- `taskboard/app.py`: add `"setup"` to `VIEW_ORDER`/`VIEW_KEYS`; staging attrs; `action_setup_*` handlers.
-- `taskboard/keymap.py`: add `0` view key and setup-scoped edit keys.
-- `taskboard/views.py`: `render_setup`; dispatch in `render_view`; `nav_model("setup") -> []`.
+- `taskboard/app.py`: add `"setup"` to `VIEW_ORDER`/`VIEW_KEYS`; `_stage_setup_state`; `_pre_setup_view`/`_setup_state`; `action_view` stages on entry; `action_setup_exit`; `action_focus_exit` dispatches to setup exit; existing `tab`/`enter`/`a`/`x` actions dispatch to setup stubs.
+- `taskboard/keymap.py`: add `0` view key; setup-only `space`/`ctrl+s`; `escape` scoped to kanban/gantt/setup.
+- `taskboard/views.py`: `render_setup` with sections/equipo/proyectos/roster; dispatch in `render_view`; `nav_model("setup") -> []`.
+- `README.md`: document `0` Setup and setup controls.
+- `tests/test_app.py`: update `VIEW_ORDER`/`VIEW_KEYS` assertions and escape scoping.
 
 ### Tests
-- `test_setup_key_0_switches_view`
-- `test_setup_renders_grid_with_sections`
+- `tests/test_setup_help.py::test_setup_key_0_switches_view`
+- `tests/test_setup_help.py::test_setup_renders_grid_with_sections`
+- `tests/test_setup_help.py::test_setup_esc_returns_to_previous_view`
+
+### Mutation evidence
+RED arm verified by temporarily removing `"0"` from `VIEW_KEYS`: the view-switch test failed.
 
 ## Increment 3 — US-S2 parte 2: health checks y edición staged
 
