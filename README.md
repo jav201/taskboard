@@ -62,9 +62,18 @@ row instead.
 | `7` | **Flow** | A read-only dashboard of work movement: median cycle time per phase, a phase×week heatmap, and weekly throughput. Driven entirely by the board's `history.jsonl` sidecar. |
 | `8` | **Standup** | The V3 team home (team mode): one row per roster member with a load bar, top task + phase, and sync age. Your own row carries an accent spine; stale rows wear the overdue tone. The classification filter `todo · equipo · personal` changes which task subset feeds the load/top-task calculation. |
 | `9` | **People** | The V2 people-lanes view (team mode): one lane per roster member, with that member's cards below their name. Foreign cards carry a `◦` read-only mark; your own lane has an accent spine. The classification filter changes which cards are visible in each lane. |
+| `0` | **Setup** | In-app team configuration: shared directory, sync interval, identity, shared projects, and roster — edited inside the app with live health checks. |
 
 > **Columns was retired** — kanban is the same phase grid and loses nothing, so the
 > views renumbered to 1-5. The app says so once, on the first launch after the change.
+
+### Setup controls (key `0`)
+
+| Key | Action |
+|-----|--------|
+| `tab` / `↵` / `space` | Cycle section · edit row · toggle control |
+| `a` / `x` | Add · remove roster member or project |
+| `ctrl+s` / `esc` | Save changes · cancel and return |
 
 ## Install as a command
 

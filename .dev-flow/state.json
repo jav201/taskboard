@@ -9,7 +9,7 @@
     "0": 1,
     "1": 0,
     "2": 0,
-    "3": 1,
+    "3": 2,
     "4": 0,
     "5": 0,
     "6": 0
@@ -207,6 +207,12 @@
       "date": "2026-09-01",
       "decision": "Increment 1 complete: initial team sync on mount for configured identity.",
       "notes": "Added _run_team_sync() before _start_team_daemon() in _init_team_mode; 1 new test in tests/test_setup_help.py; full suite 1285 passed."
+    },
+    {
+      "phase": 3,
+      "date": "2026-09-01",
+      "decision": "Increment 2 complete: Setup view scaffold (key 0, render_setup, staging, esc returns).",
+      "notes": "Added setup view to VIEW_ORDER/VIEW_KEYS; render_setup in views.py; keymap key 0 + space/ctrl+s + escape scoped to setup; README updated; tests/test_app.py updated; full suite 1288 passed."
     }
   ],
   "obsidian_synced": false,

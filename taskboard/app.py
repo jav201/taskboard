@@ -35,9 +35,10 @@ TICK_SECONDS = 1.0
 # is shown exactly once per board rather than at every launch.
 RENUMBER_NOTICE_KEY = "seen_view_renumber_2026_07"
 
-VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people"]
+VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people", "setup"]
 VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
-             "5": "focus", "7": "flow", "8": "standup", "9": "people"}
+             "5": "focus", "7": "flow", "8": "standup", "9": "people",
+             "0": "setup"}
 
 
 class BoardView(Static):
@@ -204,6 +205,8 @@ class TaskboardApp(App):
         self.team_sync_interval = team_sync_interval
         self.team_state: TeamState | None = None
         self.team_filter: str = "equipo"   # session-level classification filter
+        self._setup_state: dict | None = None   # staged team config while in setup view
+        self._pre_setup_view: str = "swimlanes"
 
     # keys that act on the BOARD. They stay live on pushed screens (e.g. a
     # modal) and were indicated by nothing. FALSE, not None: Textual drops a
@@ -353,6 +356,64 @@ class TaskboardApp(App):
         except Exception as exc:
             self.notify(f"Team sync failed: {exc}", title="Team sync",
                         severity="warning")
+
+    def _setup_config(self) -> dict:
+        """The authoritative team config if team mode is active, else an empty
+        dict."""
+        if self.team_state is None:
+            return {}
+        return self.team_state.config or {}
+
+    def _stage_setup_state(self) -> dict:
+        """Snapshot the current team configuration into a staged dict used by
+        the setup view.  Mutations edit the staged copy; nothing is written to
+        disk until `ctrl+s` commits."""
+        cfg = self._setup_config()
+        shared_dir = self.board.settings.get("team_shared_dir", "")
+        user_id = self.board.settings.get("team_user_id")
+        interval = self.board.settings.get("team_sync_interval")
+        if not isinstance(interval, int) or interval < 5:
+            interval = max(5, int(self.team_sync_interval // 60))
+        team_projects = {
+            p.get("id"): p for p in cfg.get("projects", [])
+            if isinstance(p, dict) and isinstance(p.get("id"), str)
+        }
+        projects = []
+        for proj in self.board.projects:
+            if proj.id in team_projects:
+                tp = team_projects[proj.id]
+                projects.append({
+                    "id": proj.id,
+                    "name": tp.get("name", proj.name),
+                    "color": tp.get("color", proj.color),
+                    "status": tp.get("status", proj.status),
+                    "template": tp.get("template", ""),
+                    "shared": True,
+                })
+            else:
+                projects.append({
+                    "id": proj.id,
+                    "name": proj.name,
+                    "color": proj.color,
+                    "status": proj.status,
+                    "template": "",
+                    "shared": False,
+                })
+        roster = [
+            {"id": r.get("id", ""), "name": r.get("name", ""), "hue": r.get("hue", "mut")}
+            for r in cfg.get("roster", [])
+            if isinstance(r, dict) and isinstance(r.get("id"), str)
+        ]
+        return {
+            "enabled": self.team_state is not None,
+            "shared_dir": str(shared_dir) if shared_dir else "",
+            "interval_minutes": min(120, max(5, interval)),
+            "user_id": user_id,
+            "projects": projects,
+            "roster": roster,
+            "cursor_section": 0,
+            "cursor_row": 0,
+        }
 
     # ---- clock -------------------------------------------------------------
     def _tick(self) -> None:
@@ -747,7 +808,8 @@ class TaskboardApp(App):
                               focus_presentation=self.focus_presentation,
                               search_query=self.search_query,
                               team_state=self.team_state,
-                              team_filter=self.team_filter)
+                              team_filter=self.team_filter,
+                              setup_state=self._setup_state)
         board_widget.update(content)
         self._scroll_selected_into_view()
 
@@ -769,10 +831,41 @@ class TaskboardApp(App):
             vp.scroll_to(y=idx - h + 1, animate=False)
 
     def action_view(self, mode: str) -> None:
-        if mode in VIEW_ORDER:
-            self.view_mode = mode
-            self._refresh_keybar()      # the bar states the CURRENT view's keys
-            self.refresh_view()
+        if mode not in VIEW_ORDER:
+            return
+        if mode == "setup":
+            self._pre_setup_view = self.view_mode
+            self._setup_state = self._stage_setup_state()
+        self.view_mode = mode
+        self._refresh_keybar()      # the bar states the CURRENT view's keys
+        self.refresh_view()
+
+    def action_setup_exit(self) -> None:
+        """`esc` in setup view: discard staged changes and return."""
+        self._setup_state = None
+        self.view_mode = self._pre_setup_view
+        self._refresh_keybar()
+        self.refresh_view()
+
+    def action_setup_save(self) -> None:
+        """`ctrl+s` in setup view: commit staged changes (implemented in inc-3)."""
+        self.notify("Setup save not yet implemented.", title="Setup",
+                    severity="information")
+
+    def action_setup_section(self) -> None:
+        """`tab` cycles the active section in setup (implemented in inc-3)."""
+
+    def action_setup_edit(self) -> None:
+        """`enter` edits the selected setup row (implemented in inc-3)."""
+
+    def action_setup_toggle(self) -> None:
+        """`space` toggles the selected setup control (implemented in inc-3)."""
+
+    def action_setup_add(self) -> None:
+        """`a` adds a roster member or project in setup (implemented in inc-3)."""
+
+    def action_setup_remove(self) -> None:
+        """`x` removes a roster member or project in setup (implemented in inc-3)."""
 
     def action_team_filter_cycle(self) -> None:
         """Cycle the team-view classification filter: todo → equipo → personal.
@@ -790,7 +883,11 @@ class TaskboardApp(App):
 
     def action_toggle_presentation(self) -> None:
         """Tab flips the kanban layout, cycles the Focus Board presentations,
-        or switches swimlanes grid/waves; a no-op elsewhere."""
+        switches swimlanes grid/waves, or cycles setup sections; a no-op
+        elsewhere."""
+        if self.view_mode == "setup":
+            self.action_setup_section()
+            return
         if self.view_mode == "kanban":
             modes = ("grouped", "matrix", "lanes")
             self.kanban_presentation = modes[(modes.index(self.kanban_presentation) + 1)
@@ -898,8 +995,11 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_focus_exit(self) -> None:
-        """escape — clear an ACTIVE search query first, then an ACTIVE project
-        focus in kanban or gantt, and do NOTHING otherwise (§6.5 AMD-03)."""
+        """escape — clear search/focus in kanban/gantt, cancel setup, and do
+        NOTHING otherwise (§6.5 AMD-03)."""
+        if self.view_mode == "setup":
+            self.action_setup_exit()
+            return
         if self.view_mode not in ("kanban", "gantt"):
             return
         if self.search_query:
@@ -931,6 +1031,9 @@ class TaskboardApp(App):
 
     # ---- task CRUD ---------------------------------------------------------
     def action_add_task(self) -> None:
+        if self.view_mode == "setup":
+            self.action_setup_add()
+            return
         self.push_screen(TaskModal(self.board), self._on_task_added)
 
     def _on_task_added(self, data: dict | None) -> None:
@@ -942,8 +1045,11 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_details(self) -> None:
-        """Read-only details view of the selected task (Enter). Never opens the
-        editor — a safe way to review all fields + images."""
+        """Read-only details view of the selected task (Enter), or edit the
+        selected setup row when in setup view."""
+        if self.view_mode == "setup":
+            self.action_setup_edit()
+            return
         task = self.selected_task
         if task is None:
             return
@@ -1016,7 +1122,8 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_archive(self) -> None:
-        """`x` — put a task away, or bring it back. It SAYS SO EITHER WAY.
+        """`x` — put a task away, bring it back, or remove a setup row. It SAYS
+        SO EITHER WAY.
 
         The complaint this answers: with `v` off, archiving makes the row vanish,
         and a row vanishing is indistinguishable from a key that did nothing. The
@@ -1032,6 +1139,9 @@ class TaskboardApp(App):
         self.board.save()
         # the title is the user's text and goes through the SAME escape the views
         # use: a title holding markup must never be able to render as markup here
+        if self.view_mode == "setup":
+            self.action_setup_remove()
+            return
         shown = escape(clip(task.title, 40))
         if task.archived:
             # WITH `v` OFF THE ROW LEAVES THE SCREEN, and the selection leaves

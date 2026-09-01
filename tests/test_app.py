@@ -64,11 +64,12 @@ def test_the_retired_view_is_gone_from_the_code_entirely():
 
 
 async def test_two_now_opens_agenda(tmp_path):
-    """The view numbering: 1-5, no gap; flow is 7, standup 8, people 9."""
+    """The view numbering: 1-5, no gap; flow is 7, standup 8, people 9, setup 0."""
     from taskboard.app import VIEW_KEYS, VIEW_ORDER
-    assert VIEW_ORDER == ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people"]
+    assert VIEW_ORDER == ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people", "setup"]
     assert VIEW_KEYS == {"1": "swimlanes", "2": "agenda", "3": "gantt",
-                         "4": "kanban", "5": "focus", "7": "flow", "8": "standup", "9": "people"}
+                         "4": "kanban", "5": "focus", "7": "flow", "8": "standup",
+                         "9": "people", "0": "setup"}
     app = make_app(tmp_path)
     async with app.run_test() as pilot:
         await pilot.press("2")
@@ -3503,7 +3504,7 @@ def test_focus_due_undo_actions_are_registered_and_guarded(tmp_path):
     assert by_action["focus_cycle"].keys == "F"
     assert by_action["focus_cycle"].views == ("kanban", "gantt")
     assert by_action["focus_exit"].keys == "escape"
-    assert by_action["focus_exit"].views == ("kanban", "gantt")
+    assert by_action["focus_exit"].views == ("kanban", "gantt", "setup")
     assert by_action["due_bump(1)"].views is None       # selection-scoped,
     assert by_action["undo"].views is None              # like the other
     arrow_at = next(i for i, k in enumerate(KEYMAP)     # quick keys
