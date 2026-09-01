@@ -249,7 +249,13 @@
       "phase": 6,
       "date": "2026-09-01",
       "decision": "Batch-12 pushed to origin/main.",
-      "notes": "Pushed at operator order: main ff4bb7e..fd33658."
+      "notes": "Pushed at operator order: main ff4bb7e..33eb4bf (includes post-close hotfix 33eb4bf)."
+    },
+    {
+      "phase": 6,
+      "date": "2026-09-01",
+      "decision": "Post-close hotfix: Setup TextPrompt bug and missing executable-command ATs.",
+      "notes": "Fixed action_setup_edit to use TextPrompt(initial=...) instead of value=...; added 5 tests for Enter/Space/a/x in setup view; updated PLAN.md US-S2 ATs and close note. Full suite 1303 passed."
     }
   ],
   "obsidian_synced": false,

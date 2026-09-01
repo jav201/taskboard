@@ -76,7 +76,7 @@ Packaging approved: **batch-12 = US-S1 + US-S2 + US-S3 + US-S4**. Deferred: V4/V
 - **HLR-S2.4.** Advisory health checks per row; re-run on open and `ctrl+s`.
 - **HLR-S2.5.** `ctrl+s` commits (team.json version bump + board.settings + sync + save); `esc` discards and returns to previous view.
 
-**ATs:** save writes files; unwritable dir shows warning; esc leaves files unchanged; stepper clamps.
+**ATs:** save writes files; unwritable dir shows warning; esc leaves files unchanged; stepper clamps; `Enter` edits shared dir / interval / names; `Space` toggles modo equipo and project shared flag; `a`/`x` add/remove roster/project rows.
 
 ## US-S3 — per-view help family
 
@@ -145,6 +145,11 @@ RED arm verified by temporarily removing `"0"` from `VIEW_KEYS`: the view-switch
 - `tests/test_setup_help.py::test_setup_esc_leaves_files_unchanged`
 - `tests/test_setup_help.py::test_probe_setup_health_flags_unwritable_shared_path`
 - `tests/test_setup_help.py::test_setup_stepper_clamps_interval`
+- `tests/test_setup_help.py::test_setup_enter_edits_shared_directory`
+- `tests/test_setup_help.py::test_setup_enter_edits_sync_interval`
+- `tests/test_setup_help.py::test_setup_space_toggles_team_mode_enabled`
+- `tests/test_setup_help.py::test_setup_a_adds_project_row`
+- `tests/test_setup_help.py::test_setup_x_removes_roster_row`
 
 ### Mutation evidence
 RED arm verified by temporarily returning `(True, "ok")` for all checks: the unwritable-path test failed.
@@ -198,9 +203,10 @@ RED arm verified by temporarily returning `(True, "ok")` for all checks: the unw
 
 - Working files reconciled; `prototypes/*` remains untracked exploratory work.
 - `state.json` and `.dev-flow/BACKLOG.md` updated.
+- **Post-close finding (fixed in `33eb4bf`):** the ATs for US-S2 did not exercise every editable row operation (`Enter`, `Space`, `a`, `x`) during the increment; the HLR-S2.3 list of editable fields was correct, but the derived test cases stopped at save/esc/health/stepper. This allowed a constructor mismatch (`TextPrompt(..., value=...)` vs `initial=...`) to ship. Corrective action: added 5 executable-setup command tests and updated the US-S2 ATs above.
 
 # Phase 6 — Push
 
 **Status:** complete.
 
-- Pushed to `origin/main`: `ff4bb7e..fd33658`.
+- Pushed to `origin/main`: `ff4bb7e..33eb4bf` (includes the post-close `33eb4bf` hotfix for the Setup `TextPrompt` bug and missing ATs).
