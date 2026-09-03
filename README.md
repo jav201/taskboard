@@ -232,8 +232,10 @@ Inside a modal: `Esc` cancels, `Tab` moves between fields, `Enter` on a button a
 have**. It opens a list of every project (name · status · task count, archived ones flagged). With a
 project highlighted: `e` (or `Enter`) edits it — change its name, status
 (`on_track`/`paused`/`cancelled`/`completed`), color, and start/due dates; `x` archives or
-unarchives it; `d` deletes it. **Deleting a project never deletes its tasks** — they are reassigned
-to Inbox (no-project). Every change saves immediately and the board re-renders behind the menu.
+unarchives it. **Archiving a project archives its open tasks too**, so the whole stream stops
+drawing as active work; unarchiving restores both. `d` deletes it. **Deleting a project never
+deletes its tasks** — they are reassigned to Inbox (no-project). Every change saves immediately
+and the board re-renders behind the menu.
 
 Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink (clickable in
 terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
