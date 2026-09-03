@@ -642,7 +642,31 @@ class ProjectPicker(ModalScreen[None]):
         proj = self._current()
         if proj is None:
             return
+        if not proj.archived:
+            # Archiving a project also archives its open tasks: the project is the
+            # container, and a project that is no longer active should not leave
+            # its tasks drawing as active work in the lanes.
+            open_tasks = [t for t in self.board.tasks
+                          if t.project_id == proj.id and not t.archived]
+            if open_tasks:
+                msg = (f"Archive '{proj.name}'? Its {len(open_tasks)} open "
+                       f"task{'s' if len(open_tasks) != 1 else ''} will be archived too.")
+                self.app.push_screen(ConfirmModal(msg, confirm="Archive",
+                                                  variant="warning"),
+                                     lambda ok, p=proj: self._on_archive(p, ok))
+                return
+        self._do_archive_toggle(proj)
+
+    def _on_archive(self, proj: Project, ok: bool) -> None:
+        if not ok:
+            return
+        self._do_archive_toggle(proj)
+
+    def _do_archive_toggle(self, proj: Project) -> None:
         proj.archived = not proj.archived
+        for t in self.board.tasks:
+            if t.project_id == proj.id:
+                t.archived = proj.archived
         self.board.save()
         self.app.refresh_view()
         self._reload(keep=proj.id)

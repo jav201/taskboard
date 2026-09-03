@@ -13,8 +13,8 @@ from textual.widgets import Button, Input, OptionList, Select, Static, TextArea
 from taskboard import models, modals
 from taskboard.app import BoardView, TaskboardApp
 from taskboard.models import Board, Project, Task
-from taskboard.modals import (CalendarModal, PhaseEditor, TaskDetails, TaskModal,
-                              image_block)
+from taskboard.modals import (CalendarModal, ConfirmModal, PhaseEditor, TaskDetails,
+                              TaskModal, image_block)
 from taskboard.ribbon import Ribbon
 from taskboard.views import (META_FULL_INNER, META_FULL_W, METER_W,
                              render_agenda, render_gantt)
@@ -197,8 +197,8 @@ async def test_manage_projects_edit_status_persists(tmp_path):
 
 
 async def test_manage_projects_archive_hides_and_persists(tmp_path):
-    """Archiving a project via the manager hides it under the archived toggle in
-    the board render, and the archived flag persists to disk."""
+    """Archiving a project via the manager archives the project AND its open
+    tasks, hides everything under the archived toggle, and persists to disk."""
     board_path = str(tmp_path / "board.json")
     app = TaskboardApp(board_path=board_path)
     async with app.run_test(size=(120, 40)) as pilot:
@@ -206,13 +206,20 @@ async def test_manage_projects_archive_hides_and_persists(tmp_path):
         target = next(p for p in app.board.projects if p.name == "Mobile App")
         assert not target.archived
         assert "Mobile App" in board_text(app)             # visible before archiving
+        project_tasks = [t for t in app.board.tasks if t.project_id == target.id]
+        assert project_tasks                                # there are tasks to archive
         idx = app.board.projects.index(target)
         await pilot.press("P")
         await pilot.pause()
         app.screen.query_one("#proj-list", OptionList).highlighted = idx
         await pilot.press("x")                              # archive
         await pilot.pause()
+        # confirm the prompt that open tasks will be archived too
+        assert isinstance(app.screen, ConfirmModal)
+        app.screen.query_one("#yes", Button).press()
+        await pilot.pause()
         assert app.board.project_by_id(target.id).archived is True
+        assert all(t.archived for t in project_tasks)
         await pilot.press("escape")                         # close the manager
         await pilot.pause()
         assert "Mobile App" not in board_text(app)         # hidden by default
@@ -220,6 +227,29 @@ async def test_manage_projects_archive_hides_and_persists(tmp_path):
         assert "Mobile App" in board_text(app)             # visible again
     reloaded = Board.load(board_path)
     assert reloaded.project_by_id(target.id).archived is True
+    assert all(t.archived for t in reloaded.tasks if t.project_id == target.id)
+
+
+async def test_manage_projects_unarchive_restores_tasks(tmp_path):
+    """Unarchiving a project also unarchives its tasks so they become active
+    work again."""
+    board_path = str(tmp_path / "board.json")
+    app = TaskboardApp(board_path=board_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        target = next(p for p in app.board.projects if p.name == "Mobile App")
+        target.archived = True
+        project_tasks = [t for t in app.board.tasks if t.project_id == target.id]
+        for t in project_tasks:
+            t.archived = True
+        app.board.save()
+        idx = app.board.projects.index(target)
+        await pilot.press("P")
+        await pilot.pause()
+        app.screen.query_one("#proj-list", OptionList).highlighted = idx
+        await pilot.press("x")                              # unarchive
+        await pilot.pause()
+        assert app.board.project_by_id(target.id).archived is False
+        assert not any(t.archived for t in project_tasks)
 
 
 async def test_manage_projects_delete_moves_tasks_to_inbox(tmp_path):
