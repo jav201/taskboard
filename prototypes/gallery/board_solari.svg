@@ -5,24 +5,26 @@
 <rect x="295.6" y="27.0" width="84.0" height="17.0" fill="#17171a"/>
 <rect x="673.6" y="27.0" width="33.6" height="17.0" fill="#17171a"/>
 <text x="295.6" y="40.3" fill="#e03a2f">   ████   </text>
-<text x="379.6" y="40.3" fill="#f0ede4">                                      4                            </text>
+<text x="379.6" y="40.3" fill="#f0ede4">                                      5                            </text>
 <rect x="295.6" y="44.0" width="84.0" height="17.0" fill="#17171a"/>
 <text x="295.6" y="57.3" fill="#e03a2f"> ██    ██ </text>
 <rect x="295.6" y="61.0" width="84.0" height="17.0" fill="#17171a"/>
-<text x="295.6" y="74.3" fill="#e03a2f"> ██    ██ </text>
+<rect x="707.2" y="61.0" width="33.6" height="17.0" fill="#17171a"/>
+<text x="295.6" y="74.3" fill="#e03a2f">       ██ </text>
+<text x="379.6" y="74.3" fill="#f0ede4">                                          3                        </text>
 <rect x="295.6" y="78.0" width="84.0" height="17.0" fill="#1f1f22"/>
-<text x="295.6" y="91.3" fill="#6e6a60">▔▔▔</text>
-<text x="320.8" y="91.3" fill="#e03a2f">▀▀▀▀</text>
+<text x="295.6" y="91.3" fill="#6e6a60">▔▔▔▔▔</text>
+<text x="337.6" y="91.3" fill="#e03a2f">▀▀</text>
 <text x="354.4" y="91.3" fill="#6e6a60">▔▔▔</text>
 <rect x="295.6" y="95.0" width="84.0" height="17.0" fill="#17171a"/>
-<rect x="707.2" y="95.0" width="33.6" height="17.0" fill="#17171a"/>
-<text x="295.6" y="108.3" fill="#e03a2f"> ██    ██ </text>
-<text x="379.6" y="108.3" fill="#f0ede4">                                          1                        </text>
+<text x="295.6" y="108.3" fill="#e03a2f">   ██     </text>
 <rect x="295.6" y="112.0" width="84.0" height="17.0" fill="#17171a"/>
-<text x="295.6" y="125.3" fill="#e03a2f"> ██    ██ </text>
-<text x="740.8" y="125.3" fill="#1f1f22">   0   0   0   0   0   0</text>
+<rect x="740.8" y="112.0" width="33.6" height="17.0" fill="#17171a"/>
+<text x="295.6" y="125.3" fill="#e03a2f"> ██       </text>
+<text x="379.6" y="125.3" fill="#f0ede4">                                              1</text>
+<text x="774.4" y="125.3" fill="#1f1f22">   0   0   0   0   0</text>
 <rect x="295.6" y="129.0" width="84.0" height="17.0" fill="#17171a"/>
-<text x="295.6" y="142.3" fill="#e03a2f">   ████   </text>
+<text x="295.6" y="142.3" fill="#e03a2f"> ████████ </text>
 <text x="673.6" y="142.3" fill="#1f1f22">LOAD · 8 WK</text>
 <text x="26.8" y="176.3" fill="#6e6a60">                                DAYS OVERDUE                               </text>
 <rect x="68.8" y="180.0" width="25.2" height="17.0" fill="#17171a"/>
@@ -51,10 +53,10 @@
 <rect x="707.2" y="231.0" width="8.4" height="17.0" fill="#17171a"/>
 <rect x="866.8" y="231.0" width="25.2" height="17.0" fill="#17171a"/>
 <text x="35.2" y="244.3" fill="#6e6a60">DEP</text>
-<text x="68.8" y="244.3" fill="#e03a2f">8</text>
+<text x="68.8" y="244.3" fill="#e03a2f">2</text>
 <text x="85.6" y="244.3" fill="#6e6a60">NEAREST</text>
 <text x="194.8" y="244.3" fill="#e03a2f">LATE</text>
-<text x="236.8" y="244.3" fill="#e03a2f">6</text>
+<text x="236.8" y="244.3" fill="#e03a2f">2</text>
 <text x="253.6" y="244.3" fill="#6e6a60">OVERDUE</text>
 <text x="354.4" y="244.3" fill="#6e6a60">BRD</text>
 <text x="388.0" y="244.3" fill="#f5a300">4</text>
@@ -66,7 +68,7 @@
 <text x="707.2" y="244.3" fill="#f5a300">9</text>
 <text x="724.0" y="244.3" fill="#6e6a60">WORKDAY</text>
 <text x="833.2" y="244.3" fill="#6e6a60">SKD</text>
-<text x="858.4" y="244.3" fill="#f0ede4"> 134 </text>
+<text x="858.4" y="244.3" fill="#f0ede4"> -98 </text>
 <text x="900.4" y="244.3" fill="#6e6a60">BOARD</text>
 <rect x="35.2" y="265.0" width="915.6" height="17.0" fill="#f0ede4"/>
 <text x="35.2" y="278.3" fill="#0b0b0c"> GATE BACKLOG 09                                                                 STATUS    PROJ          PRI </text>
@@ -78,42 +80,39 @@
 <text x="917.2" y="295.3" fill="#6e6a60">HIGH</text>
 <text x="35.2" y="312.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
 <rect x="35.2" y="316.0" width="16.8" height="17.0" fill="#e03a2f"/>
-<text x="35.2" y="329.3" fill="#0b0b0c">07</text>
+<text x="35.2" y="329.3" fill="#0b0b0c">01</text>
 <text x="52.0" y="329.3" fill="#f0ede4">  COMPRESS DATABASE BACKUPS                                                    </text>
 <text x="715.6" y="329.3" fill="#6e6a60">LATE    </text>
 <text x="799.6" y="329.3" fill="#6e6a60">DATA WAREHO…</text>
 <text x="917.2" y="329.3" fill="#6e6a60">NORM</text>
 <text x="35.2" y="346.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
-<rect x="35.2" y="350.0" width="16.8" height="17.0" fill="#e03a2f"/>
+<rect x="35.2" y="350.0" width="16.8" height="17.0" fill="#f5a300"/>
 <text x="35.2" y="363.3" fill="#0b0b0c">03</text>
 <text x="52.0" y="363.3" fill="#f0ede4">  RENEW TLS CERTIFICATE                                                        </text>
-<text x="715.6" y="363.3" fill="#6e6a60">LATE    </text>
+<text x="715.6" y="363.3" fill="#6e6a60">BOARDING</text>
 <text x="799.6" y="363.3" fill="#6e6a60">--          </text>
 <text x="917.2" y="363.3" fill="#6e6a60">HIGH</text>
 <text x="35.2" y="380.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
-<rect x="35.2" y="384.0" width="16.8" height="17.0" fill="#e03a2f"/>
-<text x="35.2" y="397.3" fill="#0b0b0c">01</text>
-<text x="52.0" y="397.3" fill="#f0ede4">  WRITE API REFERENCE                                                          </text>
-<text x="715.6" y="397.3" fill="#6e6a60">LATE    </text>
+<rect x="35.2" y="384.0" width="16.8" height="17.0" fill="#17171a"/>
+<text x="35.2" y="397.3" fill="#f0ede4">05  WRITE API REFERENCE                                                          </text>
+<text x="715.6" y="397.3" fill="#6e6a60">ON TIME </text>
 <text x="799.6" y="397.3" fill="#6e6a60">API PLATFORM</text>
 <text x="917.2" y="397.3" fill="#6e6a60">NORM</text>
 <text x="35.2" y="414.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
-<rect x="35.2" y="418.0" width="16.8" height="17.0" fill="#f5a300"/>
-<text x="35.2" y="431.3" fill="#0b0b0c">02</text>
-<text x="52.0" y="431.3" fill="#f0ede4">  SHUT DOWN LEGACY SERVERS                                                     </text>
-<text x="715.6" y="431.3" fill="#6e6a60">BOARDING</text>
+<rect x="35.2" y="418.0" width="16.8" height="17.0" fill="#17171a"/>
+<text x="35.2" y="431.3" fill="#f0ede4">08  SHUT DOWN LEGACY SERVERS                                                     </text>
+<text x="715.6" y="431.3" fill="#6e6a60">ON TIME </text>
 <text x="799.6" y="431.3" fill="#6e6a60">LEGACY SUNS…</text>
 <text x="917.2" y="431.3" fill="#6e6a60">NORM</text>
 <text x="35.2" y="448.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
-<rect x="35.2" y="452.0" width="16.8" height="17.0" fill="#f5a300"/>
-<text x="35.2" y="465.3" fill="#0b0b0c">03</text>
-<text x="52.0" y="465.3" fill="#f0ede4">  DEPRECATE V1 ENDPOINTS                                                       </text>
-<text x="715.6" y="465.3" fill="#6e6a60">BOARDING</text>
+<rect x="35.2" y="452.0" width="16.8" height="17.0" fill="#17171a"/>
+<text x="35.2" y="465.3" fill="#f0ede4">09  DEPRECATE V1 ENDPOINTS                                                       </text>
+<text x="715.6" y="465.3" fill="#6e6a60">ON TIME </text>
 <text x="799.6" y="465.3" fill="#6e6a60">API PLATFORM</text>
 <text x="917.2" y="465.3" fill="#6e6a60">HIGH</text>
 <text x="35.2" y="482.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
 <rect x="35.2" y="486.0" width="16.8" height="17.0" fill="#17171a"/>
-<text x="35.2" y="499.3" fill="#f0ede4">12  ADD PUSH NOTIFICATIONS                                                       </text>
+<text x="35.2" y="499.3" fill="#f0ede4">18  ADD PUSH NOTIFICATIONS                                                       </text>
 <text x="715.6" y="499.3" fill="#6e6a60">ON TIME </text>
 <text x="799.6" y="499.3" fill="#6e6a60">MOBILE APP  </text>
 <text x="917.2" y="499.3" fill="#6e6a60">NORM</text>

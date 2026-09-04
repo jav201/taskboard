@@ -2,33 +2,33 @@
   ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐  
   │┌───────────────────────────────────────────────────────────────────────┐  ▄▄ ░░ ░░ ░░ ░░ ░░ ░░ ░░              │  
   ││                              ░░      ▄▄                               │  ▄▄ ░░ ░░ ░░ ░░ ░░ ░░ ░░              │  
-  ││                            ▒▒  ▒▒  ██  ██                             │  ▄▄ ░░ ░░ ░░ ░░ ░░ ░░ ░░              │  
-  ││                            ▒▒  ▒▒  ██  ██                             │  ▄▄ ░░ ░░ ░░ ░░ ░░ ░░ ░░              │  
+  ││                            ▒▒  ▒▒  ▒▒  ██                             │  ▄▄ ▄▄ ░░ ░░ ░░ ░░ ░░ ░░              │  
+  ││                            ▒▒  ▒▒  ▒▒  ██                             │  ▄▄ ▄▄ ░░ ░░ ░░ ░░ ░░ ░░              │  
   ││                              ░░      ▄▄                               │  ▄▄ ▄▄ ░░ ░░ ░░ ░░ ░░ ░░              │  
-  ││                            ▒▒  ▒▒  ██  ██                             │  ▄▄ ▄▄ ░░ ░░ ░░ ░░ ░░ ░░              │  
-  ││                            ▒▒  ▒▒  ██  ██                             │  LOAD · 8 WK                          │  
+  ││                            ▒▒  ▒▒  ██  ▒▒                             │  ▄▄ ▄▄ ▄▄ ░░ ░░ ░░ ░░ ░░              │  
+  ││                            ▒▒  ▒▒  ██  ▒▒                             │  LOAD · 8 WK                          │  
   └────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘  
   ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
   ▄▄ ▄▄ ▄▄ ▄▄ ▄▄ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ [ 13%]        
   ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
   [1]B O A R D [2]LANES [3]AGENDA [4]GANTT                                                                            
   ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
-   DL   8 │NEAREST D  OV   6 │OVERDUE C  WF   4 │WORK IN F  BL   1 │BLOCKED    BD   9 │WORKDAY B  FS 134 │BOARD FIL   
+   DL   2 │NEAREST D  OV   2 │OVERDUE C  WF   4 │WORK IN F  BL   1 │BLOCKED    BD   9 │WORKDAY B  FS -98 │BOARD FIL   
   ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────  
    [1] B A C K L O G  9                                                                                               
    ────────────────────────────────────────────────────────────────────────────────────────────────────────────       
-   [1] FIX CHECKOUT 500 ERROR                                                         DUE -8D   PR HIGH  ST BLK       
-   [2] COMPRESS DATABASE BACKUPS                                                      DUE -7D   PR NORM  ST OPEN      
-   [3] RENEW TLS CERTIFICATE                                                          DUE -3D   PR HIGH  ST OPEN      
-   [4] WRITE API REFERENCE                                                            DUE -1D   PR NORM  ST OPEN      
-   [5] SHUT DOWN LEGACY SERVERS                                                       DUE 2D    PR NORM  ST OPEN      
-   [6] DEPRECATE V1 ENDPOINTS                                                         DUE 3D    PR HIGH  ST OPEN      
-   [7] ADD PUSH NOTIFICATIONS                                                         DUE 12D   PR NORM  ST OPEN      
+   [1] FIX CHECKOUT 500 ERROR                                                         DUE -2D   PR HIGH  ST BLK       
+   [2] COMPRESS DATABASE BACKUPS                                                      DUE -1D   PR NORM  ST OPEN      
+   [3] RENEW TLS CERTIFICATE                                                          DUE 3D    PR HIGH  ST OPEN      
+   [4] WRITE API REFERENCE                                                            DUE 5D    PR NORM  ST OPEN      
+   [5] SHUT DOWN LEGACY SERVERS                                                       DUE 8D    PR NORM  ST OPEN      
+   [6] DEPRECATE V1 ENDPOINTS                                                         DUE 9D    PR HIGH  ST OPEN      
+   [7] ADD PUSH NOTIFICATIONS                                                         DUE 18D   PR NORM  ST OPEN      
    [8] PLAN Q3 ROADMAP                                                                DUE --    PR NORM  ST OPEN      
    [9] UPDATE ONBOARDING COPY                                                         DUE --    PR NORM  ST OPEN   ▂  
    [2] D O I N G  4                                                                                                   
    ────────────────────────────────────────────────────────────────────────────────────────────────────────────       
-   [1] DESIGN HOMEPAGE MOCKUPS                                                        DUE -6D   PR NORM  ST OPEN      
-   [2] REVIEW PULL REQUESTS                                                           DUE -5D   PR NORM  ST OPEN      
+   [1] DESIGN HOMEPAGE MOCKUPS                                                        DUE 0D    PR NORM  ST OPEN      
+   [2] REVIEW PULL REQUESTS                                                           DUE 1D    PR NORM  ST OPEN      
                                                                                                                       
  1 2 3 4 Views  c Signals  ? Keys  v Size  r Refresh  t Language  g Gallery  q Quit                       ▏^p palette 

@@ -182,6 +182,91 @@ def build(root: Path, when: str) -> str:
     return "".join(out)
 
 
+GALLERY = ROOT / "prototypes" / "gallery"
+
+SURFACES_HEADER = """# The surface axis, as the reference implementation renders it
+
+**Generated.**  `prototypes/export_to_skill.py` in the taskboard repo writes this file from the
+capture sweep (`python prototypes\\capture_languages.py --surface`).  Do not edit by hand.
+
+**One image, every language.**  The frames below are the SAME picture --
+`tui-demos/lab/mbb_rho_final.npy`, a 20x60 topology-optimisation density field rendered through
+R1's PAPER/INK colormap at scale 6 (360x120 px) -- put through every kit's `raster_region()`.
+"The same image in {n} languages" is only an honest comparison when it really is one image, which
+is the argument the board sweep makes one level up.
+
+**The `.txt` is the GLYPH side and it works on any terminal.**  Where `textual_image` reports a
+raster transport, the same posture is applied to the pixels and rendered through it; the `raster`
+column says what those pixels are, and `refused` is a COMMITMENT rather than a gap -- ledger
+audits a figure instead of showing it, solari cannot flip an image.
+
+| language | posture | frame | ink | raster |
+|---|---|---|---|---|
+"""
+
+
+def _probe():
+    """A 2x2 image is enough to ask a posture whether it refuses.  The sweep's
+    real image lives in `capture_languages.py`, which this file deliberately
+    does not import -- importing it would pull in a Textual app and numpy to
+    write a markdown table."""
+    from PIL import Image
+    return Image.new("RGB", (2, 2), (128, 128, 128))
+
+
+def surfaces_index() -> str | None:
+    """The generated index of the surface sweep, or None if it has not run.
+
+    A SEPARATE FILE rather than an edit to `INDEX.md`, for the reason this
+    exporter already refuses to touch `LANGUAGES.md`: that file is prose that
+    argues.  A generator that rewrote it would flatten the part that teaches,
+    and one that appended to it would fight the author."""
+    rows = []
+    for n in TH.ORDER:
+        f = GALLERY / f"surface_{n}.txt"
+        if not f.exists():
+            return None
+        grid = f.read_text(encoding="utf-8").splitlines()
+        total = sum(len(r) for r in grid) or 1
+        ink = sum(1 for r in grid for c in r if c != " ") / total * 100
+        res = LG.kit(n).raster_region(_probe(), 10, 4)
+        rows.append(
+            f"| **{TH.THEMES[n].get('label', n)}** | `{res.posture}` | "
+            f"`surface_{n}.txt` | {ink:.1f} % | "
+            f"{'**refused**' if res.pixels is None else 'sixel / TGP'} |")
+    # the count is interpolated, not typed: a header that says "ten" over
+    # eleven rows is the drift this whole file exists to stop
+    return (SURFACES_HEADER.format(n=len(TH.ORDER))
+            + "\n".join(rows) + "\n")
+
+
+def copy_captures(skill: Path) -> tuple[int, int]:
+    """Carry the capture sweep's frames into the skill.
+
+    THIS DID NOT EXIST, AND THE ASSETS DRIFTED BECAUSE OF IT.  The exporter
+    wrote `languages.py` and nothing else, so the twenty `.txt`/`.svg` frames
+    under `assets/languages/` were copied by hand once and then silently fell
+    behind: `prototypes/out/_fixture_late.json` was edited after the sweep that
+    produced them, and every board frame in the skill now differs from a fresh
+    sweep of unmodified code.  A projection that projects half the asset is how
+    the other half rots -- which is the exact failure this file's own header
+    says it exists to prevent."""
+    dst = skill / "assets" / "languages"
+    dst.mkdir(parents=True, exist_ok=True)
+    written = unchanged = 0
+    for src in sorted(GALLERY.glob("*.*")):
+        if src.suffix not in (".txt", ".svg"):
+            continue
+        target = dst / src.name
+        data = src.read_bytes()
+        if target.exists() and target.read_bytes() == data:
+            unchanged += 1
+            continue
+        target.write_bytes(data)
+        written += 1
+    return written, unchanged
+
+
 def main() -> int:
     skill = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_SKILL
     dst = skill / "assets" / "languages.py"
@@ -209,6 +294,20 @@ def main() -> int:
         assert ns["FAMILY"][n] == LG.kit(n).board_layout(), f"{n}: family"
     print(f"  verified: {len(TH.ORDER)} languages, every token, doc and family "
           f"round-trips")
+
+    # THE FRAMES, which used to be copied by hand and therefore rotted
+    written, unchanged = copy_captures(skill)
+    print(f"  captures: {written} written, {unchanged} already identical "
+          f"-> {skill / 'assets' / 'languages'}")
+
+    idx = surfaces_index()
+    if idx is None:
+        print("  SURFACES.md NOT written: run "
+              "`capture_languages.py --surface` first", file=sys.stderr)
+    else:
+        (skill / "assets" / "languages" / "SURFACES.md").write_text(
+            idx, encoding="utf-8")
+        print(f"  wrote SURFACES.md ({len(TH.ORDER)} postures)")
     return 0
 
 

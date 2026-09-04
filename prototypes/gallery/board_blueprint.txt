@@ -1,31 +1,31 @@
                                                                                                                       
-                                       ▄▄                                      ────                                   
-                                   ▌▐    ▌▐                                    ····                                   
-                                   ▌▐    ▌▐                                    ····                                   
-                                       ▀▀                                      ····                                   
-                                   ▌▐    ▌▐                                    ····────                               
-                                   ▌▐    ▌▐                                    ································       
-                                     ▀▀▀▀                                      LOAD · 8 WK                            
+                                     ▄▄▄▄                                      ────                                   
+                                   ▄▄    ▌▐                                    ····                                   
+                                         ▌▐                                    ····────                               
+                                       ▀▀                                      ········                               
+                                     ▀▀                                        ········                               
+                                   ▌▐                                          ········────····················       
+                                   ▌▀▀▀▀▀▀▀                                    LOAD · 8 WK                            
                                                                                                                       
                                   DAYS OVERDUE                                                                        
                                                                                                                       
   WORK ├ 02/15  13% ─┤                                                                                                
   ├─ 09 ─┤ ├───┤ 04 ├─┤ 02 LOAD                                                                                       
                                                                                                                       
-   DIM 8 ── NEAREST   OVR 6 ── OVERDUE   WIP 4 ── WORK IN   ╱╱ 1 ── BLOCKED    DAY 9 ── WORKDAY   SHT 134 ── BOARD    
+   DIM 2 ── NEAREST   OVR 2 ── OVERDUE   WIP 4 ── WORK IN   ╱╱ 1 ── BLOCKED    DAY 9 ── WORKDAY   SHT -98 ── BOARD    
                                                                                                                       
    BACKLOG                                                                                      ├─── 09 ───┤          
    FIX CHECKOUT 500 ERROR                                                                       ├╱╱╱╱ HELD ╱╱╱╱┤      
    ·── WEBSITE REDESIGN ── BACKLOG ── HIGH                                                                            
-   COMPRESS DATABASE BACKUPS                                                                    ├ 07D! ─┤             
+   COMPRESS DATABASE BACKUPS                                                                    ├─┤ 01D!              
    ·── DATA WAREHOUSE ── BACKLOG ── NORM                                                                           ▄  
-   RENEW TLS CERTIFICATE                                                                        ├───┤ 03D!            
+   RENEW TLS CERTIFICATE                                                                        ├───┤ 03D             
    ·── BACKLOG ── HIGH                                                                                                
-   WRITE API REFERENCE                                                                          ├─┤ 01D!              
+   WRITE API REFERENCE                                                                          ├ 05D ┤               
    ·── API PLATFORM ── BACKLOG ── NORM                                                                                
-   SHUT DOWN LEGACY SERVERS                                                                     ├──┤ 02D              
+   SHUT DOWN LEGACY SERVERS                                                                     ├─ 08D ──┤            
    ·── LEGACY SUNSET ── BACKLOG ── NORM                                                                               
-   DEPRECATE V1 ENDPOINTS                                                                       ├───┤ 03D             
+   DEPRECATE V1 ENDPOINTS                                                                       ├── 09D ──┤           
    ·── API PLATFORM ── BACKLOG ── HIGH                                                                                
   ┌     ┐                                                   ────────────────────────────────────────────────────────  
    BOARD  lanes  agenda  gantt                              SHEET TASKBOARD  REV 2026-08-03  WORK 02/15  ├ OVERDUE ┤  

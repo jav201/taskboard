@@ -406,6 +406,127 @@ async def sweep() -> list[dict]:
     return report
 
 
+# ===========================================================================
+# THE SURFACE SWEEP (--surface) -- the eighth axis, one image, every language
+#
+# WHY ONE FIXED IMAGE AND NOT A SYNTHETIC ONE.  The boards above compare the
+# languages on one fixture because "the same screen in ten languages" is only
+# an honest comparison when it really is the same screen.  The same argument
+# applies one level down: a surface posture is a claim about what a language
+# does to REAL PIXELS, and ten postures shown ten different pictures is a
+# scrapbook again.  The picture is `tui-demos/lab/mbb_rho_final.npy` -- a 20x60
+# density field from the topology-optimisation runs, rendered through R1's own
+# PAPER/INK colormap at scale 6 (360x120 px), which is the image that lab
+# already publishes.
+#
+# THE `.npy` LOAD LIVES HERE AND NOT IN `taskboard/`.  numpy is not a declared
+# dependency of the package (`pyproject.toml`: textual, tzdata, pillow,
+# textual-image).  `prototypes/` is dev-side and may import anything; the
+# shipped package may not grow a dependency to make a capture convenient.
+# ===========================================================================
+
+MBB = Path(r"C:\Users\jjgh8\Github\tui-demos\lab\mbb_rho_final.npy")
+MBB_SCALE = 6                       # 20x60 -> 120x360 px, NEAREST
+PAPER, INK = (248, 246, 240), (28, 32, 44)      # r1_pixels.py's colormap
+
+
+def test_image():
+    """The MBB density field as a PIL image, exactly as `r1_pixels.load()`
+    builds it: linear blend PAPER->INK on the clipped field, NEAREST upscale.
+    Reproduced rather than imported -- `r1_pixels.py` has no import guard and
+    lives in another repo this batch may only READ."""
+    import numpy as np
+    from PIL import Image as PImage
+    g = np.clip(np.load(MBB), 0, 1)[..., None]
+    rgb = (np.array(PAPER, np.uint8) * (1 - g)
+           + np.array(INK, np.uint8) * g).astype(np.uint8)
+    img = PImage.fromarray(rgb)
+    return img.resize((img.width * MBB_SCALE, img.height * MBB_SCALE),
+                      PImage.NEAREST)
+
+
+SURFACE_H = 26                      # rows the region reserves inside the frame
+
+
+def surface_sheet(lang: str, img):
+    """The specimen page a surface capture photographs: the language's own
+    section header, then the reserved rectangle.
+
+    Deliberately NOT a board screen.  Spec section 5 is explicit that no
+    existing screen renders a region in this batch, so wiring one here to take
+    a picture of it would be the batch shipping the thing it declared out of
+    scope.  What the sheet does carry is the language's `sect()` -- so the
+    frames differ pairwise OUTSIDE the image rectangle, which is the
+    acceptance boundary LANGUAGES.md already uses for the boards."""
+    import taskboard.language as LG
+    kit = LG.kit(lang)
+    res = kit.raster_region(img, SIZE[0] - 2, SURFACE_H, label="mbb rho final")
+    head = kit.sect("SURFACE", f"{res.posture} - {img.width}x{img.height} px",
+                    SIZE[0] - 2, SURFACE_H)
+    return "\n".join(head + res.rows), res
+
+
+async def sweep_surfaces() -> list[dict]:
+    """One image, every implemented kit, headless, at the board's viewport."""
+    from textual.app import App, ComposeResult
+    from textual.widgets import Static
+
+    import taskboard.themes as _TH
+
+    img = test_image()
+    OUT.mkdir(parents=True, exist_ok=True)
+    report: list[dict] = []
+
+    for lang in _TH.ORDER:
+        body, res = surface_sheet(lang, img)
+
+        class Sheet(App):
+            CSS = ("Screen { layout: vertical; }\n"
+                   "#surface { padding: 0 1; width: 1fr; height: 1fr; }")
+
+            def compose(self) -> ComposeResult:
+                yield Static(body, id="surface", markup=True)
+
+        app = Sheet()
+        async with app.run_test(size=SIZE) as pilot:
+            await pilot.pause()
+            app.screen.styles.background = _TH.THEMES[lang]["ground"]
+            rows = await settle(pilot, app, f"surface {lang}")
+            w, h, i = write(f"surface_{lang}", rows, app,
+                            f"taskboard - {lang} - surface ({res.posture})")
+        report.append(dict(lang=lang, posture=res.posture, ink=i,
+                           pixels=None if res.pixels is None
+                           else res.pixels.size))
+        print(f"  {lang:<11} {res.posture:<9} {w}x{h} {i:5.1f}% ink   "
+              f"raster {'refused' if res.pixels is None else res.pixels.size}")
+    return report
+
+
+def surface_main() -> int:
+    if not MBB.exists():
+        print(f"TEST IMAGE MISSING: {MBB}", file=sys.stderr)
+        return 2
+    import taskboard.themes as _TH
+    print(f"image {MBB.name} | viewport {SIZE[0]}x{SIZE[1]} | "
+          f"{len(_TH.ORDER)} languages | animations off")
+    report = asyncio.run(sweep_surfaces())
+
+    # THE SWEEP'S OWN LAW, the same one the boards keep: no two frames
+    # identical.  Two languages whose surface renders byte-for-byte the same is
+    # the exact defect LANGUAGES.md records, one axis down.
+    got = {r["lang"]: (OUT / f"surface_{r['lang']}.txt").read_text(
+        encoding="utf-8") for r in report}
+    order = [r["lang"] for r in report]
+    dupes = [(a, b) for i, a in enumerate(order) for b in order[i + 1:]
+             if got[a] == got[b]]
+    if dupes:
+        print(f"IDENTICAL SURFACES: {dupes}", file=sys.stderr)
+        return 1
+    print(f"\n  {len(report)} surfaces -> {OUT}")
+    print(f"  no two identical ({len(order) * (len(order) - 1) // 2} pairs)")
+    return 0
+
+
 def check_reproducible(first: dict[str, str]) -> list[str]:
     """Re-run the whole sweep in a SEPARATE PROCESS and diff every grid.
 
@@ -484,4 +605,13 @@ if __name__ == "__main__":
         with contextlib.redirect_stdout(io.StringIO()):
             asyncio.run(sweep())
         raise SystemExit(0)
+    # `--surface [DIR]`: the eighth axis, one image through every kit.  A
+    # separate entry point rather than a fifth capture inside `sweep()`: the
+    # board sweep photographs a SCREEN and this one photographs a PRIMITIVE
+    # that no screen consumes yet (spec section 5), so folding them together
+    # would make the boards depend on a test image from another repo.
+    if sys.argv[1:2] == ["--surface"]:
+        if len(sys.argv) == 3:
+            OUT = Path(sys.argv[2])
+        raise SystemExit(surface_main())
     raise SystemExit(main())
