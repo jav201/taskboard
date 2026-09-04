@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · corgi · S6 command palette">
+<title>taskboard · corgi · S6 command palette</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#6fe36f">[1]B O A R D</text>
+<text x="119.2" y="23.3" fill="#9a9a9a">[2]</text>
+<text x="144.4" y="23.3" fill="#3a3a3a">FORM</text>
+<text x="186.4" y="23.3" fill="#9a9a9a">[3]</text>
+<text x="211.6" y="23.3" fill="#3a3a3a">CFG</text>
+<text x="245.2" y="23.3" fill="#9a9a9a">[4]</text>
+<text x="270.4" y="23.3" fill="#3a3a3a">LOG</text>
+<text x="10.0" y="40.3" fill="#ff6600">[C]</text>
+<text x="43.6" y="40.3" fill="#f2f2f2">C O M M A N D</text>
+<text x="169.6" y="40.3" fill="#9a9a9a">QUERY &#x27;RE&#x27;  ·  6 RESULTS</text>
+<text x="10.0" y="57.3" fill="#9a9a9a">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="74.3" fill="#ff6600">&gt; </text>
+<text x="43.6" y="74.3" fill="#3a3a3a">▔▔</text>
+<text x="60.4" y="74.3" fill="#f2f2f2">re</text>
+<text x="77.2" y="74.3" fill="#ff6600">▌</text>
+<text x="85.6" y="74.3" fill="#3a3a3a">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔▔</text>
+<text x="26.8" y="108.3" fill="#ff6600">▐</text>
+<text x="43.6" y="108.3" fill="#ff6600">re</text>
+<text x="60.4" y="108.3" fill="#f2f2f2">direct to task</text>
+<text x="413.2" y="108.3" fill="#3a3a3a">enter</text>
+<text x="43.6" y="125.3" fill="#ff6600">re</text>
+<text x="60.4" y="125.3" fill="#9a9a9a">name project</text>
+<text x="43.6" y="142.3" fill="#ff6600">re</text>
+<text x="60.4" y="142.3" fill="#9a9a9a">fresh board</text>
+<text x="413.2" y="142.3" fill="#3a3a3a">r</text>
+<text x="43.6" y="159.3" fill="#9a9a9a">archive rele</text>
+<text x="144.4" y="159.3" fill="#ff6600">as</text>
+<text x="161.2" y="159.3" fill="#9a9a9a">ed</text>
+<text x="43.6" y="176.3" fill="#ff6600">re</text>
+<text x="60.4" y="176.3" fill="#9a9a9a">store from backup</text>
+<text x="43.6" y="193.3" fill="#9a9a9a">set re</text>
+<text x="94.0" y="193.3" fill="#ff6600">mi</text>
+<text x="110.8" y="193.3" fill="#9a9a9a">nder</text>
+<text x="26.8" y="227.3" fill="#9a9a9a">───────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="244.3" fill="#ff6600">&gt; </text>
+<text x="43.6" y="244.3" fill="#3a3a3a">▔▔</text>
+<text x="60.4" y="244.3" fill="#f2f2f2">zzq</text>
+<text x="85.6" y="244.3" fill="#ff6600">▌</text>
+<text x="94.0" y="244.3" fill="#3a3a3a">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔▔</text>
+<text x="43.6" y="278.3" fill="#ff6600"> ██    ██ </text>
+<text x="43.6" y="295.3" fill="#ff6600"> ██    ██ </text>
+<text x="43.6" y="329.3" fill="#ff6600">█        █</text>
+<text x="43.6" y="346.3" fill="#ff6600"> █      █ </text>
+<text x="43.6" y="363.3" fill="#ff6600">  ██████  </text>
+<text x="43.6" y="380.3" fill="#3a3a3a"> [0] NO TASKS</text>
+<text x="26.8" y="414.3" fill="#ff6600">[1]</text>
+<text x="60.4" y="414.3" fill="#9a9a9a">RUN</text>
+<text x="110.8" y="414.3" fill="#ff6600">[2]</text>
+<text x="144.4" y="414.3" fill="#9a9a9a">CLOSE</text>
+<text x="211.6" y="414.3" fill="#ff6600">[3]</text>
+<text x="245.2" y="414.3" fill="#9a9a9a">PREV</text>
+<text x="304.0" y="414.3" fill="#ff6600">[4]</text>
+<text x="337.6" y="414.3" fill="#9a9a9a">NEXT</text>
+</g>
+</svg>

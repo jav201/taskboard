@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · ledger · S4 modal dialog">
+<title>taskboard · ledger · S4 modal dialog</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#1c1a15">▪ BOARD</text>
+<text x="68.8" y="23.3" fill="#8a8272"> │ </text>
+<text x="94.0" y="23.3" fill="#c4b99f">· form</text>
+<text x="144.4" y="23.3" fill="#8a8272"> │ </text>
+<text x="169.6" y="23.3" fill="#c4b99f">· cfg</text>
+<text x="211.6" y="23.3" fill="#8a8272"> │ </text>
+<text x="236.8" y="23.3" fill="#c4b99f">· log</text>
+<text x="10.0" y="40.3" fill="#1c1a15">CLOSING ENTRY ································································</text>
+<text x="673.6" y="40.3" fill="#6b6558">3 postings to reverse</text>
+<text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="91.3" fill="#6b6558"> 1 </text>
+<text x="52.0" y="91.3" fill="#8a8272">│</text>
+<text x="60.4" y="91.3" fill="#1c1a15"> Fix login redirect ···················································</text>
+<text x="656.8" y="91.3" fill="#8a8272">│</text>
+<text x="665.2" y="91.3" fill="#6b6558"> doing    </text>
+<text x="749.2" y="91.3" fill="#8a8272">│</text>
+<text x="757.6" y="91.3" fill="#a8261f">   rev</text>
+<text x="808.0" y="91.3" fill="#8a8272">│</text>
+<text x="26.8" y="108.3" fill="#6b6558"> 2 </text>
+<text x="52.0" y="108.3" fill="#8a8272">│</text>
+<text x="60.4" y="108.3" fill="#1c1a15"> Rate-limit the API ···················································</text>
+<text x="656.8" y="108.3" fill="#8a8272">│</text>
+<text x="665.2" y="108.3" fill="#6b6558"> doing    </text>
+<text x="749.2" y="108.3" fill="#8a8272">│</text>
+<text x="757.6" y="108.3" fill="#a8261f">   rev</text>
+<text x="808.0" y="108.3" fill="#8a8272">│</text>
+<rect x="26.8" y="112.0" width="789.6" height="17.0" fill="#e0d7c2"/>
+<text x="26.8" y="125.3" fill="#6b6558"> 3 </text>
+<text x="52.0" y="125.3" fill="#8a8272">│</text>
+<text x="60.4" y="125.3" fill="#1c1a15"> Port the CSV importer ················································</text>
+<text x="656.8" y="125.3" fill="#8a8272">│</text>
+<text x="665.2" y="125.3" fill="#6b6558"> doing    </text>
+<text x="749.2" y="125.3" fill="#8a8272">│</text>
+<text x="757.6" y="125.3" fill="#a8261f">   rev</text>
+<text x="808.0" y="125.3" fill="#8a8272">│</text>
+<text x="26.8" y="159.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="176.3" fill="#1c1a15">3 entries reversed, 0 deleted</text>
+<text x="26.8" y="210.3" fill="#2b3a67">▶ </text>
+<text x="43.6" y="210.3" fill="#1c1a15"> Post reversal  </text>
+<text x="178.0" y="210.3" fill="#2b3a67"> │</text>
+<text x="220.0" y="210.3" fill="#1c1a15">│      Cancel      │</text>
+</g>
+</svg>

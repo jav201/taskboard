@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · prism · S5 live monitor / log">
+<title>taskboard · prism · S5 live monitor / log</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#8b98a5"> board</text>
+<text x="60.4" y="23.3" fill="#5b6675"> │ </text>
+<text x="85.6" y="23.3" fill="#8b98a5"> form</text>
+<text x="127.6" y="23.3" fill="#5b6675"> │ </text>
+<text x="152.8" y="23.3" fill="#8b98a5"> cfg</text>
+<text x="186.4" y="23.3" fill="#5b6675"> │ </text>
+<text x="211.6" y="23.3" fill="#2dd4bf">▸log</text>
+<text x="10.0" y="40.3" fill="#e6edf3">MONITOR</text>
+<text x="85.6" y="40.3" fill="#5b6675">8 events  ·  held</text>
+<text x="26.8" y="74.3" fill="#8b98a5">events/s    ⣿⣿⣿⣿⣿⣿⣿</text>
+<text x="186.4" y="74.3" fill="#5b6675">⣀⣀⣀⣀⣀⣀⣀</text>
+<text x="253.6" y="74.3" fill="#8b98a5">5</text>
+<text x="26.8" y="108.3" fill="#8b98a5">rate    </text>
+<text x="94.0" y="108.3" fill="#2dd4bf">▂▅▂▅▂▅█▅▂▂▅▅▅▂▅▅</text>
+<text x="245.2" y="108.3" fill="#5b6675">ceiling 10</text>
+<text x="26.8" y="159.3" fill="#5b6675">09:41:02</text>
+<text x="127.6" y="159.3" fill="#5b6675">INFO  </text>
+<text x="178.0" y="159.3" fill="#8b98a5">board loaded  16 tasks  4 projects</text>
+<text x="26.8" y="176.3" fill="#5b6675">09:41:07</text>
+<text x="127.6" y="176.3" fill="#5b6675">INFO  </text>
+<text x="178.0" y="176.3" fill="#8b98a5">sync started  remote=origin</text>
+<text x="26.8" y="193.3" fill="#5b6675">09:41:09</text>
+<text x="102.4" y="193.3" fill="#fbbf24">!  WARN  </text>
+<text x="178.0" y="193.3" fill="#e6edf3">3 tasks overdue in BACKLOG</text>
+<text x="26.8" y="210.3" fill="#5b6675">09:41:12</text>
+<text x="127.6" y="210.3" fill="#5b6675">INFO  </text>
+<text x="178.0" y="210.3" fill="#8b98a5">sync ok  216 ms  0 conflicts</text>
+<text x="26.8" y="227.3" fill="#5b6675">09:41:18</text>
+<text x="102.4" y="227.3" fill="#f43f5e">!! ERROR </text>
+<text x="178.0" y="227.3" fill="#e6edf3">rate limit hit  retry in 30 s</text>
+<text x="26.8" y="244.3" fill="#5b6675">09:41:20</text>
+<text x="127.6" y="244.3" fill="#5b6675">INFO  </text>
+<text x="178.0" y="244.3" fill="#8b98a5">retry scheduled  attempt 2 of 5</text>
+<text x="26.8" y="261.3" fill="#5b6675">09:41:33</text>
+<text x="127.6" y="261.3" fill="#5b6675">INFO  </text>
+<text x="178.0" y="261.3" fill="#8b98a5">sync ok  198 ms  0 conflicts</text>
+<text x="26.8" y="278.3" fill="#5b6675">09:41:41</text>
+<text x="127.6" y="278.3" fill="#5b6675">INFO  </text>
+<text x="178.0" y="278.3" fill="#8b98a5">signal engine idle</text>
+<text x="94.0" y="295.3" fill="#fbbf24">|| HELD</text>
+<text x="169.6" y="295.3" fill="#5b6675">space resumes</text>
+</g>
+</svg>

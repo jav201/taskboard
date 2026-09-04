@@ -1,0 +1,32 @@
+▸board │  form │  cfg │  log                                                                        
+COMMAND  query 're'  ·  6 results                                                                   
+                                                                                                    
+  > ⣿re⡆⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣿                                                      
+                                                                                                    
+  ▸ redirect to task                            enter                                               
+    rename project                                                                                  
+    refresh board                               r                                                   
+    archive released                                                                                
+    restore from backup                                                                             
+    set reminder                                                                                    
+                                                                                                    
+                                                                                                    
+  > ⣿zzq⡆⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣿                                                      
+                                                                                                    
+    ⠀⢸⣿⣿⡇⠀⠀⠀⠀⠀⢸⣿⣿⡇⠀                                                                                 
+    ⠀⢸⣿⣿⡇⠀⠀⠀⠀⠀⢸⣿⣿⡇⠀                                                                                 
+    ⠀⠘⠛⠛⠃⠀⠀⠀⠀⠀⠘⠛⠛⠃⠀                                                                                 
+    ⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀                                                                                 
+    ⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿                                                                                 
+    ⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀                                                                                 
+    ⠀⠈⠉⣶⣶⣶⣶⣶⣶⣶⣶⣶⠉⠁⠀                                                                                 
+    ⠀⠀⠀⠛⠛⠛⠛⠛⠛⠛⠛⠛⠀⠀⠀                                                                                 
+     empty                                                                                          
+                                                                                                    
+  enter run   esc close   ^p prev   ^n next                                                         
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · prism · S2 form with validation">
+<title>taskboard · prism · S2 form with validation</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#8b98a5"> board</text>
+<text x="60.4" y="23.3" fill="#5b6675"> │ </text>
+<text x="85.6" y="23.3" fill="#2dd4bf">▸form</text>
+<text x="127.6" y="23.3" fill="#5b6675"> │ </text>
+<text x="152.8" y="23.3" fill="#8b98a5"> cfg</text>
+<text x="186.4" y="23.3" fill="#5b6675"> │ </text>
+<text x="211.6" y="23.3" fill="#8b98a5"> log</text>
+<text x="10.0" y="40.3" fill="#e6edf3">NEW TASK</text>
+<text x="94.0" y="40.3" fill="#5b6675">5 fields  ·  1 invalid</text>
+<text x="26.8" y="74.3" fill="#8b98a5">title</text>
+<text x="68.8" y="74.3" fill="#f43f5e">*</text>
+<text x="144.4" y="74.3" fill="#5b6675">⣿</text>
+<text x="152.8" y="74.3" fill="#e6edf3">Fix login</text>
+<text x="228.4" y="74.3" fill="#2dd4bf">⡆</text>
+<text x="236.8" y="74.3" fill="#e6edf3"> redirect</text>
+<text x="312.4" y="74.3" fill="#5b6675">⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣿</text>
+<text x="26.8" y="108.3" fill="#8b98a5">due</text>
+<text x="52.0" y="108.3" fill="#f43f5e">*</text>
+<text x="144.4" y="108.3" fill="#5b6675">⣿</text>
+<text x="152.8" y="108.3" fill="#e6edf3">12/09/26</text>
+<text x="220.0" y="108.3" fill="#5b6675">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿</text>
+<text x="455.2" y="108.3" fill="#f43f5e">!</text>
+<text x="144.4" y="125.3" fill="#f43f5e">expected YYYY-MM-DD</text>
+<text x="26.8" y="159.3" fill="#8b98a5">priority</text>
+<text x="144.4" y="159.3" fill="#5b6675">⣀⣀⣀</text>
+<text x="178.0" y="159.3" fill="#8b98a5">low</text>
+<text x="220.0" y="159.3" fill="#5b6675">⣀⣀⣀</text>
+<text x="253.6" y="159.3" fill="#8b98a5">norm</text>
+<text x="304.0" y="159.3" fill="#e6edf3">⣀⣿⣀</text>
+<text x="337.6" y="159.3" fill="#e6edf3">high</text>
+<text x="26.8" y="193.3" fill="#8b98a5">tags</text>
+<text x="144.4" y="193.3" fill="#5b6675">⣿⣀⣿</text>
+<text x="178.0" y="193.3" fill="#8b98a5">api</text>
+<text x="220.0" y="193.3" fill="#e6edf3">⣿⠀⣿</text>
+<text x="253.6" y="193.3" fill="#8b98a5">ui</text>
+<text x="287.2" y="193.3" fill="#e6edf3">⣿⠀⣿</text>
+<text x="320.8" y="193.3" fill="#8b98a5">urgent</text>
+<text x="26.8" y="227.3" fill="#8b98a5">notes</text>
+<text x="144.4" y="227.3" fill="#5b6675">⣿</text>
+<text x="152.8" y="227.3" fill="#e6edf3">Redirect drops the ?next= param when the</text>
+<text x="488.8" y="227.3" fill="#5b6675">⣿</text>
+<text x="144.4" y="244.3" fill="#5b6675">⣿</text>
+<text x="152.8" y="244.3" fill="#e6edf3">session cookie is renewed mid-flight.</text>
+<text x="463.6" y="244.3" fill="#5b6675">⣿</text>
+<text x="144.4" y="261.3" fill="#5b6675">⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿</text>
+<text x="144.4" y="295.3" fill="#5b6675">⠄⠄   Save   ⠄⠄</text>
+<text x="287.2" y="295.3" fill="#e6edf3">⣿⣀  Cancel  ⣀⣿</text>
+<text x="144.4" y="312.3" fill="#5b6675">Save is held until due parses</text>
+</g>
+</svg>

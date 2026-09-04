@@ -1,0 +1,32 @@
+SETTINGS  ·── 5 SWITCHES  ·  2 SELECTS  ·  1 SLIDER                                                 
+                                                                                                    
+  notify on overdue         ├─┤                                                                     
+  daily digest              ├─┤                                                                     
+  sound                     ├┤·                                                                     
+  sync to remote            ├╎╌   (no remote configured)                                            
+  compact rows              ├─┤                                                                     
+                                                                                                    
+  start of week             ┤  mon  · v                                                             
+  theme                     ┤  dark · v                                                             
+                                auto                                                                
+                                light                                                               
+                              ┌ dark                                                                
+                                                                                                    
+  row density               ├────────┤···· 70                                                       
+                                                                                                    
+                                                                                                    
+  DANGER  delete every completed task                                                               
+  ├  Delete all  ┤   7 tasks, not recoverable                                                       
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+             ┌   ┐               ─────────                                                          
+ board  form  CFG  log           ├ CLEAR ┤                                                          
+             └   ┘               ─────────                                                          

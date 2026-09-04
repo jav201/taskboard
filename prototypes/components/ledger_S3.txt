@@ -1,0 +1,32 @@
+· board │ · form │ ▪ CFG │ · log                                                                    
+SETTINGS ····················································· 5 switches  ·  2 selects  ·  1 slider
+────────────────────────────────────────────────────────────────────────────────────────────────────
+  notify on overdue         ──▪ posted                                                              
+  daily digest              ──▪ posted                                                              
+  sound                     ▪·· open                                                                
+  sync to remote            ▫╌╌ open     (no remote configured)                                     
+  compact rows              ──▪ posted                                                              
+                                                                                                    
+  start of week             ▪  mon  ┊ v                                                             
+  theme                     ▪  dark ┊ v                                                             
+                                auto                                                                
+                                light                                                               
+                              ▶ dark                                                                
+                                                                                                    
+  row density               ─────────▪···· 70                                                       
+                                                                                                    
+  ────────────────────────────────────────────────────────────────────────────────────────────────  
+  CLOSING  7 completed entries                                                                      
+  │  Post closing entry  │   reverses, never deletes                                                
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    

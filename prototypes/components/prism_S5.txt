@@ -1,0 +1,32 @@
+ board │  form │  cfg │ ▸log                                                                        
+MONITOR  8 events  ·  held                                                                          
+                                                                                                    
+  events/s    ⣿⣿⣿⣿⣿⣿⣿⣀⣀⣀⣀⣀⣀⣀ 5                                                                      
+                                                                                                    
+  rate    ▂▅▂▅▂▅█▅▂▂▅▅▅▂▅▅  ceiling 10                                                              
+                                                                                                    
+                                                                                                    
+  09:41:02    INFO  board loaded  16 tasks  4 projects                                              
+  09:41:07    INFO  sync started  remote=origin                                                     
+  09:41:09 !  WARN  3 tasks overdue in BACKLOG                                                      
+  09:41:12    INFO  sync ok  216 ms  0 conflicts                                                    
+  09:41:18 !! ERROR rate limit hit  retry in 30 s                                                   
+  09:41:20    INFO  retry scheduled  attempt 2 of 5                                                 
+  09:41:33    INFO  sync ok  198 ms  0 conflicts                                                    
+  09:41:41    INFO  signal engine idle                                                              
+          || HELD  space resumes                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    

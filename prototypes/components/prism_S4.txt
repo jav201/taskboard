@@ -1,0 +1,32 @@
+▸board │  form │  cfg │  log                                                                        
+BOARD  16 tasks  ·  4 projects                                                                      
+                                                                                                    
+  ▎  BACKLOG 5                                               │ DETAIL  Fix login redirect           
+    ▎  Audit the theme tokens                           21d  │                                      
+    ▎    backlog · 21d                                       │ project                           Web
+    ▎  Drop the legacy shim                             30d  │ phase                           doing
+    ▎    backlog · 30d                                       │ due                                3d
+                                                             │ priority                         high
+▸ ▎  DOING 4                                                 │ status                           open
+                        ┌──────────────────────────────────────────────────┐                        
+                        │ Delete 3 tasks?                                  │                        
+                        │                                                  │                        
+                        │ 3 tasks will be removed from BACKLOG.            │                        
+                        │ This cannot be undone.                           │                        
+                        │                                                  │                        
+                        │ ⣿⣤  Delete  ⣤⣿   ⣿⣀  Cancel  ⣀⣿                  │                        
+                        └──────────────────────────────────────────────────┘                        
+                                                             │                                      
+  ▎  BLOCKED 0                                               │                                      
+    ⠀⢸⣿⣿⡇⠀⠀⠀⠀⠀⢸⣿⣿⡇⠀                                          │                                      
+    ⠀⢸⣿⣿⡇⠀⠀⠀⠀⠀⢸⣿⣿⡇⠀                                          │                                      
+    ⠀⠘⠛⠛⠃⠀⠀⠀⠀⠀⠘⠛⠛⠃⠀                                          │                                      
+    ⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀                                          │                                      
+    ⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿                                          │                                      
+    ⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀                                          │                                      
+    ⠀⠈⠉⣶⣶⣶⣶⣶⣶⣶⣶⣶⠉⠁⠀                                          │                                      
+    ⠀⠀⠀⠛⠛⠛⠛⠛⠛⠛⠛⠛⠀⠀⠀                                          │                                      
+     empty                                                   │                                      
+                                                             │                                      
+view ⠒⣿⣿⣿⣿⠒⠒⠒⠒⠒⠒⠒ 3-10 of 23                                                                        
+                                                                                                    

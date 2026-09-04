@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · corgi · S1 list + detail">
+<title>taskboard · corgi · S1 list + detail</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#6fe36f">[1]B O A R D</text>
+<text x="119.2" y="23.3" fill="#9a9a9a">[2]</text>
+<text x="144.4" y="23.3" fill="#3a3a3a">FORM</text>
+<text x="186.4" y="23.3" fill="#9a9a9a">[3]</text>
+<text x="211.6" y="23.3" fill="#3a3a3a">CFG</text>
+<text x="245.2" y="23.3" fill="#9a9a9a">[4]</text>
+<text x="270.4" y="23.3" fill="#3a3a3a">LOG</text>
+<text x="10.0" y="40.3" fill="#ff6600">[B]</text>
+<text x="43.6" y="40.3" fill="#f2f2f2">B O A R D</text>
+<text x="136.0" y="40.3" fill="#9a9a9a">16 TASKS  ·  4 PROJECTS</text>
+<text x="10.0" y="57.3" fill="#9a9a9a">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="74.3" fill="#ff6600">[1]</text>
+<text x="60.4" y="74.3" fill="#f2f2f2">B A C K L O G</text>
+<text x="178.0" y="74.3" fill="#6fe36f"> 5</text>
+<text x="522.4" y="74.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="74.3" fill="#ff6600">[D]</text>
+<text x="572.8" y="74.3" fill="#f2f2f2">D E T A I L</text>
+<text x="682.0" y="74.3" fill="#9a9a9a">FIX LOGIN REDIRECT</text>
+<text x="26.8" y="91.3" fill="#9a9a9a">─────────────────────────────────────────────────────────</text>
+<text x="522.4" y="91.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="91.3" fill="#9a9a9a">────────────────────────────────────</text>
+<text x="43.6" y="108.3" fill="#9a9a9a">[5]</text>
+<text x="77.2" y="108.3" fill="#f2f2f2">AUDIT THE THEME TOKENS</text>
+<text x="295.6" y="108.3" fill="#9a9a9a">DUE</text>
+<text x="329.2" y="108.3" fill="#9a9a9a">21D </text>
+<text x="379.6" y="108.3" fill="#9a9a9a">PR</text>
+<text x="404.8" y="108.3" fill="#9a9a9a">LOW </text>
+<text x="455.2" y="108.3" fill="#9a9a9a">ST</text>
+<text x="480.4" y="108.3" fill="#6fe36f">OPEN</text>
+<text x="522.4" y="108.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="108.3" fill="#9a9a9a">project</text>
+<text x="824.8" y="108.3" fill="#f2f2f2">Web</text>
+<text x="43.6" y="125.3" fill="#9a9a9a">[6]</text>
+<text x="77.2" y="125.3" fill="#f2f2f2">DROP THE LEGACY SHIM</text>
+<text x="295.6" y="125.3" fill="#9a9a9a">DUE</text>
+<text x="329.2" y="125.3" fill="#9a9a9a">30D </text>
+<text x="379.6" y="125.3" fill="#9a9a9a">PR</text>
+<text x="404.8" y="125.3" fill="#9a9a9a">NORM</text>
+<text x="455.2" y="125.3" fill="#9a9a9a">ST</text>
+<text x="480.4" y="125.3" fill="#6fe36f">OPEN</text>
+<text x="522.4" y="125.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="125.3" fill="#9a9a9a">phase</text>
+<text x="808.0" y="125.3" fill="#f2f2f2">doing</text>
+<text x="522.4" y="142.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="142.3" fill="#9a9a9a">due</text>
+<text x="833.2" y="142.3" fill="#f2f2f2">3d</text>
+<text x="10.0" y="159.3" fill="#ff6600">▐</text>
+<text x="26.8" y="159.3" fill="#ff6600">[2]</text>
+<text x="60.4" y="159.3" fill="#f2f2f2">D O I N G</text>
+<text x="144.4" y="159.3" fill="#6fe36f"> 4</text>
+<text x="522.4" y="159.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="159.3" fill="#9a9a9a">priority</text>
+<text x="816.4" y="159.3" fill="#f2f2f2">high</text>
+<text x="10.0" y="176.3" fill="#ff6600">▐</text>
+<text x="26.8" y="176.3" fill="#9a9a9a">─────────────────────────────────────────────────────────</text>
+<text x="522.4" y="176.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="176.3" fill="#9a9a9a">status</text>
+<text x="816.4" y="176.3" fill="#f2f2f2">open</text>
+<text x="10.0" y="193.3" fill="#ff6600">▐</text>
+<text x="43.6" y="193.3" fill="#9a9a9a">[1]</text>
+<text x="77.2" y="193.3" fill="#f2f2f2">FIX LOGIN REDIRECT</text>
+<text x="295.6" y="193.3" fill="#9a9a9a">DUE</text>
+<text x="329.2" y="193.3" fill="#ffb000">3D  </text>
+<text x="379.6" y="193.3" fill="#9a9a9a">PR</text>
+<text x="404.8" y="193.3" fill="#9a9a9a">HIGH</text>
+<text x="455.2" y="193.3" fill="#9a9a9a">ST</text>
+<text x="480.4" y="193.3" fill="#6fe36f">OPEN</text>
+<text x="522.4" y="193.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="193.3" fill="#9a9a9a">owner</text>
+<text x="799.6" y="193.3" fill="#f2f2f2">jav201</text>
+<text x="43.6" y="210.3" fill="#9a9a9a">[2]</text>
+<text x="77.2" y="210.3" fill="#f2f2f2">RATE-LIMIT THE API</text>
+<text x="295.6" y="210.3" fill="#9a9a9a">DUE</text>
+<text x="329.2" y="210.3" fill="#d92b1a">-2D </text>
+<text x="379.6" y="210.3" fill="#9a9a9a">PR</text>
+<text x="404.8" y="210.3" fill="#9a9a9a">HIGH</text>
+<text x="455.2" y="210.3" fill="#9a9a9a">ST</text>
+<text x="480.4" y="210.3" fill="#6fe36f">BLK </text>
+<text x="522.4" y="210.3" fill="#3a3a3a">│</text>
+<text x="43.6" y="227.3" fill="#9a9a9a">[3]</text>
+<text x="77.2" y="227.3" fill="#f2f2f2">PORT THE CSV IMPORTER</text>
+<text x="295.6" y="227.3" fill="#9a9a9a">DUE</text>
+<text x="329.2" y="227.3" fill="#9a9a9a">9D  </text>
+<text x="379.6" y="227.3" fill="#9a9a9a">PR</text>
+<text x="404.8" y="227.3" fill="#9a9a9a">NORM</text>
+<text x="455.2" y="227.3" fill="#9a9a9a">ST</text>
+<text x="480.4" y="227.3" fill="#6fe36f">OPEN</text>
+<text x="522.4" y="227.3" fill="#3a3a3a">│</text>
+<text x="539.2" y="227.3" fill="#6fe36f">▄▄ ▄▄ ▄▄ ▄▄ </text>
+<text x="640.0" y="227.3" fill="#3a3a3a">░░ ░░ ░░ ░░ </text>
+<text x="740.8" y="227.3" fill="#9a9a9a">[ 44%]</text>
+<text x="43.6" y="244.3" fill="#9a9a9a">[4]</text>
+<text x="77.2" y="244.3" fill="#f2f2f2">REWRITE THE ONBOARDING</text>
+<text x="295.6" y="244.3" fill="#9a9a9a">DUE</text>
+<text x="329.2" y="244.3" fill="#9a9a9a">14D </text>
+<text x="379.6" y="244.3" fill="#9a9a9a">PR</text>
+<text x="404.8" y="244.3" fill="#9a9a9a">LOW </text>
+<text x="455.2" y="244.3" fill="#9a9a9a">ST</text>
+<text x="480.4" y="244.3" fill="#6fe36f">OPEN</text>
+<text x="522.4" y="244.3" fill="#3a3a3a">│</text>
+<text x="522.4" y="261.3" fill="#3a3a3a">│</text>
+<text x="26.8" y="278.3" fill="#ff6600">[3]</text>
+<text x="60.4" y="278.3" fill="#f2f2f2">B L O C K E D</text>
+<text x="178.0" y="278.3" fill="#3a3a3a"> 0</text>
+<text x="522.4" y="278.3" fill="#3a3a3a">│</text>
+<text x="26.8" y="295.3" fill="#9a9a9a">─────────────────────────────────────────────────────────</text>
+<text x="522.4" y="295.3" fill="#3a3a3a">│</text>
+<text x="43.6" y="312.3" fill="#ff6600"> ██    ██ </text>
+<text x="522.4" y="312.3" fill="#3a3a3a">│</text>
+<text x="43.6" y="329.3" fill="#ff6600"> ██    ██ </text>
+<text x="522.4" y="329.3" fill="#3a3a3a">│</text>
+<text x="522.4" y="346.3" fill="#3a3a3a">│</text>
+<text x="43.6" y="363.3" fill="#ff6600">█        █</text>
+<text x="522.4" y="363.3" fill="#3a3a3a">│</text>
+<text x="43.6" y="380.3" fill="#ff6600"> █      █ </text>
+<text x="522.4" y="380.3" fill="#3a3a3a">│</text>
+<text x="43.6" y="397.3" fill="#ff6600">  ██████  </text>
+<text x="522.4" y="397.3" fill="#3a3a3a">│</text>
+<text x="43.6" y="414.3" fill="#3a3a3a"> [0] NO TASKS</text>
+<text x="522.4" y="414.3" fill="#3a3a3a">│</text>
+<text x="522.4" y="431.3" fill="#3a3a3a">│</text>
+<text x="26.8" y="448.3" fill="#ff6600">[4]</text>
+<text x="60.4" y="448.3" fill="#f2f2f2">D O N E</text>
+<text x="127.6" y="448.3" fill="#6fe36f"> 7</text>
+<text x="522.4" y="448.3" fill="#3a3a3a">│</text>
+<text x="26.8" y="465.3" fill="#9a9a9a">─────────────────────────────────────────────────────────</text>
+<text x="522.4" y="465.3" fill="#3a3a3a">│</text>
+<text x="522.4" y="482.3" fill="#3a3a3a">│</text>
+<text x="522.4" y="499.3" fill="#3a3a3a">│</text>
+<text x="522.4" y="516.3" fill="#3a3a3a">│</text>
+<text x="10.0" y="533.3" fill="#3a3a3a">view</text>
+<text x="52.0" y="533.3" fill="#6fe36f">██</text>
+<text x="77.2" y="533.3" fill="#3a3a3a">░░</text>
+<text x="102.4" y="533.3" fill="#3a3a3a">░░</text>
+<text x="127.6" y="533.3" fill="#3a3a3a">░░</text>
+<text x="152.8" y="533.3" fill="#9a9a9a">3-10 of 23</text>
+</g>
+</svg>

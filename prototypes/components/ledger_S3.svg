@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · ledger · S3 settings">
+<title>taskboard · ledger · S3 settings</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#c4b99f">· board</text>
+<text x="68.8" y="23.3" fill="#8a8272"> │ </text>
+<text x="94.0" y="23.3" fill="#c4b99f">· form</text>
+<text x="144.4" y="23.3" fill="#8a8272"> │ </text>
+<text x="169.6" y="23.3" fill="#1c1a15">▪ CFG</text>
+<text x="211.6" y="23.3" fill="#8a8272"> │ </text>
+<text x="236.8" y="23.3" fill="#c4b99f">· log</text>
+<text x="10.0" y="40.3" fill="#1c1a15">SETTINGS ·····················································</text>
+<text x="539.2" y="40.3" fill="#6b6558">5 switches  ·  2 selects  ·  1 slider</text>
+<text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="74.3" fill="#6b6558">notify on overdue</text>
+<text x="245.2" y="74.3" fill="#6b6558">──</text>
+<text x="262.0" y="74.3" fill="#1c1a15">▪</text>
+<text x="278.8" y="74.3" fill="#1c1a15">posted</text>
+<text x="26.8" y="91.3" fill="#6b6558">daily digest</text>
+<text x="245.2" y="91.3" fill="#6b6558">──</text>
+<text x="262.0" y="91.3" fill="#1c1a15">▪</text>
+<text x="278.8" y="91.3" fill="#1c1a15">posted</text>
+<text x="26.8" y="108.3" fill="#6b6558">sound</text>
+<text x="245.2" y="108.3" fill="#1c1a15">▪</text>
+<text x="253.6" y="108.3" fill="#c4b99f">··</text>
+<text x="278.8" y="108.3" fill="#6b6558">open  </text>
+<text x="26.8" y="125.3" fill="#c4b99f">sync to remote</text>
+<text x="245.2" y="125.3" fill="#c4b99f">▫╌╌</text>
+<text x="278.8" y="125.3" fill="#c4b99f">open  </text>
+<text x="354.4" y="125.3" fill="#c4b99f">(no remote configured)</text>
+<text x="26.8" y="142.3" fill="#6b6558">compact rows</text>
+<text x="245.2" y="142.3" fill="#6b6558">──</text>
+<text x="262.0" y="142.3" fill="#1c1a15">▪</text>
+<text x="278.8" y="142.3" fill="#1c1a15">posted</text>
+<text x="26.8" y="176.3" fill="#6b6558">start of week</text>
+<text x="245.2" y="176.3" fill="#1c1a15">▪  mon  </text>
+<text x="312.4" y="176.3" fill="#c4b99f">┊</text>
+<text x="329.2" y="176.3" fill="#6b6558">v</text>
+<text x="26.8" y="193.3" fill="#6b6558">theme</text>
+<text x="245.2" y="193.3" fill="#1c1a15">▪  dark </text>
+<text x="312.4" y="193.3" fill="#c4b99f">┊</text>
+<text x="329.2" y="193.3" fill="#6b6558">v</text>
+<text x="262.0" y="210.3" fill="#6b6558">  auto   </text>
+<text x="262.0" y="227.3" fill="#6b6558">  light  </text>
+<text x="262.0" y="244.3" fill="#1c1a15">▶ dark   </text>
+<text x="26.8" y="278.3" fill="#6b6558">row density</text>
+<text x="245.2" y="278.3" fill="#6b6558">─────────</text>
+<text x="320.8" y="278.3" fill="#1c1a15">▪</text>
+<text x="329.2" y="278.3" fill="#c4b99f">····</text>
+<text x="371.2" y="278.3" fill="#6b6558">70</text>
+<text x="26.8" y="312.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="329.3" fill="#1c1a15">CLOSING</text>
+<text x="102.4" y="329.3" fill="#6b6558">7 completed entries</text>
+<text x="26.8" y="346.3" fill="#1c1a15">│  Post closing entry  │</text>
+<text x="253.6" y="346.3" fill="#c4b99f">reverses, never deletes</text>
+</g>
+</svg>
