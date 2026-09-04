@@ -48,6 +48,8 @@ import copy as _copy
 from datetime import date
 from typing import NamedTuple
 
+from rich.text import Text
+
 from taskboard import bases as BS
 from taskboard import naught as NA
 from taskboard import raster as RS
@@ -1212,6 +1214,46 @@ class Motion(NamedTuple):
         return self.step_ms / 1000
 
 
+#: THE TRANSPARENT CELL. A cell of `chrome` carrying this character is a HOLE:
+#: the compositor must leave whatever is already in that cell alone — it is
+#: where the glass goes, and painting it would paint over the raster.
+#:
+#: U+E000 is the first Private Use Area codepoint, chosen for two reasons and
+#: not for taste. It is one cell wide by rich's own width table (measured), so
+#: punching it into a row cannot move the reserved rectangle. And no kit can
+#: ever emit it: every glyph any language draws comes from a declared alphabet
+#: (`LATTICE_GLYPHS`, the box constants, `RS.HALF`, the shade ramps), and none
+#: of them reaches the PUA. A space would have been the obvious sentinel and is
+#: the wrong one — swiss pads its gutter with real spaces and corgi's bars sit
+#: next to them, so "space" cannot distinguish a hole from chrome that is blank
+#: on purpose, which is exactly the distinction this character exists to carry.
+RASTER_HOLE = "\ue000"
+
+
+def _punch(row: str, x: int, w: int) -> str:
+    """One markup row with cells `[x, x+w)` replaced by `RASTER_HOLE`.
+
+    Measured on CELLS, never on characters — a markup row's `len()` counts its
+    tags, and this module's rows are markup end to end (the pitfall `mark()`
+    documents one level up). `Text` is used as the MEASURING INSTRUMENT here,
+    which is the same role it already plays in this axis's tests ("the cells a
+    markup row actually draws — measured through rich, not by `len()`").
+
+    THE RE-EMISSION IS SAFE ON BOTH PARSERS, AND THAT WAS MEASURED RATHER THAN
+    ASSUMED. This module's markup is read by TEXTUAL, and `mark()` records at
+    length that rich and Textual disagree about escaping — so round-tripping a
+    row through rich to slice it is exactly the move that had bitten this file
+    before. Checked on 2026-09-04 over every row of every language at the
+    sweep's own geometry (11 x 26 rows): `Content.from_markup` gives the same
+    plain text and the same spans for the original row and for the re-emitted
+    one, in every case. A row that ever failed that check would come back as a
+    lost style or a swallowed `[/]`, which the region's cell-width assertion
+    and the sweep's frames would both see."""
+    t = Text.from_markup(row)
+    head, _, tail = t.divide([x, x + w])
+    return head.markup + RASTER_HOLE * w + tail.markup
+
+
 class RenderResult(NamedTuple):
     """WHAT A SURFACE POSTURE PRODUCES — both sides of it, from one call.
 
@@ -1232,14 +1274,54 @@ class RenderResult(NamedTuple):
     that wanted to bleed under a card would be asking for a frame the
     compositor cannot make honest.
 
+    `image_box` is `(col, row, w, h)` — WHERE INSIDE `rows` THE GLASS WENT.
+    It exists because `rows` fuses the frame and the image into one rendering,
+    and a consumer that draws the true raster then has nothing to draw the
+    frame from: corgi's `[1] DISPLAY` box and blueprint's dimension spans are
+    IN `rows` and are absent from `pixels` (recorded as F-4, found in the
+    captures rather than in the code). `None` means the posture refused, and
+    it is `None` rather than a zero-size rectangle on purpose — a refusing
+    language has no place to put glass, which is not the same as having a
+    place of no size.
+
+    `chrome` is the frame ALONE: `rows` with the `image_box` cells replaced by
+    `RASTER_HOLE`. It is DERIVED from `rows` and never the other way round,
+    which is what keeps every frame this repo has already captured byte-
+    identical — `rows` is still the whole rendering, and `chrome` is a view of
+    it. For a refusing posture `chrome` IS `rows`, the same object: there is
+    no glass to cut a hole for, so there is nothing to derive.
+
     `blob()` is what the mutation check (LANGUAGES.md's VERIFY rule) compares.
     It covers BOTH surfaces on purpose: a posture that changed the cells and
     left the pixels alone would pass a glyph-only comparison while breaking
-    AC-3's "the same posture applied to the pixels"."""
+    AC-3's "the same posture applied to the pixels". It deliberately does NOT
+    cover `chrome`: `chrome` is a function of `rows` and `image_box`, so
+    folding it in would make the mutation check compare the same bytes twice
+    and report the redundancy as strength. The chrome limb is its own
+    assertion in the test instead."""
     posture: str
     rows: list[str]
     pixels: object | None
     reserved: tuple[int, int]
+    image_box: tuple[int, int, int, int] | None = None
+
+    @property
+    def chrome(self) -> list[str]:
+        """The posture's frame, with a transparent hole where the glass goes.
+
+        A compositor draws this, reserves `image_box`, and puts the raster
+        widget in the hole — which is the whole of what F-4 asked for, and the
+        reason it is a property rather than a fifth thing a mechanism has to
+        remember to build: a mechanism that BUILT its chrome separately could
+        build one that disagreed with its own `rows`, and nothing would catch
+        it. Derived, they cannot drift."""
+        if self.image_box is None:
+            return self.rows
+        x, y, w, h = self.image_box
+        out = list(self.rows)
+        for i in range(y, min(y + h, len(out))):
+            out[i] = _punch(out[i], x, w)
+        return out
 
     def blob(self) -> bytes:
         pix = self.pixels
@@ -7416,8 +7498,14 @@ def _plain(s: str, w: int) -> str:
 def _surface_untinted(k, img, w, h, label=""):
     """UNTINTED (nord / base16). The one thing the user's colour scheme cannot
     restyle, so it is shown as-is with NO frame — the environment's rules stop
-    at the region's edge and the language says so (LANGUAGES.md §6)."""
-    return RenderResult("untinted", RS.halfblock(img, w, h), img, (w, h))
+    at the region's edge and the language says so (LANGUAGES.md §6).
+
+    THE IMAGE BOX IS THE WHOLE REGION, and that is this posture's answer
+    rather than a missing frame: `chrome` comes back as nothing but holes,
+    which is what "there is no chrome" looks like when it is said in the same
+    vocabulary every other posture is said in."""
+    return RenderResult("untinted", RS.halfblock(img, w, h), img, (w, h),
+                        (0, 0, w, h))
 
 
 def _surface_lattice(k, img, w, h, label=""):
@@ -7429,12 +7517,18 @@ def _surface_lattice(k, img, w, h, label=""):
 
     The glyph side is drawn by the kit's own lattice code (naught's full-bleed
     `field`, instrument's braille), so the surface cannot invent a second dot
-    vocabulary beside the one the board already draws."""
+    vocabulary beside the one the board already draws.
+
+    THE IMAGE BOX IS THE WHOLE REGION. The unlit dots are not chrome around a
+    picture, they are the picture's dark half — an LED panel showing black is
+    still the panel showing something. Cutting them out as frame would hand a
+    compositor a hole with the language's own grid drawn around it, which is
+    the one thing this posture exists to refuse."""
     cols, rows = k.lattice_grid(w, h)
     bm = RS.bitmap(img, cols, rows)
     return RenderResult("lattice", k.lattice_rows(bm, w, h)[:h],
                         RS.quantise(img, cols, rows, k.c["ink"], k.c["dim"]),
-                        (w, h))
+                        (w, h), (0, 0, w, h))
 
 
 def _surface_display(k, img, w, h, label=""):
@@ -7462,7 +7556,10 @@ def _surface_display(k, img, w, h, label=""):
     for line in RS.halfblock(pix, iw, ih):
         rows.append(f"[{rule}]{lf}[/]" + line + f"[{rule}]{rt}[/]")
     rows.append(f"[{rule}]{_plain(bl + bot_g * max(0, w - 2) + br, w)}[/]")
-    return RenderResult("display", rows[:h], pix, (w, h))
+    # the box is the interior the body was drawn into, one cell in from the
+    # bars on every side — the same `iw`/`ih` the loop above used, so a frame
+    # that moved would move the box with it
+    return RenderResult("display", rows[:h], pix, (w, h), (1, 1, iw, ih))
 
 
 def _surface_tint(k, img, w, h, label=""):
@@ -7482,7 +7579,11 @@ def _surface_tint(k, img, w, h, label=""):
     body = RS.halfblock(pix, w, max(1, h - 2))
     rows = ([f"[{k['mut']}]{_plain(span_w, w)}[/]"] + body
             + [f"[{k['mut']}]{_plain(span_h, w)}[/]"])
-    return RenderResult("tint", rows[:h], pix, (w, h))
+    # the spans are chrome ABOVE and BELOW the glass, never over it: this
+    # posture's frame is full-width, so the box is full-width too and only the
+    # two span rows survive into `chrome`
+    return RenderResult("tint", rows[:h], pix, (w, h),
+                        (0, 1, w, max(1, h - 2)))
 
 
 def _surface_refuse(k, img, w, h, label=""):
@@ -7494,10 +7595,17 @@ def _surface_refuse(k, img, w, h, label=""):
     "one shape, the row; an image cannot flip" — nothing at all.
 
     Both go through `kit.exhibit()`, because refusing is one posture and what
-    a language shows INSTEAD is the language's own business."""
+    a language shows INSTEAD is the language's own business.
+
+    NO IMAGE BOX, AND `None` RATHER THAN AN EMPTY RECTANGLE. There is nowhere
+    for glass to go, so `chrome` comes back as `rows` itself — the exhibit and
+    the empty page are the whole rendering, with no hole cut in them. A caller
+    handed `(0, 0, 0, 0)` here would reserve a degenerate region and composite
+    into it; handed `None` it has to decide what refusing means to it, which
+    is the decision this posture exists to force."""
     rows = list(k.exhibit(img, w, h, label))[:h]
     rows += [" " * w] * (h - len(rows))
-    return RenderResult("refuse", rows, None, (w, h))
+    return RenderResult("refuse", rows, None, (w, h), None)
 
 
 def _surface_frame(k, img, w, h, label=""):
@@ -7519,7 +7627,8 @@ def _surface_frame(k, img, w, h, label=""):
     for line in RS.halfblock(img, max(1, w - 2), max(1, h - 2)):
         rows.append(f"[{k['ink']}]{lf}[/]" + line + f"[{k['ink']}]{rt}[/]")
     rows.append(f"[{k['ink']}]{_plain(bl + bot_g * max(0, w - 2) + br, w)}[/]")
-    return RenderResult("frame", rows[:h], img, (w, h))
+    return RenderResult("frame", rows[:h], img, (w, h),
+                        (1, 1, max(1, w - 2), max(1, h - 2)))
 
 
 def _surface_depth(k, img, w, h, label=""):
@@ -7539,7 +7648,11 @@ def _surface_depth(k, img, w, h, label=""):
     body = RS.halfblock(img, max(1, w - 2), max(1, h - 2))
     rows = [pad] + [f"[on {g}] [/]" + line + f"[on {g}] [/]" for line in body]
     rows.append(pad)
-    return RenderResult("depth", rows[:h], RS.inset(img, g, 4), (w, h))
+    # this posture's chrome is the INSET ITSELF and nothing else — the grey
+    # rung around the hole is the whole frame, which is the literal reading of
+    # "separates by a step of background, never a border"
+    return RenderResult("depth", rows[:h], RS.inset(img, g, 4), (w, h),
+                        (1, 1, max(1, w - 2), max(1, h - 2)))
 
 
 def _surface_figure(k, img, w, h, label=""):
@@ -7562,7 +7675,11 @@ def _surface_figure(k, img, w, h, label=""):
     rows.append((rule or f"[{k.rule_color}]{'─' * iw}[/]") + pad)
     cap = _plain(k.caption(img, label), iw)      # measured plain, emitted safe
     rows.append(f"[{k['mut']}]{mark(cap)}[/]" + pad)
-    return RenderResult("figure", rows[:h], img, (w, h))
+    # the box stops at the gutter, so the air swiss sets the figure in stays in
+    # `chrome` as real cells — "never full-bleed" has to survive into the
+    # raster path or a compositor would fill the page edge to edge and undo it
+    return RenderResult("figure", rows[:h], img, (w, h),
+                        (0, 0, iw, max(1, h - 2)))
 
 
 def _surface_catalogue(posture: str, why: str):
