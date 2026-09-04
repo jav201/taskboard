@@ -79,6 +79,18 @@ from pathlib import Path
 # degrades every animation to its FINAL frame with no loss of information
 # (RUN.md), which is the frame a capture is supposed to hold.  The determinism
 # check at the bottom of this file is what keeps that claim honest.
+#
+# AND IT DID NOT CURE THE STALL.  This comment used to stop at the line above,
+# which reads as if the setting settled the matter.  It did not, and the check
+# that was supposed to keep the claim honest is what says so: `board_solari.txt`
+# still drifts intermittently on the SAME row this note is about (`DAYS
+# OVERDUE`), and `gallery_blueprint.txt` on a switch caught at `▅▅` vs `▁▁`.
+# Both were observed on control sweeps with every `surface` token popped, so
+# neither is caused by the batch that recorded them.  It makes this sweep exit
+# red about one run in three -- filed as F-1, open, and NOT fixed here.  The
+# setting is still correct and still worth having; it is simply not sufficient,
+# and a reader who trusted the paragraph above would go looking for the cause
+# somewhere else.
 os.environ["TEXTUAL_ANIMATIONS"] = "none"
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -376,6 +388,27 @@ def write(name: str, rows: list[str], app=None,
     return w, len(rect), ink(rect)
 
 
+#: the sheets `sweep()` writes for each language, in the order it writes them.
+#: This is the BOARD sweep's own output and nothing else -- the `--surface`
+#: entry point writes `surface_*` into the same directory, from a separate run,
+#: and the reproducibility check below must not confuse the two (F-5).
+#:
+#: It has to match the `write()` names in `sweep()`.  It is not derived from
+#: them because they are produced inside a Textual session that has to run to
+#: produce anything, and a check that had to sweep in order to learn what a
+#: sweep produces could not be used to decide whether the sweep was complete.
+#: A rename that forgets this constant fails LOUD on the next run -- `main()`
+#: reads these names directly, so a missing one raises there rather than
+#: quietly narrowing the check to the files that happen to exist.
+BOARD_SHEETS = ("board", "gallery")
+
+
+def board_frames() -> list[str]:
+    """Every `.txt` one `sweep()` produces, named rather than discovered."""
+    return [f"{sheet}_{lang}.txt"
+            for lang in TH.ORDER for sheet in BOARD_SHEETS]
+
+
 async def sweep() -> list[dict]:
     from app import TaskboardWidget          # prototypes/widget_slice/app.py
 
@@ -549,6 +582,17 @@ def check_reproducible(first: dict[str, str]) -> list[str]:
                            env={**os.environ, "PYTHONIOENCODING": "utf-8"})
         if r.returncode != 0:
             raise RuntimeError(f"control sweep failed:\n{r.stderr[-1500:]}")
+        # A FILE THE CONTROL ARM DID NOT WRITE IS A DISAGREEMENT ABOUT WHAT A
+        # SWEEP PRODUCES, and it is reported as one rather than as whatever
+        # error `read_text` happens to raise.  That is how F-5 presented: a
+        # bare FileNotFoundError traceback, which reads like a missing input
+        # and was in fact the two arms sweeping different things.
+        missing = [n for n in first if not (Path(td) / n).exists()]
+        if missing:
+            raise RuntimeError(
+                f"the control sweep did not write {missing} -- the two arms "
+                f"disagree about what a sweep produces. If a sheet was renamed "
+                f"or added, BOARD_SHEETS is the place that says so.")
         return [n for n, t in first.items()
                 if (Path(td) / n).read_text(encoding="utf-8") != t]
 
@@ -566,8 +610,17 @@ def main() -> int:
     # cheap enough to keep: a capture that differs between two runs of the same
     # code on the same fixture is not a picture of a design, it is a picture of
     # a moment.
-    first = {p.name: p.read_text(encoding="utf-8")
-             for p in sorted(OUT.glob("*.txt"))}
+    #
+    # THE SET IS NAMED, NOT GLOBBED, AND THAT WAS A BUG (F-5).  This line read
+    # `OUT.glob("*.txt")` and therefore meant "every text capture in the output
+    # directory" -- which stopped being this sweep's output the moment the
+    # `--surface` entry point started writing `surface_*.txt` beside it.  The
+    # control arm below runs `sweep()` alone, so it never writes those, and the
+    # comparison demanded a control file that could not exist: the DOCUMENTED
+    # command died in its own determinism check with a FileNotFoundError on
+    # `surface_blueprint.txt`.  Naming the frames makes the two arms agree by
+    # construction instead of by whatever happens to be on disk.
+    first = {n: (OUT / n).read_text(encoding="utf-8") for n in board_frames()}
     print("\n  re-sweeping in a fresh process to check reproducibility...")
     drift = check_reproducible(first)
     if drift:
