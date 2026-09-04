@@ -479,6 +479,14 @@ def test_image():
 
 
 SURFACE_H = 26                      # rows the region reserves inside the frame
+#: WHAT THE FIGURE IS, handed to every posture that captions or audits one.
+#: Named rather than inlined because two other files have to agree with it and
+#: neither may import this one (it pulls in a Textual app and numpy):
+#: `export_to_skill.py` prints each posture's image box beside the frame this
+#: label produced, and `tests/test_surface.py` renders against the shipped
+#: frame. Both repeat the string with this line cited; the test fails loudly
+#: if it drifts, which is the check the exporter does not have (F-12).
+SURFACE_LABEL = "mbb rho final"
 
 
 def surface_sheet(lang: str, img):
@@ -493,7 +501,7 @@ def surface_sheet(lang: str, img):
     acceptance boundary LANGUAGES.md already uses for the boards."""
     import taskboard.language as LG
     kit = LG.kit(lang)
-    res = kit.raster_region(img, SIZE[0] - 2, SURFACE_H, label="mbb rho final")
+    res = kit.raster_region(img, SIZE[0] - 2, SURFACE_H, label=SURFACE_LABEL)
     head = kit.sect("SURFACE", f"{res.posture} - {img.width}x{img.height} px",
                     SIZE[0] - 2, SURFACE_H)
     return "\n".join(head + res.rows), res

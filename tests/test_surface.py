@@ -153,6 +153,57 @@ def test_mutation_changes_the_render(name):
 
 
 @pytest.mark.parametrize("name", DECLARED)
+def test_every_optional_argument_is_read_or_declared_refused(name):
+    """L-31's GENERAL FORM: *an optional argument no implementation reads is
+    not an argument, it is a comment.*
+
+    `raster_region`'s one optional argument is `label`, documented as "what
+    the figure IS, for the postures that caption or audit one". Blueprint's
+    `tint` dropped it — so the sheet stated `480px` above the drawing and had
+    no way to say those pixels were a 60 x 20 mesh, and the posture that
+    captions HARDEST was the one that could not be told what it was
+    captioning. Nothing caught it because "I decided not to caption" and "I
+    forgot to caption" are the same code: `label=""` in the signature, and
+    nothing in the body.
+
+    So the argument must reach the render, OR the refusal must be DECLARED —
+    and this asserts the declaration is true, in both directions. A posture in
+    the table whose render moves is as much a failure as one outside it whose
+    render does not: the first means the table is stale, the second means an
+    argument went unread with no one saying so."""
+    img = probe()
+    posture = THEMES[name]["surface"]
+    bare = LG.kit(name).raster_region(img, W, H).blob()
+    told = LG.kit(name).raster_region(img, W, H, label="60 X 20 CELLS").blob()
+
+    why = LG.LABEL_REFUSED_BY_LANGUAGE.get(name) or LG.LABEL_REFUSED.get(posture)
+    if why is None:
+        assert told != bare, (
+            f"{name}: posture {posture!r} renders IDENTICAL bytes with and "
+            f"without `label` — the argument is a comment. Either read it, or "
+            f"declare the refusal in LABEL_REFUSED with the commitment it "
+            f"follows from.")
+    else:
+        assert told == bare, (
+            f"{name}: posture {posture!r} is declared to REFUSE the label "
+            f"({why}) and the render moved anyway — the declaration is stale")
+
+
+def test_the_declared_refusals_name_postures_that_exist():
+    """A refusal table is only honest while its keys are real. A renamed
+    posture would leave an entry excusing a mechanism that no longer exists,
+    and the test above would then silently stop checking the one that does."""
+    assert set(LG.LABEL_REFUSED) <= set(LG.LIVE_SURFACES), (
+        sorted(set(LG.LABEL_REFUSED) - set(LG.LIVE_SURFACES)))
+    assert set(LG.LABEL_REFUSED_BY_LANGUAGE) <= set(ORDER), (
+        sorted(set(LG.LABEL_REFUSED_BY_LANGUAGE) - set(ORDER)))
+    assert all(v.strip() for v in {**LG.LABEL_REFUSED,
+                                   **LG.LABEL_REFUSED_BY_LANGUAGE}.values()), (
+        "a refusal with no commitment behind it is a skip with better "
+        "punctuation")
+
+
+@pytest.mark.parametrize("name", DECLARED)
 def test_region_is_the_rectangle_the_layout_reserved(name):
     """AC-3. The region is an OPAQUE RECTANGLE the layout reserves, on both
     paths (CEILINGS §7 — the compositor never knows an image's content, so a

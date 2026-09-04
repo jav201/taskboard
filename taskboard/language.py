@@ -6451,10 +6451,23 @@ class Blueprint(Kit):
       merely absent: it is unconstructable. (A terminator may stand alone in a
       two-cell seat — the calendar day — where a span does not fit. That is a
       renunciation, and it is the only place it happens.);
+    * **a SERIES is an ORDINATE DIMENSION STACK** (`series()`). A conventional
+      chart axis is `│` and `└` and is therefore unconstructable here, but an
+      axis is not the only way to draw a trace: a drawing office schedules
+      ordinate dimensions from a common datum, and this does the same — every
+      sample a run from the sheet's left terminator, its figure standing on
+      the run, and **the locus of the closing terminators IS the curve**. The
+      vertical a plot appears to need is never drawn; it is the column the
+      terminators fall in. The scale is PUBLISHED on the last row as a
+      full-width span figured with the ceiling, which is what lets the ceiling
+      be derived from the series without breaking DATAVIZ law 2 (found by the
+      first app to carry this language, and decided rather than renounced —
+      `tui-demos` LIMITS L-34);
     * **the whole frame budget is ONE TITLE BLOCK** (`frame="titleblock"`), a
       3-row stamp docked to the bottom corner carrying the sheet's identity,
       its revision date, its work tally and its state. Its two rules are the
-      only strokes on the page;
+      only strokes on the page, and `stamp()` builds it from ROWS OF CELLS so
+      that an app with no mode strip can still have one (L-32);
     * **emphasis is KNOCKOUT** (`knockout=True`): exactly ONE element per view
       reverses to a pale ground with dark ink, and it is the title block's
       STATE cell. That is the first-fixation law here, and it is why chroma
@@ -6534,6 +6547,26 @@ class Blueprint(Kit):
         on the page, and a card is never boxed."""
         return None if self.titled else super().rule_line(w)
 
+    @property
+    def glyphs(self) -> frozenset[str]:
+        """THE TEN, as data rather than as prose.
+
+        The class docstring enumerates this language's whole alphabet and then
+        makes a claim about it — *not one of them is a vertical stroke or a
+        rectangle junction, so a containing box here is not merely absent: it
+        is unconstructable*. A claim that strong is worth a test, and a test
+        needs the set; stated only in prose it was checkable by reading and by
+        nothing else, which is how `series()` came to be asked for (L-34).
+
+        Each member is read off where it already lives rather than restated:
+        `━` is the `dimension` ramp's heavy end, which is where this
+        language's meters are drawn from, and the hatch is a token. `·` is the
+        leader's ORIGIN DOT and not a box-drawing mark, which is why the
+        docstring's count is ten and this set's is ten."""
+        return frozenset(self.OPEN + self.CLOSE + self.EXT + self.BREAK
+                         + "".join(self.REG) + COVER_RAMPS["dimension"][-1]
+                         + self.hatch)
+
     # ---- the dimension span -----------------------------------------------
     def dimension(self, n: int, label: str, fill: str | None = None,
                   clipped: bool = False, outside: bool = True) -> str:
@@ -6584,6 +6617,134 @@ class Blueprint(Kit):
     def _fig(days: int) -> str:
         d = abs(int(days))
         return f"{d:02d}" if d <= 99 else "99+"
+
+    # ---- the dimensioned trace --------------------------------------------
+    # THE LANGUAGE'S ANSWER TO A SERIES, and it is an answer rather than a
+    # renunciation (L-34, decided in this batch's spec 6.1).
+    #
+    # L-34 is right that a conventional chart axis is UNCONSTRUCTABLE here:
+    # every terminal plot axis is `│` and `└`, and neither is among the ten
+    # marks this language draws. It is also right that `dimension()` is the
+    # wrong mechanism for a series — it measures ONE quantity against a
+    # declared ceiling, which is a bar.
+    #
+    # But what is unconstructable is an AXIS, and a series is not an axis. A
+    # drawing office does not plot with an axis box; it draws a SCHEDULE OF
+    # ORDINATE DIMENSIONS from a common datum — every sample a run from the
+    # same left terminator, its length the value, the figure standing on the
+    # run. Stack those rows and **the locus of the closing terminators IS the
+    # trace**: the curve is drawn in `┤`, the datum in `├`, the run in `─`,
+    # the off-scale flag in `╌`. The vertical the plot appears to need is
+    # never drawn — it is the column the terminators happen to fall in, which
+    # is exactly what an ordinate dimension looks like on paper.
+    #
+    # Renunciation was the other option and it was rejected because a
+    # renunciation has to follow from something the language BELIEVES. Ledger
+    # refuses images because "a figure is audited, not shown"; solari because
+    # "one shape, the row; an image cannot flip". This language's doctrine
+    # points the other way — *the frame stops CONTAINING and starts MEASURING*,
+    # *the only language here where the chrome IS the data-viz*, *fits:
+    # anything spatial, anything with extents and tolerances* — and a series is
+    # a sequence of extents. Renouncing plots would have been the first
+    # renunciation here adopted for a short alphabet rather than for a
+    # commitment.
+
+    def _trace_cells(self, v: float, top: float, w: int) -> int:
+        """Cells one sample occupies in a `w`-cell seat.
+
+        Deliberately NOT `_cells()`, which is the CARD's span: that one takes
+        integer days against `SCALE_DAYS` in a `SPAN_W` seat, and widening it
+        to floats would have put the board's every due date through a code
+        path a convergence curve asked for. Same LAW, twice — including the
+        microbar floor — because the law is DATAVIZ's and not this method's.
+        """
+        run = max(1, w - 2)
+        d = min(abs(float(v)), top)
+        inner = round(run * d / top)
+        if d and inner == 0:
+            inner = 1                      # MICROBAR FLOOR (DATAVIZ law 3):
+            # a sample that is small must not round onto a sample that is zero
+        return inner + 2
+
+    @staticmethod
+    def _sample(vals: list[float], n: int) -> list[float]:
+        """`n` samples spanning `vals`, ALWAYS including both endpoints.
+
+        A trace's endpoints are its datum — where the run started and where it
+        got to — so a subsample that dropped either would be answering a
+        different question from the one a convergence curve is asked."""
+        if not vals or n < 1:
+            return []
+        if len(vals) <= n:
+            return list(vals)
+        if n == 1:
+            return [vals[-1]]
+        step = (len(vals) - 1) / (n - 1)
+        return [vals[round(i * step)] for i in range(n)]
+
+    def series(self, values, w: int, h: int, ceiling: float | None = None,
+               label: str = "") -> list[str]:
+        """A SERIES AS A DIMENSIONED TRACE — exactly `h` rows of `w` cells.
+
+        Each sample is a span from the sheet's left datum, its run the value,
+        its figure standing on the run; the ragged column of closing
+        terminators is the trace. Nothing is boxed, no vertical is drawn, and
+        every mark is one of this language's ten.
+
+        THE SCALE IS STATED, and that is the half `dimension()` could not do.
+        DATAVIZ law 2 forbids normalising a row to itself, and a kit method
+        handed ONE row at a time can only obey it by declaring a constant
+        (`SCALE_DAYS`). A series is the one case where the siblings are in
+        hand — so the ceiling may be derived, and therefore MUST be published:
+        the last row is a full-width span figured with the ceiling, which is a
+        scale bar and means "this width is that value". Pass `ceiling` to
+        compare two traces against a shared scale; leave it out and the trace
+        is normalised to itself and says so on the sheet.
+
+        THE DECLARED LADDER when the seat is short: the SCALE row never drops
+        — a trace whose scale is unstated is precisely the reading law 2
+        exists to prevent — the label goes first, and the samples reduce after
+        that (`_sample`, which keeps both endpoints).
+
+        The figure is dropped rather than pushed outside its span
+        (`outside=False`): a figure lettered PAST the closing terminator would
+        put ink to the right of the value, and the whole reading of this
+        mechanism is that nothing stands right of a terminator except the
+        terminators of longer samples."""
+        c = self.c
+        w, h = max(4, int(w)), max(2, int(h))
+        vals = [float(v) for v in values]
+        head = [str(label).upper()] if (label and h >= 3) else []
+        seats = max(1, h - 1 - len(head))
+        pts = self._sample(vals, seats)
+        # DERIVED FROM THE WHOLE SERIES, NOT FROM THE SEATS THAT FIT. Reading
+        # the ceiling off `pts` made the scale depend on the height of the
+        # region: the same data in a shorter seat came back drawn against a
+        # different ceiling, and at one seat the trace's LAST value rendered
+        # full-width — a converged run shown touching full scale. Caught by
+        # the ladder test at h=3.
+        top = abs(float(ceiling)) if ceiling else max(
+            (abs(v) for v in vals), default=0.0)
+        top = top or 1.0
+
+        def row(span: str, tone: str) -> str:
+            # width math on the plain span, `mark()` on the way out
+            return f"[{tone}]{mark(_plain(span, w))}[/]"
+
+        out = [row(self.dimension(w, s, outside=False), c["mut"])
+               for s in head]
+        calm = self.t.get("calm", c["ink"])
+        for v in pts:
+            out.append(row(self.dimension(
+                self._trace_cells(v, top, w), f"{v:.3g}",
+                clipped=abs(v) > top, outside=False), calm))
+        # an empty series still states its scale, and the seat it could not
+        # fill stays blank rather than being closed up — the sheet says "no
+        # samples", not "a shorter trace"
+        out += [" " * w] * max(0, h - 1 - len(out))
+        out.append(row(self.dimension(w, f"{top:.3g}", outside=False),
+                       c["mut"]))
+        return out[:h]
 
     def _span(self, days: int | None, state: str) -> tuple[str, str]:
         """`(the span, exactly SPAN_W cells, its tone)`.
@@ -6850,31 +7011,64 @@ class Blueprint(Kit):
                     for cap, val, _ in cells)
                 + self.GAP * max(0, len(cells) - 1))
 
-    def title_block(self, options, active, w: int) -> list[str]:
-        """THE SHEET'S TITLE BLOCK — three rows, and the only frame this
-        language spends. Two rules bracket a row of cells; the mode on screen
-        is bracketed by REGISTRATION MARKS instead of a border, which is the
-        selection mechanism this language owns (`┌ ┐` above, `└ ┘` below —
-        four separate corners that never join, so nothing here is a box).
+    def stamp(self, rows, w: int, strip=None) -> list[str]:
+        """THE SHEET'S STAMP — two rules bracketing rows of cells, docked to
+        the bottom corner, and the only frame this language spends.
+
+        CONTENT IS DATA, SELECTION IS AN EXTRA, and that is the whole of L-32.
+        `rows` is a list of body rows, each a list of `(caption, value,
+        knocked)` cells — the same triple `block_cells()` builds, with nothing
+        about a taskboard in it. `strip` is `(options, active)` for an app
+        that HAS a mode strip and `None` for one that does not.
+
+        The old entry point was `title_block(options, active, w)`, whose first
+        two parameters are a MODE STRIP's options and the mode on screen:
+        taskboard's content, and a concept a parameter study does not have. So
+        this language's single largest frame investment was reachable only
+        from an app that happened to have a nav row, and the first outside
+        consumer (emersio-lab, 2026-09-04) rebuilt the block out of `EXT` and
+        `REG` rather than fake a mode strip to obtain a stamp — re-deriving
+        the docking arithmetic below, and standing up a second copy of the
+        mark this language is most identified by. **A component whose
+        parameters name its first caller's domain has been specialised, not
+        generalised**, and that fork was forced by an interface rather than
+        chosen. `title_block()` is now a three-line adapter over this.
+
+        The mode on screen is bracketed by REGISTRATION MARKS instead of a
+        border, which is the selection mechanism this language owns (`┌ ┐`
+        above, `└ ┘` below — four separate corners that never join, so nothing
+        here is a box). An app with no strip gets NO registration marks: there
+        is nothing selected to register, which is not the same as registering
+        nothing.
 
         THE DECLARED LADDER, when the sheet is too narrow for all of it:
-        tier 1 sheds title-block cells in `TB_DROP` order; tier 2 gives up the
-        modes the sheet is NOT on (the block is the sheet's identity and may
-        not be cut for a nav row); tier 3 renounces the strip entirely and
-        keeps the STATE, because the state is the knockout.
+        tier 1 sheds cells — and tier 1 belongs to the CALLER, because which
+        cell a sheet can afford to lose is the sheet's own knowledge
+        (`block_cells()` is taskboard's answer, in `TB_DROP` order, and the
+        lab's rows are the lab's); tier 2 gives up the modes the sheet is NOT
+        on (the block is the sheet's identity and may not be cut for a nav
+        row); tier 3 renounces the strip entirely and keeps the cells, because
+        the state is the knockout.
         """
         c = self.c
         w = max(12, int(w))
-        strip, strip_mk, reg = self._mode_strip(options, active)
-        cells = self.block_cells(w, len(strip))
-        if len(strip) + self.GAP + self.block_w(cells) > w:
-            strip, strip_mk, reg = self._mode_strip([active], active)
-        if len(strip) + self.GAP + self.block_w(cells) > w:
-            strip, strip_mk, reg = "", "", (-1, -1)
-        bw = self.block_w(cells)
+        rows = [list(r) for r in rows] or [[]]
+        # THE BLOCK IS AS WIDE AS ITS WIDEST ROW. One body row is taskboard's
+        # case and the arithmetic never had to know it; the lab's stamp has
+        # two, and a block sized to the first of them would dock the second
+        # off the edge.
+        bw = max(self.block_w(r) for r in rows)
+        s, strip_mk, reg = "", "", (-1, -1)
+        if strip is not None:
+            options, active = strip
+            s, strip_mk, reg = self._mode_strip(options, active)
+            if len(s) + self.GAP + bw > w:
+                s, strip_mk, reg = self._mode_strip([active], active)
+            if len(s) + self.GAP + bw > w:
+                s, strip_mk, reg = "", "", (-1, -1)
         x = max(0, w - bw)
-        if strip:
-            x = max(x, len(strip) + self.GAP)
+        if s:
+            x = max(x, len(s) + self.GAP)
         # the two rules — from the block's own origin to the sheet's edge —
         # and the registration marks, which never touch them
         top = [" "] * w
@@ -6902,21 +7096,54 @@ class Blueprint(Kit):
                 i = j
             return "".join(out)
 
-        body = []
-        for n, (cap, val, knocked) in enumerate(cells):
-            if n:
-                body.append(" " * self.GAP)
-            if cap:
-                body.append(f"[{c['mut']}]{cap}[/] [{c['ink']}]{mark(val)}[/]")
-            elif knocked:
-                # KNOCKOUT: the cell reverses — pale ground, dark ink. Exactly
-                # one of these exists on a view, and it is the first fixation.
-                body.append(f"[{self.t['ground']} on {c['ink']}]"
-                            f"{mark(val)}[/]")
-            else:
-                body.append(f"[{c['mut']}]{mark(val)}[/]")
-        mid = strip_mk + " " * max(0, x - len(strip)) + "".join(body)
-        return [paint(top), mid, paint(bot)]
+        mids = []
+        for r, cells in enumerate(rows):
+            body = []
+            for n, (cap, val, knocked) in enumerate(cells):
+                if n:
+                    body.append(" " * self.GAP)
+                if cap:
+                    body.append(f"[{c['mut']}]{cap}[/] "
+                                f"[{c['ink']}]{mark(val)}[/]")
+                elif knocked:
+                    # KNOCKOUT: the cell reverses — pale ground, dark ink.
+                    # Exactly one of these exists on a view, and it is the
+                    # first fixation.
+                    body.append(f"[{self.t['ground']} on {c['ink']}]"
+                                f"{mark(val)}[/]")
+                else:
+                    body.append(f"[{c['mut']}]{mark(val)}[/]")
+            # THE STRIP RIDES THE FIRST BODY ROW and the rest are indented to
+            # the block's origin. `strip_mk` is "" when there is no strip, so
+            # the two branches are one expression rather than a special case.
+            pre = (strip_mk + " " * max(0, x - len(s)) if r == 0
+                   else " " * x)
+            # EXACTLY `w` CELLS, INCLUDING THE SHORT ROWS. On one body row the
+            # docking arithmetic lands on `w` by construction (`x = w - bw`,
+            # and the narrowing ladder runs until the strip fits beside it), so
+            # this pad was zero for the whole life of the board's block and the
+            # rectangle was exact by luck rather than by rule. A stamp with a
+            # NARROWER second row came back 9 cells short — a ragged frame,
+            # which is the one thing a reserved rectangle cannot be. Measured
+            # on the plain cells (`block_w`) and never on the markup.
+            mids.append(pre + "".join(body)
+                        + " " * max(0, w - x - self.block_w(cells)))
+        return [paint(top), *mids, paint(bot)]
+
+    def title_block(self, options, active, w: int) -> list[str]:
+        """The board's three-row title block — a THIN ADAPTER over `stamp()`.
+
+        It survives with its signature intact so the board's captures stay
+        byte-identical, and it now holds exactly what is taskboard's about the
+        block: one body row, whose cells `block_cells()` chooses (tier 1 of
+        the narrowing ladder, in `TB_DROP` order) against the width the full
+        mode strip would want. Everything else — the docking arithmetic, the
+        two rules, the registration marks, the knockout — is the mechanism's.
+        """
+        w = max(12, int(w))
+        strip, _, _ = self._mode_strip(options, active)
+        return self.stamp([self.block_cells(w, len(strip))], w,
+                          strip=(options, active))
 
     def tabs(self, options, active):
         if not (self.fielded and self.titled):
@@ -7570,20 +7797,48 @@ def _surface_tint(k, img, w, h, label=""):
 
     The spans are `_span_text`, the same object the `dimension` meter draws.
     Two implementations of one mechanism is how a language forks its own
-    identity (DATAVIZ.md's dispatch law), so there is only ever the one."""
+    identity (DATAVIZ.md's dispatch law), so there is only ever the one.
+
+    THE LABEL IS A THIRD SPAN, AND WITHOUT IT THIS POSTURE COULD NOT SAY WHAT
+    IT WAS MEASURING (L-31). Two spans built from `img.size` state `480px` and
+    `160px` — an image's pixel extent, which is a fact about the ENCODER. A
+    drawing's dimension is a fact about the THING DRAWN, and on this sheet
+    they are different numbers in different units. So a `label` that is given
+    is lettered onto its own span above the two: `├─ 60 X 20 CELLS ─┤` over
+    `480px` over the glass over `160px` — what the pixels ARE, above what they
+    MEASURE. The posture that captions hardest is no longer the one that
+    cannot be told what it is captioning.
+
+    It is the CALLER's datum and the LANGUAGE's mark, which is the split that
+    made this worth fixing in the kit: emersio-lab drew exactly this row
+    itself, correctly, through `dimension()` — and every consumer that draws a
+    real figure would have drawn it again. The span is built through
+    `_span_text` rather than through `k.dimension()` because a MECHANISM is
+    dispatched on a token and may be reached by a kit with no `dimension()`
+    method; `dimension()` is a two-line delegation to this same function, so
+    the mark is the language's either way and there is still only ever one.
+
+    Lettered in CAPS: this sheet's figures are `03D`, `HELD`, `DONE`, and a
+    lowercase callout would be the one piece of typing on the drawing that was
+    not drafted. Escaped with `mark()` AFTER the width math, never before."""
     low, high = k.tint_pair()
     pix = RS.duotone(img, low, high)
     iw, ih = max(1, img.size[0]), max(1, img.size[1])
+    caption = [_span_text(w, str(label).upper())] if label else []
     span_w = _span_text(w, f"{iw}px")
     span_h = _span_text(w, f"{ih}px")
-    body = RS.halfblock(pix, w, max(1, h - 2))
-    rows = ([f"[{k['mut']}]{_plain(span_w, w)}[/]"] + body
+    body = RS.halfblock(pix, w, max(1, h - 2 - len(caption)))
+    rows = ([f"[{k['mut']}]{mark(_plain(s, w))}[/]" for s in caption]
+            + [f"[{k['mut']}]{_plain(span_w, w)}[/]"] + body
             + [f"[{k['mut']}]{_plain(span_h, w)}[/]"])
     # the spans are chrome ABOVE and BELOW the glass, never over it: this
     # posture's frame is full-width, so the box is full-width too and only the
-    # two span rows survive into `chrome`
+    # span rows survive into `chrome`. The caption pushes the glass down one
+    # row and shortens it by one — the region is RESERVED, so a third span has
+    # to be paid for out of the rectangle rather than added to it.
     return RenderResult("tint", rows[:h], pix, (w, h),
-                        (0, 1, w, max(1, h - 2)))
+                        (0, 1 + len(caption), w,
+                         max(1, h - 2 - len(caption))))
 
 
 def _surface_refuse(k, img, w, h, label=""):
@@ -7738,6 +7993,47 @@ SURFACES = {"untinted": _surface_untinted, "lattice": _surface_lattice,
 # swapping into one proves nothing about whether the token is read.
 LIVE_SURFACES = ("untinted", "lattice", "display", "tint",
                  "refuse", "frame", "depth", "figure")
+
+# WHO REFUSES THE LABEL, AND ON WHAT COMMITMENT.
+#
+# `raster_region`'s `label` is documented as "what the figure IS, for the
+# postures that caption or audit one". Five postures never read it — and until
+# L-31 a posture that had DECIDED not to caption was indistinguishable from one
+# that had forgotten to, because both are spelled `label=""` in the signature
+# and nothing in the body. `tint` turned out to be the second kind: it captions
+# harder than anything else here and could not be told what it was captioning.
+#
+# So the refusals are declared, and the declaration is what the test checks
+# against. An optional argument no implementation reads is a comment; a
+# DECLARED refusal is an implementation reading the argument and rejecting it,
+# and the difference is that one of them can be wrong out loud.
+LABEL_REFUSED = {
+    "untinted": "the environment's rules stop at the region's edge and this "
+                "posture draws no frame at all — there is nowhere to letter",
+    "lattice":  "the whole region is the panel and the unlit dots are the "
+                "picture's dark half; a caption would be a lit dot that is "
+                "not part of the picture",
+    "display":  "the label beside a display belongs to the CONTROL, and the "
+                "language numbers it (`display_label`) rather than letting a "
+                "caller name it — an OP-1 screen's legend is the machine's",
+    "frame":    "\"a raw image at full strength, hard edge, inside a heavy "
+                "box — no smoothing, NO CAPTION softening it\"",
+    "depth":    "the figure is separated by one grey step and by nothing "
+                "else; a caption is chrome, and this posture's whole "
+                "commitment is that it draws none",
+}
+
+# THE ONE REFUSAL THAT IS A LANGUAGE'S AND NOT A POSTURE'S. `refuse` reads the
+# label — ledger letters it on the exhibit's caption — but solari's `exhibit()`
+# shows NOTHING, so the label dies inside a posture that generally honours it.
+# That is solari's commitment rather than the mechanism's, and it is keyed by
+# language for exactly that reason: a table that hid it under "refuse" would be
+# reporting ledger's behaviour as solari's.
+LABEL_REFUSED_BY_LANGUAGE = {
+    "solari": "\"one shape, the row; an image cannot flip\" — there is "
+              "nothing on the page to letter, which is the same refusal that "
+              "took the pixels",
+}
 
 
 # phosphor and bbs retired 2026-07-26 (user curation); their decay/gradient
