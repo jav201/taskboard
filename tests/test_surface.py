@@ -755,3 +755,54 @@ def test_chrome_preserves_the_frame_the_shipped_capture_shows(name):
         assert holes[i] == keep, (
             f"{name}: chrome row {i} is not the shipped frame with the glass "
             f"punched out")
+
+
+# --------------------------------------------------------------------------
+# F-12 (inc10's finding): `export_to_skill.py::surfaces_index()` printed each
+# language's `image box` from a fresh, unlabelled `raster_region()` call and
+# nothing checked it against the frame named beside it -- so blueprint's row
+# read `0, 1 116x24` next to a `surface_blueprint.txt` captured at
+# `0, 2 116x23`, caught by a person reading the staged table, not by a test.
+# `check_box_matches_shipped()` is the fix: for every language it re-derives
+# the shipped frame's rows at the sheet's own geometry (the same `kit.sect()`
+# head-offset trick as the test above) and compares the rectangle where that
+# shipped frame disagrees with the kit's own `chrome` against `image_box`
+# itself, raising `SurfaceIndexMismatch` -- an error -- on any disagreement.
+# --------------------------------------------------------------------------
+
+import sys                                                        # noqa: E402
+
+sys.path.insert(0, str(GALLERY.parents[1]))                       # ROOT
+sys.path.insert(0, str(GALLERY.parents[0]))                       # prototypes
+import export_to_skill as ES                                      # noqa: E402
+
+
+@pytest.mark.parametrize("name", ORDER)
+def test_check_box_matches_shipped_is_green_for_all_eleven_frames(name):
+    """The check itself, run for real against every shipped frame -- not a
+    synthetic probe. Green here is what makes the abort below trustworthy:
+    a check that fires on real data too would make every staged export
+    unrunnable, not just a stale one."""
+    ES.check_box_matches_shipped(name)
+
+
+def test_check_box_matches_shipped_aborts_when_a_frame_is_stale(tmp_path):
+    """The mutant: `surface_blueprint.txt`'s reserved band, rolled down one
+    row (the shipped file's row 0 duplicated at the top, its old last row
+    dropped) -- the same shape of drift F-12 actually shipped, where the
+    frame the file shows had moved a row from the box `raster_region()`
+    still reports for it. `check_box_matches_shipped` must raise rather than
+    let a caller trust the disagreeing rectangle."""
+    name = "blueprint"
+    kit = LG.kit(name)
+    head = kit.sect("SURFACE", "probe", ES.SHEET_W, ES.SHEET_H)
+    lines = (ES.GALLERY / f"surface_{name}.txt").read_text(
+        encoding="utf-8").splitlines()
+    h = len(head)
+    frame = lines[h:h + ES.SHEET_H]
+    rolled = lines[:h] + [frame[0]] + frame[:-1] + lines[h + ES.SHEET_H:]
+    (tmp_path / f"surface_{name}.txt").write_text(
+        "\n".join(rolled) + "\n", encoding="utf-8")
+
+    with pytest.raises(ES.SurfaceIndexMismatch):
+        ES.check_box_matches_shipped(name, gallery=tmp_path)
