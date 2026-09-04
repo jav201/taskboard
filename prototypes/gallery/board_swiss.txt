@@ -2,10 +2,10 @@
       ┌────────────────────────────────────────────────────────────────────────────┐                                  
       │                                                  ━━━                       │                                  
       │D A Y S   O V E R D U E                                                     │                                  
-      │                                                                            │                                  
-      │8                                                                           │                                  
       │                                                     ━━━                    │                                  
-      │Fix checkout 500 error                            ────────────────────────  │                                  
+      │2                                                                           │                                  
+      │                                                                            │                                  
+      │Fix checkout 500 error                            ──────━━━───────────────  │                                  
       │                                                  LOAD · 8 WK               │                                  
       └────────────────────────────────────────────────────────────────────────────┘                                  
                                                                                                                       
@@ -14,21 +14,21 @@
                                                                                                                       
       B O A R D   lanes   agenda   gantt                                                                              
                                                                                                                       
-       Near   8     Over   6     Work   4     Bloc   1     Work   9     Boar 134                                      
+       Near   2     Over   2     Work   4     Bloc   1     Work   9     Boar -98                                      
                                                                                                                       
        B A C K L O G                                                           9                                      
        ────────────────────────────────────────────────────────────────────────────────────────────────────────       
                                                                                                                       
        Fix checkout 500 error              Website Redesign                    blk                                    
                                                                                                                       
-       Compress database backups           Data Warehouse                      7d!                                 ▅  
+       Compress database backups           Data Warehouse                      1d!                                 ▅  
                                                                                                                       
-       Renew TLS certificate                                                   3d!                                    
+       Renew TLS certificate                                                   3d                                     
                                                                                                                       
-       Write API reference                 API Platform                        1d!                                    
+       Write API reference                 API Platform                        5d                                     
                                                                                                                       
-       Shut down legacy servers            Legacy Sunset                       2d                                     
+       Shut down legacy servers            Legacy Sunset                       8d                                     
                                                                                                                       
-       Deprecate v1 endpoints              API Platform                        3d                                     
+       Deprecate v1 endpoints              API Platform                        9d                                     
                                                                                                                       
  1 2 3 4 Views  c Signals  ? Keys  v Size  r Refresh  t Language  g Gallery  q Quit                       ▏^p palette 

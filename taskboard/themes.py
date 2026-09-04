@@ -111,6 +111,14 @@ Structural tokens:
   tally     the counted mark of the tally meter — it must NOT be mistakable
             for the column rule that stands beside it (ledger)
   meter     the quantity mechanism (language.METERS)
+  surface   the RASTER POSTURE (language.SURFACES) — what the language does
+            when a region can be REAL PIXELS (LANGUAGES.md's eighth axis,
+            added 2026-09-03): refuse | lattice | display | tint | frame |
+            depth | figure | untinted. Every language must answer and several
+            answer no, so a missing token is not a default it is a gap. NOTE
+            the name collides with `Kit.surface()`, which is a DIFFERENT axis
+            (the TCSS ground a language draws on); the token is read through
+            `Kit.posture` for exactly that reason
   numbered  params/heads/rows carry functional [n] numbering
   airy      the plain hero spends rows on emptiness (swiss)
   pitch     rows per card slot — swiss spends a blank row where others ink
@@ -140,6 +148,7 @@ THEMES: dict[str, dict] = {
     # screen, and under it ONE full-width spec sheet whose values stand in
     # engraved slots aligned down the whole page.
     "corgi": dict(
+        surface='display',
         hero="corgi", frame="grid", meter="lcd", numbered=True, base="segment",
         layout="strip",                        # the board IS one mode surface
         label="Corgi Engineering", note="numbered params · 7-seg display · safety orange",
@@ -156,6 +165,7 @@ THEMES: dict[str, dict] = {
     # dot lattice, unlit dots VISIBLE, labels drawn too, one red spent only on
     # live state.
     "naught": dict(
+        surface='lattice',
         base="block2",
         hero="naught7", frame="none", meter="dotgrid", dot_w=1, gap=0,
         layout="lattice",                      # the board IS the dot grid
@@ -187,6 +197,7 @@ THEMES: dict[str, dict] = {
     # twenty-ninth-pass entry — the darker value is not measurably better on
     # any check the suite runs, and this ground is verified identity.
     "instrument": dict(
+        surface='lattice',
         base="braille",
         hero="dot", frame="none", meter="braille",
         layout="trace",                        # the board IS a scope screen
@@ -206,6 +217,7 @@ THEMES: dict[str, dict] = {
     # The grid is what makes the promise in `note` true: before this the board
     # printed one rule per phase and spent ~70% of its measure on nothing.
     "swiss": dict(
+        surface='figure',
         base="ascii",
         hero="plain", frame="rule", meter="hairline", airy=True, pitch=2,
         layout="editorial", columns=3,         # the type grid, not the flow
@@ -227,6 +239,7 @@ THEMES: dict[str, dict] = {
     # `sel` border (HIERARCHY.md ranks a border as the mechanism RESERVED for
     # focus), and the plate stays passive structure.
     "industrial": dict(
+        surface='display',
         base="block",
         hero="plain", frame="single", meter="boxed", numbered=True,
         layout="panel",                        # plates, not boxes
@@ -249,6 +262,7 @@ THEMES: dict[str, dict] = {
     # (The hero's numeral-vs-plot imbalance is a SEPARATE defect and is still
     # open — this token cures the board, not the hero.)
     "nord": dict(
+        surface='untinted',
         base="quadrant",
         hero="dot", frame="rule", meter="blocks",
         layout="split", split=(28, 34),         # (master floor, detail floor)
@@ -271,6 +285,7 @@ THEMES: dict[str, dict] = {
     # a background grey-step, never a border; lowercase register; identity is
     # a date-driven moon doodle on a deliberately recessive wordmark.
     "darkside": dict(
+        surface='depth',
         base="ascii",
         hero="plain", frame="none", meter="step", layout="rail",
         label="Darkside", note="achromatic · accent = interaction only · moon doodle",
@@ -302,6 +317,7 @@ THEMES: dict[str, dict] = {
     # the due-today colour at the identical hex -- the same mark meaning two
     # things in five views -- and that collision is why the border exists.
     "prism": dict(
+        surface='depth',
         base="braille",
         hero="ember", frame="none", meter="ember", layout="rail",
         label="Prism", note="two colour systems, one written border · carved ember",
@@ -337,6 +353,7 @@ THEMES: dict[str, dict] = {
     # else). So the accent is the clerk's blue-black pen and the RED PEN is
     # reserved for debt — overdue entries and nothing else.
     "ledger": dict(
+        surface='refuse',
         base="slab",                           # the ENGRAVED figure, drawn
         hero="dot", frame="ruled", meter="tally", layout="ruled",
         numbered=True, pitch=1,
@@ -378,6 +395,7 @@ THEMES: dict[str, dict] = {
     # spends no border and carries selection on the row's own ground, which
     # is the ledger precedent.
     "solari": dict(
+        surface='refuse',
         base="flap",                           # the hero is a BANK OF CELLS
         hero="dot",
         frame="flaps", meter="odometer", numbered=False, pitch=1,
@@ -436,6 +454,7 @@ THEMES: dict[str, dict] = {
     # `┌ ┐ └ ┘` that bracket the mode on screen inside the title block. Same
     # reasoning, and the same deviation, as solari's `sel="band"`.
     "blueprint": dict(
+        surface='tint',
         base="stencil",                        # the CUT figure, drawn
         hero="dot",
         frame="titleblock", meter="dimension", numbered=False, pitch=1,

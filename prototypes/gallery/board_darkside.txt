@@ -2,7 +2,7 @@
   ┌────────────────────────────────────────────┐                                                                      
   │days overdue                                │                                                                      
   │                                            │                                                                      
-  │8                                           │                                                                      
+  │2                                           │                                                                      
   │Fix checkout 500 error                      │                                                                      
   │                                            │                                                                      
   │                                            │                                                                      
@@ -14,21 +14,21 @@
                                                                                                                       
   (O)board  ( )lanes  ( )agenda  ( )gantt                                                                             
                                                                                                                       
-   d   8  !!   6  w   4   x   1  $   9   f 134                                                                        
+   d   2  !!   2  w   4   x   1  $   9   f -98                                                                        
                                                                                                                       
    ▏  backlog 9                                                                                                       
                                                                                                                       
    ▏  fix checkout 500 error                                                                                blk       
-   ▏    backlog · d-8                                                                                                 
-   ▏  compress database backups                                                                             7d!       
-   ▏    backlog · d-7                                                                                              ▄  
-   ▏  renew tls certificate                                                                                 3d!       
-   ▏    backlog · d-3                                                                                                 
-   ▏  write api reference                                                                                   1d!       
-   ▏    backlog · d-1                                                                                                 
-   ▏  shut down legacy servers                                                                               2d       
-   ▏    backlog · d2                                                                                                  
-   ▏  deprecate v1 endpoints                                                                                 3d       
+   ▏    backlog · d-2                                                                                                 
+   ▏  compress database backups                                                                             1d!       
+   ▏    backlog · d-1                                                                                              ▄  
+   ▏  renew tls certificate                                                                                  3d       
    ▏    backlog · d3                                                                                                  
+   ▏  write api reference                                                                                    5d       
+   ▏    backlog · d5                                                                                                  
+   ▏  shut down legacy servers                                                                               8d       
+   ▏    backlog · d8                                                                                                  
+   ▏  deprecate v1 endpoints                                                                                 9d       
+   ▏    backlog · d9                                                                                                  
                                                                                                                       
  1 2 3 4 Views  c Signals  ? Keys  v Size  r Refresh  t Language  g Gallery  q Quit                       ▏^p palette 

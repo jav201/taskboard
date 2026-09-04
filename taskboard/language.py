@@ -50,6 +50,7 @@ from typing import NamedTuple
 
 from taskboard import bases as BS
 from taskboard import naught as NA
+from taskboard import raster as RS
 from taskboard.themes import THEMES
 
 # The MASCOT mask — one creature, drawn through each language's pixel base
@@ -1211,6 +1212,52 @@ class Motion(NamedTuple):
         return self.step_ms / 1000
 
 
+class RenderResult(NamedTuple):
+    """WHAT A SURFACE POSTURE PRODUCES — both sides of it, from one call.
+
+    `rows` is the GLYPH side: exactly `reserved[1]` markup rows, each drawing
+    exactly `reserved[0]` cells. It works on any terminal.
+
+    `pixels` is the TRUE-RASTER side: the same posture applied to the actual
+    pixels, ready for `textual_image`. `None` means the posture REFUSED —
+    ledger and solari are not missing an implementation, they are exercising
+    a commitment, and a caller that draws pixels anyway has overruled the
+    language rather than rendered it.
+
+    THE RECTANGLE IS RESERVED, NOT COMPOSITED (CEILINGS §7). `reserved` is
+    the opaque cell rectangle the layout must give this region on BOTH paths.
+    A raster region is drawn by the terminal, not by the compositor: the
+    compositor knows the image's size and never its content, so z-order and
+    scroll over it cannot be correct. Nothing may overlap it, and a posture
+    that wanted to bleed under a card would be asking for a frame the
+    compositor cannot make honest.
+
+    `blob()` is what the mutation check (LANGUAGES.md's VERIFY rule) compares.
+    It covers BOTH surfaces on purpose: a posture that changed the cells and
+    left the pixels alone would pass a glyph-only comparison while breaking
+    AC-3's "the same posture applied to the pixels"."""
+    posture: str
+    rows: list[str]
+    pixels: object | None
+    reserved: tuple[int, int]
+
+    def blob(self) -> bytes:
+        pix = self.pixels
+        return b"\x00".join([
+            self.posture.encode(),
+            "\n".join(self.rows).encode(),
+            b"" if pix is None else
+            f"{pix.mode}{pix.size}".encode() + pix.tobytes()])
+
+    def widget(self):
+        """The true-raster widget, or None when there is no raster transport
+        or the posture refused. Reuses `modals.py`'s path — one detection,
+        made before Textual starts (see `raster.py`'s docstring)."""
+        if self.pixels is None or not RS.raster_available():
+            return None
+        return RS.AutoImage(self.pixels)
+
+
 class Kit:
     """Base kit = the `nord` language: deliberately the terminal's own
     conventional idiom (base16 doctrine: it inherits the environment and has
@@ -1409,6 +1456,106 @@ class Kit:
         swappable commitment (mutating the token swaps the mechanism)."""
         fn = METERS.get(self.t.get("meter", "blocks"), _meter_blocks)
         return fn(self, done, total, counts, w)
+
+    # -- THE SURFACE POSTURE: what the language does with REAL PIXELS -------
+    #
+    # NAMING, SAID ONCE SO IT IS NOT A TRAP. There is already a `surface()`
+    # method on this class and it is a different axis: that one returns TCSS
+    # for the GROUND a language draws on (panels, hatch, flat black). The
+    # `surface` TOKEN added 2026-09-03 is the raster posture, and it is read
+    # here and nowhere else. The property below is called `posture` precisely
+    # so no call site has to guess which `surface` it meant.
+    @property
+    def posture(self) -> str:
+        """The `surface` token — the language's answer to "what happens when
+        this region can be real pixels" (LANGUAGES.md's eighth axis)."""
+        return self.t.get("surface", "untinted")
+
+    def raster_region(self, img, w: int, h: int,
+                      label: str = "") -> RenderResult:
+        """Dispatched on the `surface` token, exactly as `meter` is dispatched
+        on `meter` — mutating the token swaps the mechanism, which is what
+        keeps a token alive rather than decorative.
+
+        `img` is a `PIL.Image`; `w`/`h` are the CELLS the layout reserves.
+        `label` is what the figure IS, for the postures that caption or audit
+        one (swiss's caption, ledger's exhibit, corgi's display legend). It is
+        optional because a posture that captions must still be able to render
+        without being told — it falls back to the figure's own metrics, which
+        is a caption a drawing office would accept and an empty string is
+        not."""
+        fn = SURFACES.get(self.posture, _surface_untinted)
+        return fn(self, img, max(1, w), max(1, h), label)
+
+    # -- per-language hooks the shared mechanisms call ----------------------
+    # A mechanism two languages share is one function (AC-2: naught and
+    # instrument share `lattice`, corgi and industrial share `display`), and
+    # what differs between them is declared HERE, on the kit, rather than by
+    # branching on the kit's name inside the mechanism.
+
+    def lattice_grid(self, w: int, h: int) -> tuple[int, int]:
+        """Dots the lattice fits in a w x h cell region. Base is the naught
+        pitch: `dot_w` cells per dot plus `gap` cells of air, one dot row per
+        cell row."""
+        per = max(1, int(self.t.get("dot_w", 1)) + int(self.t.get("gap", 0)))
+        return max(1, (w + int(self.t.get("gap", 0))) // per), max(1, h)
+
+    def lattice_rows(self, bm, w: int, h: int) -> list[str]:
+        """Draw a 0/1 sprite as this language's lattice, unlit grid visible.
+        Base uses naught's own full-bleed field — the code that already draws
+        its board, so the surface cannot fork the identity."""
+        return NA.field(w, h, bm, self.c["ink"], self.c["dim"],
+                        dot_w=int(self.t.get("dot_w", 1)),
+                        gap=int(self.t.get("gap", 0)), ox=0)
+
+    LATTICE_GLYPHS = frozenset(NA.ON + NA.OFF + " ")
+
+    # (tl, tr, bl, br, top, bottom, left, right) — eight glyphs and not two,
+    # because a language whose frame is a STAMPED PLATE has a different top
+    # from its bottom (`▀` / `▄`) while a language whose frame is a drawn box
+    # does not. Two glyphs would have forced industrial to borrow corgi's box.
+    DISPLAY_BOX = "┌┐└┘──││"
+
+    def display_chrome(self) -> tuple[str, str, str]:
+        """(box glyphs, screen low colour, screen high colour) for the
+        `display` posture. Base: box drawing, ground to ink."""
+        return self.DISPLAY_BOX, self.t.get("ground", "#000000"), self.c["ink"]
+
+    def display_label(self, idx: int = 1) -> str:
+        """The label beside a display. `numbered` languages number it — the
+        token decides, not the class."""
+        return f"[{idx}] DISPLAY" if self.numbered else "DISPLAY"
+
+    def depth_ground(self) -> str:
+        """The +1 grey STEP the `depth` posture separates on. Read off the
+        language's own ladder (`focus`, the rung above `panel`) rather than
+        invented as a delta: darkside already declares where its next grey
+        step is, and a second ladder beside it would be two answers to one
+        question. Only languages with no `focus` fall back to arithmetic."""
+        panel = self.t.get("panel", self.t.get("ground", "#000000"))
+        return self.t.get("focus") or RS.step(panel, 14)
+
+    def caption(self, img, label: str) -> str:
+        """What a captioning posture writes under its figure. The metrics are
+        the fallback because a caption is not optional — a figure with no
+        caption is a poster, and swiss's posture is explicitly not that."""
+        return label or f"{img.size[0]}x{img.size[1]} px"
+
+    def tint_pair(self) -> tuple[str, str]:
+        """(low, high) of the `tint` posture's duotone ramp. Base: the
+        language's own ground and ink, which is what "one hue" means when the
+        language has not named a second one."""
+        return self.t.get("ground", "#000000"), self.c["ink"]
+
+    def exhibit(self, img, w: int, h: int, label: str = "") -> list[str]:
+        """What a REFUSING language shows instead of the image.
+
+        Base is NOTHING but ground, and that is solari's answer in full: "one
+        shape, the row; an image cannot flip. If a board needs a picture it is
+        not a departure board." A blank rectangle is the render of that
+        sentence, so solari overrides nothing. Ledger overrides with its ruled
+        exhibit."""
+        return [" " * w for _ in range(h)]
 
     # -- a view section header (AGENDA / GANTT / SWIMLANES) -----------------
     def sect(self, title: str, note: str, w: int, h: int = 0) -> list[str]:
@@ -3218,6 +3365,14 @@ class Corgi(Kit):
     def rule_color(self) -> str:
         return self.alu                    # TE rules are aluminium, always
 
+    def display_chrome(self) -> tuple[str, str, str]:
+        """The DISPLAY posture's own frame and glass. Square junctions — TE
+        has no rounded corners anywhere, and the display is not the exception
+        — and the glass is the SAME green-black `surface()` already puts under
+        the hero and the meter, so the raster region lands on the screen this
+        language already declared rather than on a second one."""
+        return self.DISPLAY_BOX, "#0a120a", self.screen
+
     def surface(self):
         # the DISPLAY REGION: machine output lives on green-black glass
         return (super().surface()
@@ -3571,6 +3726,46 @@ class Instrument(Kit):
     # pinned as a literal — a glyph a law can only compare to itself is a
     # spelling, not a rule.
     BLANK, FULL, HALF, LATT = "⠐", "⣿", "⡗", "⠒"
+
+    # -- the LATTICE surface posture, in THIS language's dots ---------------
+    # Shared with naught (AC-2 says they share the mechanism) and drawn in a
+    # different alphabet, which is the whole reason the mechanism takes a kit
+    # hook instead of a kit name. Naught's lattice is `∙`/`◦` at one dot per
+    # cell; this one is braille at 2x4, because `base="braille"` is what this
+    # language declares and borrowing naught's dots here would put naught's
+    # identity on instrument's screen.
+    LATTICE_GLYPHS = frozenset(chr(c) for c in range(0x2800, 0x2900)) | {" "}
+
+    def lattice_grid(self, w: int, h: int) -> tuple[int, int]:
+        """2x4 sub-cell dots — braille's own sub-grid (`bases.BASES`), which
+        is also the maximum resolution any base here reaches."""
+        return max(1, w * 2), max(1, h * 4)
+
+    def lattice_rows(self, bm, w: int, h: int) -> list[str]:
+        """Lit cells in the ink, cells with no dot drawn as `BLANK` in the
+        graticule tone — the same unlit mark this language's own meter uses,
+        so the surface does not invent a second "this position is empty".
+        `bases.braille` returns U+2800 for an empty cell, which is the defect
+        DATAVIZ law 4 names by name (a blank that draws no track)."""
+        tick = self.t.get("tick", self.c["dim"])
+        out = []
+        for row in BS.braille(bm)[:h]:
+            line, buf, run = [], [], None
+            for ch in row[:w].ljust(w, "⠀"):
+                lit = ch != "⠀"
+                if run is not None and lit is not run and buf:
+                    line.append(f"[{self.c['ink'] if run else tick}]"
+                                f"{''.join(buf)}[/]")
+                    buf = []
+                run = lit
+                buf.append(ch if lit else self.BLANK)
+            if buf:
+                line.append(f"[{self.c['ink'] if run else tick}]"
+                            f"{''.join(buf)}[/]")
+            out.append("".join(line))
+        while len(out) < h:
+            out.append(f"[{tick}]{self.BLANK * w}[/]")
+        return out
 
     # ======================================================================
     # THE RETICLE. Every cell position below is computed in ONE place
@@ -4253,6 +4448,18 @@ class Industrial(Kit):
     @property
     def plate(self) -> str:
         return self.t.get("plate", self.c["dim"])
+
+    # THE DISPLAY POSTURE, IN THIS LANGUAGE'S FRAME. Shared mechanism with
+    # corgi (AC-2), different chrome: corgi's display is a drawn box with
+    # square junctions on green-black glass; industrial's is a STAMPED PLATE,
+    # so its top edge and its bottom edge are different glyphs and its sides
+    # are half-cell walls. And the glass is GREY — LANGUAGES.md is explicit
+    # that severity still cannot ride colour inside this display, so the
+    # screen's ramp is ground-to-ink with no hue in it at all.
+    DISPLAY_BOX = "▛▜▙▟▀▄▌▐"
+
+    def display_chrome(self) -> tuple[str, str, str]:
+        return self.DISPLAY_BOX, self.t.get("ground", "#000000"), self.c["ink"]
 
     def plate_w(self, w: int) -> int:
         """How wide the plate WILL be at this measure — asked before it is
@@ -5209,6 +5416,38 @@ class Ledger(Kit):
     LEAD = "·"
     RULE_V, RULE_SUB, RULE_HEAD = "│", "─", "═"
     GUTTER = 3                             # folio: two figures and a cell of air
+
+    # THE REFUSAL, WRITTEN OUT. "A figure is audited, not shown. At most one
+    # small ruled exhibit with dot leaders to its caption, like a receipt
+    # stapled to the page; a full-bleed image on a ledger is a forgery of the
+    # genre." So the exhibit STATES the figure — its identity and its
+    # metrics, ruled and led — and draws none of it. `pixels` is None on this
+    # posture, so there is nothing for a raster transport to overrule.
+    EXHIBIT_W = 34                         # a receipt, not a plate
+
+    def exhibit(self, img, w: int, h: int, label: str = "") -> list[str]:
+        c = self.c
+        ew = min(max(20, self.EXHIBIT_W), w)
+        inner = ew - 2
+        head = f"{self.RULE_HEAD * inner}"
+        entries = [("exhibit", (label or "figure").upper()[:inner - 12]),
+                   ("width", f"{img.size[0]} px"),
+                   ("height", f"{img.size[1]} px"),
+                   ("shown", "no")]
+        body = []
+        for name, val in entries:
+            room = inner - 1 - len(name) - len(val)
+            body.append(f"{self.RULE_V} {name}{self.LEAD * max(1, room)}"
+                        f"{val}{self.RULE_V}")
+        rows = ([f"[{self.rule_color}]{self.RULE_V}{head}{self.RULE_V}[/]"]
+                + [f"[{c['ink']}]{mark(r)}[/]" for r in body]
+                + [f"[{self.rule_color}]{self.RULE_V}"
+                   f"{self.RULE_SUB * inner}{self.RULE_V}[/]"])
+        # The exhibit is a RECEIPT on a page, so it is `ew` cells wide and the
+        # page pays for the rest. Padded here rather than by the mechanism:
+        # only this method knows how many cells its markup actually draws.
+        air = " " * (w - ew)
+        return [r + air for r in rows[:h]]
     ACCT_W = 10                            # the account column (the phase)
     FIG_W = 6                              # the figure column, right-aligned
     BAND_EVERY = 5                         # every 5th line of the page tints
@@ -7149,6 +7388,239 @@ METERS = {"blocks": _meter_blocks, "dotgrid": _meter_dotgrid,
           "decay": _meter_decay, "gradient": _meter_gradient,
           "step": _meter_step, "tally": _meter_tally,
           "odometer": _meter_odometer, "dimension": _meter_dimension}
+
+
+# ===========================================================================
+# SURFACE MECHANISMS — the eighth axis, dispatched on the `surface` token
+#
+# One function per POSTURE, never one per language: naught and instrument
+# share `lattice`, corgi and industrial share `display`, ledger and solari
+# share `refuse`. What differs between two languages on one posture is
+# declared on their kit (`lattice_rows`, `display_chrome`, `exhibit`), which
+# is the same split `METERS` uses and for the same reason — a mechanism that
+# branched on the kit's NAME would put the commitment back in the renderer.
+#
+# EVERY MECHANISM RETURNS BOTH SURFACES (AC-3). The pixel transform is
+# applied FIRST and the glyph rows are drawn off its result, so the two
+# cannot drift: "blueprint tints the pixels" and "blueprint tints the cells"
+# are one operation seen twice.
+# ===========================================================================
+
+
+def _plain(s: str, w: int) -> str:
+    """A chrome row clipped/padded to exactly `w` cells. Chrome only — never
+    called on a half-block row, whose width is exact by construction."""
+    return s[:w].ljust(w)
+
+
+def _surface_untinted(k, img, w, h, label=""):
+    """UNTINTED (nord / base16). The one thing the user's colour scheme cannot
+    restyle, so it is shown as-is with NO frame — the environment's rules stop
+    at the region's edge and the language says so (LANGUAGES.md §6)."""
+    return RenderResult("untinted", RS.halfblock(img, w, h), img, (w, h))
+
+
+def _surface_lattice(k, img, w, h, label=""):
+    """LATTICE-IZE (naught, instrument). A photograph would break the one
+    thing that makes these languages themselves, so the pixels are quantised
+    back onto the language's own dot grid at its `gap` — and the UNLIT grid
+    stays visible, which is the commitment that separates an LED panel from
+    sparse block type.
+
+    The glyph side is drawn by the kit's own lattice code (naught's full-bleed
+    `field`, instrument's braille), so the surface cannot invent a second dot
+    vocabulary beside the one the board already draws."""
+    cols, rows = k.lattice_grid(w, h)
+    bm = RS.bitmap(img, cols, rows)
+    return RenderResult("lattice", k.lattice_rows(bm, w, h)[:h],
+                        RS.quantise(img, cols, rows, k.c["ink"], k.c["dim"]),
+                        (w, h))
+
+
+def _surface_display(k, img, w, h, label=""):
+    """DISPLAY REGION (corgi, industrial). Pixels live ONLY inside the
+    numbered, boxed display; every control around it stays a label. The bars
+    that frame it are where chrome ends and machine output begins — an OP-1
+    screen is a raster surface and its aluminium is not.
+
+    The image is tinted to the SCREEN's own two colours before either side is
+    drawn: a full-colour photograph inside an LCD is a picture of a different
+    device."""
+    tl, tr, bl, br, top_g, bot_g, lf, rt = k.display_chrome()[0]
+    _, low, high = k.display_chrome()
+    pix = RS.duotone(img, low, high)
+    iw, ih = max(1, w - 2), max(1, h - 2)
+    lab = f" {k.display_label()} "[:max(0, w - 4)]
+    rule = k["accent"] if k.numbered else k.rule_color
+    # `mark()` for the label, `len()` for the arithmetic. The label carries a
+    # literal `[1]` and this row is markup: escaping changes its CHARACTER
+    # count and not its cell count, so the padding is measured on the plain
+    # string and the escaped one is what is emitted. Padding an escaped string
+    # is how a reserved rectangle silently loses a cell.
+    bar_n = max(0, w - 2 - len(lab))
+    rows = [f"[{rule}]{tl}{mark(lab)}{top_g * bar_n}{tr}[/]"]
+    for line in RS.halfblock(pix, iw, ih):
+        rows.append(f"[{rule}]{lf}[/]" + line + f"[{rule}]{rt}[/]")
+    rows.append(f"[{rule}]{_plain(bl + bot_g * max(0, w - 2) + br, w)}[/]")
+    return RenderResult("display", rows[:h], pix, (w, h))
+
+
+def _surface_tint(k, img, w, h, label=""):
+    """TINT + MEASURE (blueprint). Linework at true resolution, cyanotype-
+    tinted, WITH DIMENSION SPANS DRAWN OVER IT — the chrome stays the data-viz
+    even on pixels, which is the whole reason this language is one of the two
+    naturals for an optimiser's field.
+
+    The spans are `_span_text`, the same object the `dimension` meter draws.
+    Two implementations of one mechanism is how a language forks its own
+    identity (DATAVIZ.md's dispatch law), so there is only ever the one."""
+    low, high = k.tint_pair()
+    pix = RS.duotone(img, low, high)
+    iw, ih = max(1, img.size[0]), max(1, img.size[1])
+    span_w = _span_text(w, f"{iw}px")
+    span_h = _span_text(w, f"{ih}px")
+    body = RS.halfblock(pix, w, max(1, h - 2))
+    rows = ([f"[{k['mut']}]{_plain(span_w, w)}[/]"] + body
+            + [f"[{k['mut']}]{_plain(span_h, w)}[/]"])
+    return RenderResult("tint", rows[:h], pix, (w, h))
+
+
+def _surface_refuse(k, img, w, h, label=""):
+    """REFUSE (ledger, solari). The posture with no pixels — `pixels` is None
+    and that is the commitment being exercised, not a gap in the code.
+
+    Ledger: "a figure is audited, not shown" — at most one small ruled exhibit
+    with dot leaders to its caption, a receipt stapled to the page. Solari:
+    "one shape, the row; an image cannot flip" — nothing at all.
+
+    Both go through `kit.exhibit()`, because refusing is one posture and what
+    a language shows INSTEAD is the language's own business."""
+    rows = list(k.exhibit(img, w, h, label))[:h]
+    rows += [" " * w] * (h - len(rows))
+    return RenderResult("refuse", rows, None, (w, h))
+
+
+def _surface_frame(k, img, w, h, label=""):
+    """FRAME (neo-brutalist). "A raw image at full strength, hard edge, inside
+    a heavy box — no smoothing, no caption softening it."
+
+    So: no tint, no dither, no caption. The pixels are handed on untouched and
+    the only thing the posture adds is the box — which is the point, because
+    in this language the frame IS the aesthetic rather than an accident.
+
+    NO KIT DECLARES THIS TOKEN. Neo-brutalist is in LANGUAGES.md §7 and has no
+    kit in this repo; the mechanism is here because AC-2 requires the posture
+    to exist and because a language that adopts it later must not have to
+    write it. It is reachable — the mutation test renders every language
+    through it."""
+    box = "╔╗╚╝══║║"
+    tl, tr, bl, br, top_g, bot_g, lf, rt = box
+    rows = [f"[{k['ink']}]{_plain(tl + top_g * max(0, w - 2) + tr, w)}[/]"]
+    for line in RS.halfblock(img, max(1, w - 2), max(1, h - 2)):
+        rows.append(f"[{k['ink']}]{lf}[/]" + line + f"[{k['ink']}]{rt}[/]")
+    rows.append(f"[{k['ink']}]{_plain(bl + bot_g * max(0, w - 2) + br, w)}[/]")
+    return RenderResult("frame", rows[:h], img, (w, h))
+
+
+def _surface_depth(k, img, w, h, label=""):
+    """DEPTH STEP (darkside, prism). "A raster region separates from its
+    neighbours by ±1 grey step of BACKGROUND, never a border."
+
+    The literal reading, and the only one that is checkable: there is no
+    border glyph anywhere in the region. What separates it is an inset of the
+    language's next grey rung (`depth_ground()`, read off its own ladder), so
+    the region is legible as a distinct plane without a rule being drawn.
+
+    The ambient motion LANGUAGES.md permits here ("the one slow ambient, at
+    ~0.25 speed") is NOT implemented: nothing in this batch animates, and a
+    still frame is the honest render of a motion nobody plays."""
+    g = k.depth_ground()
+    pad = f"[on {g}]{' ' * w}[/]"
+    body = RS.halfblock(img, max(1, w - 2), max(1, h - 2))
+    rows = [pad] + [f"[on {g}] [/]" + line + f"[on {g}] [/]" for line in body]
+    rows.append(pad)
+    return RenderResult("depth", rows[:h], RS.inset(img, g, 4), (w, h))
+
+
+def _surface_figure(k, img, w, h, label=""):
+    """EDITORIAL FIGURE (swiss). "One image per screen, hairline rule and a
+    caption in plain cells, NEVER FULL-BLEED — the magazine photograph, not
+    the poster."
+
+    Never full-bleed is the load-bearing half and it is what the measure
+    enforces: the figure is set inside the type grid's gutter, so air stands
+    between it and the region's edge, and a reader can see that the image was
+    placed on a page rather than used as one. Under it a hairline (the
+    language's single rule, from the `frame` token) and a caption in PLAIN
+    cells — this language renounces drawn type, so the caption is typed."""
+    gut = getattr(k, "GUTTER", 3)
+    iw = max(1, w - gut)
+    body = RS.halfblock(img, iw, max(1, h - 2))
+    pad = " " * (w - iw)
+    rows = [line + pad for line in body]
+    rule = k.rule_line(iw + 1)
+    rows.append((rule or f"[{k.rule_color}]{'─' * iw}[/]") + pad)
+    cap = _plain(k.caption(img, label), iw)      # measured plain, emitted safe
+    rows.append(f"[{k['mut']}]{mark(cap)}[/]" + pad)
+    return RenderResult("figure", rows[:h], img, (w, h))
+
+
+def _surface_catalogue(posture: str, why: str):
+    """AC-7. Phosphor and BBS have postures in LANGUAGES.md and NO kit here.
+    They get a registry entry that SAYS SO and refuses, rather than being
+    quietly aliased to a posture that happens to look similar — an alias is
+    exactly the "dead metadata" failure this axis exists to prevent, and it
+    would be undetectable from the outside."""
+    def _refuse_catalogue(k, img, w, h, label=""):
+        raise NotImplementedError(
+            f"surface posture {posture!r} is CATALOGUE-ONLY: {why}. "
+            f"No kit in this repo renders it (LANGUAGES.md marks both "
+            f"catalogue-only). It is not mapped to another posture on purpose.")
+    _refuse_catalogue.__doc__ = f"{posture} — documented, not implemented: {why}"
+    return _refuse_catalogue
+
+
+# THE REGISTRY. Postures, and which languages commit to each:
+#
+#   lattice    naught, instrument — dither to the language's round-dot grid
+#   display    corgi, industrial  — framed screen region, controls stay labels
+#   tint       blueprint          — cyanotype + dimension spans over the pixels
+#   untinted   nord               — as-is, no frame (the base default)
+#   refuse     ledger, solari     — ruled exhibit / nothing at all
+#   frame      neo-brutalist      — raw image, hard edge, heavy box. NO KIT
+#                                   declares it: LANGUAGES.md §7 has no kit in
+#                                   this repo, and the posture is written so a
+#                                   language adopting it later inherits it
+#   depth      darkside, prism    — ±1 grey step of ground, never a border
+#   figure     swiss              — one image, hairline + caption, never bleed
+#
+# AND TWO THAT ARE DOCUMENTED WITHOUT BEING IMPLEMENTED (AC-7):
+#
+#   phosphor   one hue, scanlines, bloom on the bright end — a full-colour
+#              image is off-language. Catalogue-only: no kit renders phosphor
+#              in this repo (retired 2026-07-26 by operator curation).
+#   bbs        refuse, or dither to `░▒▓█` — the block gradient IS the shading
+#              vocabulary and a true raster is the one thing this language
+#              cannot have been drawn with. Catalogue-only, same retirement.
+#
+# Both raise `NotImplementedError` naming themselves. Mapping either onto
+# `tint` or `lattice` would render something plausible and report a posture
+# that no code implements, which is the failure mode AC-7 is written against.
+SURFACES = {"untinted": _surface_untinted, "lattice": _surface_lattice,
+            "display": _surface_display, "tint": _surface_tint,
+            "refuse": _surface_refuse, "frame": _surface_frame,
+            "depth": _surface_depth, "figure": _surface_figure,
+            "phosphor": _surface_catalogue(
+                "phosphor", "one hue, scanlines and bloom; a full-colour "
+                            "image is off-language"),
+            "bbs": _surface_catalogue(
+                "bbs", "refuse, or dither to the block gradient ░▒▓█")}
+
+# The postures a mutation test may swap BETWEEN: the implemented ones. The
+# two catalogue entries are excluded because refusing is their behaviour —
+# swapping into one proves nothing about whether the token is read.
+LIVE_SURFACES = ("untinted", "lattice", "display", "tint",
+                 "refuse", "frame", "depth", "figure")
 
 
 # phosphor and bbs retired 2026-07-26 (user curation); their decay/gradient
