@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · blueprint · S2 form with validation">
+<title>taskboard · blueprint · S2 form with validation</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#eef4f8">NEW TASK</text>
+<text x="94.0" y="23.3" fill="#7fa8c4">·── 5 FIELDS  ·  1 INVALID</text>
+<text x="26.8" y="57.3" fill="#7fa8c4">title</text>
+<text x="68.8" y="57.3" fill="#ff7a5c">*</text>
+<text x="144.4" y="57.3" fill="#24486b">╞</text>
+<text x="152.8" y="57.3" fill="#eef4f8">Fix login╪ redirect</text>
+<text x="312.4" y="57.3" fill="#24486b">╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╡</text>
+<text x="26.8" y="91.3" fill="#7fa8c4">due</text>
+<text x="52.0" y="91.3" fill="#ff7a5c">*</text>
+<text x="144.4" y="91.3" fill="#24486b">├</text>
+<text x="152.8" y="91.3" fill="#eef4f8">12/09/26</text>
+<text x="220.0" y="91.3" fill="#24486b">··························┤</text>
+<text x="455.2" y="91.3" fill="#ff7a5c">!</text>
+<text x="144.4" y="108.3" fill="#ff7a5c">expected YYYY-MM-DD</text>
+<text x="26.8" y="142.3" fill="#7fa8c4">priority</text>
+<text x="144.4" y="142.3" fill="#24486b">┤ ├</text>
+<text x="178.0" y="142.3" fill="#7fa8c4">low</text>
+<text x="220.0" y="142.3" fill="#24486b">┤ ├</text>
+<text x="253.6" y="142.3" fill="#7fa8c4">norm</text>
+<text x="304.0" y="142.3" fill="#eef4f8">┤○├</text>
+<text x="337.6" y="142.3" fill="#eef4f8">high</text>
+<text x="26.8" y="176.3" fill="#7fa8c4">tags</text>
+<text x="144.4" y="176.3" fill="#24486b">├ ┤</text>
+<text x="178.0" y="176.3" fill="#7fa8c4">api</text>
+<text x="220.0" y="176.3" fill="#eef4f8">├╪┤</text>
+<text x="253.6" y="176.3" fill="#7fa8c4">ui</text>
+<text x="287.2" y="176.3" fill="#eef4f8">├╪┤</text>
+<text x="320.8" y="176.3" fill="#7fa8c4">urgent</text>
+<text x="26.8" y="210.3" fill="#7fa8c4">notes</text>
+<text x="144.4" y="210.3" fill="#24486b">├</text>
+<text x="152.8" y="210.3" fill="#eef4f8">Redirect drops the ?next= param when the</text>
+<text x="488.8" y="210.3" fill="#24486b">┤</text>
+<text x="144.4" y="227.3" fill="#24486b">├</text>
+<text x="152.8" y="227.3" fill="#eef4f8">session cookie is renewed mid-flight.</text>
+<text x="463.6" y="227.3" fill="#24486b">┤</text>
+<text x="144.4" y="244.3" fill="#24486b">├··································┤</text>
+<text x="144.4" y="278.3" fill="#24486b">╎    Save    ╎</text>
+<text x="287.2" y="278.3" fill="#eef4f8">├   Cancel   ┤</text>
+<text x="144.4" y="295.3" fill="#24486b">Save is held until due parses</text>
+<text x="68.8" y="516.3" fill="#eef4f8">┌</text>
+<text x="110.8" y="516.3" fill="#eef4f8">┐</text>
+<text x="287.2" y="516.3" fill="#7fa8c4">─────────</text>
+<text x="18.4" y="533.3" fill="#7fa8c4">board</text>
+<text x="77.2" y="533.3" fill="#eef4f8">FORM</text>
+<text x="127.6" y="533.3" fill="#7fa8c4">cfg</text>
+<text x="169.6" y="533.3" fill="#7fa8c4">log</text>
+<text x="287.2" y="533.3" fill="#7fa8c4">├ CLEAR ┤</text>
+<text x="68.8" y="550.3" fill="#eef4f8">└</text>
+<text x="110.8" y="550.3" fill="#eef4f8">┘</text>
+<text x="287.2" y="550.3" fill="#7fa8c4">─────────</text>
+</g>
+</svg>

@@ -1,0 +1,32 @@
+[1]BOARD [2]FORM [3]C F G [4]LOG                                                                    
+[S] S E T T I N G S  5 SWITCHES  ·  2 SELECTS  ·  1 SLIDER                                          
+─────────────────────────────────────────────────────────────────────────────────────────────────── 
+  notify on overdue         ▄▄ ██ ON                                                                
+  daily digest              ▄▄ ██ ON                                                                
+  sound                     ██ ▁▁ --                                                                
+  sync to remote            ╳╳ ·· --   (no remote configured)                                       
+  compact rows              ▄▄ ██ ON                                                                
+                                                                                                    
+  start of week             ▄▄  mon  ▁▁ v                                                           
+  theme                     ▄▄  dark ▁▁ v                                                           
+                                auto                                                                
+                                light                                                               
+                              ▐ dark                                                                
+                                                                                                    
+  row density               ▄▄ ▄▄ ▄▄ ██ ▁▁[70]                                                      
+                                                                                                    
+  ───────────────────────────────────────────────────────────────────────────────────────────────   
+  DANGER  delete every completed task                                                               
+  ▁▁ Delete all ▁▁   7 tasks, not recoverable                                                       
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    

@@ -1,0 +1,19 @@
+# blueprint · S5 — live monitor / log — candidates
+
+Frame: `blueprint_S5.txt` / `.svg` — 100×32, rendered through `taskboard.language.kit("blueprint")`.
+
+Every element below was drawn **by hand in `prototypes/components/screens.py`**, not by a kit method. Everything else in the frame came out of a kit call and is therefore *implemented*. Verdicts are the spec's closed set: **implemented / evoked / refused**.
+
+## `Kit.log_row` — **evoked**
+
+- **element drawn:** the log row's level mark and its severity channel
+- **frame rows:** 8, 9, 10, 11, 12, 13, 14, 15
+- **proposed signature:** `Kit.log_row(self, ts: str, level: str, msg: str, w: int) -> str`
+- **the commitment it must honour:** `ICONS` has six domain kinds and no log level.  The level must read in greyscale on a glyph, and the alert hue is rationed -- ledger spends it only on debt, blueprint only on overdue, naught has one red total
+
+## `Kit.tail` — **evoked**
+
+- **element drawn:** the tail marker (the streaming/held state of the log)
+- **frame rows:** 16
+- **proposed signature:** `Kit.tail(self, held: bool) -> str`
+- **the commitment it must honour:** an INDETERMINATE indicator, which COMPONENTS.md's state matrix says must be MOTION and never a frozen half-fill; `spinner(tick)` is the moving half and this is the held one
