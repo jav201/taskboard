@@ -1,0 +1,34 @@
+                                                                                                                      
+                                                                                                                      
+                              ┌────────────────────────────────────────────────────────┐                              
+                              │                                                        │                              
+                              │   ██  █  █                                             │                              
+                              │  █   █ █ █                                             │                              
+                              │  █ █ ███ █                                             │                              
+                              │  █ █ █ █ █                                             │                              
+                              │   ██ █ █ ███                                           │                              
+                              │  Industrial                                            │                              
+                              │  ──────────────────────────────────────────────────    │                              
+                              │  ─                                                 ▅▅  │                              
+                              │   ██    ██                                             │                              
+                              │   ██    ██                                             │                              
+                              │                                                        │                              
+                              │  █        █                                            │                              
+                              │   █      █                                             │                              
+                              │    ██████                                              │                              
+                              │  checkable  switch      checkbox  off·on               │                              
+                              │             [|·]  [█|]  [ ]  [X]   default             │                              
+                              │             [I·]  [█I]  [_]  [#]   focused             │                              
+                              │             [#·]  [█#]  [-]  [*]   active              │                              
+                              │             [x-]  [░x]  (-)  (x)   disabled            │                              
+                              │  radio      lo·mid·hi  set=mid cursor=hi               │                              
+                              │             < > lo  <O> mid  < > hi   default          │                              
+                              │             < > lo  <O> mid  <_> hi   focused          │                              
+                              │             < > lo  <O> mid  <-> hi   active           │                              
+                              │             (-) lo  (o) mid  (-) hi   disabled         │                              
+                              │  button     ok·Refresh  label INSIDE                   │                              
+                              │                                                        │                              
+                              └────────────────────────────────────────────────────────┘                              
+                                                                                                                      
+                                                                                                                      
+ esc/q/g Close  t Language                                                                                            

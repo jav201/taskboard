@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1011.2 598.0" role="img" aria-label="taskboard · darkside · board">
+<title>taskboard · darkside · board</title>
+<rect width="1011.2" height="598.0" fill="#000000"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<rect x="26.8" y="27.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="40.3" fill="#1783ff">┌────────────────────────────────────────────┐</text>
+<rect x="26.8" y="44.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="57.3" fill="#1783ff">│</text>
+<text x="35.2" y="57.3" fill="#737373">days overdue</text>
+<text x="404.8" y="57.3" fill="#1783ff">│</text>
+<rect x="26.8" y="61.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="74.3" fill="#1783ff">│</text>
+<text x="404.8" y="74.3" fill="#1783ff">│</text>
+<rect x="26.8" y="78.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="91.3" fill="#1783ff">│</text>
+<text x="35.2" y="91.3" fill="#ff4f42">2</text>
+<text x="404.8" y="91.3" fill="#1783ff">│</text>
+<rect x="26.8" y="95.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="108.3" fill="#1783ff">│</text>
+<text x="35.2" y="108.3" fill="#262626">Fix checkout 500 error</text>
+<text x="404.8" y="108.3" fill="#1783ff">│</text>
+<rect x="26.8" y="112.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="125.3" fill="#1783ff">│</text>
+<text x="404.8" y="125.3" fill="#1783ff">│</text>
+<rect x="26.8" y="129.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="142.3" fill="#1783ff">│</text>
+<text x="404.8" y="142.3" fill="#1783ff">│</text>
+<rect x="26.8" y="146.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="159.3" fill="#1783ff">│</text>
+<text x="404.8" y="159.3" fill="#1783ff">│</text>
+<rect x="26.8" y="163.0" width="386.4" height="17.0" fill="#0a0a0a"/>
+<text x="26.8" y="176.3" fill="#1783ff">└────────────────────────────────────────────┘</text>
+<text x="26.8" y="210.3" fill="#737373">█████</text>
+<text x="68.8" y="210.3" fill="#262626">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="337.6" y="210.3" fill="#262626"> 13%</text>
+<text x="26.8" y="227.3" fill="#737373">█▄▄</text>
+<text x="60.4" y="227.3" fill="#262626">flow</text>
+<text x="26.8" y="261.3" fill="#1783ff">(O)</text>
+<text x="52.0" y="261.3" fill="#f5f5f5">board  </text>
+<text x="110.8" y="261.3" fill="#262626">( )</text>
+<text x="136.0" y="261.3" fill="#737373">lanes</text>
+<text x="194.8" y="261.3" fill="#262626">( )</text>
+<text x="220.0" y="261.3" fill="#737373">agenda</text>
+<text x="287.2" y="261.3" fill="#262626">( )</text>
+<text x="312.4" y="261.3" fill="#737373">gantt</text>
+<text x="35.2" y="295.3" fill="#737373">d</text>
+<text x="52.0" y="295.3" fill="#ff4f42">  2</text>
+<text x="94.0" y="295.3" fill="#737373">!!</text>
+<text x="119.2" y="295.3" fill="#ff4f42">  2</text>
+<text x="161.2" y="295.3" fill="#737373">w</text>
+<text x="178.0" y="295.3" fill="#ffd230">  4</text>
+<text x="228.4" y="295.3" fill="#737373">x</text>
+<text x="245.2" y="295.3" fill="#ffd230">  1</text>
+<text x="287.2" y="295.3" fill="#737373">$</text>
+<text x="304.0" y="295.3" fill="#ffd230">  9</text>
+<text x="354.4" y="295.3" fill="#737373">f</text>
+<text x="362.8" y="295.3" fill="#f5f5f5"> -98</text>
+<text x="35.2" y="329.3" fill="#262626">▏</text>
+<text x="43.6" y="329.3" fill="#f5f5f5">  backlog </text>
+<text x="127.6" y="329.3" fill="#737373">9</text>
+<rect x="26.8" y="350.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="363.3" fill="#262626">▏</text>
+<text x="43.6" y="363.3" fill="#f5f5f5">  fix checkout 500 error                                                                                </text>
+<text x="917.2" y="363.3" fill="#ff4f42">blk</text>
+<rect x="26.8" y="367.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="380.3" fill="#262626">▏</text>
+<text x="77.2" y="380.3" fill="#262626">backlog · d-2</text>
+<rect x="26.8" y="384.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="397.3" fill="#262626">▏</text>
+<text x="43.6" y="397.3" fill="#f5f5f5">  compress database backups                                                                             </text>
+<text x="917.2" y="397.3" fill="#ff4f42">1d!</text>
+<rect x="26.8" y="401.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="414.3" fill="#262626">▏</text>
+<text x="77.2" y="414.3" fill="#262626">backlog · d-1</text>
+<text x="976.0" y="414.3" fill="#003054">▄</text>
+<rect x="26.8" y="418.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="431.3" fill="#262626">▏</text>
+<text x="43.6" y="431.3" fill="#f5f5f5">  renew tls certificate                                                                                  </text>
+<text x="925.6" y="431.3" fill="#ffd230">3d</text>
+<rect x="26.8" y="435.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="448.3" fill="#262626">▏</text>
+<text x="77.2" y="448.3" fill="#262626">backlog · d3</text>
+<rect x="26.8" y="452.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="465.3" fill="#262626">▏</text>
+<text x="60.4" y="465.3" fill="#737373">write api reference</text>
+<text x="925.6" y="465.3" fill="#737373">5d</text>
+<rect x="26.8" y="469.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="482.3" fill="#262626">▏</text>
+<text x="77.2" y="482.3" fill="#262626">backlog · d5</text>
+<rect x="26.8" y="486.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="499.3" fill="#262626">▏</text>
+<text x="60.4" y="499.3" fill="#737373">shut down legacy servers</text>
+<text x="925.6" y="499.3" fill="#737373">8d</text>
+<rect x="26.8" y="503.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="516.3" fill="#262626">▏</text>
+<text x="77.2" y="516.3" fill="#262626">backlog · d8</text>
+<rect x="26.8" y="520.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="533.3" fill="#262626">▏</text>
+<text x="60.4" y="533.3" fill="#737373">deprecate v1 endpoints</text>
+<text x="925.6" y="533.3" fill="#737373">9d</text>
+<rect x="26.8" y="537.0" width="949.2" height="17.0" fill="#121212"/>
+<text x="35.2" y="550.3" fill="#262626">▏</text>
+<text x="77.2" y="550.3" fill="#262626">backlog · d9</text>
+<rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#121212"/>
+<text x="18.4" y="584.3" fill="#1783ff">1</text>
+<text x="35.2" y="584.3" fill="#1783ff">2</text>
+<text x="52.0" y="584.3" fill="#1783ff">3</text>
+<text x="68.8" y="584.3" fill="#1783ff">4</text>
+<text x="85.6" y="584.3" fill="#e0e0e0">Views</text>
+<text x="136.0" y="584.3" fill="#1783ff"> c </text>
+<text x="161.2" y="584.3" fill="#e0e0e0">Signals </text>
+<text x="228.4" y="584.3" fill="#1783ff"> ? </text>
+<text x="253.6" y="584.3" fill="#e0e0e0">Keys </text>
+<text x="295.6" y="584.3" fill="#1783ff"> v </text>
+<text x="320.8" y="584.3" fill="#e0e0e0">Size </text>
+<text x="362.8" y="584.3" fill="#1783ff"> r </text>
+<text x="388.0" y="584.3" fill="#e0e0e0">Refresh </text>
+<text x="455.2" y="584.3" fill="#1783ff"> t </text>
+<text x="480.4" y="584.3" fill="#e0e0e0">Language </text>
+<text x="556.0" y="584.3" fill="#1783ff"> g </text>
+<text x="581.2" y="584.3" fill="#e0e0e0">Gallery </text>
+<text x="648.4" y="584.3" fill="#1783ff"> q </text>
+<text x="673.6" y="584.3" fill="#e0e0e0">Quit </text>
+<text x="900.4" y="584.3" fill="#3b3b3b">▏</text>
+<text x="908.8" y="584.3" fill="#1783ff">^p</text>
+<text x="925.6" y="584.3" fill="#e0e0e0"> palette</text>
+</g>
+</svg>

@@ -189,6 +189,15 @@ GALLERY = ROOT / "prototypes" / "gallery"
 #: Repeated rather than imported for the reason `_probe()` gives below: that
 #: module pulls in a Textual app and numpy, to write a markdown table.
 SHEET_W, SHEET_H = 116, 26
+#: ...AND THE LABEL IT PASSES, which stopped being ignorable on 2026-09-04.
+#: `_surface_tint` now READS the label (LIMITS L-31): blueprint's sheet letters
+#: it onto a third dimension span, and the span is paid for out of the reserved
+#: rectangle, so the glass moves down a row and loses one. Asking a posture for
+#: its box WITHOUT the label therefore printed `0, 1 116x24` beside a frame
+#: rendered at `0, 2 116x23` -- the table describing a render that is not the
+#: one it names, which is precisely what `surfaces_index()`'s own comment
+#: promises it does not do. Caught in the STAGED export, before shipping.
+SHEET_LABEL = "mbb rho final"
 
 SURFACES_HEADER = """# The surface axis, as the reference implementation renders it
 
@@ -258,7 +267,8 @@ def surfaces_index() -> str | None:
         # rectangle the `.txt` beside it was rendered with, and quoting the
         # probe's own 10x4 box would print a number that describes nothing a
         # reader can see.
-        res = LG.kit(n).raster_region(_probe(), SHEET_W, SHEET_H)
+        res = LG.kit(n).raster_region(_probe(), SHEET_W, SHEET_H,
+                                      label=SHEET_LABEL)
         box = ("**none**" if res.image_box is None
                else "`{}, {} {}x{}`".format(*res.image_box))
         rows.append(
