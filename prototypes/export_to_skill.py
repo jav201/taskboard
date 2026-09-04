@@ -184,6 +184,12 @@ def build(root: Path, when: str) -> str:
 
 GALLERY = ROOT / "prototypes" / "gallery"
 
+#: the geometry `capture_languages.py --surface` reserves for the region, and
+#: therefore the geometry every `surface_*.txt` in `GALLERY` was rendered at.
+#: Repeated rather than imported for the reason `_probe()` gives below: that
+#: module pulls in a Textual app and numpy, to write a markdown table.
+SHEET_W, SHEET_H = 116, 26
+
 SURFACES_HEADER = """# The surface axis, as the reference implementation renders it
 
 **Generated.**  `prototypes/export_to_skill.py` in the taskboard repo writes this file from the
@@ -200,8 +206,25 @@ raster transport, the same posture is applied to the pixels and rendered through
 column says what those pixels are, and `refused` is a COMMITMENT rather than a gap -- ledger
 audits a figure instead of showing it, solari cannot flip an image.
 
-| language | posture | frame | ink | raster |
-|---|---|---|---|---|
+**Two surfaces, one token -- and since 2026-09-04 the frame is a third thing you can ask for.**
+`raster_region()` returns `rows` (the fused glyph rendering: frame AND image, which is what the
+`.txt` files below are), `pixels` (the glass alone), and now also **`chrome`** and
+**`image_box`**.  They exist because the first two are not enough for a consumer that draws TRUE
+PIXELS: corgi's `[1] DISPLAY` box and blueprint's dimension spans live in `rows` and are absent
+from `pixels`, so a Sixel field rendered from `pixels` came out bare, with none of the language
+around it.  `image_box` is `(col, row, w, h)` -- where inside the rectangle the glass goes -- and
+`chrome` is `rows` with exactly those cells replaced by a transparent sentinel (`RASTER_HOLE`,
+U+E000), meaning "do not paint: the raster belongs here".  So a compositor draws `chrome`,
+reserves `image_box`, and puts the image widget in the hole, and gets the posture whole.
+
+`chrome` is DERIVED from `rows` and never the reverse, which is why adding it moved no frame in
+this directory.  For the refusing postures `image_box` is `None` and `chrome` IS `rows`: there is
+no glass, so there is no hole to cut -- and `None` rather than an empty rectangle, because a
+language that refuses has nowhere to put an image, which is not the same as having a place of no
+size.  The `image box` column below is the rectangle at the frames' own {w}x{h} geometry.
+
+| language | posture | frame | ink | raster | image box |
+|---|---|---|---|---|---|
 """
 
 
@@ -229,14 +252,23 @@ def surfaces_index() -> str | None:
         grid = f.read_text(encoding="utf-8").splitlines()
         total = sum(len(r) for r in grid) or 1
         ink = sum(1 for r in grid for c in r if c != " ") / total * 100
-        res = LG.kit(n).raster_region(_probe(), 10, 4)
+        # AT THE FRAMES' OWN GEOMETRY, not the probe's.  A posture's image box
+        # depends on the RESERVED SIZE and on the kit, never on the image's
+        # content -- so a 2x2 probe measured at 116x26 gives exactly the
+        # rectangle the `.txt` beside it was rendered with, and quoting the
+        # probe's own 10x4 box would print a number that describes nothing a
+        # reader can see.
+        res = LG.kit(n).raster_region(_probe(), SHEET_W, SHEET_H)
+        box = ("**none**" if res.image_box is None
+               else "`{}, {} {}x{}`".format(*res.image_box))
         rows.append(
             f"| **{TH.THEMES[n].get('label', n)}** | `{res.posture}` | "
             f"`surface_{n}.txt` | {ink:.1f} % | "
-            f"{'**refused**' if res.pixels is None else 'sixel / TGP'} |")
+            f"{'**refused**' if res.pixels is None else 'sixel / TGP'} | "
+            f"{box} |")
     # the count is interpolated, not typed: a header that says "ten" over
     # eleven rows is the drift this whole file exists to stop
-    return (SURFACES_HEADER.format(n=len(TH.ORDER))
+    return (SURFACES_HEADER.format(n=len(TH.ORDER), w=SHEET_W, h=SHEET_H)
             + "\n".join(rows) + "\n")
 
 

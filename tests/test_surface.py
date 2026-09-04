@@ -15,8 +15,11 @@ diff and satisfy nothing else.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from PIL import Image
+from rich.console import Console
 from rich.text import Text
 
 from taskboard import language as LG
@@ -40,6 +43,41 @@ def probe(size=(64, 32)) -> Image.Image:
                   255 - (x * 255 // w)) if y < h // 2 else (20, 20, 20)
                  for y in range(h) for x in range(w)])
     return img
+
+
+def flipped_probe() -> Image.Image:
+    """`probe()` with its two halves exchanged — a DIFFERENT image of the SAME
+    size. Same size because the captioning postures put the figure's metrics
+    in their chrome, so a resize would move chrome legitimately and a test
+    that read the move as leakage would be measuring its own probe."""
+    w, h = 64, 32
+    img = Image.new("RGB", (w, h))
+    img.putdata([(20, 20, 20) if y < h // 2
+                 else (255 - (x * 255 // w),) * 3
+                 for y in range(h) for x in range(w)])
+    return img
+
+
+def sweep_image():
+    """The image `capture_languages.py --surface` photographs, or None.
+
+    Rebuilt here rather than imported for the reason that module's own header
+    gives for rebuilding it: importing it drags in a Textual app. Returning
+    None rather than raising is what lets the shipped-frame check SKIP with a
+    reason on a machine that has neither numpy nor the other repo."""
+    npy = Path(r"C:\Users\jjgh8\Github\tui-demos\lab\mbb_rho_final.npy")
+    if not npy.exists():
+        return None
+    try:
+        import numpy as np
+    except ImportError:
+        return None
+    paper, ink, scale = (248, 246, 240), (28, 32, 44), 6
+    g = np.clip(np.load(npy), 0, 1)[..., None]
+    rgb = (np.array(paper, np.uint8) * (1 - g)
+           + np.array(ink, np.uint8) * g).astype(np.uint8)
+    img = Image.fromarray(rgb)
+    return img.resize((img.width * scale, img.height * scale), Image.NEAREST)
 
 
 def cells(row: str) -> int:
@@ -426,3 +464,243 @@ def test_widget_is_none_without_a_transport_and_never_for_a_refusal():
         assert res.widget() is None
     ghost = LG.RenderResult("refuse", [" " * W] * H, None, (W, H))
     assert ghost.widget() is None, "a refusing posture may never yield pixels"
+
+
+# --------------------------------------------------------------------------
+# CHROME ON THE RASTER PATH (batch "chrome-on-raster", its AC-1 and AC-2)
+#
+# The numbering below belongs to THAT batch's spec, not to the AC-1..AC-7
+# sections above, which are the `surface` batch's. Said here because the two
+# sets of numbers meet in this one file and nothing else distinguishes them.
+#
+# The finding being closed (inc3 F-4): `rows` is chrome and image FUSED and
+# `pixels` is the glass alone, so a consumer that draws the true raster has
+# nothing to draw corgi's `[1] DISPLAY` box or blueprint's spans from. The
+# fix is `image_box` — where the glass went — and `chrome`, which is `rows`
+# with that rectangle punched out. `rows` itself does not move.
+# --------------------------------------------------------------------------
+
+GALLERY = Path(__file__).resolve().parents[1] / "prototypes" / "gallery"
+
+#: the sweep's own geometry, from `capture_languages.py`. Repeated rather than
+#: imported: importing that module pulls in numpy and a Textual app to read two
+#: integers, and it is those integers the shipped frames were rendered at.
+SHEET_W, SHEET_H = 116, 26
+SHEET_LABEL = "mbb rho final"
+
+
+def cellwise(row: str) -> list[tuple[str, str]]:
+    """A markup row as a list of (character, resolved style) per CELL.
+
+    Comparing rendered rows by their markup strings would call two rows
+    different because one says `[/]` where the other says `[/red]`. What a
+    reader sees is the cell, so the cell is what is compared — and the style
+    is carried along because these rows are half-blocks, whose glyph is `▀`
+    everywhere and whose entire content is colour."""
+    t = Text.from_markup(row)
+    return [(t.plain[i], str(t.get_style_at_offset(Console(), i)))
+            for i in range(len(t.plain))]
+
+
+def boxed(res) -> tuple[int, int, int, int]:
+    assert res.image_box is not None, f"{res.posture} has no image box"
+    return res.image_box
+
+
+@pytest.mark.parametrize("name", DECLARED)
+def test_chrome_is_rows_with_the_image_cells_punched_out(name):
+    """AC-1, cell by cell. Inside `image_box` every chrome cell is the hole;
+    outside it every chrome cell is the SAME cell `rows` drew — character and
+    style. That second half is the load-bearing one: a `chrome` that redrew
+    the frame from its own idea of the language would satisfy "there is a
+    frame" and could still disagree with the rendering it claims to describe.
+    """
+    res = LG.kit(name).raster_region(probe(), W, H, label=SHEET_LABEL)
+    if res.posture == "refuse":
+        pytest.skip("refuse has no box; asserted by its own test")
+    x, y, bw, bh = boxed(res)
+    assert len(res.chrome) == H, "chrome lost a row of the reserved rectangle"
+    bad = [(i, cells(r)) for i, r in enumerate(res.chrome) if cells(r) != W]
+    assert not bad, f"{name}: chrome rows not {W} cells wide: {bad}"
+
+    for i, (crow, rrow) in enumerate(zip(res.chrome, res.rows)):
+        c, r = cellwise(crow), cellwise(rrow)
+        assert len(c) == len(r) == W
+        inside = range(x, x + bw) if y <= i < y + bh else range(0, 0)
+        for j in range(W):
+            if j in inside:
+                assert c[j][0] == LG.RASTER_HOLE, (
+                    f"{name}: chrome[{i}][{j}] is inside the image box and is "
+                    f"{c[j][0]!r}, not the hole")
+            else:
+                assert c[j] == r[j], (
+                    f"{name}: chrome[{i}][{j}] is outside the image box and "
+                    f"differs from rows: {c[j]!r} != {r[j]!r}")
+
+
+@pytest.mark.parametrize("name", DECLARED)
+def test_the_image_box_names_the_image_and_nothing_else(name):
+    """The box is only worth having if it is TRUE, and "true" is checkable
+    without trusting any glyph alphabet: render the same region twice with two
+    DIFFERENT images of the same size, and the cells that move are the image.
+
+    Every cell that moves must lie inside the box — a box that were too small
+    or misplaced would leak — and cells inside it must actually move, or the
+    box would be a claim about a region that carries nothing. The two probes
+    are the same SIZE on purpose: swiss captions its figure's metrics and
+    blueprint spans them, so a different-sized image would legitimately change
+    chrome outside the box and the check would be measuring the wrong thing.
+    """
+    kit = LG.kit(name)
+    a = kit.raster_region(probe(), W, H, label=SHEET_LABEL)
+    b = kit.raster_region(flipped_probe(), W, H, label=SHEET_LABEL)
+    if a.posture == "refuse":
+        assert [cellwise(r) for r in a.rows] == [cellwise(r) for r in b.rows], (
+            f"{name} refused and still tracked the image")
+        return
+    x, y, bw, bh = boxed(a)
+    ca = [cellwise(r) for r in a.rows]
+    cb = [cellwise(r) for r in b.rows]
+    outside = [(i, j) for i in range(H) for j in range(W)
+               if not (y <= i < y + bh and x <= j < x + bw)
+               and ca[i][j] != cb[i][j]]
+    assert not outside, (
+        f"{name}: the image reached cells OUTSIDE image_box {a.image_box}: "
+        f"{outside[:6]} — the box does not name the glass")
+    moved = sum(1 for i in range(y, y + bh) for j in range(x, x + bw)
+                if ca[i][j] != cb[i][j])
+    # A FLOOR, NOT A TARGET, and it cannot be "all of it": naught's lattice
+    # draws unlit grid air INSIDE the image (that air is the posture's whole
+    # commitment) and a duotone maps many source values onto one cell, so a
+    # correct box legitimately holds cells that two different images agree on.
+    # Measured across the eight rendering postures at this size on 2026-09-04:
+    # naught 88/192 is the floor, every other posture is 88-96 %. A quarter
+    # sits clear of the real minimum and still fails a box that names nothing.
+    assert moved > bw * bh // 4, (
+        f"{name}: only {moved} of {bw * bh} cells inside image_box changed "
+        f"when the image did — the box does not name the glass either")
+
+
+def test_refusing_postures_have_no_box_and_their_chrome_is_the_rendering():
+    """AC-2. `None`, never a zero-size rectangle, and `chrome` is `rows`
+    ITSELF — the same object, because there is nothing to derive: no glass
+    means no hole, and a copy would only invite one of the two to drift."""
+    for name in ("ledger", "solari"):
+        res = LG.kit(name).raster_region(probe(), 40, H, label=SHEET_LABEL)
+        assert res.posture == "refuse"
+        assert res.image_box is None, (
+            f"{name} refuses the image and still offered a box: "
+            f"{res.image_box!r}")
+        assert res.chrome is res.rows, (
+            f"{name}: a refusing posture's chrome is its rendering")
+
+
+#: THE ONE PAIR OF POSTURES THAT SHARE A FRAME, named rather than skipped.
+#: `untinted` and `lattice` are both full-bleed and frameless — their image box
+#: is the whole reserved rectangle — so their chrome is nothing but holes and
+#: the two are identical by construction, for every language. That is not a
+#: hole in the mutation check, it is the check reporting a real property: the
+#: postures differ entirely in what they do to the GLASS (`nord` hands the
+#: pixels over untouched, `naught` quantises them onto its dot grid) and not at
+#: all in what they draw around it, because neither draws anything around it.
+#: Measured over all eleven languages on 2026-09-04: this is the ONLY pair
+#: whose chrome collides, and no language's own posture collides with any other
+#: except through it.
+FRAME_TWINS = frozenset({"untinted", "lattice"})
+
+
+@pytest.mark.parametrize("name", DECLARED)
+def test_mutation_changes_the_chrome_too(name):
+    """AC-5's limb. The 77-swap table above proves the token is dispatched;
+    this proves it reaches the SURFACE THE FRAME IS ON. Without it a posture
+    could differ from every other only in its glass and still be reported as a
+    distinct posture to a consumer that draws chrome — which is precisely the
+    consumer F-4 exists for.
+
+    The `FRAME_TWINS` exception is NAMED rather than skipped: a skip would
+    hide the day a third posture went frameless by accident. Here, a collision
+    with any posture outside that pair fails, and a collision *within* it is
+    asserted to still be there — so the exception cannot silently widen."""
+    kit_probe = probe()
+    original = THEMES[name]["surface"]
+
+    def chrome_of(posture: str) -> str:
+        THEMES[name]["surface"] = posture
+        return "\n".join(
+            LG.kit(name).raster_region(kit_probe, W, H, label="fig").chrome)
+
+    try:
+        got = {p: chrome_of(p) for p in LG.LIVE_SURFACES}
+    finally:
+        THEMES[name]["surface"] = original
+
+    for other in (p for p in LG.LIVE_SURFACES if p != original):
+        collided = got[other] == got[original]
+        twins = {original, other} == FRAME_TWINS
+        if twins:
+            assert collided, (
+                f"{name}: {original!r} and {other!r} are the declared frame "
+                f"twins and their chrome now DIFFERS — one of them grew a "
+                f"frame, and the exception above is out of date")
+        else:
+            assert not collided, (
+                f"{name}: swapping surface {original!r} -> {other!r} left the "
+                f"CHROME identical — the frame does not follow the token")
+
+
+@pytest.mark.parametrize("name", DECLARED)
+def test_no_language_can_draw_the_hole_itself(name):
+    """The sentinel only means "do not paint" if nothing else can say it. Every
+    glyph these languages draw comes from a declared alphabet and none of them
+    reaches the Private Use Area — asserted rather than assumed, because the
+    obvious sentinel (a space) fails exactly this check: swiss pads its gutter
+    with real spaces."""
+    res = LG.kit(name).raster_region(probe(), W, H, label=SHEET_LABEL)
+    assert LG.RASTER_HOLE not in text_of(res), (
+        f"{name} drew the transparent sentinel as ordinary content")
+
+
+@pytest.mark.parametrize("name", DECLARED)
+def test_chrome_preserves_the_frame_the_shipped_capture_shows(name):
+    """AC-1 against the ARTEFACT, not only against a synthetic probe.
+
+    `surface_<lang>.txt` is what a reader of the skill actually looks at, and
+    the whole point of F-4 is that the frame visible THERE — corgi's boxed
+    `[1] DISPLAY`, blueprint's `360px`/`120px` spans, swiss's hairline and
+    caption — never reached the raster path. So the check is run against that
+    file: at the sweep's own geometry, `rows` must be the frame the capture
+    shows, and every cell of it that is not glass must survive into `chrome`.
+
+    Skipped, loudly, when the sweep's inputs are absent: the test image is a
+    `.npy` in another repo and numpy is not a dependency of this package."""
+    img = sweep_image()
+    if img is None:
+        pytest.skip("sweep image unavailable (numpy or the .npy is missing)")
+    shipped = GALLERY / f"surface_{name}.txt"
+    if not shipped.exists():
+        pytest.skip(f"{shipped.name} not captured; run capture_languages.py "
+                    f"--surface")
+    kit = LG.kit(name)
+    res = kit.raster_region(img, SHEET_W, SHEET_H, label=SHEET_LABEL)
+    head = kit.sect("SURFACE", f"{res.posture} - {img.width}x{img.height} px",
+                    SHEET_W, SHEET_H)
+    grid = shipped.read_text(encoding="utf-8").splitlines()
+
+    # the sheet is `head + rows`, drawn in a Static with one cell of padding
+    frame = [grid[len(head) + i][1:1 + SHEET_W] for i in range(SHEET_H)]
+    drawn = [Text.from_markup(r).plain for r in res.rows]
+    assert frame == drawn, (
+        f"{name}: the shipped capture is not what raster_region renders — "
+        f"the frames are stale, or the geometry moved")
+
+    holes = [Text.from_markup(r).plain for r in res.chrome]
+    if res.image_box is None:
+        assert holes == frame, f"{name} refused; chrome is the frame"
+        return
+    x, y, bw, bh = res.image_box
+    for i in range(SHEET_H):
+        keep = (frame[i] if not (y <= i < y + bh)
+                else frame[i][:x] + LG.RASTER_HOLE * bw + frame[i][x + bw:])
+        assert holes[i] == keep, (
+            f"{name}: chrome row {i} is not the shipped frame with the glass "
+            f"punched out")
