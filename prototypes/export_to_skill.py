@@ -39,6 +39,8 @@ import inspect
 import sys
 from pathlib import Path
 
+from rich.text import Text
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
@@ -196,7 +198,9 @@ SHEET_W, SHEET_H = 116, 26
 #: its box WITHOUT the label therefore printed `0, 1 116x24` beside a frame
 #: rendered at `0, 2 116x23` -- the table describing a render that is not the
 #: one it names, which is precisely what `surfaces_index()`'s own comment
-#: promises it does not do. Caught in the STAGED export, before shipping.
+#: promises it does not do. Caught in the STAGED export, before shipping --
+#: by a person reading the table, not by any check (F-12). `check_box_
+#: matches_shipped()` below is that check.
 SHEET_LABEL = "mbb rho final"
 
 SURFACES_HEADER = """# The surface axis, as the reference implementation renders it
@@ -237,13 +241,104 @@ size.  The `image box` column below is the rectangle at the frames' own {w}x{h} 
 """
 
 
+#: the sweep's own image SIZE (`capture_languages.py`'s `test_image()`: a
+#: 20x60 field at `MBB_SCALE=6`).  Repeated for the same reason `SHEET_LABEL`
+#: is: a flat probe of THIS size reproduces the dimension captions the
+#: shipped frames actually show -- blueprint's `360px` span, ledger's
+#: `width`/`height` exhibit rows -- because those read `img.size`, never a
+#: pixel value, and reproducing them is what lets `check_box_matches_shipped`
+#: compare against the shipped `.txt` without numpy or the other repo's
+#: `.npy`. Content stays flat: nothing this file compares reads a pixel.
+IMG_W, IMG_H = 360, 120
+
+
 def _probe():
-    """A 2x2 image is enough to ask a posture whether it refuses.  The sweep's
-    real image lives in `capture_languages.py`, which this file deliberately
-    does not import -- importing it would pull in a Textual app and numpy to
-    write a markdown table."""
+    """A flat `IMG_W`x`IMG_H` image -- enough to ask a posture what it does
+    (posture, image box, and every caption that reads `img.size`) without
+    the real sweep image. The sweep's real image lives in
+    `capture_languages.py`, which this file deliberately does not import --
+    importing it would pull in a Textual app and numpy to write a markdown
+    table."""
     from PIL import Image
-    return Image.new("RGB", (2, 2), (128, 128, 128))
+    return Image.new("RGB", (IMG_W, IMG_H), (128, 128, 128))
+
+
+class SurfaceIndexMismatch(RuntimeError):
+    """SURFACES.md's `image box` column would print a rectangle that
+    disagrees with the frame it names -- F-12."""
+
+
+def _plain(rows: list[str]) -> list[str]:
+    return [Text.from_markup(r).plain for r in rows]
+
+
+def _derive_glass_box(shipped: list[str], chrome: list[str]
+                       ) -> tuple[int, int, int, int] | None:
+    """Where `shipped` (the artefact in `prototypes/gallery/`) and `chrome`
+    (this kit's own hole, at the same geometry) DISAGREE -- glass, located by
+    comparing two texts, never by reading `image_box` back to itself, which
+    would let a bug in `image_box` mark its own homework.
+
+    `None` if the two texts agree everywhere (the `refuse` postures, whose
+    `chrome` IS `rows`, so there is nothing to disagree about). Raises if the
+    disagreeing cells are not a solid rectangle -- a check that only ever
+    diffs two numbers already assumes they describe a rectangle, and a hole
+    that leaked into a caption row would be exactly that assumption unpaid
+    for."""
+    cells = {(i, j) for i, (s, c) in enumerate(zip(shipped, chrome))
+             for j, (sc, cc) in enumerate(zip(s, c)) if sc != cc}
+    if not cells:
+        return None
+    ys, xs = [i for i, _ in cells], [j for _, j in cells]
+    y, x = min(ys), min(xs)
+    bh, bw = max(ys) - y + 1, max(xs) - x + 1
+    expected = {(i, j) for i in range(y, y + bh) for j in range(x, x + bw)}
+    if cells != expected:
+        raise SurfaceIndexMismatch(
+            f"the glass cells the shipped frame and chrome disagree on are "
+            f"not a rectangle: {sorted(cells)}")
+    return (x, y, bw, bh)
+
+
+def check_box_matches_shipped(n: str, gallery: Path = GALLERY):
+    """F-12. Verify that the box `surfaces_index()` is about to print for
+    `surface_<n>.txt` is the box that shipped frame actually shows, before
+    the table repeats a claim nothing checked.
+
+    Re-derives the sheet's head offset from the frame the same way
+    `tests/test_surface.py::test_chrome_preserves_the_frame_the_shipped_capture_shows`
+    does (`head = kit.sect(...)`): the note text passed to `sect()` does not
+    change `head`'s LENGTH for any of the eleven kits -- only `title` (always
+    "SURFACE" here) and the fixed `SHEET_W`/`SHEET_H` do -- so a placeholder
+    note re-derives the same offset the real capture used, without needing
+    the sweep's own image. Then it finds the rectangle where that shipped
+    frame and this kit's own `chrome` disagree (`_derive_glass_box`) and
+    compares it to `image_box` itself -- the original defect: a call to
+    `raster_region()` made WITHOUT `label=` gave blueprint a DIFFERENT
+    geometry (one row shorter caption, glass one row lower) than the label'd
+    call that produced the shipped `surface_blueprint.txt`, so the printed
+    `0, 1 116x24` sat beside a frame captured at `0, 2 116x23` and nothing
+    noticed. `refuse` postures (ledger, solari) show no disagreeing cells;
+    their `image_box` must be `None` too, checked the same way.
+
+    Raises `SurfaceIndexMismatch` -- an ERROR, not a warning -- naming both
+    rectangles, rather than let the table ship a description of a frame it
+    does not name. Returns the `raster_region()` result once it agrees, so
+    `surfaces_index()` need not render the sheet a second time."""
+    kit = LG.kit(n)
+    f = gallery / f"surface_{n}.txt"
+    grid = f.read_text(encoding="utf-8").splitlines()
+    head = kit.sect("SURFACE", "probe", SHEET_W, SHEET_H)
+    shipped = [grid[len(head) + i][1:1 + SHEET_W] for i in range(SHEET_H)]
+    res = kit.raster_region(_probe(), SHEET_W, SHEET_H, label=SHEET_LABEL)
+    derived = _derive_glass_box(shipped, _plain(res.chrome))
+    if derived != res.image_box:
+        raise SurfaceIndexMismatch(
+            f"{n}: SURFACES.md would print image_box={res.image_box!r} for "
+            f"{f.name}, but the shipped frame's glass is at {derived!r} -- "
+            f"the table would describe a frame it does not name. Re-run "
+            f"`capture_languages.py --surface` and re-export.")
+    return res
 
 
 def surfaces_index() -> str | None:
@@ -266,9 +361,10 @@ def surfaces_index() -> str | None:
         # content -- so a 2x2 probe measured at 116x26 gives exactly the
         # rectangle the `.txt` beside it was rendered with, and quoting the
         # probe's own 10x4 box would print a number that describes nothing a
-        # reader can see.
-        res = LG.kit(n).raster_region(_probe(), SHEET_W, SHEET_H,
-                                      label=SHEET_LABEL)
+        # reader can see. F-12: `check_box_matches_shipped` VERIFIES that
+        # rectangle against the shipped frame before it is trusted to print
+        # anything -- an ERROR, not a warning, aborts the export on drift.
+        res = check_box_matches_shipped(n)
         box = ("**none**" if res.image_box is None
                else "`{}, {} {}x{}`".format(*res.image_box))
         rows.append(
