@@ -37,10 +37,13 @@ from .views import valid_url
 # detects the terminal's graphics support by QUERYING the terminal, which only
 # works before Textual seizes it. A lazy import inside the viewer would run
 # after app start -> detection fails -> silent low-res half-cell fallback.
-try:
-    from textual_image.widget import Image as AutoImage
-except Exception:          # pragma: no cover - dependency present in prod
-    AutoImage = None
+# ...and imported FROM `raster.py` rather than from the library directly, so
+# the Sixel probe has exactly one door (L-42). `raster.py` guards that import:
+# on Windows `NUL` is a character device, `isatty()` answers True for it, and
+# an unguarded probe writes a device-attributes query into the void and blocks
+# on stdin forever. A second direct import here would reopen the hole for
+# whichever module Python happened to load first.
+from .raster import AutoImage          # noqa: F401  (re-exported for viewers)
 
 NONE_VALUE = "__none__"
 

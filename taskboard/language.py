@@ -1603,10 +1603,45 @@ class Kit:
         `display` posture. Base: box drawing, ground to ink."""
         return self.DISPLAY_BOX, self.t.get("ground", "#000000"), self.c["ink"]
 
-    def display_label(self, idx: int = 1) -> str:
+    def display_label(self, idx: int = 1, label: str = "") -> str:
         """The label beside a display. `numbered` languages number it — the
-        token decides, not the class."""
-        return f"[{idx}] DISPLAY" if self.numbered else "DISPLAY"
+        token decides, not the class.
+
+        THE LEGEND IS THE CALLER'S AND THE NOTATION IS THE LANGUAGE'S (L-33,
+        and SCOPE's F-1 which found it by shipping on it). §3b makes this
+        language's numbering FUNCTIONAL — "in a TUI the numbers are the
+        keybindings" — and a keybinding belongs to whoever owns the keymap,
+        which is never the kit. Hardcoding `[1] DISPLAY` therefore spent a key
+        on every consumer's behalf: SCOPE's `[1]` cycles its SOURCE, and the
+        legend saying `DISPLAY` over it was that app's luck rather than this
+        kit's doing.
+
+        So the caller's `label` supplies BOTH pieces, separated the way a
+        keymap is written. `label` is split once on whitespace: an ASCII run
+        of digits in front is the BINDING, the rest is the WORD; anything else
+        is a word only and the language keeps its own index. A `numbered`
+        language letters `[binding] WORD`, one that is not letters `WORD` and
+        DROPS the binding — a language with no notation for a keybinding must
+        not grow one out of a caller's string, which is L-33's tie working
+        rather than a case this forgot.
+
+        `"7 SOURCE"` -> `[7] SOURCE`. `"mbb rho final"` -> `[1] MBB RHO
+        FINAL`. No label at all -> `[1] DISPLAY`, byte-identical to before.
+
+        THE KNOWN EDGE, recorded rather than defended against: a legend that
+        legitimately opens with a number (`"2 PASS"` meaning two passes) is
+        read as a binding. `"3D FIELD"` is safe — `"3D"` is not a run of
+        digits — and the word is the caller's, so it can write `"PASS 2"`.
+
+        `isascii()` guards `int()`: `"²".isdigit()` is True and `int("²")`
+        raises, and this argument is caller text."""
+        head, _, rest = str(label).strip().partition(" ")
+        if head.isascii() and head.isdigit():
+            idx, word = int(head), rest.strip()
+        else:
+            word = str(label).strip()
+        word = word.upper() or "DISPLAY"
+        return f"[{idx}] {word}" if self.numbered else word
 
     def depth_ground(self) -> str:
         """The +1 grey STEP the `depth` posture separates on. Read off the
@@ -7771,7 +7806,7 @@ def _surface_display(k, img, w, h, label=""):
     _, low, high = k.display_chrome()
     pix = RS.duotone(img, low, high)
     iw, ih = max(1, w - 2), max(1, h - 2)
-    lab = f" {k.display_label()} "[:max(0, w - 4)]
+    lab = f" {k.display_label(label=label)} "[:max(0, w - 4)]
     rule = k["accent"] if k.numbered else k.rule_color
     # `mark()` for the label, `len()` for the arithmetic. The label carries a
     # literal `[1]` and this row is markup: escaping changes its CHARACTER
@@ -8007,15 +8042,22 @@ LIVE_SURFACES = ("untinted", "lattice", "display", "tint",
 # against. An optional argument no implementation reads is a comment; a
 # DECLARED refusal is an implementation reading the argument and rejecting it,
 # and the difference is that one of them can be wrong out loud.
+# RETRACTED 2026-09-04 (kits-learn-2): `"display"` was in this table, excused
+# by "the label beside a display belongs to the CONTROL, and the language
+# numbers it (`display_label`) rather than letting a caller name it — an OP-1
+# screen's legend is the machine's". SCOPE shipped on it and proved that
+# commitment HALF WRONG: it is true of the NOTATION and false of the CONTENT.
+# The number in `[1] DISPLAY` is a keybinding (§3b: "the numbers ARE the
+# keybindings"), and a keybinding is the caller's — so the kit was not keeping
+# a mark, it was spending a key. The notation stayed the language's; only the
+# legend moved. A declared refusal that can be wrong out loud is the point of
+# this table, and this is the table being wrong out loud.
 LABEL_REFUSED = {
     "untinted": "the environment's rules stop at the region's edge and this "
                 "posture draws no frame at all — there is nowhere to letter",
     "lattice":  "the whole region is the panel and the unlit dots are the "
                 "picture's dark half; a caption would be a lit dot that is "
                 "not part of the picture",
-    "display":  "the label beside a display belongs to the CONTROL, and the "
-                "language numbers it (`display_label`) rather than letting a "
-                "caller name it — an OP-1 screen's legend is the machine's",
     "frame":    "\"a raw image at full strength, hard edge, inside a heavy "
                 "box — no smoothing, NO CAPTION softening it\"",
     "depth":    "the figure is separated by one grey step and by nothing "
