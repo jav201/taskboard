@@ -1,106 +1,122 @@
-# Quick Spec — taskboard · batch "kits-learn" (L-31, L-32, L-34)
+# Quick Spec — taskboard · batch "kits-learn-2" (L-33/F-1, L-42)
 
-**Batch:** `2026-09-04-fastflow-08` · **Base ref:** `ea64fdf` (branch `kanban-variants`, tree clean at Phase A) ·
-Predecessor `chrome-on-raster` (F-4) archived 2026-09-04 to `archive/spec-20260904-chrome-on-raster-closed.md`,
-verbatim and with its §8 unfilled — the same way `surface` and `prev` were archived before it. Language: English.
+**Batch:** `2026-09-04-fastflow-09` · **Base ref:** `d58fa07` (branch `kanban-variants`, tree clean at Phase A) ·
+Predecessor `kits-learn` closed 2026-09-04, §8 filled, archived to `archive/spec-archive-kits-learn.md` —
+verbatim except one dated amendment recording that `inc11.md` closed **F-12** after §8 was written.
+Language: English. Increments continue the worktree's single sequence: **inc12**, **inc13**.
 
-**Input:** three findings written by the agent that made `tui-demos/lab-emersio` carry Corgi and Blueprint —
-`tui-demos/.fast-dev-flow/LIMITS.md` **L-31**, **L-32**, **L-34**. Each ends in a "For the skill" paragraph, and
-that paragraph is the requirement. This batch is the reference kit *learning from its first outside consumer*:
-every item is a gap the lab found by trying to use the language and having to work around it.
+**Input:** two defects that **real consumer apps found by running**, both approved by the operator on
+2026-09-04. Where `kits-learn` learned from a lab that *read* the kit, this batch learns from three demo
+apps that *shipped* on it — SCOPE, ATLAS, LOOM — and one of the two cost 1200 seconds of wall clock
+before anyone knew what it was.
+
+- **`tui-demos/.fast-dev-flow/LIMITS.md` L-33** and **`apps/scope/.fast-dev-flow/03-increments/inc1.md`
+  §7 item 1 (F-1)** — the display posture drops the argument it documents.
+- **`tui-demos/.fast-dev-flow/LIMITS.md` L-42** and **`apps/scope/.../inc2.md` §7 items 1–2 (F-4)** — the
+  Sixel capability probe at import hangs any Windows process whose stdout is `NUL`.
 
 ---
 
 ## 1. Objective (1 line)
 
-Close the three gaps the first non-board consumer of `language.py` hit — a posture that ignores the argument it is
-given (L-31), a frame mechanism that names its first caller's domain (L-32), and a language with no answer for a
-series (L-34) — so that emersio-lab's two workarounds become **deletable** and `LANGUAGES.md` §11 becomes **true**.
+Stop the reference kit from **claiming a keybinding it does not own** (a display legend hardcoded to
+`[1] DISPLAY` in every app) and from **hanging its own consumers at import** (a terminal probe fired at
+a character device that never answers), so that SCOPE's two recorded-not-fixed findings become fixed in
+the kit rather than worked around in every app that ever imports it.
 
 ---
 
 ## 2. User stories
 
-- As **any app that is not taskboard**, I want blueprint's title block to take my identity and my state as *data*,
-  so that I do not have to invent a fake mode strip or rebuild the language's single most identifying mark.
-- As **a consumer that renders a real figure**, I want the `tint` posture to say what the pixels *are* beside what
-  they *measure*, so that I stop drawing a third dimension span the kit should have drawn.
-- As **an app with a convergence curve**, I want blueprint to have a declared answer for a series, so that I either
-  get the language's own trace or a refusal I can read — and not a chart axis in glyphs the language forbids.
-- As **the operator**, I want nothing that already renders to move except where a decision moves it on purpose.
+- As **any app that draws a corgi display**, I want the legend beside the glass to say what MY control
+  does and to carry the key I actually bound it to, so that the kit stops spending `[1]` on my behalf.
+- As **a headless consumer** — a test runner, a bench, a CI job, a `--dump-frame` invocation — I want to
+  `import taskboard.language` and get control back, so that "the kit is also a library" is true rather
+  than aspirational.
+- As **the operator**, I want the eleven kits' unlabelled renders to be exactly what they were, and every
+  frame that moves to be named in this file before it moves.
 
 ---
 
 ## 3. Acceptance criteria (observable)
 
-- [ ] **AC-1 · L-31 · the posture reads the argument, and the argument is tested everywhere.**
-  `_surface_tint` uses `label` when it is given: the sheet carries a **third span above its two**, stating what the
-  pixels *are* (`├── 60 X 20 CELLS ──┤`) beside what they *measure* (`480px` / `160px`), built through the kit's own
-  `dimension()` — one span mechanism, never a second. `image_box` moves down one row with it, so `chrome` still
-  punches exactly the glass. With **no** label the render is byte-identical to `ea64fdf`.
-  Plus the general rule, as a test: **`test_every_optional_argument_is_read_or_declared_refused`** — for every
-  declared posture, `raster_region(img, w, h, label=X)` either differs from `raster_region(img, w, h)`, or the
-  posture appears in a **declared, in-code refusal registry** with the commitment that refuses it. A posture in
-  neither set fails. (An optional argument no implementation reads is a comment — and a *declared* refusal is an
-  implementation reading it.)
-- [ ] **AC-2 · L-32 · the frame takes content as data.** A new `Blueprint.stamp(rows, w, strip=None)` takes the
-  block's content as **rows of `(caption, value, knocked)` cells** and its selection as an **optional extra**
-  (`strip=(options, active)`, `None` for an app with no mode strip). `title_block(options, active, w)` survives as a
-  **thin adapter** over it. Observable: the 22 board/gallery frames are **byte-identical** to the baseline, and a
-  test renders a stamp from cells alone — no mode strip, two body rows — and asserts it draws the two rules, the
-  knockout, and **no `REG` marks** (nothing to register when nothing is selected).
-- [ ] **AC-3 · L-34 · the language has a declared answer for a series, and it is implemented.** Decision and
-  reasoning in **§6.1**. Implemented as `Blueprint.series(...)`, drawn **only** from the ten permitted glyphs — a
-  test asserts the rendered character set is a subset of blueprint's declared alphabet and that `│` and `└` are
-  **absent**. The kit's class docstring stops saying the language has no answer, which is what makes §11's amended
-  paragraph true.
-- [ ] **AC-4 · nothing else moves.** The **44** named frames (22 board/gallery `.txt` + 11 `surface_*.txt` + 11
-  `surface_*.svg`) are byte-identical to the baseline swept at `ea64fdf` **before any edit**
-  (`.fast-dev-flow/baseline-kits/`, 66 files, taken 2026-09-04), **except** the frames named in §6.2 — each named
-  there in advance, with the reason.
-- [ ] **AC-5 · the mutation table stays green.** The 77-swap `test_mutation_changes_the_render` table and its chrome
-  limb still pass, with `FRAME_TWINS` neither widened nor narrowed.
-- [ ] **AC-6 · the workarounds are deletable, and it is proved by rendering.** In a **temp copy** of
-  `tui-demos/lab-emersio` (`tui-demos` is READ-ONLY this batch), `_blueprint_titleblock` and `_cell_span` are
-  deleted, replaced by calls to `stamp()` and by the label `raster_region()` now reads, and the lab's blueprint
-  sheet still renders **the same sheet**: the same content in the same cells, the block docked bottom-right, two
-  rules and exactly one knockout, no glyph outside blueprint's ten.
-  **It will NOT be byte-identical, and that is the finding rather than a miss.** The lab's block padded its rules
-  by 2 cells (`bw = max(plain) + 2`) and put 3 spaces where the kit's `GAP` is 2 — hand arithmetic the kit already
-  owned, which is exactly what L-32 says a second implementation costs. The diff is reported cell-by-cell and every
-  differing cell must be attributable to the lab adopting the kit's arithmetic; a difference in **content** or in
-  **marks** fails this AC.
-- [ ] **AC-7 · the export is staged, not shipped.** `export_to_skill.py` is run into a **staging directory**; the
-  diff of the generated `assets/languages.py` and `assets/languages/SURFACES.md` against the live skill is reported.
-  The real export stays the orchestrator's call.
+- [ ] **AC-1 · L-33/F-1 · the display posture reads `label`, and the caller's mark reaches the chrome.**
+  `_surface_display` passes `label` to `display_label()`, which letters the caller's legend into the
+  language's own notation. Observable, and it is a **property test rather than a mutation test**:
+  `raster_region(img, w, h, label="7 SOURCE").chrome` for corgi contains the substring `[7] SOURCE` —
+  the caller's binding AND the caller's word, in the chrome the compositor draws. A test that only
+  asserted `told != bare` would prove the token is READ; only this proves it is read **correctly**.
+  With **no** label the render is byte-identical to `d58fa07` for all eleven languages.
+- [ ] **AC-2 · the `numbered` token stays in charge.** A language whose `numbered` token is **off**,
+  handed the same `"7 SOURCE"`, draws `SOURCE` and **no bracket** — the binding is dropped rather than
+  lettered, because a language with no notation for a keybinding must not grow one from a caller's
+  string. This is **L-33's tie working**, and it is asserted, not assumed.
+
+  **CORRECTION TO THE ACCEPTANCE AS FIRST WRITTEN (Phase B, before any edit).** This AC originally said
+  *"industrial shares `display` and is not `numbered`"*. **That is false.** `numbered` is True for corgi,
+  industrial **and** ledger, and the two languages that use the `display` posture are corgi and
+  industrial — so **both are numbered** and no shipped language exercises the unnumbered limb. The AC is
+  therefore asserted by **swapping the token**, exactly the idiom `test_mutation_changes_the_render`
+  already uses on this file: `numbered` is a plain theme token (`Kit.numbered` is
+  `bool(self.t.get("numbered"))`), so a kit with it turned off is a real kit and not a mock. Recorded
+  here rather than quietly re-scoped, and it changes §6.2: `surface_industrial.*` moves for **AC-1**'s
+  reason like corgi's, not for AC-2's.
+- [ ] **AC-3 · the refusal that is now false is retracted, out loud.** `LABEL_REFUSED["display"]` is
+  **deleted**, and the deletion is the finding: `kits-learn`'s inc8 declared display's refusal on the
+  commitment *"the label beside a display belongs to the CONTROL, and the language numbers it rather
+  than letting a caller name it"*. The consumer proved that commitment **half wrong** — it is true of the
+  *notation* and false of the *content*, because the number is a keybinding and a keybinding is the
+  caller's. `test_every_optional_argument_is_read_or_declared_refused` then requires display's render to
+  move, and `test_the_declared_refusals_name_postures_that_exist` still passes.
+- [ ] **AC-4 · L-42 · importing the kit with `stdout=DEVNULL` returns.** A **subprocess** test runs
+  `python -c "import taskboard.language"` with `stdout=subprocess.DEVNULL` and asserts it returns within
+  **2 s**. This is the test that would have hung: it is the exact invocation that cost SCOPE two 600 s
+  runs. The probe fires only when stdout **and** stdin are real consoles — on Windows decided by
+  **`GetConsoleMode`** succeeding on the stream's handle (`NUL` is a character device, so `isatty()`
+  answers True for it and `GetConsoleMode` does not), on POSIX by `isatty()` alone (`/dev/null` is not a
+  tty there). On no answer, **no Sixel**.
+- [ ] **AC-5 · a real console still gets its capability.** A test drives the same selection path with the
+  console check and the library import **mocked** (named explicitly in the packet), and asserts the
+  transport comes back `"sixel"` — so the guard is proved to gate the probe rather than to kill it.
+  Plus the bound: the answer wait is capped at **≤200 ms** (`PROBE_BUDGET_S`).
+- [ ] **AC-6 · no API change, consumers untouched.** `TRANSPORT`, `raster_available()` and `AutoImage`
+  keep their names and meanings. `tui-demos` is **not edited**. `raster_available() == (TRANSPORT in
+  ("sixel","tgp"))` still holds and its existing test still passes.
+- [ ] **AC-7 · nothing else moves.** The 66 frames are byte-identical to the baseline swept at `d58fa07`
+  **before any edit** (`.fast-dev-flow/baseline-kits2/`), **except** the frames named in §6.2.
+- [ ] **AC-8 · the consumer check.** `python -X utf8 -m pytest apps/scope/tests -q` is run from the
+  `tui-demos` root, **read-only**, and its verbatim last line is in the packet. If SCOPE's frame would
+  change once it passes a label, the packet says so — the gallery's collector detects the drift by sha,
+  which is **the mechanism working** and not a regression.
 
 ---
 
 ## 4. Validation strategy
 
-`python -m pytest -q` is the gate for AC-1/2/3/5 (baseline at `ea64fdf`: **285 passed, 2 skipped, 4 warnings**).
-AC-4 is a byte comparison against `.fast-dev-flow/baseline-kits/`, refreshed by
-`python prototypes\capture_languages.py` and `... --surface` run **plain** — F-1 makes the board sweep red about one
-run in three (it took **3 runs** to get a green baseline here: `board_instrument.txt`, then `board_prism.txt`, then
-green), and F-8 blocks `--surface` when its output is redirected inside a compound command, so both are run alone
-and the count is recorded. AC-6 is a rendered diff from a temp copy of the lab. AC-7 is a directory diff. No test is
-skipped silently; the two already-skipping tests are the numpy/`.npy` sweep-image pair and they are named.
+`python -X utf8 -m pytest -q` in this worktree is the gate for AC-1/2/3/4/5/6. Baseline at `d58fa07`:
+**327 passed, 2 skipped, 4 warnings**. *The brief warned of a pre-existing environmental clipboard
+failure; it did not appear in the Phase-A baseline run, and that is recorded rather than assumed away.*
+AC-7 is a byte comparison against `.fast-dev-flow/baseline-kits2/`, refreshed by
+`python prototypes\capture_languages.py --surface` run **plain and alone** (F-8 blocks `--surface` when
+its output is redirected inside a compound command; F-1 makes the board sweep red about one run in
+three). AC-8 is a read-only pytest run in the other repo. No test is skipped silently; the two
+already-skipping tests are the numpy/`.npy` sweep-image pair and they are named.
 
 ---
 
 ## 5. Non-goals (what is OUT)
 
-- **A series mechanism for every language.** §6.1's decision is blueprint's. A `Kit.series()` base — the eleven-way
-  question of what each language does with a trace — is a batch of its own, and inventing it here would be the
-  eleven-language redesign this batch is not.
-- **Fixing F-1.** Still open, now with a fifth implicated frame (`board_instrument.txt`, new this batch). Recorded,
-  re-run around, not investigated.
-- **Any edit to `tui-demos`.** Read-only. AC-6's patch lives in a temp copy and is thrown away.
-- **The real export to `~/.claude/skills/tui-design/`**, and the hand-written `LANGUAGES.md` §11 rewrite — both are
-  the orchestrator's call. This batch produces the §11 replacement paragraph as *text in the increment*, staged, and
-  says plainly that it did not write it into the skill.
-- **The remaining LIMITS findings.** L-33 is explicitly "recorded rather than resolved" by its own author. L-35–L-37
-  are `tui-demos`' capture harness, not this repo's kits.
+- **Forking `textual_image`.** The probe is inside the library, at `textual_image.renderable`'s module
+  scope. This batch guards the *entry* to it and bounds the *wait*; it does not vendor or patch the
+  library's internals beyond the one documented seam, and §6.3 says exactly what stays unbounded.
+- **A new `raster_region` parameter.** The operator's decision for L-42 is explicitly *no API change*,
+  and AC-1 keeps `label: str` for the same reason: a second parameter would be a second thing every one
+  of the eleven postures has to have an answer for.
+- **Any edit to `tui-demos`.** Read-only. AC-8 runs its suite and reads its packets; it writes nothing.
+- **The real export to `~/.claude/skills/tui-design/`** — the orchestrator's call, as in every batch.
+- **Fixing F-1** (this repo's flaky board sweep) or **F-8**. Recorded, run around.
+- **The remaining LIMITS findings.** L-43–L-46 are `tui-demos`' capture harness and budget, not this
+  repo's kits.
 
 ---
 
@@ -111,56 +127,82 @@ skipped silently; the two already-skipping tests are the numpy/`.npy` sweep-imag
 
 **`security_required`:** `true` (one flag, narrow)
 
-**Risk summary:** the only surface is **caller text interpolated into a markup row**. `_surface_tint` starts reading
-a caller's `label`, and `stamp()` starts taking a caller's cell values — both land inside Textual markup, which is
-this module's documented pitfall A1: escaping changes a string's *character* count and not its *cell* count, so a
-mechanism that pads the escaped string hands back a rectangle one cell short. Rule: **width math before `mark()`,
-always**, the way `Blueprint._pad` already does it. `test_a_label_cannot_inject_markup_or_steal_a_cell` already
-parameterises over every declared posture and will now actually exercise `tint`; the stamp gets the same assertion.
+**Risk summary:** the same surface `kits-learn` flagged, on a **new row**. `_surface_display` starts
+interpolating caller text into a markup row that already carries a literal `[1]` — this module's
+documented pitfall A1: escaping changes a string's *character* count and not its *cell* count, so
+padding an escaped string hands back a rectangle one cell short. The existing code already does width
+math on the plain string and `mark()`s on the way out, and that order is **preserved, not re-derived**.
+`test_a_label_cannot_inject_markup_or_steal_a_cell` is parameterised over every language and will now
+genuinely exercise corgi and industrial for the first time — until this batch, display refused the
+label, so that test was asserting nothing about it. The Sixel guard *reduces* attack surface: it stops
+the process writing an escape sequence to, and reading bytes from, a handle it has not established is a
+terminal.
 
-### 6.1 · The L-34 decision — a **declared series mechanism**, not a renunciation
+### 6.1 · The L-33/F-1 decision — the legend is the caller's, the notation is the language's
 
-**Decision: blueprint gets a series, drawn as an ORDINATE DIMENSION STACK from a common datum.**
+SCOPE's own general form (`inc1.md` §7 item 1) is the requirement: *a language mechanism that draws a
+keymap-bound mark must take the binding from its caller, because the caller owns the keymap.*
 
-**Why not renunciation.** Ledger and Solari may renounce images because each has a *sentence* that forbids one:
-ledger's "a figure is audited, not shown" follows from double-entry, solari's "one shape, the row; an image cannot
-flip" follows from the machine it imitates. **Blueprint has no such sentence about a series, and its doctrine points
-the other way**: *"the frame stops CONTAINING and starts MEASURING"*, *"the only language here where the chrome IS
-the data-viz"*, *"Fits: anything spatial, anything with extents and tolerances."* A convergence curve is a sequence
-of extents. Renouncing plots would renounce the language's own declared subject, and it would be the first
-renunciation here adopted for lack of a glyph rather than out of a commitment. **A renunciation has to be a
-consequence of something the language believes; this one would only be a consequence of the alphabet being short.**
+**The rule:** `label` is split once on whitespace. If the first token is a run of digits it is the
+**binding**; the rest is the **word**. Otherwise the whole label is the word and the language keeps its
+own index. A `numbered` language letters `[binding] WORD`; one that is not numbered letters `WORD` and
+drops the binding on the floor. No label at all → the language's own default, unchanged.
 
-**Why the impossibility in L-34 is real and narrower than it reads.** L-34 is exactly right that `│` and `└` are
-unconstructable, and this batch does not smuggle them in. But what is unconstructable is a **conventional axis**,
-and *a series is not an axis*. A drawing office does not plot with an axis box; it draws a **schedule of ordinate
-dimensions from a common datum** — every sample a run from the same left terminator, its length the value, the
-figure standing on the run. Stack those rows and **the locus of the closing terminators IS the trace**: the curve is
-drawn in `┤`, the datum in `├`, the run in `─`, the off-scale flag in `╌`. The vertical the plot appears to need is
-never drawn — it is the column the terminators happen to fall in, which is precisely what an ordinate dimension
-looks like on paper. **Nothing is admitted to the ten glyphs, and nothing is boxed.**
+**Why a mini-syntax and not a second parameter.** Three alternatives were considered and rejected:
+(a) *the label replaces the legend verbatim* — then an unnumbered language handed `[7] SOURCE` draws
+brackets it has no notation for, which breaks the `numbered` token, the one thing L-33 says must stay in
+charge; (b) *the label is only the word, the index stays the kit's* — fixes half the defect and leaves
+`[1]` still spent by the kit, which is the half SCOPE named first; (c) *a new `idx` parameter on
+`raster_region`* — eleven postures each needing an answer for an argument ten of them refuse, to carry
+one integer that is already expressible in the string. The mini-syntax is one rule, it keeps the token
+authoritative, and it makes both halves reachable through the parameter that was already documented.
 
-**What it fixes that `dimension()` could not.** `dimension()` measures one quantity against a *declared* ceiling,
-because DATAVIZ law 2 forbids normalising a row to itself and a kit method is handed one row at a time. A series is
-the one case where the siblings ARE in hand — so `series()` may derive its ceiling, and therefore **must state it**,
-which on this sheet is a dimension. The scale becomes a mark on the drawing instead of an assumption, which is the
-same law arriving at the opposite mechanism because the input changed.
-
-**Cost of being wrong:** if the stack does not read as a trace at real width, the fallback is the renunciation, and
-it costs one method and one paragraph. That is cheap enough that implementing is the better way to find out.
+**Cost of being wrong:** an app whose legend legitimately starts with a number (`"3D FIELD"`) gets it
+read as a binding. `"3D"` is not a run of digits, so that exact case is safe; a label of `"2 PASS"`
+meaning "two passes" is not. Recorded as the known edge, and the mitigation is that the word is the
+caller's and it can write `"PASS 2"`.
 
 ### 6.2 · Frames that move on purpose (named in advance)
 
 | frame | why | which AC |
 | --- | --- | --- |
-| `surface_blueprint.txt` | the tint sheet gains its third span, because the sweep passes `label="mbb rho final"` | AC-1 |
-| `surface_blueprint.svg` | same render, other transport | AC-1 |
+| `surface_corgi.txt` | the sweep passes `label="mbb rho final"`; the legend becomes `[1] MBB RHO FINAL` | AC-1 |
+| `surface_corgi.svg` | same render, other transport | AC-1 |
+| `surface_industrial.txt` | same label; industrial is `numbered` too → `[1] MBB RHO FINAL` | AC-1 |
+| `surface_industrial.svg` | same render, other transport | AC-1 |
 
-**Two frames, and they move for L-31 rather than for L-34.** This is a **correction to the acceptance as briefed**,
-which permitted only "the frames your L-34 decision moves". L-34 moves **none**: no board or surface sheet draws a
-series, so `series()` adds a mechanism and changes no existing rendering. L-31 moves two, and it cannot not: the
-sweep hands `tint` a label, so a `tint` that reads its label renders differently *by definition* — that is the whole
-content of the finding. The other **42** frames stay byte-identical.
+**Four frames, and they cannot not move.** The surface sweep hands every language
+`SURFACE_LABEL = "mbb rho final"`, so a display posture that reads its label renders differently **by
+definition** — that is the whole content of the finding. `"mbb rho final"` has no leading integer, so
+corgi keeps index 1 and the `numbered` notation is still visible in the shipped frame. The other **62**
+frames stay byte-identical. No **board** frame moves: the board never calls `raster_region`.
+
+**Downstream, stated in advance:** `check_box_matches_shipped()` (inc11) compares the shipped frame
+against a fresh `raster_region(..., label=SHEET_LABEL)`, so it stays green **only if the recapture is
+done**. Skipping the recapture turns AC-7 into a `SurfaceIndexMismatch`, which is that check doing its job.
+
+### 6.3 · The L-42 decision — guard at the entry, bound at the seam, and say what is left
+
+The probe is **not ours**. The chain is `taskboard.raster → textual_image.widget →
+textual_image.renderable → sixel.query_terminal_support()`, and it runs at
+`textual_image/renderable/__init__.py` **module scope**, gated by that module's own
+`is_tty = sys.__stdout__ and sys.__stdout__.isatty()`.
+
+**The guard** is therefore placed where the library already reads: `raster.py` substitutes a stdout shim
+whose `isatty()` answers **accurately** for the duration of the import, so on `NUL` the library's own
+`is_tty` is False and it selects the unicode renderable without querying anything. This is not a
+monkeypatch of library internals — it is telling the library the truth that `isatty()` cannot express on
+Windows. `modals.py` imports the same widget at module scope, so it takes its `AutoImage` from
+`raster.py` and the second door closes with it.
+
+**The bound** is `PROBE_BUDGET_S = 0.2`, applied at `textual_image._terminal.read` — a module-level
+attribute, the library's own seam, restored afterwards — capping the **sum of the waits** the probe
+performs.
+
+**What stays unbounded, said plainly:** a single `os.read()` that blocks *after* `WaitForSingleObject`
+has returned signalled cannot be bounded without forking the library, because there is no non-blocking
+read behind that call. The guard is what removes the reported failure; the budget caps the answer wait.
+This is the case the brief anticipated, and this paragraph is the packet saying so.
 
 ---
 
@@ -172,7 +214,7 @@ content of the finding. The other **42** frames stay byte-identical.
 | Started | 2026-09-04 |
 | Closed | 2026-09-04 |
 | Promoted to /dev-flow | no |
-| Notes | **≤ 4 source files per increment, one agent, sequential.** Inc 1: L-32, `stamp()` + adapter + its test. Inc 2: L-31, `_surface_tint` reads `label` + the refusal registry + the optional-argument test + the two recaptures. Inc 3: L-34, `Blueprint.series()` + its glyph-alphabet test + the docstring that stops being false + the §11 replacement text. Inc 4: AC-6 (temp-copy lab proof) and AC-7 (staged export + diff). |
+| Notes | **≤ 4 source files per increment, one agent, sequential.** **inc12:** AC-1/2/3 — `display_label()` takes the legend, `_surface_display` passes it, `LABEL_REFUSED["display"]` retracted, the property test, the four recaptures, SCOPE's suite as the consumer check. **inc13:** AC-4/5/6 — the console guard and the probe budget in `raster.py`, `modals.py` taking its widget from it, the DEVNULL subprocess test and the mocked-console test. |
 
 ---
 
@@ -180,80 +222,106 @@ content of the finding. The other **42** frames stay byte-identical.
 
 ### What changed
 
-The reference kit learned three things from its first outside consumer. Blueprint's title block
-became **`stamp(rows, w, strip=None)`** — content as rows of cells, selection as an optional extra
-— with `title_block()` surviving as a three-line adapter. The **`tint` posture reads its `label`**
-and letters it onto a third dimension span, so the sheet states what the pixels ARE above what they
-MEASURE, and every posture's treatment of that argument is now either a render or a **declared
-refusal** in `LABEL_REFUSED`. And blueprint gained **`series()`** — a declared answer to L-34,
-implemented as an ordinate dimension stack whose closing terminators are the trace, chosen over a
-renunciation because a renunciation must follow from a commitment and this one would only have
-followed from a short alphabet.
+The reference kit stopped taking two things from its consumers that were never its to take:
+**a keybinding** and **control of the process**.
+
+`Kit.display_label()` hardcoded `[1] DISPLAY`, and `_surface_display` threw away the `label`
+it documented. Since §3b makes this language's numbers *keybindings*, the kit was spending
+`[1]` on behalf of every app that drew a display. It now takes the legend from the caller —
+**an ASCII run of digits in front is the BINDING, the rest is the WORD** — while the language
+keeps the notation, so a `numbered` language letters `[7] SOURCE` and one that is not letters
+`SOURCE` and drops the binding it has no notation for. `LABEL_REFUSED["display"]` was
+**retracted**: its commitment was true of the notation and false of the content, and a
+consumer is what falsified it.
+
+`taskboard/raster.py` ran a Sixel device-attributes probe at import, and on Windows `NUL`
+answers `isatty()`, so any process with `stdout=DEVNULL` queried the void and blocked forever.
+The probe now fires **only when both stdout and stdin are real consoles** — decided by
+**`GetConsoleMode`**, which fails on `NUL` where `isatty()` lies — with the answer wait bounded
+at **200 ms** and no answer meaning no Sixel. `modals.py` was the second door and now takes its
+widget from `raster.py`. **From 600 s to 0.4 s, with no API change and no consumer edited.**
 
 ### How it was tested
 
-- `python -m pytest -q` — **315 passed, 2 skipped, 4 warnings** (baseline at `ea64fdf`: 285 passed).
-  30 new tests: 18 in `tests/test_frame.py`, 12 in `tests/test_surface.py`.
-- Both capture sweeps re-run plain and alone after every increment; 66 frames byte-compared against
-  a baseline swept **before any edit** into `.fast-dev-flow/baseline-kits/`.
-- The unlabelled render was compared against `taskboard/language.py` **as it stands at `ea64fdf`**,
-  loaded side by side — not inferred.
-- AC-6 rendered from a throwaway copy of `lab-emersio` in `%TEMP%`; `tui-demos` never written to.
+- `python -X utf8 -m pytest -q` — **341 passed, 2 skipped, 4 warnings** (baseline at `d58fa07`:
+  327 passed). 14 new tests: 8 for inc12, 6 for inc13, all in `tests/test_surface.py`.
+- **Both defects were measured on the pre-edit code before either was fixed**, so neither
+  regression test is a decoration: the DEVNULL import hung at 8 s in both stdin modes, and the
+  four stale-frame failures appeared exactly where §6.2 predicted them in writing.
+- The surface sweep was re-run **plain and alone** (F-8), green on the first run; 66 frames
+  byte-compared against `.fast-dev-flow/baseline-kits2/`, swept **before any edit**.
+- `apps/scope/tests` was run from the `tui-demos` root as the consumer check, **read-only**.
 
 ### Evidence per AC
 
 | AC | verdict | evidence |
 | --- | --- | --- |
-| AC-1 · L-31 | **met** | `inc8.md` §1, §4 — the third span renders; `LABEL_REFUSED` + `LABEL_REFUSED_BY_LANGUAGE`; `test_every_optional_argument_is_read_or_declared_refused` (×11) and `test_the_declared_refusals_name_postures_that_exist`; no-label render identical to `ea64fdf` for all 11 languages |
-| AC-2 · L-32 | **met** | `inc7.md` §1, §4 — `Blueprint.stamp()`; `tests/test_frame.py` 9 tests incl. the no-strip stamp and the no-registration-marks assertion; 44/44 board frames byte-identical |
-| AC-3 · L-34 | **met** | `inc9.md` §1–§4 and spec §6.1 — `Blueprint.series()`; `test_a_series_smuggles_in_no_vertical_stroke`, `test_the_trace_is_the_locus_of_the_closing_terminators` + 7 more; the kit docstring ships the commitment |
-| AC-4 · nothing else moves | **met** | `inc10.md` §5 — `64 / 66` identical; MOVED = `surface_blueprint.txt`, `surface_blueprint.svg`, both named in §6.2 in advance |
-| AC-5 · mutation table | **met** | in the 315; `FRAME_TWINS` untouched, the 77-swap table and its chrome limb green every run |
-| AC-6 · deletable | **met** | `inc10.md` §1 — identical token multiset, 1 knockout, `─` only, nothing outside the ten; the only deltas are the 3 cells of the lab's own arithmetic, as the corrected AC required |
-| AC-7 · staged export | **met** | `inc10.md` §2 — 5 files differ from the live skill, each attributed by three-way comparison; the real export not run |
+| AC-1 · label reaches chrome | **met** | `inc12.md` §1, §3 — `test_the_display_legend_is_the_callers_mark_and_reaches_the_chrome` asserts `[7] SOURCE` in `chrome[0]`, on `chrome` because that is what a non-Textual caller reads |
+| AC-2 · `numbered` in charge | **met, premise corrected** | `inc12.md` §2 — the AC's claim "industrial is not numbered" was **false**; both display languages are numbered, so the limb is asserted by token swap. Correction dated in §3 above before any edit |
+| AC-3 · refusal retracted | **met** | `inc12.md` §1 — `LABEL_REFUSED["display"]` deleted with a dated comment; `test_every_optional_argument_is_read_or_declared_refused` now requires display's render to move, and does |
+| AC-4 · DEVNULL import returns | **met** | `inc13.md` §1, §5 — `HUNG (killed at 8s)` before, `rc=0 in 0.39s` after, both stdin modes; `timeout=2` is the assertion |
+| AC-5 · real console keeps capability | **met** | `inc13.md` §5 — `_detect()` maps Sixel/TGP/other correctly with **`_import_textual_image` mocked and nothing else**; `PROBE_BUDGET_S <= 0.2` |
+| AC-6 · no API change | **met** | `inc13.md` §4 — `TRANSPORT`, `raster_available()`, `AutoImage` unchanged; `tui-demos` never written to (§6) |
+| AC-7 · nothing else moves | **met** | `62 / 66` identical; MOVED = the four `surface_{corgi,industrial}.{txt,svg}` named in §6.2 in advance |
+| AC-8 · consumer check | **met** | `44 passed in 33.91s`; SCOPE's frame does **not** move today because it passes no label, and its L-42 workaround is now deletable — proved at `0.69s` without editing it |
 
 ### Open risks / pending
 
-- **The real export** and the **`LANGUAGES.md` §11 rewrite** are the orchestrator's call. §11's
-  replacement text is staged at `.fast-dev-flow/staging/LANGUAGES-11-replacement.md`.
-- `gallery_darkside.*` is stale in the live skill from a previously blocked export — **not** this
-  batch; proved byte-identical to the pre-edit baseline.
-- **F-12** (new): `surfaces_index()` promises its table describes the frame it names and nothing
-  checks it. Caught here in staging; not fixed.
-- **F-9**, **F-10**, **F-11** — recorded in `inc7.md`, `inc8.md`, `inc9.md`.
-- **F-1** still open, now with five implicated frames (`board_instrument.txt` added today);
-  3 red in 8 sweep runs this batch. **F-8** unchanged; no terminal process was ever killed.
-- A stated limit of the series: below the width its own figure needs a sample draws bare, so a
-  converging trace loses its tail figures. The published scale row is the mitigation.
+- **One blocking `os.read()` after a signalled wait is still unbounded** and cannot be bounded
+  without forking `textual_image`. Named in `inc13.md` §2 and §7 rather than implied.
+- **F-13** (new): the transport dict literal `{None: "none", _Sixel: "sixel", _TGP: "tgp"}`
+  collapsed to `{None: "tgp"}` when the library was absent, so a box with no `textual_image`
+  reported a TGP transport and `raster_available()` answered True. Fixed here with three `is`
+  tests and a regression; **not written into `tui-demos`' LIMITS**, which is read-only.
+- **L-42's entry still says "WORKAROUND, applied in the tests, not in the kit."** Out of date.
+  Updating it, and deleting SCOPE's file-redirect workaround, are the orchestrator's call.
+- **`LANGUAGES.md` §3b's added sentence** (L-33's own ask) — **not written**. Hand-written skill
+  file, same call as `kits-learn`'s §11.
+- **The real export** — orchestrator's call. The live skill is stale by inc12's four frames.
+- **A concurrent agent was editing `tui-demos`** during this batch (11:17–11:25, an `infra-1`
+  increment). Nothing was written there by this batch; the 44-passed result is a timestamped
+  snapshot and `scope.py:129` — the line the finding depends on — was verified unchanged.
+- **The pre-existing clipboard failure did not appear** in any of the three full runs. Recorded
+  as not-observed, not as fixed.
+- **F-1**, **F-8** — untouched. No board sweep was run at all, because no board frame moves.
 
 ### Security flags — handling
 
-One flag fired (input / attack surface), and it was the only one: caller text interpolated into
-markup rows, on two new surfaces. Both do width math on the plain string and `mark()` on the way
-out. `test_a_label_cannot_inject_markup_or_steal_a_cell` now genuinely exercises `tint`, and
-`test_a_stamp_cell_cannot_inject_markup_or_steal_a_cell` covers the stamp with two payloads —
-including `[URGENT]`, the case `mark()`'s docstring records as the one `rich.markup.escape` gets
-wrong. No secrets, no external calls, no destructive commands, no new dependency.
+One flag fired (input / attack surface) and it was the only one. inc12 interpolates caller text
+into a markup row that already carries a literal `[1]`: the width math stays on the **plain**
+string with `mark()` on the way out, the order pitfall A1 requires, **preserved rather than
+re-derived**. `test_a_label_cannot_inject_markup_or_steal_a_cell` now genuinely exercises corgi
+and industrial for the first time — until this batch display refused the label, so that test was
+asserting nothing about them — and the recaptured frames confirm the box did not move by a cell.
+inc13 **reduces** attack surface: the process no longer writes an escape sequence to, or reads
+bytes from, a handle it has not established is a terminal. No secrets, no external calls, no
+destructive commands, no new dependency, no git state changed.
 
 ### Suggested commit message
 
 ```
-kits-learn(L-31,L-32,L-34): the kit learns from its first outside consumer
+kits-learn-2(L-33,L-42): the kit stops taking a keybinding and the process
 
-stamp(rows, w, strip=None) takes the title block's content as data and its
-selection as an optional extra; title_block() is a three-line adapter over it,
-so the board's 44 frames are byte-identical.
+display_label() takes the caller's legend: an ASCII run of digits in front is
+the BINDING, the rest is the WORD, and the language keeps the notation -- so a
+numbered language letters [7] SOURCE and one that is not letters SOURCE. The
+kit was spending [1] on every consumer's behalf, because in a TUI the numbers
+ARE the keybindings and a keybinding belongs to whoever owns the keymap.
 
-_surface_tint reads the label it is given and letters it onto a third dimension
-span -- what the pixels ARE above what they MEASURE. Every posture that does
-NOT read it now says so in LABEL_REFUSED, and a test checks the declaration in
-both directions.
+LABEL_REFUSED["display"] is retracted. Its commitment was true of the notation
+and false of the content, and a consumer is what falsified it -- which is the
+declared-refusal table working, not a reversal to apologise for.
 
-Blueprint gets series(): an ordinate dimension stack whose closing terminators
-are the trace. A renunciation must follow from a commitment, and this one would
-only have followed from a short alphabet -- so the language draws a series the
-way a drawing office does, in its own ten glyphs, with no vertical smuggled in.
+The Sixel probe fires only when stdout AND stdin are real consoles, decided by
+GetConsoleMode because NUL is a character device and isatty() answers True for
+it. The answer wait is bounded at 200 ms; no answer means no Sixel. modals.py
+was the second door and now takes its widget from raster.py. 600s -> 0.4s, no
+API change, no consumer edited.
 
-Moved on purpose: surface_blueprint.txt/.svg (the caption span). 64/66 frames
-byte-identical against a baseline swept before any edit.
+Also fixes a latent collapse: {None:"none", _Sixel:"sixel", _TGP:"tgp"} became
+{None:"tgp"} with the library absent, so a box with no textual_image reported a
+graphics transport.
+
+Moved on purpose: surface_{corgi,industrial}.{txt,svg} (the legend row).
+62/66 frames byte-identical against a baseline swept before any edit.
 ```
