@@ -13,7 +13,7 @@
                                                                                                                       
   ∙ BOARD  ◦ lanes  ◦ agenda  ◦ gantt                                                                                 
                                                                                                                       
-   ∙◦ ∙   2 Nearest   ∙∙ ∙   2 Overdue   ◦∙ ∙   4 Work in   ◦◦ ∙   1 Blocked   ∙  ∙   9 Workday   ◦  ∙ -98 Board fi   
+   ∙◦ ∙   2 Nearest   ∙∙ ∙   2 Overdue   ◦∙ ∙   4 Work in   ◦◦ ∙   1 Blocked   ∙  ∙   9 Workday   ◦  ∙   7 Board fi   
                                                                                                                       
    BACKLOG                                                   DOING                            DONE                    
    ◦◦∙∙∙∙◦◦                                                  ∙∙◦◦◦◦∙∙                         ◦◦∙∙∙∙◦◦                

@@ -53,19 +53,20 @@
 <text x="262.0" y="176.3" fill="#d71921">▌</text>
 <text x="287.2" y="176.3" fill="#8a8a8a">Naught</text>
 <text x="740.8" y="176.3" fill="#d71921">▐</text>
-<rect x="262.0" y="180.0" width="487.2" height="17.0" fill="#0a0a0a"/>
+<rect x="262.0" y="180.0" width="445.2" height="17.0" fill="#0a0a0a"/>
+<rect x="724.0" y="180.0" width="25.2" height="17.0" fill="#0a0a0a"/>
 <text x="262.0" y="193.3" fill="#d71921">▌</text>
 <text x="287.2" y="193.3" fill="#242424">◦◦</text>
 <text x="304.0" y="193.3" fill="#f5f5f5">∙</text>
 <text x="312.4" y="193.3" fill="#242424">◦◦◦</text>
 <text x="337.6" y="193.3" fill="#f5f5f5">∙</text>
 <text x="346.0" y="193.3" fill="#242424">◦◦</text>
+<text x="707.2" y="193.3" fill="#003054">▁▁</text>
 <text x="740.8" y="193.3" fill="#d71921">▐</text>
 <rect x="262.0" y="197.0" width="445.2" height="17.0" fill="#0a0a0a"/>
 <rect x="724.0" y="197.0" width="25.2" height="17.0" fill="#0a0a0a"/>
 <text x="262.0" y="210.3" fill="#d71921">▌</text>
 <text x="287.2" y="210.3" fill="#242424">◦◦◦◦◦◦◦◦◦</text>
-<text x="707.2" y="210.3" fill="#003054">▇▇</text>
 <text x="740.8" y="210.3" fill="#d71921">▐</text>
 <rect x="262.0" y="214.0" width="445.2" height="17.0" fill="#0a0a0a"/>
 <rect x="724.0" y="214.0" width="25.2" height="17.0" fill="#0a0a0a"/>

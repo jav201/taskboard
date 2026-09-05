@@ -12,7 +12,7 @@
   WORK ├ 02/15  13% ─┤                                                                                                
   ├─ 09 ─┤ ├───┤ 04 ├─┤ 02 LOAD                                                                                       
                                                                                                                       
-   DIM 2 ── NEAREST   OVR 2 ── OVERDUE   WIP 4 ── WORK IN   ╱╱ 1 ── BLOCKED    DAY 9 ── WORKDAY   SHT -98 ── BOARD    
+   DIM 2 ── NEAREST   OVR 2 ── OVERDUE   WIP 4 ── WORK IN   ╱╱ 1 ── BLOCKED    DAY 9 ── WORKDAY   SHT 7 ── BOARD      
                                                                                                                       
    BACKLOG                                                                                      ├─── 09 ───┤          
    FIX CHECKOUT 500 ERROR                                                                       ├╱╱╱╱ HELD ╱╱╱╱┤      

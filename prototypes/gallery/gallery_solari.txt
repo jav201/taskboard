@@ -10,7 +10,7 @@
                                 checkbox   ▁ ▁ OFF  ▁▼▁ ON    default  off·on                                         
                                            ▔ ▔ OFF  ▔▲▔ ON    focused                                                 
                                            ▁·▁ OFF  ▁█▁ ON    active                                                  
-                                           ╌ ╌ OFF  ╌▽╌ ON    disabled              ▄▄                                
+                                           ╌ ╌ OFF  ╌▽╌ ON    disabled              ▇▇                                
                                 radio      lo·mid·hi  set=mid cursor=hi                                               
                                            ▁▁▁ lo  ▁●▁ mid  ▁▁▁ hi   default                                          
                                            ▁▁▁ lo  ▁●▁ mid  ▔▔▔ hi   focused                                          
@@ -26,8 +26,8 @@
                                            ▔task······▔   focused                                                     
                                            ▔ta▮sk▁▁▁▁▁▔   edited                                                      
                                            ▂task······▂   active                                                      
+                                           ═task······═   invalid                                                     
                                            ╌task╌╌╌╌╌╌╌   disabled                                                    
-                                           ▁title·····▁   placeholder                                                 
                                                                                                                       
                                                                                                                       
                                                                                                                       

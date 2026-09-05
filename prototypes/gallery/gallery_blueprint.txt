@@ -9,7 +9,7 @@
                                 ▀▀                ▀▀                                                                  
                                   ▀▀            ▀▀                                                                    
                                     ▀▀▀▀▀▀▀▀▀▀▀▀                                                                      
-                                checkable  switch    checkbox  off·on               ▅▅                                
+                                checkable  switch    checkbox  off·on               ▇▇                                
                                            ├┤·  ├─┤  ├ ┤  ├╪┤   default                                               
                                            ├╡·  ├─╡  ╞ ╡  ╞╪╡   focused                                               
                                            ├┫·  ├─┫  ┣ ┫  ┣╪┫   active                                                

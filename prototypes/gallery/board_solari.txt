@@ -11,7 +11,7 @@
   DONE 002 OF 015  013%                                                                                               
   09 04 02 LOAD                                                                                                       
    BOARD  lanes  agenda  gantt                                                                                        
-   DEP 2 NEAREST      LATE 2 OVERDUE     BRD 4 WORK IN      HELD 1 BLOCKED     DAY 9 WORKDAY      SKD -98 BOARD       
+   DEP 2 NEAREST      LATE 2 OVERDUE     BRD 4 WORK IN      HELD 1 BLOCKED     DAY 9 WORKDAY      SKD 7 BOARD FILE    
                                                                                                                       
     GATE BACKLOG 09                                                                 STATUS    PROJ          PRI       
    --  FIX CHECKOUT 500 ERROR                                                       HELD      WEBSITE RED…  HIGH      

@@ -69,7 +69,7 @@
 <text x="446.8" y="227.3" fill="#1f1f22">╌▽╌</text>
 <text x="480.4" y="227.3" fill="#1f1f22">ON </text>
 <text x="530.8" y="227.3" fill="#1f1f22">disabled</text>
-<text x="715.6" y="227.3" fill="#003054">▄▄</text>
+<text x="715.6" y="227.3" fill="#003054">▇▇</text>
 <rect x="262.0" y="231.0" width="453.6" height="17.0" fill="#17171a"/>
 <rect x="715.6" y="231.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="231.0" width="16.8" height="17.0" fill="#17171a"/>
@@ -194,15 +194,15 @@
 <rect x="262.0" y="486.0" width="453.6" height="17.0" fill="#17171a"/>
 <rect x="715.6" y="486.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="486.0" width="16.8" height="17.0" fill="#17171a"/>
-<text x="371.2" y="499.3" fill="#1f1f22">╌task╌╌╌╌╌╌╌</text>
-<text x="497.2" y="499.3" fill="#1f1f22">disabled</text>
+<text x="371.2" y="499.3" fill="#1f1f22">═</text>
+<text x="379.6" y="499.3" fill="#f0ede4">task</text>
+<text x="413.2" y="499.3" fill="#1f1f22">······═</text>
+<text x="497.2" y="499.3" fill="#1f1f22">invalid</text>
 <rect x="262.0" y="503.0" width="453.6" height="17.0" fill="#17171a"/>
 <rect x="715.6" y="503.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="503.0" width="16.8" height="17.0" fill="#17171a"/>
-<text x="371.2" y="516.3" fill="#1f1f22">▁</text>
-<text x="379.6" y="516.3" fill="#6e6a60">title</text>
-<text x="421.6" y="516.3" fill="#1f1f22">·····▁</text>
-<text x="497.2" y="516.3" fill="#1f1f22">placeholder</text>
+<text x="371.2" y="516.3" fill="#1f1f22">╌task╌╌╌╌╌╌╌</text>
+<text x="497.2" y="516.3" fill="#1f1f22">disabled</text>
 <rect x="262.0" y="520.0" width="487.2" height="17.0" fill="#17171a"/>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#17171a"/>
 <text x="10.0" y="584.3" fill="#f5a300"> esc/q/g </text>

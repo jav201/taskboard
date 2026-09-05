@@ -9,8 +9,8 @@
                               │  ─                                                     │                              
                               │  checkable  switch    checkbox  off·on                 │                              
                               │             │──  ━━│  │ │  │▪│   default               │                              
-                              │             ┃──  ━━┃  ┃ ┃  ┃▪┃   focused               │                              
-                              │             █──  ━━█  █ █  █▮█   active            ▇▇  │                              
+                              │             ┃──  ━━┃  ┃ ┃  ┃▪┃   focused           ▁▁  │                              
+                              │             █──  ━━█  █ █  █▮█   active                │                              
                               │             ┆┈┈  ┅┅┆  ┆ ┆  ┆·┆   disabled              │                              
                               │  radio      lo·mid·hi  set=mid cursor=hi               │                              
                               │             ╵ ╵ lo  ╵•╵ mid  ╵ ╵ hi   default          │                              

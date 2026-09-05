@@ -9,7 +9,7 @@
 <text x="740.8" y="74.3" fill="#1783ff">│</text>
 <rect x="262.0" y="78.0" width="487.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="91.3" fill="#1783ff">│</text>
-<text x="287.2" y="91.3" fill="#3a3a3a">(o) gal</text>
+<text x="287.2" y="91.3" fill="#3a3a3a">(.) gal</text>
 <text x="740.8" y="91.3" fill="#1783ff">│</text>
 <rect x="262.0" y="95.0" width="487.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="108.3" fill="#1783ff">│</text>
@@ -74,7 +74,7 @@
 <text x="522.4" y="227.3" fill="#262626">‹ ›</text>
 <text x="556.0" y="227.3" fill="#737373">hi</text>
 <text x="598.0" y="227.3" fill="#262626">default</text>
-<text x="707.2" y="227.3" fill="#003054">▄▄</text>
+<text x="707.2" y="227.3" fill="#003054">▇▇</text>
 <text x="740.8" y="227.3" fill="#1783ff">│</text>
 <rect x="262.0" y="231.0" width="445.2" height="17.0" fill="#121212"/>
 <rect x="724.0" y="231.0" width="25.2" height="17.0" fill="#121212"/>
@@ -198,25 +198,24 @@
 <rect x="262.0" y="452.0" width="445.2" height="17.0" fill="#121212"/>
 <rect x="724.0" y="452.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="465.3" fill="#1783ff">│</text>
-<text x="379.6" y="465.3" fill="#262626">╌task╌╌╌╌╌╌╌</text>
-<text x="505.6" y="465.3" fill="#262626">disabled</text>
+<text x="379.6" y="465.3" fill="#262626">Ø</text>
+<text x="388.0" y="465.3" fill="#f5f5f5">task</text>
+<text x="421.6" y="465.3" fill="#262626">      Ø</text>
+<text x="505.6" y="465.3" fill="#262626">invalid</text>
 <text x="740.8" y="465.3" fill="#1783ff">│</text>
 <rect x="262.0" y="469.0" width="445.2" height="17.0" fill="#121212"/>
 <rect x="724.0" y="469.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="482.3" fill="#1783ff">│</text>
-<text x="379.6" y="482.3" fill="#262626">▬</text>
-<text x="388.0" y="482.3" fill="#737373">title</text>
-<text x="430.0" y="482.3" fill="#262626">     ▬</text>
-<text x="505.6" y="482.3" fill="#262626">placeholder</text>
+<text x="379.6" y="482.3" fill="#262626">╌task╌╌╌╌╌╌╌</text>
+<text x="505.6" y="482.3" fill="#262626">disabled</text>
 <text x="740.8" y="482.3" fill="#1783ff">│</text>
 <rect x="262.0" y="486.0" width="445.2" height="17.0" fill="#121212"/>
 <rect x="724.0" y="486.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="499.3" fill="#1783ff">│</text>
-<text x="379.6" y="499.3" fill="#262626">▮</text>
-<text x="388.0" y="499.3" fill="#f5f5f5">t windows</text>
-<text x="463.6" y="499.3" fill="#1783ff">◆</text>
-<text x="472.0" y="499.3" fill="#262626">▮</text>
-<text x="505.6" y="499.3" fill="#262626">window</text>
+<text x="379.6" y="499.3" fill="#262626">▬</text>
+<text x="388.0" y="499.3" fill="#737373">title</text>
+<text x="430.0" y="499.3" fill="#262626">     ▬</text>
+<text x="505.6" y="499.3" fill="#262626">placeholder</text>
 <text x="740.8" y="499.3" fill="#1783ff">│</text>
 <rect x="262.0" y="503.0" width="487.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="516.3" fill="#1783ff">│</text>

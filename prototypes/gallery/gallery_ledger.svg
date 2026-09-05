@@ -38,12 +38,15 @@
 <text x="488.8" y="193.3" fill="#2b3a67">●</text>
 <text x="497.2" y="193.3" fill="#1c1a15"> posted   </text>
 <text x="581.2" y="193.3" fill="#c4b99f">active</text>
-<rect x="262.0" y="197.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="197.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="197.0" width="16.8" height="17.0" fill="#000000"/>
+<rect x="732.4" y="197.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="371.2" y="210.3" fill="#c4b99f">▫╌╌</text>
 <text x="404.8" y="210.3" fill="#c4b99f">open  </text>
 <text x="472.0" y="210.3" fill="#c4b99f">┄┄▫</text>
 <text x="505.6" y="210.3" fill="#c4b99f">posted</text>
 <text x="581.2" y="210.3" fill="#c4b99f">disabled</text>
+<text x="715.6" y="210.3" fill="#003054">▂▂</text>
 <rect x="262.0" y="214.0" width="453.6" height="17.0" fill="#f2ecdd"/>
 <rect x="715.6" y="214.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="214.0" width="16.8" height="17.0" fill="#f2ecdd"/>

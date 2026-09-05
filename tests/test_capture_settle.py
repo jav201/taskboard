@@ -188,3 +188,62 @@ async def test_settle_names_the_widget_it_gave_up_on():
             assert "hero" in str(e) and "BLANK" in str(e), str(e)
         else:                                             # pragma: no cover
             raise AssertionError("settle returned on an unpainted hero band")
+
+
+# ---------------------------------------------------------------------------
+# THE SIGNATURE PIN (inc21) — the capture must not read a timestamp git does
+# not carry.
+#
+# `taskboard/engine.py:sig_board_file` ages the board file with
+# `(time.time() - p.stat().st_mtime) / 60`. `freeze_clock()` pins the first
+# term and the CHECKOUT pins the second, so before the pin the committed frames
+# carried `f -98` and a fresh checkout of the same tree rendered `f -46982` —
+# deterministically, in every run, in every language whose signal row shows the
+# board-file tile. That is eleven of the twenty-two frames unreproducible by
+# anyone who clones the repo.
+#
+# WHY THIS RUNS IN A SUBPROCESS. `freeze_clock()` rebinds `datetime` and `date`
+# inside every imported taskboard module and swaps a shim over
+# `engine.time` — deliberately global, because the capture has to photograph
+# the shipping code rather than a variant of it. Doing that inside the pytest
+# process would leave the other 684 tests running against a frozen clock. A
+# fresh interpreter is also the honest condition: it is what a rebuild a week
+# from now actually has.
+# ---------------------------------------------------------------------------
+import subprocess                                                 # noqa: E402
+
+PIN_PROBE = """
+import os, sys, time
+sys.path.insert(0, {root!r})
+sys.path.insert(0, {proto!r})
+sys.path.insert(0, {slice_!r})
+import capture_languages as CL
+import app, kanban                       # freeze_clock patches these by name
+os.utime(CL.FIXTURE, (time.time(), time.time()))   # whatever a checkout left
+CL.freeze_clock()
+from taskboard.engine import sig_board_file
+r = sig_board_file(None)                 # the signal ignores its context
+print(r.value, "|", r.caption)
+"""
+
+
+def test_the_board_file_signal_does_not_read_the_checkout_clock():
+    """The cell that reaches eleven frames, asked of a fresh interpreter.
+
+    The probe deliberately stamps the fixture with the CURRENT time first, so
+    it starts from the worst case the defect produces — a file that was just
+    written — and then checks that `freeze_clock()` overrides it. Asserting the
+    rendered VALUE rather than the mtime is what makes this a test of the frame
+    instead of a test of a call: `int(age_min)` is what lands in the grid, and
+    `FIXTURE_AGE_S` is 450 rather than 420 exactly so that a float timestamp
+    round-tripping through the filesystem cannot flip it to the minute below.
+    """
+    out = subprocess.run(
+        [sys.executable, "-X", "utf8", "-c",
+         PIN_PROBE.format(root=str(ROOT), proto=str(ROOT / "prototypes"),
+                          slice_=str(ROOT / "prototypes" / "widget_slice"))],
+        capture_output=True, text=True,
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+    assert out.returncode == 0, out.stderr[-2000:]
+    assert out.stdout.strip() == f"{CL.FIXTURE_AGE_S // 60} | min since save", (
+        out.stdout, out.stderr[-500:])

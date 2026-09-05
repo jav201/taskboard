@@ -12,7 +12,7 @@
                                                                                                                       
   ▪ BOARD │ · lanes │ · agenda │ · gantt                                                                              
                                                                                                                       
-   due   2 NEARE…     o/d   2 OVERD…     w/p   4 WORK …     hld   1 BLOCK…     day   9 WORKD…     led -98 BOARD…      
+   due   2 NEARE…     o/d   2 OVERD…     w/p   4 WORK …     hld   1 BLOCK…     day   9 WORKD…     led   7 BOARD…      
                                                                                                                       
     1 BACKLOG ························································································ 9 entries      
    ═════════════════════════════════════════════════════════════════════════════════════════════════════════════      

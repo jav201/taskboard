@@ -2,7 +2,7 @@
                                                                                                                       
                               ┌────────────────────────────────────────────────────────┐                              
                               │                                                        │                              
-                              │  (o) gal                                               │                              
+                              │  (.) gal                                               │                              
                               │  Darkside                                              │                              
                               │  checkable  switch    checkbox  off·on                 │                              
                               │             O──  ▬▬O  ( )  (O)   default               │                              
@@ -10,7 +10,7 @@
                               │             ●──  ▬▬●  { }  {●}   active                │                              
                               │             x╌╌  ▁▁x  ╌ ╌  ╌x╌   disabled              │                              
                               │  radio      lo·mid·hi  set=mid cursor=hi               │                              
-                              │             ‹ › lo  ‹◦› mid  ‹ › hi   default      ▄▄  │                              
+                              │             ‹ › lo  ‹◦› mid  ‹ › hi   default      ▇▇  │                              
                               │             ‹ › lo  ‹◦› mid  « » hi   focused          │                              
                               │             ‹ › lo  ‹◦› mid  ▶ ◀ hi   active           │                              
                               │             ┄ ┄ lo  ┄▫┄ mid  ┄ ┄ hi   disabled         │                              
@@ -24,9 +24,9 @@
                               │             ▮task      ▮   focused                     │                              
                               │             ▮ta◆sk·····▮   edited                      │                              
                               │             █task      █   active                      │                              
+                              │             Øtask      Ø   invalid                     │                              
                               │             ╌task╌╌╌╌╌╌╌   disabled                    │                              
                               │             ▬title     ▬   placeholder                 │                              
-                              │             ▮t windows◆▮   window                      │                              
                               │                                                        │                              
                               └────────────────────────────────────────────────────────┘                              
                                                                                                                       

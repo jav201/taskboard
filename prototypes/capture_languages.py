@@ -169,6 +169,23 @@ STABLE_READS = 8         # identical consecutive frames required
 # this fixture and this constant always yield the same twenty grids.
 FROZEN = "2026-08-03T09:00:00"
 
+# AND THE FIXTURE'S OWN TIMESTAMP, WHICH IS THE OTHER HALF OF THAT SUBTRACTION.
+# `taskboard/engine.py:sig_board_file` ages the board file with
+# `(time.time() - p.stat().st_mtime) / 60`.  FROZEN pins the first term; the
+# CHECKOUT pins the second, and git does not carry mtimes -- so the signal reads
+# whatever minute the fixture happened to land on this disk.  The committed
+# frames were taken at `f -98`; this tree renders `f -46982`, deterministically,
+# in every run, because the file was checked out again.  A capture that is a
+# function of a timestamp git does not carry cannot be reproduced by anyone who
+# clones the repo, which defeats the whole `.txt`-is-the-art contract.
+#
+# 450 SECONDS, AND NOT 420.  `int(age_min)` is what reaches the frame, so a pin
+# landing exactly on a minute boundary can be flipped to the minute below by the
+# sub-microsecond error of a float timestamp round-tripping through the
+# filesystem's own resolution.  Seven and a HALF minutes renders `7` from either
+# side of that error.
+FIXTURE_AGE_S = 450
+
 
 def freeze_clock() -> None:
     """Pin `datetime.now()` / `date.today()` to FROZEN, everywhere it is read.
@@ -249,6 +266,25 @@ def freeze_clock() -> None:
     _models.default_board_path = lambda: FIXTURE
     if getattr(_eng, "default_board_path", None) is not None:
         _eng.default_board_path = lambda: FIXTURE
+
+    # AND THE FIXTURE'S MTIME, PINNED BY SETTING IT RATHER THAN BY DERIVING
+    # THE SIGNAL FROM CONTENT.  Both cures were on the table.  Deriving
+    # "minutes since save" from the file's bytes would make `sig_board_file`
+    # a different signal wearing the same label -- it watches for edits made
+    # OUTSIDE this process, and a content hash cannot say when one happened.
+    # This function's own contract is the other way round: it pins the
+    # capture's INPUTS (the present, the board path) and photographs the
+    # shipping code unaltered.  A file's timestamp is an input like the clock
+    # is, so it is pinned here, where every other input already is, and
+    # `sig_board_file` is left exactly as it ships.
+    #
+    # What this buys: `age_min` becomes FIXTURE_AGE_S / 60 on every machine,
+    # so the committed frames reproduce on a fresh clone.  What it costs: the
+    # capture WRITES metadata (not content) to the fixture.  That is the same
+    # file this function already repoints every reader at, it is idempotent,
+    # and git carries neither the before nor the after.
+    _t = fixed.timestamp() - FIXTURE_AGE_S
+    os.utime(FIXTURE, (_t, _t))
     return hit
 
 
