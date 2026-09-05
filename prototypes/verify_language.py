@@ -4967,15 +4967,38 @@ async def main():
           LG.kit("swiss").MOTION_STEPS == 0
           and all(len(LG.kit("swiss").motion_frames(c, e, **w).frames) >= 2
                   for e, c, w in DEBTS))
+    # THE TABLE IS A PIN AND IT HAS TO BE TYPED, which is why it rotted (F-14).
+    # It went red the day PRISM arrived as the eleventh language and stayed red
+    # for six increments, carried forward as "pre-existing, unchanged" because
+    # the check printed no DETAIL to say WHICH entry disagreed — a `==` between
+    # two eleven-key dicts whose failure message was the sentence above.
+    #
+    # THE CHECK WAS WRONG, NOT THE KIT. Prism's own `MOTION_STEPS = 3` is
+    # argued at its definition (`language.py`): four was tried and repeats a
+    # frame because the switch's knob has three seats, two repeats as well, and
+    # "sharing the value 3 with four other languages costs nothing -- what the
+    # laws compare is the FRAME LIST". So the language's commitment stands and
+    # the table was simply never extended.
+    #
+    # AND THE NUMBER IS NOT DERIVABLE, so it is not derived. Every other rotted
+    # literal in this file became `len(...)` off its own derivation; this one
+    # cannot, because the whole point is that a re-tune of any language's
+    # motion budget is a RED LINE a human has to walk up to. What is added is
+    # the detail string, so the next language costs one reading instead of six
+    # packets.
+    MOTION_PIN = {"naught": 3, "corgi": 1, "instrument": 3, "swiss": 0,
+                  "industrial": 1, "nord": 1, "darkside": 3, "prism": 3,
+                  "ledger": 1, "solari": 3, "blueprint": 2}
+    _mot = {n: LG.kit(n).MOTION_STEPS for n in TH.ORDER}
+    _off = [f"{n}: pinned {MOTION_PIN.get(n, '<unpinned>')}, declares {v}"
+            for n, v in _mot.items() if MOTION_PIN.get(n) != v]
+    _gone = sorted(set(MOTION_PIN) - set(_mot))
     check("character: the token is `MOTION_STEPS` and it governs FIVE "
           "events, which is why it is no longer called `FLIP_STEPS` — a "
           "language that elaborated its switch and cut its button would be "
           "two languages",
-          not hasattr(LG.Kit, "FLIP_STEPS")
-          and {n: LG.kit(n).MOTION_STEPS for n in TH.ORDER}
-          == {"naught": 3, "corgi": 1, "instrument": 3, "swiss": 0,
-              "industrial": 1, "nord": 1, "darkside": 3, "ledger": 1,
-              "solari": 3, "blueprint": 2})
+          not hasattr(LG.Kit, "FLIP_STEPS") and _mot == MOTION_PIN,
+          f"off the pin: {_off} · pinned but gone: {_gone}")
 
     # -- (5b) THE REFRESH FLOOR (#36) -------------------------------------
     # A transition's one tempo is split across the gaps between its frames,
@@ -8073,13 +8096,43 @@ async def main():
           and blue not in kd.rail_prefix())
     # DISPATCH: the mechanism must follow the token, not the class name —
     # a hardcoded rail would make `layout` dead metadata (VERIFY.md)
+    #
+    # AND THE GLYPH IS THE LANGUAGE'S OWN (F-14). This loop asked all eleven
+    # languages for DARKSIDE's `▏` and compared the answer to their own
+    # `layout` token, so it went red the day prism declared `layout: rail` and
+    # drew `▎`. That is the same "one class stands for the axis" defect the
+    # line above warns about, committed by the CHECKER instead of by a kit —
+    # and prism's commitment is explicit at its `RAIL` in `language.py`: "NOT
+    # DARKSIDE'S STROKE. `▏` is that language's rail and the suite holds a
+    # NEGATIVE law over it -- no other language may carry it". So the kit is
+    # right, the check was wrong, and the negative law it names is the half
+    # this loop must keep.
+    #
+    # Both halves are now asserted over the SET of declared rails: a language
+    # that declares `layout=rail` draws its OWN stroke and no other's, and a
+    # language that does not draws NONE of them. The old form could only see
+    # darkside's — prism's `▎` could have appeared on any of the other ten
+    # rows and nothing here would have said so.
+    RAILS = {g for g in (getattr(LG.KITS.get(n, LG.Kit), "RAIL", None)
+                         for n in TH.ORDER) if g}
+    check("the rail is a set of DECLARED strokes, one per rail language "
+          "(probe self-check — an empty set would pass the loop below "
+          "vacuously for all eleven)",
+          len(RAILS) == sum(TH.THEMES[n].get("layout") == "rail"
+                            for n in TH.ORDER),
+          f"{sorted(RAILS)}")
     for name in TH.ORDER:
         k = LG.kit(name)
         rows = (k.card_rows("Shut down legacy servers", "8d", k["mut"], 40, 0,
                             False, META_A) + [k.head("BACKLOG", 5, 40, 0)])
-        check(f"{name}: rail renders IFF the language declares layout=rail",
-              any(RAIL in r for r in rows)
-              == (TH.THEMES[name].get("layout") == "rail"))
+        own = getattr(LG.KITS.get(name, LG.Kit), "RAIL", None)
+        drawn = {g for g in RAILS if any(g in r for r in rows)}
+        want = {own} if TH.THEMES[name].get("layout") == "rail" else set()
+        check(f"{name}: rail renders IFF the language declares layout=rail — "
+              f"and it is the language's OWN stroke, never another's",
+              drawn == want,
+              f"drawn={sorted(drawn)} want={sorted(want)} "
+              f"layout={TH.THEMES[name].get('layout')!r}")
     # the rail is paid for out of the CONTENT budget, exactly like padding:
     # a rail that widened the row would wrap it at every width
     for w in (20, 28, 40, 96):
