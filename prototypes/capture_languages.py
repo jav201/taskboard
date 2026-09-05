@@ -50,18 +50,55 @@ chosen over `calm` because overdue work exercises each language's SEVERITY
 channel, which is exactly the axis a one-hue language (phosphor) had to solve
 by brightness and an identity-coloured one (corgi) had to solve by glyph.
 
-SETTLE IS WEAKER HERE THAN IN THE HARNESS, AND IT IS SAID RATHER THAN HIDDEN.
-`verify_language.py:338` has a `settle()` that interrogates the widget tree and
-asserts every mounted content widget has PAINTED pixels inside its clipped
-area -- it exists because `TaskCard.on_mount` defers its paint with
-`call_after_refresh`, so "mounted" and "drawn" are different moments and the
-board came back blank about one run in three under load.  That function cannot
-be imported: `verify_language.py` has NO `if __name__ == "__main__"` guard, so
-importing it runs all 9923 checks.  What is implemented below is condition B
-only -- two consecutive identical frames -- plus a non-blank assertion per
-capture, and a capture that never stabilises FAILS LOUD instead of being
-written.  Condition A is not covered; if a frame ever lands blank, run the
-harness rather than trusting this file.
+SETTLE HERE NOW ASKS THE SAME THREE QUESTIONS THE HARNESS ASKS, AND IT HAD TO.
+This paragraph used to say the opposite -- that only condition B (identical
+consecutive frames) was implemented, that condition A was "not covered", and
+that a reader who saw a blank frame should go run the harness instead.  That
+was an honest description of the code and a bad bargain, and
+`.fast-dev-flow/03-increments/race-probe.md` is the measurement that closed it:
+over **30 fresh-interpreter sweeps** of this file, **6 of the 22 frames drifted**
+and **two independent sweeps disagreed 58.9 % of the time** -- which is the
+number the operator sees, because `main()`'s determinism check compares one
+sweep against one control sweep.  A capture that is a coin flip is not a
+capture.
+
+The probe's §5 says WHICH cells moved, and the answer is why B alone could
+never have been enough: a widget waiting on a deferred re-render produces a
+genuinely static frame WHILE IT WAITS, so B is satisfied by the very state it
+exists to exclude.  Three families showed up -- the **hero band** composed at a
+seat it no longer had (the load bar 46 cells wide where the settled frame draws
+37, the value and caption not yet landed), the DOING column's **stale card
+bake** (`TaskCard.render_card` falling back to an 18-cell row before its first
+layout), and solari's **unpainted** split-flap label.
+
+So `settle()` below implements A, B and C, with A widened by one seat:
+
+  A  every content widget the compositor SAYS it is drawing carries ink inside
+     its own clipped area -- the four classes `KanbanBoard.build()` mounts,
+     PLUS `#hero`.  The hero is not a `BOARD_CONTENT` widget, which is exactly
+     how a frame could pass the harness's own A and still be wrong here.
+  B  eight identical composited reads, not three (measured: 3 -> 8 alone takes
+     the drift from 6 frames to 2, and both survivors were card bakes).
+  C  no `TaskCard` THE COMPOSITOR IS DRAWING holds a paint composed at a seat
+     it no longer has, asked as a SHADOW render with `update` intercepted so
+     the check measures the app and never repairs it.  "Drawing" is load-
+     bearing: the DOM is wider than the frame and asking every card in the
+     tree made the sweep fail loud on a good screen -- see `_not_at_rest`.
+
+A+B+C measured **0 of 22 frames drifting and 0.0 % pairwise** over 30 sweeps.
+The cost is stated rather than buried, both halves of it: a sweep goes from
+~7.9 s to ~11.7 s, and **3 of those 30 sweeps FAILED LOUD instead of finishing**
+-- always on the columns branch, always four DOING-column cards holding a paint
+composed at a narrower seat, and measured to be PERMANENT (still stale 640
+iterations / 19.5 s later).  That frame is one the old condition used to write.
+Refusing it is the change working; the wedge itself is F-1's remainder and it
+lives in `kanban.py`.
+`verify_language.py`'s settle is still the fuller instrument and still cannot
+be imported (no `if __name__ == "__main__"` guard, so importing it runs all
+9923 checks); `_stale_paint` below is lifted from it verbatim in behaviour
+rather than shared, and that duplication is the price of the missing guard.
+A capture that never stabilises still FAILS LOUD, and now names the widgets
+that never came to rest.
 """
 from __future__ import annotations
 
@@ -82,15 +119,19 @@ from pathlib import Path
 #
 # AND IT DID NOT CURE THE STALL.  This comment used to stop at the line above,
 # which reads as if the setting settled the matter.  It did not, and the check
-# that was supposed to keep the claim honest is what says so: `board_solari.txt`
-# still drifts intermittently on the SAME row this note is about (`DAYS
-# OVERDUE`), and `gallery_blueprint.txt` on a switch caught at `▅▅` vs `▁▁`.
-# Both were observed on control sweeps with every `surface` token popped, so
-# neither is caused by the batch that recorded them.  It makes this sweep exit
-# red about one run in three -- filed as F-1, open, and NOT fixed here.  The
-# setting is still correct and still worth having; it is simply not sufficient,
-# and a reader who trusted the paragraph above would go looking for the cause
-# somewhere else.
+# that was supposed to keep the claim honest is what said so: `board_solari.txt`
+# drifted intermittently on the SAME row this note is about (`DAYS OVERDUE`),
+# and `gallery_blueprint.txt` on a switch caught at `▅▅` vs `▁▁`.  Both were
+# observed on control sweeps with every `surface` token popped, so neither was
+# caused by the batch that recorded them.  That was F-1, and it made this sweep
+# exit red about one run in three.
+#
+# F-1 IS CLOSED BY `settle()`, NOT BY THIS LINE -- which is the point worth
+# keeping.  The setting is still correct and still worth having; it was simply
+# never sufficient, because turning animations off cannot make a widget that is
+# waiting on a deferred re-render look any different from a widget at rest.
+# Only the widget tree can answer that, which is what conditions A and C ask.
+# Numbers: `.fast-dev-flow/03-increments/race-probe.md`.
 os.environ["TEXTUAL_ANIMATIONS"] = "none"
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -104,7 +145,13 @@ OUT = ROOT / "prototypes" / "gallery"
 SIZE = (118, 34)
 
 MAX_SETTLE = 40          # frames to wait for the screen to come to rest
-STABLE_READS = 3         # identical consecutive frames required
+# EIGHT, AND THE 3 IT REPLACES WAS MEASURED WRONG RATHER THAN ARGUED WRONG.
+# 30 cross-process sweeps per arm (race-probe.md §6): at 3 reads, 4 of 22 frames
+# drift and two sweeps disagree 58.9 % of the time; at 8 reads, 2 of 22 and
+# 13.1 %; at 8 reads plus condition C, 0 and 0.0 %.  Raising the count alone
+# leaves exactly the two frames condition C exists to catch, which is why both
+# levers are here and neither is here alone.
+STABLE_READS = 8         # identical consecutive frames required
 
 # THE CLOCK IS FROZEN, AND IT HAS TO BE.  A fixture pins the DATA; it does not
 # pin the present.  The app reads `datetime.now()` in the signal engine, in the
@@ -213,31 +260,160 @@ def screen_text(app) -> list[str]:
             for strip in app.screen._compositor.render_strips()]
 
 
+#: The classes `KanbanBoard.build()` attaches to the content it mounts, quoted
+#: from `verify_language.py:319` rather than re-derived, because the renderer
+#: writes these strings and a second list would drift from it silently.
+BOARD_CONTENT = ("kb-card", "col-head", "kb-empty", "kb-detail")
+
+#: AND THE ONE SEAT THE HARNESS'S OWN LIST DOES NOT COVER.  The hero is not a
+#: `BOARD_CONTENT` widget -- it is `Hero(id="hero")`, mounted beside the board,
+#: not inside it -- so neither the harness's condition A nor its condition C
+#: has ever watched it.  race-probe.md §5 is the bill for that: the frame that
+#: drifted most on darkside differed ONLY in rows 3-12, the hero band, with the
+#: load bar composed 46 cells wide where the settled frame draws 37 and the
+#: value and caption not yet landed.  A capture must wait for it like any other
+#: content, so it is named here and condition A reads both.
+HERO_ID = "hero"
+
+
+def _not_at_rest(app, rows: list[str]) -> list[str]:
+    """CONDITIONS A AND C, asked ONLY of the widgets the compositor DRAWS.
+
+    Returns names, not a boolean, so a timeout can point at the widget instead
+    of at "the board" -- the same reason `verify_language.py`'s settle collects
+    a `stuck` list rather than short-circuiting on the first one.
+
+    `visible_widgets` is what makes A sound, and the naive alternative was
+    tried and is wrong: a widget's `region` is in SCREEN space and keeps
+    growing past the fold, so a raw region slice reads whatever is at those
+    coordinates (for a card at y=29, the Footer -- whose text scores as
+    "painted").  The compositor's map holds only the widgets it actually
+    draws, each with its clip, so anything scrolled away drops out of the
+    question instead of answering it wrongly.
+
+    **AND THE SAME MAP IS WHY CONDITION C IS ASKED HERE AND NOT OVER
+    `app.query(TaskCard)`.**  The first version of this file asked every card
+    in the tree, and that made the sweep FAIL LOUD on a perfectly good screen
+    in 3 of 30 cross-process runs (all three on the COLUMNS branch --
+    `board naught`, `board instrument` x2 -- with four cards reported stale at
+    one uniform seat and never coming right inside `MAX_SETTLE`).  The tree is
+    wider than the frame: measured on this fixture, 3 to 9 of the 15 cards are
+    in the DOM but not drawn in every one of the eleven languages, at seats
+    that belong to a layout that is no longer on screen (50, 55, 107, 111).
+    `KanbanBoard.build()` says why in its own comment -- `remove_children()`
+    is ASYNCHRONOUS, so for a beat the board holds the previous build's
+    widgets too, and a columns-to-columns theme switch leaves them at a seat
+    close to but not equal to the new one.  A card the compositor is not
+    drawing contributes no cells, so it cannot make the capture wrong, and
+    refusing to settle on it is a false positive by construction.
+
+    Where a screen mounts none of these -- the `--surface` sheets, which are a
+    bare `Static` -- the list is empty, A and C are vacuously true and B
+    settles the frame by itself.  One condition, no special case.
+    """
+    from textual.widgets import Static
+    from kanban import TaskCard
+    drawn = app.screen._compositor.visible_widgets
+    h = len(rows)
+    waiting: list[str] = []
+    for w in app.query(Static):
+        if not (w.id == HERO_ID
+                or any(w.has_class(c) for c in BOARD_CONTENT)):
+            continue
+        box = drawn.get(w)
+        if box is None:
+            continue                      # clipped away: evidence of nothing
+        area = box[0].intersection(box[1])
+        if not (area.width and area.height):
+            continue
+        name = f"{w.id or '.'.join(sorted(w.classes))}@{area.x},{area.y}"
+        if not any(rows[y][area.x: area.x + area.width].strip()
+                   for y in range(area.y, min(area.y + area.height, h))):
+            waiting.append(f"{name} {area.width}x{area.height} BLANK")
+        elif isinstance(w, TaskCard) and _stale_paint(w):
+            waiting.append(f"{name} STALE PAINT (composed at a seat it no "
+                           f"longer has; seat is now {w.size.width})")
+    return waiting
+
+
+def _stale_paint(card) -> bool:
+    """CONDITION C: was this card's paint composed at a seat it no longer has?
+
+    Lifted verbatim in behaviour from `verify_language.py:322`, which cannot be
+    imported (that file has no `if __name__ == "__main__"` guard, so importing
+    it runs all 9923 checks).  Ask the card what it would draw RIGHT NOW and
+    compare it to what it is already showing, with `update` intercepted so the
+    answer is collected and never applied: this REPORTS, it does not repair.
+    A settle that silently re-rendered the board would mask the exact class of
+    bug it exists to catch.
+    """
+    got: list = []
+    card.update = got.append
+    try:
+        card.render_card()
+    finally:
+        del card.update            # drop the shim, restore the class method
+    return bool(got) and got[0] != card.content
+
+
 async def settle(pilot, app, label: str) -> list[str]:
-    """Wait for a frame that has stopped changing AND has painted content.
+    """Wait for a frame the app has actually finished composing.
 
-    THREE consecutive identical composited frames, not two.  Two equal frames
-    is also what a widget looks like in the gap between being mounted and being
-    painted -- `TaskCard.on_mount` defers its paint with `call_after_refresh`,
-    so "mounted" and "drawn" are different moments.
+    Three conditions, all of which must hold on the SAME read:
 
-    Condition A of the real harness (`verify_language.py:338`, every mounted
-    content widget has painted pixels inside its CLIPPED area) is deliberately
-    NOT reimplemented here.  It was tried: reading `widget.region` directly and
-    demanding ink gives false positives for anything scrolled out of its
-    column, and the sweep timed out on frames that were perfectly fine.  Doing
-    it properly needs the compositor's clipping, which is the harness's job.
-    What guards this file instead is the CROSS-PROCESS reproducibility check in
-    `main()` -- if a race ever does slip a half-painted frame through, two
-    independent runs disagree and the sweep fails rather than shipping it.
+      A  every content widget the compositor says it is drawing carries ink
+         inside its own clipped area -- the four classes `build()` mounts and
+         `#hero`
+      B  `STABLE_READS` identical composited frames
+      C  no DRAWN `TaskCard` holds a paint composed at a seat it no longer has
 
-    Why THREE identical reads and not two.  Two consecutive equal frames is
-    also what a widget looks like in the gap between being mounted and being
-    painted; the third read is what distinguishes a screen at rest from a
-    screen mid-transition.
+    A and C are one pass over the compositor's own map (`_not_at_rest`); B is
+    the read counter below.
+
+    **B ALONE WAS THE DEFECT, AND B ALONE CANNOT BE FIXED BY WAITING LONGER.**
+    This docstring used to argue that condition A was deliberately not
+    reimplemented here, that a naive region slice gave false positives, and
+    that the cross-process check in `main()` would catch anything that slipped
+    through.  The first two were true of the naive version; the third was the
+    mistake.  `main()` DID catch it -- it caught it 58.9 % of the time
+    (`.fast-dev-flow/03-increments/race-probe.md` §4b, 30 fresh-interpreter
+    sweeps) -- and a check that fails on more than half of all runs is not a
+    guard, it is a coin flip that has to be re-run until it agrees.
+
+    The reason B is not merely SHORT is worth stating, because it is the whole
+    mechanism: a widget waiting on a deferred re-render produces a genuinely
+    static frame while it waits.  `TaskCard.on_mount` defers its paint with
+    `call_after_refresh`; `Hero.show` is driven by a worker; the split branch
+    fills its detail pane from `_seed_detail`, also deferred.  Every one of
+    those makes "mounted" and "drawn" different moments in which nothing
+    changes between reads.  No number of identical reads can distinguish that
+    state from rest -- only asking the widget tree can, which is A and C.
+
+    The false-positive worry that kept A out is answered by
+    `visible_widgets` -- see `_not_at_rest`, which uses the compositor's own
+    clip rather than the widget's screen-space region, and which is also why
+    C is asked about the cards on screen rather than every card in the tree.
+    Validated on the only evidence that can settle it: 30 cross-process sweeps
+    of all 22 frames, **0 drifting, 0.0 % pairwise** (was 6 and 58.9 %).
+
+    **AND IT NOW FAILS LOUD ON A FRAME THE OLD SETTLE USED TO WRITE.**  Three
+    of those 30 sweeps did not finish: `board instrument`, `board industrial`
+    and `board naught` -- the COLUMNS branch -- raised the timeout below with
+    four DOING-column cards holding a paint composed at a narrower seat.  That
+    is not this function being impatient, and it was measured rather than
+    assumed: kept running for **640 iterations / 19.5 s** past the bound, the
+    same four cards still read `Design home...` where their present seat draws
+    `Design homepage moc...`.  The app WEDGES, and nothing corrects it.  The
+    old condition WROTE that frame, and it is the drift race-probe.md §5 named
+    for exactly these three languages, character for character.  A sweep that
+    stops rather than shipping it is the whole point of the change -- but the
+    ~10 % loud failure is F-1's remainder, it lives in `kanban.py` and not
+    here, and a caller who sees this timeout on a columns language is looking
+    at that defect rather than at a slow machine.
     """
     stable = 0
     prev: list[str] | None = None
+    waiting: list[str] = []
     for _ in range(MAX_SETTLE):
         await pilot.pause()
         rows = screen_text(app)
@@ -247,8 +423,30 @@ async def settle(pilot, app, label: str) -> list[str]:
             continue
         if not any(r.strip() for r in rows):
             raise RuntimeError(f"{label}: frame settled BLANK")
+        # A and C are asked only once B is otherwise satisfied: they cost a
+        # widget walk and a shadow render per drawn card, and a frame that is
+        # still changing is going to be re-read anyway.
+        waiting = _not_at_rest(app, rows)
+        if waiting:
+            # NOT a settled frame, however still it looks -- keep waiting.
+            #
+            # AND `stable` IS NOT RESET HERE, WHICH WAS MEASURED RATHER THAN
+            # REASONED.  The first version of this did reset it, on the theory
+            # that the frame must be stable AFTER the last widget comes to
+            # rest.  It is -- but the run of identical reads already delivers
+            # that for free, because a widget that finishes painting CHANGES
+            # the composited frame and `stable` drops to 0 on the next read by
+            # itself.  Resetting as well only spends the MAX_SETTLE budget:
+            # every failed check threw away a seven-read run-up, and with A
+            # watching the hero (which waits on a worker) `board industrial`
+            # timed out in 1 of 3 sweeps -- a settle that fails LOUD on a
+            # perfectly good screen, which is its own kind of wrong.
+            continue
         return rows
-    raise RuntimeError(f"{label}: never settled after {MAX_SETTLE} frames")
+    raise RuntimeError(
+        f"{label}: never settled after {MAX_SETTLE} frames; not settled: "
+        + (", ".join(waiting[:4]) + (" ..." if len(waiting) > 4 else "")
+           if waiting else "nothing -- the FRAME never stopped changing"))
 
 
 CW, LH, FS, PAD = 8.4, 17.0, 14.0, 10.0
