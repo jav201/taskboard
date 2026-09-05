@@ -14,7 +14,7 @@
                                                                                                                       
      ⣿BOARD  ⠂lanes  ⠂agenda  ⠂gantt                                                                                  
                                                                                                                       
-      ⠙ ⠿   2 Nearest   ⠮ ⠿   2 Overdue   ⠿ ⠿   4 Work in   ⠺ ⠿   1 Blocked   ⠳ ⠿   9 Workday   ⠋ ⠿ -98 Board f       
+      ⠙ ⠿   2 Nearest   ⠮ ⠿   2 Overdue   ⠿ ⠿   4 Work in   ⠺ ⠿   1 Blocked   ⠳ ⠿   9 Workday   ⠋ ⠿   7 Board f       
                                                                                                                       
       BACKLOG                                        9      DOING                   4      DONE            2          
         ─├────7d┴───14d┴───21d┴                               ─├────7d┴───14d┴──             ─├────7d┴─               

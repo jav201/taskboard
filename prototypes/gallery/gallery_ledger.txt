@@ -9,7 +9,7 @@
                                 switch     ▪·· open    ──▪ posted   default  off·on                                   
                                            ▶·· open    ──▶ posted   focused                                           
                                            ●·· open    ──● posted   active                                            
-                                           ▫╌╌ open    ┄┄▫ posted   disabled                                          
+                                           ▫╌╌ open    ┄┄▫ posted   disabled        ▂▂                                
                                 checkbox   │ │ open    │×│ posted   default  off·on                                   
                                            ▶ │ open    ▶×│ posted   focused                                           
                                            ▶·│ open    ▶●│ posted   active                                            

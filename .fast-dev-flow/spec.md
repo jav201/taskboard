@@ -47,7 +47,7 @@ capture that a clone does not carry.
 
 ## 3. Acceptance criteria (observable)
 
-- [ ] **AC-1 · inc20 · the settle waits for a composed frame.** `settle()` requires **eight** identical
+- [x] **AC-1 · inc20 · the settle waits for a composed frame.** `settle()` requires **eight** identical
   composited reads (was three) **and** two widget conditions before it signs off:
   **A** — every content widget the compositor says it is drawing carries ink inside its own clipped area,
   where "content widget" is the four classes `KanbanBoard.build()` mounts (`kb-card`, `col-head`,
@@ -57,28 +57,28 @@ capture that a clone does not carry.
   **Measured, not asserted:** `race_probe.py --cross 30 --engine shipped` — the arm that runs the
   shipped file — must report **0 of 22 frames drifting** and **0.0 % pairwise disagreement**, against the
   6/22 and 58.9 % of the input. The sweep-time cost is **stated**, not hidden.
-- [ ] **AC-2 · inc20 · the two docstrings state the settle that exists.** The module header's
+- [x] **AC-2 · inc20 · the two docstrings state the settle that exists.** The module header's
   "SETTLE IS WEAKER HERE THAN IN THE HARNESS" paragraph and `settle()`'s "Condition A … is deliberately
   NOT reimplemented here" paragraph are rewritten to state the new design and to cite
   `.fast-dev-flow/03-increments/race-probe.md` for the numbers. A third block — the `TEXTUAL_ANIMATIONS`
   comment's "filed as F-1, open, and NOT fixed here" — is in the same file and becomes false at inc20;
   it is corrected in the same edit and named in the packet.
-- [ ] **AC-3 · inc20 · the hero wait has a test, and the test has teeth.** `tests/test_capture_settle.py`
+- [x] **AC-3 · inc20 · the hero wait has a test, and the test has teeth.** `tests/test_capture_settle.py`
   drives a fixture app whose hero band fills through `call_after_refresh` several refresh cycles late.
   Two assertions, and the first is what stops the second being vacuous: **(a)** the OLD condition
   (B alone, three reads — quoted in the test) signs the frame off with the hero band **blank**;
   **(b)** `CL.settle` returns a frame whose hero band carries ink. Red-then-green is pasted in the packet
   from a real run against the pre-change file, not narrated.
-- [ ] **AC-4 · inc21 · the capture no longer reads a timestamp git does not carry.** `sig_board_file`'s
+- [x] **AC-4 · inc21 · the capture no longer reads a timestamp git does not carry.** `sig_board_file`'s
   input is pinned for the capture, the mechanism is named with its reason, and a fresh checkout of this
   worktree reproduces the committed frames. Observable: two sweeps taken at two different fixture mtimes
   produce byte-identical `board_*.txt`.
-- [ ] **AC-5 · inc21 · the 22 frames are re-baked and every mover is named.** `prototypes/gallery/`'s 22
+- [x] **AC-5 · inc21 · the 22 frames are re-baked and every mover is named.** `prototypes/gallery/`'s 22
   board/gallery frames are re-swept with the new settle and the pinned signature and committed. The
   packet lists **which frames changed and why** — the two predicted causes are the hero/load-bar seats
   (AC-1) and the `-98` → pinned board-file signal (AC-4). A frame that moved for a third reason is a
   finding, not a footnote.
-- [ ] **AC-6 · nothing else moves.** The 11 `surface_*.txt` frames stay byte-identical to
+- [x] **AC-6 · nothing else moves.** The 11 `surface_*.txt` frames stay byte-identical to
   `.fast-dev-flow/baseline-kits2/`. The surface sweep is run **plain and alone** (F-8). The 30 component
   frames under `prototypes/components/` are untouched — no increment here reaches them.
 
@@ -144,13 +144,89 @@ No secrets, no network, no new dependency, no destructive command. `tests/test_n
 | | |
 | --- | --- |
 | Phase A (spec) | **done** — this file; predecessor archived |
-| Phase B (implement) | inc20 · the settle · AC-1, AC-2, AC-3 — **pending** |
-| | inc21 · reproducible frames · AC-4, AC-5, AC-6 — **pending** |
-| Phase C (close) | §8 — **pending** |
+| Phase B (implement) | inc20 · the settle · AC-1, AC-2, AC-3 — **done** (`7462881`) |
+| | inc21 · reproducible frames · AC-4, AC-5, AC-6 — **done** |
+| Phase C (close) | §8 — **done** |
 | Notes | **<= 5 files per increment, one agent, sequential.** The 22 re-baked frames of inc21 are data, not source: inc21 touches **one** source file. |
 
 ---
 
 ## 8. Close (filled in phase C)
 
-_(pending)_
+### What changed
+
+`prototypes/capture_languages.py`'s `settle()` implemented condition B alone — three identical
+composited reads — and a widget waiting on a deferred re-render produces a genuinely static frame while
+it waits. It now asks three conditions: **A** (every content widget the compositor is drawing carries ink
+in its own clipped area — the four classes `build()` mounts **plus `#hero`**), **B** (eight identical
+reads, was three), **C** (no drawn `TaskCard` holds a paint composed at a seat it no longer has, asked as
+a shadow render that measures and never repairs). And `freeze_clock()` now pins the one input it had left
+unpinned: the fixture's own mtime, which `sig_board_file` subtracts from the frozen clock and which git
+does not carry.
+
+The 22 committed frames were re-baked through the documented command and every mover is named.
+
+### How it was tested
+
+- `python -X utf8 prototypes/race_probe.py --cross 30 --engine shipped` — 30 whole sweeps in 30 fresh
+  interpreters, all 22 frames diffed. **0/22 drifting, 0.0 % pairwise** (was 6/22 and 58.9 %).
+- `python prototypes/capture_languages.py` — clean, and its own cross-process determinism check reported
+  **22 grids identical across two PROCESSES**.
+- Two sweeps taken at fixture mtimes 99 days apart: **22 frames, 0 differ**.
+- `python prototypes/capture_languages.py --surface`, plain and alone (F-8): the 11 surface frames are
+  **byte-identical to HEAD**.
+- `python -X utf8 prototypes/verify_language.py`: **2 failures, F-14's two, unmoved.**
+- `python -X utf8 -m pytest -q`: `1 failed, 685 passed, 2 skipped in 33.49s` — 682 baseline + 4 new; the
+  one failure is the documented environment-dependent clipboard test.
+
+### Evidence per AC
+
+| AC | verdict | evidence |
+| --- | --- | --- |
+| AC-1 · the settle waits for a composed frame | **met** | `inc20.md` §4a — 0/22 frames, 0/351 pairs, against 6/22 and 58.9 % |
+| AC-2 · the two docstrings state the settle that exists | **met** | `inc20.md` §1; the third block (`TEXTUAL_ANIMATIONS`'s "NOT fixed here") corrected in the same edit and named |
+| AC-3 · the hero wait has a test with teeth | **met** | `inc20.md` §4c — 2 failed / 1 passed against HEAD, 3 passed after; the one that passes both is the anti-vacuous guard |
+| AC-4 · the capture no longer reads a checkout timestamp | **met** | `inc21.md` §4a — 22 frames identical across two mtimes; `test_the_board_file_signal_does_not_read_the_checkout_clock` |
+| AC-5 · the 22 frames re-baked, every mover named | **met** | `inc21.md` §4c — 11 boards on the signal cell, 11 sheets on the scroll-bar thumb, 2 of them also gaining a row |
+| AC-6 · nothing else moves | **met** | `inc21.md` §4d — `git status` on `surface_*` is empty; the two deltas vs `baseline-kits2` already differed at HEAD |
+
+### Open risks / pending
+
+- **F-16 (new, and the batch's own finding): a `TaskCard` in a column can permanently hold a paint
+  composed at a narrower seat.** Four cards at once, COLUMNS branch only, ~10 % of sweeps, measured still
+  stale **640 iterations / 19.5 s** past the settle bound. `on_mount`'s `call_after_refresh` and
+  `on_resize` are both supposed to correct it and neither does. The old settle WROTE that frame — it is 2
+  of F-1's 6 drifting frames — and the new one fails loud instead. It belongs to
+  `prototypes/widget_slice/kanban.py` and it is the next task.
+- **Two published component sheets were missing a control state and nothing caught it.** `gallery_darkside`
+  and `gallery_solari` had no `invalid` row — the sixth derived state `kits-learn-3` shipped — because the
+  old settle signed off before the sheet finished composing. Nothing in the suite asserts that a published
+  FRAME carries every state its registry derives; `tests/test_components.py` asserts the KIT. That gap is
+  still open.
+- **The documented sweep now fails loud about one run in ten** (`main()` runs two sweeps, so ~19 % per
+  invocation). Better than the 58.9 % silent failure it replaces — nothing wrong is written — but new.
+- **Condition A on `#hero` is an ink check, not a seat check.** A hero composed at a stale seat that still
+  carries ink would pass it; there is no shadow-render oracle for the hero, because `Hero.show` needs data
+  only the app has. What covers it today is the eight reads — 30 sweeps of evidence, not proof.
+- **`FIXTURE_AGE_S` is a second constant the frames depend on**, alongside `FROZEN`, and the capture now
+  writes metadata to the fixture. A read-only checkout would fail the sweep where it used to produce wrong
+  art.
+- **F-17 (new, found at the close): `verify_language.py:11592` OVERWRITES `prototypes/out/_fixture_late.json`.**
+  It derives its two probe fixtures relative to `date.today()` and writes them over the capture's fixture,
+  so running the language harness moves every date in the 22 frames — measured today at +33 days
+  (`2026-09-05 − FROZEN`). The symptom is already in `export_to_skill.py`'s own docstring; the culprit was
+  not. Restored from HEAD, the re-bake proved reproducible against it, and it is **not fixed** — the
+  harness is a declared non-goal. It defeats the same contract AC-4 exists to protect, and it means this
+  batch's validation ORDER (re-bake, then verify) was load-bearing rather than deliberate.
+- **F-14** — `verify_language.py`'s two pre-existing reds, re-measured and unmoved. **F-15** — untouched.
+- **F-8** — obeyed, not fixed.
+
+### Security flags — handling
+
+The one flag §6 named is closed rather than widened. The mtime pin stamps
+`prototypes/out/_fixture_late.json` and nothing else, inside `freeze_clock()`'s existing repointing away
+from `~/.taskboard/board.json`; `sig_board_file` is unchanged, so the shipped app still reports the real
+board's age for its real user. `tests/test_no_live_board.py` and `tests/test_privacy_sweep.py` green. No
+secrets, no network, no new dependency, no destructive command, no terminal process killed, every headless
+run captured to a file rather than to `DEVNULL` (L-42) — with `--surface` run plain and alone, as F-8
+requires.

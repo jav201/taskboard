@@ -31,16 +31,18 @@
 <text x="262.0" y="176.3" fill="#ff6600">│</text>
 <text x="287.2" y="176.3" fill="#9a9a9a">Corgi Engineering</text>
 <text x="740.8" y="176.3" fill="#ff6600">│</text>
-<rect x="262.0" y="180.0" width="487.2" height="17.0" fill="#1c1c1c"/>
+<rect x="262.0" y="180.0" width="445.2" height="17.0" fill="#1c1c1c"/>
+<rect x="707.2" y="180.0" width="16.8" height="17.0" fill="#000000"/>
+<rect x="724.0" y="180.0" width="25.2" height="17.0" fill="#1c1c1c"/>
 <text x="262.0" y="193.3" fill="#ff6600">│</text>
 <text x="287.2" y="193.3" fill="#9a9a9a">──────────────────────────────────────────────────</text>
+<text x="707.2" y="193.3" fill="#003054">▁▁</text>
 <text x="740.8" y="193.3" fill="#ff6600">│</text>
 <rect x="262.0" y="197.0" width="445.2" height="17.0" fill="#1c1c1c"/>
 <rect x="707.2" y="197.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="197.0" width="25.2" height="17.0" fill="#1c1c1c"/>
 <text x="262.0" y="210.3" fill="#ff6600">│</text>
 <text x="287.2" y="210.3" fill="#9a9a9a">─</text>
-<text x="707.2" y="210.3" fill="#003054">▇▇</text>
 <text x="740.8" y="210.3" fill="#ff6600">│</text>
 <rect x="262.0" y="214.0" width="445.2" height="17.0" fill="#1c1c1c"/>
 <rect x="707.2" y="214.0" width="16.8" height="17.0" fill="#000000"/>

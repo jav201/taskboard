@@ -14,7 +14,7 @@
                                                                                                                       
   ▸board │  lanes │  agenda │  gantt                                                                                  
                                                                                                                       
-   @   2 Nearest dea  !   2 Overdue cou  ~   4 Work in fli  x   1 Blocked      $   9 Workday bud  # -98 Board file    
+   @   2 Nearest dea  !   2 Overdue cou  ~   4 Work in fli  x   1 Blocked      $   9 Workday bud  #   7 Board file    
                                                                                                                       
    BACKLOG 9▄                                                                                                         
    ──────────────────────────          F I X   C H E C K O U T   5 0 0   E R R O R                                    

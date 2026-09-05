@@ -51,7 +51,7 @@
 <rect x="388.0" y="231.0" width="8.4" height="17.0" fill="#17171a"/>
 <rect x="556.0" y="231.0" width="8.4" height="17.0" fill="#17171a"/>
 <rect x="707.2" y="231.0" width="8.4" height="17.0" fill="#17171a"/>
-<rect x="866.8" y="231.0" width="25.2" height="17.0" fill="#17171a"/>
+<rect x="866.8" y="231.0" width="8.4" height="17.0" fill="#17171a"/>
 <text x="35.2" y="244.3" fill="#6e6a60">DEP</text>
 <text x="68.8" y="244.3" fill="#e03a2f">2</text>
 <text x="85.6" y="244.3" fill="#6e6a60">NEAREST</text>
@@ -68,8 +68,8 @@
 <text x="707.2" y="244.3" fill="#f5a300">9</text>
 <text x="724.0" y="244.3" fill="#6e6a60">WORKDAY</text>
 <text x="833.2" y="244.3" fill="#6e6a60">SKD</text>
-<text x="858.4" y="244.3" fill="#f0ede4"> -98 </text>
-<text x="900.4" y="244.3" fill="#6e6a60">BOARD</text>
+<text x="858.4" y="244.3" fill="#f0ede4"> 7 </text>
+<text x="883.6" y="244.3" fill="#6e6a60">BOARD FILE </text>
 <rect x="35.2" y="265.0" width="915.6" height="17.0" fill="#f0ede4"/>
 <text x="35.2" y="278.3" fill="#0b0b0c"> GATE BACKLOG 09                                                                 STATUS    PROJ          PRI </text>
 <rect x="35.2" y="282.0" width="16.8" height="17.0" fill="#17171a"/>
