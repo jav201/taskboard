@@ -80,6 +80,26 @@ class TaskCard(Static):
         # first paint so a focus that lands early has something to read
         self.meta: dict = {}
         self.chip, self.tone = "", tokens["mut"]
+        # the seat `render()` last composed at; -1 so the first paint composes
+        self._painted_w = -1
+
+    def render(self):
+        """Compose at the seat we are ABOUT TO DRAW AT (F-16).
+
+        `on_resize` is not enough, because Textual guarantees the RE-RENDER but
+        not the EVENT. `Screen._refresh_layout` calls `_size_updated` on every
+        widget in the compositor's layers — which sets `_size` and dirties the
+        widget — but posts `Resize` only for the ones its MAP DIFF calls new or
+        resized. A lazy `Compositor.full_map` rebuild absorbs the new geometry
+        into that map first, so the diff sees nothing and `on_resize` never
+        fires. Measured, columns branch, 3 of 30 sweeps: four DOING cards
+        mounted at seat 0, both `on_mount` paints spent at the 20-cell
+        fallback, `_size` then set 0 -> 33 with no `Resize`, bake held for good.
+        """
+        if self._painted_w != self.size.width:
+            self._painted_w = self.size.width
+            self.render_card()
+        return super().render()
 
     def set_cursor(self, on: bool) -> None:
         """Called ONLY by KanbanBoard.on_card_focused, which is the single
