@@ -926,9 +926,12 @@ async def main():
           set(LG.COMPONENT_PARTS["slider"]) - set(LG.COMPONENT_PARTS["bar"])
           == {"knob"}
           and set(LG.COMPONENT_PARTS["bar"]) < set(LG.COMPONENT_PARTS["slider"]))
-    check("registry: the state axis is LVGL's canonical six, in order",
+    check("registry: the state axis is LVGL's canonical six plus INVALID, "
+          "in order — the seventh entry and the sixth CONTROL state, added "
+          "by kits-learn-3 because a form screen had no seat in the contract "
+          "and five languages invented the same red `!` to fill it",
           LG.STATES == ("default", "focused", "edited", "active", "checked",
-                        "disabled"))
+                        "invalid", "disabled"))
     check("registry: a slider takes FOCUSED, EDITED and ACTIVE",
           all(s in CS["slider"] for s in (LG.FOCUSED, LG.EDITED, LG.ACTIVE)))
     check("registry: a bar takes NONE of them — no knob, no affordance of "
@@ -2716,7 +2719,8 @@ async def main():
     # content ruling read at the value instead of at the label.
     TF = CS["textfield"]
     TFP = LG.COMPONENT_PARTS["textfield"]
-    TF5 = (LG.DEFAULT, LG.FOCUSED, LG.EDITED, LG.ACTIVE, LG.DISABLED)
+    TFS = (LG.DEFAULT, LG.FOCUSED, LG.EDITED, LG.ACTIVE, LG.INVALID,
+           LG.DISABLED)
     LONG = "abcdefghijklmnopqrstuvwxyz"
     FW = 8                                  # the field's columns in these laws
 
@@ -2786,9 +2790,10 @@ async def main():
           "a slider's knob",
           LG.actuator("textfield") == "caret")
     check("registry: the axis is default / focused / EDITED / active / "
-          "disabled — five states, DERIVED, and EDITED is the one this "
-          "component was chosen to test",
-          TF == TF5, f"{TF}")
+          "INVALID / disabled — six states, DERIVED, and the pair EDITED and "
+          "INVALID is what this component was chosen to test: what the "
+          "arrows can change, the form can reject",
+          TF == TFS, f"{TF}")
     check("registry: EDITED IS PRESENT AND IT MEANS WHAT IT SAYS HERE. On a "
           "slider it is 'the arrows now move the value'; here it is 'the "
           "keystrokes now land IN the text', and the caret is the promise of "
@@ -2813,16 +2818,16 @@ async def main():
     LG.COMPONENT_PARTS["_probe_both"] = ("main", "indicator", "caret")
     try:
         check("control: a NEW component declaring `(main, caret)` gets the "
-              "text field's five states with nothing hand-listed — the "
+              "text field's six states with nothing hand-listed — the "
               "derivation, not the text field, is what knows this",
-              LG.component_states("_probe_field") == TF5)
+              LG.component_states("_probe_field") == TFS)
         check("control: ... and its actuator is the caret, off GRIPS alone",
               LG.actuator("_probe_field") == "caret"
               and not LG.has_value("_probe_field"))
         check("control: a component with BOTH an extent and a field still "
-              "gets five states — an interior counted twice is one interior, "
+              "gets six states — an interior counted twice is one interior, "
               "and the knobless grip is still the caret",
-              LG.component_states("_probe_both") == TF5
+              LG.component_states("_probe_both") == TFS
               and LG.actuator("_probe_both") == "caret")
         _sv = LG.CHECKABLE
         LG.CHECKABLE = _sv + ("_probe_field",)
@@ -2841,7 +2846,7 @@ async def main():
     check("control: ... and the registry is put back",
           "_probe_field" not in LG.COMPONENT_PARTS
           and "_probe_both" not in LG.COMPONENT_PARTS
-          and LG.component_states("textfield") == TF5)
+          and LG.component_states("textfield") == TFS)
 
     _sp = LG.COMPONENT_PARTS["textfield"]
     LG.COMPONENT_PARTS["textfield"] = ("main",)
@@ -2855,7 +2860,7 @@ async def main():
         LG.COMPONENT_PARTS["textfield"] = _sp
     check("control: ... registry restored again",
           LG.COMPONENT_PARTS["textfield"] == ("main", "caret")
-          and LG.component_states("textfield") == TF5)
+          and LG.component_states("textfield") == TFS)
 
     # -- (3) SOURCE: the new fork is on the REGISTRY, names nobody ---------
     for fn in (LG.has_interior, LG.actuator, LG.component_states,
@@ -2921,13 +2926,16 @@ async def main():
               f"interior to put between them",
               all(len(g_) % 2 == 1 and len(g_) >= 3 for g_ in forms.values()),
               str({s_: len(g_) for s_, g_ in forms.items()}))
-        check(f"{name}: ONE length across all five states — the frame may not "
+        check(f"{name}: ONE length across every state — the frame may not "
               f"move under the words",
               len({len(g_) for g_ in forms.values()}) == 1)
-        check(f"{name}: the five grounds are pairwise DISTINCT with colour "
+        check(f"{name}: the grounds are pairwise DISTINCT with colour "
               f"stripped — a field separated by hue alone says nothing to a "
-              f"greyscale eye, and the value may fill every other cell",
-              len(set(forms.values())) == 5,
+              f"greyscale eye, and the value may fill every other cell. "
+              f"COUNTED off the derivation, never numbered here: the axis "
+              f"grew by one in kits-learn-3 and this check had to be edited, "
+              f"which is a literal earning its keep",
+              len(set(forms.values())) == len(forms),
               str(sorted(set(forms.values()))))
         check(f"{name}: the caret is exactly ONE cell wide — a mark that "
               f"spent two would push the value under itself",
@@ -3133,9 +3141,10 @@ async def main():
               f"selected' and 'the field entered' two readable states",
               {LG.EDITED, LG.FOCUSED} <= set(greys)
               and greys[LG.EDITED] != greys[LG.FOCUSED])
-        check(f"{name}: all five states are pairwise distinct in greyscale "
-              f"with a value in the field",
-              len(set(greys.values())) == 5,
+        check(f"{name}: all states are pairwise distinct in greyscale "
+              f"with a value in the field — INVALID included, which is the "
+              f"one a fallback along the state chain would silently pass",
+              len(set(greys.values())) == len(greys),
               str(sorted(set(greys.values()))))
 
         # THE ACCENT LAW, a sixth time.
@@ -3921,8 +3930,8 @@ async def main():
           "granted — a grip AND an interior AND not a boolean. On a slider "
           "EDITED means the arrows now move the value; here the arrows ARE "
           "the component, so this is the state the axis was built for",
-          ST == (LG.DEFAULT, LG.FOCUSED, LG.EDITED, LG.ACTIVE, LG.DISABLED)
-          == CS["slider"], f"{ST}")
+          ST == (LG.DEFAULT, LG.FOCUSED, LG.EDITED, LG.ACTIVE, LG.INVALID,
+                 LG.DISABLED) == CS["slider"], f"{ST}")
     check("registry: ... and no OTHER component's axis moved — a new part "
           "that changed an old component's states would be a refactor "
           "wearing an increment's clothes",

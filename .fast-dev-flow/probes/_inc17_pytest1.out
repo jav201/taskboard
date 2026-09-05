@@ -1,0 +1,47 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m [ 33%]
+[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m [ 66%]
+[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31m [ 99%]
+[0m[31mF[0m[31m                                                                        [100%][0m
+================================== FAILURES ===================================
+[31m[1m______________ test_naughts_separation_is_charge_and_not_a_frame ______________[0m
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_naughts_separation_is_charge_and_not_a_frame[39;49;00m():[90m[39;49;00m
+    [90m    [39;49;00m[33m"""Operator ruling 4. The page keeps every dot it had and loses its[39;49;00m
+    [33m    CHARGE; the question is the only region left lit, bounded by the lattice[39;49;00m
+    [33m    at full charge. No box, no scrim, no mark laid in front of anything."""[39;49;00m[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtaskboard[39;49;00m[90m [39;49;00m[94mimport[39;49;00m naught [94mas[39;49;00m NA[90m[39;49;00m
+        k = LG.kit([33m"[39;49;00m[33mnaught[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        out = k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)[90m[39;49;00m
+        lit = [r [94mfor[39;49;00m r [95min[39;49;00m out [94mif[39;49;00m plain(r).strip(NA.ON) == [33m"[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+>       [94massert[39;49;00m [96mlen[39;49;00m(lit) == [94m2[39;49;00m, [plain(r) [94mfor[39;49;00m r [95min[39;49;00m out][90m[39;49;00m
+[1m[31mE       AssertionError: ['row 0 of the board', 'row 1 of the board', 'row 2 of the board', '∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙', 'Delete 3 tasks?', '', ...][0m
+[1m[31mE       assert 3 == 2[0m
+[1m[31mE        +  where 3 = len(['[#f5f5f5]∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙[/]', '', '[#f5f5f5]∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙[/]'])[0m
+
+[1m[31mtests\test_components.py[0m:522: AssertionError
+[31m[1m________ test_blueprints_title_block_knockout_comes_from_the_same_seat ________[0m
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_blueprints_title_block_knockout_comes_from_the_same_seat[39;49;00m():[90m[39;49;00m
+    [90m    [39;49;00m[33m"""The move is only legal if it is the SAME mark. Asserted by rendering[39;49;00m
+    [33m    the title block and finding the seat's exact output inside it."""[39;49;00m[90m[39;49;00m
+        k = LG.kit([33m"[39;49;00m[33mblueprint[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        k.meter([94m3[39;49;00m, [94m9[39;49;00m, [[94m1[39;49;00m, [94m1[39;49;00m, [94m1[39;49;00m], [94m60[39;49;00m)          [90m# the block reads its figures here[39;49;00m[90m[39;49;00m
+        stamp = [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(k.tabs([[33m"[39;49;00m[33mboard[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mlog[39;49;00m[33m"[39;49;00m], [33m"[39;49;00m[33mboard[39;49;00m[33m"[39;49;00m).split([33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m))[90m[39;49;00m
+>       [94massert[39;49;00m [96many[39;49;00m(k.knockout_cell(w) [95min[39;49;00m stamp[90m[39;49;00m
+                   [94mfor[39;49;00m w [95min[39;49;00m ([33m"[39;49;00m[33mBOARD[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mboard[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mLOG[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mlog[39;49;00m[33m"[39;49;00m, k.mood.upper(),[90m[39;49;00m
+                             k.mood)), stamp[90m[39;49;00m
+[1m[31mE       AssertionError: [#eef4f8]┌[/]     [#eef4f8]┐[/]                [#7fa8c4]─────────────────────────────────────[/][0m
+[1m[31mE          [#eef4f8]BOARD[/]  [#7fa8c4]log[/]            [#7fa8c4]REV[/] [#eef4f8]2026-09-04[/]  [#7fa8c4]WORK[/] [#eef4f8]03/09[/]  [#7fa8c4]├ CLEAR ┤[/][0m
+[1m[31mE         [#eef4f8]└[/]     [#eef4f8]┘[/]                [#7fa8c4]─────────────────────────────────────[/][0m
+[1m[31mE       assert False[0m
+[1m[31mE        +  where False = any(<generator object test_blueprints_title_block_knockout_comes_from_the_same_seat.<locals>.<genexpr> at 0x00000266B8F9EDC0>)[0m
+
+[1m[31mtests\test_components.py[0m:546: AssertionError
+[36m[1m=========================== short test summary info ===========================[0m
+[31mFAILED[0m tests/test_components.py::[1mtest_naughts_separation_is_charge_and_not_a_frame[0m - AssertionError: ['row 0 of the board', 'row 1 of the board', 'row 2 of the ...
+[31mFAILED[0m tests/test_components.py::[1mtest_blueprints_title_block_knockout_comes_from_the_same_seat[0m - AssertionError: [#eef4f8]┌[/]     [#eef4f8]┐[/]                [#7fa8c4]───...
+[31m[31m[1m2 failed[0m, [32m215 passed[0m[31m in 0.42s[0m[0m

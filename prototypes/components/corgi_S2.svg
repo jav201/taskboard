@@ -22,10 +22,9 @@
 <text x="320.8" y="74.3" fill="#3a3a3a">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔▔</text>
 <text x="26.8" y="108.3" fill="#9a9a9a">due</text>
 <text x="52.0" y="108.3" fill="#d92b1a">*</text>
-<text x="144.4" y="108.3" fill="#3a3a3a">▁▁</text>
+<text x="144.4" y="108.3" fill="#3a3a3a">▄▀</text>
 <text x="161.2" y="108.3" fill="#f2f2f2">12/09/26</text>
-<text x="228.4" y="108.3" fill="#3a3a3a">··························▁▁</text>
-<text x="472.0" y="108.3" fill="#d92b1a">!</text>
+<text x="228.4" y="108.3" fill="#3a3a3a">··························▀▄</text>
 <text x="144.4" y="125.3" fill="#d92b1a">expected YYYY-MM-DD</text>
 <text x="26.8" y="159.3" fill="#9a9a9a">priority</text>
 <text x="144.4" y="159.3" fill="#3a3a3a">▁◦</text>

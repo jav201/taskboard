@@ -3,12 +3,12 @@ BOARD  16 tasks  ·  4 projects
                                                                                                     
   ▎  BACKLOG 5                                               │ DETAIL  Fix login redirect           
     ▎  Audit the theme tokens                           21d  │                                      
-    ▎    backlog · 21d                                       │ project                           Web
-    ▎  Drop the legacy shim                             30d  │ phase                           doing
-    ▎    backlog · 30d                                       │ due                                3d
-                                                             │ priority                         high
-▸ ▎  DOING 4                                                 │ status                           open
-▸   ▎  Fix login redirect                                3d  │ owner                          jav201
+    ▎    backlog · 21d                                       │ project                       ⡀⡤⣶ Web
+    ▎  Drop the legacy shim                             30d  │ phase                       ⡀⡤⣶ doing
+    ▎    backlog · 30d                                       │ due                            ⡀⡤⣶ 3d
+                                                             │ priority                     ⡀⡤⣶ high
+▸ ▎  DOING 4                                                 │ status                       ⡀⡤⣶ open
+▸   ▎  Fix login redirect                                3d  │ owner                      ⡀⡤⣶ jav201
     ▎    doing · 3d                                          │                                      
     ▎  Rate-limit the API                               2d!  │ ⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿  44%     
     ▎    doing · -2d                                         │                                      

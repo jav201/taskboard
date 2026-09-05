@@ -2,32 +2,12 @@
 <title>taskboard · corgi · S4 modal dialog</title>
 <rect width="860.0" height="564.0" fill="#121212"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<text x="10.0" y="23.3" fill="#6fe36f">[1]B O A R D</text>
-<text x="119.2" y="23.3" fill="#9a9a9a">[2]</text>
-<text x="144.4" y="23.3" fill="#3a3a3a">FORM</text>
-<text x="186.4" y="23.3" fill="#9a9a9a">[3]</text>
-<text x="211.6" y="23.3" fill="#3a3a3a">CFG</text>
-<text x="245.2" y="23.3" fill="#9a9a9a">[4]</text>
-<text x="270.4" y="23.3" fill="#3a3a3a">LOG</text>
-<text x="10.0" y="40.3" fill="#ff6600">[C]</text>
-<text x="43.6" y="40.3" fill="#f2f2f2">C O N F I R M</text>
-<text x="169.6" y="40.3" fill="#9a9a9a">MODE 5  ·  DESTRUCTIVE</text>
-<text x="10.0" y="57.3" fill="#9a9a9a">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
-<text x="26.8" y="91.3" fill="#f2f2f2">██  ███ █   ███ ███ ███</text>
-<text x="26.8" y="108.3" fill="#f2f2f2">█ █ █   █   █    █  █  </text>
-<text x="26.8" y="125.3" fill="#f2f2f2">█ █ ██  █   ██   █  ██ </text>
-<text x="26.8" y="142.3" fill="#f2f2f2">█ █ █   █   █    █  █  </text>
-<text x="26.8" y="159.3" fill="#f2f2f2">██  ███ ███ ███  █  ███</text>
-<text x="26.8" y="193.3" fill="#f2f2f2">3 TASKS</text>
-<text x="102.4" y="193.3" fill="#9a9a9a">WILL BE REMOVED FROM BACKLOG</text>
-<text x="26.8" y="210.3" fill="#9a9a9a">THIS CANNOT BE UNDONE</text>
-<text x="26.8" y="244.3" fill="#ff6600">▔▔</text>
-<text x="43.6" y="244.3" fill="#f2f2f2">   DELETE   </text>
-<text x="144.4" y="244.3" fill="#ff6600">▔▔</text>
-<text x="186.4" y="244.3" fill="#f2f2f2">▁▁   CANCEL   ▁▁</text>
-<text x="26.8" y="278.3" fill="#ff6600">[1]</text>
-<text x="60.4" y="278.3" fill="#9a9a9a">DELETE</text>
-<text x="136.0" y="278.3" fill="#ff6600">[2]</text>
-<text x="169.6" y="278.3" fill="#9a9a9a">CANCEL</text>
+<text x="10.0" y="244.3" fill="#f2f2f2">Delete 3 tasks?</text>
+<text x="10.0" y="278.3" fill="#9a9a9a">3 tasks will be removed from BACKLOG.</text>
+<text x="10.0" y="295.3" fill="#9a9a9a">This cannot be undone.</text>
+<text x="10.0" y="329.3" fill="#ff6600">▔▔</text>
+<text x="26.8" y="329.3" fill="#f2f2f2"> ▄Delete▄ </text>
+<text x="110.8" y="329.3" fill="#ff6600">▔▔</text>
+<text x="152.8" y="329.3" fill="#f2f2f2">▁▁  Cancel  ▁▁</text>
 </g>
 </svg>

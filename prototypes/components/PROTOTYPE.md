@@ -1,5 +1,13 @@
 # PROTOTYPE — seis pantallas canónicas × cinco lenguajes
 
+> **AMENDMENT 2026-09-04, after the operator's verdict.** The matrix in §1 and the per-language sections
+> below are the record of the PROTOTYPE ROUND and are kept verbatim. The batch that executed the verdict
+> is `kits-learn-3` (`.fast-dev-flow/spec.md`, packets `inc14.md`..`inc19.md`), and it moved the matrix
+> from **0** cells at `implementa` to **14 of 30**. The `.candidates.md` sidecars beside these frames have
+> been RE-RENDERED and now describe the current frames, so where §1 and a sidecar disagree, **the sidecar
+> is right and §1 is history**. Re-run `python -X utf8 prototypes/components/matrix.py` for the live table.
+
+
 **Ronda de prototipo, no de implementación.** 30 frames reales renderizados por la ruta del kit
 (`taskboard.language` → `Static` headless → `capture_languages.svg_from_grid`). **`taskboard/language.py`
 y los once kits están intactos.** Suite del worktree: `341 passed, 2 skipped`. Falta tu veredicto antes

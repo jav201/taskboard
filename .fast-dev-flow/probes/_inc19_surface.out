@@ -1,0 +1,15 @@
+image mbb_rho_final.npy | viewport 118x34 | 11 languages | animations off
+  naught      lattice   118x34  82.3% ink   raster (360, 120)
+  corgi       display   118x34  78.6% ink   raster (360, 120)
+  instrument  lattice   118x34  79.2% ink   raster (360, 120)
+  swiss       figure    118x34  74.1% ink   raster (360, 120)
+  industrial  display   118x34  78.6% ink   raster (360, 120)
+  nord        untinted  118x34  75.8% ink   raster (360, 120)
+  darkside    depth     118x34  68.7% ink   raster (360, 120)
+  prism       depth     118x34  68.7% ink   raster (360, 120)
+  ledger      refuse    118x34  10.5% ink   raster refused
+  solari      refuse    118x34   3.5% ink   raster refused
+  blueprint   tint      118x34  75.6% ink   raster (360, 120)
+
+  11 surfaces -> C:\Users\jjgh8\Github\taskboard\.claude\worktrees\kanban-variants\prototypes\gallery
+  no two identical (55 pairs)

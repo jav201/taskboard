@@ -21,7 +21,7 @@
       ██████                                                                                        
      [0] NO TASKS                                                                                   
                                                                                                     
-  [1] RUN   [2] CLOSE   [3] PREV   [4] NEXT                                                         
+  [enter] RUN   [esc] CLOSE   [^p] PREV   [^n] NEXT                                                 
                                                                                                     
                                                                                                     
                                                                                                     

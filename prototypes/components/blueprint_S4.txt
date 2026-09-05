@@ -2,20 +2,21 @@ BOARD  ·── 16 TASKS  ·  4 PROJECTS
                                                                                                     
   BACKLOG                                   ├─ 05 ─┤           DETAIL  ·── FIX LOGIN REDIRECT       
     AUDIT THE THEME TOKENS                  ├╌─── 21D ─────┤                                        
-    ·── DOCS ── BACKLOG ── LOW                                 project ························· Web
-    DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   phase ························· doing
-    ·── API ── BACKLOG ── NORM                                 due ······························ 3d
-                                                               priority ······················· high
-┌ DOING                                     ├ 04 ─┤            status ························· open
-┌   FIX LOGIN REDIRECT                      ├───┤ 03D          owner ························ jav201
-    ·── WEB ── DOING ── HIGH                                                                        
-                      ┌                                                    ┐                        
-                       REVISION  DELETE 3 TASKS?                                                    
-                       ·── 3 TASKS WILL BE REMOVED FROM BACKLOG.                                    
-                       ·── THIS CANNOT BE UNDONE.                                                   
+    ·── DOCS ── BACKLOG ── LOW                                 PROJECT ·──────────────────────── Web
+    DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   PHASE ·──────────────────────── doing
+    ·── API ── BACKLOG ── NORM                                 DUE ·───────────────────────────── 3d
+                                                               PRIORITY ·────────────────────── high
+┌ DOING                                     ├ 04 ─┤            STATUS ·──────────────────────── open
+┌   FIX LOGIN REDIRECT                      ├───┤ 03D          OWNER ·─────────────────────── jav201
+                           ┌                                           ┐                            
+                           DELETE 3 TASKS?                                                          
                                                                                                     
-                        DELETE    ├  CANCEL  ┤                                                      
-                      └                                                    ┘                        
+                           ·── 3 TASKS WILL BE REMOVED FROM BACKLOG.                                
+                           ·── THIS CANNOT BE UNDONE.                                               
+                                                                                                    
+                            DELETE    ├  CANCEL  ┤                                                  
+                           └                                           ┘                            
+  BLOCKED                                   ├┤ 00                                                   
       ▌▄▄▐        ▌▄▄▐                                                                              
       ▌▄▄▐        ▌▄▄▐                                                                              
                                                                                                     
@@ -25,7 +26,6 @@ BOARD  ·── 16 TASKS  ·  4 PROJECTS
      NO ITEMS ON SHEET                                                                              
                                                                                                     
   DONE                                      ├── 07 ──┤                                              
-                                                                                                    
                                                                                                     
 ┌     ┐                          ─────────                                                          
  BOARD  form  cfg  log           ├ CLEAR ┤                                                          

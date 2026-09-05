@@ -2,12 +2,12 @@ BOARD  ·── 16 TASKS  ·  4 PROJECTS
                                                                                                     
   BACKLOG                                   ├─ 05 ─┤           DETAIL  ·── FIX LOGIN REDIRECT       
     AUDIT THE THEME TOKENS                  ├╌─── 21D ─────┤                                        
-    ·── DOCS ── BACKLOG ── LOW                                 project ························· Web
-    DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   phase ························· doing
-    ·── API ── BACKLOG ── NORM                                 due ······························ 3d
-                                                               priority ······················· high
-┌ DOING                                     ├ 04 ─┤            status ························· open
-┌   FIX LOGIN REDIRECT                      ├───┤ 03D          owner ························ jav201
+    ·── DOCS ── BACKLOG ── LOW                                 PROJECT ·──────────────────────── Web
+    DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   PHASE ·──────────────────────── doing
+    ·── API ── BACKLOG ── NORM                                 DUE ·───────────────────────────── 3d
+                                                               PRIORITY ·────────────────────── high
+┌ DOING                                     ├ 04 ─┤            STATUS ·──────────────────────── open
+┌   FIX LOGIN REDIRECT                      ├───┤ 03D          OWNER ·─────────────────────── jav201
     ·── WEB ── DOING ── HIGH                                                                        
     RATE-LIMIT THE API                      ├──┤ 02D!          WORK ├──────────┤ 07/16  44%         
     ·── API ── DOING ── HIGH                                                                        

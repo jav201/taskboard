@@ -4,13 +4,6 @@ Frame: `naught_S1.txt` / `.svg` — 100×32, rendered through `taskboard.languag
 
 Every element below was drawn **by hand in `prototypes/components/screens.py`**, not by a kit method. Everything else in the frame came out of a kit call and is therefore *implemented*. Verdicts are the spec's closed set: **implemented / evoked / refused**.
 
-## `Kit.field_row` — **evoked**
-
-- **element drawn:** the detail pane's caption -> value rows
-- **frame rows:** 6, 7, 8, 9, 10, 11
-- **proposed signature:** `Kit.field_row(self, caption: str, value: str, w: int, state: str = DEFAULT) -> str`
-- **the commitment it must honour:** the definition-list row a detail pane, a KPI tile and a settings summary all are -- COMPONENTS.md's census lists the stat tile and has no row for this.  It is the single most reused shape in the six screens and the ONE the contract has no seat for, so all five languages are currently drawing LEDGER's mechanism (dot leaders): ledger's own answer generalised into four languages that never chose it, which is the palette-swap failure with a leader instead of a hue
-
 ## `pane_split` — **evoked**
 
 - **element drawn:** the vertical divider between the list and the detail pane

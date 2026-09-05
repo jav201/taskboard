@@ -11,10 +11,9 @@
 <text x="312.4" y="57.3" fill="#24486b">╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╡</text>
 <text x="26.8" y="91.3" fill="#7fa8c4">due</text>
 <text x="52.0" y="91.3" fill="#ff7a5c">*</text>
-<text x="144.4" y="91.3" fill="#24486b">├</text>
+<text x="144.4" y="91.3" fill="#24486b">┤</text>
 <text x="152.8" y="91.3" fill="#eef4f8">12/09/26</text>
-<text x="220.0" y="91.3" fill="#24486b">··························┤</text>
-<text x="455.2" y="91.3" fill="#ff7a5c">!</text>
+<text x="220.0" y="91.3" fill="#24486b">··························├</text>
 <text x="144.4" y="108.3" fill="#ff7a5c">expected YYYY-MM-DD</text>
 <text x="26.8" y="142.3" fill="#7fa8c4">priority</text>
 <text x="144.4" y="142.3" fill="#24486b">┤ ├</text>
