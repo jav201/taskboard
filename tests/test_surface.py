@@ -80,6 +80,47 @@ def sweep_image():
     return img.resize((img.width * scale, img.height * scale), Image.NEAREST)
 
 
+#: the tokens the raster postures actually read. `surface` dispatches the
+#: mechanism; `ink`/`dim` are the two hexes the lattice paints; `dot_w`/`gap`
+#: derive the grid the bitmap is sampled onto. Measured, not guessed — driving
+#: each one off its shipped value is what changes the number
+#: `test_lattice_pixels_are_two_colours` asserts (inc26 §2).
+WATCHED = ("surface", "ink", "dim", "dot_w", "gap")
+
+
+@pytest.fixture(autouse=True)
+def themes_are_restored():
+    """Every test in this file must hand the next one an unmutated `THEMES`.
+
+    WHY THIS EXISTS: F-15. `test_lattice_pixels_are_two_colours` went red once,
+    in a full suite, and never again — 40 isolation runs, 10 full-suite runs and
+    4865 per-test evaluations later it has not been reproduced. What the
+    investigation *could* establish is that the assertion is a pure function of
+    the five tokens above and one constant image: no clock, no RNG, no file
+    read, no import order. So the ONLY way it can go red in a suite run is a
+    token left mutated by an earlier test — and this file is the only file in
+    `tests/` that writes `THEMES` at all.
+
+    That made the cause unfindable and the mechanism knowable, which is exactly
+    when a detector beats a fix. Reading eight `finally` blocks proves today's
+    code restores; this asserts it at every seat, for every future edit, and
+    names the CULPRIT test rather than reddening a distant assertion three
+    hundred tests later — which is the shape F-15 arrived in.
+
+    It errors rather than fails, and on the leaking test rather than the victim.
+    A test that legitimately fails mid-mutation will now report twice; that is
+    noise on an already-red run, and the second report is the one that says
+    which token is still swapped."""
+    before = {n: tuple(THEMES[n].get(t) for t in WATCHED) for n in ORDER}
+    yield
+    after = {n: tuple(THEMES[n].get(t) for t in WATCHED) for n in ORDER}
+    drift = {n: dict(zip(WATCHED, zip(before[n], after[n])))
+             for n in ORDER if before[n] != after[n]}
+    assert not drift, (
+        f"this test left THEMES mutated, so every test after it ran against a "
+        f"language it did not declare: {drift}")
+
+
 def cells(row: str) -> int:
     """The cells a markup row actually draws — measured through rich, not by
     `len()`, which counts the markup tags."""
@@ -234,6 +275,12 @@ def test_catalogue_postures_refuse_by_name(posture):
     assert posture in LG.SURFACES
     assert posture not in LG.LIVE_SURFACES
     kit = LG.kit("nord")
+    # SAVED, NOT TYPED. This restored the literal `"untinted"`, which is right
+    # only for as long as that stays nord's declared surface — and the day it
+    # does not, this test silently rewrites the language for every test after
+    # it. That is F-15's exact shape, so it is closed rather than argued about
+    # (inc26 §4).
+    original = THEMES["nord"]["surface"]
     THEMES["nord"]["surface"] = posture
     try:
         with pytest.raises(NotImplementedError) as e:
@@ -241,7 +288,7 @@ def test_catalogue_postures_refuse_by_name(posture):
         assert posture in str(e.value)
         assert "CATALOGUE-ONLY" in str(e.value)
     finally:
-        THEMES["nord"]["surface"] = "untinted"
+        THEMES["nord"]["surface"] = original
     assert kit  # the kit itself never raised — only rendering the posture did
 
 
@@ -459,11 +506,12 @@ def test_frame_is_a_heavy_box_around_untouched_pixels():
     box — no smoothing, no caption softening it." No kit declares this token,
     so it is reached the way the mutation test reaches it."""
     img = probe()
+    original = THEMES["nord"]["surface"]        # saved, not typed — see above
     THEMES["nord"]["surface"] = "frame"
     try:
         res = LG.kit("nord").raster_region(img, W, H)
     finally:
-        THEMES["nord"]["surface"] = "untinted"
+        THEMES["nord"]["surface"] = original
     rows = [Text.from_markup(r).plain for r in res.rows]
     assert rows[0][0] == "╔" and rows[0][-1] == "╗"
     assert rows[-1][0] == "╚" and rows[-1][-1] == "╝"
