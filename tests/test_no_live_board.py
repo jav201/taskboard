@@ -59,6 +59,36 @@ def test_the_fixture_is_in_git_not_just_on_this_disk():
     assert r.returncode == 0, "_fixture_late.json is not tracked"
 
 
+def test_the_fixture_is_the_bytes_git_carries_not_the_bytes_a_harness_left():
+    """F-17, and it is a law about the WORKING TREE rather than about a value.
+
+    `prototypes/verify_language.py` derived a probe fixture and wrote it
+    straight onto this file -- the one name under `prototypes/out/` that
+    `.gitignore` names back in -- with its dates taken from `date.today()`.
+    Running the language harness therefore re-dated the fixture all 22 frames
+    in `prototypes/gallery/` were swept from (+33 days on 12 of 16 tasks, on
+    the run that found it), and every committed frame stopped reproducing. The
+    harness writes `_verify_late.json` now; this is what says so next time.
+
+    ASSERTED AGAINST GIT, NOT AGAINST A PINNED HASH. A hash would also go red
+    the day someone deliberately re-bakes this fixture and commits it, which is
+    a legitimate act no law here should refuse. What must never happen is the
+    working tree drifting from the index unnoticed: that is the state in which
+    a sweep bakes art nobody who clones the repo can reproduce, and it is the
+    state `export_to_skill.py:copy_captures` describes in its own docstring."""
+    r = subprocess.run(["git", "status", "--porcelain", "--",
+                        "prototypes/out/_fixture_late.json"],
+                       cwd=ROOT, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert not r.stdout.strip(), (
+        f"_fixture_late.json differs from the bytes git carries "
+        f"({r.stdout.strip()!r}). Every frame in prototypes/gallery/ was swept "
+        f"from the committed bytes, so a sweep taken now would not reproduce "
+        f"them. Restore with `git checkout -- prototypes/out/"
+        f"_fixture_late.json` and find what wrote it -- F-17 was "
+        f"prototypes/verify_language.py")
+
+
 def test_the_fixture_holds_no_real_looking_identity():
     """The fixture is the thing every capture renders, so it is the one file
     whose contents end up in shareable artifacts. Pinned to its synthetic

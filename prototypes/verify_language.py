@@ -10281,7 +10281,7 @@ async def main():
     # an argument. It is NOT asserted here, and the reason is measured rather
     # than assumed: the engine picks the hero signal from the board, so the
     # severity of a rendered aperture is the fixture's property, and
-    # `_fixture_calm.json` (built for the blueprint pass: nothing overdue)
+    # `_verify_calm.json` (built for the blueprint pass: nothing overdue)
     # still drives this hero to WARN. What the shipped frame CAN answer is
     # that the figure's ink comes from the severity ladder and nowhere else —
     # a stray hue on a hero is exactly the defect the ration exists to stop.
@@ -10370,7 +10370,7 @@ async def main():
     # The CALM half of that pair is asserted at DRAW level, where the tone is
     # an argument (`calm` tone -> zero alert). It is deliberately NOT asserted
     # here: the engine picks the hero's severity from the board, so a rendered
-    # aperture's tone is the FIXTURE's property, and `_fixture_calm.json` is
+    # aperture's tone is the FIXTURE's property, and `_verify_calm.json` is
     # not built until the sheet section further down — asserting against a file
     # a previous run left behind is a check that measures its own history.
     check("blueprint: the hero fits the aperture's row budget with its caption "
@@ -11589,8 +11589,31 @@ async def main():
     # `kanban.py` chips them `blk` and the sheet hatches them — the alert hue
     # reaches no row at all, and both held rows sit in DOING, below the fold at
     # 30 screen rows. Stated rather than asserted around.
-    fl = W / "prototypes" / "out" / "_fixture_late.json"
-    fc = W / "prototypes" / "out" / "_fixture_calm.json"
+    #
+    # AND THEY ARE THIS HARNESS'S OWN FILES, WHICH IS THE WHOLE OF F-17.
+    # The late one was written to `_fixture_late.json` — the ONE name under
+    # `prototypes/out/` that `.gitignore` names back in, because it is the
+    # committed fixture all 22 frames in `prototypes/gallery/` were swept
+    # from. Two different artefacts wore one filename: a tracked INPUT that
+    # must never move, and a derived PROBE rebuilt on every run. So running
+    # the language harness silently re-dated the capture's fixture (measured:
+    # +33 days on 12 of 16 tasks — `date.today()` minus `FROZEN`) and every
+    # frame in the gallery stopped reproducing. That is the symptom
+    # `export_to_skill.py:copy_captures` already describes in its docstring
+    # without naming the culprit.
+    #
+    # THE CURE IS THE PRIVATE PATH, NOT A FROZEN CLOCK, and the choice is
+    # between the two `inc21.md` §4g put on the table. Pinning `date.today()`
+    # to `capture_languages.FROZEN` would make the WRITE idempotent and leave
+    # the COLLISION in place: this harness would still own a tracked file it
+    # has no business owning, one edit to either concept away from the same
+    # defect. It would also drag `freeze_clock()` — which repoints
+    # `default_board_path` and stamps an mtime — across 10854 checks measured
+    # against a live clock, to fix a name. These two are PROBES; probes belong
+    # in the scratch yard under names nothing else reads.
+    # `_fixture_late.json` keeps its bytes and loses its writer.
+    fl = W / "prototypes" / "out" / "_verify_late.json"
+    fc = W / "prototypes" / "out" / "_verify_calm.json"
     late_seed = json.loads(fx.read_text(encoding="utf-8"))
     calm_seed = json.loads(fx.read_text(encoding="utf-8"))
     today = date.today()
