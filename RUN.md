@@ -73,7 +73,7 @@ All paths are relative to the worktree root, so `cd` there first.
 python -m pytest tests -q              # project suite            -> 137 passed
                                        # (test_win_clipboard_roundtrip is env-
                                        # dependent: fails if the clipboard is busy)
-python prototypes\verify_language.py   # THE LANGUAGE AXIS: 2178 checks — greyscale
+python prototypes\verify_language.py   # THE LANGUAGE AXIS: 10857 checks — greyscale
                                        # pairs, token mutation, data-viz laws,
                                        # drive-checks, legibility, board geometry
                                        # (one measure: row_width) -> ALL PASSED
@@ -86,9 +86,12 @@ python prototypes\verify_variants.py   # variant drive/render/budget: 12 -> ALL 
 python prototypes\verify_ink.py 12     # ink fraction per language x size class
 ```
 
-`verify_language` is the slow one (~75-80 s); the rest are seconds. The suite has been **flake-free
-since the forty-sixth pass** — the darkside capture race was a harness bug (settle signing off on a
-frame composed at the wrong width) and is cured by settle's condition C.
+`verify_language` is the slow one (~75-80 s); the rest are seconds. **It is safe to run from a clean
+tree**: until `harness-hygiene` inc24 it rewrote the tracked capture fixture (F-17), and it now writes
+nothing tracked. **Two flakes are open, not zero** (`PENDING.md`): F-15 in `test_surface.py`, bounded at
+0/50 isolation runs and detected at every seat but never reproduced, and F-18, an observation-point race
+in `test_board_seat.py`. The darkside capture race was a third and separate harness bug (settle signing
+off on a frame composed at the wrong width) and is cured by settle's condition C.
 
 ## The REAL app's aperture (the prototype grown into the product)
 
