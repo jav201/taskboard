@@ -28,30 +28,29 @@
 <text x="211.6" y="108.3" fill="#f5f5f5">⡄⡄</text>
 <text x="245.2" y="108.3" fill="#242424">ceiling 10</text>
 <text x="26.8" y="159.3" fill="#242424">09:41:02</text>
-<text x="127.6" y="159.3" fill="#242424">INFO  </text>
-<text x="178.0" y="159.3" fill="#8a8a8a">board loaded  16 tasks  4 projects</text>
+<text x="102.4" y="159.3" fill="#242424">◦◦</text>
+<text x="127.6" y="159.3" fill="#8a8a8a">board loaded  16 tasks  4 projects</text>
 <text x="26.8" y="176.3" fill="#242424">09:41:07</text>
-<text x="127.6" y="176.3" fill="#242424">INFO  </text>
-<text x="178.0" y="176.3" fill="#8a8a8a">sync started  remote=origin</text>
+<text x="102.4" y="176.3" fill="#242424">◦◦</text>
+<text x="127.6" y="176.3" fill="#8a8a8a">sync started  remote=origin</text>
 <text x="26.8" y="193.3" fill="#242424">09:41:09</text>
-<text x="102.4" y="193.3" fill="#d71921">!  WARN  </text>
-<text x="178.0" y="193.3" fill="#f5f5f5">3 tasks overdue in BACKLOG</text>
+<text x="102.4" y="193.3" fill="#8a8a8a">∙◦</text>
+<text x="127.6" y="193.3" fill="#f5f5f5">3 tasks overdue in BACKLOG</text>
 <text x="26.8" y="210.3" fill="#242424">09:41:12</text>
-<text x="127.6" y="210.3" fill="#242424">INFO  </text>
-<text x="178.0" y="210.3" fill="#8a8a8a">sync ok  216 ms  0 conflicts</text>
+<text x="102.4" y="210.3" fill="#242424">◦◦</text>
+<text x="127.6" y="210.3" fill="#8a8a8a">sync ok  216 ms  0 conflicts</text>
 <text x="26.8" y="227.3" fill="#242424">09:41:18</text>
-<text x="102.4" y="227.3" fill="#d71921">!! ERROR </text>
-<text x="178.0" y="227.3" fill="#f5f5f5">rate limit hit  retry in 30 s</text>
+<text x="102.4" y="227.3" fill="#f5f5f5">∙∙</text>
+<text x="127.6" y="227.3" fill="#f5f5f5">rate limit hit  retry in 30 s</text>
 <text x="26.8" y="244.3" fill="#242424">09:41:20</text>
-<text x="127.6" y="244.3" fill="#242424">INFO  </text>
-<text x="178.0" y="244.3" fill="#8a8a8a">retry scheduled  attempt 2 of 5</text>
+<text x="102.4" y="244.3" fill="#242424">◦◦</text>
+<text x="127.6" y="244.3" fill="#8a8a8a">retry scheduled  attempt 2 of 5</text>
 <text x="26.8" y="261.3" fill="#242424">09:41:33</text>
-<text x="127.6" y="261.3" fill="#242424">INFO  </text>
-<text x="178.0" y="261.3" fill="#8a8a8a">sync ok  198 ms  0 conflicts</text>
+<text x="102.4" y="261.3" fill="#242424">◦◦</text>
+<text x="127.6" y="261.3" fill="#8a8a8a">sync ok  198 ms  0 conflicts</text>
 <text x="26.8" y="278.3" fill="#242424">09:41:41</text>
-<text x="127.6" y="278.3" fill="#242424">INFO  </text>
-<text x="178.0" y="278.3" fill="#8a8a8a">signal engine idle</text>
-<text x="94.0" y="295.3" fill="#d71921">|| HELD</text>
-<text x="169.6" y="295.3" fill="#242424">space resumes</text>
+<text x="102.4" y="278.3" fill="#242424">◦◦</text>
+<text x="127.6" y="278.3" fill="#8a8a8a">signal engine idle</text>
+<text x="94.0" y="295.3" fill="#8a8a8a">held -- space resumes</text>
 </g>
 </svg>

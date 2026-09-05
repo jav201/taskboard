@@ -1,0 +1,21 @@
+                        S1              S2              S3              S4              S5              S6
+corgi             evoca 1E        evoca 3E    implementa -    implementa -    rehusa 1R/0E    implementa -
+blueprint     rehusa 1R/0E        evoca 3E    implementa -    rehusa 1R/0E    implementa -    implementa -
+prism             evoca 1E        evoca 3E    implementa -        evoca 1E    implementa -    implementa -
+naught            evoca 1E        evoca 3E    implementa -        evoca 1E    implementa -    implementa -
+ledger            evoca 1E        evoca 3E    implementa -        evoca 1E    rehusa 1R/0E    implementa -
+
+--- per screen: which primitive is missing in how many languages ---
+S1: pane_splitx5
+S2: Kit.errorx5, Kit.required()x5, Kit.textareax5
+S3: 
+S4: pane_splitx4
+S5: Kit.readout_labelx2
+S6: 
+
+--- refusals, by language ---
+corgi      ['S5:Kit.readout_label']
+blueprint  ['S1:pane_split', 'S4:pane_split']
+prism      []
+naught     []
+ledger     ['S5:Kit.readout_label']

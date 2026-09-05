@@ -18,21 +18,21 @@
 <text x="77.2" y="74.3" fill="#5b6675">⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣿</text>
 <text x="26.8" y="108.3" fill="#2dd4bf">▸</text>
 <text x="43.6" y="108.3" fill="#2dd4bf">re</text>
-<text x="60.4" y="108.3" fill="#e6edf3">direct to task</text>
+<text x="60.4" y="108.3" fill="#8b98a5">direct to task</text>
 <text x="413.2" y="108.3" fill="#5b6675">enter</text>
 <text x="43.6" y="125.3" fill="#2dd4bf">re</text>
 <text x="60.4" y="125.3" fill="#8b98a5">name project</text>
 <text x="43.6" y="142.3" fill="#2dd4bf">re</text>
 <text x="60.4" y="142.3" fill="#8b98a5">fresh board</text>
 <text x="413.2" y="142.3" fill="#5b6675">r</text>
-<text x="43.6" y="159.3" fill="#8b98a5">archive rele</text>
-<text x="144.4" y="159.3" fill="#2dd4bf">as</text>
-<text x="161.2" y="159.3" fill="#8b98a5">ed</text>
+<text x="43.6" y="159.3" fill="#8b98a5">archive </text>
+<text x="110.8" y="159.3" fill="#2dd4bf">re</text>
+<text x="127.6" y="159.3" fill="#8b98a5">leased</text>
 <text x="43.6" y="176.3" fill="#2dd4bf">re</text>
 <text x="60.4" y="176.3" fill="#8b98a5">store from backup</text>
-<text x="43.6" y="193.3" fill="#8b98a5">set re</text>
-<text x="94.0" y="193.3" fill="#2dd4bf">mi</text>
-<text x="110.8" y="193.3" fill="#8b98a5">nder</text>
+<text x="43.6" y="193.3" fill="#8b98a5">set </text>
+<text x="77.2" y="193.3" fill="#2dd4bf">re</text>
+<text x="94.0" y="193.3" fill="#8b98a5">minder</text>
 <text x="26.8" y="244.3" fill="#2dd4bf">&gt; </text>
 <text x="43.6" y="244.3" fill="#5b6675">⣿</text>
 <text x="52.0" y="244.3" fill="#e6edf3">zzq</text>
@@ -47,13 +47,17 @@
 <text x="43.6" y="380.3" fill="#2dd4bf">⠀⠈⠉⣶⣶⣶⣶⣶⣶⣶⣶⣶⠉⠁⠀</text>
 <text x="43.6" y="397.3" fill="#2dd4bf">⠀⠀⠀⠛⠛⠛⠛⠛⠛⠛⠛⠛⠀⠀⠀</text>
 <text x="43.6" y="414.3" fill="#5b6675"> empty</text>
-<text x="26.8" y="448.3" fill="#2dd4bf">enter</text>
-<text x="77.2" y="448.3" fill="#5b6675">run</text>
-<text x="127.6" y="448.3" fill="#2dd4bf">esc</text>
-<text x="161.2" y="448.3" fill="#5b6675">close</text>
-<text x="228.4" y="448.3" fill="#2dd4bf">^p</text>
-<text x="253.6" y="448.3" fill="#5b6675">prev</text>
-<text x="312.4" y="448.3" fill="#2dd4bf">^n</text>
-<text x="337.6" y="448.3" fill="#5b6675">next</text>
+<text x="26.8" y="448.3" fill="#e6edf3">enter</text>
+<text x="68.8" y="448.3" fill="#5b6675">⣶</text>
+<text x="77.2" y="448.3" fill="#8b98a5">run</text>
+<text x="127.6" y="448.3" fill="#e6edf3">esc</text>
+<text x="152.8" y="448.3" fill="#5b6675">⣶</text>
+<text x="161.2" y="448.3" fill="#8b98a5">close</text>
+<text x="228.4" y="448.3" fill="#e6edf3">^p</text>
+<text x="245.2" y="448.3" fill="#5b6675">⣶</text>
+<text x="253.6" y="448.3" fill="#8b98a5">prev</text>
+<text x="312.4" y="448.3" fill="#e6edf3">^n</text>
+<text x="329.2" y="448.3" fill="#5b6675">⣶</text>
+<text x="337.6" y="448.3" fill="#8b98a5">next</text>
 </g>
 </svg>

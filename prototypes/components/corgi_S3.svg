@@ -35,16 +35,17 @@
 <text x="270.4" y="142.3" fill="#f2f2f2">██</text>
 <text x="295.6" y="142.3" fill="#f2f2f2">ON</text>
 <text x="26.8" y="176.3" fill="#9a9a9a">start of week</text>
-<text x="245.2" y="176.3" fill="#f2f2f2">▄▄  mon  </text>
-<text x="320.8" y="176.3" fill="#3a3a3a">▁▁</text>
-<text x="346.0" y="176.3" fill="#9a9a9a">v</text>
+<text x="245.2" y="176.3" fill="#3a3a3a">▁▁</text>
+<text x="262.0" y="176.3" fill="#f2f2f2">mon    </text>
+<text x="320.8" y="176.3" fill="#3a3a3a">▄▁▁</text>
 <text x="26.8" y="193.3" fill="#9a9a9a">theme</text>
-<text x="245.2" y="193.3" fill="#f2f2f2">▄▄  dark </text>
-<text x="320.8" y="193.3" fill="#3a3a3a">▁▁</text>
-<text x="346.0" y="193.3" fill="#9a9a9a">v</text>
-<text x="262.0" y="210.3" fill="#9a9a9a">  auto   </text>
-<text x="262.0" y="227.3" fill="#9a9a9a">  light  </text>
-<text x="262.0" y="244.3" fill="#f2f2f2">▐ dark   </text>
+<text x="245.2" y="193.3" fill="#3a3a3a">▁▁</text>
+<text x="262.0" y="193.3" fill="#f2f2f2">dark   </text>
+<text x="320.8" y="193.3" fill="#3a3a3a">▄▁▁</text>
+<text x="278.8" y="210.3" fill="#9a9a9a">auto   </text>
+<text x="278.8" y="227.3" fill="#9a9a9a">light  </text>
+<text x="262.0" y="244.3" fill="#ff6600">▐</text>
+<text x="278.8" y="244.3" fill="#f2f2f2">dark   </text>
 <text x="26.8" y="278.3" fill="#9a9a9a">row density</text>
 <text x="245.2" y="278.3" fill="#6fe36f">▄▄</text>
 <text x="270.4" y="278.3" fill="#6fe36f">▄▄</text>
@@ -53,9 +54,9 @@
 <text x="346.0" y="278.3" fill="#3a3a3a">▁▁</text>
 <text x="362.8" y="278.3" fill="#9a9a9a">[70]</text>
 <text x="26.8" y="312.3" fill="#9a9a9a">───────────────────────────────────────────────────────────────────────────────────────────────</text>
-<text x="26.8" y="329.3" fill="#d92b1a">DANGER</text>
-<text x="94.0" y="329.3" fill="#9a9a9a">delete every completed task</text>
-<text x="26.8" y="346.3" fill="#f2f2f2">▁▁ Delete all ▁▁</text>
+<text x="26.8" y="329.3" fill="#9a9a9a">DANGER ZONE</text>
+<text x="127.6" y="329.3" fill="#6fe36f">delete every completed task</text>
+<text x="26.8" y="346.3" fill="#f2f2f2">▁▁▄Delete all▄▁▁</text>
 <text x="186.4" y="346.3" fill="#3a3a3a">7 tasks, not recoverable</text>
 </g>
 </svg>

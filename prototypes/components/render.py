@@ -130,9 +130,15 @@ async def sweep():
             sh, (w, h, ink), over = await one(lang, screen)
             name = f"{lang}_{screen}"
             cand_n = len(sh.cands)
-            if cand_n:
-                (OUT / f"{name}.candidates.md").write_text(
-                    candidates_md(lang, screen, sh), encoding="utf-8")
+            # ALWAYS WRITTEN, INCLUDING WHEN THERE IS NOTHING TO DECLARE
+            # (kits-learn-3 close). Writing it only when `cand_n` left the
+            # sidecars of frames that had become clean STALE ON DISK, still
+            # claiming elements the kit now draws -- a sidecar that survives
+            # the thing it describes is worse than no sidecar, because it is
+            # the file the matrix's readers trust. `candidates_md` already
+            # had the empty case written for it.
+            (OUT / f"{name}.candidates.md").write_text(
+                candidates_md(lang, screen, sh), encoding="utf-8")
             verdicts = [c.verdict for c, _ in sh.cands.values()]
             report.append(dict(lang=lang, screen=screen, w=w, h=h, ink=ink,
                                cands=cand_n,

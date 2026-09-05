@@ -26,7 +26,8 @@ import re
 from typing import NamedTuple
 
 import taskboard.language as LG
-from taskboard.language import (DEFAULT, DISABLED, EDITED, FOCUSED)
+from taskboard.language import (DEFAULT, DISABLED, EDITED, FOCUSED,
+                               INVALID)
 
 import fixture as F
 
@@ -225,13 +226,21 @@ C_SPLIT = Cand(
     "grey step, air, or a refusal; COMPOSITION is a per-kit commitment "
     "(COMPONENTS.md: 'composition is the last palette-swap')")
 
-C_INVALID = Cand(
-    "the invalid field's mark and its inline message",
-    "evoked", "STATES += INVALID  /  Kit.error(msg, w)",
-    "LG.INVALID = 'invalid'; Kit.error(self, msg: str, w: int) -> str",
-    "a sixth control state, derived in `component_states` like the other "
-    "five, reading on GLYPH + STRUCTURE and never on the alert hue alone "
-    "(COMPONENTS.md state matrix; NAVIGATION.md 'never colour alone')")
+# NARROWED BY inc14 (kits-learn-3).  The STATE is implemented: the field is
+# drawn by `k.textfield(..., INVALID)` and its mark is the language's own
+# ground, so nothing about the CONTROL is hand-drawn here any more.  What is
+# still drawn by hand is the MESSAGE row -- the caller's words, on a row whose
+# NOTATION no language has a seat for.  The candidate shrank to exactly that,
+# which is the sidecar staying honest as the contract grows.
+C_ERROR = Cand(
+    "the inline error message under the invalid field",
+    "evoked", "Kit.error",
+    "Kit.error(self, msg: str, w: int) -> str",
+    "the message is CONTENT and comes back byte for byte; what is missing is "
+    "the language's NOTATION for a row that explains a rejection -- ledger's "
+    "leaders, corgi's segment legend, blueprint's revision note.  The STATE "
+    "itself is no longer a candidate: `STATES += INVALID` shipped in inc14 "
+    "and the field above is drawn in it")
 
 C_REQUIRED = Cand(
     "the required-field marker beside a caption",
@@ -250,89 +259,6 @@ C_TEXTAREA = Cand(
     "for byte, the caret takes a column of its own, and the window moves "
     "in two axes instead of one")
 
-C_SELECT = Cand(
-    "the closed select (its value and its disclosure mark)",
-    "evoked", "Kit.select",
-    "Kit.select(self, options, selected: int, w: int = 0, "
-    "state: str = DEFAULT, open_: bool = False) -> str",
-    "COMPONENTS.md census: 'the closed-state anatomy and the open overlay's "
-    "frame'.  Distinct from `stepper`, which shows the two ways OFF a value; "
-    "a select shows the one way INTO a list")
-
-C_MENU = Cand(
-    "the open select's list of options",
-    "evoked", "Kit.menu",
-    "Kit.menu(self, options, selected: int, w: int, "
-    "state: str = DEFAULT) -> list[str]",
-    "COMPONENTS.md names the context menu 'the biggest historical gap'.  "
-    "The frame is the language's overlay answer, and a language that "
-    "refuses overlays must say what it does instead")
-
-C_DANGER = Cand(
-    "the destructive action and the zone that holds it",
-    "evoked", "Kit.button(..., danger=True)",
-    "Kit.button(self, label, w=0, state=DEFAULT, danger: bool = False)",
-    "severity on a CONTROL, which the contract has never had: it must read "
-    "in greyscale (COMPONENTS.md 'severity by the language's reserved hues "
-    "AND a glyph, never hue alone') -- and in ledger and corgi the reserved "
-    "hue is already spent, so the mechanism cannot be the hue")
-
-C_SCRIM = Cand(
-    "the modal's frame and the treatment of the board behind it",
-    "evoked", "Kit.overlay",
-    "Kit.overlay(self, rows: list[str], w: int, h: int, "
-    "under: list[str]) -> list[str]",
-    "COMPONENTS.md 'dialog / sheet': frame weight and scrim idiom.  This is "
-    "the one component where the five languages' answers are furthest "
-    "apart, and three of them are refusals")
-
-C_FIELDROW = Cand(
-    "the detail pane's caption -> value rows",
-    "evoked", "Kit.field_row",
-    "Kit.field_row(self, caption: str, value: str, w: int, "
-    "state: str = DEFAULT) -> str",
-    "the definition-list row a detail pane, a KPI tile and a settings "
-    "summary all are -- COMPONENTS.md's census lists the stat tile and has "
-    "no row for this.  It is the single most reused shape in the six "
-    "screens and the ONE the contract has no seat for, so all five "
-    "languages are currently drawing LEDGER's mechanism (dot leaders): "
-    "ledger's own answer generalised into four languages that never chose "
-    "it, which is the palette-swap failure with a leader instead of a hue")
-
-C_LOGROW = Cand(
-    "the log row's level mark and its severity channel",
-    "evoked", "Kit.log_row",
-    "Kit.log_row(self, ts: str, level: str, msg: str, w: int) -> str",
-    "`ICONS` has six domain kinds and no log level.  The level must read "
-    "in greyscale on a glyph, and the alert hue is rationed -- ledger spends "
-    "it only on debt, blueprint only on overdue, naught has one red total")
-
-C_TAIL = Cand(
-    "the tail marker (the streaming/held state of the log)",
-    "evoked", "Kit.tail",
-    "Kit.tail(self, held: bool) -> str",
-    "an INDETERMINATE indicator, which COMPONENTS.md's state matrix says "
-    "must be MOTION and never a frozen half-fill; `spinner(tick)` is the "
-    "moving half and this is the held one")
-
-C_MATCH = Cand(
-    "the highlighted span of the query inside a result",
-    "evoked", "Kit.match",
-    "Kit.match(self, text: str, span: tuple[int, int], "
-    "state: str = DEFAULT) -> str",
-    "the CONTENT law (L-33 / inc12): the result's text comes back byte for "
-    "byte and only its NOTATION is the language's -- so a language that "
-    "upper-cases titles may not upper-case a match, and the emphasis may "
-    "not be the accent alone")
-
-C_HINT = Cand(
-    "the key hints along the bottom",
-    "evoked", "Kit.keyhint",
-    "Kit.keyhint(self, pairs: list[tuple[str, str]], w: int) -> str",
-    "inc12 §8.3: 'a mark that encodes a binding belongs to whoever owns the "
-    "keymap.  Never the library.'  So the kit owns the NOTATION (corgi's "
-    "brackets, ledger's leaders) and the caller supplies every key")
-
 
 # ===========================================================================
 # S1 -- LIST + DETAIL
@@ -349,16 +275,15 @@ def s1(sh: Sheet) -> None:
 
     # -- the detail pane's rows, built first so the two panes can be zipped --
     det: list[str] = []
-    det_hand: list[int] = []
     for line in k.sect("DETAIL", F.TASKS[F.SELECTED][0][:right - 14], right, 3):
         det.append(clip(line, right))
+    # THE DEFINITION ROWS, through the kit (inc15).  This loop used to draw
+    # ledger's dot leaders in five languages -- one language's typographic
+    # argument generalised into four that never chose it.  Each language now
+    # answers for itself: air to a right column, an engraved silkscreen, a
+    # dimension, an ember frontier, an unlit lattice, dot leaders.
     for cap, val in F.DETAIL:
-        room = right - len(cap) - len(val) - 2
-        lead = k.LEAD if hasattr(k, "LEAD") else " "
-        det.append(f"[{c['mut']}]{LG.mark(cap)}[/] "
-                   f"[{c['dim']}]{LG.mark(lead * max(1, room))}[/] "
-                   f"[{c['ink']}]{LG.mark(val)}[/]")
-        det_hand.append(len(det))
+        det.append(clip(k.field_row(cap, val, right), right))
     det.append("")
     det.append(k.meter(F.WORK[0], F.WORK[1], F.COUNTS, right).split("\n")[0])
 
@@ -400,8 +325,7 @@ def s1(sh: Sheet) -> None:
     for i in range(room):
         l = clip(lst[i] if i < len(lst) else "", left)
         r = clip(det[i] if i < len(det) else "", right)
-        cds = [C_SPLIT] + ([C_FIELDROW] if (i + 1) in det_hand else [])
-        sh.row(pad(l, left) + " " + split + " " + r, *cds)
+        sh.row(pad(l, left) + " " + split + " " + r, C_SPLIT)
     sh.row(pad(f"[{c['dim']}]{LG.mark('view')}[/] " + bar
                 + f" [{c['mut']}]{LG.mark(f'{st + 1}-{st + sz} of {tot}')}[/]",
                 left))
@@ -456,14 +380,15 @@ def s2(sh: Sheet) -> None:
           True, C_REQUIRED)
     sh.blank()
 
-    # due -- the INVALID field.  There is no invalid state in the contract,
-    # so the field is drawn in the nearest state the kit HAS and the mark and
-    # the message beside it are drawn here and declared.
-    bad = k.textfield(F.FORM_DUE_RAW, None, 34, DEFAULT)
-    field("due", bad + " " + f"[{c['alert']}]{LG.mark('!')}[/]", True,
-          C_REQUIRED, C_INVALID)
+    # due -- the INVALID field, drawn in the kit's own sixth state (inc14).
+    # The mark is the LANGUAGE's ground -- ledger daggers it, corgi mis-seats
+    # the segment bank, blueprint reverses the dimension -- and the `!` this
+    # file used to add is gone, because that `!` in five languages at once was
+    # the finding the round reported.
+    bad = k.textfield(F.FORM_DUE_RAW, None, 34, INVALID)
+    field("due", bad, True, C_REQUIRED)
     sh.row(" " * (lab + 2) + f"[{c['alert']}]{LG.mark(F.FORM_DUE_ERROR)}[/]",
-           C_INVALID)
+           C_ERROR)
     sh.blank()
 
     field("priority", k.radio_group(F.PRIORITIES, F.PRIORITY_SEL))
@@ -515,65 +440,30 @@ def s3(sh: Sheet) -> None:
                   if dis else ""))
     sh.blank()
 
-    # -- the two selects.  `stepper` is the nearest thing the contract has and
-    # it is a DIFFERENT control: it shows the two ways off a value, not the
-    # one way into a list.  Drawn as a stepper plus a disclosure mark, and
-    # declared as evoked rather than passed off as implemented.
+    # -- the two selects, through the kit (inc16).  `select` is its own
+    # primitive now: a stepper shows the two ways OFF a value, a select shows
+    # the one way INTO a list, and the disclosure mark is the language's.
     for label, opts, sel, is_open in F.SELECTS:
         cap = f"[{c['mut']}]{LG.mark(label)}[/]"
-        body = k.stepper(opts, sel, 7) + " " + f"[{c['mut']}]{LG.mark('v')}[/]"
-        sh.row("  " + pad(cap, lab) + body, C_SELECT)
+        sh.row("  " + pad(cap, lab) + k.select(opts, sel, 7))
         if not is_open:
             continue
-        for j, o in enumerate(opts):
-            mk = k.CUR if j == sel else " "
-            tone = c["ink"] if j == sel else c["mut"]
-            sh.row("  " + " " * lab + f"[{c['dim']}]{LG.mark('  ')}[/]"
-                   + f"[{tone}]{LG.mark(mk + ' ' + pad(o, 7))}[/]",
-                   C_SELECT, C_MENU)
+        for line in k.menu(opts, sel, 7):
+            sh.row("  " + " " * lab + "  " + line)
     sh.blank()
 
     sh.row("  " + pad(f"[{c['mut']}]{LG.mark(F.SLIDER_LABEL)}[/]", lab)
            + k.slider(F.SLIDER_VAL, 0, 100, 14))
     sh.blank()
 
-    # -- the danger zone ----------------------------------------------------
+    # -- the danger zone, through the kit (inc16).  The severity is a SHAPE
+    # the control itself carries (`danger=True`), so the zone no longer needs
+    # a hand-drawn red word to announce it -- which is all that word was.
     r = k.rule_line(W - 4)
     sh.row("  " + (r if r is not None else ""))
-    sh.row("  " + f"[{c['alert']}]{LG.mark('DANGER')}[/]  "
-           + f"[{c['mut']}]{LG.mark(F.DANGER_LABEL)}[/]", C_DANGER)
-    sh.row("  " + k.button(F.DANGER_ACTION, 12, DEFAULT)
-           + "   " + f"[{c['dim']}]{LG.mark('7 tasks, not recoverable')}[/]",
-           C_DANGER)
-
-
-def s3_ledger(sh: Sheet) -> None:
-    """Ledger's settings, and the danger zone is where the GENRE answers.
-
-    'Nothing is deleted, everything is balanced' (LANGUAGES.md #9) is a rule
-    about the product, not about the palette -- so a button that destroys
-    seven rows is not a control this language may draw at all.  What it draws
-    instead is the entry that REVERSES them, which is what a ledger does when
-    something must go away.
-    """
-    s3(sh)
-    k, c = sh.k, sh.k.c
-    # replace the two danger rows with the language's own answer
-    sh.rows = sh.rows[:-2]
-    sh.cands.pop(C_DANGER.name, None)
-    sh.row("  " + f"[{c['ink']}]{LG.mark('CLOSING')}[/]  "
-           + f"[{c['mut']}]{LG.mark('7 completed entries')}[/]")
-    sh.row("  " + k.button("Post closing entry", 20, DEFAULT)
-           + "   " + f"[{c['dim']}]{LG.mark('reverses, never deletes')}[/]")
-    sh.note(Cand(
-        "the destructive action -- NOT DRAWN",
-        "refused", "Kit.button(..., danger=True)",
-        "Kit.button(self, label, w=0, state=DEFAULT, danger: bool = False)",
-        "'nothing is deleted, everything is balanced' rules out silent "
-        "deletion as a DESIGN, so this language has no destructive control "
-        "to style -- it has a closing entry.  And the red pen is literal "
-        "debt: spending alert on a button would break the one thing that "
-        "makes an overdue row legible"))
+    sh.row("  " + k.field_row("danger zone", F.DANGER_LABEL, W - 4))
+    sh.row("  " + k.button(F.DANGER_ACTION, 12, DEFAULT, danger=True)
+           + "   " + f"[{c['dim']}]{LG.mark('7 tasks, not recoverable')}[/]")
 
 
 # ===========================================================================
@@ -597,306 +487,85 @@ def _under(sh: Sheet) -> tuple[list[str], list[Cand]]:
 
 
 def s4(sh: Sheet) -> None:
-    """The default answer: a bordered dialog over a dimmed board.
+    """ONE builder, five compositions (inc17).
 
-    Only prism is entitled to this by its own commitment ('borders are
-    reserved for modals'); the other four override below.
+    The five per-language S4 builders this file used to carry are gone, and
+    that is the increment: every one of them existed to draw a FRAME the kit
+    had no seat for, and four of them existed to draw the ABSENCE of one. The
+    rows below are the caller's words -- a title, two lines, two answers --
+    and what separates them from the board behind them is now the language's,
+    read out of `MODAL_BORDER_REFUSED` and composed by `Kit.overlay`.
     """
     k, c = sh.k, sh.k.c
     under, back = _under(sh)
-    dw, dh = 52, 9
-    x = (W - dw) // 2
-    y = 10
+    rows = [f"[{c['ink']}]{LG.mark(F.MODAL_TITLE)}[/]", ""]
+    rows += [f"[{c['mut']}]{LG.mark(b)}[/]" for b in F.MODAL_BODY]
+    rows += ["", answers(sh)]
+    out = k.overlay(rows, W, H, under)
+    for line in out:
+        sh.row(line)
+    carry(sh, out, under, back)
 
-    box_t = "┌" + "─" * (dw - 2) + "┐"
-    box_b = "└" + "─" * (dw - 2) + "┘"
 
-    lines: list[str] = []
-    lines.append(f"[{c['ink']}]{LG.mark(box_t)}[/]")
-    lines.append(f"[{c['ink']}]{LG.mark('│')}[/]"
-                 + f"[{c['ink']}]{LG.mark(' ' + pad(F.MODAL_TITLE, dw - 3))}[/]"
-                 + f"[{c['ink']}]{LG.mark('│')}[/]")
-    lines.append(f"[{c['ink']}]{LG.mark('│')}[/]"
-                 + f"[{c['dim']}]{LG.mark(' ' * (dw - 2))}[/]"
-                 + f"[{c['ink']}]{LG.mark('│')}[/]")
-    for b in F.MODAL_BODY:
-        lines.append(f"[{c['ink']}]{LG.mark('│')}[/]"
-                     + f"[{c['mut']}]{LG.mark(' ' + pad(b, dw - 3))}[/]"
-                     + f"[{c['ink']}]{LG.mark('│')}[/]")
-    lines.append(f"[{c['ink']}]{LG.mark('│')}[/]"
-                 + f"[{c['dim']}]{LG.mark(' ' * (dw - 2))}[/]"
-                 + f"[{c['ink']}]{LG.mark('│')}[/]")
-    btns = (k.button("Delete", 10, FOCUSED) + "   "
+def answers(sh: Sheet) -> str:
+    """The two answers, with the destructive one carrying its own severity
+    (inc16's `danger=True`) and the focus ring on it because it is the
+    default."""
+    k = sh.k
+    return (k.button("Delete", 10, FOCUSED, danger=True) + "   "
             + k.button("Cancel", 10, DEFAULT))
-    lines.append(f"[{c['ink']}]{LG.mark('│')}[/]"
-                 + pad(" " + btns, dw - 2)
-                 + f"[{c['ink']}]{LG.mark('│')}[/]")
-    lines.append(f"[{c['ink']}]{LG.mark(box_b)}[/]")
-
-    # the board behind, DIMMED -- the one channel a text frame has for
-    # "inactive" without a real compositor is tone, so every row is redrawn
-    # in the dim tier.  That is the scrim, and it is declared.
-    for i in range(H):
-        base = under[i] if i < len(under) else ""
-        if y <= i < y + len(lines):
-            j = i - y
-            sh.row(" " * x + lines[j], C_SCRIM)
-        else:
-            sh.row(f"[{c['dim']}]{LG.mark(vis(base))}[/]", C_SCRIM)
 
 
-def s4_prism(sh: Sheet) -> None:
-    """Prism is the one language whose commitment PERMITS this box.
+def carry(sh: Sheet, out: list[str], under: list[str],
+          back: list[Cand]) -> None:
+    """Carry the BACKDROP's candidates forward -- but only if the backdrop is
+    still on the screen.
 
-    'Depth by ±1 grey step, never borders.  Borders are reserved for modals.'
-    So the dialog is the single place a border is legal here, and the board
-    behind it recedes by exactly one grey step of BACKGROUND rather than by
-    being greyed out -- which is `depth_ground()`, a method the kit has.
-    """
-    k, c = sh.k, sh.k.c
-    under, back = _under(sh)
-    ground = k.depth_ground()
-    dw = 52
-    x = (W - dw) // 2
-    y = 10
-
-    lines = [f"[{c['ink']}]{LG.mark('┌' + '─' * (dw - 2) + '┐')}[/]",
-             f"[{c['ink']}]{LG.mark('│ ' + pad(F.MODAL_TITLE, dw - 3))}│[/]",
-             f"[{c['ink']}]{LG.mark('│' + ' ' * (dw - 2) + '│')}[/]"]
-    for b in F.MODAL_BODY:
-        lines.append(f"[{c['ink']}]{LG.mark('│')}[/]"
-                     + f"[{c['mut']}]{LG.mark(' ' + pad(b, dw - 3))}[/]"
-                     + f"[{c['ink']}]{LG.mark('│')}[/]")
-    lines.append(f"[{c['ink']}]{LG.mark('│' + ' ' * (dw - 2) + '│')}[/]")
-    lines.append(f"[{c['ink']}]{LG.mark('│')}[/]"
-                 + pad(" " + k.button("Delete", 10, FOCUSED) + "   "
-                       + k.button("Cancel", 10, DEFAULT), dw - 2)
-                 + f"[{c['ink']}]{LG.mark('│')}[/]")
-    lines.append(f"[{c['ink']}]{LG.mark('└' + '─' * (dw - 2) + '┘')}[/]")
-
-    for i in range(H):
-        base = under[i] if i < len(under) else ""
-        if y <= i < y + len(lines):
-            sh.row(" " * x + lines[i - y], C_SCRIM)
-        else:
-            # the recede is a BACKGROUND step, not a dimming of the ink
-            sh.row(f"[{c['mut']} on {ground}]{LG.mark(pad(vis(base), W))}[/]")
+    A hand-drawn element does not stop being hand-drawn because it was drawn
+    behind something else; it DOES stop being on the frame when the language's
+    answer is that there is nothing behind (corgi's mode takes the screen).
+    Decided by looking at the composed rows rather than by a list of language
+    names, so a language that changes its mind changes this too."""
+    seen = "\n".join(vis(r) for r in out)
+    keep = any(vis(u).strip() and vis(u).strip() in seen for u in under)
+    if not keep:
+        return
     for cd in back:
         sh.note(cd)
-    sh.note(Cand(
-        "the modal's border and the board's ±1 grey step behind it",
-        "evoked", "Kit.overlay",
-        "Kit.overlay(self, rows, w, h, under: list[str]) -> list[str]",
-        "'depth by ±1 grey step, never borders -- borders are RESERVED for "
-        "modals'.  This language is the only one of the five whose "
-        "commitment licenses the box, and the recede is `depth_ground()`, "
-        "which the kit already computes.  The primitive is missing; the "
-        "MECHANISM is not"))
-
-
-def s4_corgi(sh: Sheet) -> None:
-    """Corgi refuses the overlay: 'the mode takes over the screen'.
-
-    'No persistent navigation chrome.  Its answer to smallness is FEWER
-    THINGS AT ONCE, not smaller things.'  A dialog floating over a board is
-    two modes at once, which is the thing this language is built against --
-    so a confirm is a MODE, numbered like every other, and the board is gone.
-    """
-    k, c = sh.k, sh.k.c
-    chrome(sh, "board")
-    header(sh, "CONFIRM", "MODE 5  ·  DESTRUCTIVE")
-    sh.blank()
-    for line in k.wordmark("DELETE")[:6]:
-        sh.row("  " + line)
-    sh.blank()
-    sh.row("  " + f"[{c['ink']}]{LG.mark(str(F.MODAL_COUNT) + ' TASKS')}[/]  "
-           + f"[{c['mut']}]{LG.mark('WILL BE REMOVED FROM BACKLOG')}[/]")
-    sh.row("  " + f"[{c['mut']}]{LG.mark('THIS CANNOT BE UNDONE')}[/]")
-    sh.blank()
-    sh.row("  " + k.button("DELETE", 12, FOCUSED) + "   "
-           + k.button("CANCEL", 12, DEFAULT))
-    sh.blank()
-    sh.row("  " + f"[{c['accent']}]{LG.mark('[1]')}[/] "
-           + f"[{c['mut']}]{LG.mark('DELETE')}[/]   "
-           + f"[{c['accent']}]{LG.mark('[2]')}[/] "
-           + f"[{c['mut']}]{LG.mark('CANCEL')}[/]", C_HINT)
-    sh.note(Cand(
-        "the overlay and the dimmed board -- NOT DRAWN",
-        "refused", "Kit.overlay",
-        "Kit.overlay(self, rows, w, h, under: list[str]) -> list[str]",
-        "'the mode takes over the screen -- no persistent navigation "
-        "chrome; its answer to smallness is fewer things at once'.  A "
-        "dialog over a board is two modes at once.  The confirm is a MODE, "
-        "and because the numbers ARE the keybindings (§3b) its two answers "
-        "are numbered rather than trapped in a focus ring"))
-
-
-def s4_naught(sh: Sheet) -> None:
-    """Naught has NO FRAMES AT ALL -- so there is no box to draw.
-
-    'Mono + one red · dense · no frames at all · everything on one dot
-    lattice.'  What separates the question from the board is that the board's
-    lattice goes UNLIT and the question's stays lit: the lattice is the
-    scrim, which is the one structure device this language owns.
-    """
-    k, c = sh.k, sh.k.c
-    under, back = _under(sh)
-
-    # THE QUESTION IS A LIT BAND ON THE LATTICE.  The board keeps every dot
-    # it had and loses only its CHARGE -- which is the whole mechanism: "the
-    # unlit grid is visible; dark dots render in the dim tier rather than as
-    # spaces.  That faint lattice IS the signature."  A box would be a frame,
-    # and this language has none; what it has is a row that is lit and rows
-    # that are not, and the lattice rule above and below the band is the
-    # edge.  Drawn with `rule_line()`, which is naught's own lattice row.
-    # the band edge: the lattice at FULL CHARGE.  `rule_line()` returns
-    # None here (naught spends no rule), so the lit row is drawn and
-    # declared rather than borrowed from a method that has no answer.
-    lat = k.CUR * W
-    band_y, band_h = 12, 9
-
-    def unlit(i: int) -> str:
-        base = vis(under[i]) if i < len(under) else ""
-        return f"[{c['dim']}]{LG.mark(base)}[/]"
-
-    for i in range(band_y):
-        sh.row(unlit(i))
-
-    lines: list[str] = [clip(f"[{c['ink']}]{lat}[/]", W)]
-    sprite = k.wordmark(str(F.MODAL_COUNT))[:5]
-    for j, line in enumerate(sprite):
-        tail = ("   " + f"[{c['ink']}]{LG.mark('tasks will be deleted')}[/]"
-                if j == 2 else "")
-        lines.append("      " + line + tail)
-    lines.append("      " + k.button("delete", 10, FOCUSED) + "   "
-                 + k.button("cancel", 10, DEFAULT))
-    lines.append(clip(f"[{c['ink']}]{lat}[/]", W))
-    for l in lines[:band_h]:
-        sh.row(l)
-
-    for i in range(band_y + band_h, H):
-        sh.row(unlit(i))
-    sh.rows = sh.rows[:H]
-    for cd in back:
-        sh.note(cd)
-    sh.note(Cand(
-        "the modal's frame -- NOT DRAWN",
-        "refused", "Kit.overlay",
-        "Kit.overlay(self, rows, w, h, under: list[str]) -> list[str]",
-        "'no frames at all' is one of this language's four commitments, so "
-        "an overlay BOX is unconstructable.  The separation is the lattice "
-        "going unlit behind a lit question, and the count is a DRAWN sprite "
-        "because a count is exactly what this language draws"))
-    sh.note(Cand(
-        "the inactive board, drawn as an unlit lattice",
-        "evoked", "Kit.recede",
-        "Kit.recede(self, rows: list[str]) -> list[str]",
-        "'the unlit grid is visible -- dark dots render in the dim tier "
-        "rather than as spaces.  That faint lattice IS the signature.'  So "
-        "this language's scrim is the one it was already drawing"))
 
 
 def s4_blueprint(sh: Sheet) -> None:
-    """Blueprint cannot box the dialog either -- and its emphasis is a
-    KNOCKOUT, which is exactly one element per sheet.
+    """Blueprint's confirm, and the ONE thing this language changes: operator
+    ruling 10 lets its single knockout MOVE from the title block to the
+    default answer.
 
-    So the dialog is a REVISION NOTE on the sheet: registration marks around
-    what is selected (the language's own selection mechanism, four corners
-    that never join), the question as a field, and the knockout spent on the
-    default answer instead of on the title block's STATE cell -- which is the
-    one place a sheet's single knockout is allowed to move.
+    It is affordable exactly here. `_state_cell` spends the reverse on the
+    `alert` mood alone, and this sheet's mood is calm -- so the sheet's one
+    knockout is UNSPENT and the confirm may take it without the title block
+    losing anything. "Exactly one element per view" holds by arithmetic, not
+    by promise.
+
+    The knockout is also the one mark in this file that does NOT survive the
+    `.txt`: an inversion is a background, so the cell grid shows the word and
+    not the emphasis. Read it in the `.svg`.
     """
     k, c = sh.k, sh.k.c
-    chrome(sh, "board")            # deferred: the stamp docks at the bottom
+    chrome(sh, "board")                # deferred: the stamp docks at the foot
     under, back = _under(sh)
-    y, dh = 11, 8
-    keep = [vis(under[i]) if i < len(under) else "" for i in range(H)]
-    for i in range(y):
-        sh.row(f"[{c['dim']}]{LG.mark(keep[i])}[/]")
-    # THE FOUR CORNERS NEVER JOIN.  The first sweep ran a `─` between them,
-    # which makes a box lid however this language spells it -- and "not one
-    # element on this sheet is boxed, AT ANY WIDTH" is the commitment being
-    # tested.  `tabs()` shows the shipped form: `┌   ┐` above, `└   ┘`
-    # below, with air where a stroke would be.  This registers the same way.
-    x, span = 22, 54
-    reg = (f"[{c['ink']}]{LG.mark('┌')}[/]" + " " * (span - 2)
-           + f"[{c['ink']}]{LG.mark('┐')}[/]")
-    reg_b = (f"[{c['ink']}]{LG.mark('└')}[/]" + " " * (span - 2)
-             + f"[{c['ink']}]{LG.mark('┘')}[/]")
-    sh.row(" " * x + reg)
-    sh.row(" " * x + f"[{c['ink']}]{LG.mark(' REVISION  ' + F.MODAL_TITLE.upper())}[/]")
-    sh.row(" " * x + f"[{c['mut']}]{LG.mark(' ·── ' + F.MODAL_BODY[0].upper())}[/]")
-    sh.row(" " * x + f"[{c['mut']}]{LG.mark(' ·── ' + F.MODAL_BODY[1].upper())}[/]")
-    sh.row("")
-    ko = (f"[{k.t.get('ground', '#0d2b45')} on {c['ink']}]"
-          f"{LG.mark(' DELETE ')}[/]")
-    sh.row(" " * x + " " + ko + "   "
-           + k.button("CANCEL", 8, DEFAULT), C_SCRIM)
-    sh.row(" " * x + reg_b)
-    for i in range(y + dh, H):
-        sh.row(f"[{c['dim']}]{LG.mark(keep[i])}[/]")
-    for cd in back:
-        sh.note(cd)
-    sh.note(Cand(
-        "the modal's box -- NOT DRAWN; registration marks instead",
-        "refused", "Kit.overlay",
-        "Kit.overlay(self, rows, w, h, under: list[str]) -> list[str]",
-        "'not one element on this sheet is boxed' and the ten marks contain "
-        "no vertical stroke and no rectangle junction, so a dialog box is "
-        "unconstructable.  What marks the selection is the REGISTRATION "
-        "PAIR (`┌ ┐` above, `└ ┘` below -- four corners that never join), "
-        "which is this language's selection mechanism already"))
-    sh.note(Cand(
-        "the knockout on the default answer",
-        "evoked", "Kit.knockout_cell",
-        "Kit.knockout_cell(self, text: str) -> str",
-        "'exactly ONE element per view reverses to a pale ground with dark "
-        "ink, and it is the hero.'  On a board that cell is the title "
-        "block's STATE; on a confirm the hero is the answer, so the "
-        "knockout MOVES -- and the sheet must still carry exactly one"))
-
-
-def s4_ledger(sh: Sheet) -> None:
-    """Ledger refuses the QUESTION, not just the frame.
-
-    'Nothing is deleted, everything is balanced' (LANGUAGES.md #9) rules out
-    silent deletion as a design.  So 'delete 3 tasks?' is not a dialog this
-    language can render honestly -- what it renders is the REVERSING ENTRY
-    the genre requires, posted in the same ruled columns as everything else,
-    with the folio and the leaders it always has.
-    """
-    k, c = sh.k, sh.k.c
-    chrome(sh, "board")
-    header(sh, "CLOSING ENTRY", "3 postings to reverse")
-    sh.blank()
-    for i, t in enumerate(F.TASKS[:3]):
-        sh.row("  " + k.card_rows(t[0], "rev", c["alert"], W - 6, i, False,
-                                  meta_of(t))[0])
-    sh.blank()
-    r = k.rule_line(W - 4)
-    sh.row("  " + (r if r is not None else ""))
-    sh.row("  " + f"[{c['ink']}]{LG.mark('3 entries reversed, 0 deleted')}[/]")
-    sh.blank()
-    sh.row("  " + k.button("Post reversal", 16, FOCUSED) + "   "
-           + k.button("Cancel", 16, DEFAULT))
-    sh.note(Cand(
-        "the delete dialog -- REFUSED AT THE CONTENT, not the frame",
-        "refused", "Kit.overlay",
-        "Kit.overlay(self, rows, w, h, under: list[str]) -> list[str]",
-        "'nothing is deleted, everything is balanced' -- the genre rules "
-        "out silent deletion as a design (LANGUAGES.md #9, 'what the genre "
-        "obligates').  A confirm-to-destroy is therefore not a dialog this "
-        "language may style; the honest screen is the reversing entry, and "
-        "it is a PAGE rather than an overlay because a ledger has no "
-        "surface in front of the page"))
+    rows = [f"[{c['ink']}]{LG.mark(F.MODAL_TITLE.upper())}[/]", ""]
+    rows += [f"[{c['mut']}]{LG.mark(k.LEAD + k.EXT * 2 + ' ' + b.upper())}[/]"
+             for b in F.MODAL_BODY]
+    rows += ["", k.knockout_cell(" DELETE ") + "   "
+             + k.button("CANCEL", 8, DEFAULT)]
+    out = k.overlay(rows, W, H - len(sh.chrome_tail), under)
+    for line in out:
+        sh.row(line)
+    carry(sh, out, under, back)
 
 
 # ===========================================================================
 # S5 -- LIVE MONITOR / LOG
 # ===========================================================================
-LEVEL_MARK = {"info": " ", "warn": "!", "error": "!!"}
-
-
 def s5(sh: Sheet) -> None:
     k, c = sh.k, sh.k.c
     chrome(sh, "log")
@@ -916,23 +585,21 @@ def s5(sh: Sheet) -> None:
     r = k.rule_line(W - 4)
     sh.row("  " + (r if r is not None else ""))
 
-    # -- the log ------------------------------------------------------------
+    # -- the log, through the kit (inc18).  The level is a GLYPH LADDER in
+    # each language -- lit dots, segment height, the ember ramp, the margin
+    # dagger, the drawing's weights -- so the row sorts with the colour taken
+    # away.  The `!!` in the alert hue that five languages shared is gone.
     for ts, lvl, msg in F.LOG:
-        tone = (c["alert"] if lvl == "error"
-                else c["warn"] if lvl == "warn" else c["mut"])
-        mkr = LEVEL_MARK[lvl]
-        sh.row("  " + f"[{c['dim']}]{LG.mark(ts)}[/] "
-               + f"[{tone}]{LG.mark(pad(mkr, 3))}[/]"
-               + f"[{c['dim'] if lvl == 'info' else tone}]"
-               f"{LG.mark(lvl.upper()[:5].ljust(6))}[/]"
-               + f"[{c['ink'] if lvl != 'info' else c['mut']}]"
-               f"{LG.mark(msg)}[/]", C_LOGROW)
+        sh.row("  " + k.log_row(lvl, ts, msg))
 
-    # -- the tail marker ----------------------------------------------------
-    held = f"[{c['warn']}]{LG.mark('|| HELD')}[/]" if F.PAUSED else \
-        k.spinner(2) + f" [{c['mut']}]{LG.mark('live')}[/]"
-    sh.row("  " + f"[{c['dim']}]{LG.mark('        ')}[/]" + held
-           + f"  [{c['dim']}]{LG.mark('space resumes')}[/]", C_TAIL)
+    # -- the tail: the live edge is the last row's own mark, not a widget
+    last_ts, last_lvl, last_msg = F.LOG[-1]
+    sh.rows[-1] = "  " + k.log_row(last_lvl, last_ts, last_msg,
+                                   tail=not F.PAUSED)
+    sh.row("  " + f"[{c['dim']}]{LG.mark('        ')}[/]"
+           + (f"[{c['mut']}]{LG.mark('held -- space resumes')}[/]"
+              if F.PAUSED
+              else k.spinner(2) + f" [{c['mut']}]{LG.mark('live')}[/]"))
 
 
 def legend(sh: Sheet) -> None:
@@ -975,17 +642,18 @@ def s6(sh: Sheet) -> None:
            + k.textfield(F.QUERY, len(F.QUERY), 40, EDITED))
     sh.blank()
 
-    for i, (label, span, hint) in enumerate(F.RESULTS):
+    # THE RESULT ROWS, through the kit (inc19).  `match` finds the query in
+    # the text and marks it WITHOUT touching a byte of it -- the three
+    # languages here that letter their titles in capitals may not letter
+    # these (operator ruling 9).  The span the frame used to compute by hand
+    # is the kit's business now, which is also why `F.RESULTS`' precomputed
+    # span is no longer read.
+    for i, (label, _span, hint) in enumerate(F.RESULTS):
         sel = i == F.RESULT_SEL
         cur = f"[{c['accent']}]{k.CUR}[/] " if sel else "  "
-        a, b = span
-        pre, mid, post = label[:a], label[a:b], label[b:]
-        tone = c["ink"] if sel else c["mut"]
-        body = (f"[{tone}]{LG.mark(pre)}[/]"
-                f"[{c['accent']}]{LG.mark(mid)}[/]"
-                f"[{tone}]{LG.mark(post)}[/]")
+        body = k.match(label, F.QUERY)
         keyc = (f"[{c['dim']}]{LG.mark(hint)}[/]" if hint else "")
-        sh.row("  " + cur + pad(body, 44) + keyc, C_MATCH)
+        sh.row("  " + cur + pad(body, 44) + keyc)
     sh.blank()
     r = k.rule_line(W - 4)
     sh.row("  " + (r if r is not None else ""))
@@ -998,30 +666,8 @@ def s6(sh: Sheet) -> None:
         sh.row("    " + line)
     sh.blank()
 
-    hints = "   ".join(f"[{c['accent']}]{LG.mark(kk)}[/] "
-                       f"[{c['dim']}]{LG.mark(vv)}[/]" for kk, vv in F.HINTS)
-    sh.row("  " + hints, C_HINT)
-
-
-def s6_corgi(sh: Sheet) -> None:
-    """Corgi's key hints are the one place its numbering is already the
-    mechanism -- '[1] BOARD [2] LOG' IS the hint row.  So the hints are
-    IMPLEMENTED here and evoked everywhere else."""
-    s6(sh)
-    sh.cands.pop(C_HINT.name, None)
-    k, c = sh.k, sh.k.c
-    sh.rows[-1] = "  " + "   ".join(
-        f"[{c['accent']}]{LG.mark('[' + str(i + 1) + ']')}[/] "
-        f"[{c['mut']}]{LG.mark(vv.upper())}[/]"
-        for i, (kk, vv) in enumerate(F.HINTS))
-    sh.note(Cand(
-        "the key hint row",
-        "evoked", "Kit.keyhint",
-        "Kit.keyhint(self, pairs: list[tuple[str, str]], w: int) -> str",
-        "§3b: 'in a TUI the numbers ARE the keybindings, which makes the "
-        "numbering functional rather than decorative.'  This language "
-        "already HAS the notation -- what is missing is the seat, and the "
-        "caller must still supply every key (inc12 §8.3)"))
+    # the hint row: the kit owns the notation, the fixture owns every key
+    sh.row("  " + k.keyhint(F.HINTS, W - 4))
 
 
 # ===========================================================================
@@ -1030,11 +676,10 @@ def s6_corgi(sh: Sheet) -> None:
 BUILDERS = {
     "S1": {"blueprint": s1_blueprint},
     "S2": {},
-    "S3": {"ledger": s3_ledger},
-    "S4": {"prism": s4_prism, "corgi": s4_corgi, "naught": s4_naught,
-           "blueprint": s4_blueprint, "ledger": s4_ledger},
+    "S3": {},
+    "S4": {"blueprint": s4_blueprint},
     "S5": {},
-    "S6": {"corgi": s6_corgi},
+    "S6": {},
 }
 BASE = {"S1": s1, "S2": s2, "S3": s3, "S4": s4, "S5": s5, "S6": s6}
 SCREENS = ["S1", "S2", "S3", "S4", "S5", "S6"]

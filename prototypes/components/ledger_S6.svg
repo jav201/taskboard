@@ -18,22 +18,22 @@
 <text x="68.8" y="74.3" fill="#2b3a67">▏</text>
 <text x="77.2" y="74.3" fill="#c4b99f">∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙│</text>
 <text x="26.8" y="108.3" fill="#2b3a67">▶</text>
-<text x="43.6" y="108.3" fill="#2b3a67">re</text>
-<text x="60.4" y="108.3" fill="#1c1a15">direct to task</text>
+<text x="43.6" y="108.3" fill="#1c1a15">re</text>
+<text x="60.4" y="108.3" fill="#6b6558">direct to task</text>
 <text x="413.2" y="108.3" fill="#c4b99f">enter</text>
-<text x="43.6" y="125.3" fill="#2b3a67">re</text>
+<text x="43.6" y="125.3" fill="#1c1a15">re</text>
 <text x="60.4" y="125.3" fill="#6b6558">name project</text>
-<text x="43.6" y="142.3" fill="#2b3a67">re</text>
+<text x="43.6" y="142.3" fill="#1c1a15">re</text>
 <text x="60.4" y="142.3" fill="#6b6558">fresh board</text>
 <text x="413.2" y="142.3" fill="#c4b99f">r</text>
-<text x="43.6" y="159.3" fill="#6b6558">archive rele</text>
-<text x="144.4" y="159.3" fill="#2b3a67">as</text>
-<text x="161.2" y="159.3" fill="#6b6558">ed</text>
-<text x="43.6" y="176.3" fill="#2b3a67">re</text>
+<text x="43.6" y="159.3" fill="#6b6558">archive </text>
+<text x="110.8" y="159.3" fill="#1c1a15">re</text>
+<text x="127.6" y="159.3" fill="#6b6558">leased</text>
+<text x="43.6" y="176.3" fill="#1c1a15">re</text>
 <text x="60.4" y="176.3" fill="#6b6558">store from backup</text>
-<text x="43.6" y="193.3" fill="#6b6558">set re</text>
-<text x="94.0" y="193.3" fill="#2b3a67">mi</text>
-<text x="110.8" y="193.3" fill="#6b6558">nder</text>
+<text x="43.6" y="193.3" fill="#6b6558">set </text>
+<text x="77.2" y="193.3" fill="#1c1a15">re</text>
+<text x="94.0" y="193.3" fill="#6b6558">minder</text>
 <text x="26.8" y="227.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="244.3" fill="#2b3a67">&gt; </text>
 <text x="43.6" y="244.3" fill="#c4b99f">▶</text>
@@ -41,13 +41,17 @@
 <text x="77.2" y="244.3" fill="#2b3a67">▏</text>
 <text x="85.6" y="244.3" fill="#c4b99f">∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙│</text>
 <text x="43.6" y="278.3" fill="#c4b99f"> nil balance</text>
-<text x="26.8" y="312.3" fill="#2b3a67">enter</text>
-<text x="77.2" y="312.3" fill="#c4b99f">run</text>
-<text x="127.6" y="312.3" fill="#2b3a67">esc</text>
-<text x="161.2" y="312.3" fill="#c4b99f">close</text>
-<text x="228.4" y="312.3" fill="#2b3a67">^p</text>
-<text x="253.6" y="312.3" fill="#c4b99f">prev</text>
-<text x="312.4" y="312.3" fill="#2b3a67">^n</text>
-<text x="337.6" y="312.3" fill="#c4b99f">next</text>
+<text x="26.8" y="312.3" fill="#1c1a15">enter</text>
+<text x="68.8" y="312.3" fill="#c4b99f">··</text>
+<text x="85.6" y="312.3" fill="#6b6558">RUN</text>
+<text x="136.0" y="312.3" fill="#1c1a15">esc</text>
+<text x="161.2" y="312.3" fill="#c4b99f">··</text>
+<text x="178.0" y="312.3" fill="#6b6558">CLOSE</text>
+<text x="245.2" y="312.3" fill="#1c1a15">^p</text>
+<text x="262.0" y="312.3" fill="#c4b99f">··</text>
+<text x="278.8" y="312.3" fill="#6b6558">PREV</text>
+<text x="337.6" y="312.3" fill="#1c1a15">^n</text>
+<text x="354.4" y="312.3" fill="#c4b99f">··</text>
+<text x="371.2" y="312.3" fill="#6b6558">NEXT</text>
 </g>
 </svg>

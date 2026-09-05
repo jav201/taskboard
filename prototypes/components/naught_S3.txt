@@ -7,8 +7,8 @@ SETTINGS  5 switches  ·  2 selects  ·  1 slider
   sync to remote            ◌··   (no remote configured)                                            
   compact rows              ∙∙◉                                                                     
                                                                                                     
-  start of week             ●  mon  · v                                                             
-  theme                     ●  dark · v                                                             
+  start of week             ◦mon    ◍◦                                                              
+  theme                     ◦dark   ◍◦                                                              
                                 auto                                                                
                                 light                                                               
                               ∙ dark                                                                
@@ -16,8 +16,8 @@ SETTINGS  5 switches  ·  2 selects  ·  1 slider
   row density               ∙∙∙∙∙∙∙∙∙◉◦◦◦◦ 70                                                       
                                                                                                     
                                                                                                     
-  DANGER  delete every completed task                                                               
-  ◦  Delete all  ◦   7 tasks, not recoverable                                                       
+  danger zone delete every completed task ◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦  
+  ◦ ∙Delete all∙ ◦   7 tasks, not recoverable                                                       
                                                                                                     
                                                                                                     
                                                                                                     

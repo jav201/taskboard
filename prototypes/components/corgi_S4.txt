@@ -1,22 +1,22 @@
-[1]B O A R D [2]FORM [3]CFG [4]LOG                                                                  
-[C] C O N F I R M  MODE 5  ·  DESTRUCTIVE                                                           
-─────────────────────────────────────────────────────────────────────────────────────────────────── 
-                                                                                                    
-  ██  ███ █   ███ ███ ███                                                                           
-  █ █ █   █   █    █  █                                                                             
-  █ █ ██  █   ██   █  ██                                                                            
-  █ █ █   █   █    █  █                                                                             
-  ██  ███ ███ ███  █  ███                                                                           
-                                                                                                    
-  3 TASKS  WILL BE REMOVED FROM BACKLOG                                                             
-  THIS CANNOT BE UNDONE                                                                             
-                                                                                                    
-  ▔▔   DELETE   ▔▔   ▁▁   CANCEL   ▁▁                                                               
-                                                                                                    
-  [1] DELETE   [2] CANCEL                                                                           
                                                                                                     
                                                                                                     
                                                                                                     
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+Delete 3 tasks?                                                                                     
+                                                                                                    
+3 tasks will be removed from BACKLOG.                                                               
+This cannot be undone.                                                                              
+                                                                                                    
+▔▔ ▄Delete▄ ▔▔   ▁▁  Cancel  ▁▁                                                                     
                                                                                                     
                                                                                                     
                                                                                                     
