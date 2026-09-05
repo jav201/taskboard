@@ -384,9 +384,12 @@ def copy_captures(skill: Path) -> tuple[int, int]:
     THIS DID NOT EXIST, AND THE ASSETS DRIFTED BECAUSE OF IT.  The exporter
     wrote `languages.py` and nothing else, so the twenty `.txt`/`.svg` frames
     under `assets/languages/` were copied by hand once and then silently fell
-    behind: `prototypes/out/_fixture_late.json` was edited after the sweep that
-    produced them, and every board frame in the skill now differs from a fresh
-    sweep of unmodified code.  A projection that projects half the asset is how
+    behind: `prototypes/out/_fixture_late.json` was BEING REWRITTEN by
+    `verify_language.py` (F-17, closed in `harness-hygiene` inc24 -- the probe
+    fixtures moved to gitignored `_verify_*.json` names), so every board frame
+    in the skill differed from a fresh sweep of unmodified code.  The rewriter
+    is gone; this copier is what keeps the halves together.  A projection that
+    projects half the asset is how
     the other half rots -- which is the exact failure this file's own header
     says it exists to prevent."""
     dst = skill / "assets" / "languages"
