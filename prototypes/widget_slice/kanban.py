@@ -242,6 +242,26 @@ class KanbanBoard(Vertical):
         # with THAT one — the write lands in a widget about to be removed and
         # the live pane stays blank for good. Measured, not theorised
         # (PENDING, thirtieth pass: 4-7 permanent blanks in 30 runs).
+        # the seat `render()` last checked; -1 so the first paint checks
+        self._painted_w = -1
+
+    def render(self):
+        """Rebuild at the seat we are ABOUT TO DRAW AT (F-16, one level up).
+
+        `on_resize` alone is not enough, for the reason `TaskCard.render`
+        gives: Textual guarantees the RE-RENDER on a seat change but not the
+        EVENT. The board's PUSH-PAINTED rows are the exposure. `.col-head` and
+        `.kb-empty` are composed once, in `build()`, for a width derived from
+        the BOARD's seat and NOT from their own — measured: in the columns
+        branch a board resize does not move a head's own seat at all and the
+        head's `render()` is never called, so a guard on the head could not see
+        the change. The board's `render()` can, and it repairs every surface
+        the build composes at once.
+        """
+        if self._painted_w != self.size.width:
+            self._painted_w = self.size.width
+            self._rebuild_if_seat_moved()
+        return super().render()
 
     def build(self, show_archived: bool = False) -> None:
         from textual.containers import Horizontal
@@ -413,6 +433,10 @@ class KanbanBoard(Vertical):
             self._drive(msg.card)
 
     def on_resize(self) -> None:
+        """The event, when it comes. It is not guaranteed — see `render`."""
+        self._rebuild_if_seat_moved()
+
+    def _rebuild_if_seat_moved(self) -> None:
         """Rebuild only when the width actually changed — a rebuild is
         content-cold work and must not ride every resize event."""
         w = max(20, self.size.width or 0)
