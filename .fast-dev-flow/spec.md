@@ -109,12 +109,95 @@ of `default_board_path` away from `~/.taskboard/board.json` is untouched, and
 | | |
 | --- | --- |
 | Phase A (spec) | **done** — this file; predecessor archived verbatim |
-| Phase B (implement) | inc24 · F-17 — **pending** · inc25 · F-14 — **pending** · inc26 · F-15 — **pending** |
-| Phase C (close) | §8 — **pending** |
-| Notes | **<= 5 files, one agent.** `prototypes/verify_language.py` (inc24 + inc25), plus whatever inc26's measurement earns, plus this spec, the archived predecessor and three packets. |
+| Phase B (implement) | inc24 · F-17 **closed** · inc25 · F-14 **closed** · inc26 · F-15 **bounded and detected, not reproduced** |
+| Phase C (close) | §8 — **done** |
+| Notes | **3 source files, one agent.** `prototypes/verify_language.py` (inc24 + inc25), `tests/test_no_live_board.py` (inc24), `tests/test_surface.py` (inc26); plus this spec, the archived predecessor and three packets. |
 
 ---
 
 ## 8. Close (filled in phase C)
 
-_pending_
+### What changed
+
+**Two of the three findings are closed. The third is not, and the packet says so in its title.**
+
+**F-17 — closed.** `verify_language.py` derived a probe fixture straight onto
+`prototypes/out/_fixture_late.json`, the one name under `prototypes/out/` that `.gitignore` names back in
+and the fixture all 22 committed frames were swept from. Its dates came from `date.today()`, so running
+the language harness re-dated the art's input — measured at +33 days on 12 of 16 tasks, which is
+`date.today()` − `FROZEN`. The two derived fixtures are probes and now say so (`_verify_late.json`,
+`_verify_calm.json`, both ignored). Not a frozen clock: pinning the date would have made the write
+idempotent and left the name collision standing, and would have dragged `freeze_clock()` across 10854
+checks measured against a live clock to fix a filename. **And the finding under the finding:** the tracked
+fixture's `phase`/`blocked` fields are this harness's own derivation, so the committed file was never a
+designed input — it is a byproduct that was committed once and then kept being overwritten by the thing
+that produced it. Its bytes are unchanged; it now has no writer at all.
+
+**F-14 — closed, and both reds were the CHECK.** Neither kit was wrong, and both checks were wrong the
+same way: a hand-typed literal standing for the language axis that never learned prism, the eleventh
+language. `MOTION_STEPS` compared an eleven-key dict against a ten-key pin — every pinned value still
+matched, and the failure was one extra key, printed with no detail at all, which is why it survived six
+packets. The rail check asked all eleven languages for **darkside's** glyph while prism declares
+`layout: rail` and draws its own heavier stroke — the "one class stands for the axis" defect the check's
+own comment forbids, committed by the checker. Both commitments are argued at their definitions in
+`taskboard/language.py` and both stand, so **that file was not touched**. The sweep now reports
+`ALL PASSED`.
+
+**F-15 — not reproduced, and not claimed as fixed.** 80 isolation runs, 27 full-suite runs and 4865
+per-test evaluations, all green. What the increment established instead: the assertion is a pure function
+of five theme tokens and a constant image; its failure map says the only state that reddens it is a
+mutated token; and the assertion replayed against all nine commits from `kits-learn-2` to here is green
+with identical tokens — so the red state has never existed in a commit. The only thing standing behind
+"and no test leaks one" was a human reading eight `finally` blocks; an autouse fixture now asserts it at
+every seat and errors on the **leaking** test rather than the distant victim. Two literal restores — the
+one latent path to the symptom — were closed alongside. No tolerance was widened.
+
+**F-18 — new, found by the same runs.** `tests/test_board_seat.py:205` samples the widget tree one
+`pilot.pause()` after a resize and can catch both generations of `.col-head` — six heads where a board has
+three. 1 red in 40 isolated runs, 1 in 27 full-suite runs. It is the test's observation point, not
+inc23's repair. Recorded with its rate, not fixed.
+
+### How it was tested
+
+- `python -X utf8 prototypes/verify_language.py` — **`ALL PASSED`, 10857 PASS, 0 FAIL, exit 0**
+  (baseline at Phase A: 10854 PASS, 2 FAIL; +3 checks, −2 failures, none deleted or suppressed).
+- `git status --porcelain -- prototypes/out/_fixture_late.json` after that run: **empty**.
+- `python -X utf8 prototypes/race_probe.py --cross 3 --engine shipped`: `0/22 frames drifting, 0.0 %
+  pairwise`, and each swept grid hashed against the committed frame — **22/22 byte-identical**.
+- Anti-vacuity probe for F-14: 7 arms; ARM 6 is the gain — same tree, same stray glyph, old check green
+  and new check red.
+- Anti-vacuity for the F-15 detector: a planted leak produces 1 error naming the culprit test and the
+  drifted token, plus the 3 distant failures a reader would otherwise be left with.
+- `python prototypes/capture_languages.py --surface`, **plain and alone** (F-8): 11 surfaces, no two
+  identical, and `git status --porcelain -- prototypes/gallery/` **empty** — all 33 frames byte-identical
+  to HEAD.
+- `python -X utf8 -m pytest -q`: **693 passed, 2 skipped, 4 warnings in 31.18s** (692 baseline + 1 new
+  test).
+
+**No frame was re-baked** — no hash moved, `prototypes/gallery/` was never opened for write by this batch,
+and `export_to_skill.py` was not run because no carried frame moved.
+
+### Evidence per AC
+
+| AC | verdict | evidence |
+| --- | --- | --- |
+| AC-1 · the sweep does not rewrite a tracked fixture | **met** | `inc24.md` §4a — empty `git status` after a full harness run; the cure and the rejected alternative argued in §2 |
+| AC-2 · the 22 frames still reproduce byte-for-byte | **met** | `inc24.md` §4b — 22/22 MATCH against the committed hashes, 0/22 drift over 3 fresh sweeps |
+| AC-3 · each red diagnosed to a verdict | **met** | `inc25.md` §2 and §3 — what each check asserts, what each kit renders, the deciding docstring quoted; both are check defects, `language.py` untouched |
+| AC-4 · the sweep is green after | **met** | `inc25.md` §5a — `ALL PASSED`, 10857 PASS, 0 FAIL |
+| AC-5 · F-15 reproduced or bounded | **met, as bounded** | `inc26.md` §2, §3, §4 — counts before and after, the failure map, the nine-commit replay, 4865 audited evaluations, the detector red-then-green. Not reproduced; no cause claimed; no tolerance widened |
+| AC-6 · nothing else moves | **met** | suite 693/2; `--surface` plain and alone leaves all 33 frames byte-identical; nothing re-baked, nothing exported |
+
+### Open risks / pending
+
+- **F-18 (new)** — the `test_board_seat.py` observation-point race, with its rate. `inc26.md` §5 and §8.
+- **F-8** — unchanged. `--surface` still has to be run plain and alone.
+- **F-15 is closed without a cause.** If it returns, the new fixture will name the culprit — unless the
+  mechanism was never a theme leak, in which case `inc26.md` §2's whole argument is wrong and the return
+  will say so.
+- **`RUN.md` is stale in two places**: "flake-free since the forty-sixth pass" (F-15 and F-18 both
+  contradict it) and "`verify_language.py` … 2178 checks" against a run that now reports 10857.
+- **`export_to_skill.py:copy_captures`'s docstring** still describes F-17's symptom in the present tense.
+- **The committed fixture has no writer now.** If it ever needs regenerating, nothing in the repo says
+  how. `inc24.md` §1a and §6.
+- Each increment's own risk section: `inc24.md` §5, `inc25.md` §6, `inc26.md` §7.
