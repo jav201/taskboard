@@ -1674,6 +1674,152 @@ def test_exchanging_the_field_walls_back_makes_the_law_go_red(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
+# inc40 (rework-1) - an overlay COVERS a band; it does not eat the page's head
+# ---------------------------------------------------------------------------
+#: the ONE language whose refusal says the page does not survive a confirm, so
+#: the head law below cannot be asked of it. Named rather than derived, and its
+#: citation is asserted word for word inside the test — an exemption may not
+#: outlive the commitment that earns it, and "the board is gone" is the phrase
+#: that earns this one.
+MODAL_KEEPS_NOTHING = ("corgi",)
+
+
+def page_rows(lang):
+    """The page a modal stands in front of: this language's own S1 frame.
+
+    `screens.s4` builds `under` by running the S1 builder, so the shipped S1
+    `.txt` IS the backdrop — not a stand-in for it."""
+    return (FRAMES / f"{lang}_S1.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")
+
+
+def page_markup(lang):
+    """The same page as a CALLER hands it over: every row through `mark()`.
+
+    A sheet's rows are markup, so a literal `[` in a page (industrial's
+    `[21d]`, nord's `[x]`) reaches `overlay` escaped. Passing the raw `.txt`
+    instead would have `visible()` read those runs as style tags and eat
+    them — the module's own pitfall A1, from the caller's side."""
+    return [LG.mark(r) for r in page_rows(lang)]
+
+
+def modal_band(lang):
+    """The rows S4 changes relative to the page, as indices."""
+    s1 = page_rows(lang)
+    s4 = (FRAMES / f"{lang}_S4.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")
+    return [i for i, (a, b) in enumerate(zip(s1, s4)) if a.rstrip() != b.rstrip()]
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_modal_changes_one_contiguous_band_of_the_page(lang):
+    """THE COMPOSITION PROPERTY: a question in front of a page occupies a
+    REGION. The rows it changes are one run, and every row it does not change
+    is the page's own row AT THE SAME INDEX.
+
+    That second half is what "overlay" means and it is the half that can be
+    lost silently: a composition that wrote the question and then appended the
+    page would push everything down, and the frame would still be `h` rows of
+    plausible-looking board — `test_an_overlay_returns_the_rectangle_it_was_
+    asked_for` would stay green while every row below the question was one row
+    off. Measured on the shipped frames, against the shipped page."""
+    band = modal_band(lang)
+    assert band, lang
+    assert band == list(range(band[0], band[-1] + 1)), (lang, band)
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_modal_leaves_the_pages_first_row_alone(lang):
+    """THE HEAD LAW: the page's first row survives the modal.
+
+    Row 1 is where every one of these languages puts the mode strip, and a
+    destructive confirm is precisely the moment the operator needs to know
+    which mode the question came from. `solari_S4` used to open on a blank row
+    — its announcement band was anchored at screen row 0, so the mode strip,
+    the masthead and the head seam were gone and the frame could not answer
+    "which mode is this?" at all. Ten of the eleven kept row 1 before this
+    increment; solari now does too.
+
+    THE EXEMPTION IS NAMED AND ITS CITATION IS CHECKED. corgi's refusal is
+    that a confirm is a MODE — "a dialog floating over a board is two modes at
+    once ... so a confirm is a MODE and the board is gone". A language that
+    has declared the board gone cannot be asked to keep its first row, and a
+    language that quietly stopped keeping it without such a declaration is
+    what this law is for."""
+    if lang in MODAL_KEEPS_NOTHING:
+        assert "the board is gone" in LG.MODAL_BORDER_REFUSED[lang], lang
+        assert 0 in modal_band(lang), lang       # the exemption does work
+        return
+    assert 0 not in modal_band(lang), (lang, modal_band(lang))
+
+
+def test_solaris_announcement_takes_the_head_of_the_schedule_not_the_screen():
+    """SOLARI'S OWN DOCTRINE, kept, and the defect under it, removed.
+
+    `MODAL_BORDER_REFUSED["solari"]`: "a question is posted the way a
+    cancellation is, as a BAND IN REVERSE VIDEO at the head of the schedule,
+    with the rows still legible under it." Both halves are load-bearing and
+    the second one was false: the band was written at index 0, so it landed on
+    the station's own plate — the mode strip, `BOARD 16 TASKS · 4 PROJECTS`,
+    and the seam that closes them — and those rows were not legible under
+    anything, they were gone.
+
+    THE PLATE IS FOUND, NOT COUNTED. `schedule_head` reads the page for its
+    first FULL-MEASURE seam, which on this board is what closes the masthead,
+    and the schedule starts on the row after it. This is asked against the
+    language's own shipped page rather than a synthetic one, because the claim
+    is about a real masthead and a synthetic backdrop has none."""
+    k = LG.kit("solari")
+    under = page_markup("solari")
+    assert k.schedule_head(under) == 3, k.schedule_head(under)
+    raw = page_rows("solari")
+    out = [plain(r) for r in k.overlay(dialog(k), len(raw[0]),
+                                       len(raw), under)]
+    assert all(a.rstrip() == b.rstrip()
+               for a, b in zip(out[:3], raw[:3])), out[:3]
+    assert any("Delete 3 tasks?" in r for r in out[3:]), out[3:8]
+    # and a page with NO full-measure seam has no plate to protect, so the
+    # band still takes the top — the behaviour `UNDER` has always had.
+    assert k.schedule_head(UNDER) == 0
+
+
+def test_anchoring_solaris_band_at_row_zero_eats_the_boards_own_plate(monkeypatch):
+    """TEETH. `schedule_head` returning 0 IS the pre-inc40 body — the old loop
+    read `if i < len(block)`, which is `0 <= i < len(block)` — so this arm
+    restores the defect exactly rather than approximating it.
+
+    The second assertion is the round's own evidence, reproduced: with the
+    band at index 0 the page's row 9 comes back as the frame's row 9, which is
+    what made `solari_S4.txt` row 9 equal `solari_S1.txt` row 9 byte for byte.
+    The page was never SHIFTED — the head was CLOBBERED and everything below
+    it stayed exactly where it was. The other ten are asserted untouched by
+    the same patch, which is what says the fix is solari's and not the base's.
+
+    A law nobody has watched fail is a law nobody has watched."""
+    k = LG.kit("solari")
+    under = page_markup("solari")
+    raw = page_rows("solari")
+    w, h = len(raw[0]), len(raw)
+    assert plain(k.overlay(dialog(k), w, h, under)[0]).rstrip() == raw[0].rstrip()
+
+    monkeypatch.setattr(LG.Solari, "schedule_head", lambda self, u: 0)
+    out = [plain(r) for r in k.overlay(dialog(k), w, h, under)]
+    assert out[0].rstrip() != raw[0].rstrip()
+    assert not any(raw[0].strip() and raw[0].strip() in r for r in out)
+    assert out[8].rstrip() == raw[8].rstrip()            # row 9 is row 9
+
+    for other in LANGS:
+        if other == "solari":
+            continue
+        ko, u = LG.kit(other), page_rows(other)
+        row0 = plain(ko.overlay(dialog(ko), len(u[0]), len(u),
+                                page_markup(other))[0])
+        if other in MODAL_KEEPS_NOTHING:
+            continue
+        assert row0.rstrip() == u[0].rstrip(), other
+
+
+# ---------------------------------------------------------------------------
 # inc37 (inheritors-2) — every language is photographed, not just the five
 # ---------------------------------------------------------------------------
 SCREENS = ("S1", "S2", "S3", "S4", "S5", "S6")

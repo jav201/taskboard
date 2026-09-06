@@ -7468,6 +7468,35 @@ class Solari(Kit):
                           f"[{c['mut']}]{mark(str(v).upper())}[/]"
                           for k_, v in pairs)
 
+    def schedule_head(self, under: list[str]) -> int:
+        """WHERE THE SCHEDULE STARTS: the row after the board's head seam.
+
+        A departure board's announcement takes the head of the SCHEDULE, not
+        the head of the screen. The station's own plate — its name, its
+        counts, and the seam that closes them — is not a departure, and an
+        announcement has never covered it on any board that ever hung in a
+        concourse. `MODAL_BORDER_REFUSED` says the same thing from the other
+        side: "with the rows still legible under it" is a claim about the
+        page surviving, and a page whose masthead is gone has not survived.
+
+        THE PLATE IS FOUND, NOT COUNTED. This language's whole divider
+        vocabulary is the seam, so the plate is exactly what stands above the
+        first FULL-MEASURE seam — a row that is nothing but `SEAM`, edge to
+        edge. Read off the page rather than typed as a row number: a head
+        that grows a line does not need this method edited, and a language
+        that stopped ruling its masthead would fall back on its own.
+
+        A PAGE WITH NO FULL-MEASURE SEAM HAS NO PLATE TO PROTECT, and the
+        band takes the top — which is the pre-inc40 behaviour, kept as the
+        honest answer to "nobody said" rather than as a fallback nobody
+        chose. `tests/test_components.py`'s synthetic `UNDER` is such a page,
+        and it is asserted to stay put."""
+        for i, r in enumerate(under):
+            body = visible(r).rstrip()
+            if body and set(body) == {self.SEAM}:
+                return i + 1
+        return 0
+
     def overlay_instead(self, rows, w, h, under):
         """A BOARD HAS NO SURFACE IN FRONT OF IT. "One shape, the row" is the
         commitment that already took this language's pixels ("an image cannot
@@ -7477,17 +7506,29 @@ class Solari(Kit):
         legible under it.
 
         `band="reverse"` is a token this language already declares, and the
-        band is exactly as wide as the seams under it -- which is why the
+        band is exactly as wide as the seams under it — which is why the
         question sits at the TOP rather than centred: a departure board's
-        announcement row is its first row."""
+        announcement row is its first row.
+
+        THE HEAD OF THE SCHEDULE, NOT ROW ZERO (inc40). This method used to
+        write the block at index 0 and take `under[i]` only below it, so on a
+        real page the announcement landed on the mode strip, the masthead and
+        the head seam and they were gone — `solari_S4` opened on a blank row
+        where every other language keeps the mode strip, and the round could
+        not answer "which mode is this?" from the frame. The band still takes
+        the head; `schedule_head` is what says which head. The block is
+        placed the way the base places its own, `y <= i < y + len(block)`,
+        which is also what keeps this an OVERLAY: every row outside the band
+        is still `under[i]` at the same index, so nothing shifts."""
         c = self.c
         bar = (f"[{self.t.get('ground', '#000000')} on {c['accent']}]"
                f"{mark(' ' * w)}[/]")
         block = [bar] + list(rows) + [self.seam(w)]
+        y = self.schedule_head(under)
         out = []
         for i in range(h):
-            if i < len(block):
-                out.append(block[i])
+            if y <= i < y + len(block):
+                out.append(block[i - y])
             else:
                 out.append(self.recede(under[i] if i < len(under) else ""))
         return out
