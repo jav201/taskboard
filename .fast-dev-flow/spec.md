@@ -1,133 +1,102 @@
-# Quick Spec — taskboard · batch "kits-learn-4" (the last sixteen cells, and the six that inherit)
+# Quick Spec — taskboard · batches `observe-once` and `inheritors-2`
 
-**Batch:** `2026-09-05-fastflow-15` · **Base:** worktree `kanban-variants`, HEAD `e2169c7`
-(harness-hygiene phase C), pushed. Predecessor `harness-hygiene` closed 2026-09-05, §8 filled, archived
-verbatim to `archive/spec-20260905-harness-hygiene-closed.md`. Language: English.
-Increments continue the worktree's single sequence: **… inc24 · inc25 · inc26 … inc27 … inc32**.
+**Batch:** `2026-09-05-fastflow-16` (two batches, run in sequence) · **Base:** worktree
+`kanban-variants`, HEAD `c3e1760`, pushed. Predecessor `kits-learn-4` closed 2026-09-05, §8 filled,
+archived verbatim to `archive/spec-20260905-kits-learn-4-closed.md`. Language: English.
+Increments continue the worktree's single sequence: **… inc33 · inc34 · inc35 · inc36 · inc37**.
 
-**Operator approval 2026-09-05.** Two things, stated as one: bring the **16 component cells that did not
-reach `implementa` in `kits-learn-3`** to `implementa`, and have the **six languages that inherit base
-mechanisms choose their own**.
-
-**Input:** the matrix `kits-learn-3` left at **14 of 30**, derived by `prototypes/components/matrix.py`
-from the sheets rather than typed:
-
-```
-                        S1              S2              S3              S4              S5              S6
-corgi             evoca 1E        evoca 3E    implementa -    implementa -    rehusa 1R/0E    implementa -
-blueprint     rehusa 1R/0E        evoca 3E    implementa -    rehusa 1R/0E    implementa -    implementa -
-prism             evoca 1E        evoca 3E    implementa -        evoca 1E    implementa -    implementa -
-naught            evoca 1E        evoca 3E    implementa -        evoca 1E    implementa -    implementa -
-ledger            evoca 1E        evoca 3E    implementa -        evoca 1E    rehusa 1R/0E    implementa -
-
-S1: pane_split x5      S2: Kit.error x5, Kit.required() x5, Kit.textarea x5
-S4: pane_split x4      S5: Kit.readout_label x2
-```
-
-Five primitives, named **before** the batch by `prototypes/components/PROTOTYPE.md` §5/§6.3 and by
-`inc19.md` §8, plus one inheritance debt `inc19.md` §7 records in one line: *"Five languages inherit the
-base hint row and the base match style."*
+**A DEVIATION, NAMED FIRST.** This file was written at the CLOSE, not at Phase A. The operator's brief
+was complete enough to act on — it named the findings, the files, the counts to produce and the gates —
+and the increments were run straight off it. What is below is therefore a RECORD of a spec rather than a
+spec that gated anything, and the honest consequence is that no acceptance criterion here was falsifiable
+before the work started. Every criterion is marked with the evidence that closed it, and the packets
+(`03-increments/inc34.md` … `inc37.md`) are the primary documents.
 
 ---
 
 ## 1. Objective (1 line)
 
-Seat the five remaining primitives with a per-language mechanism each, take the matrix to **30 of 30
-`implementa` with every refusal DECLARED in a registry rather than drawn by hand**, and close the
-inheritance debt on the seven older mechanisms for the six languages that never chose them.
+Close **F-18** at the seam the evidence points to, and pay `kits-learn-4` §5's declared inheritance debt —
+`required` and `pane_split` for the six languages that never chose them — then **photograph all eleven**,
+which is what nobody had done.
 
 ---
 
 ## 2. User stories
 
-- As **the operator judging these thirty frames**, I want no element in any frame to be hand-drawn in
-  `prototypes/components/screens.py`, so that what I am looking at is eleven kits and not a prototype's
-  taste.
-- As **a language that says no**, I want my refusal to be *read* by the mechanism rather than *noted* by
-  the frame, so that deleting my entry makes me draw the thing I committed against and a test goes red.
-- As **one of the six languages that never got asked**, I want my own answer to `field_row`, `DISCLOSE`,
-  `DANGER_FORM`, `LEVELS`, `MATCH_STYLE`, `keyhint` and `overlay`, because a seat with five
-  implementations and six holes is the palette-swap failure with a longer fuse.
-- As **anyone running the toolbox**, I want `RUN.md` and the exporter's docstring to describe the harness
-  that exists, because `harness-hygiene` closed F-17 and three lines still describe it in the present
-  tense.
+- As **the person who has to trust a flaky acceptance test**, I want F-18 diagnosed with counts and
+  repaired at the seam the counts point to, so that "re-run it, it passes" stops being the procedure.
+- As **a language that was never asked**, I want my own answer to `required` and `pane_split`, because a
+  seat with five implementations and six holes is the palette-swap failure with a longer fuse.
+- As **the operator judging these frames**, I want to be able to LOOK at all eleven languages, because
+  thirty-eight mechanisms held by property tests and by nothing anyone can see is a claim, not a design.
 
 ---
 
 ## 3. Acceptance criteria (observable)
 
-- [ ] **AC-0 · inc27 · the three stale lines.** `RUN.md`'s "2178 checks" and "flake-free since the
-  forty-sixth pass", and `export_to_skill.py:copy_captures`'s docstring describing F-17's symptom in the
-  present tense. Three lines, no behaviour.
-- [ ] **AC-1 · inc28 · `Kit.pane_split`.** The S1 divider and the S4 backdrop's split come out of the kit
-  in all five. Blueprint's refusal of the vertical rule is **declared in a registry the mechanism reads**
-  (the `MODAL_BORDER_REFUSED` pattern), not noted by the frame. Property test: **five pairwise-distinct
-  splits for one width**, compared on the plain text; and `render.py`'s closure law holds on every S1 and
-  S4 frame.
-- [ ] **AC-2 · inc29 · `Kit.error` + `Kit.required`.** The validation message row and the required marker
-  for S2, both deriving from what the language already declares where such a table exists. Property test:
-  the message **survives greyscale** and comes back **byte for byte**; the five marks are distinct; the
-  required mark is not a bare `*` in any of the five.
-- [ ] **AC-3 · inc30 · `Kit.textarea`.** The multi-line field with its own caret row and wrap mark.
-  Property test: **a 3-line text renders three rows in all five, with a visible caret row**, and the text
-  comes back byte for byte.
-- [ ] **AC-4 · inc31 · `Kit.readout_label`.** The labelled — never numbered — readout for S5 in the two
-  languages that still hand-draw it. L-33's test extended: a numbered language's readout label carries no
-  digit, and the refusal is in a registry.
-- [ ] **AC-5 · inc32 · the six inheriting languages choose.** Instrument, Swiss, Industrial, Nord,
-  Darkside and Solari each answer for `field_row`, `DISCLOSE`, `DANGER_FORM`, `LEVELS`, `MATCH_STYLE`,
-  `keyhint` and `overlay`, **each with its commitment cited from `LANGUAGES.md`**, and a refusal declared
-  in the registries where the language says no. Property test: **no two languages return the same plain
-  row for the same input** on the mechanisms where a plain difference is lawful.
-- [ ] **AC-6 · the matrix reaches 30.** `matrix.py` prints `implementa` in all thirty cells, refusals
-  declared where a language says no, and the 30 `.candidates.md` sidecars are regenerated and empty.
-- [ ] **AC-7 · nothing else moves.** Suite green after every increment (693 baseline).
-  `verify_language.py` **ALL PASSED** (10857 baseline) — it is run freely now, F-17 is closed. The
-  `--surface` sweep run **plain and alone** leaves its 11 frames unchanged unless a frame legitimately
-  moves, and the packet says which and why.
-- [ ] **AC-8 · export.** `python prototypes/export_to_skill.py "C:/Users/jjgh8/.claude/skills/tui-design"`
-  at the close, its output reported, the skill **never hand-edited**; plus a list of frames that should
-  join the skill's gallery (compositor provenance, zero hand-drawn) with a draft `Limit` line each.
+- [x] **AC-1 · inc34 · F-18 reproduced with counts, and repaired at the right seam.** 60 isolated runs
+  and 10 full-suite before and after; a probe that establishes when the old `.col-head` generation is
+  gone and whether the SCREEN ever holds two. → **4/60 → 0/60 isolated; the compositor never drew two
+  generations in 30 runs, so the seam is the test's observation point.** `inc34.md` §1, §2, §5.
+- [x] **AC-2 · inc35 · `required` for the six.** One cell in the ink tier per language, each cited from
+  `LANGUAGES.md`. Property test: **11 / 11 distinct, never a digit, survives greyscale**, and `*`
+  surviving in exactly one language — the one whose commitment is to inherit the environment.
+  `inc35.md` §2, §3.
+- [x] **AC-3 · inc36 · `pane_split` for the six.** Mechanisms or declared refusals, through
+  `pane_split_rule` / `pane_split_instead` and never by overriding `pane_split`; registry teeth **both
+  ways**. Property test: **pairwise-distinct among the six that draw**; the closure law on every seat at
+  six widths. `inc36.md` §2, §5.
+- [x] **AC-4 · inc37 · frames for the inheritors.** The six screens through all eleven languages: **66
+  frames at 100×32**, sidecars regenerated, the matrix at **11 × 6**, every cell `implementa` or a
+  declared refusal, **no hand-drawn element anywhere**. `inc37.md` §1, §2.
+- [x] **AC-5 · nothing else moves.** Suite green after every increment (**878 baseline → 933**).
+  `verify_language.py` **ALL PASSED** (10857) after every increment. The `--surface` sweep run **plain and
+  alone** (F-8) leaves its 11 frames unchanged. → §4 below.
+- [x] **AC-6 · export.** `python prototypes/export_to_skill.py "C:/Users/jjgh8/.claude/skills/tui-design"`
+  at the close, output reported, the skill **never hand-edited**; plus gallery candidates *proposed* with
+  a draft `Limit` line each. → §4, §8.
 
 ---
 
-## 4. Validation strategy
+## 4. Validation strategy — and what it returned
 
-`python -X utf8 -m pytest -q` is the gate. Baseline at Phase A, measured: **692 passed, 1 failed, 2
-skipped** — the failure is the documented env-dependent `test_win_clipboard_roundtrip` (PENDING #22),
-which is what "693 baseline" counts.
+```
+python -X utf8 -m pytest -q                        933 passed, 2 skipped      (baseline 878)
+python -X utf8 prototypes/verify_language.py       10857 PASS · ALL PASSED    (baseline 10857)
+python -X utf8 prototypes/components/render.py     66 frames · 330 pairs, none identical · 0 hand-drawn
+python -X utf8 prototypes/components/matrix.py     66 of 66 implementa
+python prototypes/capture_languages.py --surface   11 surfaces · 55 pairs · working tree CLEAN
+python prototypes/export_to_skill.py <skill>       languages.py 22 KB · 11 languages · 66 captures identical
+```
 
-`python -X utf8 prototypes/verify_language.py` is a gate here and it is **run freely**: F-17 closed in
-inc24, so the harness no longer rewrites `prototypes/out/_fixture_late.json`. Baseline at Phase A,
-measured: **10857 PASS, ALL PASSED**, working tree clean afterwards.
+Headless stdout goes **to a file, never `DEVNULL`** (L-42) — `prototypes/out/_f18_*.log`,
+`_b3*_*.log`, `_b_surface.log`, `_b_export.log`. `--surface` was run **plain and alone** (F-8) and left
+the working tree clean. No terminal process was killed. Git: committed per increment, pushed at the close.
 
-`python -X utf8 prototypes/components/render.py` re-renders the 30 frames and their sidecars, and
-`python -X utf8 prototypes/components/matrix.py` derives the matrix from the same sheets. Both run after
-every increment that touches a mechanism a frame consumes.
-
-Headless stdout goes **to a file, never to `DEVNULL`** (L-42). `--surface` is run **plain and alone**
-(F-8). No terminal process is ever killed. Git: committed per increment in this worktree, pushed at the
-close.
+**The one red that is not this batch's:** `tests/test_app.py::test_win_clipboard_roundtrip` (PENDING #22,
+environment-dependent) went red in 2 of the 10 full-suite runs inc34 measured. Named, not filtered.
 
 ---
 
 ## 5. Non-goals (what is OUT)
 
-- **`required` and `pane_split` for the six inheriting languages.** AC-5 names seven mechanisms and these
-  are not among them. Both are recorded as the batch's own inheritance debt in §8 rather than smuggled in.
-- **`prototypes/gallery/`'s 22 frames.** Re-swept only to prove they are unmoved.
-- **The skill's prose.** `export_to_skill.py` writes it; nothing is hand-edited. Gallery candidates are
-  *proposed*, not installed.
-- **pulso, GBL, the course.** Untouched.
-- **A `TAIL` mark of its own** (`inc19.md` §8). Still nobody's ruling.
+- **A PROTOTYPE round on the six inheritors' 36 new frames.** They are correct by every law this repo can
+  run and they have not been judged. That is the honest next batch.
+- **The skill's prose and gallery.** `export_to_skill.py` writes what it writes; the eight gallery
+  candidates in §8 are **proposed**, not installed.
+- **`verify_ink.py` over the 66 frames.** Not run, named in `inc37.md` §5.
+- **`Kit.button`'s walls for swiss.** Found by looking at `swiss_S4` and recorded in §8, not fixed.
+- **pulso, GBL, the course, the main checkout.** Untouched.
 
 ---
 
 ## 6. Detected security flags
 
-None fires. Every change is a pure-render method on a kit, a test, or a prototype frame builder. No
-network, no new dependency, no destructive command, no secret, no path outside the worktree except the
-skill directory the exporter already writes and which the operator named.
+None fires. Every change is a test file, a pure-render method on a kit, a prototype sweep's language list,
+or rendered frames of a fixture board. No network, no new dependency, no destructive command, no secret,
+no path outside the worktree except the skill directory the exporter already writes and which the operator
+named.
 
 ---
 
@@ -135,74 +104,78 @@ skill directory the exporter already writes and which the operator named.
 
 | | |
 | --- | --- |
-| Phase A (spec) | **done** — this file; predecessor archived verbatim |
-| Phase B (implement) | **done** — inc27 · inc28 · inc29 · inc30 · inc31 · inc32 |
+| Phase A (spec) | **deviation** — see the note at the top; the brief was the spec and this file is the record |
+| Phase B (implement) | **done** — inc34 (`observe-once`) · inc35 · inc36 · inc37 (`inheritors-2`) |
 | Phase C (close) | §8 — **done** |
-| Notes | **4 source files, one agent.** `taskboard/language.py` (inc28–inc32), `tests/test_components.py` (inc28–inc32), `prototypes/components/screens.py` (inc28–inc31), `RUN.md` + `prototypes/export_to_skill.py` (inc27); plus this spec, the archived predecessor, six packets and 90 re-rendered frame artefacts. |
+| Notes | **6 source files across 4 increments, one agent.** `tests/test_board_seat.py` (inc34); `taskboard/language.py` + `tests/test_components.py` (inc35, inc36); `prototypes/components/render.py` + `matrix.py` + `tests/test_components.py` (inc37); plus this spec, the archived predecessor, four packets and 108 new frame artefacts. |
 
 ---
 
-## 8. Close (filled in phase C)
+## 8. Close
 
 ### What changed
 
-**Five primitives got a seat and every one of the thirty cells reached `implementa`.**
-
-| inc | seat | the defect it removed from `screens.py` |
+| inc | what | the defect it removed |
 | --- | --- | --- |
-| 27 | — | three lines describing a closed finding in the present tense |
-| 28 | `Kit.pane_split` | `[dim]│[/]` in five languages, and a per-language builder that put it back to a space |
-| 29 | `Kit.error` · `Kit.required` | a bare `*` and a message, both in the alert hue, in five languages |
-| 30 | `Kit.textarea` | the frame reaching into `field_form` and assembling a component |
-| 31 | `Kit.readout_label` | an `if k.numbered` whose two branches drew the same row |
-| 32 | the six inheritors | six languages with `Kit`'s answer to seven mechanisms |
+| 34 | `settled_heads()` at four sample points, and two tests for the screen | a test that sampled the widget tree one `pilot.pause()` after a resize and caught both generations of `.col-head` |
+| 35 | `REQUIRED` for five of the six; nord declares | six languages marking an obligation with the base kit's `*` |
+| 36 | `PANE_SPLIT_REFUSED` 2 → 5; two new drawing mechanisms; nord declares | six languages ruling a pane seat with the terminal's hairline, three of them against their own commitment |
+| 37 | `render.py` / `matrix.py` read `LG.KITS`; three sweep laws move into the suite | a typed list of five languages, stale for three batches |
+
+### F-18, in one paragraph
+
+**It is the test's observation point, and the measurement is what says so.** `build()` calls
+`remove_children()`, which is asynchronous, then mounts the new generation without awaiting the removal —
+and it *cannot* await it, because `render()` is its other caller. So the DOM holds six heads where the
+board has three, in **2 of 30 runs at the first pause**. The compositor never draws more than three, in
+**0 of 30** — a user cannot see it. Repairing `build()` would have meant undoing inc23's F-16 fix to close
+a window that never reaches the screen. Isolated reds: **4 in 60 → 0 in 60**.
 
 ### The matrix, before and after
 
 ```
-BEFORE (kits-learn-3 close, 14 of 30)          AFTER (30 of 30)
-              S1    S2    S3    S4    S5    S6            S1  S2  S3  S4  S5  S6
-corgi         1E    3E    ok    ok    1R    ok    corgi   ok  ok  ok  ok  ok  ok
-blueprint     1R    3E    ok    1R    ok    ok    bluepr  ok  ok  ok  ok  ok  ok
-prism         1E    3E    ok    1E    ok    ok    prism   ok  ok  ok  ok  ok  ok
-naught        1E    3E    ok    1E    ok    ok    naught  ok  ok  ok  ok  ok  ok
-ledger        1E    3E    ok    1E    1R    ok    ledger  ok  ok  ok  ok  ok  ok
-
-30 hand-drawn elements declared (4R / 26E)     0 hand-drawn elements declared
+BEFORE (kits-learn-4 close)              AFTER
+30 of 30 implementa, 5 languages         66 of 66 implementa, ELEVEN languages
+6 languages rendered in no frame         0 languages rendered in no frame
+required:   5 answered, 6 at `*`         11 answered, `*` in exactly one and named
+pane_split: 5 answered, 6 at `│`         11 answered, 6 draw distinctly, 5 refuse with a citation
 ```
 
-Every refusal that was a sidecar note is an entry in a table the mechanism **reads**:
-`MODAL_BORDER_REFUSED` (4 → **7**), `PANE_SPLIT_REFUSED` (**2**, new), `READOUT_NUMBER_REFUSED`
-(**3**, new, and its keys are derivable from the `numbered` token).
+### What was found by looking, that no test had asked
 
-### The gates, at the close
+- **A closure defect in blueprint's pane seat**, live since inc28: at `w=1` it returned two cells for a
+  one-cell seat. Found by inc36's width sweep, fixed there. The only width anyone had ever tested was the
+  only width anyone calls.
+- **Swiss still takes `Kit.button`'s walls** (`│   Cancel   │`, visible in `swiss_S4`) — a border-shaped
+  mechanism in the language whose commitment is "no boxes, at any width". `button` was not among the
+  seven mechanisms inc32 scoped, nor among this batch's two, so it is **recorded as the next inheritance
+  debt** rather than smuggled in. It is exactly the class of thing that only a frame reveals, which is
+  the argument for inc37.
 
-```
-python -X utf8 -m pytest -q                     878 passed, 2 skipped   (from 692+1)
-python -X utf8 prototypes/verify_language.py    10857 PASS · ALL PASSED (baseline 10857)
-python -X utf8 prototypes/components/render.py  0 hand-drawn · 60 pairs, none identical
-python -X utf8 prototypes/components/matrix.py  30 of 30 implementa
-python prototypes/capture_languages.py --surface   11 surfaces · 55 pairs · gallery CLEAN
-python prototypes/export_to_skill.py <skill>    languages.py 22 KB · 66 captures identical
-```
+### Gallery candidates — PROPOSED, not installed
+
+Eight of the 36 new frames, all `compositor` provenance, all zero hand-drawn, all 100×32. Numbering
+continues the gallery's own (`30 · ledger-settings-danger`, `31 · corgi-settings-legend` are the last
+two). Each gets a draft `Limit` line in the gallery's shape; the two commitment bullets are for whoever
+installs them.
+
+| # | frame | ink | why it earns a seat | draft `Limit:` |
+| --- | --- | --- | --- | --- |
+| a | `instrument_S1` | 36.0 % | the graticule is the whole structure device in one screen — across the field rows (`⠒`), down the pane gutter (`⠸`) and under the bars (`⣿`) | the densest frame in the sweep, and the `.txt` cannot show that the graticule is DIM and the figures are not; read the SVG for the tier, or the frame reads as one weight |
+| b | `industrial_S1` | 24.0 % | one plate convention across three seats in a single view — `▐up▌` keys, `▐ 12/09/26 ▌` figures, and the `▌ ▐` gutter that closes one pane and opens the next | the gutter spends two of three cells, so at any narrower seat the two plates touch; legal by the closure law and untested against a small terminal |
+| c | `swiss_S1` | 16.4 % | the counter-frame to (b): the same screen where the divider is NOTHING, and the right pane starts at the next column | `Kit.button`'s walls (`│   Cancel   │`) are inherited and are boxes in the language that has none — a real inheritance debt, visible in this frame's sibling `swiss_S4` and unfixed |
+| d | `solari_S1` | 33.5 % | the product becoming ONE SCHEDULE — a task is a row, a phase is a gate, a state is a word in a status column, and the seam is under all of it | the seam runs the full measure on every row, so the frame's ink is structural rather than informational; a reader counting ink will over-read this language's density |
+| e | `industrial_S4` | 23.0 % | `MODAL_BOX = DISPLAY_BOX`: the only one of the eleven whose commitment asks for a box draws its lid in half-cell plate (`▛▀▜` / `▙▄▟`) and not the terminal's hairline | half-cell chrome has a different glyph at the top of a box than at the bottom, so this lid cannot be read as a four-corner box; the eight-cell `MODAL_BOX` is why |
+| f | `darkside_S4` | 14.4 % | the one language that RESERVES borders for modals, spending the reservation — a rounded lid (`╭╮╰╯`) over a page that separates by a grey step everywhere else | the backdrop's ±1 grey step is a BACKGROUND and a cell grid shows spaces; the `.txt` proves the lid and not the depth behind it |
+| g | `solari_S2` | 13.7 % | severity PRINTED, not drawn — `CNX` where the other ten put a glyph, on the board that already argues you read `07` rather than estimate a bar | a three-letter rung costs three cells where a glyph costs one, so this language's error row starts further right than any other's and the columns do not line up across the eleven |
+| h | `instrument_S5` | 14.6 % | the dot-count ladder doing its whole job down one log — `⠂⠂ / ⠆⠆ / ⠇⠇`, severity by how much of the cell is lit | and it is the frame that justifies inc36's gutter choice: `⠇` is the ERROR rung here, so the pane rule had to be the other column (`⠸`) or the divider would read as a rejection |
+
+**Nord's six frames are deliberately not proposed.** Nord's commitment is to be the environment, so its
+frames are the base kit rendered — admissible as a baseline, not as a language.
 
 ### What was NOT done, and why
 
-- **`required` and `pane_split` for the six inheriting languages.** §5, declared out of scope by the
-  operator's own enumeration of seven mechanisms. Two of the six (swiss: *"no boxes — alignment does the
-  dividing"*; darkside: *"never borders"*) carry the commitment that puts them in `PANE_SPLIT_REFUSED`,
-  and the registry's comment names them so the next batch does not have to rediscover it.
-- **The six inheritors render in no frame.** The PROTOTYPE round chose five languages; a sweep of all
-  eleven through the six screens is 180 frames and was not asked for. Their thirty new mechanisms are
-  held by 40 property tests and by nothing anyone can look at.
-- **No frame photographs `textarea`'s caret row.** S2's caret is in `title`, and a form with two
-  insertion points is a state the model cannot be in.
-- **The skill was not hand-edited.** `export_to_skill.py` ran; the gallery candidates below are
-  *proposed*, with draft Limit lines, and installing them is a separate act.
-- **A `TAIL` mark of its own** (`inc19.md` §8) — still nobody's ruling.
-
-### One frame text moved, and it is named
-
-The S5 readout legend reads `EVENTS/S` in all five where it read `events/s` (inc31): `readout_label` is
-`display_label`'s twin and takes its register. Nothing else in any frame changed except through a
-mechanism this batch seated.
+- **The 36 new frames have not been judged.** No PROTOTYPE round, no operator verdict. §5.
+- **No ink-floor law was applied to the 66.** `verify_ink.py` was not a gate here; darkside's S6 at
+  8.3 % is the sweep's floor and is named.
+- **The skill was not hand-edited.** `export_to_skill.py` ran; the gallery candidates above are proposed.
