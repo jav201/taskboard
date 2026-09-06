@@ -9413,7 +9413,10 @@ def _meter_blocks(k, done, total, counts, w):
     their own token (`dotgrid`, `lcd`, `braille`, `hairline`, `boxed`,
     `step`, `ember`, `tally`, `odometer`, `dimension`) and `blocks` is the
     base's, so this function draws for exactly one language. Proved by frame
-    diff, not by reading: 3 of the 66 moved and all three are nord's.
+    diff rather than by reading: of the 66, exactly ONE moved and it is
+    `nord_S1`. (`Nord.detail_rows` draws a SECOND bar inline, which is the one
+    the docstring above measured; it moved with this one, and `board_nord` in
+    the gallery carries both.)
 
     WHAT REPLACES IT IS NOT AN INVENTION. Rich -- the library this app is
     built on -- draws its own progress bar with `━`, so a terminal that has a
