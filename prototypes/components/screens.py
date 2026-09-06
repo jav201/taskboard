@@ -229,14 +229,10 @@ def rule(sh: Sheet) -> None:
 # marker: the `*` this file printed in five languages at once was the
 # palette-swap failure at one glyph, which is what its own commitment said.
 
-C_TEXTAREA = Cand(
-    "the multi-line notes field",
-    "evoked", "Kit.textarea",
-    "Kit.textarea(self, lines: list[str], caret: tuple[int,int] | None, "
-    "w: int, h: int, state: str = DEFAULT) -> list[str]",
-    "the text field's contract over a RECTANGLE: the value comes back byte "
-    "for byte, the caret takes a column of its own, and the window moves "
-    "in two axes instead of one")
+# `C_TEXTAREA` was here until inc30.  `Kit.textarea` seats it and declares
+# nothing per-language: the walls, the paper, the caret's own column and the
+# lit/unlit tiers are all seats `textfield` already had, and the wrap mark is
+# `DISCLOSE` -- the third component to spend the same declaration.
 
 
 # ===========================================================================
@@ -364,19 +360,16 @@ def s2(sh: Sheet) -> None:
     field("tags", tags)
     sh.blank()
 
-    # notes -- a rectangle of text the contract has no component for
-    field("notes", "", False)
-    sh.rows.pop()
+    # notes -- the rectangle, through the kit (inc30).  The walls, the paper
+    # and the caret's column are the one-line field's own seats, so a language
+    # that answered `textfield` has already answered this.  DRAWN IN `DEFAULT`
+    # AND WITH NO CARET, because the caret is in `title` on this frame and a
+    # form with two insertion points is a state the model cannot be in -- the
+    # caret row is exercised in `tests/test_components.py` instead.
     cap = pad(f"[{c['mut']}]{LG.mark('notes')}[/] ", lab)
-    op, rune, cl = k.field_form(DEFAULT, "textfield")
-    for i, line in enumerate(F.NOTES):
-        head = cap if i == 0 else " " * lab
-        sh.row("  " + head + f"[{c['dim']}]{LG.mark(op)}[/]"
-               + f"[{c['ink']}]{LG.mark(pad(line, 34))}[/]"
-               + f"[{c['dim']}]{LG.mark(cl)}[/]", C_TEXTAREA)
-    sh.row("  " + " " * lab + f"[{c['dim']}]{LG.mark(op)}[/]"
-           + f"[{c['dim']}]{LG.mark(rune * 34)}[/]"
-           + f"[{c['dim']}]{LG.mark(cl)}[/]", C_TEXTAREA)
+    for i, line in enumerate(k.textarea(F.NOTES, None, 34,
+                                        len(F.NOTES) + 1, DEFAULT)):
+        sh.row("  " + (cap if i == 0 else " " * lab) + line)
     sh.blank()
 
     # the two buttons -- Save DISABLED because `due` is invalid.  Both states

@@ -2461,6 +2461,67 @@ class Kit:
         return (f"[{ground}]{mark(op)}[/]" + "".join(body)
                 + f"[{ground}]{mark(cl)}[/]")
 
+    def textarea(self, lines, caret: tuple[int, int] | None = None,
+                 w: int = 12, h: int = 3,
+                 state: str = DEFAULT) -> list[str]:
+        """THE TEXT FIELD'S CONTRACT OVER A RECTANGLE — `h` rows, each the
+        same field the one-line seat draws.
+
+        NOTHING PER-LANGUAGE IS DECLARED FOR IT, and that is the finding
+        rather than a shortcut. Every mark this needs is already a seat: the
+        walls and the paper are `field_form(state, "textfield")`, the caret
+        is the `caret` part in the parts registry, the lit and unlit tiers are
+        `check_tone` and `part_tone`. A language that answered the one-line
+        field has already answered this one, and a second table would have
+        been eleven restatements of six existing ones.
+
+        THE CARET TAKES A COLUMN OF ITS OWN, on ONE row. `caret` is
+        `(row, col)`: the field has exactly one insertion point, and a mark on
+        every row would draw a state the model cannot be in. The column is the
+        one-line seat's law for the one-line seat's reason — a block caret ON
+        a character hides it, and the only way to keep it readable underneath
+        is reverse video, which is colour.
+
+        THE LINE BREAKS ARE THE CALLER'S. It passes `lines`; a kit does not
+        know where this app's paragraphs end. What the kit owns is what
+        happens when a line does not fit, and the mark for that is the
+        language's own `DISCLOSE` — the third component to spend it, on the
+        same declaration as the other two: a select points at a list, a log's
+        tail at the line that has not arrived, a wrapped row at the text that
+        did not fit.
+
+        AND THAT IS THE ONE PLACE THE BYTES STOP. A one-line field can move
+        its WINDOW sideways; a rectangle's rows cannot, so an over-long line
+        shows its own leading bytes, unrecased and in order, and says with a
+        mark that there are more. Nothing is substituted and nothing is
+        silently dropped — but "byte for byte" holds for the lines that FIT,
+        which is stated here rather than discovered in a frame."""
+        w, h = max(1, int(w)), max(1, int(h))
+        op, rune, cl = self.field_form(state, "textfield")
+        ground = self.part_tone("main", state, "textfield")
+        lit = self.check_tone(True, state)
+        cg = self.part_glyph("caret", state, "textfield")
+        ct = self.part_tone("caret", state, "textfield")
+        cr, cc = (int(caret[0]), int(caret[1])) if caret else (-1, 0)
+        out = []
+        for i in range(h):
+            text = str(lines[i]) if i < len(lines) else ""
+            cols: list[str | None] = list(text)
+            if i == cr:
+                cols.insert(max(0, min(len(text), cc)), None)
+            more = len(cols) > w
+            view = cols[:w - 1] if more else cols[:w]
+            body = [f"[{ct}]{mark(cg)}[/]" if ch is None
+                    else f"[{lit}]{mark(ch)}[/]" for ch in view]
+            if more:
+                body.append(f"[{self.c['accent']}]{mark(self.DISCLOSE)}[/]")
+            elif len(view) < w:
+                body.append(f"[{ground}]"
+                            f"{mark(rune * (w - len(view)))}[/]")
+            out.append(f"[{ground}]{mark(op)}[/]" + "".join(body)
+                       + f"[{ground}]{mark(cl)}[/]")
+        return out
+
     GROUP_SEP = "  "                       # air between a group's items
 
     def radio_items(self, options, selected: int, state: str = DEFAULT,

@@ -46,11 +46,13 @@
 <text x="497.2" y="193.3" fill="#6b6558">urgent</text>
 <text x="26.8" y="227.3" fill="#6b6558">notes</text>
 <text x="144.4" y="227.3" fill="#c4b99f">│</text>
-<text x="152.8" y="227.3" fill="#1c1a15">Redirect drops the ?next= param when the</text>
-<text x="488.8" y="227.3" fill="#c4b99f">│</text>
+<text x="152.8" y="227.3" fill="#1c1a15">Redirect drops the ?next= param w</text>
+<text x="430.0" y="227.3" fill="#2b3a67">┊</text>
+<text x="438.4" y="227.3" fill="#c4b99f">│</text>
 <text x="144.4" y="244.3" fill="#c4b99f">│</text>
-<text x="152.8" y="244.3" fill="#1c1a15">session cookie is renewed mid-flight.</text>
-<text x="463.6" y="244.3" fill="#c4b99f">│</text>
+<text x="152.8" y="244.3" fill="#1c1a15">session cookie is renewed mid-fli</text>
+<text x="430.0" y="244.3" fill="#2b3a67">┊</text>
+<text x="438.4" y="244.3" fill="#c4b99f">│</text>
 <text x="144.4" y="261.3" fill="#c4b99f">│··································│</text>
 <text x="144.4" y="295.3" fill="#c4b99f">╌    Save    ╌</text>
 <text x="287.2" y="295.3" fill="#1c1a15">│   Cancel   │</text>
