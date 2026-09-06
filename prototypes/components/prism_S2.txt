@@ -1,10 +1,10 @@
  board │ ▸form │  cfg │  log                                                                        
 NEW TASK  5 fields  ·  1 invalid                                                                    
                                                                                                     
-  title*        ⣿Fix login⡆ redirect⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣿                                                
+  title⡀        ⣿Fix login⡆ redirect⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣿                                                
                                                                                                     
-  due*          ⣹12/09/26⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣏                                                
-                expected YYYY-MM-DD                                                                 
+  due⡀          ⣹12/09/26⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣏                                                
+                ⣿⣿ expected YYYY-MM-DD                                                              
                                                                                                     
   priority      ⣀⣀⣀ low  ⣀⣀⣀ norm  ⣀⣿⣀ high                                                         
                                                                                                     

@@ -2611,6 +2611,69 @@ class Kit:
     # level survives the colour being taken away (operator ruling 8).
     LEVELS = {"info": "· ", "warn": "! ", "error": "!!"}
 
+    # THE VALIDATION ROW — what a language does with the rest of the line
+    # after it has said what was rejected, and which tier it says it in.
+    #
+    # `ERROR_FILL` is the NOTATION the PROTOTYPE round asked for by name:
+    # "ledger's leaders, corgi's segment legend, blueprint's revision note".
+    # Air is a real answer (the terminal writes the message and stops) and it
+    # is the base's.
+    #
+    # `ERROR_TONE` exists because TWO of these languages ration their alert
+    # hue by commitment — ledger spends it on literal debt, blueprint on
+    # overdue and nothing else ("a calm sheet carries zero alert") — and a
+    # validation message reaching for red would break the one mark those two
+    # guard. inc18 solved the same problem for the log by taking the hue away
+    # from ALL ELEVEN; that was right for a stream of rows and it is too much
+    # here, where one row is the whole point. So the tier is a per-language
+    # decision, which is what it actually is.
+    ERROR_FILL = ""
+    ERROR_TONE = "alert"
+
+    def error(self, msg: str, w: int) -> str:
+        """THE ROW THAT EXPLAINS A REJECTION.
+
+        THE MESSAGE IS CONTENT and comes back byte for byte — no recasing, no
+        truncation, no ellipsis. Three of these languages letter their labels
+        in capitals and none of them may letter this: the words are the
+        caller's account of what is wrong, and a language that shouted them
+        would be editing the complaint.
+
+        THE MARK IS THE LANGUAGE'S SEVERITY LADDER, not a new table. `LEVELS`
+        already carries three shapes of one width per language, already
+        survives the colour being taken away (operator ruling 8), and already
+        says ERROR in this language's own alphabet. A second table beside it
+        would be two answers to one question — and an inline validation
+        failure and a log line at ERROR are the same claim about the same
+        severity, made about a field instead of about an event.
+
+        `w` IS A MINIMUM, `field_row`'s rule: the row is filled out to `w`
+        with `ERROR_FILL` and NEVER cut. A validation message trimmed to fit
+        is the one string in a form that must not be."""
+        c = self.c
+        text = str(msg)
+        mk = self.LEVELS["error"]
+        tone = c.get(self.ERROR_TONE, c["ink"])
+        row = (f"[{tone}]{mark(mk)}[/] [{c['ink']}]{mark(text)}[/]")
+        gap = w - len(mk) - 1 - len(text)
+        if self.ERROR_FILL and gap > 1:
+            row += (" " + f"[{c['dim']}]"
+                    f"{mark(self.ERROR_FILL * (gap - 1))}[/]")
+        return row
+
+    # THE REQUIRED MARK — one cell, and it may NOT be a bare `*` in eleven
+    # languages, which is the palette-swap failure at a single glyph. It is a
+    # PROPERTY of the field rather than an alert or an action, so the base
+    # spends the ink tier on it: one weight step above the `mut` caption it
+    # stands beside (HIERARCHY.md's dim/normal/bright ladder), and no rationed
+    # hue at all. `*` is the terminal's own convention and the base kit is the
+    # terminal; every language with an alphabet of its own answers below.
+    REQUIRED = "*"
+
+    def required(self) -> str:
+        """The mark beside a caption whose field may not be left empty."""
+        return f"[{self.c['ink']}]{mark(self.REQUIRED)}[/]"
+
     def knockout_cell(self, text: str) -> str:
         """REVERSE VIDEO — a cell that trades ink for ground.
 
@@ -3778,6 +3841,15 @@ class Naught(Kit):
     # two components.
     PANE_RULE = NA.OFF
 
+    # THE VALIDATION ROW, in the lattice. The remainder is the UNLIT ground
+    # this language draws everywhere else (`field_row`, `pane_split`), and
+    # the mark is two dots at full charge -- the ladder's top rung, already
+    # declared. Nothing rations `alert` here, so the tier is the base's.
+    ERROR_FILL = NA.OFF
+    # A LIT DOT. Full charge means the seat must carry a value; the unlit dot
+    # beside it on the same row means it does not yet.
+    REQUIRED = NA.ON
+
     LEVELS = {"info": "◦◦", "warn": "∙◦", "error": "∙∙"}
 
     MATCH_STYLE = "bold {ink}"             # full charge, and no second red
@@ -4283,6 +4355,17 @@ class Corgi(Kit):
     # display, and the edge is a bar. The gutters are the brutalist grid's own
     # ("single-cell gutters, no rounded corners").
     PANE_RULE = "█"
+
+    # THE VALIDATION ROW, on the panel. The remainder is BARE PANEL -- air,
+    # because a silkscreen does not rule a line out of a legend (`field_row`
+    # makes the same argument for the same reason). The mark is the segment
+    # bank fully lit, which is this language's ERROR already.
+    ERROR_FILL = ""
+    # THE UPPER BANK LIT. `DISCLOSE` is the bank BELOW the segment; a slot
+    # that must be filled lights the one above it. Two banks, two meanings,
+    # one alphabet -- and not a number, because the numbers are the keymap
+    # (L-33) and an obligation is not a key.
+    REQUIRED = "▀"
 
     LEVELS = {"info": "▁▁", "warn": "▄▄", "error": "██"}
 
@@ -5895,6 +5978,14 @@ class Prism(Kit):
         return [f"[{self.c['mut']} on {self.depth_ground()}]{' ' * w}[/]"
                 for _ in range(max(0, h))]
 
+    # THE VALIDATION ROW, and this language is airy: the message stands and
+    # the line ends. The mark is the ember at full strength, its own ERROR.
+    ERROR_FILL = ""
+    # THE EMBER'S LEADING CELL -- the frontier `field_row` draws, at one dot.
+    # "Quantity is a solid field being CONSUMED": a required seat is a field
+    # the value has not reached yet.
+    REQUIRED = "⡀"
+
     LEVELS = {"info": "⣀⣀", "warn": "⣤⣤", "error": "⣿⣿"}
 
     MATCH_STYLE = "bold {accent}"          # the accent CALLS ATTENTION
@@ -6564,6 +6655,20 @@ class Ledger(Kit):
         if rows:
             rows[0] = f"[{self.rule_color}]{mark(self.RULE_HEAD * w)}[/]"
         return rows
+
+    # THE VALIDATION ROW, on the page. A ledger FOOTNOTES an exception and
+    # rules the leader out to the margin, which is the one typographic
+    # argument this language is built on -- so the remainder is `LEAD`.
+    #
+    # AND IT SPENDS NO ALERT. "The alert hue is literal debt and nothing
+    # else" is the commitment `log_row` already protects; a rejected form
+    # field is not money owed.
+    ERROR_FILL = LEAD
+    ERROR_TONE = "ink"
+    # THE SINGLE DAGGER. Footnote order is the whole notation: `†` marks the
+    # entry that must be made, `‡` (this language's ERROR, and the wall its
+    # invalid field is daggered with) marks the one that was refused.
+    REQUIRED = "†"
 
     LEVELS = {"info": "  ", "warn": "† ", "error": "‡ "}
 
@@ -8042,6 +8147,20 @@ class Blueprint(Kit):
                        + " " * max(0, w - 2)
                        + f"[{self.c['dim']}]{mark('├')}[/]")
         return rows
+
+    # THE VALIDATION ROW IS A REVISION NOTE: lettered on a DASHED extension
+    # out of the feature that changed, which is what `╌` is for on this
+    # sheet and what its WARN rung already spells.
+    #
+    # AND IT SPENDS NO ALERT. "A calm sheet carries zero alert" -- the hue is
+    # rationed to overdue and nothing else, and `log_row` already guards it.
+    ERROR_FILL = "╌"
+    ERROR_TONE = "ink"
+    # AN OPENING TERMINATOR. On a drawing an unfigured dimension is a
+    # REFERENCE and a figured one is required; the mark that says an extent
+    # must be given is the terminator that opens it. `━` was the other
+    # candidate and it is spent twice already (DANGER_FORM, ERROR).
+    REQUIRED = "├"
 
     LEVELS = {"info": "··", "warn": "╌╌", "error": "━━"}
 

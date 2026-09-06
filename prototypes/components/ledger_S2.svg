@@ -13,18 +13,20 @@
 <text x="665.2" y="40.3" fill="#6b6558">5 fields  ·  1 invalid</text>
 <text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="74.3" fill="#6b6558">title</text>
-<text x="68.8" y="74.3" fill="#a8261f">*</text>
+<text x="68.8" y="74.3" fill="#1c1a15">†</text>
 <text x="144.4" y="74.3" fill="#c4b99f">▶</text>
 <text x="152.8" y="74.3" fill="#1c1a15">Fix login</text>
 <text x="228.4" y="74.3" fill="#2b3a67">▏</text>
 <text x="236.8" y="74.3" fill="#1c1a15"> redirect</text>
 <text x="312.4" y="74.3" fill="#c4b99f">∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙│</text>
 <text x="26.8" y="108.3" fill="#6b6558">due</text>
-<text x="52.0" y="108.3" fill="#a8261f">*</text>
+<text x="52.0" y="108.3" fill="#1c1a15">†</text>
 <text x="144.4" y="108.3" fill="#c4b99f">‡</text>
 <text x="152.8" y="108.3" fill="#1c1a15">12/09/26</text>
 <text x="220.0" y="108.3" fill="#c4b99f">··························‡</text>
-<text x="144.4" y="125.3" fill="#a8261f">expected YYYY-MM-DD</text>
+<text x="144.4" y="125.3" fill="#1c1a15">‡ </text>
+<text x="169.6" y="125.3" fill="#1c1a15">expected YYYY-MM-DD</text>
+<text x="337.6" y="125.3" fill="#c4b99f">···························································</text>
 <text x="26.8" y="159.3" fill="#6b6558">priority</text>
 <text x="144.4" y="159.3" fill="#c4b99f">┊ ┊</text>
 <text x="178.0" y="159.3" fill="#6b6558">low</text>
