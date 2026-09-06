@@ -197,6 +197,9 @@ frames are the base kit rendered — admissible as a baseline, not as a language
 
 ## 9. Batch `rework-1` — the three findings of `PROTOTYPE-inheritors.md` that are not language-level
 
+> **§9.5 was corrected by batch `rework-2` (§10). Two of its three "found by looking" items are
+> closed and ONE OF THEM WAS DIAGNOSED WRONG — read §10.3 before acting on §9.5.**
+
 `PROTOTYPE-inheritors.md` (2026-09-05) judged 42 frames and proposed **19 `rework`**. It also argued that
 those nineteen are not nineteen defects: nord — the language that overrides nothing — proves that several
 of them live in `Kit` or in the composition layer, and its §7 q1 asks whether `Kit` is opened **before**
@@ -309,3 +312,137 @@ the base:
 | Phase B (implement) | **done** — inc39 · inc40 · inc41 |
 | Phase C (close) | this section |
 | Notes | **2 source files across 3 increments, one agent.** `taskboard/language.py` (inc39, inc40) and `tests/test_components.py` (all three), plus three packets, this section and 10 frame artefacts. `capture_languages.py` was run once and confirmed no board rendering changed. |
+
+---
+
+## 10. Batch `rework-2` — the tooling the language rework needs, and two wrong diagnoses corrected
+
+`rework-1` closed three base-level defects and left three items "found by looking" plus sixteen
+language-level `rework` frames. **This batch is the tooling: stop the suite corrupting itself, make the
+`.svg` show the tier it was dropping, and build the census that turns sixteen taste arguments into one
+measured question.** No language was changed and no frame was judged.
+
+### 10.1 What each increment did
+
+| inc | the defect | the level it lived at | artefacts moved |
+| --- | --- | --- | --- |
+| 42 | `pytest -q` **appended a block to `tests/test_components.py` on every run**. `prototypes/out/_b37_test.py` matched pytest's default `python_files`, and collecting a module runs its body. HEAD carried three copies. | `pyproject.toml` had no `testpaths`, and the probe was named like a test. **Both closed** — `testpaths = ["tests"]` and a rename. Proved by an md5 that does not move across a full run. | `tests/test_components.py` −116 lines; 995 collected before and after |
+| 42 | `gallery_darkside` "stale since inc21" | **wrong diagnosis — see §10.3.** It is calendar-dependent, and was one day old. | `gallery_darkside.{txt,svg}` |
+| 43 | the `.svg` painted **0** of the **66** style runs the eleven S6 sheets declare. `bold`/`underline` never reached it; `reverse` reached Rich as a style FLAG with colour and bgcolor still in declared order, so an exporter reading `bgcolor` saw the page ground. | `capture_languages.cell_grid` (the swap) and `svg_from_grid` (the two attributes). **Not `screens.py` and not a kit.** | the eleven `*_S6.svg`, and the 22 gallery `.svg` the same exporter takes. **All 88 `.txt` byte-identical.** |
+| 44 | `verify_ink.py` printed a bare table that was then quoted as if it measured the 66 frames. It measures the LIVE widget, 11×3, and drifts. | the script's own naming, plus a missing mode. Now `glance ink, 11x3, live` and `frame ink, 66 frames, static`. **Neither is a gate.** | none |
+| 44 | the sixteen language-level findings had no common measurement | **`prototypes/collision_census.py`** — 54 cells across the eleven that carry more than one role. | `prototypes/out/collision_census.txt` |
+
+### 10.2 The laws and tools this batch added
+
+- **inc43** — *the `.svg` paints exactly the style runs the kit declared*, over the eleven S6: six declared
+  and six painted each, 66 = 66, **and the word must match too** (a `bold` language's S6 carries no
+  `text-decoration` anywhere). Its teeth are the two `reverse` kits: each of their six runs paints the
+  query in the CELL'S OWN GROUND on a rect of the kit's hue — painting the hue as ink would keep the count
+  and mean nothing was fixed — and the SEVENTH `re` in every frame (the search field) is asserted to be
+  excluded, because a measurement that counted text content would score 7.
+- **inc43** — `declared_grounds` learned that **`[reverse #456]` is `[… on #456]` said backwards**. The
+  vacuity roster is 13 → **14**: `industrial_S6` declared six grounds the whole time and neither the
+  census nor the exporter could see them. Two blind spots facing each other read as agreement.
+- **inc44** — `verify_ink.py --frames`, deterministic, floor `corgi_S4` 2.7% and ceiling `ledger_S4`
+  48.8%. **One formula for both modes, and it now discards U+2800 BRAILLE PATTERN BLANK** — an empty
+  braille cell is a space that lives in the braille block. Seven frames move by up to 1.9 points, and
+  **`instrument_S1` crosses DENSITY.md's 35% line the wrong way (36.0% → 34.3%): it was over the floor on
+  padding.**
+- **inc44** — `prototypes/collision_census.py`, with the five collisions the round found by hand asserted
+  as a self-check before any table is printed.
+
+### 10.3 `gallery_darkside` was never stale, and §9.5 says the opposite
+
+`Darkside.wordmark()` calls `doodle()`, which is `PHASES[date.today().day % 6]` — *"identity is a
+date-driven moon doodle"*, the last clause of its own class docstring.
+
+```
+baked 2026-09-05 (inc21)   day 5 -> 5 % 6 = 5 -> PHASES[5] = "(.)"     the committed cell
+re-baked 2026-09-06        day 6 -> 6 % 6 = 0 -> PHASES[0] = "( )"     what the sweep now writes
+```
+
+**One day old, not four months.** And §9.5's own probe had already proved it: reverting `language.py` to
+`8604607` and getting the identical diff means the source is not involved *at all*, which was read as "not
+this batch's doing" instead. **The re-bake is committed and closes nothing** — on 2026-09-07 the committed
+frame is wrong again. Closing it needs a pinned date (as the fixture is pinned) or the doodle cell exempted
+from the comparison: **a design change, so it is the operator's.**
+
+### 10.4 The sixteen language-level frames, now with their census rows
+
+Still open, still untouched. The census column is the cell's own row from `collision_census.txt`; a blank
+one is a finding the census **cannot** see, which is as useful to know.
+
+| frame | the finding | census row |
+| --- | --- | --- |
+| `instrument_S2` | ERROR rung `⠇` opens the SAFE button | **`⠇` (4)** LEVELS[error] · INVALID textfield.main open · button.main open · textfield.main open — **and its mirror `⠸` (3)** on both closers |
+| `instrument_S3` | `⠁` is REQUIRED in S2 and DISABLED here | **`⠁` (5)** REQUIRED · checkbox.main (disabled) · stepper.main · switch.main (disabled) · textfield.main (disabled) |
+| `instrument_S4` | the only severity cell in a destructive confirm sits on `Cancel` | **`⠛` (2)** DANGER_FORM · checkbox.main (focused) — the danger form IS the focused checkbox |
+| `swiss_S2` | `Save` (DISABLED) is typographically a caption | — (a weight/type finding; no cell carries two roles) |
+| `swiss_S3` | `·` (`LEVELS["info"]`) prefixes `╲Delete all╱` | **`·` (6)** LEVELS[info] · button.main open (default) · checkbox.knob · radio.knob · stepper.main · textfield.main |
+| `swiss_S4` | `•` (REQUIRED) is the focus ring on the irreversible button | **`•` (3)** REQUIRED · **button.main open (focused)** · radio.knob — the round's finding, verbatim |
+| `industrial_S2` | `▐` is both REQUIRED and the field's wall | **`▐` (4)** REQUIRED · INVALID textfield.main open · button.main open · textfield.main open — **and `▌` (3)** on both closers |
+| `industrial_S3` | the danger-zone CAPTION is plated like the button beside it | — (a composition finding; the caption is not a `PART_GLYPHS` slot) |
+| `nord_S1` | the load plot beats the declared subject | — |
+| `darkside_S1` | the `.txt` has no pane separation at all | — |
+| `darkside_S3` | caption and destructive button open with the same `▬` | — **and this is the census's own limit**: `▬` is drawn outside `PART_GLYPHS`, so set B cannot reach it |
+| `darkside_S6` | `bold {ink}` in an achromatic language | — the tier now reaches the `.svg` (inc43); whether the weight is observable is still open |
+| `solari_S2` | `▁` does nine jobs in one screen | **`▁` (7 families, 18 declared seats)** REQUIRED · button · checkbox · radio · stepper · switch · textfield. The round counted per SCREEN; the census counts per KIT, and it is the widest single cell in the corpus |
+| `blueprint_S1` | first fixation unspent on a calm sheet | — doctrine (§9.3 q3) |
+| `blueprint_S2` | `├` is both REQUIRED and the dimension's opening terminator | **`├` (7)** REQUIRED · INVALID stepper.step open · button · checkbox · radio · stepper · textfield — **and `┤` (7)** on the closers |
+| `blueprint_S3` | on and off differ by ONE hairline cell | — (a contrast finding between two states of one part) |
+
+**Five of the sixteen have an exact census row, four more have a partial one, seven have none.** The seven
+are composition and typography findings, and they say what the census is not: it reads DECLARATIONS, not
+frames.
+
+### 10.5 What the census found that the round did not — and the languages with no frame in §10.4
+
+`collision_census.txt`, 54 cells over eleven languages, **zero languages clean**. The rows the sixteen
+never named:
+
+- **`naught ∙` (6 families)** — `LEVELS[error]` **and** `LEVELS[warn]` **and** `DANGER_FORM` **and**
+  `REQUIRED` **and** `CUR` **and** the switch indicator. Five meanings on one dot, and **naught has no
+  frame among the sixteen at all.** By family count it is the worst cell in the corpus.
+- **`naught ◦` (6)** — info **and** warn, plus both button walls, the checkbox and the radio.
+- **`corgi ▁ ▄ ▀ █` (7/7/4/4)** — corgi spends its four-step block ramp twice: once as `LEVELS`, once as
+  chrome. **corgi also has no frame among the sixteen.**
+- **`ledger †` (2)** — `LEVELS["warn"]` **is** `REQUIRED`. One dagger, two meanings, and ledger has no
+  frame among the sixteen either.
+- **`darkside O` (4)** — `LEVELS["error"]` **is** `CUR`, and both knobs.
+- **`prism ⣿` (7)** — error **and** `DANGER_FORM` **and** all three button walls.
+- **`nord [ ]` (4 each)** — the stepper's INVALID step **is** the button's wall and the checkbox's well.
+
+**AND THE CENSUS FLAGS inc39's OWN FIX.** `swiss ╱ ╲`, `nord !`, `blueprint ━`, `corgi ▄`, `darkside Ø`
+and `ledger ‡` all show `DANGER_FORM` sharing cells with the INVALID textfield walls — **which is exactly
+the rule inc39 applied on purpose** (§9.2). The census cannot tell a deliberate alignment from an accident;
+it asks the question and the answer is the operator's. That limit is stated in the script's own docstring.
+
+**The B×B boundary is a decision, not an oversight.** Two controls sharing a wall form is how a language
+reads as one language, so chrome-only sharing is counted and not listed; the count is printed per language
+so the choice can be reversed by whoever disagrees.
+
+### 10.6 Found by looking, not fixed
+
+- **`gallery_darkside` is calendar-dependent** (§10.3). Live, and no amount of re-baking closes it.
+- **`instrument_S1` is under DENSITY.md's glance floor** once the braille blank stops counting as ink
+  (36.0% → 34.3%). It was over the floor on padding.
+- **`verify_ink.py`'s live mode drifts** — `industrial board` 50.8% then 51.5% back to back, `nord board`
+  29.2% then 29.3%, the other 31 cells identical. Cause not established; on that pair the drift stayed out
+  of the `glance` column the floor is read off. **Not a gate, deliberately.**
+- **`test_win_clipboard_roundtrip` is environment-coupled.** It drives the real Windows clipboard through
+  PowerShell and fails when anything else on the desktop holds it — `Set-Clipboard` itself returns
+  *"Requested Clipboard operation did not succeed"*. It is the one test in the suite whose result depends
+  on the machine's GUI state.
+- **`blueprint_S4`'s destructive control has no danger mark and no focus mark in either tier** (inc41 §8).
+  Untouched.
+- **The gallery boards carry 15–48 bold runs each and nobody has judged those pictures** (inc43 §9). They
+  are more faithful than what they replace, which is not the same as saying anyone has looked.
+
+### 10.7 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc42 · inc43 · inc44 |
+| Phase C (close) | this section |
+| Notes | **7 source files across 3 increments, one agent** (`pyproject.toml`, `tests/test_components.py`, `prototypes/capture_languages.py`, `prototypes/verify_ink.py`, `prototypes/collision_census.py`, `.gitignore`, `tests/test_scratch_cannot_be_committed.py`), plus 35 regenerated artefacts, the census table, three packets and this section. **No kit and no screen was changed; not one of the 88 `.txt` moved.** |
