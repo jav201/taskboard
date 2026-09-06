@@ -446,3 +446,167 @@ so the choice can be reversed by whoever disagrees.
 | Phase B (implement) | **done** — inc42 · inc43 · inc44 |
 | Phase C (close) | this section |
 | Notes | **7 source files across 3 increments, one agent** (`pyproject.toml`, `tests/test_components.py`, `prototypes/capture_languages.py`, `prototypes/verify_ink.py`, `prototypes/collision_census.py`, `.gitignore`, `tests/test_scratch_cannot_be_committed.py`), plus 35 regenerated artefacts, the census table, three packets and this section. **No kit and no screen was changed; not one of the 88 `.txt` moved.** |
+
+---
+
+## 11. Batch `rework-3` — the language-level rework
+
+`rework-1` closed three base-level defects, `rework-2` built the instrument. **This batch is the rework
+itself: four increments, the sixteen language-level `rework` frames of §9.4 answered one by one, and the
+operator's rule written once and then enforced by three property laws over all eleven languages.**
+
+### 11.0 The rule this batch enforces, and where it is written
+
+> A cell that carries a **meaning** — a severity rung `LEVELS[*]`, the `DANGER_FORM`, `REQUIRED`, `CUR`,
+> or a declared `INVALID` mark — may not carry a second meaning in the same language **unless the two are
+> distinct on a channel that language declares** (count, weight, tier, position); and it may not stand at
+> a position in control chrome where a reader would take it for that meaning: **the opener of a control,
+> the indicator of a switch, a disabled mark**. Chrome-on-chrome (B×B) is an ALPHABET and is not a
+> collision. **Every exemption is by name with a citation in the kit; silence is not an exemption.**
+
+Written in full in `inc45.md` §0, with `VERIFY.md`'s *"assert distinctness on the channel that is left"*
+as its authority. It is enforced by three laws, each parametrised over all eleven and each with a teeth
+test that must name the LANGUAGE and the two roles:
+
+| law | clause | added | state |
+| --- | --- | --- | --- |
+| `test_a_languages_meaning_marks_do_not_share_a_cell` | meaning × meaning | inc45 | **11 of 11 pass** |
+| `test_a_meaning_never_stands_at_a_disabled_or_indicator_seat` | the switch indicator, the disabled mark | inc46 | 7 of 11 pass; the other four counted by name |
+| `test_no_control_opens_with_a_mark_that_means_something` | the opener | inc48 | 7 of 11 pass; the other four counted by name |
+
+### 11.1 What each increment did
+
+| inc | languages | the defect | frames moved |
+| --- | --- | --- | --- |
+| 45 | naught · corgi · nord · swiss · industrial · darkside · ledger | **two MEANINGS on one mark.** `naught ∙` was severity + danger + obligation + position; `nord !` warn + destruction; `swiss ━` error + cursor; `industrial ▪` warn + cursor; `darkside O` error + cursor; `ledger † ‡` obligation and refusal + the two severity rungs. **corgi `▄` was found by the law, not by the round** — the danger form one rung DOWN its own ladder. | 24 |
+| 46 | instrument · swiss | **a meaning at a named seat.** instrument's error rung `⠇` OPENED every button and field and its obligation `⠁` was the dead switch, dead track, dead checkbox and dead paper; swiss's `━` was the switch's ON indicator, its `•` the focus ring on an irreversible button and the radio's knob, its `·` — the lowest rung — opened `╲Delete all╱`. Four swiss controls still enclosed in the language committed against boxes. | 9 + 2 gallery |
+| 47 | solari · nord | **the widest cell in the corpus, and a docstring's own metric.** `solari ▁` was `REQUIRED` and the seam and every control's DEFAULT rung — 139 occurrences on `solari_S2`, two of them the answer. nord's load plot was 27 near-solid block cells beating the declared subject in the pane the split exists to give one subject. | 2 + 2 gallery |
+| 48 | industrial · darkside | **a caption plated as a control**, in each language's own `field_row` and not in the sheet; `industrial ▐` obligation + the plate's opening half; `darkside bold {ink}` in an achromatic language. Plus the opener law over all eleven. | 7 (+1 svg-only) |
+
+**14 source-file edits across 4 increments, one agent.** `taskboard/language.py` (all four),
+`tests/test_components.py` (all four), `prototypes/collision_census.py` (45, 46, 47),
+`prototypes/verify_language.py` (47).
+
+### 11.2 The census: 54 → 48, and the number that matters more
+
+```
+language      HEAD  inc45  inc46  inc47  inc48      live meaning x meaning
+naught           3      5      5      5      5      1  ->  0
+corgi            5      5      5      5      5      2  ->  2
+instrument       8      8      7      7      7      1  ->  1
+swiss            8      9      5      5      5      1  ->  0
+industrial       5      4      4      4      4      2  ->  1
+nord             5      4      4      4      4      1  ->  0
+darkside         3      3      3      3      3      1  ->  0
+prism            5      5      5      5      5      1  ->  1
+ledger           4      2      2      2      2      2  ->  0
+solari           3      3      3      3      3      0  ->  0
+blueprint        5      5      5      5      5      3  ->  3
+TOTAL           54     53     48     48     48     15  ->  8
+```
+
+**Two numbers, and the right-hand pair is what the rule is about.** The left counts every cell that does
+more than one job, meanings AND chrome together. The right counts only cells carrying two or more
+MEANINGS, with the batch's two named exemptions subtracted — and **every one of the eight left involves
+`INVALID`**, which is inc39's ruling (§9.2) and not this law's territory.
+
+**The census's own limits showed twice and both are recorded.** `naught` went 3 → 5 and `swiss` 8 → 9 in
+inc45 because the marks their obligation and position moved ONTO were already spent on chrome — those are
+A×B rows, which the census calls *questions* and the rule permits. And inc47 and inc48 each moved the
+total by ZERO while closing the two sharpest findings in §9.4: solari traded a seven-family row for a
+two-family row (the census counts rows, not families) and darkside's caption-as-button was never a census
+row at all, because `▬` carries no A-family — which §10.4 predicted in writing.
+
+**The three rosters that carry what is left**, each asserted exactly so it can only move when somebody
+edits it:
+
+| roster | clean | still failing |
+| --- | --- | --- |
+| `MEANING_AT_A_NAMED_SEAT` (inc46) | 7 | naught 8 · corgi 8 · prism 8 · blueprint 8 |
+| `MEANING_AT_AN_OPENER` (inc48) | 7 | corgi 31 · prism 19 · blueprint 6 · naught 2 |
+| `HANDED_FIELDS` (inc39, grew in inc46) | — | six languages have no handedness; swiss joined the five that do |
+
+### 11.3 The sixteen, one by one
+
+| frame | §9.4's finding | inc | state |
+| --- | --- | --- | --- |
+| `instrument_S2` | the ERROR rung `⠇` opens the SAFE button | 46 | **fixed** — the rails mirror; the opener takes the gutter's column, the column inc36 chose for this exact reason. `⠇` is now the closer, which is a **declared cost**: the left braille column IS the ladder's column, and the only four-dot alternative is this language's caret |
+| `instrument_S3` | `⠁` is `REQUIRED` in S2 and `DISABLED` here | 46 | **fixed** — five dead seats moved to `⠄` / `⠈`, rungs this language already spends on dead things. `⠁` means obligation and nothing else; its census row is gone |
+| `instrument_S4` | the only severity cell in a destructive confirm sits on `Cancel` | 46 | **fixed at the opener.** The round called it *"severidad invertida"* and that half was **wrong**: counted in dots the focused (destructive) button is heavier, 4 against 3, and the danger form `⠛` is heavier than the error rung. What was real is the rung on `Cancel`, and it is off the opener |
+| `swiss_S2` | `Save` (DISABLED) is typographically a caption | 46 | **partly fixed, and honestly.** The four controls beside it lost their walls so the screen is consistent — but the dead button is still air. There is nothing lighter than `▫` in this alphabet that is not a dashed rule (the shape being given up) or `·` (a severity rung, which the new law forbids at exactly this seat). **Still open** |
+| `swiss_S3` | `·` (`LEVELS["info"]`) prefixes `╲Delete all╱` | 46 | **fixed** — the button's ladder is one shape at three weights (`▫ ▪ ■`) and no rung is a declaration |
+| `swiss_S4` | `•` (`REQUIRED`) is the focus ring on the irreversible button; the modal opens and never closes | 46 | **half fixed.** Obligation keeps `•` and focus took `▪`. The unclosed modal is a composition finding in `overlay_instead` and is **still open** |
+| `industrial_S2` | `▐` is both `REQUIRED` and the field's wall | 48 | **fixed** — the plate keeps the cell (it is this language's whole notation) and obligation takes `!`, the register's own stencil |
+| `industrial_S3` | the danger-zone CAPTION is plated like the button | 48 | **fixed** — and the brief's question is answered: the sheet does NOT call `button` for a caption; `field_row` plates the value, and industrial's plate was byte for byte its DEFAULT button. `nord_S3` is the reference and the caption is bare |
+| `nord_S1` | the load plot beats the declared subject | 47 | **fixed** — both quantity seats (`_meter_blocks`, the base's, and `Nord.detail_rows` inline, which is the one the docstring measured) draw the terminal's own progress bar and the figure leads. **Block-element cells in the frame: 27 → 0**, and it is a `verify_language` check now |
+| `darkside_S1` | the `.txt` has no pane separation at all | 48 | **doctrine, cited — and the ruling is the operator's**, which is the round's own last sentence. The grey step is written down at `pane_split_instead` (*"a background is not a cell"*) and the `.svg` carries 28 rects of it; the rail is one mark on one side under inc38's principle. What this batch did was make sure it did not get WORSE: `▏` 16 → 16, `▬` 6 → 0 |
+| `darkside_S3` | caption and destructive button open with the same `▬` | 48 | **fixed** — the caption's seat is `◦`, the lightest cell this alphabet has; not `▏`, because that took `darkside_S1` from 16 strokes to 22 |
+| `darkside_S6` | `bold {ink}` in an achromatic language | 48 | **fixed** — `reverse {mut}`, a ±1 grey STEP of ground, which is the channel §8 declares. `GROUNDED_FRAMES` 14 → 15, the reverse kits 2 → 3, both asserted |
+| `solari_S2` | `▁` does nine jobs in one screen | 47 | **fixed** — obligation takes `▮`, the flap standing. **Re-measured: `▁` 139 → 137, of which mean REQUIRED 2 → 0.** The round undercounted ("more than sixty"); both readings reach the same verdict |
+| `blueprint_S1` | first fixation unspent on a calm sheet | — | **doctrine**, closed by §9.3 q3 before this batch |
+| `blueprint_S2` | `├` is `REQUIRED` and the dimension's opening terminator | — | **still open.** blueprint had no increment in this batch; it is 6 on the opener roster and 8 on the named-seat roster |
+| `blueprint_S3` | on and off differ by ONE hairline cell | — | **still open** — a contrast finding between two states of one part, which no law in this batch reaches |
+
+**Twelve fixed, two doctrine-with-citation, and `swiss_S2` / `swiss_S4` / `blueprint_S2` / `blueprint_S3`
+carrying named residue.**
+
+### 11.4 The skill's gallery — five frames are stale and must be re-installed
+
+`export_to_skill.py` writes `assets/languages.py`, `assets/languages/` and `SURFACES.md`. **It does not
+touch `assets/gallery/`**, where frames 44–51 were installed. Five of the eight no longer match their
+source and are a MANUAL install:
+
+| # | gallery frame | source | |
+| --- | --- | --- | --- |
+| 44 | `44_instrument-list-graticule` | `instrument_S1` | identical |
+| **45** | `45_industrial-list-plate` | `industrial_S1` | **stale** — inc45 (cursor `▪`→`▶`) and inc48 (`field_row` loses the plate) |
+| **46** | `46_swiss-list-next-column` | `swiss_S1` | **stale** — inc45 (cursor `━`→`▮`) |
+| 47 | `47_solari-list-gate-seam` | `solari_S1` | identical |
+| **48** | `48_industrial-modal-plate-lid` | `industrial_S4` | **stale** — inc45 (cursor) |
+| **49** | `49_darkside-modal-rounded-lid` | `darkside_S4` | **stale** — inc45 (cursor `O`→`▊`) |
+| **50** | `50_solari-form-printed-severity` | `solari_S2` | **stale** — inc47 (obligation `▁`→`▮`) |
+| 51 | `51_instrument-monitor-dot-ladder` | `instrument_S5` | identical |
+
+**Two of the eight draft `Limit:` lines in §8 are now wrong** and go with the re-install: (b)
+`industrial_S1`'s cites *"`▐ 12/09/26 ▌` figures"* — the figures are no longer plated; (c) `swiss_S1`'s
+already carried one correction (inc38) and needs a second (the cursor is `▮`, not `━`).
+
+`assets/languages/` moved in 6 files across the batch — `board_nord.{txt,svg}` (inc47),
+`gallery_instrument.{txt,svg}` and `gallery_swiss.{txt,svg}` (inc46) — all written by `export_to_skill.py`
+and verified idempotent on a second run (`0 written, 66 already identical`). **The skill repo was not
+committed.**
+
+### 11.5 Found by looking, not fixed
+
+- **corgi has never had a frame judged and is the worst language in the corpus by every roster this batch
+  built**: 31 opener seats, 8 named seats, 2 live meaning×meaning rows. Its four-step block ramp is
+  `LEVELS`, the chrome ladder, the danger form and the obligation mark at once. `prism` (19 / 8 / 1) and
+  `blueprint` (6 / 8 / 3) are the same shape, narrower.
+- **`naught` and `solari` have no unspent cell left.** Both had to put a meaning on a mark their own caret
+  already wears (`◉`, `▮`), and both are argued at the seat as ONE meaning at two seats rather than two
+  meanings on one cell. That argument is available exactly twice and it has been spent twice.
+- **The stepper has no law.** inc39 declined to extend its INVALID law there (*"a stepper's halves are
+  directions, not walls"*, §9.5) and inc48's opener law excludes it for the same reason. It costs the
+  opener law swiss's and nord's `stepper.main` — five seats each — and
+  `Kit.PART_GLYPHS["stepper.step"][INVALID] = "]["` is still the base's unfixed flip.
+- **`verify_language` caught two things the suite could not.** instrument's dead track colliding with its
+  dead KNOB (*"a knob drawn like the fill is not a knob"*), and swiss's first indicator answer making its
+  bar byte-identical to darkside's. Both were caught by laws written for other batches.
+- **A fallback is not a declaration, and both instruments had to learn it separately.** The census learned
+  it in inc44 (`invalid`); `meaning_marks_at_named_seats` learned it in inc47 (`disabled`), from a false
+  positive that reported solari's CARET as a disabled mark. naught's named-seat count fell 9 → 8 on that
+  correction.
+- **`ledger` is the batch's cheapest fix and the only language that came out clean on every roster**:
+  one declaration (`LEVELS`) moved to `*` / `**`, and its census count halved, 4 → 2.
+- **`test_win_clipboard_roundtrip` is environment-coupled** (§10.6) and was red at HEAD before the batch
+  began, in every run of all four increments.
+
+### 11.6 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc45 · inc46 · inc47 · inc48 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1004 → 1040 passed** (+36: three laws × 11 parametrisations + three teeth tests), the clipboard red throughout and named in every packet. `verify_language.py` **ALL PASSED** after every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66. `capture_languages.py` run after every increment; 4 gallery artefacts moved in total. `collision_census.py` self-check green; **4 of the round's 5 hand-found collisions are asserted CLOSED and cannot grow back**, 1 is live with its reason. `export_to_skill.py` run at the close, idempotent on re-run. |
+| Notes | **4 source files across 4 increments, one agent** (`taskboard/language.py`, `tests/test_components.py`, `prototypes/collision_census.py`, `prototypes/verify_language.py`), plus 42 regenerated frame artefacts, 4 gallery artefacts, the census table, four packets and this section. |
