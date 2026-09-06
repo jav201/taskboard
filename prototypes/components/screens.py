@@ -218,13 +218,9 @@ def rule(sh: Sheet) -> None:
 
 
 # --- the candidates that recur across screens ------------------------------
-C_SPLIT = Cand(
-    "the vertical divider between the list and the detail pane",
-    "evoked", "pane_split",
-    "Kit.pane_split(h: int) -> list[str]",
-    "the language's own answer to 'two regions side by side' -- a rule, a "
-    "grey step, air, or a refusal; COMPOSITION is a per-kit commitment "
-    "(COMPONENTS.md: 'composition is the last palette-swap')")
+# `C_SPLIT` was here until inc28.  `Kit.pane_split` seats it, and the whole
+# `s1_blueprint` builder went with it -- that override existed only to strip
+# the `│` this file had no business printing in blueprint's frame.
 
 # NARROWED BY inc14 (kits-learn-3).  The STATE is implemented: the field is
 # drawn by `k.textfield(..., INVALID)` and its mark is the language's own
@@ -321,41 +317,24 @@ def s1(sh: Sheet) -> None:
 
     top = len(sh.rows)
     room = H - top - 2
-    split = f"[{c['dim']}]│[/]"
+    # THE DIVIDER, through the kit (inc28).  This loop printed `│` in five
+    # languages at once -- the terminal's own convention generalised into four
+    # that never chose it, which is the red `!` and the borrowed dot leader at
+    # one cell.  Each language answers for itself now: a solid display bar, an
+    # unlit lattice column, a ruled money column opened at its head rule, a
+    # grey step of background, two datums that never join.
+    #
+    # AND `s1_blueprint` IS GONE WITH IT -- the fifth per-language builder this
+    # sweep has deleted.  It existed to REPLACE a `│` this file should not have
+    # printed, which is the shape every one of the five had.
+    split = k.pane_split(room, sep_w)
     for i in range(room):
         l = clip(lst[i] if i < len(lst) else "", left)
         r = clip(det[i] if i < len(det) else "", right)
-        sh.row(pad(l, left) + " " + split + " " + r, C_SPLIT)
+        sh.row(pad(l, left) + split[i] + r)
     sh.row(pad(f"[{c['dim']}]{LG.mark('view')}[/] " + bar
                 + f" [{c['mut']}]{LG.mark(f'{st + 1}-{st + sz} of {tot}')}[/]",
                 left))
-
-
-def s1_blueprint(sh: Sheet) -> None:
-    """Blueprint's S1, and the divider is a REFUSAL rather than a rule.
-
-    The language's ten marks are `─ ━ ├ ┤ ╌ ┌ ┐ └ ┘` and the hatch; not one
-    of them is a vertical stroke, so a `│` between two panes is not merely
-    off-style here, it is unconstructable (LANGUAGES.md #11).  What a drawing
-    office does instead is what this does: the second pane is a FIELD at its
-    own datum, and the air between them is the division.
-    """
-    s1(sh)
-    # the generic builder drew a `│`; blueprint's frame must not carry one.
-    c = sh.k.c
-    fixed = []
-    for r in sh.rows:
-        fixed.append(r.replace(f"[{c['dim']}]│[/]", f"[{c['dim']}] [/]"))
-    sh.rows = fixed
-    sh.cands.pop(C_SPLIT.name, None)
-    sh.note(Cand(
-        "the divider between the two panes -- NOT DRAWN",
-        "refused", "pane_split",
-        "Kit.pane_split(h: int) -> list[str]",
-        "'not one element is boxed, at any width' -- the ten marks this "
-        "language draws contain no vertical stroke, so a pane rule is "
-        "unconstructable.  The division is AIR at a second datum, which is "
-        "what a drawing office does with two views on one sheet"))
 
 
 # ===========================================================================
@@ -674,7 +653,7 @@ def s6(sh: Sheet) -> None:
 # the dispatch table -- per-language overrides, named rather than guessed
 # ===========================================================================
 BUILDERS = {
-    "S1": {"blueprint": s1_blueprint},
+    "S1": {},
     "S2": {},
     "S3": {},
     "S4": {"blueprint": s4_blueprint},
