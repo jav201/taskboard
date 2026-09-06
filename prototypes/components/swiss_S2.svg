@@ -47,8 +47,8 @@
 <text x="430.0" y="261.3" fill="#e2231a">─</text>
 <text x="438.4" y="261.3" fill="#3d3d3d">│</text>
 <text x="144.4" y="278.3" fill="#3d3d3d">│                                  │</text>
-<text x="144.4" y="312.3" fill="#3d3d3d">┆    Save    ┆</text>
-<text x="287.2" y="312.3" fill="#f4f4f4">│   Cancel   │</text>
+<text x="144.4" y="312.3" fill="#3d3d3d">     Save     </text>
+<text x="287.2" y="312.3" fill="#f4f4f4">·   Cancel    </text>
 <text x="144.4" y="329.3" fill="#3d3d3d">Save is held until due parses</text>
 </g>
 </svg>

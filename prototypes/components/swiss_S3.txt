@@ -18,7 +18,7 @@ S E T T I N G S   5 switches  ·  2 selects  ·  1 slider
                                                                                                     
   ───────────────────────────────────────────────────────────────────────────────────────────────   
   danger zone    delete every completed task                                                        
-  │ ╲Delete all╱ │   7 tasks, not recoverable                                                       
+  · ╲Delete all╱     7 tasks, not recoverable                                                       
                                                                                                     
                                                                                                     
                                                                                                     

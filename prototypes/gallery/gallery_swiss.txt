@@ -18,10 +18,10 @@
                               │             ╵ ╵ lo  ╵•╵ mid  ▀ ▀ hi   active           │                              
                               │             ╎ ╎ lo  ╎·╎ mid  ╎ ╎ hi   disabled         │                              
                               │  button     ok·Refresh  label INSIDE                   │                              
-                              │             │ ok │  │ Refresh │   default              │                              
-                              │             ┃ ok ┃  ┃ Refresh ┃   focused              │                              
-                              │             █ ok █  █ Refresh █   active               │                              
-                              │             ┆ ok ┆  ┆ Refresh ┆   disabled             │                              
+                              │             · ok    · Refresh     default              │                              
+                              │             • ok    • Refresh     focused              │                              
+                              │             ● ok    ● Refresh     active               │                              
+                              │               ok      Refresh     disabled             │                              
                               │  textfield  task·caret 2                               │                              
                               │             │task      │   default                     │                              
                               │             ┃task      ┃   focused                     │                              

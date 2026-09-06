@@ -141,39 +141,35 @@
 <rect x="707.2" y="350.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="350.0" width="25.2" height="17.0" fill="#171717"/>
 <text x="262.0" y="363.3" fill="#e2231a">│</text>
-<text x="379.6" y="363.3" fill="#f4f4f4">│ ok │  │ Refresh │   </text>
+<text x="379.6" y="363.3" fill="#f4f4f4">· ok    · Refresh     </text>
 <text x="564.4" y="363.3" fill="#3d3d3d">default</text>
 <text x="740.8" y="363.3" fill="#e2231a">│</text>
 <rect x="262.0" y="367.0" width="445.2" height="17.0" fill="#171717"/>
 <rect x="707.2" y="367.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="367.0" width="25.2" height="17.0" fill="#171717"/>
 <text x="262.0" y="380.3" fill="#e2231a">│</text>
-<text x="379.6" y="380.3" fill="#e2231a">┃ </text>
+<text x="379.6" y="380.3" fill="#e2231a">• </text>
 <text x="396.4" y="380.3" fill="#f4f4f4">ok</text>
-<text x="413.2" y="380.3" fill="#e2231a"> ┃</text>
-<text x="446.8" y="380.3" fill="#e2231a">┃ </text>
+<text x="446.8" y="380.3" fill="#e2231a">• </text>
 <text x="463.6" y="380.3" fill="#f4f4f4">Refresh</text>
-<text x="522.4" y="380.3" fill="#e2231a"> ┃</text>
 <text x="564.4" y="380.3" fill="#3d3d3d">focused</text>
 <text x="740.8" y="380.3" fill="#e2231a">│</text>
 <rect x="262.0" y="384.0" width="445.2" height="17.0" fill="#171717"/>
 <rect x="707.2" y="384.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="384.0" width="25.2" height="17.0" fill="#171717"/>
 <text x="262.0" y="397.3" fill="#e2231a">│</text>
-<text x="379.6" y="397.3" fill="#e2231a">█ </text>
+<text x="379.6" y="397.3" fill="#e2231a">● </text>
 <text x="396.4" y="397.3" fill="#f4f4f4">ok</text>
-<text x="413.2" y="397.3" fill="#e2231a"> █</text>
-<text x="446.8" y="397.3" fill="#e2231a">█ </text>
+<text x="446.8" y="397.3" fill="#e2231a">● </text>
 <text x="463.6" y="397.3" fill="#f4f4f4">Refresh</text>
-<text x="522.4" y="397.3" fill="#e2231a"> █</text>
 <text x="564.4" y="397.3" fill="#3d3d3d">active</text>
 <text x="740.8" y="397.3" fill="#e2231a">│</text>
 <rect x="262.0" y="401.0" width="445.2" height="17.0" fill="#171717"/>
 <rect x="707.2" y="401.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="401.0" width="25.2" height="17.0" fill="#171717"/>
 <text x="262.0" y="414.3" fill="#e2231a">│</text>
-<text x="379.6" y="414.3" fill="#3d3d3d">┆ ok ┆</text>
-<text x="446.8" y="414.3" fill="#3d3d3d">┆ Refresh ┆</text>
+<text x="379.6" y="414.3" fill="#3d3d3d">  ok  </text>
+<text x="446.8" y="414.3" fill="#3d3d3d">  Refresh  </text>
 <text x="564.4" y="414.3" fill="#3d3d3d">disabled</text>
 <text x="740.8" y="414.3" fill="#e2231a">│</text>
 <rect x="262.0" y="418.0" width="445.2" height="17.0" fill="#171717"/>

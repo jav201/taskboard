@@ -5464,14 +5464,43 @@ class Swiss(Kit):
                        DISABLED: "╎ ╎"},
         "radio.knob": {DEFAULT: "╵•╵", FOCUSED: "╹•╹", ACTIVE: "▀●▀",
                        DISABLED: "╎·╎"},
-        # THE ONE LANGUAGE THAT WOULD RENOUNCE THE WALLS AND CANNOT. Space is
-        # this language's structure and a bare word would be the honest swiss
-        # button — but the label is the CALLER's and may not be restyled, so
-        # with the walls gone the four states would separate on colour alone,
-        # which is the one thing forbidden here. It takes the thinnest mark
-        # that carries a state: a rule each side, thickening under the finger.
-        "button.main": {DEFAULT: "│  │", FOCUSED: "┃  ┃", ACTIVE: "█  █",
-                        DISABLED: "┆  ┆"},
+        # THE ONE LANGUAGE THAT RENOUNCES THE WALLS, and the increment that
+        # closed `inheritors-2` §8's last debt. This slot used to read
+        # `│  │ / ┃  ┃ / █  █ / ┆  ┆` under a comment that said the walls
+        # could not go, because "with the walls gone the four states would
+        # separate on colour alone". THAT REASONING WAS FALSE, and it was
+        # false in one word: it read the choice as WALLS OR NOTHING. A wall
+        # is a PAIR — it is border-shaped because it encloses — and the third
+        # option is ONE mark, on ONE side, which cannot enclose anything at
+        # any width. That is what "no boxes, at any width" leaves standing.
+        #
+        # THE LADDER IS THIS LANGUAGE'S OWN AND NO GLYPH IS NEW. Swiss's
+        # hierarchy device is WEIGHT ("hierarchy by weight, generous
+        # emptiness"), and it already spends the dot at three weights:
+        # `·` is `LEVELS["info"]` and `stepper.main`, `•` is `REQUIRED` (the
+        # ladder's mark set solid, inc35) and `radio.knob`, `●` is that
+        # knob's own ACTIVE cell — so a press here wears the cell this
+        # language already presses with. Weight is a SHAPE channel, so the
+        # four states survive greyscale, which the walls' defence claimed was
+        # only reachable through a border.
+        #
+        # DISABLED IS AIR, and it is the one decision here that is not the
+        # ladder. There is nothing lighter than `·` in this alphabet that is
+        # not a dashed RULE (`┆ ╎ ┈`), which is the very shape being given
+        # up. So the mark is simply not set — `stepper.step`'s own end
+        # behaviour, three slots down: "the mark is simply not set, and the
+        # word does not move because the field was reserved for it". A
+        # control nobody may press is a word, which is what this language
+        # would have said anyway.
+        #
+        # FOUR CELLS, SPLIT IN HALF LIKE EVERY OTHER LANGUAGE'S: the mark and
+        # one cell of air lead the field, and the two cells that would have
+        # closed it stay air. The seat's arithmetic is untouched — same even
+        # count, same one width across four states, same overhead per label —
+        # so a caller laying out a row of buttons sees no change and the word
+        # still cannot move under the state.
+        "button.main": {DEFAULT: "·   ", FOCUSED: "•   ", ACTIVE: "●   ",
+                        DISABLED: "    "},
         # THE LANGUAGE THAT WOULD RENOUNCE THE WALLS AND CANNOT, a second
         # time. A bare line of words is the honest swiss field — but a value
         # may fill every cell, so a walled-off field is the only place a full
