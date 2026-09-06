@@ -1530,6 +1530,150 @@ def test_the_modal_box_is_eight_cells_in_every_language(lang):
 
 
 # ---------------------------------------------------------------------------
+# inc39 (rework-1) - INVALID is a FORM, not the field's walls turned round
+# ---------------------------------------------------------------------------
+#: the widths the field law is asked at. `w=1` is the seat with no room for
+#: anything but the walls themselves, `34` is what `screens.py` gives S2's
+#: `due` field - the frame the inheritors round read the defect off - and 12
+#: is this file's own default, so a language that only answers at the width
+#: somebody photographed goes red here. inc38's three-width precedent, applied
+#: to the other component whose walls are its state channel.
+FIELD_WIDTHS = (1, 12, 34)
+#: the five OTHER states a text field has. INVALID is the one under test, so
+#: its own walls are not in the vocabulary they are measured against.
+FIELD_STATES = (LG.DEFAULT, LG.FOCUSED, LG.EDITED, LG.ACTIVE, LG.DISABLED)
+#: what the four carried before this increment, kept HERE and not in the kits:
+#: the teeth restore them byte for byte, and a constant living in the test is
+#: the only copy of a deleted declaration that nothing can reach by accident.
+FLIPPED_INVALID = {"nord": "] [", "instrument": "⠸⠶⠇",
+                   "industrial": "▌/▐", "blueprint": "┤·├"}
+#: WHERE each was declared, and the entry that matters is nord's. nord owns no
+#: `PART_GLYPHS` at all — `test_nord_declares_the_environment_and_the_declaration_is_checked`
+#: walks the MRO and requires the owner to be `Kit` — so its flip was the
+#: BASE's, and that is what moves this from four arguable design decisions to
+#: one base defect inherited four times.
+FLIPPED_OWNER = {"nord": LG.Kit, "instrument": LG.Instrument,
+                 "industrial": LG.Industrial, "blueprint": LG.Blueprint}
+#: the languages whose field walls HAVE a handedness — the ones where the law
+#: below can actually fire. Derived, then asserted against this roster, so the
+#: law's own vacuity is a fact somebody has to look at rather than a silence.
+HANDED_FIELDS = ("instrument", "industrial", "nord", "ledger", "blueprint")
+
+
+def field_walls(k, state):
+    """The two walls of a field's ground, off `field_form`'s own split."""
+    op, _, cl = k.field_form(state, "textfield")
+    return op, cl
+
+
+def wall_vocabularies(k):
+    """What this language uses to OPEN a field and what it uses to CLOSE one,
+    read off its five other states rather than off a reviewer's eye."""
+    return ({field_walls(k, st)[0] for st in FIELD_STATES},
+            {field_walls(k, st)[1] for st in FIELD_STATES})
+
+
+def invalid_walls_are_handed_right(lang):
+    """THE LAW as one predicate, so the teeth can call the same thing the
+    law calls instead of a second copy of it."""
+    k = LG.kit(lang)
+    opens, closes = wall_vocabularies(k)
+    op, cl = field_walls(k, LG.INVALID)
+    return op not in (closes - opens) and cl not in (opens - closes)
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_an_invalid_field_is_not_a_field_with_its_walls_exchanged(lang):
+    """THE PROPERTY: a rejected field OPENS with a mark this language opens
+    fields with and CLOSES with one it closes them with — in every language,
+    at three widths.
+
+    THE DEFECT, which was four frames of one mistake. `nord_S2` drew
+    `]12/09/26   [`, `instrument_S2` `⠸…⠇`, `industrial_S2` `▌…▐` and
+    `blueprint_S2` `┤…├`: in each, "this value was rejected" was spelled by
+    EXCHANGING the two walls and by nothing else. Orientation is not a channel
+    a reader can use here — the two marks sit at opposite ends of a 34-cell
+    row, so answering "which field is wrong?" means comparing both ends of the
+    row against a convention held in memory, and the inheritors round's
+    observable criterion (cover the error line, point at the bad field) fails
+    on all four.
+
+    WHY THIS IS ONE DEFECT AND NOT FOUR. nord declares no `PART_GLYPHS`, so
+    its flip was `Kit`'s own — the base answer every language falls back to.
+    The other three re-declared the same turn. Fixed at the declaration seat
+    in all four; the law is written once, here, over all eleven.
+
+    HOW THE LAW IS DERIVED, and why it is not "INVALID must keep DEFAULT's
+    walls". Seven languages change the wall's FORM for INVALID — swiss's
+    `╲ ╱`, darkside's `Ø Ø`, ledger's daggers — and that is the right answer,
+    not a violation. So the law asks about HANDEDNESS: the invalid opening
+    mark may not be one this language uses ONLY to close, and the closing mark
+    may not be one it uses ONLY to open. A new form passes; a turned pair does
+    not.
+
+    SCOPED TO THE FIELD ON PURPOSE, and the exemption is named rather than
+    left silent: blueprint's `radio.main` points its terminators IN (`┤ ├`)
+    where its own checkbox points them OUT (`├ ┤`), and the kit says why — a
+    callout selecting one item from a schedule. That is a DECLARED use of
+    orientation as a channel between two components, with a citation, so the
+    same law over `radio.main` would be red on doctrine. This increment does
+    not extend it there.
+
+    THREE WIDTHS, because `field_form` is width-free but the RENDER is not,
+    and the render is the artefact a reader judges."""
+    k = LG.kit(lang)
+    opens, closes = wall_vocabularies(k)
+    op, cl = field_walls(k, LG.INVALID)
+    assert op not in (closes - opens), (lang, op, sorted(closes - opens))
+    assert cl not in (opens - closes), (lang, cl, sorted(opens - closes))
+    for w in FIELD_WIDTHS:
+        row = plain(k.textfield("12/09/26", None, w, LG.INVALID))
+        assert row.startswith(op), (lang, w, row)
+        assert row.endswith(cl), (lang, w, row)
+
+
+def test_the_field_law_can_only_bite_where_the_walls_have_a_hand():
+    """THE LAW'S OWN VACUITY, measured instead of assumed.
+
+    Six of the eleven set both walls of a field to the SAME mark in every
+    state — corgi's `▁▁ ▁▁`, darkside's `▬ ▬`, solari's seam. A language with
+    no handedness cannot encode a state by turning its walls round, so the law
+    above is vacuously true there, and saying so is the difference between
+    "eleven passed" and "eleven were asked". The roster is derived from the
+    declarations and compared against a written one: a language that later
+    gives its field a left mark and a right mark joins the set, and this test
+    is where somebody finds out."""
+    handed = tuple(lang for lang in LANGS
+                   if set.symmetric_difference(*wall_vocabularies(LG.kit(lang))))
+    assert handed == HANDED_FIELDS, handed
+    assert set(FLIPPED_INVALID) <= set(handed)
+
+
+def test_exchanging_the_field_walls_back_makes_the_law_go_red(monkeypatch):
+    """TEETH, one arm per language that carried the flip.
+
+    Each arm restores that language's pre-inc39 declaration byte for byte and
+    asserts TWO things: the law goes red on it, and THE OTHER TEN STAY GREEN
+    under the same patch. The second half is what proves the four entries are
+    four independent declarations rather than one shared object — and it is
+    the half that says something about nord, whose arm patches `Kit` itself
+    and must therefore leave the ten that own their own table untouched.
+
+    A law nobody has watched fail is a law nobody has watched."""
+    assert all(invalid_walls_are_handed_right(lang) for lang in LANGS)
+    for lang, old in FLIPPED_INVALID.items():
+        owner = FLIPPED_OWNER[lang]
+        table = dict(owner.PART_GLYPHS["textfield.main"])
+        table[LG.INVALID] = old
+        monkeypatch.setitem(owner.PART_GLYPHS, "textfield.main", table)
+        assert not invalid_walls_are_handed_right(lang), lang
+        assert all(invalid_walls_are_handed_right(other)
+                   for other in LANGS if other != lang), lang
+        monkeypatch.undo()
+    assert all(invalid_walls_are_handed_right(lang) for lang in LANGS)
+
+
+# ---------------------------------------------------------------------------
 # inc37 (inheritors-2) — every language is photographed, not just the five
 # ---------------------------------------------------------------------------
 SCREENS = ("S1", "S2", "S3", "S4", "S5", "S6")
