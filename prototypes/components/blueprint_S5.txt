@@ -1,6 +1,6 @@
 MONITOR  ·── 8 EVENTS  ·  HELD                                                                      
                                                                                                     
-  events/s    ├───────······ 5                                                                      
+  EVENTS/S    ├───────······ 5                                                                      
                                                                                                     
   rate    ╌─╌─╌─━─╌╌───╌──  ceiling 10                                                              
                                                                                                     

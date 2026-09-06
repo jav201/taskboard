@@ -11,7 +11,8 @@
 <text x="211.6" y="23.3" fill="#2dd4bf">▸log</text>
 <text x="10.0" y="40.3" fill="#e6edf3">MONITOR</text>
 <text x="85.6" y="40.3" fill="#5b6675">8 events  ·  held</text>
-<text x="26.8" y="74.3" fill="#8b98a5">events/s    ⣿⣿⣿⣿⣿⣿⣿</text>
+<text x="26.8" y="74.3" fill="#8b98a5">EVENTS/S</text>
+<text x="127.6" y="74.3" fill="#8b98a5">⣿⣿⣿⣿⣿⣿⣿</text>
 <text x="186.4" y="74.3" fill="#5b6675">⣀⣀⣀⣀⣀⣀⣀</text>
 <text x="253.6" y="74.3" fill="#8b98a5">5</text>
 <text x="26.8" y="108.3" fill="#8b98a5">rate    </text>
