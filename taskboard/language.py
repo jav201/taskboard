@@ -7862,11 +7862,33 @@ class Solari(Kit):
         the head; `schedule_head` is what says which head. The block is
         placed the way the base places its own, `y <= i < y + len(block)`,
         which is also what keeps this an OVERLAY: every row outside the band
-        is still `under[i]` at the same index, so nothing shifts."""
+        is still `under[i]` at the same index, so nothing shifts.
+
+        AND THE BAND IS ITS CONTENT, WITH NO AIR IN IT (inc49→inc50). inc40
+        moved the band from rows 1-8 to rows 4-11 and the round measured the
+        trade: it gave back the mode strip, the masthead and the head seam,
+        and it took `GATE DOING 04` and `FIX LOGIN REDIRECT` — *"la banda no
+        encogió, se deslizó tres filas"* — so the surviving board opened on
+        the SEAM of a task the band had taken, five rows under no gate header
+        at all.
+
+        `MODAL_BORDER_REFUSED["solari"]` says the answer: a question is
+        posted "as a BAND IN REVERSE VIDEO". A band is a CONTIGUOUS RUN OF
+        ROWS THAT SAY SOMETHING; the two empty rows in `screens.s4`'s block
+        are the page's air between a title, a body and its answers, and a
+        page's air is not a band's. Dropping them is what "shrink" means
+        here, and it is done at THIS seat and not in the sheet because the
+        sheet's rows are shared by all eleven — ten of them draw a lid or a
+        rule around those words and want the air.
+
+        Six rows instead of eight, and the row under the band is
+        `GATE DOING 04` at its own index: the schedule under the announcement
+        opens on a HEADER again."""
         c = self.c
         bar = (f"[{self.t.get('ground', '#000000')} on {c['accent']}]"
                f"{mark(' ' * w)}[/]")
-        block = [bar] + list(rows) + [self.seam(w)]
+        said = [r for r in rows if visible(r).strip()]
+        block = [bar] + said + [self.seam(w)]
         y = self.schedule_head(under)
         out = []
         for i in range(h):

@@ -1837,6 +1837,133 @@ def test_anchoring_solaris_band_at_row_zero_eats_the_boards_own_plate(monkeypatc
 
 
 # ---------------------------------------------------------------------------
+# inc50 (rework-4) - the band SHRINKS to its content; it does not slide
+# ---------------------------------------------------------------------------
+#: A GATE HEADER, as the board prints one: the gate's name, its count, and the
+#: column captions. Matched rather than compared to a literal so the law reads
+#: the SHAPE of a header and not this fixture's three gates.
+_GATE_HEAD = re.compile(r"GATE [A-Z]+ \d\d\s")
+
+
+def solari_s4_rows(k):
+    """The words `screens.s4` hands `overlay`, rebuilt from the shipped frame.
+
+    `screens.s4` composes `[title, "", body1, body2, "", answers]` — six rows,
+    two of them the page's air between a title, a body and its answers — and
+    hands the same six to all eleven kits. The teeth below have to run THAT
+    block and not a three-row stand-in, because the whole finding is about how
+    many rows the block occupies; a stand-in whose length was chosen here
+    would be the test deciding its own outcome."""
+    said = [r.rstrip() for r in (FRAMES / "solari_S4.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")[4:8]]
+    return ([LG.mark(said[0]), ""] + [LG.mark(s) for s in said[1:3]]
+            + ["", LG.mark(said[3])])
+
+
+def test_solaris_band_is_its_content_and_the_board_under_it_opens_on_a_gate():
+    """THE BAND SHRINKS TO ITS CONTENT, AND WHAT IS UNDER IT IS A SCHEDULE.
+
+    inc40 moved the band off the station's plate and the round measured what
+    that cost: *"la banda no encogió, se deslizó tres filas"*. It gave back
+    the mode strip, the masthead and the head seam and it took two more rows
+    of board — `GATE DOING 04` and `FIX LOGIN REDIRECT` — so `solari_S4` came
+    back with the SEAM of a departure the band had taken as its first row and
+    five task rows under no gate header at all. A schedule whose first row is
+    the underline of a flight that is not on it is not "the rows still
+    legible under it".
+
+    THREE CLAUSES, ALL MEASURED ON THE SHIPPED FRAME AGAINST THE SHIPPED PAGE:
+
+    1. THE BAND IS ITS CONTENT. Its length is `1 + the rows that say
+       something + 1` — the reverse-video bar, the words, the closing seam —
+       and between the first word and the seam there is no empty row.
+       `MODAL_BORDER_REFUSED["solari"]` calls it a BAND, and a band with air
+       in it is two bands.
+    2. THE SCHEDULE UNDER IT OPENS ON A GATE HEADER. Not on a seam, not on a
+       task row: the row immediately below the band is a header, at its own
+       index, byte for byte the page's.
+    3. IT IS STILL AN OVERLAY. Every row outside the band is the page's row at
+       the same index — inc40's second half, re-asserted here because a
+       "shrink" implemented by inserting rows would satisfy clause 2 and push
+       the whole board down.
+
+    WHAT THIS LAW DOES NOT SAY, and it is the round's question (F): the band
+    still covers `GATE BACKLOG 05`, which is the gate the confirm NAMES ("3
+    tasks will be removed from BACKLOG"). At 100x32 an overlay band at the
+    head of the schedule cannot avoid it, because the gate header IS the
+    schedule's first row. Whether a solari confirm may ever eat the gate it
+    names is the operator's ruling and this increment does not take it."""
+    s1, s4 = page_rows("solari"), (FRAMES / "solari_S4.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")
+    band = modal_band("solari")
+    said = [i for i in band if s4[i].strip()]
+
+    # 1 — the bar, the words, the seam, and no air between them
+    assert band == list(range(band[0], band[-1] + 1)), band
+    assert len(band) == len(said) + 1, (band, said)      # +1: the blank bar
+    assert said == list(range(said[0], said[-1] + 1)), said
+    assert set(s4[said[-1]].strip()) == {"▁"}, s4[said[-1]]   # the seam closes
+    assert "Delete 3 tasks?" in s4[said[0]], s4[said[0]]
+
+    # 2 — the schedule under it opens on a gate header, at its own index
+    below = band[-1] + 1
+    assert _GATE_HEAD.search(s4[below]), (below, s4[below])
+    assert s4[below].rstrip() == s1[below].rstrip(), (s4[below], s1[below])
+
+    # 3 — still an overlay: nothing outside the band moved
+    assert all(s4[i].rstrip() == s1[i].rstrip()
+               for i in range(len(s1)) if i not in band)
+
+
+def test_an_unshrunk_band_leaves_the_schedule_opening_on_an_orphan_seam(
+        monkeypatch):
+    """TEETH. The pre-inc50 body restored exactly — `[bar] + list(rows) +
+    [seam]`, the air kept — and handed the block `screens.s4` really hands it.
+
+    It has to name what goes wrong and not merely that something does: with
+    the two empty rows back the band is EIGHT rows, it swallows `GATE DOING
+    04` and `FIX LOGIN REDIRECT` as well, and the first row of the surviving
+    board is that departure's own SEAM — a rule under a flight that is no
+    longer on the board. That is the round's finding, reproduced from the
+    declaration rather than described.
+
+    The band's HEAD is asserted unmoved by the same patch, which is what says
+    this is a length finding and not a re-run of inc40's anchor finding."""
+    k = LG.kit("solari")
+    s1 = page_rows("solari")
+    under, w, h = page_markup("solari"), len(s1[0]), len(s1)
+    rows = solari_s4_rows(k)
+
+    out = [plain(r) for r in k.overlay(rows, w, h, under)]
+    band = [i for i, (a, b) in enumerate(zip(s1, out))
+            if a.rstrip() != b.rstrip()]
+    assert len(band) == 6 and band[0] == 3, band
+    assert _GATE_HEAD.search(out[band[-1] + 1]), out[band[-1] + 1]
+
+    def unshrunk(self, rows, w, h, under):
+        c = self.c
+        bar = (f"[{self.t.get('ground', '#000000')} on {c['accent']}]"
+               f"{LG.mark(' ' * w)}[/]")
+        block = [bar] + list(rows) + [self.seam(w)]
+        y = self.schedule_head(under)
+        return [block[i - y] if y <= i < y + len(block)
+                else self.recede(under[i] if i < len(under) else "")
+                for i in range(h)]
+
+    monkeypatch.setattr(LG.Solari, "overlay_instead", unshrunk)
+    out = [plain(r) for r in k.overlay(rows, w, h, under)]
+    band = [i for i, (a, b) in enumerate(zip(s1, out))
+            if a.rstrip() != b.rstrip()]
+    assert len(band) == 8 and band[0] == 3, band          # the head is the same
+    eaten = [s1[i] for i in band]
+    assert any("GATE DOING 04" in r for r in eaten), eaten
+    assert any("FIX LOGIN REDIRECT" in r for r in eaten), eaten
+    orphan = out[band[-1] + 1]
+    assert not _GATE_HEAD.search(orphan), orphan
+    assert set(orphan.strip()) == {"▁"}, orphan           # a seam, not a gate
+
+
+# ---------------------------------------------------------------------------
 # inc41 (rework-1) - the SVG paints the tier the kit declared, and nothing else
 # ---------------------------------------------------------------------------
 #: every markup tag in a composed row, escaped brackets lifted out first —
