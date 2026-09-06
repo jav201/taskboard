@@ -10,8 +10,8 @@
                                                                                                     
   tags          ▁▁ -- api  ██ ON ui  ██ ON urgent                                                   
                                                                                                     
-  notes         ▁▁Redirect drops the ?next= param when the▁▁                                        
-                ▁▁session cookie is renewed mid-flight.▁▁                                           
+  notes         ▁▁Redirect drops the ?next= param w▄▁▁                                              
+                ▁▁session cookie is renewed mid-fli▄▁▁                                              
                 ▁▁··································▁▁                                              
                                                                                                     
                 ··   Save   ··   ▁▁  Cancel  ▁▁                                                     

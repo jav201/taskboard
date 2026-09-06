@@ -954,3 +954,107 @@ def test_ledgers_two_daggers_are_an_order_and_not_a_pair():
     assert plain(k.required()) == "†"
     assert k.LEVELS["error"].strip() == "‡"
     assert k.field_form(LG.INVALID, "textfield")[0] == "‡"
+
+
+# ===========================================================================
+# inc30 (kits-learn-4) — `Kit.textarea`, the field over a rectangle
+# ===========================================================================
+TA_LINES = ["ship the kit", "check the sweep", "then push"]
+TA_W, TA_H = 20, 4
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_three_line_text_renders_three_rows_with_a_visible_caret_row(lang):
+    """THE PROPERTY (AC-3), and it is two claims in one sentence.
+
+    THREE LINES, THREE ROWS: the caller owns the line breaks, so row `i` is
+    line `i` and nothing is reflowed underneath it.
+
+    ONE VISIBLE CARET ROW: the caret takes a column of its own — the one-line
+    field's law, for the one-line field's reason — and it appears on exactly
+    the row it was addressed to. A field with an insertion point on every row
+    is a state the model cannot be in."""
+    k = LG.kit(lang)
+    rows = k.textarea(TA_LINES, (1, 5), TA_W, TA_H, LG.EDITED)
+    assert len(rows) == TA_H, lang
+    caret = k.part_glyph("caret", LG.EDITED, "textfield")
+    for i, line in enumerate(TA_LINES):
+        # the caret's column SPLITS its row, which IS the mechanism: every
+        # byte is there and one cell was inserted between two of them
+        assert line in plain(rows[i]).replace(caret, ""),             (lang, i, plain(rows[i]))
+    marked = [i for i, r in enumerate(rows)
+              if caret in plain(r)[1:-1]]
+    assert marked == [1], (lang, caret, [plain(r) for r in rows])
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_textarea_returns_the_rectangle_it_was_asked_for(lang):
+    """`h` rows of `w` cells between the walls, whatever it was handed —
+    fewer lines than rows, more lines than rows, no lines at all. A row that
+    came back short would move everything under the field up the frame."""
+    k = LG.kit(lang)
+    op, _rune, cl = k.field_form(LG.DEFAULT, "textfield")
+    for lines in ([], TA_LINES, TA_LINES * 4):
+        rows = k.textarea(lines, None, TA_W, TA_H)
+        assert len(rows) == TA_H, (lang, lines)
+        for r in rows:
+            assert len(plain(r)) == TA_W + len(op) + len(cl), (lang, plain(r))
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_line_that_fits_comes_back_byte_for_byte(lang):
+    """The content law, and the frame's own notes are the case that matters:
+    a language that letters its labels in capitals may not letter these."""
+    k = LG.kit(lang)
+    weird = ["Q3 -1,204.55 [ref]", "AbCd  eF"]
+    rows = k.textarea(weird, None, 30, 2)
+    for i, line in enumerate(weird):
+        assert line in plain(rows[i]), (lang, plain(rows[i]))
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_an_overlong_line_is_marked_and_never_silently_cut(lang):
+    """The one place the bytes stop, and it says so with a mark.
+
+    A one-line field moves its WINDOW sideways; a rectangle's rows cannot. So
+    the row shows the line's own leading bytes, in order, and spends the
+    language's `DISCLOSE` on the last cell — the same declaration a select
+    and a log's tail spend: THERE IS MORE."""
+    k = LG.kit(lang)
+    row = plain(k.textarea(["x" * 40], None, 10, 1)[0])
+    assert k.DISCLOSE in row, (lang, row)
+    assert "x" * 9 in row, (lang, row)
+
+
+def test_the_wrap_mark_is_the_languages_own_disclosure_and_not_a_new_table():
+    """Three components, one declaration. A second constant for "this row
+    continues" would be an eleventh restatement of a mark every language has
+    already chosen."""
+    for lang in LANGS:
+        k = LG.kit(lang)
+        assert plain(k.textarea(["y" * 40], None, 8, 1)[0]).rstrip(
+            k.field_form(LG.DEFAULT, "textfield")[2]).endswith(k.DISCLOSE), \
+            lang
+
+
+def test_five_languages_paper_five_rectangles():
+    """The rectangle is composed out of seats the languages already differ
+    on, so it differs without a single new per-language line. That is the
+    claim this test makes falsifiable: if it ever goes red, a language has
+    lost its `field_form` or its caret part, not its textarea."""
+    got = {n: tuple(plain(r)
+                    for r in LG.kit(n).textarea(TA_LINES, (0, 2), TA_W, TA_H,
+                                                LG.EDITED))
+           for n in PROTOTYPED}
+    assert len(set(got.values())) == len(PROTOTYPED), got
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_textarea_with_no_caret_draws_none(lang):
+    """S2's own case: the caret is in `title` on that frame, so the notes
+    rectangle must not draw a second one. `caret=None` means the field is not
+    where the next keystroke lands, and the render says so."""
+    k = LG.kit(lang)
+    caret = k.part_glyph("caret", LG.DEFAULT, "textfield")
+    for r in k.textarea(TA_LINES, None, TA_W, TA_H):
+        assert caret not in plain(r)[1:-1], (lang, plain(r))
