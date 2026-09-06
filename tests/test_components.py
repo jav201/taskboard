@@ -437,8 +437,12 @@ def test_the_refusal_registry_names_languages_that_exist():
     it. This is `LABEL_REFUSED`'s own law, asked of the second table to use
     the pattern."""
     assert set(LG.MODAL_BORDER_REFUSED) <= set(LG.KITS)
+    # SEVEN, not four: `kits-learn-4` inc32 asked the six inheriting
+    # languages and three of them turned out to have been committed against a
+    # lid all along while drawing the terminal's.
     assert set(LG.MODAL_BORDER_REFUSED) == {"corgi", "blueprint", "naught",
-                                            "ledger"}
+                                            "ledger", "instrument", "swiss",
+                                            "solari"}
     assert all(len(v) > 40 for v in LG.MODAL_BORDER_REFUSED.values())
 
 
@@ -452,9 +456,12 @@ def test_prism_is_the_one_language_licensed_to_draw_the_box():
     assert has_lid(k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER))
 
 
-@pytest.mark.parametrize("lang", sorted({"corgi", "blueprint", "naught",
-                                         "ledger"}))
+@pytest.mark.parametrize("lang", sorted(LG.MODAL_BORDER_REFUSED))
 def test_a_refusing_language_draws_no_lid(lang):
+    """Parametrised on the REGISTRY rather than on a copy of it, so a
+    language added to the table is checked the moment it is added. The
+    table's own membership is asserted above, which is what keeps this from
+    passing vacuously if the table ever emptied."""
     k = LG.kit(lang)
     out = k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)
     assert not has_lid(out), (lang, [plain(r) for r in out])
@@ -1128,3 +1135,176 @@ def test_a_readouts_word_is_the_callers(lang):
     k = LG.kit(lang)
     assert "EVENTS PER MINUTE" in plain(k.readout_label("events per minute"))
     assert plain(k.readout_label("")) == "READOUT", lang
+
+
+# ===========================================================================
+# inc32 (kits-learn-4) — the six that inherited, asked to choose
+# ===========================================================================
+#: the six that had `Kit`'s answer to the seven mechanisms below and had never
+#: been asked for one of their own
+INHERITORS = ("instrument", "swiss", "industrial", "nord", "darkside",
+              "solari")
+#: the mechanisms where a PLAIN difference is lawful. `MATCH_STYLE` is absent
+#: on purpose and the reason is a ruling: operator ruling 9 requires a result
+#: row to come back byte for byte, so two languages MUST render `match`
+#: identically as cells and the only channel left is style. Its law is
+#: `test_the_match_emphasis_is_not_a_hue_alone`, not distinctness.
+SEVEN_PLAIN = ("field_row", "DISCLOSE", "DANGER_FORM", "LEVELS", "keyhint",
+               "overlay")
+
+_UNDER = ["board row " + str(i) for i in range(9)]
+_DIALOG = ["DELETE 3 TASKS?", "", "yes   no"]
+
+
+def _mech(k, name):
+    """One mechanism's PLAIN render, for a fixed input, in one language."""
+    if name == "field_row":
+        return plain(k.field_row("due date", "12/09/26", 40))
+    if name == "DISCLOSE":
+        return k.DISCLOSE
+    if name == "DANGER_FORM":
+        return plain(k.button("Delete", 12, LG.DEFAULT, danger=True))
+    if name == "LEVELS":
+        return tuple(k.LEVELS[x] for x in ("info", "warn", "error"))
+    if name == "keyhint":
+        return plain(k.keyhint([("up", "move"), ("esc", "close")]))
+    if name == "overlay":
+        return tuple(plain(r) for r in k.overlay(_DIALOG, 34, 9, _UNDER))
+    raise AssertionError(name)
+
+
+@pytest.mark.parametrize("mech", SEVEN_PLAIN)
+def test_no_two_languages_answer_a_mechanism_the_same_way(mech):
+    """THE PROPERTY (AC-5), asked of all eleven rather than of the six.
+
+    A seat with five implementations and six holes is the palette-swap
+    failure with a longer fuse: the five that were prototyped diverge and the
+    six that were never rendered quietly agree, which looks like a contract
+    and is a default. Same input, eleven answers, no two of them the same
+    string of cells.
+
+    `overlay` is the one that can only ALMOST hold, and its exception is
+    named in the test below: a grey step of background is not a cell."""
+    got = {n: _mech(LG.kit(n), mech) for n in LANGS}
+    dupes = {}
+    for n, v in got.items():
+        dupes.setdefault(v, []).append(n)
+    clash = [v for v in dupes.values() if len(v) > 1]
+    if mech == "overlay":
+        assert clash == [["nord", "prism"]], clash
+        return
+    assert not clash, (mech, clash)
+
+
+def test_prisms_overlay_differs_from_nords_in_the_svg_and_not_the_txt():
+    """The one collision the property test allows, and it is a limit of the
+    medium rather than a hole.
+
+    Prism is the one language `MODAL_BORDER_REFUSED` leaves out, so it draws
+    the terminal's lid; what it changes is the page BEHIND, which `recede`
+    steps by one grey of BACKGROUND. A background is not a cell, so the
+    `.txt` of the two is identical and the `.svg` is not — the third mark in
+    this contract with that limit, after the knockout and the match."""
+    n, p = LG.kit("nord"), LG.kit("prism")
+    a = n.overlay(_DIALOG, 34, 9, _UNDER)
+    b = p.overlay(_DIALOG, 34, 9, _UNDER)
+    assert [plain(r) for r in a] == [plain(r) for r in b]
+    assert a != b
+    assert p.depth_ground() in "".join(b)
+
+
+@pytest.mark.parametrize("attr", ["field_row", "DISCLOSE", "DANGER_FORM",
+                                  "LEVELS", "MATCH_STYLE", "keyhint",
+                                  "overlay"])
+def test_nord_declares_the_environment_and_the_declaration_is_checked(attr):
+    """NORD'S ANSWER IS THE BASE, AND FOR THIS ONE LANGUAGE THAT IS A
+    COMMITMENT RATHER THAN A GAP.
+
+    LANGUAGES.md §6: "the only language here that INHERITS THE USER'S
+    ENVIRONMENT instead of overriding it — the app looks like the rest of
+    their terminal ... Fails: when you need a distinctive identity — BY
+    CONSTRUCTION IT HAS NONE OF ITS OWN."
+
+    A block of comments saying so is a promise. This walks the MRO and
+    requires the owner to be `Kit`, so a mechanism landing on nord by
+    accident goes red and one landing on purpose has to delete the paragraph
+    that says nord is base16 first."""
+    for klass in type(LG.kit("nord")).__mro__:
+        if attr in klass.__dict__:
+            assert klass is LG.Kit, (attr, klass.__name__)
+            return
+    raise AssertionError(attr + " is not defined anywhere")
+
+
+@pytest.mark.parametrize("lang", INHERITORS)
+def test_an_inheritors_danger_still_survives_greyscale(lang):
+    """The six's new `DANGER_FORM`s held to inc16's law rather than trusted:
+    the severity is a pair of marks INSIDE the walls and it costs no hue at
+    all — which matters most for industrial, whose own entry in LANGUAGES.md
+    says it "FAILS when colour must carry severity, because the palette
+    already spent colour on identity"."""
+    k = LG.kit(lang)
+    hot = plain(k.button("Delete", 12, LG.DEFAULT, danger=True))
+    calm = plain(k.button("Delete", 12, LG.DEFAULT))
+    assert hot != calm, lang
+    assert k.DANGER_FORM[0] in hot and k.DANGER_FORM[1] in hot, lang
+
+
+@pytest.mark.parametrize("lang", INHERITORS)
+def test_an_inheritors_levels_are_one_width_and_three_shapes(lang):
+    """`log_row`'s law (operator ruling 8), asked of the six new ladders: one
+    width per language so a column of rows aligns, three distinct shapes so
+    the level sorts with the colour taken away."""
+    k = LG.kit(lang)
+    marks = [k.LEVELS[x] for x in ("info", "warn", "error")]
+    assert len({len(m) for m in marks}) == 1, (lang, marks)
+    assert len(set(marks)) == 3, (lang, marks)
+
+
+def test_solari_prints_its_severity_because_a_board_prints_everything():
+    """The one ladder of the eleven that is not a glyph, and it is this
+    language's headline commitment: "a state is a WORD in a status column".
+    A departure board does not draw severity, it prints it — the same
+    argument DATAVIZ law 1 already credits it with for quantity."""
+    k = LG.kit("solari")
+    assert tuple(k.LEVELS[x] for x in ("info", "warn", "error")) == (
+        "OK ", "DLY", "CNX")
+    row = plain(k.error("expected YYYY-MM-DD", 40))
+    assert row.startswith("CNX")
+    assert "expected YYYY-MM-DD" in row
+
+
+def test_industrial_is_the_second_language_licensed_to_draw_a_box():
+    """"BOXED GROUPS" is a commitment, and this is the only language of the
+    eleven whose commitment ASKS for a lid. The box it draws is its own
+    stamped plate rather than the terminal's hairline, and `MODAL_BOX` IS
+    `DISPLAY_BOX` — a language that has declared its frame hands the same
+    string to both seats instead of spelling its corners twice."""
+    k = LG.kit("industrial")
+    assert "industrial" not in LG.MODAL_BORDER_REFUSED
+    assert k.MODAL_BOX == k.DISPLAY_BOX
+    out = [plain(r) for r in k.overlay(_DIALOG, 34, 9, _UNDER)]
+    assert any(r.lstrip().startswith("▛") for r in out), out
+    assert not any("┌" in r for r in out), out
+
+
+def test_darksides_lid_is_rounded_and_prisms_is_not():
+    """The parent and the descendant share the doctrine that licenses a
+    border ("reserved for modals") and do not share the lid. Darkside rounds
+    its corners, which is the "clinical-WARM" half of its own adjective;
+    prism keeps the terminal's and spends its difference on the page
+    behind."""
+    d, p = LG.kit("darkside"), LG.kit("prism")
+    assert d.MODAL_BOX.startswith("╭╮╰╯")
+    assert p.MODAL_BOX == LG.Kit.MODAL_BOX
+    out = [plain(r) for r in d.overlay(_DIALOG, 34, 9, _UNDER)]
+    assert any("╭" in r for r in out), out
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_modal_box_is_eight_cells_in_every_language(lang):
+    """`DISPLAY_BOX`'s order: (tl, tr, bl, br, top, bottom, left, right).
+    Eight rather than six, because half-cell chrome has a different glyph at
+    the top of a box than at the bottom — industrial's `▛▀▜` over `▙▄▟` is
+    the case that forced it."""
+    assert len(LG.kit(lang).MODAL_BOX) == 8, lang
