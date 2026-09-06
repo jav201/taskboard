@@ -561,31 +561,17 @@ def s5(sh: Sheet) -> None:
 
 
 def legend(sh: Sheet) -> None:
-    """The passive readout's label -- and the one place L-33 bites.
+    """The passive readout's label, through the kit (inc31).
 
-    Every language here gets the same BAR (`readbar`, the kit's own readout).
-    What they do not share is how the readout is NAMED: a numbered language
-    that numbers a readout is spending a keybinding on something nobody can
-    act on, which is the decorative numbering §3b defines itself against.
+    Every language gets the same BAR (`readbar`, the kit's own readout). What
+    they do not share is how the readout is NAMED, and this file used to
+    branch on `k.numbered` to say so -- a frame holding a language's refusal
+    in an `if`, which is the same shape `s1_blueprint` had.  The refusal is
+    `READOUT_NUMBER_REFUSED` now and `Kit.readout_label` reads it.
     """
-    k, c = sh.k, sh.k.c
+    k = sh.k
     bar = k.readbar(F.RATE_VALUE, 0, F.RATE_CEILING, 14)
-    if k.numbered:
-        # corgi and ledger number their CONTROLS.  A readout is labelled.
-        sh.row("  " + f"[{c['mut']}]{LG.mark(pad(F.RATE_LABEL, 12))}[/]"
-               + bar)
-        sh.note(Cand(
-            "the readout's label -- LABELLED, never numbered",
-            "refused", "Kit.readout_label",
-            "Kit.readout_label(self, label: str) -> str",
-            "L-33: 'because the numbering IS the keymap, this language has "
-            "no notation for a passive readout.  A [5] over a chart nobody "
-            "can act on is the decorative numbering §3b defines itself "
-            "against.  Readouts are LABELLED; controls are NUMBERED.'  The "
-            "right response to wanting a numbered readout is to notice"))
-    else:
-        sh.row("  " + f"[{c['mut']}]{LG.mark(pad(F.RATE_LABEL, 12))}[/]"
-               + bar)
+    sh.row("  " + pad(k.readout_label(F.RATE_LABEL), 12) + bar)
 
 
 # ===========================================================================

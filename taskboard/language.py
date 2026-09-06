@@ -1737,6 +1737,40 @@ class Kit:
         word = word.upper() or "DISPLAY"
         return f"[{idx}] {word}" if self.numbered else word
 
+    def readout_label(self, label: str = "") -> str:
+        """THE NAME OF A PASSIVE READOUT — `display_label` WITH THE BINDING
+        REFUSED, and the difference between the two seats is L-33 entire.
+
+        Measured on a real app (emersio-lab, 2026-09-04) and quoted in
+        LANGUAGES.md §3b: *"because the numbering IS the keymap, this language
+        has no notation for a passive readout. A `[5]` over a chart nobody can
+        act on is the decorative numbering §3b defines itself against.
+        Readouts are LABELLED; controls are NUMBERED."*
+
+        SO THE REGISTRY IS READ, and reading it is what makes the refusal a
+        mechanism: a `numbered` language that is NOT in
+        `READOUT_NUMBER_REFUSED` numbers its readout, which is the branch this
+        table exists to keep empty. Take ledger out and it spends a key on a
+        bar nobody can press — and a test goes red for exactly that reason.
+
+        THE WORD IS THE CALLER'S AND THE REGISTER IS THE LANGUAGE'S, which is
+        `display_label`'s ruling and this method is deliberately its twin: a
+        readout's legend and a display's legend are the same object, so a
+        contract that lettered them differently would be answering one
+        question twice. A leading run of ASCII digits is a BINDING and is
+        DROPPED here rather than lettered — the same tie `display_label`
+        applies to a language with no numbering notation, applied to a
+        COMPONENT with no numbering notation."""
+        head, _, rest = str(label).strip().partition(" ")
+        if head.isascii() and head.isdigit():
+            idx, word = int(head), rest.strip()
+        else:
+            idx, word = None, str(label).strip()
+        word = word.upper() or "READOUT"
+        if self.numbered and self.name not in READOUT_NUMBER_REFUSED:
+            word = f"[{idx if idx is not None else 1}] {word}"
+        return f"[{self.c['mut']}]{mark(word)}[/]"
+
     def depth_ground(self) -> str:
         """The +1 grey STEP the `depth` posture separates on. Read off the
         language's own ladder (`focus`, the rung above `panel`) rather than
@@ -9190,6 +9224,37 @@ MODAL_BORDER_REFUSED = {
 # two commitments this table exists for, but `kits-learn-4` §5 scopes those six
 # languages to seven OTHER mechanisms and this is not one of them. Recorded as
 # the batch's own inheritance debt rather than smuggled in behind a spec.
+# WHO REFUSES TO NUMBER A READOUT, AND ON WHAT COMMITMENT (L-33, measured on
+# emersio-lab 2026-09-04 and quoted verbatim in LANGUAGES.md §3b). The fourth
+# table of the shape, and the one whose keys are DERIVABLE: it must name
+# exactly the languages whose `numbered` token is set, because a language that
+# does not number anything has no numbering to refuse. `Kit.readout_label`
+# READS it — a `numbered` language absent from this table numbers its readout,
+# which is the branch the table exists to keep empty, and the test that says
+# the keys equal the numbered set is what keeps it empty.
+#
+# THE ONE HONEST LIMIT, stated because the other three tables do not have it:
+# this one can only be wrong in ONE direction. Delete an entry and that
+# language spends a key on a bar nobody can press (red). Add a false entry for
+# a language that numbers nothing and nothing happens, because there was no
+# notation there to withhold.
+READOUT_NUMBER_REFUSED = {
+    "corgi": "\"because the numbering IS the keymap, this language has no "
+             "notation for a passive readout. A [5] over a chart nobody can "
+             "act on is the decorative numbering §3b defines itself against. "
+             "Readouts are LABELLED; controls are NUMBERED\" — and the right "
+             "response to wanting a numbered readout is to notice, not to "
+             "loosen the tie",
+    "ledger": "the folio numbers a POSTING — an entry someone made, that "
+              "someone else can trace back. A rate meter is not posted and "
+              "cannot be traced, so a number over it would be a reference to "
+              "nothing, which is the one thing a ledger may not write",
+    "industrial": "\"everything is numbered and labelled\" and the numbers "
+                  "are the MODES — the same keymap corgi's are, reached from "
+                  "a different product. A plate stamped over a readout "
+                  "promises a control that is not there",
+}
+
 PANE_SPLIT_REFUSED = {
     "blueprint": "\"not one element on this sheet is boxed, at any width\" — "
                  "and the ten marks this language draws (`─ ━ ├ ┤ ╌ ┌ ┐ └ ┘` "

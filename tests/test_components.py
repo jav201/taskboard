@@ -1058,3 +1058,73 @@ def test_a_textarea_with_no_caret_draws_none(lang):
     caret = k.part_glyph("caret", LG.DEFAULT, "textfield")
     for r in k.textarea(TA_LINES, None, TA_W, TA_H):
         assert caret not in plain(r)[1:-1], (lang, plain(r))
+
+
+# ===========================================================================
+# inc31 (kits-learn-4) — `Kit.readout_label`, L-33 with a seat
+# ===========================================================================
+NUMBERED = tuple(sorted(n for n in LANGS if LG.kit(n).numbered))
+
+
+def test_the_readout_registry_names_exactly_the_numbered_languages():
+    """The one table here whose keys are DERIVABLE, so it cannot drift.
+
+    A language that numbers nothing has no numbering to refuse, and a
+    language that numbers everything must say why this one component is
+    exempt. Add a `numbered` language to `KITS` and this test tells you to
+    write its citation rather than letting it silently number a bar."""
+    assert set(LG.READOUT_NUMBER_REFUSED) == set(NUMBERED)
+    assert set(NUMBERED) == {"corgi", "industrial", "ledger"}
+    assert all(len(v) > 40 for v in LG.READOUT_NUMBER_REFUSED.values())
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_no_language_numbers_a_readout(lang):
+    """L-33, measured on a real app and now asked of all eleven: a `[5]` over
+    a chart nobody can act on is a keybinding spent on something unpressable.
+
+    Asserted with a caller string that OPENS with a binding, because that is
+    the input a numbering language would letter it from."""
+    k = LG.kit(lang)
+    for label in ("rate", "5 rate", "12 events per minute"):
+        got = plain(k.readout_label(label))
+        assert not any(ch.isdigit() for ch in got), (lang, label, got)
+
+
+@pytest.mark.parametrize("lang", NUMBERED)
+def test_the_readout_and_the_display_diverge_and_the_divergence_is_the_law(lang):
+    """The two seats side by side, which is where L-33 actually lives: the
+    SAME language, the SAME caller string, a number on the control and no
+    number on the readout."""
+    k = LG.kit(lang)
+    assert k.display_label(1, "5 rate") == "[5] RATE", lang
+    assert plain(k.readout_label("5 rate")) == "RATE", lang
+
+
+def test_the_readout_registry_is_read_and_not_printed():
+    """THE TEETH. Take ledger out and it spends a key on a bar nobody can
+    press; the language's own code is not touched in either direction.
+
+    This table can only be wrong in ONE direction and the test says so: a
+    false entry for a language that numbers nothing changes nothing, because
+    there was no notation there to withhold."""
+    saved = dict(LG.READOUT_NUMBER_REFUSED)
+    try:
+        del LG.READOUT_NUMBER_REFUSED["ledger"]
+        assert plain(LG.kit("ledger").readout_label("5 rate")) == "[5] RATE"
+        LG.READOUT_NUMBER_REFUSED["prism"] = "a false entry"
+        assert plain(LG.kit("prism").readout_label("5 rate")) == "RATE"
+    finally:
+        LG.READOUT_NUMBER_REFUSED.clear()
+        LG.READOUT_NUMBER_REFUSED.update(saved)
+    assert plain(LG.kit("ledger").readout_label("5 rate")) == "RATE"
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_readouts_word_is_the_callers(lang):
+    """The legend is the caller's and the notation is the language's — the
+    ruling `display_label` already carries, and this method is its twin
+    because a readout's legend and a display's legend are the same object."""
+    k = LG.kit(lang)
+    assert "EVENTS PER MINUTE" in plain(k.readout_label("events per minute"))
+    assert plain(k.readout_label("")) == "READOUT", lang
