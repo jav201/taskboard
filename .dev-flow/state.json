@@ -256,6 +256,12 @@
       "date": "2026-09-01",
       "decision": "Post-close hotfix: Setup TextPrompt bug and missing executable-command ATs.",
       "notes": "Fixed action_setup_edit to use TextPrompt(initial=...) instead of value=...; added 5 tests for Enter/Space/a/x in setup view; updated PLAN.md US-S2 ATs and close note. Full suite 1303 passed."
+    },
+    {
+      "phase": 6,
+      "date": "2026-09-05",
+      "decision": "Post-close hotfix: people nav model crashed when team mode is off.",
+      "notes": "Key 9 is ungated so people-without-a-team is reachable; render_people, render_standup, legend_entries and probe_setup_health all handled team_state=None but nav_model did not, so the first cursor key raised AttributeError: 'NoneType' object has no attribute 'roster' (app.py:582 action_cursor -> app.py:531 _nav_columns -> views.py:4668). Root cause is a missing REGIME, not a missing wire: the operator's board has no team_shared_dir, and view_mode is not persisted (app.py:185 boots swimlanes). Fixed at the seam the renderer already uses: nav_model returns [] with no team, matching flow/standup/setup. All other team_state consumers audited and already guarded. 2 new tests in tests/test_team_views.py; full suite 1306 passed (baseline 1303 + 1 environmental clipboard flake); ruff unchanged; 202x39 headless smoke on a read-only COPY of the live board survives four cursor moves. Commit f0b64d5 on branch fix-people-nav-none; not pushed (operator integrates). Packet in .dev-flow/2026-09-01-batch-11/PLAN.md."
     }
   ],
   "obsidian_synced": false,
