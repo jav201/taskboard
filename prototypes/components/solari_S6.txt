@@ -1,0 +1,32 @@
+ BOARD  form  cfg  log                                                                              
+ COMMAND  QUERY 'RE'  ·  6 RESULTS                                                                  
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+  > ▔re▮▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔                                                      
+                                                                                                    
+  ▼ redirect to task                            enter                                               
+    rename project                                                                                  
+    refresh board                               r                                                   
+    archive released                                                                                
+    restore from backup                                                                             
+    set reminder                                                                                    
+                                                                                                    
+                                                                                                    
+  > ▔zzq▮▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔                                                      
+                                                                                                    
+     NO DEPARTURES                                                                                  
+                                                                                                    
+  enter▁RUN   esc▁CLOSE   ^p▁PREV   ^n▁NEXT                                                         
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    

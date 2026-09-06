@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · solari · S6 command palette">
+<title>taskboard · solari · S6 command palette</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<rect x="10.0" y="10.0" width="58.8" height="17.0" fill="#f0ede4"/>
+<text x="10.0" y="23.3" fill="#0b0b0c"> BOARD </text>
+<text x="68.8" y="23.3" fill="#6e6a60"> form  cfg  log </text>
+<rect x="10.0" y="27.0" width="840.0" height="17.0" fill="#f0ede4"/>
+<text x="10.0" y="40.3" fill="#0b0b0c"> COMMAND  QUERY &#x27;RE&#x27;  ·  6 RESULTS                                                                  </text>
+<text x="10.0" y="57.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="26.8" y="74.3" fill="#f5a300">&gt; </text>
+<text x="43.6" y="74.3" fill="#1f1f22">▔</text>
+<text x="52.0" y="74.3" fill="#f0ede4">re</text>
+<text x="68.8" y="74.3" fill="#f5a300">▮</text>
+<text x="77.2" y="74.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔</text>
+<text x="26.8" y="108.3" fill="#f5a300">▼</text>
+<text x="43.6" y="108.3" fill="#f0ede4">re</text>
+<text x="60.4" y="108.3" fill="#6e6a60">direct to task</text>
+<text x="413.2" y="108.3" fill="#1f1f22">enter</text>
+<text x="43.6" y="125.3" fill="#f0ede4">re</text>
+<text x="60.4" y="125.3" fill="#6e6a60">name project</text>
+<text x="43.6" y="142.3" fill="#f0ede4">re</text>
+<text x="60.4" y="142.3" fill="#6e6a60">fresh board</text>
+<text x="413.2" y="142.3" fill="#1f1f22">r</text>
+<text x="43.6" y="159.3" fill="#6e6a60">archive </text>
+<text x="110.8" y="159.3" fill="#f0ede4">re</text>
+<text x="127.6" y="159.3" fill="#6e6a60">leased</text>
+<text x="43.6" y="176.3" fill="#f0ede4">re</text>
+<text x="60.4" y="176.3" fill="#6e6a60">store from backup</text>
+<text x="43.6" y="193.3" fill="#6e6a60">set </text>
+<text x="77.2" y="193.3" fill="#f0ede4">re</text>
+<text x="94.0" y="193.3" fill="#6e6a60">minder</text>
+<text x="26.8" y="244.3" fill="#f5a300">&gt; </text>
+<text x="43.6" y="244.3" fill="#1f1f22">▔</text>
+<text x="52.0" y="244.3" fill="#f0ede4">zzq</text>
+<text x="77.2" y="244.3" fill="#f5a300">▮</text>
+<text x="85.6" y="244.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔</text>
+<text x="43.6" y="278.3" fill="#1f1f22"> NO DEPARTURES</text>
+<text x="26.8" y="312.3" fill="#f5a300">enter</text>
+<text x="68.8" y="312.3" fill="#1f1f22">▁</text>
+<text x="77.2" y="312.3" fill="#6e6a60">RUN</text>
+<text x="127.6" y="312.3" fill="#f5a300">esc</text>
+<text x="152.8" y="312.3" fill="#1f1f22">▁</text>
+<text x="161.2" y="312.3" fill="#6e6a60">CLOSE</text>
+<text x="228.4" y="312.3" fill="#f5a300">^p</text>
+<text x="245.2" y="312.3" fill="#1f1f22">▁</text>
+<text x="253.6" y="312.3" fill="#6e6a60">PREV</text>
+<text x="312.4" y="312.3" fill="#f5a300">^n</text>
+<text x="329.2" y="312.3" fill="#1f1f22">▁</text>
+<text x="337.6" y="312.3" fill="#6e6a60">NEXT</text>
+</g>
+</svg>

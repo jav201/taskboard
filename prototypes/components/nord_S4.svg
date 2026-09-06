@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · nord · S4 modal dialog">
+<title>taskboard · nord · S4 modal dialog</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#4c566a">▸board │  form │  cfg │  log</text>
+<text x="10.0" y="40.3" fill="#4c566a">BOARD  16 tasks  ·  4 projects</text>
+<text x="10.0" y="74.3" fill="#4c566a">  BACKLOG 5▂                                                 │ DETAIL  Fix login redirect</text>
+<text x="10.0" y="91.3" fill="#4c566a">  ─────────────────────────────────────────────────────────  │ </text>
+<text x="10.0" y="108.3" fill="#4c566a">    Audit the theme tokens                              21d  │ project                           Web</text>
+<text x="10.0" y="125.3" fill="#4c566a">      Docs · backlog                                         │ phase                           doing</text>
+<text x="10.0" y="142.3" fill="#4c566a">    Drop the legacy shim                                30d  │ due                                3d</text>
+<text x="10.0" y="159.3" fill="#4c566a">      API · backlog                                          │ priority                         high</text>
+<text x="10.0" y="176.3" fill="#4c566a">                                                             │ status                           open</text>
+<text x="10.0" y="193.3" fill="#4c566a">▸ DOING 4▂                                                   │ owner                          jav201</text>
+<text x="10.0" y="210.3" fill="#4c566a">▸ ─────────────────────────────────────────────────────────  │ </text>
+<text x="253.6" y="227.3" fill="#eceff4">┌───────────────────────────────────────┐</text>
+<text x="253.6" y="244.3" fill="#eceff4">│</text>
+<text x="270.4" y="244.3" fill="#eceff4">Delete 3 tasks?</text>
+<text x="589.6" y="244.3" fill="#eceff4">│</text>
+<text x="253.6" y="261.3" fill="#eceff4">│</text>
+<text x="589.6" y="261.3" fill="#eceff4">│</text>
+<text x="253.6" y="278.3" fill="#eceff4">│</text>
+<text x="270.4" y="278.3" fill="#7b88a1">3 tasks will be removed from BACKLOG.</text>
+<text x="589.6" y="278.3" fill="#eceff4">│</text>
+<text x="253.6" y="295.3" fill="#eceff4">│</text>
+<text x="270.4" y="295.3" fill="#7b88a1">This cannot be undone.</text>
+<text x="589.6" y="295.3" fill="#eceff4">│</text>
+<text x="253.6" y="312.3" fill="#eceff4">│</text>
+<text x="589.6" y="312.3" fill="#eceff4">│</text>
+<text x="253.6" y="329.3" fill="#eceff4">│</text>
+<text x="270.4" y="329.3" fill="#88c0d0">▐ </text>
+<text x="287.2" y="329.3" fill="#eceff4"> !Delete! </text>
+<text x="371.2" y="329.3" fill="#88c0d0"> ▌</text>
+<text x="413.2" y="329.3" fill="#eceff4">[   Cancel   ]</text>
+<text x="589.6" y="329.3" fill="#eceff4">│</text>
+<text x="253.6" y="346.3" fill="#eceff4">└───────────────────────────────────────┘</text>
+<text x="10.0" y="363.3" fill="#4c566a">                                                             │ </text>
+<text x="10.0" y="380.3" fill="#4c566a">  BLOCKED 0                                                  │ </text>
+<text x="10.0" y="397.3" fill="#4c566a">  ─────────────────────────────────────────────────────────  │ </text>
+<text x="10.0" y="414.3" fill="#4c566a">     ▐██▌     ▐██▌                                           │ </text>
+<text x="10.0" y="431.3" fill="#4c566a">     ▐██▌     ▐██▌                                           │ </text>
+<text x="10.0" y="448.3" fill="#4c566a">     ▐██▌     ▐██▌                                           │ </text>
+<text x="10.0" y="465.3" fill="#4c566a">                                                             │ </text>
+<text x="10.0" y="482.3" fill="#4c566a">    ▄▖           ▗▄                                          │ </text>
+<text x="10.0" y="499.3" fill="#4c566a">    █▌           ▐█                                          │ </text>
+<text x="10.0" y="516.3" fill="#4c566a">     ▐█         █▌                                           │ </text>
+<text x="10.0" y="533.3" fill="#4c566a">view ░████░░░░░░░ 3-10 of 23                                </text>
+</g>
+</svg>

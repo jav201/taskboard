@@ -1,0 +1,32 @@
+(O)board  ( )form  ( )cfg  ( )log                                                                   
+board  16 tasks  ·  4 projects                                                                      
+                                                                                                    
+  ▏  backlog 5                                                 detail  fix login redirect           
+    ▏  audit the theme tokens                           21d                                         
+    ▏    backlog · d21                                         project                         ▬ Web
+    ▏  drop the legacy shim                             30d    phase                         ▬ doing
+    ▏    backlog · d30                                         due                              ▬ 3d
+                                                               priority                       ▬ high
+O ▏  doing 4                                                   status                         ▬ open
+O   ▏  fix login redirect                                3d    owner                        ▬ jav201
+    ▏    doing · d3                                                                                 
+                             ╭───────────────────────────────────────╮                              
+                             │ Delete 3 tasks?                       │                              
+                             │                                       │                              
+                             │ 3 tasks will be removed from BACKLOG. │                              
+                             │ This cannot be undone.                │                              
+                             │                                       │                              
+                             │ ▮  ØDeleteØ  ▮   ▬   Cancel   ▬       │                              
+                             ╰───────────────────────────────────────╯                              
+     nothing here                                                                                   
+                                                                                                    
+  ▏  done 7                                                                                         
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+view ▁████▁▁▁▁▁▁▁ 3-10 of 23                                                                        
+                                                                                                    

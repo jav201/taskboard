@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · solari · S4 modal dialog">
+<title>taskboard · solari · S4 modal dialog</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<rect x="10.0" y="10.0" width="840.0" height="17.0" fill="#f5a300"/>
+<text x="10.0" y="40.3" fill="#f0ede4">Delete 3 tasks?</text>
+<text x="10.0" y="74.3" fill="#6e6a60">3 tasks will be removed from BACKLOG.</text>
+<text x="10.0" y="91.3" fill="#6e6a60">This cannot be undone.</text>
+<text x="10.0" y="125.3" fill="#f5a300">▔ </text>
+<text x="26.8" y="125.3" fill="#f0ede4"> ▀Delete▄ </text>
+<text x="110.8" y="125.3" fill="#f5a300"> ▔</text>
+<text x="152.8" y="125.3" fill="#f5a300">▁ </text>
+<text x="169.6" y="125.3" fill="#f0ede4">  Cancel  </text>
+<text x="253.6" y="125.3" fill="#f5a300"> ▁</text>
+<text x="10.0" y="142.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="10.0" y="159.3" fill="#1f1f22">                                                               PRIORITY ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ high</text>
+<text x="10.0" y="176.3" fill="#1f1f22">▼  GATE DOING 04                STATUS    PROJ          PRI    STATUS ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ open</text>
+<text x="10.0" y="193.3" fill="#1f1f22">▼   03  FIX LOGIN REDIRECT                    BOARDING  HIGH   OWNER ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ jav201</text>
+<text x="10.0" y="210.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   </text>
+<text x="10.0" y="227.3" fill="#1f1f22">    02  RATE-LIMIT THE API                    LATE      HIGH   DONE 007 OF 016  044%</text>
+<text x="10.0" y="244.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   </text>
+<text x="10.0" y="261.3" fill="#1f1f22">    09  PORT THE CSV IMPORTER                 ON TIME   NORM   </text>
+<text x="10.0" y="278.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   </text>
+<text x="10.0" y="295.3" fill="#1f1f22">    14  REWRITE THE ONBOARDING                ON TIME   LOW    </text>
+<text x="10.0" y="312.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   </text>
+<text x="10.0" y="346.3" fill="#1f1f22">   GATE BLOCKED 00              STATUS    PROJ          PRI    </text>
+<text x="10.0" y="363.3" fill="#1f1f22">     NO DEPARTURES                                             </text>
+<text x="10.0" y="397.3" fill="#1f1f22">   GATE DONE 07                 STATUS    PROJ          PRI    </text>
+<text x="10.0" y="533.3" fill="#1f1f22">view ▔▄▄▄▄▔▔▔▔▔▔▔ 3-10 of 23                                </text>
+</g>
+</svg>

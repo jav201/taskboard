@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · industrial · S1 list + detail">
+<title>taskboard · industrial · S1 list + detail</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#ff4b1f">[1]</text>
+<text x="35.2" y="23.3" fill="#f2f2f2">BOARD</text>
+<text x="85.6" y="23.3" fill="#ff4b1f">[2]</text>
+<text x="110.8" y="23.3" fill="#8f8f8f">form</text>
+<text x="152.8" y="23.3" fill="#ff4b1f">[3]</text>
+<text x="178.0" y="23.3" fill="#8f8f8f">cfg</text>
+<text x="211.6" y="23.3" fill="#ff4b1f">[4]</text>
+<text x="236.8" y="23.3" fill="#8f8f8f">log</text>
+<text x="10.0" y="40.3" fill="#8f8f8f">[</text>
+<text x="18.4" y="40.3" fill="#f2f2f2">BOARD</text>
+<text x="60.4" y="40.3" fill="#8f8f8f">]</text>
+<text x="85.6" y="40.3" fill="#8f8f8f">16 tasks  ·  4 projects</text>
+<text x="10.0" y="57.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<rect x="26.8" y="61.0" width="487.2" height="17.0" fill="#2e2e2e"/>
+<text x="26.8" y="74.3" fill="#ff4b1f">▐▌</text>
+<text x="52.0" y="74.3" fill="#ff4b1f">[1]</text>
+<text x="77.2" y="74.3" fill="#f2f2f2">BACKLOG</text>
+<text x="480.4" y="74.3" fill="#8f8f8f">[ 5]</text>
+<text x="514.0" y="74.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="74.3" fill="#4a4a4a">▐</text>
+<text x="539.2" y="74.3" fill="#8f8f8f">[</text>
+<text x="547.6" y="74.3" fill="#f2f2f2">DETAIL</text>
+<text x="598.0" y="74.3" fill="#8f8f8f">]</text>
+<text x="623.2" y="74.3" fill="#8f8f8f">Fix login redirect</text>
+<rect x="43.6" y="78.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="43.6" y="91.3" fill="#8f8f8f">▐</text>
+<text x="60.4" y="91.3" fill="#8f8f8f">05</text>
+<text x="85.6" y="91.3" fill="#8f8f8f">▌</text>
+<text x="102.4" y="91.3" fill="#f2f2f2">Audit the theme tokens</text>
+<text x="472.0" y="91.3" fill="#8f8f8f">[21d]</text>
+<text x="514.0" y="91.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="91.3" fill="#4a4a4a">▐────────────────────────────────────</text>
+<rect x="43.6" y="95.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="102.4" y="108.3" fill="#8f8f8f">[PH:BACK][DUE:21D][PR:L]</text>
+<text x="514.0" y="108.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="108.3" fill="#4a4a4a">▐</text>
+<text x="539.2" y="108.3" fill="#8f8f8f">PROJECT</text>
+<text x="791.2" y="108.3" fill="#2e2e2e">▐</text>
+<text x="799.6" y="108.3" fill="#f2f2f2"> Web </text>
+<text x="841.6" y="108.3" fill="#2e2e2e">▌</text>
+<rect x="43.6" y="112.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="43.6" y="125.3" fill="#8f8f8f">▐</text>
+<text x="60.4" y="125.3" fill="#8f8f8f">06</text>
+<text x="85.6" y="125.3" fill="#8f8f8f">▌</text>
+<text x="102.4" y="125.3" fill="#f2f2f2">Drop the legacy shim</text>
+<text x="472.0" y="125.3" fill="#8f8f8f">[30d]</text>
+<text x="514.0" y="125.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="125.3" fill="#4a4a4a">▐</text>
+<text x="539.2" y="125.3" fill="#8f8f8f">PHASE</text>
+<text x="774.4" y="125.3" fill="#2e2e2e">▐</text>
+<text x="782.8" y="125.3" fill="#f2f2f2"> doing </text>
+<text x="841.6" y="125.3" fill="#2e2e2e">▌</text>
+<rect x="43.6" y="129.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="102.4" y="142.3" fill="#8f8f8f">[PH:BACK][DUE:30D][PR:N]</text>
+<text x="514.0" y="142.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="142.3" fill="#4a4a4a">▐</text>
+<text x="539.2" y="142.3" fill="#8f8f8f">DUE</text>
+<text x="799.6" y="142.3" fill="#2e2e2e">▐</text>
+<text x="808.0" y="142.3" fill="#f2f2f2"> 3d </text>
+<text x="841.6" y="142.3" fill="#2e2e2e">▌</text>
+<text x="514.0" y="159.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="159.3" fill="#4a4a4a">▐</text>
+<text x="539.2" y="159.3" fill="#8f8f8f">PRIORITY</text>
+<text x="782.8" y="159.3" fill="#2e2e2e">▐</text>
+<text x="791.2" y="159.3" fill="#f2f2f2"> high </text>
+<text x="841.6" y="159.3" fill="#2e2e2e">▌</text>
+<rect x="26.8" y="163.0" width="487.2" height="17.0" fill="#2e2e2e"/>
+<text x="10.0" y="176.3" fill="#ff4b1f">▪</text>
+<text x="26.8" y="176.3" fill="#ff4b1f">▐▌</text>
+<text x="52.0" y="176.3" fill="#ff4b1f">[2]</text>
+<text x="77.2" y="176.3" fill="#f2f2f2">DOING</text>
+<text x="480.4" y="176.3" fill="#8f8f8f">[ 4]</text>
+<text x="514.0" y="176.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="176.3" fill="#4a4a4a">▐</text>
+<text x="539.2" y="176.3" fill="#8f8f8f">STATUS</text>
+<text x="782.8" y="176.3" fill="#2e2e2e">▐</text>
+<text x="791.2" y="176.3" fill="#f2f2f2"> open </text>
+<text x="841.6" y="176.3" fill="#2e2e2e">▌</text>
+<rect x="43.6" y="180.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="10.0" y="193.3" fill="#ff4b1f">▪</text>
+<text x="43.6" y="193.3" fill="#ffd400">▐</text>
+<text x="60.4" y="193.3" fill="#8f8f8f">01</text>
+<text x="85.6" y="193.3" fill="#ffd400">▌</text>
+<text x="102.4" y="193.3" fill="#f2f2f2">Fix login redirect</text>
+<text x="480.4" y="193.3" fill="#ffd400">[3d]</text>
+<text x="514.0" y="193.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="193.3" fill="#4a4a4a">▐</text>
+<text x="539.2" y="193.3" fill="#8f8f8f">OWNER</text>
+<text x="766.0" y="193.3" fill="#2e2e2e">▐</text>
+<text x="774.4" y="193.3" fill="#f2f2f2"> jav201 </text>
+<text x="841.6" y="193.3" fill="#2e2e2e">▌</text>
+<rect x="43.6" y="197.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="102.4" y="210.3" fill="#8f8f8f">[PH:DOIN][DUE:3D][PR:H]</text>
+<text x="514.0" y="210.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="210.3" fill="#4a4a4a">▐</text>
+<rect x="43.6" y="214.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="43.6" y="227.3" fill="#ff4b1f">▐</text>
+<text x="60.4" y="227.3" fill="#8f8f8f">02</text>
+<text x="85.6" y="227.3" fill="#ff4b1f">▌</text>
+<text x="102.4" y="227.3" fill="#f2f2f2">Rate-limit the API</text>
+<text x="472.0" y="227.3" fill="#ff4b1f">[2d!]</text>
+<text x="514.0" y="227.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="227.3" fill="#4a4a4a">▐[</text>
+<text x="547.6" y="227.3" fill="#ff4b1f">███████████</text>
+<text x="640.0" y="227.3" fill="#4a4a4a">░░░░░░░░░░░░░░]</text>
+<text x="774.4" y="227.3" fill="#8f8f8f"> 44%</text>
+<rect x="43.6" y="231.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="102.4" y="244.3" fill="#8f8f8f">[PH:DOIN][DUE:-2D][PR:H]</text>
+<text x="514.0" y="244.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="244.3" fill="#4a4a4a">▐</text>
+<rect x="43.6" y="248.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="43.6" y="261.3" fill="#8f8f8f">▐</text>
+<text x="60.4" y="261.3" fill="#8f8f8f">03</text>
+<text x="85.6" y="261.3" fill="#8f8f8f">▌</text>
+<text x="102.4" y="261.3" fill="#f2f2f2">Port the CSV importer</text>
+<text x="480.4" y="261.3" fill="#8f8f8f">[9d]</text>
+<text x="514.0" y="261.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="261.3" fill="#4a4a4a">▐</text>
+<rect x="43.6" y="265.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="102.4" y="278.3" fill="#8f8f8f">[PH:DOIN][DUE:9D][PR:N]</text>
+<text x="514.0" y="278.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="278.3" fill="#4a4a4a">▐</text>
+<rect x="43.6" y="282.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="43.6" y="295.3" fill="#8f8f8f">▐</text>
+<text x="60.4" y="295.3" fill="#8f8f8f">04</text>
+<text x="85.6" y="295.3" fill="#8f8f8f">▌</text>
+<text x="102.4" y="295.3" fill="#f2f2f2">Rewrite the onboarding</text>
+<text x="472.0" y="295.3" fill="#8f8f8f">[14d]</text>
+<text x="514.0" y="295.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="295.3" fill="#4a4a4a">▐</text>
+<rect x="43.6" y="299.0" width="470.4" height="17.0" fill="#2e2e2e"/>
+<text x="102.4" y="312.3" fill="#8f8f8f">[PH:DOIN][DUE:14D][PR:L]</text>
+<text x="514.0" y="312.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="312.3" fill="#4a4a4a">▐</text>
+<text x="514.0" y="329.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="329.3" fill="#4a4a4a">▐</text>
+<rect x="26.8" y="333.0" width="487.2" height="17.0" fill="#2e2e2e"/>
+<text x="26.8" y="346.3" fill="#ff4b1f">▐▌</text>
+<text x="52.0" y="346.3" fill="#ff4b1f">[3]</text>
+<text x="77.2" y="346.3" fill="#f2f2f2">BLOCKED</text>
+<text x="480.4" y="346.3" fill="#8f8f8f">[ 0]</text>
+<text x="514.0" y="346.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="346.3" fill="#4a4a4a">▐</text>
+<text x="43.6" y="363.3" fill="#ff4b1f"> ██    ██ </text>
+<text x="514.0" y="363.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="363.3" fill="#4a4a4a">▐</text>
+<text x="43.6" y="380.3" fill="#ff4b1f"> ██    ██ </text>
+<text x="514.0" y="380.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="380.3" fill="#4a4a4a">▐</text>
+<text x="514.0" y="397.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="397.3" fill="#4a4a4a">▐</text>
+<text x="43.6" y="414.3" fill="#ff4b1f">█        █</text>
+<text x="514.0" y="414.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="414.3" fill="#4a4a4a">▐</text>
+<text x="43.6" y="431.3" fill="#ff4b1f"> █      █ </text>
+<text x="514.0" y="431.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="431.3" fill="#4a4a4a">▐</text>
+<text x="43.6" y="448.3" fill="#ff4b1f">  ██████  </text>
+<text x="514.0" y="448.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="448.3" fill="#4a4a4a">▐</text>
+<text x="43.6" y="465.3" fill="#4a4a4a"> empty</text>
+<text x="514.0" y="465.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="465.3" fill="#4a4a4a">▐</text>
+<text x="514.0" y="482.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="482.3" fill="#4a4a4a">▐</text>
+<rect x="26.8" y="486.0" width="487.2" height="17.0" fill="#2e2e2e"/>
+<text x="26.8" y="499.3" fill="#ff4b1f">▐▌</text>
+<text x="52.0" y="499.3" fill="#ff4b1f">[4]</text>
+<text x="77.2" y="499.3" fill="#f2f2f2">DONE</text>
+<text x="480.4" y="499.3" fill="#8f8f8f">[ 7]</text>
+<text x="514.0" y="499.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="499.3" fill="#4a4a4a">▐</text>
+<text x="514.0" y="516.3" fill="#4a4a4a">▌</text>
+<text x="530.8" y="516.3" fill="#4a4a4a">▐</text>
+<text x="10.0" y="533.3" fill="#4a4a4a">view</text>
+<text x="52.0" y="533.3" fill="#4a4a4a">[-</text>
+<text x="68.8" y="533.3" fill="#8f8f8f">###</text>
+<text x="94.0" y="533.3" fill="#4a4a4a">------]</text>
+<text x="161.2" y="533.3" fill="#8f8f8f">3-10 of 23</text>
+</g>
+</svg>

@@ -1,0 +1,32 @@
+▸board │  form │  cfg │  log                                                                        
+BOARD  16 tasks  ·  4 projects                                                                      
+                                                                                                    
+  BACKLOG 5▂                                                 │ DETAIL  Fix login redirect           
+  ─────────────────────────────────────────────────────────  │                                      
+    Audit the theme tokens                              21d  │ project                           Web
+      Docs · backlog                                         │ phase                           doing
+    Drop the legacy shim                                30d  │ due                                3d
+      API · backlog                                          │ priority                         high
+                                                             │ status                           open
+▸ DOING 4▂                                                   │ owner                          jav201
+▸ ─────────────────────────────────────────────────────────  │                                      
+▸   Fix login redirect                                   3d  │ ▇▇▇▇▇▇▇▇▇▇▇▇░░░░░░░░░░░░░░░  44%     
+      Web · doing                                            │                                      
+    Rate-limit the API                                  2d!  │                                      
+      API · doing                                            │                                      
+    Port the CSV importer                                9d  │                                      
+      API · doing                                            │                                      
+    Rewrite the onboarding                              14d  │                                      
+      Web · doing                                            │                                      
+                                                             │                                      
+  BLOCKED 0                                                  │                                      
+  ─────────────────────────────────────────────────────────  │                                      
+     ▐██▌     ▐██▌                                           │                                      
+     ▐██▌     ▐██▌                                           │                                      
+     ▐██▌     ▐██▌                                           │                                      
+                                                             │                                      
+    ▄▖           ▗▄                                          │                                      
+    █▌           ▐█                                          │                                      
+     ▐█         █▌                                           │                                      
+view ░████░░░░░░░ 3-10 of 23                                                                        
+                                                                                                    

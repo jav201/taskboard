@@ -1,0 +1,32 @@
+                                                                                                    
+Delete 3 tasks?                                                                                     
+                                                                                                    
+3 tasks will be removed from BACKLOG.                                                               
+This cannot be undone.                                                                              
+                                                                                                    
+▔  ▀Delete▄  ▔   ▁   Cancel   ▁                                                                     
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+                                                               PRIORITY ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ high
+▼  GATE DOING 04                STATUS    PROJ          PRI    STATUS ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ open
+▼   03  FIX LOGIN REDIRECT                    BOARDING  HIGH   OWNER ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ jav201
+    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁                                        
+    02  RATE-LIMIT THE API                    LATE      HIGH   DONE 007 OF 016  044%                
+    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁                                        
+    09  PORT THE CSV IMPORTER                 ON TIME   NORM                                        
+    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁                                        
+    14  REWRITE THE ONBOARDING                ON TIME   LOW                                         
+    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁                                        
+                                                                                                    
+   GATE BLOCKED 00              STATUS    PROJ          PRI                                         
+     NO DEPARTURES                                                                                  
+                                                                                                    
+   GATE DONE 07                 STATUS    PROJ          PRI                                         
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+view ▔▄▄▄▄▔▔▔▔▔▔▔ 3-10 of 23                                                                        
+                                                                                                    

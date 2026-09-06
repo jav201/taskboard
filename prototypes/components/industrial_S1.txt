@@ -1,0 +1,32 @@
+[1]BOARD [2]form [3]cfg [4]log                                                                      
+[BOARD]  16 tasks  ·  4 projects                                                                    
+─────────────────────────────────────────────────────────────────────────────────────────────────── 
+  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fix login redirect         
+    ▐ 05 ▌ Audit the theme tokens                      [21d]▌ ▐──────────────────────────────────── 
+           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT                       ▐ Web ▌
+    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE                       ▐ doing ▌
+           [PH:BACK][DUE:30D][PR:N]                         ▌ ▐DUE                            ▐ 3d ▌
+                                                            ▌ ▐PRIORITY                     ▐ high ▌
+▪ ▐▌ [2]DOING                                           [ 4]▌ ▐STATUS                       ▐ open ▌
+▪   ▐ 01 ▌ Fix login redirect                           [3d]▌ ▐OWNER                      ▐ jav201 ▌
+           [PH:DOIN][DUE:3D][PR:H]                          ▌ ▐                                     
+    ▐ 02 ▌ Rate-limit the API                          [2d!]▌ ▐[███████████░░░░░░░░░░░░░░]  44%     
+           [PH:DOIN][DUE:-2D][PR:H]                         ▌ ▐                                     
+    ▐ 03 ▌ Port the CSV importer                        [9d]▌ ▐                                     
+           [PH:DOIN][DUE:9D][PR:N]                          ▌ ▐                                     
+    ▐ 04 ▌ Rewrite the onboarding                      [14d]▌ ▐                                     
+           [PH:DOIN][DUE:14D][PR:L]                         ▌ ▐                                     
+                                                            ▌ ▐                                     
+  ▐▌ [3]BLOCKED                                         [ 0]▌ ▐                                     
+     ██    ██                                               ▌ ▐                                     
+     ██    ██                                               ▌ ▐                                     
+                                                            ▌ ▐                                     
+    █        █                                              ▌ ▐                                     
+     █      █                                               ▌ ▐                                     
+      ██████                                                ▌ ▐                                     
+     empty                                                  ▌ ▐                                     
+                                                            ▌ ▐                                     
+  ▐▌ [4]DONE                                            [ 7]▌ ▐                                     
+                                                            ▌ ▐                                     
+view [-###------] 3-10 of 23                                                                        
+                                                                                                    

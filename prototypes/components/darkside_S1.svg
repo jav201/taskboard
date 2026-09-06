@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · darkside · S1 list + detail">
+<title>taskboard · darkside · S1 list + detail</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#1783ff">(O)</text>
+<text x="35.2" y="23.3" fill="#f5f5f5">board</text>
+<text x="94.0" y="23.3" fill="#262626">( )</text>
+<text x="119.2" y="23.3" fill="#737373">form</text>
+<text x="169.6" y="23.3" fill="#262626">( )</text>
+<text x="194.8" y="23.3" fill="#737373">cfg</text>
+<text x="236.8" y="23.3" fill="#262626">( )</text>
+<text x="262.0" y="23.3" fill="#737373">log</text>
+<text x="10.0" y="40.3" fill="#f5f5f5">board</text>
+<text x="68.8" y="40.3" fill="#262626">16 tasks  ·  4 projects</text>
+<rect x="514.0" y="61.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="26.8" y="74.3" fill="#262626">▏</text>
+<text x="52.0" y="74.3" fill="#f5f5f5">backlog</text>
+<text x="119.2" y="74.3" fill="#737373">5</text>
+<text x="539.2" y="74.3" fill="#f5f5f5">detail</text>
+<text x="606.4" y="74.3" fill="#262626">fix login redirect</text>
+<rect x="514.0" y="78.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="91.3" fill="#262626">▏</text>
+<text x="68.8" y="91.3" fill="#737373">audit the theme tokens</text>
+<text x="480.4" y="91.3" fill="#737373">21d</text>
+<rect x="514.0" y="95.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="108.3" fill="#262626">▏</text>
+<text x="85.6" y="108.3" fill="#262626">backlog · d21</text>
+<text x="539.2" y="108.3" fill="#262626">project</text>
+<text x="808.0" y="108.3" fill="#262626">▬</text>
+<text x="824.8" y="108.3" fill="#f5f5f5">Web</text>
+<rect x="514.0" y="112.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="125.3" fill="#262626">▏</text>
+<text x="68.8" y="125.3" fill="#737373">drop the legacy shim</text>
+<text x="480.4" y="125.3" fill="#737373">30d</text>
+<text x="539.2" y="125.3" fill="#262626">phase</text>
+<text x="791.2" y="125.3" fill="#262626">▬</text>
+<text x="808.0" y="125.3" fill="#f5f5f5">doing</text>
+<rect x="514.0" y="129.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="142.3" fill="#262626">▏</text>
+<text x="85.6" y="142.3" fill="#262626">backlog · d30</text>
+<text x="539.2" y="142.3" fill="#262626">due</text>
+<text x="816.4" y="142.3" fill="#262626">▬</text>
+<text x="833.2" y="142.3" fill="#f5f5f5">3d</text>
+<rect x="514.0" y="146.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="539.2" y="159.3" fill="#262626">priority</text>
+<text x="799.6" y="159.3" fill="#262626">▬</text>
+<text x="816.4" y="159.3" fill="#f5f5f5">high</text>
+<rect x="514.0" y="163.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="10.0" y="176.3" fill="#1783ff">O</text>
+<text x="26.8" y="176.3" fill="#262626">▏</text>
+<text x="52.0" y="176.3" fill="#f5f5f5">doing</text>
+<text x="102.4" y="176.3" fill="#737373">4</text>
+<text x="539.2" y="176.3" fill="#262626">status</text>
+<text x="799.6" y="176.3" fill="#262626">▬</text>
+<text x="816.4" y="176.3" fill="#f5f5f5">open</text>
+<rect x="514.0" y="180.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="10.0" y="193.3" fill="#1783ff">O</text>
+<text x="43.6" y="193.3" fill="#262626">▏</text>
+<text x="68.8" y="193.3" fill="#737373">fix login redirect</text>
+<text x="488.8" y="193.3" fill="#ffd230">3d</text>
+<text x="539.2" y="193.3" fill="#262626">owner</text>
+<text x="782.8" y="193.3" fill="#262626">▬</text>
+<text x="799.6" y="193.3" fill="#f5f5f5">jav201</text>
+<rect x="514.0" y="197.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="210.3" fill="#262626">▏</text>
+<text x="85.6" y="210.3" fill="#262626">doing · d3</text>
+<rect x="514.0" y="214.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="227.3" fill="#262626">▏</text>
+<text x="68.8" y="227.3" fill="#f5f5f5">rate-limit the api</text>
+<text x="480.4" y="227.3" fill="#ff4f42">2d!</text>
+<text x="514.0" y="227.3" fill="#737373">   ████████████</text>
+<text x="640.0" y="227.3" fill="#262626">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="774.4" y="227.3" fill="#262626"> 44%</text>
+<rect x="514.0" y="231.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="244.3" fill="#262626">▏</text>
+<text x="85.6" y="244.3" fill="#262626">doing · d-2</text>
+<rect x="514.0" y="248.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="261.3" fill="#262626">▏</text>
+<text x="68.8" y="261.3" fill="#737373">port the csv importer</text>
+<text x="488.8" y="261.3" fill="#737373">9d</text>
+<rect x="514.0" y="265.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="278.3" fill="#262626">▏</text>
+<text x="85.6" y="278.3" fill="#262626">doing · d9</text>
+<rect x="514.0" y="282.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="295.3" fill="#262626">▏</text>
+<text x="68.8" y="295.3" fill="#737373">rewrite the onboarding</text>
+<text x="480.4" y="295.3" fill="#737373">14d</text>
+<rect x="514.0" y="299.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="312.3" fill="#262626">▏</text>
+<text x="85.6" y="312.3" fill="#262626">doing · d14</text>
+<rect x="514.0" y="316.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<rect x="514.0" y="333.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="26.8" y="346.3" fill="#262626">▏</text>
+<text x="52.0" y="346.3" fill="#f5f5f5">blocked</text>
+<text x="119.2" y="346.3" fill="#262626">0</text>
+<rect x="514.0" y="350.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="43.6" y="363.3" fill="#262626"> nothing here</text>
+<rect x="514.0" y="367.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<rect x="514.0" y="384.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="26.8" y="397.3" fill="#262626">▏</text>
+<text x="52.0" y="397.3" fill="#f5f5f5">done</text>
+<text x="94.0" y="397.3" fill="#737373">7</text>
+<rect x="514.0" y="401.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<rect x="514.0" y="418.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<rect x="514.0" y="435.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<rect x="514.0" y="452.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<rect x="514.0" y="469.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<rect x="514.0" y="486.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<rect x="514.0" y="503.0" width="25.2" height="17.0" fill="#1f1f1f"/>
+<text x="10.0" y="533.3" fill="#262626">view</text>
+<text x="52.0" y="533.3" fill="#262626">▁</text>
+<text x="60.4" y="533.3" fill="#737373">████</text>
+<text x="94.0" y="533.3" fill="#262626">▁▁▁▁▁▁▁</text>
+<text x="161.2" y="533.3" fill="#737373">3-10 of 23</text>
+</g>
+</svg>

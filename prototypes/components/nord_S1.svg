@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · nord · S1 list + detail">
+<title>taskboard · nord · S1 list + detail</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#88c0d0">▸board</text>
+<text x="60.4" y="23.3" fill="#4c566a"> │ </text>
+<text x="85.6" y="23.3" fill="#7b88a1"> form</text>
+<text x="127.6" y="23.3" fill="#4c566a"> │ </text>
+<text x="152.8" y="23.3" fill="#7b88a1"> cfg</text>
+<text x="186.4" y="23.3" fill="#4c566a"> │ </text>
+<text x="211.6" y="23.3" fill="#7b88a1"> log</text>
+<text x="10.0" y="40.3" fill="#88c0d0">BOARD</text>
+<text x="68.8" y="40.3" fill="#7b88a1">16 tasks  ·  4 projects</text>
+<text x="26.8" y="74.3" fill="#7b88a1">BACKLOG</text>
+<text x="94.0" y="74.3" fill="#88c0d0">5▂</text>
+<text x="522.4" y="74.3" fill="#4c566a">│</text>
+<text x="539.2" y="74.3" fill="#88c0d0">DETAIL</text>
+<text x="606.4" y="74.3" fill="#7b88a1">Fix login redirect</text>
+<text x="26.8" y="91.3" fill="#4c566a">─────────────────────────────────────────────────────────</text>
+<text x="522.4" y="91.3" fill="#4c566a">│</text>
+<text x="43.6" y="108.3" fill="#eceff4">Audit the theme tokens</text>
+<text x="480.4" y="108.3" fill="#7b88a1">21d</text>
+<text x="522.4" y="108.3" fill="#4c566a">│</text>
+<text x="539.2" y="108.3" fill="#7b88a1">project</text>
+<text x="824.8" y="108.3" fill="#eceff4">Web</text>
+<text x="43.6" y="125.3" fill="#4c566a">  Docs · backlog</text>
+<text x="522.4" y="125.3" fill="#4c566a">│</text>
+<text x="539.2" y="125.3" fill="#7b88a1">phase</text>
+<text x="808.0" y="125.3" fill="#eceff4">doing</text>
+<text x="43.6" y="142.3" fill="#eceff4">Drop the legacy shim</text>
+<text x="480.4" y="142.3" fill="#7b88a1">30d</text>
+<text x="522.4" y="142.3" fill="#4c566a">│</text>
+<text x="539.2" y="142.3" fill="#7b88a1">due</text>
+<text x="833.2" y="142.3" fill="#eceff4">3d</text>
+<text x="43.6" y="159.3" fill="#4c566a">  API · backlog</text>
+<text x="522.4" y="159.3" fill="#4c566a">│</text>
+<text x="539.2" y="159.3" fill="#7b88a1">priority</text>
+<text x="816.4" y="159.3" fill="#eceff4">high</text>
+<text x="522.4" y="176.3" fill="#4c566a">│</text>
+<text x="539.2" y="176.3" fill="#7b88a1">status</text>
+<text x="816.4" y="176.3" fill="#eceff4">open</text>
+<text x="10.0" y="193.3" fill="#88c0d0">▸</text>
+<text x="26.8" y="193.3" fill="#7b88a1">DOING</text>
+<text x="77.2" y="193.3" fill="#88c0d0">4▂</text>
+<text x="522.4" y="193.3" fill="#4c566a">│</text>
+<text x="539.2" y="193.3" fill="#7b88a1">owner</text>
+<text x="799.6" y="193.3" fill="#eceff4">jav201</text>
+<text x="10.0" y="210.3" fill="#88c0d0">▸</text>
+<text x="26.8" y="210.3" fill="#4c566a">─────────────────────────────────────────────────────────</text>
+<text x="522.4" y="210.3" fill="#4c566a">│</text>
+<text x="10.0" y="227.3" fill="#88c0d0">▸</text>
+<text x="43.6" y="227.3" fill="#eceff4">Fix login redirect</text>
+<text x="488.8" y="227.3" fill="#ebcb8b">3d</text>
+<text x="522.4" y="227.3" fill="#4c566a">│</text>
+<text x="539.2" y="227.3" fill="#88c0d0">▇▇▇▇▇▇▇▇▇▇▇▇░░░░░░░░░░░░░░░</text>
+<text x="774.4" y="227.3" fill="#7b88a1"> 44%</text>
+<text x="43.6" y="244.3" fill="#4c566a">  Web · doing</text>
+<text x="522.4" y="244.3" fill="#4c566a">│</text>
+<text x="43.6" y="261.3" fill="#eceff4">Rate-limit the API</text>
+<text x="480.4" y="261.3" fill="#bf616a">2d!</text>
+<text x="522.4" y="261.3" fill="#4c566a">│</text>
+<text x="43.6" y="278.3" fill="#4c566a">  API · doing</text>
+<text x="522.4" y="278.3" fill="#4c566a">│</text>
+<text x="43.6" y="295.3" fill="#eceff4">Port the CSV importer</text>
+<text x="488.8" y="295.3" fill="#7b88a1">9d</text>
+<text x="522.4" y="295.3" fill="#4c566a">│</text>
+<text x="43.6" y="312.3" fill="#4c566a">  API · doing</text>
+<text x="522.4" y="312.3" fill="#4c566a">│</text>
+<text x="43.6" y="329.3" fill="#eceff4">Rewrite the onboarding</text>
+<text x="480.4" y="329.3" fill="#7b88a1">14d</text>
+<text x="522.4" y="329.3" fill="#4c566a">│</text>
+<text x="43.6" y="346.3" fill="#4c566a">  Web · doing</text>
+<text x="522.4" y="346.3" fill="#4c566a">│</text>
+<text x="522.4" y="363.3" fill="#4c566a">│</text>
+<text x="26.8" y="380.3" fill="#7b88a1">BLOCKED</text>
+<text x="94.0" y="380.3" fill="#4c566a">0</text>
+<text x="522.4" y="380.3" fill="#4c566a">│</text>
+<text x="26.8" y="397.3" fill="#4c566a">─────────────────────────────────────────────────────────</text>
+<text x="522.4" y="397.3" fill="#4c566a">│</text>
+<text x="43.6" y="414.3" fill="#88c0d0"> ▐██▌     ▐██▌ </text>
+<text x="522.4" y="414.3" fill="#4c566a">│</text>
+<text x="43.6" y="431.3" fill="#88c0d0"> ▐██▌     ▐██▌ </text>
+<text x="522.4" y="431.3" fill="#4c566a">│</text>
+<text x="43.6" y="448.3" fill="#88c0d0"> ▐██▌     ▐██▌ </text>
+<text x="522.4" y="448.3" fill="#4c566a">│</text>
+<text x="522.4" y="465.3" fill="#4c566a">│</text>
+<text x="43.6" y="482.3" fill="#88c0d0">▄▖           ▗▄</text>
+<text x="522.4" y="482.3" fill="#4c566a">│</text>
+<text x="43.6" y="499.3" fill="#88c0d0">█▌           ▐█</text>
+<text x="522.4" y="499.3" fill="#4c566a">│</text>
+<text x="43.6" y="516.3" fill="#88c0d0"> ▐█         █▌ </text>
+<text x="522.4" y="516.3" fill="#4c566a">│</text>
+<text x="10.0" y="533.3" fill="#4c566a">view</text>
+<text x="52.0" y="533.3" fill="#4c566a">░</text>
+<text x="60.4" y="533.3" fill="#7b88a1">████</text>
+<text x="94.0" y="533.3" fill="#4c566a">░░░░░░░</text>
+<text x="161.2" y="533.3" fill="#7b88a1">3-10 of 23</text>
+</g>
+</svg>

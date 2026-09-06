@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · solari · S1 list + detail">
+<title>taskboard · solari · S1 list + detail</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<rect x="10.0" y="10.0" width="58.8" height="17.0" fill="#f0ede4"/>
+<text x="10.0" y="23.3" fill="#0b0b0c"> BOARD </text>
+<text x="68.8" y="23.3" fill="#6e6a60"> form  cfg  log </text>
+<rect x="10.0" y="27.0" width="840.0" height="17.0" fill="#f0ede4"/>
+<text x="10.0" y="40.3" fill="#0b0b0c"> BOARD  16 TASKS  ·  4 PROJECTS                                                                     </text>
+<text x="10.0" y="57.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<rect x="26.8" y="61.0" width="487.2" height="17.0" fill="#f0ede4"/>
+<rect x="539.2" y="61.0" width="310.8" height="17.0" fill="#f0ede4"/>
+<text x="26.8" y="74.3" fill="#0b0b0c"> GATE BACKLOG 05              STATUS    PROJ          PRI </text>
+<text x="539.2" y="74.3" fill="#0b0b0c"> DETAIL  FIX LOGIN REDIRECT          </text>
+<rect x="43.6" y="78.0" width="16.8" height="17.0" fill="#17171a"/>
+<text x="43.6" y="91.3" fill="#f0ede4">21</text>
+<text x="60.4" y="91.3" fill="#e0e0e0">  AUDIT THE THEME TOKENS                </text>
+<text x="396.4" y="91.3" fill="#6e6a60">ON TIME </text>
+<text x="480.4" y="91.3" fill="#6e6a60">LOW </text>
+<text x="539.2" y="91.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="43.6" y="108.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="539.2" y="108.3" fill="#6e6a60">PROJECT</text>
+<text x="606.4" y="108.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="824.8" y="108.3" fill="#f0ede4">Web</text>
+<rect x="43.6" y="112.0" width="16.8" height="17.0" fill="#17171a"/>
+<text x="43.6" y="125.3" fill="#f0ede4">30</text>
+<text x="60.4" y="125.3" fill="#e0e0e0">  DROP THE LEGACY SHIM                  </text>
+<text x="396.4" y="125.3" fill="#6e6a60">ON TIME </text>
+<text x="480.4" y="125.3" fill="#6e6a60">NORM</text>
+<text x="539.2" y="125.3" fill="#6e6a60">PHASE</text>
+<text x="589.6" y="125.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="808.0" y="125.3" fill="#f0ede4">doing</text>
+<text x="43.6" y="142.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="539.2" y="142.3" fill="#6e6a60">DUE</text>
+<text x="572.8" y="142.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="833.2" y="142.3" fill="#f0ede4">3d</text>
+<text x="539.2" y="159.3" fill="#6e6a60">PRIORITY</text>
+<text x="614.8" y="159.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="816.4" y="159.3" fill="#f0ede4">high</text>
+<rect x="26.8" y="163.0" width="487.2" height="17.0" fill="#f0ede4"/>
+<text x="10.0" y="176.3" fill="#f5a300">▼</text>
+<text x="26.8" y="176.3" fill="#0b0b0c"> GATE DOING 04                STATUS    PROJ          PRI </text>
+<text x="539.2" y="176.3" fill="#6e6a60">STATUS</text>
+<text x="598.0" y="176.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="816.4" y="176.3" fill="#f0ede4">open</text>
+<rect x="43.6" y="180.0" width="16.8" height="17.0" fill="#f5a300"/>
+<text x="10.0" y="193.3" fill="#f5a300">▼</text>
+<text x="43.6" y="193.3" fill="#0b0b0c">03</text>
+<text x="60.4" y="193.3" fill="#e0e0e0">  FIX LOGIN REDIRECT                    </text>
+<text x="396.4" y="193.3" fill="#6e6a60">BOARDING</text>
+<text x="480.4" y="193.3" fill="#6e6a60">HIGH</text>
+<text x="539.2" y="193.3" fill="#6e6a60">OWNER</text>
+<text x="589.6" y="193.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="799.6" y="193.3" fill="#f0ede4">jav201</text>
+<text x="43.6" y="210.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<rect x="43.6" y="214.0" width="16.8" height="17.0" fill="#e03a2f"/>
+<rect x="581.2" y="214.0" width="25.2" height="17.0" fill="#17171a"/>
+<rect x="640.0" y="214.0" width="25.2" height="17.0" fill="#17171a"/>
+<rect x="682.0" y="214.0" width="25.2" height="17.0" fill="#17171a"/>
+<text x="43.6" y="227.3" fill="#0b0b0c">02</text>
+<text x="60.4" y="227.3" fill="#e0e0e0">  RATE-LIMIT THE API                    </text>
+<text x="396.4" y="227.3" fill="#6e6a60">LATE    </text>
+<text x="480.4" y="227.3" fill="#6e6a60">HIGH</text>
+<text x="539.2" y="227.3" fill="#6e6a60">DONE </text>
+<text x="581.2" y="227.3" fill="#f0ede4">007</text>
+<text x="606.4" y="227.3" fill="#6e6a60"> OF </text>
+<text x="640.0" y="227.3" fill="#f0ede4">016</text>
+<text x="682.0" y="227.3" fill="#f0ede4">044</text>
+<text x="707.2" y="227.3" fill="#6e6a60">%</text>
+<text x="43.6" y="244.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<rect x="43.6" y="248.0" width="16.8" height="17.0" fill="#17171a"/>
+<text x="43.6" y="261.3" fill="#f0ede4">09</text>
+<text x="60.4" y="261.3" fill="#e0e0e0">  PORT THE CSV IMPORTER                 </text>
+<text x="396.4" y="261.3" fill="#6e6a60">ON TIME </text>
+<text x="480.4" y="261.3" fill="#6e6a60">NORM</text>
+<text x="43.6" y="278.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<rect x="43.6" y="282.0" width="16.8" height="17.0" fill="#17171a"/>
+<text x="43.6" y="295.3" fill="#f0ede4">14</text>
+<text x="60.4" y="295.3" fill="#e0e0e0">  REWRITE THE ONBOARDING                </text>
+<text x="396.4" y="295.3" fill="#6e6a60">ON TIME </text>
+<text x="480.4" y="295.3" fill="#6e6a60">LOW </text>
+<text x="43.6" y="312.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<rect x="26.8" y="333.0" width="487.2" height="17.0" fill="#f0ede4"/>
+<text x="26.8" y="346.3" fill="#0b0b0c"> GATE BLOCKED 00              STATUS    PROJ          PRI </text>
+<text x="43.6" y="363.3" fill="#1f1f22"> NO DEPARTURES</text>
+<rect x="26.8" y="384.0" width="487.2" height="17.0" fill="#f0ede4"/>
+<text x="26.8" y="397.3" fill="#0b0b0c"> GATE DONE 07                 STATUS    PROJ          PRI </text>
+<text x="10.0" y="533.3" fill="#1f1f22">view</text>
+<text x="52.0" y="533.3" fill="#1f1f22">▔</text>
+<text x="60.4" y="533.3" fill="#6e6a60">▄▄▄▄</text>
+<text x="94.0" y="533.3" fill="#1f1f22">▔▔▔▔▔▔▔</text>
+<text x="161.2" y="533.3" fill="#6e6a60">3-10 of 23</text>
+</g>
+</svg>
