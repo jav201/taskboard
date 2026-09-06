@@ -3,7 +3,7 @@ COMMAND  query 're'  ·  6 results
 ◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦ 
   > ○re◉∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙○                                                      
                                                                                                     
-  ∙ redirect to task                            enter                                               
+  ● redirect to task                            enter                                               
     rename project                                                                                  
     refresh board                               r                                                   
     archive released                                                                                

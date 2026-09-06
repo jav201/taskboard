@@ -1168,11 +1168,20 @@ def test_ledgers_two_daggers_are_an_order_and_not_a_pair():
     """Footnote order is the whole notation: `†` marks the entry that must be
     made, `‡` marks the one that was refused — and `‡` is also the wall this
     language's invalid field is daggered with, so the mark on the row and the
-    mark on the field are the same claim."""
+    mark on the field are the same claim.
+
+    AND THE LADDER IS NOT MADE OF THEM ANY MORE (inc45). `LEVELS` read
+    `† ` / `‡ `, so `†` meant "this entry must be made" beside a caption and
+    "there is a warning about this" on a log row — two claims, one mark, no
+    channel between them. The ladder now takes the FIRST mark of the
+    printer's order, `*`, doubled for the graver note; the daggers are an
+    order of TWO and nothing else, which is what this test's title claimed
+    all along."""
     k = LG.kit("ledger")
     assert plain(k.required()) == "†"
-    assert k.LEVELS["error"].strip() == "‡"
     assert k.field_form(LG.INVALID, "textfield")[0] == "‡"
+    assert not {"†", "‡"} & set("".join(k.LEVELS.values()))
+    assert k.LEVELS["error"].strip() == "**"
 
 
 # ===========================================================================
@@ -2317,3 +2326,160 @@ def test_no_language_that_refuses_the_pane_rule_draws_it_round_its_button(lang):
     assert LG.Kit.PANE_RULE not in declared, (lang, declared)
     for st in BUTTON_STATES:
         assert LG.Kit.PANE_RULE not in plain(k.button("Cancel", 10, st)), lang
+
+
+# ===========================================================================
+# inc45 (rework-3) — one mark, one meaning
+# ===========================================================================
+#: THE FOUR LANGUAGE-LEVEL DECLARATIONS THAT MEAN SOMETHING ABOUT THE WORK,
+#: read straight off the kit: how bad it is (the severity LADDER, all three
+#: rungs as ONE declaration), whether the control destroys (`DANGER_FORM`),
+#: whether the field is compulsory (`REQUIRED`), and where the reader is
+#: (`CUR`). Three rungs count as one because the census counts them as one:
+#: "two severity rungs sharing a cell is a severity problem, not a collision"
+#: (`prototypes/collision_census.py`).
+def _meaning_marks(k) -> dict[str, str]:
+    return {"ladder": "".join(k.LEVELS[x] for x in ("info", "warn", "error")),
+            "danger": "".join(k.DANGER_FORM),
+            "required": k.REQUIRED,
+            "cursor": k.CUR}
+
+
+#: not a cell — the ASCII space and U+2800 BRAILLE PATTERN BLANK, the same
+#: pair the census discards. A language that pads two roles with the same
+#: nothing has not overloaded anything.
+BLANKS = " ⠀"
+
+#: THE ONE EXEMPTION, BY NAME AND WITH ITS CITATION. `DANGER_FORM` may be the
+#: severity ladder's TOP rung set around the label — one claim about one
+#: gravity, said as a FORM rather than as a rung, which is what
+#: `Kit.DANGER_FORM` declares it to be ("a pair of marks that bracket the
+#: label INSIDE the walls ... the form is therefore the WHOLE channel"). It is
+#: the TOP rung or nothing: nord's `!` (warn) and corgi's `▄▄` (warn) were
+#: both this exemption spent one rung too low, and inc45 moved both.
+DANGER_IS_THE_TOP_RUNG = {
+    "naught": "`∙∙` — LEVELS[error]; two lit dots, and not the one red",
+    "corgi": "`██` — LEVELS[error]; the segment driven to full height",
+    "prism": "`⣿⣿` — LEVELS[error]; nothing left to burn",
+    "blueprint": "`━━` — LEVELS[error]; the HEAVY weight, this alphabet's "
+                 "loudest mark",
+}
+
+
+def _cells(glyph: str) -> set[str]:
+    return {ch for ch in glyph if ch not in BLANKS}
+
+
+def shared_cell_pairs(lang: str) -> list[tuple]:
+    """Every pair of meaning marks that shares a cell, as
+    `(role, role, the shared cells, mark, mark)`.
+
+    A FUNCTION AND NOT AN INLINE LOOP, because the teeth test below has to
+    read WHICH pair fired: pytest's assertion rewriting turns an assert's own
+    message into a formatted string long before a caller can inspect it, so a
+    teeth test that scraped `AssertionError.args` would be asserting on a
+    repr."""
+    k = LG.kit(lang)
+    marks = _meaning_marks(k)
+    exempt = (lang in DANGER_IS_THE_TOP_RUNG
+              and marks["danger"] == k.LEVELS["error"])
+    names = sorted(marks)
+    out = []
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            shared = _cells(marks[a]) & _cells(marks[b])
+            if not shared:
+                continue
+            if exempt and {a, b} == {"danger", "ladder"}:
+                continue
+            out.append((a, b, "".join(sorted(shared)), marks[a], marks[b]))
+    return out
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_languages_meaning_marks_do_not_share_a_cell(lang):
+    """ONE MARK, ONE MEANING — asked of all eleven, off the declarations.
+
+    `PROTOTYPE-inheritors.md` left sixteen `rework` frames and the census
+    (inc44) measured what most of them are: a language with a small alphabet
+    spends one cell on severity or obligation and then spends the same cell
+    on something else that also MEANS something. Six of those were two
+    meanings on one mark with no control involved at all — `naught ∙` carried
+    five, `swiss ━` was the cursor AND the error rung, `nord !` was warn AND
+    the destructive form, `industrial ▪` was warn AND the cursor,
+    `darkside O` was error AND the cursor, `ledger † ‡` were obligation and
+    refusal AND the two severity rungs.
+
+    THE LAW. In one language, the four marks that carry a MEANING may not
+    share a cell. Not "may not be equal" — SHARE, because the defect the
+    round photographed is a reader meeting a familiar cell in an unfamiliar
+    seat, and `industrial ▪` against `▪▪` proves that doubling a mark for
+    alignment is not a channel: the first cell of the rung is the cursor
+    either way.
+
+    THE LADDER IS ONE DECLARATION, not three. Its rungs are MEANT to share
+    cells — that is what a ladder is, and the census makes the same choice for
+    the same reason.
+
+    INVALID IS NOT IN THIS SET, and the exclusion is named rather than
+    silent (VERIFY.md, "assert distinctness on the channel that is left"):
+    inc39 ruled that where un-flipping a field's walls would collide with
+    DEFAULT byte for byte, the walls take that language's own `DANGER_FORM`
+    (spec §9.2). Five languages spell rejection with their danger form ON
+    PURPOSE, so a law over `INVALID` would be a law over that ruling. inc39's
+    own law governs those slots.
+
+    THE ONE EXEMPTION is `DANGER_IS_THE_TOP_RUNG`, by name and with the
+    citation each kit carries."""
+    k = LG.kit(lang)
+    if lang in DANGER_IS_THE_TOP_RUNG:
+        assert "".join(k.DANGER_FORM) == k.LEVELS["error"], (
+            lang, k.DANGER_FORM, k.LEVELS)
+        assert DANGER_IS_THE_TOP_RUNG[lang].strip(), lang
+    assert not shared_cell_pairs(lang), (lang, shared_cell_pairs(lang))
+
+
+def test_the_one_mark_one_meaning_law_goes_red_on_the_six_it_was_written_for(
+        monkeypatch):
+    """TEETH — the six declarations inc45 moved, restored one at a time.
+
+    A law that has never been watched fail is a law nobody has watched, and
+    this one has to name the LANGUAGE and the TWO ROLES when it fires or the
+    next reader gets a boolean. Each arm restores exactly the byte string
+    HEAD carried before this increment; the assertion checks that the pair
+    the round complained about is the pair reported.
+
+    The seventh arm is the exemption's own teeth: corgi's danger form put
+    back one rung DOWN the ladder — `▄▄` is `LEVELS["warn"]` — must be red,
+    because the exemption is for the TOP rung and for nothing else."""
+    def roles(lang):
+        return {frozenset(row[:2]) for row in shared_cell_pairs(lang)}
+
+    for lang in LANGS:
+        assert not roles(lang), lang
+
+    monkeypatch.setattr(LG.Naught, "CUR", "∙")
+    assert frozenset(("cursor", "ladder")) in roles("naught")
+    monkeypatch.setattr(LG.Naught, "REQUIRED", "∙")
+    assert frozenset(("required", "ladder")) in roles("naught")
+
+    monkeypatch.setattr(LG.Swiss, "CUR", "━")
+    assert frozenset(("cursor", "ladder")) in roles("swiss")
+
+    monkeypatch.setattr(LG.Kit, "DANGER_FORM", ("!", "!"))
+    assert frozenset(("danger", "ladder")) in roles("nord")
+
+    monkeypatch.setattr(LG.Industrial, "CUR", "▪")
+    assert frozenset(("cursor", "ladder")) in roles("industrial")
+
+    monkeypatch.setattr(LG.Darkside, "CUR", "O")
+    assert frozenset(("cursor", "ladder")) in roles("darkside")
+
+    monkeypatch.setattr(LG.Ledger, "LEVELS",
+                        {"info": "  ", "warn": "† ", "error": "‡ "})
+    assert frozenset(("required", "ladder")) in roles("ledger")
+
+    monkeypatch.setattr(LG.Corgi, "DANGER_FORM", ("▄", "▄"))
+    assert frozenset(("danger", "ladder")) in roles("corgi")
+    with pytest.raises(AssertionError):
+        test_a_languages_meaning_marks_do_not_share_a_cell("corgi")

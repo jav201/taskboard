@@ -46,7 +46,7 @@
 <text x="799.6" y="159.3" fill="#262626">▬</text>
 <text x="816.4" y="159.3" fill="#f5f5f5">high</text>
 <rect x="514.0" y="163.0" width="25.2" height="17.0" fill="#1f1f1f"/>
-<text x="10.0" y="176.3" fill="#1783ff">O</text>
+<text x="10.0" y="176.3" fill="#1783ff">▊</text>
 <text x="26.8" y="176.3" fill="#262626">▏</text>
 <text x="52.0" y="176.3" fill="#f5f5f5">doing</text>
 <text x="102.4" y="176.3" fill="#737373">4</text>
@@ -54,7 +54,7 @@
 <text x="799.6" y="176.3" fill="#262626">▬</text>
 <text x="816.4" y="176.3" fill="#f5f5f5">open</text>
 <rect x="514.0" y="180.0" width="25.2" height="17.0" fill="#1f1f1f"/>
-<text x="10.0" y="193.3" fill="#1783ff">O</text>
+<text x="10.0" y="193.3" fill="#1783ff">▊</text>
 <text x="43.6" y="193.3" fill="#262626">▏</text>
 <text x="68.8" y="193.3" fill="#737373">fix login redirect</text>
 <text x="488.8" y="193.3" fill="#ffd230">3d</text>

@@ -11,7 +11,7 @@ settings  5 switches  ·  2 selects  ·  1 slider
   theme                     ▬dark   ▿▬                                                              
                                 auto                                                                
                                 light                                                               
-                              O dark                                                                
+                              ▊ dark                                                                
                                                                                                     
   row density               ▬▬▬▬▬▬▬▬▬O──── 70                                                       
                                                                                                     

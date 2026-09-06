@@ -7,8 +7,8 @@ board  16 tasks  ·  4 projects
     ▏  drop the legacy shim                             30d    phase                         ▬ doing
     ▏    backlog · d30                                         due                              ▬ 3d
                                                                priority                       ▬ high
-O ▏  doing 4                                                   status                         ▬ open
-O   ▏  fix login redirect                                3d    owner                        ▬ jav201
+▊ ▏  doing 4                                                   status                         ▬ open
+▊   ▏  fix login redirect                                3d    owner                        ▬ jav201
     ▏    doing · d3                                                                                 
     ▏  rate-limit the api                               2d!    ████████████▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁  44%     
     ▏    doing · d-2                                                                                

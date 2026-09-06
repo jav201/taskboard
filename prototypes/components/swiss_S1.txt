@@ -7,8 +7,8 @@ B O A R D   16 tasks  ·  4 projects
     Audit the theme tokens       21d                                                                
     Drop the legacy shim         30d                           project        Web                   
                                                                phase          doing                 
-━ D O I N G                     4                              due            3d                    
-━   Fix login redirect           3d                            priority       high                  
+▮ D O I N G                     4                              due            3d                    
+▮   Fix login redirect           3d                            priority       high                  
     Rate-limit the API           2d!                           status         open                  
     Port the CSV importer        9d                            owner          jav201                
     Rewrite the onboarding       14d                                                                

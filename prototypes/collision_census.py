@@ -247,30 +247,51 @@ def report() -> list[str]:
     return out
 
 
-#: THE FIVE THE ROUND FOUND BY HAND, as `(language, cell, {families})`. This
-#: script's whole claim is that it cannot miss a sixth, and a census that had
-#: quietly stopped reading `DANGER_FORM` would still print a confident table.
-#: So the five are asserted before anything is reported -- the same bargain
-#: `verify_ink.py` makes with its arithmetic self-check.
+#: THE FIVE THE ROUND FOUND BY HAND, as
+#: `(language, cell, {families}, closed_by)`. This script's whole claim is
+#: that it cannot miss a sixth, and a census that had quietly stopped reading
+#: `DANGER_FORM` would still print a confident table. So the five are asserted
+#: before anything is reported -- the same bargain `verify_ink.py` makes with
+#: its arithmetic self-check.
+#:
+#: `closed_by` IS THE ONLY WAY A ROW MAY LEAVE THIS ROSTER, and the reason is
+#: that the roster is the instrument's teeth: deleting a line once the rework
+#: fixes it would leave a census that can no longer prove it still sees
+#: anything. So a fixed row STAYS, with the increment that fixed it, and the
+#: assertion INVERTS -- the named families must no longer meet on that cell.
+#: The check therefore fires in both directions: it goes red if the census
+#: stops seeing a live collision AND if a language quietly grows a closed one
+#: back.
 FOUND_BY_HAND = (
-    ("instrument", "⠇", {"severity", "button"}),      # error rung, button opener
-    ("instrument", "⠁", {"required", "switch"}),      # REQUIRED, switch DISABLED
-    ("swiss", "━", {"cursor", "severity"}),           # cursor, error
-    ("nord", "!", {"severity", "danger"}),            # warn, delete danger
-    ("solari", "▁", {"required", "textfield"}),       # one of its nine roles
+    ("instrument", "⠇", {"severity", "button"}, None),   # error rung, button opener
+    ("instrument", "⠁", {"required", "switch"}, None),   # REQUIRED, switch DISABLED
+    ("swiss", "━", {"cursor", "severity"}, "inc45"),     # cursor, error
+    ("nord", "!", {"severity", "danger"}, "inc45"),      # warn, delete danger
+    ("solari", "▁", {"required", "textfield"}, None),    # one of its nine roles
 )
 
 
 def _self_check() -> None:
-    for lang, cell, want in FOUND_BY_HAND:
+    live = closed = 0
+    for lang, cell, want, closed_by in FOUND_BY_HAND:
         named, _ = role_map(lang)
         fams = named.get(cell, {})
-        assert collides(fams), f"CENSUS BROKEN: {lang} {cell} not a collision"
-        missing = want - set(fams)
-        assert not missing, (f"CENSUS BROKEN: {lang} {cell} lost role families "
-                             f"{sorted(missing)}; has {sorted(fams)}")
-    print(f"self-check  the {len(FOUND_BY_HAND)} collisions the round found by "
-          "hand all come back out of the census")
+        if closed_by is None:
+            live += 1
+            assert collides(fams), f"CENSUS BROKEN: {lang} {cell} not a collision"
+            missing = want - set(fams)
+            assert not missing, (f"CENSUS BROKEN: {lang} {cell} lost role "
+                                 f"families {sorted(missing)}; "
+                                 f"has {sorted(fams)}")
+            continue
+        closed += 1
+        assert not want <= set(fams), (
+            f"REGRESSION: {lang} {cell} carries {sorted(want)} again -- "
+            f"{closed_by} moved one of them off this cell")
+    assert live, "SELF-CHECK VACUOUS: every roster row is marked closed"
+    print(f"self-check  {live} of the {len(FOUND_BY_HAND)} collisions the round "
+          f"found by hand still come back out of the census; {closed} are "
+          "asserted CLOSED and cannot grow back")
 
 
 def main() -> int:

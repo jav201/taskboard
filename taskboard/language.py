@@ -1863,7 +1863,20 @@ class Kit:
     # that makes an overdue row legible. The form is therefore the WHOLE
     # channel, which is also what makes it survive greyscale by construction
     # rather than by review.
-    DANGER_FORM = ("!", "!")               # the terminal's own shout
+    #
+    # AND IT IS THE ROOT PROMPT, NOT THE SHOUT (inc45). This read `("!", "!")`
+    # under "the terminal's own shout", and `!` is also `LEVELS["warn"]` and
+    # half of `LEVELS["error"]` — so `[ !Delete all! ]` and a warning row said
+    # the same thing with the same cell. `nord_S3`'s objection is verbatim:
+    # "decir si `!Delete all!` es «peligroso» o «hay una advertencia sobre
+    # esto»" — two correct answers, no cue. The ladder keeps `!` (ruling 8:
+    # one width, three shapes, `· ` / `! ` / `!!` counted), because a shout IS
+    # what a severity rung is, and the danger form takes the OTHER thing the
+    # environment already writes: `#`, the root prompt — the terminal's own
+    # mark for the account that can destroy. Nord is the one language whose
+    # commitment is to inherit the environment rather than to invent, so its
+    # destructive form has to be something the environment already means.
+    DANGER_FORM = ("#", "#")               # the root prompt, `$` made `#`
     SPIN = ("▖", "▘", "▝", "▗")            # quadrant spin — matches nord's base
 
     # ------------------------------------------------------------------
@@ -1941,11 +1954,21 @@ class Kit:
         # its answer, and the inheritors round read it off `nord_S2`.
         #
         # Un-flipping alone would give `[ ]`, which is DEFAULT byte for
-        # byte, so the walls take `DANGER_FORM` -- the terminal's own shout,
+        # byte, so the walls took `DANGER_FORM` -- the terminal's own shout,
         # the same seat swiss and darkside already spend theirs on.  The
         # paper stays blank, as DEFAULT's is.
+        #
+        # AND THE REJECTION GETS ITS OWN MARK (inc45). inc39 reached for
+        # `DANGER_FORM` because un-flipping alone collided with DEFAULT, not
+        # because destruction and rejection are one claim -- and once the
+        # danger form stopped being `!` (above) that borrowing would only have
+        # moved the overload: `#` would then be "this deletes" AND "this was
+        # refused". So the walls take the environment's own mark for a value
+        # it cannot read, `?`, which is not spent anywhere else in this kit.
+        # inc39's law still holds by construction: the same mark opens and
+        # closes, so there is no handedness to read a state off.
         "textfield.main": {DEFAULT: "[ ]", FOCUSED: "▐ ▌", EDITED: "▐▁▌",
-                           ACTIVE: "▓ ▓", INVALID: "! !",
+                           ACTIVE: "▓ ▓", INVALID: "? ?",
                            DISABLED: "╌╌╌"},
         # the terminal's own bar cursor, in its own column
         "textfield.caret": {DEFAULT: "▏"},
@@ -3923,7 +3946,17 @@ class Naught(Kit):
     # Nothing's toggle is a FILL INVERSION, never a knob (the widget sheet:
     # active pill = solid, off = outline). State = lit vs unlit lattice —
     # monochrome: the shape channel carries it, red is not spent here.
-    CUR = NA.ON
+    # THE ROUND PIXEL AT FULL BRIGHTNESS (inc45). This read `NA.ON`, the same
+    # lit dot as `LEVELS["warn"]`'s first cell, `LEVELS["error"]`'s two, the
+    # `DANGER_FORM` and (until this increment) `REQUIRED` -- five meanings on
+    # one pixel. THE LADDER KEEPS THE LIT DOT, because "quantity is a row of
+    # discrete lit dots ... how many are lit is the signal" is the first line
+    # of this language's own entry and the ladder is that sentence; what moves
+    # is everything that is NOT a count. The charge ramp `⋅ · ◦ ∙ ◉ ●` is
+    # already declared across `PART_GLYPHS`, so position takes its brightest
+    # rung -- where the current is, which is the argument operator ruling 4
+    # accepted for this language's overlay.
+    CUR = "●"
 
     @property
     def SPIN(self):                        # dot chase at the lattice pitch
@@ -3975,9 +4008,22 @@ class Naught(Kit):
     # the mark is two dots at full charge -- the ladder's top rung, already
     # declared. Nothing rations `alert` here, so the tier is the base's.
     ERROR_FILL = NA.OFF
-    # A LIT DOT. Full charge means the seat must carry a value; the unlit dot
-    # beside it on the same row means it does not yet.
-    REQUIRED = NA.ON
+    # THE LIT DOT WITH A RING OF CHARGE STILL AROUND IT (inc45). This read
+    # `NA.ON` under "full charge means the seat must carry a value", and the
+    # census answered it: one lit dot was `LEVELS[error]`'s cell, the
+    # `DANGER_FORM`, the `REQUIRED` mark AND the `CUR` -- the widest single
+    # cell in the corpus by family count, and naught had no frame among the
+    # sixteen to say so.
+    #
+    # THE LADDER IS A CHARGE RAMP AND IT WAS ALREADY DECLARED. `⋅ · ◦ ∙ ◉ ●`
+    # is this language's own vocabulary, spent across `PART_GLYPHS` from the
+    # faintest lattice dot to the pressed key; `◉` is the rung the knob wears
+    # ("a dot with an EYE") and the caret wears ("the one LIT dot in the
+    # lattice"). Obligation takes the tier ABOVE the plain lit dot the cursor
+    # spends, so the two are distinct on the one channel this language
+    # declares -- LANGUAGES.md §0, "quantity is a row of discrete lit dots
+    # ... HOW MANY ARE LIT is the signal". Charge, not position.
+    REQUIRED = "◉"
 
     LEVELS = {"info": "◦◦", "warn": "∙◦", "error": "∙∙"}
 
@@ -4154,7 +4200,15 @@ class Corgi(Kit):
     (`_flow_*`)."""
 
     DISCLOSE = "▄"                        # the bank below the segment
-    DANGER_FORM = ("▄", "▄")               # the key's shoulders swollen, engraved
+    # THE SEGMENT DRIVEN ALL THE WAY, and it is the TOP rung (inc45). This
+    # read `("▄", "▄")` -- "the key's shoulders swollen, engraved" -- and `▄▄`
+    # is `LEVELS["warn"]`, so a destructive key and a warning row were the
+    # same cell at the MIDDLE of the ladder. corgi has no frame among the
+    # sixteen; the law found it, not the round. `██` is `LEVELS["error"]`, and
+    # a danger form that is the ladder's TOP rung set around the label is one
+    # claim about one gravity rather than two -- the same seat naught, prism
+    # and blueprint already spend theirs on.
+    DANGER_FORM = ("█", "█")               # the segment driven to full height
 
     # ======================================================================
     # THE PARAM STRIP. Every cell position below is computed in ONE place
@@ -5455,7 +5509,20 @@ class Swiss(Kit):
 
     VOICE = {"empty": "nothing here", "no_signals": "no signals enabled"}
 
-    CUR = "━"
+    # THE LADDER'S MARK STOOD UPRIGHT (inc45). This read `━`, which is
+    # `LEVELS["error"]` -- so a selected column head and a rejected one were
+    # the same cell, and `swiss_S1`'s objection is exactly that: "with the
+    # colour taken away, say whether DOING is SELECTED or in ERROR".
+    #
+    # THE SEVERITY LADDER KEEPS THE RULE. A weight ladder of HORIZONTAL rules
+    # (`· ─ ━`) is this language's whole hierarchy device and severity is what
+    # it was declared for ("hierarchy by weight, generous emptiness"). The
+    # cursor takes the same weight on the OTHER AXIS: `▮`, the solid slab this
+    # language already spends on its edited knob and on its pressed checkbox
+    # mark. It is deliberately NOT a block element and NOT a box-drawing cell
+    # -- "no boxes, at any width" is the commitment, and a rule stood on end
+    # would have been a wall.
+    CUR = "▮"
     SPIN = (".", "..", "...", " ")          # a walking period
 
     # structure by WEIGHT, which is what a hairline language has instead of
@@ -5859,7 +5926,17 @@ class Industrial(Kit):
              "blocked": "\\[B]", "workday":"\\[$]", "boardfile":"\\[F]"}
 
     # everything labelled, everything bracketed
-    CUR = "▪"
+    #
+    # THE STAMPED POINTER (inc45). This read `▪`, which is the middle rung of
+    # this language's severity ladder (`▫▫ / ▪▪ / ■■`) -- and that ladder is
+    # not optional here: LANGUAGES.md §3 says this palette "FAILS WHEN COLOUR
+    # MUST CARRY SEVERITY, because the palette already spent colour on
+    # identity", so severity has nowhere to go but the square's SIZE. Severity
+    # keeps the three squares; the cursor leaves the family altogether and
+    # takes `DISCLOSE`'s own form -- "solid, flat, stamped" -- turned ninety
+    # degrees, which is the one thing a stamped pointer can be that a size
+    # rung cannot be mistaken for.
+    CUR = "▶"
     # THE FOURTH MARK IS NOT A BACKSLASH, and that is a measured defect
     # rather than a taste. `\` is the ONE character that cannot stand at the
     # end of a markup string's literal text (PENDING #31): both parsers read
@@ -6327,7 +6404,21 @@ class Darkside(Kit):
     ICONS = {"deadline": "d", "overdue": "!!", "wip": "w", "blocked": "x",
              "workday": "$", "boardfile": "f"}
 
-    CUR = "O"
+    # THE RAIL AT FULL WEIGHT (inc45). This read `O`, which is
+    # `LEVELS["error"]`'s cell -- `darkside_S1` and `darkside_S6` both open on
+    # `O redirect to task` and the round's note is verbatim: "el cursor es la
+    # celda de error". The ladder keeps the mark, because the class docstring
+    # is where severity is committed ("passive data is grey STEPS whose levels
+    # ride on SHAPE") and the ladder is that commitment: `· / o / O` is one
+    # mark losing and gaining weight.
+    #
+    # SO THE CURSOR TAKES THE OTHER THING THIS LANGUAGE OWNS. §8: "hierarchy
+    # by WEIGHT AND DIMMING, not size" and "DEPTH BY ±1 GREY STEP, NEVER
+    # BORDERS". `RAIL` is `▏`, the thinnest stroke this alphabet draws; the
+    # cursor is that same stroke at full weight, `▊`. One stroke, two weights
+    # -- which is the declared channel, and no border is added because a
+    # single mark on one side encloses nothing at any width.
+    CUR = "▊"
     SPIN = (".", "o", "O", "o")            # one breathing dot
 
     def spinner(self, tick):
@@ -7219,7 +7310,22 @@ class Ledger(Kit):
     # invalid field is daggered with) marks the one that was refused.
     REQUIRED = "†"
 
-    LEVELS = {"info": "  ", "warn": "† ", "error": "‡ "}
+    # THE COMPOSITOR'S FIRST MARK, DOUBLED (inc45). This read `† ` / `‡ `,
+    # which is the two marks the line above has just spent on OBLIGATION and
+    # on REFUSAL -- so `†` meant "this entry must be made" on a caption and
+    # "there is a warning about this" on a log row, and `‡` meant "refused"
+    # on a field and "error" on a row. Two claims per mark, no channel between
+    # them, and ledger had no frame among the sixteen to say so either.
+    #
+    # REFERENCE MARKS ARE ASSIGNED, NOT RANKED. The printer's order is
+    # `* † ‡ § ‖ ¶`; `†` and `‡` are spoken for above, so the ladder takes the
+    # FIRST mark of that order and DOUBLES it for the graver note, which is
+    # exactly what a compositor does when one mark is not enough. And doubling
+    # is not a new channel here: "quantity is TALLY marks in groups of five --
+    # the mechanism used when you COUNT rather than measure" is this
+    # language's own commitment, so a ladder that counts is the ladder it
+    # already believes in. One width, three shapes (ruling 8) as before.
+    LEVELS = {"info": "  ", "warn": "* ", "error": "**"}
 
     # A LEDGER RULES UNDER A REFERENCED FIGURE. Underline is not a hue, and
     # it is the mark this genre already uses to point at an amount without

@@ -10,8 +10,8 @@
 <text x="10.0" y="125.3" fill="#3d3d3d">    Audit the theme tokens       21d                           </text>
 <text x="10.0" y="142.3" fill="#3d3d3d">    Drop the legacy shim         30d                           project        Web                   </text>
 <text x="10.0" y="159.3" fill="#3d3d3d">                                                               phase          doing                 </text>
-<text x="10.0" y="176.3" fill="#3d3d3d">━ D O I N G                     4                              due            3d                    </text>
-<text x="10.0" y="193.3" fill="#3d3d3d">━   Fix login redirect           3d                            priority       high                  </text>
+<text x="10.0" y="176.3" fill="#3d3d3d">▮ D O I N G                     4                              due            3d                    </text>
+<text x="10.0" y="193.3" fill="#3d3d3d">▮   Fix login redirect           3d                            priority       high                  </text>
 <text x="10.0" y="210.3" fill="#3d3d3d">    Rate-limit the API           2d!                           status         open                  </text>
 <text x="10.0" y="227.3" fill="#3d3d3d">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="10.0" y="261.3" fill="#f4f4f4">Delete 3 tasks?</text>
