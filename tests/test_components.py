@@ -2857,40 +2857,64 @@ def test_the_named_seat_law_goes_red_on_the_three_declarations_it_moved(
 # ===========================================================================
 # inc48 (rework-3) — the opener law, the batch rule's first named seat
 # ===========================================================================
-#: THE STEPPER IS OUT, BY A RULING AND NOT BY CONVENIENCE. `stepper.main` and
-#: `stepper.step` are two-cell strings whose halves are DIRECTIONS, not walls
-#: — spec §9.5, inc39's own words when it declined to extend its INVALID law
-#: there: "a stepper's halves are directions, not walls, so it needs its own
-#: law". A law about what OPENS an enclosure cannot be asked of a pair that
-#: encloses nothing, and the stepper's own law is still unwritten.
-OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield")
+#: THE STEPPER IS IN SINCE inc51, AND ITS EXCLUSION IS WHAT WENT AWAY. This
+#: tuple used to stop at `textfield`, on inc39's ruling that "a stepper's
+#: halves are DIRECTIONS, not walls, so it needs its own law" (spec §9.5) — a
+#: law about what OPENS an enclosure could not be asked of a pair that
+#: encloses nothing. That ruling was right about ENCLOSURE and wrong about
+#: ANNOUNCEMENT: whatever cell stands first is what a reader meets first,
+#: whether it is a wall or an arrow. The stepper's own law is written now
+#: (`test_a_steppers_halves_are_directions_and_invalid_is_not_a_turn`), so the
+#: exclusion has nothing left to stand on.
+#:
+#: WHAT IT COST, PAID RATHER THAN ABSORBED. inc48 §5 published the bill in
+#: advance: "it costs the law swiss's and nord's `stepper.main` (`··`, whose
+#: first cell is `LEVELS["info"]`), five seats each". Both were paid at the
+#: declaration in inc51 and not by an exemption — swiss's dead end takes `▫`,
+#: the lightest rung of the one-shape ladder inc46 built it, and nord's takes
+#: `░`, the lightest rung of the shade ramp this kit already owns — so both
+#: stay at 0. The four languages that grew (naught 2→3, corgi 31→40,
+#: prism 19→25, blueprint 6→12) were already on the roster.
+OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
+                    "stepper")
 
 #: WHAT STILL OPENS WITH A MEANING, COUNTED — the same bargain
 #: `MEANING_AT_A_NAMED_SEAT` and `HANDED_FIELDS` make, for the same reason:
 #: a roster is a record only while somebody has to edit it.
 #:
-#:   naught      2  `◦` opens the button and the field, and `LEVELS["info"]`
-#:                  is `◦◦`. This is the roster's arguable entry: naught's
-#:                  info rung is ZERO LIT DOTS — the unlit lattice, which
-#:                  LANGUAGES.md §0 calls this language's visible GROUND — so
-#:                  "nothing is lit" and "an empty seat" may be one meaning
-#:                  rather than two. The argument is written here and NOT
-#:                  granted: an exemption is the operator's, and silence is
-#:                  not one.
-#:   corgi      31  the segment bank is `LEVELS` and the chrome ladder at
-#:                  once (`▁▁ ▄▄ ██` against `▁▁ ▔▔ ▂▂ ··`). No increment in
-#:                  this batch; this is the widest single roster entry in the
-#:                  corpus.
-#:   prism      19  `⣿` is `LEVELS["error"]`, the `DANGER_FORM` and the
-#:                  opening cell of the button, the checkbox and the field.
-#:   blueprint   6  `├` is `REQUIRED` and the dimension's opening terminator
-#:                  — §9.4's `blueprint_S2`, still open.
+#:   naught      3  2 + 1. `◦` opens the button and the field, and
+#:                  `LEVELS["info"]` is `◦◦`; inc51 adds `◉◉`, the ACTIVE
+#:                  step, whose first cell is `REQUIRED`. The first two are
+#:                  the roster's arguable entry: naught's info rung is ZERO
+#:                  LIT DOTS — the unlit lattice, which LANGUAGES.md §0 calls
+#:                  this language's visible GROUND — so "nothing is lit" and
+#:                  "an empty seat" may be one meaning rather than two. The
+#:                  argument is written here and NOT granted: an exemption is
+#:                  the operator's, and silence is not one.
+#:   corgi      40  31 + 9. The segment bank is `LEVELS` and the chrome
+#:                  ladder at once (`▁▁ ▄▄ ██` against `▁▁ ▔▔ ▂▂ ··`), and
+#:                  inc51 adds the whole stepper: `▁▁▁▁` at five states of
+#:                  the ground plus four of the step. Never had an
+#:                  increment; the widest roster entry in the corpus.
+#:   prism      25  19 + 6. `⣿` is `LEVELS["error"]`, the `DANGER_FORM` and
+#:                  the opening cell of the button, the checkbox and the
+#:                  field; inc51 adds `⣀⣀` (the ground, five states) and
+#:                  `⡀⢀` (the DEFAULT step, whose first cell is `REQUIRED`).
+#:                  Never had an increment.
+#:   blueprint  12  6 + 6. `├` is `REQUIRED` and the dimension's opening
+#:                  terminator — §9.4's `blueprint_S2` — and inc51 adds the
+#:                  ground, `··` at five states (`LEVELS["info"]` is `··`)
+#:                  and `╌╌` at the dead one (`LEVELS["warn"]`). Never had an
+#:                  increment.
 #:
-#: SEVEN ARE ZERO: instrument (inc46), swiss (inc46), industrial (inc48),
-#: darkside (inc48), nord, ledger and solari (inc47).
-MEANING_AT_AN_OPENER = {"naught": 2, "corgi": 31, "instrument": 0, "swiss": 0,
-                        "industrial": 0, "nord": 0, "darkside": 0, "prism": 19,
-                        "ledger": 0, "solari": 0, "blueprint": 6}
+#: SEVEN ARE ZERO: instrument (inc46), swiss (inc46 and inc51), industrial
+#: (inc48), darkside (inc48), nord (inc51), ledger and solari (inc47).
+#: **swiss and nord stayed at zero through the stepper's arrival because
+#: inc51 paid their two `stepper.main` declarations rather than exempting
+#: them** — see `OPENING_CONTROLS` above for the bill and who paid it.
+MEANING_AT_AN_OPENER = {"naught": 3, "corgi": 40, "instrument": 0, "swiss": 0,
+                        "industrial": 0, "nord": 0, "darkside": 0, "prism": 25,
+                        "ledger": 0, "solari": 0, "blueprint": 12}
 
 
 def meaning_marks_at_an_opener(lang: str) -> list[tuple]:
@@ -2992,3 +3016,163 @@ def test_the_opener_law_goes_red_on_the_two_declarations_inc48_and_inc46_moved(
     for lang in LANGS:
         assert (len(meaning_marks_at_an_opener(lang))
                 == MEANING_AT_AN_OPENER[lang]), lang
+
+
+# ===========================================================================
+# inc51 (rework-4) — the stepper's own law, the one inc39 said it needed
+# ===========================================================================
+#: THE PAIRS THAT SAID "REJECTED" BY TURNING ROUND, and what each of them is
+#: now. Six declarations, restored one at a time by the teeth below, so the
+#: law is watched failing on the exact bytes HEAD carried before inc51.
+#:
+#: FIVE OF THE SIX ARE THEIR OWN DEFAULT EXCHANGED and go red on clause 1.
+#: `nord`'s `][` is NOT: it is a turn of a pair the stepper never declares at
+#: all — `[` and `]` are the BUTTON's walls and the CHECKBOX's well, which is
+#: the census row `nord [ ] (4 each)` verbatim. It goes red on clause 2 only,
+#: and that split is why the third column is here: a law with the orientation
+#: clause alone would have left the BASE's own defect standing, which is the
+#: defect spec §9.5 has been carrying since inc39.
+STEP_TURNS = {
+    "nord": ("][", "▚▚", False),     # `Kit`'s own, spec §9.5's unfixed flip
+    "instrument": ("⢠⡄", "⠶⠶", True),
+    "swiss": ("›‹", "╲╲", True),
+    "industrial": ("><", "//", True),
+    "prism": ("⢀⡀", "⣹⣹", True),
+    "blueprint": ("├┤", "━━", True),
+}
+
+
+def _halves(g: str) -> tuple[str, str]:
+    """A step pair split where the kit splits it: the first half is the step
+    BACK, the second the step FORWARD (`Kit.PART_GLYPHS`'s own words). Every
+    declaration in the corpus is an even string, which `part_slots`' width
+    reservation is what guarantees."""
+    h = len(g) // 2
+    return g[:h], g[h:]
+
+
+def steps_that_are_another_state_turned_round(lang: str) -> list[tuple]:
+    """Every pair of `stepper.step` states where one is the other with its
+    halves EXCHANGED, as `(state, state, glyph, glyph)`.
+
+    A pair whose halves are equal has no handedness and cannot violate the
+    law — `corgi ████`, `solari ◆◆`, `darkside ØØ`. That exclusion is what
+    keeps the law about ORIENTATION rather than about repetition."""
+    k = LG.kit(lang)
+    marks = {st: k.part_glyph("step", st, "stepper")
+             for st in LG.component_states("stepper")}
+    names = sorted(marks)
+    out = []
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            back, fwd = _halves(marks[b])
+            if back != fwd and marks[a] == fwd + back:
+                out.append((a, b, marks[a], marks[b]))
+    return out
+
+
+def invalid_step_is_off_the_languages_own_refusal(lang: str) -> bool:
+    """Whether `stepper.step[INVALID]` is drawn from the cells this language
+    already spends on a refused VALUE — its INVALID knob, its INVALID field.
+
+    The knob and the field are where a rejection is said in every one of the
+    eleven, and both are declarations rather than fallbacks: this asks the
+    tables directly so a language that declares no `INVALID` cannot pass by
+    inheriting one."""
+    k = LG.kit(lang)
+    said = set()
+    for key in ("knob", "textfield.main"):
+        said |= set(k.PART_GLYPHS[key].get(LG.INVALID, ""))
+    step = k.PART_GLYPHS[k.part_key("stepper", "step")][LG.INVALID]
+    return bool(step) and set(step) <= (said - set(" ⠀"))
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_steppers_halves_are_directions_and_invalid_is_not_a_turn(lang):
+    """THE STEPPER'S LAW, and it is the one inc39 said out loud it was not
+    writing.
+
+    inc39 fixed four fields that spelled INVALID by EXCHANGING their two
+    walls and declined to extend that law to the stepper, in these words:
+    *"a stepper's halves are DIRECTIONS, not walls, so it needs its own
+    law"* (spec §9.5). It has been the unwritten law of record ever since —
+    §9.5, §11.5, inc48 §5 and `PROTOTYPE-inheritors-2.md` §5 K3 all name it —
+    while `Kit.PART_GLYPHS["stepper.step"][INVALID]` sat at `][` and five
+    other kits carried the same turn.
+
+    THE LAW, in two clauses:
+
+    1. **A step pair is two DIRECTIONS and no state is another state turned
+       round.** `Kit`'s own declaration says what the two cells are: "the
+       first half is the step BACK and the second half is the step FORWARD
+       ... the cell's POSITION is what says which way it goes." A state
+       spelled by exchanging another state's halves is a state spelled by
+       ORIENTATION, and inc39's law already ruled that orientation is not a
+       channel a reader can use. On a field the two marks sat 34 cells apart;
+       on a stepper they TOUCH, so the reader is asked to compare two arrows
+       side by side and remember which way they were before.
+    2. **INVALID is said on the language's own refusal channel.** Whatever
+       cells the kit spends on a rejected value at its knob and at its field
+       are the cells its stepper spends. Five of the eleven already did it —
+       `darkside ØØ`, `ledger ‡‡`, `solari ══`, `naught ◑◑`, `corgi ▀▄▄▀` —
+       and inc51 moved the other six onto the same rule.
+
+    WHY BOTH CLAUSES AND NOT JUST THE FIRST. Clause 1 alone is satisfiable by
+    inventing any unused mark, which is how a kit acquires a cell nobody can
+    read. Clause 2 says the mark must be one the reader has already met
+    meaning exactly this, somewhere else in the same language."""
+    assert not steps_that_are_another_state_turned_round(lang), (
+        lang, steps_that_are_another_state_turned_round(lang))
+    assert invalid_step_is_off_the_languages_own_refusal(lang), (
+        lang, LG.kit(lang).PART_GLYPHS[
+            LG.kit(lang).part_key("stepper", "step")][LG.INVALID])
+
+
+def test_the_stepper_law_goes_red_on_the_six_turns_inc51_moved(monkeypatch):
+    """TEETH — six arms, one per declaration, each restoring the exact byte
+    string HEAD carried at `251511d` and each required to name the LANGUAGE
+    and the TWO STATES the turn is between.
+
+    `nord`'s arm is the base's: nord declares no `PART_GLYPHS`, so `][` was
+    `Kit`'s line and patching `Kit` moves nord and nothing else — which the
+    arm asserts by checking the other ten stay clean, the same proof inc39
+    §9.3 q1 had to make by measurement.
+
+    A seventh arm is the second clause's own teeth: an INVALID that is
+    neither a turn nor drawn from the language's refusal — `≠≠`, a mark no
+    kit declares — must still be red, because clause 1 alone would pass it."""
+    for lang in LANGS:
+        assert not steps_that_are_another_state_turned_round(lang), lang
+        assert invalid_step_is_off_the_languages_own_refusal(lang), lang
+
+    for lang, (turn, _fixed, is_a_turn) in STEP_TURNS.items():
+        kit_cls = LG.Kit if lang == "nord" else type(LG.kit(lang))
+        tbl = dict(kit_cls.PART_GLYPHS["stepper.step"])
+        tbl[LG.INVALID] = turn
+        monkeypatch.setitem(kit_cls.PART_GLYPHS, "stepper.step", tbl)
+        hits = steps_that_are_another_state_turned_round(lang)
+        if is_a_turn:
+            assert hits, (lang, turn)
+            assert all(LG.INVALID in (h[0], h[1]) for h in hits), (lang, hits)
+            assert all(turn in (h[2], h[3]) for h in hits), (lang, hits)
+        else:
+            # nord: `][` turns a pair the stepper never declares, so clause 1
+            # is silent and clause 2 is what fires. Asserted, not assumed.
+            assert not hits, (lang, hits)
+        assert not invalid_step_is_off_the_languages_own_refusal(lang), lang
+        with pytest.raises(AssertionError):
+            test_a_steppers_halves_are_directions_and_invalid_is_not_a_turn(
+                lang)
+        assert all(not steps_that_are_another_state_turned_round(o)
+                   and invalid_step_is_off_the_languages_own_refusal(o)
+                   for o in LANGS if o != lang), lang
+        monkeypatch.undo()
+
+    tbl = dict(LG.Darkside.PART_GLYPHS["stepper.step"])
+    tbl[LG.INVALID] = "≠≠"
+    monkeypatch.setitem(LG.Darkside.PART_GLYPHS, "stepper.step", tbl)
+    assert not steps_that_are_another_state_turned_round("darkside")
+    assert not invalid_step_is_off_the_languages_own_refusal("darkside")
+    with pytest.raises(AssertionError):
+        test_a_steppers_halves_are_directions_and_invalid_is_not_a_turn(
+            "darkside")

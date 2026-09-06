@@ -2001,9 +2001,35 @@ class Kit:
         # nord inherits the environment, so it takes the terminal's own spin
         # marks and puts the state where its other controls put it: the
         # weight of the mark under the finger.
-        "stepper.main": {DEFAULT: "··", DISABLED: "╌╌"},
+        # THE DEAD END IS A SHADE, NOT A SEVERITY RUNG (inc51). This read
+        # `··`, and `·` is `LEVELS["info"]` -- so when inc51 dropped the
+        # stepper's by-name exclusion from the opener law, nord's clamped
+        # floor announced itself with the bottom of its own severity ladder,
+        # five seats' worth. `░` is the terminal's own inert ground and this
+        # kit already owns the whole shade ramp (`░` shaft, `▒` dead
+        # indicator, `▓` press, `█` view), so the lightest rung is what a
+        # terminal draws where there is nothing to act on.
+        "stepper.main": {DEFAULT: "░░", DISABLED: "╌╌"},
+        # INVALID IS THE ENVIRONMENT'S REFUSED-VALUE MARK, NOT THE
+        # DIRECTIONS TURNED ROUND (inc51). This entry read `][` -- two
+        # brackets the stepper never otherwise declares, set facing IN. The
+        # comment three lines up says what these two cells ARE: "the first
+        # half is the step BACK and the second half is the step FORWARD ...
+        # the cell's POSITION is what says which way it goes." Spelling
+        # REJECTED by exchanging them is inc39's textfield defect at the one
+        # seat inc39 declined to reach ("a stepper's halves are directions,
+        # not walls, so it needs its own law", spec §9.5) -- and it is worse
+        # here, because on a field the two marks sit 34 cells apart and here
+        # they sit adjacent, so the reader is asked to compare two arrows
+        # that touch.
+        #
+        # `▚` is this kit's own INVALID GRIP, the mark the knob wears when a
+        # value is refused, and it has no direction to read. The two halves
+        # are equal, so there is no handedness left to misread -- which is
+        # what the other five kits that got this right already do (`ØØ`,
+        # `‡‡`, `══`, `◑◑`).
         "stepper.step": {DEFAULT: "-+", FOCUSED: "◂▸", EDITED: "◄►",
-                         ACTIVE: "◀▶", INVALID: "][",
+                         ACTIVE: "◀▶", INVALID: "▚▚",
                          DISABLED: "╳╳"},
     }
 
@@ -5243,7 +5269,12 @@ class Instrument(Kit):
         # longer `⠁⠁` -- see the dead-rung note above: `⠁` is `REQUIRED`.
         "stepper.main": {DEFAULT: "⠒⠒", DISABLED: "⠈⠈"},
         "stepper.step": {DEFAULT: "⡄⢠", FOCUSED: "⡆⢰", EDITED: "⡇⢸",
-                         ACTIVE: "⣇⣸", INVALID: "⢠⡄",
+                         # inc51: this read `⢠⡄`, which is DEFAULT `⡄⢠`
+                         # with the halves exchanged -- two braille columns
+                         # facing in. `⠶` is this language's own refused
+                         # value: the knob wears it and it is the fill of
+                         # the invalid field.
+                         ACTIVE: "⣇⣸", INVALID: "⠶⠶",
                          DISABLED: "⠄⠄"},
     }
 
@@ -5734,9 +5765,20 @@ class Swiss(Kit):
         # doing the work space does everywhere in this language: the mark is
         # simply not set, and the word does not move because the field was
         # reserved for it.
-        "stepper.main": {DEFAULT: "··", DISABLED: "╎╎"},
+        # THE DEAD END TAKES THE LADDER'S LIGHTEST RUNG (inc51), and not
+        # `··`: `·` is `LEVELS["info"]`, so the clamped floor was announcing
+        # itself with a severity rung -- five seats on the opener roster the
+        # moment the stepper stopped being excluded from that law. inc46
+        # built this language a ladder that is ONE SHAPE AT THREE WEIGHTS
+        # (`▫ ▪ ■`) precisely so no rung of it is a declaration; `▫` is its
+        # lightest, and "present, not acted on" is what an end-stop says.
+        "stepper.main": {DEFAULT: "▫▫", DISABLED: "╎╎"},
         "stepper.step": {DEFAULT: "‹›", FOCUSED: "◃▹", EDITED: "◂▸",
-                         ACTIVE: "██", INVALID: "›‹",
+                         # inc51: this read `›‹`, DEFAULT `‹›` turned
+                         # round. `╲` is this kit's own INVALID mark at the
+                         # knob and at the field, which is inc39's ruling
+                         # (spec §9.2) and not a new claim.
+                         ACTIVE: "██", INVALID: "╲╲",
                          DISABLED: "┆┆"},
     }
 
@@ -6163,7 +6205,11 @@ class Industrial(Kit):
         # one, and this language distinguishes those.
         "stepper.main": {DEFAULT: "..", DISABLED: "--"},
         "stepper.step": {DEFAULT: "<>", FOCUSED: "{}", EDITED: "[]",
-                         ACTIVE: "##", INVALID: "><",
+                         # inc51: this read `><`, DEFAULT `<>` turned
+                         # round. `/` is the register's own refusal -- the
+                         # knob's mark, and the hatch that fills a rejected
+                         # field.
+                         ACTIVE: "##", INVALID: "//",
                          DISABLED: "()"},
     }
 
@@ -6914,7 +6960,12 @@ class Prism(Kit):
         # and a sixth would be an unaccounted one), and the step reads the same
         # at ⡆ because what it says is DIRECTION, not extent.
         "stepper.step": {DEFAULT: "⡀⢀", FOCUSED: "⡄⢠", EDITED: "⡆⢰",
-                         ACTIVE: "⣇⣸", INVALID: "⢀⡀",
+                         # inc51: this read `⢀⡀`, DEFAULT `⡀⢀` turned
+                         # round -- two frontier cells swapped, which is an
+                         # ORIENTATION and not a rung of the ember ramp.
+                         # `⣹` is this kit's own refused-value cell, at the
+                         # knob and opening the refused field.
+                         ACTIVE: "⣇⣸", INVALID: "⣹⣹",
                          DISABLED: "⠁⠈"},
     }
 
@@ -9282,7 +9333,13 @@ class Blueprint(Kit):
         # with.
         "stepper.main": {DEFAULT: LEAD + LEAD, DISABLED: BREAK + BREAK},
         "stepper.step": {DEFAULT: "┤├", FOCUSED: "╡╞", EDITED: "╪╪",
-                         ACTIVE: "┫┣", INVALID: "├┤",
+                         # inc51: this read `├┤`, DEFAULT `┤├` with the
+                         # terminators exchanged -- and `├` is also this
+                         # sheet's `REQUIRED`, so the rejected stepper
+                         # opened with the obligation mark. `━` is what this
+                         # sheet already draws around a refused value
+                         # (`━·━`, inc39 §9.2) and it is straight.
+                         ACTIVE: "┫┣", INVALID: "━━",
                          DISABLED: "╏╏"},
     }
 
