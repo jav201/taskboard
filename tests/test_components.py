@@ -27,6 +27,12 @@ LANGS = tuple(LG.KITS)
 #: the five the PROTOTYPE round rendered; the others inherit the seat, and the
 #: laws below are asked of ALL of them either way
 PROTOTYPED = ("corgi", "blueprint", "prism", "naught", "ledger")
+#: the six the PROTOTYPE round never rendered, which is why they inherited
+#: seat after seat from `Kit` -- inc32 gave them seven mechanisms, inc35 and
+#: inc36 the last two. Declared here beside `PROTOTYPED` because both halves
+#: of the eleven are read from the first law onward.
+INHERITORS = ("instrument", "swiss", "industrial", "nord", "darkside",
+              "solari")
 
 _ESC = "\x00"
 _TAG = re.compile(r"\[[^\]]*\]")
@@ -944,6 +950,69 @@ def test_the_required_mark_is_not_a_bare_star_in_any_prototyped_language():
     assert plain(LG.kit("nord").required()) == "*"
 
 
+# ---------------------------------------------------------------------------
+# inc35 (inheritors-2) — `required` for the six that inherited it
+# ---------------------------------------------------------------------------
+def test_eleven_languages_mark_an_obligation_eleven_ways():
+    """THE PROPERTY, and it is the one the five-language version could not
+    make: `required` is ONE CELL, so it is the narrowest seat in this file
+    and the easiest place in the repo for eleven languages to agree by
+    accident. Five did not agree; six inherited `*` and therefore did.
+
+    Eleven marks, no two the same cell — a graticule's floor dot
+    (instrument), the weight ladder's own mark set solid (swiss), the plate
+    opened (industrial), one achromatic solid cell (darkside), a seam with
+    nothing flipped onto it (solari), and the five the PROTOTYPE round
+    already had."""
+    marks = {n: plain(LG.kit(n).required()) for n in LANGS}
+    assert len(set(marks.values())) == len(LANGS), marks
+
+
+def test_only_the_language_that_declares_the_environment_marks_with_a_star():
+    """`*` IS AN ANSWER EXACTLY ONCE, and the test says whose.
+
+    The base comment's claim is "`*` is the terminal's own convention and the
+    base kit is the terminal; every language with an alphabet of its own
+    answers below". So the bare star may survive in exactly one language, and
+    it is the one whose whole commitment is to inherit the environment
+    (LANGUAGES.md §6: "the only language here that INHERITS THE USER'S
+    ENVIRONMENT instead of overriding it"). Any OTHER language reaching `*`
+    is the palette-swap failure at one glyph, which is what this asserts —
+    not "no star anywhere", which would make nord's declaration illegal."""
+    starred = [n for n in LANGS if plain(LG.kit(n).required()) == "*"]
+    assert starred == ["nord"], starred
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_required_mark_survives_greyscale(lang):
+    """Ruling 8's law asked of the narrowest mark there is.
+
+    The cell must carry the claim with every hue removed, so: it is a SHAPE
+    (non-blank in `plain`, which is the row with colour stripped at the
+    source), it is one cell, and it is still distinct from every other
+    language's once the colour is gone. The last clause is the one that
+    matters — two languages whose marks differ only in a hue token are two
+    recolours of one mark, which is the defect this seat exists against."""
+    k = LG.kit(lang)
+    cell = plain(k.required())
+    assert len(cell) == 1 and cell.strip(), (lang, repr(cell))
+    others = {plain(LG.kit(n).required()) for n in LANGS if n != lang}
+    assert cell not in others, (lang, cell)
+
+
+@pytest.mark.parametrize("lang", INHERITORS)
+def test_an_inheritors_required_mark_costs_no_rationed_hue(lang):
+    """The six held to the base's stated tier rather than trusted: the ink
+    tier, one weight step above the `mut` caption it stands beside, and NOT
+    the alert hue — a required field is a PROPERTY of the field and not an
+    alarm about it. Industrial is the row that matters, because its own entry
+    in LANGUAGES.md says it "FAILS when colour must carry severity"."""
+    k = LG.kit(lang)
+    got = k.required()
+    assert k.c["alert"] not in got, (lang, got)
+    assert k.c["ink"] in got, (lang, got)
+
+
 def test_no_language_numbers_a_required_field():
     """L-33, applied to the mark most likely to reach for a digit: corgi's
     numbers ARE its keymap, and an obligation is not a key."""
@@ -1142,8 +1211,6 @@ def test_a_readouts_word_is_the_callers(lang):
 # ===========================================================================
 #: the six that had `Kit`'s answer to the seven mechanisms below and had never
 #: been asked for one of their own
-INHERITORS = ("instrument", "swiss", "industrial", "nord", "darkside",
-              "solari")
 #: the mechanisms where a PLAIN difference is lawful. `MATCH_STYLE` is absent
 #: on purpose and the reason is a ruling: operator ruling 9 requires a result
 #: row to come back byte for byte, so two languages MUST render `match`
@@ -1215,7 +1282,7 @@ def test_prisms_overlay_differs_from_nords_in_the_svg_and_not_the_txt():
 
 @pytest.mark.parametrize("attr", ["field_row", "DISCLOSE", "DANGER_FORM",
                                   "LEVELS", "MATCH_STYLE", "keyhint",
-                                  "overlay"])
+                                  "overlay", "REQUIRED"])
 def test_nord_declares_the_environment_and_the_declaration_is_checked(attr):
     """NORD'S ANSWER IS THE BASE, AND FOR THIS ONE LANGUAGE THAT IS A
     COMMITMENT RATHER THAN A GAP.

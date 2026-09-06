@@ -4665,6 +4665,14 @@ class Instrument(Kit):
     # half-cell fill this repo hunted once. A sixth live one goes red,
     # which is the census doing exactly what it was written for.
     DISCLOSE = "⠿"                        # saturated: there is more beyond
+    # THE REQUIRED MARK — ONE DOT, the least this matrix can light. LANGUAGES
+    # .md §1: "numerals and icons DRAWN ON A COARSE DOT GRID ... borders
+    # almost absent". Severity in this language is dot COUNT (`⠂⠂ / ⠆⠆ /
+    # ⠇⠇`), so an obligation — which is a property and not a severity — is
+    # the count's floor: one dot, at the top of the cell, where a trace
+    # enters. Not `⡀`: that is prism's dot and it sits at the BOTTOM, on a
+    # different reading of the same grid.
+    REQUIRED = "⠁"
     DANGER_FORM = ("⠛", "⠛")               # the top row raised, both sides
     # SEVERITY BY DOT COUNT, which is the only ladder a dot-matrix owns:
     # one lit dot, two, three. It must not reach `⠿` (this language's
@@ -5145,6 +5153,15 @@ class Swiss(Kit):
     # DIVIDING."
     # ======================================================================
     DISCLOSE = "─"                        # the hairline, at one cell
+    # THE REQUIRED MARK — THE LADDER'S OWN MARK AT FULL WEIGHT. §2: "near-
+    # mono + one accent (classically red) ... no boxes — ALIGNMENT DOES THE
+    # DIVIDING", and this language's severity ladder is a WEIGHT ladder
+    # (`· / ─ / ━`). It has no glyph alphabet to reach into — it is the
+    # cheapest language here precisely because it draws none — so the mark
+    # it can honestly spend is the one shape it already uses, set solid:
+    # `•` against the ladder's `·`. Weight, which is the whole method, and
+    # not a hue: the accent is rationed and an obligation is not an alarm.
+    REQUIRED = "•"
     # THE DIAGONALS THIS LANGUAGE ALREADY REJECTS WITH. `field_form(INVALID)`
     # is `╲ ╱` here, so a destructive control is bracketed by the same pair
     # — one rejection notation, not two. And it is a FORM: this language's
@@ -5514,6 +5531,14 @@ class Industrial(Kit):
     # STAMPED PLATE — the `▐ nn ▌` it already stamps on every card.
     # ======================================================================
     DISCLOSE = "▼"                        # solid, flat, stamped
+    # THE REQUIRED MARK — THE PLATE, OPENED. §3: "boxed groups ... EVERYTHING
+    # IS NUMBERED AND LABELLED", and the plate (`DISPLAY_BOX`'s `▐`/`▌`) is
+    # this language's whole notation: it plates its keys, plates its figures,
+    # plates its display. A field that may not be left empty is a plate that
+    # has been OPENED and is not closed until it is filled — the leading half
+    # cell, alone. It cannot be a number: L-33 rules the digits are the MODES,
+    # and an obligation is not a mode.
+    REQUIRED = "▐"
     DANGER_FORM = ("╱╱", "╱╱")           # hazard striping, and not a hue
     LEVELS = {"info": "▫▫", "warn": "▪▪", "error": "■■"}
     MATCH_STYLE = "reverse {accent}"       # a plate struck over the run
@@ -6033,6 +6058,15 @@ class Darkside(Kit):
     # between the two languages' lids and is why `MODAL_BOX` is a seat.
     # ======================================================================
     DISCLOSE = "▿"                        # hollow: airy, and not the solid ▾
+    # THE REQUIRED MARK — ONE SOLID CELL, ACHROMATIC. §8: "achromatic + ONE
+    # RESERVED ACCENT ... hierarchy by WEIGHT AND DIMMING, not size", and the
+    # accent "marks interactivity, NOTHING ELSE". A required field is neither
+    # interactive nor an alarm, so the accent is unavailable by commitment and
+    # the ladder (`· / o / O`) is spoken for by severity. What is left is the
+    # channel this language actually names: weight. `▪` is the heaviest a
+    # single achromatic cell gets without becoming a border, and a border is
+    # the one thing this language has forbidden itself.
+    REQUIRED = "▪"
     DANGER_FORM = ("Ø", "Ø")               # its own INVALID wall, the struck mark
     # A DIMMING LADDER MADE OF ITS OWN CURSOR. `CUR` is `O`; the ladder is
     # that mark losing and gaining weight, which is this language's stated
@@ -7265,6 +7299,15 @@ class Solari(Kit):
     # tabular fields PADDED TO THEIR WIDEST CONTENT."
     # ======================================================================
     DISCLOSE = "═"                        # the seam doubled: a flap mid-turn
+    # THE REQUIRED MARK — A SEAM WITH NOTHING FLIPPED ONTO IT. §10: "THE SEAM
+    # IS THE WHOLE DIVIDER VOCABULARY ... the structure device is the cell
+    # FACE a character is flipped onto". On a departure board a field that
+    # must be filled is a face that has not turned yet, and what shows is the
+    # seam under it. The same mark `field_row` closes its gap with, which is
+    # the commitment rather than a collision: this language HAS one divider
+    # and spends it everywhere. Not a digit — the digits are the quantity
+    # (DATAVIZ law 1) and an obligation states no quantity.
+    REQUIRED = "▁"
     DANGER_FORM = ("▀", "▄")               # the two halves of a turning cell
     # THE ONE LADDER IN THE ELEVEN THAT IS NOT A GLYPH, AND IT IS THIS
     # LANGUAGE'S HEADLINE COMMITMENT: "a state is a WORD in a status column".
