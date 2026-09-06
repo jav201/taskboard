@@ -262,6 +262,12 @@
       "date": "2026-09-05",
       "decision": "Post-close hotfix: people nav model crashed when team mode is off.",
       "notes": "Key 9 is ungated so people-without-a-team is reachable; render_people, render_standup, legend_entries and probe_setup_health all handled team_state=None but nav_model did not, so the first cursor key raised AttributeError: 'NoneType' object has no attribute 'roster' (app.py:582 action_cursor -> app.py:531 _nav_columns -> views.py:4668). Root cause is a missing REGIME, not a missing wire: the operator's board has no team_shared_dir, and view_mode is not persisted (app.py:185 boots swimlanes). Fixed at the seam the renderer already uses: nav_model returns [] with no team, matching flow/standup/setup. All other team_state consumers audited and already guarded. 2 new tests in tests/test_team_views.py; full suite 1306 passed (baseline 1303 + 1 environmental clipboard flake); ruff unchanged; 202x39 headless smoke on a read-only COPY of the live board survives four cursor moves. Commit f0b64d5 on branch fix-people-nav-none; not pushed (operator integrates). Packet in .dev-flow/2026-09-01-batch-11/PLAN.md."
+    },
+    {
+      "phase": 6,
+      "date": "2026-09-05",
+      "decision": "Post-close hardening: view-survival law, the parametrized regression test the people-nav hotfix named but did not build.",
+      "notes": "New tests/test_view_survival.py: for every view in VIEW_ORDER (9) x three degraded regimes (no_team_small_board / empty_board / archived_only) = 27 cells, boot TaskboardApp, enter the view by its key, drive down/up/right/left/enter, assert no exception and the board still renders (width-exact for the 8 views with that established contract per test_prism_laws.py's MANIFEST, overflow-only for setup, whose render_setup is a documented free-form editor layout with no such contract anywhere in the repo). All 27 cells green on the first structurally-correct run; no product code changed (git diff --stat taskboard/views.py empty). Non-vacuousness proven by a RED arm: temporarily deleting nav_model's 'people' team_state-None guard reproduced the operator's exact original AttributeError on all 3 people cells, then the guard was restored byte-identical. Full suite 1333 passed (1306 baseline + 27 new), 0 failed. ruff: 0 findings in the new file; 3 pre-existing findings in views.py untouched. Branch view-survival-law from main (068ff59); not pushed (operator integrates). Packet appended to .dev-flow/2026-09-01-batch-11/PLAN.md."
     }
   ],
   "obsidian_synced": false,
