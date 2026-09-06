@@ -136,9 +136,73 @@ skill directory the exporter already writes and which the operator named.
 | | |
 | --- | --- |
 | Phase A (spec) | **done** — this file; predecessor archived verbatim |
-| Phase B (implement) | inc27 · inc28 · inc29 · inc30 · inc31 · inc32 |
-| Phase C (close) | §8 |
+| Phase B (implement) | **done** — inc27 · inc28 · inc29 · inc30 · inc31 · inc32 |
+| Phase C (close) | §8 — **done** |
+| Notes | **4 source files, one agent.** `taskboard/language.py` (inc28–inc32), `tests/test_components.py` (inc28–inc32), `prototypes/components/screens.py` (inc28–inc31), `RUN.md` + `prototypes/export_to_skill.py` (inc27); plus this spec, the archived predecessor, six packets and 90 re-rendered frame artefacts. |
 
 ---
 
 ## 8. Close (filled in phase C)
+
+### What changed
+
+**Five primitives got a seat and every one of the thirty cells reached `implementa`.**
+
+| inc | seat | the defect it removed from `screens.py` |
+| --- | --- | --- |
+| 27 | — | three lines describing a closed finding in the present tense |
+| 28 | `Kit.pane_split` | `[dim]│[/]` in five languages, and a per-language builder that put it back to a space |
+| 29 | `Kit.error` · `Kit.required` | a bare `*` and a message, both in the alert hue, in five languages |
+| 30 | `Kit.textarea` | the frame reaching into `field_form` and assembling a component |
+| 31 | `Kit.readout_label` | an `if k.numbered` whose two branches drew the same row |
+| 32 | the six inheritors | six languages with `Kit`'s answer to seven mechanisms |
+
+### The matrix, before and after
+
+```
+BEFORE (kits-learn-3 close, 14 of 30)          AFTER (30 of 30)
+              S1    S2    S3    S4    S5    S6            S1  S2  S3  S4  S5  S6
+corgi         1E    3E    ok    ok    1R    ok    corgi   ok  ok  ok  ok  ok  ok
+blueprint     1R    3E    ok    1R    ok    ok    bluepr  ok  ok  ok  ok  ok  ok
+prism         1E    3E    ok    1E    ok    ok    prism   ok  ok  ok  ok  ok  ok
+naught        1E    3E    ok    1E    ok    ok    naught  ok  ok  ok  ok  ok  ok
+ledger        1E    3E    ok    1E    1R    ok    ledger  ok  ok  ok  ok  ok  ok
+
+30 hand-drawn elements declared (4R / 26E)     0 hand-drawn elements declared
+```
+
+Every refusal that was a sidecar note is an entry in a table the mechanism **reads**:
+`MODAL_BORDER_REFUSED` (4 → **7**), `PANE_SPLIT_REFUSED` (**2**, new), `READOUT_NUMBER_REFUSED`
+(**3**, new, and its keys are derivable from the `numbered` token).
+
+### The gates, at the close
+
+```
+python -X utf8 -m pytest -q                     878 passed, 2 skipped   (from 692+1)
+python -X utf8 prototypes/verify_language.py    10857 PASS · ALL PASSED (baseline 10857)
+python -X utf8 prototypes/components/render.py  0 hand-drawn · 60 pairs, none identical
+python -X utf8 prototypes/components/matrix.py  30 of 30 implementa
+python prototypes/capture_languages.py --surface   11 surfaces · 55 pairs · gallery CLEAN
+python prototypes/export_to_skill.py <skill>    languages.py 22 KB · 66 captures identical
+```
+
+### What was NOT done, and why
+
+- **`required` and `pane_split` for the six inheriting languages.** §5, declared out of scope by the
+  operator's own enumeration of seven mechanisms. Two of the six (swiss: *"no boxes — alignment does the
+  dividing"*; darkside: *"never borders"*) carry the commitment that puts them in `PANE_SPLIT_REFUSED`,
+  and the registry's comment names them so the next batch does not have to rediscover it.
+- **The six inheritors render in no frame.** The PROTOTYPE round chose five languages; a sweep of all
+  eleven through the six screens is 180 frames and was not asked for. Their thirty new mechanisms are
+  held by 40 property tests and by nothing anyone can look at.
+- **No frame photographs `textarea`'s caret row.** S2's caret is in `title`, and a form with two
+  insertion points is a state the model cannot be in.
+- **The skill was not hand-edited.** `export_to_skill.py` ran; the gallery candidates below are
+  *proposed*, with draft Limit lines, and installing them is a separate act.
+- **A `TAIL` mark of its own** (`inc19.md` §8) — still nobody's ruling.
+
+### One frame text moved, and it is named
+
+The S5 readout legend reads `EVENTS/S` in all five where it read `events/s` (inc31): `readout_label` is
+`display_label`'s twin and takes its register. Nothing else in any frame changed except through a
+mechanism this batch seated.

@@ -1,0 +1,21 @@
+                        S1              S2              S3              S4              S5              S6
+corgi         implementa -    implementa -    implementa -    implementa -    implementa -    implementa -
+blueprint     implementa -    implementa -    implementa -    implementa -    implementa -    implementa -
+prism         implementa -    implementa -    implementa -    implementa -    implementa -    implementa -
+naught        implementa -    implementa -    implementa -    implementa -    implementa -    implementa -
+ledger        implementa -    implementa -    implementa -    implementa -    implementa -    implementa -
+
+--- per screen: which primitive is missing in how many languages ---
+S1: 
+S2: 
+S3: 
+S4: 
+S5: 
+S6: 
+
+--- refusals, by language ---
+corgi      []
+blueprint  []
+prism      []
+naught     []
+ledger     []
