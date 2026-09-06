@@ -622,3 +622,157 @@ tested it.
 **Candidate control for `dev-flow-lessons`:** *when a view's data source is
 optional, the parity checklist is (seats × regimes), not seats. A guard in the
 renderer is not evidence the navigator has one.*
+
+---
+
+# Post-close hardening — 2026-09-05 — the view-survival law
+
+**Branch:** `view-survival-law` (from `main`, HEAD `068ff59`) · **Files:** 1
+· **Status:** law added, all cells green, no new defects.
+
+## What this is
+
+The people/team-mode-off hotfix above fixed one cell of a table it named but
+did not build: "the repo has no test asserting that every view survives a
+cursor key in its degraded regime." This closes that gap as a standing,
+parametrized regression law rather than a one-off pilot test, so the next
+defect of this class is caught by CI instead of by the operator's keyboard.
+
+## The law (`tests/test_view_survival.py`)
+
+For every view in `VIEW_ORDER` (9), under three degraded regimes (3) = 27
+cells: boot the real `TaskboardApp` on a board file, press the view's own key,
+then drive `down`, `up`, `right`, `left`, `enter` (dismissing any modal `enter`
+opens, via `escape`, so the next key still reaches the board) — assert no
+exception, no modal left stranded open, and the board still renders.
+
+Regimes, each built the same way `Board.load` already builds boards (no
+custom board-file writer invented):
+- **no_team_small_board** — the hotfix's own fixture shape: a fresh path loads
+  `seed_data()`, a real multi-project, multi-phase, multi-priority board, with
+  no `team_shared_dir` configured.
+- **empty_board** — zero projects, zero tasks.
+- **archived_only** — one project, two tasks, both `archived=True`,
+  `show_archived` left at the app's own default (`False`), so every view's
+  visible-task set is empty even though the board is not literally empty.
+
+**Width check, calibrated per view, not invented as a new universal law:**
+`test_prism_laws.py`'s MANIFEST homes the "rectangle law" (every line exactly
+the requested width) in `test_swimlanes.py`, and the same exact-width
+convention is reused by the existing width-sweep tests for `flow`, `standup`,
+and `people`. `setup` carries no such test anywhere in the repo, and reading
+`render_setup` shows why: it is a free-form editor screen — a header line, a
+blank separator, `fit()`-padded columns narrower than the frame, a footer key
+hint — never a filled rectangle. The law therefore asserts exact width for the
+other 8 views and only "no overflow" (`cell_len(line) <= width`) for `setup`,
+rather than forcing a contract the codebase never asked `setup` to keep.
+
+## Run 1 — 3 cells failed, and why they were not defects
+
+First run: `setup` failed all 3 regimes on the width assertion —
+`cell_len('SETUP · equipo · proyectos · roster') == 35`, not the frame width.
+This is `render_setup`'s documented ragged-right layout (see above), not a
+crash and not regime-specific (same failure shape in all three regimes,
+confirming it was the assertion, not the product). Fixed by narrowing the
+width check for `setup` to "no overflow" as described above — one line in the
+test file, no product code touched.
+
+## Run 2 — all 27 cells green
+
+```
+tests/test_view_survival.py .......................... [100%]
+27 passed in 16.03s
+```
+
+No `(view, regime)` cell required a product fix. The 2026-09-05 hotfix's
+`nav_model` guard, plus the pre-existing guards audited in that hotfix
+(`render_standup`, `render_people`, `legend_entries`, `probe_setup_health`),
+already cover the full 9-view × 3-regime table — at least for the cursor keys
+this law drives. No cell was marked `xfail`.
+
+## Cell table
+
+| view | no_team_small_board | empty_board | archived_only |
+|---|---|---|---|
+| swimlanes | pass | pass | pass |
+| agenda | pass | pass | pass |
+| gantt | pass | pass | pass |
+| kanban | pass | pass | pass |
+| focus | pass | pass | pass |
+| flow | pass | pass | pass |
+| standup | pass | pass | pass |
+| people | pass | pass | pass |
+| setup | pass (overflow-only check) | pass (overflow-only check) | pass (overflow-only check) |
+
+## Non-vacuousness: RED arm against the hotfix's own guard
+
+A test suite that never fails proves nothing by itself. To show this law
+actually detects the defect class it claims to (not just the specific
+`people`/`nav_model` line, but that a missing guard on that exact line
+reproduces on this law), the `nav_model` "people" branch's `if team_state is
+None: return []` guard was temporarily deleted and the three `people` cells
+re-run:
+
+```
+FAILED tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[people-no_team_small_board]
+FAILED tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[people-empty_board]
+FAILED tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[people-archived_only]
+AttributeError: 'NoneType' object has no attribute 'roster'
+  views.py:4674 in nav_model
+```
+
+Same exception, same site, same message as the operator's original 2026-09-05
+crash. The guard was restored immediately after
+(`git diff --stat taskboard/views.py` confirmed byte-identical to `main`
+afterward — no product line was left changed by this increment).
+
+## Suite status
+
+```
+python -X utf8 -m pytest -q
+1333 passed in 93.41s
+```
+1306 baseline (post-hotfix, per this file's prior entry) + 27 new. No
+failures, including `test_win_clipboard_roundtrip` (environmental flake;
+passed clean this run).
+
+## ruff
+
+```
+python -m ruff check tests/test_view_survival.py taskboard/views.py
+```
+0 findings in `tests/test_view_survival.py` (new file). 3 pre-existing
+findings in `taskboard/views.py` (`os` unused import, `Table` unused import,
+unused local `h` in `grid_nav`'s sibling `_grid_list_order` caller path) —
+byte-identical before and after this increment (`git diff --stat` shows no
+change to `views.py`); none introduced by this law.
+
+## Risks / limits
+
+- The law drives 5 keys (`down/up/right/left/enter`) at one fixed terminal
+  size (120×40). It does not sweep width like the per-view width-sweep tests,
+  and does not drive every key on the bar (e.g. `tab`, `s`/`g`/`z` in kanban,
+  `space`/`ctrl+s` in setup) — those remain the per-view tests' job. This law
+  is a floor (nothing in VIEW_ORDER crashes on the universal cursor keys under
+  these three regimes), not a ceiling.
+- Only three regimes are covered. A fourth regime this law does not reach:
+  malformed/partial team.json while `team_state` is NOT `None` (a team is
+  configured but its config is degenerate) — `team_sync.py`'s own
+  never-raises tests cover that at the data layer, but no view-survival cell
+  exercises it end-to-end through the app.
+
+## Pending items
+
+- None for this increment. The law is standing infrastructure; future views
+  are covered automatically by extending `VIEW_ORDER` (the parametrize reads
+  it directly, so no per-view line needs to be added here).
+
+## Suggested next task
+
+- Extend `REGIMES` with the "team configured but malformed" case named above,
+  if the operator wants the fourth regime closed too.
+- Consider whether the per-view width-sweep tests (currently only
+  flow/standup/people/swimlanes) should exist for agenda/gantt/kanban/focus
+  as well — this increment found them absent but did not add them (out of
+  scope: no defect motivated it, and adding 4 new width-sweep test files was
+  not part of the approved task).
