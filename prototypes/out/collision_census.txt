@@ -74,12 +74,11 @@ NORD   4 colliding cells   (LEVELS · /! /!!  DANGER ##  REQUIRED *  CUR ▸)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-DARKSIDE   3 colliding cells   (LEVELS · /o /O   DANGER ØØ  REQUIRED ▪  CUR ▊)
+DARKSIDE   2 colliding cells   (LEVELS · /o /O   DANGER ØØ  REQUIRED ▪  CUR ▊)
 ------------------------------------------------------------------------------
-  O   [3 families]  LEVELS[error]  ·  checkbox.knob mid (checked,default)  ·  switch.knob mark (checked,default)
   ·   [2 families]  LEVELS[info]  ·  textfield.main mid (edited)
   Ø   [2 families]  DANGER_FORM close + DANGER_FORM open  ·  INVALID stepper.step close + INVALID stepper.step open + INVALID textfield.main close + INVALID textfield.main open
-  ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
@@ -131,13 +130,13 @@ instrument                   7
 swiss                        5
 industrial                   4
 nord                         4
-darkside                     3
+darkside                     2
 prism                        5
 ledger                       2
 solari                       3
 blueprint                    5
 ------------------------------
-TOTAL                       48
+TOTAL                       47
 
 zero collisions: NONE -- all eleven overload at least one cell
 

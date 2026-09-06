@@ -5,8 +5,8 @@
                               │  ( ) gal                                               │                              
                               │  Darkside                                              │                              
                               │  checkable  switch    checkbox  off·on                 │                              
-                              │             O──  ▬▬O  ( )  (O)   default               │                              
-                              │             ◎──  ▬▬◎  [ ]  [◎]   focused               │                              
+                              │             ◎──  ▬▬◎  ( )  (◎)   default               │                              
+                              │             ◉──  ▬▬◉  [ ]  [◉]   focused               │                              
                               │             ●──  ▬▬●  { }  {●}   active                │                              
                               │             x╌╌  ▁▁x  ╌ ╌  ╌x╌   disabled              │                              
                               │  radio      lo·mid·hi  set=mid cursor=hi               │                              
