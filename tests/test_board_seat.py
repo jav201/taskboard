@@ -140,6 +140,82 @@ def heads(board) -> list[str]:
     return [str(w.content) for w in board.query(".col-head")]
 
 
+#: the board mounts exactly ONE `.col-head` per phase, in both branches this
+#: file drives (columns puts each in its own column, sections puts all three in
+#: one flat list). The number the tree must come back to once a build has
+#: settled -- and the number `settled_heads` waits for.
+NHEADS = len(StubBoard.phases)
+
+#: the bound on a settle. Measured rather than guessed: `_f18_lifetime.py` read
+#: every run's second pause at one generation, in 30 of 30. Sixty is two orders
+#: of margin over the only number anyone measured, and it is a BOUND and not a
+#: budget -- reaching it raises.
+SETTLE_FRAMES = 60
+
+
+def drawn_heads(app, board) -> int:
+    """How many `.col-head` the COMPOSITOR says it is drawing, with a clip that
+    has area. Asked of `visible_widgets` and not of the widget's own region,
+    for the reason `capture_languages._not_at_rest` gives at length: a region
+    is in SCREEN space and keeps growing past the fold, so a raw slice reads
+    whatever is at those coordinates. The compositor's map holds only what it
+    actually draws."""
+    vis = app.screen._compositor.visible_widgets
+    n = 0
+    for w in board.query(".col-head"):
+        box = vis.get(w)
+        if box is None:
+            continue
+        area = box[0].intersection(box[1])
+        if area.width and area.height:
+            n += 1
+    return n
+
+
+async def settled_heads(app, pilot, board, what, also=None) -> list[str]:
+    """The tree's `.col-head` row, sampled ONLY once the build has settled.
+
+    F-18. This is the seat the finding lives at. What stood here was one
+    `await pilot.pause()` and an immediate read, and one pause after a resize
+    is not a settled frame -- measured over 30 runs of both branches
+    (`prototypes/out/_f18_lifetime.py`, tree/drawn counts per pause):
+
+        pause 1: the tree held BOTH generations -- six heads where the board
+                 has three --  in 2 of 30 runs
+        pause 1: the compositor was drawing NO column head at all in 8 of 30
+        pause 2: three heads, three drawn, in 30 of 30
+
+    The cause is in `KanbanBoard.build()` and it is not a defect: it calls
+    `remove_children()`, which is ASYNCHRONOUS (its own `__init__` comment says
+    so and paid for the knowledge), then mounts the new generation -- and
+    `build()` cannot await the removal, because its other caller is `render()`.
+    So for one beat the DOM holds two generations. **The SCREEN never does**:
+    0 of 30 runs ever had the compositor drawing more than three, which is why
+    the repair is here and not in `build()`, and
+    `test_the_screen_never_shows_two_generations_of_heads` is that fact
+    asserted rather than trusted.
+
+    So the wait is for the CONDITION the assertion is about instead of for a
+    number of pauses: one generation in the tree, the same one on two
+    consecutive reads (which is what rules out sampling the OLD three before
+    the new three have landed), and any extra predicate the caller needs.
+    Failing the bound raises and names what it was waiting for -- a settle that
+    gives up silently would hand back the bad sample this exists to prevent.
+    """
+    prev: list[str] | None = None
+    for _ in range(SETTLE_FRAMES):
+        got = heads(board)
+        if (len(got) == NHEADS and got == prev
+                and (also is None or also())):
+            return got
+        prev = got
+        await pilot.pause()
+    raise AssertionError(
+        f"the board never settled in {SETTLE_FRAMES} frames: {what}; last "
+        f"read {len(prev or [])} heads where the board mounts {NHEADS}: "
+        f"{prev!r}")
+
+
 async def start(app, pilot):
     """Mount, then build once explicitly -- which is what the real app does
     (`app.py:start_widget` calls `kb.build()`); the pre-fix board with a
@@ -148,12 +224,13 @@ async def start(app, pilot):
     await pilot.pause()
     board = app.query_one(KanbanBoard)
     board.build()
-    await pilot.pause()
+    await settled_heads(app, pilot, board, "the first explicit build")
     return board
 
 
 async def narrow(app, pilot) -> None:
-    """The layout takes 40 cells off the board."""
+    """The layout takes 40 cells off the board. Delivering the resize is all
+    this does; WAITING for what the resize causes is `settled_heads`."""
     app.query_one("#wrap").styles.width = NARROW
     await pilot.pause()
 
@@ -176,8 +253,8 @@ async def _stale_when_deaf(monkeypatch, kit) -> None:
             "this file reproduces")
         # ... and it SHOULD have moved: the rebuild is the oracle.
         board.build()
-        await pilot.pause()
-        assert heads(board) != wide, (
+        after = await settled_heads(app, pilot, board, "the oracle rebuild")
+        assert after != wide, (
             f"the head does not depend on the board's seat under {kit.name!r}, "
             f"so this fixture proves nothing: {wide!r}")
 
@@ -191,7 +268,14 @@ async def _repaired_at_next_paint(monkeypatch, kit) -> None:
         wide = heads(board)
 
         await narrow(app, pilot)
-        got = heads(board)
+        # F-18: the board's rebuild is what this assertion is ABOUT, so the
+        # sample waits for it -- built at the new seat, and one generation of
+        # heads in the tree. The predicate is passed rather than asserted
+        # after, so a board that rebuilds at the WRONG seat times out here
+        # naming the seat instead of failing three lines down on a head row.
+        got = await settled_heads(
+            app, pilot, board, f"a rebuild at the new seat ({NARROW})",
+            also=lambda: board._built_w == NARROW)
 
         assert seen, "the fixture never delivered the resize it ignores"
         assert board._built_w == NARROW, (
@@ -201,9 +285,10 @@ async def _repaired_at_next_paint(monkeypatch, kit) -> None:
             f"{got!r}")
         # and what it shows IS what the present seat composes
         board.build()
-        await pilot.pause()
-        assert heads(board) == got, (
-            f"a rebuild at the same seat composes something else: {got!r}")
+        again = await settled_heads(app, pilot, board, "the oracle rebuild")
+        assert again == got, (
+            f"a rebuild at the same seat composes something else: {got!r} "
+            f"vs {again!r}")
 
 
 async def test_a_board_rebuilt_only_from_events_keeps_the_wide_build_columns(
@@ -222,3 +307,52 @@ async def test_the_next_paint_builds_at_the_new_seat_columns(monkeypatch):
 
 async def test_the_next_paint_builds_at_the_new_seat_sections(monkeypatch):
     await _repaired_at_next_paint(monkeypatch, SECTIONS)
+
+
+# ===========================================================================
+# F-18 — the DOM's double-generation window, and the screen's absence of one
+# ===========================================================================
+async def _no_two_generations_on_screen(kit) -> None:
+    """The finding asserted rather than trusted: across every frame of a
+    resize, the COMPOSITOR never draws more than one generation of heads.
+
+    This is the claim that decides where F-18 gets repaired. `build()` removes
+    the old heads asynchronously and mounts the new ones without awaiting the
+    removal -- it cannot await it, `render()` is one of its two callers -- so
+    the TREE holds six heads for a beat where the board has three. Measured:
+    2 of 30 runs at the first pause. If the SCREEN held six too, a user could
+    read a duplicated board for a frame and the repair would belong in
+    `build()`. It does not: 0 of 30, and this walks every frame of the resize
+    rather than the one the probe sampled.
+
+    The tree count is recorded beside it and deliberately NOT asserted -- an
+    assertion that the DOM never doubles would be a claim about Textual's
+    removal scheduling, which this repo does not own and which the working
+    fixture would have to fight.
+    """
+    app = OneBoardApp(kit, KanbanBoard)
+    async with app.run_test(size=(120, 30)) as pilot:
+        board = await start(app, pilot)
+        app.query_one("#wrap").styles.width = NARROW
+        drawn: list[int] = []
+        tree: list[int] = []
+        for _ in range(SETTLE_FRAMES):
+            await pilot.pause()
+            drawn.append(drawn_heads(app, board))
+            tree.append(len(board.query(".col-head")))
+            if len(tree) >= 3 and tree[-3:] == [NHEADS] * 3:
+                break
+        assert max(drawn) <= NHEADS, (
+            f"the compositor drew {max(drawn)} column heads where the board "
+            f"has {NHEADS} -- a user could see two generations at once; "
+            f"drawn per frame {drawn}, tree per frame {tree}")
+        assert board._built_w == NARROW, board._built_w
+        assert tree[-1] == NHEADS and drawn[-1] == NHEADS, (drawn, tree)
+
+
+async def test_the_screen_never_shows_two_generations_of_heads_columns():
+    await _no_two_generations_on_screen(COLUMNS)
+
+
+async def test_the_screen_never_shows_two_generations_of_heads_sections():
+    await _no_two_generations_on_screen(SECTIONS)
