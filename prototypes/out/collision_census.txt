@@ -102,12 +102,12 @@ LEDGER   2 colliding cells   (LEVELS   /* /**  DANGER ()  REQUIRED †  CUR ▶)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-SOLARI   3 colliding cells   (LEVELS OK /DLY/CNX  DANGER ▀▄  REQUIRED ▁  CUR ▼)
+SOLARI   3 colliding cells   (LEVELS OK /DLY/CNX  DANGER ▀▄  REQUIRED ▮  CUR ▼)
 ------------------------------------------------------------------------------
-  ▁   [7 families]  REQUIRED  ·  button.main close (default)  ·  button.main open (default)  ·  checkbox.knob close (active,checked,checked+active,default)  ·  checkbox.knob open (active,checked,checked+active,default)  ·  checkbox.main close (active,checked,checked+active,default)  ·  checkbox.main open (active,checked,checked+active,default)  ·  radio.knob close (checked,default)  ·  radio.knob open (checked,default)  ·  radio.main close (checked,default)  ·  radio.main mid (checked,default)  ·  radio.main open (checked,default)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (default)  ·  textfield.main mid (edited)  ·  textfield.main open (default)
   ·   [4 families]  INVALID textfield.main mid  ·  checkbox.main mid (active,checked+active)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
   ▼   [4 families]  CUR  ·  checkbox.knob mid (checked,default)  ·  stepper.step close (default)  ·  switch.knob mark (checked,default)
-  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ▮   [2 families]  REQUIRED  ·  textfield.caret mark (active,default,disabled,edited,focused)
+  ... 8 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 1 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------

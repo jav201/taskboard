@@ -52,8 +52,8 @@
 <text x="43.6" y="227.3" fill="#eceff4">Fix login redirect</text>
 <text x="488.8" y="227.3" fill="#ebcb8b">3d</text>
 <text x="522.4" y="227.3" fill="#4c566a">│</text>
-<text x="539.2" y="227.3" fill="#88c0d0">▇▇▇▇▇▇▇▇▇▇▇▇░░░░░░░░░░░░░░░</text>
-<text x="774.4" y="227.3" fill="#7b88a1"> 44%</text>
+<text x="539.2" y="227.3" fill="#7b88a1"> 44%</text>
+<text x="581.2" y="227.3" fill="#88c0d0">━━━━━━━━━━━━───────────────</text>
 <text x="43.6" y="244.3" fill="#4c566a">  Web · doing</text>
 <text x="522.4" y="244.3" fill="#4c566a">│</text>
 <text x="43.6" y="261.3" fill="#eceff4">Rate-limit the API</text>

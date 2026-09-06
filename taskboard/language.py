@@ -6322,9 +6322,19 @@ class Nord(Kit):
             if line:
                 rows.append(line)
         rows.append("")
+        # THE SAME PAIR `_meter_blocks` DRAWS (inc47), and it has to be: the
+        # docstring metric this whole layout exists to satisfy was measured on
+        # THIS row, not on the frame's. `Nord.__doc__`: "the only isolated
+        # element, the hero numeral, came FIFTH behind the LOAD PLOT standing
+        # beside it in the same panel". A near-solid block run out-weighs a
+        # line of text at any length, and the split cannot give the eye one
+        # subject while the pane below it carries a slab. The terminal's own
+        # progress bar is two RULES -- Rich draws its own with `━` -- so the
+        # complete and the remaining still differ in SHAPE (greyscale holds)
+        # at roughly a seventh of the coverage. Two seats, one mechanism.
         rows.append(f"[{c['dim']}]{'PROGRESS':<9}[/]"
-                    f"[{c['accent']}]{'▇' * lit}[/]"
-                    f"[{c['dim']}]{'░' * (bar_w - lit)}[/]"
+                    f"[{c['accent']}]{'━' * lit}[/]"
+                    f"[{c['dim']}]{'─' * (bar_w - lit)}[/]"
                     f" [{c['mut']}]{idx}/{n}[/]")
         return rows
 
@@ -7647,15 +7657,34 @@ class Solari(Kit):
     # tabular fields PADDED TO THEIR WIDEST CONTENT."
     # ======================================================================
     DISCLOSE = "═"                        # the seam doubled: a flap mid-turn
-    # THE REQUIRED MARK — A SEAM WITH NOTHING FLIPPED ONTO IT. §10: "THE SEAM
-    # IS THE WHOLE DIVIDER VOCABULARY ... the structure device is the cell
-    # FACE a character is flipped onto". On a departure board a field that
-    # must be filled is a face that has not turned yet, and what shows is the
-    # seam under it. The same mark `field_row` closes its gap with, which is
-    # the commitment rather than a collision: this language HAS one divider
-    # and spends it everywhere. Not a digit — the digits are the quantity
-    # (DATAVIZ law 1) and an obligation states no quantity.
-    REQUIRED = "▁"
+    # THE FLAP STANDING (inc47). This read `▁`, the SEAM, under the argument
+    # that "this language HAS one divider and spends it everywhere" -- and the
+    # argument is right about the SEAM and wrong about the obligation.
+    # `solari_S2` is the measurement: `▁` appears 139 times on that screen and
+    # TWO of them are the answer to "point at the required fields". A mark
+    # that has to be found by counting from the end of a caption is a
+    # POSITION, not a mark, and §9.4's q6 asks that question by name.
+    #
+    # THE SEAM STAYS THE DIVIDER. It is spent 137 more times on that same
+    # screen -- the row seam, the head rule, and the DEFAULT rung of every
+    # control's chrome ladder (`▁` default, `▔` focused, `▂` active, `╌` dead)
+    # -- and that is ALPHABET, which this batch does not touch. What moves is
+    # the one seat where the seam had to carry a MEANING.
+    #
+    # AND THE MARK IS THE FACE, NOT THE EDGE. §10: "the structure device is
+    # the cell FACE a character is flipped onto." `▮` is that face caught
+    # UPRIGHT -- the cell standing with nothing flipped onto it yet -- and it
+    # is this language's own caret, which is the same claim from the other
+    # side: the caret says the next character lands HERE, the obligation says
+    # a character MUST land here. One meaning at two seats, which is the
+    # inverse of the defect this batch exists to remove.
+    #
+    # NOT `▔` AND NOT `▂`: those are the FOCUSED and ACTIVE rungs of the
+    # chrome ladder, so an obligation would have opened a focused control
+    # (inc48's law). Not `═`: that is `DISCLOSE` and the INVALID mark, a
+    # meaning already. Not a digit -- the digits are the quantity (DATAVIZ
+    # law 1) and an obligation states no quantity.
+    REQUIRED = "▮"
     DANGER_FORM = ("▀", "▄")               # the two halves of a turning cell
     # THE ONE LADDER IN THE ELEVEN THAT IS NOT A GLYPH, AND IT IS THIS
     # LANGUAGE'S HEADLINE COMMITMENT: "a state is a WORD in a status column".
@@ -9300,11 +9329,40 @@ def _meter_ember(k, done, total, counts, w):
 
 
 def _meter_blocks(k, done, total, counts, w):
+    """THE TERMINAL'S OWN PROGRESS BAR (inc47), and the figure leads it.
+
+    This drew `▇`*n + `░`*(bar_w-n) -- twenty-seven near-solid block cells in
+    the detail pane -- and `Nord.__doc__` carries the measurement that makes
+    that a defect rather than a preference: "colour-stripped at 118x30 nord
+    had NO first fixation ... the only isolated element, the hero numeral,
+    came FIFTH behind the LOAD PLOT standing beside it in the same panel."
+    The split (`layout="split"`) is this language's ONE commitment and it
+    exists to give the eye one subject; `nord_S1` reproduced the same failure
+    one layout later, with the plot beating the declared subject in the pane
+    the split had just created.
+
+    THE FIX IS HERE AND NOT IN A KIT, and that is the whole reason it is
+    tractable. Nord declares nothing -- the other ten override `meter` with
+    their own token (`dotgrid`, `lcd`, `braille`, `hairline`, `boxed`,
+    `step`, `ember`, `tally`, `odometer`, `dimension`) and `blocks` is the
+    base's, so this function draws for exactly one language. Proved by frame
+    diff, not by reading: 3 of the 66 moved and all three are nord's.
+
+    WHAT REPLACES IT IS NOT AN INVENTION. Rich -- the library this app is
+    built on -- draws its own progress bar with `━`, so a terminal that has a
+    bar has that one. The complete run is the heavy rule and the remainder is
+    the light one: two SHAPES, so it survives greyscale, and about a seventh
+    of the ink COVERAGE, so it stops out-weighing a line of text. The figure
+    moves to the FRONT because DATAVIZ law 1 is that a gauge STATES its
+    value, and because the first cell of the row is the one the eye reaches
+    first -- which is the quantity the docstring measured.
+
+    BLOCK-ELEMENT CELLS IN `nord_S1`: 27 -> 0."""
     c = k.c
     bar_w = max(4, w - 10)
     pct, n = _pct_n(done, total, bar_w)
-    bar = "▇" * n + "░" * (bar_w - n)
-    return (f"[{c['accent']}]{bar}[/] [{c['mut']}]{pct:>3}%[/]\n"
+    bar = "━" * n + "─" * (bar_w - n)
+    return (f"[{c['mut']}]{pct:>3}%[/] [{c['accent']}]{bar}[/]\n"
             f"[{c['dim']}]{_pulse(counts, bar_w)}[/] [{c['dim']}]flow[/]")
 
 

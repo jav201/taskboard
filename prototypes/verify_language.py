@@ -8571,10 +8571,23 @@ async def main():
           all(f in dg for f in ("PROJECT", "PHASE", "DUE", "PRIORITY",
                                 "STATE", "PROGRESS")), )
     check("nord: quantity in the detail is nord's OWN meter family (the "
-          "filled/unfilled block pair `_meter_blocks` draws), not a second "
-          "mechanism",
-          "▇" in dg and "░" in dg
-          and "▇" in grey(kn.meter(3, 8, [4, 0, 2, 2], 44)))
+          "complete/remaining RULE pair `_meter_blocks` draws), not a second "
+          "mechanism -- inc47 turned that pair from `▇`/`░`, twenty-seven "
+          "near-solid block cells that beat the declared subject in the pane "
+          "the split exists to give one subject, into the terminal's own "
+          "progress bar",
+          "━" in dg and "─" in dg
+          and "━" in grey(kn.meter(3, 8, [4, 0, 2, 2], 44)))
+    check("nord: ... and the figure LEADS the bar, so the first cell of the "
+          "row is the datum rather than a slab (DATAVIZ law 1: a gauge "
+          "STATES its value)",
+          grey(kn.meter(3, 8, [4, 0, 2, 2], 44)).lstrip().startswith("38%"),
+          grey(kn.meter(3, 8, [4, 0, 2, 2], 44)).split(chr(10))[0])
+    check("nord: ... and NO block element is left in the detail pane, which "
+          "is the docstring's own metric made countable -- 27 block cells "
+          "before, none after",
+          not any(0x2580 <= ord(ch) <= 0x259F for ch in dg),
+          "".join(sorted({ch for ch in dg if 0x2580 <= ord(ch) <= 0x259F})))
     # a state word under a DUE label was on screen and is a lie — the render
     # caught it, so it becomes a check
     blk = "\n".join(grey(r) for r in
