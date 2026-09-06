@@ -490,33 +490,60 @@ MONO = ("ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',"
         "Menlo,Consolas,'Liberation Mono',monospace")
 
 
-def cell_grid(app) -> tuple[list[list[tuple[str, str, str]]], str]:
-    """Read the composited frame as (char, fg, bg) per CELL.
+#: one cell of a composited frame.  The last two are the STYLE tier, added in
+#: inc43 -- see `cell_grid`.
+Cell = tuple[str, str, str, bool, bool]
+
+
+def cell_grid(app) -> tuple[list[list[Cell]], str]:
+    """Read the composited frame as (char, fg, bg, bold, underline) per CELL.
 
     Segment styles are read off the compositor, not off any widget's internal
     state: a widget can hold its text and still not have been flushed, and it
     is the flush a capture reads.  Returns the screen's own background too, so
     the picture's ground is the app's ground rather than a guess.
+
+    THE STYLE TIER, AND WHY `reverse` IS RESOLVED HERE RATHER THAN IN THE
+    EXPORTER.  `Kit.match` is the one contract seat whose emphasis may not add
+    a cell (operator ruling 9 -- the result text comes back byte for byte), so
+    every one of the eleven kits spells `MATCH_STYLE` as a STYLE over a hue:
+    seven `bold`, two `underline`, and `industrial`/`solari` `reverse`.  Until
+    inc43 this function returned three fields and the whole tier was dropped:
+    66 declared runs across the eleven S6 sheets, none painted.
+
+    `bold` and `underline` are carried out as flags because they are a
+    property of the TEXT and the exporter emits them as text attributes.
+    `reverse` is not -- it is a GROUND channel wearing a style word's costume,
+    which is exactly why it went missing.  Rich hands it over as
+    `Style.reverse` with `color` and `bgcolor` STILL IN THEIR DECLARED ORDER
+    (measured: industrial's run arrives `#ff4b1f` on `#121212`, flag set), so
+    an exporter looking only at `bgcolor` sees the page's own ground and paints
+    nothing.  Swapping the pair HERE turns the run back into what it actually
+    is -- ink on a ground -- and the exporter's existing background-run code
+    then paints it with no new branch and no second notion of what a ground is.
     """
-    grid: list[list[tuple[str, str, str]]] = []
+    grid: list[list[Cell]] = []
     ground = "#000000"
     for strip in app.screen._compositor.render_strips():
-        row: list[tuple[str, str, str]] = []
+        row: list[Cell] = []
         for seg in strip:
             st = seg.style
             fg = (st.color.triplet.hex
                   if (st and st.color and st.color.triplet) else "#ffffff")
             bg = (st.bgcolor.triplet.hex
                   if (st and st.bgcolor and st.bgcolor.triplet) else ground)
+            if st and st.reverse:
+                fg, bg = bg, fg
+            bold, under = bool(st and st.bold), bool(st and st.underline)
             for ch in seg.text:
-                row.append((ch, fg, bg))
+                row.append((ch, fg, bg, bold, under))
         grid.append(row)
     # the ground is the most common background in the frame -- measured, not
     # assumed, because several languages paint a full-bleed panel over it
     counts: dict[str, int] = {}
     for row in grid:
-        for _, _, bg in row:
-            counts[bg] = counts.get(bg, 0) + 1
+        for cell in row:
+            counts[cell[2]] = counts.get(cell[2], 0) + 1
     if counts:
         ground = max(counts, key=counts.get)
     return grid, ground
@@ -528,6 +555,20 @@ def svg_from_grid(grid, ground: str, label: str) -> str:
     Backgrounds are emitted as RUNS -- consecutive cells sharing a bg become
     one `<rect>` -- which is where the size win over the stock exporter comes
     from.
+
+    THE STYLE TIER (inc43).  A text run now breaks on WEIGHT and DECORATION as
+    well as on colour, and carries `font-weight="bold"` / `text-decoration=
+    "underline"` when it has them.  `reverse` needs nothing here: `cell_grid`
+    resolves it into the (ink, ground) pair it always was, so it arrives as a
+    background run and is painted by the loop above.  That is the whole reason
+    the swap lives there and not here -- this function has exactly one idea of
+    what a ground is, and teaching it a second one would have been a way to
+    disagree with itself later.
+
+    WHAT IS STILL DROPPED, said out loud: `italic`, `strike`, `dim`, `blink`.
+    No kit declares any of them, and the law over these frames is a comparison
+    of DECLARED runs against PAINTED ones -- so the day a kit reaches for one,
+    that law goes red rather than this docstring going quietly out of date.
 
     HOW THE GRID IS HELD -- ONE `x` PER RUN, AND NOTHING ELSE.  Two richer
     schemes were tried against a real browser and both had to go, for the same
@@ -577,18 +618,20 @@ def svg_from_grid(grid, ground: str, label: str) -> str:
                            f'width="{(x2 - x) * CW:.1f}" height="{LH:.1f}" '
                            f'fill="{bg}"/>')
             x = x2
-        # text runs, one per colour, each glyph carrying its own x
+        # text runs, one per (colour, weight, decoration)
         ty = ry + 0.78 * LH
         x = 0
         while x < len(row):
-            fg = row[x][1]
+            key = (row[x][1], row[x][3], row[x][4])
             x2 = x
-            while x2 < len(row) and row[x2][1] == fg:
+            while x2 < len(row) and (row[x2][1], row[x2][3], row[x2][4]) == key:
                 x2 += 1
-            text = "".join(c for c, _, _ in row[x:x2])
+            fg, bold, under = key
+            text = "".join(cell[0] for cell in row[x:x2])
             if text.strip():
+                attr = (' font-weight="bold"' if bold else "") +                        (' text-decoration="underline"' if under else "")
                 out.append(f'<text x="{PAD + x * CW:.1f}" y="{ty:.1f}" '
-                           f'fill="{fg}">'
+                           f'fill="{fg}"{attr}>'
                            f'{_h.escape(text).replace(" ", chr(160))}</text>')
             x = x2
     out += ["</g>", "</svg>", ""]

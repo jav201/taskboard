@@ -7,21 +7,29 @@
 <rect x="262.0" y="61.0" width="487.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="74.3" fill="#1783ff">│</text>
 <text x="740.8" y="74.3" fill="#1783ff">│</text>
-<rect x="262.0" y="78.0" width="487.2" height="17.0" fill="#121212"/>
+<rect x="262.0" y="78.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="78.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="78.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="91.3" fill="#1783ff">│</text>
 <text x="287.2" y="91.3" fill="#3a3a3a">( ) gal</text>
 <text x="740.8" y="91.3" fill="#1783ff">│</text>
-<rect x="262.0" y="95.0" width="487.2" height="17.0" fill="#121212"/>
+<rect x="262.0" y="95.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="95.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="95.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="108.3" fill="#1783ff">│</text>
 <text x="287.2" y="108.3" fill="#737373">Darkside</text>
 <text x="740.8" y="108.3" fill="#1783ff">│</text>
-<rect x="262.0" y="112.0" width="487.2" height="17.0" fill="#121212"/>
+<rect x="262.0" y="112.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="112.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="112.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="125.3" fill="#1783ff">│</text>
 <text x="287.2" y="125.3" fill="#737373">checkable  </text>
 <text x="379.6" y="125.3" fill="#262626">switch    checkbox</text>
 <text x="547.6" y="125.3" fill="#262626">off·on</text>
 <text x="740.8" y="125.3" fill="#1783ff">│</text>
-<rect x="262.0" y="129.0" width="487.2" height="17.0" fill="#121212"/>
+<rect x="262.0" y="129.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="129.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="129.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="142.3" fill="#1783ff">│</text>
 <text x="379.6" y="142.3" fill="#1783ff">O</text>
 <text x="388.0" y="142.3" fill="#262626">──</text>
@@ -31,7 +39,9 @@
 <text x="505.6" y="142.3" fill="#1783ff">(O)</text>
 <text x="556.0" y="142.3" fill="#262626">default</text>
 <text x="740.8" y="142.3" fill="#1783ff">│</text>
-<rect x="262.0" y="146.0" width="487.2" height="17.0" fill="#121212"/>
+<rect x="262.0" y="146.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="146.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="146.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="159.3" fill="#1783ff">│</text>
 <text x="379.6" y="159.3" fill="#1783ff">◎</text>
 <text x="388.0" y="159.3" fill="#262626">──</text>
@@ -41,7 +51,9 @@
 <text x="505.6" y="159.3" fill="#1783ff">[◎]</text>
 <text x="556.0" y="159.3" fill="#262626">focused</text>
 <text x="740.8" y="159.3" fill="#1783ff">│</text>
-<rect x="262.0" y="163.0" width="487.2" height="17.0" fill="#121212"/>
+<rect x="262.0" y="163.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="163.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="163.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="176.3" fill="#1783ff">│</text>
 <text x="379.6" y="176.3" fill="#1783ff">●</text>
 <text x="388.0" y="176.3" fill="#262626">──</text>
@@ -51,7 +63,9 @@
 <text x="505.6" y="176.3" fill="#1783ff">{●}</text>
 <text x="556.0" y="176.3" fill="#262626">active</text>
 <text x="740.8" y="176.3" fill="#1783ff">│</text>
-<rect x="262.0" y="180.0" width="487.2" height="17.0" fill="#121212"/>
+<rect x="262.0" y="180.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="180.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="180.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="193.3" fill="#1783ff">│</text>
 <text x="379.6" y="193.3" fill="#262626">x╌╌</text>
 <text x="421.6" y="193.3" fill="#262626">▁▁x</text>
@@ -59,12 +73,15 @@
 <text x="505.6" y="193.3" fill="#262626">╌x╌</text>
 <text x="556.0" y="193.3" fill="#262626">disabled</text>
 <text x="740.8" y="193.3" fill="#1783ff">│</text>
-<rect x="262.0" y="197.0" width="487.2" height="17.0" fill="#121212"/>
+<rect x="262.0" y="197.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="197.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="197.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="210.3" fill="#1783ff">│</text>
 <text x="287.2" y="210.3" fill="#737373">radio      </text>
 <text x="379.6" y="210.3" fill="#262626">lo·mid·hi  set=mid cursor=hi</text>
 <text x="740.8" y="210.3" fill="#1783ff">│</text>
 <rect x="262.0" y="214.0" width="445.2" height="17.0" fill="#121212"/>
+<rect x="707.2" y="214.0" width="16.8" height="17.0" fill="#003054"/>
 <rect x="724.0" y="214.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="227.3" fill="#1783ff">│</text>
 <text x="379.6" y="227.3" fill="#262626">‹ ›</text>
@@ -74,7 +91,7 @@
 <text x="522.4" y="227.3" fill="#262626">‹ ›</text>
 <text x="556.0" y="227.3" fill="#737373">hi</text>
 <text x="598.0" y="227.3" fill="#262626">default</text>
-<text x="707.2" y="227.3" fill="#003054">▇▇</text>
+<text x="707.2" y="227.3" fill="#000000">▇▇</text>
 <text x="740.8" y="227.3" fill="#1783ff">│</text>
 <rect x="262.0" y="231.0" width="445.2" height="17.0" fill="#121212"/>
 <rect x="724.0" y="231.0" width="25.2" height="17.0" fill="#121212"/>
@@ -223,9 +240,9 @@
 <rect x="262.0" y="520.0" width="487.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="533.3" fill="#1783ff">└────────────────────────────────────────────────────────┘</text>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#121212"/>
-<text x="10.0" y="584.3" fill="#1783ff"> esc/q/g </text>
+<text x="10.0" y="584.3" fill="#1783ff" font-weight="bold"> esc/q/g </text>
 <text x="85.6" y="584.3" fill="#e0e0e0">Close </text>
-<text x="136.0" y="584.3" fill="#1783ff"> t </text>
+<text x="136.0" y="584.3" fill="#1783ff" font-weight="bold"> t </text>
 <text x="161.2" y="584.3" fill="#e0e0e0">Language </text>
 </g>
 </svg>

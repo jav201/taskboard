@@ -3,17 +3,29 @@
 <rect width="1011.2" height="598.0" fill="#e9e1cf"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <rect x="262.0" y="44.0" width="487.2" height="17.0" fill="#f2ecdd"/>
-<rect x="262.0" y="61.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="61.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="61.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="61.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="278.8" y="74.3" fill="#8a8272">═════</text>
-<rect x="262.0" y="78.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="78.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="78.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="78.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="278.8" y="91.3" fill="#1c1a15">G A L</text>
-<rect x="262.0" y="95.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="95.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="95.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="95.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="278.8" y="108.3" fill="#8a8272">─────</text>
-<rect x="262.0" y="112.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="112.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="112.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="112.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="278.8" y="125.3" fill="#6b6558">Ledger</text>
-<rect x="262.0" y="129.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="129.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="129.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="129.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="278.8" y="142.3" fill="#8a8272">────────────────────────────────────────────────────</text>
-<rect x="262.0" y="146.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="146.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="146.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="146.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="278.8" y="159.3" fill="#6b6558">switch     </text>
 <text x="371.2" y="159.3" fill="#1c1a15">▪</text>
 <text x="379.6" y="159.3" fill="#c4b99f">··</text>
@@ -22,7 +34,9 @@
 <text x="488.8" y="159.3" fill="#1c1a15">▪ posted   </text>
 <text x="581.2" y="159.3" fill="#c4b99f">default</text>
 <text x="656.8" y="159.3" fill="#c4b99f">off·on</text>
-<rect x="262.0" y="163.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="163.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="163.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="163.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="371.2" y="176.3" fill="#2b3a67">▶</text>
 <text x="379.6" y="176.3" fill="#c4b99f">··</text>
 <text x="404.8" y="176.3" fill="#6b6558">open  </text>
@@ -30,7 +44,9 @@
 <text x="488.8" y="176.3" fill="#2b3a67">▶</text>
 <text x="497.2" y="176.3" fill="#1c1a15"> posted   </text>
 <text x="581.2" y="176.3" fill="#c4b99f">focused</text>
-<rect x="262.0" y="180.0" width="487.2" height="17.0" fill="#f2ecdd"/>
+<rect x="262.0" y="180.0" width="453.6" height="17.0" fill="#f2ecdd"/>
+<rect x="715.6" y="180.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="180.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="371.2" y="193.3" fill="#2b3a67">●</text>
 <text x="379.6" y="193.3" fill="#c4b99f">··</text>
 <text x="404.8" y="193.3" fill="#6b6558">open  </text>
@@ -39,14 +55,14 @@
 <text x="497.2" y="193.3" fill="#1c1a15"> posted   </text>
 <text x="581.2" y="193.3" fill="#c4b99f">active</text>
 <rect x="262.0" y="197.0" width="453.6" height="17.0" fill="#f2ecdd"/>
-<rect x="715.6" y="197.0" width="16.8" height="17.0" fill="#000000"/>
+<rect x="715.6" y="197.0" width="16.8" height="17.0" fill="#003054"/>
 <rect x="732.4" y="197.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="371.2" y="210.3" fill="#c4b99f">▫╌╌</text>
 <text x="404.8" y="210.3" fill="#c4b99f">open  </text>
 <text x="472.0" y="210.3" fill="#c4b99f">┄┄▫</text>
 <text x="505.6" y="210.3" fill="#c4b99f">posted</text>
 <text x="581.2" y="210.3" fill="#c4b99f">disabled</text>
-<text x="715.6" y="210.3" fill="#003054">▂▂</text>
+<text x="715.6" y="210.3" fill="#000000">▂▂</text>
 <rect x="262.0" y="214.0" width="453.6" height="17.0" fill="#f2ecdd"/>
 <rect x="715.6" y="214.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="214.0" width="16.8" height="17.0" fill="#f2ecdd"/>
@@ -188,9 +204,9 @@
 <text x="497.2" y="516.3" fill="#c4b99f">edited</text>
 <rect x="262.0" y="520.0" width="487.2" height="17.0" fill="#f2ecdd"/>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#f2ecdd"/>
-<text x="10.0" y="584.3" fill="#2b3a67"> esc/q/g </text>
+<text x="10.0" y="584.3" fill="#2b3a67" font-weight="bold"> esc/q/g </text>
 <text x="85.6" y="584.3" fill="#e0e0e0">Close </text>
-<text x="136.0" y="584.3" fill="#2b3a67"> t </text>
+<text x="136.0" y="584.3" fill="#2b3a67" font-weight="bold"> t </text>
 <text x="161.2" y="584.3" fill="#e0e0e0">Language </text>
 </g>
 </svg>

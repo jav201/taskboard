@@ -20,22 +20,28 @@
 <text x="52.0" y="74.3" fill="#f2f2f2">re</text>
 <text x="68.8" y="74.3" fill="#ff4b1f">|</text>
 <text x="77.2" y="74.3" fill="#4a4a4a">-------------------------------------▌</text>
+<rect x="43.6" y="95.0" width="16.8" height="17.0" fill="#ff4b1f"/>
 <text x="26.8" y="108.3" fill="#ff4b1f">▪</text>
-<text x="43.6" y="108.3" fill="#ff4b1f">re</text>
+<text x="43.6" y="108.3" fill="#121212">re</text>
 <text x="60.4" y="108.3" fill="#8f8f8f">direct to task</text>
 <text x="413.2" y="108.3" fill="#4a4a4a">enter</text>
-<text x="43.6" y="125.3" fill="#ff4b1f">re</text>
+<rect x="43.6" y="112.0" width="16.8" height="17.0" fill="#ff4b1f"/>
+<text x="43.6" y="125.3" fill="#121212">re</text>
 <text x="60.4" y="125.3" fill="#8f8f8f">name project</text>
-<text x="43.6" y="142.3" fill="#ff4b1f">re</text>
+<rect x="43.6" y="129.0" width="16.8" height="17.0" fill="#ff4b1f"/>
+<text x="43.6" y="142.3" fill="#121212">re</text>
 <text x="60.4" y="142.3" fill="#8f8f8f">fresh board</text>
 <text x="413.2" y="142.3" fill="#4a4a4a">r</text>
+<rect x="110.8" y="146.0" width="16.8" height="17.0" fill="#ff4b1f"/>
 <text x="43.6" y="159.3" fill="#8f8f8f">archive </text>
-<text x="110.8" y="159.3" fill="#ff4b1f">re</text>
+<text x="110.8" y="159.3" fill="#121212">re</text>
 <text x="127.6" y="159.3" fill="#8f8f8f">leased</text>
-<text x="43.6" y="176.3" fill="#ff4b1f">re</text>
+<rect x="43.6" y="163.0" width="16.8" height="17.0" fill="#ff4b1f"/>
+<text x="43.6" y="176.3" fill="#121212">re</text>
 <text x="60.4" y="176.3" fill="#8f8f8f">store from backup</text>
+<rect x="77.2" y="180.0" width="16.8" height="17.0" fill="#ff4b1f"/>
 <text x="43.6" y="193.3" fill="#8f8f8f">set </text>
-<text x="77.2" y="193.3" fill="#ff4b1f">re</text>
+<text x="77.2" y="193.3" fill="#121212">re</text>
 <text x="94.0" y="193.3" fill="#8f8f8f">minder</text>
 <text x="26.8" y="227.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="244.3" fill="#ff4b1f">&gt; </text>
