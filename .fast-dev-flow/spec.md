@@ -610,3 +610,176 @@ committed.**
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1004 → 1040 passed** (+36: three laws × 11 parametrisations + three teeth tests), the clipboard red throughout and named in every packet. `verify_language.py` **ALL PASSED** after every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66. `capture_languages.py` run after every increment; 4 gallery artefacts moved in total. `collision_census.py` self-check green; **4 of the round's 5 hand-found collisions are asserted CLOSED and cannot grow back**, 1 is live with its reason. `export_to_skill.py` run at the close, idempotent on re-run. |
 | Notes | **4 source files across 4 increments, one agent** (`taskboard/language.py`, `tests/test_components.py`, `prototypes/collision_census.py`, `prototypes/verify_language.py`), plus 42 regenerated frame artefacts, 4 gallery artefacts, the census table, four packets and this section. |
+
+---
+
+## 12. Batch `rework-4` — the three items on the re-judged round that are defects and not decisions
+
+`PROTOTYPE-inheritors-2.md` (2026-09-06) re-judged the same 42 frames after `rework-1/2/3` and returned
+**keep 14 · nota 21 · rework 7**. Its §5 groups what is left by who fixes it and its §6 puts seven
+questions to the operator. **This batch is the intersection: the items that are DEFECTS ON THE RECORD and
+need no operator ruling — K1, C3, K3. Three increments, one agent. Nothing in §6 was decided and nothing
+in §6 was touched.**
+
+### 12.1 What each increment did
+
+| inc | the finding | the level it lived at | frames moved |
+| --- | --- | --- | --- |
+| 49 | **K1 — the named-seat law never looked at `switch.knob`.** inc46 wrote its clause as `comp == "switch" and part == "indicator"`, and in these kits the indicator is the TRACK. `darkside_S3` drew five switch knobs with `O` = `LEVELS["error"]` (`▬▬O`, `O──`) while the roster said **0**; the census saw it and the law did not. The same hole hid `naught ◉` and `corgi ██`/`▀▀`. | the CLAUSE, in `tests/test_components.py`; plus one kit's declaration (`Darkside.PART_GLYPHS`) | `darkside_S2`, `darkside_S3` (txt + svg), `gallery_darkside` (txt + svg) |
+| 50 | **C3 — `solari_S4`'s band slid three rows instead of shrinking.** inc40 gave back the mode strip, the masthead and the head seam and took `GATE DOING 04` and `FIX LOGIN REDIRECT`, so the surviving schedule opened on the SEAM of a departure the band had taken, five task rows under no gate header. | **`Solari.overlay_instead`** — not `screens.py`, whose six dialog rows are shared by all eleven | `solari_S4` (txt + svg) |
+| 51 | **K3 — the stepper had no law and `Kit.PART_GLYPHS["stepper.step"][INVALID] = "]["`.** Six kits spelled REJECTED by exchanging their two direction marks; inc39 deferred it in §9.5 and inc48 then used that deferral as the reason to exclude the stepper from the opener law. | **`Kit`** (nord's line) plus five kits' own; the two exclusions in `tests/test_components.py` | **none** |
+
+### 12.2 The laws this batch added or widened
+
+- **inc49** — `test_a_meaning_never_stands_at_a_disabled_or_indicator_seat` now covers **every knob the
+  registry declares** (`switch.knob`, `checkbox.knob`, `radio.knob`) as well as the switch indicator and
+  every disabled mark. The seat set is written as `KNOB_SEATS` so the slider's absence is legible as the
+  census's boundary and not as a claim. **No new test function**: the law that existed now reaches four
+  seats it could not see, which is why `pytest` stayed at 1040 across that increment. Teeth grew a third
+  arm that restores `Darkside.PART_GLYPHS["knob"][DEFAULT] = "O"` and must name `switch.knob` and the
+  error rung.
+- **inc50** — *the band is its content, and the schedule under it opens on a GATE HEADER.* Three clauses
+  measured on the shipped `solari_S4.txt` against the shipped `solari_S1.txt`: depth is
+  `1 + the rows that say something + 1` with no air between the first word and the closing seam; the row
+  below the band is a header at its own index; every row outside the band is the page's row at the same
+  index (inc40's second half, re-asserted, because a shrink implemented by INSERTING would satisfy the
+  second clause and push the board down). Teeth restore the pre-inc50 body with the real six-row block and
+  name `GATE DOING 04`, `FIX LOGIN REDIRECT` and the orphan seam, **with the band's HEAD asserted
+  unmoved** — a length finding, not a re-run of inc40's anchor finding.
+- **inc51** — *a stepper's halves are DIRECTIONS.* Two clauses over all eleven: no state may be another
+  state with its halves exchanged (a symmetric pair has no handedness and cannot violate it), and
+  `stepper.step[INVALID]` must be drawn from the cells that kit already spends on a rejected value at its
+  `knob` and its `textfield`. **Both clauses are load-bearing and the teeth prove it**: five of the six
+  turns go red on clause 1, and `nord ][` goes red on clause 2 alone — `[` and `]` are the button's walls
+  and the checkbox's well, a pair the stepper never declares, so a law with the orientation clause alone
+  would have left the BASE's own defect standing. A seventh arm (`≠≠`, a mark no kit declares) is clause
+  2's own teeth.
+- **inc51** — `OPENING_CONTROLS` gained `stepper`. inc39's ruling was right about ENCLOSURE and wrong
+  about ANNOUNCEMENT: whatever cell stands first is what a reader meets first, whether it is a wall or an
+  arrow.
+
+### 12.3 The rosters, before and after
+
+```
+MEANING_AT_A_NAMED_SEAT      rework-3   inc49        MEANING_AT_AN_OPENER    rework-3   inc51
+  naught                          8       12           naught                     2        3
+  corgi                           8       16           corgi                     31       40
+  prism                           8       16           prism                     19       25
+  blueprint                       8       12           blueprint                  6       12
+  darkside                        0        0 *         swiss                      0        0 **
+  the other six                   0        0           nord                       0        0 **
+                                                       the other five             0        0
+```
+
+`*` darkside read 0 only because the law was blind; it read **4** under the widened clause and was fixed
+at its own declaration back to 0 — the grip ramp starts one rung up (`O ◎ ●` → `◎ ◉ ●`, `(O)` → `(◎)`),
+on two cells this kit already declared, and **deliberately not on a geometric `○`**, which is the
+homoglyph move the round documents five times in §0b/§4.
+
+`**` swiss and nord stayed at zero through the stepper's arrival because **the bill inc48 §5 published in
+advance was PAID rather than exempted**: swiss's `stepper.main` dead end takes `▫` (the lightest rung of
+the one-shape ladder inc46 built it) and nord's takes `░` (the lightest rung of the shade ramp `Kit`
+already owns).
+
+**The four languages that grew on both rosters — naught, corgi, prism, blueprint — were already failing
+both laws before this batch widened them.** Three of the four have never had an increment, which is
+decision **A**; the fourth has no unspent cell, which §11.5 says in writing. Counted by name with their
+reason, not fixed and not exempted.
+
+### 12.4 The census, and the number that matters more
+
+```
+language      rework-3   inc49   inc50   inc51
+naught             5        5       5       5
+corgi              5        5       5       5
+instrument         7        7       7       5
+swiss              5        5       5       3
+industrial         4        4       4       2
+nord               4        4       4       1
+darkside           3        2       2       2
+prism              5        5       5       4
+ledger             2        2       2       2
+solari             3        3       3       3
+blueprint          5        5       5       4
+------------------------------------------------
+TOTAL             48       47      47      36
+```
+
+**48 → 36, and eleven of the twelve are inc51's.** `rework-3` moved the total by 6 across four
+increments; the stepper's turns were worth 11 in one, because each turn made a cell carry
+`INVALID stepper.step open` and `stepper.step close` at the same time. `nord` is now **1**, the cleanest
+language in the corpus. `zero collisions: NONE` still holds for all eleven.
+
+**Live meaning × meaning — the number §11.2 says the rule is actually about — falls 8 → 6.** Both closures
+are inc51's: `prism ⡀` and `blueprint ├` were `REQUIRED` sharing a cell with an `INVALID stepper.step`,
+two of the eight rows §11.2 noted *"every one of the eight left involves `INVALID`"*.
+
+### 12.5 Frames changed, by name
+
+| inc | frames (`.txt` + `.svg` unless said) | gallery |
+| --- | --- | --- |
+| 49 | `darkside_S2`, `darkside_S3` | `gallery_darkside` (2 of 22) — checked against the calendar trap of §10.3: the diff is the two knob rows, the moon doodle cell is unchanged |
+| 50 | `solari_S4` | 0 of 22 |
+| 51 | **none** | 0 of 22 |
+
+**Three frames in the whole batch.** inc51 changed eight declarations across seven kits — two of them
+`stepper.main[DEFAULT]`, the string every LIVE state of the ground falls back to — and not one of the 88
+`.txt` moved, which is a stronger statement than the round's *"no frame renders an invalid stepper"*:
+**no artefact in this repo draws a stepper at all.** (A stepper drawn only in DISABLED would escape that
+argument; it is named in `inc51.md` §7 as the one hole in it.) `capture_languages.py`'s docstring claims
+the component sheet carries *"and stepper, each in the states the registry derives"* — at 118×34 it is
+cut off after the switch and checkbox rows. **So the stepper's law stands on the property test alone**,
+stated rather than glossed.
+
+**The skill's installed gallery frames 44–51: NONE changed byte-wise in this batch, and all eight are
+currently byte-identical to their sources.** This batch's three moved frames (`darkside_S2`,
+`darkside_S3`, `solari_S4`) are not the source of any of the eight. The five that §11.4 listed as stale
+(45, 46, 48, 49, 50) carry an mtime of 2026-09-06 12:54, before this batch's first commit — **the manual
+re-install §11.4 asked for was done outside this batch**, and it is recorded here rather than claimed.
+
+### 12.6 What was NOT touched, by name
+
+**Every item in `PROTOTYPE-inheritors-2.md` §6 is the operator's and none of them was decided:**
+
+| | the question | this batch's contact with it |
+| --- | --- | --- |
+| **A** | corgi, prism and blueprint have never had an increment; 12 of the 66 frames are unjudged | **made their rosters bigger and more precise, fixed none of them** |
+| **C** | `INVALID` takes the `DANGER_FORM` (inc39's ruling) | **applied a sixth and seventh time** (swiss `╲╲`, blueprint `━━`), because it is the ruling of record; if C is reverted those two lines revert with it |
+| **D** | are diameter and rotation channels a language declares? | **inc49 refused a homoglyph move on that ground and said so at the seat** — it did not answer the question |
+| **E** | `darkside_S1`: the rail, or the `.txt` stops being the work | untouched |
+| **F** | may a solari confirm eat the gate it names? | **inc50 came within one design decision of it and stopped.** At 100×32 an overlay band at the head of the schedule cannot avoid `GATE BACKLOG 05`, because the gate header IS the schedule's first row; the three ways out are all design changes and `inc50.md` §4 names them |
+| **G** | blueprint's first-fixation law is in a test and in no image | untouched |
+| **C1** | `blueprint_S4`'s destructive control is built with `knockout_cell` instead of `button` | untouched — named in inc41 §8, in §10.6, in §11.3 and now here |
+
+Also still open and outside this batch's scope: **K2** (the three laws compare code points and the
+reader's channel is shape), **K4** (no law compares two states of one part), **L1–L6**, **C2**, **C4**,
+**C5**, **C6**, **C7**, **E2** (the `.svg` carries no font metric, so no homoglyph objection can be
+*resolved* from the artefact) and **E3** (`gallery_darkside` is calendar-dependent).
+
+### 12.7 Found by looking
+
+- **`capture_languages.py`'s docstring overstates the component sheet.** The one component all eleven
+  declare is the one component nobody has ever seen rendered (§12.5).
+- **`Darkside.tabs()` and `wordmark()` still print `(O)`** — the error rung marking the active tab, and
+  the moon doodle at one of six phases — both drawn outside `PART_GLYPHS` where neither the census nor any
+  of the four laws can reach them. The same limit §10.4 published for `▬`.
+- **`Darkside.LEVELS`' own comment cites a `CUR` that moved in inc45** (*"a dimming ladder made of its own
+  cursor. `CUR` is `O`"*; `CUR` has been `▊` since inc45).
+- **inc49's blind spot was structural, not a typo.** `COMPONENT_PARTS` gives `switch` the same three parts
+  as `slider` on purpose; the clause that named `indicator` was written from the word rather than from the
+  registry. The rule's two other clauses (`dead`, and inc48's opener) are derived from the registry and
+  were never wrong.
+- **`solari_S4`'s ink went UP 4 points (22.8 → 26.8) while its modal got smaller** — density on this
+  language measures board coverage, not modal size.
+- **`test_win_clipboard_roundtrip` is environment-coupled** (§10.6) and was red at `a8a7a5d` before this
+  batch began, in every run of all three increments. **Reported, not counted, not touched.**
+
+### 12.8 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc49 · inc50 · inc51 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1040 → 1040 → 1042 → 1054 passed** (inc49 widened a law without adding a test function; inc50 +2; inc51 +12), the clipboard red throughout and named in every packet. `verify_language.py` **ALL PASSED** after every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66. `capture_languages.py` after every increment; **2 gallery artefacts moved in total**. `collision_census.py` self-check green after every increment; **TOTAL 48 → 36**. `export_to_skill.py` at the close: `2 written, 64 already identical`, re-run `0 written, 66 already identical`. **The skill repo was not committed.** |
+| Notes | **2 source files across 3 increments, one agent** (`taskboard/language.py`, `tests/test_components.py`), plus 6 regenerated frame artefacts, 2 gallery artefacts, the census table, three packets and this section. **Every increment's law was watched failing BY HAND on the real declaration, with the output quoted verbatim in its packet**, in addition to its monkeypatched teeth. |
