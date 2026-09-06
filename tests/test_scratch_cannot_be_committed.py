@@ -33,6 +33,12 @@ MUST_STAY_COMMITTABLE = [
     "prototypes/out/kanban-flow.svg",
     "prototypes/out/kanban-matrix.svg",
     "prototypes/out/kanban-triage.svg",
+    # inc44: the collision census table. A GENERATED file that is nonetheless
+    # reviewed and committed -- the language rework reads it. It is in the
+    # yard because `collision_census.py` writes it there; it is named here
+    # because this roster is what keeps "ignore the yard" from quietly
+    # dropping a repository file, which is the failure this file exists for.
+    "prototypes/out/collision_census.txt",
 ]
 
 
