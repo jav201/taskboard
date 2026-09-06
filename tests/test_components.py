@@ -1820,6 +1820,202 @@ def test_anchoring_solaris_band_at_row_zero_eats_the_boards_own_plate(monkeypatc
 
 
 # ---------------------------------------------------------------------------
+# inc41 (rework-1) - the SVG paints the tier the kit declared, and nothing else
+# ---------------------------------------------------------------------------
+#: every markup tag in a composed row, escaped brackets lifted out first —
+#: `plain()`'s own order, applied to the tags instead of to the cells.
+_TAG_BODY = re.compile(r"\[([^\]]*)\]")
+#: a tag that sets a GROUND. Rich spells it `fg on bg` or bare `on bg`, and
+#: both shapes are in these kits: blueprint's knockout is the first, the plate
+#: industrial stamps under a card is the second.
+_ON_TAG = re.compile(r"(?:^|\s)on\s+(\S+)$")
+#: the four style words a kit can reach for. `reverse` is the one that IS a
+#: ground channel, which is why it is listed beside the three that are not.
+_STYLE_WORDS = ("reverse", "bold", "underline", "italic")
+#: the frames that declare at least one ground, measured rather than assumed —
+#: the roster the ground law is non-vacuous on. 13 of 66; the other 53 declare
+#: none and paint none, which is a true pass and an empty one.
+GROUNDED_FRAMES = ("industrial_S1", "darkside_S1", "prism_S1", "ledger_S1",
+                   "solari_S1", "solari_S2", "solari_S3", "prism_S4",
+                   "ledger_S4", "solari_S4", "blueprint_S4", "solari_S5",
+                   "solari_S6")
+
+
+def sheet_rows(lang, screen):
+    """The composed MARKUP of a frame, from the sheet that made it.
+
+    The only place the tiers exist as DECLARATIONS: the `.txt` has them
+    stripped and the `.svg` has them rendered, so neither can say what was
+    asked for. `screens.py` imports without Textual — unlike `render.py`,
+    which is why FRAMES is a path and not an import — and it needs the repo
+    root, `prototypes/` and `prototypes/components/` on the path for its own
+    `fixture` import."""
+    import sys
+    for p in (FRAMES.parents[1], FRAMES.parent, FRAMES):
+        if str(p) not in sys.path:
+            sys.path.insert(0, str(p))
+    import screens
+    return screens.build(lang, screen).rows
+
+
+def declared_grounds(lang, screen):
+    """The set of ground colours this frame's composition asks for."""
+    out = set()
+    for row in sheet_rows(lang, screen):
+        for m in _TAG_BODY.finditer(row.replace("\\[", _ESC)):
+            hit = _ON_TAG.search(m.group(1).strip())
+            if hit:
+                out.add(hit.group(1))
+    return out
+
+
+def declared_styles(lang, screen):
+    """The style-tier runs this frame's composition asks for: `(word, text)`.
+
+    Separate from the grounds because the exporter treats them differently —
+    which is the whole finding below."""
+    out = []
+    for row in sheet_rows(lang, screen):
+        for m in _TAG_BODY.finditer(row.replace("\\[", _ESC)):
+            body = m.group(1).strip()
+            if body.split(" ")[0] in _STYLE_WORDS:
+                out.append(body)
+    return out
+
+
+def painted_grounds(lang, screen):
+    """The grounds the `.svg` actually paints. The FIRST `<rect>` is the
+    sheet's own canvas — `svg_from_grid` writes it before any cell run — so it
+    is dropped by POSITION rather than by colour: two languages ground their
+    page in a colour a cell could also carry."""
+    svg = (FRAMES / f"{lang}_{screen}.svg").read_text(encoding="utf-8")
+    return set(re.findall(r'<rect[^>]*fill="([^"]+)"', svg)[1:])
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_svg_paints_exactly_the_grounds_the_kit_declared(lang):
+    """THE TIER LAW, over all six screens of every language: the `.svg` paints
+    the ground a kit asked for, nothing it did not ask for, and nothing else.
+
+    THIS IS THE QUESTION `PROTOTYPE-inheritors.md` §0b ASKED AND ANSWERED THE
+    WRONG WAY. It found `blueprint_S4.svg` painting `DELETE` as the sheet's
+    knockout while `blueprint_S4.txt` shows a bare word, and concluded that
+    "the exporter answered by itself" — that a design decision nobody made had
+    been taken by `svg_from_grid`. It had not. The exporter has no opinion:
+    across 66 frames it paints the declared set exactly, and the declaration
+    for that cell is `screens.s4_blueprint` calling `knockout_cell`, under
+    operator ruling 10 (§ the next test).
+
+    Compared as SETS and not as counts on purpose. A ground run crossing a row
+    boundary becomes several `<rect>`s — prism declares one and gets 22 — so
+    counting would assert a fact about Textual's segmentation instead of about
+    the kit. What the law is for is a colour appearing that nobody asked for,
+    or one that was asked for and did not arrive."""
+    for screen in SCREENS:
+        assert declared_grounds(lang, screen) == painted_grounds(lang, screen), \
+            (lang, screen, declared_grounds(lang, screen),
+             painted_grounds(lang, screen))
+
+
+def test_the_ground_law_is_not_vacuous():
+    """WHICH FRAMES THE LAW ACTUALLY BITES ON, measured and written down.
+
+    53 of the 66 declare no ground and paint none: a true pass, and an empty
+    one. The 13 that do are the law's whole evidence, so the roster is derived
+    and compared with a written one — a frame that stops declaring a ground
+    (blueprint's knockout going away, solari's bands going flat) changes this
+    list and somebody has to look at it."""
+    got = tuple(f"{lang}_{sc}" for sc in SCREENS for lang in LANGS
+                if declared_grounds(lang, sc))
+    assert sorted(got) == sorted(GROUNDED_FRAMES), got
+    assert len(got) == 13
+
+
+def test_blueprints_knockout_is_where_operator_ruling_10_put_it():
+    """NOT A DEFECT — A RULING, MADE ON 2026-09-04 AND RECORDED.
+
+        "10. Blueprint's knockout may MOVE from the title block to the default
+             answer in a confirm — exactly one per view."
+        (`.fast-dev-flow/archive/spec-20260905-kits-learn-3-closed.md` §6.1,
+         the operator's ten rulings; implemented by inc17, cited at
+         `Kit.knockout_cell` and at `screens.s4_blueprint`.)
+
+    `PROTOTYPE.md` §4 is the list of questions PUT to the operator, and the
+    round read its question 10 as unanswered. All ten were answered; this one
+    was answered yes. So the `.svg` painting `DELETE` is the ruling being
+    obeyed, and the `.txt` not showing it is the limit `knockout_cell`'s own
+    docstring records — "the one mark in this file that does not survive the
+    `.txt` ... the honest place to read a knockout is the SVG" — which
+    `PROTOTYPE.md` §3 had already published as a collateral finding.
+
+    THE TITLE BLOCK LOST NOTHING, which is what makes the move legal rather
+    than merely permitted. The state cell reverses on the `alert` mood alone,
+    and the seeded board is calm — so the sheet's one knockout was UNSPENT and
+    the confirm could take it. "Exactly one per view" holds by arithmetic. The
+    mechanism is exercised in both moods here, so "the title block carries no
+    knockout" is shown to be an unspent law and not a dead one."""
+    k = LG.kit("blueprint")
+    assert k.knockout_cell(" DELETE ") == \
+        f"[{k.t['ground']} on {k.c['ink']}] DELETE [/]"
+    assert declared_grounds("blueprint", "S4") == {k.c["ink"]}
+    svg = (FRAMES / "blueprint_S4.svg").read_text(encoding="utf-8")
+    pair = re.search(r'<rect[^>]*fill="%s"/>\s*<text[^>]*fill="([^"]+)"[^>]*>'
+                     r'([^<]*)</text>' % re.escape(k.c["ink"]), svg)
+    assert pair, svg[:200]
+    assert pair.group(1) == k.t["ground"]
+    assert pair.group(2).replace("\u00a0", " ") == " DELETE "
+
+    # the title block's own cell: unspent, not absent
+    assert k.mood != "alert"
+    assert k._state_cell() == ("├ CLEAR ┤", False)
+    calm = LG.kit("blueprint")
+    calm.mood = "alert"
+    assert calm._state_cell()[1] is True, "the first-fixation law is dead"
+
+
+def test_no_style_tier_survives_the_exporter_and_that_is_why_S6_is_unjudged():
+    """THE LIMIT, ASSERTED SO IT CANNOT BE CROSSED OR KEPT SILENTLY.
+
+    `Kit.match` marks the query inside a result row with `MATCH_STYLE`, which
+    every one of the eleven spells as a STYLE — `bold`, `underline` or
+    `reverse` over a hue. `svg_from_grid` emits background runs and fill
+    colours and nothing else, so all six declared match runs in every S6 reach
+    neither artefact: not the `.txt` (a style is not a cell) and not the
+    `.svg`. Sixty-six declared runs, none painted.
+
+    THAT IS WHY THE ROUND COULD NOT JUDGE A SINGLE S6 (`PROTOTYPE-inheritors`
+    §4). Two of the eleven are the sharp case: industrial's `reverse {accent}`
+    and solari's `reverse {ink}` are a GROUND channel — the same channel this
+    exporter paints 16 times in `industrial_S1` — and they are still not
+    painted, because `reverse` reaches Rich as a style word rather than as
+    `on <colour>`.
+
+    NOT FIXED HERE, and the reason is scope rather than difficulty: teaching
+    the exporter `bold` / `underline` / `reverse` re-renders all 66 `.svg` and
+    re-opens the round that judged them (`PROTOTYPE-inheritors.md` §7 q9, an
+    operator question). What this test does is stop the limit from being
+    either forgotten or silently crossed: the day the exporter learns a style,
+    this goes red and points at the round that has to be redone."""
+    total = 0
+    for lang in LANGS:
+        declared = declared_styles(lang, "S6")
+        assert len(declared) == 6, (lang, declared)
+        assert declared[0].split(" ")[0] in _STYLE_WORDS, (lang, declared)
+        total += len(declared)
+        svg = (FRAMES / f"{lang}_S6.svg").read_text(encoding="utf-8")
+        assert "font-weight" not in svg, lang
+        assert "text-decoration" not in svg, lang
+    assert total == 66
+    # and the two whose style IS a ground channel paint nothing either
+    for lang in ("industrial", "solari"):
+        assert LG.kit(lang).MATCH_STYLE.startswith("reverse"), lang
+    assert painted_grounds("industrial", "S6") == set()
+    assert painted_grounds("industrial", "S1"), (
+        "the exporter CAN paint a ground for this language -- it does it "
+        "sixteen times on the board -- and in S6 it paints none")
+
+
+# ---------------------------------------------------------------------------
 # inc37 (inheritors-2) — every language is photographed, not just the five
 # ---------------------------------------------------------------------------
 SCREENS = ("S1", "S2", "S3", "S4", "S5", "S6")

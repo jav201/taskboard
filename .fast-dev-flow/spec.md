@@ -192,3 +192,120 @@ frames are the base kit rendered — admissible as a baseline, not as a language
 - **No ink-floor law was applied to the 66.** `verify_ink.py` was not a gate here; darkside's S6 at
   8.3 % is the sweep's floor and is named.
 - **The skill was not hand-edited.** `export_to_skill.py` ran; the gallery candidates above are proposed.
+
+---
+
+## 9. Batch `rework-1` — the three findings of `PROTOTYPE-inheritors.md` that are not language-level
+
+`PROTOTYPE-inheritors.md` (2026-09-05) judged 42 frames and proposed **19 `rework`**. It also argued that
+those nineteen are not nineteen defects: nord — the language that overrides nothing — proves that several
+of them live in `Kit` or in the composition layer, and its §7 q1 asks whether `Kit` is opened **before**
+any language is touched. **This batch is that: three increments, one base-level defect each, no language
+given its own answer.** The sixteen remaining `rework` frames are listed in §9.4 and are untouched.
+
+### 9.1 What each increment fixed
+
+| inc | the defect | the level it lived at | frames moved |
+| --- | --- | --- | --- |
+| 39 | `INVALID` spelled by EXCHANGING the two walls of a field — `nord ] [`, `instrument ⠸⠶⠇`, `industrial ▌/▐`, `blueprint ┤·├`. Orientation is not a channel a reader can use: the two marks sit at opposite ends of a 34-cell row. | **`Kit.PART_GLYPHS["textfield.main"]`** — nord declares no `PART_GLYPHS` at all, so its flip was the base's, and three languages had re-declared the same turn. Fixed at the declaration seat in all four; the law is written once over all eleven. | `nord_S2`, `instrument_S2`, `industrial_S2`, `blueprint_S2` (txt + svg) |
+| 40 | `solari_S4` opened on a blank row: the announcement band was anchored at screen index 0, so the mode strip, the masthead and the head seam were gone and the frame could not say which mode it was in. | **`Solari.overlay_instead`** — *not* `Kit.overlay` and *not* `screens.py`, which ten languages share and ten leave their page intact through. The band still takes the head of the board; `schedule_head` now says which head, by finding the first full-measure seam. | `solari_S4` (txt + svg) |
+| 41 | **none — the premise inverted.** The knockout on `blueprint_S4`'s `DELETE` is operator **ruling 10** of 2026-09-04, recorded verbatim in the archived spec §6.1, implemented by inc17 and cited at two seats; the `.txt` not carrying it is the limit `knockout_cell`'s own docstring publishes. Measured over all 66 frames, the exporter paints exactly the grounds the kits declare. | — | none |
+
+**The rule inc39 applied, stated so it can be argued with:** restore the language's declared handedness;
+where un-flipping alone would collide byte-for-byte with another state, the walls take that language's own
+`DANGER_FORM` — the seat swiss (`╲ ╱`) and darkside (`Ø Ø`) already spend theirs on. So
+`instrument ⠇⠶⠸` and `industrial ▐/▌` (un-flip only), `nord ! !` and `blueprint ━·━` (walls to
+`DANGER_FORM`, because un-flipping would have made INVALID byte-identical to DEFAULT).
+
+### 9.2 The laws this batch added
+
+- **inc39** — an invalid field's opening mark may not be one the language uses ONLY to close, and its
+  closing mark may not be one it uses ONLY to open; asked of all eleven at three widths (1, 12, 34). Its
+  own vacuity is asserted: six languages give a field the same mark on both sides in every state and have
+  no handedness to violate, so the law bites on exactly five (`instrument`, `industrial`, `nord`,
+  `ledger`, `blueprint`). Teeth: the four old declarations restored byte for byte go red, the other seven
+  stay green.
+- **inc40** — the rows a modal changes form ONE contiguous band, and that band never takes the page's
+  first row. `corgi` is exempt by its own citation (*"a confirm is a MODE and the board is gone"*),
+  asserted word for word and checked to be doing work. Teeth: `schedule_head → 0` IS the pre-inc40 body,
+  and under it the mode strip is gone and row 9 is row 9 again.
+- **inc41** — the `.svg` paints exactly the grounds the kit declared, over all 66 frames, with the
+  13-frame evidence roster written down; and the STYLE tier (`bold` / `underline` / `reverse`) is asserted
+  to reach neither artefact — 66 declared match runs across the eleven S6, none painted. The pair is its
+  own teeth: the same comparison comes out equal on one tier in 66 of 66 and unequal on the other in
+  11 of 11.
+
+### 9.3 Three answers to `PROTOTYPE-inheritors.md` §7, given by looking rather than by verdict
+
+- **q1 (`Kit` before the languages)** — answered by measurement, and the round's arithmetic was off. The
+  attribution is right (`Kit`'s line is the origin) but the fix is not one edit: ten of the eleven declare
+  a full 14-key `PART_GLYPHS`, so patching `Kit` moves `nord_S2` and nothing else. §5.8 of the round flags
+  its own inference as unrendered; it is rendered in inc39 §1.
+- **q2 / §0b (blueprint's ruling 10)** — **the round is wrong on the record.** `PROTOTYPE.md` §4 is the
+  list of questions PUT to the operator; all ten were answered on 2026-09-04 and §6.1 of
+  `spec-20260905-kits-learn-3-closed.md` records them. Question 10 was answered **yes**. The exporter
+  decided nothing. Whether to *reconsider* the ruling is still the operator's; this batch does not
+  prejudge it.
+- **q3 (blueprint's first fixation not rendered in five of six)** — doctrine. `_state_cell` fires the
+  reverse on the `alert` mood alone and the seeded board is calm, so the title block's knockout is
+  **unspent, not missing** — which is precisely what makes ruling 10's move legal without breaking
+  "exactly one per view". Exercised in both moods in inc41.
+- **q7 (orientation as the only channel of a state)** is answered for the FIELD and left open elsewhere.
+  **Blueprint's `radio.main` turns its terminators on purpose, with a citation in the kit** (*"a callout
+  selecting one item from a schedule"*), so inc39's law is scoped to `textfield` and exempts it by name.
+  The round reads blueprint's radio/checkbox pair as a defect; on the evidence in the kit it is doctrine.
+
+### 9.4 The `rework` frames this batch did NOT touch — language-level, still open
+
+Sixteen of the round's nineteen. Each is one language's own declaration, and none of them is fixable at
+the base:
+
+| frame | the finding, in one line | the §7 question it belongs to |
+| --- | --- | --- |
+| `instrument_S2` | the ERROR rung `⠇` opens the SAFE button; severity inverted in the controls | q5 (cell overload) |
+| `instrument_S3` | `⠁` is `REQUIRED` in S2 and `DISABLED` here — two meanings, no cue | q6 (the obligation mark) |
+| `instrument_S4` | the only severity cell in a destructive confirm sits on `Cancel` | q5 |
+| `swiss_S2` | `Save` (DISABLED) is typographically a caption; four walled controls beside one bare one | inc38's own §7 |
+| `swiss_S3` | `·` (`LEVELS["info"]`) prefixes `╲Delete all╱` — the lowest rung on the most dangerous control | q5 |
+| `swiss_S4` | `•` (`REQUIRED`) is the focus ring on the irreversible button; the modal opens and never closes | q6 |
+| `industrial_S2` | `▐` is both `REQUIRED` and the field's wall, eight spaces apart on one row | q6 |
+| `industrial_S3` | the danger-zone CAPTION is plated exactly like the button beside it | q8 (caption vs control) |
+| `nord_S1` | the load plot beats the declared subject in the pane the split exists to give one subject | — (nord's own metric) |
+| `darkside_S1` | the `.txt` has no pane separation at all; only the `.svg` shows the grey step | q10 (the `.txt` as the work) |
+| `darkside_S3` | caption and destructive button open with the same `▬` on consecutive rows | q8 |
+| `darkside_S6` | `bold {ink}` in an achromatic language — probably unobservable even in a real terminal | q9 |
+| `solari_S2` | `▁` does nine jobs in one screen; "point at the required fields" has no non-positional reading | q6 |
+| `blueprint_S1` | the first-fixation law is unspent on a calm sheet (see §9.3 q3 — **doctrine, not a bug**) | q3 |
+| `blueprint_S2` | `├` is both `REQUIRED` and the dimension's opening terminator; radio and checkbox differ only by orientation (**the second half is doctrine** — §9.3 q7) | q6 / q7 |
+| `blueprint_S3` | on and off differ by ONE hairline cell (`├─┤` vs `├┤·`) | q5 |
+
+### 9.5 Found by looking, not fixed — and one of them is urgent
+
+- **`pytest -q` MUTATES THE SUITE.** `prototypes/out/_b37_test.py` matches pytest's default
+  `python_files = test_*.py *_test.py`, so a bare `pytest` from the repo root **collects it and runs its
+  module body**, which appends the inc37 block to `tests/test_components.py`. HEAD already carries
+  **three** such copies — three prior gate runs — and the test count never moved because the duplicate
+  `def`s shadow each other. inc38 §7 recorded the symptom; this is the cause. Neutralised by hand
+  (snapshot before `pytest`, restore after) for all three commits in this batch. **The fix is one line:
+  `testpaths = ["tests"]` in `pyproject.toml`, or rename the probe.**
+- **`prototypes/gallery/gallery_darkside.{txt,svg}` are stale on disk**, last baked at inc21 while
+  `language.py` has been edited a dozen times since; `capture_languages.py` renders a radio as `( )` where
+  the committed frame has `(.)`. **Proved not this batch's doing** by checking `language.py` out at the
+  pre-batch commit `8604607`, re-running the capture, and getting the identical diff.
+- **`blueprint_S4`'s destructive control carries no danger mark and no focus mark in either tier.**
+  `screens.s4_blueprint` builds it with `knockout_cell(" DELETE ")` instead of `button(..., FOCUSED,
+  danger=True)`, so it loses its walls, its `DANGER_FORM` and its focus and gains the reverse. Ruling 10
+  moved the KNOCKOUT; it did not say the default answer stops being a button. Fixing it needs
+  `knockout_cell` and `button` to compose, which is a new kit seat — named, not invented.
+- **`Kit.PART_GLYPHS["stepper.step"][INVALID] = "]["`** is inc39's defect on the stepper (`]` as the step
+  BACK against `-+` / `◂▸` / `◄►` / `◀▶`). Not fixed: a stepper's halves are directions, not walls, so it
+  needs its own law, and no frame in the sweep renders an invalid stepper.
+
+### 9.6 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc39 · inc40 · inc41 |
+| Phase C (close) | this section |
+| Notes | **2 source files across 3 increments, one agent.** `taskboard/language.py` (inc39, inc40) and `tests/test_components.py` (all three), plus three packets, this section and 10 frame artefacts. `capture_languages.py` was run once and confirmed no board rendering changed. |
