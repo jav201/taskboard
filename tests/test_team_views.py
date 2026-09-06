@@ -282,3 +282,44 @@ def test_people_width_sweep_is_cell_exact(width, tmp_path):
     expected = max(MIN_WIDTH, width)
     for line in text.plain.split("\n"):
         assert cell_len(line) == expected, f"width {width}: {line!r}"
+
+
+# --------------------------------------------------------------------------- #
+# people WITHOUT a team: key 9 is ungated, so this is a reachable state
+# --------------------------------------------------------------------------- #
+def test_people_nav_model_survives_team_mode_off(tmp_path):
+    """Key `9` enters people unconditionally (`app.VIEW_KEYS`, no team gate) and
+    `render_people` answers team-mode-off with a body that says so. The nav model
+    is the third seat on that same entry point and must agree: no roster means
+    nothing selectable, NOT an AttributeError on the operator's first cursor key.
+
+    This is the crash of 2026-09-05: `team_state=None` reached
+    `for member in team_state.roster()`.
+    """
+    board = _board(tmp_path)
+    board.tasks = [Task("Solo task", project_id="personal", phase="Doing")]
+
+    rows = nav_model("people", board, False, team_state=None, team_filter="equipo")
+    assert rows == [], "no team means no selectable rows, not a crash"
+
+
+async def test_cursor_in_people_without_a_team_does_not_crash(tmp_path):
+    """The operator's reproduction: a board with tasks, NO team configured,
+    switch to people, press a cursor key. The app must survive and still draw
+    the honest team-mode-off body."""
+    board_path = tmp_path / "board.json"
+    board = Board.load(str(board_path))
+    board.save()
+    assert not board.settings.get("team_shared_dir"), "fixture must have no team"
+
+    app = TaskboardApp(board_path=str(board_path))
+    async with app.run_test(size=(202, 39)) as pilot:
+        await pilot.press("9")
+        assert app.view_mode == "people"
+        assert app.team_state is None, "no shared dir means team mode is off"
+        await pilot.press("down")
+        await pilot.press("down")
+        await pilot.press("up")
+        text = str(app.query_one("#board").render())
+        assert "PEOPLE" in text
+        assert "team mode off" in text, "the view must say why it is empty"

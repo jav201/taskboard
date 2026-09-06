@@ -4664,6 +4664,14 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
         return [[t.id for t in pinned]]
 
     if mode == "people":
+        # Key `9` is ungated, so people IS reachable with team mode off, and
+        # `render_people` answers that with a body that says so. Nav is the
+        # other seat on that entry point and must agree with the render: a view
+        # that draws no cards offers no rows to walk. The disagreement was not
+        # merely the F-3 trap (a cursor parked where the screen draws nothing);
+        # it was an AttributeError on the first cursor key.
+        if team_state is None:
+            return []
         ids: list[str] = []
         for member in team_state.roster():
             uid = member["id"]
