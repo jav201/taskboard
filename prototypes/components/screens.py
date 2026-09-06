@@ -222,29 +222,12 @@ def rule(sh: Sheet) -> None:
 # `s1_blueprint` builder went with it -- that override existed only to strip
 # the `│` this file had no business printing in blueprint's frame.
 
-# NARROWED BY inc14 (kits-learn-3).  The STATE is implemented: the field is
-# drawn by `k.textfield(..., INVALID)` and its mark is the language's own
-# ground, so nothing about the CONTROL is hand-drawn here any more.  What is
-# still drawn by hand is the MESSAGE row -- the caller's words, on a row whose
-# NOTATION no language has a seat for.  The candidate shrank to exactly that,
-# which is the sidecar staying honest as the contract grows.
-C_ERROR = Cand(
-    "the inline error message under the invalid field",
-    "evoked", "Kit.error",
-    "Kit.error(self, msg: str, w: int) -> str",
-    "the message is CONTENT and comes back byte for byte; what is missing is "
-    "the language's NOTATION for a row that explains a rejection -- ledger's "
-    "leaders, corgi's segment legend, blueprint's revision note.  The STATE "
-    "itself is no longer a candidate: `STATES += INVALID` shipped in inc14 "
-    "and the field above is drawn in it")
-
-C_REQUIRED = Cand(
-    "the required-field marker beside a caption",
-    "evoked", "Kit.required()",
-    "Kit.required(self) -> str",
-    "one mark, in the language's own notation -- corgi numbers, ledger "
-    "leaders, blueprint dimensions; it may NOT be a bare '*' in five "
-    "languages, which is the palette-swap failure at one glyph")
+# `C_ERROR` and `C_REQUIRED` were here until inc29.  `Kit.error` seats the
+# message row -- the mark is the language's own `LEVELS["error"]`, the words
+# come back byte for byte, and the remainder is the language's (leaders, unlit
+# lattice, a dashed revision extension, bare panel).  `Kit.required` seats the
+# marker: the `*` this file printed in five languages at once was the
+# palette-swap failure at one glyph, which is what its own commitment said.
 
 C_TEXTAREA = Cand(
     "the multi-line notes field",
@@ -346,7 +329,9 @@ def s2(sh: Sheet) -> None:
     header(sh, "NEW TASK", "5 fields  ·  1 invalid")
 
     lab = 14
-    req = f"[{c['alert']}]{LG.mark('*')}[/]"
+    # THE REQUIRED MARK, through the kit (inc29).  This was `*` in the alert
+    # hue, in five languages at once.
+    req = k.required()
 
     def field(caption: str, control: str, required: bool = False,
               *cands: Cand) -> None:
@@ -356,7 +341,7 @@ def s2(sh: Sheet) -> None:
 
     # title -- textfield in EDITED, which is the kit's own caret state
     field("title", k.textfield(F.FORM_TITLE, F.FORM_TITLE_CARET, 34, EDITED),
-          True, C_REQUIRED)
+          True)
     sh.blank()
 
     # due -- the INVALID field, drawn in the kit's own sixth state (inc14).
@@ -365,9 +350,10 @@ def s2(sh: Sheet) -> None:
     # file used to add is gone, because that `!` in five languages at once was
     # the finding the round reported.
     bad = k.textfield(F.FORM_DUE_RAW, None, 34, INVALID)
-    field("due", bad, True, C_REQUIRED)
-    sh.row(" " * (lab + 2) + f"[{c['alert']}]{LG.mark(F.FORM_DUE_ERROR)}[/]",
-           C_ERROR)
+    field("due", bad, True)
+    # THE MESSAGE ROW, through the kit (inc29).  The words are the caller's and
+    # come back byte for byte; the mark and the remainder are the language's.
+    sh.row(" " * (lab + 2) + k.error(F.FORM_DUE_ERROR, W - lab - 4))
     sh.blank()
 
     field("priority", k.radio_group(F.PRIORITIES, F.PRIORITY_SEL))

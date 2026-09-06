@@ -848,3 +848,109 @@ def test_blueprints_two_datums_never_join():
     rows = [plain(r) for r in LG.kit("blueprint").pane_split(5, 3)]
     assert rows[0] == "┤ ├"
     assert set(rows[1:]) == {"   "}
+
+
+# ===========================================================================
+# inc29 (kits-learn-4) — `Kit.error` and `Kit.required`, S2's other two
+# ===========================================================================
+MSG = "due must be a date (dd/mm/yy)"
+EW = 44
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_an_error_row_returns_its_message_byte_for_byte(lang):
+    """THE CONTENT LAW, on the one string in a form that must not be edited.
+
+    The words are the caller's account of what is wrong. Three of these
+    languages letter their labels in capitals and none of them may letter
+    this; none may truncate it either, however narrow the row is asked for —
+    a validation message trimmed to fit is a complaint the user cannot act
+    on."""
+    k = LG.kit(lang)
+    for w in (EW, 8, 200):
+        assert MSG in plain(k.error(MSG, w)), (lang, w, plain(k.error(MSG, w)))
+    weird = "Q3 -1,204.55 [ref] AbCd"
+    assert weird in plain(k.error(weird, EW)), lang
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_an_error_row_survives_greyscale(lang):
+    """The mark is a SHAPE, so the row still says ERROR with every hue
+    removed — and it is not any of the language's other two rungs, so a
+    greyscale eye can tell a rejection from a warning."""
+    k = LG.kit(lang)
+    got = plain(k.error(MSG, EW))
+    assert got.startswith(k.LEVELS["error"]), (lang, got)
+    assert k.LEVELS["error"] != k.LEVELS["warn"] != k.LEVELS["info"], lang
+
+
+def test_five_languages_explain_a_rejection_five_ways():
+    """THE PROPERTY (AC-2). Same message, same width, five rows that differ
+    as cells: the segment bank on bare panel (corgi), two lit dots over an
+    unlit lattice (naught), a single-daggered footnote ruled out to the
+    margin (ledger), the ember at full strength (prism), a revision note on a
+    dashed extension (blueprint)."""
+    rows = {n: plain(LG.kit(n).error(MSG, EW)) for n in PROTOTYPED}
+    assert len(set(rows.values())) == len(PROTOTYPED), rows
+
+
+def test_the_error_mark_is_the_languages_own_level_ladder_and_not_a_new_table():
+    """A second severity table beside `LEVELS` would be two answers to one
+    question. An inline validation failure and a log line at ERROR are the
+    same claim about the same severity, made about a field instead of an
+    event — so the mark is read off the ladder that already survives
+    greyscale by ruling 8."""
+    for lang in LANGS:
+        k = LG.kit(lang)
+        assert plain(k.error("x", 4)).startswith(k.LEVELS["error"]), lang
+
+
+@pytest.mark.parametrize("lang", ("ledger", "blueprint"))
+def test_the_two_rationing_languages_spend_no_alert_on_a_rejected_field(lang):
+    """The commitment `log_row` already guards, asked of the other component
+    that wants red: ledger's alert is literal debt, blueprint's is overdue
+    and nothing else ("a calm sheet carries zero alert"). A rejected form
+    field is neither."""
+    k = LG.kit(lang)
+    assert k.c["alert"] not in k.error(MSG, EW), lang
+    assert k.c["alert"] not in k.required(), lang
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_required_mark_is_one_cell_and_costs_no_rationed_hue(lang):
+    """One cell, so a caption's column does not move when a field becomes
+    obligatory; and the ink tier rather than alert, because a required field
+    is a PROPERTY of the field and not an alarm about it."""
+    k = LG.kit(lang)
+    assert len(plain(k.required())) == 1, (lang, plain(k.required()))
+    assert plain(k.required()).strip() != "", lang
+
+
+def test_the_required_mark_is_not_a_bare_star_in_any_prototyped_language():
+    """The candidate's own commitment, made falsifiable: "it may NOT be a
+    bare `*` in five languages, which is the palette-swap failure at one
+    glyph". `*` is the terminal's convention and the base kit keeps it; a
+    language with an alphabet of its own answers for itself."""
+    marks = {n: plain(LG.kit(n).required()) for n in PROTOTYPED}
+    assert "*" not in marks.values(), marks
+    assert len(set(marks.values())) == len(PROTOTYPED), marks
+    assert plain(LG.kit("nord").required()) == "*"
+
+
+def test_no_language_numbers_a_required_field():
+    """L-33, applied to the mark most likely to reach for a digit: corgi's
+    numbers ARE its keymap, and an obligation is not a key."""
+    for lang in LANGS:
+        assert not any(ch.isdigit() for ch in plain(LG.kit(lang).required())), \
+            lang
+
+
+def test_ledgers_two_daggers_are_an_order_and_not_a_pair():
+    """Footnote order is the whole notation: `†` marks the entry that must be
+    made, `‡` marks the one that was refused — and `‡` is also the wall this
+    language's invalid field is daggered with, so the mark on the row and the
+    mark on the field are the same claim."""
+    k = LG.kit("ledger")
+    assert plain(k.required()) == "†"
+    assert k.LEVELS["error"].strip() == "‡"
+    assert k.field_form(LG.INVALID, "textfield")[0] == "‡"
