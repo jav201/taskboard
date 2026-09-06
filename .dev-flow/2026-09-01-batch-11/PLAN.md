@@ -529,3 +529,96 @@ committed as part of this batch.
   batch-11" section summarizing the spine and deferred V4/V5/V6/V7 work.
 - No public API docs beyond README/keybinding; UI strings are in the app's
   English register.
+
+---
+
+# Post-close hotfix — 2026-09-05 — `people` nav crashed with team mode off
+
+**Commit:** `f0b64d5` (branch `fix-people-nav-none`, from `4d8ebd6`) · **Files:** 2
+· **Status:** fixed, suite green.
+
+## What happened
+
+The operator, at 202×39 on his own board (77 tasks, 5 projects), pressed `9`
+then a cursor key and the app died:
+
+```
+app.py:582 action_cursor -> app.py:531 _nav_columns -> views.py:4668 nav_model
+for member in team_state.roster():   # team_state = None, mode='people'
+AttributeError: 'NoneType' object has no attribute 'roster'
+```
+
+## Cause — one of the three candidates, with evidence
+
+| candidate | verdict | evidence |
+|---|---|---|
+| the persisted view mode restored `people` before the team loaded | ❌ **FALSE** | `view_mode` is not persisted at all: `app.py:185` sets `"swimlanes"` on every boot. The operator reached `people` by pressing `9` in-session. |
+| `_nav_columns` never passes `team_state` | ❌ **FALSE** | `app.py:541` passes `team_state=self.team_state` explicitly. It passed it faithfully — the value itself was `None`. |
+| **no team file on this box, so team mode is off** | ✅ **TRUE** | The operator's real board has no `team_shared_dir` in `settings`; `TeamState.from_settings` returns `None` for a falsy dir (`team_sync.py`), so `app.py:309` leaves `self.team_state = None`. Verified on the live board read-only: `team_shared_dir set: False`, and the app reports `team_state: None` at runtime. |
+
+The deeper cause is a **regime gap, not a missing wire**. Key `9` is ungated
+(`VIEW_KEYS`, `keymap.py:75` — no team check), so `people` with team mode OFF is
+a first-class reachable state. `render_people` (`views.py:3815`) and
+`render_standup` (`views.py:3713`) both handle it with an honest body; the
+legend (`views.py:4526`) and `probe_setup_health` handle it too. `nav_model` was
+the **only** consumer on that entry point that assumed a roster.
+
+## The fix, and why this seam
+
+`nav_model`'s `people` branch returns `[]` when `team_state is None`.
+
+The alternative — gate key `9` so `people` is unavailable without a team — was
+rejected because it contradicts how the app already behaves: the renderer has a
+purpose-built team-mode-off body, so the product's answer to "people without a
+team" is *show the view and say why it is empty*, not *refuse the view*. Nav
+must agree with the render, and a view that draws no cards offers no rows to
+walk — exactly what `flow`, `standup` and `setup` already return. `action_cursor`
+already handles empty columns (`_locate` → `None` → `_select_first`), so the
+cursor becomes a no-op and the view keeps rendering.
+
+## Other consumers of `team_state` — all checked
+
+Every `team_state.` dereference was audited (`grep -n "team_state\." taskboard/`).
+Only `nav_model` was exposed:
+
+| site | guarded? |
+|---|---|
+| `views.py:3713` `render_standup` | ✅ early return, "team mode off" body |
+| `views.py:3815` `render_people` | ✅ early return, "team mode off" body |
+| `views.py:3652-3656` `_member_tasks_for_filter` | ✅ unreachable with `None` — only called from inside the two guards and from the roster loop |
+| `views.py:4526` legend `standup`/`people` marks | ✅ `if team_state is not None` |
+| `views.py:4532` `render_setup` → `probe_setup_health` | ✅ takes `TeamState \| None`, `team_sync.py:271` returns early |
+| `team_sync.py:354` `sync_tone` | ✅ `if team_state is not None and ...` |
+| `app.py:312-366`, `app.py:921` | ✅ every path tests `is None` first |
+| **`views.py:4668` `nav_model`** | ❌ **the defect — now guarded** |
+
+## Verification
+
+- **RED:** both new tests failed with the operator's exact frames
+  (`app.py:582` → `_nav_columns` → `views.py:4668`).
+- **GREEN:** `tests/test_team_views.py` 253 passed.
+- **Suite:** baseline on `4d8ebd6` 1303 passed / 1 environmental
+  `test_win_clipboard_roundtrip` failure (WinError 206, the documented flake);
+  after the fix **1306 passed**, 0 failed.
+- **ruff:** 4 pre-existing findings on `views.py`/`test_team_views.py`, byte-identical
+  before and after. The change adds none; the pre-existing ones were left alone.
+- **Smoke** at 202×39 on a **copy** of the operator's real board (the original
+  is never opened by the app; sha256 and mtime asserted unchanged): enters
+  `people`, survives four cursor moves, renders `PEOPLE` + `team mode off`, all
+  rows exactly 202 cells. Non-vacuous: the same script on the pre-fix code
+  reproduces the `AttributeError`.
+
+## Lesson (extends this batch's Lesson 2)
+
+**View parity is per-REGIME, not per-branch.** Batch-11 already recorded that a
+new view needs an explicit branch in every seat — `render_view`, `nav_model`,
+`legend_entries`, `VIEW_ORDER`, `VIEW_KEYS`, `keymap.py`. All six branches
+existed. What was missing is that a view with an **optional data source** has
+two regimes, and the parity law has to be walked once per regime: every seat
+that can see `team_state` must answer *both* "there is a team" and "there is
+not". Three seats had covered the off-regime; the fourth had not, and nothing
+tested it.
+
+**Candidate control for `dev-flow-lessons`:** *when a view's data source is
+optional, the parity checklist is (seats × regimes), not seats. A guard in the
+renderer is not evidence the navigator has one.*
