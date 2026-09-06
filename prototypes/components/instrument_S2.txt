@@ -1,20 +1,20 @@
 ⠂board  ⣿FORM  ⠂cfg  ⠂log                                                                           
 ⣿ NEW TASK  5 fields  ·  1 invalid                                                                  
 ⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒ 
-  title⠁        ⠧Fix login⡇ redirect⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠼                                                
+  title⠁        ⠼Fix login⡇ redirect⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠧                                                
                                                                                                     
-  due⠁          ⠇12/09/26⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠸                                                
+  due⠁          ⠸12/09/26⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠇                                                
                 ⠇⠇ expected YYYY-MM-DD                                                              
                                                                                                     
   priority      ⠐ low  ⠐ norm  ⠶ high                                                               
                                                                                                     
   tags          ⠒ api  ⣿ ui  ⣿ urgent                                                               
                                                                                                     
-  notes         ⠇Redirect drops the ?next= param w⠿⠸                                                
-                ⠇session cookie is renewed mid-fli⠿⠸                                                
-                ⠇⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠸                                                
+  notes         ⠸Redirect drops the ?next= param w⠿⠇                                                
+                ⠸session cookie is renewed mid-fli⠿⠇                                                
+                ⠸⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠇                                                
                                                                                                     
-                ⠄    Save    ⠄   ⠇   Cancel   ⠸                                                     
+                ⠄    Save    ⠄   ⠸   Cancel   ⠇                                                     
                 Save is held until due parses                                                       
                                                                                                     
                                                                                                     

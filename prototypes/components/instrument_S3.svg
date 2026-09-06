@@ -24,19 +24,19 @@
 <text x="245.2" y="108.3" fill="#e8edf2">⡇</text>
 <text x="253.6" y="108.3" fill="#333c47">⠒⠒</text>
 <text x="26.8" y="125.3" fill="#333c47">sync to remote</text>
-<text x="245.2" y="125.3" fill="#333c47">⠄⠁⠁</text>
+<text x="245.2" y="125.3" fill="#333c47">⠄⠈⠈</text>
 <text x="295.6" y="125.3" fill="#333c47">(no remote configured)</text>
 <text x="26.8" y="142.3" fill="#6b7785">compact rows</text>
 <text x="245.2" y="142.3" fill="#6b7785">⣿⣿</text>
 <text x="262.0" y="142.3" fill="#e8edf2">⡇</text>
 <text x="26.8" y="176.3" fill="#6b7785">start of week</text>
-<text x="245.2" y="176.3" fill="#333c47">⠇</text>
+<text x="245.2" y="176.3" fill="#333c47">⠸</text>
 <text x="253.6" y="176.3" fill="#e8edf2">mon    </text>
-<text x="312.4" y="176.3" fill="#333c47">⠿⠸</text>
+<text x="312.4" y="176.3" fill="#333c47">⠿⠇</text>
 <text x="26.8" y="193.3" fill="#6b7785">theme</text>
-<text x="245.2" y="193.3" fill="#333c47">⠇</text>
+<text x="245.2" y="193.3" fill="#333c47">⠸</text>
 <text x="253.6" y="193.3" fill="#e8edf2">dark   </text>
-<text x="312.4" y="193.3" fill="#333c47">⠿⠸</text>
+<text x="312.4" y="193.3" fill="#333c47">⠿⠇</text>
 <text x="278.8" y="210.3" fill="#6b7785">auto   </text>
 <text x="278.8" y="227.3" fill="#6b7785">light  </text>
 <text x="262.0" y="244.3" fill="#2dd4bf">⣿</text>
@@ -49,7 +49,7 @@
 <text x="26.8" y="329.3" fill="#6b7785">danger zone</text>
 <text x="127.6" y="329.3" fill="#333c47">⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒</text>
 <text x="606.4" y="329.3" fill="#e8edf2">delete every completed task</text>
-<text x="26.8" y="346.3" fill="#e8edf2">⠇ ⠛Delete all⠛ ⠸</text>
+<text x="26.8" y="346.3" fill="#e8edf2">⠸ ⠛Delete all⠛ ⠇</text>
 <text x="186.4" y="346.3" fill="#333c47">7 tasks, not recoverable</text>
 </g>
 </svg>

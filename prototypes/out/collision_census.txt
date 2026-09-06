@@ -30,12 +30,11 @@ CORGI   5 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRE
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-INSTRUMENT   8 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⠁  CUR ⣿)
+INSTRUMENT   7 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⠁  CUR ⣿)
 ------------------------------------------------------------------------------
-  ⠁   [5 families]  REQUIRED  ·  checkbox.main mark (checked+disabled,disabled)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (checked+disabled,disabled)  ·  textfield.main mid (disabled)
-  ⠇   [4 families]  LEVELS[error]  ·  INVALID textfield.main open  ·  button.main open (default)  ·  textfield.main open (default)
+  ⠇   [4 families]  LEVELS[error]  ·  INVALID textfield.main close  ·  button.main close (default)  ·  textfield.main close (default)
   ⠶   [3 families]  INVALID textfield.main mid  ·  radio.knob mark (checked,default)  ·  switch.indicator mark (checked+disabled,disabled)
-  ⠸   [3 families]  INVALID textfield.main close  ·  button.main close (default)  ·  textfield.main close (default)
+  ⠸   [3 families]  INVALID textfield.main open  ·  button.main open (default)  ·  textfield.main open (default)
   ⣿   [3 families]  CUR  ·  checkbox.knob mark (checked,default)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)
   ⠛   [2 families]  DANGER_FORM close + DANGER_FORM open  ·  checkbox.main mark (checked+focused,focused)
   ⡄   [2 families]  INVALID stepper.step close  ·  stepper.step open (default)
@@ -44,19 +43,15 @@ INSTRUMENT   8 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  RE
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-SWISS   9 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
+SWISS   5 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
 ------------------------------------------------------------------------------
-  ·   [6 families]  LEVELS[info]  ·  button.main open (default)  ·  checkbox.knob mid (checked+disabled,disabled)  ·  radio.knob mid (checked+disabled,disabled)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  textfield.main mid (edited)
-  •   [3 families]  REQUIRED  ·  button.main open (focused)  ·  radio.knob mid (checked,checked+focused,default,focused)
+  ·   [3 families]  LEVELS[info]  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  textfield.main mid (edited)
   ‹   [2 families]  INVALID stepper.step close  ·  stepper.step open (default)
   ›   [2 families]  INVALID stepper.step open  ·  stepper.step close (default)
   ─   [2 families]  LEVELS[warn]  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)
-  ━   [2 families]  LEVELS[error]  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)
-  ╱   [2 families]  DANGER_FORM close  ·  INVALID textfield.main close
   ╲   [2 families]  DANGER_FORM open  ·  INVALID textfield.main open
-  ▮   [2 families]  CUR  ·  checkbox.knob mid (active,checked+active)
-  ... 6 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 1 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
 INDUSTRIAL   4 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED ▐  CUR ▶)
@@ -132,8 +127,8 @@ LANGUAGE x COLLISIONS
 language       colliding cells
 naught                       5
 corgi                        5
-instrument                   8
-swiss                        9
+instrument                   7
+swiss                        5
 industrial                   4
 nord                         4
 darkside                     3
@@ -142,7 +137,7 @@ ledger                       2
 solari                       3
 blueprint                    5
 ------------------------------
-TOTAL                       53
+TOTAL                       48
 
 zero collisions: NONE -- all eleven overload at least one cell
 

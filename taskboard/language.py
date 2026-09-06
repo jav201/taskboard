@@ -5139,7 +5139,20 @@ class Instrument(Kit):
     # and nothing to grab — so it was a BAR wearing a slider's name, which is
     # the exact confusion the parts registry exists to make impossible.
     PART_GLYPHS = {
-        "main": {DEFAULT: "⠒", DISABLED: "⠁"},
+        # THE DEAD RUNG IS `⠄`, NOT `⠁` (inc46). `⠁` is `REQUIRED` -- one dot
+        # at the top of the cell, inc35's obligation mark -- and it was also
+        # the DISABLED track here, the DISABLED checkbox, the dead field's
+        # paper and the stepper's end stop. `instrument_S3` is the frame: a
+        # reader who has just learned that `⠁` means "you must fill this"
+        # meets it on a switch that says "off, and you may not touch it".
+        # `⠄` is the same column's BOTTOM dot and is already this language's
+        # dead rung -- the dead button's rails, the dead field's rails and the
+        # dead knob all wear it.
+        # The dead TRACK cannot take `⠄` either -- that is the dead KNOB, and
+        # `verify_language` holds a knob to differing in SHAPE from both the
+        # fill and the track. It takes the right column's top dot, the rung
+        # this language's dead stepper track already wears (`⠈⠈`).
+        "main": {DEFAULT: "⠒", DISABLED: "⠈"},
         "indicator": {DEFAULT: "⣿", DISABLED: "⠶"},
         "knob": {DEFAULT: "⡇", FOCUSED: "⢸", EDITED: "⠿",
                  ACTIVE: "⣤", INVALID: "⠶",
@@ -5149,7 +5162,7 @@ class Instrument(Kit):
         # needs no bracket to contain a mark. Span-equality carries the
         # containment law here, the same renunciation naught makes.
         "checkbox.main": {DEFAULT: "⠒", FOCUSED: "⠛", ACTIVE: "⠤",
-                          DISABLED: "⠁"},
+                          DISABLED: "⠄"},
         "checkbox.knob": {DEFAULT: "⣿", FOCUSED: "⣶", ACTIVE: "⣤",
                           DISABLED: "⠿"},
         # A REGISTER READ AS A RING, not as a level. The checkbox drives the
@@ -5166,7 +5179,31 @@ class Instrument(Kit):
         # word between them like a reading between two graticule marks. The
         # press BOTTOMS OUT — the rails gain their lower dots (⣇ ⣸) — which
         # is a travel this language can show without moving the label.
-        "button.main": {DEFAULT: "⠇  ⠸", FOCUSED: "⠧  ⠼", ACTIVE: "⣇⣀⣀⣸",
+        # THE RAILS MIRROR (inc46), and it is one edit with two arguments.
+        # `⠇` is `LEVELS["error"]`'s own cell -- three dots in the LEFT
+        # column, the ladder's top rung -- and it was OPENING the SAFE button:
+        # `instrument_S4` puts the only severity cell on the screen over
+        # `Cancel`, one key away from deleting three tasks. inc36 already made
+        # this choice once, for the gutter, and wrote the reason down -- it
+        # took `⠸` "because `⠇` is the error rung and a neutral divider with
+        # the cell of the ladder would say 'rejected' to a greyscale reader".
+        # The rail takes the gutter's column.
+        #
+        # AND THE INK NOW LOOKS AT THE CONTENT. Read as a pair, `⠇ … ⠸` sets
+        # each rail's dots on its OUTER edge, facing away from the word --
+        # `] [` in braille. `⠸ … ⠇` faces them in. The handedness is kept
+        # (inc39's law bites on this language), it is simply the other way
+        # round, and the INVALID declaration below is mirrored with it.
+        #
+        # `⠇` IS STILL THE CLOSER, and that is a declared cost rather than an
+        # oversight: the LEFT braille column IS the severity ladder's column
+        # (`⠂` one dot, `⠆` two, `⠇` three), so the only left-column rail that
+        # does not share a cell with the ladder is the FOUR-dot `⡇` -- which
+        # is this language's caret, its own index mark, and a field whose
+        # closing rail is its caret is worse than one whose closing rail is a
+        # rung. The batch rule names the OPENER, the switch indicator and the
+        # disabled mark; a closer is none of the three.
+        "button.main": {DEFAULT: "⠸  ⠇", FOCUSED: "⠼  ⠧", ACTIVE: "⣸⣀⣀⣇",
                         DISABLED: "⠄  ⠄"},
         # braille RAILS with a braille RULE between them, clinical register:
         # the field is a measured span and the words lie along it.
@@ -5177,23 +5214,34 @@ class Instrument(Kit):
         # both ends of the row. The rails go back the way this language sets
         # them in every other state; the full-dot paper `⠶` was already a
         # channel and is now the only one.
-        "textfield.main": {DEFAULT: "⠇⠒⠸", FOCUSED: "⠧⠒⠼", EDITED: "⠧⠤⠼",
-                           ACTIVE: "⣇⠒⣸", INVALID: "⠇⠶⠸",
-                           DISABLED: "⠄⠁⠄"},
+        #
+        # MIRRORED WITH THE BUTTON (inc46): the opener takes the gutter's
+        # column so the error rung stops opening a field, and the dots face
+        # the words. INVALID keeps the PAPER as its channel, which is inc39's
+        # fix; only the hand of the rails moved. The dead paper is the dead
+        # RAIL's own rung now (`⠄`) rather than `⠁`, which is `REQUIRED`.
+        "textfield.main": {DEFAULT: "⠸⠒⠇", FOCUSED: "⠼⠒⠧", EDITED: "⠼⠤⠧",
+                           ACTIVE: "⣸⠒⣇", INVALID: "⠸⠶⠇",
+                           DISABLED: "⠄⠄⠄"},
         # a full-height braille tick — this language's own index mark
         "textfield.caret": {DEFAULT: "⡇"},
         # THE REGISTER READ AS A TRAVERSE: the shaft is the baseline rail
         # (one dot row, the instrument's zero) and the view is the register
         # DRIVEN FULL. Clinical, and it is the same sub-cell channel this
         # language spends on every quantity it has ever drawn.
-        "scrollbar.main": {DEFAULT: "⠄", DISABLED: "⠁"},
+        # the dead shaft cannot take `⠄` -- that is this shaft's LIVE datum --
+        # so it takes the right column's top dot, the rung this language's
+        # dead stepper track already wears (`⠈⠈`).
+        "scrollbar.main": {DEFAULT: "⠄", DISABLED: "⠈"},
         "scrollbar.indicator": {DEFAULT: "⣿", DISABLED: "⠿"},
         # THE REGISTER'S DETENTS — a braille column each side, weighted to
         # the side it steps toward, so the sub-cell grid carries the
         # direction the way it carries everything else here. The state is how
         # many dot rows are driven; the dead detent is the baseline rail this
         # instrument reads zero as.
-        "stepper.main": {DEFAULT: "⠁⠁", DISABLED: "⠈⠈"},
+        # the end stop is the REGISTER'S BASELINE, `main`'s own datum, and no
+        # longer `⠁⠁` -- see the dead-rung note above: `⠁` is `REQUIRED`.
+        "stepper.main": {DEFAULT: "⠒⠒", DISABLED: "⠈⠈"},
         "stepper.step": {DEFAULT: "⡄⢠", FOCUSED: "⡆⢰", EDITED: "⡇⢸",
                          ACTIVE: "⣇⣸", INVALID: "⢠⡄",
                          DISABLED: "⠄⠄"},
@@ -5530,8 +5578,27 @@ class Swiss(Kit):
     # one. The old slider drew the same `─` on both sides of the knob — a
     # slider with no indicator, i.e. two parts where the registry says three.
     PART_GLYPHS = {
+        # THE PASSED EXTENT IS A SLAB, NOT THE ERROR RUNG (inc46). This read
+        # `━`, which is `LEVELS["error"]` -- so a switch that is ON and a log
+        # row that has failed were the same cell, and the batch rule names
+        # that seat by hand: a meaning may not stand at the INDICATOR of a
+        # switch. `▀` is the RULE RISEN -- the half-height weight this language
+        # already spends on a pressed radio -- so the passed extent is one
+        # more step of the only ladder it owns and the top rung stays severity.
+        #
+        # NOT `▬`, which was the first answer and was wrong for a MEASURED
+        # reason: `▬` over `─` is byte for byte darkside's bar, and
+        # `verify_language`'s "no two languages draw the same bar either"
+        # went red on it. A weight step that lands on another language's is
+        # not a weight step this language owns.
+        #
+        # `main` KEEPS `─`, and the exemption is by EXTENT rather than by
+        # silence: a rung is ONE cell at the head of a row, in a column that
+        # aligns (ruling 8's whole point), and a track is a RUN of `n` cells
+        # under a word. `DISCLOSE` is the same mark for the same reason. It
+        # is the weakest of this file's exemptions and it is written down.
         "main": {DEFAULT: "─", DISABLED: "┈"},
-        "indicator": {DEFAULT: "━", DISABLED: "┅"},
+        "indicator": {DEFAULT: "▀", DISABLED: "┅"},
         "knob": {DEFAULT: "│", FOCUSED: "┃", EDITED: "▮",
                  ACTIVE: "█", INVALID: "╲",
                  DISABLED: "┆"},
@@ -5539,19 +5606,41 @@ class Swiss(Kit):
         # and the state is how heavy they are. The mark is set INSIDE them,
         # which is the containment law non-vacuous: the two rules survive
         # every state and only the interior changes.
-        "checkbox.main": {DEFAULT: "│ │", FOCUSED: "┃ ┃", ACTIVE: "█ █",
-                          DISABLED: "┆ ┆"},
-        "checkbox.knob": {DEFAULT: "│▪│", FOCUSED: "┃▪┃", ACTIVE: "█▮█",
-                          DISABLED: "┆·┆"},
+        # ONE MARK, ONE SIDE (inc46) -- inc38's answer for the button, taken
+        # to the three controls that still enclosed. A wall is a PAIR: it is
+        # border-shaped because it ENCLOSES, and this language's commitment is
+        # "no boxes, at any width". The rule that led is kept and the rule
+        # that closed is not set, so the ladder is unchanged (`│ ┃ █ ┆`, the
+        # same four weights) and only the enclosure is gone. Same three cells,
+        # same one width across four states, so no caller's row moves.
+        #
+        # THE MARK NO LONGER CARRIES THE STATE. It read `│▪│ / ┃▪┃ / █▮█ /
+        # ┆·┆`: `▮` is now `CUR` and `·` is `LEVELS["info"]`, which put a
+        # severity rung at a DISABLED seat -- the batch rule's third named
+        # position. The square bullet is the CHECKED bit and nothing else;
+        # the leading rule's weight is the control state, which is the one
+        # channel this language has.
+        "checkbox.main": {DEFAULT: "│  ", FOCUSED: "┃  ", ACTIVE: "█  ",
+                          DISABLED: "┆  "},
+        "checkbox.knob": {DEFAULT: "│▪ ", FOCUSED: "┃▪ ", ACTIVE: "█▪ ",
+                          DISABLED: "┆▪ "},
         # THE TYPOGRAPHIC DISTINCTION, which this language of all ten is
         # entitled to make: a square bullet marks a box, a ROUND bullet marks
         # a choice. The rules shorten to half-height ticks so the well reads
         # lighter than the box beside it — Swiss separates by weight, and it
         # is spending weight here rather than inventing an ornament.
-        "radio.main": {DEFAULT: "╵ ╵", FOCUSED: "╹ ╹", ACTIVE: "▀ ▀",
-                       DISABLED: "╎ ╎"},
-        "radio.knob": {DEFAULT: "╵•╵", FOCUSED: "╹•╹", ACTIVE: "▀●▀",
-                       DISABLED: "╎·╎"},
+        # ONE MARK, ONE SIDE here too (inc46), on the half-height ticks this
+        # control already had. AND THE ROUND BULLET IS `●` IN EVERY STATE:
+        # the knob read `•`, which is `REQUIRED` (inc35, "the ladder's mark
+        # set solid"), so an obligation beside a caption and a chosen option
+        # in a group were one cell -- `swiss_S4` puts that same `•` on the
+        # focus ring of an irreversible button. Obligation keeps `•`; the
+        # choice takes the solid round bullet this knob already wore when it
+        # was pressed. Square marks a box, round marks a choice, unchanged.
+        "radio.main": {DEFAULT: "╵  ", FOCUSED: "╹  ", ACTIVE: "▀  ",
+                       DISABLED: "╎  "},
+        "radio.knob": {DEFAULT: "╵● ", FOCUSED: "╹● ", ACTIVE: "▀● ",
+                       DISABLED: "╎● "},
         # THE ONE LANGUAGE THAT RENOUNCES THE WALLS, and the increment that
         # closed `inheritors-2` §8's last debt. This slot used to read
         # `│  │ / ┃  ┃ / █  █ / ┆  ┆` under a comment that said the walls
@@ -5587,7 +5676,25 @@ class Swiss(Kit):
         # count, same one width across four states, same overhead per label —
         # so a caller laying out a row of buttons sees no change and the word
         # still cannot move under the state.
-        "button.main": {DEFAULT: "·   ", FOCUSED: "•   ", ACTIVE: "●   ",
+        # THE LADDER LEAVES THE MARKS THAT MEAN SOMETHING (inc46). inc38's
+        # ladder was `· • ●` and both of its lower rungs turned out to be
+        # declarations: `·` is `LEVELS["info"]` -- `swiss_S3` opens
+        # `╲Delete all╱`, the most dangerous control on the screen, with the
+        # LOWEST rung of the severity ladder -- and `•` is `REQUIRED`, which
+        # `swiss_S4` puts on the focus ring of an irreversible button.
+        #
+        # SO THE LADDER IS ONE SHAPE AT THREE WEIGHTS, which is what
+        # "hierarchy by weight" has meant here all along, and the shape is the
+        # square bullet this language already declares for a box: hollow,
+        # inked, filled. Neither `▫` nor `■` is a new IDEA -- they are `▪` at
+        # its two other weights -- and neither is a box-drawing cell or a
+        # block element, so inc38's law (no wall around a button at any width,
+        # derived from the codepoint) is untouched and still bites.
+        #
+        # DISABLED IS STILL AIR, for inc38's stated reason: there is nothing
+        # lighter than the hollow square in this alphabet that is not a dashed
+        # RULE, which is the shape being given up.
+        "button.main": {DEFAULT: "▫   ", FOCUSED: "▪   ", ACTIVE: "■   ",
                         DISABLED: "    "},
         # THE LANGUAGE THAT WOULD RENOUNCE THE WALLS AND CANNOT, a second
         # time. A bare line of words is the honest swiss field — but a value
@@ -5595,9 +5702,24 @@ class Swiss(Kit):
         # one can say DISABLED without colour. It takes the thinnest rule that
         # carries a state, and it leaves the paper BLANK: the only language
         # here that spends nothing at all on its ground.
-        "textfield.main": {DEFAULT: "│ │", FOCUSED: "┃ ┃", EDITED: "┃·┃",
-                           ACTIVE: "█ █", INVALID: "╲ ╱",
-                           DISABLED: "┆ ┆"},
+        # ONE MARK, ONE SIDE (inc46), and the comment above is the claim it
+        # disproves. "A walled-off field is the only place a full one can say
+        # DISABLED without colour" is the SAME false dichotomy inc38 already
+        # took apart on the button: it reads the choice as WALLS OR NOTHING.
+        # The LEADING rule says DISABLED whether the field is full or empty --
+        # it is the first cell of the row and no value can reach it -- and
+        # what the closing rule carried was the field's EXTENT, which in a
+        # language whose divider is alignment is the next column's job.
+        # Same three cells, same one width across six states.
+        #
+        # INVALID KEEPS ITS OWN FORM. `╲` is half this language's
+        # `DANGER_FORM` and it opens the field the way every other state
+        # opens it, so inc39's law is satisfied by construction: the mark
+        # that opens a rejected field is a mark this language opens fields
+        # with, and there is no closing mark left to turn round.
+        "textfield.main": {DEFAULT: "│  ", FOCUSED: "┃  ", EDITED: "┃· ",
+                           ACTIVE: "█  ", INVALID: "╲  ",
+                           DISABLED: "┆  "},
         "textfield.caret": {DEFAULT: "▏"},
         # WEIGHT, the only ornament this language owns, spent on a shaft this
         # time: the track is the lightest rule it can draw and the view is
