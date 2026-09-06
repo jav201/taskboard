@@ -6,7 +6,7 @@
 <text x="10.0" y="278.3" fill="#9a9a9a">3 tasks will be removed from BACKLOG.</text>
 <text x="10.0" y="295.3" fill="#9a9a9a">This cannot be undone.</text>
 <text x="10.0" y="329.3" fill="#ff6600">▔▔</text>
-<text x="26.8" y="329.3" fill="#f2f2f2"> ▄Delete▄ </text>
+<text x="26.8" y="329.3" fill="#f2f2f2"> █Delete█ </text>
 <text x="110.8" y="329.3" fill="#ff6600">▔▔</text>
 <text x="152.8" y="329.3" fill="#f2f2f2">▁▁  Cancel  ▁▁</text>
 </g>

@@ -33,12 +33,12 @@
 <text x="26.8" y="176.3" fill="#c4b99f">09:41:07</text>
 <text x="127.6" y="176.3" fill="#6b6558">sync started  remote=origin</text>
 <text x="26.8" y="193.3" fill="#c4b99f">09:41:09</text>
-<text x="102.4" y="193.3" fill="#6b6558">† </text>
+<text x="102.4" y="193.3" fill="#6b6558">* </text>
 <text x="127.6" y="193.3" fill="#1c1a15">3 tasks overdue in BACKLOG</text>
 <text x="26.8" y="210.3" fill="#c4b99f">09:41:12</text>
 <text x="127.6" y="210.3" fill="#6b6558">sync ok  216 ms  0 conflicts</text>
 <text x="26.8" y="227.3" fill="#c4b99f">09:41:18</text>
-<text x="102.4" y="227.3" fill="#1c1a15">‡ </text>
+<text x="102.4" y="227.3" fill="#1c1a15">**</text>
 <text x="127.6" y="227.3" fill="#1c1a15">rate limit hit  retry in 30 s</text>
 <text x="26.8" y="244.3" fill="#c4b99f">09:41:20</text>
 <text x="127.6" y="244.3" fill="#6b6558">retry scheduled  attempt 2 of 5</text>

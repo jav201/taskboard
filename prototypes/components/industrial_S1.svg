@@ -69,7 +69,7 @@
 <text x="791.2" y="159.3" fill="#f2f2f2"> high </text>
 <text x="841.6" y="159.3" fill="#2e2e2e">▌</text>
 <rect x="26.8" y="163.0" width="487.2" height="17.0" fill="#2e2e2e"/>
-<text x="10.0" y="176.3" fill="#ff4b1f">▪</text>
+<text x="10.0" y="176.3" fill="#ff4b1f">▶</text>
 <text x="26.8" y="176.3" fill="#ff4b1f">▐▌</text>
 <text x="52.0" y="176.3" fill="#ff4b1f">[2]</text>
 <text x="77.2" y="176.3" fill="#f2f2f2">DOING</text>
@@ -81,7 +81,7 @@
 <text x="791.2" y="176.3" fill="#f2f2f2"> open </text>
 <text x="841.6" y="176.3" fill="#2e2e2e">▌</text>
 <rect x="43.6" y="180.0" width="470.4" height="17.0" fill="#2e2e2e"/>
-<text x="10.0" y="193.3" fill="#ff4b1f">▪</text>
+<text x="10.0" y="193.3" fill="#ff4b1f">▶</text>
 <text x="43.6" y="193.3" fill="#ffd400">▐</text>
 <text x="60.4" y="193.3" fill="#8f8f8f">01</text>
 <text x="85.6" y="193.3" fill="#ffd400">▌</text>

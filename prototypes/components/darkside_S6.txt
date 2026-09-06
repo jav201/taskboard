@@ -3,7 +3,7 @@ command  query 're'  ·  6 results
                                                                                                     
   > ▮re◆·····································▮                                                      
                                                                                                     
-  O redirect to task                            enter                                               
+  ▊ redirect to task                            enter                                               
     rename project                                                                                  
     refresh board                               r                                                   
     archive released                                                                                
