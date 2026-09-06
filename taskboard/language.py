@@ -5784,14 +5784,25 @@ class Industrial(Kit):
     # STAMPED PLATE — the `▐ nn ▌` it already stamps on every card.
     # ======================================================================
     DISCLOSE = "▼"                        # solid, flat, stamped
-    # THE REQUIRED MARK — THE PLATE, OPENED. §3: "boxed groups ... EVERYTHING
-    # IS NUMBERED AND LABELLED", and the plate (`DISPLAY_BOX`'s `▐`/`▌`) is
-    # this language's whole notation: it plates its keys, plates its figures,
-    # plates its display. A field that may not be left empty is a plate that
-    # has been OPENED and is not closed until it is filled — the leading half
-    # cell, alone. It cannot be a number: L-33 rules the digits are the MODES,
-    # and an obligation is not a mode.
-    REQUIRED = "▐"
+    # THE STENCILLED BANG (inc48). This read `▐` -- "the plate, opened" --
+    # and `▐` is the OPENING half of the plate every button and every field is
+    # set in. `industrial_S2` is the frame: `title▐        ▐Fix login…▌`, the
+    # obligation and the control's wall eight spaces apart on one row, and the
+    # round's criterion is "decir cuál de los dos `▐` es la obligación". The
+    # PLATE KEEPS THE CELL, because the plate is this language's whole
+    # notation -- §3, "BOXED GROUPS ... EVERYTHING IS NUMBERED AND LABELLED"
+    # -- and a control that stopped wearing it would stop being this language.
+    #
+    # SO OBLIGATION TAKES THE REGISTER'S OWN ATTENTION CODE. This vocabulary
+    # is ASCII stencil (`| I X # x _ - . = @ O o`), and §3's own failure
+    # clause -- "FAILS WHEN COLOUR MUST CARRY SEVERITY, because the palette
+    # already spent colour on identity" -- is what pushed severity onto the
+    # square's SIZE (`▫▫ ▪▪ ■■`). That leaves `!` unspent here, and it is what
+    # a panel stencils beside a control that must be set before the machine
+    # will run. It is not a severity rung in this language, and it is not a
+    # number: L-33 rules the digits are the MODES, and an obligation is not a
+    # mode.
+    REQUIRED = "!"
 
     def pane_split_rule(self, h: int, w: int = 3) -> list[str]:
         """TWO PLATES, FACING — the one of the eleven whose commitment ASKS
@@ -5830,24 +5841,37 @@ class Industrial(Kit):
     # everything else here rather than a terminal's hairline lid.
 
     def field_row(self, caption, value, w):
-        """THE FIGURE STANDS ON A PLATE, and the caption is its legend.
+        """THE CAPTION IS LABELLED; THE FIGURE IS NOT PLATED (inc48).
 
-        "Everything is numbered and labelled" — and the thing this language
-        labels WITH is the stamped plate, which is why the card already wears
-        one. A definition row is a plate with a word instead of a code.
+        This row used to set the value in `▐ … ▌` under the argument that
+        "everything is numbered and labelled, and the thing this language
+        labels WITH is the stamped plate". The plate half of that is right and
+        the argument proved too much: `▐ … ▌` is BYTE FOR BYTE this language's
+        DEFAULT button, so `industrial_S3` printed
 
-        The plate's walls come out of the row's own budget, exactly as the
-        card's do: a plate that widened the row would wrap it (VERIFY.md's
-        frame law). The VALUE is untouched inside them — the walls are
-        chrome and the figure is content."""
+            DANGER ZONE                       ▐ delete every completed task ▌
+            ▐ ╱╱Delete all╱╱ ▌   7 tasks, not recoverable
+
+        -- a sentence describing a consequence, plated exactly like the
+        irreversible control on the next row. The round's criterion is
+        "señalar los elementos pulsables de las dos últimas filas": there are
+        two plates and only one of them is a control.
+
+        THE REFERENCE IS `nord_S3`, the one of the seven that already got this
+        right -- bare caption, bracketed button. So the plate goes back to
+        meaning what it means everywhere else here: a STAMP on a code, on a
+        display, or on a CONTROL. A definition row is none of the three. The
+        caption stays UPPERCASE, which is the "labelled" half and costs no
+        chrome, and the figure stands in the ink tier on air.
+
+        What is left is the base's composition with this language's register
+        laid over it, and that is the honest reading: what industrial had to
+        say about a definition row was the capitals, not the walls."""
         c = self.c
         cap, val = str(caption).upper(), str(value)
-        plate = f"▐ {val} ▌"
-        gap = max(1, w - len(cap) - len(plate))
+        gap = max(1, w - len(cap) - len(val))
         return (f"[{c['mut']}]{mark(cap)}[/]" + " " * gap
-                + f"[{self.plate}]{mark('▐')}[/]"
-                + f"[{c['ink']}]{mark(' ' + val + ' ')}[/]"
-                + f"[{self.plate}]{mark('▌')}[/]")
+                + f"[{c['ink']}]{mark(val)}[/]")
 
     def keyhint(self, pairs, w=0):
         """THE KEY IS ON A PLATE AND THE LABEL IS THE LEGEND BESIDE IT — the
@@ -6403,10 +6427,24 @@ class Darkside(Kit):
     # shapes so the level still sorts with the colour taken away.
     LEVELS = {"info": "· ", "warn": "o ", "error": "O "}
     # THE ACCENT IS RESERVED FOR WHAT IS ACTIONABLE and a search hit is not:
-    # it is a place in the text, not a thing to press. So the emphasis is
-    # weight on the ink, which is the ladder this language uses for
-    # everything it does not accent.
-    MATCH_STYLE = "bold {ink}"
+    # it is a place in the text, not a thing to press.
+    #
+    # AND IT IS A GREY STEP, NOT A WEIGHT (inc48). This read `bold {ink}`, and
+    # `darkside_S6` is the round's worst `S6` for a structural reason rather
+    # than an exporter one: in a language that has renounced hue BY
+    # COMMITMENT, `bold {ink}` is weight and nothing else, and a terminal that
+    # renders bold as "brighter" -- the default in a large share of them --
+    # leaves this language ZERO channels for the match. The criterion is
+    # "circular el `re` que casó", and it was unanswerable in the artefact AND
+    # probably in the destination.
+    #
+    # §8 names the channel this language actually owns: "DEPTH BY ±1 GREY STEP
+    # of background, NEVER borders". A matched run is a region of the row, so
+    # it takes the same step -- the ground comes up one rung of the ramp and
+    # the text sits on it. Not a hue (the ramp is achromatic), not the
+    # reserved accent, not weight; so it survives the one terminal
+    # configuration `bold` does not.
+    MATCH_STYLE = "reverse {mut}"
     MODAL_BOX = "╭╮╰╯──││"     # rounded: the "clinical-WARM" half
 
     def field_row(self, caption, value, w):
@@ -6417,17 +6455,46 @@ class Darkside(Kit):
         override ("quiet lowercase") — hierarchy by register rather than by
         size. And the figure stands on one `RAIL`-weight mark of its own.
 
-        THAT MARK IS NOT A LEADER, which is the distinction ledger's row
-        forces every other language to make: a leader is a RUN that connects
-        two marks across the gap, and this is a single cell that says where
-        the figure begins. The gap itself is air, because this language
-        separates by tone and emptiness and has committed against drawing a
-        stroke through one."""
+        AND THE FIGURE'S SEAT IS AIR (inc48). This row used to set one `▬` in
+        front of the value -- "a single cell that says where the figure
+        begins" -- and `▬` is BYTE FOR BYTE the opening shoulder of this
+        language's DEFAULT button, so `darkside_S3` printed
+
+            danger zone                        ▬ delete every completed task
+            ▬ ØDelete allØ ▬   7 tasks, not recoverable
+
+        on consecutive rows: a sentence and an irreversible control opening
+        with one cell. The round's criterion is "señalar los pulsables de las
+        dos últimas filas", and `nord_S3` is the one language of the seven
+        that already answered it -- bare caption, bracketed button.
+
+        THE SEAT BECOMES THE SMALLEST RING THIS ALPHABET DRAWS. `◦` is spent
+        on nothing here but an unchosen radio -- it is not a rung, not a
+        control's shoulder, not a switch indicator and not a disabled mark --
+        and it is the lightest cell available, which is what a seat under a
+        figure should be in a language whose second word is AIRY.
+
+        NOT THE RAIL, and the reason is a MEASUREMENT rather than a taste.
+        `▏` was the first answer, because this docstring had always claimed
+        the mark was "RAIL-weight" -- but `darkside_S1`'s objection is that
+        this language "se prohibió el trazo vertical en el único sitio donde
+        hacía falta y lo imprime catorce veces donde no", and routing the
+        detail pane's six field rows through the rail took that frame from 16
+        vertical strokes to 22. A fix that makes the frame it was measured
+        against worse is not a fix.
+
+        AND THE ROW MAY NOT SIMPLY GO BARE, which is worth writing down rather
+        than discovering twice. Dropping the mark makes this method byte for
+        byte `Kit`'s -- `test_no_two_languages_answer_a_mechanism_the_same_way`
+        went red on `[["nord", "darkside"]]` -- and "the caption is lowercased"
+        is not a difference when the caller's caption is already lowercase. A
+        language that answers a mechanism by deleting its answer has not
+        answered it."""
         c = self.c
         cap, val = str(caption).lower(), str(value)
         gap = max(1, w - len(cap) - len(val) - 2)
         return (f"[{c['dim']}]{mark(cap)}[/]" + " " * gap
-                + f"[{c['dim']}]{mark('▬')}[/] "
+                + f"[{c['dim']}]{mark('◦')}[/] "
                 + f"[{c['ink']}]{mark(val)}[/]")
 
     def keyhint(self, pairs, w=0):

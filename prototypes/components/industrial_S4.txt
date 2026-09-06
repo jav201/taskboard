@@ -3,12 +3,12 @@
 ─────────────────────────────────────────────────────────────────────────────────────────────────── 
   ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fix login redirect         
     ▐ 05 ▌ Audit the theme tokens                      [21d]▌ ▐──────────────────────────────────── 
-           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT                       ▐ Web ▌
-    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE                       ▐ doing ▌
-           [PH:BACK][DUE:30D][PR:N]                         ▌ ▐DUE                            ▐ 3d ▌
-                                                            ▌ ▐PRIORITY                     ▐ high ▌
-▶ ▐▌ [2]DOING                                           [ 4]▌ ▐STATUS                       ▐ open ▌
-▶   ▐ 01 ▌ Fix login redirect                           [3d]▌ ▐OWNER                      ▐ jav201 ▌
+           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT                           Web
+    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE                           doing
+           [PH:BACK][DUE:30D][PR:N]                         ▌ ▐DUE                                3d
+                                                            ▌ ▐PRIORITY                         high
+▶ ▐▌ [2]DOING                                           [ 4]▌ ▐STATUS                           open
+▶   ▐ 01 ▌ Fix login redirect                           [3d]▌ ▐OWNER                          jav201
            [PH:DOIN][DUE:3D][PR:H]                          ▌ ▐                                     
                              ▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜                              
                              ▌ Delete 3 tasks?                       ▐                              

@@ -7,12 +7,12 @@
 <text x="10.0" y="57.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="10.0" y="74.3" fill="#4a4a4a">  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fix login redirect</text>
 <text x="10.0" y="91.3" fill="#4a4a4a">    ▐ 05 ▌ Audit the theme tokens                      [21d]▌ ▐────────────────────────────────────</text>
-<text x="10.0" y="108.3" fill="#4a4a4a">           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT                       ▐ Web ▌</text>
-<text x="10.0" y="125.3" fill="#4a4a4a">    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE                       ▐ doing ▌</text>
-<text x="10.0" y="142.3" fill="#4a4a4a">           [PH:BACK][DUE:30D][PR:N]                         ▌ ▐DUE                            ▐ 3d ▌</text>
-<text x="10.0" y="159.3" fill="#4a4a4a">                                                            ▌ ▐PRIORITY                     ▐ high ▌</text>
-<text x="10.0" y="176.3" fill="#4a4a4a">▶ ▐▌ [2]DOING                                           [ 4]▌ ▐STATUS                       ▐ open ▌</text>
-<text x="10.0" y="193.3" fill="#4a4a4a">▶   ▐ 01 ▌ Fix login redirect                           [3d]▌ ▐OWNER                      ▐ jav201 ▌</text>
+<text x="10.0" y="108.3" fill="#4a4a4a">           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT                           Web</text>
+<text x="10.0" y="125.3" fill="#4a4a4a">    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE                           doing</text>
+<text x="10.0" y="142.3" fill="#4a4a4a">           [PH:BACK][DUE:30D][PR:N]                         ▌ ▐DUE                                3d</text>
+<text x="10.0" y="159.3" fill="#4a4a4a">                                                            ▌ ▐PRIORITY                         high</text>
+<text x="10.0" y="176.3" fill="#4a4a4a">▶ ▐▌ [2]DOING                                           [ 4]▌ ▐STATUS                           open</text>
+<text x="10.0" y="193.3" fill="#4a4a4a">▶   ▐ 01 ▌ Fix login redirect                           [3d]▌ ▐OWNER                          jav201</text>
 <text x="10.0" y="210.3" fill="#4a4a4a">           [PH:DOIN][DUE:3D][PR:H]                          ▌ ▐</text>
 <text x="253.6" y="227.3" fill="#f2f2f2">▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜</text>
 <text x="253.6" y="244.3" fill="#f2f2f2">▌</text>

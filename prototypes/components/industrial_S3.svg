@@ -57,9 +57,7 @@
 <text x="371.2" y="278.3" fill="#8f8f8f">70</text>
 <text x="26.8" y="312.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="329.3" fill="#8f8f8f">DANGER ZONE</text>
-<text x="572.8" y="329.3" fill="#2e2e2e">▐</text>
-<text x="581.2" y="329.3" fill="#f2f2f2"> delete every completed task </text>
-<text x="824.8" y="329.3" fill="#2e2e2e">▌</text>
+<text x="606.4" y="329.3" fill="#f2f2f2">delete every completed task</text>
 <text x="26.8" y="346.3" fill="#f2f2f2">▐ ╱╱Delete all╱╱ ▌</text>
 <text x="203.2" y="346.3" fill="#4a4a4a">7 tasks, not recoverable</text>
 </g>
