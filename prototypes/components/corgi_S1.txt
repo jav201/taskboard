@@ -1,32 +1,32 @@
 [1]B O A R D [2]FORM [3]CFG [4]LOG                                                                  
 [B] B O A R D  16 TASKS  ·  4 PROJECTS                                                              
 ─────────────────────────────────────────────────────────────────────────────────────────────────── 
-  [1] B A C K L O G  5                                       │ [D] D E T A I L  FIX LOGIN REDIRECT  
-  ─────────────────────────────────────────────────────────  │ ──────────────────────────────────── 
-    [5] AUDIT THE THEME TOKENS    DUE 21D   PR LOW   ST OPEN │ PROJECT Web                          
-    [6] DROP THE LEGACY SHIM      DUE 30D   PR NORM  ST OPEN │ PHASE doing                          
-                                                             │ DUE 3d                               
-▐ [2] D O I N G  4                                           │ PRIORITY high                        
-▐ ─────────────────────────────────────────────────────────  │ STATUS open                          
-▐   [1] FIX LOGIN REDIRECT        DUE 3D    PR HIGH  ST OPEN │ OWNER jav201                         
-    [2] RATE-LIMIT THE API        DUE -2D   PR HIGH  ST BLK  │                                      
-    [3] PORT THE CSV IMPORTER     DUE 9D    PR NORM  ST OPEN │ ▄▄ ▄▄ ▄▄ ▄▄ ░░ ░░ ░░ ░░ [ 44%]       
-    [4] REWRITE THE ONBOARDING    DUE 14D   PR LOW   ST OPEN │                                      
-                                                             │                                      
-  [3] B L O C K E D  0                                       │                                      
-  ─────────────────────────────────────────────────────────  │                                      
-     ██    ██                                                │                                      
-     ██    ██                                                │                                      
-                                                             │                                      
-    █        █                                               │                                      
-     █      █                                                │                                      
-      ██████                                                 │                                      
-     [0] NO TASKS                                            │                                      
-                                                             │                                      
-  [4] D O N E  7                                             │                                      
-  ─────────────────────────────────────────────────────────  │                                      
-                                                             │                                      
-                                                             │                                      
-                                                             │                                      
+  [1] B A C K L O G  5                                       █ [D] D E T A I L  FIX LOGIN REDIRECT  
+  ─────────────────────────────────────────────────────────  █ ──────────────────────────────────── 
+    [5] AUDIT THE THEME TOKENS    DUE 21D   PR LOW   ST OPEN █ PROJECT Web                          
+    [6] DROP THE LEGACY SHIM      DUE 30D   PR NORM  ST OPEN █ PHASE doing                          
+                                                             █ DUE 3d                               
+▐ [2] D O I N G  4                                           █ PRIORITY high                        
+▐ ─────────────────────────────────────────────────────────  █ STATUS open                          
+▐   [1] FIX LOGIN REDIRECT        DUE 3D    PR HIGH  ST OPEN █ OWNER jav201                         
+    [2] RATE-LIMIT THE API        DUE -2D   PR HIGH  ST BLK  █                                      
+    [3] PORT THE CSV IMPORTER     DUE 9D    PR NORM  ST OPEN █ ▄▄ ▄▄ ▄▄ ▄▄ ░░ ░░ ░░ ░░ [ 44%]       
+    [4] REWRITE THE ONBOARDING    DUE 14D   PR LOW   ST OPEN █                                      
+                                                             █                                      
+  [3] B L O C K E D  0                                       █                                      
+  ─────────────────────────────────────────────────────────  █                                      
+     ██    ██                                                █                                      
+     ██    ██                                                █                                      
+                                                             █                                      
+    █        █                                               █                                      
+     █      █                                                █                                      
+      ██████                                                 █                                      
+     [0] NO TASKS                                            █                                      
+                                                             █                                      
+  [4] D O N E  7                                             █                                      
+  ─────────────────────────────────────────────────────────  █                                      
+                                                             █                                      
+                                                             █                                      
+                                                             █                                      
 view ██ ░░ ░░ ░░ 3-10 of 23                                                                         
                                                                                                     

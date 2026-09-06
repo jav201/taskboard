@@ -1,6 +1,6 @@
 BOARD  ·── 16 TASKS  ·  4 PROJECTS                                                                  
                                                                                                     
-  BACKLOG                                   ├─ 05 ─┤           DETAIL  ·── FIX LOGIN REDIRECT       
+  BACKLOG                                   ├─ 05 ─┤        ┤ ├DETAIL  ·── FIX LOGIN REDIRECT       
     AUDIT THE THEME TOKENS                  ├╌─── 21D ─────┤                                        
     ·── DOCS ── BACKLOG ── LOW                                 PROJECT ·──────────────────────── Web
     DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   PHASE ·──────────────────────── doing

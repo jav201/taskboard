@@ -3,7 +3,7 @@
 <rect width="860.0" height="564.0" fill="#121212"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <text x="10.0" y="23.3" fill="#24486b">BOARD  ·── 16 TASKS  ·  4 PROJECTS</text>
-<text x="10.0" y="57.3" fill="#24486b">  BACKLOG                                   ├─ 05 ─┤           DETAIL  ·── FIX LOGIN REDIRECT</text>
+<text x="10.0" y="57.3" fill="#24486b">  BACKLOG                                   ├─ 05 ─┤        ┤ ├DETAIL  ·── FIX LOGIN REDIRECT</text>
 <text x="10.0" y="74.3" fill="#24486b">    AUDIT THE THEME TOKENS                  ├╌─── 21D ─────┤   </text>
 <text x="10.0" y="91.3" fill="#24486b">    ·── DOCS ── BACKLOG ── LOW                                 PROJECT ·──────────────────────── Web</text>
 <text x="10.0" y="108.3" fill="#24486b">    DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   PHASE ·──────────────────────── doing</text>

@@ -2734,6 +2734,73 @@ class Kit:
             row += f" [{c['accent']}]{mark(self.DISCLOSE)}[/]"
         return row
 
+    def _split_cell(self, glyph: str, tone: str, w: int) -> str:
+        """One row of a pane seat: `glyph` centred in exactly `w` cells.
+
+        The pad is PLAIN and only the glyph is toned, so a language whose
+        answer is air spends no markup at all — which is what makes "the
+        division is nothing" measurable in the `.txt` rather than merely
+        described."""
+        g = str(glyph)
+        lead = max(0, (w - len(g)) // 2)
+        return (" " * lead + (f"[{tone}]{mark(g)}[/]" if g else "")
+                + " " * max(0, w - lead - len(g)))
+
+    def pane_split(self, h: int, w: int = 3) -> list[str]:
+        """TWO REGIONS SIDE BY SIDE — `h` rows of exactly `w` cells, and what
+        stands between them.
+
+        THE LAST COMPOSITION PRIMITIVE, and the one COMPONENTS.md calls "the
+        last palette-swap": every other seat in this file draws a THING, and
+        this one draws the RELATION between two of them. The prototype round
+        drew `│` in five languages at once — the same defect as the red `!`
+        and the borrowed dot leader, one cell wide.
+
+        THE REFUSAL REGISTRY IS CONSULTED FIRST, exactly as `overlay` does,
+        and consulting it is what makes it a mechanism rather than a note: a
+        language whose alphabet cannot construct a vertical stroke never
+        reaches the stroke code, whatever it did or did not override.
+
+        `w` IS A SEAT, not a suggestion: every row comes back at exactly `w`
+        cells so the two panes stay in their columns on every line. A split
+        that varied its width would move the right pane down the page.
+
+        AND NO LANGUAGE OVERRIDES *THIS* METHOD, which is the same shape
+        `overlay` has and for the same reason: a language that overrode the
+        entry point would never consult the table, so the table would decide
+        nothing for it and a false entry against it would go undetected. What
+        a language overrides is `pane_split_rule` (it draws) or
+        `pane_split_instead` (it refuses). The first version of this seat had
+        three languages overriding the entry point and the registry's own
+        teeth test found it.
+
+        BASE (nord) IS THE TERMINAL'S OWN: a hairline rule at the dim tier,
+        with a cell of air on each side. The environment's convention, and
+        the base kit is the environment."""
+        if self.name in PANE_SPLIT_REFUSED:
+            return self.pane_split_instead(h, w)
+        return self.pane_split_rule(h, w)
+
+    #: the mark a language rules a pane seat with. A constant, because for
+    #: most languages that is the whole decision; a language whose divider
+    #: changes down the page overrides `pane_split_rule` instead.
+    PANE_RULE = "│"
+
+    def pane_split_rule(self, h: int, w: int = 3) -> list[str]:
+        """The drawing branch — `PANE_RULE`, centred, at the dim tier."""
+        return [self._split_cell(self.PANE_RULE, self.c["dim"], w)
+                for _ in range(max(0, h))]
+
+    def pane_split_instead(self, h: int, w: int = 3) -> list[str]:
+        """WHAT A LANGUAGE DOES WHEN IT MAY NOT DRAW THE RULE.
+
+        The base answer is the mildest one available and it is not a blank:
+        it is AIR, which for a language that separates by alignment is the
+        whole mechanism. A language in the registry that overrides nothing
+        still cannot draw a stroke, which is the registry doing its job even
+        where nobody has done the design."""
+        return [" " * w for _ in range(max(0, h))]
+
     def recede(self, row: str) -> str:
         """The page BEHIND something, drawn inactive.
 
@@ -3701,6 +3768,16 @@ class Naught(Kit):
                 out.append(self.recede(under[i] if i < len(under) else ""))
         return out
 
+    # THE PANE SEAT IS THE LATTICE, ONE CHARGE DOWN. "No frames at all"
+    # forbids a rule and does not forbid this, because the lattice is not a
+    # frame — it is the GROUND, and it was already under both panes before
+    # either was drawn. What divides them is a column where the ground stays
+    # UNLIT while the panes are lit: the argument operator ruling 4 accepted
+    # for this language's overlay, where the separation is charge, not a box.
+    # `field_row` fills a row's remainder with the same unlit dot. One ground,
+    # two components.
+    PANE_RULE = NA.OFF
+
     LEVELS = {"info": "◦◦", "warn": "∙◦", "error": "∙∙"}
 
     MATCH_STYLE = "bold {ink}"             # full charge, and no second red
@@ -4193,6 +4270,19 @@ class Corgi(Kit):
         y = max(0, (h - len(rows)) // 2)
         out = [""] * y + list(rows)
         return (out + [""] * h)[:h]
+
+    # THE PANE SEAT IS THE DISPLAY FRAME — a SOLID BAR, single-cell gutters.
+    # LANGUAGES.md §3b, verbatim: "a display REGION, visually separate from
+    # the chrome ... framed by SOLID BARS. Everything inside it is machine
+    # output; everything outside is a label." Two panes are exactly that
+    # boundary — a list the operator drives, a readout the machine writes.
+    #
+    # AND IT IS NOT `SLOT_GAP`'S ANSWER, which is air. That comment says a
+    # rule glyph between slots "would be `Ledger.RULE_V`", and it is right:
+    # INSIDE one panel this language separates by air. This is the EDGE of the
+    # display, and the edge is a bar. The gutters are the brutalist grid's own
+    # ("single-cell gutters, no rounded corners").
+    PANE_RULE = "█"
 
     LEVELS = {"info": "▁▁", "warn": "▄▄", "error": "██"}
 
@@ -5786,6 +5876,25 @@ class Prism(Kit):
         return (f"[{self.c['mut']} on {self.depth_ground()}]"
                 f"{mark(visible(row))}[/]")
 
+    def pane_split_instead(self, h, w=3):
+        """THE STEP — no stroke at all, and the whole depth mechanism.
+
+        This language is in `PANE_SPLIT_REFUSED` because "never borders" is
+        its structure device and a pane rule is a border. What it draws
+        instead is what `recede` draws: ±1 grey step of BACKGROUND, the same
+        `depth_ground()` the modal's backdrop uses. Two panes separate the
+        way two regions do, because for this language there is only one
+        answer to "these are different regions".
+
+        AND IT DOES NOT SURVIVE THE `.txt`, which is stated here rather than
+        discovered in a frame. A background is not a cell, so a cell grid
+        shows three spaces — the third mark in this contract with that limit,
+        after blueprint's knockout and every language's match emphasis. It
+        DOES survive greyscale, which is the law that actually applies: a
+        grey step is a step with every hue removed."""
+        return [f"[{self.c['mut']} on {self.depth_ground()}]{' ' * w}[/]"
+                for _ in range(max(0, h))]
+
     LEVELS = {"info": "⣀⣀", "warn": "⣤⣤", "error": "⣿⣿"}
 
     MATCH_STYLE = "bold {accent}"          # the accent CALLS ATTENTION
@@ -6434,6 +6543,27 @@ class Ledger(Kit):
         out.append(self.rule_line(w) or "")
         out += list(rows)
         return out[:h] + [""] * max(0, h - len(out))
+
+    def pane_split_rule(self, h, w=3):
+        """A RULED COLUMN, AND THE RULE DESCENDS FROM THE HEAD RULE.
+
+        "Structure is RULED MONEY COLUMNS, never boxes" — so this language
+        does own the vertical stroke the other four spend differently, and
+        `cols()` already says "the rule occupies its own cell". What makes
+        the row `═══` at the top rather than `│` all the way down is
+        `cols_frame`'s own order: a ruled page opens a column at the head
+        rule and rules DOWN from it. A column rule that started in mid-air
+        would be a stroke this page never posted.
+
+        That first row is also the only thing separating this seat from the
+        terminal's own `│`, and the difference is the point: nord rules
+        because a terminal rules, and this language rules because the column
+        was OPENED."""
+        rows = [self._split_cell("│", self.rule_color, w)
+                for _ in range(max(0, h))]
+        if rows:
+            rows[0] = f"[{self.rule_color}]{mark(self.RULE_HEAD * w)}[/]"
+        return rows
 
     LEVELS = {"info": "  ", "warn": "† ", "error": "‡ "}
 
@@ -7890,6 +8020,29 @@ class Blueprint(Kit):
                 out.append(self.recede(under[i] if i < len(under) else ""))
         return out
 
+    def pane_split_instead(self, h, w=3):
+        """TWO DATUMS, AND THE AIR BETWEEN THEM.
+
+        This language is in `PANE_SPLIT_REFUSED` on an ALPHABETIC refusal:
+        none of its ten marks is a vertical stroke, so a pane rule is
+        unconstructable. What a drawing office does with two views on one
+        sheet is give each its own datum — so the left field TERMINATES and
+        the right field OPENS, once, on the row where the panes begin, and
+        the rest is air.
+
+        `┤` and `├` are the two terminators this language already spends on
+        every dimension it draws, and they are the marks the whole
+        vocabulary is built on. THEY NEVER JOIN: no stroke runs between them,
+        which is the same law the registration pair obeys ("four corners that
+        never join"). One row of declaration and `h-1` rows of nothing is a
+        DIMENSION, not a decoration — it states an extent and then stops."""
+        rows = [" " * w for _ in range(max(0, h))]
+        if rows:
+            rows[0] = (f"[{self.c['dim']}]{mark('┤')}[/]"
+                       + " " * max(0, w - 2)
+                       + f"[{self.c['dim']}]{mark('├')}[/]")
+        return rows
+
     LEVELS = {"info": "··", "warn": "╌╌", "error": "━━"}
 
     MATCH_STYLE = "bold {ink}"             # the heavy weight, in type
@@ -8832,6 +8985,44 @@ MODAL_BORDER_REFUSED = {
               "has no surface IN FRONT OF the page. A question is posted on "
               "the sheet like everything else: under a rule, at the foot, "
               "with the page it is about still legible above it",
+}
+
+
+# WHO REFUSES A PANE RULE, AND ON WHAT COMMITMENT (batch `kits-learn-4`). The
+# third table of the same shape, and the same three properties: READ by
+# `Kit.pane_split` before it draws anything, falsifiable in BOTH directions
+# (delete an entry and that language starts ruling a line it has committed
+# against; add a false one and a language that owns a rule stops drawing it),
+# and answered by `pane_split_instead` rather than by a blank.
+#
+# THE TWO REFUSALS ARE NOT THE SAME REFUSAL, which is why a registry and not a
+# flag. Blueprint's is ALPHABETIC — the mark does not exist in its ten. Prism's
+# is DOCTRINAL — the mark exists and the language has forbidden itself to spend
+# it. A language can leave one of these and not the other.
+#
+# NAUGHT IS ABSENT ON PURPOSE. "No frames at all" is one of its four
+# commitments and a lattice column is not a frame, it is the GROUND — the same
+# distinction operator ruling 4 already made for its overlay, where the answer
+# was the lattice's charge rather than a box.
+#
+# SWISS AND DARKSIDE BELONG HERE AND ARE NOT HERE YET. "No boxes — alignment
+# does the dividing" and "depth by ±1 grey step, never borders" are the same
+# two commitments this table exists for, but `kits-learn-4` §5 scopes those six
+# languages to seven OTHER mechanisms and this is not one of them. Recorded as
+# the batch's own inheritance debt rather than smuggled in behind a spec.
+PANE_SPLIT_REFUSED = {
+    "blueprint": "\"not one element on this sheet is boxed, at any width\" — "
+                 "and the ten marks this language draws (`─ ━ ├ ┤ ╌ ┌ ┐ └ ┘` "
+                 "and the hatch) contain no vertical stroke, so a pane rule "
+                 "is unconstructable rather than merely off-style. What a "
+                 "drawing office does with two views on one sheet is give "
+                 "each its own DATUM, and the air between them is the "
+                 "division",
+    "prism": "\"depth by ±1 grey step of background, never borders\" — the "
+             "one language here whose doctrine names the exception ("
+             "\"borders are RESERVED for modals\"), which is a licence for "
+             "the modal and a prohibition everywhere else. A pane rule is "
+             "everywhere else, so the division is a STEP",
 }
 
 

@@ -746,3 +746,105 @@ def test_corgis_numbering_lives_in_the_hint_row_where_it_is_functional():
 def test_five_languages_letter_five_hint_rows():
     rows = {n: plain(LG.kit(n).keyhint(HINTS)) for n in PROTOTYPED}
     assert len(set(rows.values())) == len(PROTOTYPED), rows
+
+
+# ===========================================================================
+# inc28 (kits-learn-4) — `Kit.pane_split`, the last composition primitive
+# ===========================================================================
+SPLIT_H, SPLIT_W = 6, 3
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_pane_split_is_the_rectangle_it_was_asked_for(lang):
+    """`h` rows of exactly `w` cells, in every language including the two
+    that refuse the rule.
+
+    This is the law that makes the seat usable at all: the two panes sit on
+    either side of it on EVERY line, so a row that came back short or long
+    would move the right pane down the page. A refusal is air at the same
+    width, never a missing row."""
+    rows = LG.kit(lang).pane_split(SPLIT_H, SPLIT_W)
+    assert len(rows) == SPLIT_H, lang
+    assert [len(plain(r)) for r in rows] == [SPLIT_W] * SPLIT_H, \
+        (lang, [plain(r) for r in rows])
+
+
+def test_five_languages_split_five_ways():
+    """THE PROPERTY (AC-1), and the defect it names is one cell wide.
+
+    Before this seat `screens.py` printed `[dim]│[/]` between the two panes in
+    all five languages, exactly as it had printed a red `!` for INVALID and
+    ledger's dot leaders for every definition row. Composition is the last
+    palette-swap and this is where it lived.
+
+    Same height, same width, five splits that differ AS CELLS: a solid display
+    bar (corgi), an unlit lattice column (naught), a ruled money column opened
+    at its head rule (ledger), a grey step of background (prism), two datums
+    that never join (blueprint). Compared on the PLAIN text — two splits
+    differing only in a colour token are two recolours."""
+    got = {n: tuple(plain(r) for r in LG.kit(n).pane_split(SPLIT_H, SPLIT_W))
+           for n in PROTOTYPED}
+    assert len(set(got.values())) == len(PROTOTYPED), got
+
+
+def test_the_pane_split_registry_names_languages_that_exist():
+    """`LABEL_REFUSED`'s law, asked of the third table to use the pattern."""
+    assert set(LG.PANE_SPLIT_REFUSED) <= set(LG.KITS)
+    assert set(LG.PANE_SPLIT_REFUSED) == {"blueprint", "prism"}
+    assert all(len(v) > 40 for v in LG.PANE_SPLIT_REFUSED.values())
+
+
+@pytest.mark.parametrize("lang", ("blueprint", "prism"))
+def test_a_refusing_language_rules_no_stroke(lang):
+    """The refusal, measured on the cells rather than trusted.
+
+    Neither of these may put a vertical stroke between two panes, and their
+    reasons differ: blueprint's ten marks do not contain one, prism has
+    forbidden itself to spend one. The assertion is the same either way."""
+    rows = LG.kit(lang).pane_split(SPLIT_H, SPLIT_W)
+    assert not any(ch in "│┃║╎╏┆┇┊┋|" for r in rows for ch in plain(r)), \
+        (lang, [plain(r) for r in rows])
+
+
+def test_the_pane_split_registry_is_read_and_not_printed():
+    """THE TEETH, both ways — what makes the table a mechanism, not a note.
+
+    Take blueprint OUT and it rules a line its alphabet cannot construct. Put
+    naught IN and the language whose answer IS the lattice loses it. Neither
+    language's code is touched in either direction: the table decides."""
+    k_b, k_n = LG.kit("blueprint"), LG.kit("naught")
+    saved = dict(LG.PANE_SPLIT_REFUSED)
+    try:
+        del LG.PANE_SPLIT_REFUSED["blueprint"]
+        assert "│" in plain(k_b.pane_split(2, 3)[0])
+        LG.PANE_SPLIT_REFUSED["naught"] = "a false entry"
+        assert plain(k_n.pane_split(2, 3)[0]).strip() == ""
+    finally:
+        LG.PANE_SPLIT_REFUSED.clear()
+        LG.PANE_SPLIT_REFUSED.update(saved)
+    assert "│" not in plain(k_b.pane_split(2, 3)[0])
+    assert LG.kit("naught").pane_split(2, 3)[0].strip() != ""
+
+
+def test_ledgers_column_is_opened_at_the_head_rule():
+    """The one thing separating ledger's `│` from the terminal's own.
+
+    `cols_frame` opens a ruled column at the head rule and rules DOWN from it,
+    so a column rule that started in mid-air would be a stroke this page never
+    posted. Nord rules because a terminal rules; ledger rules because the
+    column was OPENED, and the difference is row 0."""
+    k = LG.kit("ledger")
+    rows = [plain(r) for r in k.pane_split(4, 3)]
+    assert rows[0] == k.RULE_HEAD * 3
+    assert set(rows[1:]) == {" " + k.RULE_V + " "}
+    assert plain(LG.kit("nord").pane_split(4, 3)[0]) != rows[0]
+
+
+def test_blueprints_two_datums_never_join():
+    """The registration pair's law, applied to a pane seat: the left field
+    TERMINATES and the right field OPENS, once, and no stroke runs between
+    them. One row of declaration and the rest is air is a DIMENSION — it
+    states an extent and then stops."""
+    rows = [plain(r) for r in LG.kit("blueprint").pane_split(5, 3)]
+    assert rows[0] == "┤ ├"
+    assert set(rows[1:]) == {"   "}
