@@ -1,0 +1,32 @@
+board   form   C F G   log                                                                          
+S E T T I N G S   5 switches  ·  2 selects  ·  1 slider                                             
+─────────────────────────────────────────────────────────────────────────────────────────────────── 
+                                                                                                    
+  notify on overdue         ━━│                                                                     
+  daily digest              ━━│                                                                     
+  sound                     │──                                                                     
+  sync to remote            ┆┈┈   (no remote configured)                                            
+  compact rows              ━━│                                                                     
+                                                                                                    
+  start of week             │mon    ─│                                                              
+  theme                     │dark   ─│                                                              
+                                auto                                                                
+                                light                                                               
+                              ━ dark                                                                
+                                                                                                    
+  row density               ━━━━━━━━━│────  70                                                      
+                                                                                                    
+  ───────────────────────────────────────────────────────────────────────────────────────────────   
+  danger zone    delete every completed task                                                        
+  │ ╲Delete all╱ │   7 tasks, not recoverable                                                       
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    

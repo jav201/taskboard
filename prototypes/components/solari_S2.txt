@@ -1,0 +1,32 @@
+ board  FORM  cfg  log                                                                              
+ NEW TASK  5 FIELDS  ·  1 INVALID                                                                   
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+  title▁        ▔Fix login▮ redirect▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔                                                
+                                                                                                    
+  due▁          ═12/09/26··························═                                                
+                CNX expected YYYY-MM-DD                                                             
+                                                                                                    
+  priority      ▁▁▁ low  ▁▁▁ norm  ▁●▁ high                                                         
+                                                                                                    
+  tags          ▁ ▁ OFF api  ▁▼▁ ON  ui  ▁▼▁ ON  urgent                                             
+                                                                                                    
+  notes         ▁Redirect drops the ?next= param w═▁                                                
+                ▁session cookie is renewed mid-fli═▁                                                
+                ▁··································▁                                                
+                                                                                                    
+                ╌    Save    ╌   ▁   Cancel   ▁                                                     
+                Save is held until due parses                                                       
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    

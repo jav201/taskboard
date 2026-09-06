@@ -1,4 +1,4 @@
-"""matrix.py -- the 6x5 matrix, DERIVED from the sheets rather than typed.
+"""matrix.py -- the 11x6 matrix, DERIVED from the sheets rather than typed.
 
 The packet's table is the round's headline claim, and a hand-typed table is a
 claim nothing checks.  This reads the same `Sheet` objects `render.py` writes
@@ -9,7 +9,9 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1])); sys.path.insert(0, str(HERE))
 import screens as S
 
-LANGS = ["corgi", "blueprint", "prism", "naught", "ledger"]
+# ALL ELEVEN since inc37, off the same registry `render.py` reads, so the
+# matrix cannot describe a set of frames that were never rendered.
+LANGS = list(S.LG.KITS)
 
 def cell(sh):
     v = [c.verdict for c, _ in sh.cands.values()]

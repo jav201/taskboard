@@ -1,4 +1,4 @@
-"""render.py -- the six screens through five kits, headless, 30 frames.
+"""render.py -- the six screens through ELEVEN kits, headless, 66 frames.
 
     python -X utf8 prototypes/components/render.py
 
@@ -38,7 +38,13 @@ import capture_languages as CAP                                  # noqa: E402
 import taskboard.themes as TH                                    # noqa: E402
 import screens as S                                              # noqa: E402
 
-LANGS = ["corgi", "blueprint", "prism", "naught", "ledger"]
+#: ALL ELEVEN since inc37, and READ OFF THE KIT REGISTRY rather than typed.
+#: The five the PROTOTYPE round rendered were a list, and a list is how the
+#: six inheriting languages went unphotographed for two batches: thirty
+#: mechanisms held by property tests and by nothing anyone could look at. A
+#: kit that exists now renders, and a kit added later renders without this
+#: file being edited.
+LANGS = list(S.LG.KITS)
 SIZE = (S.W, S.H)
 OUT = HERE
 

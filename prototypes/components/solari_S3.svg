@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · solari · S3 settings">
+<title>taskboard · solari · S3 settings</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<rect x="119.2" y="10.0" width="42.0" height="17.0" fill="#f0ede4"/>
+<text x="10.0" y="23.3" fill="#6e6a60"> board  form </text>
+<text x="119.2" y="23.3" fill="#0b0b0c"> CFG </text>
+<text x="161.2" y="23.3" fill="#6e6a60"> log </text>
+<rect x="10.0" y="27.0" width="840.0" height="17.0" fill="#f0ede4"/>
+<text x="10.0" y="40.3" fill="#0b0b0c"> SETTINGS  5 SWITCHES  ·  2 SELECTS  ·  1 SLIDER                                                    </text>
+<text x="10.0" y="57.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="26.8" y="74.3" fill="#6e6a60">notify on overdue</text>
+<text x="245.2" y="74.3" fill="#6e6a60">▁▁</text>
+<text x="262.0" y="74.3" fill="#f5a300">▼</text>
+<text x="278.8" y="74.3" fill="#f0ede4">ON </text>
+<text x="26.8" y="91.3" fill="#6e6a60">daily digest</text>
+<text x="245.2" y="91.3" fill="#6e6a60">▁▁</text>
+<text x="262.0" y="91.3" fill="#f5a300">▼</text>
+<text x="278.8" y="91.3" fill="#f0ede4">ON </text>
+<text x="26.8" y="108.3" fill="#6e6a60">sound</text>
+<text x="245.2" y="108.3" fill="#f5a300">▼</text>
+<text x="253.6" y="108.3" fill="#1f1f22">··</text>
+<text x="278.8" y="108.3" fill="#6e6a60">OFF</text>
+<text x="26.8" y="125.3" fill="#1f1f22">sync to remote</text>
+<text x="245.2" y="125.3" fill="#1f1f22">▽╌╌</text>
+<text x="278.8" y="125.3" fill="#1f1f22">OFF</text>
+<text x="329.2" y="125.3" fill="#1f1f22">(no remote configured)</text>
+<text x="26.8" y="142.3" fill="#6e6a60">compact rows</text>
+<text x="245.2" y="142.3" fill="#6e6a60">▁▁</text>
+<text x="262.0" y="142.3" fill="#f5a300">▼</text>
+<text x="278.8" y="142.3" fill="#f0ede4">ON </text>
+<text x="26.8" y="176.3" fill="#6e6a60">start of week</text>
+<text x="245.2" y="176.3" fill="#1f1f22">▁</text>
+<text x="253.6" y="176.3" fill="#f0ede4">mon    </text>
+<text x="312.4" y="176.3" fill="#1f1f22">═▁</text>
+<text x="26.8" y="193.3" fill="#6e6a60">theme</text>
+<text x="245.2" y="193.3" fill="#1f1f22">▁</text>
+<text x="253.6" y="193.3" fill="#f0ede4">dark   </text>
+<text x="312.4" y="193.3" fill="#1f1f22">═▁</text>
+<text x="278.8" y="210.3" fill="#6e6a60">auto   </text>
+<text x="278.8" y="227.3" fill="#6e6a60">light  </text>
+<text x="262.0" y="244.3" fill="#f5a300">▼</text>
+<text x="278.8" y="244.3" fill="#f0ede4">dark   </text>
+<rect x="371.2" y="265.0" width="16.8" height="17.0" fill="#17171a"/>
+<text x="26.8" y="278.3" fill="#6e6a60">row density</text>
+<text x="245.2" y="278.3" fill="#6e6a60">▁▁▁▁▁▁▁▁▁</text>
+<text x="320.8" y="278.3" fill="#f5a300">▼</text>
+<text x="329.2" y="278.3" fill="#1f1f22">····</text>
+<text x="371.2" y="278.3" fill="#f0ede4">70</text>
+<text x="26.8" y="329.3" fill="#6e6a60">DANGER ZONE</text>
+<text x="127.6" y="329.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="606.4" y="329.3" fill="#f0ede4">delete every completed task</text>
+<text x="26.8" y="346.3" fill="#f5a300">▁ </text>
+<text x="43.6" y="346.3" fill="#f0ede4">▀Delete all▄</text>
+<text x="144.4" y="346.3" fill="#f5a300"> ▁</text>
+<text x="186.4" y="346.3" fill="#1f1f22">7 tasks, not recoverable</text>
+</g>
+</svg>

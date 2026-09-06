@@ -1,0 +1,32 @@
+[1]BOARD [2]form [3]cfg [4]log                                                                      
+[COMMAND]  query 're'  ·  6 results                                                                 
+─────────────────────────────────────────────────────────────────────────────────────────────────── 
+  > ▐re|-------------------------------------▌                                                      
+                                                                                                    
+  ▪ redirect to task                            enter                                               
+    rename project                                                                                  
+    refresh board                               r                                                   
+    archive released                                                                                
+    restore from backup                                                                             
+    set reminder                                                                                    
+                                                                                                    
+  ───────────────────────────────────────────────────────────────────────────────────────────────   
+  > ▐zzq|------------------------------------▌                                                      
+                                                                                                    
+     ██    ██                                                                                       
+     ██    ██                                                                                       
+                                                                                                    
+    █        █                                                                                      
+     █      █                                                                                       
+      ██████                                                                                        
+     empty                                                                                          
+                                                                                                    
+  ▐enter▌ RUN   ▐esc▌ CLOSE   ▐^p▌ PREV   ▐^n▌ NEXT                                                 
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    

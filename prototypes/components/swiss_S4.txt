@@ -1,0 +1,32 @@
+B O A R D   form   cfg   log                                                                        
+B O A R D   16 tasks  ·  4 projects                                                                 
+─────────────────────────────────────────────────────────────────────────────────────────────────── 
+                                                                                                    
+  B A C K L O G                 5                              D E T A I L   Fix login redirect     
+  ─────────────────────────────────────────────────────────    ──────────────────────────────────── 
+    Audit the theme tokens       21d                                                                
+    Drop the legacy shim         30d                           project        Web                   
+                                                               phase          doing                 
+━ D O I N G                     4                              due            3d                    
+━   Fix login redirect           3d                            priority       high                  
+    Rate-limit the API           2d!                           status         open                  
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+Delete 3 tasks?                                                                                     
+                                                                                                    
+3 tasks will be removed from BACKLOG.                                                               
+This cannot be undone.                                                                              
+                                                                                                    
+┃  ╲Delete╱  ┃   │   Cancel   │                                                                     
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+view ┄▬▬▬▬┄┄┄┄┄┄┄ 3-10 of 23                                                                        
+                                                                                                    

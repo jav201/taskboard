@@ -17,6 +17,7 @@ happen.
 """
 from __future__ import annotations
 
+import pathlib
 import re
 
 import pytest
@@ -24,6 +25,14 @@ import pytest
 from taskboard import language as LG
 
 LANGS = tuple(LG.KITS)
+#: where `prototypes/components/render.py` writes its sweep. Reached as a path
+#: and not imported: that module pulls `capture_languages` and Textual, and the
+#: only question this file asks of it is which frames exist on disk.
+FRAMES = pathlib.Path(__file__).resolve().parents[1] / "prototypes" / "components"
+#: where `prototypes/components/render.py` writes its sweep. Reached as a path
+#: and not imported: that module pulls `capture_languages` and Textual, and the
+#: only question this file asks of it is which frames exist on disk.
+FRAMES = pathlib.Path(__file__).resolve().parents[1] / "prototypes" / "components"
 #: the five the PROTOTYPE round rendered; the others inherit the seat, and the
 #: laws below are asked of ALL of them either way
 PROTOTYPED = ("corgi", "blueprint", "prism", "naught", "ledger")
@@ -1514,3 +1523,111 @@ def test_the_modal_box_is_eight_cells_in_every_language(lang):
     the top of a box than at the bottom — industrial's `▛▀▜` over `▙▄▟` is
     the case that forced it."""
     assert len(LG.kit(lang).MODAL_BOX) == 8, lang
+
+
+# ---------------------------------------------------------------------------
+# inc37 (inheritors-2) — every language is photographed, not just the five
+# ---------------------------------------------------------------------------
+SCREENS = ("S1", "S2", "S3", "S4", "S5", "S6")
+
+
+def test_every_language_has_a_frame_for_every_screen():
+    """THE DEFECT THIS GUARDS IS A LIST, and it has already happened once.
+
+    `render.py` swept a typed list of five languages for two batches. The six
+    that were not on it inherited seat after seat and then, in inc32/35/36,
+    got thirty-eight mechanisms of their own — held by property tests and by
+    nothing anyone could look at. The list is now read off `LG.KITS`; this is
+    what says so from the outside, on the artefacts rather than on the source,
+    so a kit added later that nobody sweeps is red here.
+
+    The `.txt` is the file every law in this repo measures (the `.svg` carries
+    the two marks a cell grid cannot show), so it is the one asked for."""
+    missing = [f"{lang}_{sc}.txt" for lang in LANGS for sc in SCREENS
+               if not (FRAMES / f"{lang}_{sc}.txt").exists()]
+    assert not missing, missing
+    assert len(list(FRAMES.glob("*_S?.txt"))) == len(LANGS) * len(SCREENS)
+
+
+def test_no_two_languages_render_a_screen_identically():
+    """`render.py`'s own sweep law, asserted where the gate runs it.
+
+    Two languages agreeing on a WHOLE screen is the exact defect
+    LANGUAGES.md records — "a language that only changes colour is not a
+    language" — and until now it was checked only inside a prototype script
+    that pytest does not run. 55 pairs per screen, 330 in all.
+
+    It reads the shipped `.txt` rather than re-rendering: a re-render here
+    would need Textual and a settle, and the artefact is what a reader
+    judges."""
+    for sc in SCREENS:
+        got = {lang: (FRAMES / f"{lang}_{sc}.txt").read_text(encoding="utf-8")
+               for lang in LANGS}
+        assert len(set(got.values())) == len(LANGS), (
+            sc, [a for a in got if list(got.values()).count(got[a]) > 1])
+
+
+def test_no_frame_declares_a_hand_drawn_element():
+    """THE ROUND'S HEADLINE CLAIM, read off the sidecars the sweep writes.
+
+    A frame with a hand-drawn element is a prototype's taste standing where a
+    kit's answer should be, and the sidecar is where `render.py` declares one.
+    All 66 say the same sentence, and this is what keeps saying it after the
+    next edit to `screens.py`."""
+    drawn = [f.name for f in FRAMES.glob("*.candidates.md")
+             if "Nothing was drawn by hand" not in f.read_text(encoding="utf-8")]
+    assert not drawn, drawn
+
+
+# ---------------------------------------------------------------------------
+# inc37 (inheritors-2) — every language is photographed, not just the five
+# ---------------------------------------------------------------------------
+SCREENS = ("S1", "S2", "S3", "S4", "S5", "S6")
+
+
+def test_every_language_has_a_frame_for_every_screen():
+    """THE DEFECT THIS GUARDS IS A LIST, and it has already happened once.
+
+    `render.py` swept a typed list of five languages for two batches. The six
+    that were not on it inherited seat after seat and then, in inc32/35/36,
+    got thirty-eight mechanisms of their own — held by property tests and by
+    nothing anyone could look at. The list is now read off `LG.KITS`; this is
+    what says so from the outside, on the artefacts rather than on the source,
+    so a kit added later that nobody sweeps is red here.
+
+    The `.txt` is the file every law in this repo measures (the `.svg` carries
+    the two marks a cell grid cannot show), so it is the one asked for."""
+    missing = [f"{lang}_{sc}.txt" for lang in LANGS for sc in SCREENS
+               if not (FRAMES / f"{lang}_{sc}.txt").exists()]
+    assert not missing, missing
+    assert len(list(FRAMES.glob("*_S?.txt"))) == len(LANGS) * len(SCREENS)
+
+
+def test_no_two_languages_render_a_screen_identically():
+    """`render.py`'s own sweep law, asserted where the gate runs it.
+
+    Two languages agreeing on a WHOLE screen is the exact defect
+    LANGUAGES.md records — "a language that only changes colour is not a
+    language" — and until now it was checked only inside a prototype script
+    that pytest does not run. 55 pairs per screen, 330 in all.
+
+    It reads the shipped `.txt` rather than re-rendering: a re-render here
+    would need Textual and a settle, and the artefact is what a reader
+    judges."""
+    for sc in SCREENS:
+        got = {lang: (FRAMES / f"{lang}_{sc}.txt").read_text(encoding="utf-8")
+               for lang in LANGS}
+        assert len(set(got.values())) == len(LANGS), (
+            sc, [a for a in got if list(got.values()).count(got[a]) > 1])
+
+
+def test_no_frame_declares_a_hand_drawn_element():
+    """THE ROUND'S HEADLINE CLAIM, read off the sidecars the sweep writes.
+
+    A frame with a hand-drawn element is a prototype's taste standing where a
+    kit's answer should be, and the sidecar is where `render.py` declares one.
+    All 66 say the same sentence, and this is what keeps saying it after the
+    next edit to `screens.py`."""
+    drawn = [f.name for f in FRAMES.glob("*.candidates.md")
+             if "Nothing was drawn by hand" not in f.read_text(encoding="utf-8")]
+    assert not drawn, drawn

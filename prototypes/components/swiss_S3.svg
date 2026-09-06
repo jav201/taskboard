@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · swiss · S3 settings">
+<title>taskboard · swiss · S3 settings</title>
+<rect width="860.0" height="564.0" fill="#121212"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#8a8a8a">board</text>
+<text x="77.2" y="23.3" fill="#8a8a8a">form</text>
+<text x="136.0" y="23.3" fill="#f4f4f4">C F G</text>
+<text x="203.2" y="23.3" fill="#8a8a8a">log</text>
+<text x="10.0" y="40.3" fill="#f4f4f4">S E T T I N G S</text>
+<text x="161.2" y="40.3" fill="#8a8a8a">5 switches  ·  2 selects  ·  1 slider</text>
+<text x="10.0" y="57.3" fill="#3d3d3d">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="91.3" fill="#8a8a8a">notify on overdue</text>
+<text x="245.2" y="91.3" fill="#8a8a8a">━━</text>
+<text x="262.0" y="91.3" fill="#f4f4f4">│</text>
+<text x="26.8" y="108.3" fill="#8a8a8a">daily digest</text>
+<text x="245.2" y="108.3" fill="#8a8a8a">━━</text>
+<text x="262.0" y="108.3" fill="#f4f4f4">│</text>
+<text x="26.8" y="125.3" fill="#8a8a8a">sound</text>
+<text x="245.2" y="125.3" fill="#f4f4f4">│</text>
+<text x="253.6" y="125.3" fill="#3d3d3d">──</text>
+<text x="26.8" y="142.3" fill="#3d3d3d">sync to remote</text>
+<text x="245.2" y="142.3" fill="#3d3d3d">┆┈┈</text>
+<text x="295.6" y="142.3" fill="#3d3d3d">(no remote configured)</text>
+<text x="26.8" y="159.3" fill="#8a8a8a">compact rows</text>
+<text x="245.2" y="159.3" fill="#8a8a8a">━━</text>
+<text x="262.0" y="159.3" fill="#f4f4f4">│</text>
+<text x="26.8" y="193.3" fill="#8a8a8a">start of week</text>
+<text x="245.2" y="193.3" fill="#3d3d3d">│</text>
+<text x="253.6" y="193.3" fill="#f4f4f4">mon    </text>
+<text x="312.4" y="193.3" fill="#3d3d3d">─│</text>
+<text x="26.8" y="210.3" fill="#8a8a8a">theme</text>
+<text x="245.2" y="210.3" fill="#3d3d3d">│</text>
+<text x="253.6" y="210.3" fill="#f4f4f4">dark   </text>
+<text x="312.4" y="210.3" fill="#3d3d3d">─│</text>
+<text x="278.8" y="227.3" fill="#8a8a8a">auto   </text>
+<text x="278.8" y="244.3" fill="#8a8a8a">light  </text>
+<text x="262.0" y="261.3" fill="#e2231a">━</text>
+<text x="278.8" y="261.3" fill="#f4f4f4">dark   </text>
+<text x="26.8" y="295.3" fill="#8a8a8a">row density</text>
+<text x="245.2" y="295.3" fill="#8a8a8a">━━━━━━━━━</text>
+<text x="320.8" y="295.3" fill="#f4f4f4">│</text>
+<text x="329.2" y="295.3" fill="#3d3d3d">────</text>
+<text x="379.6" y="295.3" fill="#8a8a8a">70</text>
+<text x="26.8" y="329.3" fill="#3d3d3d">───────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="26.8" y="346.3" fill="#8a8a8a">danger zone</text>
+<text x="152.8" y="346.3" fill="#f4f4f4">delete every completed task</text>
+<text x="26.8" y="363.3" fill="#f4f4f4">│ ╲Delete all╱ │</text>
+<text x="186.4" y="363.3" fill="#3d3d3d">7 tasks, not recoverable</text>
+</g>
+</svg>
