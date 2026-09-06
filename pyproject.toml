@@ -23,3 +23,12 @@ taskboard = ["*.tcss"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+# `prototypes/out/` is the scratch yard, and one file in it -- `_b37_test.py` --
+# matched pytest's default `python_files = test_*.py *_test.py`. A bare `pytest`
+# from the repo root COLLECTED it, which runs its module body, which appends a
+# block to `tests/test_components.py`. Three gate runs left three copies in HEAD
+# and the count never moved because the duplicate `def`s shadow each other.
+# Collection is now confined to the suite. The probe was renamed as well
+# (`_b37_probe.py`): either fix alone would do, and a scratch yard that pytest
+# can reach at all is the thing worth closing twice.
+testpaths = ["tests"]

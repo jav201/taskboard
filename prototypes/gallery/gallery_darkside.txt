@@ -2,7 +2,7 @@
                                                                                                                       
                               ┌────────────────────────────────────────────────────────┐                              
                               │                                                        │                              
-                              │  (.) gal                                               │                              
+                              │  ( ) gal                                               │                              
                               │  Darkside                                              │                              
                               │  checkable  switch    checkbox  off·on                 │                              
                               │             O──  ▬▬O  ( )  (O)   default               │                              
