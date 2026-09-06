@@ -30,47 +30,38 @@ CORGI   5 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRE
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-INSTRUMENT   7 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⠁  CUR ⣿)
+INSTRUMENT   5 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⠁  CUR ⣿)
 ------------------------------------------------------------------------------
   ⠇   [4 families]  LEVELS[error]  ·  INVALID textfield.main close  ·  button.main close (default)  ·  textfield.main close (default)
-  ⠶   [3 families]  INVALID textfield.main mid  ·  radio.knob mark (checked,default)  ·  switch.indicator mark (checked+disabled,disabled)
+  ⠶   [3 families]  INVALID stepper.step close + INVALID stepper.step open + INVALID textfield.main mid  ·  radio.knob mark (checked,default)  ·  switch.indicator mark (checked+disabled,disabled)
   ⠸   [3 families]  INVALID textfield.main open  ·  button.main open (default)  ·  textfield.main open (default)
   ⣿   [3 families]  CUR  ·  checkbox.knob mark (checked,default)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)
   ⠛   [2 families]  DANGER_FORM close + DANGER_FORM open  ·  checkbox.main mark (checked+focused,focused)
-  ⡄   [2 families]  INVALID stepper.step close  ·  stepper.step open (default)
-  ⢠   [2 families]  INVALID stepper.step open  ·  stepper.step close (default)
   ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-SWISS   5 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
+SWISS   3 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
 ------------------------------------------------------------------------------
-  ·   [3 families]  LEVELS[info]  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  textfield.main mid (edited)
-  ‹   [2 families]  INVALID stepper.step close  ·  stepper.step open (default)
-  ›   [2 families]  INVALID stepper.step open  ·  stepper.step close (default)
+  ·   [2 families]  LEVELS[info]  ·  textfield.main mid (edited)
   ─   [2 families]  LEVELS[warn]  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)
-  ╲   [2 families]  DANGER_FORM open  ·  INVALID textfield.main open
-  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ╲   [2 families]  DANGER_FORM open  ·  INVALID stepper.step close + INVALID stepper.step open + INVALID textfield.main open
+  ... 8 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 1 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-INDUSTRIAL   4 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED !  CUR ▶)
+INDUSTRIAL   2 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED !  CUR ▶)
 ------------------------------------------------------------------------------
-  <   [3 families]  INVALID stepper.step close  ·  radio.knob open (active,checked,checked+active,checked+focused,default,focused)  ·  radio.main open (active,checked,checked+active,checked+focused,default,focused)  ·  stepper.step open (default)
-  >   [3 families]  INVALID stepper.step open  ·  radio.knob close (active,checked,checked+active,checked+focused,default,focused)  ·  radio.main close (active,checked,checked+active,checked+focused,default,focused)  ·  stepper.step close (default)
   ▌   [3 families]  INVALID textfield.main close  ·  button.main close (active,default,focused)  ·  textfield.main close (active,default,edited,focused)
   ▐   [3 families]  INVALID textfield.main open  ·  button.main open (active,default,focused)  ·  textfield.main open (active,default,edited,focused)
-  ... 10 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-NORD   4 colliding cells   (LEVELS · /! /!!  DANGER ##  REQUIRED *  CUR ▸)
+NORD   1 colliding cells   (LEVELS · /! /!!  DANGER ##  REQUIRED *  CUR ▸)
 ------------------------------------------------------------------------------
-  [   [4 families]  INVALID stepper.step close  ·  button.main open (default)  ·  checkbox.knob open (checked,default)  ·  checkbox.main open (checked,default)  ·  textfield.main open (default)
-  ]   [4 families]  INVALID stepper.step open  ·  button.main close (default)  ·  checkbox.knob close (checked,default)  ·  checkbox.main close (checked,default)  ·  textfield.main close (default)
-  ·   [2 families]  LEVELS[info]  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)
   ▸   [2 families]  CUR  ·  stepper.step close (focused)
-  ... 5 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
@@ -82,13 +73,12 @@ DARKSIDE   2 colliding cells   (LEVELS · /o /O   DANGER ØØ  REQUIRED ▪  CUR
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-PRISM   5 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⡀  CUR ▸)
+PRISM   4 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⡀  CUR ▸)
 ------------------------------------------------------------------------------
   ⣀   [7 families]  LEVELS[info]  ·  button.main mid (default)  ·  checkbox.main mid (active,checked,checked+active,checked+focused,default,focused)  ·  radio.knob close (checked,default)  ·  radio.knob open (checked,default)  ·  radio.main close (checked,default)  ·  radio.main mid (checked,default)  ·  radio.main open (checked,default)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (focused)
   ⣿   [7 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  button.main close (active,default,focused)  ·  button.main mid (active)  ·  button.main open (active,default,focused)  ·  checkbox.knob close (checked,default)  ·  checkbox.knob open (checked,default)  ·  checkbox.main close (checked,default)  ·  checkbox.main open (checked,default)  ·  radio.knob mid (active,checked,checked+active,checked+focused,default,focused)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (active,default,edited,focused)  ·  textfield.main open (active,default,edited,focused)
   ⣤   [5 families]  LEVELS[warn]  ·  button.main mid (focused)  ·  radio.knob close (checked+focused,focused)  ·  radio.knob open (checked+focused,focused)  ·  radio.main close (checked+focused,focused)  ·  radio.main mid (checked+focused,focused)  ·  radio.main open (checked+focused,focused)  ·  switch.indicator mark (checked+disabled,disabled)  ·  textfield.main mid (edited)
-  ⡀   [3 families]  REQUIRED  ·  INVALID stepper.step close  ·  stepper.step open (default)
-  ⢀   [2 families]  INVALID stepper.step open  ·  stepper.step close (default)
+  ⡀   [2 families]  REQUIRED  ·  stepper.step open (default)
   ... 6 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
@@ -110,14 +100,13 @@ SOLARI   3 colliding cells   (LEVELS OK /DLY/CNX  DANGER ▀▄  REQUIRED ▮  C
   ... 1 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-BLUEPRINT   5 colliding cells   (LEVELS ··/╌╌/━━  DANGER ━━  REQUIRED ├  CUR ┌)
+BLUEPRINT   4 colliding cells   (LEVELS ··/╌╌/━━  DANGER ━━  REQUIRED ├  CUR ┌)
 ------------------------------------------------------------------------------
-  ├   [7 families]  REQUIRED  ·  INVALID stepper.step open  ·  button.main open (default)  ·  checkbox.knob open (checked,default)  ·  checkbox.main open (checked,default)  ·  radio.knob close (checked,default)  ·  radio.main close (checked,default)  ·  stepper.step close (default)  ·  textfield.main open (default)
-  ┤   [7 families]  INVALID stepper.step close  ·  button.main close (default)  ·  checkbox.knob close (checked,default)  ·  checkbox.main close (checked,default)  ·  radio.knob open (checked,default)  ·  radio.main open (checked,default)  ·  stepper.step open (default)  ·  switch.knob mark (checked,default)  ·  textfield.main close (default)
+  ├   [6 families]  REQUIRED  ·  button.main open (default)  ·  checkbox.knob open (checked,default)  ·  checkbox.main open (checked,default)  ·  radio.knob close (checked,default)  ·  radio.main close (checked,default)  ·  stepper.step close (default)  ·  textfield.main open (default)
   ╌   [6 families]  LEVELS[warn]  ·  checkbox.knob mid (checked+disabled,disabled)  ·  radio.knob mid (checked+disabled,disabled)  ·  stepper.main close (disabled)  ·  stepper.main open (disabled)  ·  switch.main mark (checked+disabled,disabled)  ·  textfield.main mid (disabled,edited)
   ·   [5 families]  LEVELS[info]  ·  INVALID textfield.main mid  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
-  ━   [3 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  INVALID textfield.main close + INVALID textfield.main open
-  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ━   [3 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  INVALID stepper.step close + INVALID stepper.step open + INVALID textfield.main close + INVALID textfield.main open
+  ... 8 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ==============================================================================
@@ -126,17 +115,17 @@ LANGUAGE x COLLISIONS
 language       colliding cells
 naught                       5
 corgi                        5
-instrument                   7
-swiss                        5
-industrial                   4
-nord                         4
+instrument                   5
+swiss                        3
+industrial                   2
+nord                         1
 darkside                     2
-prism                        5
+prism                        4
 ledger                       2
 solari                       3
-blueprint                    5
+blueprint                    4
 ------------------------------
-TOTAL                       47
+TOTAL                       36
 
 zero collisions: NONE -- all eleven overload at least one cell
 
