@@ -2984,20 +2984,40 @@ class Kit:
 
         THE ROWS ARE THE CALLER'S WORDS. A kit does not know that three tasks
         are about to be deleted; it knows how this language separates a
-        question from what the question is about."""
+        question from what the question is about.
+
+        AND NO LANGUAGE OVERRIDES *THIS* METHOD, for the reason `pane_split`
+        states at length and this seat learned second: a language that
+        overrode the entry point would never consult the table, so a false
+        entry against it could not be wrong out loud. What a language
+        overrides is `overlay_box` (it draws a lid, in its own chrome) or
+        `overlay_instead` (it may not)."""
         if self.name in MODAL_BORDER_REFUSED:
             return self.overlay_instead(rows, w, h, under)
+        return self.overlay_box(rows, w, h, under)
+
+    #: The lid a language that may draw one draws, in `DISPLAY_BOX`'s own
+    #: order: (tl, tr, bl, br, top, bottom, left, right). EIGHT cells rather
+    #: than six, because half-cell chrome has a different glyph at the top of
+    #: a box than at the bottom -- and because a language that already
+    #: declares a display's frame should be able to hand the same string to
+    #: both rather than spell its corners twice.
+    MODAL_BOX = "┌┐└┘──││"
+
+    def overlay_box(self, rows: list[str], w: int, h: int,
+                    under: list[str]) -> list[str]:
+        """The drawing branch: `MODAL_BOX`, centred, over a receded page."""
         c = self.c
+        tl, tr, bl, br, top, bot, lt, rt = self.MODAL_BOX
         body = [visible(r) for r in rows]
         dw = min(max(8, w), max(len(b) for b in body) + 4)
         x = max(0, (w - dw) // 2)
-        lid = "─" * (dw - 2)
-        box = [f"[{c['ink']}]{mark('┌' + lid + '┐')}[/]"]
+        box = [f"[{c['ink']}]{mark(tl + top * (dw - 2) + tr)}[/]"]
         for r, b in zip(rows, body):
-            box.append(f"[{c['ink']}]{mark('│')}[/] " + r
+            box.append(f"[{c['ink']}]{mark(lt)}[/] " + r
                        + " " * max(0, dw - 3 - len(b))
-                       + f"[{c['ink']}]{mark('│')}[/]")
-        box.append(f"[{c['ink']}]{mark('└' + lid + '┘')}[/]")
+                       + f"[{c['ink']}]{mark(rt)}[/]")
+        box.append(f"[{c['ink']}]{mark(bl + bot * (dw - 2) + br)}[/]")
         y = max(0, (h - len(box)) // 2)
         out = []
         for i in range(h):
@@ -4628,6 +4648,77 @@ class Instrument(Kit):
     # spelling, not a rule.
     BLANK, FULL, HALF, LATT = "⠐", "⣿", "⡗", "⠒"
 
+    # ======================================================================
+    # THE SEVEN IT USED TO INHERIT (batch `kits-learn-4`, AC-5). LANGUAGES.md
+    # §1: "mono + one accent · dense · WHITESPACE STRUCTURE · drawn dot-matrix
+    # type · clinical. Numerals and icons drawn on a coarse dot grid; BORDERS
+    # ALMOST ABSENT; one saturated hue for state."
+    #
+    # Every mark below is braille at this language's own 2x4 sub-cell, which
+    # is the reason `lattice_rows` takes a kit hook at all: naught's lattice
+    # and this one are the SAME mechanism in two alphabets, and borrowing
+    # naught's round dots here would put naught's identity on this screen.
+    # ======================================================================
+    # `⡇` was the first choice and it is SPOKEN FOR: `verify_language`
+    # keeps a three-site census of every `⡇` in this file (five exempt
+    # seats, closed against the source), because that glyph is the
+    # half-cell fill this repo hunted once. A sixth live one goes red,
+    # which is the census doing exactly what it was written for.
+    DISCLOSE = "⠿"                        # saturated: there is more beyond
+    DANGER_FORM = ("⠛", "⠛")               # the top row raised, both sides
+    # SEVERITY BY DOT COUNT, which is the only ladder a dot-matrix owns:
+    # one lit dot, two, three. It must not reach `⠿` (this language's
+    # SATURATED mark, spent on `OVER`, on the `wip` icon and on the
+    # disclosure above) or the log's worst row and its "there is more"
+    # mark would be the same cell.
+    LEVELS = {"info": "⠂⠂", "warn": "⠆⠆", "error": "⠇⠇"}
+    MATCH_STYLE = "underline {accent}"     # a scope marks a span with a cursor
+
+    def field_row(self, caption, value, w):
+        """THE GRATICULE RUNS TO THE FIGURE, and the figure stands at the
+        right-hand graticule line.
+
+        This is the SCOPE READOUT, which is what this language's board already
+        is (`layout="trace"`): a label at the left, the unlit graticule across
+        the field, the reading at the edge. It is NOT a leader — a leader is
+        drawn BETWEEN two marks to connect them, and a graticule was on the
+        glass before either mark arrived. Naught draws the same distinction
+        about its lattice and fills AFTER the figure; this one fills BEFORE
+        it, because a scope's reading sits at the trace's end."""
+        c = self.c
+        cap, val = str(caption), str(value)
+        gap = max(1, w - len(cap) - len(val) - 1)
+        return (f"[{c['mut']}]{mark(cap)}[/] "
+                + f"[{self.t.get('tick', c['dim'])}]{mark(self.LATT * gap)}[/]"
+                + f"[{c['ink']}]{mark(val)}[/]")
+
+    def keyhint(self, pairs, w=0):
+        """The graticule at one cell, between the key and what it does — the
+        same mark the row above spends, and no air at all: this language is
+        dense, and air is swiss's divider rather than its own."""
+        c = self.c
+        return "   ".join(f"[{c['accent']}]{mark(str(k_))}[/]"
+                          f"[{c['dim']}]{mark(self.LATT)}[/]"
+                          f"[{c['mut']}]{mark(str(v))}[/]"
+                          for k_, v in pairs)
+
+    def overlay_instead(self, rows, w, h, under):
+        """"Borders almost absent", so the question is not boxed — it is
+        BANDED: two full-width graticule rules, the question between them,
+        the page unlit behind. Whitespace structure with the dot identity,
+        which is the pair of commitments this language leads with."""
+        c = self.c
+        band = f"[{self.t.get('tick', c['dim'])}]{mark(self.LATT * w)}[/]"
+        block = [band] + list(rows) + [band]
+        y = max(0, (h - len(block)) // 2)
+        out = []
+        for i in range(h):
+            if y <= i < y + len(block):
+                out.append(block[i - y])
+            else:
+                out.append(self.recede(under[i] if i < len(under) else ""))
+        return out
+
     # -- the LATTICE surface posture, in THIS language's dots ---------------
     # Shared with naught (AC-2 says they share the mechanism) and drawn in a
     # different alphabet, which is the whole reason the mechanism takes a kit
@@ -5046,6 +5137,74 @@ class Swiss(Kit):
     GUTTER = 3
     MEASURE_MIN = 24
 
+    # ======================================================================
+    # THE SEVEN IT USED TO INHERIT (batch `kits-learn-4`, AC-5). LANGUAGES.md
+    # §2: "near-mono + one accent (classically red) · AIRY · single hairline
+    # rules · plain cells · clinical-editorial. Strict grid, generous
+    # emptiness, FLUSH-LEFT EVERYTHING, NO BOXES — ALIGNMENT DOES THE
+    # DIVIDING."
+    # ======================================================================
+    DISCLOSE = "─"                        # the hairline, at one cell
+    # THE DIAGONALS THIS LANGUAGE ALREADY REJECTS WITH. `field_form(INVALID)`
+    # is `╲ ╱` here, so a destructive control is bracketed by the same pair
+    # — one rejection notation, not two. And it is a FORM: this language's
+    # accent is its red, and the red is spent on the one thing it accents.
+    DANGER_FORM = ("╲", "╱")
+    # A WEIGHT LADDER, which is this language's whole hierarchy device
+    # ("hierarchy by weight, generous emptiness"): a dot, a hairline, a heavy
+    # rule. One cell each, so a column of rows aligns.
+    LEVELS = {"info": "·", "warn": "─", "error": "━"}
+    MATCH_STYLE = "bold {alert}"           # the classic red, and never alone
+
+    def field_row(self, caption, value, w):
+        """FLUSH LEFT, BOTH OF THEM, on the grid.
+
+        Every other language here closes the gap somehow — a leader, a
+        lattice, a dimension, an ember. This one does not close it: the
+        figure starts at the next COLUMN and the emptiness between is the
+        divider, which is the language's whole method stated as one row
+        ("no boxes — alignment does the dividing").
+
+        The caption's field is `MEASURE_MIN // 2` wide with the grid's own
+        `GUTTER` after it, so two rows of different caption lengths put their
+        figures in the SAME cell. A right-flushed figure would put them in
+        the same cell too and would be nord's answer; this one is a grid, and
+        a grid is read from the left."""
+        c = self.c
+        cap, val = str(caption), str(value)
+        col = self.MEASURE_MIN // 2 + self.GUTTER
+        gap = max(self.GUTTER, col - len(cap))
+        return (f"[{c['mut']}]{mark(cap)}[/]" + " " * gap
+                + f"[{c['ink']}]{mark(val)}[/]"
+                + " " * max(0, w - len(cap) - gap - len(val)))
+
+    def keyhint(self, pairs, w=0):
+        """AIR, and more of it than anyone else spends. The gutter separates
+        a key from its label and twice the gutter separates one pair from the
+        next — the same two measures the editorial grid is built on, because
+        a language with one divider uses it everywhere."""
+        c = self.c
+        return (" " * (self.GUTTER * 2)).join(
+            f"[{c['accent']}]{mark(str(k_))}[/]" + " " * self.GUTTER
+            + f"[{c['mut']}]{mark(str(v))}[/]" for k_, v in pairs)
+
+    def overlay_instead(self, rows, w, h, under):
+        """NO BOXES, at any width — so the question is set at the grid's first
+        column under the SINGLE HAIRLINE this language allows itself, with the
+        page dimmed behind. The rule is the masthead's, not a lid's: it runs
+        the full measure and nothing turns a corner."""
+        c = self.c
+        rule = f"[{self.rule_color}]{mark('─' * w)}[/]"
+        block = [rule, ""] + list(rows)
+        y = max(0, (h - len(block)) // 2)
+        out = []
+        for i in range(h):
+            if y <= i < y + len(block):
+                out.append(block[i - y])
+            else:
+                out.append(self.recede(under[i] if i < len(under) else ""))
+        return out
+
     @property
     def editorial(self) -> bool:
         """The grid, dispatched on the token — the same shape as
@@ -5342,6 +5501,58 @@ class Industrial(Kit):
     # so the narrow tier gives up three cells of plate, never the number.
     PLATE_W = 7
     SHORT_W = 4
+
+    # ======================================================================
+    # THE SEVEN IT USED TO INHERIT (batch `kits-learn-4`, AC-5). LANGUAGES.md
+    # §3: "~5 flat colours on grey · dense · BOXED GROUPS · plain cells ·
+    # playful-industrial. Everything is NUMBERED AND LABELLED; colour codes
+    # FUNCTION, not decoration ... FAILS: WHEN COLOUR MUST CARRY SEVERITY,
+    # because the palette already spent colour on identity."
+    #
+    # That last clause decides three of the seven. A language that cannot put
+    # severity on colour has to put it on SHAPE, and the shape it owns is the
+    # STAMPED PLATE — the `▐ nn ▌` it already stamps on every card.
+    # ======================================================================
+    DISCLOSE = "▼"                        # solid, flat, stamped
+    DANGER_FORM = ("╱╱", "╱╱")           # hazard striping, and not a hue
+    LEVELS = {"info": "▫▫", "warn": "▪▪", "error": "■■"}
+    MATCH_STYLE = "reverse {accent}"       # a plate struck over the run
+    # THE BOX THIS LANGUAGE IS ALLOWED, and the only one of the eleven whose
+    # commitment ASKS for one: "boxed groups". Drawn in the same half-cell
+    # plate chrome `DISPLAY_BOX` already stamps, so the dialog is a plate like
+    # everything else here rather than a terminal's hairline lid.
+
+    def field_row(self, caption, value, w):
+        """THE FIGURE STANDS ON A PLATE, and the caption is its legend.
+
+        "Everything is numbered and labelled" — and the thing this language
+        labels WITH is the stamped plate, which is why the card already wears
+        one. A definition row is a plate with a word instead of a code.
+
+        The plate's walls come out of the row's own budget, exactly as the
+        card's do: a plate that widened the row would wrap it (VERIFY.md's
+        frame law). The VALUE is untouched inside them — the walls are
+        chrome and the figure is content."""
+        c = self.c
+        cap, val = str(caption).upper(), str(value)
+        plate = f"▐ {val} ▌"
+        gap = max(1, w - len(cap) - len(plate))
+        return (f"[{c['mut']}]{mark(cap)}[/]" + " " * gap
+                + f"[{self.plate}]{mark('▐')}[/]"
+                + f"[{c['ink']}]{mark(' ' + val + ' ')}[/]"
+                + f"[{self.plate}]{mark('▌')}[/]")
+
+    def keyhint(self, pairs, w=0):
+        """THE KEY IS ON A PLATE AND THE LABEL IS THE LEGEND BESIDE IT — the
+        same two parts every plate on this board has. Corgi brackets its
+        keys; this language stamps them, which is the difference between a
+        silkscreened panel and a machined one."""
+        c = self.c
+        return "   ".join(f"[{self.plate}]{mark('▐')}[/]"
+                          f"[{c['ink']}]{mark(str(k_))}[/]"
+                          f"[{self.plate}]{mark('▌')}[/] "
+                          f"[{c['mut']}]{mark(str(v).upper())}[/]"
+                          for k_, v in pairs)
     TAB_W = 3                                  # the legend's "▐▌ " tab
     CODE_MIN = 24
 
@@ -5364,6 +5575,13 @@ class Industrial(Kit):
     # that severity still cannot ride colour inside this display, so the
     # screen's ramp is ground-to-ink with no hue in it at all.
     DISPLAY_BOX = "▛▜▙▟▀▄▌▐"
+
+    # AND THE DIALOG IS ONE TOO (kits-learn-4). This is the only language of
+    # the eleven whose commitment ASKS for a box -- "boxed groups" -- and the
+    # box it owns is this plate. `MODAL_BOX` takes `DISPLAY_BOX`'s order for
+    # exactly this: a language that has already declared its frame should
+    # hand the same string to both seats rather than spell its corners twice.
+    MODAL_BOX = DISPLAY_BOX
 
     def display_chrome(self) -> tuple[str, str, str]:
         return self.DISPLAY_BOX, self.t.get("ground", "#000000"), self.c["ink"]
@@ -5637,6 +5855,30 @@ class Nord(Kit):
     Under any other `layout` every method below falls through to `super()`,
     i.e. the base kit, and nord renders byte-for-byte as it always did."""
 
+    # ======================================================================
+    # THE SEVEN THIS LANGUAGE DOES NOT OVERRIDE, AND WHY THAT IS AN ANSWER
+    # (batch `kits-learn-4`, AC-5). `field_row`, `DISCLOSE`, `DANGER_FORM`,
+    # `LEVELS`, `MATCH_STYLE`, `keyhint` and `overlay` all come from `Kit`
+    # here, and for this ONE language that is a commitment rather than a gap.
+    #
+    # LANGUAGES.md §6 (base16 / theme-native): "the only language here that
+    # INHERITS THE USER'S ENVIRONMENT instead of overriding it — the app looks
+    # like the rest of their terminal ... Fails: when you need a distinctive
+    # identity — BY CONSTRUCTION IT HAS NONE OF ITS OWN."
+    #
+    # A right-flushed two-column list, a `▾` disclosure, `!` for danger, the
+    # `· / ! / !!` level ladder, bold accent on a match, `key label` hints and
+    # a `┌─┐` modal are the terminal's own conventions, and the base kit WAS
+    # written as nord. Giving this language a mechanism of its own would not
+    # be filling a hole; it would be leaving base16 doctrine.
+    #
+    # AND IT IS ASSERTED RATHER THAN WRITTEN HERE. A block of comments is a
+    # promise; `test_nord_declares_the_environment_and_the_declaration_is_
+    # checked` walks the MRO for all seven and requires the owner to be `Kit`,
+    # so a mechanism landing on nord by accident goes red and one landing on
+    # purpose has to delete this paragraph first.
+    # ======================================================================
+
     # HIERARCHY.md's own figure for a driving list. A LAW of the pattern, not
     # a choice this language gets to make — so it is a constant, not a token.
     SHARE = 0.30
@@ -5776,6 +6018,64 @@ class Darkside(Kit):
 
     RAIL = "▏"
     RAIL_W = 3                             # the stroke plus two cells of air
+
+    # ======================================================================
+    # THE SEVEN IT USED TO INHERIT (batch `kits-learn-4`, AC-5). LANGUAGES.md
+    # §8: "achromatic + ONE RESERVED ACCENT · airy · DEPTH BY ±1 GREY STEP,
+    # NEVER BORDERS · plain cells · clinical-warm ... the accent marks
+    # interactivity, NOTHING ELSE ... hierarchy by WEIGHT AND DIMMING, not
+    # size ... BORDERS ARE RESERVED FOR MODALS."
+    #
+    # The reservation is the interesting half. Prism inherited this doctrine
+    # and spends it: it is the one language `MODAL_BORDER_REFUSED` leaves out.
+    # So does its parent -- but not in the terminal's hairline. A
+    # clinical-warm system rounds its one box, which is the whole difference
+    # between the two languages' lids and is why `MODAL_BOX` is a seat.
+    # ======================================================================
+    DISCLOSE = "▿"                        # hollow: airy, and not the solid ▾
+    DANGER_FORM = ("Ø", "Ø")               # its own INVALID wall, the struck mark
+    # A DIMMING LADDER MADE OF ITS OWN CURSOR. `CUR` is `O`; the ladder is
+    # that mark losing and gaining weight, which is this language's stated
+    # hierarchy device ("weight and dimming, not size") turned into three
+    # shapes so the level still sorts with the colour taken away.
+    LEVELS = {"info": "· ", "warn": "o ", "error": "O "}
+    # THE ACCENT IS RESERVED FOR WHAT IS ACTIONABLE and a search hit is not:
+    # it is a place in the text, not a thing to press. So the emphasis is
+    # weight on the ink, which is the ladder this language uses for
+    # everything it does not accent.
+    MATCH_STYLE = "bold {ink}"
+    MODAL_BOX = "╭╮╰╯──││"     # rounded: the "clinical-WARM" half
+
+    def field_row(self, caption, value, w):
+        """QUIET LOWERCASE, AIR, AND THE FIGURE'S OWN SEAT.
+
+        Two of this language's four traits meet in one row. The caption is
+        LOWERCASED, which is `tile_row`'s habit here and `display_cap`'s
+        override ("quiet lowercase") — hierarchy by register rather than by
+        size. And the figure stands on one `RAIL`-weight mark of its own.
+
+        THAT MARK IS NOT A LEADER, which is the distinction ledger's row
+        forces every other language to make: a leader is a RUN that connects
+        two marks across the gap, and this is a single cell that says where
+        the figure begins. The gap itself is air, because this language
+        separates by tone and emptiness and has committed against drawing a
+        stroke through one."""
+        c = self.c
+        cap, val = str(caption).lower(), str(value)
+        gap = max(1, w - len(cap) - len(val) - 2)
+        return (f"[{c['dim']}]{mark(cap)}[/]" + " " * gap
+                + f"[{c['dim']}]{mark('▬')}[/] "
+                + f"[{c['ink']}]{mark(val)}[/]")
+
+    def keyhint(self, pairs, w=0):
+        """Airy, dim, lowercase, and the pairs separated by a middot with air
+        on both sides — the calmest divider available that is still a mark.
+        The key carries the one accent because the key is the actionable
+        thing on the row, which is this language's rule for spending it."""
+        c = self.c
+        return f"  [{c['dim']}]{mark('·')}[/]  ".join(
+            f"[{c['accent']}]{mark(str(k_))}[/] "
+            f"[{c['mut']}]{mark(str(v).lower())}[/]" for k_, v in pairs)
 
     @property
     def rail_width(self):
@@ -6955,6 +7255,79 @@ class Solari(Kit):
     """
 
     SEAM = "▁"
+
+    # ======================================================================
+    # THE SEVEN IT USED TO INHERIT (batch `kits-learn-4`, AC-5). LANGUAGES.md
+    # §10: "amber on near-black, rationed · dense · THE SEAM IS THE WHOLE
+    # DIVIDER VOCABULARY · flap-cell digits · public-signage. The product
+    # becomes ONE SCHEDULE: a task is a row, a phase is a gate, A STATE IS A
+    # WORD IN A STATUS COLUMN ... headers are BANDS IN REVERSE VIDEO ...
+    # tabular fields PADDED TO THEIR WIDEST CONTENT."
+    # ======================================================================
+    DISCLOSE = "═"                        # the seam doubled: a flap mid-turn
+    DANGER_FORM = ("▀", "▄")               # the two halves of a turning cell
+    # THE ONE LADDER IN THE ELEVEN THAT IS NOT A GLYPH, AND IT IS THIS
+    # LANGUAGE'S HEADLINE COMMITMENT: "a state is a WORD in a status column".
+    # A departure board does not draw severity, it PRINTS it -- the same
+    # argument DATAVIZ law 1 credits it with for quantity ("you read 07, you
+    # do not estimate a bar"). Three words of one width, so the column still
+    # aligns and the level still sorts with every colour stripped away.
+    #
+    # `CNX` FOR A REJECTED FIELD IS THE LANGUAGE HAVING AN OPINION, not a
+    # borrowed word: on this board an entry that will not run is cancelled,
+    # and a form field that will not parse is the same event.
+    LEVELS = {"info": "OK ", "warn": "DLY", "error": "CNX"}
+    MATCH_STYLE = "reverse {ink}"          # a band, which is this board's mark
+
+    def field_row(self, caption, value, w):
+        """THE SEAM CLOSES THE GAP, because the seam is the only divider this
+        language owns.
+
+        Every other language here had to choose one; this one had already
+        chosen, and `rule_line()` returning None is the same decision seen
+        from the other side. The caption is lettered in the board's caps and
+        the figure stands at the right of its own field, padded so nothing
+        moves sideways when the value changes -- the anti-jiggle law that
+        lets a flap board be read WHILE it is flipping."""
+        c = self.c
+        cap, val = str(caption).upper(), str(value)
+        gap = max(1, w - len(cap) - len(val) - 2)
+        return (f"[{c['mut']}]{mark(cap)}[/] "
+                + f"[{self.seam_tone}]{mark(self.SEAM * gap)}[/] "
+                + f"[{c['ink']}]{mark(val)}[/]")
+
+    def keyhint(self, pairs, w=0):
+        """The key, the seam, the word -- in caps, because everything on a
+        departure board is."""
+        c = self.c
+        return "   ".join(f"[{c['accent']}]{mark(str(k_))}[/]"
+                          f"[{self.seam_tone}]{mark(self.SEAM)}[/]"
+                          f"[{c['mut']}]{mark(str(v).upper())}[/]"
+                          for k_, v in pairs)
+
+    def overlay_instead(self, rows, w, h, under):
+        """A BOARD HAS NO SURFACE IN FRONT OF IT. "One shape, the row" is the
+        commitment that already took this language's pixels ("an image cannot
+        flip"), and it takes the dialog for the same reason: a question is
+        posted the way a cancellation is, as a BAND IN REVERSE VIDEO across
+        the full measure at the head of the board, with the schedule still
+        legible under it.
+
+        `band="reverse"` is a token this language already declares, and the
+        band is exactly as wide as the seams under it -- which is why the
+        question sits at the TOP rather than centred: a departure board's
+        announcement row is its first row."""
+        c = self.c
+        bar = (f"[{self.t.get('ground', '#000000')} on {c['accent']}]"
+               f"{mark(' ' * w)}[/]")
+        block = [bar] + list(rows) + [self.seam(w)]
+        out = []
+        for i in range(h):
+            if i < len(block):
+                out.append(block[i])
+            else:
+                out.append(self.recede(under[i] if i < len(under) else ""))
+        return out
     GAP = 2                                # cells of air between fields
     DUE_W, STAT_W, PROJ_W, PRI_W = 2, 8, 12, 4
     # the priority vocabulary (models.TASK_PRIORITIES), abbreviated to the
@@ -9199,8 +9572,26 @@ MODAL_BORDER_REFUSED = {
               "has no surface IN FRONT OF the page. A question is posted on "
               "the sheet like everything else: under a rule, at the foot, "
               "with the page it is about still legible above it",
+    # THREE MORE, added by `kits-learn-4` inc32 when the six inheriting
+    # languages were asked. Every one of them was already committed against a
+    # lid and had been drawing the terminal's since the seat existed.
+    "instrument": "\"borders almost absent\" -- this language's whole "
+                  "structure device is WHITESPACE and the one mark it draws "
+                  "is the dot, so a question is not boxed, it is BANDED: two "
+                  "full-width graticule rules with the question between them "
+                  "and the page unlit behind",
+    "swiss": "\"NO BOXES -- alignment does the dividing\", at any width, and "
+             "the language allows itself exactly ONE hairline rule. So the "
+             "question is set at the grid's first column under that rule, "
+             "which is the masthead's and not a lid's: it runs the full "
+             "measure and nothing turns a corner",
+    "solari": "\"one shape, the row; an image cannot flip\" -- the commitment "
+              "that already took this language's pixels takes its dialog for "
+              "the same reason. A board has no surface IN FRONT OF it: a "
+              "question is posted the way a cancellation is, as a BAND IN "
+              "REVERSE VIDEO at the head of the schedule, with the rows still "
+              "legible under it",
 }
-
 
 # WHO REFUSES A PANE RULE, AND ON WHAT COMMITMENT (batch `kits-learn-4`). The
 # third table of the same shape, and the same three properties: READ by
