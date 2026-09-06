@@ -801,13 +801,18 @@ def test_five_languages_split_five_ways():
 
 
 def test_the_pane_split_registry_names_languages_that_exist():
-    """`LABEL_REFUSED`'s law, asked of the third table to use the pattern."""
+    """`LABEL_REFUSED`'s law, asked of the third table to use the pattern.
+
+    The set is five since inc36: swiss, darkside and solari joined the two the
+    PROTOTYPE round found. It is written out rather than counted, so adding a
+    language to the table without deciding its commitment is red."""
     assert set(LG.PANE_SPLIT_REFUSED) <= set(LG.KITS)
-    assert set(LG.PANE_SPLIT_REFUSED) == {"blueprint", "prism"}
+    assert set(LG.PANE_SPLIT_REFUSED) == {"blueprint", "prism", "swiss",
+                                          "darkside", "solari"}
     assert all(len(v) > 40 for v in LG.PANE_SPLIT_REFUSED.values())
 
 
-@pytest.mark.parametrize("lang", ("blueprint", "prism"))
+@pytest.mark.parametrize("lang", sorted(LG.PANE_SPLIT_REFUSED))
 def test_a_refusing_language_rules_no_stroke(lang):
     """The refusal, measured on the cells rather than trusted.
 
@@ -837,6 +842,139 @@ def test_the_pane_split_registry_is_read_and_not_printed():
         LG.PANE_SPLIT_REFUSED.update(saved)
     assert "│" not in plain(k_b.pane_split(2, 3)[0])
     assert LG.kit("naught").pane_split(2, 3)[0].strip() != ""
+
+
+# ---------------------------------------------------------------------------
+# inc36 (inheritors-2) — `pane_split` for the six that inherited it
+# ---------------------------------------------------------------------------
+#: the six languages that DRAW a pane rule, i.e. the eleven minus the registry.
+#: Derived from the table rather than typed, so a language changing sides
+#: changes this list too and the distinctness law follows it.
+DRAWERS = tuple(n for n in LANGS if n not in LG.PANE_SPLIT_REFUSED)
+
+
+def test_every_language_that_draws_a_pane_rule_draws_a_different_one():
+    """THE PROPERTY, and it is asked only of the languages that DRAW.
+
+    A refusal is not required to be distinct — four of the five answer with
+    air and two of those four are a grey STEP the `.txt` cannot show, so a
+    distinctness law over all eleven would be a law about a limit rather than
+    about a design. Over the six that draw it is exactly the palette-swap
+    question: same height, same width, six rules that differ AS CELLS — an
+    unlit lattice column (naught), a solid display bar (corgi), a graticule
+    column (instrument), two plates facing (industrial), the terminal's
+    hairline (nord), a ruled money column opened at its head rule (ledger)."""
+    got = {n: tuple(plain(r) for r in LG.kit(n).pane_split(SPLIT_H, SPLIT_W))
+           for n in DRAWERS}
+    assert len(set(got.values())) == len(DRAWERS), got
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_closure_law_holds_on_every_pane_seat_at_every_width(lang):
+    """`w` IS A SEAT — the law `pane_split`'s own docstring states, asked at
+    every width a caller can reach and not only at 3.
+
+    A row that came back short or long moves the right pane down the page, so
+    this is the one property a refusal must satisfy as strictly as a rule.
+    Widths 1 and 2 are in the list because industrial's mechanism draws TWO
+    marks and has to degrade to one; a seat that only closes at its design
+    width is a seat that will be found open by a narrow terminal."""
+    k = LG.kit(lang)
+    for w in (1, 2, 3, 4, 7, 12):
+        for h in (0, 1, 5):
+            rows = k.pane_split(h, w)
+            assert len(rows) == h, (lang, w, h)
+            assert [len(plain(r)) for r in rows] == [w] * h, (
+                lang, w, [plain(r) for r in rows])
+
+
+@pytest.mark.parametrize("lang", ("swiss", "darkside", "solari"))
+def test_the_three_new_refusals_are_read_and_not_printed(lang):
+    """THE TEETH FOR inc36'S OWN ENTRIES, in the direction that matters.
+
+    Each of these three was ruling the terminal's `│` before this increment —
+    a stroke all three had committed against in `LANGUAGES.md` and none of
+    them had been asked about. Delete the entry and the language goes straight
+    back to that stroke, with no other line of its code touched. That is the
+    table deciding, and it is what separates a registry from a comment."""
+    k = LG.kit(lang)
+    assert "│" not in plain(k.pane_split(2, 3)[0]), lang
+    saved = dict(LG.PANE_SPLIT_REFUSED)
+    try:
+        del LG.PANE_SPLIT_REFUSED[lang]
+        assert "│" in plain(LG.kit(lang).pane_split(2, 3)[0]), lang
+    finally:
+        LG.PANE_SPLIT_REFUSED.clear()
+        LG.PANE_SPLIT_REFUSED.update(saved)
+    assert "│" not in plain(LG.kit(lang).pane_split(2, 3)[0]), lang
+
+
+@pytest.mark.parametrize("lang", DRAWERS)
+def test_a_false_entry_silences_any_language_that_draws(lang):
+    """The other direction, asked of all six rather than of naught alone: a
+    table that only bites the languages already in it decides nothing for the
+    ones that are not."""
+    saved = dict(LG.PANE_SPLIT_REFUSED)
+    try:
+        LG.PANE_SPLIT_REFUSED[lang] = "a false entry, long enough to be one"
+        assert plain(LG.kit(lang).pane_split(2, 3)[0]).strip() == "", lang
+    finally:
+        LG.PANE_SPLIT_REFUSED.clear()
+        LG.PANE_SPLIT_REFUSED.update(saved)
+    assert plain(LG.kit(lang).pane_split(2, 3)[0]).strip() != "", lang
+
+
+def test_industrial_closes_one_pane_and_opens_the_next_in_its_own_chrome():
+    """The only one of the eleven whose commitment ASKS for a box, ruling a
+    gutter in half-cell plate instead of the terminal's hairline — and in
+    `keyhint`'s order, which is what makes it one convention rather than two.
+
+    `keyhint` plates a key as `▐up▌`: the ink faces the CONTENT. So a gutter
+    closes the left pane with `▌` and opens the right with `▐`, and the air
+    between belongs to the panes."""
+    k = LG.kit("industrial")
+    rows = [plain(r) for r in k.pane_split(3, 3)]
+    assert set(rows) == {"▌ ▐"}, rows
+    assert k.DISPLAY_BOX[6] + k.DISPLAY_BOX[7] == "▌▐"
+    assert plain(k.pane_split(1, 5)[0]) == "▌   ▐"
+    # and below two cells there is no room for two plates
+    assert plain(k.pane_split(1, 1)[0]) == "▐"
+
+
+def test_instruments_graticule_column_is_not_its_error_rung():
+    """A neutral divider may not wear the severity ladder's cell.
+
+    This language's rungs are dot COUNT in the LEFT column (`⠂⠂ / ⠆⠆ / ⠇⠇`),
+    and `⠇` — three dots, left column — is the error rung. A gutter ruled with
+    it would say "rejected" down the whole page to a greyscale reader, which
+    is the failure ruling 8 exists against. `⠸` is the same three dots in the
+    other column and says nothing else in this alphabet."""
+    k = LG.kit("instrument")
+    cell = plain(k.pane_split(1, 3)[0]).strip()
+    assert cell == "⠸"
+    assert cell not in "".join(k.LEVELS.values())
+    assert cell != k.DISCLOSE and cell not in k.DANGER_FORM
+
+
+def test_darkside_and_prism_step_the_ground_and_swiss_and_solari_do_not():
+    """The four air-answering refusals are not one answer, and the `.txt` is
+    where that stops being visible.
+
+    Darkside and prism separate by a ±1 grey step of BACKGROUND — the doctrine
+    the parent holds and the child inherited — so their markup carries a
+    ground and their cells do not. Swiss and solari separate by the pad
+    itself, so there is no markup at all. All four read as `w` spaces in a
+    cell grid, which is the limit this file already carries for the knockout
+    and for every language's match emphasis, and the honest place to read a
+    step is the `.svg`."""
+    for lang in ("darkside", "prism"):
+        k = LG.kit(lang)
+        got = k.pane_split(2, 3)
+        assert k.depth_ground() in "".join(got), lang
+        assert all(plain(r) == "   " for r in got), lang
+    for lang in ("swiss", "solari"):
+        got = LG.kit(lang).pane_split(2, 3)
+        assert got == ["   ", "   "], (lang, got)
 
 
 def test_ledgers_column_is_opened_at_the_head_rule():
@@ -1282,7 +1420,8 @@ def test_prisms_overlay_differs_from_nords_in_the_svg_and_not_the_txt():
 
 @pytest.mark.parametrize("attr", ["field_row", "DISCLOSE", "DANGER_FORM",
                                   "LEVELS", "MATCH_STYLE", "keyhint",
-                                  "overlay", "REQUIRED"])
+                                  "overlay", "REQUIRED", "PANE_RULE",
+                                  "pane_split_rule", "pane_split_instead"])
 def test_nord_declares_the_environment_and_the_declaration_is_checked(attr):
     """NORD'S ANSWER IS THE BASE, AND FOR THIS ONE LANGUAGE THAT IS A
     COMMITMENT RATHER THAN A GAP.
