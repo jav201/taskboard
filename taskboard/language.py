@@ -1930,8 +1930,22 @@ class Kit:
         # button puts it: the bracket's weight. EDITED additionally lays a
         # RULED LINE under the paper, so the state a caret lives in is
         # readable even in the instant between two keystrokes.
+        #
+        # INVALID IS THE SHOUT, NOT THE BRACKET TURNED ROUND (inc39). This
+        # entry read `] [`: the terminal's own input with its two walls
+        # EXCHANGED, so "this value was rejected" was spelled by the ORDER
+        # of two brackets and by nothing else. That is not a terminal
+        # convention of any kind -- it reads as a broken render rather than
+        # as a state -- and it is the BASE's defect, not nord's: nord
+        # declares no `PART_GLYPHS` of its own, so this line is the whole of
+        # its answer, and the inheritors round read it off `nord_S2`.
+        #
+        # Un-flipping alone would give `[ ]`, which is DEFAULT byte for
+        # byte, so the walls take `DANGER_FORM` -- the terminal's own shout,
+        # the same seat swiss and darkside already spend theirs on.  The
+        # paper stays blank, as DEFAULT's is.
         "textfield.main": {DEFAULT: "[ ]", FOCUSED: "▐ ▌", EDITED: "▐▁▌",
-                           ACTIVE: "▓ ▓", INVALID: "] [",
+                           ACTIVE: "▓ ▓", INVALID: "! !",
                            DISABLED: "╌╌╌"},
         # the terminal's own bar cursor, in its own column
         "textfield.caret": {DEFAULT: "▏"},
@@ -5102,8 +5116,15 @@ class Instrument(Kit):
                         DISABLED: "⠄  ⠄"},
         # braille RAILS with a braille RULE between them, clinical register:
         # the field is a measured span and the words lie along it.
+        # INVALID KEEPS THE RAILS AND CHANGES THE PAPER (inc39). It read
+        # `⠸⠶⠇`: the same two rails with left and right EXCHANGED, so a
+        # rejected field and a good one differed by the ORDER of two braille
+        # cells thirty-four columns apart -- unreadable without comparing
+        # both ends of the row. The rails go back the way this language sets
+        # them in every other state; the full-dot paper `⠶` was already a
+        # channel and is now the only one.
         "textfield.main": {DEFAULT: "⠇⠒⠸", FOCUSED: "⠧⠒⠼", EDITED: "⠧⠤⠼",
-                           ACTIVE: "⣇⠒⣸", INVALID: "⠸⠶⠇",
+                           ACTIVE: "⣇⠒⣸", INVALID: "⠇⠶⠸",
                            DISABLED: "⠄⠁⠄"},
         # a full-height braille tick — this language's own index mark
         "textfield.caret": {DEFAULT: "⡇"},
@@ -5893,8 +5914,15 @@ class Industrial(Kit):
         # THE PLATE with a machined face — the same ▐ ▌ it stamps on every
         # card. The paper is punched with its own dot; the dead plate keeps
         # the round bracket, because here round brackets mean dead.
+        # INVALID IS PUNCHED PAPER, NOT A TURNED PLATE (inc39). It read
+        # `▌/▐`: the plate with its ink facing OUT, away from the words it
+        # holds, which is the one thing this vocabulary never does -- "the
+        # ink looks at the content" is what makes a plate read as a plate.
+        # The plate goes back the way it is set in every other state and the
+        # hatch `/` in the paper carries the sixth, which is exactly where
+        # this table already puts `·`, `_`, `-` and `#`.
         "textfield.main": {DEFAULT: "▐·▌", FOCUSED: "▐_▌", EDITED: "▐-▌",
-                           ACTIVE: "▐#▌", INVALID: "▌/▐",
+                           ACTIVE: "▐#▌", INVALID: "▐/▌",
                            DISABLED: "(-)"},
         "textfield.caret": {DEFAULT: "|"},
         # ASCII AND CODED, this language's whole register, and its bracketed
@@ -8820,8 +8848,16 @@ class Blueprint(Kit):
         # A TITLE-BLOCK CELL between two extension lines — nothing is boxed
         # here, and two verticals are a dimension, not a box. The caret is
         # this language's own EDITED knob, the datum tick.
+        # INVALID IS THE DATUM AT ERROR WEIGHT (inc39). It read `┤·├`: the
+        # dimension's terminators EXCHANGED. On this sheet that turn is
+        # ALREADY SPOKEN FOR -- `radio.main` points its terminators IN on
+        # purpose, as a callout selecting one item from a schedule -- so a
+        # rejected field and a selected option were drawn with the same
+        # turn. Un-flipping alone gives `├·┤`, DEFAULT byte for byte, so
+        # the terminators take `DANGER_FORM`: the heavy rule, which is this
+        # language's own `LEVELS["error"]` and the ladder S5 already reads.
         "textfield.main": {DEFAULT: "├·┤", FOCUSED: "╞·╡", EDITED: "╞╌╡",
-                           ACTIVE: "┣·┫", INVALID: "┤·├",
+                           ACTIVE: "┣·┫", INVALID: "━·━",
                            DISABLED: "╎╌╎"},
         "textfield.caret": {DEFAULT: "╪"},
         # A DIMENSION ON A LONG SHEET, and NOTHING IS FILLED — this sheet's
