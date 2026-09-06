@@ -2,24 +2,24 @@
 <title>taskboard · blueprint · board</title>
 <rect width="1011.2" height="598.0" fill="#123a5c"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<text x="26.8" y="40.3" fill="#ff7a5c">                                   ▄▄▄▄                                      </text>
-<text x="673.6" y="40.3" fill="#eef4f8">────</text>
-<text x="26.8" y="57.3" fill="#ff7a5c">                                 ▄▄    ▌▐                                    </text>
-<text x="673.6" y="57.3" fill="#7fa8c4">····</text>
-<text x="26.8" y="74.3" fill="#ff7a5c">                                       ▌▐                                    </text>
-<text x="673.6" y="74.3" fill="#7fa8c4">····</text>
-<text x="707.2" y="74.3" fill="#eef4f8">────</text>
-<text x="26.8" y="91.3" fill="#ff7a5c">                                     ▀▀                                      </text>
-<text x="673.6" y="91.3" fill="#7fa8c4">········</text>
-<text x="26.8" y="108.3" fill="#ff7a5c">                                   ▀▀                                        </text>
-<text x="673.6" y="108.3" fill="#7fa8c4">········</text>
-<text x="26.8" y="125.3" fill="#ff7a5c">                                 ▌▐                                          </text>
-<text x="673.6" y="125.3" fill="#7fa8c4">········</text>
-<text x="740.8" y="125.3" fill="#eef4f8">────</text>
-<text x="774.4" y="125.3" fill="#24486b">····················</text>
-<text x="26.8" y="142.3" fill="#ff7a5c">                                 ▌▀▀▀▀▀▀▀</text>
-<text x="673.6" y="142.3" fill="#24486b">LOAD · 8 WK</text>
-<text x="26.8" y="176.3" fill="#7fa8c4">                                DAYS OVERDUE                               </text>
+<text x="26.8" y="40.3" fill="#ff7a5c" font-weight="bold">                                   ▄▄▄▄                                      </text>
+<text x="673.6" y="40.3" fill="#eef4f8" font-weight="bold">────</text>
+<text x="26.8" y="57.3" fill="#ff7a5c" font-weight="bold">                                 ▄▄    ▌▐                                    </text>
+<text x="673.6" y="57.3" fill="#7fa8c4" font-weight="bold">····</text>
+<text x="26.8" y="74.3" fill="#ff7a5c" font-weight="bold">                                       ▌▐                                    </text>
+<text x="673.6" y="74.3" fill="#7fa8c4" font-weight="bold">····</text>
+<text x="707.2" y="74.3" fill="#eef4f8" font-weight="bold">────</text>
+<text x="26.8" y="91.3" fill="#ff7a5c" font-weight="bold">                                     ▀▀                                      </text>
+<text x="673.6" y="91.3" fill="#7fa8c4" font-weight="bold">········</text>
+<text x="26.8" y="108.3" fill="#ff7a5c" font-weight="bold">                                   ▀▀                                        </text>
+<text x="673.6" y="108.3" fill="#7fa8c4" font-weight="bold">········</text>
+<text x="26.8" y="125.3" fill="#ff7a5c" font-weight="bold">                                 ▌▐                                          </text>
+<text x="673.6" y="125.3" fill="#7fa8c4" font-weight="bold">········</text>
+<text x="740.8" y="125.3" fill="#eef4f8" font-weight="bold">────</text>
+<text x="774.4" y="125.3" fill="#24486b" font-weight="bold">····················</text>
+<text x="26.8" y="142.3" fill="#ff7a5c" font-weight="bold">                                 ▌▀▀▀▀▀▀▀</text>
+<text x="673.6" y="142.3" fill="#24486b" font-weight="bold">LOAD · 8 WK</text>
+<text x="26.8" y="176.3" fill="#7fa8c4" font-weight="bold">                                DAYS OVERDUE                               </text>
 <text x="26.8" y="210.3" fill="#7fa8c4">WORK </text>
 <text x="68.8" y="210.3" fill="#eef4f8">├ 02/15  13% ─┤</text>
 <text x="26.8" y="227.3" fill="#7fa8c4">├─ 09 ─┤</text>
@@ -50,15 +50,21 @@
 <text x="858.4" y="261.3" fill="#eef4f8"> 7 </text>
 <text x="883.6" y="261.3" fill="#24486b">──</text>
 <text x="908.8" y="261.3" fill="#7fa8c4">BOARD</text>
+<rect x="976.0" y="265.0" width="8.4" height="17.0" fill="#24486b"/>
+<rect x="976.0" y="282.0" width="8.4" height="17.0" fill="#24486b"/>
 <text x="35.2" y="295.3" fill="#7fa8c4">BACKLOG                                                                                    </text>
 <text x="799.6" y="295.3" fill="#eef4f8">  ├─── 09 ───┤    </text>
+<rect x="976.0" y="299.0" width="8.4" height="17.0" fill="#24486b"/>
 <text x="35.2" y="312.3" fill="#eef4f8">FIX CHECKOUT 500 ERROR                                                                       </text>
 <text x="816.4" y="312.3" fill="#7fa8c4">├╱╱╱╱ HELD ╱╱╱╱┤</text>
+<rect x="976.0" y="316.0" width="8.4" height="17.0" fill="#24486b"/>
 <text x="35.2" y="329.3" fill="#7fa8c4">·── WEBSITE REDESIGN ── BACKLOG ── HIGH</text>
+<rect x="976.0" y="333.0" width="8.4" height="17.0" fill="#24486b"/>
 <text x="35.2" y="346.3" fill="#eef4f8">COMPRESS DATABASE BACKUPS                                                                    </text>
 <text x="816.4" y="346.3" fill="#ff7a5c">├─┤ 01D!        </text>
+<rect x="976.0" y="350.0" width="8.4" height="17.0" fill="#24486b"/>
 <text x="35.2" y="363.3" fill="#7fa8c4">·── DATA WAREHOUSE ── BACKLOG ── NORM</text>
-<text x="976.0" y="363.3" fill="#24486b">▄</text>
+<text x="976.0" y="363.3" fill="#123a5c">▄</text>
 <text x="35.2" y="380.3" fill="#eef4f8">RENEW TLS CERTIFICATE                                                                        </text>
 <text x="816.4" y="380.3" fill="#7fa8c4">├───┤ 03D       </text>
 <text x="35.2" y="397.3" fill="#7fa8c4">·── BACKLOG ── HIGH</text>
@@ -85,27 +91,27 @@
 <text x="26.8" y="550.3" fill="#eef4f8">└     ┘                                                   </text>
 <text x="514.0" y="550.3" fill="#7fa8c4">────────────────────────────────────────────────────────</text>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#0e2f4a"/>
-<text x="18.4" y="584.3" fill="#eef4f8">1</text>
-<text x="35.2" y="584.3" fill="#eef4f8">2</text>
-<text x="52.0" y="584.3" fill="#eef4f8">3</text>
-<text x="68.8" y="584.3" fill="#eef4f8">4</text>
+<text x="18.4" y="584.3" fill="#eef4f8" font-weight="bold">1</text>
+<text x="35.2" y="584.3" fill="#eef4f8" font-weight="bold">2</text>
+<text x="52.0" y="584.3" fill="#eef4f8" font-weight="bold">3</text>
+<text x="68.8" y="584.3" fill="#eef4f8" font-weight="bold">4</text>
 <text x="85.6" y="584.3" fill="#e0e0e0">Views</text>
-<text x="136.0" y="584.3" fill="#eef4f8"> c </text>
+<text x="136.0" y="584.3" fill="#eef4f8" font-weight="bold"> c </text>
 <text x="161.2" y="584.3" fill="#e0e0e0">Signals </text>
-<text x="228.4" y="584.3" fill="#eef4f8"> ? </text>
+<text x="228.4" y="584.3" fill="#eef4f8" font-weight="bold"> ? </text>
 <text x="253.6" y="584.3" fill="#e0e0e0">Keys </text>
-<text x="295.6" y="584.3" fill="#eef4f8"> v </text>
+<text x="295.6" y="584.3" fill="#eef4f8" font-weight="bold"> v </text>
 <text x="320.8" y="584.3" fill="#e0e0e0">Size </text>
-<text x="362.8" y="584.3" fill="#eef4f8"> r </text>
+<text x="362.8" y="584.3" fill="#eef4f8" font-weight="bold"> r </text>
 <text x="388.0" y="584.3" fill="#e0e0e0">Refresh </text>
-<text x="455.2" y="584.3" fill="#eef4f8"> t </text>
+<text x="455.2" y="584.3" fill="#eef4f8" font-weight="bold"> t </text>
 <text x="480.4" y="584.3" fill="#e0e0e0">Language </text>
-<text x="556.0" y="584.3" fill="#eef4f8"> g </text>
+<text x="556.0" y="584.3" fill="#eef4f8" font-weight="bold"> g </text>
 <text x="581.2" y="584.3" fill="#e0e0e0">Gallery </text>
-<text x="648.4" y="584.3" fill="#eef4f8"> q </text>
+<text x="648.4" y="584.3" fill="#eef4f8" font-weight="bold"> q </text>
 <text x="673.6" y="584.3" fill="#e0e0e0">Quit </text>
 <text x="900.4" y="584.3" fill="#385268">▏</text>
-<text x="908.8" y="584.3" fill="#eef4f8">^p</text>
+<text x="908.8" y="584.3" fill="#eef4f8" font-weight="bold">^p</text>
 <text x="925.6" y="584.3" fill="#e0e0e0"> palette</text>
 </g>
 </svg>

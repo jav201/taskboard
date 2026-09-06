@@ -3,28 +3,44 @@
 <rect width="1011.2" height="598.0" fill="#123a5c"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <rect x="262.0" y="44.0" width="487.2" height="17.0" fill="#0e2f4a"/>
-<rect x="262.0" y="61.0" width="487.2" height="17.0" fill="#0e2f4a"/>
+<rect x="262.0" y="61.0" width="453.6" height="17.0" fill="#0e2f4a"/>
+<rect x="715.6" y="61.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="61.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="278.8" y="74.3" fill="#eef4f8">├ G A L ┤</text>
-<rect x="262.0" y="78.0" width="487.2" height="17.0" fill="#0e2f4a"/>
+<rect x="262.0" y="78.0" width="453.6" height="17.0" fill="#0e2f4a"/>
+<rect x="715.6" y="78.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="78.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="278.8" y="91.3" fill="#7fa8c4">Blueprint</text>
-<rect x="262.0" y="95.0" width="487.2" height="17.0" fill="#0e2f4a"/>
+<rect x="262.0" y="95.0" width="453.6" height="17.0" fill="#0e2f4a"/>
+<rect x="715.6" y="95.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="95.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="278.8" y="108.3" fill="#eef4f8">  ▌▄▄▐        ▌▄▄▐  </text>
-<rect x="262.0" y="112.0" width="487.2" height="17.0" fill="#0e2f4a"/>
+<rect x="262.0" y="112.0" width="453.6" height="17.0" fill="#0e2f4a"/>
+<rect x="715.6" y="112.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="112.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="278.8" y="125.3" fill="#eef4f8">  ▌▄▄▐        ▌▄▄▐  </text>
-<rect x="262.0" y="129.0" width="487.2" height="17.0" fill="#0e2f4a"/>
-<rect x="262.0" y="146.0" width="487.2" height="17.0" fill="#0e2f4a"/>
+<rect x="262.0" y="129.0" width="453.6" height="17.0" fill="#0e2f4a"/>
+<rect x="715.6" y="129.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="129.0" width="16.8" height="17.0" fill="#0e2f4a"/>
+<rect x="262.0" y="146.0" width="453.6" height="17.0" fill="#0e2f4a"/>
+<rect x="715.6" y="146.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="146.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="278.8" y="159.3" fill="#eef4f8">▀▀                ▀▀</text>
-<rect x="262.0" y="163.0" width="487.2" height="17.0" fill="#0e2f4a"/>
+<rect x="262.0" y="163.0" width="453.6" height="17.0" fill="#0e2f4a"/>
+<rect x="715.6" y="163.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="163.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="278.8" y="176.3" fill="#eef4f8">  ▀▀            ▀▀  </text>
-<rect x="262.0" y="180.0" width="487.2" height="17.0" fill="#0e2f4a"/>
+<rect x="262.0" y="180.0" width="453.6" height="17.0" fill="#0e2f4a"/>
+<rect x="715.6" y="180.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="732.4" y="180.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="278.8" y="193.3" fill="#eef4f8">    ▀▀▀▀▀▀▀▀▀▀▀▀    </text>
 <rect x="262.0" y="197.0" width="453.6" height="17.0" fill="#0e2f4a"/>
-<rect x="715.6" y="197.0" width="16.8" height="17.0" fill="#000000"/>
+<rect x="715.6" y="197.0" width="16.8" height="17.0" fill="#003054"/>
 <rect x="732.4" y="197.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="278.8" y="210.3" fill="#7fa8c4">checkable  </text>
 <text x="371.2" y="210.3" fill="#24486b">switch    checkbox</text>
 <text x="539.2" y="210.3" fill="#24486b">off·on</text>
-<text x="715.6" y="210.3" fill="#003054">▇▇</text>
+<text x="715.6" y="210.3" fill="#000000">▇▇</text>
 <rect x="262.0" y="214.0" width="453.6" height="17.0" fill="#0e2f4a"/>
 <rect x="715.6" y="214.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="214.0" width="16.8" height="17.0" fill="#0e2f4a"/>
@@ -165,9 +181,9 @@
 <text x="497.2" y="516.3" fill="#24486b">edited</text>
 <rect x="262.0" y="520.0" width="487.2" height="17.0" fill="#0e2f4a"/>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#0e2f4a"/>
-<text x="10.0" y="584.3" fill="#eef4f8"> esc/q/g </text>
+<text x="10.0" y="584.3" fill="#eef4f8" font-weight="bold"> esc/q/g </text>
 <text x="85.6" y="584.3" fill="#e0e0e0">Close </text>
-<text x="136.0" y="584.3" fill="#eef4f8"> t </text>
+<text x="136.0" y="584.3" fill="#eef4f8" font-weight="bold"> t </text>
 <text x="161.2" y="584.3" fill="#e0e0e0">Language </text>
 </g>
 </svg>

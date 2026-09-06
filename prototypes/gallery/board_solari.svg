@@ -4,29 +4,29 @@
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <rect x="295.6" y="27.0" width="84.0" height="17.0" fill="#17171a"/>
 <rect x="673.6" y="27.0" width="33.6" height="17.0" fill="#17171a"/>
-<text x="295.6" y="40.3" fill="#e03a2f">   ████   </text>
-<text x="379.6" y="40.3" fill="#f0ede4">                                      5                            </text>
+<text x="295.6" y="40.3" fill="#e03a2f" font-weight="bold">   ████   </text>
+<text x="379.6" y="40.3" fill="#f0ede4" font-weight="bold">                                      5                            </text>
 <rect x="295.6" y="44.0" width="84.0" height="17.0" fill="#17171a"/>
-<text x="295.6" y="57.3" fill="#e03a2f"> ██    ██ </text>
+<text x="295.6" y="57.3" fill="#e03a2f" font-weight="bold"> ██    ██ </text>
 <rect x="295.6" y="61.0" width="84.0" height="17.0" fill="#17171a"/>
 <rect x="707.2" y="61.0" width="33.6" height="17.0" fill="#17171a"/>
-<text x="295.6" y="74.3" fill="#e03a2f">       ██ </text>
-<text x="379.6" y="74.3" fill="#f0ede4">                                          3                        </text>
+<text x="295.6" y="74.3" fill="#e03a2f" font-weight="bold">       ██ </text>
+<text x="379.6" y="74.3" fill="#f0ede4" font-weight="bold">                                          3                        </text>
 <rect x="295.6" y="78.0" width="84.0" height="17.0" fill="#1f1f22"/>
-<text x="295.6" y="91.3" fill="#6e6a60">▔▔▔▔▔</text>
-<text x="337.6" y="91.3" fill="#e03a2f">▀▀</text>
-<text x="354.4" y="91.3" fill="#6e6a60">▔▔▔</text>
+<text x="295.6" y="91.3" fill="#6e6a60" font-weight="bold">▔▔▔▔▔</text>
+<text x="337.6" y="91.3" fill="#e03a2f" font-weight="bold">▀▀</text>
+<text x="354.4" y="91.3" fill="#6e6a60" font-weight="bold">▔▔▔</text>
 <rect x="295.6" y="95.0" width="84.0" height="17.0" fill="#17171a"/>
-<text x="295.6" y="108.3" fill="#e03a2f">   ██     </text>
+<text x="295.6" y="108.3" fill="#e03a2f" font-weight="bold">   ██     </text>
 <rect x="295.6" y="112.0" width="84.0" height="17.0" fill="#17171a"/>
 <rect x="740.8" y="112.0" width="33.6" height="17.0" fill="#17171a"/>
-<text x="295.6" y="125.3" fill="#e03a2f"> ██       </text>
-<text x="379.6" y="125.3" fill="#f0ede4">                                              1</text>
-<text x="774.4" y="125.3" fill="#1f1f22">   0   0   0   0   0</text>
+<text x="295.6" y="125.3" fill="#e03a2f" font-weight="bold"> ██       </text>
+<text x="379.6" y="125.3" fill="#f0ede4" font-weight="bold">                                              1</text>
+<text x="774.4" y="125.3" fill="#1f1f22" font-weight="bold">   0   0   0   0   0</text>
 <rect x="295.6" y="129.0" width="84.0" height="17.0" fill="#17171a"/>
-<text x="295.6" y="142.3" fill="#e03a2f"> ████████ </text>
-<text x="673.6" y="142.3" fill="#1f1f22">LOAD · 8 WK</text>
-<text x="26.8" y="176.3" fill="#6e6a60">                                DAYS OVERDUE                               </text>
+<text x="295.6" y="142.3" fill="#e03a2f" font-weight="bold"> ████████ </text>
+<text x="673.6" y="142.3" fill="#1f1f22" font-weight="bold">LOAD · 8 WK</text>
+<text x="26.8" y="176.3" fill="#6e6a60" font-weight="bold">                                DAYS OVERDUE                               </text>
 <rect x="68.8" y="180.0" width="25.2" height="17.0" fill="#17171a"/>
 <rect x="127.6" y="180.0" width="25.2" height="17.0" fill="#17171a"/>
 <rect x="169.6" y="180.0" width="25.2" height="17.0" fill="#17171a"/>
@@ -70,30 +70,39 @@
 <text x="833.2" y="244.3" fill="#6e6a60">SKD</text>
 <text x="858.4" y="244.3" fill="#f0ede4"> 7 </text>
 <text x="883.6" y="244.3" fill="#6e6a60">BOARD FILE </text>
+<rect x="976.0" y="248.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <rect x="35.2" y="265.0" width="915.6" height="17.0" fill="#f0ede4"/>
+<rect x="976.0" y="265.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <text x="35.2" y="278.3" fill="#0b0b0c"> GATE BACKLOG 09                                                                 STATUS    PROJ          PRI </text>
 <rect x="35.2" y="282.0" width="16.8" height="17.0" fill="#17171a"/>
+<rect x="976.0" y="282.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <text x="35.2" y="295.3" fill="#6e6a60">--</text>
 <text x="52.0" y="295.3" fill="#f0ede4">  FIX CHECKOUT 500 ERROR                                                       </text>
 <text x="715.6" y="295.3" fill="#6e6a60">HELD    </text>
 <text x="799.6" y="295.3" fill="#6e6a60">WEBSITE RED…</text>
 <text x="917.2" y="295.3" fill="#6e6a60">HIGH</text>
+<rect x="976.0" y="299.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <text x="35.2" y="312.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
 <rect x="35.2" y="316.0" width="16.8" height="17.0" fill="#e03a2f"/>
+<rect x="976.0" y="316.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <text x="35.2" y="329.3" fill="#0b0b0c">01</text>
 <text x="52.0" y="329.3" fill="#f0ede4">  COMPRESS DATABASE BACKUPS                                                    </text>
 <text x="715.6" y="329.3" fill="#6e6a60">LATE    </text>
 <text x="799.6" y="329.3" fill="#6e6a60">DATA WAREHO…</text>
 <text x="917.2" y="329.3" fill="#6e6a60">NORM</text>
+<rect x="976.0" y="333.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <text x="35.2" y="346.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
 <rect x="35.2" y="350.0" width="16.8" height="17.0" fill="#f5a300"/>
+<rect x="976.0" y="350.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <text x="35.2" y="363.3" fill="#0b0b0c">03</text>
 <text x="52.0" y="363.3" fill="#f0ede4">  RENEW TLS CERTIFICATE                                                        </text>
 <text x="715.6" y="363.3" fill="#6e6a60">BOARDING</text>
 <text x="799.6" y="363.3" fill="#6e6a60">--          </text>
 <text x="917.2" y="363.3" fill="#6e6a60">HIGH</text>
+<rect x="976.0" y="367.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <text x="35.2" y="380.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
 <rect x="35.2" y="384.0" width="16.8" height="17.0" fill="#17171a"/>
+<rect x="976.0" y="384.0" width="8.4" height="17.0" fill="#1f1f22"/>
 <text x="35.2" y="397.3" fill="#f0ede4">05  WRITE API REFERENCE                                                          </text>
 <text x="715.6" y="397.3" fill="#6e6a60">ON TIME </text>
 <text x="799.6" y="397.3" fill="#6e6a60">API PLATFORM</text>
@@ -125,27 +134,27 @@
 <text x="917.2" y="533.3" fill="#6e6a60">NORM</text>
 <text x="35.2" y="550.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#17171a"/>
-<text x="18.4" y="584.3" fill="#f5a300">1</text>
-<text x="35.2" y="584.3" fill="#f5a300">2</text>
-<text x="52.0" y="584.3" fill="#f5a300">3</text>
-<text x="68.8" y="584.3" fill="#f5a300">4</text>
+<text x="18.4" y="584.3" fill="#f5a300" font-weight="bold">1</text>
+<text x="35.2" y="584.3" fill="#f5a300" font-weight="bold">2</text>
+<text x="52.0" y="584.3" fill="#f5a300" font-weight="bold">3</text>
+<text x="68.8" y="584.3" fill="#f5a300" font-weight="bold">4</text>
 <text x="85.6" y="584.3" fill="#e0e0e0">Views</text>
-<text x="136.0" y="584.3" fill="#f5a300"> c </text>
+<text x="136.0" y="584.3" fill="#f5a300" font-weight="bold"> c </text>
 <text x="161.2" y="584.3" fill="#e0e0e0">Signals </text>
-<text x="228.4" y="584.3" fill="#f5a300"> ? </text>
+<text x="228.4" y="584.3" fill="#f5a300" font-weight="bold"> ? </text>
 <text x="253.6" y="584.3" fill="#e0e0e0">Keys </text>
-<text x="295.6" y="584.3" fill="#f5a300"> v </text>
+<text x="295.6" y="584.3" fill="#f5a300" font-weight="bold"> v </text>
 <text x="320.8" y="584.3" fill="#e0e0e0">Size </text>
-<text x="362.8" y="584.3" fill="#f5a300"> r </text>
+<text x="362.8" y="584.3" fill="#f5a300" font-weight="bold"> r </text>
 <text x="388.0" y="584.3" fill="#e0e0e0">Refresh </text>
-<text x="455.2" y="584.3" fill="#f5a300"> t </text>
+<text x="455.2" y="584.3" fill="#f5a300" font-weight="bold"> t </text>
 <text x="480.4" y="584.3" fill="#e0e0e0">Language </text>
-<text x="556.0" y="584.3" fill="#f5a300"> g </text>
+<text x="556.0" y="584.3" fill="#f5a300" font-weight="bold"> g </text>
 <text x="581.2" y="584.3" fill="#e0e0e0">Gallery </text>
-<text x="648.4" y="584.3" fill="#f5a300"> q </text>
+<text x="648.4" y="584.3" fill="#f5a300" font-weight="bold"> q </text>
 <text x="673.6" y="584.3" fill="#e0e0e0">Quit </text>
 <text x="900.4" y="584.3" fill="#3f3f41">▏</text>
-<text x="908.8" y="584.3" fill="#f5a300">^p</text>
+<text x="908.8" y="584.3" fill="#f5a300" font-weight="bold">^p</text>
 <text x="925.6" y="584.3" fill="#e0e0e0"> palette</text>
 </g>
 </svg>

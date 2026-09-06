@@ -17,21 +17,21 @@
 <text x="68.8" y="74.3" fill="#88c0d0">▏</text>
 <text x="77.2" y="74.3" fill="#4c566a">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▌</text>
 <text x="26.8" y="108.3" fill="#88c0d0">▸</text>
-<text x="43.6" y="108.3" fill="#88c0d0">re</text>
+<text x="43.6" y="108.3" fill="#88c0d0" font-weight="bold">re</text>
 <text x="60.4" y="108.3" fill="#7b88a1">direct to task</text>
 <text x="413.2" y="108.3" fill="#4c566a">enter</text>
-<text x="43.6" y="125.3" fill="#88c0d0">re</text>
+<text x="43.6" y="125.3" fill="#88c0d0" font-weight="bold">re</text>
 <text x="60.4" y="125.3" fill="#7b88a1">name project</text>
-<text x="43.6" y="142.3" fill="#88c0d0">re</text>
+<text x="43.6" y="142.3" fill="#88c0d0" font-weight="bold">re</text>
 <text x="60.4" y="142.3" fill="#7b88a1">fresh board</text>
 <text x="413.2" y="142.3" fill="#4c566a">r</text>
 <text x="43.6" y="159.3" fill="#7b88a1">archive </text>
-<text x="110.8" y="159.3" fill="#88c0d0">re</text>
+<text x="110.8" y="159.3" fill="#88c0d0" font-weight="bold">re</text>
 <text x="127.6" y="159.3" fill="#7b88a1">leased</text>
-<text x="43.6" y="176.3" fill="#88c0d0">re</text>
+<text x="43.6" y="176.3" fill="#88c0d0" font-weight="bold">re</text>
 <text x="60.4" y="176.3" fill="#7b88a1">store from backup</text>
 <text x="43.6" y="193.3" fill="#7b88a1">set </text>
-<text x="77.2" y="193.3" fill="#88c0d0">re</text>
+<text x="77.2" y="193.3" fill="#88c0d0" font-weight="bold">re</text>
 <text x="94.0" y="193.3" fill="#7b88a1">minder</text>
 <text x="26.8" y="227.3" fill="#4c566a">───────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="244.3" fill="#88c0d0">&gt; </text>

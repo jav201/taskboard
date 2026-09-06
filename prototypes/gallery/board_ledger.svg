@@ -2,21 +2,21 @@
 <title>taskboard · ledger · board</title>
 <rect width="1011.2" height="598.0" fill="#e9e1cf"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<text x="26.8" y="40.3" fill="#a8261f">                                   ▀▀▀▀                                      </text>
-<text x="673.6" y="40.3" fill="#1c1a15">▪▪▪▪</text>
-<text x="26.8" y="57.3" fill="#a8261f">                                 ▀▀    ██                                    </text>
-<text x="673.6" y="57.3" fill="#1c1a15">▪▪▪▪</text>
-<text x="26.8" y="74.3" fill="#a8261f">                                       ██                                    </text>
-<text x="673.6" y="74.3" fill="#1c1a15">▪▪▪▪▪▪▪▪</text>
-<text x="26.8" y="91.3" fill="#a8261f">                                     ▄▄                                      </text>
-<text x="673.6" y="91.3" fill="#1c1a15">▪▪▪▪▪▪▪▪</text>
-<text x="26.8" y="108.3" fill="#a8261f">                                   ▄▄                                        </text>
-<text x="673.6" y="108.3" fill="#1c1a15">▪▪▪▪▪▪▪▪</text>
-<text x="26.8" y="125.3" fill="#a8261f">                                 ██                                          </text>
-<text x="673.6" y="125.3" fill="#1c1a15">▪▪▪▪▪▪▪▪▪▪▪▪</text>
-<text x="774.4" y="125.3" fill="#c4b99f">····················</text>
-<text x="26.8" y="142.3" fill="#a8261f">                                ▄██▄▄▄▄▄▄▄</text>
-<text x="673.6" y="142.3" fill="#c4b99f">LOAD · 8 WK</text>
+<text x="26.8" y="40.3" fill="#a8261f" font-weight="bold">                                   ▀▀▀▀                                      </text>
+<text x="673.6" y="40.3" fill="#1c1a15" font-weight="bold">▪▪▪▪</text>
+<text x="26.8" y="57.3" fill="#a8261f" font-weight="bold">                                 ▀▀    ██                                    </text>
+<text x="673.6" y="57.3" fill="#1c1a15" font-weight="bold">▪▪▪▪</text>
+<text x="26.8" y="74.3" fill="#a8261f" font-weight="bold">                                       ██                                    </text>
+<text x="673.6" y="74.3" fill="#1c1a15" font-weight="bold">▪▪▪▪▪▪▪▪</text>
+<text x="26.8" y="91.3" fill="#a8261f" font-weight="bold">                                     ▄▄                                      </text>
+<text x="673.6" y="91.3" fill="#1c1a15" font-weight="bold">▪▪▪▪▪▪▪▪</text>
+<text x="26.8" y="108.3" fill="#a8261f" font-weight="bold">                                   ▄▄                                        </text>
+<text x="673.6" y="108.3" fill="#1c1a15" font-weight="bold">▪▪▪▪▪▪▪▪</text>
+<text x="26.8" y="125.3" fill="#a8261f" font-weight="bold">                                 ██                                          </text>
+<text x="673.6" y="125.3" fill="#1c1a15" font-weight="bold">▪▪▪▪▪▪▪▪▪▪▪▪</text>
+<text x="774.4" y="125.3" fill="#c4b99f" font-weight="bold">····················</text>
+<text x="26.8" y="142.3" fill="#a8261f" font-weight="bold">                                ▄██▄▄▄▄▄▄▄</text>
+<text x="673.6" y="142.3" fill="#c4b99f" font-weight="bold">LOAD · 8 WK</text>
 <text x="26.8" y="176.3" fill="#1c1a15">▪▪▪▪</text>
 <text x="60.4" y="176.3" fill="#c4b99f">·</text>
 <text x="77.2" y="176.3" fill="#c4b99f">·····</text>
@@ -57,9 +57,12 @@
 <text x="833.2" y="261.3" fill="#6b6558">led</text>
 <text x="858.4" y="261.3" fill="#1c1a15">   7 </text>
 <text x="900.4" y="261.3" fill="#6b6558">BOARD…</text>
+<rect x="976.0" y="282.0" width="8.4" height="17.0" fill="#8a8272"/>
 <text x="35.2" y="295.3" fill="#1c1a15"> 1 BACKLOG ························································································ </text>
 <text x="875.2" y="295.3" fill="#6b6558">9 entries</text>
+<rect x="976.0" y="299.0" width="8.4" height="17.0" fill="#8a8272"/>
 <text x="35.2" y="312.3" fill="#8a8272">═════════════════════════════════════════════════════════════════════════════════════════════════════════════</text>
+<rect x="976.0" y="316.0" width="8.4" height="17.0" fill="#8a8272"/>
 <text x="35.2" y="329.3" fill="#6b6558"> 1 </text>
 <text x="60.4" y="329.3" fill="#8a8272">│</text>
 <text x="68.8" y="329.3" fill="#1c1a15"> Fix checkout 500 error ······························································</text>
@@ -68,6 +71,7 @@
 <text x="883.6" y="329.3" fill="#8a8272">│</text>
 <text x="892.0" y="329.3" fill="#a8261f">   blk</text>
 <text x="942.4" y="329.3" fill="#8a8272">│</text>
+<rect x="976.0" y="333.0" width="8.4" height="17.0" fill="#8a8272"/>
 <text x="60.4" y="346.3" fill="#8a8272">│</text>
 <text x="68.8" y="346.3" fill="#6b6558">   Website Redesign ··································································</text>
 <text x="791.2" y="346.3" fill="#8a8272">│</text>
@@ -75,6 +79,7 @@
 <text x="883.6" y="346.3" fill="#8a8272">│</text>
 <text x="892.0" y="346.3" fill="#a8261f">   hld</text>
 <text x="942.4" y="346.3" fill="#8a8272">│</text>
+<rect x="976.0" y="350.0" width="8.4" height="17.0" fill="#8a8272"/>
 <text x="35.2" y="363.3" fill="#6b6558"> 2 </text>
 <text x="60.4" y="363.3" fill="#8a8272">│</text>
 <text x="68.8" y="363.3" fill="#1c1a15"> Compress database backups ···························································</text>
@@ -83,6 +88,7 @@
 <text x="883.6" y="363.3" fill="#8a8272">│</text>
 <text x="892.0" y="363.3" fill="#a8261f">   1d!</text>
 <text x="942.4" y="363.3" fill="#8a8272">│</text>
+<rect x="976.0" y="367.0" width="8.4" height="17.0" fill="#8a8272"/>
 <text x="60.4" y="380.3" fill="#8a8272">│</text>
 <text x="68.8" y="380.3" fill="#6b6558">   Data Warehouse ····································································</text>
 <text x="791.2" y="380.3" fill="#8a8272">│</text>
@@ -91,6 +97,7 @@
 <text x="892.0" y="380.3" fill="#a8261f">   o/d</text>
 <text x="942.4" y="380.3" fill="#8a8272">│</text>
 <rect x="35.2" y="384.0" width="915.6" height="17.0" fill="#e0d7c2"/>
+<rect x="976.0" y="384.0" width="8.4" height="17.0" fill="#8a8272"/>
 <text x="35.2" y="397.3" fill="#6b6558"> 3 </text>
 <text x="60.4" y="397.3" fill="#8a8272">│</text>
 <text x="68.8" y="397.3" fill="#1c1a15"> Renew TLS certificate ·······························································</text>
@@ -99,7 +106,7 @@
 <text x="883.6" y="397.3" fill="#8a8272">│</text>
 <text x="892.0" y="397.3" fill="#a8261f">    3d</text>
 <text x="942.4" y="397.3" fill="#8a8272">│</text>
-<rect x="976.0" y="401.0" width="8.4" height="17.0" fill="#ded4bc"/>
+<rect x="976.0" y="401.0" width="8.4" height="17.0" fill="#8a8272"/>
 <text x="60.4" y="414.3" fill="#8a8272">│</text>
 <text x="68.8" y="414.3" fill="#6b6558">   -- ················································································</text>
 <text x="791.2" y="414.3" fill="#8a8272">│</text>
@@ -107,7 +114,7 @@
 <text x="883.6" y="414.3" fill="#8a8272">│</text>
 <text x="892.0" y="414.3" fill="#6b6558">   due</text>
 <text x="942.4" y="414.3" fill="#8a8272">│</text>
-<text x="976.0" y="414.3" fill="#8a8272">▇</text>
+<text x="976.0" y="414.3" fill="#ded4bc">▇</text>
 <rect x="976.0" y="418.0" width="8.4" height="17.0" fill="#ded4bc"/>
 <text x="35.2" y="431.3" fill="#6b6558"> 4 </text>
 <text x="60.4" y="431.3" fill="#8a8272">│</text>
@@ -178,27 +185,27 @@
 <text x="892.0" y="550.3" fill="#6b6558">   due</text>
 <text x="942.4" y="550.3" fill="#8a8272">│</text>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#f2ecdd"/>
-<text x="18.4" y="584.3" fill="#2b3a67">1</text>
-<text x="35.2" y="584.3" fill="#2b3a67">2</text>
-<text x="52.0" y="584.3" fill="#2b3a67">3</text>
-<text x="68.8" y="584.3" fill="#2b3a67">4</text>
+<text x="18.4" y="584.3" fill="#2b3a67" font-weight="bold">1</text>
+<text x="35.2" y="584.3" fill="#2b3a67" font-weight="bold">2</text>
+<text x="52.0" y="584.3" fill="#2b3a67" font-weight="bold">3</text>
+<text x="68.8" y="584.3" fill="#2b3a67" font-weight="bold">4</text>
 <text x="85.6" y="584.3" fill="#e0e0e0">Views</text>
-<text x="136.0" y="584.3" fill="#2b3a67"> c </text>
+<text x="136.0" y="584.3" fill="#2b3a67" font-weight="bold"> c </text>
 <text x="161.2" y="584.3" fill="#e0e0e0">Signals </text>
-<text x="228.4" y="584.3" fill="#2b3a67"> ? </text>
+<text x="228.4" y="584.3" fill="#2b3a67" font-weight="bold"> ? </text>
 <text x="253.6" y="584.3" fill="#e0e0e0">Keys </text>
-<text x="295.6" y="584.3" fill="#2b3a67"> v </text>
+<text x="295.6" y="584.3" fill="#2b3a67" font-weight="bold"> v </text>
 <text x="320.8" y="584.3" fill="#e0e0e0">Size </text>
-<text x="362.8" y="584.3" fill="#2b3a67"> r </text>
+<text x="362.8" y="584.3" fill="#2b3a67" font-weight="bold"> r </text>
 <text x="388.0" y="584.3" fill="#e0e0e0">Refresh </text>
-<text x="455.2" y="584.3" fill="#2b3a67"> t </text>
+<text x="455.2" y="584.3" fill="#2b3a67" font-weight="bold"> t </text>
 <text x="480.4" y="584.3" fill="#e0e0e0">Language </text>
-<text x="556.0" y="584.3" fill="#2b3a67"> g </text>
+<text x="556.0" y="584.3" fill="#2b3a67" font-weight="bold"> g </text>
 <text x="581.2" y="584.3" fill="#e0e0e0">Gallery </text>
-<text x="648.4" y="584.3" fill="#2b3a67"> q </text>
+<text x="648.4" y="584.3" fill="#2b3a67" font-weight="bold"> q </text>
 <text x="673.6" y="584.3" fill="#e0e0e0">Quit </text>
 <text x="900.4" y="584.3" fill="#eee9dd">▏</text>
-<text x="908.8" y="584.3" fill="#2b3a67">^p</text>
+<text x="908.8" y="584.3" fill="#2b3a67" font-weight="bold">^p</text>
 <text x="925.6" y="584.3" fill="#e0e0e0"> palette</text>
 </g>
 </svg>

@@ -4,11 +4,11 @@
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <text x="26.8" y="40.3" fill="#d71921">▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜</text>
 <text x="26.8" y="57.3" fill="#d71921">▌</text>
-<text x="35.2" y="57.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="220.0" y="57.3" fill="#d71921">∙∙∙∙</text>
-<text x="253.6" y="57.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="446.8" y="57.3" fill="#f5f5f5">  ∙∙∙</text>
-<text x="488.8" y="57.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="35.2" y="57.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="220.0" y="57.3" fill="#d71921" font-weight="bold">∙∙∙∙</text>
+<text x="253.6" y="57.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="446.8" y="57.3" fill="#f5f5f5" font-weight="bold">  ∙∙∙</text>
+<text x="488.8" y="57.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
 <text x="690.4" y="57.3" fill="#d71921">▐</text>
 <text x="715.6" y="57.3" fill="#f5f5f5">∙∙∙</text>
 <text x="740.8" y="57.3" fill="#050505">╳</text>
@@ -17,13 +17,13 @@
 <text x="942.4" y="57.3" fill="#8a8a8a">13%</text>
 <text x="967.6" y="57.3" fill="#050505">╳╳</text>
 <text x="26.8" y="74.3" fill="#d71921">▌</text>
-<text x="35.2" y="74.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="203.2" y="74.3" fill="#d71921">∙∙</text>
-<text x="220.0" y="74.3" fill="#242424">◦◦◦◦</text>
-<text x="253.6" y="74.3" fill="#d71921">∙∙</text>
-<text x="270.4" y="74.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="446.8" y="74.3" fill="#f5f5f5">  ∙∙∙</text>
-<text x="488.8" y="74.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="35.2" y="74.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="203.2" y="74.3" fill="#d71921" font-weight="bold">∙∙</text>
+<text x="220.0" y="74.3" fill="#242424" font-weight="bold">◦◦◦◦</text>
+<text x="253.6" y="74.3" fill="#d71921" font-weight="bold">∙∙</text>
+<text x="270.4" y="74.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="446.8" y="74.3" fill="#f5f5f5" font-weight="bold">  ∙∙∙</text>
+<text x="488.8" y="74.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
 <text x="690.4" y="74.3" fill="#d71921">▐</text>
 <text x="715.6" y="74.3" fill="#f5f5f5">⡇⡇⡇⡇⡇⡇</text>
 <text x="766.0" y="74.3" fill="#8a8a8a">⡄⡄⡄⡄⡄⡄⡀⡀⡀⡀⡀⡀</text>
@@ -31,38 +31,38 @@
 <text x="875.2" y="74.3" fill="#242424">flow</text>
 <text x="908.8" y="74.3" fill="#050505">╳╳╳╳╳╳╳╳╳</text>
 <text x="26.8" y="91.3" fill="#d71921">▌</text>
-<text x="35.2" y="91.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="253.6" y="91.3" fill="#d71921">∙∙</text>
-<text x="270.4" y="91.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="446.8" y="91.3" fill="#f5f5f5">  ∙∙∙∙∙∙</text>
-<text x="514.0" y="91.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="35.2" y="91.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="253.6" y="91.3" fill="#d71921" font-weight="bold">∙∙</text>
+<text x="270.4" y="91.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="446.8" y="91.3" fill="#f5f5f5" font-weight="bold">  ∙∙∙∙∙∙</text>
+<text x="514.0" y="91.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
 <text x="690.4" y="91.3" fill="#d71921">▐</text>
 <text x="26.8" y="108.3" fill="#d71921">▌</text>
-<text x="35.2" y="108.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="236.8" y="108.3" fill="#d71921">∙∙</text>
-<text x="253.6" y="108.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="446.8" y="108.3" fill="#f5f5f5">  ∙∙∙∙∙∙</text>
-<text x="514.0" y="108.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="35.2" y="108.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="236.8" y="108.3" fill="#d71921" font-weight="bold">∙∙</text>
+<text x="253.6" y="108.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="446.8" y="108.3" fill="#f5f5f5" font-weight="bold">  ∙∙∙∙∙∙</text>
+<text x="514.0" y="108.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
 <text x="690.4" y="108.3" fill="#d71921">▐</text>
 <text x="26.8" y="125.3" fill="#d71921">▌</text>
-<text x="35.2" y="125.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="220.0" y="125.3" fill="#d71921">∙∙</text>
-<text x="236.8" y="125.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="446.8" y="125.3" fill="#f5f5f5">  ∙∙∙∙∙∙</text>
-<text x="514.0" y="125.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="35.2" y="125.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="220.0" y="125.3" fill="#d71921" font-weight="bold">∙∙</text>
+<text x="236.8" y="125.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="446.8" y="125.3" fill="#f5f5f5" font-weight="bold">  ∙∙∙∙∙∙</text>
+<text x="514.0" y="125.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
 <text x="690.4" y="125.3" fill="#d71921">▐</text>
 <text x="26.8" y="142.3" fill="#d71921">▌</text>
-<text x="35.2" y="142.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="203.2" y="142.3" fill="#d71921">∙∙</text>
-<text x="220.0" y="142.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="446.8" y="142.3" fill="#f5f5f5">  ∙∙∙∙∙∙∙∙∙</text>
-<text x="539.2" y="142.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="35.2" y="142.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="203.2" y="142.3" fill="#d71921" font-weight="bold">∙∙</text>
+<text x="220.0" y="142.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="446.8" y="142.3" fill="#f5f5f5" font-weight="bold">  ∙∙∙∙∙∙∙∙∙</text>
+<text x="539.2" y="142.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
 <text x="690.4" y="142.3" fill="#d71921">▐</text>
 <text x="26.8" y="159.3" fill="#d71921">▌</text>
-<text x="35.2" y="159.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="203.2" y="159.3" fill="#d71921">∙∙∙∙∙∙∙∙</text>
-<text x="270.4" y="159.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
-<text x="463.6" y="159.3" fill="#242424">LOAD · 8 WK</text>
+<text x="35.2" y="159.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="203.2" y="159.3" fill="#d71921" font-weight="bold">∙∙∙∙∙∙∙∙</text>
+<text x="270.4" y="159.3" fill="#242424" font-weight="bold">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
+<text x="463.6" y="159.3" fill="#242424" font-weight="bold">LOAD · 8 WK</text>
 <text x="690.4" y="159.3" fill="#d71921">▐</text>
 <text x="26.8" y="176.3" fill="#d71921">▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟</text>
 <text x="26.8" y="244.3" fill="#f5f5f5">∙ BOARD  </text>
@@ -95,9 +95,11 @@
 <text x="833.2" y="278.3" fill="#8a8a8a">◦ </text>
 <text x="850.0" y="278.3" fill="#f5f5f5"> ∙   7 </text>
 <text x="908.8" y="278.3" fill="#8a8a8a">Board fi</text>
+<rect x="497.2" y="299.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="312.3" fill="#8a8a8a">BACKLOG</text>
 <text x="522.4" y="312.3" fill="#8a8a8a">DOING</text>
 <text x="799.6" y="312.3" fill="#8a8a8a">DONE</text>
+<rect x="497.2" y="316.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="329.3" fill="#242424">◦◦</text>
 <text x="52.0" y="329.3" fill="#f5f5f5">∙∙∙∙</text>
 <text x="85.6" y="329.3" fill="#242424">◦◦</text>
@@ -107,6 +109,7 @@
 <text x="799.6" y="329.3" fill="#242424">◦◦</text>
 <text x="816.4" y="329.3" fill="#f5f5f5">∙∙∙∙</text>
 <text x="850.0" y="329.3" fill="#242424">◦◦</text>
+<rect x="497.2" y="333.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="346.3" fill="#f5f5f5">∙∙</text>
 <text x="52.0" y="346.3" fill="#242424">◦◦◦◦</text>
 <text x="85.6" y="346.3" fill="#f5f5f5">∙∙</text>
@@ -116,12 +119,14 @@
 <text x="799.6" y="346.3" fill="#f5f5f5">∙∙</text>
 <text x="816.4" y="346.3" fill="#242424">◦◦◦◦</text>
 <text x="850.0" y="346.3" fill="#f5f5f5">∙∙</text>
+<rect x="497.2" y="350.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="363.3" fill="#242424">◦◦</text>
 <text x="52.0" y="363.3" fill="#f5f5f5">∙∙∙∙∙∙</text>
 <text x="522.4" y="363.3" fill="#f5f5f5">∙∙∙∙∙∙∙∙</text>
 <text x="799.6" y="363.3" fill="#242424">◦◦◦◦</text>
 <text x="833.2" y="363.3" fill="#f5f5f5">∙∙</text>
 <text x="850.0" y="363.3" fill="#242424">◦◦</text>
+<rect x="497.2" y="367.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="380.3" fill="#242424">◦◦◦◦◦◦</text>
 <text x="85.6" y="380.3" fill="#f5f5f5">∙∙</text>
 <text x="522.4" y="380.3" fill="#242424">◦◦◦◦◦◦</text>
@@ -129,12 +134,14 @@
 <text x="799.6" y="380.3" fill="#242424">◦◦</text>
 <text x="816.4" y="380.3" fill="#f5f5f5">∙∙</text>
 <text x="833.2" y="380.3" fill="#242424">◦◦◦◦</text>
+<rect x="497.2" y="384.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="397.3" fill="#242424">◦◦</text>
 <text x="52.0" y="397.3" fill="#f5f5f5">∙∙∙∙</text>
 <text x="85.6" y="397.3" fill="#242424">◦◦</text>
 <text x="522.4" y="397.3" fill="#242424">◦◦◦◦◦◦</text>
 <text x="572.8" y="397.3" fill="#f5f5f5">∙∙</text>
 <text x="799.6" y="397.3" fill="#f5f5f5">∙∙∙∙∙∙∙∙</text>
+<rect x="497.2" y="401.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="414.3" fill="#d71921">∙</text>
 <text x="43.6" y="414.3" fill="#f5f5f5"> Fix checkout 500 error</text>
 <text x="236.8" y="414.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
@@ -145,6 +152,7 @@
 <text x="799.6" y="414.3" fill="#242424">◦</text>
 <text x="808.0" y="414.3" fill="#f5f5f5"> Set up CI… </text>
 <text x="908.8" y="414.3" fill="#242424">done</text>
+<rect x="497.2" y="418.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="431.3" fill="#f5f5f5">  ∙ </text>
 <text x="68.8" y="431.3" fill="#242424">◦</text>
 <text x="85.6" y="431.3" fill="#242424">◦</text>
@@ -154,6 +162,7 @@
 <text x="598.0" y="431.3" fill="#8a8a8a">◦∙</text>
 <text x="799.6" y="431.3" fill="#f5f5f5">  ∙ ∙ ∙  </text>
 <text x="875.2" y="431.3" fill="#8a8a8a">◦∙</text>
+<rect x="497.2" y="435.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="448.3" fill="#d71921">∙</text>
 <text x="43.6" y="448.3" fill="#f5f5f5"> Compress database backups</text>
 <text x="262.0" y="448.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
@@ -165,11 +174,12 @@
 <text x="799.6" y="448.3" fill="#242424">◦</text>
 <text x="808.0" y="448.3" fill="#f5f5f5"> Migrate u… </text>
 <text x="908.8" y="448.3" fill="#242424">done</text>
+<rect x="497.2" y="452.0" width="8.4" height="17.0" fill="#003054"/>
 <text x="35.2" y="465.3" fill="#f5f5f5">  ∙ </text>
 <text x="68.8" y="465.3" fill="#242424">◦</text>
 <text x="85.6" y="465.3" fill="#242424">◦</text>
 <text x="110.8" y="465.3" fill="#8a8a8a">∙∙</text>
-<text x="497.2" y="465.3" fill="#003054">▅</text>
+<text x="497.2" y="465.3" fill="#000000">▅</text>
 <text x="522.4" y="465.3" fill="#f5f5f5">  ∙ ∙ </text>
 <text x="572.8" y="465.3" fill="#242424">◦</text>
 <text x="598.0" y="465.3" fill="#8a8a8a">◦∙</text>
@@ -210,27 +220,27 @@
 <text x="253.6" y="550.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
 <text x="446.8" y="550.3" fill="#8a8a8a">8d</text>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#0a0a0a"/>
-<text x="18.4" y="584.3" fill="#d71921">1</text>
-<text x="35.2" y="584.3" fill="#d71921">2</text>
-<text x="52.0" y="584.3" fill="#d71921">3</text>
-<text x="68.8" y="584.3" fill="#d71921">4</text>
+<text x="18.4" y="584.3" fill="#d71921" font-weight="bold">1</text>
+<text x="35.2" y="584.3" fill="#d71921" font-weight="bold">2</text>
+<text x="52.0" y="584.3" fill="#d71921" font-weight="bold">3</text>
+<text x="68.8" y="584.3" fill="#d71921" font-weight="bold">4</text>
 <text x="85.6" y="584.3" fill="#e0e0e0">Views</text>
-<text x="136.0" y="584.3" fill="#d71921"> c </text>
+<text x="136.0" y="584.3" fill="#d71921" font-weight="bold"> c </text>
 <text x="161.2" y="584.3" fill="#e0e0e0">Signals </text>
-<text x="228.4" y="584.3" fill="#d71921"> ? </text>
+<text x="228.4" y="584.3" fill="#d71921" font-weight="bold"> ? </text>
 <text x="253.6" y="584.3" fill="#e0e0e0">Keys </text>
-<text x="295.6" y="584.3" fill="#d71921"> v </text>
+<text x="295.6" y="584.3" fill="#d71921" font-weight="bold"> v </text>
 <text x="320.8" y="584.3" fill="#e0e0e0">Size </text>
-<text x="362.8" y="584.3" fill="#d71921"> r </text>
+<text x="362.8" y="584.3" fill="#d71921" font-weight="bold"> r </text>
 <text x="388.0" y="584.3" fill="#e0e0e0">Refresh </text>
-<text x="455.2" y="584.3" fill="#d71921"> t </text>
+<text x="455.2" y="584.3" fill="#d71921" font-weight="bold"> t </text>
 <text x="480.4" y="584.3" fill="#e0e0e0">Language </text>
-<text x="556.0" y="584.3" fill="#d71921"> g </text>
+<text x="556.0" y="584.3" fill="#d71921" font-weight="bold"> g </text>
 <text x="581.2" y="584.3" fill="#e0e0e0">Gallery </text>
-<text x="648.4" y="584.3" fill="#d71921"> q </text>
+<text x="648.4" y="584.3" fill="#d71921" font-weight="bold"> q </text>
 <text x="673.6" y="584.3" fill="#e0e0e0">Quit </text>
 <text x="900.4" y="584.3" fill="#343434">▏</text>
-<text x="908.8" y="584.3" fill="#d71921">^p</text>
+<text x="908.8" y="584.3" fill="#d71921" font-weight="bold">^p</text>
 <text x="925.6" y="584.3" fill="#e0e0e0"> palette</text>
 </g>
 </svg>

@@ -7,36 +7,48 @@
 <rect x="262.0" y="61.0" width="487.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="74.3" fill="#88c0d0">│</text>
 <text x="740.8" y="74.3" fill="#88c0d0">│</text>
-<rect x="262.0" y="78.0" width="487.2" height="17.0" fill="#3b4252"/>
+<rect x="262.0" y="78.0" width="445.2" height="17.0" fill="#3b4252"/>
+<rect x="707.2" y="78.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="78.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="91.3" fill="#88c0d0">│</text>
 <text x="287.2" y="91.3" fill="#eceff4"> ▐██▌  ▐█   █▌   </text>
 <text x="740.8" y="91.3" fill="#88c0d0">│</text>
-<rect x="262.0" y="95.0" width="487.2" height="17.0" fill="#3b4252"/>
+<rect x="262.0" y="95.0" width="445.2" height="17.0" fill="#3b4252"/>
+<rect x="707.2" y="95.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="95.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="108.3" fill="#88c0d0">│</text>
 <text x="287.2" y="108.3" fill="#eceff4">▄▞▀▀▘ ▄▞▀▄▖ █▌   </text>
 <text x="740.8" y="108.3" fill="#88c0d0">│</text>
-<rect x="262.0" y="112.0" width="487.2" height="17.0" fill="#3b4252"/>
+<rect x="262.0" y="112.0" width="445.2" height="17.0" fill="#3b4252"/>
+<rect x="707.2" y="112.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="112.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="125.3" fill="#88c0d0">│</text>
 <text x="287.2" y="125.3" fill="#eceff4">█▌    █▌ █▌ █▌   </text>
 <text x="740.8" y="125.3" fill="#88c0d0">│</text>
-<rect x="262.0" y="129.0" width="487.2" height="17.0" fill="#3b4252"/>
+<rect x="262.0" y="129.0" width="445.2" height="17.0" fill="#3b4252"/>
+<rect x="707.2" y="129.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="129.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="142.3" fill="#88c0d0">│</text>
 <text x="287.2" y="142.3" fill="#eceff4">█▌ █▌ ████▌ █▌   </text>
 <text x="740.8" y="142.3" fill="#88c0d0">│</text>
-<rect x="262.0" y="146.0" width="487.2" height="17.0" fill="#3b4252"/>
+<rect x="262.0" y="146.0" width="445.2" height="17.0" fill="#3b4252"/>
+<rect x="707.2" y="146.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="146.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="159.3" fill="#88c0d0">│</text>
 <text x="287.2" y="159.3" fill="#eceff4">█▌ █▌ █▛▀█▌ █▌   </text>
 <text x="740.8" y="159.3" fill="#88c0d0">│</text>
-<rect x="262.0" y="163.0" width="487.2" height="17.0" fill="#3b4252"/>
+<rect x="262.0" y="163.0" width="445.2" height="17.0" fill="#3b4252"/>
+<rect x="707.2" y="163.0" width="16.8" height="17.0" fill="#003054"/>
+<rect x="724.0" y="163.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="176.3" fill="#88c0d0">│</text>
 <text x="287.2" y="176.3" fill="#eceff4">█▌ █▌ █▌ █▌ █▌   </text>
 <text x="740.8" y="176.3" fill="#88c0d0">│</text>
 <rect x="262.0" y="180.0" width="445.2" height="17.0" fill="#3b4252"/>
-<rect x="707.2" y="180.0" width="16.8" height="17.0" fill="#000000"/>
+<rect x="707.2" y="180.0" width="16.8" height="17.0" fill="#003054"/>
 <rect x="724.0" y="180.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="193.3" fill="#88c0d0">│</text>
 <text x="287.2" y="193.3" fill="#eceff4"> ▐██▌ █▌ █▌ ████▌</text>
-<text x="707.2" y="193.3" fill="#003054">▃▃</text>
+<text x="707.2" y="193.3" fill="#000000">▃▃</text>
 <text x="740.8" y="193.3" fill="#88c0d0">│</text>
 <rect x="262.0" y="197.0" width="445.2" height="17.0" fill="#3b4252"/>
 <rect x="707.2" y="197.0" width="16.8" height="17.0" fill="#000000"/>
@@ -175,9 +187,9 @@
 <rect x="262.0" y="520.0" width="487.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="533.3" fill="#88c0d0">╰────────────────────────────────────────────────────────╯</text>
 <rect x="10.0" y="571.0" width="991.2" height="17.0" fill="#3b4252"/>
-<text x="10.0" y="584.3" fill="#88c0d0"> esc/q/g </text>
+<text x="10.0" y="584.3" fill="#88c0d0" font-weight="bold"> esc/q/g </text>
 <text x="85.6" y="584.3" fill="#e0e0e0">Close </text>
-<text x="136.0" y="584.3" fill="#88c0d0"> t </text>
+<text x="136.0" y="584.3" fill="#88c0d0" font-weight="bold"> t </text>
 <text x="161.2" y="584.3" fill="#e0e0e0">Language </text>
 </g>
 </svg>

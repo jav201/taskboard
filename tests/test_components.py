@@ -1825,12 +1825,19 @@ _ON_TAG = re.compile(r"(?:^|\s)on\s+(\S+)$")
 #: ground channel, which is why it is listed beside the three that are not.
 _STYLE_WORDS = ("reverse", "bold", "underline", "italic")
 #: the frames that declare at least one ground, measured rather than assumed —
-#: the roster the ground law is non-vacuous on. 13 of 66; the other 53 declare
+#: the roster the ground law is non-vacuous on. 14 of 66; the other 52 declare
 #: none and paint none, which is a true pass and an empty one.
+#:
+#: `industrial_S6` JOINED THE ROSTER IN inc43 without one glyph changing. Its
+#: `MATCH_STYLE` is `reverse {accent}`, which was always a ground declaration
+#: wearing a style word's costume; before inc43 neither this list nor the
+#: exporter could see it. `solari_S6` was already here for a different reason
+#: (its bands) and its `reverse {ink}` resolves to the SAME hue those bands
+#: use, so the SET did not move even though six new rects did.
 GROUNDED_FRAMES = ("industrial_S1", "darkside_S1", "prism_S1", "ledger_S1",
                    "solari_S1", "solari_S2", "solari_S3", "prism_S4",
                    "ledger_S4", "solari_S4", "blueprint_S4", "solari_S5",
-                   "solari_S6")
+                   "solari_S6", "industrial_S6")
 
 
 def sheet_rows(lang, screen):
@@ -1851,13 +1858,24 @@ def sheet_rows(lang, screen):
 
 
 def declared_grounds(lang, screen):
-    """The set of ground colours this frame's composition asks for."""
+    """The set of ground colours this frame's composition asks for.
+
+    TWO SPELLINGS, AND THE SECOND IS WHY inc41 MEASURED A GAP THAT WAS NOT
+    THERE. `[#123 on #456]` is the obvious one. `[reverse #456]` is the other:
+    a reversed run paints its hue as the GROUND and the cell's own ground as
+    the ink — the same channel, said backwards. Until inc43 the exporter
+    dropped it and this helper did not count it, so the two agreed on zero and
+    `industrial_S6` read as a frame that declares no ground. It declares six."""
     out = set()
     for row in sheet_rows(lang, screen):
         for m in _TAG_BODY.finditer(row.replace("\\[", _ESC)):
-            hit = _ON_TAG.search(m.group(1).strip())
+            body = m.group(1).strip()
+            hit = _ON_TAG.search(body)
             if hit:
                 out.add(hit.group(1))
+            parts = body.split()
+            if len(parts) == 2 and parts[0] == "reverse":
+                out.add(parts[1])
     return out
 
 
@@ -1912,15 +1930,21 @@ def test_the_svg_paints_exactly_the_grounds_the_kit_declared(lang):
 def test_the_ground_law_is_not_vacuous():
     """WHICH FRAMES THE LAW ACTUALLY BITES ON, measured and written down.
 
-    53 of the 66 declare no ground and paint none: a true pass, and an empty
-    one. The 13 that do are the law's whole evidence, so the roster is derived
+    52 of the 66 declare no ground and paint none: a true pass, and an empty
+    one. The 14 that do are the law's whole evidence, so the roster is derived
     and compared with a written one — a frame that stops declaring a ground
     (blueprint's knockout going away, solari's bands going flat) changes this
-    list and somebody has to look at it."""
+    list and somebody has to look at it.
+
+    IT WAS 13 UNTIL inc43 AND THE FOURTEENTH IS THE POINT. `industrial_S6`
+    declared six reversed runs the whole time; the roster could not see them
+    because `declared_grounds` only knew the `on <colour>` spelling, and the
+    exporter could not paint them for the mirror-image reason. Two blind spots
+    facing each other read as agreement. This list is where that shows up."""
     got = tuple(f"{lang}_{sc}" for sc in SCREENS for lang in LANGS
                 if declared_grounds(lang, sc))
     assert sorted(got) == sorted(GROUNDED_FRAMES), got
-    assert len(got) == 13
+    assert len(got) == 14
 
 
 def test_blueprints_knockout_is_where_operator_ruling_10_put_it():
@@ -1965,46 +1989,129 @@ def test_blueprints_knockout_is_where_operator_ruling_10_put_it():
     assert calm._state_cell()[1] is True, "the first-fixation law is dead"
 
 
-def test_no_style_tier_survives_the_exporter_and_that_is_why_S6_is_unjudged():
-    """THE LIMIT, ASSERTED SO IT CANNOT BE CROSSED OR KEPT SILENTLY.
+#: the sheet's own query, from the fixture the six result rows are built from.
+#: It is the DISCRIMINATOR a painted count needs and not a convenience: solari
+#: reverses to `#f0ede4`, which is exactly the colour its S6 bands already use,
+#: so counting rects by fill alone would score two bands as match runs; and the
+#: query also appears in the search FIELD one row above the results, so counting
+#: `<text>` by content alone would score seven where six were declared.
+QUERY = "re"
+#: `svg_from_grid`'s cell width. A reversed match run is the query's own cells
+#: turned into a ground, so its rect is exactly this wide.
+CELL_W = 8.4
 
-    `Kit.match` marks the query inside a result row with `MATCH_STYLE`, which
-    every one of the eleven spells as a STYLE — `bold`, `underline` or
-    `reverse` over a hue. `svg_from_grid` emits background runs and fill
-    colours and nothing else, so all six declared match runs in every S6 reach
-    neither artefact: not the `.txt` (a style is not a cell) and not the
-    `.svg`. Sixty-six declared runs, none painted.
 
-    THAT IS WHY THE ROUND COULD NOT JUDGE A SINGLE S6 (`PROTOTYPE-inheritors`
-    §4). Two of the eleven are the sharp case: industrial's `reverse {accent}`
-    and solari's `reverse {ink}` are a GROUND channel — the same channel this
-    exporter paints 16 times in `industrial_S1` — and they are still not
-    painted, because `reverse` reaches Rich as a style word rather than as
-    `on <colour>`.
+def painted_styles(lang, screen):
+    """The style-tier runs the `.svg` actually paints, as a list of words.
 
-    NOT FIXED HERE, and the reason is scope rather than difficulty: teaching
-    the exporter `bold` / `underline` / `reverse` re-renders all 66 `.svg` and
-    re-opens the round that judged them (`PROTOTYPE-inheritors.md` §7 q9, an
-    operator question). What this test does is stop the limit from being
-    either forgotten or silently crossed: the day the exporter learns a style,
-    this goes red and points at the round that has to be redone."""
-    total = 0
-    for lang in LANGS:
-        declared = declared_styles(lang, "S6")
-        assert len(declared) == 6, (lang, declared)
-        assert declared[0].split(" ")[0] in _STYLE_WORDS, (lang, declared)
-        total += len(declared)
-        svg = (FRAMES / f"{lang}_S6.svg").read_text(encoding="utf-8")
-        assert "font-weight" not in svg, lang
-        assert "text-decoration" not in svg, lang
-    assert total == 66
-    # and the two whose style IS a ground channel paint nothing either
+    TWO SHAPES, BECAUSE THE TIER HAS TWO SHAPES. `bold` and `underline` are
+    properties of the text and arrive as attributes on a `<text>`. `reverse`
+    is not and must not be looked for as one: it is a GROUND channel wearing a
+    style word's costume, so `cell_grid` resolves it back into the (ink,
+    ground) pair it always was and what reaches the `.svg` is a `<rect>` of the
+    declared hue with the query painted on it in the cell's own ground.
+
+    A reversed run is therefore counted as a rect of the declared hue that is
+    exactly the query wide — both halves load-bearing, and §QUERY says which
+    frame breaks without which half."""
+    svg = (FRAMES / f"{lang}_{screen}.svg").read_text(encoding="utf-8")
+    out = []
+    for m in re.finditer(r"<text[^>]*>", svg):
+        if 'font-weight="bold"' in m.group(0):
+            out.append("bold")
+        if 'text-decoration="underline"' in m.group(0):
+            out.append("underline")
+    hue = LG.kit(lang).MATCH_STYLE.split()[-1].format(**LG.kit(lang).c)
+    wide = f'width="{len(QUERY) * CELL_W:.1f}"'
+    for m in re.finditer(r"<rect[^>]*/>", svg):
+        if wide in m.group(0) and f'fill="{hue}"' in m.group(0):
+            out.append("reverse")
+    return out
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_svg_paints_exactly_the_style_runs_the_kit_declared(lang):
+    """THE OTHER TIER, AND IT IS NOW A LAW INSTEAD OF A RECORDED DEFECT.
+
+    `Kit.match` is the one contract seat whose emphasis may not add a cell —
+    operator ruling 9, the result text comes back byte for byte — so every one
+    of the eleven spells `MATCH_STYLE` as a STYLE over a hue: seven `bold`, two
+    `underline`, and industrial/solari `reverse`. Each S6 sheet declares six
+    such runs, 66 across the eleven.
+
+    inc41 measured 66 declared and 0 painted and asserted that as a fact,
+    because painting them re-renders every `.svg` and re-opens the round that
+    judged them (`PROTOTYPE-inheritors.md` §7 q9). inc43 painted them. THIS IS
+    THE SAME COMPARISON inc41 RAN, with the answer it could not have: equal, in
+    11 of 11.
+
+    THE WORD MUST MATCH TOO, not just the count. A language that declares
+    `bold` and paints an underline would satisfy an arithmetic law and be
+    wrong; the run's own word is asserted against the kit's `MATCH_STYLE`. And
+    the negative half is asserted with it — a `bold` language's S6 carries no
+    `text-decoration` at all, which is what stops "six of something" from
+    passing for "six of the right thing"."""
+    declared = declared_styles(lang, "S6")
+    assert len(declared) == 6, (lang, declared)
+    word = LG.kit(lang).MATCH_STYLE.split()[0]
+    assert word in _STYLE_WORDS, (lang, word)
+    assert {d.split()[0] for d in declared} == {word}, (lang, declared)
+
+    painted = painted_styles(lang, "S6")
+    assert len(painted) == len(declared), (lang, declared, painted)
+    assert set(painted) == {word}, (lang, painted)
+
+    svg = (FRAMES / f"{lang}_S6.svg").read_text(encoding="utf-8")
+    for other in ("bold", "underline"):
+        attr = ('font-weight="bold"' if other == "bold"
+                else 'text-decoration="underline"')
+        assert (attr in svg) == (word == other), (lang, word, other)
+
+
+def test_the_style_law_is_not_vacuous_and_the_two_reverse_kits_are_the_proof():
+    """WHERE THE LAW BITES, and the one case that could have passed hollow.
+
+    Seven of the eleven are `bold` and two are `underline`: for those, "the
+    exporter learned the tier" is one attribute on one element and the law is
+    honest but easy. The two that are `reverse` are the ones inc41 called the
+    sharp case — the same ground channel this exporter paints 16 times in
+    `industrial_S1` and dropped entirely in `industrial_S6`, because Rich hands
+    `reverse` over as a style FLAG with colour and bgcolor still in their
+    declared order.
+
+    So the swap itself is asserted, not just its arithmetic: each of the six
+    runs paints the query in the CELL'S OWN GROUND on a rect of the kit's hue.
+    Painting the hue as ink on the ground would keep the count at six and mean
+    nothing had been fixed.
+
+    AND THE SEVENTH `re` IS THE TEETH. The query also sits in the search field
+    one row above the results, painted in ordinary ink. It is in every one of
+    the eleven frames and it is NOT a match run; a measurement that counted
+    text content would score 7 here and 7 is the number this test refuses."""
+    words = {lang: LG.kit(lang).MATCH_STYLE.split()[0] for lang in LANGS}
+    assert sorted(words.values()).count("reverse") == 2
+    assert {l for l, w in words.items() if w == "reverse"} == {"industrial",
+                                                               "solari"}
+
     for lang in ("industrial", "solari"):
-        assert LG.kit(lang).MATCH_STYLE.startswith("reverse"), lang
-    assert painted_grounds("industrial", "S6") == set()
-    assert painted_grounds("industrial", "S1"), (
-        "the exporter CAN paint a ground for this language -- it does it "
-        "sixteen times on the board -- and in S6 it paints none")
+        k = LG.kit(lang)
+        hue = k.MATCH_STYLE.split()[-1].format(**k.c)
+        svg = (FRAMES / f"{lang}_S6.svg").read_text(encoding="utf-8")
+        canvas = re.search(r'<rect width="[\d.]+" height="[\d.]+" '
+                           r'fill="([^"]+)"/>', svg)
+        assert canvas, lang
+        ground = canvas.group(1)
+        assert ground != hue, (lang, hue)
+        # the six runs: the query, in the page's ground, and nothing else
+        on_ground = re.findall(r'<text[^>]*fill="%s"[^>]*>([^<]*)</text>'
+                               % re.escape(ground), svg)
+        assert on_ground == [QUERY] * 6, (lang, on_ground)
+        # and the seventh `re` -- the search field -- is NOT one of them
+        every = re.findall(r'<text[^>]*fill="([^"]+)"[^>]*>%s</text>'
+                           % re.escape(QUERY), svg)
+        assert len(every) == 7, (lang, every)
+        assert every.count(ground) == 6, (lang, every)
+        assert len(painted_styles(lang, "S6")) == 6, lang
 
 
 # ---------------------------------------------------------------------------
