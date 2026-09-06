@@ -10,7 +10,7 @@ BOARD  16 tasks  ·  4 projects
                                                              │ status                           open
 ▸ DOING 4▂                                                   │ owner                          jav201
 ▸ ─────────────────────────────────────────────────────────  │                                      
-▸   Fix login redirect                                   3d  │ ▇▇▇▇▇▇▇▇▇▇▇▇░░░░░░░░░░░░░░░  44%     
+▸   Fix login redirect                                   3d  │  44% ━━━━━━━━━━━━───────────────     
       Web · doing                                            │                                      
     Rate-limit the API                                  2d!  │                                      
       API · doing                                            │                                      

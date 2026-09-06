@@ -263,11 +263,16 @@ def report() -> list[str]:
 #: stops seeing a live collision AND if a language quietly grows a closed one
 #: back.
 FOUND_BY_HAND = (
-    ("instrument", "⠇", {"severity", "button"}, None),   # error rung, button opener
+    # STILL LIVE, AND ON PURPOSE (inc46 §1a). The rails mirrored, so `⠇` is
+    # the CLOSER now rather than the opener the round photographed -- but the
+    # LEFT braille column IS the severity ladder's column, so the only rail
+    # that shares no cell with the ladder is the four-dot `⡇`, which is this
+    # language's caret. The row stays; the defect at the opener is gone.
+    ("instrument", "⠇", {"severity", "button"}, None),   # error rung, button rail
     ("instrument", "⠁", {"required", "switch"}, "inc46"),  # REQUIRED, switch DISABLED
     ("swiss", "━", {"cursor", "severity"}, "inc45"),     # cursor, error
     ("nord", "!", {"severity", "danger"}, "inc45"),      # warn, delete danger
-    ("solari", "▁", {"required", "textfield"}, None),    # one of its nine roles
+    ("solari", "▁", {"required", "textfield"}, "inc47"),  # one of its nine roles
 )
 
 

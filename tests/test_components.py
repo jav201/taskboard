@@ -2523,23 +2523,24 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #: the only way a roster stays a record instead of a decoration
 #: (`HANDED_FIELDS`, one screen up, is the same bargain).
 #:
-#:   naught     9  `∙` is the switch's ON indicator and `◦` its dead one, and
+#:   naught     8  `∙` is the switch's ON indicator and `◦` its dead one, and
 #:                 both are rungs of the count ladder. Naught has ONE round
 #:                 pixel at six charges; it has no unspent cell. Open.
 #:   corgi      8  the segment bank: `▄▄` ON, `▁▁` dead — `LEVELS["warn"]`
 #:                 and `LEVELS["info"]`. corgi has no increment in this
 #:                 batch. Open.
 #:   prism      8  `⣿` ON, `⣤` dead — the top two rungs. Open.
-#:   solari     6  `▁` is REQUIRED and the switch's indicator. **inc47.**
 #:   blueprint  8  `╌` is `LEVELS["warn"]` and this language's whole DISABLED
 #:                 vocabulary — five parts wear it. Open.
 #:
-#: instrument, swiss, industrial, nord, darkside and ledger are ZERO, and two
-#: of those six were not zero before this increment.
-MEANING_AT_A_NAMED_SEAT = {"naught": 9, "corgi": 8, "instrument": 0,
+#: SOLARI WAS 6 AND IS 0 (inc47): `▁` was `REQUIRED` and the switch's
+#: indicator and eighteen more chrome seats; obligation moved to `▮` and the
+#: seam went back to being alphabet. instrument and swiss went to zero in
+#: inc46. Five of the eleven are clean.
+MEANING_AT_A_NAMED_SEAT = {"naught": 8, "corgi": 8, "instrument": 0,
                            "swiss": 0, "industrial": 0, "nord": 0,
                            "darkside": 0, "prism": 8, "ledger": 0,
-                           "solari": 6, "blueprint": 8}
+                           "solari": 0, "blueprint": 8}
 
 
 def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
@@ -2558,12 +2559,22 @@ def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
     out = []
     for comp in RULED_CONTROLS:
         for part in LG.COMPONENT_PARTS[comp]:
+            table = k.PART_GLYPHS[k.part_key(comp, part)]
             for st in LG.component_states(comp):
+                dead = LG.control_of(st) == LG.DISABLED
+                if dead and LG.DISABLED not in table:
+                    # A FALLBACK IS NOT A DECLARATION, and `collision_census`
+                    # already had to learn this: `part_glyph` walks the state
+                    # chain, so a part with no `disabled` key returns its
+                    # DEFAULT glyph. Crediting that to the DISABLED seat made
+                    # solari's CARET a "disabled mark" the moment its
+                    # obligation mark moved onto the caret's cell (inc47) --
+                    # a field nobody may type in draws no caret at all.
+                    continue
                 glyph = k.part_glyph(part, st, comp)
                 hit = set(glyph) & meanings
                 if not hit:
                     continue
-                dead = LG.control_of(st) == LG.DISABLED
                 if dead or (comp == "switch" and part == "indicator"):
                     out.append((f"{comp}.{part}", st, glyph,
                                 "".join(sorted(hit))))

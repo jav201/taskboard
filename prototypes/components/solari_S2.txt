@@ -1,9 +1,9 @@
  board  FORM  cfg  log                                                                              
  NEW TASK  5 FIELDS  ·  1 INVALID                                                                   
 ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-  title▁        ▔Fix login▮ redirect▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔                                                
+  title▮        ▔Fix login▮ redirect▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔                                                
                                                                                                     
-  due▁          ═12/09/26··························═                                                
+  due▮          ═12/09/26··························═                                                
                 CNX expected YYYY-MM-DD                                                             
                                                                                                     
   priority      ▁▁▁ low  ▁▁▁ norm  ▁●▁ high                                                         
