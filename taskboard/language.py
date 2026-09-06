@@ -4665,6 +4665,20 @@ class Instrument(Kit):
     # half-cell fill this repo hunted once. A sixth live one goes red,
     # which is the census doing exactly what it was written for.
     DISCLOSE = "⠿"                        # saturated: there is more beyond
+    # THE PANE SEAT — A GRATICULE COLUMN, and this language DRAWS one.
+    # LANGUAGES.md §1: "borders almost absent", which is not "no marks": this
+    # language already rules a graticule ACROSS a field row (`⠒`), and a
+    # graticule is not a border — it was on the glass before either pane
+    # arrived. It refuses a modal LID (`MODAL_BORDER_REFUSED`) because a lid
+    # ENCLOSES; a graticule MEASURES, and the two are different acts.
+    #
+    # THE RIGHT COLUMN, DELIBERATELY. `⠇` is the left column and it is this
+    # language's ERROR rung (`⠇⠇`); a neutral divider wearing the severity
+    # ladder's cell would say "rejected" down the whole gutter to a greyscale
+    # reader. `⠸` is the same three dots in the other column and says nothing
+    # else in this alphabet.
+    PANE_RULE = "⠸"
+
     # THE REQUIRED MARK — ONE DOT, the least this matrix can light. LANGUAGES
     # .md §1: "numerals and icons DRAWN ON A COARSE DOT GRID ... borders
     # almost absent". Severity in this language is dot COUNT (`⠂⠂ / ⠆⠆ /
@@ -5539,6 +5553,35 @@ class Industrial(Kit):
     # cell, alone. It cannot be a number: L-33 rules the digits are the MODES,
     # and an obligation is not a mode.
     REQUIRED = "▐"
+
+    def pane_split_rule(self, h: int, w: int = 3) -> list[str]:
+        """TWO PLATES, FACING — the one of the eleven whose commitment ASKS
+        for a box, ruling a pane seat in its own chrome.
+
+        §3: "boxed groups". This language is documented as the only one here
+        whose commitment wants a frame, and inc32 already made it draw its
+        modal lid in half-cell plate rather than the terminal's hairline
+        (`MODAL_BOX = DISPLAY_BOX`). A gutter is the same claim: the left pane
+        CLOSES and the right pane OPENS, each in its own plate.
+
+        THE ORDER IS `keyhint`'S, not a new one. That row plates a key as
+        `▐up▌` — the ink faces the CONTENT on both sides — so a gutter closes
+        the left pane with `▌` and opens the right with `▐`, and the air
+        between is the panes' own separation rather than a second mark. Read
+        the two rows together and it is one convention, which is the whole
+        argument for a language having an alphabet.
+
+        Below two cells there is no room for two plates and the seat falls
+        back to one, because `w` is a seat and a short row would move the
+        right pane down the page."""
+        rows = max(0, h)
+        if w < 2:
+            return [self._split_cell(self.DISPLAY_BOX[7], self.c["dim"], w)
+                    for _ in range(rows)]
+        dim = self.c["dim"]
+        row = (f"[{dim}]{mark(self.DISPLAY_BOX[6])}[/]" + " " * (w - 2)
+               + f"[{dim}]{mark(self.DISPLAY_BOX[7])}[/]")
+        return [row for _ in range(rows)]
     DANGER_FORM = ("╱╱", "╱╱")           # hazard striping, and not a hue
     LEVELS = {"info": "▫▫", "warn": "▪▪", "error": "■■"}
     MATCH_STYLE = "reverse {accent}"       # a plate struck over the run
@@ -6058,6 +6101,26 @@ class Darkside(Kit):
     # between the two languages' lids and is why `MODAL_BOX` is a seat.
     # ======================================================================
     DISCLOSE = "▿"                        # hollow: airy, and not the solid ▾
+    def pane_split_instead(self, h: int, w: int = 3) -> list[str]:
+        """THE STEP, and it is this language's whole structure device.
+
+        §8: "regions separate by a ±1 grey-ramp step of BACKGROUND, not by
+        box-drawing ... borders are reserved for modals". Two panes are two
+        regions, and this language has exactly one answer to "these are
+        different regions" — the same `depth_ground()` its backdrop uses.
+
+        PRISM WRITES THIS METHOD TOO, and the duplication is deliberate.
+        Prism is `Kit`'s child, not this class's: it INHERITED the doctrine
+        from a borrowed language and then kept it. Making one call the other
+        would assert a class relationship the file does not have, to save four
+        lines.
+
+        AND IT DOES NOT SURVIVE THE `.txt`: a background is not a cell, so a
+        cell grid shows `w` spaces. It DOES survive greyscale, which is the
+        law that applies — a grey step is a step with every hue removed."""
+        return [f"[{self.c['mut']} on {self.depth_ground()}]{' ' * w}[/]"
+                for _ in range(max(0, h))]
+
     # THE REQUIRED MARK — ONE SOLID CELL, ACHROMATIC. §8: "achromatic + ONE
     # RESERVED ACCENT ... hierarchy by WEIGHT AND DIMMING, not size", and the
     # accent "marks interactivity, NOTHING ELSE". A required field is neither
@@ -8651,9 +8714,17 @@ class Blueprint(Kit):
         vocabulary is built on. THEY NEVER JOIN: no stroke runs between them,
         which is the same law the registration pair obeys ("four corners that
         never join"). One row of declaration and `h-1` rows of nothing is a
-        DIMENSION, not a decoration — it states an extent and then stops."""
+        DIMENSION, not a decoration — it states an extent and then stops.
+
+        AND BELOW TWO CELLS THERE IS NO EXTENT TO STATE, so the declaration
+        row is not drawn at all. This was a closure-law defect until inc36's
+        width sweep found it: the pair was written unconditionally and at
+        `w=1` it returned TWO cells for a one-cell seat, which is the one
+        thing `pane_split`'s contract forbids — a row that is not `w` wide
+        moves the right pane down the page. The honest degradation for a
+        language whose refusal IS air is more air."""
         rows = [" " * w for _ in range(max(0, h))]
-        if rows:
+        if rows and w >= 2:
             rows[0] = (f"[{self.c['dim']}]{mark('┤')}[/]"
                        + " " * max(0, w - 2)
                        + f"[{self.c['dim']}]{mark('├')}[/]")
@@ -9653,11 +9724,21 @@ MODAL_BORDER_REFUSED = {
 # distinction operator ruling 4 already made for its overlay, where the answer
 # was the lattice's charge rather than a box.
 #
-# SWISS AND DARKSIDE BELONG HERE AND ARE NOT HERE YET. "No boxes — alignment
-# does the dividing" and "depth by ±1 grey step, never borders" are the same
-# two commitments this table exists for, but `kits-learn-4` §5 scopes those six
-# languages to seven OTHER mechanisms and this is not one of them. Recorded as
-# the batch's own inheritance debt rather than smuggled in behind a spec.
+# SWISS, DARKSIDE AND SOLARI JOINED IN `inheritors-2` (inc36). The first two
+# were named in this comment as the batch's declared debt, in these words:
+# "No boxes — alignment does the dividing" and "depth by ±1 grey step, never
+# borders" are the same two commitments this table exists for. Solari was not
+# named and had to be decided: its refusal is the third KIND here, neither
+# alphabetic nor doctrinal but STRUCTURAL — it has a divider, it is just not
+# this one, and it has committed to spending no other.
+#
+# THREE OF THE FIVE ANSWER WITH AIR AND THAT IS NOT ONE ANSWER. Blueprint's
+# air carries a registration pair on its first row, prism's and darkside's is
+# a grey STEP of background (which the `.txt` cannot show and the `.svg` can),
+# swiss's and solari's is the pad itself. The `.txt` collapses the last three
+# to the same three spaces, and that limit is stated here rather than
+# discovered: a background is not a cell, the same mark this file already
+# carries for the knockout and for every language's match emphasis.
 # WHO REFUSES TO NUMBER A READOUT, AND ON WHAT COMMITMENT (L-33, measured on
 # emersio-lab 2026-09-04 and quoted verbatim in LANGUAGES.md §3b). The fourth
 # table of the shape, and the one whose keys are DERIVABLE: it must name
@@ -9697,6 +9778,22 @@ PANE_SPLIT_REFUSED = {
                  "drawing office does with two views on one sheet is give "
                  "each its own DATUM, and the air between them is the "
                  "division",
+    "swiss": "\"NO BOXES — alignment does the dividing\", and the language "
+             "allows itself exactly ONE hairline rule, which the masthead has "
+             "already spent. Two panes are two columns of the same grid: the "
+             "right one starts at the next column and the emptiness between "
+             "them IS the division — the method stated at three cells wide",
+    "darkside": "\"depth by ±1 grey step of background, NEVER BORDERS\", and "
+                "a pane rule is a border. Prism inherited this doctrine and "
+                "the exception written into it (\"borders are RESERVED for "
+                "modals\"), so the parent refuses here for the reason the "
+                "child does, one generation earlier",
+    "solari": "\"the structure device is the cell FACE a character is flipped "
+              "onto, so the language SPENDS NO RULE AT ALL and keeps its "
+              "strongest divider unspent\" — and \"tabular fields padded to "
+              "their widest content\" says what holds two columns apart "
+              "instead. A rule between panes would spend the divider this "
+              "language is defined by not spending",
     "prism": "\"depth by ±1 grey step of background, never borders\" — the "
              "one language here whose doctrine names the exception ("
              "\"borders are RESERVED for modals\"), which is a licence for "
