@@ -6635,7 +6635,24 @@ class Darkside(Kit):
     PART_GLYPHS = {
         "main": {DEFAULT: "─", DISABLED: "╌"},
         "indicator": {DEFAULT: "▬", DISABLED: "▁"},
-        "knob": {DEFAULT: "O", FOCUSED: "◎", EDITED: "◆",
+        # THE RAMP STARTS ONE RUNG UP, AND `O` IS GONE FROM THE GRIP (inc49).
+        # This table read `O ◎ ●`, and `O` is `LEVELS["error"]` — so the five
+        # switches of `darkside_S3` wore the error rung as their PERILLA
+        # (`▬▬O`, `O──`) while `MEANING_AT_A_NAMED_SEAT["darkside"]` said 0,
+        # because inc46's law asked only `switch.indicator`, which in this
+        # language is the TRACK. The round's criterion is "en la fila 6, decir
+        # si `O──` significa «apagado» o «error en este ajuste»".
+        #
+        # THE NEW FIRST RUNG IS THIS KIT'S OWN, and it is not a wider `O`.
+        # §0b of the round is that five of the six languages resolved a
+        # collision by moving to a HOMOGLYPH — `• ●`, `o ◦`, `▶ ▼` — so a
+        # geometric `○` for the letter `O` would be that mistake said twice.
+        # `◎` and `◉` are already declared here (the focused grip and the
+        # radio's chosen mark) and they differ from `· o O` by COUNT — two
+        # concentric strokes against one — which is the first channel the
+        # batch rule lists. The ramp still climbs: ring+dot, ring+disc,
+        # solid disc, and the accent still reaches only the grip.
+        "knob": {DEFAULT: "◎", FOCUSED: "◉", EDITED: "◆",
                  ACTIVE: "●", INVALID: "Ø",
                  DISABLED: "x"},
         # the PORT, which is this language's one shape, with the plug in it
@@ -6643,7 +6660,9 @@ class Darkside(Kit):
         # survive it — containment is non-vacuous here.
         "checkbox.main": {DEFAULT: "( )", FOCUSED: "[ ]", ACTIVE: "{ }",
                           DISABLED: "╌ ╌"},
-        "checkbox.knob": {DEFAULT: "(O)", FOCUSED: "[◎]", ACTIVE: "{●}",
+        # the plug takes the grip's ramp with it (inc49), so the port and the
+        # switch say "untouched" with one mark and not two.
+        "checkbox.knob": {DEFAULT: "(◎)", FOCUSED: "[◉]", ACTIVE: "{●}",
                           DISABLED: "╌x╌"},
         # THE SECOND LANGUAGE THAT COULD NOT TAKE THE ROUND WELL, for the
         # opposite reason to industrial's: here the round bracket is already

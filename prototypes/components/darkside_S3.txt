@@ -1,11 +1,11 @@
 ( )board  ( )form  (O)cfg  ( )log                                                                   
 settings  5 switches  ·  2 selects  ·  1 slider                                                     
                                                                                                     
-  notify on overdue         ▬▬O                                                                     
-  daily digest              ▬▬O                                                                     
-  sound                     O──                                                                     
+  notify on overdue         ▬▬◎                                                                     
+  daily digest              ▬▬◎                                                                     
+  sound                     ◎──                                                                     
   sync to remote            x╌╌   (no remote configured)                                            
-  compact rows              ▬▬O                                                                     
+  compact rows              ▬▬◎                                                                     
                                                                                                     
   start of week             ▬mon    ▿▬                                                              
   theme                     ▬dark   ▿▬                                                              
@@ -13,7 +13,7 @@ settings  5 switches  ·  2 selects  ·  1 slider
                                 light                                                               
                               ▊ dark                                                                
                                                                                                     
-  row density               ▬▬▬▬▬▬▬▬▬O──── 70                                                       
+  row density               ▬▬▬▬▬▬▬▬▬◎──── 70                                                       
                                                                                                     
                                                                                                     
   danger zone                                                        ◦ delete every completed task  

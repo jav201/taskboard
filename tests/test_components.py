@@ -2523,37 +2523,80 @@ def test_the_one_mark_one_meaning_law_goes_red_on_the_six_it_was_written_for(
 RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
                   "stepper")
 
-#: WHAT IS STILL WRONG, COUNTED. Six languages draw a mark that MEANS
-#: something at a seat the batch rule names — a DISABLED mark or a switch's
-#: INDICATOR — and this roster is the measurement rather than a promise. It
-#: is asserted exactly, both ways: a language that gets worse is red, and a
-#: language that gets better is red until somebody edits this line, which is
-#: the only way a roster stays a record instead of a decoration
-#: (`HANDED_FIELDS`, one screen up, is the same bargain).
+#: THE KNOB IS A NAMED SEAT TOO (inc49), and leaving it out was a BLIND SPOT
+#: rather than a narrowing. inc46 wrote the indicator clause as
+#: `comp == "switch" and part == "indicator"` — and in these kits the
+#: indicator is the TRACK and the knob is the PERILLA, the cell a reader
+#: points at and calls "the switch". `PROTOTYPE-inheritors-2.md` §0c
+#: photographed what the gap hid: darkside drew the knob of all five switches
+#: on `darkside_S3` with `O`, which is `LEVELS["error"]` (`▬▬O`, `O──`),
+#: while this roster said **0**. The same hole hid `naught ◉` (`REQUIRED` at
+#: the knob) and `corgi ██` / `▀▀` (the error and warn rungs at the knob).
 #:
-#:   naught     8  `∙` is the switch's ON indicator and `◦` its dead one, and
-#:                 both are rungs of the count ladder. Naught has ONE round
-#:                 pixel at six charges; it has no unspent cell. Open.
-#:   corgi      8  the segment bank: `▄▄` ON, `▁▁` dead — `LEVELS["warn"]`
-#:                 and `LEVELS["info"]`. corgi has no increment in this
-#:                 batch. Open.
-#:   prism      8  `⣿` ON, `⣤` dead — the top two rungs. Open.
-#:   blueprint  8  `╌` is `LEVELS["warn"]` and this language's whole DISABLED
-#:                 vocabulary — five parts wear it. Open.
+#: So the seat set is every KNOB the registry reaches — `switch.knob`,
+#: `checkbox.knob`, `radio.knob` — plus the switch indicator and every
+#: disabled mark. The slider's knob is out only because `RULED_CONTROLS` is
+#: the census's six and the slider is not one of them; that boundary is the
+#: census's, not this law's.
+#:
+#: WHAT IS STILL WRONG, COUNTED. Four languages draw a mark that MEANS
+#: something at a seat the batch rule names — a DISABLED mark, a switch's
+#: INDICATOR or a KNOB — and this roster is the measurement rather than a
+#: promise. It is asserted exactly, both ways: a language that gets worse is
+#: red, and a language that gets better is red until somebody edits this
+#: line, which is the only way a roster stays a record instead of a
+#: decoration (`HANDED_FIELDS`, one screen up, is the same bargain).
+#:
+#:   naught    12  8 + 4. `∙` is the switch's ON indicator and `◦` its dead
+#:                 one, and both are rungs of the count ladder; inc49 adds
+#:                 `◉`, `REQUIRED`, at the switch's and the checkbox's knob.
+#:                 Naught has ONE round pixel at six charges and spec §11.5
+#:                 says it in writing — "naught and solari have no unspent
+#:                 cell left … that argument is available exactly twice and
+#:                 it has been spent twice". Open, and it was open before
+#:                 this increment widened it.
+#:   corgi     16  8 + 8. The segment bank: `▄▄` ON, `▁▁` dead —
+#:                 `LEVELS["warn"]` and `LEVELS["info"]` — and inc49 adds the
+#:                 knob, `██` (`LEVELS["error"]`) and `▀▀`, plus `▁●` at the
+#:                 radio. corgi has never had an increment. Open.
+#:   prism     16  8 + 8. `⣿` ON, `⣤` dead — the top two rungs — and inc49
+#:                 adds `⣿` and `⣀` at the checkbox's and the radio's knob.
+#:                 prism has never had an increment. Open.
+#:   blueprint 12  8 + 4. `╌` is `LEVELS["warn"]` and this language's whole
+#:                 DISABLED vocabulary — five parts wear it — and inc49 adds
+#:                 `├`, `REQUIRED`, at the checkbox's and the radio's knob.
+#:                 blueprint has never had an increment. Open.
+#:
+#: THE FOUR ARE NOT NEW FAILURES AND ARE NOT FIXED HERE. Each was already on
+#: this roster before the clause widened, and each is a language
+#: `PROTOTYPE-inheritors-2.md` §6 decision **A** puts to the operator (corgi,
+#: prism and blueprint have never had an increment; naught has no unspent
+#: cell). The one language the blind spot was HIDING — darkside, which read
+#: 0 while wearing the error rung on five knobs — is fixed at its own
+#: declaration in inc49 and is 0 for a reason now.
 #:
 #: SOLARI WAS 6 AND IS 0 (inc47): `▁` was `REQUIRED` and the switch's
 #: indicator and eighteen more chrome seats; obligation moved to `▮` and the
 #: seam went back to being alphabet. instrument and swiss went to zero in
-#: inc46. Five of the eleven are clean.
-MEANING_AT_A_NAMED_SEAT = {"naught": 8, "corgi": 8, "instrument": 0,
+#: inc46, darkside in inc49. Seven of the eleven are clean.
+MEANING_AT_A_NAMED_SEAT = {"naught": 12, "corgi": 16, "instrument": 0,
                            "swiss": 0, "industrial": 0, "nord": 0,
-                           "darkside": 0, "prism": 8, "ledger": 0,
-                           "solari": 0, "blueprint": 8}
+                           "darkside": 0, "prism": 16, "ledger": 0,
+                           "solari": 0, "blueprint": 12}
+
+
+#: THE KNOB SEATS THE REGISTRY REACHES. `COMPONENT_PARTS` gives the switch,
+#: the checkbox and the radio a `knob`, and all three are the cell a reader
+#: reads as the control's VALUE. Written as a set rather than as
+#: `part == "knob"` so the slider's exclusion is visible: the slider is not
+#: in `RULED_CONTROLS`, and that is the census's boundary, not a claim that a
+#: slider's grip may wear a severity rung.
+KNOB_SEATS = (("switch", "knob"), ("checkbox", "knob"), ("radio", "knob"))
 
 
 def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
-    """Every DISABLED mark and every switch INDICATOR that is drawn with a
-    cell this language spends on severity, danger or obligation.
+    """Every DISABLED mark, every switch INDICATOR and every KNOB that is
+    drawn with a cell this language spends on severity, danger or obligation.
 
     `CUR` is deliberately NOT in the set. The batch rule's second clause names
     three seats a MEANING may not stand at, and inc48's opener law names the
@@ -2583,7 +2626,10 @@ def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
                 hit = set(glyph) & meanings
                 if not hit:
                     continue
-                if dead or (comp == "switch" and part == "indicator"):
+                named = (dead
+                         or (comp == "switch" and part == "indicator")
+                         or (comp, part) in KNOB_SEATS)
+                if named:
                     out.append((f"{comp}.{part}", st, glyph,
                                 "".join(sorted(hit))))
     return out
@@ -2591,12 +2637,23 @@ def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
 
 @pytest.mark.parametrize("lang", LANGS)
 def test_a_meaning_never_stands_at_a_disabled_or_indicator_seat(lang):
-    """THE BATCH RULE'S SECOND CLAUSE, at two of its three seats.
+    """THE BATCH RULE'S SECOND CLAUSE, at every seat but the opener.
 
     A mark that means something about the WORK — a severity rung, the danger
     form, the obligation mark — may not stand where a reader would take it for
-    that meaning. Three seats are named: the OPENER of a control (inc48), the
-    INDICATOR of a switch, and a DISABLED mark. This law is the last two.
+    that meaning. The seats are the OPENER of a control (inc48), the
+    INDICATOR of a switch, a DISABLED mark, and — since inc49 — every KNOB
+    the registry declares. This law is all of those but the opener.
+
+    THE KNOB WAS MISSING AND IT WAS THE SEAT THE FRAME SHOWS. inc46 wrote the
+    clause as `comp == "switch" and part == "indicator"`; in these kits the
+    indicator is the TRACK. `PROTOTYPE-inheritors-2.md` §0c photographed the
+    hole: `darkside_S3` drew five switch knobs with `O`, this language's
+    `LEVELS["error"]` (`▬▬O   ▬▬O   O──`), and the roster said 0 —
+    the census saw it (`O [3 families]`) and the law did not. Widening the
+    clause to `switch.knob`, `checkbox.knob` and `radio.knob` moves five of
+    the eleven: darkside 0 → 4 (fixed at the declaration, back to 0),
+    naught 8 → 12, corgi 8 → 16, prism 8 → 16, blueprint 8 → 12.
 
     THE FRAMES IT WAS WRITTEN OFF. `instrument_S3`: `⠁` is `REQUIRED` in `S2`
     and the DISABLED switch here, and the round's criterion is that showing
@@ -2605,24 +2662,29 @@ def test_a_meaning_never_stands_at_a_disabled_or_indicator_seat(lang):
     and the switch's ON indicator, so a switch that is on and a row that has
     failed are one cell.
 
-    IT IS A MEASUREMENT, NOT A PASS. Six languages still fail it and the count
-    is asserted per language, so the roster can only move when somebody edits
-    it. That is deliberate: a law scoped to the languages that already obey it
-    would be a law that never says anything about the ones that do not."""
+    IT IS A MEASUREMENT, NOT A PASS. Four languages still fail it and the
+    count is asserted per language, so the roster can only move when somebody
+    edits it. That is deliberate: a law scoped to the languages that already
+    obey it would be a law that never says anything about the ones that do
+    not."""
     assert len(meaning_marks_at_named_seats(lang))         == MEANING_AT_A_NAMED_SEAT[lang], (lang,
                                            meaning_marks_at_named_seats(lang))
 
 
-def test_the_named_seat_law_goes_red_on_the_two_declarations_inc46_moved(
+def test_the_named_seat_law_goes_red_on_the_three_declarations_it_moved(
         monkeypatch):
-    """TEETH — and they have to be, because five of the eleven arms of the law
+    """TEETH — and they have to be, because four of the eleven arms of the law
     above assert a NON-ZERO count, which is the shape of assertion that rots
     into a snapshot if nobody watches it fire.
 
     Arm one restores instrument's dead rung to `⠁`, the obligation mark, on
     the one part `instrument_S3` photographed. Arm two restores swiss's switch
-    indicator to `━`, the error rung. Each must move that language's count off
-    zero, and each must name the part."""
+    indicator to `━`, the error rung. Arm three restores darkside's grip to
+    `O`, `LEVELS["error"]` — the declaration inc49 moved, and the seat inc46's
+    clause could not reach. Each must move that language's count off zero, and
+    each must name the SEAT and the MARK, because "darkside is 4" without
+    `switch.knob` and `O` in it is a number the next reader has to re-derive
+    from the kit."""
     for lang in LANGS:
         assert (len(meaning_marks_at_named_seats(lang))
                 == MEANING_AT_A_NAMED_SEAT[lang]), lang
@@ -2641,6 +2703,23 @@ def test_the_named_seat_law_goes_red_on_the_two_declarations_inc46_moved(
     hits = meaning_marks_at_named_seats("swiss")
     assert hits and all(h[0] == "switch.indicator" for h in hits), hits
     assert all(h[3] == LG.kit("swiss").LEVELS["error"] for h in hits), hits
+    monkeypatch.undo()
+
+    # ARM THREE — the knob seat, and the one the old clause was blind to.
+    # `knob` is the SHARED table, so restoring it moves the switch and leaves
+    # `checkbox.knob` (its own table) where inc49 put it: the hits must name
+    # `switch.knob` and nothing else, which is what proves the widening is
+    # what caught it rather than the disabled arm catching it sideways.
+    tbl = dict(LG.Darkside.PART_GLYPHS["knob"])
+    tbl[LG.DEFAULT] = "O"
+    monkeypatch.setitem(LG.Darkside.PART_GLYPHS, "knob", tbl)
+    hits = meaning_marks_at_named_seats("darkside")
+    assert hits and all(h[0] == "switch.knob" for h in hits), hits
+    assert all(h[3] == LG.kit("darkside").LEVELS["error"].strip()
+               for h in hits), hits
+    assert all(len(meaning_marks_at_named_seats(o))
+               == MEANING_AT_A_NAMED_SEAT[o]
+               for o in LANGS if o != "darkside")
     monkeypatch.undo()
 
     for lang in LANGS:

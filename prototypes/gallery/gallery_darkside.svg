@@ -31,24 +31,24 @@
 <rect x="707.2" y="129.0" width="16.8" height="17.0" fill="#003054"/>
 <rect x="724.0" y="129.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="142.3" fill="#1783ff">│</text>
-<text x="379.6" y="142.3" fill="#1783ff">O</text>
+<text x="379.6" y="142.3" fill="#1783ff">◎</text>
 <text x="388.0" y="142.3" fill="#262626">──</text>
 <text x="421.6" y="142.3" fill="#737373">▬▬</text>
-<text x="438.4" y="142.3" fill="#1783ff">O</text>
+<text x="438.4" y="142.3" fill="#1783ff">◎</text>
 <text x="463.6" y="142.3" fill="#262626">( )</text>
-<text x="505.6" y="142.3" fill="#1783ff">(O)</text>
+<text x="505.6" y="142.3" fill="#1783ff">(◎)</text>
 <text x="556.0" y="142.3" fill="#262626">default</text>
 <text x="740.8" y="142.3" fill="#1783ff">│</text>
 <rect x="262.0" y="146.0" width="445.2" height="17.0" fill="#121212"/>
 <rect x="707.2" y="146.0" width="16.8" height="17.0" fill="#003054"/>
 <rect x="724.0" y="146.0" width="25.2" height="17.0" fill="#121212"/>
 <text x="262.0" y="159.3" fill="#1783ff">│</text>
-<text x="379.6" y="159.3" fill="#1783ff">◎</text>
+<text x="379.6" y="159.3" fill="#1783ff">◉</text>
 <text x="388.0" y="159.3" fill="#262626">──</text>
 <text x="421.6" y="159.3" fill="#737373">▬▬</text>
-<text x="438.4" y="159.3" fill="#1783ff">◎</text>
+<text x="438.4" y="159.3" fill="#1783ff">◉</text>
 <text x="463.6" y="159.3" fill="#262626">[ ]</text>
-<text x="505.6" y="159.3" fill="#1783ff">[◎]</text>
+<text x="505.6" y="159.3" fill="#1783ff">[◉]</text>
 <text x="556.0" y="159.3" fill="#262626">focused</text>
 <text x="740.8" y="159.3" fill="#1783ff">│</text>
 <rect x="262.0" y="163.0" width="445.2" height="17.0" fill="#121212"/>
