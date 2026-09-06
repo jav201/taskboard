@@ -16,7 +16,7 @@ Delete 3 tasks?
 3 tasks will be removed from BACKLOG.                                                               
 This cannot be undone.                                                                              
                                                                                                     
-⠧  ⠛Delete⠛  ⠼   ⠇   Cancel   ⠸                                                                     
+⠼  ⠛Delete⠛  ⠧   ⠸   Cancel   ⠇                                                                     
 ⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒
                                                              ⠸                                      
   BLOCKED                                                  0 ⠸                                      

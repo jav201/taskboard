@@ -4,11 +4,11 @@
   notify on overdue         ⣿⣿⡇                                                                     
   daily digest              ⣿⣿⡇                                                                     
   sound                     ⡇⠒⠒                                                                     
-  sync to remote            ⠄⠁⠁   (no remote configured)                                            
+  sync to remote            ⠄⠈⠈   (no remote configured)                                            
   compact rows              ⣿⣿⡇                                                                     
                                                                                                     
-  start of week             ⠇mon    ⠿⠸                                                              
-  theme                     ⠇dark   ⠿⠸                                                              
+  start of week             ⠸mon    ⠿⠇                                                              
+  theme                     ⠸dark   ⠿⠇                                                              
                                 auto                                                                
                                 light                                                               
                               ⣿ dark                                                                
@@ -17,7 +17,7 @@
                                                                                                     
                                                                                                     
   danger zone ⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒delete every completed task  
-  ⠇ ⠛Delete all⠛ ⠸   7 tasks, not recoverable                                                       
+  ⠸ ⠛Delete all⠛ ⠇   7 tasks, not recoverable                                                       
                                                                                                     
                                                                                                     
                                                                                                     

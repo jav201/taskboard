@@ -1546,7 +1546,15 @@ FIELD_STATES = (LG.DEFAULT, LG.FOCUSED, LG.EDITED, LG.ACTIVE, LG.DISABLED)
 #: what the four carried before this increment, kept HERE and not in the kits:
 #: the teeth restore them byte for byte, and a constant living in the test is
 #: the only copy of a deleted declaration that nothing can reach by accident.
-FLIPPED_INVALID = {"nord": "] [", "instrument": "⠸⠶⠇",
+#:
+#: INSTRUMENT'S ENTRY IS THE MIRROR OF WHAT IT WAS, and the reason is written
+#: here rather than lost: inc46 turned this language's rails round so the dots
+#: face the words (`⠸ … ⠇` where it used to set `⠇ … ⠸`), because `⠇` is the
+#: error rung and it was OPENING the safe button. The pre-inc39 defect was
+#: literally `⠸⠶⠇`; under the new orientation that string is LEGAL, and the
+#: exchanged form -- the thing this constant exists to restore -- is `⠇⠶⠸`.
+#: The defect being restored is the same defect; only its spelling moved.
+FLIPPED_INVALID = {"nord": "] [", "instrument": "⠇⠶⠸",
                    "industrial": "▌/▐", "blueprint": "┤·├"}
 #: WHERE each was declared, and the entry that matters is nord's. nord owns no
 #: `PART_GLYPHS` at all — `test_nord_declares_the_environment_and_the_declaration_is_checked`
@@ -1558,7 +1566,15 @@ FLIPPED_OWNER = {"nord": LG.Kit, "instrument": LG.Instrument,
 #: the languages whose field walls HAVE a handedness — the ones where the law
 #: below can actually fire. Derived, then asserted against this roster, so the
 #: law's own vacuity is a fact somebody has to look at rather than a silence.
-HANDED_FIELDS = ("instrument", "industrial", "nord", "ledger", "blueprint")
+#:
+#: SWISS JOINED THE SET IN inc46, which is exactly what this roster is for.
+#: Its field used to close with the same rule it opened with (`│ │`); with the
+#: enclosure gone it opens with a rule and closes with AIR, so opens and
+#: closes are different vocabularies and the law can fire on it. Nobody
+#: decided that; the derivation below noticed it and this line is where it
+#: had to be written down.
+HANDED_FIELDS = ("instrument", "swiss", "industrial", "nord", "ledger",
+                 "blueprint")
 
 
 def field_walls(k, state):
@@ -2254,32 +2270,38 @@ def test_the_swiss_button_keeps_its_states_apart_without_a_wall_or_a_hue():
     assert all(v.count("Cancel") == 1 for v in got.values()), got
 
 
-def test_the_swiss_buttons_ladder_is_made_of_marks_it_already_spends():
-    """DERIVED FROM THE LANGUAGE'S OWN TOKENS, NOT FROM A NEW GLYPH.
+def test_the_swiss_buttons_ladder_is_one_shape_at_three_weights():
+    """ONE SHAPE, THREE WEIGHTS — and NOT the marks that mean something.
 
-    A mechanism invented for one seat is a mark a reader has to learn twice.
-    Every cell in this button appears somewhere else in swiss's own
-    declaration — `·` is `LEVELS["info"]`, `•` is `REQUIRED` (inc35: the
-    ladder's mark set solid) and `●` is this language's own pressed cell,
-    already worn by its radio knob. Asserted against the declaration rather
-    than typed, so a later edit reaching for a mark from outside the alphabet
-    is red here.
+    inc38 built this ladder out of `· • ●` and asserted that every cell in it
+    appeared elsewhere in swiss's own declaration, which was the right
+    instinct and the wrong set: `·` is `LEVELS["info"]` and `•` is `REQUIRED`,
+    so two of the three rungs were DECLARATIONS. `swiss_S3` is what that
+    renders as — `· ╲Delete all╱`, the lowest rung of the severity ladder
+    opening the most dangerous control on the screen — and `swiss_S4` puts
+    `•`, the obligation mark, on the focus ring of an irreversible button.
 
-    DISABLED IS AIR, and the blank is asserted rather than tolerated: there is
-    nothing lighter than `·` in this alphabet that is not a dashed RULE, which
-    is the shape being given up. `stepper.step`'s own end behaviour, one slot
-    over — the mark is simply not set."""
+    SO THE LAW CHANGED SHAPE WITH THE LADDER. "Made of marks it already
+    spends" is replaced by something stronger and narrower: the ladder is ONE
+    shape at three weights, the shape is the square bullet this language
+    already declares for a box, and NO rung may be a mark that means
+    something. `▫` and `■` are not new ideas — they are `▪` hollow and `▪`
+    full — but they ARE new code points, and that is the trade this test now
+    records instead of hiding.
+
+    DISABLED IS STILL AIR, asserted rather than tolerated: there is nothing
+    lighter than the hollow square in this alphabet that is not a dashed
+    RULE, which is the shape being given up."""
     k = LG.kit("swiss")
-    elsewhere = set()
-    for key, tbl in k.PART_GLYPHS.items():
-        if not key.startswith("button"):
-            elsewhere |= set("".join(tbl.values()))
-    elsewhere |= set("".join(k.LEVELS.values())) | {k.REQUIRED, k.DISCLOSE}
-    cells = set("".join(k.PART_GLYPHS["button.main"].values())) - {" "}
-    assert cells <= elsewhere, sorted(cells - elsewhere)
-    assert k.PART_GLYPHS["button.main"][LG.DEFAULT].strip() == k.LEVELS["info"]
-    assert k.PART_GLYPHS["button.main"][LG.FOCUSED].strip() == k.REQUIRED
+    rungs = [k.PART_GLYPHS["button.main"][st].strip()
+             for st in (LG.DEFAULT, LG.FOCUSED, LG.ACTIVE)]
+    assert rungs == ["▫", "▪", "■"], rungs
     assert not k.PART_GLYPHS["button.main"][LG.DISABLED].strip()
+    meanings = set("".join(k.LEVELS.values())) | {k.REQUIRED} | set(k.DANGER_FORM)
+    assert not (set(rungs) & meanings), sorted(set(rungs) & meanings)
+    # the square bullet the ladder is three weights OF is still the checkbox's
+    # own checked mark, so the shape is the language's and not the test's
+    assert "▪" in k.PART_GLYPHS["checkbox.knob"][LG.DEFAULT]
 
 
 def test_putting_the_walls_back_makes_the_no_wall_law_go_red(monkeypatch):
@@ -2483,3 +2505,125 @@ def test_the_one_mark_one_meaning_law_goes_red_on_the_six_it_was_written_for(
     assert frozenset(("danger", "ladder")) in roles("corgi")
     with pytest.raises(AssertionError):
         test_a_languages_meaning_marks_do_not_share_a_cell("corgi")
+
+
+# ===========================================================================
+# inc46 (rework-3) — the other two seats the batch rule names
+# ===========================================================================
+#: the six controls the census reads, so the two files ask the same question
+#: of the same set.
+RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
+                  "stepper")
+
+#: WHAT IS STILL WRONG, COUNTED. Six languages draw a mark that MEANS
+#: something at a seat the batch rule names — a DISABLED mark or a switch's
+#: INDICATOR — and this roster is the measurement rather than a promise. It
+#: is asserted exactly, both ways: a language that gets worse is red, and a
+#: language that gets better is red until somebody edits this line, which is
+#: the only way a roster stays a record instead of a decoration
+#: (`HANDED_FIELDS`, one screen up, is the same bargain).
+#:
+#:   naught     9  `∙` is the switch's ON indicator and `◦` its dead one, and
+#:                 both are rungs of the count ladder. Naught has ONE round
+#:                 pixel at six charges; it has no unspent cell. Open.
+#:   corgi      8  the segment bank: `▄▄` ON, `▁▁` dead — `LEVELS["warn"]`
+#:                 and `LEVELS["info"]`. corgi has no increment in this
+#:                 batch. Open.
+#:   prism      8  `⣿` ON, `⣤` dead — the top two rungs. Open.
+#:   solari     6  `▁` is REQUIRED and the switch's indicator. **inc47.**
+#:   blueprint  8  `╌` is `LEVELS["warn"]` and this language's whole DISABLED
+#:                 vocabulary — five parts wear it. Open.
+#:
+#: instrument, swiss, industrial, nord, darkside and ledger are ZERO, and two
+#: of those six were not zero before this increment.
+MEANING_AT_A_NAMED_SEAT = {"naught": 9, "corgi": 8, "instrument": 0,
+                           "swiss": 0, "industrial": 0, "nord": 0,
+                           "darkside": 0, "prism": 8, "ledger": 0,
+                           "solari": 6, "blueprint": 8}
+
+
+def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
+    """Every DISABLED mark and every switch INDICATOR that is drawn with a
+    cell this language spends on severity, danger or obligation.
+
+    `CUR` is deliberately NOT in the set. The batch rule's second clause names
+    three seats a MEANING may not stand at, and inc48's opener law names the
+    same three declarations — `LEVELS`, `DANGER_FORM`, `REQUIRED`. A cursor
+    says where the reader is, not what the work is worth, and a language that
+    spends its cursor cell on a knob has not told anybody their data is
+    rejected. Named, so the narrowing is a decision and not an oversight."""
+    k = LG.kit(lang)
+    meanings = (set("".join(k.LEVELS.values())) | {k.REQUIRED}
+                | set("".join(k.DANGER_FORM))) - set(" ⠀")
+    out = []
+    for comp in RULED_CONTROLS:
+        for part in LG.COMPONENT_PARTS[comp]:
+            for st in LG.component_states(comp):
+                glyph = k.part_glyph(part, st, comp)
+                hit = set(glyph) & meanings
+                if not hit:
+                    continue
+                dead = LG.control_of(st) == LG.DISABLED
+                if dead or (comp == "switch" and part == "indicator"):
+                    out.append((f"{comp}.{part}", st, glyph,
+                                "".join(sorted(hit))))
+    return out
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_meaning_never_stands_at_a_disabled_or_indicator_seat(lang):
+    """THE BATCH RULE'S SECOND CLAUSE, at two of its three seats.
+
+    A mark that means something about the WORK — a severity rung, the danger
+    form, the obligation mark — may not stand where a reader would take it for
+    that meaning. Three seats are named: the OPENER of a control (inc48), the
+    INDICATOR of a switch, and a DISABLED mark. This law is the last two.
+
+    THE FRAMES IT WAS WRITTEN OFF. `instrument_S3`: `⠁` is `REQUIRED` in `S2`
+    and the DISABLED switch here, and the round's criterion is that showing
+    the two screens in sequence produces two correct answers to "what does
+    `⠁` mean" with no cue on either. `swiss_S1`/`S5`: `━` is the error rung
+    and the switch's ON indicator, so a switch that is on and a row that has
+    failed are one cell.
+
+    IT IS A MEASUREMENT, NOT A PASS. Six languages still fail it and the count
+    is asserted per language, so the roster can only move when somebody edits
+    it. That is deliberate: a law scoped to the languages that already obey it
+    would be a law that never says anything about the ones that do not."""
+    assert len(meaning_marks_at_named_seats(lang))         == MEANING_AT_A_NAMED_SEAT[lang], (lang,
+                                           meaning_marks_at_named_seats(lang))
+
+
+def test_the_named_seat_law_goes_red_on_the_two_declarations_inc46_moved(
+        monkeypatch):
+    """TEETH — and they have to be, because five of the eleven arms of the law
+    above assert a NON-ZERO count, which is the shape of assertion that rots
+    into a snapshot if nobody watches it fire.
+
+    Arm one restores instrument's dead rung to `⠁`, the obligation mark, on
+    the one part `instrument_S3` photographed. Arm two restores swiss's switch
+    indicator to `━`, the error rung. Each must move that language's count off
+    zero, and each must name the part."""
+    for lang in LANGS:
+        assert (len(meaning_marks_at_named_seats(lang))
+                == MEANING_AT_A_NAMED_SEAT[lang]), lang
+
+    tbl = dict(LG.Instrument.PART_GLYPHS["checkbox.main"])
+    tbl[LG.DISABLED] = "⠁"
+    monkeypatch.setitem(LG.Instrument.PART_GLYPHS, "checkbox.main", tbl)
+    hits = meaning_marks_at_named_seats("instrument")
+    assert hits and all(h[0] == "checkbox.main" for h in hits), hits
+    assert all(h[3] == LG.kit("instrument").REQUIRED for h in hits), hits
+    monkeypatch.undo()
+
+    tbl = dict(LG.Swiss.PART_GLYPHS["indicator"])
+    tbl[LG.DEFAULT] = "━"
+    monkeypatch.setitem(LG.Swiss.PART_GLYPHS, "indicator", tbl)
+    hits = meaning_marks_at_named_seats("swiss")
+    assert hits and all(h[0] == "switch.indicator" for h in hits), hits
+    assert all(h[3] == LG.kit("swiss").LEVELS["error"] for h in hits), hits
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        assert (len(meaning_marks_at_named_seats(lang))
+                == MEANING_AT_A_NAMED_SEAT[lang]), lang

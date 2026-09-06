@@ -16,16 +16,16 @@
 <text x="10.0" y="57.3" fill="#333c47">⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒</text>
 <text x="26.8" y="74.3" fill="#6b7785">title</text>
 <text x="68.8" y="74.3" fill="#e8edf2">⠁</text>
-<text x="144.4" y="74.3" fill="#333c47">⠧</text>
+<text x="144.4" y="74.3" fill="#333c47">⠼</text>
 <text x="152.8" y="74.3" fill="#e8edf2">Fix login</text>
 <text x="228.4" y="74.3" fill="#2dd4bf">⡇</text>
 <text x="236.8" y="74.3" fill="#e8edf2"> redirect</text>
-<text x="312.4" y="74.3" fill="#333c47">⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠼</text>
+<text x="312.4" y="74.3" fill="#333c47">⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠧</text>
 <text x="26.8" y="108.3" fill="#6b7785">due</text>
 <text x="52.0" y="108.3" fill="#e8edf2">⠁</text>
-<text x="144.4" y="108.3" fill="#333c47">⠇</text>
+<text x="144.4" y="108.3" fill="#333c47">⠸</text>
 <text x="152.8" y="108.3" fill="#e8edf2">12/09/26</text>
-<text x="220.0" y="108.3" fill="#333c47">⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠸</text>
+<text x="220.0" y="108.3" fill="#333c47">⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠇</text>
 <text x="144.4" y="125.3" fill="#f43f5e">⠇⠇</text>
 <text x="169.6" y="125.3" fill="#e8edf2">expected YYYY-MM-DD</text>
 <text x="26.8" y="159.3" fill="#6b7785">priority</text>
@@ -43,17 +43,17 @@
 <text x="253.6" y="193.3" fill="#e8edf2">⣿</text>
 <text x="270.4" y="193.3" fill="#6b7785">urgent</text>
 <text x="26.8" y="227.3" fill="#6b7785">notes</text>
-<text x="144.4" y="227.3" fill="#333c47">⠇</text>
+<text x="144.4" y="227.3" fill="#333c47">⠸</text>
 <text x="152.8" y="227.3" fill="#e8edf2">Redirect drops the ?next= param w</text>
 <text x="430.0" y="227.3" fill="#2dd4bf">⠿</text>
-<text x="438.4" y="227.3" fill="#333c47">⠸</text>
-<text x="144.4" y="244.3" fill="#333c47">⠇</text>
+<text x="438.4" y="227.3" fill="#333c47">⠇</text>
+<text x="144.4" y="244.3" fill="#333c47">⠸</text>
 <text x="152.8" y="244.3" fill="#e8edf2">session cookie is renewed mid-fli</text>
 <text x="430.0" y="244.3" fill="#2dd4bf">⠿</text>
-<text x="438.4" y="244.3" fill="#333c47">⠸</text>
-<text x="144.4" y="261.3" fill="#333c47">⠇⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠸</text>
+<text x="438.4" y="244.3" fill="#333c47">⠇</text>
+<text x="144.4" y="261.3" fill="#333c47">⠸⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠇</text>
 <text x="144.4" y="295.3" fill="#333c47">⠄    Save    ⠄</text>
-<text x="287.2" y="295.3" fill="#e8edf2">⠇   Cancel   ⠸</text>
+<text x="287.2" y="295.3" fill="#e8edf2">⠸   Cancel   ⠇</text>
 <text x="144.4" y="312.3" fill="#333c47">Save is held until due parses</text>
 </g>
 </svg>

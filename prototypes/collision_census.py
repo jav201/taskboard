@@ -264,7 +264,7 @@ def report() -> list[str]:
 #: back.
 FOUND_BY_HAND = (
     ("instrument", "⠇", {"severity", "button"}, None),   # error rung, button opener
-    ("instrument", "⠁", {"required", "switch"}, None),   # REQUIRED, switch DISABLED
+    ("instrument", "⠁", {"required", "switch"}, "inc46"),  # REQUIRED, switch DISABLED
     ("swiss", "━", {"cursor", "severity"}, "inc45"),     # cursor, error
     ("nord", "!", {"severity", "danger"}, "inc45"),      # warn, delete danger
     ("solari", "▁", {"required", "textfield"}, None),    # one of its nine roles

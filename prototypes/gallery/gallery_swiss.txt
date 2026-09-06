@@ -8,25 +8,25 @@
                               │  ──────────────────────────────────────────────────    │                              
                               │  ─                                                     │                              
                               │  checkable  switch    checkbox  off·on                 │                              
-                              │             │──  ━━│  │ │  │▪│   default               │                              
-                              │             ┃──  ━━┃  ┃ ┃  ┃▪┃   focused           ▁▁  │                              
-                              │             █──  ━━█  █ █  █▮█   active                │                              
-                              │             ┆┈┈  ┅┅┆  ┆ ┆  ┆·┆   disabled              │                              
+                              │             │──  ▀▀│  │    │▪    default               │                              
+                              │             ┃──  ▀▀┃  ┃    ┃▪    focused           ▁▁  │                              
+                              │             █──  ▀▀█  █    █▪    active                │                              
+                              │             ┆┈┈  ┅┅┆  ┆    ┆▪    disabled              │                              
                               │  radio      lo·mid·hi  set=mid cursor=hi               │                              
-                              │             ╵ ╵ lo  ╵•╵ mid  ╵ ╵ hi   default          │                              
-                              │             ╵ ╵ lo  ╵•╵ mid  ╹ ╹ hi   focused          │                              
-                              │             ╵ ╵ lo  ╵•╵ mid  ▀ ▀ hi   active           │                              
-                              │             ╎ ╎ lo  ╎·╎ mid  ╎ ╎ hi   disabled         │                              
+                              │             ╵   lo  ╵●  mid  ╵   hi   default          │                              
+                              │             ╵   lo  ╵●  mid  ╹   hi   focused          │                              
+                              │             ╵   lo  ╵●  mid  ▀   hi   active           │                              
+                              │             ╎   lo  ╎●  mid  ╎   hi   disabled         │                              
                               │  button     ok·Refresh  label INSIDE                   │                              
-                              │             · ok    · Refresh     default              │                              
-                              │             • ok    • Refresh     focused              │                              
-                              │             ● ok    ● Refresh     active               │                              
+                              │             ▫ ok    ▫ Refresh     default              │                              
+                              │             ▪ ok    ▪ Refresh     focused              │                              
+                              │             ■ ok    ■ Refresh     active               │                              
                               │               ok      Refresh     disabled             │                              
                               │  textfield  task·caret 2                               │                              
-                              │             │task      │   default                     │                              
-                              │             ┃task      ┃   focused                     │                              
-                              │             ┃ta▏sk·····┃   edited                      │                              
-                              │             █task      █   active                      │                              
+                              │             │task          default                     │                              
+                              │             ┃task          focused                     │                              
+                              │             ┃ta▏sk·····    edited                      │                              
+                              │             █task          active                      │                              
                               │                                                        │                              
                               └────────────────────────────────────────────────────────┘                              
                                                                                                                       
