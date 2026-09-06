@@ -86,7 +86,8 @@ environment-dependent) went red in 2 of the 10 full-suite runs inc34 measured. N
 - **The skill's prose and gallery.** `export_to_skill.py` writes what it writes; the eight gallery
   candidates in §8 are **proposed**, not installed.
 - **`verify_ink.py` over the 66 frames.** Not run, named in `inc37.md` §5.
-- **`Kit.button`'s walls for swiss.** Found by looking at `swiss_S4` and recorded in §8, not fixed.
+- ~~**`Kit.button`'s walls for swiss.** Found by looking at `swiss_S4` and recorded in §8, not fixed.~~
+  **No longer a non-goal — inc38 closed it** on the operator's verdict of 2026-09-05. §8.
 - **pulso, GBL, the course, the main checkout.** Untouched.
 
 ---
@@ -121,6 +122,7 @@ named.
 | 35 | `REQUIRED` for five of the six; nord declares | six languages marking an obligation with the base kit's `*` |
 | 36 | `PANE_SPLIT_REFUSED` 2 → 5; two new drawing mechanisms; nord declares | six languages ruling a pane seat with the terminal's hairline, three of them against their own commitment |
 | 37 | `render.py` / `matrix.py` read `LG.KITS`; three sweep laws move into the suite | a typed list of five languages, stale for three batches |
+| 38 | swiss's `button.main` becomes its own weight ladder (`·` `•` `●`, DISABLED air); five laws, one parametrised off `PANE_SPLIT_REFUSED` | `│   Cancel   │` — a border-shaped mechanism in the language whose commitment is "no boxes, at any width" |
 
 ### F-18, in one paragraph
 
@@ -146,11 +148,22 @@ pane_split: 5 answered, 6 at `│`         11 answered, 6 draw distinctly, 5 ref
 - **A closure defect in blueprint's pane seat**, live since inc28: at `w=1` it returned two cells for a
   one-cell seat. Found by inc36's width sweep, fixed there. The only width anyone had ever tested was the
   only width anyone calls.
-- **Swiss still takes `Kit.button`'s walls** (`│   Cancel   │`, visible in `swiss_S4`) — a border-shaped
-  mechanism in the language whose commitment is "no boxes, at any width". `button` was not among the
-  seven mechanisms inc32 scoped, nor among this batch's two, so it is **recorded as the next inheritance
-  debt** rather than smuggled in. It is exactly the class of thing that only a frame reveals, which is
-  the argument for inc37.
+- **Swiss took `Kit.button`'s wall-shaped mechanism** (`│   Cancel   │`, visible in `swiss_S4`) — a
+  border in the language whose commitment is "no boxes, at any width", and the very stroke swiss is in
+  `PANE_SPLIT_REFUSED` for refusing between two panes. `button` was not among the seven mechanisms inc32
+  scoped, nor among this batch's two, so it was **recorded as the next inheritance debt** rather than
+  smuggled in. It is exactly the class of thing that only a frame reveals, which is the argument for
+  inc37.
+  **CLOSED by inc38**, on the operator's verdict of 2026-09-05. Swiss's `button.main` is now a weight
+  ladder of marks it already spends — `·` (`LEVELS["info"]`), `•` (`REQUIRED`), `●` (its own radio
+  knob's pressed cell) — set ONCE, on ONE side, with DISABLED left as air; a single cell closes no
+  corner at any width, and weight is a shape channel, so the four states never touch colour. It was
+  **not** done with a `BUTTON_REFUSED` registry: `Kit.button` already dispatches per language through
+  `PART_GLYPHS`, so the precondition that made `pane_split`'s and `overlay`'s tables necessary — an
+  entry point that draws a SHARED default — is absent here (inc38 §2). The other ten were measured at
+  the same time against `PANE_SPLIT_REFUSED`, and **swiss was the only one**; ledger's `│` is the one
+  other hit and it is legal, because ledger draws pane rules (inc38 §3). Four frames moved, all swiss:
+  `swiss_S2`, `swiss_S3`, `swiss_S4`, `gallery_swiss`.
 
 ### Gallery candidates — PROPOSED, not installed
 
@@ -163,7 +176,7 @@ installs them.
 | --- | --- | --- | --- | --- |
 | a | `instrument_S1` | 36.0 % | the graticule is the whole structure device in one screen — across the field rows (`⠒`), down the pane gutter (`⠸`) and under the bars (`⣿`) | the densest frame in the sweep, and the `.txt` cannot show that the graticule is DIM and the figures are not; read the SVG for the tier, or the frame reads as one weight |
 | b | `industrial_S1` | 24.0 % | one plate convention across three seats in a single view — `▐up▌` keys, `▐ 12/09/26 ▌` figures, and the `▌ ▐` gutter that closes one pane and opens the next | the gutter spends two of three cells, so at any narrower seat the two plates touch; legal by the closure law and untested against a small terminal |
-| c | `swiss_S1` | 16.4 % | the counter-frame to (b): the same screen where the divider is NOTHING, and the right pane starts at the next column | `Kit.button`'s walls (`│   Cancel   │`) are inherited and are boxes in the language that has none — a real inheritance debt, visible in this frame's sibling `swiss_S4` and unfixed |
+| c | `swiss_S1` | 16.4 % | the counter-frame to (b): the same screen where the divider is NOTHING, and the right pane starts at the next column | the divider is nothing and the reader has to be told so: the `.txt` shows air where every other language shows a mark, and a frame whose mechanism is an ABSENCE cannot be read without its commitment beside it (the button's walls this line used to name were closed by inc38) |
 | d | `solari_S1` | 33.5 % | the product becoming ONE SCHEDULE — a task is a row, a phase is a gate, a state is a word in a status column, and the seam is under all of it | the seam runs the full measure on every row, so the frame's ink is structural rather than informational; a reader counting ink will over-read this language's density |
 | e | `industrial_S4` | 23.0 % | `MODAL_BOX = DISPLAY_BOX`: the only one of the eleven whose commitment asks for a box draws its lid in half-cell plate (`▛▀▜` / `▙▄▟`) and not the terminal's hairline | half-cell chrome has a different glyph at the top of a box than at the bottom, so this lid cannot be read as a four-corner box; the eight-cell `MODAL_BOX` is why |
 | f | `darkside_S4` | 14.4 % | the one language that RESERVES borders for modals, spending the reservation — a rounded lid (`╭╮╰╯`) over a page that separates by a grey step everywhere else | the backdrop's ±1 grey step is a BACKGROUND and a cell grid shows spaces; the `.txt` proves the lid and not the depth behind it |

@@ -33,6 +33,10 @@ FRAMES = pathlib.Path(__file__).resolve().parents[1] / "prototypes" / "component
 #: and not imported: that module pulls `capture_languages` and Textual, and the
 #: only question this file asks of it is which frames exist on disk.
 FRAMES = pathlib.Path(__file__).resolve().parents[1] / "prototypes" / "components"
+#: where `prototypes/components/render.py` writes its sweep. Reached as a path
+#: and not imported: that module pulls `capture_languages` and Textual, and the
+#: only question this file asks of it is which frames exist on disk.
+FRAMES = pathlib.Path(__file__).resolve().parents[1] / "prototypes" / "components"
 #: the five the PROTOTYPE round rendered; the others inherit the seat, and the
 #: laws below are asked of ALL of them either way
 PROTOTYPED = ("corgi", "blueprint", "prism", "naught", "ledger")
@@ -1577,6 +1581,211 @@ def test_no_frame_declares_a_hand_drawn_element():
     drawn = [f.name for f in FRAMES.glob("*.candidates.md")
              if "Nothing was drawn by hand" not in f.read_text(encoding="utf-8")]
     assert not drawn, drawn
+
+
+# ---------------------------------------------------------------------------
+# inc37 (inheritors-2) — every language is photographed, not just the five
+# ---------------------------------------------------------------------------
+SCREENS = ("S1", "S2", "S3", "S4", "S5", "S6")
+
+
+def test_every_language_has_a_frame_for_every_screen():
+    """THE DEFECT THIS GUARDS IS A LIST, and it has already happened once.
+
+    `render.py` swept a typed list of five languages for two batches. The six
+    that were not on it inherited seat after seat and then, in inc32/35/36,
+    got thirty-eight mechanisms of their own — held by property tests and by
+    nothing anyone could look at. The list is now read off `LG.KITS`; this is
+    what says so from the outside, on the artefacts rather than on the source,
+    so a kit added later that nobody sweeps is red here.
+
+    The `.txt` is the file every law in this repo measures (the `.svg` carries
+    the two marks a cell grid cannot show), so it is the one asked for."""
+    missing = [f"{lang}_{sc}.txt" for lang in LANGS for sc in SCREENS
+               if not (FRAMES / f"{lang}_{sc}.txt").exists()]
+    assert not missing, missing
+    assert len(list(FRAMES.glob("*_S?.txt"))) == len(LANGS) * len(SCREENS)
+
+
+def test_no_two_languages_render_a_screen_identically():
+    """`render.py`'s own sweep law, asserted where the gate runs it.
+
+    Two languages agreeing on a WHOLE screen is the exact defect
+    LANGUAGES.md records — "a language that only changes colour is not a
+    language" — and until now it was checked only inside a prototype script
+    that pytest does not run. 55 pairs per screen, 330 in all.
+
+    It reads the shipped `.txt` rather than re-rendering: a re-render here
+    would need Textual and a settle, and the artefact is what a reader
+    judges."""
+    for sc in SCREENS:
+        got = {lang: (FRAMES / f"{lang}_{sc}.txt").read_text(encoding="utf-8")
+               for lang in LANGS}
+        assert len(set(got.values())) == len(LANGS), (
+            sc, [a for a in got if list(got.values()).count(got[a]) > 1])
+
+
+def test_no_frame_declares_a_hand_drawn_element():
+    """THE ROUND'S HEADLINE CLAIM, read off the sidecars the sweep writes.
+
+    A frame with a hand-drawn element is a prototype's taste standing where a
+    kit's answer should be, and the sidecar is where `render.py` declares one.
+    All 66 say the same sentence, and this is what keeps saying it after the
+    next edit to `screens.py`."""
+    drawn = [f.name for f in FRAMES.glob("*.candidates.md")
+             if "Nothing was drawn by hand" not in f.read_text(encoding="utf-8")]
+    assert not drawn, drawn
+
+
+# ---------------------------------------------------------------------------
+# inc38 (inheritors-2) — the button's walls, in the language that has no boxes
+# ---------------------------------------------------------------------------
+#: the four states a button has. `component_states("button")` derives them; the
+#: literal tuple is what keeps a derivation defect from taking these laws down
+#: with a KeyError instead of going red where it belongs — `verify_language`'s
+#: own BFOUR, same reason.
+BUTTON_STATES = (LG.DEFAULT, LG.FOCUSED, LG.ACTIVE, LG.DISABLED)
+#: what swiss's `button.main` said before this increment, kept HERE and not in
+#: the kit: it is the state the teeth test restores, and a constant living in
+#: the test is the only copy of it that nothing can reach by accident
+SWISS_WALLS = {LG.DEFAULT: "│  │", LG.FOCUSED: "┃  ┃", LG.ACTIVE: "█  █",
+               LG.DISABLED: "┆  ┆"}
+
+
+def is_wall(ch: str) -> bool:
+    """A mark that can BUILD A BOX — derived from the codepoint, not listed.
+
+    The Box Drawing block minus its three diagonals, plus every Block
+    Element. A hand list would only catch the marks whoever wrote it thought
+    of, and the claim under test is "no box AT ANY WIDTH", which is a claim
+    about marks nobody has thought of yet.
+
+    THE DIAGONALS ARE EXCLUDED ON PURPOSE AND IT IS NOT A LOOPHOLE. `╲ ╱` is
+    swiss's own `DANGER_FORM`, which `Kit.button` sets around the WORD and not
+    around the field — a stroke that leans closes no corner, and inc16's law
+    already governs it. The law below is asked of the danger button too, so
+    those two are the only marks in this range it may contain."""
+    return (0x2500 <= ord(ch) <= 0x257F and ch not in "╱╲╳") \
+        or 0x2580 <= ord(ch) <= 0x259F
+
+
+def test_swiss_puts_no_wall_around_a_button_at_any_width():
+    """§2, LITERALLY: "no boxes — ALIGNMENT DOES THE DIVIDING", at any width.
+
+    This is `inheritors-2` §8's last recorded debt. Swiss drew
+    `│   Cancel   │` — a pair of full-height vertical rules, which is a
+    border-shaped mechanism in the one language committed against borders at
+    every width, and it is the very stroke swiss is already in
+    `PANE_SPLIT_REFUSED` for refusing between two panes.
+
+    THREE WIDTHS, because the seat takes one and the defect blueprint's pane
+    split carried for eight increments was "the only width anyone tested was
+    the only width anyone calls": below the label (`w=1`, no padding at all),
+    at the dialog's own (10), and at this language's own MEASURE_MIN (24)."""
+    k = LG.kit("swiss")
+    bad = [(w, st, danger, ch)
+           for w in (1, 10, k.MEASURE_MIN)
+           for st in BUTTON_STATES
+           for danger in (False, True)
+           for ch in plain(k.button("Cancel", w, st, danger)) if is_wall(ch)]
+    assert not bad, bad
+
+
+def test_the_swiss_button_keeps_its_states_apart_without_a_wall_or_a_hue():
+    """THE CLAIM THE WALLS WERE DEFENDED WITH, disproved by measurement.
+
+    The comment this increment deleted said the walls could not go because
+    "with the walls gone the four states would separate on COLOUR ALONE".
+    They do not: the mark leading the field is a WEIGHT ladder, weight is a
+    shape channel, and this asks for it with the colour stripped at the source
+    — four states, four different strings of cells, one width so the word
+    cannot move under the state.
+
+    FOCUS AND PRESS ARE ASKED TWICE, once inside the four and once on their
+    own, because they are the pair `verify_language` singles out: a button
+    that only changes hue when pressed says nothing, and ACTIVE is the state
+    the component exists for."""
+    k = LG.kit("swiss")
+    got = {st: plain(k.button("Cancel", 10, st)) for st in BUTTON_STATES}
+    assert len(set(got.values())) == 4, got
+    assert len({len(v) for v in got.values()}) == 1, got
+    assert got[LG.ACTIVE] != got[LG.FOCUSED], got
+    assert got[LG.FOCUSED] != got[LG.DEFAULT], got
+    assert all(v.count("Cancel") == 1 for v in got.values()), got
+
+
+def test_the_swiss_buttons_ladder_is_made_of_marks_it_already_spends():
+    """DERIVED FROM THE LANGUAGE'S OWN TOKENS, NOT FROM A NEW GLYPH.
+
+    A mechanism invented for one seat is a mark a reader has to learn twice.
+    Every cell in this button appears somewhere else in swiss's own
+    declaration — `·` is `LEVELS["info"]`, `•` is `REQUIRED` (inc35: the
+    ladder's mark set solid) and `●` is this language's own pressed cell,
+    already worn by its radio knob. Asserted against the declaration rather
+    than typed, so a later edit reaching for a mark from outside the alphabet
+    is red here.
+
+    DISABLED IS AIR, and the blank is asserted rather than tolerated: there is
+    nothing lighter than `·` in this alphabet that is not a dashed RULE, which
+    is the shape being given up. `stepper.step`'s own end behaviour, one slot
+    over — the mark is simply not set."""
+    k = LG.kit("swiss")
+    elsewhere = set()
+    for key, tbl in k.PART_GLYPHS.items():
+        if not key.startswith("button"):
+            elsewhere |= set("".join(tbl.values()))
+    elsewhere |= set("".join(k.LEVELS.values())) | {k.REQUIRED, k.DISCLOSE}
+    cells = set("".join(k.PART_GLYPHS["button.main"].values())) - {" "}
+    assert cells <= elsewhere, sorted(cells - elsewhere)
+    assert k.PART_GLYPHS["button.main"][LG.DEFAULT].strip() == k.LEVELS["info"]
+    assert k.PART_GLYPHS["button.main"][LG.FOCUSED].strip() == k.REQUIRED
+    assert not k.PART_GLYPHS["button.main"][LG.DISABLED].strip()
+
+
+def test_putting_the_walls_back_makes_the_no_wall_law_go_red(monkeypatch):
+    """TEETH, BOTH WAYS — the law can fire, and it fires on the real defect.
+
+    Arm one restores swiss's pre-inc38 declaration, byte for byte, and the
+    law above goes red on the mark it was written for. Arm two DELETES the
+    declaration instead, which is the other way a language loses its answer:
+    `part_key` falls back to the unscoped `main` and the button comes back
+    wearing the slider's track. Both are walls; neither is silent.
+
+    A law nobody has watched fail is a law nobody has watched."""
+    def walls_in_render():
+        return [ch for st in BUTTON_STATES
+                for ch in plain(LG.kit("swiss").button("Cancel", 10, st))
+                if is_wall(ch)]
+
+    assert not walls_in_render()
+    monkeypatch.setitem(LG.Swiss.PART_GLYPHS, "button.main", SWISS_WALLS)
+    assert "│" in walls_in_render()
+    monkeypatch.delitem(LG.Swiss.PART_GLYPHS, "button.main")
+    assert walls_in_render()
+    assert LG.kit("swiss").part_key("button", "main") == "main"
+
+
+@pytest.mark.parametrize("lang", sorted(LG.PANE_SPLIT_REFUSED))
+def test_no_language_that_refuses_the_pane_rule_draws_it_round_its_button(lang):
+    """THE OTHER TEN, ASKED THE SAME QUESTION — off a REGISTRY rather than
+    off a reviewer's eye.
+
+    A language that has declared, with a citation, that it may not rule a
+    vertical stroke between two panes may not rule one either side of a word
+    either. The mark is `Kit.PANE_RULE`, the base's own hairline, which is
+    what the five in that table refused — so this law grows with the table
+    instead of with a hand list, and a sixth language joining
+    `PANE_SPLIT_REFUSED` is asked about its button the moment it is added.
+
+    SWISS WAS THE ONLY ONE OF THE FIVE THAT FAILED IT. The other four answer
+    with their own alphabets — blueprint's registration pair, darkside's
+    weight marks, solari's seam, prism's dots — and the measured frame for
+    all eleven is in inc38 §3."""
+    k = LG.kit(lang)
+    declared = "".join(k.PART_GLYPHS["button.main"].values())
+    assert LG.Kit.PANE_RULE not in declared, (lang, declared)
+    for st in BUTTON_STATES:
+        assert LG.Kit.PANE_RULE not in plain(k.button("Cancel", 10, st)), lang
 
 
 # ---------------------------------------------------------------------------

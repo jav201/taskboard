@@ -15,7 +15,7 @@ N E W   T A S K   5 fields  ·  1 invalid
                 │session cookie is renewed mid-fli─│                                                
                 │                                  │                                                
                                                                                                     
-                ┆    Save    ┆   │   Cancel   │                                                     
+                     Save        ·   Cancel                                                         
                 Save is held until due parses                                                       
                                                                                                     
                                                                                                     
