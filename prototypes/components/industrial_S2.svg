@@ -16,14 +16,14 @@
 <text x="110.8" y="40.3" fill="#8f8f8f">5 fields  ·  1 invalid</text>
 <text x="10.0" y="57.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="74.3" fill="#8f8f8f">title</text>
-<text x="68.8" y="74.3" fill="#f2f2f2">▐</text>
+<text x="68.8" y="74.3" fill="#f2f2f2">!</text>
 <text x="144.4" y="74.3" fill="#4a4a4a">▐</text>
 <text x="152.8" y="74.3" fill="#f2f2f2">Fix login</text>
 <text x="228.4" y="74.3" fill="#ff4b1f">|</text>
 <text x="236.8" y="74.3" fill="#f2f2f2"> redirect</text>
 <text x="312.4" y="74.3" fill="#4a4a4a">---------------▌</text>
 <text x="26.8" y="108.3" fill="#8f8f8f">due</text>
-<text x="52.0" y="108.3" fill="#f2f2f2">▐</text>
+<text x="52.0" y="108.3" fill="#f2f2f2">!</text>
 <text x="144.4" y="108.3" fill="#4a4a4a">▐</text>
 <text x="152.8" y="108.3" fill="#f2f2f2">12/09/26</text>
 <text x="220.0" y="108.3" fill="#4a4a4a">//////////////////////////▌</text>

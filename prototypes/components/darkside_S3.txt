@@ -16,7 +16,7 @@ settings  5 switches  ·  2 selects  ·  1 slider
   row density               ▬▬▬▬▬▬▬▬▬O──── 70                                                       
                                                                                                     
                                                                                                     
-  danger zone                                                        ▬ delete every completed task  
+  danger zone                                                        ◦ delete every completed task  
   ▬ ØDelete allØ ▬   7 tasks, not recoverable                                                       
                                                                                                     
                                                                                                     

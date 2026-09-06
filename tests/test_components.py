@@ -1862,7 +1862,7 @@ _STYLE_WORDS = ("reverse", "bold", "underline", "italic")
 GROUNDED_FRAMES = ("industrial_S1", "darkside_S1", "prism_S1", "ledger_S1",
                    "solari_S1", "solari_S2", "solari_S3", "prism_S4",
                    "ledger_S4", "solari_S4", "blueprint_S4", "solari_S5",
-                   "solari_S6", "industrial_S6")
+                   "solari_S6", "industrial_S6", "darkside_S6")
 
 
 def sheet_rows(lang, screen):
@@ -1965,11 +1965,18 @@ def test_the_ground_law_is_not_vacuous():
     declared six reversed runs the whole time; the roster could not see them
     because `declared_grounds` only knew the `on <colour>` spelling, and the
     exporter could not paint them for the mirror-image reason. Two blind spots
-    facing each other read as agreement. This list is where that shows up."""
+    facing each other read as agreement. This list is where that shows up.
+
+    AND IT IS 15 SINCE inc48: `darkside_S6` joined it, because that language's
+    `MATCH_STYLE` stopped being `bold {ink}` — weight, in a language that has
+    renounced hue by commitment, on terminals that render bold as "brighter"
+    — and became a ±1 grey STEP of ground, which is the channel §8 says this
+    language owns. A frame arriving on this roster is the same event as a
+    frame leaving it, and both have to be looked at."""
     got = tuple(f"{lang}_{sc}" for sc in SCREENS for lang in LANGS
                 if declared_grounds(lang, sc))
     assert sorted(got) == sorted(GROUNDED_FRAMES), got
-    assert len(got) == 14
+    assert len(got) == 15
 
 
 def test_blueprints_knockout_is_where_operator_ruling_10_put_it():
@@ -2093,12 +2100,12 @@ def test_the_svg_paints_exactly_the_style_runs_the_kit_declared(lang):
         assert (attr in svg) == (word == other), (lang, word, other)
 
 
-def test_the_style_law_is_not_vacuous_and_the_two_reverse_kits_are_the_proof():
+def test_the_style_law_is_not_vacuous_and_the_reverse_kits_are_the_proof():
     """WHERE THE LAW BITES, and the one case that could have passed hollow.
 
-    Seven of the eleven are `bold` and two are `underline`: for those, "the
+    Six of the eleven are `bold` and two are `underline`: for those, "the
     exporter learned the tier" is one attribute on one element and the law is
-    honest but easy. The two that are `reverse` are the ones inc41 called the
+    honest but easy. The THREE that are `reverse` are the ones inc41 called the
     sharp case — the same ground channel this exporter paints 16 times in
     `industrial_S1` and dropped entirely in `industrial_S6`, because Rich hands
     `reverse` over as a style FLAG with colour and bgcolor still in their
@@ -2114,11 +2121,12 @@ def test_the_style_law_is_not_vacuous_and_the_two_reverse_kits_are_the_proof():
     the eleven frames and it is NOT a match run; a measurement that counted
     text content would score 7 here and 7 is the number this test refuses."""
     words = {lang: LG.kit(lang).MATCH_STYLE.split()[0] for lang in LANGS}
-    assert sorted(words.values()).count("reverse") == 2
+    assert sorted(words.values()).count("reverse") == 3
     assert {l for l, w in words.items() if w == "reverse"} == {"industrial",
-                                                               "solari"}
+                                                              "solari",
+                                                              "darkside"}
 
-    for lang in ("industrial", "solari"):
+    for lang in ("industrial", "solari", "darkside"):
         k = LG.kit(lang)
         hue = k.MATCH_STYLE.split()[-1].format(**k.c)
         svg = (FRAMES / f"{lang}_S6.svg").read_text(encoding="utf-8")
@@ -2638,3 +2646,143 @@ def test_the_named_seat_law_goes_red_on_the_two_declarations_inc46_moved(
     for lang in LANGS:
         assert (len(meaning_marks_at_named_seats(lang))
                 == MEANING_AT_A_NAMED_SEAT[lang]), lang
+
+
+# ===========================================================================
+# inc48 (rework-3) — the opener law, the batch rule's first named seat
+# ===========================================================================
+#: THE STEPPER IS OUT, BY A RULING AND NOT BY CONVENIENCE. `stepper.main` and
+#: `stepper.step` are two-cell strings whose halves are DIRECTIONS, not walls
+#: — spec §9.5, inc39's own words when it declined to extend its INVALID law
+#: there: "a stepper's halves are directions, not walls, so it needs its own
+#: law". A law about what OPENS an enclosure cannot be asked of a pair that
+#: encloses nothing, and the stepper's own law is still unwritten.
+OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield")
+
+#: WHAT STILL OPENS WITH A MEANING, COUNTED — the same bargain
+#: `MEANING_AT_A_NAMED_SEAT` and `HANDED_FIELDS` make, for the same reason:
+#: a roster is a record only while somebody has to edit it.
+#:
+#:   naught      2  `◦` opens the button and the field, and `LEVELS["info"]`
+#:                  is `◦◦`. This is the roster's arguable entry: naught's
+#:                  info rung is ZERO LIT DOTS — the unlit lattice, which
+#:                  LANGUAGES.md §0 calls this language's visible GROUND — so
+#:                  "nothing is lit" and "an empty seat" may be one meaning
+#:                  rather than two. The argument is written here and NOT
+#:                  granted: an exemption is the operator's, and silence is
+#:                  not one.
+#:   corgi      31  the segment bank is `LEVELS` and the chrome ladder at
+#:                  once (`▁▁ ▄▄ ██` against `▁▁ ▔▔ ▂▂ ··`). No increment in
+#:                  this batch; this is the widest single roster entry in the
+#:                  corpus.
+#:   prism      19  `⣿` is `LEVELS["error"]`, the `DANGER_FORM` and the
+#:                  opening cell of the button, the checkbox and the field.
+#:   blueprint   6  `├` is `REQUIRED` and the dimension's opening terminator
+#:                  — §9.4's `blueprint_S2`, still open.
+#:
+#: SEVEN ARE ZERO: instrument (inc46), swiss (inc46), industrial (inc48),
+#: darkside (inc48), nord, ledger and solari (inc47).
+MEANING_AT_AN_OPENER = {"naught": 2, "corgi": 31, "instrument": 0, "swiss": 0,
+                        "industrial": 0, "nord": 0, "darkside": 0, "prism": 19,
+                        "ledger": 0, "solari": 0, "blueprint": 6}
+
+
+def meaning_marks_at_an_opener(lang: str) -> list[tuple]:
+    """Every control glyph whose FIRST cell is a mark this language spends on
+    severity, danger or obligation.
+
+    ONE EXEMPTION, BY NAME AND WITH ITS RULING: a field whose INVALID walls
+    are that language's own `DANGER_FORM`. inc39 ruled that where un-flipping
+    a field's walls would collide with DEFAULT byte for byte, the walls take
+    the danger form (spec §9.2) — swiss `╲ ╱`, darkside `Ø Ø`, blueprint
+    `━ ━`, corgi, ledger. There the opening cell IS the rejection, said in the
+    language's loudest form, which is the opposite of a reader mistaking it
+    for one. Everything else counts."""
+    k = LG.kit(lang)
+    meanings = (set("".join(k.LEVELS.values())) | {k.REQUIRED}
+                | set("".join(k.DANGER_FORM))) - set(" ⠀")
+    danger = set(k.DANGER_FORM)
+    out = []
+    for comp in OPENING_CONTROLS:
+        for part in LG.COMPONENT_PARTS[comp]:
+            table = k.PART_GLYPHS[k.part_key(comp, part)]
+            for st in LG.component_states(comp):
+                glyph = k.part_glyph(part, st, comp)
+                if len(glyph) < 2 or glyph[0] not in meanings:
+                    continue
+                if (LG.control_of(st) == LG.INVALID and LG.INVALID in table
+                        and glyph[0] in danger):
+                    continue
+                out.append((f"{comp}.{part}", st, glyph, glyph[0]))
+    return out
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_no_control_opens_with_a_mark_that_means_something(lang):
+    """THE BATCH RULE'S FIRST NAMED SEAT, and the finding the census was built
+    around.
+
+    `collision_census.py`'s own docstring states it: "a language has a small
+    alphabet, spends one glyph on severity or obligation, and then spends the
+    same glyph on a control's chrome — so a reader who has learned 'this mark
+    means error' meets it OPENING A BUTTON." That is `instrument_S2`
+    (`⠇   Cancel   ⠸`, the error rung on the safe button), `industrial_S2`
+    (`▐` the obligation and the field's wall on one row), `swiss_S3`
+    (`· ╲Delete all╱`, the LOWEST severity rung opening the most dangerous
+    control on the screen) and `solari_S2` (`▁` nineteen ways).
+
+    THE OPENER AND NOT EVERY CELL, deliberately. A mark that means something
+    may stand in a control — a closer, a paper, a knob, a mark inside a box —
+    because a reader meets those AFTER the control has already announced
+    itself. The first cell is the announcement, which is why the round's
+    phrasing is "el peldaño de error ABRE el botón seguro" and not "aparece
+    en".
+
+    IT IS A MEASUREMENT, NOT A PASS. Four languages still fail it, counted
+    per language so the roster can only move when somebody edits it, and one
+    of the four (naught) carries a written argument for an exemption that has
+    NOT been granted. Seven are clean and four of those seven were not before
+    this batch."""
+    assert len(meaning_marks_at_an_opener(lang)) \
+        == MEANING_AT_AN_OPENER[lang], (lang, meaning_marks_at_an_opener(lang))
+
+
+def test_the_opener_law_goes_red_on_the_two_declarations_inc48_and_inc46_moved(
+        monkeypatch):
+    """TEETH, and they have to name the control and the mark.
+
+    Arm one restores `Industrial.REQUIRED` to `▐`, the opening half of the
+    plate every button and every field is set in — the declaration inc48
+    moved, and `industrial_S2`'s finding verbatim.
+
+    Arm two restores swiss's pre-inc46 button ladder, `· • ●`, whose two lower
+    rungs are `LEVELS["info"]` and `REQUIRED` — the declaration inc46 moved,
+    and `swiss_S3`'s and `swiss_S4`'s findings at once. Each arm must move its
+    language off zero AND leave the other ten where they were, which is what
+    proves the eleven are eleven declarations rather than one shared object."""
+    for lang in LANGS:
+        assert (len(meaning_marks_at_an_opener(lang))
+                == MEANING_AT_AN_OPENER[lang]), lang
+
+    monkeypatch.setattr(LG.Industrial, "REQUIRED", "▐")
+    hits = meaning_marks_at_an_opener("industrial")
+    assert hits, "industrial"
+    assert {h[0] for h in hits} == {"button.main", "textfield.main"}, hits
+    assert {h[3] for h in hits} == {"▐"}, hits
+    assert all(len(meaning_marks_at_an_opener(o)) == MEANING_AT_AN_OPENER[o]
+               for o in LANGS if o != "industrial")
+    monkeypatch.undo()
+
+    monkeypatch.setitem(LG.Swiss.PART_GLYPHS, "button.main",
+                        {LG.DEFAULT: "·   ", LG.FOCUSED: "•   ",
+                         LG.ACTIVE: "●   ", LG.DISABLED: "    "})
+    hits = meaning_marks_at_an_opener("swiss")
+    assert {h[0] for h in hits} == {"button.main"}, hits
+    assert {h[3] for h in hits} == {"·", "•"}, hits
+    assert all(len(meaning_marks_at_an_opener(o)) == MEANING_AT_AN_OPENER[o]
+               for o in LANGS if o != "swiss")
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        assert (len(meaning_marks_at_an_opener(lang))
+                == MEANING_AT_AN_OPENER[lang]), lang

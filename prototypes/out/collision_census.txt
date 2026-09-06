@@ -54,12 +54,12 @@ SWISS   5 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR
   ... 1 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-INDUSTRIAL   4 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED ▐  CUR ▶)
+INDUSTRIAL   4 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED !  CUR ▶)
 ------------------------------------------------------------------------------
-  ▐   [4 families]  REQUIRED  ·  INVALID textfield.main open  ·  button.main open (active,default,focused)  ·  textfield.main open (active,default,edited,focused)
   <   [3 families]  INVALID stepper.step close  ·  radio.knob open (active,checked,checked+active,checked+focused,default,focused)  ·  radio.main open (active,checked,checked+active,checked+focused,default,focused)  ·  stepper.step open (default)
   >   [3 families]  INVALID stepper.step open  ·  radio.knob close (active,checked,checked+active,checked+focused,default,focused)  ·  radio.main close (active,checked,checked+active,checked+focused,default,focused)  ·  stepper.step close (default)
   ▌   [3 families]  INVALID textfield.main close  ·  button.main close (active,default,focused)  ·  textfield.main close (active,default,edited,focused)
+  ▐   [3 families]  INVALID textfield.main open  ·  button.main open (active,default,focused)  ·  textfield.main open (active,default,edited,focused)
   ... 10 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
