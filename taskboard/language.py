@@ -1465,6 +1465,27 @@ class RenderResult(NamedTuple):
         return RS.AutoImage(self.pixels)
 
 
+def split_field_glyph(glyph: str) -> tuple[str, str, str]:
+    """A field's glyph split into `(opener, RUNE, closer)` — the wall that
+    opens it, the RUNE its paper is made of, and the wall that closes it. An
+    ODD length, so the two walls are halves of what is left when the rune is
+    taken out of the middle.
+
+    THE ONE PLACE THIS SPLIT IS MADE (rework-6c). `Kit.field_form` calls it
+    to read a live declaration; `tests/test_components.py::_invalid_marks`
+    and `prototypes/collision_census.py::role_map` call it to agree on which
+    cell of a rejected field is a REJECTION MARK (the two walls) and which is
+    CHROME (the rune — the paper every other state of the field lies on
+    too). Before this function existed the two files each split the string
+    by hand and the census counted the rune as a meaning while the law did
+    not, for five languages since inc52 and a sixth since inc66 — twelve
+    rows (six collisions, six homoglyphs) waiting on one decision
+    (`spec.md` §15.5, §17.4, §17.8). One function closes it: change the
+    split here and both instruments move together."""
+    h = len(glyph) // 2
+    return glyph[:h], glyph[h], glyph[h + 1:]
+
+
 class Kit:
     """Base kit = the `nord` language: deliberately the terminal's own
     conventional idiom (base16 doctrine: it inherits the environment and has
@@ -2295,10 +2316,11 @@ class Kit:
 
         One string rather than three declarations because it is one decision:
         a language does not choose its walls and its paper separately, it
-        chooses the ground it lays under someone else's words."""
-        g = self.part_glyph("main", state, name)
-        h = len(g) // 2
-        return g[:h], g[h], g[h + 1:]
+        chooses the ground it lays under someone else's words.
+
+        The split itself is `split_field_glyph`, module-level, so every
+        other reader of a field's rune uses the same one."""
+        return split_field_glyph(self.part_glyph("main", state, name))
 
     def component_cells(self, name: str, val: float, lo: float, hi: float,
                         w: int = 10, state: str = DEFAULT,

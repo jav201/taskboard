@@ -8,133 +8,176 @@ language's alphabet and is counted but not listed. Read the module
 docstring of prototypes/collision_census.py for the argument.
 
 ------------------------------------------------------------------------------
-NAUGHT   4 colliding cells   (LEVELS ◦◦/∙◦/∙∙  DANGER ∙∙  REQUIRED ⊛  CUR ●)
+NAUGHT   3 colliding cells   (LEVELS ◦◦/∙◦/∙∙  DANGER ∙∙  REQUIRED ⊛  CUR ●)
 ------------------------------------------------------------------------------
-  ◦   [8 families]  LEVELS[info] + LEVELS[warn]  ·  button.main close (default)  ·  button.main open (default)  ·  checkbox.main mark (checked,default)  ·  field.leader mark (declared)  ·  radio.main mark (active,checked+active)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.indicator mark (checked+disabled,disabled)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (default)  ·  textfield.main mid (edited)  ·  textfield.main open (default)
-  ⋅   [7 families]  INVALID textfield.main mid  ·  button.main close (disabled)  ·  button.main open (disabled)  ·  checkbox.main mark (checked+disabled,disabled)  ·  radio.main mark (checked+disabled,disabled)  ·  stepper.main close (disabled)  ·  stepper.main open (disabled)  ·  switch.main mark (checked+disabled,disabled)  ·  textfield.main close (disabled)  ·  textfield.main mid (active,default,disabled,focused)  ·  textfield.main open (disabled)
-  ●   [7 families]  CUR  ·  button.main close (active)  ·  button.main mid (active)  ·  button.main open (active)  ·  checkbox.knob mark (checked+focused,focused)  ·  radio.knob mark (active,checked+active)  ·  stepper.step close (default)  ·  stepper.step open (default)  ·  switch.knob mark (active,checked+active)  ·  textfield.main close (active)  ·  textfield.main open (active)
-  ∙   [2 families]  LEVELS[error] + LEVELS[warn]  ·  DANGER_FORM close + DANGER_FORM open
-  ... 4 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ◦   [13 families]  LEVELS[info] + LEVELS[warn]  ·  bar.indicator mark (disabled)  ·  bar.main mark (default)  ·  button.main close (default)  ·  button.main open (default)  ·  checkbox.main mark (checked,default)  ·  field.leader mark (declared)  ·  pane.rule mark (declared)  ·  meter.track mark (declared)  ·  radio.main mark (active,checked+active)  ·  scrollbar.indicator mark (disabled)  ·  scrollbar.main mark (default)  ·  slider.indicator mark (disabled)  ·  slider.main mark (active,default,edited,focused)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.indicator mark (checked+disabled,disabled)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (default)  ·  textfield.main mid (edited)  ·  textfield.main open (default)
+  ●   [9 families]  CUR  ·  button.main close (active)  ·  button.main mid (active)  ·  button.main open (active)  ·  checkbox.knob mark (checked+focused,focused)  ·  radio.knob mark (active,checked+active)  ·  scrollbar.indicator mark (default)  ·  slider.knob mark (active)  ·  stepper.step close (default)  ·  stepper.step open (default)  ·  switch.knob mark (active,checked+active)  ·  textfield.main close (active)  ·  textfield.main open (active)
+  ∙   [5 families]  LEVELS[error] + LEVELS[warn]  ·  DANGER_FORM close + DANGER_FORM open  ·  bar.indicator mark (default)  ·  mascot.pixel mark (declared)  ·  slider.indicator mark (active,default,edited,focused)
+  ... 6 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-CORGI   2 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRED ▀  CUR ▐)
+CORGI   4 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRED ▀  CUR ▐)
 ------------------------------------------------------------------------------
-  ·   [7 families]  INVALID textfield.main mid  ·  button.main close (disabled)  ·  button.main mid (disabled)  ·  button.main open (disabled)  ·  checkbox.main close (checked+disabled,disabled)  ·  checkbox.main open (checked+disabled,disabled)  ·  radio.knob open (checked+disabled,disabled)  ·  radio.main open (checked+disabled,disabled)  ·  stepper.main close (disabled)  ·  stepper.main mid (disabled)  ·  stepper.main open (disabled)  ·  switch.indicator close (checked+disabled,disabled)  ·  switch.indicator open (checked+disabled,disabled)  ·  switch.main close (checked+disabled,disabled)  ·  switch.main open (checked+disabled,disabled)  ·  textfield.main close (disabled)  ·  textfield.main mid (active,default,disabled,focused)  ·  textfield.main open (disabled)
-  █   [2 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open
-  ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 3 further cells would collide if slider/bar/scrollbar were in the B set
+  ▄   [4 families]  LEVELS[warn]  ·  bar.indicator close (default)  ·  bar.indicator open (default)  ·  meter.fill mark (declared)  ·  slider.indicator close (active,default,edited,focused)  ·  slider.indicator open (active,default,edited,focused)
+  █   [4 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  spark.peak mark (declared)  ·  scrollbar.indicator close (default)  ·  scrollbar.indicator open (default)
+  ▁   [3 families]  LEVELS[info]  ·  bar.indicator close (disabled)  ·  bar.indicator open (disabled)  ·  bar.main close (default)  ·  bar.main open (default)  ·  slider.indicator close (disabled)  ·  slider.indicator open (disabled)  ·  slider.main close (active,default,edited,focused)  ·  slider.main open (active,default,edited,focused)
+  ░   [3 families]  INVALID slider.knob close + INVALID slider.knob open + INVALID stepper.step close + INVALID stepper.step mid + INVALID stepper.step open + INVALID textfield.main close + INVALID textfield.main open  ·  meter.track mark (declared)  ·  spark.floor mark (declared)  ·  scrollbar.main close (default)  ·  scrollbar.main open (default)
+  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
 INSTRUMENT   4 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⠁  CUR ⣿)
 ------------------------------------------------------------------------------
+  ⣿   [7 families]  CUR  ·  bar.indicator mark (default)  ·  checkbox.knob mark (checked,default)  ·  mascot.pixel mark (declared)  ·  meter.fill mark (declared)  ·  spark.peak mark (declared)  ·  scrollbar.indicator mark (default)  ·  slider.indicator mark (active,default,edited,focused)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)
+  ⠶   [6 families]  INVALID slider.knob mark + INVALID stepper.step close + INVALID stepper.step open + INVALID textfield.main mark  ·  bar.indicator mark (disabled)  ·  radio.knob mark (checked,default)  ·  slider.indicator mark (disabled)  ·  switch.indicator mark (checked+disabled,disabled)  ·  textfield.main mark (invalid)
   ⠇   [3 families]  LEVELS[error]  ·  button.main close (default)  ·  textfield.main close (default)
-  ⠶   [3 families]  INVALID stepper.step close + INVALID stepper.step open + INVALID textfield.main close + INVALID textfield.main mid + INVALID textfield.main open  ·  radio.knob mark (checked,default)  ·  switch.indicator mark (checked+disabled,disabled)
-  ⣿   [3 families]  CUR  ·  checkbox.knob mark (checked,default)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)
   ⠛   [2 families]  DANGER_FORM close + DANGER_FORM open  ·  checkbox.main mark (checked+focused,focused)
-  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ... 14 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-SWISS   3 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
+SWISS   4 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
 ------------------------------------------------------------------------------
-  ┆   [5 families]  INVALID textfield.main mid  ·  checkbox.knob open (checked+disabled,disabled)  ·  checkbox.main open (checked+disabled,disabled)  ·  stepper.step close (disabled)  ·  stepper.step open (disabled)  ·  switch.knob mark (checked+disabled,disabled)  ·  textfield.main open (disabled)
-  ·   [2 families]  LEVELS[info]  ·  textfield.main mid (edited)
-  ─   [2 families]  LEVELS[warn]  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)
-  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 1 further cells would collide if slider/bar/scrollbar were in the B set
+  ─   [6 families]  LEVELS[warn]  ·  bar.main mark (default)  ·  meter.track mark (declared)  ·  scrollbar.indicator mark (disabled)  ·  slider.main mark (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)
+  ·   [3 families]  LEVELS[info]  ·  scrollbar.main mark (disabled)  ·  textfield.main mid (edited)
+  ━   [2 families]  LEVELS[error]  ·  meter.fill mark (declared)  ·  spark.peak mark (declared)
+  ▮   [2 families]  CUR  ·  slider.knob mark (edited)
+  ... 10 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-INDUSTRIAL   2 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED !  CUR ▶)
+INDUSTRIAL   3 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED !  CUR ▶)
 ------------------------------------------------------------------------------
-  ▌   [3 families]  INVALID textfield.main close  ·  button.main close (active,default,focused)  ·  textfield.main close (active,default,edited,focused)
-  ▐   [3 families]  INVALID textfield.main open  ·  button.main open (active,default,focused)  ·  textfield.main open (active,default,edited,focused)
-  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ▌   [3 families]  INVALID textfield.main mark  ·  button.main close (active,default,focused)  ·  textfield.main close (active,default,edited,focused)
+  ▐   [3 families]  INVALID textfield.main mark  ·  button.main open (active,default,focused)  ·  textfield.main open (active,default,edited,focused)
+  /   [2 families]  INVALID slider.knob mark + INVALID stepper.step close + INVALID stepper.step open  ·  textfield.main mark (invalid)
+  ... 17 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
 NORD   1 colliding cells   (LEVELS · /! /!!  DANGER ##  REQUIRED *  CUR ▸)
 ------------------------------------------------------------------------------
   ▸   [2 families]  CUR  ·  stepper.step close (focused)
-  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
 DARKSIDE   1 colliding cells   (LEVELS · /o /O   DANGER ▚▞  REQUIRED ▪  CUR ▊)
 ------------------------------------------------------------------------------
   ·   [2 families]  LEVELS[info]  ·  textfield.main mid (edited)
-  ... 14 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ... 16 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-PRISM   2 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⡀  CUR ▸)
+PRISM   4 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⡀  CUR ▸)
 ------------------------------------------------------------------------------
+  ⣿   [4 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  bar.indicator mark (default)  ·  mascot.pixel mark (declared)  ·  meter.fill mark (declared)
+  ⣀   [3 families]  LEVELS[info]  ·  bar.main mark (default)  ·  meter.track mark (declared)
   ⡀   [2 families]  REQUIRED  ·  field.leader open (declared)
-  ⣿   [2 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open
-  ... 9 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 2 further cells would collide if slider/bar/scrollbar were in the B set
+  ⣤   [2 families]  LEVELS[warn]  ·  bar.indicator mark (disabled)
+  ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-LEDGER   2 colliding cells   (LEVELS   /* /**  DANGER ()  REQUIRED †  CUR ▶)
+LEDGER   1 colliding cells   (LEVELS   /* /**  DANGER ()  REQUIRED †  CUR ▶)
 ------------------------------------------------------------------------------
-  ▶   [7 families]  CUR  ·  button.main open (active,focused)  ·  checkbox.knob open (active,checked+active,checked+focused,focused)  ·  checkbox.main open (active,checked+active,checked+focused,focused)  ·  radio.knob open (active,checked+active,checked+focused,focused)  ·  radio.main open (active,checked+active,checked+focused,focused)  ·  stepper.step close (focused)  ·  switch.knob mark (checked+focused,focused)  ·  textfield.main open (active,edited,focused)
-  ·   [6 families]  INVALID textfield.main mid  ·  checkbox.main mid (active,checked+active)  ·  field.leader mark (declared)  ·  radio.main mid (active,checked+active)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
-  ... 8 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ▶   [8 families]  CUR  ·  button.main open (active,focused)  ·  checkbox.knob open (active,checked+active,checked+focused,focused)  ·  checkbox.main open (active,checked+active,checked+focused,focused)  ·  radio.knob open (active,checked+active,checked+focused,focused)  ·  radio.main open (active,checked+active,checked+focused,focused)  ·  slider.knob mark (focused)  ·  stepper.step close (focused)  ·  switch.knob mark (checked+focused,focused)  ·  textfield.main open (active,edited,focused)
+  ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
 SOLARI   3 colliding cells   (LEVELS OK /DLY/CNX  DANGER ▀▄  REQUIRED ▮  CUR ▼)
 ------------------------------------------------------------------------------
-  ·   [4 families]  INVALID textfield.main mid  ·  checkbox.main mid (active,checked+active)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
-  ▼   [4 families]  CUR  ·  checkbox.knob mid (checked,default)  ·  stepper.step close (default)  ·  switch.knob mark (checked,default)
+  ▼   [5 families]  CUR  ·  checkbox.knob mid (checked,default)  ·  slider.knob mark (default)  ·  stepper.step close (default)  ·  switch.knob mark (checked,default)
+  ▄   [2 families]  DANGER_FORM close  ·  scrollbar.indicator mark (default)
   ▮   [2 families]  REQUIRED  ·  textfield.caret mark (active,default,disabled,edited,focused)
-  ... 8 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 1 further cells would collide if slider/bar/scrollbar were in the B set
+  ... 10 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
 BLUEPRINT   2 colliding cells   (LEVELS   /╌╌/━━  DANGER ━━  REQUIRED ═  CUR ┌)
 ------------------------------------------------------------------------------
-  ·   [5 families]  INVALID textfield.main mid  ·  field.leader open (declared)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
-  ━   [2 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open
-  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 1 further cells would collide if slider/bar/scrollbar were in the B set
+  ━   [4 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  spark.peak mark (declared)  ·  scrollbar.indicator mark (default)
+  ╌   [2 families]  LEVELS[warn]  ·  scrollbar.main mark (disabled)
+  ... 13 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ==============================================================================
 LANGUAGE x COLLISIONS
 ==============================================================================
 language       colliding cells
-naught                       4
-corgi                        2
+naught                       3
+corgi                        4
 instrument                   4
-swiss                        3
-industrial                   2
+swiss                        4
+industrial                   3
 nord                         1
 darkside                     1
-prism                        2
-ledger                       2
+prism                        4
+ledger                       1
 solari                       3
 blueprint                    2
 ------------------------------
-TOTAL                       26
+TOTAL                       30
 
 zero collisions: NONE -- all eleven overload at least one cell
 
 ==============================================================================
-HOMOGLYPHS — one drawing at two diameters, meaning against chrome
+HOMOGLYPHS — one drawing at another size or fill (ruling D amended)
 ==============================================================================
 Ruling D (2026-09-06): a channel is COUNT, WEIGHT, POSITION or
 DIRECTION. Diameter alone is none of them, so a language that tells a
-MEANING apart from its own CHROME by size alone has told them apart
-with nothing. The pairs read as one drawing are:
-    • ●   · ∙   ○ O   o ◦   ▪ ■
+MEANING apart from its own CHROME -- or from another MEANING -- by
+size or fill alone has told them apart with nothing. Ruling D amended
+(2026-09-07): the pairs are DERIVED from these families, any two
+members of one row being one drawing. Triangles are NOT a family:
+they differ by DIRECTION, which the D-addendum rules a channel.
+    ⋅ · ∙ • ●
+    ◦ o ○ ◎ ◉ ⊙ ⊛ O
+    ▫ □ ▪ ■
+    † ‡
+    ╌ ┄ ┈
+    -> 48 pairs
 These rows are NOT added to the counts above: a homoglyph row is a
 question about two drawings, and the count is a question about one
 cell.
 
-DARKSIDE   1 row(s)
+NAUGHT   12 row(s)
+  ∙ is danger + severity   and its homoglyph ⋅ is bar + button + checkbox + radio + scrollbar + slider + stepper + switch + textfield chrome
+  ● is cursor   and its homoglyph ⋅ is bar + button + checkbox + radio + scrollbar + slider + stepper + switch + textfield chrome
+  ∙ is danger + severity   and its homoglyph ● is cursor MEANING
+  ◦ is severity   and its homoglyph ○ is button + checkbox + radio + stepper + textfield chrome
+  ◦ is severity   and its homoglyph ◎ is checkbox + slider chrome
+  ◦ is severity   and its homoglyph ◉ is checkbox + quantity + slider + stepper + switch + textfield chrome
+  ◦ is severity   and its homoglyph ⊙ is radio chrome
+  ◦ is severity   and its homoglyph ⊛ is required MEANING
+  ⊛ is required   and its homoglyph ○ is button + checkbox + radio + stepper + textfield chrome
+  ⊛ is required   and its homoglyph ◎ is checkbox + slider chrome
+  ⊛ is required   and its homoglyph ◉ is checkbox + quantity + slider + stepper + switch + textfield chrome
+  ⊛ is required   and its homoglyph ⊙ is radio chrome
+SWISS   1 row(s)
+  · is severity   and its homoglyph • is required MEANING
+NORD   1 row(s)
+  · is severity   and its homoglyph ● is radio chrome
+DARKSIDE   8 row(s)
+  · is severity   and its homoglyph ● is checkbox + identity + radio + slider + switch chrome
   o is severity   and its homoglyph ◦ is radio chrome
+  O is severity   and its homoglyph ◦ is radio chrome
+  o is severity   and its homoglyph ◎ is checkbox + identity + slider + switch chrome
+  o is severity   and its homoglyph ◉ is checkbox + identity + radio + slider + switch chrome
+  O is severity   and its homoglyph ◎ is checkbox + identity + slider + switch chrome
+  O is severity   and its homoglyph ◉ is checkbox + identity + radio + slider + switch chrome
+  ▪ is required   and its homoglyph ▫ is radio chrome
+LEDGER   1 row(s)
+  † is required   and its homoglyph ‡ is invalid MEANING
+SOLARI   1 row(s)
+  O is severity   and its homoglyph ◉ is radio chrome
+BLUEPRINT   2 row(s)
+  ╌ is severity   and its homoglyph ┄ is bar + checkbox + radio + slider + switch chrome
+  ╌ is severity   and its homoglyph ┈ is bar + slider + stepper + switch + textfield chrome
 
-TOTAL homoglyph rows             1
+TOTAL homoglyph rows            26
 
 This is the input to the language-level rework, not a verdict. A cell
 here is the question 'did you mean these two to be the same mark?'.

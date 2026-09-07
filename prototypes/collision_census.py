@@ -263,6 +263,26 @@ def role_map(lang: str) -> tuple[dict[str, dict[str, set[str]]], dict[str, dict[
                     # invalid for a part has not overloaded anything there.
                     continue
                 glyph = k.part_glyph(part, state, comp)
+                if state == "invalid" and comp == "textfield" and part == "main":
+                    # THE RUNE IS CHROME, NOT A MEANING (rework-6c, on the
+                    # orchestrator's ruling). A rejected field's glyph is
+                    # wall-RUNE-wall, split by `LG.split_field_glyph` -- the
+                    # same function `_invalid_marks` reads -- and the rune is
+                    # the paper every OTHER state of this field lies on too,
+                    # so it is credited to this component's own chrome here,
+                    # exactly as at every other state; only the two walls are
+                    # the REJECTION mark. Before this split the rune counted
+                    # twice -- once as chrome (every other state) and once as
+                    # `invalid` -- which is what made the census see a
+                    # collision the laws never declared (`spec.md` §15.5,
+                    # §17.4, §17.8: twelve rows on one decision).
+                    op, rune, cl = LG.split_field_glyph(glyph)
+                    for wall in (op, cl):
+                        for cell, pos in _cells(wall):
+                            add(bag, cell, "invalid", f"INVALID {comp}.{part} {pos}")
+                    for cell, pos in _cells(rune):
+                        add(bag, cell, comp, f"{comp}.{part} {pos} [{state}]")
+                    continue
                 for cell, pos in _cells(glyph):
                     if state == "invalid":
                         # a DECLARED `invalid` slot is a REJECTION MARK before
@@ -520,16 +540,30 @@ FOUND_BY_HAND = (
 #: THE THIRTY, GROUPED BY WHAT CAUSES THEM, because thirty rows read one at a
 #: time are thirty taste arguments and grouped they are six facts:
 #:
-#:   6  THE INVALID RUNE, and this file already knows about it. `spec.md`
-#:      §15.5 and §16.4 record the discrepancy by name: the CENSUS counts a
-#:      field's paper rune as a rejection mark while the LAW does not
-#:      (`_invalid_marks` has excluded the rune since inc52, reading the two
-#:      WALLS and not the paper between them). Every one of these six is a
-#:      `·` or `⋅` that is a field's paper standing against a filled disc at
-#:      another size: corgi, ledger, solari, blueprint and naught (twice).
-#:      **The day the census adopts the law's exclusion, all six go at once**
-#:      — the same sentence §16.4 wrote about six COLLISION rows, now true of
-#:      six homoglyph rows as well.
+#:   6  THE INVALID RUNE, as it stood before rework-6c — kept here as the
+#:      historical count this bucket used to be. `spec.md` §15.5 and §16.4
+#:      recorded the discrepancy by name: the CENSUS counted a field's paper
+#:      rune as a rejection mark while the LAW did not (`_invalid_marks` has
+#:      excluded the rune since inc52, reading the two WALLS and not the
+#:      paper between them). Every one of these six was a `·` or `⋅` that is
+#:      a field's paper standing against a filled disc at another size:
+#:      corgi, ledger, solari, blueprint and naught (twice).
+#:
+#:      REWORK-6C GAVE BOTH INSTRUMENTS ONE DEFINITION (`LG.split_field_
+#:      glyph`, `taskboard/language.py`) and the rune moved from the
+#:      `invalid` family to this component's own chrome family — exactly
+#:      where every OTHER state of the same field already puts it. FOUR of
+#:      the six CLOSE outright: corgi, ledger, solari and blueprint's rune
+#:      pairs each against a bare `●` with no A-family of its own, so once
+#:      the rune stops being a meaning neither side of the pair is one.
+#:      NAUGHT'S TWO DO NOT CLOSE, and that is a finding rather than a
+#:      shortfall: `⋅`'s homoglyph partners here are `∙` (`danger` +
+#:      `severity`) and `●` (`cursor`) — REAL meanings — so the pair still
+#:      reads, now the other way round: a meaning against `⋅`'s own chrome,
+#:      the same MEANING x CHROME shape every other row in this roster
+#:      already has. **30 → 26, not 30 → 24**: the six-row prediction in
+#:      `spec.md` §17.4 and §17.8 was two rows short of what one definition
+#:      actually moves.
 #:   5  NAUGHT'S GROUND. `◦` is `LEVELS["info"]` (`◦◦`, zero lit dots) and it
 #:      is also this language's BLANK — `THE_GROUND_IS_NOT_A_MARK`, one
 #:      language, one cell, granted by name in inc61 and priced at
@@ -578,9 +612,13 @@ FOUND_BY_HAND = (
 #: `scrollbar.main`. See `Naught.PART_GLYPHS` for the whole of it — inc61
 #: retired that pixel and could not reach the one seat the census was told
 #: not to read.
-HOMOGLYPH_ROSTER = {"naught": 12, "corgi": 1, "instrument": 0, "swiss": 1,
+#:
+#: TWENTY-SIX, AFTER rework-6c. corgi, ledger, solari and blueprint drop one
+#: row each (the invalid-rune bucket above); naught is unchanged at 12
+#: because its two rune rows reclassify rather than close.
+HOMOGLYPH_ROSTER = {"naught": 12, "corgi": 0, "instrument": 0, "swiss": 1,
                     "industrial": 0, "nord": 1, "darkside": 8, "prism": 0,
-                    "ledger": 2, "solari": 2, "blueprint": 3}
+                    "ledger": 1, "solari": 1, "blueprint": 2}
 
 
 def _self_check() -> None:

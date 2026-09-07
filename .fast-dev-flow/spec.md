@@ -1850,3 +1850,125 @@ already identical`) and **the skill repo was not committed.**
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1165 → 1188 → 1202 → 1225 → 1248 passed** (+23, +14, +23, +23), the clipboard test red in every run and named in every packet. `verify_language.py` **ALL PASSED exit 0 after every increment** — and RED twice during the work, in inc67 and inc70, both written up. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` refusals `[]` for all eleven. `collision_census.py` both self-checks green after every increment; **TOTAL 26 → 35**, accounted for in §17.4; **homoglyph rows 1 → 30**, likewise. `capture_languages.py plain` after every increment, 22 grids identical across two processes each time; **11 gallery artefacts moved in total**. `export_to_skill.py` at the close: `14 written, 52 already identical`, re-run `0 written, 66 already identical`. **The skill repo was not committed.** Gallery 30–51: **5 of 22 are stale** (32, 35, 37, 42, 43) and none was hand-installed. |
 | Notes | **6 source files across 4 increments, one agent** (`taskboard/language.py`, `taskboard/naught.py`, `taskboard/themes.py`, `prototypes/collision_census.py`, `prototypes/verify_language.py`, `tests/test_components.py`) — **never more than 5 in one increment**, and 5 only in inc67 — plus **9 distinct component frames** regenerated (`.txt` and `.svg`), 24 further `.svg`, 11 gallery artefacts, the census table, four packets and this section. **Every increment's law was watched failing on a REAL declaration**: inc67 on `METER_CELLS["dotgrid"]`, prism's shipped `scrollbar.indicator` and corgi's base fallback; inc68 on inc59's dimming walls and inc64's inversion; inc69 on inc38's four spaces, byte for byte; inc70 on the four `mut` hexes with the ratios they shipped at. |
+
+---
+
+## 18. Batch `rework-6c` — one definition for the field's rune, and the solari `mut` doctrine recorded
+
+`rework-6b` (§17.8) surfaced two decisions it could not take: solari's `mut` (blocked on a per-row-ink
+change outside this programme) and whether the census adopts the laws' exclusion of the invalid RUNE (a
+discrepancy `spec.md` had already named in §15.5, §16.4 and §17.4/§17.8, three batches running). **The
+operator delegated both to the orchestrator; one increment, one agent.** The ruling is quoted verbatim in
+`inc71.md` §0 and reproduced here.
+
+### 18.1 The rulings, as given
+
+> **One definition.** The invalid field's RUNE (its paper, the middle cell) is chrome, not a meaning; the
+> census adopts the laws' exclusion. Move the definition to one place both files import (a small function
+> or constant in `taskboard/language.py` or a shared module under `prototypes/`, whichever the two already
+> share), so the census and the laws cannot disagree again.
+
+> **solari's `mut`** stays exempt by name with the arithmetic (`L ≥ 0.19021` against the ground, `L ≤
+> 0.14960` against the band): the selection band is a second ground and a per-row ink is app CSS work
+> outside this programme. Recorded as doctrine in the kit docstring and in `spec.md`; the exemption's
+> stale check stays.
+
+### 18.2 What the increment did
+
+`taskboard/language.py` gains `split_field_glyph(glyph) -> (opener, rune, closer)`, module-level, and
+`Kit.field_form` now delegates to it instead of carrying its own copy of the same arithmetic.
+`tests/test_components.py::_invalid_marks` calls it for the `textfield.main` branch (dropping the rune,
+keeping the two walls, same behaviour as before — only the source of the split changed).
+`prototypes/collision_census.py::role_map` gains the branch that had never existed: for a field's `main`
+part in the `invalid` state, the rune is credited to the component's own chrome family instead of to
+`invalid`, exactly as every other state's rune already is three lines above it. One teeth test
+(`test_the_census_and_the_law_read_the_rune_off_one_function`) loads `collision_census.py` as a module and
+proves both readers move together under the same monkeypatch of the shared function.
+
+solari's `mut` ruling asked for no code: the doctrine it names — the two inequalities and the "the two
+floors do not overlap" conclusion — was already written into `taskboard/themes.py` (lines 134–190) by
+inc70, and `THE_BAND_IS_A_SECOND_GROUND`'s stale-exemption check (`tests/test_components.py`) already
+stands. This section is the `spec.md` half of "recorded as doctrine ... in spec.md."
+
+### 18.3 The census, and the two rows the four-batch-old prediction missed
+
+**Collisions 35 → 30. Homoglyph rows 30 → 26.** Both predictions on record (§15.5, §17.4, §17.8) expected
+35→29 and 30→24 — six rows closing on each side, one per affected language. Measured, four languages close
+cleanly on both counts (corgi, ledger, solari, blueprint: their rune's homoglyph/collision partner carries
+no A-family of its own, so once the rune stops being a meaning neither side of the pair is one) and two do
+not, for two different and real reasons:
+
+```
+                    collisions          homoglyph rows
+language          before   after       before   after
+naught                 4       3           12      12
+corgi                  5       4            1       0
+instrument             4       4            0       0
+swiss                  5       4            1       1
+industrial             2       3            0       0
+nord                   1       1            1       1
+darkside               1       1            8       8
+prism                  4       4            0       0
+ledger                 2       1            2       1
+solari                 4       3            2       1
+blueprint              3       2            3       2
+----------------------------------------------------------
+TOTAL                 35      30           30      26
+```
+
+- **naught's two homoglyph rows reclassify rather than close.** Its rune (`⋅`) pairs with `∙`
+  (`DANGER_FORM`+`LEVELS[error]`) and `●` (`CUR`) — both REAL meanings, not bare chrome — so the pair still
+  reads, now as meaning-×-chrome instead of the manufactured meaning-×-meaning it used to be. Its
+  collision count still drops by one, because `⋅` itself stops carrying an A-family and so stops being a
+  colliding CELL even though its homoglyph partners still list it.
+- **industrial GAINS a collision row, and it is real.** `/` is industrial's field paper under `INVALID`
+  AND its own declared invalid mark at `slider.knob`/`stepper.step` (inc52 §9 already named industrial as
+  a kit whose invalid walls never change, only the paper does). Both uses used to land in the same
+  `invalid` family, which the census's own rule reads as no collision (one family, however many
+  declarations). Split correctly, the field's use is chrome and the knob/stepper's use is still `invalid`
+  — a genuine two-role cell, invisible until this increment's fix stopped merging them by accident.
+
+Net **−5 on collisions (6 removed, 1 revealed), −4 on homoglyph rows (4 removed, 2 reclassified in
+place)**. `inc71.md` §4 and §9 have the full account, including that nobody had checked the six-row
+prediction's arithmetic against the actual partner families before this increment ran it.
+
+### 18.4 Frames, gallery and the skill
+
+**Zero.** No glyph table moved — only which family a rune's cell is filed under — so `render.py` (66
+frames), `matrix.py` (66 implementa) and `capture_languages.py` (22 grids) all report no change, confirmed
+by `git status --short` on `prototypes/components/` and `prototypes/gallery/` returning nothing.
+`export_to_skill.py` was not run: nothing moved to export, and the skill repo's standing dirty state (G2,
+§17.5) is unchanged by this batch.
+
+### 18.5 What was NOT touched, by name
+
+| | the objection | this batch's contact with it |
+| --- | --- | --- |
+| **the invalid-RUNE discrepancy** | census and laws disagreed about the rune | **CLOSED as an instrument** — one function, both files read it, teeth prove they move together |
+| **industrial's `/`** | field paper doubles as the knob/stepper's invalid mark | **newly measured, not ruled on** — §18.3, `inc71.md` §11 |
+| **solari's `mut`** | the banded row has no ink of its own | **doctrine recorded** (already written in `themes.py`/`inc70.md`); still blocked on the per-row-ink decision, which is app CSS work outside this programme |
+| **L6, L7, L10, C5–C10, E2, E3, G1, G2** | | untouched, carried from `rework-6b` (§17.6) |
+
+### 18.6 Found by looking
+
+- **A discrepancy can be named correctly in four separate packets across three batches and still not be
+  fixed, because naming the PRINCIPLE ("the rune is chrome") is not the same work as making two files'
+  CODE say so in one place.** `inc52.md` §0a already stated the principle exactly right; the plumbing gap
+  lived on for four batches after the principle was settled.
+- **A published prediction that nobody ran is a guess with a byte count.** The six-row forecast assumed
+  every rune's homoglyph/collision partner was bare chrome; two of six (both naught's) are real meanings,
+  and only running the fix found that.
+- **A census bug can hide a real collision as easily as it manufactures a false one.** industrial's `/`
+  collision was invisible for the same reason the false ones were visible: the rune's mis-classification
+  happened to land in the SAME family as a genuine declaration at that cell, so the two merged into what
+  looked like one harmless fact instead of two roles worth flagging.
+
+### 18.7 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc71, the whole batch |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1248 → 1249 passed** (+1, the new teeth test), the clipboard test red at the baseline and named in the packet. `verify_language.py` **ALL PASSED exit 0**, unaffected by construction. `render.py` 66 frames / 330 pairs / 0 hand-drawn, **0 of 66 moved**. `matrix.py` 66 of 66 implementa, refusals `[]` for all eleven. `capture_languages.py plain` 22 grids identical across two processes, **0 of 22 moved**. `collision_census.py` both self-checks green; **TOTAL 35 → 30** and **homoglyph rows 30 → 26**, both accounted for in §18.3 against a four-batch-old prediction that was two rows short on each side. `export_to_skill.py` not run — nothing moved. |
+| Notes | **3 source files, one increment, one agent** (`taskboard/language.py`, `tests/test_components.py`, `prototypes/collision_census.py`) — no component frame and no gallery artefact regenerated differently, because this batch moved a classification, not a glyph. The teeth test was watched proving both directions on the same monkeypatch, not merely asserting the post-fix state (`inc71.md` §3). |
