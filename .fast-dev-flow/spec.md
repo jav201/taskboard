@@ -1972,3 +1972,280 @@ by `git status --short` on `prototypes/components/` and `prototypes/gallery/` re
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1248 → 1249 passed** (+1, the new teeth test), the clipboard test red at the baseline and named in the packet. `verify_language.py` **ALL PASSED exit 0**, unaffected by construction. `render.py` 66 frames / 330 pairs / 0 hand-drawn, **0 of 66 moved**. `matrix.py` 66 of 66 implementa, refusals `[]` for all eleven. `capture_languages.py plain` 22 grids identical across two processes, **0 of 22 moved**. `collision_census.py` both self-checks green; **TOTAL 35 → 30** and **homoglyph rows 30 → 26**, both accounted for in §18.3 against a four-batch-old prediction that was two rows short on each side. `export_to_skill.py` not run — nothing moved. |
 | Notes | **3 source files, one increment, one agent** (`taskboard/language.py`, `tests/test_components.py`, `prototypes/collision_census.py`) — no component frame and no gallery artefact regenerated differently, because this batch moved a classification, not a glyph. The teeth test was watched proving both directions on the same monkeypatch, not merely asserting the post-fix state (`inc71.md` §3). |
+
+---
+
+## 19. Batch `rework-7a` — the four reworks, the four contrast rulings, and two rulings that corrected two of them
+
+`PROTOTYPE-inheritors-4.md` (2026-09-07, at `4089eda`) judged all 66 frames for the fourth time and
+returned **keep 11 · note 51 · rework 4** — the first round in which a label went DOWN, and it did so
+four times for one reason: inc63 made the exporter honest about the ground, so for the first time the
+corpus could be MEASURED and the measurement was worse than the reading. **The operator delegated the
+decisions to the orchestrator, and this batch is four increments and nine rulings, two of which the
+orchestrator issued to correct two of its own after the increment reported the arithmetic back.**
+
+### 19.1 The rulings, as given
+
+The seven of the brief, verbatim in every packet's §0:
+
+> **K6:** contrast is measured against the background actually under the run (the second grounds:
+> selection bands, plates, match rects), not only the canvas. `ink` and `mut` ≥ 4.5:1 against every
+> ground they are painted on; `focus` ≥ 3:1.
+
+> **K7:** `dim` ≥ 3:1 wherever it classifies (a severity rung on a log row, a dash count, a state
+> mark); a purely decorative leader or seam is exempt by seat, named. `alert` ≥ 4.5:1 against every
+> ground it is painted on, all eleven.
+
+> **Match tier:** `accent` (or the match ink) against `mut` and against `ink` ≥ 3:1, all eleven, so
+> raising `mut` cannot silently erase the match.
+
+> **L7 measured:** the `info` rung may be air (blueprint, ledger, doctrine) or drawn; if drawn it
+> obeys K7 (≥ 3:1). Nine languages draw it under 2:1: fix each.
+
+> **C8, second half:** corgi's confirm gets walls from its display frame (`▓`, inc67's register
+> ruling) with the board still gone; thirty blank rows with no opener or closer is not a modal.
+
+> **swiss `╎`:** stands; consistency with the kit's own dead cell beats one fewer vertical.
+> Recorded.
+
+> **industrial `/`:** the value's separators and the field paper may not be one glyph: the paper
+> becomes a cell that no value can contain (cite industrial's alphabet), the invalid marks at
+> slider.knob/stepper.step stay.
+
+And the two the orchestrator issued mid-batch, correcting itself:
+
+> **Ruling on the match tier** (replaces the "≥ 3 vs mut and vs ink" clause, which is unsatisfiable:
+> contrast(ink,ground) = contrast(ink,mut) × contrast(mut,ground), so it demanded 40.5:1 against a
+> physical maximum of 21:1). The match run must be legible and distinct, and the two are measured on
+> different channels: (a) legible: match ink ≥ 4.5:1 against the ground it is actually painted on
+> (for `reverse` that ground is the swapped rect); (b) distinct: by the channel the kit declares in
+> `MATCH_STYLE`. Where the channel is weight or decoration, the svg run must carry
+> `font-weight`/`text-decoration` (structural assertion, no luminance clause: 1.00 by construction
+> is correct). Where the channel is `reverse`, the rect must exist under exactly the match cells.
+> Where the channel is a hue (`bold {accent}` in nord etc.), assert hue distance: the accent's hue
+> angle differs from `mut`'s and `ink`'s by ≥ 30° in HLS, or, for achromatic kits, the accent
+> differs from `mut` by ≥ 1.5:1 in luminance. nord's 1.38 is then judged on hue, and if nord's
+> accent is achromatic it is the 1.5 clause. Report which kits fall in which branch and which fail.
+
+> **Ruling on industrial's focus:** a token has exactly one role. Ground-role tokens (ground, band,
+> plate, match rect) and ink-role tokens (ink, mut, dim, focus, alert, accent) are disjoint sets in
+> `THEMES`, asserted by a test over all eleven. Industrial's plate becomes its own token `plate`
+> (= `#2e2e2e` today), the focus bracket keeps `focus` as ink and moves to a value that clears 3:1
+> on both grounds it is painted on. Check the other ten for the same double role while you are there
+> (solari's band already has a name; darkside's grey steps?).
+
+**`swiss ╎` IS RECORDED AND NOT IMPLEMENTED, on purpose.** The ruling says the sixth vertical stands
+because consistency with the kit's own dead cell beats one fewer vertical; nothing in the code had to
+move for that to be true, and it is here so the next round argues with a written ruling.
+
+**THE TWO CORRECTIONS ARE THE BATCH'S OWN FINDING, and both were reported before a token moved**,
+which is what the brief asked for in its own words (*"report the failing runs by language and tier
+before any token moves"*). §19.5 carries the arithmetic.
+
+### 19.2 What each increment did
+
+| inc | ruling | what moved | frames |
+| --- | --- | --- | --- |
+| 72 | **the four reworks** | `Ledger.overlay_instead` builds `[rule] + rows + [rule]` and cuts the page to fit, so the posting closes and `(Delete)` leaves row 32; naught's band is bounded by `NA.OFF` instead of the `DANGER_FORM`; naught's radio DEFAULT/FOCUSED trade places so its resting pair leaves the checkbox's ring family; blueprint retires `┄` and `┈` and moves `LEVELS["warn"]` off `╌` to `"━ "`. | `ledger_S4` `naught_S2` `naught_S4` `blueprint_S3` `blueprint_S5` txt+svg · gallery `gallery_naught` `gallery_blueprint` |
+| 73 | **K6, K7's `alert`, the match tier, the role ruling** | `painted_runs()` reads the ground under every run of the 66 svgs; ten tokens move in seven kits; `focus` joins `Kit.__init__`'s ink set and `Industrial.keyhint` stops painting glyphs in a ground name. | **svg only** — 30 component, 11 gallery |
+| 74 | **K7's `dim`, L7** | `DIM_CLASSIFIES`, eight seats, three verdicts. `log_row`'s tone ladder `dim/mut/ink` → `mut/mut/ink`; ledger's and corgi's inactive mode labels leave `dim`. **Zero tokens moved.** | **svg only** — 20 component, 2 gallery |
+| 75 | **C8's second half, the `/` ruling** | `Corgi.overlay_instead` wraps its question in two full-measure `PANE_RULE` bars; industrial's rejected field is papered in `░`. | `corgi_S4` `industrial_S2` txt+svg · 0 gallery |
+
+### 19.3 Every token moved, with every ratio
+
+All in inc73; inc72, inc74 and inc75 moved **no token at all**.
+
+| kit | token | old | new | clause | before → after |
+| --- | --- | --- | --- | --- | --- |
+| industrial | `mut` | `#8f8f8f` | `#959595` | K6, on the plate | 4.20 → **4.53** |
+| industrial | `alert` + `accent` | `#ff4b1f` | `#ff6039` | K7, on the plate | 4.06 → **4.52** |
+| industrial | `focus` | `#2e2e2e` | `#777777` | role ruling | 1.28 → **3.03** on ground, **3.03** on plate |
+| ledger | `mut` | `#6a6458` | `#635e52` | K6, on the band | 4.10 → **4.51** |
+| nord | `alert` | `#bf616a` | `#cf888f` | K7 | 3.05 → **4.50** |
+| nord | `accent` | `#88c0d0` | `#8fbcbb` | match tier, hue | 25.4°/24.2° → **40.0°/38.8°** |
+| corgi | `alert` | `#d92b1a` | `#e53524` | K7 | 3.99 → **4.50** |
+| naught | `alert` + `accent` + `warn` | `#d71921` | `#e51b24` | K7 | 4.05 → **4.51** |
+| swiss | `alert` + `accent` + `warn` | `#e2231a` | `#e7372e` | K7 **and** match legibility | 4.07 → **4.52** |
+| swiss | `mut` | `#8a8a8a` | `#9b9b9b` | match tier, achromatic fallback | 1.36 → **1.52** vs the match |
+
+**Ten values in seven kits, and every one is the smallest HLS lightness step that clears every clause
+at once with hue and saturation held exactly** — inc70's declared method — **except nord's `accent`**,
+which is a hue move by definition and takes `#8fbcbb`, Nord's own published frost-0, so the scheme
+does not leave its palette to gain the channel. **Three kits move `accent` with `alert` because the
+two are one hex by declaration**; splitting them to reach a floor would have turned a one-colour
+ration into two. **swiss moved the GREY and not the RED** at the match clause: reaching 1.5:1 by
+moving the red costs the kit its signature colour.
+
+**solari's `mut` stays under the floor**, on the impossibility proof `THE_BAND_IS_A_SECOND_GROUND`
+has carried since inc70, and inc73's law asserts the exemption is real and that `mut` is the only
+tier that fails there.
+
+### 19.4 The laws this batch added, replaced and re-measured
+
+**Added — twelve laws and eight teeth, all over all eleven:**
+
+- **inc72 — ledger's confirm opens and closes on the same rule** and its destructive answer is not on
+  the sheet's last row; **naught's band adds no lit dot of its own** (the `DANGER_FORM` count inside
+  it equals what the question spends); **naught's two option controls do not rest on one drawing**
+  (L10, asked of the RESTING pair and of the shipped frame); **blueprint's dead runs turn instead of
+  counting dashes** (four clauses: `┄`/`┈` gone, the two dead runs, no dead run is the warn rung or
+  its homoglyph, a dead datum is never its own walls) plus the severity ladder's drawn-cell counts
+  `[0, 1, 2]`.
+- **inc73 — every painted run clears its tier's floor on its own ground**, per character over the 66
+  svgs (`TIER_FLOOR`, and `dim` is deliberately absent); **the match run is legible and distinct on
+  its declared channel**, four branches; **a token has exactly one role**, over `THEMES`; **and this
+  file's picture metrics are the exporter's**, checked against `capture_languages.py`'s source rather
+  than imported.
+- **inc74 — a `dim` run that classifies is legible or has moved** (`DIM_CLASSIFIES`, eight seats,
+  three verdicts, with a vacuity arm that runs the `carried` branch's cited law); **the `info` rung
+  is air by doctrine or legible by tier** (`INFO_RUNG_IS_AIR`).
+- **inc75 — a confirm opens and closes on marks of its own** (DRAWN rows, not CHANGED ones); **a
+  rejected field's paper is a cell no value can contain**, against `fixture.py` read by path.
+
+**Replaced — one law, and the replacement is the batch in one line:**
+
+- **inc72 retired `test_blueprints_dash_ladder_is_monotone_in_its_count`.** It asserted the ladder
+  CLIMBS, which was the honest limit of what inc60 could ask; round four answered it by measuring the
+  three runs at 1.24:1. **A count you cannot resolve is not a channel however well it is ordered**,
+  and the teeth make the point in arithmetic: with inc60's table restored the OLD law still passes
+  and the new one goes red.
+
+**Re-measured — three constants, and each measurement is a finding:**
+
+- **`BLUEPRINT_TABLES_WORTH` `(1, 8)` → `(0, 0)`** and `BLUEPRINT_SHEET_BEFORE[REQUIRED]`
+  `(8, 12)` → `(7, 4)`. The same cells at the same seats are worth eight rows or none depending on
+  where one meaning sits — inc60's ruling (ii) stated as arithmetic. The end point is unchanged at
+  `(13, 12)`.
+- **L7's count is EIGHT, not nine.** inc74's teeth restore the `dim` rung for all eleven and collect
+  the red list: instrument, swiss, industrial, nord, darkside, naught, corgi and **solari** (three
+  WORDS at 1.20:1, which round four listed under "words" without measuring). **prism is not in it**
+  — 3.25:1, the only kit of the eleven over the floor.
+- **`STATES_TOLD_APART_BY_SIZE["naught"]` did NOT move and stays 8**, which inc72's packet states
+  against its own first draft: the `○`/`◦` pair moved from DEFAULT-vs-ACTIVE to FOCUSED-vs-ACTIVE.
+  What changed is the pair of cells a FORM draws, which is what L10 was raised about.
+
+### 19.5 The two arithmetic findings that produced the corrections
+
+**The match tier as first ruled was unsatisfiable in every kit at every token value.** WCAG's ratio is
+exactly multiplicative — every term is a ratio of `L + 0.05` — so
+
+```
+contrast(ink, ground) == contrast(ink, mut) x contrast(mut, ground)
+```
+
+A match ink 3:1 from both `mut` and `ink` forces `contrast(ink, mut) >= 9`, and with K6's
+`mut >= 4.5` that forces `contrast(ink, ground) >= 40.5` **against a physical maximum of 21:1**. The
+corpus's best `ink/mut` headroom, with `mut` sitting exactly on the K6 floor, is darkside's **4.28**.
+And the two clauses fight: inc73's K6 fix for ledger moved the match tier 2.96 → 2.69, which is round
+four's §7.1 objection reproduced as arithmetic rather than as a complaint.
+
+**industrial's `focus` was a defect no floor could catch.** `plate` and `focus` were one hex and
+`Industrial.keyhint` painted the plate's WALLS in `self.plate`, so a ground-role value was drawn as
+ink at **1.28:1**, eight cells. `contrast(token, ground) >= 3` cannot tell which role a token has.
+**The other ten were checked: one clash in eleven kits, and it is the one the ruling names.**
+
+**And the corpus's tightest number now has no clause at all**, which is recorded rather than left to
+be discovered: after this batch swiss's `ink/mut` is 2.53 and nord's 2.40. The proof above says no
+match clause can constrain it, and whether `ink > mut` is a VISIBLE ladder at 2.4:1 is a question no
+law here poses.
+
+### 19.6 The census, across the four increments
+
+```
+                   4089eda   inc72   inc73   inc74   inc75
+NAUGHT   colliding      3       3       3       3       3
+BLUEPRINT colliding     2       1       1       1       1
+INDUSTRIAL colliding    3       3       3       3       2
+the other eight      unchanged
+-----------------------------------------------------------------
+TOTAL colliding        30      29      29      29      28
+TOTAL homoglyph rows   26      24      24      24      24
+```
+
+**Two rows closed and both were closed by RETIRING CELLS rather than by widening the reader**, which
+is the first time in this programme. blueprint's `╌`/`┄` and `╌`/`┈` went because `┄` and `┈` left the
+kit and the warn rung left `╌`; industrial's `/` stopped colliding because the fix took its CHROME
+half away and one A-family alone does not collide — **the accounting inc66 predicted in the other
+direction** when swiss's new paper cost exactly one row. The instrument is consistent in both
+directions.
+
+### 19.7 Frames, and what the skill holds
+
+**`.txt` — 7 of the 66 moved**, and every one is a glyph decision:
+
+```
+blueprint_S3  the dead switch `├╎┈` -> `├╎╌`
+blueprint_S5  the warn rung appears: `09:41:09    3 tasks` -> `09:41:09 ━  3 tasks`
+corgi_S4      two full-measure `▓` bars at rows 13 and 20
+industrial_S2 `▐12/09/26//////…▌` -> `▐12/09/26░░░░░░…▌`
+ledger_S4     the posting closes on row 32; `(Delete)` moves to row 31
+naught_S2     `○ low  ○ norm  ⊙ high` -> `◌ low  ◌ norm  ⊚ high`
+naught_S4     rows 13 and 20: 100 `∙` -> 100 `◦`; `∙` on the sheet 237 -> 37
+```
+
+**`.svg` — 42 of the 66 moved**, the 7 above plus 35 that changed colour only. inc73 and inc74 are
+**svg-only increments** and that is checkable rather than claimed: ten token moves and two seat moves
+left every `.txt` byte-identical, which is the strongest available statement that this corpus judges
+colour on a separate artefact.
+
+**Gallery — 14 of the 22 artefacts moved:** `board_corgi` `board_industrial` `board_ledger`
+`board_naught` `board_nord` `board_swiss` (svg) · `gallery_industrial` `gallery_ledger` `gallery_nord`
+`gallery_swiss` (svg) · `gallery_blueprint` and `gallery_naught` (txt AND svg).
+
+**`export_to_skill.py`:** `11 languages, every token, doc and family round-trips` ·
+**captures 14 written, 52 already identical** · `SURFACES.md (11 postures)`. The fourteen written are
+exactly the fourteen named above — the skill's gallery 30–51 changed byte-wise in those names and
+nowhere else. **The skill repo is not committed**, per the batch's own standing instruction.
+
+### 19.8 What was NOT touched, by name
+
+- **solari's `mut`** — 3.65:1 against its canvas, exempt by an impossibility proof four batches old.
+  Its resolution is a per-row ink for the banded row, which `_sched_row` cannot see because the band
+  is painted by the app's own CSS. **Still a request for a ruling, not a verdict.**
+- **`Kit.depth_ground()`** reads `t["focus"]` as a GROUND, for darkside and prism. The role law is
+  green because those kits' values are disjoint from their ground tokens; the CODE still has the
+  double role the ruling is about.
+- **nord's and darkside's rejected fields are papered in AIR** (`"? ?"`, `"Ø Ø"`). An L2-shaped
+  reading at a seat L2 did not reach; both are named in inc75's law rather than skipped, so a third
+  cannot join them unnoticed.
+- **`/` survives at `knob[INVALID]` and `stepper.step[INVALID]`** and neither is drawn in the 66 —
+  preserved by the ruling, and round four's §7.6 point is unchanged.
+- **`STATES_TOLD_APART_BY_SIZE`** — naught 8, darkside 1. Closing them is still "a second channel for
+  this alphabet, which is a language-level increment".
+- **`log.time` is `dim` in all eleven** and `DIM_CLASSIFIES` calls it decorative. The ruling's example
+  list does not name it and this batch did not widen it on its own authority.
+- **C5, C6, C7, C9, C10, E2, E3, G1, G2, L4, L6** — open.
+
+### 19.9 Found by looking
+
+- **A ruling can be arithmetically impossible and read perfectly.** The match-tier clause named a
+  real defect (raising `mut` erases the match), asked for the obvious remedy, and demanded 40.5:1
+  where 21:1 is the ceiling. It was caught by writing the identity down, not by trying values.
+- **A floor cannot catch a role.** industrial's `#2e2e2e` was correct as a ground and wrong as ink,
+  and two batches of contrast law were green on it. The law that caught it asks a different question.
+- **`self.c` was the evidence and nobody read it.** `Kit.__init__` built the ink set from six keys and
+  `focus` was not one of them — which is exactly why `keyhint` reached for `plate`: the token it
+  wanted was not in the dict it paints from. The bug and its diagnosis were four lines apart.
+- **A case-sensitive reader passed a kit that had the defect.** inc74's first draft searched for the
+  mode label as written and corgi UPPERCASES its legend, so the law found no seat and said nothing.
+  Recorded in the reader's own comment. **A law that looks in the wrong place is worse than no law**,
+  because it also reports.
+- **inc60's dash count was forced by a constraint nobody restated.** The dead runs left `╌` because
+  `╌` was the warn rung; three batches later the cheaper move was to send the MEANING away instead,
+  and the same tables that were worth `(1, 8)` became worth `(0, 0)`. **The constraint was in a
+  comment and the alternative was never priced.**
+- **Two exemptions in this file already turn on "a ground is not a mark"** — `THE_GROUND_IS_NOT_A_MARK`
+  and `THE_BAND_IS_A_SECOND_GROUND` — and inc75 added a third, solari's confirm edge. Nobody has asked
+  whether that is one idea or three.
+- **The `.txt` cannot show colour and the `.svg` cannot show a keystroke.** Two of this batch's four
+  increments are invisible in the artefact three rounds judged the corpus on.
+
+### 19.10 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc72, inc73, inc74, inc75 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1249 → 1338 passed** (+89), the clipboard test red at the baseline and named in every packet — environment-coupled (§10.6), reported, not counted, not touched. `verify_language.py` **ALL PASSED exit 0** at every increment (and RED three times inside inc72, on the first draft of the blueprint fix — §19.9). `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` 66 of 66, refusals `[]` for all eleven. `capture_languages.py plain` 22 grids identical across two processes at every increment. `collision_census.py` both self-checks green; **TOTAL 30 → 28**, **homoglyph rows 26 → 24**. `export_to_skill.py` **14 written, 52 identical**. |
+| Notes | **Four increments, one agent, 2–3 source files each** (`taskboard/language.py`, `taskboard/themes.py`, `tests/test_components.py`, `prototypes/collision_census.py`). Twelve laws, eight teeth, one law retired, three constants re-measured. **Two of the brief's seven rulings were reported back with arithmetic and corrected by the orchestrator before any token moved**, which is the batch's own finding and is why §19.5 exists. |
