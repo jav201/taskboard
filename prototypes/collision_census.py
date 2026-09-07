@@ -517,11 +517,37 @@ FOUND_BY_HAND = (
     # LEFT braille column IS the severity ladder's column, so the only rail
     # that shares no cell with the ladder is the four-dot `⡇`, which is this
     # language's caret. The row stays; the defect at the opener is gone.
-    ("instrument", "⠇", {"severity", "button"}, None),   # error rung, button rail
+    # inc89: CLOSED. The severity ladder left `⠂ ⠆ ⠇` for `⢆ ⣆ ⣖` -- three
+    # dots, four, five -- because the first two rungs were 5.3% and 10.5%
+    # of a cell. `⠇` keeps the button rail and the field and is no longer a
+    # severity mark at all, so the round's oldest live instrument row goes
+    # with a change that was made for a different reason.
+    ("instrument", "⠇", {"severity", "button"}, "inc89"),  # error rung, rail
     ("instrument", "⠁", {"required", "switch"}, "inc46"),  # REQUIRED, switch DISABLED
     ("swiss", "━", {"cursor", "severity"}, "inc45"),     # cursor, error
     ("nord", "!", {"severity", "danger"}, "inc45"),      # warn, delete danger
     ("solari", "▁", {"required", "textfield"}, "inc47"),  # one of its nine roles
+    # TWO LIVE ROWS ADDED BY inc89, AND THE REASON IS THIS ROSTER'S OWN
+    # VACUITY GUARD. Closing `instrument ⠇` left every row of the five marked
+    # closed, and `assert live` fired: a roster in which nothing is live can
+    # no longer prove the census still SEES a collision, which is the whole
+    # job the five were doing. So two were found the way the five were --
+    # by opening a frame and looking -- rather than by relaxing the guard.
+    #
+    # BOTH ARE THE SAME FINDING IN TWO LANGUAGES: the ERROR RUNG AND THE
+    # DANGER FORM ARE ONE CELL. On `blueprint_S3` the shoulders of
+    # `━Delete all━` and the log's graver rung are the same stroke; on
+    # `corgi_S3` the shoulders of `█Delete all█` and its error rung are the
+    # same block. Two A-families on one cell, which is the strongest kind of
+    # row this census reports and the kind the original five were.
+    #
+    # NEITHER IS PROPOSED AS A DEFECT HERE. `DANGER_IS_THE_TOP_RUNG` already
+    # names this pairing as a decision two languages take on purpose -- the
+    # gravest thing the log can say and the gravest thing a button can be,
+    # drawn alike -- and no ruling has asked for it to be undone. What they
+    # are is LIVE, which is what the guard needs.
+    ("blueprint", "━", {"severity", "danger"}, None),   # error rung, delete form
+    ("corgi", "█", {"severity", "danger"}, None),       # error rung, delete form
 )
 
 
@@ -626,8 +652,26 @@ FOUND_BY_HAND = (
 #: widening the reader. naught stays at 12 — the radio's resting cells left
 #: the ring family, which is what `naught_S2` is judged on, but the family
 #: still holds every OTHER state of both controls.
+#:
+#: TWENTY-TWO, AFTER inc89 (`rework-9`), and the two that closed closed for
+#: a reason nobody was aiming at.  The ruling was about AREA -- six calm
+#: severity rungs were under Q1's coverage clause and took a bigger cell out
+#: of their own alphabets.  Two of those rungs were the character `·`, and
+#: `·` is a homoglyph of `●`, which is what a radio and a checkbox rest on:
+#:
+#:   nord      `·` LEVELS[info]  vs  `●` radio
+#:   darkside  `·` LEVELS[info]  vs  `●` radio, checkbox, slider, switch,
+#:                                       and this kit's identity mark
+#:
+#: SO THE INVISIBLE CALM RUNG WAS ALSO THE WRONG DRAWING, and only one of
+#: those two facts had an instrument.  A mark too small to find and a mark
+#: that looks like a control's resting dot are the same defect seen from two
+#: sides, and fixing the one that could be MEASURED closed the one that
+#: could only be argued.  Recorded here rather than in the packet alone,
+#: because a roster that fell without saying why is a roster nobody can
+#: check.
 HOMOGLYPH_ROSTER = {"naught": 12, "corgi": 0, "instrument": 0, "swiss": 1,
-                    "industrial": 0, "nord": 1, "darkside": 8, "prism": 0,
+                    "industrial": 0, "nord": 0, "darkside": 7, "prism": 0,
                     "ledger": 1, "solari": 1, "blueprint": 0}
 
 
@@ -656,8 +700,8 @@ def _self_check() -> None:
             f"REGRESSION: {lang} {cell} carries {sorted(want)} again -- "
             f"{closed_by} moved one of them off this cell")
     assert live, "SELF-CHECK VACUOUS: every roster row is marked closed"
-    print(f"self-check  {live} of the {len(FOUND_BY_HAND)} collisions the round "
-          f"found by hand still come back out of the census; {closed} are "
+    print(f"self-check  {live} of the {len(FOUND_BY_HAND)} collisions found by "
+          f"hand still come back out of the census; {closed} are "
           "asserted CLOSED and cannot grow back")
     print(f"self-check  the homoglyph roster is exact for all eleven "
           f"({sum(HOMOGLYPH_ROSTER.values())} rows, "

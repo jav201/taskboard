@@ -3344,7 +3344,17 @@ INVALID_CHANNEL_BEFORE = (
     ("corgi", "knob", "▀▄", ("required", "invalid"), None),
     ("corgi", "textfield.main", "▄▀·▀▄", ("required", "invalid"), None),
     ("corgi", "stepper.step", "▀▄▄▀", ("required", "invalid"), None),
-    ("instrument", "textfield.main", "⠸⠶⠇", ("ladder", "invalid"), None),
+    # inc89: THIS ARM NEEDED A SECOND RESTORE. `⠇` was `LEVELS["error"]`
+    # when inc52 wrote the row, and inc89 moved this kit's whole ladder
+    # three dots up the count (`⠂⠆⠇` -> `⢆⤆⤖`) because its
+    # first two rungs were 5.3% and 10.5% of a cell. So the pre-inc52 FIELD
+    # alone no longer collides with anything and the arm would have passed
+    # by absence. The pre-inc89 LADDER goes back with it -- the same shape
+    # blueprint's arm has carried since inc60 -- so what this arm still
+    # proves is what it always proved: the law reaches the LADDER and not
+    # only the danger form.
+    ("instrument", "textfield.main", "⠸⠶⠇", ("ladder", "invalid"),
+     ("LEVELS", {"info": "⠂⠂", "warn": "⠆⠆", "error": "⠇⠇"})),
 )
 
 
@@ -4175,6 +4185,15 @@ def test_the_opener_law_goes_red_on_the_two_declarations_inc48_and_inc46_moved(
                for o in LANGS if o != "industrial")
     monkeypatch.undo()
 
+    # inc89: THE LADDER GOES BACK WITH THE BUTTON, for the same reason
+    # instrument's arm above needed it. `·` was `LEVELS["info"]` when
+    # inc46 moved this declaration, and inc89 replaced it with `▁`
+    # because a 4.7%-coverage dot is not a mark -- so the pre-inc46
+    # button alone would now hit on `•` only and the arm would prove
+    # half of what it was written to prove. Both rungs of that ladder
+    # are the point: `LEVELS["info"]` AND `REQUIRED` at one opener.
+    monkeypatch.setattr(LG.Swiss, "LEVELS",
+                        {"info": "·", "warn": "─", "error": "━"})
     monkeypatch.setitem(LG.Swiss.PART_GLYPHS, "button.main",
                         {LG.DEFAULT: "·   ", LG.FOCUSED: "•   ",
                          LG.ACTIVE: "●   ", LG.DISABLED: "    "})
@@ -4401,7 +4420,16 @@ PRISM_EMBER_BEFORE = (
     ("textfield.main", {LG.DEFAULT: "⣿⠀⣿", LG.FOCUSED: "⣿⣀⣿",
                         LG.EDITED: "⣿⣤⣿", LG.ACTIVE: "⣿⣶⣿",
                         LG.INVALID: "⣹⠀⣏", LG.DISABLED: "⠄⠄⠄"}, 4, 0),
-    ("stepper.main", {LG.DEFAULT: "⣀⣀", LG.DISABLED: "⠄⠄"}, 5, 0),
+    # inc89 MOVED THIS ROW'S OPENER SCORE FROM 5 TO 0, the same kind of
+    # side effect the `stepper.step` note below records and the second
+    # time this table has taken one.  The pre-inc59 `stepper.main` opens
+    # on `⣀`, and `⣀` scored because it was `LEVELS["info"]`.  inc89
+    # moved this kit's ladder one rung up its own ramp -- `⣀` is ONE
+    # dot-row and 11.1 % of a cell -- so the leading `⣀` is now the
+    # meter's floor and nothing else.  THE TABLE IS THE PRE-inc59
+    # DECLARATION AND IS UNCHANGED; what has moved is what that
+    # declaration COSTS, and the cost is the thing worth watching.
+    ("stepper.main", {LG.DEFAULT: "⣀⣀", LG.DISABLED: "⠄⠄"}, 0, 0),
     # inc82 MOVED THIS ROW'S OPENER SCORE FROM 1 TO 0, and the reason is a
     # side effect worth recording rather than absorbing: the pre-inc59
     # `stepper.step` opened on `⡀`, and `⡀` scored because it was
@@ -4458,7 +4486,10 @@ def test_both_seat_laws_go_red_on_each_of_the_ten_tables_inc59_moved(
             assert (len(meaning_marks_at_named_seats(other))
                     == MEANING_AT_A_NAMED_SEAT[other]), (key, other)
 
-    assert counts() == (24, 16), counts()
+    # inc89: 24 -> 19.  The whole cumulative total falls by the five seats
+    # `stepper.main` stopped costing when this kit's ladder left `⣀`; see
+    # that row's own note above.
+    assert counts() == (19, 16), counts()
     with pytest.raises(AssertionError):
         test_no_control_opens_with_a_mark_that_means_something("prism")
     with pytest.raises(AssertionError):
@@ -5122,10 +5153,17 @@ def test_the_census_reaches_every_mark_declared_outside_the_glyph_tables():
     source, which is exactly the method a census exists to replace.
 
     THE COUNTERFACTUAL IS THE TEETH. Put the OLD identity alphabet back and
-    darkside goes from one colliding cell to three: `o` is `LEVELS["warn"]`
-    and `O` is `LEVELS["error"]`, and both were the moon and the active tab.
-    (`(.)` is a FULL STOP and `LEVELS["info"]` is a MIDDLE DOT, so the third
-    rung never collided — two of three, said exactly.)"""
+    darkside goes from NO colliding cell to two: `o` is `LEVELS["warn"]` and
+    `O` is `LEVELS["error"]`, and both were the moon and the active tab.
+    (`(.)` is a FULL STOP and this kit's calm rung was a MIDDLE DOT, so the
+    third rung never collided — two of three, said exactly.)
+
+    AND THE BASELINE IS ZERO SINCE inc89, which is worth stopping on: this is
+    the FIRST language of the eleven with no cell doing two jobs. It got
+    there by AREA and not by tidying — the calm rung `·` was 4.7 % of a cell
+    and had to grow, and the cell it grew into (`c`, an open `o`) is spent by
+    nothing else here. The kit's last collision was closed by a ruling about
+    legibility."""
     import sys
     root = FRAMES.parents[1]
     for p in (root, root / "prototypes"):
@@ -5143,7 +5181,7 @@ def test_the_census_reaches_every_mark_declared_outside_the_glyph_tables():
         for cell in LG.kit(lang).FIELD_LEAD:
             assert "field" in named.get(cell, {}), (lang, cell)
 
-    assert list(colliding("darkside")) == ["·"], colliding("darkside")
+    assert list(colliding("darkside")) == [], colliding("darkside")
 
     old = ("( )", "(.)", "(o)", "(O)", "(o)", "(.)")
     saved = LG.Darkside.IDENT_GLYPHS
@@ -5152,7 +5190,7 @@ def test_the_census_reaches_every_mark_declared_outside_the_glyph_tables():
         was = colliding("darkside")
     finally:
         LG.Darkside.IDENT_GLYPHS = saved
-    assert sorted(was) == ["O", "o", "·"], was
+    assert sorted(was) == ["O", "o"], was
     assert "severity" in was["O"] and "identity" in was["O"], was["O"]
     assert "severity" in was["o"] and "identity" in was["o"], was["o"]
 
@@ -8391,7 +8429,7 @@ IDENTICAL_DRAWINGS = (("•", "∙"),)
 #: clears 3:1 declared at its worst seat where `*` did not.  Nothing else
 #: in either count moved: the three cursor tokens are hues that were over
 #: 3:1 DECLARED before they moved and are over it after.
-MEANING_MARKS = (80, 37)
+MEANING_MARKS = (80, 32)
 
 ARGUED_DISTANCE = {("•", "●"): 21.64, ("○", "◦"): 22.81, ("◎", "◉"): 21.42,
                    ("†", "‡"): 4.87, ("▪", "■"): 26.52, ("╌", "┄"): 4.09,
@@ -9237,13 +9275,13 @@ def _measure_cell(im, side, x: int, y: int, bg: str):
 #: would put it under the >= 8 clause.  A middle-band run that is not named
 #: here makes `floor_rows` raise rather than pick a side for it.
 NAMED_RUNS_5_TO_7 = {
-    ("naught", "severity", "∙", "#8a8a8a"):
-        ("bound", "the muted severity rung, seven cells wide on a log row "
-                  "that spends it as a MARK. Seven cells of a 14.0%-coverage "
-                  "disc still names the row's kind and nothing else."),
     ("naught", "severity", "∙", "#f5f5f5"):
-        ("bound", "the same rung in `ink` on the graver rows: the tier moved, "
-                  "the job did not."),
+        ("bound", "the severity rung, five or six cells wide on a log row "
+                  "that spends it as a MARK. Six cells of a 14.0%-coverage "
+                  "disc still names the row's kind and nothing else. It was "
+                  "TWO rows until inc89 -- one in `mut`, one in `ink` -- and "
+                  "putting this kit's calm and noteworthy rungs in `ink` left "
+                  "one tone where there were two."),
     ("naught", "danger", "∙", "#f5f5f5"):
         ("bound", "`DANGER_FORM` — the mark that says a button is "
                   "irreversible. Five or six cells of it is the button's own "
@@ -9306,7 +9344,7 @@ def floor_rows(lang: str) -> tuple:
 
 
 #: WHAT IS UNDER THE FLOOR TODAY, at the declared seat, over all eleven.
-#: 85 bound seats, 73 clear both clauses and 12 miss one or both.
+#: 83 bound seats, 79 clear both clauses and 4 miss one or both.
 #:
 #: THIS IS A RECORDED SET AND NOT A GATE — the shape `SECOND_WIDTH_RED` and
 #: `DIM_CLASSIFIES` already have in this file, and for the identical reason:
@@ -9348,17 +9386,10 @@ def floor_rows(lang: str) -> tuple:
 #:     inc82's kind of move — a glyph out of the language's own alphabet —
 #:     and it needs a round, not an increment.
 BELOW_THE_FLOOR = {
-    ("naught", "severity", "∙", "#8a8a8a"): "COV",
     ("naught", "severity", "∙", "#f5f5f5"): "COV",
-    ("naught", "severity", "◦", "#8a8a8a"): "COVEFF",
+    ("naught", "severity", "◦", "#f5f5f5"): "COV",
     ("naught", "danger", "∙", "#f5f5f5"): "COV",
-    ("instrument", "severity", "⠂", "#6e7b89"): "COVEFF",
-    ("instrument", "severity", "⠆", "#6e7b89"): "COVEFF",
-    ("swiss", "severity", "·", "#9b9b9b"): "COVEFF",
     ("swiss", "required", "•", "#f4f4f4"): "COV",
-    ("nord", "severity", "·", "#919cb0"): "COVEFF",
-    ("darkside", "severity", "·", "#757575"): "COVEFF",
-    ("prism", "severity", "⣀", "#8b98a5"): "COVEFF",
 }
 
 #: prism's `⣀` is the one drawing that sits on TWO grounds at its declared
@@ -9376,7 +9407,7 @@ BELOW_THE_FLOOR = {
 #: wall stopped being one cell repeated and became a mirrored pair, `░░·░░`
 #: -> `▚▚·▞▞`, so one seat became two.  All three counts are asserted so a
 #: seat that stops being DRAWN cannot be mistaken for a seat that passed.
-FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 85, 12
+FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 83, 4
 
 
 @pytest.mark.parametrize("lang", LANGS)
@@ -9785,14 +9816,20 @@ def test_every_middle_band_run_is_named_and_the_table_is_not_vacuous():
 def test_the_floor_law_bites_on_a_row_of_the_recorded_set(monkeypatch):
     """TEETH on the recorded set itself, in both directions.
 
-    THE ORIGINAL MUTANTS ARE GONE, and that is the strongest thing this
-    docstring can say. inc81 wrote this tooth against instrument `⠁` and
-    prism `⡀` — the two obligations round five returned — and inc82 took
-    both rows OUT of `BELOW_THE_FLOOR` by fixing the marks. A tooth whose
-    mutant has been fixed is a tooth that bit. It is re-pointed rather than
-    deleted, at two rows the fix did not touch and at two different failure
-    modes: swiss `•` (coverage, the obligation still under the floor) and
-    darkside `·` (both clauses, §7's worst mark of the corpus by eye).
+    THE ORIGINAL MUTANTS ARE GONE, TWICE OVER, and that is the strongest
+    thing this docstring can say. inc81 wrote this tooth against instrument
+    `⠁` and prism `⡀` — the two obligations round five returned — and inc82
+    took both rows OUT of `BELOW_THE_FLOOR` by fixing the marks. It was
+    re-pointed at swiss `•` (coverage) and darkside `·` (both clauses, §7's
+    worst mark of the corpus by eye), and inc89 fixed darkside's too. A tooth
+    whose mutant keeps being fixed is a tooth that keeps biting.
+
+    IT IS RE-POINTED A SECOND TIME AND THE SECOND MODE IS GONE. There is no
+    `COVEFF` row left in this corpus to aim at — inc89 emptied that column —
+    so both arms are now coverage rows, and they are chosen to be the two
+    DIFFERENT kinds of coverage row that remain: an OBLIGATION exempted by an
+    eye (swiss `•`) and a SEVERITY rung that is not (naught `◦`). If a third
+    kind ever appears this docstring is where it will not fit.
 
     Each arm must go red for its OWN kit and stay green for the other ten,
     which is the clause that says the law reads the cell and not the name.
@@ -9801,7 +9838,7 @@ def test_the_floor_law_bites_on_a_row_of_the_recorded_set(monkeypatch):
         test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang)
 
     for key, clause in ((("swiss", "required", "•", "#f4f4f4"), "COV"),
-                        (("darkside", "severity", "·", "#757575"), "COVEFF")):
+                        (("naught", "severity", "◦", "#f5f5f5"), "COV")):
         assert BELOW_THE_FLOOR[key] == clause, key
         thinner = {k: v for k, v in BELOW_THE_FLOOR.items() if k != key}
         monkeypatch.setitem(globals(), "BELOW_THE_FLOOR", thinner)
@@ -9905,6 +9942,20 @@ def _drawn(ch: str, fg: str, bg: str) -> tuple:
 #:   changed under them.  A roster that only held the rows that worked
 #:   would be a report and not a record.
 SEATS_MOVED_TO_INK = {
+    # inc89 -- SEVEN ROWS THE AREA MOVE ADDED, and they are inc85's own
+    # prediction coming true. inc85 left `naught` and `instrument` out of
+    # `RUNG_TAKES_INK` because they missed the COVERAGE clause too and "a
+    # tone move does not cure an area failure". inc89 made the area move,
+    # and the contrast clause then fell to this table for five kits at
+    # once -- with `info` AND `warn` in each, because a ladder whose calm
+    # rung is `ink` and whose noteworthy one is `mut` descends.
+    ("naught", "severity", "◦"): ("mut", 2.40, 5.68),
+    ("naught", "severity", "∙"): ("mut", 3.50, 9.66),
+    ("instrument", "severity", "⢆"): ("mut", 1.90, 4.17),
+    ("instrument", "severity", "⣆"): ("mut", 1.95, 4.22),
+    ("nord", "severity", "~"): ("mut", 2.36, 4.18),
+    ("darkside", "severity", "c"): ("mut", 2.36, 7.51),
+    ("prism", "severity", "⣶"): ("mut", 2.33, 4.28),
     ("swiss", "severity", "─"): ("mut", 2.87, 5.81),
     ("industrial", "severity", "▫"): ("mut", 2.77, 5.82),
     ("industrial", "severity", "▪"): ("mut", 3.73, 8.82),
@@ -9934,15 +9985,22 @@ SEATS_MOVED_TO_INK = {
     ("blueprint", "invalid", "╲"): ("dim", 1.14, 4.47),
 }
 
-#: THE ONE SEAT THAT WAS GREEN AND MOVED ANYWAY, with the sentence that
-#: justifies it.  industrial's ladder is `▫▫ / ▪▪ / ■■` and the HOLLOW square
-#: is thinner than the FILLED one at the same tier, so the calm rung missed
-#: the clause (2.77) where the noteworthy one cleared it (3.73).  Applying
-#: the ruling to `info` alone would have left `ink / mut / ink` -- the calm
-#: rung LOUDER than the one above it.  A ladder that descends is not a
-#: ladder, so `warn` came with it.  Named because it is the only row in this
-#: increment that touches a seat no measurement condemned.
-CARRIED_BY_THE_LADDER = {("industrial", "severity", "▪")}
+#: THE SEATS THAT WERE GREEN AND MOVED ANYWAY, each with the sentence that
+#: justifies it.  Both are the same sentence: A LADDER THAT DESCENDS IS NOT
+#: A LADDER.
+#:
+#: `industrial ▪` (inc85) -- the ladder is `▫▫ / ▪▪ / ■■` and the HOLLOW
+#: square is thinner than the FILLED one at the same tier, so the calm rung
+#: missed the clause at 2.77 where the noteworthy one cleared it at 3.73.
+#: Applying the ruling to `info` alone would have shipped `ink / mut / ink`.
+#:
+#: `naught ∙` (inc89) -- the disc clears `mut` on its own at 3.50; it is the
+#: RING in the same rung (`∙◦`, one disc and one nought) that does not, at
+#: 2.40.  A rung is ONE SEAT and is painted in one tone, so the disc came
+#: with the ring.  This is the first row here whose reason is a rung drawn
+#: in TWO CELLS rather than a ladder drawn in two weights.
+CARRIED_BY_THE_LADDER = {("industrial", "severity", "▪"),
+                         ("naught", "severity", "∙")}
 
 #: WHAT IS STILL UNDER THE EFFECTIVE CLAUSE AND ONLY THAT CLAUSE.  NOTHING.
 #:
@@ -10143,9 +10201,20 @@ def test_the_uncured_table_is_empty_and_the_corpus_agrees():
     assert not got, sorted(got)
     # AND THE SWEEP IS NOT EMPTY OF EVERYTHING, which is the arm that says the
     # measurement still runs: the floor is still failed, by area, in six kits.
-    still = {(lang, v) for lang in LANGS
-             for _f, _c, _t, v, _r in floor_rows(lang) if v}
-    assert {v for _l, v in still} == {"COV", "COVEFF"}, sorted(still)
+    still = [(lang, v) for lang in LANGS
+             for _f, _c, _t, v, _r in floor_rows(lang) if v]
+    assert {v for _l, v in still} == {"COV"}, sorted(still)
+    # AND THE FOUR THAT REMAIN ARE ONE NUMBER. inc89 emptied the
+    # both-clause column as well, so what is left under the floor is four
+    # seats that all measure EXACTLY 14.0% of the cell -- one point under
+    # a clause the round set at 15% -- and nothing else. Asserted because
+    # it is the strangest fact this table has ever held and a reader who
+    # does not know it will read four failures where there is one.
+    assert len(still) == FLOOR_SEATS_FAILING, sorted(still)
+    covs = {round(_drawn(ch, tone, LG.THEMES[lang]["ground"])[0], 3)
+            for lang in LANGS
+            for _f, ch, tone, v, _r in floor_rows(lang) if v}
+    assert covs == {0.14}, sorted(covs)
 
 
 # ===========================================================================
@@ -10520,6 +10589,255 @@ def test_the_cursor_step_bites_when_the_token_goes_back(monkeypatch):
     for lang, cell in CURSOR_TOOK_A_LIGHTNESS_STEP:
         test_the_cursor_took_the_smallest_hue_preserving_step_that_clears(
             lang, cell)
+
+
+# ===========================================================================
+# inc89 (rework-9) -- the both-clause seats, moved by AREA
+#
+# THE RULING (orchestrator, 2026-09-07, on the operator's delegation):
+#
+#   Both-clause seats move by area (inc82's kind): the eight seats failing
+#   coverage AND contrast take a bigger glyph from their language's alphabet;
+#   `naught ◦` (13.5 %) is among them and gets no eye exemption.
+#
+# THE EIGHT ARE SIX SEVERITY LADDERS, and five of the six could be moved.
+# ===========================================================================
+
+#: THE FIVE LADDERS THE AREA MOVE REWROTE.
+#: `kit -> (was, coverage of each rung then, now, coverage of each rung now,
+#:          the extra families the new cells carry)`.
+#:
+#: COVERAGE IS OF THE FIRST CELL OF EACH RUNG, white on black, which is what
+#: Q1's clause is written about and what `_cov` measures.  It is recorded for
+#: BOTH tables so the claim "this is bigger" is a diff and not an adjective.
+#:
+#: THE FIFTH FIELD IS THE PRICE, and only prism pays one: `⣶` is also this
+#: kit's field leader.  It is named rather than filtered because a cell that
+#: quietly acquired a second job is the defect this whole census exists for.
+#: What prism actually did is a TRADE the census's own count cannot show --
+#: `⣀` was a THREE-family cell (`LEVELS[info]`, the bar's main run and the
+#: meter's track) and `⣶` is a TWO-family one, so the kit's colliding-cell
+#: count is flat at 3 while one fewer job is being done by one fewer cell.
+def _ink_area(ch: str) -> float:
+    """The fraction of the cell this drawing covers, off the canonical
+    white-on-black tile `_cov` builds -- which is what Q1's coverage
+    clause is written about and what `legibility.py` section A reports."""
+    px = _cov(ch)
+    return sum(1 for v in px if v) / len(px)
+
+
+LADDER_MOVED_BY_AREA = {
+    "instrument": (("⠂⠂", "⠆⠆", "⠇⠇"), (0.053, 0.105, 0.164),
+                   ("⢆⢆", "⣆⣆", "⣖⣖"), (0.164, 0.216, 0.269), ()),
+    "swiss": (("·", "─", "━"), (0.047, 0.158, 0.263),
+              ("▁", "─", "━"), (0.158, 0.158, 0.263), ()),
+    "nord": (("· ", "! ", "!!"), (0.047, 0.187, 0.187),
+             ("~ ", "! ", "!!"), (0.175, 0.187, 0.187), ()),
+    "darkside": (("· ", "o ", "O "), (0.047, 0.281, 0.409),
+                 ("c ", "o ", "O "), (0.246, 0.281, 0.409), ()),
+    "prism": (("⣀⣀", "⣤⣤", "⣿⣿"), (0.111, 0.216, 0.444),
+              ("⣤⣤", "⣶⣶", "⣿⣿"), (0.216, 0.322, 0.444), (("⣶", "field"),)),
+}
+
+#: THE SIXTH LADDER, AND THE ONE THAT COULD NOT MOVE.
+#:
+#: `(kit, family, cell) -> (its coverage, the cells of its own alphabet that
+#: clear the clause, the one of those that OPENS a control, the cells the
+#: face has that this kit does not spend)`.
+#:
+#: naught's alphabet is CIRCLES and nothing else -- the charge ramp
+#: `◌ ○ ◑ ◍ ◎ ◉ ●`, the choice set `⊙ ⊚ ⊗`, `⊛` for obligation, `⋅` for the
+#: lattice and this ladder's own `∙ ◦`.  spec.md §11.5 wrote the limit four
+#: batches ago: *"naught and solari have no unspent cell left ... that
+#: argument is available exactly twice and it has been spent twice."*
+#:
+#: SO THE REFUSAL IS AN ENUMERATION AND THE LAW BELOW WALKS IT.  Every circle
+#: this kit owns that clears 15 % is spent by a CONTROL; `○` is worse than
+#: spent, it OPENS four of them, so taking it goes red on a law with no
+#: exemptions since inc52.  And the three circles the face has that this kit
+#: does not spend are ALL LARGER THAN THIS LADDER'S GRAVEST RUNG, so not one
+#: of them can be its calmest.  What was available was the TIER, and inc89
+#: took it: `RUNG_TAKES_INK` now carries naught, so `◦` measures 5.68 instead
+#: of 2.40 and the seat misses ONE clause instead of two.
+ALPHABET_EXHAUSTED = {
+    ("naught", "severity", "◦"): (
+        0.140, "○◑◍◎◉●⊙⊚⊗", "○", "◘◙⬤"),
+}
+
+
+@pytest.mark.parametrize("lang", sorted(LADDER_MOVED_BY_AREA))
+def test_a_severity_ladder_that_missed_by_area_took_a_bigger_cell(lang):
+    """THE RULING, in five clauses, and the fifth is the one that keeps the
+    census out of it.
+
+      (a) the kit ships the recorded ladder, rung for rung;
+      (b) both coverage tables reproduce off the tiles to three places -- the
+          BEFORE as well as the AFTER, because "bigger" is a comparison and a
+          record with only one side of it is an adjective;
+      (c) every rung of the new ladder clears BOTH of Q1's clauses at the
+          tone `log_row` paints it in, and at least one rung of the old one
+          missed the COVERAGE clause -- which is what makes this an area move
+          and not a tier move wearing one;
+      (d) the ladder ASCENDS, before and after: coverage never falls from one
+          rung to the next. A ladder that descends is not a ladder, and the
+          cheapest way to pass clause (c) would have been to make the calm
+          rung the loudest;
+      (e) every cell the new ladder introduces is credited by the census to
+          this kit's SEVERITY family, and any OTHER family it carries is
+          named in the roster. That is ruling C's criterion applied to a
+          severity mark instead of an invalid one.
+    """
+    was, cov_was, now, cov_now, extra = LADDER_MOVED_BY_AREA[lang]
+    k, t = LG.kit(lang), LG.THEMES[lang]
+    assert (k.LEVELS["info"], k.LEVELS["warn"], k.LEVELS["error"]) == now, \
+        (lang, k.LEVELS)
+
+    def first(rung):
+        return rung.strip()[:1]
+
+    assert tuple(round(_ink_area(first(g)), 3) for g in was) == cov_was, \
+        (lang, [round(_ink_area(first(g)), 3) for g in was])
+    assert tuple(round(_ink_area(first(g)), 3) for g in now) == cov_now, \
+        (lang, [round(_ink_area(first(g)), 3) for g in now])
+
+    for level, rung in zip(("info", "warn", "error"), now):
+        tone = (t["ink"] if level in LG.RUNG_TAKES_INK.get(lang, ())
+                else t["mut"] if level in ("info", "warn") else t["ink"])
+        for ch in set(rung.strip()):
+            cov, eff = _drawn(ch, tone, t["ground"])
+            assert cov >= FLOOR_COVERAGE, (lang, level, ch, cov)
+            assert eff >= FLOOR_EFFECTIVE, (lang, level, ch, eff)
+    assert any(c < FLOOR_COVERAGE for c in cov_was), (lang, cov_was)
+
+    for table in (cov_was, cov_now):
+        assert list(table) == sorted(table), (lang, table)
+
+    named, other = _census().role_map(lang)
+    for ch in {c for g in now for c in g.strip()} - \
+              {c for g in was for c in g.strip()}:
+        fams = set(named.get(ch, {})) | set(other.get(ch, {}))
+        assert "severity" in fams, (lang, ch, sorted(fams))
+        assert fams - {"severity"} == {f for c, f in extra if c == ch}, \
+            (lang, ch, sorted(fams), "an unnamed second job")
+
+
+def test_the_ladder_naught_could_not_move_is_refused_by_an_enumeration():
+    """THE SIXTH SEAT, and the refusal walked rather than asserted.
+
+    Four clauses, and together they are the whole argument:
+
+      (a) the mark still measures what the roster says and is still under the
+          coverage clause -- a refusal for a seat that has stopped failing is
+          stale and this is where it would show;
+      (b) EVERY cell of this kit's own alphabet that clears the clause is
+          spent by a family that is not severity. That is the sentence
+          "the alphabet is exhausted", turned into a walk;
+      (c) the cell named as an OPENER really opens a control -- so the
+          cheapest raid on that alphabet is the one that goes red on
+          `test_no_control_opens_with_a_mark_that_means_something`, which has
+          had no exemptions since inc52;
+      (d) every circle the face has that this kit does not spend is LARGER
+          than this ladder's gravest rung. A calm rung heavier than the grave
+          one is not a ladder, so the unspent cells cannot serve either.
+    """
+    for (lang, family, ch), (cov, spent, opener, free) in \
+            ALPHABET_EXHAUSTED.items():
+        k, t = LG.kit(lang), LG.THEMES[lang]
+        assert round(_ink_area(ch), 3) == cov, (lang, ch, _ink_area(ch))
+        assert cov < FLOOR_COVERAGE, (lang, ch, cov)
+        assert (family, ch, t["ink"]) in declared_seat_tones(lang), (lang, ch)
+
+        named, other = _census().role_map(lang)
+        for cell in spent:
+            assert _ink_area(cell) >= FLOOR_COVERAGE, (lang, cell, "not bigger")
+            fams = (set(named.get(cell, {})) | set(other.get(cell, {}))) - \
+                   {family}
+            assert fams, (lang, cell, "unspent after all -- the refusal is stale")
+
+        assert opener in spent, (lang, opener)
+        opens = [g for comp in OPENING_CONTROLS
+                 for part in LG.COMPONENT_PARTS[comp]
+                 for st in LG.component_states(comp)
+                 for g in (k.part_glyph(part, st, comp),)
+                 if len(g) >= 2 and g[0] == opener]
+        assert opens, (lang, opener, "named as an opener and opens nothing")
+
+        gravest = max(_ink_area(c) for c in k.LEVELS["error"].strip())
+        for cell in free:
+            fams = set(named.get(cell, {})) | set(other.get(cell, {}))
+            assert not fams, (lang, cell, sorted(fams), "not free after all")
+            assert _ink_area(cell) > gravest, (lang, cell, _ink_area(cell), gravest)
+
+
+def test_the_area_move_bites_when_a_ladder_goes_back(monkeypatch):
+    """TEETH -- five arms, one per ladder, and each one MEASURED.
+
+    THE MUTANT IS THE DECLARATION and the red is the roster's law, because
+    the floor law cannot be the tooth here: `floor_rows` reads the shipped
+    PNGs, and a ladder put back in the source does not put its cells back on
+    the sheets. So each arm asserts three things instead of one -- that the
+    kit no longer ships the recorded ladder, that the old calm rung really
+    is under the coverage clause when re-measured, and that the other four
+    kits stay green under the mutant.
+    """
+    for lang in LADDER_MOVED_BY_AREA:
+        test_a_severity_ladder_that_missed_by_area_took_a_bigger_cell(lang)
+
+    for lang, (was, cov_was, _now, _cn, _x) in LADDER_MOVED_BY_AREA.items():
+        kind = type(LG.kit(lang))
+        monkeypatch.setattr(kind, "LEVELS", dict(
+            zip(("info", "warn", "error"), was)))
+        declared_seat_tones.cache_clear()
+        assert _ink_area(was[0].strip()[:1]) < FLOOR_COVERAGE, (lang, was[0])
+        with pytest.raises(AssertionError):
+            test_a_severity_ladder_that_missed_by_area_took_a_bigger_cell(lang)
+        for other in LADDER_MOVED_BY_AREA:
+            if other != lang:
+                test_a_severity_ladder_that_missed_by_area_took_a_bigger_cell(
+                    other)
+        monkeypatch.undo()
+        declared_seat_tones.cache_clear()
+
+    for lang in LADDER_MOVED_BY_AREA:
+        test_a_severity_ladder_that_missed_by_area_took_a_bigger_cell(lang)
+
+
+def test_the_naught_refusal_bites_by_running_the_raid_it_refuses(monkeypatch):
+    """TEETH -- and this one does not mutate a roster, it TAKES THE CELL.
+
+    naught's ladder is set to `○○ / ⬤○ / ⬤⬤`: the count and the reading
+    preserved, both cells over the coverage clause, `⬤` unspent and East-
+    Asian-Width neutral. It is the move the ruling asked for and it is the
+    move that was refused, so the refusal is worth exactly what this arm
+    proves -- that the corpus rejects it and names the reason.
+
+    TWO REDS AND THEY ARE DIFFERENT REASONS: `○` opens the focused button,
+    the focused stepper and the field at two states, so the opener law fires;
+    and this kit's danger form is its own error rung by exemption
+    (`DANGER_IS_THE_TOP_RUNG`), so a ladder that leaves `∙` behind takes that
+    exemption's own precondition with it.
+    """
+    test_no_control_opens_with_a_mark_that_means_something("naught")
+    test_a_languages_meaning_marks_do_not_share_a_cell("naught")
+
+    monkeypatch.setattr(LG.Naught, "LEVELS",
+                        {"info": "○○", "warn": "⬤○", "error": "⬤⬤"})
+    declared_seat_tones.cache_clear()
+    hits = meaning_marks_at_an_opener("naught")
+    assert {h[3] for h in hits} == {"○"}, hits
+    assert len(hits) == 4, hits
+    with pytest.raises(AssertionError):
+        test_no_control_opens_with_a_mark_that_means_something("naught")
+    with pytest.raises(AssertionError):
+        test_a_languages_meaning_marks_do_not_share_a_cell("naught")
+    for other in LANGS:
+        if other != "naught":
+            test_no_control_opens_with_a_mark_that_means_something(other)
+    monkeypatch.undo()
+    declared_seat_tones.cache_clear()
+
+    test_no_control_opens_with_a_mark_that_means_something("naught")
+    test_a_languages_meaning_marks_do_not_share_a_cell("naught")
 
 
 # ---- K8 / E6: the run with no glyph ---------------------------------------

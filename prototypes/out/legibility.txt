@@ -3,7 +3,7 @@ legibility.txt -- the 66 frames measured on the RASTER, not on the svg
   face      Cascadia Mono 16px  C:\WINDOWS\Fonts\CascadiaMono.ttf
   cell      9x19 px = 171 pixels
   fallback  Segoe UI Symbol for ⊖⊚⊛⋅ (sizes {'⊖': 11, '⊚': 11, '⊛': 11, '⋅': 16})
-  corpus    209 distinct painted glyphs, 36993 painted cells, 2800 distinct (kit, glyph, ink, ground, weight, decoration) drawings
+  corpus    211 distinct painted glyphs, 36993 painted cells, 2802 distinct (kit, glyph, ink, ground, weight, decoration) drawings
 
   Every number below is an AREA or a RATIO measured on pixels a
   font actually drew. E2 (the svg carries no font metric) is
@@ -25,12 +25,12 @@ that is mostly edge -- which is section C's whole subject.
 --------------------------------------------------------
      ⠀     421   0.0%   0.0%  ............
      ⋅      64   1.4%   4.7%  ............
-     ·    2496   2.4%   4.7%  ............
+     ·    2478   2.4%   4.7%  ............
      .      22   2.4%   4.7%  ............
      ⠄      25   2.5%   5.3%  ............
      ⡀      25   2.5%   5.3%  ............
      ⠁       6   2.5%   5.8%  ............
-     ⠂      37   2.5%   5.3%  ............
+     ⠂      25   2.5%   5.3%  ............
      ⢀       6   2.5%   5.8%  ............
      ⠈       9   2.5%   6.4%  ............
      ⠐       2   2.5%   5.3%  ............
@@ -39,9 +39,8 @@ that is mostly edge -- which is section C's whole subject.
      '      22   4.9%   8.8%  #...........
      ⠤      88   5.0%  10.5%  #...........
      ⡄       9   5.0%  10.5%  #...........
-     ⠆       2   5.0%  10.5%  #...........
      ⠃      12   5.0%  11.1%  #...........
-     ⣀      52   5.0%  11.1%  #...........
+     ⣀      40   5.0%  11.1%  #...........
      ⠉     122   5.0%  12.3%  #...........
      ⠒    1381   5.1%  10.5%  #...........
      ⠘      12   5.1%  11.7%  #...........
@@ -52,8 +51,9 @@ that is mostly edge -- which is section C's whole subject.
      _       2   6.9%  10.5%  #...........
      ╎       4   7.4%  17.5%  #...........
      ⡤      13   7.6%  15.8%  #...........
-     ⠇      12   7.6%  16.4%  #...........
+     ⠇       8   7.6%  16.4%  #...........
      ⡆       3   7.6%  15.8%  #...........
+     ⢆      12   7.6%  16.4%  #...........
      ⠸      54   7.6%  17.0%  #...........
      ◦    2009   7.6%  14.0%  #...........
      ◌       3   7.6%  26.3%  #...........
@@ -62,6 +62,7 @@ that is mostly edge -- which is section C's whole subject.
      ^      22   8.6%  15.2%  #...........
      ─    6266   8.7%  15.8%  #...........
      !      18   9.0%  18.7%  #...........
+     ~       6   9.1%  17.5%  #...........
      ▫      25   9.7%  17.0%  #...........
      ┆      27   9.8%  26.3%  #...........
      ⊚       1   9.8%  26.9%  #...........
@@ -70,10 +71,10 @@ that is mostly edge -- which is section C's whole subject.
      ∙     134  10.1%  14.0%  #...........
      •       2  10.1%  14.0%  #...........
      ⠧       4  10.1%  21.6%  #...........
-     ⣤      11  10.1%  21.6%  #...........
+     ⣤      21  10.1%  21.6%  #...........
      ⡇      45  10.1%  21.6%  #...........
      ⠶      29  10.1%  21.1%  #...........
-     ⣆       2  10.1%  21.6%  #...........
+     ⣆       4  10.1%  21.6%  #...........
      ⠼       4  10.1%  22.2%  #...........
      ⣉       2  10.1%  23.4%  #...........
      ⢸      42  10.1%  22.8%  #...........
@@ -88,7 +89,8 @@ that is mostly edge -- which is section C's whole subject.
      ╭       1  11.5%  21.1%  #...........
      ╯       1  11.8%  20.5%  #...........
      ╮       1  11.9%  21.1%  #...........
-     ▁    1895  12.6%  15.8%  ##..........
+     ▁    1901  12.6%  15.8%  ##..........
+     ⣖       4  12.6%  26.9%  ##..........
      <       3  12.8%  25.7%  ##..........
      ▏      34  12.9%  22.2%  ##..........
      ▪      38  12.9%  17.5%  ##..........
@@ -107,13 +109,13 @@ that is mostly edge -- which is section C's whole subject.
      ‡       2  14.2%  25.1%  ##..........
      |       8  14.6%  29.8%  ##..........
      ▽       1  14.9%  28.7%  ##..........
-     ⣶      75  15.1%  32.2%  ##..........
+     ⣶      77  15.1%  32.2%  ##..........
      ⠿      59  15.1%  33.3%  ##..........
      ⣏       1  15.1%  33.9%  ##..........
      ⣹       1  15.1%  33.9%  ##..........
      L     158  15.2%  19.9%  ##..........
      v     147  15.2%  25.7%  ##..........
-     c     494  15.5%  24.6%  ##..........
+     c     500  15.5%  24.6%  ##..........
      ○       9  15.6%  30.4%  ##..........
      x      73  15.7%  27.5%  ##..........
      T     258  15.8%  26.3%  ##..........
@@ -283,7 +285,7 @@ B2. THE TEN SMALLEST IN THE CORPUS -- every pair of distinct
       ⊖ ⊛     2.27%  NO                      6        2
       . :     2.39%  NO                     22      209
       . ⠀     2.39%  NO                     22      421
-      · ⠀     2.39%  NO                   2496      421
+      · ⠀     2.39%  NO                   2478      421
       ⠀ ⠄     2.52%  NO                    421       25
 
 B3. THE 48 PAIRS `HOMOGLYPH_FAMILIES` DERIVES, smallest first
@@ -292,14 +294,14 @@ B3. THE 48 PAIRS `HOMOGLYPH_FAMILIES` DERIVES, smallest first
 ----------------------------------------
       ∙ •     0.00%  134/2       
       ┄ ┈     2.79%  16/2        
-      ⋅ ·     3.12%  64/2496     
+      ⋅ ·     3.12%  64/2478     
       ▫ ▪     3.20%  25/38       
       ╌ ┄     4.09%  90/16       
       ╌ ┈     4.46%  90/2        
       † ‡     4.87%  2/2         
       ○ ◉     5.82%  9/23        
-      · •     7.68%  2496/2      
-      · ∙     7.68%  2496/134    
+      · •     7.68%  2478/2      
+      · ∙     7.68%  2478/134    
       ⋅ •     8.69%  64/2        
       ⋅ ∙     8.69%  64/134      
       ⊙ O    11.17%  0/354       
@@ -332,7 +334,7 @@ B3. THE 48 PAIRS `HOMOGLYPH_FAMILIES` DERIVES, smallest first
       ◉ ⊙    28.07%  23/0        
       ▫ □    28.85%  25/0        
       ◎ ⊙    28.96%  7/0         
-      · ●    29.32%  2496/27     
+      · ●    29.32%  2478/27     
       ▫ ■    29.72%  25/4        
       ⋅ ●    30.34%  64/27       
       ◦ O    31.29%  2009/354    
@@ -357,9 +359,7 @@ naught            ⊛ ○    19.25%  required vs button+checkbox+radio+stepper+t
 naught            ⊛ ◎    22.25%  required vs checkbox+slider                 
 naught            ⊛ ◉    20.39%  required vs checkbox+quantity+slider+stepper+switch+textfield
 naught            ⊛ ⊙    25.75%  required vs radio                           
-swiss             · •     7.68%  severity vs required                        
-nord              · ●    29.32%  severity vs radio                           
-darkside          · ●    29.32%  severity vs checkbox+identity+radio+slider+switch
+swiss             • ·     7.68%  required vs scrollbar+textfield             
 darkside          o ◦    17.16%  severity vs radio                           
 darkside          O ◦    31.29%  severity vs radio                           
 darkside          o ◎    22.94%  severity vs checkbox+identity+slider+switch 
@@ -370,7 +370,7 @@ darkside          ▪ ▫     3.20%  required vs radio
 ledger            † ‡     4.87%  required vs invalid                         
 solari            O ◉    21.56%  severity vs radio                           
 ------------------------------------------------------------------------------
-24 rows, the census's own count
+22 rows, the census's own count
 
 ==============================================================================
 C. EFFECTIVE CONTRAST -- the ratio the pixels give, and the coverage
@@ -418,17 +418,17 @@ solari        .  4.7%   1.78   3.65    0.083  S4 r12 c36 (+1)
 prism         ⠄  5.3%   1.64   3.25    0.086  S2 r16 c16 (+5)           
 prism         ⠈  5.3%   1.64   3.25    0.086  S3 r6 c28 (+0)            
 darkside      .  4.7%   1.90   4.56    0.089  S4 r15 c67 (+1)           
-darkside      ·  4.7%   1.90   4.56    0.089  S5 r8 c11 (+5)            
 ledger        ·  4.7%   1.98   4.51    0.092  S1 r6 c16 (+49)           
 instrument    .  4.7%   2.01   4.50    0.094  S4 r15 c36 (+1)           
 instrument    ·  4.7%   2.01   4.50    0.094  S1 r1 c19 (+5)            
 ledger        .  4.7%   2.05   4.96    0.096  S4 r27 c36 (+1)           
 ledger        ·  4.7%   2.05   4.96    0.096  S1 r1 c87 (+266)          
-instrument    ⠂  5.3%   1.90   4.50    0.100  S5 r8 c11 (+11)           
 darkside      '  8.8%   1.15   1.39    0.101  S6 r1 c15 (+1)            
 solari        :  9.4%   1.08   1.20    0.101  S5 r8 c4 (+15)            
 solari        ,  9.4%   1.09   1.20    0.102  S3 r19 c28 (+0)           
 blueprint     :  9.4%   1.11   1.24    0.104  S5 r7 c4 (+15)            
+naught        .  4.7%   2.24   6.08    0.105  S4 r15 c36 (+1)           
+naught        ·  4.7%   2.24   6.08    0.105  S1 r1 c17 (+5)            
 
 ==============================================================================
 D. THE MEANING MARKS -- coverage x effective contrast, every kit
@@ -458,20 +458,20 @@ corgi         █ danger+severity          100.0%   4.41   4.50    4.410  S2 r6
 corgi         ▐ cursor                   55.6%   5.03   6.62    2.796  S1 r8         
 corgi         ▚ invalid                  57.9%  12.80  17.36    7.413  S2 r5         
 corgi         ▞ invalid                  60.2%  13.83  17.36    8.331  S2 r5         
-instrument    ⠂ severity                  5.3%   1.24   1.74    0.065  S1 r0         
-instrument    ⠆ severity                 10.5%   1.90   4.50    0.200  S5 r10        
-instrument    ⠇ severity                 15.8%   1.24   1.74    0.196  S2 r12        
 instrument    ⠛ danger                   21.1%   1.24   1.74    0.261  S4 r25        
 instrument    ⠶ invalid                  21.1%   1.24   1.74    0.261  S2 r5         
+instrument    ⢆ severity                 16.4%   4.17  16.52    0.682  S5 r8         
+instrument    ⣆ severity                 21.6%   4.22  16.52    0.913  S5 r10        
 instrument    ⣉ required                 23.4%   3.77  16.52    0.883  S2 r3         
+instrument    ⣖ severity                 26.9%   1.95   5.30    0.525  S2 r6         
 instrument    ⣿ cursor                   41.5%   1.24   1.74    0.516  S4 r0         
-swiss         · severity                  4.7%   1.28   1.75    0.060  S2 r4         
 swiss         • required                 14.0%   9.13  17.30    1.281  S2 r4         
 swiss         ─ severity                 15.8%   1.31   1.75    0.207  S1 r2         
 swiss         ━ severity                 26.3%   2.55   4.52    0.672  S2 r7         
 swiss         ║ invalid                  55.6%   7.95  17.30    4.415  S2 r6         
 swiss         ╱ danger                   28.7%   5.95  17.30    1.705  S3 r20        
 swiss         ╲ danger                   28.7%   5.94  17.30    1.703  S3 r20        
+swiss         ▁ severity                 15.8%   4.75   6.85    0.750  S5 r9         
 swiss         ▮ cursor                   37.4%   1.42   1.75    0.531  S4 r9         
 industrial    ! required                 18.7%   2.06   4.57    0.386  S1 r12        
 industrial    / invalid                  26.3%   2.51   5.81    0.660  S5 r3         
@@ -486,22 +486,22 @@ nord          ! severity                 18.7%   2.14   4.50    0.400  S1 r14
 nord          # danger                   41.5%   5.07  10.84    2.104  S3 r19        
 nord          * required                 30.4%   3.67  10.84    1.115  S2 r3         
 nord          ? invalid                  26.3%   4.29  10.84    1.130  S2 r5         
-nord          · severity                  4.7%   1.30   1.69    0.061  S1 r6         
+nord          ~ severity                 17.5%   4.18  10.84    0.733  S5 r8         
 nord          ▚ invalid                      --      --      --       --  NOT DRAWN
 nord          ▸ cursor                   20.5%   1.41   1.69    0.288  S4 r0         
 darkside      O severity                 40.4%   2.30   4.56    0.926  S4 r15        
+darkside      c severity                 23.4%   1.20   1.39    0.280  S1 r1         
 darkside      o severity                 28.1%   1.20   1.39    0.336  S1 r1         
-darkside      · severity                  4.7%   1.13   1.39    0.053  S1 r1         
 darkside      Ø invalid                  52.6%   7.22  19.26    3.799  S2 r5         
 darkside      ▊ cursor                   88.9%   1.30   1.39    1.159  S4 r9         
 darkside      ▚ danger                   57.9%  13.94  19.26    8.069  S3 r19        
 darkside      ▞ danger                   60.2%  15.12  19.26    9.108  S3 r19        
 darkside      ▪ required                 17.5%  10.10  19.26    1.772  S2 r3         
 prism         ▸ cursor                   21.1%   2.95   5.18    0.621  S4 r0         
-prism         ⣀ severity                  9.9%   1.46   2.41    0.145  S1 r12        
 prism         ⣆ required                 21.6%   4.22  16.02    0.913  S2 r3         
 prism         ⣏ invalid                  33.9%   3.96  16.02    1.345  S2 r5         
-prism         ⣤ severity                 21.6%   4.21  16.02    0.912  S5 r10        
+prism         ⣤ severity                 21.6%   4.21  16.02    0.912  S5 r8         
+prism         ⣶ severity                 31.0%   1.66   3.25    0.514  S1 r5         
 prism         ⣹ invalid                  33.9%   3.97  16.02    1.347  S2 r5         
 prism         ⣿ danger+severity          44.4%   1.89   5.15    0.842  S2 r6         
 ledger        ( danger                   26.9%   1.29   1.50    0.347  S3 r6         
@@ -532,24 +532,24 @@ D1. THE TEN WORST MEANING MARKS IN THE CORPUS
 
 rank kit          gl family                      cov     eff    decl  cov*eff
 ------------------------------------------------------------------------------
-   1 darkside      · severity                  4.7%   1.13   1.39    0.053
-   2 swiss         · severity                  4.7%   1.28   1.75    0.060
-   3 nord          · severity                  4.7%   1.30   1.69    0.061
-   4 instrument    ⠂ severity                  5.3%   1.24   1.74    0.065
-   5 prism         ⣀ severity                  9.9%   1.46   2.41    0.145
-   6 naught        ◦ severity                 13.5%   1.14   1.35    0.154
-   7 naught        ∙ danger+severity          14.0%   1.20   1.35    0.169
-   8 instrument    ⠇ severity                 15.8%   1.24   1.74    0.196
-   9 instrument    ⠆ severity                 10.5%   1.90   4.50    0.200
-  10 swiss         ─ severity                 15.8%   1.31   1.75    0.207
+   1 naught        ◦ severity                 13.5%   1.14   1.35    0.154
+   2 naught        ∙ danger+severity          14.0%   1.20   1.35    0.169
+   3 swiss         ─ severity                 15.8%   1.31   1.75    0.207
+   4 solari        L severity                 19.9%   1.13   1.20    0.226
+   5 corgi         ▁ severity                 15.8%   1.49   1.71    0.236
+   6 instrument    ⠛ danger                   21.1%   1.24   1.74    0.261
+   7 instrument    ⠶ invalid                  21.1%   1.24   1.74    0.261
+   8 blueprint     ┌ cursor                   24.6%   1.12   1.24    0.276
+   9 darkside      c severity                 23.4%   1.20   1.39    0.280
+  10 nord          ▸ cursor                   20.5%   1.41   1.69    0.288
 
 ==============================================================================
 E. THE PRODUCT, AND WHY THE RULING DID NOT TAKE IT
 ==============================================================================
 
-The 80 meaning marks the corpus draws span 0.053 to 9.802 on coverage x effective.
+The 80 meaning marks the corpus draws span 0.154 to 9.802 on coverage x effective.
 
-AND 37 OF THEM ARE UNDER 3:1 ON DECLARED
+AND 32 OF THEM ARE UNDER 3:1 ON DECLARED
 CONTRAST AT THE SEAT REPORTED HERE. That number is NOT a count
 of violations and must not be read as one. `worst seat` is this
 report's own choice of where to look, and inc74 judged seats one
@@ -613,9 +613,8 @@ invalid / #f2f2f2`, which was the value's own date separators.
 
 kit         family     gl tone        cov    eff   decl     run  seat      verdict 
 ------------------------------------------------------------------------------
-naught      severity    ∙ #8a8a8a  14.0%   3.50   6.08     1-9  S1 r10    FAIL COV
 naught      severity    ∙ #f5f5f5  14.0%   9.66  19.26     1-8  S1 r0     FAIL COV
-naught      severity    ◦ #8a8a8a  14.0%   2.40   6.08     1-2  S1 r10    FAIL COVEFF
+naught      severity    ◦ #f5f5f5  14.0%   5.68  19.26   1-100  S2 r16    FAIL COV
 naught      danger      ∙ #f5f5f5  14.0%   9.66  19.26     1-8  S1 r0     FAIL COV
 naught      required    ⊛ #f5f5f5  28.1%   3.45  19.26       1  S2 r3     pass    
 naught      invalid     ◑ #f5f5f5  38.0%   7.33  19.26       1  S2 r5     pass    
@@ -628,16 +627,16 @@ corgi       required    ▀ #f2f2f2  57.9%  16.93  17.36       1  S2 r3     pass
 corgi       invalid     ▚ #f2f2f2  57.9%  12.80  17.36       2  S2 r5     pass    
 corgi       invalid     ▞ #f2f2f2  60.2%  13.83  17.36       2  S2 r5     pass    
 corgi       cursor      ▐ #ff6600  55.6%   5.03   6.62       1  S1 r8     pass    
-instrument  severity    ⠂ #6e7b89   5.3%   1.90   4.50       2  S5 r8     FAIL COVEFF
-instrument  severity    ⠆ #6e7b89  10.5%   1.90   4.50       2  S5 r10    FAIL COVEFF
-instrument  severity    ⠇ #e8edf2  16.4%   4.16  16.52     1-2  S2 r16    pass    
+instrument  severity    ⢆ #e8edf2  16.4%   4.17  16.52       2  S5 r8     pass    
+instrument  severity    ⣆ #e8edf2  21.6%   4.22  16.52       2  S5 r10    pass    
+instrument  severity    ⣖ #e8edf2  26.9%   4.26  16.52       2  S5 r12    pass    
 instrument  danger      ⠛ #e8edf2  22.8%   3.92  16.52       1  S3 r19    pass    
 instrument  required    ⣉ #e8edf2  23.4%   3.77  16.52       1  S2 r3     pass    
 instrument  invalid     ⠶ #e8edf2  21.1%   4.40  16.52    1-27  S2 r5     pass    
 instrument  cursor      ⣿ #39d7c3  44.4%   3.01  10.82    1-21  S1 r0     pass    
-swiss       severity    · #9b9b9b   4.7%   2.64   6.85       1  S1 r1     FAIL COVEFF
 swiss       severity    ─ #f4f4f4  15.8%   5.81  17.30       1  S5 r11    pass    
 swiss       severity    ━ #f4f4f4  26.3%   7.91  17.30       1  S5 r13    pass    
+swiss       severity    ▁ #9b9b9b  15.8%   4.75   6.85       1  S5 r9     pass    
 swiss       danger      ╱ #f4f4f4  28.7%   5.95  17.30       1  S3 r20    pass    
 swiss       danger      ╲ #f4f4f4  28.7%   5.94  17.30       1  S3 r20    pass    
 swiss       required    • #f4f4f4  14.0%   9.13  17.30       1  S2 r4     FAIL COV
@@ -652,22 +651,21 @@ industrial  invalid     ▌ #f2f2f2  55.6%  13.43  15.55       1  S2 r5     pass
 industrial  invalid     ▐ #f2f2f2  55.6%  11.51  15.55       1  S2 r5     pass    
 industrial  cursor      ▶ #ff623b  35.1%   3.00   5.85       1  S1 r9     pass    
 nord        severity    ! #eceff4  18.7%   3.81  10.84     1-2  S5 r10    pass    
-nord        severity    · #919cb0   4.7%   2.26   4.51       1  S1 r1     FAIL COVEFF
+nord        severity    ~ #eceff4  17.5%   4.18  10.84       1  S5 r8     pass    
 nord        danger      # #eceff4  41.5%   5.07  10.84       1  S3 r19    pass    
 nord        required    * #eceff4  30.4%   3.67  10.84       1  S2 r3     pass    
 nord        invalid     ? #eceff4  26.3%   4.29  10.84       1  S2 r5     pass    
 nord        cursor      ▸ #8fbcbb  21.6%   3.28   5.99       1  S1 r0     pass    
 darkside    severity    O #f5f5f5  40.9%   6.99  19.26       1  S5 r10    pass    
+darkside    severity    c #f5f5f5  24.6%   7.51  19.26       1  S1 r3     pass    
 darkside    severity    o #f5f5f5  28.1%   8.34  19.26     1-2  S1 r0     pass    
-darkside    severity    · #757575   4.7%   1.90   4.56       1  S5 r8     FAIL COVEFF
 darkside    danger      ▚ #f5f5f5  57.9%  13.94  19.26       1  S3 r19    pass    
 darkside    danger      ▞ #f5f5f5  60.2%  15.12  19.26       1  S3 r19    pass    
 darkside    required    ▪ #f5f5f5  17.5%  10.10  19.26       1  S2 r3     pass    
 darkside    invalid     Ø #f5f5f5  52.6%   7.22  19.26       1  S2 r5     pass    
 darkside    cursor      ▊ #1783ff  88.9%   4.47   5.73       1  S1 r9     pass    
-prism       severity    ⣀ #8b98a5   9.9%   2.38   5.18       1  S4 r23    FAIL COVEFF
-prism       severity    ⣀ #8b98a5  11.1%   2.25   6.43       2  S5 r8     FAIL COVEFF
-prism       severity    ⣤ #e6edf3  21.6%   4.21  16.02       2  S5 r10    pass    
+prism       severity    ⣤ #e6edf3  21.6%   4.21  16.02       2  S5 r8     pass    
+prism       severity    ⣶ #e6edf3  32.2%   4.28  16.02       2  S5 r10    pass    
 prism       severity    ⣿ #e6edf3  44.4%   4.06  16.02     1-2  S3 r19    pass    
 prism       danger      ⣿ #e6edf3  44.4%   4.06  16.02     1-2  S3 r19    pass    
 prism       required    ⣆ #e6edf3  21.6%   4.22  16.02       1  S2 r3     pass    
@@ -699,11 +697,11 @@ blueprint   required    ═ #eef4f8  26.3%   5.62  10.60       1  S2 r2     pass
 blueprint   invalid     ╲ #eef4f8  28.7%   4.47  10.60       1  S2 r4     pass    
 blueprint   cursor      ┌ #eef4f8  24.6%   4.33  10.60       1  S1 r8     pass    
 ------------------------------------------------------------------------------
-F1. 85 BOUND SEATS, 73 PASS, 12 FAIL
+F1. 83 BOUND SEATS, 79 PASS, 4 FAIL
 
     coverage only    4
     effective only   0
-    both clauses     8
+    both clauses     0
 
 F2. THE ELEVEN OBLIGATIONS, which is the row the round predicted
 
@@ -742,10 +740,9 @@ blueprint     ═ 26.3%   5.62  10.60 pass
 F3. THE 5-7 RUNS, named per seat
 
     naught danger ∙ #f5f5f5  run [5, 6]  -> bound
-    naught severity ∙ #8a8a8a  run [7]  -> bound
     naught severity ∙ #f5f5f5  run [5, 6]  -> bound
 
-    3 seats in the middle band, all of them naught's `∙`.
+    2 seats in the middle band, all of them naught's `∙`.
     Every one is NAMED in `NAMED_RUNS` with a reason; an
     unnamed middle run is a hole in the ruling and the law
     below goes red on it rather than choosing a side.

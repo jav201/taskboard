@@ -128,16 +128,14 @@ GREY_DISTINCT = 1.10
 #: under Q1's two clauses like a 1-4 run, `structure` puts it under the
 #: >= 8 clause.  Nothing may be here without a reason a reader can check.
 NAMED_RUNS = {
-    ("naught", "severity", "∙", "#8a8a8a"):
-        ("bound",
-         "the muted severity rung of `naught_S5`, drawn seven cells wide "
-         "where a log row spends it as a MARK and not as a rule. Seven "
-         "cells of a 14.0%-coverage disc is still a mark: it names the "
-         "row's kind and nothing else joins it."),
     ("naught", "severity", "∙", "#f5f5f5"):
         ("bound",
-         "the same rung in `ink` on the graver rows. Same seat, same "
-         "reading; the tier changed, the job did not."),
+         "the severity rung of `naught_S5`, drawn five or six cells wide "
+         "where a log row spends it as a MARK and not as a rule. Six "
+         "cells of a 14.0%-coverage disc is still a mark: it names the "
+         "row's kind and nothing else joins it.  It read seven cells in "
+         "`mut` as well until inc89 put this kit's `info` and `warn` "
+         "rungs in `ink`, which left one tone where there were two."),
     ("naught", "danger", "∙", "#f5f5f5"):
         ("bound",
          "`DANGER_FORM`, which is the mark that says a button is "

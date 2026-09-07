@@ -1533,18 +1533,40 @@ def split_field_glyph(glyph: str) -> tuple[str, str, str]:
 #:   solari      warn `DLY`  1.94..2.59 -> 5.67..9.84
 #:   blueprint   warn `━ `   2.90 -> 5.60
 #:
-#: THE THREE KITS THAT ARE NOT HERE, each for its own reason and none of them
-#: "it passed": `corgi` clears the clause in `mut` at both rungs (4.77, 6.46);
-#: `naught` and `instrument` miss the COVERAGE clause as well as the contrast
-#: one, and a tone move does not cure an area failure -- that is inc82's kind
-#: of move (a glyph out of the language's own alphabet) and it needs a round,
-#: not an increment.  They stay in `BELOW_THE_FLOOR` with both clauses named.
+#: THE ONE KIT THAT IS NOT HERE: `corgi` clears the clause in `mut` at both
+#: rungs (4.77, 6.46), so it never needed the tier.
+#:
+#: AND `swiss` IS HERE FOR `warn` ONLY, which is the one tier LADDER left in
+#: the corpus's logs.  inc85 wrote that `naught` and `instrument` were absent
+#: because they missed the COVERAGE clause too and "a tone move does not cure
+#: an area failure".  inc89 made the area move, and the contrast clause then
+#: fell to this table exactly as inc85 predicted it would: FIVE KITS JOINED
+#: (naught, instrument, nord, darkside, prism), all of them with `info` AND
+#: `warn`, because a ladder whose calm rung is `ink` and whose noteworthy one
+#: is `mut` descends -- which is the sentence `industrial ▪` is already here
+#: for.  swiss is the exception and it is a MEASUREMENT: `▁` clears 3:1
+#: effective in `mut` at 4.75, so that kit keeps `mut / ink / ink` and the
+#: tier still says something there.
+#:
+#: THE MEASUREMENT FOR THE FIVE, `mut -> ink` effective on the NEW cells:
+#:
+#:   naught      info `○○`   2.25 -> 5.13
+#:   naught      warn `⬤○`   2.25 -> 5.13   CARRIED: `⬤` clears `mut` at
+#:               4.41 on its own; it is the `○` in the same rung that does
+#:               not, and a rung is one seat.
+#:   instrument  info `⢆⢆`   1.85 -> 4.17
+#:   instrument  warn `⣆⣆`   1.95 -> 4.22
+#:   nord        info `~ `   2.36 -> 4.18
+#:   darkside    info `c `   2.36 -> 7.51
+#:   prism       info `⣤⣤`   2.31 -> 4.21
 RUNG_TAKES_INK: dict[str, tuple[str, ...]] = {
+    "naught": ("info", "warn"),
+    "instrument": ("info", "warn"),
     "swiss": ("warn",),
     "industrial": ("info", "warn"),
-    "nord": ("warn",),
-    "darkside": ("warn",),
-    "prism": ("warn",),
+    "nord": ("info", "warn"),
+    "darkside": ("info", "warn"),
+    "prism": ("info", "warn"),
     "ledger": ("warn",),
     "solari": ("info", "warn"),
     "blueprint": ("warn",),
@@ -3078,7 +3100,15 @@ class Kit:
     #
     # ONE WIDTH PER LANGUAGE, so a column of rows aligns; three shapes, so the
     # level survives the colour being taken away (operator ruling 8).
-    LEVELS = {"info": "· ", "warn": "! ", "error": "!!"}
+    # inc89 (both-clause seats move by AREA): `·` was 4.7% of the cell at
+    # 2.26 in `mut`, third of round five's ten worst by eye, and it is the
+    # kind of mark this kit's own doctrine should never have drawn: base16
+    # inherits the terminal, and a terminal log marks a note with a
+    # character a keyboard has. `~` is 17.5% at 4.18 in `ink`, unspent in
+    # every state of every control here, and it is the ASCII mark for
+    # "about, roughly, nothing has happened" that a reader of logs already
+    # owns. The ladder stays `note / warning / two warnings`.
+    LEVELS = {"info": "~ ", "warn": "! ", "error": "!!"}
 
     # THE VALIDATION ROW — what a language does with the rest of the line
     # after it has said what was rejected, and which tier it says it in.
@@ -4521,6 +4551,33 @@ class Naught(Kit):
     # chose the pixel pair for, and the one `·` and `●` fail.
     REQUIRED = "⊛"
 
+    # inc89 (both-clause seats move by AREA): THE CELL DID NOT MOVE AND THE
+    # TIER DID, AND THE REFUSAL IS MEASURED. `◦` is 14.0% of the raster cell
+    # at 2.40 effective in `mut` -- one point under Q1's coverage clause and
+    # well under its contrast one -- and round five put it eighth in its ten
+    # worst marks by eye. The ruling asks for a bigger glyph out of this
+    # language's own alphabet. THIS LANGUAGE HAS NONE, and spec.md §11.5 said
+    # so four batches ago in its own words: "naught and solari have no
+    # unspent cell left ... that argument is available exactly twice and it
+    # has been spent twice."
+    #
+    # THE ENUMERATION, because a refusal without one is a preference. This
+    # alphabet is the CHARGE ramp `◌ ○ ◑ ◍ ◎ ◉ ●`, the CHOICE set `⊙ ⊚ ⊗`,
+    # `⊛` (obligation), `⋅` (the lattice) and this ladder's own `∙ ◦`. Every
+    # cell of it that clears 15% is spent by a CONTROL, and four of them are
+    # control OPENERS -- `○` alone opens the focused button, the focused
+    # stepper and the field at two states -- so taking one would go red on
+    # `test_no_control_opens_with_a_mark_that_means_something`, which has NO
+    # exemptions since inc52. The only circles the face has that this kit
+    # does not spend are `◘`, `◙` and `⬤`; the first two are a filled BOX
+    # with a hole in it and not this language's shape, and `⬤` at 49.1% is
+    # larger than the rung it would have to sit under.
+    #
+    # WHAT WAS AVAILABLE WAS THE TIER, and it is taken: `RUNG_TAKES_INK` now
+    # carries this kit for `info` and `warn`, so `◦` measures 5.68 instead of
+    # 2.40 and the seat misses ONE clause instead of two. It stays in
+    # `BELOW_THE_FLOOR` as `COV`, named and not exempt -- which is the
+    # ruling's own instruction about this mark.
     LEVELS = {"info": "◦◦", "warn": "∙◦", "error": "∙∙"}
 
     MATCH_STYLE = "bold {ink}"             # full charge, and no second red
@@ -5644,7 +5701,25 @@ class Instrument(Kit):
     # SATURATED mark, spent on `OVER`, on the `wip` icon and on the
     # disclosure above) or the log's worst row and its "there is more"
     # mark would be the same cell.
-    LEVELS = {"info": "⠂⠂", "warn": "⠆⠆", "error": "⠇⠇"}
+    # inc89 (both-clause seats move by AREA): SAME LADDER, THREE DOTS
+    # HIGHER. It read `⠂⠂ / ⠆⠆ / ⠇⠇` -- one, two and three dots -- and a
+    # braille dot is 5.3% of the cell, so the first two rungs were 5.3%
+    # and 10.5% and round five put both in its ten worst by eye. THE
+    # LADDER IS THE COUNT, so the fix is to count higher: three, four and
+    # five dots, 16.4% / 21.6% / 26.9%.
+    #
+    # AND THE THREE ARE STRICTLY NESTED, which no other ladder in this
+    # corpus is: `⠆` (the old warn rung) + dot 8 = `⢆`, + dot 7 = `⣆`,
+    # + dot 5 = `⣖`. Each rung is the one below it with a dot added, so
+    # "which is graver" is answered by looking for the extra dot rather
+    # than by remembering two shapes.
+    #
+    # ALL THREE CELLS WERE UNSPENT, which is why these and not the left
+    # column `⠇ ⡇ ⣇` the old ladder pointed at: those three are the
+    # slider's, the stepper's, the switch's, the button's and the
+    # field's, and taking them would have added two counted collisions to
+    # a census this batch had just brought down.
+    LEVELS = {"info": "⢆⢆", "warn": "⣆⣆", "error": "⣖⣖"}
     MATCH_STYLE = "underline {accent}"     # a scope marks a span with a cursor
 
     #: THE LATTICE TICK (inc57). `LATT` is the graticule this language
@@ -6228,7 +6303,19 @@ class Swiss(Kit):
     # A WEIGHT LADDER, which is this language's whole hierarchy device
     # ("hierarchy by weight, generous emptiness"): a dot, a hairline, a heavy
     # rule. One cell each, so a column of rows aligns.
-    LEVELS = {"info": "·", "warn": "─", "error": "━"}
+    # inc89 (both-clause seats move by AREA): THE CALM RUNG STOPPED BEING
+    # A DOT AND BECAME A RULE, which is what the other two always were.
+    # `·` was 4.7% of the cell at 2.64 in `mut` -- second of round five's
+    # ten worst by eye -- and it was the only rung of the three that was
+    # not a horizontal stroke. `▁` is 15.8% at 4.75 in `mut`: it CLEARS
+    # BOTH CLAUSES IN THE QUIET TIER, which is why this is the one kit of
+    # the six that kept a real tier ladder instead of going flat in `ink`.
+    #
+    # THE THREE RULES ARE NOW A WEIGHT LADDER AND A POSITION ONE: a
+    # hairline at the BASELINE, a hairline at the MIDDLE, a heavy rule at
+    # the middle. Position is one of ruling D's four channels and this kit
+    # spends nothing else on it.
+    LEVELS = {"info": "▁", "warn": "─", "error": "━"}
     MATCH_STYLE = "bold {alert}"           # the classic red, and never alone
 
     #: AIR (inc57). This language sets the figure on the SECOND COLUMN of
@@ -7567,7 +7654,25 @@ class Darkside(Kit):
     # size") -- and the cursor is now a stroke, a different family. Corrected
     # in inc57; a comment that cites a declaration two batches out of date is
     # how the next reader learns the wrong rule.
-    LEVELS = {"info": "· ", "warn": "o ", "error": "O "}
+    # inc89 (both-clause seats move by AREA): THE LADDER IS THREE
+    # LETTERFORMS NOW INSTEAD OF TWO AND A DOT. `·` was 4.7% of the cell
+    # at 1.90 in `mut` -- THE WORST MARK IN THE CORPUS by round five's
+    # count, first of its ten worst -- and it was the odd rung out: the
+    # other two are letters and it was punctuation.
+    #
+    # `c` IS AN OPEN `o`, which makes the ladder a single reading rather
+    # than two: the ring OPENS, CLOSES, then GROWS -- 24.6% / 28.1% /
+    # 40.9%, ascending, all three clear. It is unspent in every state of
+    # every control this kit draws.
+    #
+    # THE COST IS NAMED: this kit already had the only severity ladder in
+    # the corpus made of letters, so `collision_census.role_map` credits
+    # every `o` in the corpus to severity and now credits every `c` as
+    # well. inc87 made the DECLARED SEAT a column rather than a character,
+    # so no seat is invented by it; what it still moves is the count of
+    # marks section D reports at their WORST seat, which is a notice under
+    # Q3 and never a red.
+    LEVELS = {"info": "c ", "warn": "o ", "error": "O "}
     # THE ACCENT IS RESERVED FOR WHAT IS ACTIONABLE and a search hit is not:
     # it is a place in the text, not a thing to press.
     #
@@ -8056,7 +8161,15 @@ class Prism(Kit):
     # only area.
     REQUIRED = "⣆"
 
-    LEVELS = {"info": "⣀⣀", "warn": "⣤⣤", "error": "⣿⣿"}
+    # inc89 (both-clause seats move by AREA): THE LADDER MOVED ONE RUNG UP
+    # ITS OWN RAMP. The ramp this language declares is `⠄ ⣀ ⣤ ⣶ ⣿`, the
+    # four dot-rows of a braille cell, and the severity ladder was taking
+    # its first, third and fifth rungs. `⣀` is ONE row and 11.1% of the
+    # cell -- seventh of round five's ten worst -- so the ladder now takes
+    # TWO, THREE and FOUR rows: 21.6% / 32.2% / 44.4%, three CONSECUTIVE
+    # rungs of the ramp, which is a stronger reading than the one it
+    # replaced because the step between rungs is now constant.
+    LEVELS = {"info": "⣤⣤", "warn": "⣶⣶", "error": "⣿⣿"}
 
     MATCH_STYLE = "bold {accent}"          # the accent CALLS ATTENTION
 
