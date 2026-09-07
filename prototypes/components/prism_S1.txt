@@ -10,7 +10,7 @@ BOARD  16 tasks  ·  4 projects
 ▸ ▎  DOING 4                                                   status                       ⡀⡤⣶ open
 ▸   ▎  Fix login redirect                                3d    owner                      ⡀⡤⣶ jav201
     ▎    doing · 3d                                                                                 
-    ▎  Rate-limit the API                               2d!    ⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿  44%     
+    ▎  Rate-limit the API                               2d!    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀  44%     
     ▎    doing · -2d                                                                                
     ▎  Port the CSV importer                             9d                                         
     ▎    doing · 9d                                                                                 

@@ -4865,3 +4865,283 @@ def test_the_declared_ground_law_bites_on_the_defect_it_was_written_for():
     seen, spread = ground_report(covered)
     assert seen == k.t["ground"], "clause one still passes -- that is the point"
     assert max(spread, key=spread.get) == _TEXTUAL_DEFAULT_GROUND, spread
+
+
+# ---------------------------------------------------------------------------
+# inc64 (rework-6a) — L8 and L9: more value is more ink, in one direction
+# ---------------------------------------------------------------------------
+#: RELATIVE INK PER CELL, for the fill vocabulary these eleven kits actually
+#: spend. Braille and the block elements are COMPUTED — a braille cell's dots
+#: over eight, a block element's declared coverage — so they cannot drift. The
+#: eight below are DECLARED, with the reason, because Unicode gives no coverage
+#: for them and this file will not pretend to measure a font (E2: the artefacts
+#: carry no font metric). They are ordinal, not photometric: what every law
+#: here asks of them is which of two cells is the fuller, and each pair below
+#: is a pair the corpus draws side by side.
+CELL_INK = {
+    "·": 0.05,   # · MIDDLE DOT — the lightest mark in the corpus
+    "◦": 0.06,   # ◦ WHITE BULLET — the same size, hollow
+    "∙": 0.10,   # ∙ BULLET OPERATOR — the same size, filled
+    "─": 0.08,   # ─ LIGHT HORIZONTAL — one thin stroke
+    "━": 0.16,   # ━ HEAVY HORIZONTAL — the same stroke, doubled
+    "▪": 0.30,   # ▪ BLACK SMALL SQUARE
+    "▬": 0.50,   # ▬ BLACK RECTANGLE — half a cell, solid
+    "▫": 0.15,   # ▫ WHITE SMALL SQUARE — ▪'s outline
+}
+#: coverage of the block elements, U+2580–U+259F, as eighths or quarters of a
+#: cell. This is what the glyphs ARE, so it is arithmetic and not taste.
+CELL_INK.update({chr(cp): v for cp, v in {
+    0x2580: .5, 0x2581: .125, 0x2582: .25, 0x2583: .375, 0x2584: .5,
+    0x2585: .625, 0x2586: .75, 0x2587: .875, 0x2588: 1.0, 0x2589: .875,
+    0x258a: .75, 0x258b: .625, 0x258c: .5, 0x258d: .375, 0x258e: .25,
+    0x258f: .125, 0x2590: .5, 0x2591: .25, 0x2592: .5, 0x2593: .75,
+    0x2594: .125, 0x2595: .125, 0x2596: .25, 0x2597: .25, 0x2598: .25,
+    0x2599: .75, 0x259a: .5, 0x259b: .75, 0x259c: .75, 0x259d: .25,
+    0x259e: .5, 0x259f: .75,
+}.items()})
+
+
+def cell_ink(ch):
+    """How full one cell is, in the corpus's own fill vocabulary.
+
+    `None` means "this file has no weight for that cell", which is a REFUSAL
+    and not a zero: a law that scored an unknown glyph as empty would pass
+    every language that moved to one."""
+    o = ord(ch)
+    if ch in " ⠀":
+        return 0.0
+    if 0x2800 <= o <= 0x28ff:                       # braille: dots over eight
+        return bin(o - 0x2800).count("1") / 8
+    return CELL_INK.get(ch)
+
+
+def mark_ink(ch):
+    """`cell_ink`, with an unweighed glyph counted as a FULL mark.
+
+    Used only by the ticked-box law, and only in the direction that makes it
+    HARDER to pass. A box's two states differ in one cell; the corpus's tick
+    vocabulary is thirty-odd glyphs (`X`, `x`, `#`, `*`, `×`, `╳`, `╪`, `◉`,
+    `●`, `◍`, `◎`, `▲`, `▼`, `▽`, `┄` ...) and this file will not pretend to
+    know how full each of them draws in a font it cannot see (E2). Scoring an
+    unknown as 1.0 means an UNCHECKED cell that is unknown is treated as the
+    fullest thing on the page, so a language that ticked by taking ink away
+    cannot hide behind a glyph nobody weighed. The permissive half — blank to
+    an unknown mark — is a tick that adds a mark, which is the thing the law
+    is for."""
+    w = cell_ink(ch)
+    return 1.0 if w is None else w
+
+
+def checkbox_knob(k, base, on):
+    """The BOX, without the word beside it.
+
+    `Kit.checkbox` appends `check_label`, and three languages spend a word
+    there (`ON`/`--`, `posted`/`open`, `ON `/`OFF`). Counting the label would
+    have made this law measure how long the English is: solari's `OFF` is one
+    letter longer than its `ON `, so a whole-control reading called its ACTIVE
+    checkbox lighter when ticked while the box itself goes `▁·▁` → `▁█▁`."""
+    state = LG.with_checked(base, on)
+    return shape(k.component_cells("checkbox", LG.bool_value(state),
+                                   0, 1, 1, state))
+
+
+#: the four control states a checkbox is declared at.
+_BOX_STATES = (LG.DEFAULT, LG.FOCUSED, LG.ACTIVE, LG.DISABLED)
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_ticked_box_is_never_lighter_than_an_empty_one(lang):
+    """L8. TICKING A BOX ADDS INK. It does not take it away.
+
+    `prism_S2` row 11 is the frame that asked for this law. The fixture ticks
+    `ui` and `urgent` and leaves `api` clear — every other language draws it
+    that way (`darkside` `( ) api  (◎) ui`, `corgi` `▒▒ -- api  ▓▓ ON ui`,
+    `naught` `◦ api  ◉ ui`). prism drew the two ticked tags as `⠿⠀⠿`, the
+    EMPTY well, and the one clear tag as `⠿⠉⠿`, a mark inside the box. Every
+    reader who has not read the kit points at `api`.
+
+    inc59 moved both of those tables in the same increment and did not notice,
+    because no law in this file has ever compared two states of one part (K4).
+    This is the first one that does.
+
+    MEASURED ON THE BOX AND NOT ON THE CONTROL — see `checkbox_knob`. And
+    measured as `>=`, not `>`: four languages tick by changing the SHAPE of a
+    mark at the same weight (naught `◦`→`◉`, `○`→`●`, `◌`→`◍`), which is
+    ruling D's first channel spent honestly, and a law demanding strictly more
+    ink would call those defects."""
+    k = LG.kit(lang)
+    for base in _BOX_STATES:
+        off, on = checkbox_knob(k, base, False), checkbox_knob(k, base, True)
+        assert len(off) == len(on), (lang, base, off, on)
+        moved = [(a, b) for a, b in zip(off, on) if a != b]
+        assert moved, (lang, base, "a tick that changes nothing", off)
+        for a, b in moved:
+            assert mark_ink(b) >= mark_ink(a), (lang, base, off, on, a, b)
+
+
+def test_the_ticked_box_law_bites_on_the_frame_it_was_written_for():
+    """Watched failing on the declaration inc64 moved, not on a mock.
+
+    The two centres are put back the way inc59 left them and the law goes red
+    at all four states of prism and at no state of any other language."""
+    saved = dict(LG.Prism.PART_GLYPHS)
+    try:
+        LG.Prism.PART_GLYPHS = dict(
+            saved,
+            **{"checkbox.main": {LG.DEFAULT: "⠿⠉⠿",
+                                 LG.FOCUSED: "⣷⠉⣷",
+                                 LG.ACTIVE: "⣾⠉⣾",
+                                 LG.DISABLED: "⠄⠄⠄"},
+               "checkbox.knob": {LG.DEFAULT: "⠿⠀⠿",
+                                 LG.FOCUSED: "⣷⠀⣷",
+                                 LG.ACTIVE: "⣾⠀⣾",
+                                 LG.DISABLED: "⠄⠀⠄"}})
+        red = []
+        for lang in LANGS:
+            k = LG.kit(lang)
+            for base in _BOX_STATES:
+                off = checkbox_knob(k, base, False)
+                on = checkbox_knob(k, base, True)
+                if any(mark_ink(b) < mark_ink(a)
+                       for a, b in zip(off, on) if a != b):
+                    red.append((lang, base))
+    finally:
+        LG.Prism.PART_GLYPHS = saved
+    assert [l for l, _ in red] == ["prism"] * 4, red
+    assert sorted(b for _, b in red) == sorted(_BOX_STATES), red
+    # and green again on the shipped declaration
+    k = LG.kit("prism")
+    assert checkbox_knob(k, LG.DEFAULT, True) == "⠿⠉⠿"
+    assert checkbox_knob(k, LG.DEFAULT, False) == "⠿⠀⠿"
+
+
+#: the two meters that draw no fill ramp at all, by name and with the kit's
+#: own word for what they draw instead. Their empty and full cells are not in
+#: `CELL_INK` and never will be — a digit and a terminator are not fill — so
+#: the direction law below cannot ask them anything, and a roster is the only
+#: honest way to say so. A third language arriving here is a language that has
+#: stopped drawing a ramp, and somebody has to look at it.
+RAMPLESS_METERS = {
+    "solari": "odometer",       # QUANTITY IS DIGITS, never a bar
+    "blueprint": "dimension",   # quantity is a DIMENSION SPAN with terminators
+}
+
+
+def track_cell(rendered):
+    """The cell a widget's TRACK is made of: the commonest non-ASCII glyph in
+    the rendering.
+
+    Commonest rather than first, because the head of these runs is not the
+    track — it is a knob (`◉`, `⢸`, `▙▟`), a bracket or a readout, and every
+    one of them appears once while the track appears ten to twenty-five
+    times. ASCII is dropped so a percentage, a `[`, a `/` or the word `WORK`
+    cannot win."""
+    counts = {}
+    for ch in plain(rendered).split("\n")[0]:
+        if ord(ch) < 128:
+            continue
+        counts[ch] = counts.get(ch, 0) + 1
+    return max(counts, key=counts.get) if counts else None
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_languages_fill_direction_is_one_declaration(lang):
+    """L9. MORE VALUE IS MORE INK, and it is the same answer at every widget
+    this language draws a quantity with.
+
+    THE FRAME THAT ASKED FOR IT. `prism_S1` row 13 drew
+    `⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿  44%` — twelve LIGHT cells of
+    twenty-seven, labelled 44 %, so the picture reads 56 % — while `prism_S3`
+    drew `⣿⣿⣿⣿⣿⣿⣿⣿⣿⢸⣀⣀⣀⣀ 70` and `prism_S5` drew
+    `⣿⣿⣿⣿⣿⣿⣿⣀⣀⣀⣀⣀⣀⣀ 5`, both heavy-first, out of the same kit. Two code
+    paths: `_meter_ember` composed its own bitmap and filled the DONE side
+    with ash, and `component_cells` spends `indicator` on the value and `main`
+    on the rest. One language, two directions, and no instrument in this repo
+    reached either — the meter, the slider and the bar are all outside
+    `PART_GLYPHS` and outside the census's set B (K5, spec §15.4).
+
+    HOW THE DIRECTION IS READ. Each widget is rendered at its floor and at its
+    ceiling and the track's own cell is taken from each (`track_cell`). The
+    law is that the ceiling's cell is fuller than the floor's — one relation,
+    asked three times, per language.
+
+    WHY `>` HERE AND `>=` IN THE BOX LAW. A checkbox may tick by changing a
+    mark's shape at the same weight; a QUANTITY may not, because the reader is
+    being asked to judge an amount from a length and the two ends of that
+    length have to differ."""
+    k = LG.kit(lang)
+    widgets = {
+        "meter": lambda v: k.meter(v, 100, [5, 4, 3, 4], 37),
+        "slider": lambda v: k.slider(v, 0, 100, 14),
+        "readbar": lambda v: k.readbar(v, 0, 100, 27),
+    }
+    asked = 0
+    for name, draw in widgets.items():
+        empty, full = track_cell(draw(0)), track_cell(draw(100))
+        if name == "meter" and lang in RAMPLESS_METERS:
+            assert (empty is None or cell_ink(empty) is None
+                    or full is None or cell_ink(full) is None), \
+                (lang, "has grown a ramp -- take it off RAMPLESS_METERS",
+                 empty, full)
+            continue
+        assert empty is not None and full is not None, (lang, name)
+        lo, hi = cell_ink(empty), cell_ink(full)
+        assert lo is not None and hi is not None, (lang, name, empty, full)
+        assert hi > lo, (lang, name, empty, lo, full, hi)
+        asked += 1
+    assert asked == (2 if lang in RAMPLESS_METERS else 3), (lang, asked)
+
+
+def test_the_fill_direction_law_bites_and_its_roster_is_not_vacuous():
+    """Watched failing on the code inc64 changed, and its two skips named.
+
+    `_meter_ember` is put back the way it filled before this increment — the
+    done side as ash, the rest as the solid field — and the law goes red for
+    prism's meter and for nothing else."""
+    import taskboard.wave as WV
+    saved = LG.METERS["ember"]
+
+    def burnt_first(k, done, total, counts, w):
+        c = k.c
+        bar_w = max(4, w - 10)
+        pct, _ = LG._pct_n(done, total, bar_w)
+        dots_w = bar_w * WV.DOT_COLS
+        burnt = 0 if not total else max(
+            0, min(dots_w, round(dots_w * done / total)))
+        live, ash = (WV.Bitmap(dots_w, WV.DOT_ROWS),
+                     WV.Bitmap(dots_w, WV.DOT_ROWS))
+        for x in range(dots_w):
+            if x < burnt:
+                ash.fill_to(x, 1)
+            else:
+                live.fill_to(x, WV.DOT_ROWS)
+        lit, spent = live.to_braille()[0], ash.to_braille()[0]
+        ash_c = k.t.get("ash", c["dim"])
+        bar = "".join(
+            f"[{ash_c}]{spent[i]}[/]" if spent[i] != " " else
+            (f"[{c['accent']}]{lit[i]}[/]" if lit[i] != " " else " ")
+            for i in range(bar_w))
+        return f"{bar} [{c['mut']}]{pct:>3}%[/]"
+
+    try:
+        LG.METERS["ember"] = burnt_first
+        k = LG.kit("prism")
+        empty = track_cell(k.meter(0, 100, [5, 4, 3, 4], 37))
+        full = track_cell(k.meter(100, 100, [5, 4, 3, 4], 37))
+        assert (empty, full) == ("⣿", "⣀"), (empty, full)
+        assert cell_ink(full) < cell_ink(empty)          # the law is RED here
+    finally:
+        LG.METERS["ember"] = saved
+
+    # the shipped direction, and the two skips, both measured
+    k = LG.kit("prism")
+    assert track_cell(k.meter(0, 100, [5, 4, 3, 4], 37)) == "⣀"
+    assert track_cell(k.meter(100, 100, [5, 4, 3, 4], 37)) == "⣿"
+    got = {}
+    for lang in LANGS:
+        kk = LG.kit(lang)
+        cells = (track_cell(kk.meter(0, 100, [5, 4, 3, 4], 37)),
+                 track_cell(kk.meter(100, 100, [5, 4, 3, 4], 37)))
+        if any(c is None or cell_ink(c) is None for c in cells):
+            got[lang] = cells
+    assert sorted(got) == sorted(RAMPLESS_METERS), got
