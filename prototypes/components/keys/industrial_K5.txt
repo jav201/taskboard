@@ -1,10 +1,10 @@
                                                                                                     
   [SIGNALS]  what the widget watches                                                                
   ─────────────────────────────────────────────────────────────────────────────────────────────     
-   ▶ [█I] [D] Nearest deadline     <#> fast  < > slow    1s   2                                     
-       Days until the soonest open task is due. The default hero.                                   
+     [█|] [D] Nearest deadline     <O> fast  < > slow    1s   2                                     
      [█|] [O] Overdue count        <O> fast  < > slow    2s   2                                     
-     [█|] [W] Work in flight       <O> fast  < > slow    2s   4 [██|···] 3                          
+   ▶ [█I] [W] Work in flight       <#> fast  < > slow    2s   4 ▐12/99/26▌                          
+       Tasks in the DOING phase, against a limit you set.                                           
      [█|] [B] Blocked              <O> fast  < > slow    3s   1                                     
      [█|] [$] Workday budget       < > fast  <O> slow   30s   9 [██|···] 18                         
      [█|] [F] Board file           < > fast  <O> slow   20s   7                                     

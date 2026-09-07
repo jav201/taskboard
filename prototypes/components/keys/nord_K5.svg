@@ -4,40 +4,37 @@
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <text x="26.8" y="40.3" fill="#8fbcbb">SIGNALS</text>
 <text x="102.4" y="40.3" fill="#919cb0">what the widget watches</text>
-<text x="35.2" y="74.3" fill="#8fbcbb">▸</text>
 <text x="52.0" y="74.3" fill="#919cb0">██</text>
-<text x="68.8" y="74.3" fill="#8fbcbb">▐</text>
+<text x="68.8" y="74.3" fill="#eceff4">▌ </text>
 <text x="85.6" y="74.3" fill="#919cb0">@</text>
-<text x="94.0" y="74.3" fill="#eceff4"> Nearest deadline     </text>
-<text x="278.8" y="74.3" fill="#8fbcbb">&lt;o&gt;</text>
-<text x="304.0" y="74.3" fill="#eceff4"> fast  </text>
+<text x="102.4" y="74.3" fill="#919cb0">Nearest deadline    </text>
+<text x="270.4" y="74.3" fill="#eceff4"> (o) fast  </text>
 <text x="362.8" y="74.3" fill="#4c566a">( )</text>
 <text x="396.4" y="74.3" fill="#919cb0">slow</text>
 <text x="438.4" y="74.3" fill="#4c566a">   1s</text>
 <text x="488.8" y="74.3" fill="#919cb0">  2</text>
-<text x="68.8" y="91.3" fill="#4c566a">Days until the soonest open task is due. The default hero.</text>
+<text x="52.0" y="91.3" fill="#919cb0">██</text>
+<text x="68.8" y="91.3" fill="#eceff4">▌ </text>
+<text x="85.6" y="91.3" fill="#919cb0">!</text>
+<text x="102.4" y="91.3" fill="#919cb0">Overdue count       </text>
+<text x="270.4" y="91.3" fill="#eceff4"> (o) fast  </text>
+<text x="362.8" y="91.3" fill="#4c566a">( )</text>
+<text x="396.4" y="91.3" fill="#919cb0">slow</text>
+<text x="438.4" y="91.3" fill="#4c566a">   2s</text>
+<text x="488.8" y="91.3" fill="#919cb0">  2</text>
+<text x="35.2" y="108.3" fill="#8fbcbb">▸</text>
 <text x="52.0" y="108.3" fill="#919cb0">██</text>
-<text x="68.8" y="108.3" fill="#eceff4">▌ </text>
-<text x="85.6" y="108.3" fill="#919cb0">!</text>
-<text x="102.4" y="108.3" fill="#919cb0">Overdue count       </text>
-<text x="270.4" y="108.3" fill="#eceff4"> (o) fast  </text>
+<text x="68.8" y="108.3" fill="#8fbcbb">▐</text>
+<text x="85.6" y="108.3" fill="#919cb0">~</text>
+<text x="94.0" y="108.3" fill="#eceff4"> Work in flight       </text>
+<text x="278.8" y="108.3" fill="#8fbcbb">&lt;o&gt;</text>
+<text x="304.0" y="108.3" fill="#eceff4"> fast  </text>
 <text x="362.8" y="108.3" fill="#4c566a">( )</text>
 <text x="396.4" y="108.3" fill="#919cb0">slow</text>
 <text x="438.4" y="108.3" fill="#4c566a">   2s</text>
-<text x="488.8" y="108.3" fill="#919cb0">  2</text>
-<text x="52.0" y="125.3" fill="#919cb0">██</text>
-<text x="68.8" y="125.3" fill="#eceff4">▌ </text>
-<text x="85.6" y="125.3" fill="#919cb0">~</text>
-<text x="102.4" y="125.3" fill="#919cb0">Work in flight      </text>
-<text x="270.4" y="125.3" fill="#eceff4"> (o) fast  </text>
-<text x="362.8" y="125.3" fill="#4c566a">( )</text>
-<text x="396.4" y="125.3" fill="#919cb0">slow</text>
-<text x="438.4" y="125.3" fill="#4c566a">   2s</text>
-<text x="488.8" y="125.3" fill="#919cb0">  4</text>
-<text x="522.4" y="125.3" fill="#919cb0">██</text>
-<text x="539.2" y="125.3" fill="#eceff4">▌</text>
-<text x="547.6" y="125.3" fill="#4c566a">─────</text>
-<text x="598.0" y="125.3" fill="#919cb0">3</text>
+<text x="488.8" y="108.3" fill="#919cb0">  4</text>
+<text x="514.0" y="108.3" fill="#eceff4"> ?12/99/26?</text>
+<text x="68.8" y="125.3" fill="#4c566a">Tasks in the DOING phase, against a limit you set.</text>
 <text x="52.0" y="142.3" fill="#919cb0">██</text>
 <text x="68.8" y="142.3" fill="#eceff4">▌ </text>
 <text x="85.6" y="142.3" fill="#919cb0">x</text>

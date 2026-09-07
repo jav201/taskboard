@@ -1,10 +1,10 @@
                                                                                                     
   SIGNALS  ·── WHAT THE WIDGET WATCHES                                                              
                                                                                                     
-   ┌ ├─╡ DIM Nearest deadline     ╡◉╞ fast  ┤ ├ slow    1s   2                                      
-       Days until the soonest open task is due. The default hero.                                   
+     ├─┤ DIM Nearest deadline     ┤○├ fast  ┤ ├ slow    1s   2                                      
      ├─┤ OVR Overdue count        ┤○├ fast  ┤ ├ slow    2s   2                                      
-     ├─┤ WIP Work in flight       ┤○├ fast  ┤ ├ slow    2s   4 ├──┤···· 3                           
+   ┌ ├─╡ WIP Work in flight       ╡◉╞ fast  ┤ ├ slow    2s   4 ╲12/99/26╲                           
+       Tasks in the DOING phase, against a limit you set.                                           
      ├─┤ ╱╱ Blocked              ┤○├ fast  ┤ ├ slow    3s   1                                       
      ├─┤ DAY Workday budget       ┤ ├ fast  ┤○├ slow   30s   9 ├───┤··· 18                          
      ├─┤ SHT Board file           ┤ ├ fast  ┤○├ slow   20s   7                                      

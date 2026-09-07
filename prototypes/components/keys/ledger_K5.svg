@@ -5,41 +5,38 @@
 <text x="26.8" y="40.3" fill="#1c1a15">SIGNALS ······························································ </text>
 <text x="623.2" y="40.3" fill="#635e52">what the widget watches</text>
 <text x="26.8" y="57.3" fill="#8a8272">──────────────────────────────────────────────────────────────────────────────────────────────</text>
-<text x="35.2" y="74.3" fill="#2b3a67">▶</text>
 <text x="52.0" y="74.3" fill="#635e52">──</text>
-<text x="68.8" y="74.3" fill="#2b3a67">▶</text>
-<text x="77.2" y="74.3" fill="#1c1a15"> posted </text>
+<text x="68.8" y="74.3" fill="#1c1a15">▪ posted </text>
 <text x="144.4" y="74.3" fill="#635e52">due</text>
-<text x="169.6" y="74.3" fill="#1c1a15"> Nearest deadline     </text>
-<text x="354.4" y="74.3" fill="#2b3a67">▶●┊</text>
-<text x="379.6" y="74.3" fill="#1c1a15"> fast  </text>
+<text x="178.0" y="74.3" fill="#635e52">Nearest deadline    </text>
+<text x="346.0" y="74.3" fill="#1c1a15"> ┊●┊ fast  </text>
 <text x="438.4" y="74.3" fill="#c4b99f">┊ ┊</text>
 <text x="472.0" y="74.3" fill="#635e52">slow</text>
 <text x="514.0" y="74.3" fill="#c4b99f">   1s</text>
 <text x="564.4" y="74.3" fill="#635e52">  2</text>
-<text x="68.8" y="91.3" fill="#c4b99f">Days until the soonest open task is due. The default hero.</text>
+<text x="52.0" y="91.3" fill="#635e52">──</text>
+<text x="68.8" y="91.3" fill="#1c1a15">▪ posted </text>
+<text x="144.4" y="91.3" fill="#a8261f">o/d</text>
+<text x="178.0" y="91.3" fill="#635e52">Overdue count       </text>
+<text x="346.0" y="91.3" fill="#1c1a15"> ┊●┊ fast  </text>
+<text x="438.4" y="91.3" fill="#c4b99f">┊ ┊</text>
+<text x="472.0" y="91.3" fill="#635e52">slow</text>
+<text x="514.0" y="91.3" fill="#c4b99f">   2s</text>
+<text x="564.4" y="91.3" fill="#635e52">  2</text>
+<text x="35.2" y="108.3" fill="#2b3a67">▶</text>
 <text x="52.0" y="108.3" fill="#635e52">──</text>
-<text x="68.8" y="108.3" fill="#1c1a15">▪ posted </text>
-<text x="144.4" y="108.3" fill="#a8261f">o/d</text>
-<text x="178.0" y="108.3" fill="#635e52">Overdue count       </text>
-<text x="346.0" y="108.3" fill="#1c1a15"> ┊●┊ fast  </text>
+<text x="68.8" y="108.3" fill="#2b3a67">▶</text>
+<text x="77.2" y="108.3" fill="#1c1a15"> posted </text>
+<text x="144.4" y="108.3" fill="#635e52">w/p</text>
+<text x="169.6" y="108.3" fill="#1c1a15"> Work in flight       </text>
+<text x="354.4" y="108.3" fill="#2b3a67">▶●┊</text>
+<text x="379.6" y="108.3" fill="#1c1a15"> fast  </text>
 <text x="438.4" y="108.3" fill="#c4b99f">┊ ┊</text>
 <text x="472.0" y="108.3" fill="#635e52">slow</text>
 <text x="514.0" y="108.3" fill="#c4b99f">   2s</text>
-<text x="564.4" y="108.3" fill="#635e52">  2</text>
-<text x="52.0" y="125.3" fill="#635e52">──</text>
-<text x="68.8" y="125.3" fill="#1c1a15">▪ posted </text>
-<text x="144.4" y="125.3" fill="#635e52">w/p</text>
-<text x="178.0" y="125.3" fill="#635e52">Work in flight      </text>
-<text x="346.0" y="125.3" fill="#1c1a15"> ┊●┊ fast  </text>
-<text x="438.4" y="125.3" fill="#c4b99f">┊ ┊</text>
-<text x="472.0" y="125.3" fill="#635e52">slow</text>
-<text x="514.0" y="125.3" fill="#c4b99f">   2s</text>
-<text x="564.4" y="125.3" fill="#635e52">  4</text>
-<text x="598.0" y="125.3" fill="#635e52">──</text>
-<text x="614.8" y="125.3" fill="#1c1a15">▪</text>
-<text x="623.2" y="125.3" fill="#c4b99f">·····</text>
-<text x="673.6" y="125.3" fill="#635e52">3</text>
+<text x="564.4" y="108.3" fill="#635e52">  4</text>
+<text x="589.6" y="108.3" fill="#1c1a15"> ‡12/99/26‡</text>
+<text x="68.8" y="125.3" fill="#c4b99f">Tasks in the DOING phase, against a limit you set.</text>
 <text x="52.0" y="142.3" fill="#635e52">──</text>
 <text x="68.8" y="142.3" fill="#1c1a15">▪ posted </text>
 <text x="144.4" y="142.3" fill="#635e52">hld</text>

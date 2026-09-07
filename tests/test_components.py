@@ -11723,8 +11723,8 @@ KEY_SCRIPT = {
     2: ("focus", ("tab", "tab", "tab")),
     3: ("modal", ("question_mark",)),
     4: ("escape", ("escape",)),
-    5: ("invalid", ("c", "1", "2", "slash", "9", "9", "slash", "2", "6",
-                    "tab")),
+    5: ("invalid", ("c", "down", "down", "1", "2", "slash", "9", "9",
+                    "slash", "2", "6", "tab")),
     6: ("match", ("ctrl+p", "r", "e", "f", "r", "e")),
 }
 
@@ -11734,18 +11734,25 @@ KEY_SCRIPT = {
 #: page it COVERED.
 KEY_RESTORE_AGAINST = 2
 
-#: THE TWO STEPS NO KEY IN THIS APP CAN REACH, recorded with the reason.  This
-#: is a STALE CHECK in the shape `SEEN_BY_EYE` established: the day the widget
-#: grows a live invalid seat or the palette starts speaking the language, the
-#: law below goes red and somebody has to come here and delete a row on
-#: purpose.  A recorded failure that could quietly become a pass is a record
-#: nobody is keeping.
-KEY_UNREACHABLE = {
-    5: "the widget has no live TYPED seat, so the INVALID state all eleven "
-       "kits draw at S2 is reachable by no key",
-    6: "the command palette paints Textual's own chrome, so the one live "
-       "match run in the app is in no kit's MATCH_STYLE",
-}
+#: WHAT THE FIELD IS DRAWN AROUND, derived from the script rather than typed
+#: twice.  A law that looked for the old string after somebody changed the keys
+#: would be looking for a value nobody typed.
+KEY_REFUSED = "".join("/" if k == "slash" else k for k in KEY_SCRIPT[5][1]
+                      if k == "slash" or (len(k) == 1 and k.isdigit()))
+
+#: THE ONE CHANNEL THE FRAMEWORK CANNOT SPEND, and it is Textual's limit and
+#: not any language's.  `Widget.get_visual_style(..., partial=True)` builds its
+#: `VisualStyle` from five flags - bold, dim, italic, underline, strike - and
+#: **`reverse` is not among them**; an opaque `background` in a partial style
+#: resolves to transparent by that same function's blend
+#: (`background.blend(tint, 1 - tint.a)` with `a == 1`).  So the three kits
+#: whose `MATCH_STYLE` is a PLATE get their match ink in the command palette
+#: and no plate under it.
+#:
+#: RECORDED AND NOT FAKED.  Giving them a second channel here would be the app
+#: choosing a channel the kit did not declare, which is what the "match tier by
+#: channel" ruling (`rework-7a`, inc73) forbids in as many words.
+PALETTE_CANNOT_REVERSE = ("industrial", "darkside", "solari")
 
 
 def _key_side(lang: str, n: int) -> dict:
@@ -11868,18 +11875,30 @@ def test_escape_gives_back_the_page_the_modal_covered(lang):
     assert a != one, (lang, "escape gave back a page that predates the tabs")
 
 
-def _invalid_field_seats(lang: str, cells) -> list:
-    """Every place the language's INVALID FIELD is drawn: wall, paper, wall.
+def _invalid_field_seats(lang: str, cells, value: str) -> list:
+    """Every place the language's INVALID FIELD is drawn around `value`.
 
-    ASKED AS A SEAT AND NOT AS A CHARACTER, and the difference was measured
-    rather than assumed.  Asked as *"is any cell anywhere drawing the wall
-    glyph in the wall tone"*, this passed on instrument (5 cells) and
-    industrial (2) - both of which spend those glyphs as chrome elsewhere.
-    That is `spec.md` section 23.3.1 one instrument further out: `role_map`
-    keyed by CHARACTER credited darkside's prose `o` to its severity family,
-    and inc87 fixed it by asking what the CONTRACT PAINTS.  The shape below is
-    `field_form`'s own, with the walls in `field_wall_tone`'s tier and the
-    paper in another - that method's own doctrine."""
+    ASKED AS A SEAT AND NOT AS A CHARACTER, and both wrong versions were
+    measured rather than reasoned.
+
+    **Asked as a character scan** - *"is any cell anywhere drawing the wall
+    glyph in the wall tone"* - it passed on instrument (5 cells) and industrial
+    (2), which spend those glyphs as chrome elsewhere.  That is `spec.md`
+    section 23.3.1 one instrument further out: `role_map` keyed by CHARACTER
+    credited darkside's prose `o` to its severity family, and inc87 fixed it by
+    asking what the CONTRACT PAINTS.
+
+    **Asked as wall + PAPER + wall** - `field_wall_tone`'s own doctrine, *"the
+    field's PAPER is still drawn in `dim` ... what changes is the tier of two
+    cells per field"* - it found nothing at all, because a field showing an
+    eight-character value in an eight-cell window draws NO PAPER: the shipped
+    frame is one run, walls and value alike in `ink`.  That clause describes an
+    EMPTY field and the seat under test is a FULL one.
+
+    So the seat is the wall, THE VALUE THE SCRIPT TYPED, and the wall, which
+    binds the glyphs the language declares, the tier `field_wall_tone` names
+    and the bytes the user actually said - and cannot be satisfied by chrome,
+    because no kit's chrome spells `12/99/26`."""
     k = LG.kit(lang)
     op, _rune, cl = k.field_form(LG.INVALID, "textfield")
     tone = k.field_wall_tone(LG.INVALID, "textfield").lower()
@@ -11894,97 +11913,139 @@ def _invalid_field_seats(lang: str, cells) -> list:
         for x in range(len(row)):
             if not at(row, x, op):
                 continue
-            j = x + len(op)
-            while j < len(row) and row[j][1].lower() != tone:
-                j += 1
-            if j > x + len(op) and at(row, j, cl):
+            i = x + len(op)
+            if "".join(c[0] for c in row[i:i + len(value)]) != value:
+                continue
+            if at(row, i + len(value), cl):
                 seats.append((y, x))
     return seats
 
 
-def _match_run(lang: str, cells) -> list:
-    """Every cell painted in the channel this kit's `MATCH_STYLE` declares.
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_invalid_state_is_reachable_by_a_key_in_every_language(lang):
+    """K5 - the state eleven kits draw and no key could provoke, provoked.
 
-    REVERSE IS READ OFF THE BACKGROUND.  `cell_grid` resolves `Style.reverse`
-    into the (ink, ground) pair it always was, so a reverse match run arrives
-    with the match ink in the BG field - reading `fg` for darkside, industrial
-    and solari would have asked the wrong half of the cell."""
-    style = LG.kit(lang).MATCH_STYLE
+    inc91 measured the cost of `textfield_block`'s recorded refusal: the
+    INVALID state ALL ELEVEN kits declare at `S2`, whose two walls inc85 moved
+    into `ink` in every one of them because a refusal is a MEANING MARK, was
+    reachable by no key in any language.  inc93 gave the one value the engine
+    already had - a signal's THRESHOLD - its keyboard, and this is the law that
+    it stays reachable.
+
+    Three clauses: the seat is drawn (the kit's own walls around the value the
+    script typed, in the tier `field_wall_tone` names); it is drawn EXACTLY
+    ONCE, so a screen that grew a second refused field would be noticed; and
+    the frame it is drawn on is the one the script says it is."""
+    s = _key_side(lang, 5)
+    seats = _invalid_field_seats(lang, _key_cells(s), KEY_REFUSED)
+    op, _r, cl = LG.kit(lang).field_form(LG.INVALID, "textfield")
+    assert seats, (lang, op, cl, KEY_REFUSED, s["screen"],
+                   "the invalid field is not on the frame")
+    assert len(seats) == 1, (lang, seats, "two refused fields on one screen")
+    assert s["screen"] == "ConfigScreen", (lang, s["screen"])
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_palette_paints_the_match_in_the_kits_own_ink(lang):
+    """K6 - the app's one live match run, in the language it is drawn over.
+
+    inc91 run-encoded the palette's eight rows in all eleven and they collapsed
+    to ONE distinct block: Textual's `#141f27` slab, its `#0e395a` cursor row,
+    and a `bold underline` highlight on a colour no kit declares.  On ledger,
+    the corpus's one light-paper kit, that was a night-mode slab laid across
+    the middle of the page.
+
+    Two clauses.  The match run carries the ink `MATCH_STYLE` names, in all
+    eleven.  And for the eight kits whose channel is a TEXT ATTRIBUTE it
+    carries that attribute too - `PALETTE_CANNOT_REVERSE` is the other three
+    and has its own law below.
+
+    MEASURED ON THE ROW THE QUERY FOUND AND NOT ON THE FRAME, because a match
+    ink is not a private colour: swiss's is `alert`, which its own aperture
+    spends bold on an overdue chip, so a frame-wide scan would find a "match"
+    on a page where nothing had been searched.  The row is named by the command
+    it found, and there is exactly one."""
+    k, t = LG.kit(lang), LG.THEMES[lang]
+    style = k.MATCH_STYLE
     word = style.split()[0]
-    t = LG.THEMES[lang]
     ink = t.get(style.strip().split()[-1].strip("{}"), t["ink"]).lower()
-    out = []
-    for row in cells:
-        for c in row:
-            if not c[0].strip():
-                continue
-            if word == "reverse":
-                if c[2].lower() == ink:
-                    out.append(c)
-            elif c[1].lower() == ink and c[3 if word == "bold" else 4]:
-                out.append(c)
-    return out
+    cells = _key_cells(_key_side(lang, 6))
+    hit = [y for y, row in enumerate(cells)
+           if "Refresh now" in "".join(c[0] for c in row)]
+    assert len(hit) == 1, (lang, hit, "the one result row is not on the frame")
+    row = cells[hit[0]]
+    painted = [c for c in row if c[0].strip() and c[1].lower() == ink]
+    assert painted, (lang, style, "the result row carries no match ink")
+    if lang not in PALETTE_CANNOT_REVERSE:
+        flagged = [c for c in painted if c[3 if word == "bold" else 4]]
+        assert flagged, (lang, word, "the declared channel is not on the run")
+        assert len(flagged) == len(KEY_SCRIPT[6][1]) - 1,             (lang, len(flagged), "the run is not the query's length")
 
 
-def test_the_two_states_no_key_can_reach_are_recorded_with_a_stale_check():
-    """K5 AND K6 - THE ROUND'S RESULT, written as a law that will go red.
+def test_the_palettes_one_missing_channel_is_the_frameworks_and_is_named():
+    """THE LIMIT inc93 FOUND AND DID NOT FIX, with the measurement in it.
 
-    `inc91` was told to record and not to fix, and a recorded failure that
-    nothing watches is a sentence.  So the failure itself is asserted: in all
-    eleven languages the config screen draws NO field in the language's
-    `field_form(INVALID, 'textfield')` shape, and the command palette paints
-    NO run in the language's own `MATCH_STYLE`.
+    Four clauses:
 
-    THE DAY EITHER IS FIXED THIS LAW GOES RED, which is the point.  It is the
-    same machinery `SEEN_BY_EYE` needed for an exemption an instrument cannot
-    re-derive: somebody has to come here and delete a row on purpose."""
-    assert set(KEY_UNREACHABLE) == {5, 6}
+      (a) `PALETTE_CANNOT_REVERSE` is EXACTLY the kits whose `MATCH_STYLE` word
+          is `reverse` - a roster that drifted from the kits would be a limit
+          recorded against the wrong languages;
+      (b) none of the three gets a PLATE in the palette: no cell on the frame
+          carries the match ink as a BACKGROUND, which is what `reverse` means
+          once `cell_grid` has resolved it;
+      (c) all three still get the INK, so the limit costs a channel and not the
+          mark;
+      (d) exactly ONE of the three - solari - has a match ink equal to the ink
+          of the row it stands in, so its match is not merely quieter than the
+          plate it declared: on the highlighted row it is INDISTINGUISHABLE.
+          That is the sharpest thing this limit costs and it is asserted rather
+          than described."""
+    declared = tuple(l for l in LANGS
+                     if LG.kit(l).MATCH_STYLE.split()[0] == "reverse")
+    assert declared == PALETTE_CANNOT_REVERSE, (declared,
+                                                PALETTE_CANNOT_REVERSE)
+    invisible = []
+    for lang in PALETTE_CANNOT_REVERSE:
+        t = LG.THEMES[lang]
+        ink = t.get(LG.kit(lang).MATCH_STYLE.strip().split()[-1].strip("{}"),
+                    t["ink"]).lower()
+        cells = _key_cells(_key_side(lang, 6))
+        plates = [c for row in cells for c in row if c[2].lower() == ink]
+        assert not plates, (lang, len(plates),
+                            "the palette grew a plate - delete this row")
+        marks = [c for row in cells for c in row
+                 if c[0].strip() and c[1].lower() == ink]
+        assert marks, (lang, "the limit cost the mark and not just the plate")
+        # THE ROW THE MATCH IS ON, named by the command it found rather than
+        # by its colour: asked by colour, solari's ink is its whole page.
+        hit = [y for y, row in enumerate(cells)
+               if "Refresh now" in "".join(c[0] for c in row)]
+        assert len(hit) == 1, (lang, hit, "the result row moved")
+        body = {c[1].lower() for c in cells[hit[0]]
+                if c[0].strip() and c[1].lower() != ink}
+        if not body:
+            invisible.append(lang)
+    assert invisible == ["solari"], invisible
+
+
+def test_the_two_seats_inc93_fixed_are_measured_and_not_assumed():
+    """THE TEETH, and they are the arms that stop both laws being vacuous.
+
+    Each measurement is run over `K1` - the page as it opens, with no config
+    screen and no palette on it - and must find NOTHING.  A field law that
+    found a field on the board would be reading chrome, and a match law with no
+    result row to stand on would have nothing to measure.
+
+    AND THE SECOND ARM IS WHY THE MATCH LAW IS ROW-BOUND.  Written frame-wide
+    it went RED here on swiss: its match ink is `alert`, and the aperture
+    spends `alert` bold on an overdue chip, so a page where nothing had been
+    searched carried a "match run".  A match ink is not a private colour, and
+    the SEAT is what makes it a match."""
     for lang in LANGS:
-        seats = _invalid_field_seats(lang, _key_cells(_key_side(lang, 5)))
-        assert not seats, (lang, KEY_UNREACHABLE[5],
-                           "an invalid field became reachable - delete row 5",
-                           seats)
-        painted = _match_run(lang, _key_cells(_key_side(lang, 6)))
-        assert not painted, (lang, KEY_UNREACHABLE[6],
-                             "the palette started speaking the language - "
-                             "delete row 6")
-
-
-def test_the_two_recorded_failures_are_failures_of_the_app_not_of_the_law():
-    """THE TEETH OF THE RECORD, and they are the arms that matter most.
-
-    A law that asserts a failure passes trivially if its measurement is
-    broken - the emptiest possible way for `not seats` to hold is for
-    `_invalid_field_seats` to be unable to find a field at all.  So both
-    measurements are run against a frame that DOES carry what they look for,
-    built out of the kit's own declarations, and both must find it.
-
-    The invalid arm builds the seat `field_form` describes; the match arm
-    builds a run in the channel `MATCH_STYLE` names.  Neither is a frame the
-    app produces - that is the finding - and both are frames every one of the
-    eleven kits knows how to draw."""
-    for lang in LANGS:
-        k, t = LG.kit(lang), LG.THEMES[lang]
-        op, rune, cl = k.field_form(LG.INVALID, "textfield")
-        tone = k.field_wall_tone(LG.INVALID, "textfield")
-        paper = t["dim"]
-        assert paper.lower() != tone.lower(), (lang, "wall and paper agree")
-        row = ([(c, tone, t["ground"], False, False) for c in op]
-               + [(rune or " ", paper, t["ground"], False, False)] * 6
-               + [(c, tone, t["ground"], False, False) for c in cl])
-        assert _invalid_field_seats(lang, [row]), \
-            (lang, "the seat law cannot find the seat its own kit declares")
-
-        style = k.MATCH_STYLE
-        word = style.split()[0]
-        ink = t.get(style.strip().split()[-1].strip("{}"), t["ink"])
-        if word == "reverse":
-            run = [("x", t["ground"], ink, False, False)] * 5
-        else:
-            run = [("x", ink, t["ground"], word == "bold",
-                    word == "underline")] * 5
-        assert _match_run(lang, [run]), \
-            (lang, style, "the match law cannot find its own kit's channel")
+        opening = _key_cells(_key_side(lang, 1))
+        assert not _invalid_field_seats(lang, opening, KEY_REFUSED),             (lang, "an invalid field on the page that opens")
+        assert not [y for y, row in enumerate(opening)
+                    if "Refresh now" in "".join(c[0] for c in row)],             (lang, "a result row on a page with no palette open")
 
 
 def test_the_live_search_seat_prints_a_cell_the_measured_face_has_not_got():
@@ -12024,3 +12085,134 @@ def test_the_live_search_seat_prints_a_cell_the_measured_face_has_not_got():
     assert cell_len("\U0001f50e") == 2, "the prompt stopped being wide"
     wide = sorted(c for c in seen if cell_len(c) == 2)
     assert wide == ["\U0001f50e"], (wide, "a second wide cell arrived")
+
+
+#: THE THREE KITS WHOSE FOCUS RIDES COLOUR ALONE, measured on the key frames.
+#:
+#: The ring is not a language decision at all: `themes.tcss()` has ONE rule for
+#: it - `.tile:focus { background: panel; border-left: <sel> accent; }` - and
+#: eleven values of `panel`.  Measured cell by cell between `K1` and `K2` over
+#: the seat that holds focus, eight kits change **one glyph** (the border-left
+#: cell) and a whole row of grounds; these three change **no glyph at all**.
+#:
+#: THAT IS THIS CORPUS'S OWN RULE BROKEN BY THE APP AND NOT BY THE KIT.
+#: `Kit.textfield`'s docstring: *"this contract's states may never ride colour
+#: alone"*, and ruling L2 (`rework-6b`, inc69): *"a disabled control always
+#: carries a mark; air is not a state"*.  FOCUS is a state, it is drawn by a
+#: stylesheet rather than by a contract seat, and in three of the eleven it is
+#: a colour and nothing else.
+#:
+#: RECORDED WITH TEETH AND NOT FIXED HERE.  Giving three languages a focus MARK
+#: is a contract seat in eleven kits - what `Kit.CUR` is for a cursor - and it
+#: is a round's decision, not an increment's.  `PROTOTYPE-inheritors-6.md`
+#: raises it; this roster is what stops it being forgotten.
+FOCUS_RIDES_COLOUR_ALONE = ("ledger", "solari", "blueprint")
+
+
+def _focus_channels(lang: str) -> tuple[int, int, int, int]:
+    """`(glyphs, fgs, bgs, cells)` that changed on the seat that took focus."""
+    a, b = _key_side(lang, 1), _key_side(lang, 2)
+    x, y, w, h = b["focus"]["region"]
+    ca, cb = _key_cells(a), _key_cells(b)
+    glyph = fg = bg = 0
+    for yy in range(y, y + h):
+        for xx in range(x, x + w):
+            p, q = ca[yy][xx], cb[yy][xx]
+            glyph += p[0] != q[0]
+            fg += p[1] != q[1]
+            bg += p[2] != q[2]
+    return glyph, fg, bg, w * h
+
+
+def test_the_focus_ring_is_a_ground_in_eleven_and_a_glyph_in_only_eight():
+    """WHAT THE RING IS MADE OF, per language, and the three that have no mark.
+
+    Four clauses:
+
+      (a) every one of the eleven changes the GROUND of the seat that takes
+          focus - the ring exists everywhere, which is what inc91's K2 law
+          already binds;
+      (b) the kits that change NO GLYPH are exactly `FOCUS_RIDES_COLOUR_ALONE`,
+          in both directions, so a kit that grows a mark and stays on the list
+          goes red and so does one that loses a mark and is not added;
+      (c) the eight that do change a glyph change exactly ONE - the border-left
+          cell - so "has a mark" is not being read off a redrawn row;
+      (d) the measurement finds NOTHING between K1 and itself, which is the
+          vacuity arm: a comparison that always reports a difference would make
+          clause (a) meaningless."""
+    quiet = []
+    for lang in LANGS:
+        glyph, _fg, bg, cells = _focus_channels(lang)
+        assert bg > 0, (lang, "the seat that holds focus keeps its ground")
+        assert bg >= cells - 1, (lang, bg, cells, "a partial ground swap")
+        if glyph == 0:
+            quiet.append(lang)
+        else:
+            assert glyph == 1, (lang, glyph, "more than the border cell moved")
+    assert tuple(quiet) == FOCUS_RIDES_COLOUR_ALONE, quiet
+    for lang in LANGS:
+        a = _key_cells(_key_side(lang, 1))
+        x, y, w, h = _key_side(lang, 2)["focus"]["region"]
+        assert not [1 for yy in range(y, y + h) for xx in range(x, x + w)
+                    if a[yy][xx] != a[yy][xx]], "the measurement is not stable"
+
+
+#: THE APP'S ONE MODAL, GROUPED BY THE TEXT IT DRAWS.  Eleven languages, FOUR
+#: distinct `.txt` - and one of the groups has FIVE members.
+#:
+#: `render.py` enforces the opposite over the sheets, in as many words: *"for
+#: each screen, no two languages may render byte-identically. Two languages
+#: agreeing on a whole screen is the exact defect LANGUAGES.md records."*  The
+#: 66 sheets obey it at both widths.  **The one modal the app actually has does
+#: not**, and it is not a near miss: corgi, swiss, industrial, darkside and
+#: prism draw the same 32 rows character for character.
+#:
+#: WHY, and it is structural rather than careless: `HelpScreen` composes the
+#: App's own `BINDINGS` through `LG.mark()` and `hint_row()`, so a kit reaches
+#: the modal only where it TRANSFORMS TEXT (naught's spacing, nord's, ledger's
+#: family's).  A kit with no text transform has no way into this screen at all.
+#:
+#: RECORDED WITH TEETH AND NOT FIXED.  What would fix it is a modal drawn
+#: through the kit the way `screens.s4` draws the sheets' confirm - walls,
+#: closer, danger form - and that is a screen rewritten, not a rule added.
+MODAL_TEXT_GROUPS = (
+    ("naught", "instrument"),
+    ("corgi", "swiss", "industrial", "darkside", "prism"),
+    ("nord",),
+    ("ledger", "solari", "blueprint"),
+)
+
+
+def test_the_one_modal_the_app_has_breaks_the_law_the_sheets_obey():
+    """FOUR TEXTS FOR ELEVEN LANGUAGES, and five of them are one text.
+
+    Four clauses:
+
+      (a) the grouping of the `K3` frames by their `.txt` is exactly
+          `MODAL_TEXT_GROUPS`, so a kit that starts or stops differing goes
+          red;
+      (b) there are FEWER groups than languages - stated separately, because
+          that single fact is the objection;
+      (c) inside every group the frames still differ in COLOUR, so this is a
+          shape collapse and not a whole-frame collapse, and the packet may not
+          overstate it;
+      (d) the sheets do NOT do this: the eleven `S4` sheets - the modal the
+          corpus DRAWS - are eleven distinct texts, which is what makes the
+          app's modal a defect rather than a limit of the medium."""
+    import collections
+    by = collections.defaultdict(list)
+    for lang in LANGS:
+        by[(KEYS / f"{lang}_K3.txt").read_text(encoding="utf-8")].append(lang)
+    got = tuple(sorted((tuple(v) for v in by.values()), key=lambda g: g[0]))
+    want = tuple(sorted(MODAL_TEXT_GROUPS, key=lambda g: g[0]))
+    assert got == want, got
+    assert len(got) < len(LANGS), (len(got), "the collapse is the objection")
+    for group in got:
+        inks = {lang: frozenset(
+            c[1] for row in _key_cells(_key_side(lang, 3)) for c in row)
+            for lang in group}
+        assert len(set(inks.values())) == len(group), (group, "same colours too")
+    sheets = {(FRAMES / f"{lang}_S4.txt").read_text(encoding="utf-8")
+              for lang in LANGS}
+    assert len(sheets) == len(LANGS), \
+        "the sheets collapsed too - this objection is about the app"

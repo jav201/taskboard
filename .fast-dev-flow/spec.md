@@ -2972,3 +2972,227 @@ skill         `export_to_skill.py` at the close: 11 languages round-trip,
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1466 → 1478 → 1488 → 1496 → 1499 (+33)**. `test_win_clipboard_roundtrip` is environment-coupled: green in the inc87 and inc88 runs, red in the inc89 and inc90 runs, **reported in every packet, counted in none, and not touched**. `verify_language.py` **ALL PASSED exit 0** after every increment. `render.py` 66 `.txt` + 66 `.svg` / 330 pairs / 0 hand-drawn, every time. `raster.py` **132 PNGs identical across two PROCESSES** (66 colour + 66 grey), every time. `legibility.py` **byte-identical across two PROCESSES**, every time; 867 → 876 lines. `second_width.py` 0 rows cut in 0 frames, 330 pairs distinct. `matrix.py` refusals `[]` for all eleven. `collision_census.py` TOTAL **27 → 23**, homoglyph rows **24 → 22**, both self-checks green. `capture_languages.py` run plain at inc88 and inc89: 22 grids identical across two processes. `export_to_skill.py` at the close: **6 written / 60 identical**, re-run **0 / 66**. |
 | Notes | **Four increments, one agent, ≤ 4 source files each.** All five of `rework-8c`'s handed-back questions are answered — four by a fix and the fifth (§23.8's `naught_S2`) by an enumeration with teeth. What goes back to the round: **naught's three 14.0 % rows and L10**, which are one alphabet's ceiling and want a cell the language does not have; the **slider's and the stepper's invalid marks**, which have no contract call and are therefore unmeasured at their own seat; the **census total**, which moved twice in this batch and is pinned by no law; and **`naught_S4`**, the `DANGER_FORM` frame, which has still been in no brief. |
+
+---
+
+## 25. Batch `rework-10` — the round that pressed a key, and the four rounds' worth of objections it found in one afternoon
+
+`PROTOTYPE-inheritors-5.md` converged on a single sentence rather than a list: *«una tecla:
+`App.run_test()` + `Pilot`, cinco rondas sin usar; un frame no puede fallar en foco porque un frame no
+tiene foco.»* `SESION-PERSONA.md` §7.3 said the same from the other side, in the list of what a human
+session cannot see. **The operator delegated it to the orchestrator; three increments, one agent.**
+This section is the record. Every ruling is quoted verbatim in each packet's §0 and reproduced here,
+because a ruling that lives only in a chat is a ruling nobody can argue with later.
+
+### 25.1 The rulings, as given
+
+> (orchestrator, 2026-09-07, on the operator's delegation)
+>
+> **A frame has no focus; the round presses keys.** The instrument is `App.run_test()` + `Pilot` on
+> the widget slice, per language, driving a fixed script and capturing the screen after each key
+> through the same `cell_grid` the raster uses.
+>
+> **L12 corrected:** the match channel in grey is weight or decoration where the kit declares it, and
+> the grey test reads the sidecar's `bold`/`underline` flags, not colour tokens; a kit is hue-only in
+> grey only if its match run carries neither.
+
+### 25.2 What each increment did
+
+| inc | ruling | what it did | frames |
+| --- | --- | --- | --- |
+| 91 | **the key instrument** | `prototypes/components/keys.py`: the real `TaskboardWidget` driven through six steps in eleven languages at 100×32, read through `capture_languages.cell_grid`. 66 frames × `.txt` + `.svg` + `.png` + a sidecar carrying the focused widget's id, class and screen RECTANGLE, the modal box's rectangle and the settle read count. **44 of 66 laws hold; K5 and K6 fail in all eleven and neither failure is language-shaped.** Recorded with a stale check, not fixed. | **66 new** |
+| 92 | **L12 corrected** | `match_branch()` read `MATCH_STYLE`'s TOKEN and returned `hue` in a branch that never looked at the STYLE WORD, so four kits were filed as hue-only while all four are painted with a second channel the raster's sidecar has recorded since inc43. Read off the paint now; the grey law is three clauses measured on the grey PNG. **Eleven of eleven have weight, decoration or both; the hue-only Limit has no members.** | **0** |
+| 93 | **the two defects** | `Kit.palette()` — the command palette in the language, with the match highlight DERIVED from `MATCH_STYLE`. `ConfigScreen`'s threshold gets a keyboard, so the INVALID state eleven kits draw is reachable by a key for the first time. **66 of 66 laws hold.** And `PROTOTYPE-inheritors-6.md`: **keep 33 · nota 12 · rehacer 21.** | **22** (`K5`, `K6` ×11) |
+
+### 25.3 The findings, in the order they landed
+
+1. **Two of the six steps could not be pressed at all, and both were states the corpus DRAWS.** The
+   INVALID mark eleven kits declare at `S2` — whose two walls inc85 moved into `ink` in every one of
+   them because a refusal is a meaning mark — was reachable by no key in any language. Eleven
+   languages drew a refusal nobody could provoke, and `textfield_block`'s docstring had said why since
+   pass 53: *"nothing in the engine is TYPED."*
+2. **The command palette was byte-identical in all eleven.** Its eight rows, run-encoded, collapse to
+   ONE distinct block: Textual's `#141f27` slab, its `#0e395a` cursor row, and a `bold underline`
+   highlight on a colour no kit declares. On ledger, the corpus's one light-paper kit, that was a
+   night-mode slab laid across the middle of the page.
+3. **`match_branch()` returned before it used its own second variable, for two batches.** inc84
+   measured L12 and inc86 recorded it in four kit docstrings; both used a classification that read the
+   token and never the word. **The evidence had been on disk since inc43**, when `cell_grid` started
+   returning `bold` and `underline` — *"66 declared runs across the eleven S6 sheets, none painted"* is
+   that increment's own line — and the measurement three batches later went round it to the tokens.
+4. **swiss is the one seat in the corpus where AREA and DEPTH disagree.** Its match covers 1.21× the
+   lit area of the body beside it and carries 1.07× its ink, because its red falls darker than the
+   grey of that body. A single number would have had to choose between *"heavier"* and *"fainter"* and
+   both are true of different halves of the same measurement.
+5. **The notice that started inc92 does not reproduce, and the way it fails is informative.**
+   `SESION-PERSONA.md` §3 measured four ink ratios; this tree's are **1.28–1.30× higher on all four**,
+   one constant factor, same ordering. The two measurements differ by a definition and not by a
+   reading — and the one place it matters is swiss, where the notice says FAINTER and the tree says
+   barely HEAVIER, which is exactly why the ruling did not rest swiss on the number.
+6. **The K5 law was wrong twice, in opposite directions.** Asked as a character scan it passed on
+   instrument (5 cells) and industrial (2) on a screen with NO field — `spec.md` §23.3.1 one
+   instrument out. Asked as wall + PAPER + wall, `field_wall_tone`'s own doctrine, it found nothing at
+   all, because a field showing an eight-character value in an eight-cell window draws no paper. It
+   asks for wall + THE VALUE + wall, which no kit's chrome can satisfy because no kit's chrome spells
+   `12/99/26`.
+7. **The typed seat ate its own screen's `r`, and the new instrument was blind to it.** Taking any
+   printable character swallowed the refresh key; `verify_language.py`'s drive-check went red in four
+   clauses at once. **No step of the key script presses `r`**, so the instrument this batch built could
+   not see the defect the batch introduced, and the older instrument caught it.
+8. **Focus in this app is ONE CSS rule and ONE token, and the token fails in two opposite ways.**
+   Measured on the seat that takes focus: eight kits move one glyph (the border cell) and a row of
+   grounds; ledger, solari and blueprint move NONE — `sel: none`, so focus is colour alone, against
+   this corpus's *"states may never ride colour alone"* and against ruling L2. And on the hero the
+   ring is a full border, so **letting go of focus redraws the hero's content in eight of eleven, up
+   to 342 cells.** No kit declares a focus mark; there is no `Kit.FOCUS` as there is a `Kit.CUR`.
+9. **The one modal the app has breaks the law the sheet sweep enforces.** `render.py`: *"for each
+   screen, no two languages may render byte-identically."* The eleven `K3` frames are **four texts**,
+   and the largest group has **five members**. The cause is structural: `HelpScreen` composes the
+   App's own `BINDINGS` through `LG.mark()`, so a kit reaches the modal only where it transforms text.
+10. **`reverse` does not reach the palette, and it is Textual's limit.**
+    `Widget.get_visual_style(..., partial=True)` builds its `VisualStyle` from five flags and `reverse`
+    is not among them; an opaque background in a partial style resolves to transparent by that
+    function's own blend. Three kits lose the channel they declare and **solari loses the distinction
+    entirely**: its match ink is the ink of the row it stands in.
+11. **The corpus met its first double-width cell, and nobody chose it.** The palette's prompt is
+    `U+1F50E` — two columns, absent from the measured face, and the only cell in 66 key frames that
+    neither a kit nor a screen picked. `keys.py` widens the grid so column N of the raster is column N
+    of the terminal, and the glyph itself is left for a contract seat that does not exist.
+12. **The frame is deterministic and the number of looks it takes to settle is not.** 264 artefacts
+    are byte-identical across two processes; `settle_reads` lands on 8, 9, 10 or 12. It is in the
+    sidecar, it is masked from the bargain by a named constant (`UNPINNED`), and it is the one thing
+    in this corpus that changes on disk without anything having moved.
+
+### 25.4 The key round, step by step
+
+```
+                        K1     K2     K3     K4     K5     K6
+inc91 (recorded)     11 ok  11 ok  11 ok  11 ok   0 ok   0 ok    44 / 66
+inc93 (fixed)        11 ok  11 ok  11 ok  11 ok  11 ok  11 ok    66 / 66
+```
+
+And the ROUND's verdicts over the same 66, which are not the same question:
+
+```
+                       keep   nota   rehacer
+K1 initial                0      8         3
+K2 focus                  8      0         3
+K3 modal                  1      0        10
+K4 escape                11      0         0
+K5 invalid                5      3         3
+K6 match                  8      1         2
+                    -------------------------
+                         33     12        21
+```
+
+**Only `K5` and `K6` are shared out by language.** The other four steps have one verdict per CAUSE,
+and the four causes live in `themes.tcss()`, in `HelpScreen` and in Textual. A round that set out to
+judge eleven languages found that **four of its six columns are not about the languages**.
+
+### 25.5 L12, corrected and re-measured on the grey PNG
+
+```
+kit         declared            painted     eff    ink    cov   carried by
+naught      bold {ink}          bold       3.33   2.50   1.22   effective + weight
+corgi       bold {ink}          bold       2.70   2.29   1.22   weight
+instrument  underline {accent}  underline  2.31   2.42   1.30   weight + decoration
+swiss       bold {alert}        bold       1.17   1.07   1.21   weight (coverage arm)
+industrial  reverse {accent}    reverse    1.60   5.16   3.60   weight + decoration
+nord        bold {accent}       bold       1.44   1.74   1.22   weight
+darkside    reverse {mut}       reverse    1.61   5.14   3.60   weight + decoration
+prism       bold {accent}       bold       1.76   1.82   1.22   weight
+ledger      underline {ink}     underline  2.24   2.21   1.30   weight + decoration
+solari      reverse {ink}       reverse    6.25  12.21   3.60   effective + weight + decoration
+blueprint   bold {ink}          bold       2.27   2.47   1.22   weight
+```
+
+**0 kits carry the match on HUE ALONE.** What survives is thinner and is written into the four
+docstrings inc86 wrote the false version into: none of those four clears the EFFECTIVE clause in grey
+(2.31, 1.76, 1.44, 1.17 against a floor of 3), so **the match is found in grey by 21–30 % of AREA and
+not by tone**. Whether an eye finds 21 % of area is the human session's question and nobody has asked
+it — and `SESION-PERSONA.md`'s `F15`–`F22` were chosen off the reading this batch corrects, so **the
+eight frames are still the right eight and the question they ask has changed**.
+
+### 25.6 The laws this batch added
+
+**Nineteen laws and six teeth**, `pytest -q` **1499 → 1561 total (+61: inc91 +37, inc92 +1, inc93
++24)**, and no increment imports `raster.py`, `legibility.py` or `keys.py` into the
+suite — the stance this file has taken since inc73.
+
+- **inc91** — `test_the_key_script_the_frames_were_taken_with_is_the_one_declared` (the script
+  declared a second time, so the two can only agree by somebody editing both);
+  `test_the_seat_that_holds_focus_is_drawn_differently_when_it_holds_it` (×11), the first law in this
+  corpus that could ever fail on focus; `test_a_modal_draws_a_band_and_the_band_is_the_kits_own_panel`
+  (×11); `test_escape_gives_back_the_page_the_modal_covered` (×11), whose second clause is its own
+  tooth (K4 ≠ K1, or the app threw the focus walk away);
+  `test_the_two_states_no_key_can_reach_are_recorded_with_a_stale_check`;
+  `test_the_live_search_seat_prints_a_cell_the_measured_face_has_not_got`. **Teeth:** the record law's
+  vacuity arm, which builds the frames the app does NOT produce out of each kit's own `field_form` and
+  `MATCH_STYLE` and requires both measurements to find them.
+- **inc92** — `test_the_match_channel_in_grey_is_weight_or_decoration_and_not_hue`, five clauses
+  including *exactly one kit needs the coverage arm and it is swiss*;
+  `test_the_four_kits_the_old_table_named_carry_the_corrected_limit`, whose last clause is that the
+  sentence inc92 disproved is GONE from the docstring. **Teeth:**
+  `test_the_grey_match_measurement_can_tell_a_channel_from_no_channel` — the run against itself must
+  read 1.00×, and the comparison turned round must read under one, so the number has a direction.
+- **inc93** — `test_the_invalid_state_is_reachable_by_a_key_in_every_language` (×11);
+  `test_the_palette_paints_the_match_in_the_kits_own_ink` (×11), row-bound;
+  `test_the_palettes_one_missing_channel_is_the_frameworks_and_is_named`;
+  `test_the_focus_ring_is_a_ground_in_eleven_and_a_glyph_in_only_eight`;
+  `test_the_one_modal_the_app_has_breaks_the_law_the_sheets_obey`. **Teeth:**
+  `test_the_two_seats_inc93_fixed_are_measured_and_not_assumed`, whose second arm is why the match law
+  is row-bound — written frame-wide it went red on swiss, whose match ink is `alert` and whose
+  aperture spends `alert` bold on an overdue chip.
+
+### 25.7 What this batch refused to do, and why each refusal is written down
+
+- **The palette's prompt glyph.** `U+1F50E` is coloured and not replaced. Giving it a language is a new
+  contract seat (`Kit.SEARCH`) in eleven kits, which is a round's decision and not a stylesheet's.
+- **A second channel for the three `reverse` kits.** The framework cannot spend a plate in that seat;
+  choosing another channel for them would be the APP choosing what the KIT did not declare, which is
+  what the *match tier by channel* ruling forbids in as many words.
+- **The focus ring.** Two measured defects, both in `themes.tcss()`, both handed to
+  `PROTOTYPE-inheritors-6.md` §4 with a roster and teeth rather than fixed inside an increment that
+  was not briefed for them.
+- **`HelpScreen`.** Four texts for eleven languages is a screen rewritten, not a rule added.
+
+### 25.8 The artefacts
+
+```
+keys          NEW. 66 .txt + 66 .svg + 66 .png + 66 .json, identical across
+              two PROCESSES.  inc93 moved 22 of them (K5 and K6 in all
+              eleven); K1-K4 are byte-identical to inc91's in every picture.
+              settle_reads is the one field outside the bargain.
+legibility    1065 -> 1202 lines.  Section H rewritten: measured on the grey
+              PNG over the seat `Kit.match` paints, three clauses, eleven rows
+              where there were four.
+census        TOTAL 23, homoglyph rows 22 -- BOTH UNCHANGED in all three
+              increments.  A stylesheet is not a declaration the census counts.
+raster        132 identical across two PROCESSES (66 colour + 66 grey), every
+              time.
+frames        ZERO component sheets moved in the whole batch, at either width.
+gallery       ZERO board or component grids moved.
+gallery 30-51 none changed byte-wise in inc91, inc92 or inc93, read off
+              `prototypes/components/`: no sheet moved in `rework-10` at all.
+round         `PROTOTYPE-inheritors-6.md`, 66 blocks, keep 33 / nota 12 /
+              rehacer 21, and the page `ronda-teclas.html` (3.97 MB, 66 PNGs
+              at 1:1, zero external URLs, zero console errors).
+```
+
+### 25.9 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief (this worktree's own instructions) was the spec; this section is the record |
+| Phase B (implement) | **done** — inc91, inc92, inc93 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1499 → 1535 → 1536 → 1560 passed**; `test_win_clipboard_roundtrip` is environment-coupled, **red in every run of this batch**, reported in every packet, counted in none, not touched. `keys.py` **44 of 66 → 66 of 66 laws**, 264 artefacts identical across two processes at every run. `verify_language.py` **ALL PASSED exit 0** — with one observed flake, §25.10. `render.py` 66 `.txt` + 66 `.svg` / 330 pairs / 0 hand-drawn, nothing changed on disk, every time. `raster.py` 132 PNGs identical across two processes. `legibility.py` byte-identical across two processes. `second_width.py` 0 rows cut, 330 pairs distinct. `matrix.py` refusals `[]`. `collision_census.py` TOTAL 23, homoglyph rows 22. `capture_languages.py` run at inc93: 22 grids identical across two processes, no two boards identical. `export_to_skill.py` at the close. The skill repo is not committed from here. |
+| Notes | **Three increments, one agent, ≤ 5 source files each.** |
+
+### 25.10 One flake, named
+
+`verify_language.py` failed once, in one run, on a single clause — *"nord's BOARD is identical either
+way"*, which compares two board captures — and passed in the runs before and after it with the same
+tree. It is the ~10 % loud failure `capture_languages.settle`'s own docstring predicts for the columns
+branch, and it is recorded here rather than smoothed over: **a gate that failed once is a gate that
+can fail, and a batch that saw it and did not say so would be hiding a coin flip.**

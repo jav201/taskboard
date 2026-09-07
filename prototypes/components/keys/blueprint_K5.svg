@@ -4,42 +4,38 @@
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <text x="26.8" y="40.3" fill="#eef4f8">SIGNALS  </text>
 <text x="102.4" y="40.3" fill="#7fa8c4">·── WHAT THE WIDGET WATCHES</text>
-<text x="26.8" y="74.3" fill="#eef4f8"> ┌ </text>
 <text x="52.0" y="74.3" fill="#24486b">├</text>
 <text x="60.4" y="74.3" fill="#7fa8c4">─</text>
-<text x="68.8" y="74.3" fill="#eef4f8">╡ </text>
+<text x="68.8" y="74.3" fill="#eef4f8">┤ </text>
 <text x="85.6" y="74.3" fill="#7fa8c4">DIM</text>
-<text x="110.8" y="74.3" fill="#eef4f8"> Nearest deadline     ╡◉╞ fast  </text>
+<text x="119.2" y="74.3" fill="#7fa8c4">Nearest deadline    </text>
+<text x="287.2" y="74.3" fill="#eef4f8"> ┤○├ fast  </text>
 <text x="379.6" y="74.3" fill="#24486b">┤ ├</text>
 <text x="413.2" y="74.3" fill="#7fa8c4">slow</text>
 <text x="455.2" y="74.3" fill="#24486b">   1s</text>
 <text x="505.6" y="74.3" fill="#7fa8c4">  2</text>
-<text x="68.8" y="91.3" fill="#24486b">Days until the soonest open task is due. The default hero.</text>
+<text x="52.0" y="91.3" fill="#24486b">├</text>
+<text x="60.4" y="91.3" fill="#7fa8c4">─</text>
+<text x="68.8" y="91.3" fill="#eef4f8">┤ </text>
+<text x="85.6" y="91.3" fill="#7fa8c4">OVR</text>
+<text x="119.2" y="91.3" fill="#7fa8c4">Overdue count       </text>
+<text x="287.2" y="91.3" fill="#eef4f8"> ┤○├ fast  </text>
+<text x="379.6" y="91.3" fill="#24486b">┤ ├</text>
+<text x="413.2" y="91.3" fill="#7fa8c4">slow</text>
+<text x="455.2" y="91.3" fill="#24486b">   2s</text>
+<text x="505.6" y="91.3" fill="#7fa8c4">  2</text>
+<text x="26.8" y="108.3" fill="#eef4f8"> ┌ </text>
 <text x="52.0" y="108.3" fill="#24486b">├</text>
 <text x="60.4" y="108.3" fill="#7fa8c4">─</text>
-<text x="68.8" y="108.3" fill="#eef4f8">┤ </text>
-<text x="85.6" y="108.3" fill="#7fa8c4">OVR</text>
-<text x="119.2" y="108.3" fill="#7fa8c4">Overdue count       </text>
-<text x="287.2" y="108.3" fill="#eef4f8"> ┤○├ fast  </text>
+<text x="68.8" y="108.3" fill="#eef4f8">╡ </text>
+<text x="85.6" y="108.3" fill="#7fa8c4">WIP</text>
+<text x="110.8" y="108.3" fill="#eef4f8"> Work in flight       ╡◉╞ fast  </text>
 <text x="379.6" y="108.3" fill="#24486b">┤ ├</text>
 <text x="413.2" y="108.3" fill="#7fa8c4">slow</text>
 <text x="455.2" y="108.3" fill="#24486b">   2s</text>
-<text x="505.6" y="108.3" fill="#7fa8c4">  2</text>
-<text x="52.0" y="125.3" fill="#24486b">├</text>
-<text x="60.4" y="125.3" fill="#7fa8c4">─</text>
-<text x="68.8" y="125.3" fill="#eef4f8">┤ </text>
-<text x="85.6" y="125.3" fill="#7fa8c4">WIP</text>
-<text x="119.2" y="125.3" fill="#7fa8c4">Work in flight      </text>
-<text x="287.2" y="125.3" fill="#eef4f8"> ┤○├ fast  </text>
-<text x="379.6" y="125.3" fill="#24486b">┤ ├</text>
-<text x="413.2" y="125.3" fill="#7fa8c4">slow</text>
-<text x="455.2" y="125.3" fill="#24486b">   2s</text>
-<text x="505.6" y="125.3" fill="#7fa8c4">  4</text>
-<text x="539.2" y="125.3" fill="#24486b">├</text>
-<text x="547.6" y="125.3" fill="#7fa8c4">──</text>
-<text x="564.4" y="125.3" fill="#eef4f8">┤</text>
-<text x="572.8" y="125.3" fill="#24486b">····</text>
-<text x="614.8" y="125.3" fill="#7fa8c4">3</text>
+<text x="505.6" y="108.3" fill="#7fa8c4">  4</text>
+<text x="530.8" y="108.3" fill="#eef4f8"> ╲12/99/26╲</text>
+<text x="68.8" y="125.3" fill="#24486b">Tasks in the DOING phase, against a limit you set.</text>
 <text x="52.0" y="142.3" fill="#24486b">├</text>
 <text x="60.4" y="142.3" fill="#7fa8c4">─</text>
 <text x="68.8" y="142.3" fill="#eef4f8">┤ </text>

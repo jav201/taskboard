@@ -405,15 +405,20 @@ def textfield_block(k, w: int, tick: int | None = None) -> list[str]:
     value without losing any of it. Every other block reflows by stacking,
     because a shorter button would be a shorter word.
 
-    `tick` IS THE BLINK, AND IT IS GALLERY-ONLY BECAUSE THE FIELD IS. Pass 53
-    read this app for a live text seat and found none — nothing in the engine
-    is TYPED — and refused to invent one. That ruling stands, so the
-    contract's first AMBIENT motion runs where its component already lives:
-    the caret's column alternates between the language's mark and the rune
-    its paper is made of, on the language's own period. Called without a
-    tick (which is how every acceptance check calls it) the caret is simply
-    ON, so the blink cannot move a single law that measured this block
-    before it existed."""
+    `tick` IS THE BLINK, AND IT IS STILL GALLERY-ONLY — but the reason has
+    changed and the old one is worth keeping in view. Pass 53 read this app
+    for a live text seat, found none (*"nothing in the engine is TYPED"*) and
+    refused to invent one; **inc93 measured what that refusal cost** — the
+    INVALID state all eleven kits draw at `S2` was reachable by no key in any
+    language — and gave the one value the engine already had, a signal's
+    THRESHOLD, its keyboard. So there IS a live field now, on `ConfigScreen`.
+
+    What has not moved is the BLINK. The live seat calls `Kit.textfield`
+    without a `tick` and without `caret_on`, so its caret is simply on: an
+    ambient loop on a config screen would be the only moving thing on a
+    surface whose whole job is to be read. The blink stays where its component
+    already lives, which is here, and called without a tick the caret cannot
+    move a single law that measured this block before it existed."""
     def lab(name):
         return f"[{MUT}]{name:<11}[/]"
 
@@ -798,6 +803,25 @@ class ConfigScreen(Screen):
         # `_pressed`) is how a surface grows a second moving element without
         # anyone deciding to.
         self._motion = None
+        # THE APP'S ONE TYPED SEAT (inc93), and it took a key round to justify
+        # it. `textfield_block`'s docstring has said since pass 53 that this
+        # app has no live text seat — *"nothing in the engine is TYPED — and
+        # refused to invent one"* — and that refusal was right until inc91
+        # measured what it cost: the INVALID state ALL ELEVEN kits draw at
+        # `S2`, whose walls inc85 moved into `ink` in every one of them, was
+        # reachable by no key in any language. A state eleven languages draw
+        # and nobody can provoke is a state the corpus has never tested.
+        #
+        # WHAT IS TYPED IS A VALUE THE MODEL ALREADY HAD. The threshold is the
+        # one number in the engine a user changes, and it has had keys since
+        # this screen existed (`[` and `]`). Typing it is giving an existing
+        # value its keyboard, not inventing a field to have one. `None` means
+        # the seat is showing its slider; a string means it is being typed.
+        self._typed: str | None = None
+        # AND THE REFUSAL OUTLIVES THE BLUR, which is the whole point of the
+        # state. A field that only looked wrong while the caret was in it
+        # would be a field nobody ever sees refuse.
+        self._refused = False
         # AND A GENERATION, because a key can be pressed again while its own
         # motion is still playing. The timer chain of the motion that was
         # interrupted is still armed, and without this it would advance the
@@ -854,8 +878,20 @@ class ConfigScreen(Screen):
         two things now need the answer: the redraw, and the PICK's motion — a
         set with every option on screen moves its MARK between siblings, and
         a set showing one option changes its WORD. Same choice, two
-        mechanisms, and therefore two motions."""
-        rows = self._rows(self._group_radio)
+        mechanisms, and therefore two motions.
+
+        AND IT IS MEASURED ON THE STEADY ROW, never on the typed one (inc93).
+        A field is wider than the slider it replaces, so asking this question
+        while the threshold is being typed could flip the whole screen's
+        mechanism under the caret — the radio set collapsing to a stepper
+        because somebody pressed a digit. The typed buffer is masked for the
+        length of the measurement, so the layout is a fact about the screen
+        and not about what the user is halfway through saying."""
+        typed, self._typed = self._typed, None
+        try:
+            rows = self._rows(self._group_radio)
+        finally:
+            self._typed = typed
         return max(plain_len(r) for r in rows) <= (self.size.width or 80)
 
     def _action_row(self) -> str:
@@ -963,9 +999,7 @@ class ConfigScreen(Screen):
             # a value nothing can reach: DISABLED.
             st = (LG.DISABLED if not s.enabled
                   else LG.EDITED if sel else LG.DEFAULT)
-            thr = ("" if s.threshold is None
-                   else KIT.slider(s.threshold, 0, max(10, s.threshold * 2), 8,
-                                   st))
+            thr = self._threshold_cell(s, sel, st)
             val = "—" if s.last is None else s.last.value
             ic = KIT.icon(s.id)
             name = (f"{ic} " if ic else "") \
@@ -981,7 +1015,106 @@ class ConfigScreen(Screen):
                     rows.append(f"     [{ALERT_HUE}]{s.last_error}[/]")
         return rows
 
+    def _threshold_cell(self, s, sel: bool, st: str) -> str:
+        """THE THRESHOLD SEAT: a SLIDER by default, a FIELD while it is typed.
+
+        Two mechanisms for one value, and the choice is the user's rather than
+        the screen's: `[` and `]` nudge it and the slider shows where it lands;
+        a digit starts typing it and the field shows what has been said so far.
+        The slider is the better read and the field is the only way to say
+        `47` without pressing a key forty-seven times.
+
+        THE INVALID STATE IS THE LANGUAGE'S AND NOT A RED BORDER. `KIT.
+        textfield(..., LG.INVALID)` draws the walls each kit declares in
+        `field_form(INVALID, 'textfield')` — naught's `◑`, corgi's `▚▚`/`▞▞`,
+        swiss's `║`, instrument's `⠶` at both ends — in the tier
+        `field_wall_tone` names, which inc85 moved to `ink` in all eleven
+        because a refusal is a MEANING MARK. This is the seat that makes that
+        move reachable."""
+        if s.threshold is None:
+            return ""
+        if sel and self._typed is not None:
+            return KIT.textfield(self._typed, len(self._typed), 8,
+                                 LG.INVALID if self._refused else LG.EDITED)
+        return KIT.slider(s.threshold, 0, max(10, s.threshold * 2), 8, st)
+
+    def on_key(self, event) -> None:
+        """THE TYPING, and every branch of it is a decision worth naming.
+
+        A DIGIT IS NOT A KEY THIS SCREEN BINDS, and that is deliberate: a
+        binding is a verb the footer can name, and there is no honest footer
+        entry for "the characters of a number". So the field reads the key
+        event directly, and only on a row that HAS a threshold — two of the
+        six signals, which is a fact about the engine and not about this
+        screen.
+
+        IT ACCEPTS WHAT IS TYPED AND REFUSES IT ON BLUR, rather than masking
+        the keystroke. A field that silently swallowed a `/` could never BE
+        invalid, and the corpus draws an INVALID state for its text field in
+        all eleven — so the design's own answer to a bad character is
+        `accept, then refuse`, and this is where that gets honoured.
+
+        **TYPING STARTS ON A DIGIT AND ON NOTHING ELSE**, and that is not a
+        nicety: the first version took any printable character the moment the
+        cursor sat on a row with a threshold, which SWALLOWED THIS SCREEN'S
+        OWN `r`. The refresh button stopped pressing, the drive-check in
+        `verify_language.py` went red in four clauses at once, and the defect
+        was invisible from the key round because no step presses `r`. A seat
+        that eats its screen's verbs is worse than no seat. So: a digit opens
+        the field, and only once it is open does it take everything else —
+        which is also how the `/` that gets refused arrives.
+
+        `space` IS NOT TAKEN even then. It is this screen's toggle and a
+        threshold has no use for it, so the binding keeps the key.
+        """
+        s = self.engine.signals[self.idx]
+        if s.threshold is None:
+            return
+        if event.key == "backspace" and self._typed is not None:
+            self._typed, self._refused = self._typed[:-1], False
+            event.stop()
+            event.prevent_default()
+            self.redraw()
+            return
+        if event.key in ("tab", "shift+tab", "enter") and self._typed is not None:
+            self._commit()
+            event.stop()
+            event.prevent_default()
+            self.redraw()
+            return
+        ch = event.character
+        if not (ch and ch.isprintable() and ch != " "):
+            return
+        if self._typed is None and not ch.isdigit():
+            return                      # the screen's own keys keep working
+        self._typed, self._refused = (self._typed or "") + ch, False
+        event.stop()
+        event.prevent_default()
+        self.redraw()
+
+    def _commit(self) -> None:
+        """VALIDATE ON BLUR, and keep the buffer when it fails.
+
+        The committed value is not touched by a refusal — a signal that was
+        watching for 4 is still watching for 4 while a wrong number sits in
+        the field — and the buffer STAYS so the refusal is something a reader
+        can see after the caret has gone. An empty buffer is a cancel and not
+        a refusal: backspacing a field to nothing is how a user says never
+        mind."""
+        v = self._typed or ""
+        if not v:
+            self._typed, self._refused = None, False
+        elif v.isdigit():
+            self.engine.signals[self.idx].threshold = int(v)
+            self._typed, self._refused = None, False
+        else:
+            self._refused = True
+
     def action_move(self, d: int) -> None:
+        # LEAVING THE ROW ABANDONS THE EDIT, refusal included. The alternative
+        # — carrying a refused value up and down the list — would make the
+        # invalid state a property of the SCREEN rather than of the seat.
+        self._typed, self._refused = None, False
         self.idx = (self.idx + d) % len(self.engine.signals)
         self.redraw()
 

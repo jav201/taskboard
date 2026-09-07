@@ -2,70 +2,47 @@
 <title>taskboard - corgi - K6 match</title>
 <rect width="860.0" height="564.0" fill="#0d0d0d"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<rect x="10.0" y="10.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="27.0" width="840.0" height="17.0" fill="#101010"/>
-<text x="26.8" y="40.3" fill="#70330a">[S]</text>
-<text x="52.0" y="40.3" fill="#6b6b6b"> S I G N A L S  </text>
-<text x="186.4" y="40.3" fill="#484848">WHAT THE WIDGET WATCHES</text>
-<rect x="10.0" y="44.0" width="840.0" height="17.0" fill="#101010"/>
-<text x="26.8" y="57.3" fill="#484848">─────────────────────────────────────────────────────────────────────────────────────────────</text>
-<rect x="10.0" y="61.0" width="840.0" height="17.0" fill="#141f27"/>
-<text x="10.0" y="74.3" fill="#0a0f13">▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔</text>
-<rect x="10.0" y="78.0" width="840.0" height="17.0" fill="#141f27"/>
-<rect x="10.0" y="95.0" width="75.6" height="17.0" fill="#141f27"/>
+<text x="26.8" y="40.3" fill="#552709">[S]</text>
+<text x="52.0" y="40.3" fill="#515151"> S I G N A L S  </text>
+<text x="186.4" y="40.3" fill="#373737">WHAT THE WIDGET WATCHES</text>
+<text x="26.8" y="57.3" fill="#373737">─────────────────────────────────────────────────────────────────────────────────────────────</text>
+<rect x="10.0" y="61.0" width="840.0" height="17.0" fill="#1c1c1c"/>
+<text x="10.0" y="74.3" fill="#3a3a3a">▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔</text>
+<rect x="10.0" y="78.0" width="840.0" height="17.0" fill="#1c1c1c"/>
+<rect x="10.0" y="95.0" width="75.6" height="17.0" fill="#1c1c1c"/>
 <rect x="85.6" y="95.0" width="8.4" height="17.0" fill="#e0e0e0"/>
-<rect x="94.0" y="95.0" width="747.6" height="17.0" fill="#141f27"/>
-<text x="26.8" y="108.3" fill="#000000">🔎</text>
-<text x="43.6" y="108.3" fill="#e0e0e0">refre</text>
-<rect x="10.0" y="112.0" width="840.0" height="17.0" fill="#141f27"/>
-<rect x="10.0" y="129.0" width="840.0" height="17.0" fill="#141f27"/>
-<rect x="10.0" y="146.0" width="840.0" height="17.0" fill="#0e395a"/>
-<text x="26.8" y="159.3" fill="#e0e0e0" font-weight="bold" text-decoration="underline">Refre</text>
-<text x="68.8" y="159.3" fill="#e0e0e0" font-weight="bold">sh now                                                                                       </text>
-<rect x="10.0" y="163.0" width="840.0" height="17.0" fill="#0e395a"/>
-<text x="26.8" y="176.3" fill="#98a7b2">Recompute every signal immediately</text>
-<rect x="10.0" y="180.0" width="840.0" height="17.0" fill="#141f27"/>
-<text x="10.0" y="193.3" fill="#000000">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
-<rect x="10.0" y="197.0" width="840.0" height="17.0" fill="#101010"/>
-<text x="26.8" y="210.3" fill="#6b6b6b">   ▒▒Refresh▒▒  </text>
-<text x="161.2" y="210.3" fill="#222222">recompute every signal now</text>
-<rect x="10.0" y="214.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="231.0" width="840.0" height="17.0" fill="#101010"/>
-<text x="35.2" y="244.3" fill="#222222">esc/q back · space toggle · [ threshold - · ] threshold + · r refresh</text>
-<rect x="10.0" y="248.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="265.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="282.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="299.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="316.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="333.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="350.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="367.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="384.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="401.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="418.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="435.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="452.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="469.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="486.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="503.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="520.0" width="840.0" height="17.0" fill="#101010"/>
-<rect x="10.0" y="537.0" width="840.0" height="17.0" fill="#161616"/>
-<text x="10.0" y="550.3" fill="#70330a" font-weight="bold"> esc/q </text>
-<text x="68.8" y="550.3" fill="#646464">Back </text>
-<text x="110.8" y="550.3" fill="#70330a" font-weight="bold"> space </text>
-<text x="169.6" y="550.3" fill="#646464">Toggle </text>
-<text x="228.4" y="550.3" fill="#70330a" font-weight="bold"> [ </text>
-<text x="253.6" y="550.3" fill="#646464">Threshold - </text>
-<text x="354.4" y="550.3" fill="#70330a" font-weight="bold"> ] </text>
-<text x="379.6" y="550.3" fill="#646464">Threshold + </text>
-<text x="480.4" y="550.3" fill="#70330a" font-weight="bold"> r </text>
-<text x="505.6" y="550.3" fill="#646464">Refresh </text>
-<text x="572.8" y="550.3" fill="#70330a" font-weight="bold"> ? </text>
-<text x="598.0" y="550.3" fill="#646464">Keys </text>
-<text x="640.0" y="550.3" fill="#70330a" font-weight="bold"> t </text>
-<text x="665.2" y="550.3" fill="#646464">Language </text>
-<text x="749.2" y="550.3" fill="#252525">▏</text>
-<text x="757.6" y="550.3" fill="#70330a" font-weight="bold">^p</text>
-<text x="774.4" y="550.3" fill="#646464"> palette</text>
+<rect x="94.0" y="95.0" width="747.6" height="17.0" fill="#1c1c1c"/>
+<text x="26.8" y="108.3" fill="#ff6600">🔎</text>
+<text x="43.6" y="108.3" fill="#f2f2f2">refre</text>
+<rect x="10.0" y="112.0" width="840.0" height="17.0" fill="#1c1c1c"/>
+<rect x="10.0" y="129.0" width="840.0" height="17.0" fill="#1c1c1c"/>
+<text x="10.0" y="142.3" fill="#3a3a3a">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<rect x="10.0" y="146.0" width="840.0" height="17.0" fill="#1c1c1c"/>
+<rect x="10.0" y="163.0" width="840.0" height="17.0" fill="#2a2a2a"/>
+<text x="26.8" y="176.3" fill="#f2f2f2" font-weight="bold">Refre</text>
+<text x="68.8" y="176.3" fill="#f2f2f2">sh now                                                                                       </text>
+<rect x="10.0" y="180.0" width="840.0" height="17.0" fill="#2a2a2a"/>
+<text x="26.8" y="193.3" fill="#3a3a3a">Recompute every signal immediately</text>
+<rect x="10.0" y="197.0" width="840.0" height="17.0" fill="#1c1c1c"/>
+<text x="10.0" y="210.3" fill="#000000">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="35.2" y="244.3" fill="#1a1a1a">esc/q back · space toggle · [ threshold - · ] threshold + · r refresh</text>
+<rect x="10.0" y="537.0" width="840.0" height="17.0" fill="#111111"/>
+<text x="10.0" y="550.3" fill="#552709" font-weight="bold"> esc/q </text>
+<text x="68.8" y="550.3" fill="#4c4c4c">Back </text>
+<text x="110.8" y="550.3" fill="#552709" font-weight="bold"> space </text>
+<text x="169.6" y="550.3" fill="#4c4c4c">Toggle </text>
+<text x="228.4" y="550.3" fill="#552709" font-weight="bold"> [ </text>
+<text x="253.6" y="550.3" fill="#4c4c4c">Threshold - </text>
+<text x="354.4" y="550.3" fill="#552709" font-weight="bold"> ] </text>
+<text x="379.6" y="550.3" fill="#4c4c4c">Threshold + </text>
+<text x="480.4" y="550.3" fill="#552709" font-weight="bold"> r </text>
+<text x="505.6" y="550.3" fill="#4c4c4c">Refresh </text>
+<text x="572.8" y="550.3" fill="#552709" font-weight="bold"> ? </text>
+<text x="598.0" y="550.3" fill="#4c4c4c">Keys </text>
+<text x="640.0" y="550.3" fill="#552709" font-weight="bold"> t </text>
+<text x="665.2" y="550.3" fill="#4c4c4c">Language </text>
+<text x="749.2" y="550.3" fill="#1d1d1d">▏</text>
+<text x="757.6" y="550.3" fill="#552709" font-weight="bold">^p</text>
+<text x="774.4" y="550.3" fill="#4c4c4c"> palette</text>
 </g>
 </svg>

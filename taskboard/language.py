@@ -1696,7 +1696,66 @@ class Kit:
         rules.append(f".tile {{ transition: background {ms}ms {ease}; }}")
         rules.append(f"#hero {{ transition: background {ms * 2}ms {ease}; }}")
         return ("\n".join(rules) + "\n" + self.surface()
-                + "\n" + self.composition())
+                + "\n" + self.composition() + "\n" + self.palette())
+
+    # -- THE COMMAND PALETTE, IN THIS LANGUAGE (inc93) ----------------------
+    def palette(self) -> str:
+        """The framework's command palette, restyled by the kit that owns the
+        screen it is drawn over.
+
+        WHY THIS EXISTS, and it is a measurement rather than a preference.
+        inc91 drove the real app through `ctrl+p` in all eleven languages and
+        run-encoded the palette's eight rows: **they collapse to ONE distinct
+        block across the eleven.** Textual's own `#141f27` slab, its own
+        `#0e395a` cursor row, and a match highlight of `bold underline` on
+        `#0e395a` — which is no kit's `MATCH_STYLE`: not instrument's
+        `underline {accent}`, not swiss's `bold {alert}`, not darkside's
+        `reverse {mut}`. The one live match run in the whole app spoke none of
+        the eleven languages. On ledger it was worse than neutral: the corpus's
+        one light-paper kit got a night-mode slab laid across the middle of it.
+
+        THE MATCH HIGHLIGHT IS DERIVED FROM `MATCH_STYLE` AND NOT RESTATED.
+        The channel and the ink come out of the same string `Kit.match` reads,
+        so a kit that changes its match channel changes this rule with it and
+        the sheet and the app cannot disagree about what a match looks like.
+        `reverse` needs no special case: Textual resolves `text-style: reverse`
+        into the (ink, ground) swap exactly as `cell_grid` does.
+
+        AND THE OPTION ROWS LOSE THEIR DEFAULT BOLD. `CommandList` ships
+        `text-style: bold` on every option, which makes weight the page's
+        baseline and therefore not a channel — seven of the eleven kits carry
+        their match on weight and would have been shouting into a shout.
+
+        WHAT IS NOT FIXED HERE, said out loud: the prompt glyph. Textual draws
+        it as `SearchIcon`, whose `icon` is the emoji `U+1F50E` — two columns
+        wide, absent from the measured face, and the only cell in 66 key frames
+        that neither a kit nor a screen chose. Giving it a language means a new
+        contract seat (`Kit.SEARCH`) in all eleven, which is a language-level
+        increment and not a stylesheet. It is coloured here and it is recorded
+        in `inc93.md`.
+        """
+        t = self.t
+        word = self.MATCH_STYLE.split()[0]
+        ink = t.get(self.MATCH_STYLE.strip().split()[-1].strip("{}"), t["ink"])
+        return "\n".join([
+            f"CommandPalette {{ background: {t['ground']} 70%; }}",
+            f"CommandPalette > Vertical {{ background: {t['panel']}; }}",
+            f"CommandPalette > Vertical:dark {{ background: {t['panel']}; }}",
+            f"CommandPalette #--input {{ border: hkey {t['dim']}; }}",
+            f"SearchIcon {{ color: {t['accent']}; }}",
+            f"CommandInput, CommandInput:focus "
+            f"{{ color: {t['ink']}; background: {t['panel']}; }}",
+            f"CommandList {{ background: {t['panel']}; }}",
+            f"CommandList > .option-list--option "
+            f"{{ color: {t['mut']}; text-style: none; }}",
+            f"CommandList > .option-list--option-highlighted "
+            f"{{ color: {t['ink']}; background: {t['focus']}; "
+            f"text-style: none; }}",
+            f"CommandPalette > .command-palette--help-text "
+            f"{{ color: {t['dim']}; text-style: none; }}",
+            f"CommandPalette > .command-palette--highlight "
+            f"{{ color: {ink}; text-style: {word}; }}",
+        ])
 
     # -- COMPOSITION: the layout ITSELF as a language commitment ------------
     def composition(self) -> str:

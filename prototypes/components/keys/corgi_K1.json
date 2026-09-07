@@ -16,7 +16,7 @@
   ]
  },
  "band": null,
- "settle_reads": 10,
+ "settle_reads": 9,
  "ground": "#0d0d0d",
  "cols": 100,
  "rows": 32,
