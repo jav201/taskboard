@@ -5261,6 +5261,26 @@ def test_this_files_picture_metrics_are_the_exporters():
     assert "ry = PAD + y * LH" in src, "row origin"
     assert f"ty = ry + {_BASE_FRAC} * LH" in src, "baseline"
 
+
+def test_capture_languages_and_verify_inks_blanks_are_one_definition():
+    """`capture_languages.ink()`'s `BLANKS` and `verify_ink.py`'s `BLANKS` must
+    name the same two characters -- the ASCII space and U+2800 BRAILLE PATTERN
+    BLANK -- or the two ink measures over the same 66 frames answer different
+    questions again (inc79: `ink()` did not read `BLANKS` at all and counted
+    U+2800 as ink, 421 times across instrument and prism).
+
+    Read off both SOURCES rather than imported: `verify_ink.py --frames` is a
+    file reader on purpose and does not import `capture_languages`, which
+    pulls in Textual (`test_this_files_picture_metrics_are_the_exporters`
+    above takes the same stance for the same reason)."""
+    cap_src = (FRAMES.parent / "capture_languages.py").read_text(encoding="utf-8")
+    vi_src = (FRAMES.parent / "verify_ink.py").read_text(encoding="utf-8")
+    cap_m = re.search(r'^BLANKS = "([^"]*)"', cap_src, re.M)
+    vi_m = re.search(r'^BLANKS = "([^"]*)"', vi_src, re.M)
+    assert cap_m and vi_m, (bool(cap_m), bool(vi_m))
+    assert cap_m.group(1) == vi_m.group(1) == " ⠀", \
+        (cap_m.group(1), vi_m.group(1))
+
 _TEXT_RUN = re.compile(
     r'<text x="([0-9.]+)" y="([0-9.]+)" fill="(#[0-9a-fA-F]{6})"'
     r'([^>]*)>(.*?)</text>')

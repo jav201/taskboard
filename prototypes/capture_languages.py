@@ -665,9 +665,21 @@ def svg_from_grid(grid, ground: str, label: str) -> str:
     return "\n".join(out)
 
 
+#: WHAT IS NOT INK.  The ASCII space and U+2800 BRAILLE PATTERN BLANK -- an
+#: EMPTY braille cell, a space that happens to live in the braille block.
+#: `verify_ink.py`'s `BLANKS` names the same pair for the same reason
+#: (inc44); `ink()` below did not read it and counted U+2800 as ink for every
+#: increment until inc79 found the two definitions disagreed (421 cells
+#: across the 66 frames -- instrument 174, prism 247).  One definition,
+#: restated in `verify_ink.py` and checked there against this one, because
+#: `verify_ink.py`'s `--frames` mode is a file reader on purpose and does
+#: not import this module (`capture_languages` pulls in Textual).
+BLANKS = " ⠀"
+
+
 def ink(rows: list[str]) -> float:
     total = sum(len(r) for r in rows)
-    return sum(1 for r in rows for c in r if c not in "  ") / total * 100
+    return sum(1 for r in rows for c in r if c not in BLANKS) / total * 100
 
 
 def write(name: str, rows: list[str], app=None,
