@@ -11,18 +11,18 @@
 <text x="10.0" y="125.3" fill="#1f1f22">    30  DROP THE LEGACY SHIM                  ON TIME   NORM   PHASE ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ doing</text>
 <text x="10.0" y="142.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   DUE ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ 3d</text>
 <text x="10.0" y="159.3" fill="#1f1f22">                                                               PRIORITY ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ high</text>
-<rect x="10.0" y="163.0" width="840.0" height="17.0" fill="#f5a300"/>
-<text x="10.0" y="193.3" fill="#f0ede4">Delete 3 tasks?</text>
-<text x="10.0" y="210.3" fill="#6e6a60">3 tasks will be removed from BACKLOG.</text>
-<text x="10.0" y="227.3" fill="#6e6a60">This cannot be undone.</text>
-<text x="10.0" y="244.3" fill="#f5a300">▔ </text>
-<text x="26.8" y="244.3" fill="#f0ede4"> ▀Delete▄ </text>
-<text x="110.8" y="244.3" fill="#f5a300"> ▔</text>
-<text x="152.8" y="244.3" fill="#f5a300">▁ </text>
-<text x="169.6" y="244.3" fill="#f0ede4">  Cancel  </text>
-<text x="253.6" y="244.3" fill="#f5a300"> ▁</text>
-<text x="10.0" y="261.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
-<text x="10.0" y="278.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   </text>
+<text x="10.0" y="176.3" fill="#1f1f22">▼  GATE DOING 04                STATUS    PROJ          PRI    STATUS ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ open</text>
+<rect x="10.0" y="180.0" width="840.0" height="17.0" fill="#f5a300"/>
+<text x="10.0" y="210.3" fill="#f0ede4">Delete 3 tasks?</text>
+<text x="10.0" y="227.3" fill="#6e6a60">3 tasks will be removed from BACKLOG.</text>
+<text x="10.0" y="244.3" fill="#6e6a60">This cannot be undone.</text>
+<text x="10.0" y="261.3" fill="#f5a300">▔ </text>
+<text x="26.8" y="261.3" fill="#f0ede4"> ▀Delete▄ </text>
+<text x="110.8" y="261.3" fill="#f5a300"> ▔</text>
+<text x="152.8" y="261.3" fill="#f5a300">▁ </text>
+<text x="169.6" y="261.3" fill="#f0ede4">  Cancel  </text>
+<text x="253.6" y="261.3" fill="#f5a300"> ▁</text>
+<text x="10.0" y="278.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
 <text x="10.0" y="295.3" fill="#1f1f22">    14  REWRITE THE ONBOARDING                ON TIME   LOW    </text>
 <text x="10.0" y="312.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   </text>
 <text x="10.0" y="346.3" fill="#1f1f22">   GATE BLOCKED 00              STATUS    PROJ          PRI    </text>
