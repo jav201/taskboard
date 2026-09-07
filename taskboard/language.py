@@ -4439,7 +4439,29 @@ class Naught(Kit):
         # of pixels at FULL SIZE. Position and extent on one channel — dot
         # size — because that is the only channel this language has and it
         # has never needed a second.
-        "scrollbar.main": {DEFAULT: "·", DISABLED: "⋅"},
+        #
+        # inc68 (K2): THE SHAFT WAS STILL SPENDING THE RETIRED PIXEL. inc61
+        # RETIRED `·` from this alphabet — "it is the homoglyph of the lit
+        # dot, it is the one rung of the ramp that is East-Asian-Width
+        # AMBIGUOUS, and LANGUAGES.md §0's own pass-10 had already measured
+        # and rejected it" — and moved every control off it. It could not
+        # move this one: the scroll bar was outside the census's set B by the
+        # operator's request, so nothing could see that the SHAFT had kept
+        # it. inc67 put the widget in the set and the row came straight back
+        # (`∙` danger+error against `·` at `scrollbar.main`, plus `⋅` and `●`
+        # against the same cell), which is the same row inc61 closed, alive
+        # in the one seat that was invisible.
+        #
+        # THE SHAFT TAKES `NA.OFF`, THE UNLIT LATTICE, which is what this
+        # comment already claims it is ("the lattice at its faintest pitch").
+        # `·` was a SIXTH charge on a five-charge ramp; the ground is the
+        # ramp's own floor and the thumb (`●`, full size) stands on it at
+        # four charges' distance. `naught_S1` row 31 read
+        # `view ·●●●●·······` — three sizes of one round pixel, `· ∙ ◦`, in
+        # one frame, which is §2.8's second objection to that frame — and it
+        # reads `view ◦●●●●◦◦◦◦◦◦◦` now, with `·` gone from this kit
+        # entirely.
+        "scrollbar.main": {DEFAULT: NA.OFF, DISABLED: "⋅"},
         "scrollbar.indicator": {DEFAULT: "●", DISABLED: "◦"},
         # THE LANGUAGE THAT CANNOT DRAW AN ARROW, and saying so is the point
         # again. Nine languages point their steps; this vocabulary is one

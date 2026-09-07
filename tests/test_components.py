@@ -3324,19 +3324,36 @@ def test_the_rune_is_excluded_from_the_invalid_channel_by_name(monkeypatch):
 # ===========================================================================
 # inc53 (rework-5a) — diameter alone is not a channel
 # ===========================================================================
-#: ONE DRAWING AT TWO DIAMETERS, the pairs the census reads as the same mark.
-#: Kept in step with `collision_census.HOMOGLYPHS` by
-#: `test_the_homoglyph_table_is_one_table_in_two_files`.
-HOMOGLYPHS = (("•", "●"), ("·", "∙"), ("○", "O"), ("o", "◦"), ("▪", "■"))
+#: ONE DRAWING AT ANOTHER SIZE OR FILL — ruling D AMENDED (2026-09-07). The
+#: five hand-picked pairs became five FAMILIES and the pairs are derived from
+#: them; `collision_census.py` owns the families and this file reads them, so
+#: there is one table and not two (`test_the_homoglyph_table_is_one_table_in_
+#: two_files` still asserts it, now over the families AND the derivation).
+#:
+#: WHY A FAMILY AND NOT A PAIR. inc53 decided "adjacent sizes only" and
+#: measured the alternative at 20 rows against 6. That decision was taken
+#: when the table was five pairs somebody had noticed, and
+#: `PROTOTYPE-inheritors-3.md` §0d is what it cost: the four TIGHTEST pairs
+#: in the corpus were outside it, so ruling D could only ever be enforced
+#: against the pairs already found by hand. The amendment reverses it and
+#: publishes the bill — 1 homoglyph row becomes 30.
+HOMOGLYPH_FAMILIES = ("⋅·∙•●", "◦o○◎◉⊙⊛O", "▫□▪■", "†‡", "╌┄┈")
+HOMOGLYPHS = tuple((a, b) for fam in HOMOGLYPH_FAMILIES
+                   for i, a in enumerate(fam) for b in fam[i + 1:])
 
 
-def _twin(ch: str) -> str | None:
-    for a, b in HOMOGLYPHS:
-        if ch == a:
-            return b
-        if ch == b:
-            return a
-    return None
+def _twins(ch: str) -> set:
+    """Every cell that is the same drawing as `ch` at another size or fill.
+
+    A SET AND NOT A CELL, since inc68: the old `_twin` returned ONE partner
+    because the table was pairs. A family has as many as it has members, and
+    a caller asking "is this mark a homoglyph of that one" has to be handed
+    all of them or it is asking about whichever the table happened to list
+    first."""
+    for fam in HOMOGLYPH_FAMILIES:
+        if ch in fam:
+            return set(fam) - {ch}
+    return set()
 
 
 def test_swisss_chosen_option_is_not_the_obligation_mark_at_another_size():
@@ -3356,7 +3373,7 @@ def test_swisss_chosen_option_is_not_the_obligation_mark_at_another_size():
     req = k.REQUIRED
     for st, glyph in k.PART_GLYPHS["radio.knob"].items():
         assert req not in glyph, (st, glyph, req)
-        assert _twin(req) not in glyph, (st, glyph, _twin(req))
+        assert not (_twins(req) & set(glyph)), (st, glyph, sorted(_twins(req)))
     box = k.PART_GLYPHS["checkbox.knob"]
     radio = k.PART_GLYPHS["radio.knob"]
     assert set(box) == set(radio), (sorted(box), sorted(radio))
@@ -3390,7 +3407,7 @@ def test_darksides_field_leader_is_not_a_severity_rung_at_another_size():
 
     rungs = set("".join(k.LEVELS.values())) - set(" ")
     assert leader not in rungs, (leader, sorted(rungs))
-    assert _twin(leader) not in rungs, (leader, _twin(leader), sorted(rungs))
+    assert not (_twins(leader) & rungs), (leader, sorted(_twins(leader) & rungs))
     assert leader != "◦" and LG.NA.OFF == "◦", (leader, LG.NA.OFF)
     assert leader == "▔", leader
 
@@ -3404,7 +3421,17 @@ def test_the_homoglyph_table_is_one_table_in_two_files():
         "_census", FRAMES.parent / "collision_census.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
+    assert tuple(mod.HOMOGLYPH_FAMILIES) == HOMOGLYPH_FAMILIES, \
+        (mod.HOMOGLYPH_FAMILIES, HOMOGLYPH_FAMILIES)
     assert tuple(mod.HOMOGLYPHS) == HOMOGLYPHS, (mod.HOMOGLYPHS, HOMOGLYPHS)
+    # AND THE DERIVATION IS THE SAME DERIVATION, not two spellings of it: a
+    # family of n members is n(n-1)/2 pairs, and both files have to agree on
+    # that as well as on the families.
+    assert len(HOMOGLYPHS) == sum(len(f) * (len(f) - 1) // 2
+                                  for f in HOMOGLYPH_FAMILIES) == 48
+    # triangles are NOT a family (ruling D amended, and the D-addendum's
+    # reason: they differ by DIRECTION, which is a channel)
+    assert not any({"▶", "▼"} <= set(f) for f in HOMOGLYPH_FAMILIES)
 
 
 # ===========================================================================
@@ -4606,7 +4633,7 @@ def test_ledger_does_not_bank_its_own_paper_up_by_size():
     edited = k.PART_GLYPHS["textfield.main"][LG.EDITED]
     rune = k.PART_GLYPHS["textfield.main"][LG.DEFAULT][1]
     assert rune == "·" and "∙" not in edited, (rune, edited)
-    assert _twin(rune) not in edited, (rune, _twin(rune), edited)
+    assert not (_twins(rune) & set(edited)), (rune, sorted(_twins(rune)), edited)
     rule = k.PART_GLYPHS["indicator"][LG.DEFAULT]
     assert rule in edited, (rule, edited)
     # ... and the rule carries no meaning anywhere in this kit.
@@ -5013,6 +5040,11 @@ CELL_INK = {
     "▪": 0.30,   # ▪ BLACK SMALL SQUARE
     "▬": 0.50,   # ▬ BLACK RECTANGLE — half a cell, solid
     "▫": 0.15,   # ▫ WHITE SMALL SQUARE — ▪'s outline
+    # inc68: the third rung of the one ladder the D-addendum blesses by name
+    # (`▫▫ ▪▪ ■■`, "hollow to filled and grows, in the same direction"). Two
+    # of its three were weighed and the third was not, so K4's channel law
+    # was refusing a ladder the ruling had already ruled on.
+    "■": 0.45,   # ■ BLACK SQUARE — ▪ at full size
     # inc67: naught's meter left the LIT dot for the CHARGED one, so the
     # direction law needs a weight for it. Ordinal and placed by the kit's own
     # ramp, which is the pair the corpus draws side by side: `⋅ ◦ ∙ ◉ ●` — a
@@ -5977,3 +6009,263 @@ def test_a_quantity_widget_draws_what_it_declares(lang):
     else:
         assert "mascot.pixel" not in q, (lang, q)
     assert asked == QUANTITY_SEATS_ANSWERED[lang], (lang, asked, q)
+
+
+# ---------------------------------------------------------------------------
+# inc68 (rework-6b) — K4: two states of one part are told apart on a declared
+# channel, and ordered where the doctrine orders them
+# ---------------------------------------------------------------------------
+#: K4, open since `PROTOTYPE-inheritors-2.md` and named in all three rounds:
+#: **no law in this corpus compares two states of the same part.** Every law
+#: here reads a glyph against the MEANINGS, or one part against another, or a
+#: frame against a fixture. Nothing asked the question a reader asks of a
+#: control — *"is this one on or off?"* — which is a question about two rows
+#: of ONE table.
+#:
+#: WHAT IT COST, twice, in frames:
+#:   `blueprint_S3`  a switch's three states are `├─┤` / `├┤·` / `├╎┈`, told
+#:                   apart by DASH COUNT at 2, 3 and 4. inc60's own packet:
+#:                   "a un cell de 12 px se le está pidiendo al lector que
+#:                   cuente guiones".
+#:   `prism_S2`      inc59 rewrote a checkbox's two centres in one increment
+#:                   and PRESERVED AN INVERSION between them — ticked drew the
+#:                   empty well, unticked drew a mark in the box — and nothing
+#:                   in eleven months of property tests could see it. inc64
+#:                   wrote the first law that compares two states of one part
+#:                   (`test_a_ticked_box_is_never_lighter_than_an_empty_one`),
+#:                   which is one part, one pair of states, one direction.
+#:                   This is the general one.
+#:
+#: THE CHANNEL IS RULING D'S FOUR AND NOTHING ELSE: COUNT, WEIGHT, POSITION,
+#: DIRECTION. Distinct CODE POINTS is not a channel and that is the whole of
+#: K2 — every one of the eleven already has pairwise-distinct glyphs in every
+#: table (measured: zero duplicates in 11 kits), so a law that asked for
+#: distinctness would pass everywhere and say nothing.
+def state_channel(g1: str, g2: str) -> str | None:
+    """Which of ruling D's four channels separates two glyphs, or `None`.
+
+    Read in the order a reader reaches them:
+
+      COUNT     the two are different LENGTHS — one is longer than the other,
+                which is the coarsest thing an eye resolves in a run.
+      POSITION  the same cells in a different order: a mark that MOVED.
+      SHAPE     at least one differing cell is a different DRAWING from its
+                partner (not in the same `HOMOGLYPH_FAMILIES` row). This is
+                the channel ruling D calls a shape rather than a size, and it
+                is what nine of the eleven spend.
+      WEIGHT    every differing cell is its partner at another size or fill,
+                AND this file has a measured ink order for the pair. A ladder
+                that grows and fills in the same direction is a channel — the
+                D-addendum says so by name for industrial's `▫▫ ▪▪ ■■`.
+
+    `None` MEANS THIS FILE CANNOT NAME A CHANNEL, and — like `cell_ink` — that
+    is a REFUSAL and not a pass. Two cells of one family with no measured
+    weight between them are *"one drawing at two diameters"*, which ruling D
+    says is no channel at all; and a pair this file has never weighed is a
+    pair it may not certify (E2: the artefacts carry no font metric). The
+    roster below is honest about which of the two each row is."""
+    if len(g1) != len(g2):
+        return "count"
+    diff = [(a, b) for a, b in zip(g1, g2) if a != b]
+    if not diff:
+        return None
+    if sorted(g1) == sorted(g2):
+        return "position"
+    for a, b in diff:
+        if b not in _twins(a):
+            return "shape"
+    for a, b in diff:
+        ia, ib = cell_ink(a), cell_ink(b)
+        if ia is not None and ib is not None and ia != ib:
+            return "weight"
+    return None
+
+
+#: WHAT STILL TELLS TWO OF ITS STATES APART BY SIZE OR FILL ALONE, counted per
+#: language. `(part key, state, state)`, over the DECLARED table only — a
+#: state a kit does not declare falls back through the chain and is the same
+#: glyph on purpose, which is a declaration that the two states LOOK ALIKE and
+#: is not this law's business.
+#:
+#:   naught     8  and it is the language, not a slip. Six seats tell two
+#:                 states apart with a ring at another size or fill —
+#:                 `◦`/`○` at the button, the checkbox and the field's paper,
+#:                 `◉`/`◎` at the shared knob and the checkbox's, `○`/`◦` at
+#:                 the radio's ground. `PROTOTYPE-inheritors-3.md` §2.8 is the
+#:                 same finding read off `naught_S2` ("el radio y el checkbox
+#:                 de este formulario se distinguen sólo por el diámetro y el
+#:                 relleno de un círculo") and `spec.md` §11.5 already records
+#:                 that this kit "has no unspent cell left". Closing these
+#:                 means a second channel for this alphabet, which is a
+#:                 language-level increment.
+#:   darkside   1  `◎`/`◉` at the shared knob, default against focused — the
+#:                 move inc49 made and this file's own census listed as
+#:                 ACCEPTED under COUNT ("two concentric strokes against
+#:                 one"). Ruling D amended reads a ring as a ring at any
+#:                 fill, so the same move is now a row. Recorded as the
+#:                 disagreement it is.
+#:
+#: SWISS IS ZERO AND IT WAS TWO UNTIL `■` WAS WEIGHED. Its button ladder is
+#: `▫ ▪ ■`, which the D-addendum names as the shape that STANDS ("passes from
+#: hollow to filled (weight) and grows (size) in the same direction"), and
+#: this file had a weight for two of the three. That is a measurement being
+#: supplied, not a law being loosened: the third weight is arithmetic on the
+#: same ordinal scale, and without it the law was refusing a ladder the
+#: ruling had already blessed.
+STATES_TOLD_APART_BY_SIZE = {"naught": 8, "corgi": 0, "instrument": 0,
+                             "swiss": 0, "industrial": 0, "nord": 0,
+                             "darkside": 1, "prism": 0, "ledger": 0,
+                             "solari": 0, "blueprint": 0}
+
+
+def states_without_a_channel(lang: str) -> list[tuple]:
+    """Every pair of DECLARED states of one part that no channel separates."""
+    k = LG.kit(lang)
+    out = []
+    for key, table in sorted(k.PART_GLYPHS.items()):
+        states = list(table)
+        for i, s1 in enumerate(states):
+            for s2 in states[i + 1:]:
+                if state_channel(table[s1], table[s2]) is None:
+                    out.append((key, s1, table[s1], s2, table[s2]))
+    return out
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_two_states_of_one_part_are_told_apart_on_a_channel(lang):
+    """K4's first half, over every part table in every kit.
+
+    A ROSTER AND NOT A ZERO, on the same precedent as `MEANING_AT_AN_OPENER`
+    and `FILL_IS_NOT_A_MEANING`: nine of the eleven are clean, two are not,
+    and both of those are a language whose whole alphabet is one drawing at
+    several sizes. The number can only move when somebody edits it."""
+    assert (len(states_without_a_channel(lang))
+            == STATES_TOLD_APART_BY_SIZE[lang]), \
+        (lang, states_without_a_channel(lang))
+
+
+#: K4's SECOND HALF — "ordered where the doctrine orders them". Two kits
+#: declare a state ladder in their own words and both are ARITHMETIC to read,
+#: which is why these two and not the other nine: a braille cell's dots and a
+#: dash glyph's dashes are properties of the code point, so no font metric is
+#: needed and E2 does not reach them.
+#:
+#: PRISM'S FOUR, from inc59: "a control is read from the TOP" and "the ladder
+#: climbs instead of dimming". Its four control states are cut from `⠄ ⠉ ⠛ ⠿`
+#: — 1, 2, 4 and 6 dots — and the doctrine's order is DISABLED, DEFAULT,
+#: FOCUSED, ACTIVE. inc59's own comment records what it replaced: walls that
+#: ran `⣿` (8 dots) at rest, `⣷` (7) focused and `⣾` (7) active, "a control
+#: that DIMMED when the reader arrived at it".
+PRISM_LADDERS = ("radio.main", "button.main", "checkbox.main", "checkbox.knob")
+PRISM_LADDER_ORDER = (LG.DISABLED, LG.DEFAULT, LG.FOCUSED, LG.ACTIVE)
+
+
+def braille_dots(glyph: str) -> int:
+    return sum(bin(ord(ch) - 0x2800).count("1") for ch in glyph
+               if 0x2800 <= ord(ch) <= 0x28FF)
+
+
+def test_prisms_control_ladder_climbs_in_its_declared_order():
+    """K4's ordering clause, on the kit whose ladder is a dot count.
+
+    NON-DECREASING ALONG THE ORDER AND STRICTLY UP END TO END, which is the
+    weakest statement that still says "it climbs": two adjacent rungs may tie
+    (`⣷` and `⣾` are both seven dots, one carved at the top and one at the
+    bottom — a DIRECTION channel, and `state_channel` above is what asks that
+    of them), but a control may never be dimmer at a later rung than at an
+    earlier one, and the last rung must be brighter than the first."""
+    k = LG.kit("prism")
+    for key in PRISM_LADDERS:
+        table = k.PART_GLYPHS[key]
+        dots = [braille_dots(table[st]) for st in PRISM_LADDER_ORDER]
+        assert dots == sorted(dots), (key, PRISM_LADDER_ORDER, dots)
+        assert dots[0] < dots[-1], (key, dots)
+
+
+#: BLUEPRINT'S THREE, from inc60: "a meaning is a LINE TYPE", and the three
+#: horizontals this kit tells apart are told apart by DASH COUNT. `╌` is
+#: `LEVELS["warn"]`, `┄` is every dead INDICATOR and `┈` is every dead GROUND,
+#: and the doctrine orders them: the calmer the run, the more broken it is.
+#: `blueprint_S3` is the frame — `├─┤` on, `├┤·` off, `├╎┈` dead — and the
+#: round's objection (§2.7) is that counting dashes in a 12px cell is not a
+#: channel a reader has. **This law does not settle that**; it asserts the
+#: ladder is MONOTONE, so that if a reader can count at all, counting gives
+#: the right answer. E2 is why the rest cannot be settled from the artefact.
+BLUEPRINT_DASHES = {"╌": 2, "┄": 3, "┈": 4}
+
+
+def test_blueprints_dash_ladder_is_monotone_in_its_count():
+    """K4's ordering clause, on the kit whose ladder is a dash count."""
+    k = LG.kit("blueprint")
+    warn = k.LEVELS["warn"].strip()[0]
+    dead_ind = k.PART_GLYPHS["indicator"][LG.DISABLED]
+    dead_main = k.PART_GLYPHS["main"][LG.DISABLED]
+    rungs = [warn, dead_ind, dead_main]
+    assert set(rungs) <= set(BLUEPRINT_DASHES), rungs
+    counts = [BLUEPRINT_DASHES[r] for r in rungs]
+    assert counts == sorted(counts) and len(set(counts)) == 3, (rungs, counts)
+    # and the LIVE indicator is not on this ladder at all -- it is a solid
+    # rule, which is the one thing a reader never has to count
+    assert k.PART_GLYPHS["indicator"][LG.DEFAULT] not in BLUEPRINT_DASHES
+
+
+def test_the_state_channel_law_goes_red_on_a_real_table(monkeypatch):
+    """TEETH, on the two declarations two increments of this programme moved,
+    plus a vacuity arm on the channel reader itself.
+
+    ARM ONE is inc59's, restored: prism's checkbox walls before that
+    increment ran `⣿` at rest, `⣷` focused and `⣾` active — the kit's own
+    comment calls it "a control that DIMMED when the reader arrived at it".
+    The ordering law goes red and names the table.
+
+    ARM TWO is inc64's frame, the one nothing in this repo could see: the two
+    checkbox centres swapped back, so ticking a box TAKES INK AWAY. It is red
+    at the ordering law's sibling (`test_a_ticked_box_is_never_lighter_than_
+    an_empty_one`) and it leaves the CHANNEL law green, which is the point —
+    an inversion is an ORDER defect and not a channel defect, and the two
+    clauses of K4 are two clauses for that reason.
+
+    ARM THREE is the channel reader itself: swap naught's radio ground for a
+    ring one size along and the roster grows by exactly one row."""
+    for lang in LANGS:
+        assert (len(states_without_a_channel(lang))
+                == STATES_TOLD_APART_BY_SIZE[lang]), lang
+    test_prisms_control_ladder_climbs_in_its_declared_order()
+
+    # ARM ONE — the pre-inc59 walls, verbatim from that increment's comment
+    tbl = dict(LG.Prism.PART_GLYPHS["checkbox.main"])
+    tbl[LG.DEFAULT], tbl[LG.FOCUSED], tbl[LG.ACTIVE] = "⣿⠀⣿", "⣷⠀⣷", "⣾⠀⣾"
+    monkeypatch.setitem(LG.Prism.PART_GLYPHS, "checkbox.main", tbl)
+    with pytest.raises(AssertionError):
+        test_prisms_control_ladder_climbs_in_its_declared_order()
+    monkeypatch.undo()
+
+    # ARM TWO — inc64's inversion: an ORDER defect that is not a CHANNEL one
+    box = dict(LG.Prism.PART_GLYPHS["checkbox.main"])
+    knob = dict(LG.Prism.PART_GLYPHS["checkbox.knob"])
+    for st in (LG.DEFAULT, LG.FOCUSED, LG.ACTIVE):
+        box[st], knob[st] = knob[st], box[st]
+    monkeypatch.setitem(LG.Prism.PART_GLYPHS, "checkbox.main", box)
+    monkeypatch.setitem(LG.Prism.PART_GLYPHS, "checkbox.knob", knob)
+    assert len(states_without_a_channel("prism")) == 0, "still a channel"
+    with pytest.raises(AssertionError):
+        test_a_ticked_box_is_never_lighter_than_an_empty_one("prism")
+    monkeypatch.undo()
+
+    # ARM THREE — the channel reader itself, on the seat inc68 just repaired.
+    # naught's scroll shaft is `◦` live and `⋅` dead: a ring against a dot,
+    # two DRAWINGS, so `state_channel` calls it SHAPE. Put the dead shaft on a
+    # ring one size along and the channel is diameter and nothing else, which
+    # is the whole of ruling D. Exactly one new row, and it names the part.
+    tbl = dict(LG.Naught.PART_GLYPHS["scrollbar.main"])
+    assert state_channel(tbl[LG.DEFAULT], tbl[LG.DISABLED]) == "shape"
+    tbl[LG.DISABLED] = "○"
+    monkeypatch.setitem(LG.Naught.PART_GLYPHS, "scrollbar.main", tbl)
+    grew = states_without_a_channel("naught")
+    assert len(grew) == STATES_TOLD_APART_BY_SIZE["naught"] + 1, grew
+    assert [r for r in grew if r[0] == "scrollbar.main"] ==         [("scrollbar.main", LG.DEFAULT, "◦", LG.DISABLED, "○")], grew
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        assert (len(states_without_a_channel(lang))
+                == STATES_TOLD_APART_BY_SIZE[lang]), lang
