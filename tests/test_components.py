@@ -18,6 +18,7 @@ happen.
 from __future__ import annotations
 
 import colorsys
+import functools
 import pathlib
 import re
 
@@ -8114,3 +8115,213 @@ def test_the_raster_laws_bite_on_the_three_defects_they_were_written_for(
     shutil.copy(shipped / f"{name}.json", work)
     test_the_raster_has_one_cell_per_character_of_the_txt(lang)
     test_the_rasters_declarations_are_the_ones_this_file_measures_against()
+
+
+# ---------------------------------------------------------------------------
+# inc77 — THE MEASURES ON THE RASTER.  What E2 was blocking.
+#
+# `prototypes/components/legibility.py` writes `prototypes/out/legibility.txt`.
+# The laws below do NOT import it, for the reason this file gives twice
+# already: the instrument's arithmetic is restated here in four lines and
+# checked against the artefact it shipped, so the two can only agree by being
+# right.  The restatement draws through the PRIMARY face only, so the four
+# cells Cascadia lacks are excluded by name — a declared limitation of this
+# restatement, not of the instrument.
+# ---------------------------------------------------------------------------
+
+LEGIBILITY = FRAMES.parents[1] / "prototypes" / "out" / "legibility.txt"
+
+
+@functools.lru_cache(maxsize=None)
+def _face() -> tuple:
+    """The face, size and box, taken from a sidecar rather than from a path.
+
+    inc76's declaration law already pins every sidecar to `raster.py`'s
+    declared constants, so reading one here inherits that check instead of
+    repeating it — and it keeps a `C:\\WINDOWS` path out of this file.
+    """
+    side = _raster_json("instrument_S1")
+    return (side["font"]["path"], side["font"]["px"],
+            (side["cell"]["w"], side["cell"]["h"]))
+
+
+@functools.lru_cache(maxsize=None)
+def _cov(ch: str) -> tuple:
+    """The glyph's coverage over the cell: white on black, one float a pixel.
+
+    Four lines, and they are `raster.cell_tile` for a primary-face glyph with
+    the colours fixed — which is the point.  If `legibility.py` ever measures
+    a different drawing than this one, the two disagree and the laws below say
+    so instead of both being wrong in the same direction.
+    """
+    from PIL import Image, ImageDraw, ImageFont
+    path, px, box = _face()
+    f = ImageFont.truetype(path, px)
+    im = Image.new("RGB", box, "#000000")
+    ImageDraw.Draw(im).text((0, f.getmetrics()[0]), ch, font=f,
+                            fill="#ffffff", anchor="ls")
+    b = im.tobytes()
+    return tuple(b[i] / 255 for i in range(0, len(b), 3))
+
+
+@functools.lru_cache(maxsize=None)
+def _xor(a: str, b: str) -> float:
+    """XOR area over cell area, as a PERCENTAGE. 0.0 means one drawing."""
+    ca, cb = _cov(a), _cov(b)
+    return sum(abs(x - y) for x, y in zip(ca, cb)) / len(ca) * 100
+
+
+def _corpus_glyphs() -> dict:
+    n: dict = {}
+    for lang in LANGS:
+        for screen in SCREENS:
+            for ch in (FRAMES / f"{lang}_{screen}.txt").read_text(
+                    encoding="utf-8"):
+                if ch not in ("\n", " "):
+                    n[ch] = n.get(ch, 0) + 1
+    return n
+
+
+def _drawable() -> list:
+    """The corpus's glyphs the PRIMARY face draws, sorted."""
+    return sorted(g for g in _corpus_glyphs() if g not in _R_FALLBACK_CELLS)
+
+
+def _zero_pairs(glyphs) -> list:
+    """Index pairs whose two glyphs rasterise identically.
+
+    By INDEX and not by value, because the teeth below make one glyph appear
+    twice and a set of values would silently swallow exactly the thing being
+    demonstrated.
+    """
+    return [(i, j) for i in range(len(glyphs))
+            for j in range(i + 1, len(glyphs))
+            if _xor(glyphs[i], glyphs[j]) == 0.0]
+
+
+#: THE ONE PAIR IN THIS CORPUS THAT IS LITERALLY ONE DRAWING, and the whole
+#: reason a raster had to be built.  `•` U+2022 BULLET and `∙` U+2219 BULLET
+#: OPERATOR rasterise **byte for byte identically** in Cascadia Mono at 16 px:
+#: the XOR area is 0.0, not 0.004.  `HOMOGLYPH_FAMILIES` puts them in one row
+#: on the strength of a reading, and this is the first artefact in the
+#: programme that can say the reading was not a guess.
+#:
+#: NO KIT DRAWS BOTH, and this says so rather than overstating: naught spends
+#: `∙` 134 times (danger + severity) and swiss spends `•` twice (required), so
+#: it is two languages holding one drawing for incompatible meanings — a fact
+#: about the corpus, not a collision inside any kit.  A twelfth kit reaching
+#: for the other one is what this constant is here to catch.
+IDENTICAL_DRAWINGS = (("•", "∙"),)
+
+#: THE TEN PAIRS FOUR ROUNDS ARGUED ABOUT, as XOR area over the cell.  Round
+#: four ruled every one of them *"irresoluble sin raster"*; these are the
+#: numbers.  Recorded so a change to a glyph, a face or a size is a diff and
+#: not a discovery.
+#: `(meaning marks the corpus draws, how many are under 3:1 DECLARED at the
+#: seat the report picks)`. The second number is NOT a violation count and the
+#: report says so at length; it is pinned because 45 of 79 is the size of a
+#: question nobody had asked before this increment could ask it.
+MEANING_MARKS = (79, 45)
+
+ARGUED_DISTANCE = {("•", "●"): 21.64, ("○", "◦"): 22.81, ("◎", "◉"): 21.42,
+                   ("†", "‡"): 4.87, ("▪", "■"): 26.52, ("╌", "┄"): 4.09,
+                   ("╌", "┈"): 4.46, ("┄", "┈"): 2.79, ("▬", "◦"): 17.09,
+                   ("⠇", "⠸"): 15.13}
+
+
+def test_a_homoglyph_distance_is_zero_only_when_the_drawings_are_one():
+    """THE MEASURE'S OWN LAW, and the one the brief asked for: *"the XOR area
+    ... so 'same drawing' becomes a number"*.
+
+    Three clauses. A glyph against itself is exactly zero; the measure is
+    symmetric; and over every pair of distinct glyphs the 66 sheets draw,
+    **exactly one pair measures zero** and it is the one named above. The
+    third clause is what makes the first two non-vacuous: a measure that
+    returned zero for everything would pass them both.
+    """
+    glyphs = _drawable()
+    assert len(glyphs) > 190, len(glyphs)
+    for ch in glyphs:
+        assert _xor(ch, ch) == 0.0, ch
+    zero = {(glyphs[i], glyphs[j]) for i, j in _zero_pairs(glyphs)}
+    assert zero == set(IDENTICAL_DRAWINGS), zero
+    for a, b in IDENTICAL_DRAWINGS:
+        assert _xor(b, a) == _xor(a, b) == 0.0, (a, b)
+
+
+def test_the_pairs_four_rounds_argued_about_have_these_distances():
+    """Measured independently here AND read out of the report the instrument
+    shipped — so the artefact on disk is not stale and the two implementations
+    do not disagree."""
+    printed = {}
+    for line in LEGIBILITY.read_text(encoding="utf-8").split("\n"):
+        bits = line.split()
+        if (len(bits) >= 3 and bits[2].endswith("%") and len(bits[0]) == 1
+                and len(bits[1]) == 1
+                and (bits[0], bits[1]) in ARGUED_DISTANCE):
+            printed[(bits[0], bits[1])] = float(bits[2].rstrip("%"))
+    assert printed == ARGUED_DISTANCE, printed
+    for (a, b), want in ARGUED_DISTANCE.items():
+        assert round(_xor(a, b), 2) == want, (a, b, _xor(a, b), want)
+
+
+def test_the_legibility_report_on_disk_is_the_one_this_corpus_produces():
+    """The header, the census's row count and the zero-ink finding, checked
+    against what this file works out for itself. A report that outlives the
+    corpus it describes is the failure mode `render.py`'s sidecars already
+    carry a comment about."""
+    text = LEGIBILITY.read_text(encoding="utf-8")
+    _, px, (w, h) = _face()
+    assert f"{_R_FACE} {px}px" in text, "face"
+    assert f"cell      {w}x{h} px = {w * h} pixels" in text, "cell"
+    used = _corpus_glyphs()
+    assert (f"corpus    {len(used)} distinct painted glyphs, "
+            f"{sum(used.values())} painted cells") in text, "corpus"
+    assert "A1. 1 GLYPH(S) IN THIS CORPUS DRAW NOTHING AT ALL" in text
+    # the census's row count, restated by the census itself
+    import importlib.util
+    src = FRAMES.parents[0] / "collision_census.py"
+    spec = importlib.util.spec_from_file_location("_census_for_legibility", src)
+    cc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cc)
+    rows = sum(len(cc.homoglyph_rows(L)) for L in LANGS)
+    assert f"{rows} rows, the census's own count" in text, rows
+    # AND THE TWO COUNTS SECTION E TURNS ON, pinned so a token move or a kit
+    # edit shows up as a diff. The second is deliberately NOT a count of
+    # violations -- inc74 judged those seats one at a time -- it is the size
+    # of the question a floor ruling would be answering.
+    marks, under = MEANING_MARKS
+    assert f"The {marks} meaning marks the corpus draws span" in text, marks
+    assert f"AND {under} OF THEM ARE UNDER 3:1 ON DECLARED" in text, under
+
+
+def test_the_distance_law_bites_when_two_homoglyphs_are_made_one():
+    """TEETH — the mutant the brief named: *"swap two homoglyphs"*.
+
+    ledger's `†` is REQUIRED and its `‡` is INVALID. The census calls that the
+    tightest row in the corpus, round four ruled it unresolvable without a
+    raster, and it measures **4.87 %** of a cell. Make the invalid mark the
+    same drawing as the required one — the swap — and the distance goes to
+    exactly zero and the corpus's zero-pair sweep returns TWO pairs where it
+    returned one.
+
+    Both vacuity arms are here: the un-mutated pair is not zero, so the law
+    can fail; and the sweep is re-run on the real glyph list afterwards to
+    show it comes back to one.
+    """
+    assert round(_xor("†", "‡"), 2) == ARGUED_DISTANCE[("†", "‡")]
+    assert _xor("†", "‡") > 0.0, "the pair is not already one drawing"
+
+    glyphs = _drawable()
+    assert len(_zero_pairs(glyphs)) == 1, "one identity before the mutation"
+
+    # ledger's INVALID mark redrawn as its REQUIRED mark: `‡` becomes `†`, so
+    # `†` now appears twice in the same corpus and the sweep must see it.
+    mutant = ["†" if g == "‡" else g for g in glyphs]
+    assert len(mutant) == len(glyphs) and mutant.count("†") == 2
+    grown = _zero_pairs(mutant)
+    assert len(grown) == 2, grown
+    assert {mutant[i] for i, _ in grown} | {mutant[j] for _, j in grown} == \
+        {"•", "∙", "†"}, grown
+
+    assert len(_zero_pairs(glyphs)) == 1, "and back to one"
