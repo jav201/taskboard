@@ -905,6 +905,37 @@ filas vivas de significado × significado. prism: 19 / 8 / 1. blueprint: 6 / 8 /
 frames del repo (corgi y prism) **no los ha juzgado ninguna ronda**. ¿Se abre un lote, o se escribe
 que la matriz de once lenguajes tiene tres sin juzgar?
 
+— **RULED (2026-09-06, `rework-5c`): se abre el lote, y son CINCO incrementos, uno por lenguaje.**
+Cada uno termina con los rosters de ese lenguaje **en cero, o con cada fila restante eximida por
+nombre y con cita**. `corgi` (inc58), `prism` (inc59), `blueprint` (inc60), `naught` y `ledger`
+(inc61). Cada incremento empieza midiendo el frame antes de escribir nada: la exención en bloque se
+probó primero en corgi y en naught y **el frame la rechazó las dos veces** — `corgi_S3` dibuja `██`
+como perilla de slider doce filas encima de `▁▁█Delete all█▁▁`, y `naught_S3` dibuja `∙∙` como vía
+viva de cinco switches, que es `LEVELS["error"]` y la forma de peligro byte a byte.
+
+Los cuatro lenguajes resultaron ser **la misma falla con su propio alfabeto: el kit tenía DOS
+registros y nunca había dicho cuál era cuál.** corgi — el banco de segmentos es la lectura, el metal
+fresado es el panel. prism — la brasa se lee desde ABAJO, un control desde ARRIBA. blueprint — los
+terminadores son cromo y nada más; un significado es un TIPO DE LÍNEA. naught — la retícula CUENTA,
+el píxel se CARGA. **En tres de los cuatro la frase ya estaba escrita en el propio kit, aplicada a UNA
+parte y a ninguna otra** (la perilla de prism: *«cada estado es un campo ROTO, precisamente para que
+la perilla no pueda confundirse con una celda llena de fuego»*).
+
+**Resultado: los once lenguajes están en cero en los dos rosters de asiento — la primera vez en este
+corpus.** `MEANING_AT_AN_OPENER` 78 → 0, `MEANING_AT_A_NAMED_SEAT` 56 → 0, filas de homoglifo 4 → 1,
+censo TOTAL 33 → 25. Dos exenciones lo sostienen y las dos están por nombre y con cita:
+`DANGER_IS_THE_TOP_RUNG` (cuatro lenguajes, desde inc45) y `THE_GROUND_IS_NOT_A_MARK` (naught, el
+píxel apagado, concedida en inc61 — que es el argumento que el comentario del roster llevaba sin
+resolver desde inc48 diciendo *«una exención es del operador, y el silencio no lo es»*). La segunda
+está **tasada**: vaciarla sobre el kit publicado marca 7 abridores, y ese número es una constante del
+suite para que nadie apoye más peso en ella en silencio.
+
+**Lo que el lote NO cerró y hay que decidir:** la RUNA del campo. `_invalid_marks` la excluye por
+nombre desde inc52 y el censo la cuenta, y esa discrepancia es hoy **la única fila que le queda a
+cinco lenguajes** (naught, corgi, blueprint, ledger, solari). Es una función en
+`collision_census.py`; no se tocó aquí porque baja cinco cuentas a la vez por un motivo que es «el
+lector cambió», y eso merece su propio incremento y el ojo del operador.
+
 **B. La ley del stepper.** Dos leyes lo excluyen por nombre, `Kit` tiene el giro `][` sin arreglar y
 ningún frame del barrido renderiza un stepper inválido. Se escribe la ley, o se escribe que el
 stepper queda fuera de la regla.
