@@ -9,7 +9,6 @@ B O A R D   16 tasks  ·  4 projects
                                                                phase          doing                 
 ▮ D O I N G                     4                              due            3d                    
 ▮   Fix login redirect           3d                            priority       high                  
-    Rate-limit the API           2d!                           status         open                  
 ────────────────────────────────────────────────────────────────────────────────────────────────────
                                                                                                     
 Delete 3 tasks?                                                                                     
@@ -19,6 +18,7 @@ This cannot be undone.
                                                                                                     
 ▪  ╲Delete╱      ▫   Cancel                                                                         
                                                                                                     
+────────────────────────────────────────────────────────────────────────────────────────────────────
                                                                                                     
                                                                                                     
                                                                                                     

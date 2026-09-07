@@ -166,7 +166,7 @@
 <text x="10.0" y="516.3" fill="#6b6558">This cannot be undone.</text>
 <text x="10.0" y="550.3" fill="#2b3a67">▶ </text>
 <text x="26.8" y="550.3" fill="#1c1a15"> (Delete) </text>
-<text x="110.8" y="550.3" fill="#2b3a67"> │</text>
+<text x="110.8" y="550.3" fill="#2b3a67"> ◀</text>
 <text x="152.8" y="550.3" fill="#1c1a15">│   Cancel   │</text>
 </g>
 </svg>
