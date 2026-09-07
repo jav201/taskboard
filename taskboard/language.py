@@ -2447,7 +2447,7 @@ class Kit:
                                with_checked(state, on))
 
     def button(self, label: str, w: int = 0, state: str = DEFAULT,
-               danger: bool = False) -> str:
+               danger: bool = False, knockout: bool = False) -> str:
         """main, and NOTHING else — the control with no value.
 
         The label is CONTENT, not a part (see the registry entry). The one
@@ -2465,7 +2465,33 @@ class Kit:
 
         NO READOUT is appended, and that is `has_value` rather than a decision
         taken here: there is no number and no bit to report, so `value_label`
-        and `check_label` have nothing to say about a button."""
+        and `check_label` have nothing to say about a button.
+
+        `knockout` IS A TIER OVER THE WHOLE SEAT, NOT A CELL (inc54, ruling
+        C1). Operator ruling 10 of 2026-09-04 let blueprint's single knockout
+        MOVE from the title block to a confirm's default answer, and inc17
+        implemented the move with `knockout_cell(" DELETE ")` — which made the
+        destructive default answer stop being a BUTTON. It had no danger form
+        and no focused walls in either tier: a bare word on a reversed ground.
+        The ruling did not say the default answer stops being a button, so the
+        knockout is a keyword here instead.
+
+        A KEYWORD AND NOT A COMPOSITION, and the reason is `mark()`. Wrapping
+        `knockout_cell(self.button(...))` would hand `mark` a string that is
+        already markup, and `mark` escapes `[` — so every tag the button wrote
+        would come out as literal text. The tier has to be chosen INSIDE, where
+        the pieces are still plain.
+
+        ONE SPAN, NOT THREE, which is what keeps "exactly one knockout per
+        view" countable: the walls and the word go inside a single
+        `ground on ink` run, so a view's knockouts are its ` on ` tags. The
+        per-part tones are deliberately dropped — a knockout that let the
+        walls keep their own hue would be two channels fighting over one seat.
+
+        A REQUEST A LANGUAGE'S REGISTRY REFUSES IS IGNORED, not raised on: ten
+        of the eleven have no `knockout` token, and for them this returns the
+        plain button of the state and danger they asked for. Callers compose
+        one S4; the language decides whether it spends a knockout there."""
         (_, walls, tone), = self.component_cells("button", None, 0, 1, 1,
                                                  state)
         half = len(walls) // 2
@@ -2474,6 +2500,9 @@ class Kit:
             lo, hi = self.DANGER_FORM
             word = f"{lo}{word}{hi}"
         text = word.center(max(int(w), len(word)))
+        if knockout and self.knockout:
+            return (f"[{self.t['ground']} on {self.c['ink']}]"
+                    f"{mark(walls[:half] + text + walls[half:])}[/]")
         return (f"[{tone}]{mark(walls[:half])}[/]"
                 f"[{self.check_tone(True, state)}]{mark(text)}[/]"
                 f"[{tone}]{mark(walls[half:])}[/]")
@@ -2831,6 +2860,19 @@ class Kit:
     def required(self) -> str:
         """The mark beside a caption whose field may not be left empty."""
         return f"[{self.c['ink']}]{mark(self.REQUIRED)}[/]"
+
+    @property
+    def knockout(self) -> bool:
+        """Does this language's REGISTRY spend a knockout at all?
+
+        MOVED UP FROM `Blueprint` IN inc54, unchanged, because `button` has to
+        ask it of all eleven and a property on one subclass can only answer
+        for one. The token is what exists -- there is no `KNOCKOUT_REFUSED`
+        roster and inventing one would have made a second place to say the
+        same thing: `THEMES` gives `knockout: True` to blueprint and to
+        nobody else, and `verify_language` already flips that token to prove
+        the reverse video is live rather than hardcoded."""
+        return bool(self.t.get("knockout"))
 
     def knockout_cell(self, text: str) -> str:
         """REVERSE VIDEO — a cell that trades ink for ground.
@@ -8631,10 +8673,6 @@ class Blueprint(Kit):
     def hatch(self) -> str:
         """The stroke a HELD span is filled with. A shape, not a hue."""
         return self.t.get("hatch", "╱")
-
-    @property
-    def knockout(self) -> bool:
-        return bool(self.t.get("knockout"))
 
     @property
     def titled(self) -> bool:

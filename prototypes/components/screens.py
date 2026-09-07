@@ -506,6 +506,16 @@ def s4_blueprint(sh: Sheet) -> None:
     The knockout is also the one mark in this file that does NOT survive the
     `.txt`: an inversion is a background, so the cell grid shows the word and
     not the emphasis. Read it in the `.svg`.
+
+    AND THE DEFAULT ANSWER IS STILL A BUTTON (inc54, ruling C1). This row read
+    `k.knockout_cell(" DELETE ")`, which is a CELL and not a control -- so the
+    one irreversible answer on this sheet carried no danger form and no
+    focused walls in EITHER tier, while ten other languages' S4 carried both.
+    Ruling 10 moved the knockout to the default answer; it did not say the
+    default answer stops being a button. The knockout is a keyword on the seat
+    now (`Kit.button(..., knockout=True)`) and this row composes like every
+    other language's -- focused, dangerous, and reversed -- with the tier over
+    the WHOLE seat, so "exactly one per view" is still one ` on ` tag.
     """
     k, c = sh.k, sh.k.c
     chrome(sh, "board")                # deferred: the stamp docks at the foot
@@ -513,8 +523,8 @@ def s4_blueprint(sh: Sheet) -> None:
     rows = [f"[{c['ink']}]{LG.mark(F.MODAL_TITLE.upper())}[/]", ""]
     rows += [f"[{c['mut']}]{LG.mark(k.LEAD + k.EXT * 2 + ' ' + b.upper())}[/]"
              for b in F.MODAL_BODY]
-    rows += ["", k.knockout_cell(" DELETE ") + "   "
-             + k.button("CANCEL", 8, DEFAULT)]
+    rows += ["", k.button("DELETE", 8, FOCUSED, danger=True, knockout=True)
+             + "   " + k.button("CANCEL", 8, DEFAULT)]
     out = k.overlay(rows, W, H - len(sh.chrome_tail), under)
     for line in out:
         sh.row(line)

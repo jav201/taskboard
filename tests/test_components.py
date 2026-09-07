@@ -2128,8 +2128,17 @@ def test_blueprints_knockout_is_where_operator_ruling_10_put_it():
     and the seeded board is calm — so the sheet's one knockout was UNSPENT and
     the confirm could take it. "Exactly one per view" holds by arithmetic. The
     mechanism is exercised in both moods here, so "the title block carries no
-    knockout" is shown to be an unspent law and not a dead one."""
+    knockout" is shown to be an unspent law and not a dead one.
+
+    WHAT inc54 CHANGED AND WHAT IT DID NOT. The ruling stands and the cell
+    still reverses; what moved is that the reversed thing is a BUTTON. The row
+    was built with `knockout_cell(" DELETE ")` \u2014 a cell, not a control \u2014 so
+    the sheet's one irreversible answer carried no danger form and no focused
+    walls in either tier. The seat is asserted below and the `.svg`'s reversed
+    run is now the whole button rather than the bare word."""
     k = LG.kit("blueprint")
+    seat = k.button("DELETE", 8, LG.FOCUSED, danger=True, knockout=True)
+    assert seat == f"[{k.t['ground']} on {k.c['ink']}]\u255e \u2501DELETE\u2501 \u2561[/]", seat
     assert k.knockout_cell(" DELETE ") == \
         f"[{k.t['ground']} on {k.c['ink']}] DELETE [/]"
     assert declared_grounds("blueprint", "S4") == {k.c["ink"]}
@@ -2138,7 +2147,7 @@ def test_blueprints_knockout_is_where_operator_ruling_10_put_it():
                      r'([^<]*)</text>' % re.escape(k.c["ink"]), svg)
     assert pair, svg[:200]
     assert pair.group(1) == k.t["ground"]
-    assert pair.group(2).replace("\u00a0", " ") == " DELETE "
+    assert pair.group(2).replace("\u00a0", " ") == "\u255e \u2501DELETE\u2501 \u2561"
 
     # the title block's own cell: unspent, not absent
     assert k.mood != "alert"
@@ -2146,6 +2155,110 @@ def test_blueprints_knockout_is_where_operator_ruling_10_put_it():
     calm = LG.kit("blueprint")
     calm.mood = "alert"
     assert calm._state_cell()[1] is True, "the first-fixation law is dead"
+
+
+# ---------------------------------------------------------------------------
+# inc54 (rework-5a) — the destructive default answer is a BUTTON
+# ---------------------------------------------------------------------------
+#: the label and minimum width `screens.py` gives the destructive default
+#: answer, per language. Two entries and not eleven: `answers()` composes it
+#: once for ten languages and `s4_blueprint` composes it once for the eleventh,
+#: which is the whole structure this law is about — the eleventh was the one
+#: that was not a button.
+S4_ANSWER = {"blueprint": ("DELETE", 8)}
+S4_ANSWER_DEFAULT = ("Delete", 10)
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_destructive_default_answer_is_a_focused_danger_button(lang):
+    """THE LAW, over all eleven: in every language's S4 the irreversible
+    default answer carries THIS LANGUAGE'S DANGER FORM, THIS LANGUAGE'S
+    FOCUSED WALLS, and — where the language's registry spends a knockout —
+    the KNOCKOUT TIER over the whole seat, in the `.txt` and in the `.svg`.
+
+    IT IS READ OFF THE SHIPPED FRAME AND NOT OFF THE COMPOSITION, which is
+    what keeps it from asserting that `screens.py` equals itself: the pattern
+    is built from the KIT's declarations — `button.main[FOCUSED]` split in
+    half and `DANGER_FORM` around the word — and searched for in
+    `<lang>_S4.txt`. A language that stopped drawing its focused walls there,
+    or drew a bare word, goes red.
+
+    `PROTOTYPE-inheritors-2.md` §5 C1 IS WHY: `blueprint_S4`'s DELETE was
+    built with `knockout_cell(" DELETE ")`, a cell rather than a control, so
+    the one irreversible answer on that sheet had no danger form and no focus
+    ring in EITHER tier while ten other languages' S4 carried both. Operator
+    ruling 10 moved the knockout to the default answer; it did not say the
+    default answer stops being a button."""
+    k = LG.kit(lang)
+    label, w = S4_ANSWER.get(lang, S4_ANSWER_DEFAULT)
+    lo, hi = k.DANGER_FORM
+    walls = k.part_glyph("main", LG.FOCUSED, "button")
+    half = len(walls) // 2
+    word = f"{lo}{label}{hi}"
+    seat = walls[:half] + word.center(max(w, len(word))) + walls[half:]
+
+    txt = (FRAMES / f"{lang}_S4.txt").read_text(encoding="utf-8")
+    assert seat in txt, (lang, seat, [r for r in txt.splitlines()
+                                      if label in r])
+    assert plain(k.button(label, w, LG.FOCUSED, danger=True,
+                          knockout=k.knockout)) == seat, lang
+
+    if not k.knockout:
+        return
+    # the tier, in the DECLARATION and in the SVG. inc41's law already asserts
+    # declared == painted over all 66; this asserts WHICH RUN carries it.
+    assert k.c["ink"] in declared_grounds(lang, "S4"), lang
+    svg = (FRAMES / f"{lang}_S4.svg").read_text(encoding="utf-8")
+    pair = re.search(r'<rect[^>]*fill="%s"/>\s*<text[^>]*fill="([^"]+)"[^>]*>'
+                     r'([^<]*)</text>' % re.escape(k.c["ink"]), svg)
+    assert pair, lang
+    assert pair.group(1) == k.t["ground"], lang
+    assert pair.group(2).replace(" ", " ") == seat, (lang, pair.group(2))
+
+
+def test_a_knockout_a_language_refuses_falls_back_to_the_plain_button():
+    """TEN OF THE ELEVEN HAVE NO `knockout` TOKEN, and a caller composing one
+    S4 for all of them may not have to know which.
+
+    So the request is IGNORED rather than raised on, and the fallback is the
+    button they would have got anyway — same walls, same tones, same danger
+    form, byte for byte. Asserted as an EQUALITY against the un-knocked call
+    rather than as "no ` on ` appears", because the second would also pass if
+    the knocked call returned something else entirely.
+
+    AND THE ONE THAT DOES SPEND IT MUST DIFFER, which is the half that keeps
+    this from being vacuous: an implementation that ignored the keyword
+    everywhere would satisfy the ten and fail here."""
+    spent = [lang for lang in LANGS if LG.kit(lang).knockout]
+    assert spent == ["blueprint"], spent
+    for lang in LANGS:
+        k = LG.kit(lang)
+        plainer = k.button("Delete", 10, LG.FOCUSED, danger=True)
+        knocked = k.button("Delete", 10, LG.FOCUSED, danger=True,
+                           knockout=True)
+        if k.knockout:
+            assert knocked != plainer, lang
+            assert knocked.count(" on ") == 1, knocked
+        else:
+            assert knocked == plainer, lang
+
+
+def test_exactly_one_knockout_per_view_still_holds_on_blueprints_confirm():
+    """*Exactly ONE element per view reverses*, counted on the COMPOSED ROWS
+    of the frame the knockout moved to — the arithmetic `s4_blueprint`'s
+    docstring claims.
+
+    THE COUNT IS OVER ` on ` TAGS and that is why `button` emits ONE span
+    rather than three: a knockout that gave the walls and the word a tag each
+    would still be one element to a reader and three to this test, and the
+    test is the only thing that can tell. The title block's state cell is
+    UNSPENT here (the sheet's mood is calm), which is what makes the move
+    legal — asserted in the ruling-10 test above and re-counted here from the
+    other end."""
+    rows = sheet_rows("blueprint", "S4")
+    assert sum(r.count(" on ") for r in rows) == 1, \
+        [r for r in rows if " on " in r]
+    assert any("╞ ━DELETE━ ╡" in plain(r) for r in rows), "the seat is gone"
 
 
 #: the sheet's own query, from the fixture the six result rows are built from.
