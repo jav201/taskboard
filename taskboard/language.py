@@ -4600,8 +4600,24 @@ class Corgi(Kit):
     PART_GLYPHS = {
         "main": {DEFAULT: "▁▁", DISABLED: "··"},
         "indicator": {DEFAULT: "▄▄", DISABLED: "▁▁"},
+        # THE BANK THE MACHINE REFUSED TO DRIVE (inc52). INVALID read `▀▄`,
+        # the two half-banks lit against each other -- and BOTH of those
+        # cells are declarations: `▀` is `REQUIRED` ("the upper bank lit")
+        # and `▄` is `DISCLOSE` and `LEVELS["warn"]` ("the bank below the
+        # segment"). A rejected value therefore said "this is compulsory"
+        # and "there is a warning", and nothing about rejection.
+        #
+        # `░` IS THE ONE CELL IN THIS LANGUAGE'S BLOCK ALPHABET THAT NO
+        # MEANING AND NO OTHER CONTROL STATE SPENDS -- the shaft's own ghost,
+        # "a segment present but NOT DRIVEN" (`scrollbar.main`, three slots
+        # down). That is the reading: the words stay in the milled channel
+        # and the bank behind them shows nothing, because the machine would
+        # not drive it. It is deliberately NOT `╳`, which is this corpus's
+        # DEAD mark at four seats of `Kit` and this kit's own `DISABLED` --
+        # dead and refused are two claims, and inc45 §7 refused a cross for
+        # nord on exactly that ground.
         "knob": {DEFAULT: "██", FOCUSED: "▀▀", EDITED: "▓▓",
-                 ACTIVE: "▒▒", INVALID: "▀▄",
+                 ACTIVE: "▒▒", INVALID: "░░",
                  DISABLED: "╳╳"},
         # the LCD's check is a segment DRIVEN, not a tick drawn: the box is
         # the baseline segment, the mark is the same cell at full height.
@@ -4631,7 +4647,12 @@ class Corgi(Kit):
         # and the rune in the middle. The words sit in a milled channel.
         "textfield.main": {DEFAULT: "▁▁·▁▁", FOCUSED: "▔▔·▔▔",
                            EDITED: "▔▔▁▔▔", ACTIVE: "▄▄·▄▄",
-                           INVALID: "▄▀·▀▄",
+                           # inc52: the walls read `▄▀` / `▀▄`, which is
+                           # `LEVELS["warn"]` beside `REQUIRED`. They take
+                           # the ghost the knob now wears; the rune stays
+                           # `·`, because a rune is the paper this field is
+                           # made of in every state and not a rejection mark.
+                           INVALID: "░░·░░",
                            DISABLED: "·····"},
         "textfield.caret": {DEFAULT: "▌"},
         # A SEGMENT BANK, doubled like everything this language draws: the
@@ -4654,7 +4675,11 @@ class Corgi(Kit):
         # not lit, which is what a hardware end stop looks like.
         "stepper.main": {DEFAULT: "▁▁▁▁", DISABLED: "····"},
         "stepper.step": {DEFAULT: "▄▄▄▄", FOCUSED: "▀▀▀▀", EDITED: "▓▓▓▓",
-                         ACTIVE: "████", INVALID: "▀▄▄▀",
+                         # inc52: this read `▀▄▄▀` -- `REQUIRED` and the warn
+                         # rung, one key each. inc51's clause 2 still holds
+                         # by construction: the cells come from this kit's
+                         # own INVALID knob.
+                         ACTIVE: "████", INVALID: "░░░░",
                          DISABLED: "╳╳╳╳"},
     }
 
@@ -5247,7 +5272,18 @@ class Instrument(Kit):
         # fix; only the hand of the rails moved. The dead paper is the dead
         # RAIL's own rung now (`⠄`) rather than `⠁`, which is `REQUIRED`.
         "textfield.main": {DEFAULT: "⠸⠒⠇", FOCUSED: "⠼⠒⠧", EDITED: "⠼⠤⠧",
-                           ACTIVE: "⣸⠒⣇", INVALID: "⠸⠶⠇",
+                           # THE RAILS COME OFF WHEN THE SPAN IS REFUSED
+                           # (inc52). Keeping them cost the closing rail
+                           # `⠇`, which is `LEVELS["error"]` -- so the one
+                           # state that says "this value was rejected" was
+                           # also the one state whose walls said "error", on
+                           # a language whose whole method is that the paper
+                           # carries the state. `⠶` is what this kit already
+                           # spends on a rejected value at its knob and at
+                           # its stepper, so the refused span is that cell
+                           # end to end: no rail to read a hand off, and the
+                           # rung is out of the field's INVALID entirely.
+                           ACTIVE: "⣸⠒⣇", INVALID: "⠶⠶⠶",
                            DISABLED: "⠄⠄⠄"},
         # a full-height braille tick — this language's own index mark
         "textfield.caret": {DEFAULT: "⡇"},
@@ -5330,10 +5366,14 @@ class Swiss(Kit):
     # `•` against the ladder's `·`. Weight, which is the whole method, and
     # not a hue: the accent is rationed and an obligation is not an alarm.
     REQUIRED = "•"
-    # THE DIAGONALS THIS LANGUAGE ALREADY REJECTS WITH. `field_form(INVALID)`
-    # is `╲ ╱` here, so a destructive control is bracketed by the same pair
-    # — one rejection notation, not two. And it is a FORM: this language's
-    # accent is its red, and the red is spent on the one thing it accents.
+    # THE DIAGONALS, AND THEY ARE THE DANGER FORM ALONE (inc52). This read
+    # "`field_form(INVALID)` is `╲ ╱` here, so a destructive control is
+    # bracketed by the same pair — one rejection notation, not two", and that
+    # sentence was the defect: "does not parse" and "destroys data" are two
+    # meanings, so one notation for both is one meaning missing. The field
+    # and the knob now say rejection with `║` (COUNT — the stroke doubled);
+    # the pair stays here, where it is a FORM: this language's accent is its
+    # red, and the red is spent on the one thing it accents.
     DANGER_FORM = ("╲", "╱")
     # A WEIGHT LADDER, which is this language's whole hierarchy device
     # ("hierarchy by weight, generous emptiness"): a dot, a hairline, a heavy
@@ -5630,8 +5670,18 @@ class Swiss(Kit):
         # is the weakest of this file's exemptions and it is written down.
         "main": {DEFAULT: "─", DISABLED: "┈"},
         "indicator": {DEFAULT: "▀", DISABLED: "┅"},
+        # THE STROKE DOUBLED, WHICH IS COUNT AND NOT WEIGHT (inc52). INVALID
+        # read `╲`, which is half this language's `DANGER_FORM` (`╲ ╱`) --
+        # "does not parse" and "destroys data" said with one cell. The four
+        # weights of this stroke (`│ ┃ █ ┆`) are the CONTROL's own states, so
+        # a rejection cannot take a fifth weight without being read as one of
+        # them; it takes the other channel this alphabet has, COUNT: one
+        # stroke becomes two. `║` is one mark on one side and encloses
+        # nothing at any width, which is what "no boxes, at any width" leaves
+        # standing (inc38's argument, inc46's seat), and a doubled rule in
+        # the margin is what a compositor sets beside copy that is queried.
         "knob": {DEFAULT: "│", FOCUSED: "┃", EDITED: "▮",
-                 ACTIVE: "█", INVALID: "╲",
+                 ACTIVE: "█", INVALID: "║",
                  DISABLED: "┆"},
         # WEIGHT is this language's only ornament, so the box is two rules
         # and the state is how heavy they are. The mark is set INSIDE them,
@@ -5743,13 +5793,15 @@ class Swiss(Kit):
         # language whose divider is alignment is the next column's job.
         # Same three cells, same one width across six states.
         #
-        # INVALID KEEPS ITS OWN FORM. `╲` is half this language's
-        # `DANGER_FORM` and it opens the field the way every other state
-        # opens it, so inc39's law is satisfied by construction: the mark
-        # that opens a rejected field is a mark this language opens fields
-        # with, and there is no closing mark left to turn round.
+        # INVALID IS THE STROKE DOUBLED (inc52). It read `╲`, half this
+        # language's `DANGER_FORM` -- one cell for "this value was rejected"
+        # and for "this control destroys". The mark is the knob's own INVALID
+        # (`║`), so the field and the grip say rejection with one cell, and
+        # inc39's law is still satisfied by construction: the mark that opens
+        # a rejected field is a mark this language opens fields with, and
+        # there is no closing mark left to turn round.
         "textfield.main": {DEFAULT: "│  ", FOCUSED: "┃  ", EDITED: "┃· ",
-                           ACTIVE: "█  ", INVALID: "╲  ",
+                           ACTIVE: "█  ", INVALID: "║  ",
                            DISABLED: "┆  "},
         "textfield.caret": {DEFAULT: "▏"},
         # WEIGHT, the only ornament this language owns, spent on a shaft this
@@ -5774,11 +5826,12 @@ class Swiss(Kit):
         # lightest, and "present, not acted on" is what an end-stop says.
         "stepper.main": {DEFAULT: "▫▫", DISABLED: "╎╎"},
         "stepper.step": {DEFAULT: "‹›", FOCUSED: "◃▹", EDITED: "◂▸",
-                         # inc51: this read `›‹`, DEFAULT `‹›` turned
-                         # round. `╲` is this kit's own INVALID mark at the
-                         # knob and at the field, which is inc39's ruling
-                         # (spec §9.2) and not a new claim.
-                         ACTIVE: "██", INVALID: "╲╲",
+                         # inc51: this read `›‹`, DEFAULT `‹›` turned round.
+                         # inc52: and then `╲╲`, which was inc39's ruling --
+                         # the danger form -- and is now this kit's own
+                         # INVALID mark at the knob and at the field. inc51's
+                         # clause 2 holds through both edits.
+                         ACTIVE: "██", INVALID: "║║",
                          DISABLED: "┆┆"},
     }
 
@@ -6466,7 +6519,23 @@ class Darkside(Kit):
     # single achromatic cell gets without becoming a border, and a border is
     # the one thing this language has forbidden itself.
     REQUIRED = "▪"
-    DANGER_FORM = ("Ø", "Ø")               # its own INVALID wall, the struck mark
+    # THE HATCH, MIRRORED (inc52). This read `("Ø", "Ø")` under the comment
+    # "its own INVALID wall, the struck mark" -- which names the direction
+    # the borrowing ran: `Ø` was declared as this kit's rejection mark at the
+    # knob, at the field and at the stepper, and the danger form took it
+    # afterwards. Rejection and destruction are two claims, so the one that
+    # arrived second moves and `Ø` stays where it was declared.
+    #
+    # §8 IS WHAT IS LEFT TO SPEND. "achromatic + ONE RESERVED ACCENT" and
+    # "the accent marks interactivity, NOTHING ELSE" put hue out of reach;
+    # "DEPTH BY ±1 GREY STEP, NEVER BORDERS" puts an enclosure out of reach;
+    # "hierarchy by WEIGHT AND DIMMING" is the channel that is left. `▚` and
+    # `▞` are one achromatic cell at half coverage -- a weight step between
+    # this kit's `▬` and its `█` -- and they are a HANDED pair: the hatch
+    # leans out on each side, which is what makes them a form that brackets a
+    # label rather than one mark used twice. Neither encloses anything and
+    # neither is drawn anywhere else in this kit.
+    DANGER_FORM = ("▚", "▞")
     # A DIMMING LADDER MADE OF ITS OWN CURSOR. `CUR` is `O`; the ladder is
     # that mark losing and gaining weight, which is this language's stated
     # hierarchy device ("weight and dimming, not size") turned into three
@@ -9274,8 +9343,19 @@ class Blueprint(Kit):
     PART_GLYPHS = {
         "main": {DEFAULT: LEAD, DISABLED: BREAK},
         "indicator": {DEFAULT: EXT, DISABLED: "┄"},
+        # THE SHEET'S TENTH GLYPH, AND THE ONLY ONE THAT IS NEITHER A
+        # DIMENSION NOR A REGISTRATION MARK (inc52). INVALID read `├`, which
+        # is this sheet's `REQUIRED` -- the terminator that says an extent
+        # MUST be figured, standing on the grip of a value that was refused.
+        # The class docstring lists the alphabet as "`─ ━ ├ ┤ ╌` (the
+        # dimension vocabulary), `┌ ┐ └ ┘` (registration marks) AND THE
+        # HATCH", and `hatch="╱"` is the one of the ten that states neither
+        # an extent nor a datum. On a drawing a figure that must not be used
+        # is HATCHED. `━` is unavailable (it is `LEVELS["error"]` AND the
+        # `DANGER_FORM`) and `╳` is unavailable (this corpus's DEAD mark, at
+        # four seats of `Kit`).
         "knob": {DEFAULT: CLOSE, FOCUSED: "╡", EDITED: "╪",
-                 ACTIVE: "┫", INVALID: "├",
+                 ACTIVE: "┫", INVALID: "╱",
                  DISABLED: "╎"},
         # NOTHING IS BOXED ON THIS SHEET, and the checkbox does not get to
         # break that. So it is not a box: it is a DATUM between two
@@ -9305,16 +9385,17 @@ class Blueprint(Kit):
         # A TITLE-BLOCK CELL between two extension lines — nothing is boxed
         # here, and two verticals are a dimension, not a box. The caret is
         # this language's own EDITED knob, the datum tick.
-        # INVALID IS THE DATUM AT ERROR WEIGHT (inc39). It read `┤·├`: the
-        # dimension's terminators EXCHANGED. On this sheet that turn is
-        # ALREADY SPOKEN FOR -- `radio.main` points its terminators IN on
-        # purpose, as a callout selecting one item from a schedule -- so a
-        # rejected field and a selected option were drawn with the same
-        # turn. Un-flipping alone gives `├·┤`, DEFAULT byte for byte, so
-        # the terminators take `DANGER_FORM`: the heavy rule, which is this
-        # language's own `LEVELS["error"]` and the ladder S5 already reads.
+        # INVALID IS HATCHED (inc52). It read `┤·├` (inc39: the dimension's
+        # terminators EXCHANGED, a turn `radio.main` already spends on a
+        # callout), then `━·━` -- the `DANGER_FORM`, which on this sheet is
+        # also `LEVELS["error"]`, so the rejected field's terminators said
+        # "destroys" and "error" and never "refused". The terminators take
+        # the sheet's HATCH, the one declared glyph here that states neither
+        # an extent nor a datum. THE RUNE STAYS `·`: it is the paper this
+        # field is made of in every state, not a rejection mark, and moving
+        # it would have said the value's own cells were wrong.
         "textfield.main": {DEFAULT: "├·┤", FOCUSED: "╞·╡", EDITED: "╞╌╡",
-                           ACTIVE: "┣·┫", INVALID: "━·━",
+                           ACTIVE: "┣·┫", INVALID: "╱·╱",
                            DISABLED: "╎╌╎"},
         "textfield.caret": {DEFAULT: "╪"},
         # A DIMENSION ON A LONG SHEET, and NOTHING IS FILLED — this sheet's
@@ -9336,10 +9417,11 @@ class Blueprint(Kit):
                          # inc51: this read `├┤`, DEFAULT `┤├` with the
                          # terminators exchanged -- and `├` is also this
                          # sheet's `REQUIRED`, so the rejected stepper
-                         # opened with the obligation mark. `━` is what this
-                         # sheet already draws around a refused value
-                         # (`━·━`, inc39 §9.2) and it is straight.
-                         ACTIVE: "┫┣", INVALID: "━━",
+                         # opened with the obligation mark. inc52: and then
+                         # `━━`, which is `LEVELS["error"]` and the
+                         # `DANGER_FORM` at once; it takes the hatch the
+                         # knob now wears.
+                         ACTIVE: "┫┣", INVALID: "╱╱",
                          DISABLED: "╏╏"},
     }
 
