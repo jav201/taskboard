@@ -2,58 +2,58 @@
 <title>taskboard · industrial · S6 command palette</title>
 <rect width="692.0" height="428.0" fill="#1a1a1a"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<text x="10.0" y="23.3" fill="#ff6039">[1]</text>
+<text x="10.0" y="23.3" fill="#ff623b">[1]</text>
 <text x="35.2" y="23.3" fill="#f2f2f2">BOARD</text>
-<text x="85.6" y="23.3" fill="#ff6039">[2]</text>
+<text x="85.6" y="23.3" fill="#ff623b">[2]</text>
 <text x="110.8" y="23.3" fill="#959595">form</text>
-<text x="152.8" y="23.3" fill="#ff6039">[3]</text>
+<text x="152.8" y="23.3" fill="#ff623b">[3]</text>
 <text x="178.0" y="23.3" fill="#959595">cfg</text>
-<text x="211.6" y="23.3" fill="#ff6039">[4]</text>
+<text x="211.6" y="23.3" fill="#ff623b">[4]</text>
 <text x="236.8" y="23.3" fill="#959595">log</text>
 <text x="10.0" y="40.3" fill="#959595">[</text>
 <text x="18.4" y="40.3" fill="#f2f2f2">COMMAND</text>
 <text x="77.2" y="40.3" fill="#959595">]</text>
 <text x="102.4" y="40.3" fill="#959595">query &#x27;re&#x27;  ·  6 results</text>
 <text x="10.0" y="57.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────────</text>
-<text x="26.8" y="74.3" fill="#ff6039">&gt; </text>
+<text x="26.8" y="74.3" fill="#ff623b">&gt; </text>
 <text x="43.6" y="74.3" fill="#4a4a4a">▐</text>
 <text x="52.0" y="74.3" fill="#f2f2f2">re</text>
-<text x="68.8" y="74.3" fill="#ff6039">|</text>
+<text x="68.8" y="74.3" fill="#ff623b">|</text>
 <text x="77.2" y="74.3" fill="#4a4a4a">-------------------------------------▌</text>
-<rect x="43.6" y="95.0" width="16.8" height="17.0" fill="#ff6039"/>
-<text x="26.8" y="108.3" fill="#ff6039">▶</text>
+<rect x="43.6" y="95.0" width="16.8" height="17.0" fill="#ff623b"/>
+<text x="26.8" y="108.3" fill="#ff623b">▶</text>
 <text x="43.6" y="108.3" fill="#1a1a1a">re</text>
 <text x="60.4" y="108.3" fill="#959595">direct to task</text>
 <text x="413.2" y="108.3" fill="#4a4a4a">enter</text>
-<rect x="43.6" y="112.0" width="16.8" height="17.0" fill="#ff6039"/>
+<rect x="43.6" y="112.0" width="16.8" height="17.0" fill="#ff623b"/>
 <text x="43.6" y="125.3" fill="#1a1a1a">re</text>
 <text x="60.4" y="125.3" fill="#959595">name project</text>
-<rect x="43.6" y="129.0" width="16.8" height="17.0" fill="#ff6039"/>
+<rect x="43.6" y="129.0" width="16.8" height="17.0" fill="#ff623b"/>
 <text x="43.6" y="142.3" fill="#1a1a1a">re</text>
 <text x="60.4" y="142.3" fill="#959595">fresh board</text>
 <text x="413.2" y="142.3" fill="#4a4a4a">r</text>
-<rect x="110.8" y="146.0" width="16.8" height="17.0" fill="#ff6039"/>
+<rect x="110.8" y="146.0" width="16.8" height="17.0" fill="#ff623b"/>
 <text x="43.6" y="159.3" fill="#959595">archive </text>
 <text x="110.8" y="159.3" fill="#1a1a1a">re</text>
 <text x="127.6" y="159.3" fill="#959595">leased</text>
-<rect x="43.6" y="163.0" width="16.8" height="17.0" fill="#ff6039"/>
+<rect x="43.6" y="163.0" width="16.8" height="17.0" fill="#ff623b"/>
 <text x="43.6" y="176.3" fill="#1a1a1a">re</text>
 <text x="60.4" y="176.3" fill="#959595">store from backup</text>
-<rect x="77.2" y="180.0" width="16.8" height="17.0" fill="#ff6039"/>
+<rect x="77.2" y="180.0" width="16.8" height="17.0" fill="#ff623b"/>
 <text x="43.6" y="193.3" fill="#959595">set </text>
 <text x="77.2" y="193.3" fill="#1a1a1a">re</text>
 <text x="94.0" y="193.3" fill="#959595">minder</text>
 <text x="26.8" y="227.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────</text>
-<text x="26.8" y="244.3" fill="#ff6039">&gt; </text>
+<text x="26.8" y="244.3" fill="#ff623b">&gt; </text>
 <text x="43.6" y="244.3" fill="#4a4a4a">▐</text>
 <text x="52.0" y="244.3" fill="#f2f2f2">zzq</text>
-<text x="77.2" y="244.3" fill="#ff6039">|</text>
+<text x="77.2" y="244.3" fill="#ff623b">|</text>
 <text x="85.6" y="244.3" fill="#4a4a4a">------------------------------------▌</text>
-<text x="43.6" y="278.3" fill="#ff6039"> ██    ██ </text>
-<text x="43.6" y="295.3" fill="#ff6039"> ██    ██ </text>
-<text x="43.6" y="329.3" fill="#ff6039">█        █</text>
-<text x="43.6" y="346.3" fill="#ff6039"> █      █ </text>
-<text x="43.6" y="363.3" fill="#ff6039">  ██████  </text>
+<text x="43.6" y="278.3" fill="#ff623b"> ██    ██ </text>
+<text x="43.6" y="295.3" fill="#ff623b"> ██    ██ </text>
+<text x="43.6" y="329.3" fill="#ff623b">█        █</text>
+<text x="43.6" y="346.3" fill="#ff623b"> █      █ </text>
+<text x="43.6" y="363.3" fill="#ff623b">  ██████  </text>
 <text x="43.6" y="380.3" fill="#4a4a4a"> empty</text>
 <text x="26.8" y="414.3" fill="#777777">▐</text>
 <text x="35.2" y="414.3" fill="#f2f2f2">enter</text>

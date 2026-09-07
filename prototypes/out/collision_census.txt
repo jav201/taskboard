@@ -17,13 +17,12 @@ NAUGHT   3 colliding cells   (LEVELS ◦◦/∙◦/∙∙  DANGER ∙∙  REQUIR
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-CORGI   4 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRED ▀  CUR ▐)
+CORGI   3 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRED ▀  CUR ▐)
 ------------------------------------------------------------------------------
   ▄   [4 families]  LEVELS[warn]  ·  bar.indicator close (default)  ·  bar.indicator open (default)  ·  meter.fill mark (declared)  ·  slider.indicator close (active,default,edited,focused)  ·  slider.indicator open (active,default,edited,focused)
   █   [4 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  spark.peak mark (declared)  ·  scrollbar.indicator close (default)  ·  scrollbar.indicator open (default)
   ▁   [3 families]  LEVELS[info]  ·  bar.indicator close (disabled)  ·  bar.indicator open (disabled)  ·  bar.main close (default)  ·  bar.main open (default)  ·  slider.indicator close (disabled)  ·  slider.indicator open (disabled)  ·  slider.main close (active,default,edited,focused)  ·  slider.main open (active,default,edited,focused)
-  ░   [3 families]  INVALID slider.knob close + INVALID slider.knob open + INVALID stepper.step close + INVALID stepper.step mid + INVALID stepper.step open + INVALID textfield.main close + INVALID textfield.main open  ·  meter.track mark (declared)  ·  spark.floor mark (declared)  ·  scrollbar.main close (default)  ·  scrollbar.main open (default)
-  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 13 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
@@ -78,7 +77,7 @@ PRISM   3 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRE
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-LEDGER   1 colliding cells   (LEVELS   /* /**  DANGER ()  REQUIRED †  CUR ▶)
+LEDGER   1 colliding cells   (LEVELS   /§ /§§  DANGER ()  REQUIRED †  CUR ▶)
 ------------------------------------------------------------------------------
   ▶   [8 families]  CUR  ·  button.main open (active,focused)  ·  checkbox.knob open (active,checked+active,checked+focused,focused)  ·  checkbox.main open (active,checked+active,checked+focused,focused)  ·  radio.knob open (active,checked+active,checked+focused,focused)  ·  radio.main open (active,checked+active,checked+focused,focused)  ·  slider.knob mark (focused)  ·  stepper.step close (focused)  ·  switch.knob mark (checked+focused,focused)  ·  textfield.main open (active,edited,focused)
   ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
@@ -105,7 +104,7 @@ LANGUAGE x COLLISIONS
 ==============================================================================
 language       colliding cells
 naught                       3
-corgi                        4
+corgi                        3
 instrument                   4
 swiss                        4
 industrial                   2
@@ -116,7 +115,7 @@ ledger                       1
 solari                       3
 blueprint                    1
 ------------------------------
-TOTAL                       27
+TOTAL                       26
 
 zero collisions: NONE -- all eleven overload at least one cell
 

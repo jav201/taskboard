@@ -1232,15 +1232,26 @@ def test_ledgers_two_daggers_are_an_order_and_not_a_pair():
     AND THE LADDER IS NOT MADE OF THEM ANY MORE (inc45). `LEVELS` read
     `† ` / `‡ `, so `†` meant "this entry must be made" beside a caption and
     "there is a warning about this" on a log row — two claims, one mark, no
-    channel between them. The ladder now takes the FIRST mark of the
-    printer's order, `*`, doubled for the graver note; the daggers are an
-    order of TWO and nothing else, which is what this test's title claimed
-    all along."""
+    channel between them. The ladder took the FIRST mark of the printer's
+    order, `*`, doubled for the graver note; the daggers are an order of TWO
+    and nothing else, which is what this test's title claimed all along.
+
+    AND IT HAS ADVANCED ALONG THAT ORDER ONCE (inc88). `*` is the thinnest
+    mark of the six and this is the corpus's one light ground, so the rung
+    missed Q1's effective clause in `mut` (1.91) AND in `ink` (2.86). The
+    ladder now spends `§`, which is the next mark of `* † ‡ § ‖ ¶` that this
+    kit has not already spoken for — and the two clauses this test exists
+    for are unchanged by that: the daggers are still out of the ladder, and
+    the graver note is still the calm one DOUBLED. What is asserted here is
+    the ORDER, not the letter: the ladder's mark must be in the printer's
+    six and must not be a dagger."""
     k = LG.kit("ledger")
     assert plain(k.required()) == "†"
     assert k.field_form(LG.INVALID, "textfield")[0] == "‡"
     assert not {"†", "‡"} & set("".join(k.LEVELS.values()))
-    assert k.LEVELS["error"].strip() == "**"
+    rung = k.LEVELS["warn"].strip()
+    assert set(rung) <= set("*†‡§‖¶"), (rung, "not a printer's mark")
+    assert k.LEVELS["error"].strip() == rung * 2, k.LEVELS
 
 
 # ===========================================================================
@@ -8371,7 +8382,16 @@ IDENTICAL_DRAWINGS = (("•", "∙"),)
 #: counted at. The two numbers move independently on purpose: this one is
 #: judged at the worst seat (Q3's notice) and `FLOOR_SEATS_FAILING` at the
 #: declared one.
-MEANING_MARKS = (79, 38)
+#:
+#: inc88 MOVED BOTH, 79 -> 80 and 38 -> 37, and the arithmetic is two
+#: different events cancelling to look like one.  The FIRST count rose
+#: because corgi's invalid wall stopped being ONE cell and became two:
+#: `░░·░░` -> `▚▚·▞▞`, a mirrored pair like every other wall this field
+#: draws.  The SECOND fell because ledger's rung left `*` for `§` and `§`
+#: clears 3:1 declared at its worst seat where `*` did not.  Nothing else
+#: in either count moved: the three cursor tokens are hues that were over
+#: 3:1 DECLARED before they moved and are over it after.
+MEANING_MARKS = (80, 37)
 
 ARGUED_DISTANCE = {("•", "●"): 21.64, ("○", "◦"): 22.81, ("◎", "◉"): 21.42,
                    ("†", "‡"): 4.87, ("▪", "■"): 26.52, ("╌", "┄"): 4.09,
@@ -9286,7 +9306,7 @@ def floor_rows(lang: str) -> tuple:
 
 
 #: WHAT IS UNDER THE FLOOR TODAY, at the declared seat, over all eleven.
-#: 84 bound seats, 67 clear both clauses and 17 miss one or both.
+#: 85 bound seats, 73 clear both clauses and 12 miss one or both.
 #:
 #: THIS IS A RECORDED SET AND NOT A GATE — the shape `SECOND_WIDTH_RED` and
 #: `DIM_CLASSIFIES` already have in this file, and for the identical reason:
@@ -9304,18 +9324,21 @@ def floor_rows(lang: str) -> tuple:
 #:     under a floor the round set at 15%, on a mark the same round recorded
 #:     as visible — named in `OBLIGATION_UNDER_THE_FLOOR`, exempt by name in
 #:     `SEEN_BY_EYE`, and not legislated away.
-#:   * FIVE miss effective contrast only, and there were TWENTY-NINE before
+#:   * NONE miss effective contrast only, and there were TWENTY-NINE before
 #:     inc85.  The twenty-nine were a collision between two floors in one
 #:     repo: K6 asks `mut` for 4.5:1 DECLARED, and a thin glyph at 4.5:1
 #:     declared lands near 2:1 EFFECTIVE.  The ruling says Q1 governs MEANING
 #:     MARKS and K6 governs TEXT RUNS, so twenty-five of the twenty-nine took
 #:     `ink` at the seat (`RUNG_TAKES_INK` and `Kit.field_wall_tone`) and
-#:     twenty-three of those cleared the clause.  The SIXTH survivor was
-#:     never a mark: inc87's derivation fix took `darkside o #757575` out of
-#:     the table, because those cells are the letter `o` of a log MESSAGE and
-#:     a message is prose.  The five that remain are named one by one in
-#:     `EFFECTIVE_UNCURED`, and NOT ONE OF THEM IS STILL PAINTED IN A QUIET
-#:     TIER — two are already in `ink` and three are a hue.
+#:     twenty-three of those cleared the clause.  Of the six left, ONE was
+#:     never a mark (inc87: `darkside o` is the letter `o` of a log MESSAGE);
+#:     THREE were cursors painted in `accent`, which is neither of the quiet
+#:     neutrals the ruling reaches, and took the smallest hue-preserving
+#:     lightness step of that token (inc88, `CURSOR_TOOK_A_LIGHTNESS_STEP`);
+#:     and TWO were facts about the DRAWING that no tier could fix and took
+#:     another cell out of their own language's alphabet (inc88,
+#:     `MARK_CURED_BY_AREA`).  THE COLUMN IS EMPTY, which is the strongest
+#:     statement this table has ever made and the one the ruling asked for.
 #:   * EIGHT miss both, and they are the marks §7 of the round put in its ten
 #:     worst by eye: the three `·` severity rungs, instrument's `⠂`/`⠆`,
 #:     prism's `⣀`, naught's `◦`.  The two clauses and the eye agree here.
@@ -9329,35 +9352,31 @@ BELOW_THE_FLOOR = {
     ("naught", "severity", "∙", "#f5f5f5"): "COV",
     ("naught", "severity", "◦", "#8a8a8a"): "COVEFF",
     ("naught", "danger", "∙", "#f5f5f5"): "COV",
-    ("corgi", "invalid", "░", "#f2f2f2"): "EFF",
     ("instrument", "severity", "⠂", "#6e7b89"): "COVEFF",
     ("instrument", "severity", "⠆", "#6e7b89"): "COVEFF",
-    ("instrument", "cursor", "⣿", "#2dd4bf"): "EFF",
     ("swiss", "severity", "·", "#9b9b9b"): "COVEFF",
     ("swiss", "required", "•", "#f4f4f4"): "COV",
-    ("swiss", "cursor", "▮", "#e7372e"): "EFF",
-    ("industrial", "cursor", "▶", "#ff6039"): "EFF",
     ("nord", "severity", "·", "#919cb0"): "COVEFF",
     ("darkside", "severity", "·", "#757575"): "COVEFF",
     ("prism", "severity", "⣀", "#8b98a5"): "COVEFF",
-    ("ledger", "severity", "*", "#1c1a15"): "EFF",
 }
 
 #: prism's `⣀` is the one drawing that sits on TWO grounds at its declared
 #: seat — the page and the confirm's plate — so it is two rows in the sweep
 #: and one row in the table above.  Recorded so the arithmetic below is not a
-#: mystery: 17 failing ROWS, 16 distinct (kit, family, cell, tone) keys.
+#: mystery: 12 failing ROWS, 11 distinct (kit, family, cell, tone) keys.
 #:
-#: THE BOUND COUNT FELL TWICE, 89 -> 86 -> 84, and the two falls are
-#: different events.  inc85's was a TIER MOVE seen from the counter's side: a
-#: seat drawn in two tones is two rows, and `ledger *`, `nord !` and
-#: `darkside o` each collapsed to one when the quiet copy moved onto the loud
-#: one.  inc87's is a DERIVATION FIX: `darkside severity o #757575` and
-#: `industrial invalid / #f2f2f2` were never seats at all — the first is the
-#: message, the second is the date separators of the value the field was
-#: handed — and `PROSE_NOT_A_SEAT` names both.  Both counts are asserted so a
+#: THE BOUND COUNT HAS MOVED THREE TIMES AND NO TWO MOVES ARE THE SAME KIND
+#: OF EVENT, 89 -> 86 -> 84 -> 85.  inc85's fall was a TIER MOVE seen from
+#: the counter's side: a seat drawn in two tones is two rows, and `ledger *`,
+#: `nord !` and `darkside o` each collapsed to one when the quiet copy moved
+#: onto the loud one.  inc87's was a DERIVATION FIX: `darkside severity o
+#: #757575` and `industrial invalid / #f2f2f2` were never seats at all, and
+#: `PROSE_NOT_A_SEAT` names both.  inc88's RISE is a DRAWING: corgi's invalid
+#: wall stopped being one cell repeated and became a mirrored pair, `░░·░░`
+#: -> `▚▚·▞▞`, so one seat became two.  All three counts are asserted so a
 #: seat that stops being DRAWN cannot be mistaken for a seat that passed.
-FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 84, 17
+FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 85, 12
 
 
 @pytest.mark.parametrize("lang", LANGS)
@@ -9873,10 +9892,17 @@ def _drawn(ch: str, fg: str, bg: str) -> tuple:
 #:   PAPER keeps `dim`: paper is not a mark, and Q2 classifies the run it
 #:   makes as structure.
 #:
-#: THE TWO ROWS THAT ARE NOT A CURE, named here rather than filtered out:
+#: ONE ROW IS NOT A CURE AND TWO STOPPED BEING ROWS AT ALL.
 #:   `industrial ▪` was ALREADY GREEN at 3.73 and moves anyway (see
-#:   `CARRIED_BY_THE_LADDER`); `ledger *` and `corgi ░` move and STILL MISS
-#:   (see `EFFECTIVE_UNCURED`).  A roster that only held the rows that worked
+#:   `CARRIED_BY_THE_LADDER`) -- it is still the only such row.
+#:   `ledger *` and `corgi ░` moved here and STILL MISSED, which inc85
+#:   recorded rather than hid; inc88 fixed both by DRAWING, so what those
+#:   keys name now is the NEW cell at the same two tiers (`§`, and the
+#:   mirrored pair `▚`/`▞`).  THE ROSTER FOLLOWS THE SEAT AND NOT THE
+#:   GLYPH: the law reads the tier off the kit as it ships today, so a cell
+#:   that leaves the kit has to leave this table with it or the law goes
+#:   red -- which is how the two rows below were found when the cells
+#:   changed under them.  A roster that only held the rows that worked
 #:   would be a report and not a record.
 SEATS_MOVED_TO_INK = {
     ("swiss", "severity", "─"): ("mut", 2.87, 5.81),
@@ -9885,7 +9911,7 @@ SEATS_MOVED_TO_INK = {
     ("nord", "severity", "!"): ("mut", 2.17, 3.81),
     ("darkside", "severity", "o"): ("mut", 2.51, 8.34),
     ("prism", "severity", "⣤"): ("mut", 2.31, 4.21),
-    ("ledger", "severity", "*"): ("mut", 1.91, 2.86),
+    ("ledger", "severity", "§"): ("mut", 2.45, 4.42),
     ("solari", "severity", "O"): ("mut", 2.07, 6.51),
     ("solari", "severity", "K"): ("mut", 2.31, 7.92),
     ("solari", "severity", "D"): ("mut", 2.36, 8.48),
@@ -9893,7 +9919,8 @@ SEATS_MOVED_TO_INK = {
     ("solari", "severity", "Y"): ("mut", 1.94, 5.67),
     ("blueprint", "severity", "━"): ("mut", 2.90, 5.60),
     ("naught", "invalid", "◑"): ("dim", 1.18, 7.33),
-    ("corgi", "invalid", "░"): ("dim", 1.05, 1.44),
+    ("corgi", "invalid", "▚"): ("dim", 1.55, 12.80),
+    ("corgi", "invalid", "▞"): ("dim", 1.59, 13.83),
     ("instrument", "invalid", "⠶"): ("dim", 1.24, 4.40),
     ("swiss", "invalid", "║"): ("dim", 1.40, 7.95),
     ("industrial", "invalid", "▌"): ("dim", 1.86, 13.43),
@@ -9917,61 +9944,31 @@ SEATS_MOVED_TO_INK = {
 #: increment that touches a seat no measurement condemned.
 CARRIED_BY_THE_LADDER = {("industrial", "severity", "▪")}
 
-#: WHAT IS STILL UNDER THE EFFECTIVE CLAUSE AND ONLY THAT CLAUSE, one row per
-#: seat with the kind of thing it is.  Five rows, two kinds, and both kinds
-#: are a reason the ruling's remedy does not reach -- which is the point of
-#: writing them down instead of leaving `EFF` as a bare count.
+#: WHAT IS STILL UNDER THE EFFECTIVE CLAUSE AND ONLY THAT CLAUSE.  NOTHING.
 #:
-#: `no louder neutral`   the mark is ALREADY in the loudest neutral the kit
-#:                       owns and still misses.  Two rows, and both are
-#:                       facts about the DRAWING rather than about the tone.
-#: `a hue, not a neutral` the cursor, painted in `accent`.  The ruling moves
-#:                       marks out of `mut` and `dim`; a hue is neither, and
-#:                       moving a cursor to `ink` would spend the one channel
-#:                       that says WHERE YOU ARE.  Handed back, not taken.
+#: THE ROSTER IS EMPTY AND IT IS KEPT, because an empty roster with a law
+#: over it is a claim and a deleted roster is a silence.  The claim is: no
+#: meaning mark in this corpus, at its declared seat, misses Q1's effective
+#: clause and only that clause.  It went 29 -> 6 -> 5 -> 0 in four
+#: increments and each step closed a different KIND of row:
 #:
-#: THERE WAS A THIRD KIND AND inc87 RETIRED IT.  `a letter of the message`
-#: held one row -- `darkside severity o #757575` -- and that row was never a
-#: seat: the derivation was keyed by CHARACTER, so the `o` of `board loaded`
-#: was credited to the one kit of eleven whose severity rung is the letter
-#: `o`.  The kind is gone because the row is gone, and `PROSE_NOT_A_SEAT` is
-#: where it went.  WHAT THAT LEAVES IS STRONGER THAN WHAT IT REMOVED: not one
-#: row here is painted in a quiet tier any more, so the law below stopped
-#: needing an exception to state the ruling it exists for.
-EFFECTIVE_UNCURED = {
-    ("corgi", "invalid", "░", "#f2f2f2"): (
-        "no louder neutral",
-        "`░` is a DITHER, not a glyph: at 9x19 its lit pixels are almost all "
-        "partway back to the ground, so 68.4% coverage carries a mean colour "
-        "1.44:1 off the page even in `ink` at 17.36:1 declared. No tier this "
-        "kit owns can fix a mark whose pixels are mostly not there; only "
-        "another cell can, and that is a glyph decision for a round."),
-    ("ledger", "severity", "*", "#1c1a15"): (
-        "no louder neutral",
-        "ledger's warn rung moved out of `mut` (1.91) onto the row its own "
-        "ERROR rung already occupied, and the row still measures 2.86 at "
-        "13.36:1 declared. `*` is a small high asterisk on the corpus's one "
-        "light ground; `ink` is the loudest neutral there is here, so the "
-        "seat has run out of tiers and the remedy left is a wider mark."),
-    ("instrument", "cursor", "⣿", "#2dd4bf"): (
-        "a hue, not a neutral",
-        "the cursor is `accent` in all three of these rows, and `accent` is "
-        "neither `mut` nor `dim` -- the ruling names the two quiet neutrals "
-        "and this is the channel that says WHERE YOU ARE. Moving it to `ink` "
-        "would delete the distinction the mark exists for, so the three "
-        "cursor rows are handed back to the round rather than taken here."),
-    ("swiss", "cursor", "▮", "#e7372e"): (
-        "a hue, not a neutral",
-        "swiss's cursor is the kit's one red at 4.52:1 declared and 2.57 "
-        "effective; the same sentence as instrument's, and the same refusal. "
-        "This kit rations its red -- `LANGUAGES.md` -- so a cursor repainted "
-        "in `ink` would not be a quieter cursor, it would be no cursor."),
-    ("industrial", "cursor", "▶", "#ff6039"): (
-        "a hue, not a neutral",
-        "the third of the three, at 2.97 effective -- three hundredths under "
-        "the clause on a 5.79:1 declared hue. Recorded at the same width as "
-        "the other two so the round can see that the cursor family fails as "
-        "a FAMILY and not as one kit's mistake."),
+#:   inc85  23 rows  a quiet tier under a floor written for text
+#:                   (`RUNG_TAKES_INK`, `Kit.field_wall_tone`)
+#:   inc87   1 row   a row that was never a seat -- the letter `o` of a log
+#:                   MESSAGE (`PROSE_NOT_A_SEAT`)
+#:   inc88   3 rows  a HUE, which neither quiet neutral's remedy reaches:
+#:                   the three cursors took the smallest hue-preserving
+#:                   lightness step of `accent`
+#:                   (`CURSOR_TOOK_A_LIGHTNESS_STEP`)
+#:   inc88   2 rows  a DRAWING, which no tier reaches: corgi's dither and
+#:                   ledger's thin asterisk took another cell out of their
+#:                   own alphabets (`MARK_CURED_BY_AREA`)
+#:
+#: WHAT IS LEFT UNDER THE FLOOR IS COVERAGE, and coverage only: four rows
+#: that miss area alone and eight that miss area AND contrast.  Not one of
+#: them is a tone question any more, which is the shape the round asked for
+#: when it made Q1 two clauses instead of a product.
+EFFECTIVE_UNCURED: dict = {
 }
 
 
@@ -9993,14 +9990,15 @@ def test_every_seat_the_ruling_moved_is_drawn_in_ink_and_measured_there():
       (c) the move is always UPWARD (`after > before`), which is the whole
           claim, and the `before` is under the clause except for the one seat
           `CARRIED_BY_THE_LADDER` names;
-      (d) the move CLEARS the clause except for the seats `EFFECTIVE_UNCURED`
-          names -- so a seat that moved and did not help cannot be quietly
-          counted as a fix."""
-    # THE SEATS THE MOVE DID NOT CURE, and it is the `no louder neutral` rows
-    # and only those: the other three uncured rows are seats this ruling
-    # never touched -- three cursors in a hue. `darkside o` was a fourth
-    # until inc87 showed that row to be the log MESSAGE and not the rung;
-    # the RUNG moved and cleared at 8.34, and that is the number below.
+      (d) the move CLEARS the clause for EVERY seat, with no exception --
+          which is a sentence this law could not say until inc88."""
+    # THE SEATS THE MOVE DID NOT CURE: there are none, and the roster that
+    # held them is empty and kept (`EFFECTIVE_UNCURED`). inc85 shipped two
+    # -- `corgi ░` at 1.44 and `ledger *` at 2.86 -- and recorded both
+    # rather than filtering them out. inc88 fixed both by DRAWING, and the
+    # rows above carry the cells that replaced them at the same two tiers.
+    # The set is still computed rather than assumed to be empty, so a row
+    # put back into the roster would take effect here.
     uncured = {(k[0], k[1], k[2]) for k, (kind, _w) in EFFECTIVE_UNCURED.items()
                if kind == "no louder neutral"}
     for (lang, fam, ch), (frm, was, now) in SEATS_MOVED_TO_INK.items():
@@ -10039,47 +10037,28 @@ def test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
     and it is judged on the SHIPPED PIXELS (`floor_rows` reads the PNGs) with
     the tier read off the theme.
 
-    AND SINCE inc87 IT HAS NO EXCEPTION LEFT. The one row that was still
-    quiet after inc85 was `darkside o #757575`, and inc87's derivation fix
-    established that those cells are the letter `o` of a log MESSAGE and not
-    the rung at all. So the clause is absolute now: NOT ONE `EFF`-only row of
-    this corpus is painted in `mut` or `dim`, in any kit. A law that used to
-    carry a named survivor carries none, which is the strongest form this
-    sentence has had.
+    AND SINCE inc88 THERE IS NOTHING LEFT TO EXEMPT. The survivors closed in
+    three different ways in three increments -- a quiet tier (inc85), a row
+    that was never a seat (inc87), and a hue and two drawings (inc88) -- so
+    what this law asserts now is the ruling itself with no roster between:
+    NO MEANING MARK IN THIS CORPUS MISSES Q1'S EFFECTIVE CLAUSE ALONE.
 
-    THE ROSTER IS SYMMETRIC, so it cannot become a parking space: every
-    `EFF`-only row of the corpus is named, and every named row must still be
-    an `EFF`-only row of the corpus."""
+    THE ROSTER IS STILL READ AND STILL SYMMETRIC, empty on both sides, so a
+    seat that starts failing goes red HERE rather than being written into a
+    table -- and a row written into the table without a failing seat goes red
+    too. An empty roster with a symmetric law over it is a claim; a deleted
+    roster would be a silence."""
     t = LG.THEMES[lang]
     got = {(lang, fam, ch, tone)
            for fam, ch, tone, v, _r in floor_rows(lang) if v == "EFF"}
     want = {k for k in EFFECTIVE_UNCURED if k[0] == lang}
     assert got == want, (lang, sorted(got ^ want))
+    assert not got, (lang, sorted(got), "the column is meant to be empty")
     for key in got:
         kind, why = EFFECTIVE_UNCURED[key]
         assert len(why.split()) >= 12, (key, "an exemption with no reason")
         assert key[3] not in (t["mut"], t["dim"]), \
             (key, kind, "a meaning mark left in the quiet tier")
-
-
-def test_the_uncured_table_covers_what_it_claims_to():
-    """The roster's own vacuity arms, the shape `DIM_CLASSIFIES` already has.
-
-    (a) every kind is one of the two that survive inc87, and both are USED --
-        a table where everything is "a hue" would be a filter;
-    (b) the two `no louder neutral` rows are asserted to BE in `ink`, which
-        is the claim their name makes;
-    (c) the three `a hue` rows are asserted NOT to be a neutral of their kit,
-        which is the claim theirs makes."""
-    kinds = {k for k, _ in EFFECTIVE_UNCURED.values()}
-    assert kinds == {"no louder neutral", "a hue, not a neutral"}, \
-        sorted(kinds)
-    for (lang, _f, _c, tone), (kind, _why) in EFFECTIVE_UNCURED.items():
-        t = LG.THEMES[lang]
-        if kind == "no louder neutral":
-            assert tone == t["ink"], (lang, tone)
-        if kind == "a hue, not a neutral":
-            assert tone not in (t["ink"], t["mut"], t["dim"]), (lang, tone)
 
 
 def test_the_ink_move_bites_when_one_seat_keeps_its_mut(monkeypatch):
@@ -10124,8 +10103,17 @@ def test_the_ink_move_bites_when_one_seat_keeps_its_mut(monkeypatch):
     monkeypatch.undo()
     declared_seat_tones.cache_clear()
 
-    # and the roster may not be emptied to make the law pass either
-    monkeypatch.setitem(globals(), "EFFECTIVE_UNCURED", {})
+    # AND THE EMPTY ROSTER IS NOT A FREE PASS. Since inc88 the roster holds
+    # nothing, so the arm that used to empty it would do nothing at all --
+    # the mutant has to go the other way and put a row IN. A row named here
+    # with no failing seat behind it must be as red as a failing seat with
+    # no row, which is what "symmetric" means and what an empty table makes
+    # easy to stop checking.
+    assert not EFFECTIVE_UNCURED, "inc88 emptied this roster; see the law"
+    monkeypatch.setitem(globals(), "EFFECTIVE_UNCURED", {
+        ("corgi", "invalid", "▚", LG.THEMES["corgi"]["ink"]):
+            ("no louder neutral", "a row invented to prove the law reads "
+                                  "the corpus and not this table")})
     with pytest.raises(AssertionError):
         test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
             "corgi")
@@ -10135,6 +10123,403 @@ def test_the_ink_move_bites_when_one_seat_keeps_its_mut(monkeypatch):
         test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
             lang)
     test_every_seat_the_ruling_moved_is_drawn_in_ink_and_measured_there()
+
+
+def test_the_uncured_table_is_empty_and_the_corpus_agrees():
+    """WHAT REPLACED THE ROSTER'S VACUITY ARMS: the fact that made them
+    unnecessary.
+
+    Until inc88 this law checked the roster's SHAPE -- that both its kinds
+    were used, that a `no louder neutral` row really was in `ink`, that a
+    hue row really was neither neutral. Those arms existed to stop a table of
+    five exemptions turning into a filter. There are no exemptions left, so
+    what is asserted instead is the two-sided claim: the roster is EMPTY, and
+    the corpus produces no row that would belong in it -- swept over all
+    eleven at once rather than kit by kit, so a row that moved between kits
+    could not hide in the parametrised law above."""
+    assert EFFECTIVE_UNCURED == {}, sorted(EFFECTIVE_UNCURED)
+    got = {(lang, fam, ch, tone) for lang in LANGS
+           for fam, ch, tone, v, _r in floor_rows(lang) if v == "EFF"}
+    assert not got, sorted(got)
+    # AND THE SWEEP IS NOT EMPTY OF EVERYTHING, which is the arm that says the
+    # measurement still runs: the floor is still failed, by area, in six kits.
+    still = {(lang, v) for lang in LANGS
+             for _f, _c, _t, v, _r in floor_rows(lang) if v}
+    assert {v for _l, v in still} == {"COV", "COVEFF"}, sorted(still)
+
+
+# ===========================================================================
+# inc88 (rework-9) -- the last two kinds of `EFF`-only failure, closed
+#
+# THE RULINGS (orchestrator, 2026-09-07, on the operator's delegation):
+#
+#   Cursors are marks: the three cursors in `accent` (instrument `⣿` 2.94,
+#   swiss `▮` 2.57, industrial `▶` 2.97) obey Q1's effective clause; fix by
+#   the smallest hue-preserving lightness step of `accent`, and re-run the
+#   match-tier law (inc73) since `accent` is a match ink in some kits: both
+#   must hold.
+#
+#   Drawing problems are fixed by drawing: corgi's invalid wall `░` (1.44 in
+#   ink, a dither) takes the heavy shade `▓` (panel register, inc67), and
+#   ledger's warn rung `*` (2.86 on light paper) takes a heavier printer's
+#   mark by area from ledger's own alphabet, both judged by Q1 at the seat.
+# ===========================================================================
+
+#: THE THREE CURSORS, WITH THE STEP EACH TOOK.
+#: `(kit, cell) -> (token, was, now, effective before, effective after)`.
+#:
+#: ONE TOKEN AND THREE DIFFERENT SIZES OF STEP, which is the reason this is a
+#: roster and not a constant: industrial was three HUNDREDTHS under the clause
+#: and moved by 0.004 of a lightness turn, swiss was the worst cursor in the
+#: corpus and moved by 0.072 -- eighteen times as far -- and instrument sits
+#: between them.  A single "brighten the accent" rule would have overshot two
+#: of the three and the round would have had no way to see it.
+CURSOR_TOOK_A_LIGHTNESS_STEP = {
+    ("instrument", "⣿"): ("accent", "#2dd4bf", "#39d7c3", 2.94, 3.01),
+    ("swiss", "▮"): ("accent", "#e7372e", "#eb574f", 2.57, 3.00),
+    ("industrial", "▶"): ("accent", "#ff6039", "#ff623b", 2.97, 3.00),
+}
+
+#: WHAT SWISS PAID FOR ITS STEP, recorded because it is the one place in this
+#: increment where a token could NOT move as one declaration.
+#:
+#: swiss declared `accent`, `warn` and `alert` at one hex -- "this kit's one
+#: red" -- and inc73 moved all three together for exactly that reason.  This
+#: increment could not: `MATCH_STYLE` is `bold {alert}`, this kit's `mut` and
+#: `ink` are ACHROMATIC, and inc73's fallback clause therefore asks the match
+#: ink to differ from body text by 1.5:1 IN LUMINANCE.  Raising the red to
+#: clear Q1 at the cursor moves it TOWARDS `mut`, and moving all three took
+#: that step from 1.52 to 1.26 -- red under inc73's own law.  MEASURED, not
+#: predicted: the whole-token move was made, the suite went red on
+#: `test_the_match_run_is_legible_and_distinct_on_its_declared_channel[swiss]`
+#: and on its tooth, and the move was narrowed to `accent` alone.
+#:
+#: SO THE RULING'S "BOTH MUST HOLD" IS WHAT SPLIT THE TOKEN, and the split is
+#: the finding: swiss's one red cannot be the CURSOR ink and the MATCH ink at
+#: the same lightness, because Q1 pushes it up and inc73 pushes it down.  The
+#: kit still spends one HUE; it now spends it at two lightnesses, which is
+#: what its own grey ladder already does three times over.
+SWISS_RED_SPLIT = ("accent", "#eb574f", "warn", "alert", "#e7372e", 1.26, 1.52)
+
+#: THE TWO MARKS NO TIER COULD FIX, AND THE CELL EACH TOOK.
+#: `(kit, family, was, now) -> (cov before, eff before, cov after, eff after)`.
+#: Both `before` numbers are measured in the tier the mark was ALREADY in --
+#: `ink` for both -- which is what "no louder neutral" meant.
+MARK_CURED_BY_AREA = {
+    ("corgi", "invalid", "░", "▚"): (0.684, 1.44, 0.579, 12.80),
+    ("corgi", "invalid", "░", "▞"): (0.684, 1.44, 0.602, 13.83),
+    ("ledger", "severity", "*", "§"): (0.304, 2.86, 0.515, 4.42),
+}
+
+#: THE CELL THE RULING NAMED AND THE CENSUS REFUSED, with the number that
+#: refused it.  `(kit, family, cell) -> how many families the kit already
+#: spends it on`.
+#:
+#: The ruling asked corgi's invalid wall to take `▓`, the heavy shade of this
+#: kit's panel register, and `▓` clears Q1 comfortably (100 % coverage, 3.47
+#: effective).  It is also the cell this kit's textfield already wears when it
+#: is ACTIVE -- and the switch indicator's, the checkbox knob's, the radio's,
+#: the button's, the stepper's, the pane rule's and the mascot's.  Taking it
+#: was MEASURED rather than argued: `collision_census.py` went 27 -> 28 and
+#: `▓` came back carrying NINE families, one of them "you are typing here" on
+#: the very field whose rejection it would have been spelling.  The number in
+#: this table is the EIGHT it carries today, without the invalid family: a
+#: refusal has to be checkable against the corpus as it stands, not against
+#: the corpus it would have become.
+#:
+#: THAT IS RULING C REVERSED -- *a language's INVALID mark is its own* -- and
+#: it is the exact defect inc52 fixed, which is why `░` was chosen in the
+#: first place: "THE ONE CELL IN THIS LANGUAGE'S BLOCK ALPHABET THAT NO
+#: MEANING AND NO OTHER CONTROL STATE SPENDS".  The criterion was kept and the
+#: family moved instead: the shade ramp has no free cell left, inc58 forbids
+#: drawing a control as a driven bar, and what remains is the QUADRANT family
+#: -- which is already this field's wall vocabulary.
+REFUSED_BY_THE_CENSUS = {("corgi", "invalid", "▓"): 8}
+
+
+def _hls(hexed: str) -> tuple:
+    return colorsys.rgb_to_hls(*[c / 255 for c in _rgb(hexed)])
+
+
+def _ray(hexed: str, upto: str) -> list:
+    """Every distinct 8-bit colour on `hexed`'s own hue/saturation ray, from
+    just above it to just below `upto`.
+
+    THE STEP IS 0.0002 OF A LIGHTNESS TURN, which is finer than 8-bit can
+    represent, so every colour the ray can reach is reached and the list is
+    the complete set of smaller steps that were available."""
+    h, l0, sat = _hls(hexed)
+    out, seen, n = [], {hexed}, 0
+    while n < 20000:
+        n += 1
+        light = l0 + n * 0.0002
+        if light > 1.0:
+            break
+        c = "#%02x%02x%02x" % tuple(
+            round(v * 255) for v in colorsys.hls_to_rgb(h, light, sat))
+        if c == upto:
+            return out
+        if c not in seen:
+            seen.add(c)
+            out.append(c)
+    raise AssertionError((hexed, upto, "not on this hue's ray"))
+
+
+@pytest.mark.parametrize("lang,cell", sorted(CURSOR_TOOK_A_LIGHTNESS_STEP))
+def test_the_cursor_took_the_smallest_hue_preserving_step_that_clears(
+        lang, cell):
+    """THE RULING, in five clauses, and the fifth is the word "smallest".
+
+      (a) the kit's token holds the new value TODAY and the cursor is painted
+          in it, read off the kit's own `menu` call and not off this table;
+      (b) both numbers reproduce off the pixels to two places, at the OLD
+          value and at the NEW one, on this kit's own ground;
+      (c) the step CROSSES the clause: `before < 3.0 <= after`;
+      (d) it is HUE-PRESERVING -- the hue moves less than a quarter of a
+          DEGREE and the saturation less than a hundredth, which is the whole
+          of what 8-bit quantisation costs on the way -- and it is UPWARD;
+      (e) IT IS THE SMALLEST SUCH STEP: every colour the hue's own ray can
+          reach between the two still misses the clause. That is the clause
+          that makes "smallest" checkable instead of decorative, and it is
+          the reason the three steps differ by a factor of eighteen.
+    """
+    token, was, now, before, after = CURSOR_TOOK_A_LIGHTNESS_STEP[(lang, cell)]
+    t = LG.THEMES[lang]
+    assert t[token] == now, (lang, token, t[token])
+    assert ("cursor", cell, now) in declared_seat_tones(lang), (lang, cell)
+
+    _, b = _drawn(cell, was, t["ground"])
+    _, a = _drawn(cell, now, t["ground"])
+    assert (round(b, 2), round(a, 2)) == (before, after), (lang, b, a)
+    assert b < FLOOR_EFFECTIVE <= a, (lang, b, a)
+
+    h0, l0, s0 = _hls(was)
+    h1, l1, s1 = _hls(now)
+    assert abs(h1 - h0) * 360 < 0.25, (lang, (h1 - h0) * 360, "hue moved")
+    assert abs(s1 - s0) < 0.01, (lang, s1 - s0, "saturation moved")
+    assert l1 > l0, (lang, l0, l1, "the step is not upward")
+
+    smaller = _ray(was, now)
+    assert smaller, (lang, "no smaller step existed at all")
+    for cand in smaller:
+        assert _drawn(cell, cand, t["ground"])[1] < FLOOR_EFFECTIVE, \
+            (lang, cand, "a smaller step would have cleared it")
+
+
+def test_the_swiss_red_is_one_hue_at_two_lightnesses_and_says_why():
+    """THE SPLIT, and the two laws that forced it, asserted from both ends.
+
+    A kit that used to hold one hex in three tokens now holds two, and that
+    is exactly the kind of change that looks like drift a year later. So the
+    reason is measured here rather than only written down: the LIGHT red
+    clears Q1 at the cursor and would fail inc73 at the match, and the DARK
+    red does the reverse. Neither value can do both jobs, which is the whole
+    content of the ruling's "both must hold"."""
+    token, light, w1, w2, dark, grey_if_moved, grey_today = SWISS_RED_SPLIT
+    t = LG.THEMES["swiss"]
+    assert t[token] == light and t[w1] == t[w2] == dark, sorted(t.items())
+    assert _hls(light)[1] > _hls(dark)[1], "the split is a lightness"
+    assert abs(_hls(light)[0] - _hls(dark)[0]) * 360 < 0.25, "one hue"
+
+    # the cursor needs the LIGHT one and the dark one misses
+    assert _drawn(LG.kit("swiss").CUR, light, t["ground"])[1] >= FLOOR_EFFECTIVE
+    assert _drawn(LG.kit("swiss").CUR, dark, t["ground"])[1] < FLOOR_EFFECTIVE
+
+    # and the match needs the DARK one: inc73's achromatic fallback asks for
+    # 1.5:1 in luminance against body text, and the light red gives 1.26
+    def step(v):
+        def g(x):
+            n = _grey_of(_rgb(x))
+            return (n, n, n)
+        return _contrast_rgb(g(v), g(t["mut"]))
+
+    assert round(step(dark), 2) == grey_today, round(step(dark), 2)
+    assert round(step(light), 2) == grey_if_moved, round(step(light), 2)
+    assert step(light) < 1.5 <= step(dark), (step(light), step(dark))
+    assert match_branch("swiss")[1] == dark, "the match still spends the dark"
+
+
+@pytest.mark.parametrize("key", sorted(MARK_CURED_BY_AREA))
+def test_a_mark_no_tier_could_fix_took_another_cell_of_its_own_alphabet(key):
+    """THE SECOND RULING, in four clauses.
+
+      (a) the OLD cell is gone from that family's declared seats and the NEW
+          one is there, read off the kit's own contract method;
+      (b) all four numbers reproduce off the pixels, in the tier the kit
+          paints the seat in today;
+      (c) the new cell clears BOTH clauses where the old one missed at least
+          one -- so a replacement that traded contrast for area would be red;
+      (d) THE NEW CELL IS FREE, which is ruling C measured rather than
+          asserted: the census credits it to this family in this kit and to
+          no other. That is the clause the `▓` the ruling named would fail,
+          and it is why `REFUSED_BY_THE_CENSUS` exists beside this table.
+    """
+    lang, family, was, now = key
+    cov0, eff0, cov1, eff1 = MARK_CURED_BY_AREA[key]
+    t = LG.THEMES[lang]
+    seats = {(f, c) for f, c, _tone in declared_seat_tones(lang)}
+    assert (family, was) not in seats, (lang, was, "the old cell is still declared")
+    tone = next(tn for f, c, tn in declared_seat_tones(lang)
+                if (f, c) == (family, now))
+
+    c0, e0 = _drawn(was, tone, t["ground"])
+    c1, e1 = _drawn(now, tone, t["ground"])
+    assert (round(c0, 3), round(e0, 2)) == (cov0, eff0), (key, c0, e0)
+    assert (round(c1, 3), round(e1, 2)) == (cov1, eff1), (key, c1, e1)
+    assert not (c0 >= FLOOR_COVERAGE and e0 >= FLOOR_EFFECTIVE), \
+        (key, "the old cell did not fail, so this is not a cure")
+    assert c1 >= FLOOR_COVERAGE and e1 >= FLOOR_EFFECTIVE, (key, c1, e1)
+
+    named, other = _census().role_map(lang)
+    fams = set(named.get(now, {})) | set(other.get(now, {}))
+    assert fams == {family}, (key, sorted(fams), "the new cell is not free")
+
+
+def test_the_cell_the_ruling_named_is_one_the_census_refuses():
+    """THE REFUSAL, measured on the corpus that produced it.
+
+    A refusal recorded as prose is an opinion. This one is a count: the cell
+    the ruling named for corgi's invalid wall is spent by at least the number
+    of families `REFUSED_BY_THE_CENSUS` records, TODAY, in the shipped kit --
+    so the refusal stops being true the moment the corpus stops making it
+    true, and goes red rather than quietly ageing.
+
+    AND THE CELL THAT WAS TAKEN INSTEAD IS ASSERTED TO BE THE OPPOSITE, which
+    is what makes the pair a decision and not a preference."""
+    for (lang, family, cell), n in REFUSED_BY_THE_CENSUS.items():
+        named, other = _census().role_map(lang)
+        fams = set(named.get(cell, {})) | set(other.get(cell, {}))
+        assert len(fams) >= n, (lang, cell, sorted(fams))
+        assert family not in fams, (lang, cell, "the refusal was not taken")
+        # it is not refused for being illegible: it clears the floor
+        t = LG.THEMES[lang]
+        cov, eff = _drawn(cell, t["ink"], t["ground"])
+        assert cov >= FLOOR_COVERAGE and eff >= FLOOR_EFFECTIVE, \
+            (lang, cell, cov, eff, "refused for the wrong reason")
+
+
+def test_the_area_cure_bites_when_the_mark_goes_back(monkeypatch):
+    """TEETH -- put each replaced cell back and the floor must say so.
+
+    TWO ARMS AND ONE CONTROL, and the arms are the two kits because the two
+    mechanisms are different: corgi's is a `PART_GLYPHS` table (a control
+    state) and ledger's is `LEVELS` (a meaning ladder), and a tooth that only
+    exercised one would leave the other's mechanism unproved.
+
+    THE THIRD ARM IS THE REFUSAL, and it is the one worth having: corgi's
+    invalid wall is set to the cell the ruling named, and the freedom clause
+    must go red -- because `▓` clears Q1 and would pass every other clause in
+    this file. Without that arm the refusal would be a comment."""
+    test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat("corgi")
+    test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat("ledger")
+
+    corgi = type(LG.kit("corgi"))
+    for part, back in (("textfield.main", "░░·░░"), ("knob", "░░")):
+        tbl = dict(corgi.PART_GLYPHS[part])
+        tbl[LG.INVALID] = back
+        monkeypatch.setitem(corgi.PART_GLYPHS, part, tbl)
+    declared_seat_tones.cache_clear()
+    assert ("invalid", "░", LG.THEMES["corgi"]["ink"]) in \
+        declared_seat_tones("corgi")
+    with pytest.raises(AssertionError):
+        test_a_mark_no_tier_could_fix_took_another_cell_of_its_own_alphabet(
+            ("corgi", "invalid", "░", "▚"))
+    monkeypatch.undo()
+    declared_seat_tones.cache_clear()
+
+    ledger = type(LG.kit("ledger"))
+    monkeypatch.setattr(ledger, "LEVELS",
+                        {"info": "  ", "warn": "* ", "error": "**"})
+    declared_seat_tones.cache_clear()
+    assert ("severity", "*", LG.THEMES["ledger"]["ink"]) in \
+        declared_seat_tones("ledger")
+    with pytest.raises(AssertionError):
+        test_a_mark_no_tier_could_fix_took_another_cell_of_its_own_alphabet(
+            ("ledger", "severity", "*", "§"))
+    monkeypatch.undo()
+    declared_seat_tones.cache_clear()
+
+    # THE REFUSAL'S OWN ARM: take the cell the ruling named and the freedom
+    # clause is what fires, on a cell that clears both of Q1's clauses.
+    tbl = dict(corgi.PART_GLYPHS["textfield.main"])
+    tbl[LG.INVALID] = "▓▓·▓▓"
+    monkeypatch.setitem(corgi.PART_GLYPHS, "textfield.main", tbl)
+    declared_seat_tones.cache_clear()
+    with pytest.raises(AssertionError):
+        test_the_cell_the_ruling_named_is_one_the_census_refuses()
+    monkeypatch.undo()
+    declared_seat_tones.cache_clear()
+
+    for key in MARK_CURED_BY_AREA:
+        test_a_mark_no_tier_could_fix_took_another_cell_of_its_own_alphabet(key)
+    test_the_cell_the_ruling_named_is_one_the_census_refuses()
+
+
+def test_the_cursor_step_bites_when_the_token_goes_back(monkeypatch):
+    """TEETH -- put each accent back and every law that stands on the step
+    must go red: the roster's own law, the floor at that kit's declared seat,
+    and the empty `EFF` column.
+
+    THE THREE ARMS ARE THREE KITS, because the three steps are three
+    different sizes and a tooth that only exercised swiss's 0.072 would say
+    nothing about industrial's 0.004 -- which is the one that could rot on a
+    font update and the one this arm is really for."""
+    for lang, cell in CURSOR_TOOK_A_LIGHTNESS_STEP:
+        test_the_cursor_took_the_smallest_hue_preserving_step_that_clears(
+            lang, cell)
+
+    for (lang, cell), (token, was, now, _b, _a) in \
+            CURSOR_TOOK_A_LIGHTNESS_STEP.items():
+        theme = dict(LG.THEMES[lang])
+        theme[token] = was
+        monkeypatch.setitem(LG.THEMES, lang, theme)
+        declared_seat_tones.cache_clear()
+        with pytest.raises(AssertionError):
+            test_the_cursor_took_the_smallest_hue_preserving_step_that_clears(
+                lang, cell)
+        # and it is not red merely because a hex string differs: the old
+        # value is asserted to MISS the clause on this kit's own ground,
+        # which is the measurement the roster claims and the reason the
+        # token moved at all
+        assert _drawn(cell, was, theme["ground"])[1] < FLOOR_EFFECTIVE, \
+            (lang, was)
+        monkeypatch.undo()
+        declared_seat_tones.cache_clear()
+
+    # THE ARM FOR THE WORD "SMALLEST", and it is the one clause (e) needs:
+    # overshoot by ONE colour on the same ray. Every other clause still holds
+    # -- the hue is preserved, the step is upward, the cursor clears -- so if
+    # (e) were decorative this mutant would pass. It must not.
+    for (lang, cell), (token, was, now, _b, _a) in \
+            CURSOR_TOOK_A_LIGHTNESS_STEP.items():
+        h, light, sat = _hls(now)
+        over, n = None, 0
+        while over is None and n < 4000:
+            n += 1
+            c = "#%02x%02x%02x" % tuple(
+                round(v * 255)
+                for v in colorsys.hls_to_rgb(h, light + n * 0.0002, sat))
+            over = c if c != now else None
+        theme = dict(LG.THEMES[lang])
+        theme[token] = over
+        monkeypatch.setitem(LG.THEMES, lang, theme)
+        fatter = dict(CURSOR_TOOK_A_LIGHTNESS_STEP)
+        fatter[(lang, cell)] = (
+            token, was, over, _b,
+            round(_drawn(cell, over, theme["ground"])[1], 2))
+        monkeypatch.setitem(globals(), "CURSOR_TOOK_A_LIGHTNESS_STEP", fatter)
+        declared_seat_tones.cache_clear()
+        assert _drawn(cell, over, theme["ground"])[1] >= FLOOR_EFFECTIVE, \
+            (lang, over, "the overshoot has to CLEAR, or it proves nothing")
+        with pytest.raises(AssertionError):
+            test_the_cursor_took_the_smallest_hue_preserving_step_that_clears(
+                lang, cell)
+        monkeypatch.undo()
+        declared_seat_tones.cache_clear()
+
+    for lang, cell in CURSOR_TOOK_A_LIGHTNESS_STEP:
+        test_the_cursor_took_the_smallest_hue_preserving_step_that_clears(
+            lang, cell)
 
 
 # ---- K8 / E6: the run with no glyph ---------------------------------------
@@ -10566,7 +10951,7 @@ def test_the_rasters_greyscale_declaration_is_the_one_measured_here():
 #:
 #: RECORDED AS A LIMIT AND NOT FIXED — the greyscale ruling's own words.
 MATCH_IN_GREY = {
-    "instrument": 2.34,
+    "instrument": 2.42,
     "swiss": 1.52,
     "nord": 1.34,
     "prism": 1.59,

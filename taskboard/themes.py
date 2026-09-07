@@ -268,7 +268,15 @@ THEMES: dict[str, dict] = {
         unit="#6e7b89",                        # readings and axis unit labels
         label="Instrument", note="round-dot scope · braille numerals · clinical",
         ground="#0a0d12", ink="#e8edf2", mut="#6e7b89", dim="#333c47",
-        accent="#2dd4bf", warn="#fbbf24", alert="#f43f5e",
+        # inc88 (Q1, the cursor): `#2dd4bf` drew `⣿` at 2.94 EFFECTIVE
+        # -- 44.4% of the cell and still under the clause, because a
+        # full braille cell is eight dots and their edges are most of
+        # the ink. ONE HLS LIGHTNESS STEP, hue and saturation held:
+        # L 0.5039 -> 0.5329, hue moves 0.05 of a DEGREE on the 8-bit
+        # round trip. 2.94 -> 3.01 effective, 10.45 -> 10.82 declared.
+        # This token is also `MATCH_STYLE`, so L12's grey step moves
+        # with it: 2.34 -> 2.42, the only one of the four that improves.
+        accent="#39d7c3", warn="#fbbf24", alert="#f43f5e",
         sel="outer",
         tempo=160, easing="out_cubic",  # motion: pace + curve
         panel="#0e131a", focus="#16202b",
@@ -295,7 +303,24 @@ THEMES: dict[str, dict] = {
         ground="#101010", ink="#f4f4f4", mut="#9b9b9b", dim="#3d3d3d",
         # inc73 (K7): `#e2231a` was 4.07:1 on this ground -> `#e7372e`,
         # 4.52:1. One HLS lightness step; the hue is Swiss red still.
-        accent="#e7372e", warn="#e7372e", alert="#e7372e",
+        #
+        # inc88 (Q1, the cursor): the same move a second time, and for
+        # the same reason at a different seat. `▮` measured 2.57
+        # EFFECTIVE at 38.6% coverage -- the worst cursor in the corpus
+        # -- so `#e7372e` -> `#eb574f`, L 0.5431 -> 0.6151, hue held to
+        # 0.16 of a degree. 2.57 -> 3.00 effective, 4.52 -> 5.44
+        # declared, and 4.25 -> 5.13 on the panel.
+        #
+        # ALL THREE MOVE TOGETHER BECAUSE THEY ARE ONE RED. This kit
+        # declares one colour and spends it on identity, warning and
+        # severity at once; splitting the hex to move a cursor would
+        # give the language a second red it has refused since inc44.
+        # THE COST IS DECLARED AND IT IS L12: `MATCH_STYLE` is `bold
+        # {alert}`, so the hue-only match steps CLOSER to `mut` in
+        # greyscale, 1.52 -> 1.26. It was already the thinnest reading
+        # in the corpus and it is thinner. Recorded, not traded away:
+        # L12 is a LIMIT with no floor and Q1 is a clause with one.
+        accent="#eb574f", warn="#e7372e", alert="#e7372e",
         sel="solid",
         tempo=240, easing="in_out_cubic",  # motion: pace + curve
         panel="#171717", focus="#1f1f1f",
@@ -323,7 +348,16 @@ THEMES: dict[str, dict] = {
         plate="#2e2e2e",                       # the plate's ground, never accent
         # inc73 (K7): 4.06:1 on the plate -> 4.52:1. `accent` moves with
         # `alert` because they are one hex here by declaration (see above).
-        accent="#ff6039", warn="#ffd400", alert="#ff6039",
+        #
+        # inc88 (Q1, the cursor): `▶` measured 2.971729 -- three
+        # hundredths of a clause -- so this is the smallest step of the
+        # three by an order of magnitude: `#ff6039` -> `#ff623b`, one
+        # unit of green and two of blue, L 0.6118 -> 0.6158, saturation
+        # unchanged at 1.0000 and hue held to 0.12 of a degree. 2.97 ->
+        # 3.00 effective. `alert` comes with it, as it did at inc73 and
+        # for the same declaration; K7 holds on all three grounds this
+        # kit paints (5.85 canvas, 5.29 panel, 4.57 plate).
+        accent="#ff623b", warn="#ffd400", alert="#ff623b",
         sel="solid",
         tempo=60, easing="linear",  # motion: pace + curve
         # inc73, THE ROLE RULING: a token has exactly one role. `focus` was
