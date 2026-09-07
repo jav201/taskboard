@@ -58,6 +58,7 @@ sys.path.insert(0, str(HERE))
 from PIL import Image                                            # noqa: E402
 
 import collision_census as CC                                    # noqa: E402
+import fixture as F                                              # noqa: E402
 import raster as RA                                              # noqa: E402
 import screens as S                                              # noqa: E402
 import taskboard.language as LG                                  # noqa: E402
@@ -117,6 +118,13 @@ STRUCTURE_MIN = 8      # >= 8 cells of one glyph: bound only to "not the ground"
 #: language is not making on purpose.  Named so the number in section H is
 #: arguable rather than buried in a comparison.
 GREY_DISTINCT = 1.10
+
+#: HOW MUCH HEAVIER A MATCH RUN HAS TO BE DRAWN FOR WEIGHT TO BE A CHANNEL
+#: (inc92, ruling "L12 corrected").  The ruling's own number: *weight >= 1.3x
+#: the neighbour's ink*.  It is a floor on `ink` -- area times depth -- and it
+#: is not the only arm of the weight clause; see `match_in_grey`, where the
+#: second arm is coverage alone and swiss is the kit that needs it.
+GREY_WEIGHT_FLOOR = 1.30
 
 #: THE 5-7 RUNS, named per seat exactly as `DIM_CLASSIFIES` names its own.
 #: The corpus draws THREE of them and all three are naught's `∙`, which is
@@ -248,15 +256,55 @@ def declared_tones(lang: str) -> dict[str, set[tuple[str, str]]]:
     return out
 
 
+def match_seat(lang: str) -> tuple[int, int, int, int, int, bool, bool]:
+    """WHERE the match run is on `<lang>_S6`, read off the raster's sidecar.
+
+    `(row, x, width, neighbour x, neighbour width, bold, underline)`.
+
+    THE SEAT IS THE ONE `Kit.match` PAINTS, not any run with the right colour.
+    `match(label, query)` emits three runs -- prefix in `mut`, the query in
+    `MATCH_STYLE`, suffix in `mut` -- and the sheet's first result is
+    `redirect to task`, whose prefix is empty.  So the seat is the first run
+    on the sheet whose text is the query and whose right-hand neighbour is
+    painted in `mut`, which is a description of the CONTRACT and not of a
+    colour.  Asked by colour instead, solari's reverse branch would have
+    matched its own tab bar and its own header two rows higher up.
+    """
+    t = LG.THEMES[lang]
+    side = json.loads((PNG / f"{lang}_S6.json").read_text(encoding="utf-8"))
+    for y, runs in enumerate(side["grid"]):
+        for i, (x0, text, fg, bg, bold, und) in enumerate(runs):
+            if text != F.QUERY or i + 1 >= len(runs):
+                continue
+            nx, ntext, nfg = runs[i + 1][0], runs[i + 1][1], runs[i + 1][2]
+            if nfg.lower() != t["mut"].lower():
+                continue
+            return (y, x0, len(text), nx, len(ntext.rstrip()), bold, und)
+    raise SystemExit(f"{lang}: no match seat on S6 -- the sheet changed shape")
+
+
 def match_branch(lang: str) -> tuple[str, str, str]:
     """`(channel, the match ink, the ground it is painted on)`.
 
-    THE SAME DERIVATION THE SUITE USES, restated here rather than imported --
-    the standing bargain of this pair of files: `test_the_match_run_is_
-    legible_and_distinct_on_its_declared_channel` reads `MATCH_STYLE` the
-    same way, and the two can only agree by being right.  The STYLE word
-    gives `bold` / `underline` / `reverse`; the TOKEN gives whether the mark
-    is a hue of its own or the kit's own ink at another weight.
+    **READ OFF THE PAINT SINCE inc92, AND IT USED TO BE READ OFF A TOKEN.**
+    The old derivation asked `MATCH_STYLE`'s TOKEN whether the mark was a hue
+    of its own, and answered `hue` for every kit spending `accent` or `alert`
+    -- which is four of them.  It never looked at the STYLE WORD in that
+    branch, so instrument (`underline {accent}`) was classified hue-only while
+    every one of its six match runs is drawn UNDERLINED, and nord, prism and
+    swiss were classified hue-only while theirs are drawn BOLD.
+
+    The ruling of 2026-09-07 (L12 corrected): *the match channel in grey is
+    weight or decoration where the kit declares it, and the grey test reads
+    the sidecar's `bold` / `underline` flags, not colour tokens; a kit is
+    hue-only in grey only if its match run carries neither.*  So the flags
+    come from `match_seat`, which reads them off the raster's own record of
+    what was painted -- the same file every other measure in this report is
+    taken from.
+
+    `reverse` still comes from the style word, because `cell_grid` has already
+    resolved it into the (ink, ground) pair it always was and there is no flag
+    left to read: a reversed run arrives as ink in the BACKGROUND field.
     """
     k, t = LG.kit(lang), LG.THEMES[lang]
     word, token = (k.MATCH_STYLE.split()[0],
@@ -264,9 +312,90 @@ def match_branch(lang: str) -> tuple[str, str, str]:
     value = t.get(token, t["ink"])
     if word == "reverse":
         return "reverse", t["ground"], value
-    if token in ("accent", "alert") and value != t["ink"]:
-        return "hue", value, t["ground"]
-    return word, value, t["ground"]
+    _y, _x, _w, _nx, _nw, bold, und = match_seat(lang)
+    if bold:
+        return "bold", value, t["ground"]
+    if und:
+        return "underline", value, t["ground"]
+    return "hue", value, t["ground"]
+
+
+def match_in_grey(lang: str) -> dict:
+    """L12's three clauses, MEASURED ON THE GREY PNG (inc92).
+
+    Until this increment section H below measured TOKENS through the greyscale
+    transform: it took `accent`, took `mut`, greyed both and divided.  That
+    answers a question about two colours and the ruling asks a question about
+    a picture -- *legible on the grey PNG* -- so the numbers here come out of
+    `<lang>_S6.grey.png`, cell by cell, over the seat `match_seat` finds and
+    the body run beside it.
+
+    THREE CLAUSES, ANY OF WHICH CARRIES THE CHANNEL:
+
+      effective   the mean grey of the pixels the match run actually PAINTS
+                  against the mean grey of the pixels the body beside it
+                  paints, >= 3:1.  Section C's definition of `effective`,
+                  applied along the one dimension grey has.
+      weight      the run is drawn HEAVIER than the body it stands in.  Two
+                  measurements, because they disagree and the disagreement is
+                  the finding: `ink` is mean |grey - ground| over the run's
+                  whole box (area AND depth), `cov` is the fraction of pixels
+                  that differ from the ground at all (area alone).  The clause
+                  is carried by `ink >= 1.30` -- the ruling's own number -- or,
+                  failing that, by `cov > 1.00`, which is the ruling's *"if
+                  weight is present it passes on weight"* turned into a
+                  measurement rather than a flag.
+      decoration  a rule under the run (`underline`) or a plate behind it
+                  (`reverse`), both of which are area no hue can take away.
+
+    WHY THE TWO WEIGHT MEASUREMENTS ARE BOTH REPORTED.  swiss is the kit that
+    separates them: its match is drawn in the bold instance and covers 1.21x
+    the lit area of the body beside it, yet its `ink` is only 1.07x, because
+    its red falls DARKER than the grey of the body and depth cancels most of
+    what area gained.  A single number would have had to choose between
+    "swiss's match is heavier" and "swiss's match is fainter", and both are
+    true of different halves of the same measurement.
+    """
+    y, x, w, nx, nw, bold, und = match_seat(lang)
+    side = json.loads((PNG / f"{lang}_S6.json").read_text(encoding="utf-8"))
+    cw, ch = side["cell"]["w"], side["cell"]["h"]
+    with Image.open(PNG / f"{lang}_S6.grey.png") as raw:
+        im = raw.convert("RGB")
+
+    def band(x0: int, n: int):
+        px = list(im.crop((x0 * cw, y * ch, (x0 + n) * cw,
+                           y * ch + ch)).getdata())
+        return [p[0] for p in px]
+
+    run, body = band(x, w), band(nx, nw)
+    # THE GROUND IS THE MODE OF THE BODY'S BOX, which is the same thing
+    # `cell_grid` would call the ground and is read here rather than converted
+    # from a token: the point of this function is that it looks at pixels.
+    ground = max(set(body), key=body.count)
+
+    def ink(v):
+        return sum(abs(p - ground) for p in v) / len(v) / 255.0
+
+    def cov(v):
+        return sum(1 for p in v if p != ground) / len(v)
+
+    def lit(v):
+        on = [p for p in v if p != ground]
+        return sum(on) / len(on) if on else float(ground)
+
+    branch, _ink_hex, _g = match_branch(lang)
+    eff = contrast((lit(run),) * 3, (lit(body),) * 3)
+    i_ratio = ink(run) / ink(body)
+    c_ratio = cov(run) / cov(body)
+    carried = []
+    if eff >= EFFECTIVE_FLOOR:
+        carried.append("effective")
+    if i_ratio >= GREY_WEIGHT_FLOOR or c_ratio > 1.0:
+        carried.append("weight")
+    if branch in ("underline", "reverse"):
+        carried.append("decoration")
+    return {"branch": branch, "bold": bold, "underline": und,
+            "eff": eff, "ink": i_ratio, "cov": c_ratio, "carried": carried}
 
 
 def _grey(px) -> tuple:
@@ -927,89 +1056,97 @@ def report() -> str:
     w.append("always meant.")
 
     # ---- H ---------------------------------------------------------------
-    h("H. THE MATCH IN GREYSCALE -- L12, on the pixels and not on a token")
+    h("H. THE MATCH IN GREYSCALE -- L12 CORRECTED, on the pixels of the "
+      "grey PNG")
     w.append("")
     w.append("Round five's L12: in three kits the ONLY channel the match run")
     w.append("has is HUE (instrument, nord, prism), and the clause that")
     w.append("approves them measures LUMINANCE against an achromatic `mut` --")
     w.append("the dimension in which a saturated hue and a grey are least")
-    w.append("different. Its §0d says the objection cannot be settled from")
-    w.append("this repo because there is no greyscale capture in it. There is")
-    w.append("now: `raster.py` writes `<name>.grey.png` beside every frame,")
-    w.append("WCAG relative luminance, so a contrast ratio measured on the")
-    w.append("grey is the same arithmetic measured on one dimension.")
+    w.append("different. inc84 answered it with a greyscale capture and inc86")
+    w.append("recorded four LIMITs off that answer.")
     w.append("")
-    w.append("A MATCH THAT VANISHES IN GREY IS RECORDED AS A LIMIT OF THE")
-    w.append("LANGUAGE AND IS NOT FIXED (the ruling's own words). This")
-    w.append("section is the record.")
+    w.append("**BOTH OF THOSE WERE MEASURING THE WRONG THING, AND SO WAS THE")
+    w.append("CLASSIFICATION UNDER THEM.** `match_branch()` asked")
+    w.append("`MATCH_STYLE`'s TOKEN whether the mark was a hue of its own and")
+    w.append("never looked at the STYLE WORD in that branch, so instrument --")
+    w.append("`underline {accent}`, drawn UNDERLINED in all six of its match")
+    w.append("runs -- was filed as hue-only, and so were nord, prism and swiss,")
+    w.append("all three drawn BOLD. Four kits were recorded as having no second")
+    w.append("channel while the raster's own sidecar carries the flag that says")
+    w.append("they do.")
     w.append("")
-    w.append("THE QUESTION IS DISTINCTNESS, NOT LEGIBILITY, and that is where")
-    w.append("the measurement has to point. A match run is legible against its")
-    w.append("GROUND and distinct against the BODY it stands in -- the six")
-    w.append("`re` of `nord_S6` are teal among slate words. So the number that")
-    w.append("answers L12 is the match ink against `mut` and against `ink`,")
-    w.append("in grey. A run that is 1.00:1 from the body it sits in is a run")
-    w.append("nobody can pick out, whatever it does against the page.")
+    w.append("THE RULING (2026-09-07, L12 corrected): *the match channel in")
+    w.append("grey is weight or decoration where the kit declares it, and the")
+    w.append("grey test reads the sidecar's `bold`/`underline` flags, not")
+    w.append("colour tokens; a kit is hue-only in grey only if its match run")
+    w.append("carries neither.* And the grey law becomes three clauses, any of")
+    w.append("which carries the channel:")
     w.append("")
-    w.append(f"{'kit':<11} {'channel':<10} {'v ground':>9} {'v mut':>7} "
-             f"{'v ink':>7} | {'grey mut':>9} {'grey ink':>9}  {'verdict':<9}")
-    w.append("-" * 78)
-    limits = []
+    w.append(f"  effective    the mean grey of the pixels the match run PAINTS")
+    w.append(f"               against the same for the body beside it, "
+             f">= {EFFECTIVE_FLOOR:.0f}:1")
+    w.append(f"  weight       ink >= {GREY_WEIGHT_FLOOR:.2f}x the body's, or "
+             f"coverage > 1.00x it")
+    w.append("  decoration   a rule under the run, or a plate behind it")
+    w.append("")
+    w.append("EVERY NUMBER BELOW IS OFF `<kit>_S6.grey.png`, over the seat")
+    w.append("`Kit.match` paints and the body run beside it -- not off a pair")
+    w.append("of tokens put through the grey transform, which is what this")
+    w.append("section did until inc92 and which is a question about two")
+    w.append("colours rather than about a picture.")
+    w.append("")
+    w.append(f"{'kit':<11} {'declares':<19} {'painted':<10} "
+             f"{'eff':>6} {'ink':>6} {'cov':>6}  {'carried by':<24}")
+    w.append("-" * 88)
+    hue, weak = [], []
     for lang in LG.KITS:
-        t = LG.THEMES[lang]
-        branch, ink_hex, ground = match_branch(lang)
-        pair = (rgb(ink_hex), rgb(ground))
-        col_g = contrast(*pair)
-        c_mut = contrast(rgb(ink_hex), rgb(t["mut"]))
-        c_ink = contrast(rgb(ink_hex), rgb(t["ink"]))
-        g_mut = contrast(_grey(rgb(ink_hex)), _grey(rgb(t["mut"])))
-        g_ink = contrast(_grey(rgb(ink_hex)), _grey(rgb(t["ink"])))
-        flat = max(g_mut, g_ink) < GREY_DISTINCT
-        if branch in ("bold", "underline", "reverse"):
-            verdict = "carried"        # a second, non-colour channel exists
-        elif flat:
-            verdict = "VANISHES"
-            limits.append((lang, round(g_mut, 2), round(g_ink, 2)))
-        else:
-            verdict = "holds"
-        w.append(f"{lang:<11} {branch:<10} {col_g:>8.2f} {c_mut:>7.2f} "
-                 f"{c_ink:>7.2f} | {g_mut:>8.2f} {g_ink:>8.2f}  {verdict:<9}")
-    w.append("-" * 78)
-    hue = [l for l in LG.KITS if match_branch(l)[0] == "hue"]
-    w.append(f"{len(hue)} kits carry the match on HUE ALONE: "
-             f"{', '.join(hue)}")
-    w.append(f"{len(limits)} of them lose it in grey at the "
-             f"{GREY_DISTINCT:.2f}:1 line"
-             + (": " + ", ".join(f"{l} ({m}/{i})" for l, m, i in limits)
-                if limits else ""))
+        m = match_in_grey(lang)
+        flags = ("bold" if m["bold"] else "") + \
+                ("underline" if m["underline"] else "")
+        if m["branch"] == "hue":
+            hue.append(lang)
+        if m["ink"] < GREY_WEIGHT_FLOOR:
+            weak.append((lang, round(m["ink"], 2), round(m["cov"], 2)))
+        w.append(f"{lang:<11} {LG.kit(lang).MATCH_STYLE:<19} "
+                 f"{(flags or m['branch']):<10} "
+                 f"{m['eff']:>6.2f} {m['ink']:>6.2f} {m['cov']:>6.2f}  "
+                 f"{'+'.join(m['carried']) or 'NOTHING':<24}")
+    w.append("-" * 88)
+    w.append(f"{len(hue)} kits carry the match on HUE ALONE"
+             + (": " + ", ".join(hue) if hue else
+                " -- every one of the eleven has weight, decoration or both"))
+    w.append(f"{len(weak)} kits are under the {GREY_WEIGHT_FLOOR:.2f}x ink "
+             f"floor and are carried by COVERAGE instead"
+             + (": " + ", ".join(f"{l} (ink {i}x, cov {c}x)"
+                                 for l, i, c in weak) if weak else ""))
     w.append("")
-    w.append("EACH ROW ABOVE IS A LIMIT OF THE LANGUAGE AND IS NOT FIXED --")
-    w.append("the ruling's own instruction. A kit whose match is BOLD,")
-    w.append("UNDERLINED or REVERSED is `carried`: it has a second channel")
-    w.append("that survives by construction and the grey column is a")
-    w.append("courtesy, not a verdict.")
+    w.append("SWISS IS THE ROW THE RULING NAMED AND IT IS THE ROW WORTH")
+    w.append("READING. Its match is drawn in the bold instance and covers more")
+    w.append("lit area than the body beside it, and its INK ratio is still")
+    w.append("barely over one, because its red falls DARKER than the grey of")
+    w.append("the body: depth cancels most of what area gained. The ruling's")
+    w.append("disposition -- *if weight is present it passes on weight, else it")
+    w.append("is a Limit* -- is what the coverage arm implements, and swiss is")
+    w.append("the only kit of eleven that needs it.")
     w.append("")
-    w.append("AND THE MEASUREMENT DOES NOT SAY WHAT L12 SAID. Round five wrote")
-    w.append("*\"en escala de grises no queda nada\"* about three kits and")
-    w.append("could not check it. Checked: NONE of the four hue kits goes to")
-    w.append("1.00:1. What survives is a LUMINANCE STEP the accent happens to")
-    w.append("carry along with its hue -- nord 1.34, swiss 1.52, prism 1.59,")
-    w.append("instrument 2.34 against `mut` -- so the objection is real in")
-    w.append("SHAPE and wrong in DEGREE: the channel is thin, not absent.")
-    w.append("Three of the four are under 3:1 against the body they stand in,")
-    w.append("which is a small number and now a number. **L12 is amended by")
-    w.append("this table and not closed by it**: a step nobody chose is not a")
-    w.append("channel a language may claim, and no ruling has said which of")
-    w.append("the two readings the corpus is held to.")
+    w.append("AND THE NOTICE THAT PROMPTED THIS DOES NOT REPRODUCE EXACTLY.")
+    w.append("`SESION-PERSONA.md` §3 measured nord 1.36x, prism 1.42x,")
+    w.append("instrument 1.86x and swiss 0.83x. This table's ink column is")
+    w.append("1.28-1.30x higher on all four -- ONE CONSTANT FACTOR, identical")
+    w.append("in every row, so the two measurements differ by a definition and")
+    w.append("not by a reading; the ORDER is the same in both. The one place")
+    w.append("it matters is swiss, where the notice says the match is FAINTER")
+    w.append("than its body and this table says it is barely HEAVIER, and that")
+    w.append("is exactly why the ruling did not rest swiss on the number.")
     w.append("")
-    w.append("WHAT THIS MEASURES AND WHAT IT DOES NOT. It measures the ratio")
-    w.append("a match run keeps against the body it stands in once hue is")
-    w.append("gone, which is what a greyscale monitor and a monochrome")
-    w.append("printout show. It does NOT model colour vision deficiency: a")
-    w.append("deuteranope does not see this image, and simulating one would")
-    w.append("be a fourth instrument this programme has not built and has no")
-    w.append("reader for. Written here so the number is not spent on a claim")
-    w.append("it cannot support.")
+    w.append("WHAT THIS MEASURES AND WHAT IT DOES NOT. It measures what a")
+    w.append("greyscale monitor and a monochrome printout show. It does NOT")
+    w.append("model colour vision deficiency: a deuteranope does not see this")
+    w.append("image, and simulating one would be a fourth instrument this")
+    w.append("programme has not built and has no reader for. And it does not")
+    w.append("say that 21% more lit area is FOUND by an eye -- that is what")
+    w.append("`SESION-PERSONA.md`'s F15-F22 are for, and it is still unrun.")
     w.append("")
     return "\n".join(w) + "\n"
 

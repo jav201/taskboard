@@ -5633,17 +5633,66 @@ def hue_gap(a: str, b: str) -> float:
     return min(d, 360 - d)
 
 
+#: The two-character query `screens.s6` searches with.  `fixture.QUERY` is the
+#: other copy; the seat below is found by it, so a sheet that changed its query
+#: and not this line fails loud instead of measuring the wrong run.
+_MATCH_QUERY = "re"
+
+
+def _match_seat(lang: str):
+    """WHERE the match run is on `<lang>_S6`: `(y, x, w, nx, nw, bold, und)`.
+
+    THE SEAT IS THE ONE `Kit.match` PAINTS.  `match(label, query)` emits three
+    runs — prefix in `mut`, the query in `MATCH_STYLE`, suffix in `mut` — and
+    the sheet's first result is `redirect to task`, whose prefix is empty.  So
+    the seat is the first run whose text is the query and whose right-hand
+    neighbour is painted in `mut`: a description of the CONTRACT rather than of
+    a colour.  Asked by colour instead, solari's reverse branch matches its own
+    tab bar and its own header two rows higher up."""
+    t = LG.THEMES[lang]
+    side = _raster_json(f"{lang}_S6")
+    for y, runs in enumerate(side["grid"]):
+        for i, (x0, text, fg, bg, bold, und) in enumerate(runs):
+            if text != _MATCH_QUERY or i + 1 >= len(runs):
+                continue
+            nx, ntext, nfg = runs[i + 1][0], runs[i + 1][1], runs[i + 1][2]
+            if nfg.lower() != t["mut"].lower():
+                continue
+            return (y, x0, len(text), nx, len(ntext.rstrip()), bold, und)
+    raise AssertionError(f"{lang}: no match seat on S6")
+
+
 def match_branch(lang: str) -> tuple[str, str, str]:
-    """`(branch, the match ink, the ground it is painted on)`."""
+    """`(branch, the match ink, the ground it is painted on)`.
+
+    **READ OFF THE PAINT SINCE inc92, AND IT USED TO BE READ OFF A TOKEN.**
+    The old derivation asked `MATCH_STYLE`'s TOKEN whether the mark was a hue
+    of its own and never looked at the STYLE WORD in that branch, so
+    instrument — `underline {accent}`, drawn UNDERLINED in all six of its match
+    runs — was classified hue-only, and so were nord, prism and swiss, all
+    three drawn BOLD.  Four kits were recorded as having no second channel
+    while the raster's own sidecar carried the flag that says they do.
+
+    THE RULING (2026-09-07, L12 corrected): *the match channel in grey is
+    weight or decoration where the kit declares it, and the grey test reads the
+    sidecar's `bold`/`underline` flags, not colour tokens; a kit is hue-only in
+    grey only if its match run carries neither.*
+
+    `reverse` still comes from the style word, because `cell_grid` resolved it
+    into the (ink, ground) pair it always was and there is no flag left to
+    read: a reversed run arrives as ink in the BACKGROUND field."""
     k, t = LG.kit(lang), LG.THEMES[lang]
     style = k.MATCH_STYLE
     word, token = style.split()[0], style.strip().split()[-1].strip("{}")
     value = t.get(token, t["ink"])
     if word == "reverse":
         return "reverse", t["ground"], value
-    if token in ("accent", "alert") and value != t["ink"]:
-        return "hue", value, t["ground"]
-    return word, value, t["ground"]
+    bold, und = _match_seat(lang)[5:7]
+    if bold:
+        return "bold", value, t["ground"]
+    if und:
+        return "underline", value, t["ground"]
+    return "hue", value, t["ground"]
 
 
 @pytest.mark.parametrize("lang", LANGS)
@@ -9756,43 +9805,6 @@ def test_the_eye_exemption_goes_stale_the_moment_the_mark_passes(monkeypatch):
     test_the_eye_exemption_is_named_measured_and_still_needed()
 
 
-def test_the_hue_only_limit_is_written_into_the_kit_that_carries_it():
-    """L12 as a LIMIT, in the four kits that have it and in no other.
-
-    THE RULING (2026-09-07): *a hue-only match channel that falls under 3:1
-    in grey is a Limit of that language, recorded in the kit docstring and in
-    `spec.md`, not fixed.*
-
-    Three clauses, and the third is the one that makes this a law rather than
-    a spell-check:
-
-      (a) exactly the kits whose match channel is HUE carry the paragraph --
-          so a kit that GAINS a second channel and keeps the note goes red,
-          and so does a kit that loses one and does not write it;
-      (b) each paragraph carries ITS OWN number to two decimals, which is the
-          number `MATCH_IN_GREY` records and
-          `test_the_match_that_rides_hue_alone_keeps_a_thin_step_in_grey`
-          re-measures off the greyscale PNGs;
-      (c) each says the word LIMIT and cites the ruling, because a number in
-          a docstring with no verdict beside it is a measurement somebody
-          left lying around."""
-    hue = {l for l in LANGS if match_branch(l)[0] == "hue"}
-    assert hue == set(MATCH_IN_GREY), sorted(hue ^ set(MATCH_IN_GREY))
-    for lang in LANGS:
-        doc = type(LG.kit(lang)).__doc__ or ""
-        assert ("L12" in doc) == (lang in hue), \
-            (lang, "L12" in doc, lang in hue)
-        if lang not in hue:
-            continue
-        assert f"{MATCH_IN_GREY[lang]:.2f}:1" in doc, \
-            (lang, MATCH_IN_GREY[lang], "the kit's own number is not in it")
-        assert "LIMIT" in doc, (lang, "a number with no verdict beside it")
-        assert "RECORDED AND NOT FIXED" in doc, (lang, "no disposition")
-    # and the four numbers are DISTINCT, so no kit inherited another's
-    quoted = {lang: f"{MATCH_IN_GREY[lang]:.2f}:1" for lang in hue}
-    assert len(set(quoted.values())) == len(quoted), quoted
-
-
 def test_every_middle_band_run_is_named_and_the_table_is_not_vacuous():
     """Q2's third class, and the vacuity arms `DIM_CLASSIFIES` already has.
 
@@ -11496,73 +11508,195 @@ def test_the_rasters_greyscale_declaration_is_the_one_measured_here():
     assert len(list(RASTER.glob("*.grey.png"))) == len(LANGS) * len(SCREENS)
 
 
-#: L12, MEASURED. `(kit, channel, grey contrast against `mut`, against `ink`)`
-#: for the four kits whose match run has no channel but HUE.
+#: L12 CORRECTED (inc92, ruling of 2026-09-07), MEASURED ON THE GREY PNG.
+#: `kit -> (painted channel, effective, ink ratio, coverage ratio)`.
 #:
-#: ROUND FIVE SAID *"en escala de grises no queda nada"* AND COULD NOT CHECK
-#: IT. Checked: none of the four goes to 1.00:1. What survives is a LUMINANCE
-#: STEP the accent carries along with its hue, and it is thin — three of the
-#: four are under 3:1 against the body they stand in. **The objection is
-#: right in SHAPE and wrong in DEGREE**, and this table is the amendment: a
-#: step nobody chose is not a channel a language may claim, and no ruling has
-#: said which of those two readings the corpus is held to.
+#: **THE TABLE THIS REPLACES HELD FOUR ROWS AND EVERY ONE OF THEM WAS A
+#: MISCLASSIFICATION.** inc86 recorded instrument, swiss, nord and prism as
+#: carrying the match on HUE ALONE, on a derivation that read `MATCH_STYLE`'s
+#: TOKEN and never its STYLE WORD.  All four are painted with a second channel
+#: — instrument underlined, the other three bold — and the raster's sidecar has
+#: carried the flag since inc43.  ELEVEN OF ELEVEN have weight, decoration or
+#: both; NONE is hue-only; the hue-only Limit has no members.
 #:
-#: ALL FOUR ARE UNDER 3:1 against the body they stand in, so the thin form
-#: of the objection binds every kit the loud form named.
-#:
-#: RECORDED AS A LIMIT AND NOT FIXED — the greyscale ruling's own words.
+#: WHAT SURVIVES IS A THINNER LIMIT AND IT IS IN THE FOUR DOCSTRINGS: none of
+#: those four clears the EFFECTIVE clause in grey (instrument 2.31, prism 1.76,
+#: nord 1.44, swiss 1.17, against a floor of 3), so what carries their channel
+#: is 21–30 % more lit AREA and not tone.  Whether an eye finds 21 % of area is
+#: the human session's question and nobody has asked it.
 MATCH_IN_GREY = {
-    "instrument": 2.42,
-    "swiss": 1.52,
-    "nord": 1.34,
-    "prism": 1.59,
+    "naught":     ("bold",      3.33, 2.50, 1.22),
+    "corgi":      ("bold",      2.70, 2.29, 1.22),
+    "instrument": ("underline", 2.31, 2.42, 1.30),
+    "swiss":      ("bold",      1.17, 1.07, 1.21),
+    "industrial": ("reverse",   1.60, 5.16, 3.60),
+    "nord":       ("bold",      1.44, 1.74, 1.22),
+    "darkside":   ("reverse",   1.61, 5.14, 3.60),
+    "prism":      ("bold",      1.76, 1.82, 1.22),
+    "ledger":     ("underline", 2.24, 2.21, 1.30),
+    "solari":     ("reverse",   6.25, 12.21, 3.60),
+    "blueprint":  ("bold",      2.27, 2.47, 1.22),
 }
 
+#: The ruling's own number for the weight clause: *weight >= 1.3x the
+#: neighbour's ink*.  `legibility.GREY_WEIGHT_FLOOR` is the other copy.
+GREY_WEIGHT_FLOOR = 1.30
 
-def match_grey(lang: str) -> tuple:
-    """`(channel, grey contrast v mut, grey contrast v ink)`."""
-    t = LG.THEMES[lang]
-    branch, ink, _ground = match_branch(lang)
-
-    def g(hexed: str) -> tuple:
-        v = _grey_of(_rgb(hexed))
-        return (v, v, v)
-
-    return (branch,
-            _contrast_rgb(g(ink), g(t["mut"])),
-            _contrast_rgb(g(ink), g(t["ink"])))
+#: THE FOUR THE OLD TABLE CALLED HUE-ONLY, kept by name because their
+#: docstrings still carry an L12 paragraph and because the human session's
+#: F15–F22 were chosen off the old reading.  A kit leaves this set only by
+#: somebody deciding it should.
+MATCH_WAS_CALLED_HUE_ONLY = ("instrument", "swiss", "nord", "prism")
 
 
-def test_the_match_that_rides_hue_alone_keeps_a_thin_step_in_grey():
-    """L12, on the pixels, and it does not say what L12 said.
+def _match_in_grey(lang: str) -> tuple:
+    """`(effective, ink ratio, coverage ratio)` off `<lang>_S6.grey.png`.
 
-    Four clauses:
+    Measured over the seat `Kit.match` paints and the body run beside it, on
+    the GREY picture — which is what the ruling asks for and what section H of
+    `legibility.txt` did not do until inc92: it greyed two TOKENS and divided,
+    which answers a question about two colours.
 
-      (a) the kits whose match channel is HUE are exactly the four named —
-          instrument, nord and prism, which round five listed, and SWISS,
-          which it discussed under `swiss_S6` and did not add to L12;
-      (b) NONE of them reaches 1.00:1 in grey, so "nothing remains" is not
-          what the capture shows;
-      (c) each keeps the step this table records, to two decimals;
-      (d) ALL FOUR are under 3:1 against the body they stand in, which is
-          what makes the objection worth keeping in a thinner form.
+      effective   the mean grey of the pixels the run actually PAINTS against
+                  the same for the body — section C's definition of effective,
+                  along the one dimension grey has;
+      ink         mean |grey − ground| over the run's whole box: area AND
+                  depth;
+      coverage    the fraction of pixels that differ from the ground at all:
+                  area alone.
 
-    AND THE KITS WITH A SECOND CHANNEL ARE ASSERTED TO HAVE ONE, so the law
-    is not passing because it only looked at four of eleven."""
-    hue = [l for l in LANGS if match_branch(l)[0] == "hue"]
-    assert set(hue) == set(MATCH_IN_GREY), sorted(hue)
-    for lang in hue:
-        branch, g_mut, g_ink = match_grey(lang)
-        assert g_mut > 1.0 and g_ink > 1.0, (lang, g_mut, g_ink)
-        assert round(g_mut, 2) == MATCH_IN_GREY[lang], (lang, round(g_mut, 2))
-    assert all(v < 3.0 for v in MATCH_IN_GREY.values()), MATCH_IN_GREY
+    The last two are both reported because they DISAGREE, and swiss is where."""
+    from PIL import Image
+    y, x, w, nx, nw, _b, _u = _match_seat(lang)
+    side = _raster_json(f"{lang}_S6")
+    cw, ch = side["cell"]["w"], side["cell"]["h"]
+    with Image.open(RASTER / f"{lang}_S6.grey.png") as raw:
+        im = raw.convert("RGB")
+
+    def band(x0, n):
+        return [p[0] for p in im.crop((x0 * cw, y * ch, (x0 + n) * cw,
+                                       y * ch + ch)).getdata()]
+
+    run, body = band(x, w), band(nx, nw)
+    ground = max(set(body), key=body.count)
+
+    def ink(v):
+        return sum(abs(p - ground) for p in v) / len(v) / 255.0
+
+    def cov(v):
+        return sum(1 for p in v if p != ground) / len(v)
+
+    def lit(v):
+        on = [p for p in v if p != ground]
+        return sum(on) / len(on) if on else float(ground)
+
+    return (_contrast_rgb((lit(run),) * 3, (lit(body),) * 3),
+            ink(run) / ink(body), cov(run) / cov(body))
+
+
+def test_the_match_channel_in_grey_is_weight_or_decoration_and_not_hue():
+    """L12 CORRECTED, on the grey pixels — the law inc92 replaces inc86's with.
+
+    Five clauses:
+
+      (a) the painted channel of every kit is what `MATCH_STYLE` declares —
+          the sidecar's flag and the kit's word agree, in all eleven, which is
+          the clause the old derivation could not have failed because it never
+          looked;
+      (b) NO kit is hue-only: every match run carries weight, decoration or
+          both, so the set the old table held is empty;
+      (c) each kit keeps the three numbers this table records, to two
+          decimals, re-measured off the greyscale PNG;
+      (d) every kit's channel is CARRIED by at least one of the three clauses
+          — effective ≥ 3, ink ≥ 1.30x, or a decoration;
+      (e) exactly one kit needs the coverage arm of the weight clause, and it
+          is swiss, which is the kit the ruling named."""
+    assert set(MATCH_IN_GREY) == set(LANGS), sorted(set(MATCH_IN_GREY) ^ set(LANGS))
+    needs_cov = []
     for lang in LANGS:
-        if lang not in MATCH_IN_GREY:
-            assert match_branch(lang)[0] in ("bold", "underline", "reverse"), \
-                (lang, match_branch(lang)[0])
+        channel, eff, ink, cov = MATCH_IN_GREY[lang]
+        word = LG.kit(lang).MATCH_STYLE.split()[0]
+        assert channel == word, (lang, channel, word)
+        assert match_branch(lang)[0] == channel, \
+            (lang, match_branch(lang)[0], channel)
+        assert channel != "hue", (lang, "a hue-only kit came back")
+        got = _match_in_grey(lang)
+        assert [round(v, 2) for v in got] == [eff, ink, cov], (lang, got)
+        carried = (eff >= 3.0) or (ink >= GREY_WEIGHT_FLOOR) or \
+            channel in ("underline", "reverse")
+        assert carried or cov > 1.0, (lang, "no clause carries the channel")
+        if not (eff >= 3.0 or ink >= GREY_WEIGHT_FLOOR
+                or channel in ("underline", "reverse")):
+            needs_cov.append(lang)
+    assert needs_cov == ["swiss"], needs_cov
     text = LEGIBILITY.read_text(encoding="utf-8")
-    assert (f"{len(hue)} kits carry the match on HUE ALONE") in text
-    assert "0 of them lose it in grey" in text, "the report is stale"
+    assert "0 kits carry the match on HUE ALONE" in text, "the report is stale"
+    assert "swiss (ink 1.07x, cov 1.21x)" in text, "the report is stale"
+
+
+def test_the_grey_match_measurement_can_tell_a_channel_from_no_channel():
+    """THE TEETH OF THE CORRECTED LAW, and they are two.
+
+    A law that finds a channel everywhere is worth nothing, so the SAME
+    measurement is run over two mutants built from the shipped pictures:
+
+      (1) the match run measured against ITSELF — same box, same pixels — must
+          come back at 1.00x ink and 1.00x coverage and 1.00 effective, so a
+          measurement that always says "heavier" is caught;
+      (2) the BODY run measured against the match run — the comparison turned
+          round — must come back UNDER one on every kit whose forward ratio is
+          over one, so the number has a direction and not just a magnitude."""
+    from PIL import Image
+    for lang in LANGS:
+        y, x, w, nx, nw, _b, _u = _match_seat(lang)
+        side = _raster_json(f"{lang}_S6")
+        cw, ch = side["cell"]["w"], side["cell"]["h"]
+        with Image.open(RASTER / f"{lang}_S6.grey.png") as raw:
+            im = raw.convert("RGB")
+
+        def band(x0, n):
+            return [p[0] for p in im.crop((x0 * cw, y * ch, (x0 + n) * cw,
+                                           y * ch + ch)).getdata()]
+
+        run, body = band(x, w), band(nx, nw)
+        ground = max(set(body), key=body.count)
+
+        def ink(v):
+            return sum(abs(p - ground) for p in v) / len(v) / 255.0
+
+        assert round(ink(run) / ink(run), 2) == 1.00, lang
+        forward = MATCH_IN_GREY[lang][2]
+        assert forward > 1.0, (lang, forward)
+        assert ink(body) / ink(run) < 1.0, (lang, "the ratio has no direction")
+
+
+def test_the_four_kits_the_old_table_named_carry_the_corrected_limit():
+    """L12's SURVIVING half, written into the four kits that had the old one.
+
+    inc86 wrote *"THE MATCH MARK RIDES HUE ALONE"* into four docstrings with a
+    grey contrast apiece.  That sentence is false — all four are painted with a
+    second channel — and deleting it would throw away the true half with it, so
+    each paragraph is REWRITTEN rather than removed.
+
+    Four clauses: the four kits and no others carry an L12 paragraph; each says
+    the word LIMIT and cites the corrected ruling; each carries ITS OWN
+    effective number to two decimals, which `_match_in_grey` re-measures; and
+    none of them still says the sentence that was wrong."""
+    named = set(MATCH_WAS_CALLED_HUE_ONLY)
+    for lang in LANGS:
+        doc = type(LG.kit(lang)).__doc__ or ""
+        assert ("L12" in doc) == (lang in named), (lang, "L12" in doc)
+        if lang not in named:
+            continue
+        eff = MATCH_IN_GREY[lang][1]
+        assert "LIMIT" in doc, (lang, "a number with no verdict beside it")
+        assert "RECORDED AND NOT FIXED" in doc, (lang, "no disposition")
+        assert "L12 corrected" in doc, (lang, "the ruling is not cited")
+        assert f"{eff:.2f}:1" in doc, (lang, eff, "its own number is missing")
+        assert "RIDES HUE ALONE" not in doc, \
+            (lang, "the sentence inc92 disproved is still in the docstring")
+    quoted = {l: f"{MATCH_IN_GREY[l][1]:.2f}:1" for l in named}
+    assert len(set(quoted.values())) == len(quoted), quoted
 
 
 # ---------------------------------------------------------------------------

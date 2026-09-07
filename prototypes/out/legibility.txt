@@ -804,73 +804,85 @@ in the suite; the census's 28 is unchanged and means what it
 always meant.
 
 ==============================================================================
-H. THE MATCH IN GREYSCALE -- L12, on the pixels and not on a token
+H. THE MATCH IN GREYSCALE -- L12 CORRECTED, on the pixels of the grey PNG
 ==============================================================================
 
 Round five's L12: in three kits the ONLY channel the match run
 has is HUE (instrument, nord, prism), and the clause that
 approves them measures LUMINANCE against an achromatic `mut` --
 the dimension in which a saturated hue and a grey are least
-different. Its §0d says the objection cannot be settled from
-this repo because there is no greyscale capture in it. There is
-now: `raster.py` writes `<name>.grey.png` beside every frame,
-WCAG relative luminance, so a contrast ratio measured on the
-grey is the same arithmetic measured on one dimension.
+different. inc84 answered it with a greyscale capture and inc86
+recorded four LIMITs off that answer.
 
-A MATCH THAT VANISHES IN GREY IS RECORDED AS A LIMIT OF THE
-LANGUAGE AND IS NOT FIXED (the ruling's own words). This
-section is the record.
+**BOTH OF THOSE WERE MEASURING THE WRONG THING, AND SO WAS THE
+CLASSIFICATION UNDER THEM.** `match_branch()` asked
+`MATCH_STYLE`'s TOKEN whether the mark was a hue of its own and
+never looked at the STYLE WORD in that branch, so instrument --
+`underline {accent}`, drawn UNDERLINED in all six of its match
+runs -- was filed as hue-only, and so were nord, prism and swiss,
+all three drawn BOLD. Four kits were recorded as having no second
+channel while the raster's own sidecar carries the flag that says
+they do.
 
-THE QUESTION IS DISTINCTNESS, NOT LEGIBILITY, and that is where
-the measurement has to point. A match run is legible against its
-GROUND and distinct against the BODY it stands in -- the six
-`re` of `nord_S6` are teal among slate words. So the number that
-answers L12 is the match ink against `mut` and against `ink`,
-in grey. A run that is 1.00:1 from the body it sits in is a run
-nobody can pick out, whatever it does against the page.
+THE RULING (2026-09-07, L12 corrected): *the match channel in
+grey is weight or decoration where the kit declares it, and the
+grey test reads the sidecar's `bold`/`underline` flags, not
+colour tokens; a kit is hue-only in grey only if its match run
+carries neither.* And the grey law becomes three clauses, any of
+which carries the channel:
 
-kit         channel     v ground   v mut   v ink |  grey mut  grey ink  verdict  
-------------------------------------------------------------------------------
-naught      bold          19.26    3.17    1.00 |     3.17     1.00  carried  
-corgi       bold          17.36    2.51    1.00 |     2.51     1.00  carried  
-instrument  hue           10.82    2.41    1.53 |     2.42     1.52  holds    
-swiss       hue            4.52    1.52    3.83 |     1.52     3.85  holds    
-industrial  reverse        5.85    5.81   15.55 |     5.81    15.55  carried  
-nord        hue            5.99    1.33    1.81 |     1.34     1.80  holds    
-darkside    reverse        4.56    4.56   19.26 |     4.56    19.26  carried  
-prism       hue           10.17    1.58    1.58 |     1.59     1.57  holds    
-ledger      underline     13.36    2.69    1.00 |     2.68     1.00  carried  
-solari      reverse       16.81    3.65   16.81 |     3.64    16.81  carried  
-blueprint   bold          10.60    2.28    1.00 |     2.27     1.00  carried  
-------------------------------------------------------------------------------
-4 kits carry the match on HUE ALONE: instrument, swiss, nord, prism
-0 of them lose it in grey at the 1.10:1 line
+  effective    the mean grey of the pixels the match run PAINTS
+               against the same for the body beside it, >= 3:1
+  weight       ink >= 1.30x the body's, or coverage > 1.00x it
+  decoration   a rule under the run, or a plate behind it
 
-EACH ROW ABOVE IS A LIMIT OF THE LANGUAGE AND IS NOT FIXED --
-the ruling's own instruction. A kit whose match is BOLD,
-UNDERLINED or REVERSED is `carried`: it has a second channel
-that survives by construction and the grey column is a
-courtesy, not a verdict.
+EVERY NUMBER BELOW IS OFF `<kit>_S6.grey.png`, over the seat
+`Kit.match` paints and the body run beside it -- not off a pair
+of tokens put through the grey transform, which is what this
+section did until inc92 and which is a question about two
+colours rather than about a picture.
 
-AND THE MEASUREMENT DOES NOT SAY WHAT L12 SAID. Round five wrote
-*"en escala de grises no queda nada"* about three kits and
-could not check it. Checked: NONE of the four hue kits goes to
-1.00:1. What survives is a LUMINANCE STEP the accent happens to
-carry along with its hue -- nord 1.34, swiss 1.52, prism 1.59,
-instrument 2.34 against `mut` -- so the objection is real in
-SHAPE and wrong in DEGREE: the channel is thin, not absent.
-Three of the four are under 3:1 against the body they stand in,
-which is a small number and now a number. **L12 is amended by
-this table and not closed by it**: a step nobody chose is not a
-channel a language may claim, and no ruling has said which of
-the two readings the corpus is held to.
+kit         declares            painted       eff    ink    cov  carried by              
+----------------------------------------------------------------------------------------
+naught      bold {ink}          bold         3.33   2.50   1.22  effective+weight        
+corgi       bold {ink}          bold         2.70   2.29   1.22  weight                  
+instrument  underline {accent}  underline    2.31   2.42   1.30  weight+decoration       
+swiss       bold {alert}        bold         1.17   1.07   1.21  weight                  
+industrial  reverse {accent}    reverse      1.60   5.16   3.60  weight+decoration       
+nord        bold {accent}       bold         1.44   1.74   1.22  weight                  
+darkside    reverse {mut}       reverse      1.61   5.14   3.60  weight+decoration       
+prism       bold {accent}       bold         1.76   1.82   1.22  weight                  
+ledger      underline {ink}     underline    2.24   2.21   1.30  weight+decoration       
+solari      reverse {ink}       reverse      6.25  12.21   3.60  effective+weight+decoration
+blueprint   bold {ink}          bold         2.27   2.47   1.22  weight                  
+----------------------------------------------------------------------------------------
+0 kits carry the match on HUE ALONE -- every one of the eleven has weight, decoration or both
+1 kits are under the 1.30x ink floor and are carried by COVERAGE instead: swiss (ink 1.07x, cov 1.21x)
 
-WHAT THIS MEASURES AND WHAT IT DOES NOT. It measures the ratio
-a match run keeps against the body it stands in once hue is
-gone, which is what a greyscale monitor and a monochrome
-printout show. It does NOT model colour vision deficiency: a
-deuteranope does not see this image, and simulating one would
-be a fourth instrument this programme has not built and has no
-reader for. Written here so the number is not spent on a claim
-it cannot support.
+SWISS IS THE ROW THE RULING NAMED AND IT IS THE ROW WORTH
+READING. Its match is drawn in the bold instance and covers more
+lit area than the body beside it, and its INK ratio is still
+barely over one, because its red falls DARKER than the grey of
+the body: depth cancels most of what area gained. The ruling's
+disposition -- *if weight is present it passes on weight, else it
+is a Limit* -- is what the coverage arm implements, and swiss is
+the only kit of eleven that needs it.
+
+AND THE NOTICE THAT PROMPTED THIS DOES NOT REPRODUCE EXACTLY.
+`SESION-PERSONA.md` §3 measured nord 1.36x, prism 1.42x,
+instrument 1.86x and swiss 0.83x. This table's ink column is
+1.28-1.30x higher on all four -- ONE CONSTANT FACTOR, identical
+in every row, so the two measurements differ by a definition and
+not by a reading; the ORDER is the same in both. The one place
+it matters is swiss, where the notice says the match is FAINTER
+than its body and this table says it is barely HEAVIER, and that
+is exactly why the ruling did not rest swiss on the number.
+
+WHAT THIS MEASURES AND WHAT IT DOES NOT. It measures what a
+greyscale monitor and a monochrome printout show. It does NOT
+model colour vision deficiency: a deuteranope does not see this
+image, and simulating one would be a fourth instrument this
+programme has not built and has no reader for. And it does not
+say that 21% more lit area is FOUND by an eye -- that is what
+`SESION-PERSONA.md`'s F15-F22 are for, and it is still unrun.
 
