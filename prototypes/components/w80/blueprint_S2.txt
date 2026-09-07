@@ -1,0 +1,24 @@
+NEW TASK  ·── 5 FIELDS  ·  1 INVALID                                            
+                                                                                
+  title═        ╞Fix login╪ redirect───────────────╡                            
+                                                                                
+  due═          ╲12/09/26··························╲                            
+                ━━ expected YYYY-MM-DD ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌  
+                                                                                
+  priority      ┤ ├ low  ┤ ├ norm  ┤○├ high                                     
+                                                                                
+  tags          ├ ┤ api  ├╪┤ ui  ├╪┤ urgent                                     
+                                                                                
+  notes         ├Redirect drops the ?next= param w╌┤                            
+                ├session cookie is renewed mid-fli╌┤                            
+                ├··································┤                            
+                                                                                
+                ╎    Save    ╎   ├   Cancel   ┤                                 
+                Save is held until due parses                                   
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+       ┌    ┐                  ───────────                                      
+ board  FORM  cfg  log         ├ OVERDUE ┤                                      
+       └    ┘                  ───────────                                      

@@ -8325,3 +8325,190 @@ def test_the_distance_law_bites_when_two_homoglyphs_are_made_one():
         {"•", "∙", "†"}, grown
 
     assert len(_zero_pairs(glyphs)) == 1, "and back to one"
+
+
+# ---------------------------------------------------------------------------
+# inc78 — THE SECOND WIDTH.  Round four's §8.5, which is one sentence long:
+# *«Un solo ancho. Los 66 estan a 100x32. Los compromisos que dicen "at any
+# width" siguen juzgados a un ancho.»*
+#
+# `prototypes/components/second_width.py` renders the same six screens at
+# 80x24 into `prototypes/components/w80/`.  The laws below JUDGE that corpus
+# by pointing `FRAMES` at it and running the laws that already exist — the
+# whole point being that no law is restated for the new width.  The verdict is
+# RECORDED, not enforced: the brief says *"Do not fix languages here; the
+# round judges."*
+# ---------------------------------------------------------------------------
+
+W80 = FRAMES / "w80"
+W80_SIZE = (80, 24)
+
+#: THE LAWS THAT CAN BE ASKED AT A SECOND WIDTH — every law in this file that
+#: reads a frame and nothing else.  Thirteen functions, 53 arms:
+#: four asked of all eleven kits and nine asked once.
+#:
+#: SIX FRAME-READING LAWS ARE OUT, and each for a stated reason rather than
+#: because it was inconvenient:
+#:
+#:   `test_blueprints_first_fixation_is_painted_on_the_form`
+#:   `test_blueprints_knockout_is_where_operator_ruling_10_put_it`
+#:   `test_the_destructive_default_answer_is_a_focused_danger_button`
+#:   `test_the_svg_paints_exactly_the_style_runs_the_kit_declared`
+#:       — these BUILD a sheet through `screens.py` as well as reading a
+#:         frame, and `screens.W`/`H` are module globals.  Asking them at
+#:         80x24 means mutating those globals inside the suite, and a global
+#:         that a test sets is a global the next test inherits.  They were run
+#:         by hand in a throwaway process with the globals set (inc78 §3) and
+#:         all four are GREEN; they are not run here.
+#:
+#:   `test_the_faces_full_block_leaves_a_seam_and_that_is_the_coverage_ceiling`
+#:       — `BLOCK_KITS` pins how many times each kit draws `█` in the 100x32
+#:         corpus.  A smaller viewport draws fewer cells (industrial 84 -> 55,
+#:         nord 88 -> 56, darkside 21 -> 12), so the constant is not a width
+#:         question and asking it at 80x24 would be asking the wrong thing.
+#:
+#:   `test_solari_never_files_a_departure_under_the_wrong_gate`
+#:       — it loads `FRAMES / "fixture.py"`, so `FRAMES` is doing two jobs in
+#:         that law: *where the frames are* and *where the prototype source
+#:         is*, and only the first one is a width. Pointing it at `w80/` asks
+#:         for a `fixture.py` that has no business being there. Run by hand
+#:         with the source alongside (inc78 §3): **GREEN at 80x24, both
+#:         arms.**
+SECOND_WIDTH_LAWS = (
+    ("test_a_modal_changes_one_contiguous_band_of_the_page", LANGS),
+    ("test_a_confirm_opens_and_closes_on_marks_of_its_own", LANGS),
+    ("test_the_raster_has_one_cell_per_character_of_the_txt", LANGS),
+    ("test_a_probe_cells_pixels_are_the_declared_colours", LANGS),
+    ("test_every_language_has_a_frame_for_every_screen", None),
+    ("test_no_two_languages_render_a_screen_identically", None),
+    ("test_every_confirm_says_where_it_ends", None),
+    ("test_naughts_two_option_controls_do_not_rest_on_one_drawing", None),
+    ("test_swisss_rejected_field_has_a_wall_paper_and_a_closer", None),
+    ("test_solaris_announcement_takes_the_head_of_the_schedule_not_the_screen",
+     None),
+    ("test_solaris_band_is_its_content_and_stands_at_a_gates_head", None),
+    ("test_no_gate_header_stands_inside_solaris_band", None),
+    ("test_a_solari_confirm_never_covers_the_gate_it_names", None),
+)
+
+#: WHAT GOES RED AT 80x24, and it is two arms out of 79.  Recorded so the
+#: round has a table to argue with and so a fix shows up as a diff.
+#:
+#: 1. **Ruling F fails for solari.** *A confirm never covers the gate it
+#:    names* — and at 24 rows it covers one it does NOT name, by two rows.
+#:    The law's first arm (the shipped frame, about BACKLOG) is green at both
+#:    sizes; the arm that goes red is the one inc55 added, which asks the
+#:    MECHANISM the same question once per gate. At 100x32 a confirm about
+#:    DOING puts its band at rows 24-28, clear below DOING's block (9-18). At
+#:    80x24 there is no room below, the band lands at 17-22, and rows 17 and
+#:    18 are DOING's own departures. **This is a HEIGHT finding wearing a
+#:    width's clothes** and it is the strongest argument in this batch for
+#:    rendering at a second size at all: the placement rule was written, and
+#:    tested, on a page that always had somewhere to go.
+#:
+#: 2. **A law is width-bound, and the frame is not.** solari's arm of
+#:    `test_a_confirm_opens_and_closes_on_marks_of_its_own` asserts the band
+#:    plate is at full measure by `any(w > 800)` over the svg's rects. 800 is
+#:    100 cells x 8.4 units minus a margin — it means "full measure" only at
+#:    100 columns. At 80 the plate is 672 units wide and IS at full measure.
+#:    **The frame is correct and the law is wrong**, and no amount of
+#:    rendering at 100 could have shown it.
+SECOND_WIDTH_RED = {
+    ("test_a_solari_confirm_never_covers_the_gate_it_names", None),
+    ("test_a_confirm_opens_and_closes_on_marks_of_its_own", "solari"),
+}
+
+
+def test_the_second_width_corpus_is_the_rectangle_it_claims():
+    """66 frames at 80x24, every row 80 cells, and no two alike on a screen.
+
+    Asked before anything is judged, because a sweep that quietly produced
+    100-cell rows inside an 80-cell viewport would make every verdict below a
+    verdict about the old width."""
+    w, h = W80_SIZE
+    seen = {}
+    for lang in LANGS:
+        for screen in SCREENS:
+            rows = (W80 / f"{lang}_{screen}.txt").read_text(
+                encoding="utf-8").rstrip("\n").split("\n")
+            assert len(rows) == h, (lang, screen, len(rows))
+            assert {len(r) for r in rows} == {w}, \
+                (lang, screen, sorted({len(r) for r in rows}))
+            seen.setdefault(screen, {})[lang] = "\n".join(rows)
+    for screen, byl in seen.items():
+        assert len(set(byl.values())) == len(LANGS), \
+            (screen, "two languages render this screen identically at 80x24")
+
+
+def test_the_frame_laws_at_eighty_by_twenty_four_are_the_ones_recorded(
+        monkeypatch):
+    """EVERY law in this file that reads a frame and nothing else, re-run with
+    `FRAMES` pointed at the 80x24 corpus.
+
+    **No law is restated for the new width** — that is the whole method. A
+    second set of 80-column laws would have been a second opinion about what
+    the corpus must do, and the objection round four raised is that the
+    commitments say *"at any width"* and were only ever asked at one.
+
+    The verdict is a RECORDED SET and not a gate. The brief is explicit: *"Do
+    not fix languages here; the round judges."* So this test is green while
+    two arms are red at 80x24, and it goes red the day that set changes in
+    either direction — a language fixed, or a new law that does not survive
+    the narrower page.
+    """
+    def run():
+        out, n = set(), 0
+        for name, args in SECOND_WIDTH_LAWS:
+            law = globals()[name]
+            for arg in (args if args is not None else (None,)):
+                n += 1
+                try:
+                    law() if arg is None else law(arg)
+                except AssertionError:
+                    out.add((name, arg))
+        return out, n
+
+    # THE CONTROL ARM FIRST: the same 53 arms against the 100x32 corpus, where
+    # every one of them is green. Without it the recorded red set could be two
+    # laws that were broken all along and the width would be a bystander.
+    green, arms = run()
+    assert arms == 53, arms
+    assert green == set(), green
+
+    monkeypatch.setitem(globals(), "FRAMES", W80)
+    monkeypatch.setitem(globals(), "RASTER", W80)
+    red, arms = run()
+    assert arms == 53, arms
+    assert red == SECOND_WIDTH_RED, red
+
+
+def test_ruling_F_fails_at_eighty_by_twenty_four_because_the_page_ran_out(
+        monkeypatch):
+    """THE FINDING, in arithmetic rather than in a test id.
+
+    Ruling F (2026-09-06): *a confirm never covers the gate it names.* The
+    mechanism satisfies it at 100x32 by moving the band BELOW the gate the
+    confirm is about — and at 80x24 there is no below. Both sizes are asked
+    here, from their own shipped frames, so the difference is the page's
+    height and not two different pages.
+    """
+    k = LG.kit("solari")
+
+    def eaten(where):
+        monkeypatch.setitem(globals(), "FRAMES", where)
+        s1 = page_rows("solari")
+        under, rows = page_markup("solari"), solari_s4_rows(k)
+        blocks = gate_blocks(s1)
+        out = {}
+        for gate, block in blocks.items():
+            got = [plain(r) for r in
+                   k.overlay(rows, len(s1[0]), len(s1), under, about=gate)]
+            out[gate] = [i for i in block
+                         if got[i].rstrip() != s1[i].rstrip()]
+        return out
+
+    wide = eaten(FRAMES)
+    assert all(not v for v in wide.values()), wide      # 100x32: ruling F holds
+    narrow = eaten(W80)
+    assert narrow["DOING"] == [17, 18], narrow
+    assert not narrow["BACKLOG"] and not narrow["BLOCKED"], narrow

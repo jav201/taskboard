@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692.0 428.0" role="img" aria-label="taskboard · blueprint · S4 modal dialog">
+<title>taskboard · blueprint · S4 modal dialog</title>
+<rect width="692.0" height="428.0" fill="#123a5c"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#24486b">BOARD  ·── 16 TASKS  ·  4 PROJECTS</text>
+<text x="10.0" y="57.3" fill="#24486b">  BACKLOG                                   ├─ 05 ─┤        ┤ ├DETAIL  ·── FIX</text>
+<text x="10.0" y="74.3" fill="#24486b">    AUDIT THE THEME TOKENS                  ├╌─── 21D ─────┤   </text>
+<text x="10.0" y="91.3" fill="#24486b">    ·── DOCS ── BACKLOG ── LOW                                 PROJECT ·──── Web</text>
+<text x="10.0" y="108.3" fill="#24486b">    DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   PHASE ·──── doing</text>
+<text x="152.8" y="125.3" fill="#eef4f8">┌</text>
+<text x="522.4" y="125.3" fill="#eef4f8">┐</text>
+<text x="152.8" y="142.3" fill="#eef4f8">DELETE 3 TASKS?</text>
+<text x="152.8" y="176.3" fill="#7fa8c4">·── 3 TASKS WILL BE REMOVED FROM BACKLOG.</text>
+<text x="152.8" y="193.3" fill="#7fa8c4">·── THIS CANNOT BE UNDONE.</text>
+<rect x="152.8" y="214.0" width="100.8" height="17.0" fill="#eef4f8"/>
+<text x="152.8" y="227.3" fill="#123a5c">╞ ━DELETE━ ╡</text>
+<text x="278.8" y="227.3" fill="#eef4f8">├  CANCEL  ┤</text>
+<text x="152.8" y="244.3" fill="#eef4f8">└</text>
+<text x="522.4" y="244.3" fill="#eef4f8">┘</text>
+<text x="10.0" y="261.3" fill="#24486b">    ·── API ── DOING ── NORM                                   </text>
+<text x="10.0" y="278.3" fill="#24486b">    REWRITE THE ONBOARDING                  ├──── 14D ─────┤   </text>
+<text x="10.0" y="295.3" fill="#24486b">    ·── WEB ── DOING ── LOW                                    </text>
+<text x="10.0" y="329.3" fill="#24486b">  BLOCKED                                   ├┤ 00              </text>
+<text x="10.0" y="346.3" fill="#24486b">      ▌▄▄▐        ▌▄▄▐                                         </text>
+<text x="10.0" y="363.3" fill="#24486b">      ▌▄▄▐        ▌▄▄▐                                         </text>
+<text x="10.0" y="380.3" fill="#eef4f8">┌</text>
+<text x="60.4" y="380.3" fill="#eef4f8">┐</text>
+<text x="287.2" y="380.3" fill="#7fa8c4">─────────</text>
+<text x="18.4" y="397.3" fill="#eef4f8">BOARD</text>
+<text x="77.2" y="397.3" fill="#7fa8c4">form</text>
+<text x="127.6" y="397.3" fill="#7fa8c4">cfg</text>
+<text x="169.6" y="397.3" fill="#7fa8c4">log</text>
+<text x="287.2" y="397.3" fill="#7fa8c4">├ CLEAR ┤</text>
+<text x="10.0" y="414.3" fill="#eef4f8">└</text>
+<text x="60.4" y="414.3" fill="#eef4f8">┘</text>
+<text x="287.2" y="414.3" fill="#7fa8c4">─────────</text>
+</g>
+</svg>

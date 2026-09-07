@@ -1,0 +1,911 @@
+{
+ "lang": "prism",
+ "screen": "S2",
+ "ground": "#0d1117",
+ "cols": 80,
+ "rows": 24,
+ "image": {
+  "w": 720,
+  "h": 456
+ },
+ "txt": {
+  "cols": 80,
+  "rows": 24
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    " board",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    6,
+    " │ ",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    9,
+    "▸form",
+    "#2dd4bf",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    14,
+    " │ ",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    17,
+    " cfg",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    21,
+    " │ ",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    24,
+    " log",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    28,
+    "                                                    ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "NEW TASK",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    8,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    10,
+    "5 fields  ·  1 invalid",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    32,
+    "                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "title",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "⡀",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    8,
+    "        ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⠿",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    17,
+    "Fix login",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    26,
+    "⡆",
+    "#2dd4bf",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    27,
+    " redirect",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    36,
+    "⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠿",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "due",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    5,
+    "⡀",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    6,
+    "          ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⣹",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    17,
+    "12/09/26",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    25,
+    "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣏",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⣿⣿",
+    "#f43f5e",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    18,
+    " ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    19,
+    "expected YYYY-MM-DD",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    38,
+    "                                          ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "priority",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    10,
+    "      ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    19,
+    " ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    20,
+    "low",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    23,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    25,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    28,
+    " ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    29,
+    "norm",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    33,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    35,
+    "⠉⢸⠉",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    38,
+    " ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    39,
+    "high",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    43,
+    "                                     ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "tags",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    6,
+    "          ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⠿⠀⠿",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    19,
+    " ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    20,
+    "api",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    23,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    25,
+    "⠿⠉⠿",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    28,
+    " ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    29,
+    "ui",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    31,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    33,
+    "⠿⠉⠿",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    36,
+    " ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    37,
+    "urgent",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    43,
+    "                                     ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "notes",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "         ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⠿",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    17,
+    "Redirect drops the ?next= param w",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    50,
+    "⣶",
+    "#2dd4bf",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    51,
+    "⠿",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⠿",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    17,
+    "session cookie is renewed mid-fli",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    50,
+    "⣶",
+    "#2dd4bf",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    51,
+    "⠿",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⠿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠿",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "⠄⠄   Save   ⠄⠄",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    30,
+    "   ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    33,
+    "⠿⠉  Cancel  ⠉⠿",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    47,
+    "                                 ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    16,
+    "Save is held until due parses",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    45,
+    "                                   ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d1117",
+    false,
+    false
+   ]
+  ]
+ ]
+}

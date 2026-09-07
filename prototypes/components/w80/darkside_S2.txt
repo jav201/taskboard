@@ -1,0 +1,24 @@
+( )board  (●)form  ( )cfg  ( )log                                               
+new task  5 fields  ·  1 invalid                                                
+                                                                                
+  title▪        ▮Fix login◆ redirect···············▮                            
+                                                                                
+  due▪          Ø12/09/26                          Ø                            
+                O  expected YYYY-MM-DD                                          
+                                                                                
+  priority      ‹ › low  ‹ › norm  ‹◦› high                                     
+                                                                                
+  tags          ( ) api  (◎) ui  (◎) urgent                                     
+                                                                                
+  notes         ▬Redirect drops the ?next= param w▿▬                            
+                ▬session cookie is renewed mid-fli▿▬                            
+                ▬                                  ▬                            
+                                                                                
+                ╌    Save    ╌   ▬   Cancel   ▬                                 
+                Save is held until due parses                                   
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                

@@ -1,0 +1,24 @@
+[1]B O A R D [2]FORM [3]CFG [4]LOG                                              
+[C] C O M M A N D  QUERY 'RE'  ·  6 RESULTS                                     
+─────────────────────────────────────────────────────────────────────────────── 
+  > ▛▛re▌▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▜▜                                
+                                                                                
+  ▐ redirect to task                            enter                           
+    rename project                                                              
+    refresh board                               r                               
+    archive released                                                            
+    restore from backup                                                         
+    set reminder                                                                
+                                                                                
+  ───────────────────────────────────────────────────────────────────────────   
+  > ▛▛zzq▌▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▜▜                                
+                                                                                
+     ▓▓    ▓▓                                                                   
+     ▓▓    ▓▓                                                                   
+                                                                                
+    ▓        ▓                                                                  
+     ▓      ▓                                                                   
+      ▓▓▓▓▓▓                                                                    
+     [0] NO TASKS                                                               
+                                                                                
+  [enter] RUN   [esc] CLOSE   [^p] PREV   [^n] NEXT                             

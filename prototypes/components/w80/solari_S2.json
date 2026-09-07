@@ -1,0 +1,919 @@
+{
+ "lang": "solari",
+ "screen": "S2",
+ "ground": "#0b0b0c",
+ "cols": 80,
+ "rows": 24,
+ "image": {
+  "w": 720,
+  "h": 456
+ },
+ "txt": {
+  "cols": 80,
+  "rows": 24
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    " board ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    7,
+    " FORM ",
+    "#0b0b0c",
+    "#f0ede4",
+    false,
+    false
+   ],
+   [
+    13,
+    " cfg  log ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    23,
+    "                                                         ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " NEW TASK  5 FIELDS  ·  1 INVALID                                               ",
+    "#0b0b0c",
+    "#f0ede4",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    2,
+    "title",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    7,
+    "▮",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    8,
+    "        ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "▔",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    17,
+    "Fix login",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    26,
+    "▮",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    27,
+    " redirect",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    36,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    2,
+    "due",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    5,
+    "▮",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    6,
+    "          ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "═",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    17,
+    "12/09/26",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    25,
+    "··························═",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "CNX",
+    "#e03a2f",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    19,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    20,
+    "expected YYYY-MM-DD",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    39,
+    "                                         ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    2,
+    "priority",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    10,
+    "      ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    19,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    20,
+    "low",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    23,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    25,
+    "▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    28,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    29,
+    "norm",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    33,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    35,
+    "▁●▁",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    38,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    39,
+    "high",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    43,
+    "                                     ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    2,
+    "tags",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    6,
+    "          ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "▁ ▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    19,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    20,
+    "OFF",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    23,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    24,
+    "api",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    27,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    29,
+    "▁▼▁",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    32,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    33,
+    "ON ",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    36,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    37,
+    "ui",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    39,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    41,
+    "▁▼▁",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    44,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    45,
+    "ON ",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    48,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    49,
+    "urgent",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    55,
+    "                         ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    2,
+    "notes",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    7,
+    "         ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    17,
+    "Redirect drops the ?next= param w",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    50,
+    "═",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    51,
+    "▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    17,
+    "session cookie is renewed mid-fli",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    50,
+    "═",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    51,
+    "▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "▁··································▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    52,
+    "                            ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "╌    Save    ╌",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    30,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    33,
+    "▁ ",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    35,
+    "  Cancel  ",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    45,
+    " ▁",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    47,
+    "                                 ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    16,
+    "Save is held until due parses",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    45,
+    "                                   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ]
+ ]
+}

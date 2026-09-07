@@ -1,0 +1,703 @@
+{
+ "lang": "industrial",
+ "screen": "S4",
+ "ground": "#1a1a1a",
+ "cols": 80,
+ "rows": 24,
+ "image": {
+  "w": 720,
+  "h": 456
+ },
+ "txt": {
+  "cols": 80,
+  "rows": 24
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    "[1]BOARD [2]form [3]cfg [4]log",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    30,
+    "                                                  ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "[BOARD]  16 tasks  ·  4 projects",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    32,
+    "                                                ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "───────────────────────────────────────────────────────────────────────────────",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    79,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fix",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    76,
+    "    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ▐ 05 ▌ Audit the theme tokens                      [21d]▌ ▐────────────────",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    79,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT       Web",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE       doing",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "           [PH:BACK][DUE:30D][PR:N]                         ▌ ▐DUE            3d",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    19,
+    "▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    21,
+    "Delete 3 tasks?",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    36,
+    "                       ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    59,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    20,
+    "                                       ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    59,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    21,
+    "3 tasks will be removed from BACKLOG.",
+    "#959595",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    58,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    59,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    21,
+    "This cannot be undone.",
+    "#959595",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    43,
+    "                ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    59,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    20,
+    "                                       ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    59,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    21,
+    "▐_",
+    "#ff6039",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    23,
+    "╱╱Delete╱╱",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    33,
+    "_▌",
+    "#ff6039",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    35,
+    "   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    38,
+    "▐   Cancel   ▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    52,
+    "       ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    59,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    19,
+    "▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ▐ 04 ▌ Rewrite the onboarding                      [14d]▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "           [PH:DOIN][DUE:14D][PR:L]                         ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                            ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ▐▌ [3]BLOCKED                                         [ 0]▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     ██    ██                                               ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     ██    ██                                               ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "view [-###------] 3-10 of 23                                ",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ]
+ ]
+}

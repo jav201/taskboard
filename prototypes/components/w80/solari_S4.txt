@@ -1,0 +1,24 @@
+ BOARD  form  cfg  log                                                          
+ BOARD  16 TASKS  ·  4 PROJECTS                                                 
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+   GATE BACKLOG 05              STATUS    PROJ          PRI     DETAIL  FIX     
+    21  AUDIT THE THEME TOKENS                ON TIME   LOW    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   PROJECT ▁▁▁▁▁ Web
+    30  DROP THE LEGACY SHIM                  ON TIME   NORM   PHASE ▁▁▁▁▁ doing
+    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   DUE ▁▁▁▁▁▁▁▁▁▁ 3d
+                                                               PRIORITY ▁▁▁ high
+▼  GATE DOING 04                STATUS    PROJ          PRI    STATUS ▁▁▁▁▁ open
+                                                                                
+Delete 3 tasks?                                                                 
+3 tasks will be removed from BACKLOG.                                           
+This cannot be undone.                                                          
+▔  ▀Delete▄  ▔   ▁   Cancel   ▁                                                 
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+    14  REWRITE THE ONBOARDING                ON TIME   LOW                     
+    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁                    
+                                                                                
+   GATE BLOCKED 00              STATUS    PROJ          PRI                     
+     NO DEPARTURES                                                              
+                                                                                
+view ▔▄▄▄▄▔▔▔▔▔▔▔ 3-10 of 23                                                    
+                                                                                

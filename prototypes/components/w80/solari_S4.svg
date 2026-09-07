@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692.0 428.0" role="img" aria-label="taskboard · solari · S4 modal dialog">
+<title>taskboard · solari · S4 modal dialog</title>
+<rect width="692.0" height="428.0" fill="#0b0b0c"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#1f1f22"> BOARD  form  cfg  log </text>
+<text x="10.0" y="40.3" fill="#1f1f22"> BOARD  16 TASKS  ·  4 PROJECTS                                                 </text>
+<text x="10.0" y="57.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="10.0" y="74.3" fill="#1f1f22">   GATE BACKLOG 05              STATUS    PROJ          PRI     DETAIL  FIX     </text>
+<text x="10.0" y="91.3" fill="#1f1f22">    21  AUDIT THE THEME TOKENS                ON TIME   LOW    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="10.0" y="108.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   PROJECT ▁▁▁▁▁ Web</text>
+<text x="10.0" y="125.3" fill="#1f1f22">    30  DROP THE LEGACY SHIM                  ON TIME   NORM   PHASE ▁▁▁▁▁ doing</text>
+<text x="10.0" y="142.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   DUE ▁▁▁▁▁▁▁▁▁▁ 3d</text>
+<text x="10.0" y="159.3" fill="#1f1f22">                                                               PRIORITY ▁▁▁ high</text>
+<text x="10.0" y="176.3" fill="#1f1f22">▼  GATE DOING 04                STATUS    PROJ          PRI    STATUS ▁▁▁▁▁ open</text>
+<rect x="10.0" y="180.0" width="672.0" height="17.0" fill="#f5a300"/>
+<text x="10.0" y="210.3" fill="#f0ede4">Delete 3 tasks?</text>
+<text x="10.0" y="227.3" fill="#6e6a60">3 tasks will be removed from BACKLOG.</text>
+<text x="10.0" y="244.3" fill="#6e6a60">This cannot be undone.</text>
+<text x="10.0" y="261.3" fill="#f5a300">▔ </text>
+<text x="26.8" y="261.3" fill="#f0ede4"> ▀Delete▄ </text>
+<text x="110.8" y="261.3" fill="#f5a300"> ▔</text>
+<text x="152.8" y="261.3" fill="#f5a300">▁ </text>
+<text x="169.6" y="261.3" fill="#f0ede4">  Cancel  </text>
+<text x="253.6" y="261.3" fill="#f5a300"> ▁</text>
+<text x="10.0" y="278.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁</text>
+<text x="10.0" y="295.3" fill="#1f1f22">    14  REWRITE THE ONBOARDING                ON TIME   LOW    </text>
+<text x="10.0" y="312.3" fill="#1f1f22">    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   </text>
+<text x="10.0" y="346.3" fill="#1f1f22">   GATE BLOCKED 00              STATUS    PROJ          PRI    </text>
+<text x="10.0" y="363.3" fill="#1f1f22">     NO DEPARTURES                                             </text>
+<text x="10.0" y="397.3" fill="#1f1f22">view ▔▄▄▄▄▔▔▔▔▔▔▔ 3-10 of 23                                </text>
+</g>
+</svg>

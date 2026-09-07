@@ -1,0 +1,1031 @@
+{
+ "lang": "corgi",
+ "screen": "S5",
+ "ground": "#0d0d0d",
+ "cols": 80,
+ "rows": 24,
+ "image": {
+  "w": 720,
+  "h": 456
+ },
+ "txt": {
+  "cols": 80,
+  "rows": 24
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    "[1]BOARD",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    8,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    9,
+    "[2]FORM",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    16,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    17,
+    "[3]CFG",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    23,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    24,
+    "[4]L O G",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    32,
+    "                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "[M]",
+    "#ff6600",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    3,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    4,
+    "M O N I T O R",
+    "#f2f2f2",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    17,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    19,
+    "8 EVENTS  ·  HELD",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    36,
+    "                                            ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "───────────────────────────────────────────────────────────────────────────────",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    79,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "EVENTS/S",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    "    ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "▄▄",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    16,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    17,
+    "▄▄",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    19,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    20,
+    "▄▄",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    22,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    23,
+    "▁▁",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    25,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    26,
+    "▁▁",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    28,
+    "[ 5]",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    32,
+    "                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "rate    ",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    "▄",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "▆",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    12,
+    "▄",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    "▆",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "▄",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    15,
+    "▆█▆",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    18,
+    "▄▄",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    20,
+    "▆▆▆",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    23,
+    "▄",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    24,
+    "▆▆",
+    "#6fe36f",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    26,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    28,
+    "ceiling 10",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    38,
+    "                                          ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "───────────────────────────────────────────────────────────────────────────",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    77,
+    "   ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "09:41:02",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "▁▁",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "board loaded  16 tasks  4 projects",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    48,
+    "                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "09:41:07",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "▁▁",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "sync started  remote=origin",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    41,
+    "                                       ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "09:41:09",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "▄▄",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "3 tasks overdue in BACKLOG",
+    "#f2f2f2",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    40,
+    "                                        ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "09:41:12",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "▁▁",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "sync ok  216 ms  0 conflicts",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    42,
+    "                                      ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "09:41:18",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "██",
+    "#f2f2f2",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "rate limit hit  retry in 30 s",
+    "#f2f2f2",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    43,
+    "                                     ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "09:41:20",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "▁▁",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "retry scheduled  attempt 2 of 5",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    45,
+    "                                   ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "09:41:33",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "▁▁",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "sync ok  198 ms  0 conflicts",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    42,
+    "                                      ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "09:41:41",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    11,
+    "▁▁",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    13,
+    " ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    14,
+    "signal engine idle",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    32,
+    "                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    2,
+    "        ",
+    "#3a3a3a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    10,
+    "held -- space resumes",
+    "#9a9a9a",
+    "#0d0d0d",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                 ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0d0d0d",
+    false,
+    false
+   ]
+  ]
+ ]
+}
