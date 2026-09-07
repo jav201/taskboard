@@ -104,7 +104,7 @@
 <text x="35.2" y="346.3" fill="#9a9a9a">[1]</text>
 <text x="60.4" y="346.3" fill="#f2f2f2"> FIX CHECKOUT 500 ERROR                                                         </text>
 <text x="732.4" y="346.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="346.3" fill="#d92b1a">-2D </text>
+<text x="766.0" y="346.3" fill="#e53524">-2D </text>
 <text x="816.4" y="346.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="346.3" fill="#9a9a9a">HIGH</text>
 <text x="892.0" y="346.3" fill="#9a9a9a">ST</text>
@@ -114,7 +114,7 @@
 <text x="35.2" y="363.3" fill="#9a9a9a">[2]</text>
 <text x="60.4" y="363.3" fill="#f2f2f2"> COMPRESS DATABASE BACKUPS                                                      </text>
 <text x="732.4" y="363.3" fill="#9a9a9a">DUE</text>
-<text x="766.0" y="363.3" fill="#d92b1a">-1D </text>
+<text x="766.0" y="363.3" fill="#e53524">-1D </text>
 <text x="816.4" y="363.3" fill="#9a9a9a">PR</text>
 <text x="841.6" y="363.3" fill="#9a9a9a">NORM</text>
 <text x="892.0" y="363.3" fill="#9a9a9a">ST</text>

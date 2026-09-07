@@ -1500,8 +1500,15 @@ class Kit:
         self.name = name
         self.t = THEMES[name]
         t = self.t
+        # THE INK-ROLE SET, and since inc73 it is exactly that. The role
+        # ruling makes ground-role tokens (`ground`, `panel`, `band`, `plate`,
+        # `flap`) and ink-role tokens (`ink`, `mut`, `dim`, `focus`, `alert`,
+        # `accent`) disjoint, and this dict is what a kit paints WITH. `focus`
+        # joins it because industrial draws a bracket in it: it was reaching
+        # for `plate` -- a ground name -- and painting glyphs at 1.28:1.
         self.c = {"ink": t["ink"], "mut": t["mut"], "dim": t["dim"],
-                  "accent": t["accent"], "warn": t["warn"], "alert": t["alert"]}
+                  "accent": t["accent"], "warn": t["warn"], "alert": t["alert"],
+                  "focus": t["focus"]}
         # board MOOD, set by the app each redraw ("clear" / "busy" / "alert");
         # languages with a functional identity element (naught's status face)
         # read it — identity must MEAN something, not float (user verdict)
@@ -6606,11 +6613,20 @@ class Industrial(Kit):
         """THE KEY IS ON A PLATE AND THE LABEL IS THE LEGEND BESIDE IT — the
         same two parts every plate on this board has. Corgi brackets its
         keys; this language stamps them, which is the difference between a
-        silkscreened panel and a machined one."""
+        silkscreened panel and a machined one.
+
+        THE WALLS ARE INK AND THEY TAKE AN INK TOKEN (inc73, the role
+        ruling). They read `self.plate` -- the token that names this
+        kit's PLATE GROUND -- so one hex was a rect's fill in sixteen
+        places and a glyph's colour in eight, and as a glyph it stood at
+        1.28:1 on `#1a1a1a`. A ground-role value painted as ink is the
+        defect. The walls are a bracket around a key, so they take
+        `focus`, an ink-role token, which now clears 3:1 on both grounds
+        this row is drawn on. The plate keeps its hex and its rect."""
         c = self.c
-        return "   ".join(f"[{self.plate}]{mark('▐')}[/]"
+        return "   ".join(f"[{c['focus']}]{mark('▐')}[/]"
                           f"[{c['ink']}]{mark(str(k_))}[/]"
-                          f"[{self.plate}]{mark('▌')}[/] "
+                          f"[{c['focus']}]{mark('▌')}[/] "
                           f"[{c['mut']}]{mark(str(v).upper())}[/]"
                           for k_, v in pairs)
     TAB_W = 3                                  # the legend's "▐▌ " tab
