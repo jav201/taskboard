@@ -797,3 +797,74 @@ that exists only in a picture. The frame-side count is here and
 in the suite; the census's 28 is unchanged and means what it
 always meant.
 
+==============================================================================
+H. THE MATCH IN GREYSCALE -- L12, on the pixels and not on a token
+==============================================================================
+
+Round five's L12: in three kits the ONLY channel the match run
+has is HUE (instrument, nord, prism), and the clause that
+approves them measures LUMINANCE against an achromatic `mut` --
+the dimension in which a saturated hue and a grey are least
+different. Its §0d says the objection cannot be settled from
+this repo because there is no greyscale capture in it. There is
+now: `raster.py` writes `<name>.grey.png` beside every frame,
+WCAG relative luminance, so a contrast ratio measured on the
+grey is the same arithmetic measured on one dimension.
+
+A MATCH THAT VANISHES IN GREY IS RECORDED AS A LIMIT OF THE
+LANGUAGE AND IS NOT FIXED (the ruling's own words). This
+section is the record.
+
+THE QUESTION IS DISTINCTNESS, NOT LEGIBILITY, and that is where
+the measurement has to point. A match run is legible against its
+GROUND and distinct against the BODY it stands in -- the six
+`re` of `nord_S6` are teal among slate words. So the number that
+answers L12 is the match ink against `mut` and against `ink`,
+in grey. A run that is 1.00:1 from the body it sits in is a run
+nobody can pick out, whatever it does against the page.
+
+kit         channel     v ground   v mut   v ink |  grey mut  grey ink  verdict  
+------------------------------------------------------------------------------
+naught      bold          19.26    3.17    1.00 |     3.17     1.00  carried  
+corgi       bold          17.36    2.51    1.00 |     2.51     1.00  carried  
+instrument  hue           10.45    2.32    1.58 |     2.34     1.57  holds    
+swiss       hue            4.52    1.52    3.83 |     1.52     3.85  holds    
+industrial  reverse        5.79    5.81   15.55 |     5.81    15.55  carried  
+nord        hue            5.99    1.33    1.81 |     1.34     1.80  holds    
+darkside    reverse        4.56    4.56   19.26 |     4.56    19.26  carried  
+prism       hue           10.17    1.58    1.58 |     1.59     1.57  holds    
+ledger      underline     13.36    2.69    1.00 |     2.68     1.00  carried  
+solari      reverse       16.81    3.65   16.81 |     3.64    16.81  carried  
+blueprint   bold          10.60    2.28    1.00 |     2.27     1.00  carried  
+------------------------------------------------------------------------------
+4 kits carry the match on HUE ALONE: instrument, swiss, nord, prism
+0 of them lose it in grey at the 1.10:1 line
+
+EACH ROW ABOVE IS A LIMIT OF THE LANGUAGE AND IS NOT FIXED --
+the ruling's own instruction. A kit whose match is BOLD,
+UNDERLINED or REVERSED is `carried`: it has a second channel
+that survives by construction and the grey column is a
+courtesy, not a verdict.
+
+AND THE MEASUREMENT DOES NOT SAY WHAT L12 SAID. Round five wrote
+*"en escala de grises no queda nada"* about three kits and
+could not check it. Checked: NONE of the four hue kits goes to
+1.00:1. What survives is a LUMINANCE STEP the accent happens to
+carry along with its hue -- nord 1.34, swiss 1.52, prism 1.59,
+instrument 2.34 against `mut` -- so the objection is real in
+SHAPE and wrong in DEGREE: the channel is thin, not absent.
+Three of the four are under 3:1 against the body they stand in,
+which is a small number and now a number. **L12 is amended by
+this table and not closed by it**: a step nobody chose is not a
+channel a language may claim, and no ruling has said which of
+the two readings the corpus is held to.
+
+WHAT THIS MEASURES AND WHAT IT DOES NOT. It measures the ratio
+a match run keeps against the body it stands in once hue is
+gone, which is what a greyscale monitor and a monochrome
+printout show. It does NOT model colour vision deficiency: a
+deuteranope does not see this image, and simulating one would
+be a fourth instrument this programme has not built and has no
+reader for. Written here so the number is not spent on a claim
+it cannot support.
+

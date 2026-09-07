@@ -5,7 +5,7 @@
 <text x="10.0" y="23.3" fill="#4a4a4a">[1]BOARD [2]form [3]cfg [4]log</text>
 <text x="10.0" y="40.3" fill="#4a4a4a">[BOARD]  16 tasks  ·  4 projects</text>
 <text x="10.0" y="57.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────────</text>
-<text x="10.0" y="74.3" fill="#4a4a4a">  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fix</text>
+<text x="10.0" y="74.3" fill="#4a4a4a">  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fi▼</text>
 <text x="10.0" y="91.3" fill="#4a4a4a">    ▐ 05 ▌ Audit the theme tokens                      [21d]▌ ▐────────────────</text>
 <text x="10.0" y="108.3" fill="#4a4a4a">           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT       Web</text>
 <text x="10.0" y="125.3" fill="#4a4a4a">    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE       doing</text>

@@ -44,13 +44,13 @@
 <text x="43.6" y="346.3" fill="#ff6600"> ▓      ▓ </text>
 <text x="43.6" y="363.3" fill="#ff6600">  ▓▓▓▓▓▓  </text>
 <text x="43.6" y="380.3" fill="#3a3a3a"> [0] NO TASKS</text>
-<text x="26.8" y="414.3" fill="#ff6600">[enter]</text>
-<text x="94.0" y="414.3" fill="#9a9a9a">RUN</text>
-<text x="144.4" y="414.3" fill="#ff6600">[esc]</text>
-<text x="194.8" y="414.3" fill="#9a9a9a">CLOSE</text>
-<text x="262.0" y="414.3" fill="#ff6600">[^p]</text>
-<text x="304.0" y="414.3" fill="#9a9a9a">PREV</text>
-<text x="362.8" y="414.3" fill="#ff6600">[^n]</text>
-<text x="404.8" y="414.3" fill="#9a9a9a">NEXT</text>
+<text x="26.8" y="550.3" fill="#ff6600">[enter]</text>
+<text x="94.0" y="550.3" fill="#9a9a9a">RUN</text>
+<text x="144.4" y="550.3" fill="#ff6600">[esc]</text>
+<text x="194.8" y="550.3" fill="#9a9a9a">CLOSE</text>
+<text x="262.0" y="550.3" fill="#ff6600">[^p]</text>
+<text x="304.0" y="550.3" fill="#9a9a9a">PREV</text>
+<text x="362.8" y="550.3" fill="#ff6600">[^n]</text>
+<text x="404.8" y="550.3" fill="#9a9a9a">NEXT</text>
 </g>
 </svg>

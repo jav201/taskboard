@@ -1,7 +1,7 @@
 ⣿BOARD  ⠂form  ⠂cfg  ⠂log                                                       
 ⣿ BOARD  16 tasks  ·  4 projects                                                
 ⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒ 
-  BACKLOG                                                  5 ⠸ ⣿ DETAIL  Fix    
+  BACKLOG                                                  5 ⠸ ⣿ DETAIL  Fi⠿    
     ─├────7d┴───14d┴───21d┴                                  ⠸ ⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒ 
     ⠂ Audit the theme tokens··························· 21d  ⠸ project ⠒⠒⠒⠒⠒⠒Web
       ⠒⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿┊ 21d                            ⠸ phase ⠒⠒⠒⠒⠒⠒doing

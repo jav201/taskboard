@@ -1,7 +1,7 @@
 ∙ BOARD  ◦ form  ◦ cfg  ◦ log                                                   
 BOARD  16 tasks  ·  4 projects                                                  
 ◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦ 
-  BACKLOG                                                    ◦ DETAIL  Fix      
+  BACKLOG                                                    ◦ DETAIL  Fi◍      
   ∙∙∙∙∙∙∙∙                                                   ◦ ◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦ 
   ∙∙◦◦◦◦◦◦                                                   ◦ project Web ◦◦◦◦◦
   ∙∙∙∙∙∙◦◦                                                   ◦ phase doing ◦◦◦◦◦

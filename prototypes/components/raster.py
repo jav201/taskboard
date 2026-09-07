@@ -117,6 +117,56 @@ FALLBACK_CELLS = "⊖⊚⊛⋅"  # codepoint order, which is `corpus_cells()`'s 
 #: measured at the same size as the other 118.
 UNDERLINE_OFFSET = 2  #: px below the baseline, drawn 1 px thick
 
+#: THE GREYSCALE PASS, DECLARED (inc84, on the greyscale ruling).  Round
+#: five's L12 is that three kits carry their MATCH on hue alone (instrument,
+#: nord, prism) and that the clause approving them measures LUMINANCE against
+#: an achromatic `mut` -- the dimension in which a saturated hue and a grey
+#: are least different.  Its §0d says the objection cannot be settled from
+#: this repo: *"no hay lector daltonico en este equipo ni captura en escala
+#: de grises en este repo"*.  This is the second half of that sentence,
+#: built.
+#:
+#: IT IS NOT `Image.convert("L")`, and the difference is the point.  PIL's
+#: `L` applies ITU-R 601-2 coefficients to the ENCODED values, which is a
+#: display convenience and not a photometric quantity.  A legibility question
+#: needs WCAG's own relative luminance -- linearise sRGB, weight by Rec.709,
+#: re-encode -- because then the CONTRAST RATIO between two greys in this
+#: image equals the ratio the colour pair had, and "does the match survive
+#: greyscale" is answered by the same arithmetic every other number in this
+#: programme is answered by.  The coefficients are ruling E4 applied one
+#: artefact over: declared, never inferred, and checked against the shipped
+#: PNGs by the suite rather than trusted here.
+GREY_WEIGHTS = (0.2126, 0.7152, 0.0722)
+
+
+def _linear(v: int) -> float:
+    x = v / 255
+    return x / 12.92 if x <= 0.03928 else ((x + 0.055) / 1.055) ** 2.4
+
+
+def _encode(y: float) -> int:
+    s = 12.92 * y if y <= 0.0031308 else 1.055 * (y ** (1 / 2.4)) - 0.055
+    return max(0, min(255, round(s * 255)))
+
+
+def grey_of(im: Image.Image) -> Image.Image:
+    """The frame with its HUE removed and its luminance kept, exactly.
+
+    A per-COLOUR lookup rather than a per-pixel one: a frame is a few dozen
+    declared colours over half a million pixels, so the table is small, and --
+    the reason that matters here -- the mapping is a function of the colour
+    and therefore cannot pick up a position-dependent rounding, which is the
+    kind of confound `check_reproducible` exists to catch and would rather
+    not have to.
+    """
+    table: dict[tuple, tuple] = {}
+    for p in set(im.getdata()):
+        g = _encode(sum(w * _linear(c) for w, c in zip(GREY_WEIGHTS, p)))
+        table[p] = (g, g, g)
+    out = Image.new("RGB", im.size)
+    out.putdata([table[p] for p in im.getdata()])
+    return out
+
 
 #: TWO CODEPOINTS NO FACE HAS, used to learn what `.notdef` looks like.
 #: Private-use and non-character, and BOTH are asked because one of them
@@ -307,6 +357,13 @@ async def sweep(m: Metrics, out: Path, size=None) -> dict[str, bytes]:
             path = out / f"{name}.png"
             img.save(path, "PNG", optimize=True)
             made[name] = path.read_bytes()
+            # THE SAME FRAME WITH ITS HUE REMOVED (inc84). Written beside the
+            # colour one and checked for determinism with it, because a
+            # second artefact that is not in the reproducibility bargain is a
+            # second artefact nobody has to keep honest.
+            grey = out / f"{name}.grey.png"
+            grey_of(img).save(grey, "PNG", optimize=True)
+            made[f"{name}.grey"] = grey.read_bytes()
             side = {"lang": lang, "screen": screen, "ground": ground,
                     "cols": max(len(r) for r in grid), "rows": len(grid),
                     "image": {"w": img.width, "h": img.height},
@@ -356,7 +413,8 @@ def main(argv: list[str]) -> int:
     for line in _declare(m):
         print(line)
     made = asyncio.run(sweep(m, OUT))
-    if len(made) != len(R.LANGS) * len(S.SCREENS):
+    frames = len(R.LANGS) * len(S.SCREENS)
+    if len(made) != frames * 2:          # a colour PNG and a grey one each
         print("INCOMPLETE RASTER", file=sys.stderr)
         return 1
 
@@ -366,6 +424,14 @@ def main(argv: list[str]) -> int:
     # would still look like a taskboard.
     bad = []
     for name in made:
+        if name.endswith(".grey"):
+            # the grey pass is the colour frame's own pixels with the hue
+            # taken out, so its law is that it is the SAME PICTURE at the
+            # same size; the colour arm's cell count answers for both.
+            if (Image.open(OUT / f"{name}.png").size
+                    != Image.open(OUT / f"{name[:-5]}.png").size):
+                bad.append((name, "grey size disagrees with colour"))
+            continue
         rows = (HERE / f"{name}.txt").read_text(
             encoding="utf-8").rstrip("\n").split("\n")
         want = (len(rows[0]) * m.w, len(rows) * m.h)
@@ -382,8 +448,9 @@ def main(argv: list[str]) -> int:
         print(f"NON-REPRODUCIBLE RASTERS: {drift}", file=sys.stderr)
         return 1
     kb = sum(len(b) for b in made.values()) / 1024
-    print(f"  {len(made)} PNGs identical across two PROCESSES")
-    print(f"\n  {len(made)} .png + {len(made)} .json -> {OUT}")
+    print(f"  {len(made)} PNGs identical across two PROCESSES "
+          f"({frames} colour + {frames} grey)")
+    print(f"\n  {frames} .png + {frames} .grey.png + {frames} .json -> {OUT}")
     print(f"  every raster is {len(rows[0])}x{len(rows)} cells of "
           f"{m.w}x{m.h} px  ({kb:.0f} KB total)")
     return 0

@@ -46,16 +46,16 @@
 <text x="77.2" y="244.3" fill="#1783ff">◆</text>
 <text x="85.6" y="244.3" fill="#262626">····································▮</text>
 <text x="43.6" y="278.3" fill="#262626"> nothing here</text>
-<text x="26.8" y="312.3" fill="#1783ff">enter</text>
-<text x="77.2" y="312.3" fill="#757575">run</text>
-<text x="119.2" y="312.3" fill="#262626">·</text>
-<text x="144.4" y="312.3" fill="#1783ff">esc</text>
-<text x="178.0" y="312.3" fill="#757575">close</text>
-<text x="236.8" y="312.3" fill="#262626">·</text>
-<text x="262.0" y="312.3" fill="#1783ff">^p</text>
-<text x="287.2" y="312.3" fill="#757575">prev</text>
-<text x="337.6" y="312.3" fill="#262626">·</text>
-<text x="362.8" y="312.3" fill="#1783ff">^n</text>
-<text x="388.0" y="312.3" fill="#757575">next</text>
+<text x="26.8" y="414.3" fill="#1783ff">enter</text>
+<text x="77.2" y="414.3" fill="#757575">run</text>
+<text x="119.2" y="414.3" fill="#262626">·</text>
+<text x="144.4" y="414.3" fill="#1783ff">esc</text>
+<text x="178.0" y="414.3" fill="#757575">close</text>
+<text x="236.8" y="414.3" fill="#262626">·</text>
+<text x="262.0" y="414.3" fill="#1783ff">^p</text>
+<text x="287.2" y="414.3" fill="#757575">prev</text>
+<text x="337.6" y="414.3" fill="#262626">·</text>
+<text x="362.8" y="414.3" fill="#1783ff">^n</text>
+<text x="388.0" y="414.3" fill="#757575">next</text>
 </g>
 </svg>

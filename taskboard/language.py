@@ -3051,6 +3051,40 @@ class Kit:
         """The mark beside a caption whose field may not be left empty."""
         return f"[{self.c['ink']}]{mark(self.REQUIRED)}[/]"
 
+    def elide(self, text: str, w: int) -> str:
+        """PLAIN text cut to `w` cells, AND THE CUT IS SAID (C13, inc84).
+
+        Round five read the 66 frames at 80 columns and found the same defect
+        in all eleven: *"los once truncan el titulo del panel de detalle a 80
+        columnas sin decirlo"* -- `instrument_S1` shows `DETAIL Fix` where the
+        task is called `Fix login redirect`, and swiss loses the VALUES too
+        (`phase: do`, `priority: hi`, `owner: ja`). **A frame that asserts
+        something false is worse than a frame that says it ran out of room**,
+        and the corpus had eleven of them at the narrower width for as long as
+        there has been a narrower width to look at.
+
+        THE MARK IS THE LANGUAGE'S OWN DISCLOSURE and not a new table -- the
+        same decision `textarea`'s wrap mark took (inc30,
+        `test_the_wrap_mark_is_the_languages_own_disclosure_and_not_a_new_
+        table`) and for the same reason. `DISCLOSE` already means *there is
+        more beyond this* in all eleven, it is one cell in all eleven, and an
+        ellipsis would have been a twelfth alphabet nobody chose: `…` is not
+        in any of these languages' vocabularies and `...` costs three cells to
+        say what one already says.
+
+        THE ARITHMETIC IS THE HONEST ONE. The mark takes a cell OF THE
+        BUDGET, so `elide(t, w)` never returns more than `w` cells -- a mark
+        that overflowed the seat it is marking would push the row it is
+        supposed to protect. At `w <= 0` there is nothing to say and nothing
+        is said; at `w == 1` the whole seat is the mark, which is the honest
+        answer for a one-cell window and is asserted rather than assumed.
+        """
+        if w <= 0:
+            return ""
+        if len(text) <= w:
+            return text
+        return text[:w - 1] + self.DISCLOSE
+
     @property
     def knockout(self) -> bool:
         """Does this language's REGISTRY spend a knockout at all?

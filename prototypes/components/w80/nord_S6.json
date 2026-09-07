@@ -804,23 +804,135 @@
   [
    [
     0,
-    "    ",
+    "  ",
     "#e0e0e0",
     "#2e3440",
     false,
     false
    ],
    [
-    4,
-    "   █████████   ",
+    2,
+    "enter",
     "#8fbcbb",
     "#2e3440",
     false,
     false
    ],
    [
-    19,
-    "                                                             ",
+    7,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    8,
+    "run",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    11,
+    "   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    14,
+    "esc",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    17,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    18,
+    "close",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    23,
+    "   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    26,
+    "^p",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "prev",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    33,
+    "   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    36,
+    "^n",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    38,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    39,
+    "next",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    "                                     ",
     "#e0e0e0",
     "#2e3440",
     false,

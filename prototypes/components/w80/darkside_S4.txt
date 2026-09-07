@@ -1,7 +1,7 @@
 (●)board  ( )form  ( )cfg  ( )log                                               
 board  16 tasks  ·  4 projects                                                  
                                                                                 
-  ▏  backlog 5                                                 detail  fix      
+  ▏  backlog 5                                                 detail  fi▿      
     ▏  audit the theme tokens                           21d                     
     ▏    backlog · d21                                         project     ▔ Web
     ▏  drop the legacy shim                             30d    phase     ▔ doing

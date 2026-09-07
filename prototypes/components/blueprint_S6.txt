@@ -20,13 +20,13 @@ COMMAND  ·── QUERY 'RE'  ·  6 RESULTS
         ▀▀▀▀▀▀▀▀▀▀▀▀                                                                                
      NO ITEMS ON SHEET                                                                              
                                                                                                     
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
   enter──RUN   esc──CLOSE   ^p──PREV   ^n──NEXT                                                     
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
 ┌     ┐                          ─────────                                                          
  BOARD  form  cfg  log           ├ CLEAR ┤                                                          
 └     ┘                          ─────────                                                          

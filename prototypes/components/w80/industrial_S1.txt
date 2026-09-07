@@ -1,7 +1,7 @@
 [1]BOARD [2]form [3]cfg [4]log                                                  
 [BOARD]  16 tasks  ·  4 projects                                                
 ─────────────────────────────────────────────────────────────────────────────── 
-  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fix    
+  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fi▼    
     ▐ 05 ▌ Audit the theme tokens                      [21d]▌ ▐──────────────── 
            [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT       Web
     ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE       doing

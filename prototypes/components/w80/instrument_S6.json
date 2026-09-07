@@ -844,23 +844,135 @@
   [
    [
     0,
-    "    ",
+    "  ",
     "#e0e0e0",
     "#0a0d12",
     false,
     false
    ],
    [
-    4,
-    " empty",
+    2,
+    "enter",
+    "#2dd4bf",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    7,
+    "⠒",
     "#333c47",
     "#0a0d12",
     false,
     false
    ],
    [
-    10,
-    "                                                                      ",
+    8,
+    "run",
+    "#6e7b89",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    11,
+    "   ",
+    "#e0e0e0",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    14,
+    "esc",
+    "#2dd4bf",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    17,
+    "⠒",
+    "#333c47",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    18,
+    "close",
+    "#6e7b89",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    23,
+    "   ",
+    "#e0e0e0",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    26,
+    "^p",
+    "#2dd4bf",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    28,
+    "⠒",
+    "#333c47",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    29,
+    "prev",
+    "#6e7b89",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    33,
+    "   ",
+    "#e0e0e0",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    36,
+    "^n",
+    "#2dd4bf",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    38,
+    "⠒",
+    "#333c47",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    39,
+    "next",
+    "#6e7b89",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    43,
+    "                                     ",
     "#e0e0e0",
     "#0a0d12",
     false,

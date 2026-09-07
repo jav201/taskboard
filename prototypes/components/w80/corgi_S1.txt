@@ -1,7 +1,7 @@
 [1]B O A R D [2]FORM [3]CFG [4]LOG                                              
 [B] B O A R D  16 TASKS  ·  4 PROJECTS                                          
 ─────────────────────────────────────────────────────────────────────────────── 
-  [1] B A C K L O G  5                                       ▓ [D] D E T A I L  
+  [1] B A C K L O G  5                                       ▓ [D] D E T A I L ▄
   ─────────────────────────────────────────────────────────  ▓ ──────────────── 
     [5] AUDIT THE THEME TOKENS    DUE 21D   PR LOW   ST OPEN ▓ PROJECT Web      
     [6] DROP THE LEGACY SHIM      DUE 30D   PR NORM  ST OPEN ▓ PHASE doing      

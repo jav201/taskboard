@@ -4,7 +4,7 @@
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <text x="10.0" y="23.3" fill="#4c566a">▸board │  form │  cfg │  log</text>
 <text x="10.0" y="40.3" fill="#4c566a">BOARD  16 tasks  ·  4 projects</text>
-<text x="10.0" y="74.3" fill="#4c566a">  BACKLOG 5▂                                                 │ DETAIL  Fix</text>
+<text x="10.0" y="74.3" fill="#4c566a">  BACKLOG 5▂                                                 │ DETAIL  Fi▾</text>
 <text x="10.0" y="91.3" fill="#4c566a">  ─────────────────────────────────────────────────────────  │ </text>
 <text x="10.0" y="108.3" fill="#4c566a">    Audit the theme tokens                              21d  │ project       Web</text>
 <text x="10.0" y="125.3" fill="#4c566a">      Docs · backlog                                         │ phase       doing</text>

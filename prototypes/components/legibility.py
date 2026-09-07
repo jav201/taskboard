@@ -109,6 +109,15 @@ EFFECTIVE_FLOOR = 3.0
 MEANING_MAX = 4        # 1..4 cells of an A-family glyph: bound by both clauses
 STRUCTURE_MIN = 8      # >= 8 cells of one glyph: bound only to "not the ground"
 
+#: THE LINE BELOW WHICH TWO GREYS ARE ONE GREY (inc84, section H).  It is a
+#: REPORTING threshold and nothing is gated on it: 1.10:1 is roughly the
+#: smallest step this corpus's own tone ladders ever spend deliberately
+#: (`solari`'s seam sits at 1.20:1 against its ground and round five found it
+#: legible at 100 cells of length), so anything under it is a distinction the
+#: language is not making on purpose.  Named so the number in section H is
+#: arguable rather than buried in a comparison.
+GREY_DISTINCT = 1.10
+
 #: THE 5-7 RUNS, named per seat exactly as `DIM_CLASSIFIES` names its own.
 #: The corpus draws THREE of them and all three are naught's `∙`, which is
 #: that kit's `DANGER_FORM` and the top two rungs of its severity ladder --
@@ -181,6 +190,38 @@ def declared_tones(lang: str) -> dict[str, set[tuple[str, str]]]:
                     if family in named.get(ch, {}):
                         out.setdefault(family, set()).add((ch, tone))
     return out
+
+
+def match_branch(lang: str) -> tuple[str, str, str]:
+    """`(channel, the match ink, the ground it is painted on)`.
+
+    THE SAME DERIVATION THE SUITE USES, restated here rather than imported --
+    the standing bargain of this pair of files: `test_the_match_run_is_
+    legible_and_distinct_on_its_declared_channel` reads `MATCH_STYLE` the
+    same way, and the two can only agree by being right.  The STYLE word
+    gives `bold` / `underline` / `reverse`; the TOKEN gives whether the mark
+    is a hue of its own or the kit's own ink at another weight.
+    """
+    k, t = LG.kit(lang), LG.THEMES[lang]
+    word, token = (k.MATCH_STYLE.split()[0],
+                   k.MATCH_STYLE.strip().split()[-1].strip("{}"))
+    value = t.get(token, t["ink"])
+    if word == "reverse":
+        return "reverse", t["ground"], value
+    if token in ("accent", "alert") and value != t["ink"]:
+        return "hue", value, t["ground"]
+    return word, value, t["ground"]
+
+
+def _grey(px) -> tuple:
+    """One colour with its hue removed, by `raster.grey_of`'s own transform.
+
+    Read through the renderer rather than reimplemented, so a greyscale
+    number in this report is a number about the greyscale PNG on disk.
+    """
+    g = RA._encode(sum(w * RA._linear(c)
+                       for w, c in zip(RA.GREY_WEIGHTS, px)))
+    return (g, g, g)
 
 
 class Sheets:
@@ -817,6 +858,91 @@ def report() -> str:
     w.append("that exists only in a picture. The frame-side count is here and")
     w.append("in the suite; the census's 28 is unchanged and means what it")
     w.append("always meant.")
+
+    # ---- H ---------------------------------------------------------------
+    h("H. THE MATCH IN GREYSCALE -- L12, on the pixels and not on a token")
+    w.append("")
+    w.append("Round five's L12: in three kits the ONLY channel the match run")
+    w.append("has is HUE (instrument, nord, prism), and the clause that")
+    w.append("approves them measures LUMINANCE against an achromatic `mut` --")
+    w.append("the dimension in which a saturated hue and a grey are least")
+    w.append("different. Its §0d says the objection cannot be settled from")
+    w.append("this repo because there is no greyscale capture in it. There is")
+    w.append("now: `raster.py` writes `<name>.grey.png` beside every frame,")
+    w.append("WCAG relative luminance, so a contrast ratio measured on the")
+    w.append("grey is the same arithmetic measured on one dimension.")
+    w.append("")
+    w.append("A MATCH THAT VANISHES IN GREY IS RECORDED AS A LIMIT OF THE")
+    w.append("LANGUAGE AND IS NOT FIXED (the ruling's own words). This")
+    w.append("section is the record.")
+    w.append("")
+    w.append("THE QUESTION IS DISTINCTNESS, NOT LEGIBILITY, and that is where")
+    w.append("the measurement has to point. A match run is legible against its")
+    w.append("GROUND and distinct against the BODY it stands in -- the six")
+    w.append("`re` of `nord_S6` are teal among slate words. So the number that")
+    w.append("answers L12 is the match ink against `mut` and against `ink`,")
+    w.append("in grey. A run that is 1.00:1 from the body it sits in is a run")
+    w.append("nobody can pick out, whatever it does against the page.")
+    w.append("")
+    w.append(f"{'kit':<11} {'channel':<10} {'v ground':>9} {'v mut':>7} "
+             f"{'v ink':>7} | {'grey mut':>9} {'grey ink':>9}  {'verdict':<9}")
+    w.append("-" * 78)
+    limits = []
+    for lang in LG.KITS:
+        t = LG.THEMES[lang]
+        branch, ink_hex, ground = match_branch(lang)
+        pair = (rgb(ink_hex), rgb(ground))
+        col_g = contrast(*pair)
+        c_mut = contrast(rgb(ink_hex), rgb(t["mut"]))
+        c_ink = contrast(rgb(ink_hex), rgb(t["ink"]))
+        g_mut = contrast(_grey(rgb(ink_hex)), _grey(rgb(t["mut"])))
+        g_ink = contrast(_grey(rgb(ink_hex)), _grey(rgb(t["ink"])))
+        flat = max(g_mut, g_ink) < GREY_DISTINCT
+        if branch in ("bold", "underline", "reverse"):
+            verdict = "carried"        # a second, non-colour channel exists
+        elif flat:
+            verdict = "VANISHES"
+            limits.append((lang, round(g_mut, 2), round(g_ink, 2)))
+        else:
+            verdict = "holds"
+        w.append(f"{lang:<11} {branch:<10} {col_g:>8.2f} {c_mut:>7.2f} "
+                 f"{c_ink:>7.2f} | {g_mut:>8.2f} {g_ink:>8.2f}  {verdict:<9}")
+    w.append("-" * 78)
+    hue = [l for l in LG.KITS if match_branch(l)[0] == "hue"]
+    w.append(f"{len(hue)} kits carry the match on HUE ALONE: "
+             f"{', '.join(hue)}")
+    w.append(f"{len(limits)} of them lose it in grey at the "
+             f"{GREY_DISTINCT:.2f}:1 line"
+             + (": " + ", ".join(f"{l} ({m}/{i})" for l, m, i in limits)
+                if limits else ""))
+    w.append("")
+    w.append("EACH ROW ABOVE IS A LIMIT OF THE LANGUAGE AND IS NOT FIXED --")
+    w.append("the ruling's own instruction. A kit whose match is BOLD,")
+    w.append("UNDERLINED or REVERSED is `carried`: it has a second channel")
+    w.append("that survives by construction and the grey column is a")
+    w.append("courtesy, not a verdict.")
+    w.append("")
+    w.append("AND THE MEASUREMENT DOES NOT SAY WHAT L12 SAID. Round five wrote")
+    w.append("*\"en escala de grises no queda nada\"* about three kits and")
+    w.append("could not check it. Checked: NONE of the four hue kits goes to")
+    w.append("1.00:1. What survives is a LUMINANCE STEP the accent happens to")
+    w.append("carry along with its hue -- nord 1.34, swiss 1.52, prism 1.59,")
+    w.append("instrument 2.34 against `mut` -- so the objection is real in")
+    w.append("SHAPE and wrong in DEGREE: the channel is thin, not absent.")
+    w.append("Three of the four are under 3:1 against the body they stand in,")
+    w.append("which is a small number and now a number. **L12 is amended by")
+    w.append("this table and not closed by it**: a step nobody chose is not a")
+    w.append("channel a language may claim, and no ruling has said which of")
+    w.append("the two readings the corpus is held to.")
+    w.append("")
+    w.append("WHAT THIS MEASURES AND WHAT IT DOES NOT. It measures the ratio")
+    w.append("a match run keeps against the body it stands in once hue is")
+    w.append("gone, which is what a greyscale monitor and a monochrome")
+    w.append("printout show. It does NOT model colour vision deficiency: a")
+    w.append("deuteranope does not see this image, and simulating one would")
+    w.append("be a fourth instrument this programme has not built and has no")
+    w.append("reader for. Written here so the number is not spent on a claim")
+    w.append("it cannot support.")
     w.append("")
     return "\n".join(w) + "\n"
 
@@ -858,7 +984,7 @@ def main(argv: list[str]) -> int:
     print(f"  {len(lines)} lines -> {OUT}")
     for line in lines:
         if line.startswith(("A.", "A1.", "B.", "C.", "D.", "E.", "F.", "F1.",
-                            "G.")):
+                            "G.", "H.")):
             print(f"    {line}")
     print("\n  re-measuring in a fresh process...")
     if not check_reproducible(text):

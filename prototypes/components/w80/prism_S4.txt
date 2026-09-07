@@ -1,7 +1,7 @@
 ▸board │  form │  cfg │  log                                                    
 BOARD  16 tasks  ·  4 projects                                                  
                                                                                 
-  ▎  BACKLOG 5                                                 DETAIL  Fix      
+  ▎  BACKLOG 5                                                 DETAIL  Fi⣶      
     ▎  Audit the theme tokens                           21d                     
     ▎    backlog · 21d                                         project   ⡀⡤⣶ Web
     ▎  Drop the legacy shim                             30d    phase   ⡀⡤⣶ doing

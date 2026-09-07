@@ -9533,3 +9533,342 @@ def test_the_glyphless_law_bites_when_the_plate_becomes_the_page(monkeypatch):
         test_a_glyphless_run_on_a_second_ground_is_ink()
     monkeypatch.undo()
     test_a_glyphless_run_on_a_second_ground_is_ink()
+
+
+# ---------------------------------------------------------------------------
+# inc84 — C12 (the key bar at 24 rows), C13 (a cut that says so), and the
+# greyscale capture round five was refused.
+#
+#   C12  at 24 rows four of the eleven LOSE the S6 key bar — instrument,
+#        nord, blueprint, prism.  `enter run · esc close · ^p prev · ^n next`
+#        is the row that says how the palette is closed, and it was appended
+#        with `Sheet.row()`, so it landed wherever the builder's content
+#        happened to end and `body()` clipped it off the bottom.  Seven kits
+#        kept it by having shorter content, which is luck, not composition.
+#   C13  at 80 columns all eleven truncate the detail panel's title with
+#        nothing to say a cut happened, and swiss truncates the VALUES too
+#        (`phase: do`, `priority: hi`).  A frame that asserts something false.
+#   L12  three kits carry the match on hue alone and the clause approving
+#        them measures luminance against an achromatic `mut`.  Round five
+#        §0d: *"no hay lector daltonico en este equipo ni captura en escala
+#        de grises en este repo"* — the second half of that sentence is now
+#        built and this is what it says.
+# ---------------------------------------------------------------------------
+
+#: the four keys `fixture.HINTS` declares, restated rather than imported for
+#: the reason this file restates everything else: the fixture is prototype
+#: source and `FRAMES` is a path.
+KEY_BAR_KEYS = ("enter", "esc", "^p", "^n")
+
+
+def key_bar_row(rows) -> int:
+    """The index of the row that says how to leave, or `-1`.
+
+    Identified by its KEYS and not by its words: three kits letter the words
+    in capitals (`RUN`, `CLOSE`) and every one of the eleven spells the
+    separator differently — `⠒`, `··`, `∙`, `▁`, air — but the keys are the
+    caller's and come back byte for byte in all eleven, which is a law this
+    file already has (`test_keyhint_prints_the_key_it_was_handed`).
+    """
+    for i, r in enumerate(rows):
+        if all(kk in r for kk in KEY_BAR_KEYS):
+            return i
+    return -1
+
+
+def docked_chrome_rows(lang: str) -> int:
+    """How many rows this kit docks BELOW the key bar.
+
+    Blueprint's whole frame budget is a three-row stamp "docked to the BOTTOM
+    corner ... the corner where a drawing keeps its identity" (LANGUAGES.md
+    §11), so its key bar is the last row that is not the stamp. Read off the
+    kit rather than counted: ten kits return 0 and the eleventh answers for
+    itself."""
+    k = LG.kit(lang)
+    if getattr(k, "frame", None) != "titleblock":
+        return 0
+    return len(k.tabs(("board", "form", "cfg", "log"), "board").split("\n"))
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_key_bar_is_the_last_row_of_the_palette_at_any_height(lang):
+    """C12, asked of the shipped frames at BOTH widths.
+
+    TWO CLAUSES. It is PRESENT — which is the finding, because at 24 rows
+    four kits had lost it entirely — and it is the LAST row of the frame,
+    below everything except the chrome a language docks under it. A key bar
+    that is present but floating in the middle of a page is the composition
+    this increment replaced: it was present at 32 rows by luck and gone at 24
+    for the same reason.
+    """
+    for where, tag in ((FRAMES, "100x32"), (W80, "80x24")):
+        rows = (where / f"{lang}_S6.txt").read_text(
+            encoding="utf-8").rstrip("\n").split("\n")
+        i = key_bar_row(rows)
+        assert i >= 0, (lang, tag, "the row that says how to leave is gone")
+        assert i == len(rows) - 1 - docked_chrome_rows(lang), \
+            (lang, tag, i, len(rows), docked_chrome_rows(lang))
+
+
+def test_the_key_bar_is_docked_and_not_stacked(monkeypatch):
+    """TEETH, on the MECHANISM rather than on the height.
+
+    `Sheet.dock` put back to `Sheet.row` IS the pre-inc84 composition — the
+    key bar appended where the builder reached it — and the sheet is rebuilt
+    at the default size, so this arm needs no module global to be mutated and
+    inherits none. Under it the bar stops being the last row in every kit
+    whose content ends early, which is the same defect that clipped it off
+    four frames at 24 rows.
+
+    THE VACUITY ARM IS THE FIRST LINE: the un-mutated build must put the bar
+    last, or the mutant proves nothing."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_screens_inc84", FRAMES / "screens.py")
+    sc = importlib.util.module_from_spec(spec)
+    sys_path_added = str(FRAMES)
+    import sys
+    if sys_path_added not in sys.path:
+        sys.path.insert(0, sys_path_added)
+    spec.loader.exec_module(sc)
+
+    def bar_index(lang: str) -> int:
+        sh = sc.build(lang, "S6")
+        return key_bar_row([plain(r) for r in sh.rows])
+
+    for lang in LANGS:
+        assert bar_index(lang) == sc.H - 1 - docked_chrome_rows(lang), lang
+
+    monkeypatch.setattr(sc.Sheet, "dock", sc.Sheet.row)
+    stacked = {l: bar_index(l) for l in LANGS}
+    assert all(i >= 0 for i in stacked.values()), stacked
+    floating = [l for l, i in stacked.items()
+                if i != sc.H - 1 - docked_chrome_rows(l)]
+    assert len(floating) == len(LANGS), sorted(stacked.items())
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        assert bar_index(lang) == sc.H - 1 - docked_chrome_rows(lang), lang
+
+
+# ---- C13: a cut that says so ----------------------------------------------
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_elide_marks_the_cut_with_the_languages_own_disclosure(lang):
+    """C13 at the seat the fix lives in, over every width a cut can happen at.
+
+    FOUR CLAUSES, and the third is the one a silent slice fails:
+
+      (a) text that fits comes back BYTE FOR BYTE — the same promise
+          `test_a_field_row_returns_its_figure_byte_for_byte` makes;
+      (b) the result is never wider than the seat, mark included, so the mark
+          cannot push the row it is protecting;
+      (c) a cut ALWAYS ends in this language's own `DISCLOSE`;
+      (d) the mark is not a twelfth alphabet — it is the cell the kit already
+          declares for *there is more beyond*, which is what `textarea`'s
+          wrap mark spends (inc30).
+    """
+    k = LG.kit(lang)
+    text = "Fix login redirect"
+    assert k.elide(text, len(text)) == text, lang
+    assert k.elide(text, 99) == text, lang
+    assert k.elide(text, 0) == "", lang
+    for w in range(1, len(text)):
+        got = k.elide(text, w)
+        assert len(got) == w, (lang, w, got)
+        assert got.endswith(k.DISCLOSE), (lang, w, got)
+        assert got[:-1] == text[:w - 1], (lang, w, got)
+    assert len(k.DISCLOSE) == 1, (lang, k.DISCLOSE)
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_no_detail_title_is_cut_without_saying_so_at_either_width(lang):
+    """C13 on the shipped frames, which is where round five found it.
+
+    The detail panel's title is `Fix login redirect`. At 100 columns it fits
+    in all eleven; at 80 it does not fit in ANY of them, and every one used
+    to show a prefix with nothing to mark it — `instrument_S1` said
+    `DETAIL Fix`, which is a task name that does not exist.
+
+    THE ROW IS FOUND BY THE TITLE AND NOT BY THE CAPTION, because the caption
+    is spelled eleven ways: `DETAIL`, `D E T A I L`, `[DETAIL]`, `detail`,
+    `AIL ···········`. The title is the fixture's and comes back in the
+    kit's own casing, so it is found with the spaces and the case removed —
+    and the row it is on at 100 columns is the row it is on at 80.
+    """
+    k = LG.kit(lang)
+
+    def flat(s_: str) -> str:
+        return "".join(s_.split()).upper()
+
+    want = flat("Fix login redirect")
+    wide = (FRAMES / f"{lang}_S1.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")
+    hits = [i for i, r in enumerate(wide) if want in flat(r)]
+    assert hits, (lang, "the detail panel does not show the title at 100")
+    row = (W80 / f"{lang}_S1.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")[hits[0]].rstrip()
+    assert want not in flat(row), (lang, "it fitted at 80; nothing to mark")
+    assert row.endswith(k.DISCLOSE), (lang, row[-16:])
+    # AND SWISS LOSES ITS VALUES TOO, which is the half round five singled
+    # out: ten kits right-align the figures and save them, swiss left-aligns
+    # and cut them at `phase: do`.
+    if lang == "swiss":
+        got = [r.rstrip() for r in (W80 / "swiss_S1.txt").read_text(
+            encoding="utf-8").split("\n") if "phase" in r]
+        assert got and got[0].endswith(k.DISCLOSE), got
+
+
+def test_the_elide_law_bites_on_the_bare_slice_it_replaced(monkeypatch):
+    """TEETH — `Kit.elide` put back to the Python slice `screens.py` used to
+    spell inline, which is the declaration round five photographed."""
+    for lang in LANGS:
+        test_elide_marks_the_cut_with_the_languages_own_disclosure(lang)
+
+    monkeypatch.setattr(LG.Kit, "elide",
+                        lambda self, text, w: text[:max(0, w)])
+    for lang in LANGS:
+        with pytest.raises(AssertionError):
+            test_elide_marks_the_cut_with_the_languages_own_disclosure(lang)
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        test_elide_marks_the_cut_with_the_languages_own_disclosure(lang)
+
+
+# ---- the greyscale capture ------------------------------------------------
+
+#: `raster.py`'s declared greyscale transform, restated and checked against
+#: its source: WCAG relative luminance (linearise sRGB, weight by Rec.709,
+#: re-encode), NOT `Image.convert("L")`, whose ITU-R 601-2 coefficients act on
+#: the ENCODED values and are a display convenience rather than a photometric
+#: quantity. The point of the choice is that a contrast ratio measured on the
+#: grey EQUALS the ratio the colour pair had, so "does the match survive
+#: greyscale" is answered by the same arithmetic as everything else here.
+GREY_WEIGHTS = (0.2126, 0.7152, 0.0722)
+
+
+def _grey_of(px) -> int:
+    y = sum(w * _lum_channel(c) for w, c in zip(GREY_WEIGHTS, px))
+    s = 12.92 * y if y <= 0.0031308 else 1.055 * (y ** (1 / 2.4)) - 0.055
+    return max(0, min(255, round(s * 255)))
+
+
+def _lum_channel(v: int) -> float:
+    x = v / 255
+    return x / 12.92 if x <= 0.03928 else ((x + 0.055) / 1.055) ** 2.4
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_greyscale_pass_is_the_declared_transform(lang):
+    """The 66 grey PNGs, checked as pictures and as arithmetic.
+
+    Three clauses. Each grey frame is the same SIZE as its colour frame — a
+    greyscale capture of a different picture would answer a different
+    question; every pixel is a true grey (R == G == B), which is what "the
+    hue is gone" means as an assertion rather than as a description; and each
+    distinct colour maps to the luminance the declared transform gives, over
+    every colour the frame actually contains rather than over a sample."""
+    from PIL import Image
+    name = f"{lang}_S6"
+    with Image.open(RASTER / f"{name}.png") as raw:
+        col = raw.convert("RGB")
+    with Image.open(RASTER / f"{name}.grey.png") as raw:
+        grey = raw.convert("RGB")
+    assert col.size == grey.size, (lang, col.size, grey.size)
+    seen = {}
+    for a, b in zip(col.getdata(), grey.getdata()):
+        assert b[0] == b[1] == b[2], (lang, b, "not a grey")
+        seen[a] = b
+    assert len(seen) > 1, (lang, "a one-colour frame proves nothing")
+    for a, b in seen.items():
+        assert b[0] == _grey_of(a), (lang, a, b, _grey_of(a))
+
+
+def test_the_rasters_greyscale_declaration_is_the_one_measured_here():
+    """The coefficients read off `raster.py`'s SOURCE, and the artefact count.
+
+    The same bargain `test_the_rasters_declarations_are_the_ones_this_file_
+    measures_against` makes: a transform declared in one file and measured
+    with different numbers in another is two transforms wearing one name."""
+    src = (FRAMES / "raster.py").read_text(encoding="utf-8")
+    assert f"GREY_WEIGHTS = {GREY_WEIGHTS}" in src, "the weights"
+    # and it is the WCAG transform and not PIL's display convenience: the
+    # linearisation and the re-encode are both in the source, which
+    # `Image.convert("L")` would need neither of.
+    assert "def _linear(" in src and "def _encode(" in src, "the transform"
+    assert "0.03928" in src and "0.0031308" in src, "the sRGB break points"
+    for lang in LANGS:
+        for screen in SCREENS:
+            assert (RASTER / f"{lang}_{screen}.grey.png").exists(), \
+                (lang, screen)
+    assert len(list(RASTER.glob("*.grey.png"))) == len(LANGS) * len(SCREENS)
+
+
+#: L12, MEASURED. `(kit, channel, grey contrast against `mut`, against `ink`)`
+#: for the four kits whose match run has no channel but HUE.
+#:
+#: ROUND FIVE SAID *"en escala de grises no queda nada"* AND COULD NOT CHECK
+#: IT. Checked: none of the four goes to 1.00:1. What survives is a LUMINANCE
+#: STEP the accent carries along with its hue, and it is thin — three of the
+#: four are under 3:1 against the body they stand in. **The objection is
+#: right in SHAPE and wrong in DEGREE**, and this table is the amendment: a
+#: step nobody chose is not a channel a language may claim, and no ruling has
+#: said which of those two readings the corpus is held to.
+#:
+#: ALL FOUR ARE UNDER 3:1 against the body they stand in, so the thin form
+#: of the objection binds every kit the loud form named.
+#:
+#: RECORDED AS A LIMIT AND NOT FIXED — the greyscale ruling's own words.
+MATCH_IN_GREY = {
+    "instrument": 2.34,
+    "swiss": 1.52,
+    "nord": 1.34,
+    "prism": 1.59,
+}
+
+
+def match_grey(lang: str) -> tuple:
+    """`(channel, grey contrast v mut, grey contrast v ink)`."""
+    t = LG.THEMES[lang]
+    branch, ink, _ground = match_branch(lang)
+
+    def g(hexed: str) -> tuple:
+        v = _grey_of(_rgb(hexed))
+        return (v, v, v)
+
+    return (branch,
+            _contrast_rgb(g(ink), g(t["mut"])),
+            _contrast_rgb(g(ink), g(t["ink"])))
+
+
+def test_the_match_that_rides_hue_alone_keeps_a_thin_step_in_grey():
+    """L12, on the pixels, and it does not say what L12 said.
+
+    Four clauses:
+
+      (a) the kits whose match channel is HUE are exactly the four named —
+          instrument, nord and prism, which round five listed, and SWISS,
+          which it discussed under `swiss_S6` and did not add to L12;
+      (b) NONE of them reaches 1.00:1 in grey, so "nothing remains" is not
+          what the capture shows;
+      (c) each keeps the step this table records, to two decimals;
+      (d) ALL FOUR are under 3:1 against the body they stand in, which is
+          what makes the objection worth keeping in a thinner form.
+
+    AND THE KITS WITH A SECOND CHANNEL ARE ASSERTED TO HAVE ONE, so the law
+    is not passing because it only looked at four of eleven."""
+    hue = [l for l in LANGS if match_branch(l)[0] == "hue"]
+    assert set(hue) == set(MATCH_IN_GREY), sorted(hue)
+    for lang in hue:
+        branch, g_mut, g_ink = match_grey(lang)
+        assert g_mut > 1.0 and g_ink > 1.0, (lang, g_mut, g_ink)
+        assert round(g_mut, 2) == MATCH_IN_GREY[lang], (lang, round(g_mut, 2))
+    assert all(v < 3.0 for v in MATCH_IN_GREY.values()), MATCH_IN_GREY
+    for lang in LANGS:
+        if lang not in MATCH_IN_GREY:
+            assert match_branch(lang)[0] in ("bold", "underline", "reverse"), \
+                (lang, match_branch(lang)[0])
+    text = LEGIBILITY.read_text(encoding="utf-8")
+    assert (f"{len(hue)} kits carry the match on HUE ALONE") in text
+    assert "0 of them lose it in grey" in text, "the report is stale"

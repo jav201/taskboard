@@ -46,6 +46,17 @@
 <text x="43.6" y="363.3" fill="#2dd4bf">⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀</text>
 <text x="43.6" y="380.3" fill="#2dd4bf">⠀⠈⠉⣶⣶⣶⣶⣶⣶⣶⣶⣶⠉⠁⠀</text>
 <text x="43.6" y="397.3" fill="#2dd4bf">⠀⠀⠀⠛⠛⠛⠛⠛⠛⠛⠛⠛⠀⠀⠀</text>
-<text x="43.6" y="414.3" fill="#5b6675"> empty</text>
+<text x="26.8" y="414.3" fill="#e6edf3">enter</text>
+<text x="68.8" y="414.3" fill="#5b6675">⣶</text>
+<text x="77.2" y="414.3" fill="#8b98a5">run</text>
+<text x="127.6" y="414.3" fill="#e6edf3">esc</text>
+<text x="152.8" y="414.3" fill="#5b6675">⣶</text>
+<text x="161.2" y="414.3" fill="#8b98a5">close</text>
+<text x="228.4" y="414.3" fill="#e6edf3">^p</text>
+<text x="245.2" y="414.3" fill="#5b6675">⣶</text>
+<text x="253.6" y="414.3" fill="#8b98a5">prev</text>
+<text x="312.4" y="414.3" fill="#e6edf3">^n</text>
+<text x="329.2" y="414.3" fill="#5b6675">⣶</text>
+<text x="337.6" y="414.3" fill="#8b98a5">next</text>
 </g>
 </svg>

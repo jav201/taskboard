@@ -44,17 +44,17 @@
 <text x="77.2" y="244.3" fill="#2b3a67">▏</text>
 <text x="85.6" y="244.3" fill="#c4b99f">────────────────────────────────────│</text>
 <text x="43.6" y="278.3" fill="#c4b99f"> nil balance</text>
-<text x="26.8" y="312.3" fill="#1c1a15">enter</text>
-<text x="68.8" y="312.3" fill="#c4b99f">··</text>
-<text x="85.6" y="312.3" fill="#635e52">RUN</text>
-<text x="136.0" y="312.3" fill="#1c1a15">esc</text>
-<text x="161.2" y="312.3" fill="#c4b99f">··</text>
-<text x="178.0" y="312.3" fill="#635e52">CLOSE</text>
-<text x="245.2" y="312.3" fill="#1c1a15">^p</text>
-<text x="262.0" y="312.3" fill="#c4b99f">··</text>
-<text x="278.8" y="312.3" fill="#635e52">PREV</text>
-<text x="337.6" y="312.3" fill="#1c1a15">^n</text>
-<text x="354.4" y="312.3" fill="#c4b99f">··</text>
-<text x="371.2" y="312.3" fill="#635e52">NEXT</text>
+<text x="26.8" y="550.3" fill="#1c1a15">enter</text>
+<text x="68.8" y="550.3" fill="#c4b99f">··</text>
+<text x="85.6" y="550.3" fill="#635e52">RUN</text>
+<text x="136.0" y="550.3" fill="#1c1a15">esc</text>
+<text x="161.2" y="550.3" fill="#c4b99f">··</text>
+<text x="178.0" y="550.3" fill="#635e52">CLOSE</text>
+<text x="245.2" y="550.3" fill="#1c1a15">^p</text>
+<text x="262.0" y="550.3" fill="#c4b99f">··</text>
+<text x="278.8" y="550.3" fill="#635e52">PREV</text>
+<text x="337.6" y="550.3" fill="#1c1a15">^n</text>
+<text x="354.4" y="550.3" fill="#c4b99f">··</text>
+<text x="371.2" y="550.3" fill="#635e52">NEXT</text>
 </g>
 </svg>

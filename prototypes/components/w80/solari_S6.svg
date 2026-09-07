@@ -42,17 +42,17 @@
 <text x="77.2" y="244.3" fill="#f5a300">▮</text>
 <text x="85.6" y="244.3" fill="#1f1f22">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔</text>
 <text x="43.6" y="278.3" fill="#1f1f22"> NO DEPARTURES</text>
-<text x="26.8" y="312.3" fill="#f5a300">enter</text>
-<text x="68.8" y="312.3" fill="#1f1f22">▁</text>
-<text x="77.2" y="312.3" fill="#6e6a60">RUN</text>
-<text x="127.6" y="312.3" fill="#f5a300">esc</text>
-<text x="152.8" y="312.3" fill="#1f1f22">▁</text>
-<text x="161.2" y="312.3" fill="#6e6a60">CLOSE</text>
-<text x="228.4" y="312.3" fill="#f5a300">^p</text>
-<text x="245.2" y="312.3" fill="#1f1f22">▁</text>
-<text x="253.6" y="312.3" fill="#6e6a60">PREV</text>
-<text x="312.4" y="312.3" fill="#f5a300">^n</text>
-<text x="329.2" y="312.3" fill="#1f1f22">▁</text>
-<text x="337.6" y="312.3" fill="#6e6a60">NEXT</text>
+<text x="26.8" y="414.3" fill="#f5a300">enter</text>
+<text x="68.8" y="414.3" fill="#1f1f22">▁</text>
+<text x="77.2" y="414.3" fill="#6e6a60">RUN</text>
+<text x="127.6" y="414.3" fill="#f5a300">esc</text>
+<text x="152.8" y="414.3" fill="#1f1f22">▁</text>
+<text x="161.2" y="414.3" fill="#6e6a60">CLOSE</text>
+<text x="228.4" y="414.3" fill="#f5a300">^p</text>
+<text x="245.2" y="414.3" fill="#1f1f22">▁</text>
+<text x="253.6" y="414.3" fill="#6e6a60">PREV</text>
+<text x="312.4" y="414.3" fill="#f5a300">^n</text>
+<text x="329.2" y="414.3" fill="#1f1f22">▁</text>
+<text x="337.6" y="414.3" fill="#6e6a60">NEXT</text>
 </g>
 </svg>
