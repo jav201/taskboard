@@ -7409,9 +7409,8 @@ class Prism(Kit):
         "knob": {DEFAULT: "⢸", FOCUSED: "⢿", EDITED: "⣷",
                  ACTIVE: "⣾", INVALID: "⣹",
                  DISABLED: "⠈"},
-        # THE CHECKBOX IS A FIELD WITH A HOLE BURNED IN IT.  Unchecked is an
-        # intact field; checked is the field CARVED -- the same figure-as-
-        # absence the hero uses for its numeral, at one cell.
+        # THE CHECKBOX IS A FIELD WITH A MARK BURNED INTO IT.  Unchecked is an
+        # empty box; checked is the box with fire in it.
         # The WALLS carry the control state and the CENTRE carries the checked
         # bit -- and the walls are identical between `main` and `knob` in every
         # state, so the box survives the mark instead of being redrawn by it.
@@ -7420,10 +7419,21 @@ class Prism(Kit):
         # `LEVELS["error"]` / `DANGER_FORM` and `LEVELS["info"]`.  Both are
         # read from the top now; the two BROKEN walls the kit already
         # declared are unchanged, and the ladder climbs instead of dimming.
-        "checkbox.main": {DEFAULT: "⠿⠉⠿", FOCUSED: "⣷⠉⣷", ACTIVE: "⣾⠉⣾",
-                          DISABLED: "⠄⠄⠄"},
-        "checkbox.knob": {DEFAULT: "⠿⠀⠿", FOCUSED: "⣷⠀⣷", ACTIVE: "⣾⠀⣾",
+        #
+        # inc64 (L8): THE CENTRES WERE THE WRONG WAY ROUND, and inc59 moved
+        # both tables without noticing.  Checked drew `⠿⠀⠿` -- the EMPTY well
+        # -- and unchecked drew `⠿⠉⠿`, a mark inside the box.  `prism_S2` row
+        # 11 renders the fixture's two ticked tags as empty boxes and its one
+        # unticked tag with something in it: every reader who has not read the
+        # kit points at `api`.  It was the only checkbox of the eleven where
+        # ticking a box took ink AWAY; the other ten add a mark, and this
+        # language's own doctrine is that more is more fire.  The two centres
+        # are swapped and nothing else: the walls, the states and the ladder
+        # are inc59's, untouched.
+        "checkbox.main": {DEFAULT: "⠿⠀⠿", FOCUSED: "⣷⠀⣷", ACTIVE: "⣾⠀⣾",
                           DISABLED: "⠄⠀⠄"},
+        "checkbox.knob": {DEFAULT: "⠿⠉⠿", FOCUSED: "⣷⠉⣷", ACTIVE: "⣾⠉⣾",
+                          DISABLED: "⠄⠄⠄"},
         # THE RADIO IS THE INVERSE: one lit cell in a dim run.  Checkbox
         # carves, radio LIGHTS -- so the two families differ in direction, not
         # in brightness, and a greyscale eye reads which is which.
@@ -10228,31 +10238,49 @@ def _meter_ember(k, done, total, counts, w):
     pct, _ = _pct_n(done, total, bar_w)
 
     dots_w = bar_w * WV.DOT_COLS
-    burnt = 0 if not total else max(0, min(dots_w, round(dots_w * done / total)))
+    alight = 0 if not total else max(0, min(dots_w,
+                                           round(dots_w * done / total)))
 
     # ASH IS NOT A SOLID FIELD, AND THAT IS LAW 1, NOT A PREFERENCE.  The first
     # version filled both sides to full height and let the TONE carry the
     # frontier -- so with colour stripped the bar did not move at all, and the
     # harness said `moved=False`.  It is the same defect the Kimi fork's
-    # grey-on-grey meter died of.  Burnt cells keep only their bottom dot row:
+    # grey-on-grey meter died of.  Ash cells keep only their bottom dot row:
     # the boundary is a change of SHAPE (solid field -> a residue), and the
     # colour is confirmation rather than the datum.
+    #
+    # WHICH SIDE IS THE FIRE (inc64, L9).  Until this increment the DONE part
+    # was the ash and the part still to do was the solid field: "a field being
+    # consumed".  Read as a picture that is backwards, and this language
+    # contradicted itself about it in one sweep -- `prism_S1` drew
+    # `⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿  44%`, twelve light cells of
+    # twenty-seven labelled 44%, so the frame reads 56%; `prism_S3`'s slider
+    # and `prism_S5`'s readbar filled the other way (`⣿⣿⣿⣿⣿⣿⣿⣿⣿⢸⣀⣀⣀⣀ 70`)
+    # out of the SAME kit, because those two come from `component_cells` and
+    # spend `indicator` on the value and `main` on the rest.  Two code paths,
+    # two directions, one language.  A language's fill direction is ONE
+    # declaration, and this kit had already made it at `PART_GLYPHS`: the
+    # indicator is `⣿` and the track is `⣀`, so MORE IS MORE FIRE.  The
+    # half-cell frontier, the field-or-figure rule and the shape channel are
+    # untouched; only which side of the frontier burns has changed.
     ASH_ROWS = 1
     live, ash = WV.Bitmap(dots_w, WV.DOT_ROWS), WV.Bitmap(dots_w, WV.DOT_ROWS)
     for x in range(dots_w):
-        if x < burnt:
-            ash.fill_to(x, ASH_ROWS)
-        else:
+        if x < alight:
             live.fill_to(x, WV.DOT_ROWS)
+        else:
+            ash.fill_to(x, ASH_ROWS)
 
     lit = live.to_braille()[0]
     spent = ash.to_braille()[0]
     ash_c = k.t.get("ash", c["dim"])
     # one cell is field or figure, never both -- so a cell straddling the
-    # frontier is emitted ONCE, in the tier that owns its lit dots
+    # frontier is emitted ONCE, in the tier that owns its lit dots.  The FIRE
+    # wins that cell now rather than the ash: the frontier is where the field
+    # ends, and the value it carries is how much is alight.
     bar = "".join(
-        f"[{ash_c}]{spent[i]}[/]" if spent[i] != " " else
-        (f"[{c['accent']}]{lit[i]}[/]" if lit[i] != " " else " ")
+        f"[{c['accent']}]{lit[i]}[/]" if lit[i] != " " else
+        (f"[{ash_c}]{spent[i]}[/]" if spent[i] != " " else " ")
         for i in range(bar_w))
     return f"{bar} [{c['mut']}]{pct:>3}%[/]"
 

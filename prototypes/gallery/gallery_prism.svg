@@ -119,8 +119,8 @@
 <text x="388.0" y="380.3" fill="#5b6675">⠉⠉</text>
 <text x="421.6" y="380.3" fill="#8b98a5">⠿⠿</text>
 <text x="438.4" y="380.3" fill="#e6edf3">⢸  </text>
-<text x="463.6" y="380.3" fill="#5b6675">⠿⠉⠿</text>
-<text x="488.8" y="380.3" fill="#e6edf3">  ⠿⠀⠿   </text>
+<text x="463.6" y="380.3" fill="#5b6675">⠿⠀⠿</text>
+<text x="488.8" y="380.3" fill="#e6edf3">  ⠿⠉⠿   </text>
 <text x="556.0" y="380.3" fill="#5b6675">default</text>
 <text x="740.8" y="380.3" fill="#2dd4bf">│</text>
 <rect x="262.0" y="384.0" width="445.2" height="17.0" fill="#161b22"/>
@@ -131,8 +131,8 @@
 <text x="388.0" y="397.3" fill="#5b6675">⠉⠉</text>
 <text x="421.6" y="397.3" fill="#8b98a5">⠿⠿</text>
 <text x="438.4" y="397.3" fill="#2dd4bf">⢿</text>
-<text x="463.6" y="397.3" fill="#5b6675">⣷⠉⣷</text>
-<text x="505.6" y="397.3" fill="#2dd4bf">⣷⠀⣷</text>
+<text x="463.6" y="397.3" fill="#5b6675">⣷⠀⣷</text>
+<text x="505.6" y="397.3" fill="#2dd4bf">⣷⠉⣷</text>
 <text x="556.0" y="397.3" fill="#5b6675">focused</text>
 <text x="740.8" y="397.3" fill="#2dd4bf">│</text>
 <rect x="262.0" y="401.0" width="445.2" height="17.0" fill="#161b22"/>
@@ -143,8 +143,8 @@
 <text x="388.0" y="414.3" fill="#5b6675">⠉⠉</text>
 <text x="421.6" y="414.3" fill="#8b98a5">⠿⠿</text>
 <text x="438.4" y="414.3" fill="#2dd4bf">⣾</text>
-<text x="463.6" y="414.3" fill="#5b6675">⣾⠉⣾</text>
-<text x="505.6" y="414.3" fill="#2dd4bf">⣾⠀⣾</text>
+<text x="463.6" y="414.3" fill="#5b6675">⣾⠀⣾</text>
+<text x="505.6" y="414.3" fill="#2dd4bf">⣾⠉⣾</text>
 <text x="556.0" y="414.3" fill="#5b6675">active</text>
 <text x="740.8" y="414.3" fill="#2dd4bf">│</text>
 <rect x="262.0" y="418.0" width="445.2" height="17.0" fill="#161b22"/>
@@ -153,8 +153,8 @@
 <text x="262.0" y="431.3" fill="#2dd4bf">│</text>
 <text x="379.6" y="431.3" fill="#5b6675">⠈⠄⠄</text>
 <text x="421.6" y="431.3" fill="#5b6675">⠛⠛⠈</text>
-<text x="463.6" y="431.3" fill="#5b6675">⠄⠄⠄</text>
-<text x="505.6" y="431.3" fill="#5b6675">⠄⠀⠄</text>
+<text x="463.6" y="431.3" fill="#5b6675">⠄⠀⠄</text>
+<text x="505.6" y="431.3" fill="#5b6675">⠄⠄⠄</text>
 <text x="556.0" y="431.3" fill="#5b6675">disabled</text>
 <text x="740.8" y="431.3" fill="#2dd4bf">│</text>
 <rect x="262.0" y="435.0" width="445.2" height="17.0" fill="#161b22"/>

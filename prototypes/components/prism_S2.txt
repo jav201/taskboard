@@ -8,7 +8,7 @@ NEW TASK  5 fields  ·  1 invalid
                                                                                                     
   priority      ⠉⠉⠉ low  ⠉⠉⠉ norm  ⠉⢸⠉ high                                                         
                                                                                                     
-  tags          ⠿⠉⠿ api  ⠿⠀⠿ ui  ⠿⠀⠿ urgent                                                         
+  tags          ⠿⠀⠿ api  ⠿⠉⠿ ui  ⠿⠉⠿ urgent                                                         
                                                                                                     
   notes         ⠿Redirect drops the ?next= param w⣶⠿                                                
                 ⠿session cookie is renewed mid-fli⣶⠿                                                
