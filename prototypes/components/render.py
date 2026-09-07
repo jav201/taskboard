@@ -55,9 +55,20 @@ async def one(lang: str, screen: str):
 
     sh = S.build(lang, screen)
     body, over = sh.body()
+    #: THE GROUND GOES IN THE CSS (inc63, ruling E4).  It used to be assigned
+    #: to `app.screen.styles.background` after the first `pause()`, and a
+    #: background assigned after the first paint never reaches the strips the
+    #: compositor has already cached: every cell of all 66 sheets arrived on
+    #: Textual's own `#121212`, and the exporter -- which took the frame's
+    #: most common background for its ground -- agreed with the mistake.  On
+    #: ledger, the corpus's only light-paper language, that shipped `#1c1a15`
+    #: ink on a `#121212` canvas at 1.08:1.  Declared here, before compose,
+    #: the cells carry the ground and the canvas needs no rect over them.
+    ground = TH.THEMES[lang]["ground"]
 
     class Frame(App):
-        CSS = ("Screen { layout: vertical; overflow: hidden; }\n"
+        CSS = (f"Screen {{ layout: vertical; overflow: hidden; "
+               f"background: {ground}; }}\n"
                "#f { padding: 0; width: 100%; height: 100%; }")
 
         def compose(self) -> ComposeResult:
@@ -66,7 +77,6 @@ async def one(lang: str, screen: str):
     app = Frame()
     async with app.run_test(size=SIZE) as pilot:
         await pilot.pause()
-        app.screen.styles.background = TH.THEMES[lang]["ground"]
         rows = await CAP.settle(pilot, app, f"{lang} {screen}")
         name = f"{lang}_{screen}"
         title = f"taskboard · {lang} · {screen} {S.TITLES[screen]}"
@@ -75,7 +85,7 @@ async def one(lang: str, screen: str):
         rect = [r.ljust(w) for r in rows]
         (OUT / f"{name}.txt").write_text("\n".join(rect) + "\n",
                                          encoding="utf-8")
-        grid, ground = CAP.cell_grid(app)
+        grid, ground = CAP.cell_grid(app, ground)
         (OUT / f"{name}.svg").write_text(
             CAP.svg_from_grid(grid, ground, title), encoding="utf-8")
     return sh, (w, len(rect), CAP.ink(rect)), over

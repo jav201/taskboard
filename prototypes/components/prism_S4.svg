@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard · prism · S4 modal dialog">
 <title>taskboard · prism · S4 modal dialog</title>
-<rect width="860.0" height="564.0" fill="#121212"/>
+<rect width="860.0" height="564.0" fill="#0d1117"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <rect x="10.0" y="10.0" width="235.2" height="17.0" fill="#1f2630"/>
 <text x="10.0" y="23.3" fill="#8b98a5">▸board │  form │  cfg │  log</text>

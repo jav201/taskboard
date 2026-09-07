@@ -2655,10 +2655,27 @@ def test_the_style_law_is_not_vacuous_and_the_reverse_kits_are_the_proof():
         assert canvas, lang
         ground = canvas.group(1)
         assert ground != hue, (lang, hue)
-        # the six runs: the query, in the page's ground, and nothing else
-        on_ground = re.findall(r'<text[^>]*fill="%s"[^>]*>([^<]*)</text>'
-                               % re.escape(ground), svg)
-        assert on_ground == [QUERY] * 6, (lang, on_ground)
+        # the six runs: the query, in the page's ground, ON a rect of the hue.
+        # PAIRED BY COORDINATE SINCE inc63. This used to read "no text run
+        # anywhere in the sheet is painted in the ground colour except these
+        # six", and it held only because the canvas was WRONG: the ground the
+        # exporter wrote was Textual's `#121212`, a colour no kit declares, so
+        # every legitimate knockout in the frame fell outside the query. With
+        # the declared ground in place, solari's masthead plates paint ink in
+        # `#0b0b0c` as well, and they are not match runs. Position is the
+        # honest test of "on a plate": `svg_from_grid` puts a text run's
+        # baseline 0.78 of a line below the top of its row, which is exactly
+        # where that row's background rect starts.
+        on_plate = []
+        for tx, ty in re.findall(
+                r'<text x="([-\d.]+)" y="([-\d.]+)" fill="%s"[^>]*>%s</text>'
+                % (re.escape(ground), re.escape(QUERY)), svg):
+            top = f"{float(ty) - 0.78 * 17.0:.1f}"
+            on_plate.append(bool(re.search(
+                r'<rect x="%s" y="%s" width="[\d.]+" height="[\d.]+" '
+                r'fill="%s"/>' % (re.escape(tx), re.escape(top),
+                                  re.escape(hue)), svg)))
+        assert on_plate == [True] * 6, (lang, on_plate)
         # and the seventh `re` -- the search field -- is NOT one of them
         every = re.findall(r'<text[^>]*fill="([^"]+)"[^>]*>%s</text>'
                            % re.escape(QUERY), svg)
@@ -4712,3 +4729,139 @@ def test_the_census_reaches_every_mark_declared_outside_the_glyph_tables():
     assert sorted(was) == ["O", "o", "·"], was
     assert "severity" in was["O"] and "identity" in was["O"], was["O"]
     assert "severity" in was["o"] and "identity" in was["o"], was["o"]
+
+
+# ---------------------------------------------------------------------------
+# inc63 (rework-6a) — E4: the exporter's ground is DECLARED, never inferred
+# ---------------------------------------------------------------------------
+#: `contrast(ink, ground)` per language, rounded, as the shipped kits measure
+#: it. Written down rather than only bounded, because the floor below (4.5:1,
+#: WCAG 1.4.3 for body text) is nowhere near any of these and a kit that
+#: walked its ink halfway to its paper would still clear it. A number moving
+#: in this table is a design change somebody has to look at.
+GROUND_INK_CONTRAST = {
+    "naught": 19.26, "corgi": 17.36, "instrument": 16.52, "swiss": 17.30,
+    "industrial": 15.55, "nord": 10.84, "darkside": 19.26, "prism": 16.02,
+    "ledger": 13.36, "solari": 16.81, "blueprint": 10.60,
+}
+
+#: Textual's own default screen ground. It is in this file for one reason: it
+#: is the colour all 66 sheets shipped as their canvas until inc63, and the
+#: teeth below reproduce that on real bytes.
+_TEXTUAL_DEFAULT_GROUND = "#121212"
+
+#: the sheet's own canvas — `svg_from_grid` writes it before any cell run, so
+#: it is the one `<rect>` with no `x`/`y`.
+_CANVAS_RECT = re.compile(
+    r'<rect width="([0-9.]+)" height="([0-9.]+)" fill="(#[0-9a-fA-F]{6})"/>')
+#: every other `<rect>`: one run of cells that carry a ground of their own.
+_BG_RUN = re.compile(r'<rect x="[-0-9.]+" y="[-0-9.]+" width="([0-9.]+)" '
+                     r'height="([0-9.]+)" fill="(#[0-9a-fA-F]{6})"/>')
+
+
+def _luminance(hexcolour: str) -> float:
+    """WCAG 2.x relative luminance. `L = 0.2126R + 0.7152G + 0.0722B` over
+    linearised channels."""
+    h = hexcolour.lstrip("#")
+    ch = []
+    for i in (0, 2, 4):
+        v = int(h[i:i + 2], 16) / 255
+        ch.append(v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2]
+
+
+def contrast(a: str, b: str) -> float:
+    """`(L1 + 0.05) / (L2 + 0.05)`, lighter over darker."""
+    la, lb = _luminance(a), _luminance(b)
+    return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
+
+
+def ground_report(svg: str) -> tuple[str, dict[str, float]]:
+    """`(the canvas colour, the area each ground colour actually shows)`.
+
+    Area in square units of the picture's own coordinate space, not in cells:
+    the cell width is the exporter's business and this reader has no opinion
+    about it. The canvas's share is what is LEFT after every run is subtracted
+    — which is the only way to ask "is the declared ground the ground you can
+    see", as opposed to "is it the string in the first rect"."""
+    m = _CANVAS_RECT.search(svg)
+    assert m, svg[:200]
+    canvas = m.group(3)
+    over: dict[str, float] = {}
+    for w, h, fill in _BG_RUN.findall(svg):
+        over[fill] = over.get(fill, 0.0) + float(w) * float(h)
+    left = float(m.group(1)) * float(m.group(2)) - sum(over.values())
+    return canvas, {canvas: left, **over}
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_svg_canvas_is_the_kits_declared_ground(lang):
+    """THE GROUND IS DECLARED, AND IT IS THE GROUND YOU CAN SEE.
+
+    Ruling E4 (orchestrator, 2026-09-07): *the exporter reads the kit's
+    declared `ground` and `ink`; it never infers them from frequency.*
+
+    WHAT WAS WRONG. `cell_grid()` took "the most common background in the
+    frame" for the ground, and `render.py` assigned the screen's background
+    AFTER the first paint — too late for strips the compositor had already
+    cached. So every cell of all 66 sheets arrived on Textual's `#121212`, the
+    exporter agreed with the mistake by counting it, and no rect was written
+    over it. On ten dark languages that was luck. On ledger, the corpus's only
+    light-paper kit (`ground #e9e1cf`, `ink #1c1a15`), it shipped six sheets
+    of black ink on a black canvas: **1.08:1**, with the dot leaders
+    (`#c4b99f`, 9.62:1) the only legible thing on the page and the hierarchy
+    therefore exactly inverted.
+
+    THREE CLAUSES, AND THE THIRD IS WHY THE FIRST IS NOT VACUOUS. A canvas can
+    carry the right string and still be invisible under a full-bleed repaint,
+    so the law also asks which colour has the largest area LEFT once every run
+    is subtracted. `prism_S4` paints 48.8% of its picture and is legal;
+    `industrial_S1` paints 28.3%. A sheet where a foreign colour outweighed
+    the declared ground would be the pre-inc63 state written a second way, and
+    the teeth below do exactly that to a shipped file."""
+    k = LG.kit(lang)
+    ground, ink = k.t["ground"], k.c["ink"]
+    assert round(contrast(ink, ground), 2) == GROUND_INK_CONTRAST[lang], \
+        (lang, contrast(ink, ground))
+    assert contrast(ink, ground) >= 4.5, (lang, ground, ink)
+    for screen in SCREENS:
+        svg = (FRAMES / f"{lang}_{screen}.svg").read_text(encoding="utf-8")
+        canvas, area = ground_report(svg)
+        assert canvas == ground, (lang, screen, canvas, ground)
+        widest = max(area, key=area.get)
+        assert widest == ground, (lang, screen, widest, area)
+
+
+def test_the_declared_ground_law_bites_on_the_defect_it_was_written_for():
+    """Watched failing on REAL BYTES, both clauses, two ways.
+
+    Not a monkeypatch and not a hand-built picture: `ledger_S6.svg` as it
+    ships, edited the two ways the defect actually presented.
+
+    (a) THE CANVAS TAKES TEXTUAL'S GROUND — what every one of the 66 shipped
+    until inc63. One substitution on the canvas rect, and the contrast clause
+    reads 1.08:1.
+
+    (b) THE CANVAS IS RIGHT AND SOMETHING FULL-BLEED SITS ON IT — the shape a
+    naive fix takes if the exporter is taught the declared ground while the
+    cells still arrive on `#121212`: every clause about the first rect passes
+    and the picture is unchanged. The area clause is what catches it."""
+    k = LG.kit("ledger")
+    svg = (FRAMES / "ledger_S6.svg").read_text(encoding="utf-8")
+    canvas, area = ground_report(svg)
+    assert canvas == k.t["ground"] and max(area, key=area.get) == canvas
+
+    stale = svg.replace(f'fill="{canvas}"/>',
+                        f'fill="{_TEXTUAL_DEFAULT_GROUND}"/>', 1)
+    assert ground_report(stale)[0] == _TEXTUAL_DEFAULT_GROUND
+    assert round(contrast(k.c["ink"], _TEXTUAL_DEFAULT_GROUND), 2) == 1.08
+    assert contrast(k.c["ink"], _TEXTUAL_DEFAULT_GROUND) < 4.5
+
+    m = _CANVAS_RECT.search(svg)
+    covered = svg.replace(
+        "<g font-family",
+        f'<rect x="0.0" y="0.0" width="{m.group(1)}" height="{m.group(2)}" '
+        f'fill="{_TEXTUAL_DEFAULT_GROUND}"/>\n<g font-family', 1)
+    seen, spread = ground_report(covered)
+    assert seen == k.t["ground"], "clause one still passes -- that is the point"
+    assert max(spread, key=spread.get) == _TEXTUAL_DEFAULT_GROUND, spread

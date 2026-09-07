@@ -443,14 +443,16 @@ async def sweep_to(dirpath: str, stable: int, extra: int,
                     await pilot.pause()
                 if extra:
                     rows = CL.screen_text(app)
-                CL.write(f"board_{lang}", rows, app, f"{lang} board")
+                CL.write(f"board_{lang}", rows, app, f"{lang} board",
+                         TH.THEMES[lang]["ground"])
                 await pilot.press("g")
                 grows = await _settle(pilot, app, f"gallery {lang}")
                 for _ in range(extra):
                     await pilot.pause()
                 if extra:
                     grows = CL.screen_text(app)
-                CL.write(f"gallery_{lang}", grows, app, f"{lang} components")
+                CL.write(f"gallery_{lang}", grows, app, f"{lang} components",
+                         TH.THEMES[lang]["ground"])
     finally:
         CL.OUT, CL.STABLE_READS = orig_out, orig_stable
 
