@@ -1,14 +1,14 @@
  board │  form │ ▸cfg │  log                                                                        
 SETTINGS  5 switches  ·  2 selects  ·  1 slider                                                     
                                                                                                     
-  notify on overdue         ⣿⣿⢸                                                                     
-  daily digest              ⣿⣿⢸                                                                     
-  sound                     ⢸⣀⣀                                                                     
+  notify on overdue         ⠿⠿⢸                                                                     
+  daily digest              ⠿⠿⢸                                                                     
+  sound                     ⢸⠉⠉                                                                     
   sync to remote            ⠈⠄⠄   (no remote configured)                                            
-  compact rows              ⣿⣿⢸                                                                     
+  compact rows              ⠿⠿⢸                                                                     
                                                                                                     
-  start of week             ⣿mon    ⣶⣿                                                              
-  theme                     ⣿dark   ⣶⣿                                                              
+  start of week             ⠿mon    ⣶⠿                                                              
+  theme                     ⠿dark   ⣶⠿                                                              
                                 auto                                                                
                                 light                                                               
                               ▸ dark                                                                
@@ -17,7 +17,7 @@ SETTINGS  5 switches  ·  2 selects  ·  1 slider
                                                                                                     
                                                                                                     
   danger zone                                                      ⡀⡤⣶ delete every completed task  
-  ⣿⣀⣿Delete all⣿⣀⣿   7 tasks, not recoverable                                                       
+  ⠿⠉⣿Delete all⣿⠉⠿   7 tasks, not recoverable                                                       
                                                                                                     
                                                                                                     
                                                                                                     

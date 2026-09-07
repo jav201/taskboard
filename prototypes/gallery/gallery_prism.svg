@@ -116,11 +116,11 @@
 <rect x="724.0" y="367.0" width="25.2" height="17.0" fill="#161b22"/>
 <text x="262.0" y="380.3" fill="#2dd4bf">│</text>
 <text x="379.6" y="380.3" fill="#e6edf3">⢸</text>
-<text x="388.0" y="380.3" fill="#5b6675">⣀⣀</text>
-<text x="421.6" y="380.3" fill="#8b98a5">⣿⣿</text>
+<text x="388.0" y="380.3" fill="#5b6675">⠉⠉</text>
+<text x="421.6" y="380.3" fill="#8b98a5">⠿⠿</text>
 <text x="438.4" y="380.3" fill="#e6edf3">⢸  </text>
-<text x="463.6" y="380.3" fill="#5b6675">⣿⣀⣿</text>
-<text x="488.8" y="380.3" fill="#e6edf3">  ⣿⠀⣿   </text>
+<text x="463.6" y="380.3" fill="#5b6675">⠿⠉⠿</text>
+<text x="488.8" y="380.3" fill="#e6edf3">  ⠿⠀⠿   </text>
 <text x="556.0" y="380.3" fill="#5b6675">default</text>
 <text x="740.8" y="380.3" fill="#2dd4bf">│</text>
 <rect x="262.0" y="384.0" width="445.2" height="17.0" fill="#161b22"/>
@@ -128,10 +128,10 @@
 <rect x="724.0" y="384.0" width="25.2" height="17.0" fill="#161b22"/>
 <text x="262.0" y="397.3" fill="#2dd4bf">│</text>
 <text x="379.6" y="397.3" fill="#2dd4bf">⢿</text>
-<text x="388.0" y="397.3" fill="#5b6675">⣀⣀</text>
-<text x="421.6" y="397.3" fill="#8b98a5">⣿⣿</text>
+<text x="388.0" y="397.3" fill="#5b6675">⠉⠉</text>
+<text x="421.6" y="397.3" fill="#8b98a5">⠿⠿</text>
 <text x="438.4" y="397.3" fill="#2dd4bf">⢿</text>
-<text x="463.6" y="397.3" fill="#5b6675">⣷⣀⣷</text>
+<text x="463.6" y="397.3" fill="#5b6675">⣷⠉⣷</text>
 <text x="505.6" y="397.3" fill="#2dd4bf">⣷⠀⣷</text>
 <text x="556.0" y="397.3" fill="#5b6675">focused</text>
 <text x="740.8" y="397.3" fill="#2dd4bf">│</text>
@@ -140,10 +140,10 @@
 <rect x="724.0" y="401.0" width="25.2" height="17.0" fill="#161b22"/>
 <text x="262.0" y="414.3" fill="#2dd4bf">│</text>
 <text x="379.6" y="414.3" fill="#2dd4bf">⣾</text>
-<text x="388.0" y="414.3" fill="#5b6675">⣀⣀</text>
-<text x="421.6" y="414.3" fill="#8b98a5">⣿⣿</text>
+<text x="388.0" y="414.3" fill="#5b6675">⠉⠉</text>
+<text x="421.6" y="414.3" fill="#8b98a5">⠿⠿</text>
 <text x="438.4" y="414.3" fill="#2dd4bf">⣾</text>
-<text x="463.6" y="414.3" fill="#5b6675">⣾⣀⣾</text>
+<text x="463.6" y="414.3" fill="#5b6675">⣾⠉⣾</text>
 <text x="505.6" y="414.3" fill="#2dd4bf">⣾⠀⣾</text>
 <text x="556.0" y="414.3" fill="#5b6675">active</text>
 <text x="740.8" y="414.3" fill="#2dd4bf">│</text>
@@ -152,7 +152,7 @@
 <rect x="724.0" y="418.0" width="25.2" height="17.0" fill="#161b22"/>
 <text x="262.0" y="431.3" fill="#2dd4bf">│</text>
 <text x="379.6" y="431.3" fill="#5b6675">⠈⠄⠄</text>
-<text x="421.6" y="431.3" fill="#5b6675">⣤⣤⠈</text>
+<text x="421.6" y="431.3" fill="#5b6675">⠛⠛⠈</text>
 <text x="463.6" y="431.3" fill="#5b6675">⠄⠄⠄</text>
 <text x="505.6" y="431.3" fill="#5b6675">⠄⠀⠄</text>
 <text x="556.0" y="431.3" fill="#5b6675">disabled</text>
@@ -168,10 +168,10 @@
 <rect x="707.2" y="452.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="452.0" width="25.2" height="17.0" fill="#161b22"/>
 <text x="262.0" y="465.3" fill="#2dd4bf">│</text>
-<text x="379.6" y="465.3" fill="#5b6675">⣀⣀⣀</text>
+<text x="379.6" y="465.3" fill="#5b6675">⠉⠉⠉</text>
 <text x="413.2" y="465.3" fill="#8b98a5">lo</text>
-<text x="430.0" y="465.3" fill="#e6edf3">  ⣀⣿⣀ mid  </text>
-<text x="522.4" y="465.3" fill="#5b6675">⣀⣀⣀</text>
+<text x="430.0" y="465.3" fill="#e6edf3">  ⠉⢸⠉ mid  </text>
+<text x="522.4" y="465.3" fill="#5b6675">⠉⠉⠉</text>
 <text x="556.0" y="465.3" fill="#8b98a5">hi</text>
 <text x="598.0" y="465.3" fill="#5b6675">default</text>
 <text x="740.8" y="465.3" fill="#2dd4bf">│</text>
@@ -179,10 +179,10 @@
 <rect x="707.2" y="469.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="469.0" width="25.2" height="17.0" fill="#161b22"/>
 <text x="262.0" y="482.3" fill="#2dd4bf">│</text>
-<text x="379.6" y="482.3" fill="#5b6675">⣀⣀⣀</text>
+<text x="379.6" y="482.3" fill="#5b6675">⠉⠉⠉</text>
 <text x="413.2" y="482.3" fill="#8b98a5">lo</text>
-<text x="430.0" y="482.3" fill="#e6edf3">  ⣀⣿⣀ mid  </text>
-<text x="522.4" y="482.3" fill="#5b6675">⣤⣤⣤</text>
+<text x="430.0" y="482.3" fill="#e6edf3">  ⠉⢸⠉ mid  </text>
+<text x="522.4" y="482.3" fill="#5b6675">⠛⠛⠛</text>
 <text x="556.0" y="482.3" fill="#8b98a5">hi</text>
 <text x="598.0" y="482.3" fill="#5b6675">focused</text>
 <text x="740.8" y="482.3" fill="#2dd4bf">│</text>
@@ -190,10 +190,10 @@
 <rect x="707.2" y="486.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="486.0" width="25.2" height="17.0" fill="#161b22"/>
 <text x="262.0" y="499.3" fill="#2dd4bf">│</text>
-<text x="379.6" y="499.3" fill="#5b6675">⣀⣀⣀</text>
+<text x="379.6" y="499.3" fill="#5b6675">⠉⠉⠉</text>
 <text x="413.2" y="499.3" fill="#8b98a5">lo</text>
-<text x="430.0" y="499.3" fill="#e6edf3">  ⣀⣿⣀ mid  </text>
-<text x="522.4" y="499.3" fill="#5b6675">⣶⣶⣶</text>
+<text x="430.0" y="499.3" fill="#e6edf3">  ⠉⢸⠉ mid  </text>
+<text x="522.4" y="499.3" fill="#5b6675">⠿⠿⠿</text>
 <text x="556.0" y="499.3" fill="#8b98a5">hi</text>
 <text x="598.0" y="499.3" fill="#5b6675">active</text>
 <text x="740.8" y="499.3" fill="#2dd4bf">│</text>
