@@ -7226,8 +7226,17 @@ async def main():
           not any(OFF in r for r in fl_card))
     check("naught.layout=flow still renders the board — it degrades, not dies",
           "BACKLOG" in fl_head and "Shut down legacy servers" in fl_card[0])
+    # inc67: THE FILL CELL IS READ FROM THE DECLARATION, not spelled. This
+    # asserted `ON in fl_meter` and went red the moment `METER_CELLS`
+    # moved naught's meter off the lit dot -- which is the right answer for
+    # the wrong reason, because the claim is "the meter keeps its dots", not
+    # "the meter keeps `NA.ON`". `Kit.quantity_glyphs()` is the one seat that
+    # says which two cells those are, so the check asks it and stays true of
+    # whatever this language fills with.
+    _q = LG.kit("naught").quantity_glyphs()
     check("naught.layout=flow keeps the METER's dots (they answer to `meter`)",
-          OFF in fl_meter and ON in fl_meter)
+          _q["meter.track"] in fl_meter and _q["meter.fill"] in fl_meter,
+          f"fill={_q['meter.fill']} track={_q['meter.track']}")
     check("naught: the lattice composition is restored after the mutation",
           grey(kn.head("BACKLOG", 5, 20, 0)) == lat_head)
 

@@ -28,6 +28,18 @@ from taskboard import bases as BS
 
 ON, OFF = "∙", "◦"
 
+# THE LOADED DOT — one rung ABOVE the lit one on this language's charge ramp
+# (`⋅ ◦ ∙ ◉ ●`), and the cell a QUANTITY fills with (inc67, K5).
+#
+# `ON` could not keep that job. `Naught.LEVELS` is `◦◦ / ∙◦ / ∙∙` and
+# `DANGER_FORM` is `∙∙`, so the lit dot IS the error rung and the danger byte
+# — and `dot_meter` filled a progress bar with it: `naught_S1` drew thirteen
+# `∙` in row 13 and two more in row 23, where they meant "overdue", and no law
+# in the corpus could see the bar at all. THE LADDER COUNTS AND THE METER
+# CHARGES, which is this language's own sentence ("la retícula CUENTA; el
+# píxel se CARGA") kept instead of two readings sharing one cell.
+CHARGE = "◉"
+
 # The SECOND dot scale (Nothing mixes large structure dots with small data
 # dots — the step counter's tiny rows). Braille dots are round AND sub-cell:
 # a column of 0-3 small dots per cell. Distinct from instrument's idiom
@@ -210,13 +222,20 @@ def numeral(s: str, on_c: str, off_c: str, font, dot_w: int = 2,
 
 
 def dot_meter(done: int, total: int, cells: int, on_c: str, off_c: str,
-              gap: int = 1) -> str:
-    """Quantity as discrete lit dots on a visible lattice — never a filled bar."""
+              gap: int = 1, on: str = CHARGE, off: str = OFF) -> str:
+    """Quantity as discrete lit dots on a visible lattice — never a filled bar.
+
+    `on` AND `off` ARE ARGUMENTS AND THE CALLER DECLARES THEM (inc67). The
+    two cells used to be `ON` and `OFF` read straight out of this module, so
+    the one place a language says what its quantity is drawn with was a
+    literal inside a drawing function. `METER_CELLS["dotgrid"]` is that
+    declaration now and `_meter_dotgrid` passes it in; the defaults keep this
+    function usable on its own and are the same declaration read from here."""
     if cells <= 0:
         return ""
     n = 0 if total <= 0 else max(0, min(cells, round(cells * done / total)))
-    lit = (ON + " " * gap) * n
-    dark = (OFF + " " * gap) * (cells - n)
+    lit = (on + " " * gap) * n
+    dark = (off + " " * gap) * (cells - n)
     return f"[{on_c}]{lit.rstrip()}[/] [{off_c}]{dark.rstrip()}[/]"
 
 

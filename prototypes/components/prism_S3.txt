@@ -13,7 +13,7 @@ SETTINGS  5 switches  ·  2 selects  ·  1 slider
                                 light                                                               
                               ▸ dark                                                                
                                                                                                     
-  row density               ⣿⣿⣿⣿⣿⣿⣿⣿⣿⢸⣀⣀⣀⣀ 70                                                       
+  row density               ⠿⠿⠿⠿⠿⠿⠿⠿⠿⢸⠉⠉⠉⠉ 70                                                       
                                                                                                     
                                                                                                     
   danger zone                                                      ⡀⡤⣶ delete every completed task  

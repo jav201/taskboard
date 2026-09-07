@@ -214,6 +214,72 @@ METER_RAMP = {
     "step": "step", "dimension": "dimension",
 }
 
+# `meter` token -> the cells the QUANTITY MECHANISM spends, as
+# `(fill, track, opener, closer)`. THE THIRD ROW KEYED ON THIS TOKEN and the
+# same argument as the other two: a mechanism is REACHED through `meter`, so
+# what it draws with is a registry row rather than a literal buried in each
+# `_meter_*` body, and a language that changed mechanism carries its cells
+# with it.
+#
+# AN INT IS AN INDEX INTO `cover_ramp()` and a STR is a literal that mechanism
+# spells. The split is not cosmetic: six of the thirteen ask the ONE SEAT for
+# their ramp (#45) and writing their cells as literals here would be the
+# second answer that seat exists to prevent, while `blocks`, `hairline`,
+# `boxed`, `step`, `ember`, `braille` and `dotgrid` spell cells the ramp does
+# not carry.
+#
+# `None` IS A MECHANISM WITH NO SUCH CELL, and there are two kinds. `odometer`
+# and `dimension` have no FILL AT ALL -- a printed figure and a dimensioned
+# span, the two `RAMPLESS_METERS` the fill-direction law already names -- and
+# eleven of the thirteen bracket nothing, so their opener and closer are
+# `None` rather than an empty string that would read as "a blank opener".
+#
+# WHY THIS TABLE EXISTS (K5, ruling A amended, 2026-09-07). The census reads
+# `PART_GLYPHS`, `FIELD_LEAD` and `IDENT_GLYPHS`; the meter, the sparkline and
+# the mascot are drawn outside all three, so a language could spend its error
+# rung on a progress bar and every law in the corpus would read zero.
+# `naught_S1` drew thirteen `∙` -- `LEVELS["error"]` and the `DANGER_FORM`
+# byte for byte -- ten rows under a task marked overdue with the same cell,
+# and nothing could see it.
+METER_CELLS = {
+    "blocks":    ("━", "─", None, None),
+    "dotgrid":   (NA.CHARGE, NA.OFF, None, None),
+    "ember":     ("⣿", "⣀", None, None),
+    "lcd":       (1, 0, None, None),
+    "braille":   ("⣿", "⠒", None, None),
+    "hairline":  ("━", "─", None, None),
+    "boxed":     ("█", "░", "[", "]"),
+    "decay":     (3, 0, None, None),
+    "gradient":  (3, 0, None, None),
+    "step":      ("█", "▁", None, None),
+    "tally":     (3, 0, None, None),
+    "odometer":  (None, None, None, None),
+    "dimension": (None, None, "├", "┤"),
+}
+
+
+def base_pixel(base: str) -> str:
+    """The cell a pixel base draws ONE FULLY LIT PIXEL with.
+
+    A mascot is a bitmap put through a base, so the cells it emits are that
+    base's pixel at every COVERAGE the base can reach -- a braille cat is a
+    full cell in its middle and part-cells along its edges, exactly as a
+    ramp's middle steps are its terminal partly covered. The language's
+    declaration is the PIXEL, not the anti-aliasing: a law that read every
+    cell of the artwork would be measuring the drawing rather than the
+    alphabet.
+
+    (No part-cell is SPELLED in this docstring on purpose -- `#46`'s census
+    in `verify_language.py` reads this file's source for half-cell fills and
+    a prose example is indistinguishable from a sixth seat.)
+
+    Derived by rendering an all-on bitmap at the base's own sub-cell
+    resolution (`bases.BASES[base]["sub"]`), so a base that changes its
+    terminal moves this with it and cannot leave a stale literal behind."""
+    sub_w, sub_h = BS.BASES[base]["sub"]
+    rows = BS.render([[1] * sub_w for _ in range(sub_h)], base)
+    return "".join(rows).strip()
+
 
 def coverage_index(c: float, levels: int,
                    lo: float = COVER_LO, hi: float = COVER_HI) -> int:
@@ -1645,6 +1711,74 @@ class Kit:
     # `tabs()` that spells its active tab in CASE or in tone declares nothing
     # either. Darkside is the one language whose identity is a GLYPH.
     IDENT_GLYPHS: tuple[str, ...] = ()
+
+    # THE CELL THE CREATURE IS DRAWN WITH, when it is not the pixel base's
+    # own. Empty for ten of the eleven: a mascot is a bitmap put through
+    # `bases.py`, so its pixel is `base_pixel(base)` and declaring it again
+    # here would be a second answer. Corgi is the one language that had to
+    # say something — its base is `segment`, which cannot draw a creature at
+    # all, so `mascot` falls back to `block` and the fallback drew `█`, this
+    # kit's `LEVELS["error"]` and `DANGER_FORM` (inc67, K5).
+    MASCOT_PIXEL = ""
+
+    def quantity_glyphs(self) -> dict[str, str]:
+        """THE CELLS THIS LANGUAGE'S QUANTITY WIDGETS SPEND, at the seats that
+        live OUTSIDE `PART_GLYPHS` — the meter, the sparkline and the mascot.
+
+        RULING A, AMENDED (orchestrator, 2026-09-07, on the operator's
+        delegation): *"the census's B set reaches every quantity widget:
+        slider, bar, scrollbar, meter, sparkline, pager, mascot. Their fill
+        and track cells are chrome; a fill cell may not be a meaning mark of
+        its language."*
+
+        FOUR OF THE SEVEN NEED NO DECLARATION. The slider, the bar and the
+        scroll bar are `COMPONENT_PARTS` entries and have been in
+        `PART_GLYPHS` since the registry was written — and the PAGER **is**
+        the scroll bar (`screens.s1` calls `k.scrollbar`). They were invisible
+        to the census because it excluded them from set B by the operator's
+        own request, which is a reader's boundary and not a missing
+        declaration; inc67 removes the exclusion instead of restating their
+        cells here.
+
+        WHY A METHOD ON THE KIT AND NOT ENTRIES IN `PART_GLYPHS`, which was
+        the other candidate. `PART_GLYPHS` is keyed by part and read by
+        `part_glyph` THROUGH THE STATE CHAIN: every one of its rows answers
+        "what does this slot look like in state X". A meter has no states —
+        it has a VALUE — and a mascot is a drawing. Putting them there would
+        hand `component_states`, the disabled-seat law and the checked-pair
+        law three components with no states to walk, which is exactly the
+        dead metadata `COMPONENT_PARTS` refuses at `GRIPS` and `VIEWED`. The
+        precedent for a declaration OUTSIDE the tables is inc57's, and this
+        is its third and fourth member: `FIELD_LEAD` and `IDENT_GLYPHS` were
+        literals inside methods until a census could not see them.
+
+        DERIVED, NEVER TYPED. The meter's two cells come from `METER_CELLS`
+        keyed on the same `meter` token that dispatches the drawing; the
+        spark's two come from `cover_ramp()`, the ONE SEAT (#45); the
+        mascot's comes from the pixel base. Nothing here is a second copy
+        that could drift from what gets drawn, and the law
+        `test_a_quantity_widget_draws_what_it_declares` renders each of them
+        at its floor and its ceiling and says so."""
+        mech = self.t.get("meter", "blocks")
+        fill, track, open_, close = METER_CELLS.get(
+            mech, METER_CELLS["blocks"])
+        ramp = self.cover_ramp()
+        out = {"meter.fill": ramp[fill] if isinstance(fill, int) else fill,
+               "meter.track": ramp[track] if isinstance(track, int) else track,
+               "meter.open": open_, "meter.close": close}
+        if mech != "odometer":
+            # the sparkline wears the mechanism's family (`Kit.spark`) and
+            # asks the same one seat for its ramp, so its floor and its peak
+            # are the ramp's two ends. `odometer` is the one branch of
+            # `spark` that does not route at all — a flap board's series is a
+            # row of FIGURES, so it has no floor and no peak to declare.
+            out["spark.floor"], out["spark.peak"] = ramp[0], ramp[-1]
+        base = self.t.get("base", "block")
+        if base == "segment":              # `Kit.mascot`'s own fallback
+            base = "block"
+        out["mascot.pixel"] = ((self.MASCOT_PIXEL or base_pixel(base))
+                               if self.mascot() else "")
+        return {k: v for k, v in out.items() if v}
 
     def field_row(self, caption: str, value: str, w: int) -> str:
         c = self.c
@@ -3479,6 +3613,13 @@ class Kit:
             base = "block"
         sx, sy = BS.BASE_SCALE.get(base, (1, 1))
         rows = BS.render(BS.scale(self._bitmap(MASCOT), sx, sy), base)
+        # THE DECLARED PIXEL, WHERE ONE IS DECLARED (inc67). A substitution
+        # and not a second renderer: `MASCOT_PIXEL` is only ever set by a kit
+        # whose base emits ONE cell (`base_pixel`), so this replaces that cell
+        # and touches nothing else.
+        if self.MASCOT_PIXEL:
+            px = base_pixel(base)
+            rows = [r.replace(px, self.MASCOT_PIXEL) for r in rows]
         return [f"[{self.c['accent']}]{r}[/]" for r in rows]
 
     def wordmark(self, text: str) -> list[str]:
@@ -3993,6 +4134,21 @@ class Naught(Kit):
     #: because this language's lattice is one alphabet and the row is the
     #: lattice.
     FIELD_LEAD = NA.OFF
+
+    #: THE CREATURE IS THE LATTICE (inc67). `mascot` is overridden here to
+    #: `face()`, which draws `NA.ON` on `NA.OFF` rather than going through
+    #: `bases.py` at all — so the pixel this language's mascot spends is the
+    #: LIT DOT and not `base_pixel("block2")`, which is what the derivation
+    #: would otherwise answer. Declared so the two cannot disagree.
+    #:
+    #: IT IS A ROW ON THE FILL ROSTER AND IT IS NOT MOVED. `NA.ON` is
+    #: `LEVELS["error"]` and the `DANGER_FORM` byte, so a creature drawn with
+    #: it is a fill cell wearing a meaning — and `PROTOTYPE-inheritors-3.md`
+    #: §2.8 judged the same drawing the best thing on `naught_S6` ("la carita
+    #: triste dibujada en la retícula ... es el compromiso del lenguaje
+    #: aplicado a un dibujo"). Counted, named, and left for whoever wants to
+    #: argue with that reading.
+    MASCOT_PIXEL = NA.ON
 
     def field_row(self, caption, value, w):
         """THE LATTICE IS THE GROUND, so the row's remainder is DRAWN.
@@ -4759,7 +4915,25 @@ class Corgi(Kit):
     # INSIDE one panel this language separates by air. This is the EDGE of the
     # display, and the edge is a bar. The gutters are the brutalist grid's own
     # ("single-cell gutters, no rounded corners").
-    PANE_RULE = "█"
+    #
+    # AND THE BAR IS MILLED, NOT DRIVEN (inc67, K5). It was `█` — this kit's
+    # `LEVELS["error"]` and its `DANGER_FORM` byte for byte — drawn twenty-five
+    # rows tall down the middle of `corgi_S1`, the screen the operator looks at
+    # longest. Asked to point at the cells that mean "irreversible", that frame
+    # offered forty-seven candidates and none of them was one. inc58's ruling
+    # settles which register a partition belongs to without adding a word to
+    # it: THE BANK IS THE READING, THE PANEL IS THE MILLED METAL. A pane edge
+    # is panel, so it takes the top step of the shade ramp — the same ramp the
+    # switch's live track and the field's paper are cut from, and no rung of
+    # anything.
+    PANE_RULE = "▓"
+
+    # THE CREATURE IS MILLED TOO, and for the same reason. This kit's base is
+    # `segment`, which cannot draw a creature at all, so `Kit.mascot` falls
+    # back to `block` — and the fallback's pixel is `█`, eighteen more cells of
+    # the error rung under an empty gate in `corgi_S1` and under a search that
+    # found nothing in `corgi_S6`. The drawing is kept and its pixel moves.
+    MASCOT_PIXEL = "▓"
 
     # THE VALIDATION ROW, on the panel. The remainder is BARE PANEL -- air,
     # because a silkscreen does not rule a line out of a legend (`field_row`
@@ -7431,13 +7605,29 @@ class Prism(Kit):
     # climbs.
     # ======================================================================
     PART_GLYPHS = {
-        # THE SLIDER'S AND THE BAR'S, and theirs alone since inc59.  These
-        # are a QUANTITY: "the slider's track is every value the knob could
-        # take, so it is the ramp's floor", and a quantity in this language
-        # IS the ember.  The hardware toggle is a control and takes the
-        # scoped tables below.
+        # THE BAR'S, AND ITS ALONE SINCE inc67.  This is a QUANTITY and a
+        # quantity in this language IS the ember: `prism_S5` draws
+        # `EVENTS/S ⣿⣿⣿⣿⣿⣿⣿⣀⣀⣀⣀⣀⣀⣀`, heavy first, and the readbar has no
+        # grip at all (`actuator("bar")` is None) — nobody moves it, it is
+        # told to you.  It is `THE_METER_IS_THE_SEVERITY_DEVICE`'s second
+        # seat, exempt by name in `tests/test_components.py`.
+        #
+        # THE SLIDER LEFT (inc67, K5).  inc59 scoped the toggle away from
+        # this pair because A TOGGLE IS A CONTROL AND IS READ FROM THE TOP,
+        # and left the slider behind — but a slider is a control by the same
+        # registry fact the toggle is one (`GRIPS`: it has a KNOB, and
+        # `COMPONENT_PARTS` says a switch is a slider whose range is
+        # boolean).  So `prism_S3` row 16 drew `⣿⣿⣿⣿⣿⣿⣿⣿⣿⢸⣀⣀⣀⣀ 70`, nine
+        # cells of `LEVELS["error"]` and the `DANGER_FORM`, four rows above
+        # `⠿⠉⣿Delete all⣿⠉⠿`.  The exemption's own condition (ruling A) is
+        # that it leave a control's fill distinct from an error rung IN THE
+        # FRAME, and that frame refuses it.  The slider takes the toggle's
+        # tables byte for byte, which is what "a switch is a slider whose
+        # range is boolean" has meant since the registry was written.
         "main": {DEFAULT: "⣀", DISABLED: "⠄"},
         "indicator": {DEFAULT: "⣿", DISABLED: "⣤"},
+        "slider.main": {DEFAULT: "⠉", DISABLED: "⠄"},
+        "slider.indicator": {DEFAULT: "⠿", DISABLED: "⠛"},
         # THE TOGGLE'S TRACK, scoped away from the slider's in inc59.  It was
         # falling through to the pair above, so the off-track was
         # `LEVELS["info"]`, the on-track was `LEVELS["error"]` and the
@@ -7523,8 +7713,16 @@ class Prism(Kit):
         # could take, so it is the ramp's floor; the scroll bar's shaft is
         # everywhere the view could BE, so it is drawn as an unlit lattice and
         # the thumb is the only fire on it.
+        # inc67: THE SHAFT HAD LEFT THE EMBER AND THE THUMB HAD NOT.  The
+        # sentence above is right and it was only half carried out — the
+        # shaft took the unlit lattice and the thumb kept `⣿`, so
+        # `prism_S1`'s pager drew `view ⠒⣿⣿⣿⣿⠒⠒⠒⠒⠒⠒⠒ 3-10 of 23`: four
+        # cells of the error rung and the danger form saying "you are here".
+        # `⣿` stands thirty-one times in that frame and not one of them is a
+        # danger.  The thumb joins the shaft's register, which is the same
+        # top-carved fire the switch and the slider run on.
         "scrollbar.main": {DEFAULT: "⠒", DISABLED: "⠄"},
-        "scrollbar.indicator": {DEFAULT: "⣿", DISABLED: "⣤"},
+        "scrollbar.indicator": {DEFAULT: "⠿", DISABLED: "⠛"},
         # THE TWO DIRECTIONS AS TWO HALF-CELLS: the step back lights the left
         # dot-column, the step forward the right.  Position says direction --
         # and at an end the ground's half draws instead, so CLAMP and WRAP
@@ -10429,7 +10627,9 @@ def _meter_dotgrid(k, done, total, counts, w):
     avail = max(8, w - 8)
     cells = max(4, avail // max(1, dot_w + g))
     pct, _ = _pct_n(done, total, 1)
-    return (NA.dot_meter(done, total, cells, c["ink"], c["dim"], gap=g)
+    q = k.quantity_glyphs()
+    return (NA.dot_meter(done, total, cells, c["ink"], c["dim"], gap=g,
+                         on=q["meter.fill"], off=q["meter.track"])
             + f" [{c['mut']}]{pct:>3}%[/]\n"
             + NA.dot_heat(counts, max(2, (avail - 6) // max(1, 1 + g)),
                           c["ink"], c["mut"], c["dim"], gap=g)

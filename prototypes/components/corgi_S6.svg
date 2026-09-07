@@ -41,11 +41,11 @@
 <text x="60.4" y="244.3" fill="#f2f2f2">zzq</text>
 <text x="85.6" y="244.3" fill="#ff6600">▌</text>
 <text x="94.0" y="244.3" fill="#3a3a3a">▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▜▜</text>
-<text x="43.6" y="278.3" fill="#ff6600"> ██    ██ </text>
-<text x="43.6" y="295.3" fill="#ff6600"> ██    ██ </text>
-<text x="43.6" y="329.3" fill="#ff6600">█        █</text>
-<text x="43.6" y="346.3" fill="#ff6600"> █      █ </text>
-<text x="43.6" y="363.3" fill="#ff6600">  ██████  </text>
+<text x="43.6" y="278.3" fill="#ff6600"> ▓▓    ▓▓ </text>
+<text x="43.6" y="295.3" fill="#ff6600"> ▓▓    ▓▓ </text>
+<text x="43.6" y="329.3" fill="#ff6600">▓        ▓</text>
+<text x="43.6" y="346.3" fill="#ff6600"> ▓      ▓ </text>
+<text x="43.6" y="363.3" fill="#ff6600">  ▓▓▓▓▓▓  </text>
 <text x="43.6" y="380.3" fill="#3a3a3a"> [0] NO TASKS</text>
 <text x="26.8" y="414.3" fill="#ff6600">[enter]</text>
 <text x="94.0" y="414.3" fill="#9a9a9a">RUN</text>
