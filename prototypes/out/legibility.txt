@@ -3,7 +3,7 @@ legibility.txt -- the 66 frames measured on the RASTER, not on the svg
   face      Cascadia Mono 16px  C:\WINDOWS\Fonts\CascadiaMono.ttf
   cell      9x19 px = 171 pixels
   fallback  Segoe UI Symbol for ⊖⊚⊛⋅ (sizes {'⊖': 11, '⊚': 11, '⊛': 11, '⋅': 16})
-  corpus    205 distinct painted glyphs, 36993 painted cells, 2799 distinct (kit, glyph, ink, ground, weight, decoration) drawings
+  corpus    207 distinct painted glyphs, 36993 painted cells, 2799 distinct (kit, glyph, ink, ground, weight, decoration) drawings
 
   Every number below is an AREA or a RATIO measured on pixels a
   font actually drew. E2 (the svg carries no font metric) is
@@ -28,8 +28,8 @@ that is mostly edge -- which is section C's whole subject.
      ·    2496   2.4%   4.7%  ............
      .      22   2.4%   4.7%  ............
      ⠄      25   2.5%   5.3%  ............
-     ⡀      27   2.5%   5.3%  ............
-     ⠁       8   2.5%   5.8%  ............
+     ⡀      25   2.5%   5.3%  ............
+     ⠁       6   2.5%   5.8%  ............
      ⠂      37   2.5%   5.3%  ............
      ⢀       6   2.5%   5.8%  ............
      ⠈       9   2.5%   6.4%  ............
@@ -73,7 +73,9 @@ that is mostly edge -- which is section C's whole subject.
      ⣤      11  10.1%  21.6%  #...........
      ⡇      45  10.1%  21.6%  #...........
      ⠶      29  10.1%  21.1%  #...........
+     ⣆       2  10.1%  21.6%  #...........
      ⠼       4  10.1%  22.2%  #...........
+     ⣉       2  10.1%  23.4%  #...........
      ⢸      42  10.1%  22.8%  #...........
      ⠛      66  10.1%  22.8%  #...........
      ▔      37  10.2%  10.5%  #...........
@@ -453,12 +455,12 @@ corgi         ▄ severity                 52.6%   1.67   1.71    0.876  S3 r9
 corgi         █ danger+severity          100.0%   4.41   4.50    4.410  S2 r6         
 corgi         ▐ cursor                   55.6%   5.03   6.62    2.796  S1 r8         
 corgi         ░ invalid                  68.4%   1.05   1.71    0.720  S1 r12        
-instrument    ⠁ required                  5.3%   1.24   1.74    0.065  S4 r29        
 instrument    ⠂ severity                  5.3%   1.24   1.74    0.065  S1 r0         
 instrument    ⠆ severity                 10.5%   1.90   4.50    0.200  S5 r10        
 instrument    ⠇ severity                 15.8%   1.24   1.74    0.196  S2 r12        
 instrument    ⠛ danger                   21.1%   1.24   1.74    0.261  S4 r25        
 instrument    ⠶ invalid                  21.1%   1.24   1.74    0.261  S2 r5         
+instrument    ⣉ required                 23.4%   3.77  16.52    0.883  S2 r3         
 instrument    ⣿ cursor                   41.5%   1.24   1.74    0.516  S4 r0         
 swiss         · severity                  4.7%   1.28   1.75    0.060  S2 r4         
 swiss         • required                 14.0%   9.13  17.30    1.281  S2 r4         
@@ -493,8 +495,8 @@ darkside      ▚ danger                   57.9%  13.94  19.26    8.069  S3 r19
 darkside      ▞ danger                   60.2%  15.12  19.26    9.108  S3 r19        
 darkside      ▪ required                 17.5%  10.10  19.26    1.772  S2 r3         
 prism         ▸ cursor                   21.1%   2.95   5.18    0.621  S4 r0         
-prism         ⡀ required                  4.7%   1.77   3.25    0.083  S1 r5         
 prism         ⣀ severity                  9.9%   1.46   2.41    0.145  S1 r12        
+prism         ⣆ required                 21.6%   4.22  16.02    0.913  S2 r3         
 prism         ⣏ invalid                  31.6%   1.64   3.25    0.518  S2 r5         
 prism         ⣤ severity                 21.6%   2.31   6.43    0.499  S5 r10        
 prism         ⣹ invalid                  31.6%   1.64   3.25    0.518  S2 r5         
@@ -531,12 +533,12 @@ rank kit          gl family                      cov     eff    decl  cov*eff
    2 swiss         · severity                  4.7%   1.28   1.75    0.060
    3 nord          · severity                  4.7%   1.30   1.69    0.061
    4 instrument    ⠂ severity                  5.3%   1.24   1.74    0.065
-   5 instrument    ⠁ required                  5.3%   1.24   1.74    0.065
-   6 prism         ⡀ required                  4.7%   1.77   3.25    0.083
-   7 prism         ⣀ severity                  9.9%   1.46   2.41    0.145
-   8 naught        ◦ severity                 13.5%   1.14   1.35    0.154
-   9 naught        ∙ danger+severity          14.0%   1.20   1.35    0.169
-  10 instrument    ⠇ severity                 15.8%   1.24   1.74    0.196
+   5 prism         ⣀ severity                  9.9%   1.46   2.41    0.145
+   6 naught        ◦ severity                 13.5%   1.14   1.35    0.154
+   7 naught        ∙ danger+severity          14.0%   1.20   1.35    0.169
+   8 instrument    ⠇ severity                 15.8%   1.24   1.74    0.196
+   9 instrument    ⠆ severity                 10.5%   1.90   4.50    0.200
+  10 swiss         ─ severity                 15.8%   1.31   1.75    0.207
 
 ==============================================================================
 E. THE PRODUCT, AND WHY THE RULING DID NOT TAKE IT
@@ -544,7 +546,7 @@ E. THE PRODUCT, AND WHY THE RULING DID NOT TAKE IT
 
 The 79 meaning marks the corpus draws span 0.053 to 9.802 on coverage x effective.
 
-AND 45 OF THEM ARE UNDER 3:1 ON DECLARED
+AND 44 OF THEM ARE UNDER 3:1 ON DECLARED
 CONTRAST AT THE SEAT REPORTED HERE. That number is NOT a count
 of violations and must not be read as one. `worst seat` is this
 report's own choice of where to look, and inc74 judged seats one
@@ -615,7 +617,7 @@ instrument  severity    ⠂ #6e7b89   5.3%   1.90   4.50       2  S5 r8     FAIL
 instrument  severity    ⠆ #6e7b89  10.5%   1.90   4.50       2  S5 r10    FAIL COVEFF
 instrument  severity    ⠇ #e8edf2  16.4%   4.16  16.52     1-2  S2 r16    pass    
 instrument  danger      ⠛ #e8edf2  22.8%   3.92  16.52       1  S3 r19    pass    
-instrument  required    ⠁ #e8edf2   5.8%   3.77  16.52       1  S2 r3     FAIL COV
+instrument  required    ⣉ #e8edf2  23.4%   3.77  16.52       1  S2 r3     pass    
 instrument  invalid     ⠶ #333c47  21.1%   1.24   1.74    1-27  S2 r5     FAIL EFF
 instrument  cursor      ⣿ #2dd4bf  44.4%   2.94  10.45    1-21  S1 r0     FAIL EFF
 swiss       severity    · #9b9b9b   4.7%   2.64   6.85       1  S1 r1     FAIL COVEFF
@@ -656,7 +658,7 @@ prism       severity    ⣀ #8b98a5  11.1%   2.25   6.43       2  S5 r8     FAIL
 prism       severity    ⣤ #8b98a5  21.6%   2.31   6.43       2  S5 r10    FAIL EFF
 prism       severity    ⣿ #e6edf3  44.4%   4.06  16.02     1-2  S3 r19    pass    
 prism       danger      ⣿ #e6edf3  44.4%   4.06  16.02     1-2  S3 r19    pass    
-prism       required    ⡀ #e6edf3   5.3%   4.40  16.02       1  S2 r3     FAIL COV
+prism       required    ⣆ #e6edf3  21.6%   4.22  16.02       1  S2 r3     pass    
 prism       invalid     ⣏ #5b6675  31.6%   1.64   3.25       1  S2 r5     FAIL EFF
 prism       invalid     ⣹ #5b6675  31.6%   1.64   3.25       1  S2 r5     FAIL EFF
 prism       cursor      ▸ #2dd4bf  21.6%   4.48  10.17       1  S1 r0     pass    
@@ -687,9 +689,9 @@ blueprint   required    ═ #eef4f8  26.3%   5.62  10.60       1  S2 r2     pass
 blueprint   invalid     ╲ #24486b  25.7%   1.14   1.24       1  S2 r4     FAIL EFF
 blueprint   cursor      ┌ #eef4f8  24.6%   4.33  10.60       1  S1 r8     pass    
 ------------------------------------------------------------------------------
-F1. 89 BOUND SEATS, 46 PASS, 43 FAIL
+F1. 89 BOUND SEATS, 48 PASS, 41 FAIL
 
-    coverage only    6
+    coverage only    4
     effective only   29
     both clauses     8
 
@@ -699,26 +701,33 @@ kit          gl    cov    eff    decl verdict
 ----------------------------------------------------
 naught        ⊛ 28.1%   3.45  19.26 pass        
 corgi         ▀ 57.9%  16.93  17.36 pass        
-instrument    ⠁  5.8%   3.77  16.52 FAIL COV    
+instrument    ⣉ 23.4%   3.77  16.52 pass        
 swiss         • 14.0%   9.13  17.30 FAIL COV    
 industrial    ! 18.7%   4.54  15.55 pass        
 nord          * 30.4%   3.67  10.84 pass        
 darkside      ▪ 17.5%  10.10  19.26 pass        
-prism         ⡀  5.3%   4.40  16.02 FAIL COV    
+prism         ⣆ 21.6%   4.22  16.02 pass        
 ledger        † 21.6%   3.19  13.36 pass        
 solari        ▮ 38.6%   7.67  16.81 pass        
 blueprint     ═ 26.3%   5.62  10.60 pass        
 ----------------------------------------------------
-11 obligations, 3 under the floor: instrument ⠁, swiss •, prism ⡀
+11 obligations, 1 under the floor: swiss •
 
-    ALL ELEVEN CLEAR THE CONTRAST CLAUSE, which is the half of
-    the round's prediction that holds. The round predicted TWO
-    coverage failures and there are 3. The third
-    is swiss `•` at 14.0%, one point under a floor the round set
-    at 15% and a mark the round itself recorded as visible
-    (`swiss_S2`: *"`•` obligatorio ... se ve"*). It is reported
-    and not adjusted: a floor moved to fit the corpus it was
-    written for is not a floor.
+    ALL ELEVEN CLEAR THE CONTRAST CLAUSE and always did: the
+    two the round sent back held the two BEST declared ratios
+    of the eleven while failing to be visible, which is the
+    whole reason Q1 is two clauses and not a product.
+
+    inc81 MEASURED THREE COVERAGE FAILURES WHERE THE ROUND
+    PREDICTED TWO. inc82 fixed the two it named -- instrument
+    `⠁` 5.8% -> `⣉` 23.4%, prism `⡀` 5.3% -> `⣆` 21.6%, both by
+    AREA out of each language's own alphabet, with the contrast
+    untouched. The third, swiss `•` at 14.0%, is one point under
+    a floor the round set at 15% and is a mark the same round
+    recorded as visible (`swiss_S2`: *"`•` obligatorio ... se
+    ve"*). It is NAMED AND NOT ADJUSTED: a floor moved to fit
+    the corpus it was written for is not a floor, and a mark
+    changed to fit a floor nobody re-argued is not a fix.
 
 F3. THE 5-7 RUNS, named per seat
 

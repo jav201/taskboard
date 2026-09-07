@@ -27,7 +27,7 @@ CORGI   4 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRE
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-INSTRUMENT   4 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⠁  CUR ⣿)
+INSTRUMENT   4 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⣉  CUR ⣿)
 ------------------------------------------------------------------------------
   ⣿   [7 families]  CUR  ·  bar.indicator mark (default)  ·  checkbox.knob mark (checked,default)  ·  mascot.pixel mark (declared)  ·  meter.fill mark (declared)  ·  spark.peak mark (declared)  ·  scrollbar.indicator mark (default)  ·  slider.indicator mark (active,default,edited,focused)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)
   ⠶   [6 families]  INVALID slider.knob mark + INVALID stepper.step close + INVALID stepper.step open + INVALID textfield.main mark  ·  bar.indicator mark (disabled)  ·  radio.knob mark (checked,default)  ·  slider.indicator mark (disabled)  ·  switch.indicator mark (checked+disabled,disabled)  ·  textfield.main mark (invalid)
@@ -69,11 +69,10 @@ DARKSIDE   1 colliding cells   (LEVELS · /o /O   DANGER ▚▞  REQUIRED ▪  C
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-PRISM   4 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⡀  CUR ▸)
+PRISM   3 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⣆  CUR ▸)
 ------------------------------------------------------------------------------
   ⣿   [4 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  bar.indicator mark (default)  ·  mascot.pixel mark (declared)  ·  meter.fill mark (declared)
   ⣀   [3 families]  LEVELS[info]  ·  bar.main mark (default)  ·  meter.track mark (declared)
-  ⡀   [2 families]  REQUIRED  ·  field.leader open (declared)
   ⣤   [2 families]  LEVELS[warn]  ·  bar.indicator mark (disabled)
   ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
@@ -112,12 +111,12 @@ swiss                        4
 industrial                   2
 nord                         1
 darkside                     1
-prism                        4
+prism                        3
 ledger                       1
 solari                       3
 blueprint                    1
 ------------------------------
-TOTAL                       28
+TOTAL                       27
 
 zero collisions: NONE -- all eleven overload at least one cell
 
