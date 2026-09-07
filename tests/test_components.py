@@ -507,18 +507,38 @@ def test_the_registry_is_read_and_not_printed():
         LG.MODAL_BORDER_REFUSED.update(saved)
 
 
-def test_corgis_confirm_takes_the_screen_and_leaves_nothing_behind():
+def test_corgis_confirm_keeps_the_mode_strip_and_nothing_else():
     """"The mode takes over the screen." A dialog floating over a board is
     two modes at once, so the backdrop is not dimmed — it is GONE. The
-    argument is accepted and dropped, and that dropping IS the refusal."""
+    argument is accepted and everything but its first row is dropped, and that
+    dropping IS the refusal.
+
+    THE FIRST ROW IS THE ONE EXCEPTION, AND inc65 MADE IT. "The board is gone"
+    is doctrine about the BOARD; row 1 of this page is `[1]BOARD [2]FORM
+    [3]CFG [4]LOG`, the strip that says which mode the operator is in. A mode
+    that erases the mode indicator is the one thing a MODE may not do, and
+    `corgi_S4` was the single frame of the sixty-six that could not answer
+    "which mode is this?" — inc40's own criterion, which this kit had an
+    exemption from on the strength of a sentence about the board. Its `.svg`
+    held seven text runs in total.
+
+    THE REFUSAL'S CITATION LIVES HERE NOW, word for word, because the head law
+    no longer carries it: a commitment may not outlive the sentence that earns
+    it."""
     k = LG.kit("corgi")
-    out = k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)
-    assert not any("row 0 of the board" in plain(r) for r in out)
+    assert "corgi" in MODAL_KEEPS_ONLY_THE_HEAD
+    assert "the board is gone" in LG.MODAL_BORDER_REFUSED["corgi"]
+    out = [plain(r) for r in k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)]
+    # the head survives, at its own index
+    assert out[0].rstrip() == plain(UNDER[0]).rstrip(), out[0]
+    # and nothing else of the page does -- the board is still gone
+    rest = [plain(r) for r in UNDER[1:]]
+    assert not any(r.strip() and r.strip() in o for r in rest for o in out), out
     # and the question is CENTRED on the panel: a mode is not a dialog that
     # lost its box, it is the whole glass, so the question sits in the middle
     # of it rather than in the corner a window would start from.
-    assert any("Delete 3 tasks?" in plain(r) for r in out)
-    assert plain(out[0]).strip() == ""
+    assert any("Delete 3 tasks?" in r for r in out)
+    assert out[1].strip() == "" and out[2].strip() == ""
 
 
 def test_ledgers_confirm_is_posted_on_the_page_that_stays_legible():
@@ -1704,12 +1724,18 @@ def test_exchanging_the_field_walls_back_makes_the_law_go_red(monkeypatch):
 # ---------------------------------------------------------------------------
 # inc40 (rework-1) - an overlay COVERS a band; it does not eat the page's head
 # ---------------------------------------------------------------------------
-#: the ONE language whose refusal says the page does not survive a confirm, so
-#: the head law below cannot be asked of it. Named rather than derived, and its
-#: citation is asserted word for word inside the test — an exemption may not
-#: outlive the commitment that earns it, and "the board is gone" is the phrase
-#: that earns this one.
-MODAL_KEEPS_NOTHING = ("corgi",)
+#: the ONE language whose refusal says the BOARD does not survive a confirm.
+#: Named rather than derived, and its citation is asserted word for word in
+#: `test_corgis_confirm_keeps_the_mode_strip_and_nothing_else` — a commitment
+#: may not outlive the sentence that earns it, and "the board is gone" is the
+#: phrase that earns this one.
+#:
+#: inc65 (C8): IT IS NO LONGER AN EXEMPTION FROM THE HEAD LAW. "The board is
+#: gone" is doctrine about the board; a mode strip is not the board, and
+#: `corgi_S4` was the one frame of the sixty-six that could not answer "which
+#: mode is this?" — which is the criterion inc40 wrote the head law for. All
+#: eleven keep row 1 now, and this roster says which of them keeps ONLY row 1.
+MODAL_KEEPS_ONLY_THE_HEAD = ("corgi",)
 
 
 def page_rows(lang):
@@ -1768,16 +1794,16 @@ def test_a_modal_leaves_the_pages_first_row_alone(lang):
     "which mode is this?" at all. Ten of the eleven kept row 1 before this
     increment; solari now does too.
 
-    THE EXEMPTION IS NAMED AND ITS CITATION IS CHECKED. corgi's refusal is
-    that a confirm is a MODE — "a dialog floating over a board is two modes at
-    once ... so a confirm is a MODE and the board is gone". A language that
-    has declared the board gone cannot be asked to keep its first row, and a
-    language that quietly stopped keeping it without such a declaration is
-    what this law is for."""
-    if lang in MODAL_KEEPS_NOTHING:
-        assert "the board is gone" in LG.MODAL_BORDER_REFUSED[lang], lang
-        assert 0 in modal_band(lang), lang       # the exemption does work
-        return
+    AND SINCE inc65 IT IS ASKED OF ALL ELEVEN. corgi held an exemption from
+    it, earned by its refusal — "a dialog floating over a board is two modes
+    at once ... so a confirm is a MODE and the board is gone". That sentence
+    is about the BOARD. The mode strip is not the board; it is the row that
+    says which mode the operator is in, and a confirm that erases it is a mode
+    that has erased its own indicator. `corgi_S4` was the one frame of the
+    sixty-six that could not answer "which mode is this?", which is the
+    question this law exists to keep answerable. The board is still gone — see
+    `test_corgis_confirm_keeps_the_mode_strip_and_nothing_else`, which is
+    where the refusal's citation now lives."""
     assert 0 not in modal_band(lang), (lang, modal_band(lang))
 
 
@@ -1842,8 +1868,6 @@ def test_anchoring_solaris_band_at_row_zero_eats_the_boards_own_plate(monkeypatc
         ko, u = LG.kit(other), page_rows(other)
         row0 = plain(ko.overlay(dialog(ko), len(u[0]), len(u),
                                 page_markup(other))[0])
-        if other in MODAL_KEEPS_NOTHING:
-            continue
         assert row0.rstrip() == u[0].rstrip(), other
 
 
@@ -1935,8 +1959,12 @@ def test_solaris_band_is_its_content_and_stands_at_a_gates_head():
     assert set(s4[said[-1]].strip()) == {"▁"}, s4[said[-1]]   # the seam closes
     assert "Delete 3 tasks?" in s4[said[0]], s4[said[0]]
 
-    # 2 — the band starts on a gate header of the page, at its own index
-    assert _GATE_HEAD.search(s1[band[0]]), (band[0], s1[band[0]])
+    # 2 — the band starts on the row BELOW a gate header of the page, at its
+    #     own index, and no gate header of any gate is inside it (inc65,
+    #     F amended)
+    assert _GATE_HEAD.search(s1[band[0] - 1]), (band[0], s1[band[0] - 1])
+    assert not _GATE_HEAD.search(s1[band[0]]), (band[0], s1[band[0]])
+    assert not any(_GATE_HEAD.search(s1[i]) for i in band),         [(i, s1[i]) for i in band if _GATE_HEAD.search(s1[i])]
 
     # 3 — still an overlay: nothing outside the band moved
     assert all(s4[i].rstrip() == s1[i].rstrip()
@@ -2133,8 +2161,9 @@ def test_a_page_whose_every_gate_is_named_puts_the_band_at_the_foot():
     # named: the band cannot stand at the only gate, so it takes the foot,
     # above the page's closing seam
     assert k.band_head(under, 6, "BACKLOG") == len(page) - 1 - 6
-    # not named: the first gate the confirm does not name is the only gate
-    assert k.band_head(under, 6, "DOING") == 2
+    # not named: the first gate the confirm does not name is the only gate,
+    # and the band takes the row BELOW its header (inc65, F amended)
+    assert k.band_head(under, 6, "DOING") == 3
     # and a caller that says nothing is still inc40's answer
     assert k.band_head(under, 6, None) == k.schedule_head(under)
 
@@ -5145,3 +5174,151 @@ def test_the_fill_direction_law_bites_and_its_roster_is_not_vacuous():
         if any(c is None or cell_ink(c) is None for c in cells):
             got[lang] = cells
     assert sorted(got) == sorted(RAMPLESS_METERS), got
+
+
+# ---------------------------------------------------------------------------
+# inc65 (rework-6a) — F amended: no gate header under the band, and no task
+# filed under a gate it is not in
+# ---------------------------------------------------------------------------
+def solari_fixture():
+    """`prototypes/components/fixture.py`, loaded BY PATH.
+
+    Membership is a fact about the content, so it is read from the content and
+    not retyped here: a law that carried its own copy of "REWRITE THE
+    ONBOARDING is in DOING" would go on passing after somebody moved the task.
+    Loaded by path rather than by `sys.path` because `fixture` is a name this
+    repo's test session should not own."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_inc65_fixture", FRAMES / "fixture.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def gate_above(rows):
+    """`{row index: the gate whose header stands above that row}`.
+
+    This is the reading a person does — the gate a departure is in is the gate
+    whose header is the nearest one above it — carried out with the kit's own
+    `gate_of`, which parses this language's header format rather than the
+    page's English."""
+    k, cur, out = LG.kit("solari"), None, {}
+    for i, row in enumerate(rows):
+        gate = k.gate_of(row)
+        if gate:
+            cur = gate
+        else:
+            out[i] = cur
+    return out
+
+
+def tasks_as_filed(rows):
+    """`{title: the gate the FRAME files it under}` for every task on the
+    page. Titles are matched upper-cased, which is how this language prints
+    them (`flap()`).
+
+    HEADER ROWS ARE SKIPPED, and that is not tidying. Row 4 of every solari
+    frame is `   GATE BACKLOG 05  ...  DETAIL  FIX LOGIN REDIRECT` — the gate
+    header and the detail pane's caption share a row, so the selected task's
+    title appears on a header line in all six sheets. A reader does not file
+    the detail pane's caption under a gate and neither does this."""
+    k = LG.kit("solari")
+    where, found = gate_above(rows), {}
+    for i, row in enumerate(rows):
+        if k.gate_of(row):
+            continue
+        for title, _proj, phase, *_rest in solari_fixture().TASKS:
+            if title.upper() in row:
+                found[title] = (where.get(i), phase.upper())
+    return found
+
+
+@pytest.mark.parametrize("frame", ("S1", "S4"))
+def test_solari_never_files_a_departure_under_the_wrong_gate(frame):
+    """F AMENDED (orchestrator, 2026-09-07): *the band never covers a gate
+    HEADER row, of any gate; it covers task rows of the first gate the confirm
+    does not name, below that gate's header, and goes to the foot of the
+    schedule when no such rows exist. A frame must never show a task under a
+    gate it does not belong to.*
+
+    WHAT THE FRAME SAID BEFORE. inc55 anchored the band ON the first unnamed
+    gate's header, so `solari_S4` covered `GATE DOING 04` and three of its four
+    departures, and the fourth — `14  REWRITE THE ONBOARDING` at row 17 — stood
+    under the only header left above it, which was `GATE BACKLOG 05`. The frame
+    did not fail to answer *which gate is this departure in*; it answered
+    BACKLOG, and the answer was wrong. A frame that asserts something false is
+    worse than one that says nothing, and inc55's declared cost was the orphan
+    seam, not this.
+
+    MEMBERSHIP COMES FROM THE FIXTURE AND POSITION FROM THE FRAME. Neither
+    side of the comparison is typed here.
+
+    ASKED OF S1 AS WELL AS S4, and S1 is the control: the same reading on the
+    page with no band on it must file all six departures correctly, or the
+    reader is wrong rather than the composition."""
+    rows = (FRAMES / f"solari_{frame}.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")
+    filed = tasks_as_filed(rows)
+    for title, (rendered, own) in sorted(filed.items()):
+        assert rendered == own, (frame, title, rendered, own)
+    if frame == "S1":
+        assert len(filed) == 6, filed          # every departure is on the page
+    else:
+        # the band covers three of DOING's four; what is left must include a
+        # departure of the gate the band moved onto, or this arm proves
+        # nothing about the gate that was mis-filed
+        assert len(filed) == 3, filed
+        assert "Rewrite the onboarding" in filed, filed
+        assert filed["Rewrite the onboarding"][0] == "DOING", filed
+
+
+def test_no_gate_header_stands_inside_solaris_band():
+    """The amendment's absolute half: *of ANY gate*, not only of the one the
+    confirm names. Read off the shipped frame against the shipped page — the
+    band is the rows S4 changes, and every one of them is a departure row or a
+    seam on the page underneath."""
+    s1 = page_rows("solari")
+    band = modal_band("solari")
+    inside = [(i, s1[i]) for i in band if _GATE_HEAD.search(s1[i])]
+    assert not inside, inside
+    # and the row the band starts on is a DEPARTURE of the gate whose header
+    # is immediately above it -- the anchor the amendment asks for
+    assert _GATE_HEAD.search(s1[band[0] - 1]), s1[band[0] - 1]
+    assert LG.kit("solari").gate_of(s1[band[0] - 1]) == "DOING", s1[band[0] - 1]
+
+
+def test_the_wrong_gate_law_bites_on_the_anchor_inc55_shipped(monkeypatch):
+    """TEETH. `band_head` put back to inc55's answer — the header's own index
+    — and the law watched going red on the real page with the real block.
+
+    Not an approximation: inc55's body is `for i, gate in heads: if gate !=
+    named: return i`, and that is what this arm installs."""
+    k = LG.kit("solari")
+    s1, under = page_rows("solari"), page_markup("solari")
+    w, h = len(s1[0]), len(s1)
+    rows = solari_s4_rows(k)
+
+    def on_the_header(self, under, depth, about=None):
+        if about is None:
+            return self.schedule_head(under)
+        named = str(about).upper()
+        heads = [(i, g) for i, r in enumerate(under) if (g := self.gate_of(r))]
+        if not heads:
+            return self.schedule_head(under)
+        for i, gate in heads:
+            if gate != named:
+                return i
+        return self.schedule_foot(under, depth)
+
+    monkeypatch.setattr(LG.Solari, "band_head", on_the_header)
+    out = [plain(r) for r in k.overlay(rows, w, h, under, about="BACKLOG")]
+    filed = tasks_as_filed(out)
+    assert filed["Rewrite the onboarding"] == ("BACKLOG", "DOING"), filed
+    band = [i for i, (a, b) in enumerate(zip(s1, out))
+            if a.rstrip() != b.rstrip()]
+    assert [i for i in band if _GATE_HEAD.search(s1[i])] == [band[0]], band
+
+    monkeypatch.undo()
+    out = [plain(r) for r in k.overlay(rows, w, h, under, about="BACKLOG")]
+    assert tasks_as_filed(out)["Rewrite the onboarding"] == ("DOING", "DOING")

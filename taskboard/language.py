@@ -4727,9 +4727,25 @@ class Corgi(Kit):
 
         CENTRED, because a mode is not a dialog that lost its box: it is the
         whole panel, and a panel puts its one question in the middle of the
-        glass rather than in the top left corner where a window would be."""
-        y = max(0, (h - len(rows)) // 2)
-        out = [""] * y + list(rows)
+        glass rather than in the top left corner where a window would be.
+
+        THE MODE STRIP STAYS (inc65, C8). "The board is gone" is doctrine
+        about the BOARD, and the first row of this page is not the board: it
+        is `[1]BOARD [2]FORM [3]CFG [4]LOG`, the strip that says which mode
+        the operator is in. A confirm that erases it is a mode that has
+        erased the mode indicator, and `corgi_S4` was the ONE frame of the
+        sixty-six that could not answer "which mode is this?" — the exact
+        criterion inc40 wrote its head law for, and inc40 exempted this kit
+        from that law on the strength of a sentence about the board.
+        Measured: `corgi_S4.svg` held SEVEN text runs in total; every other
+        language's S4 keeps row 1.
+
+        The board is still gone — the panes, the schedule, the detail pane,
+        the pager and the meter are not drawn and no backdrop is dimmed —
+        which is the half of the refusal that is about the board."""
+        head = under[0] if under else ""
+        y = max(1, (h - len(rows)) // 2)
+        out = [head] + [""] * (y - 1) + list(rows)
         return (out + [""] * h)[:h]
 
     # THE PANE SEAT IS THE DISPLAY FRAME — a SOLID BAR, single-cell gutters.
@@ -8527,11 +8543,33 @@ class Solari(Kit):
         the gate header IS the schedule's first row, and named the three ways
         out as design decisions. This is one of them, taken.
 
-        THE BAND TAKES THE HEAD OF THE FIRST GATE BLOCK THE CONFIRM DOES NOT
-        NAME. Not an offset and not a row count: the gates are found on the
-        page by `gate_of`, and the band anchors on the first header whose
-        name is not `about`. If every gate is named, or the page has one gate,
-        it goes to the foot (`schedule_foot`).
+        THE BAND TAKES THE TASK ROWS OF THE FIRST GATE BLOCK THE CONFIRM DOES
+        NOT NAME, BELOW THAT GATE'S HEADER. Not an offset and not a row count:
+        the gates are found on the page by `gate_of`, and the band anchors on
+        the row AFTER the first header whose name is not `about`. If every
+        gate is named, or the page has one gate, or no unnamed gate has room
+        for the band between its header and the next one, it goes to the foot
+        (`schedule_foot`).
+
+        F AMENDED (orchestrator, 2026-09-07): *the band never covers a gate
+        HEADER row, of any gate; it covers task rows of the first gate the
+        confirm does not name, below that gate's header, and goes to the foot
+        of the schedule when no such rows exist. A frame must never show a
+        task under a gate it does not belong to.*
+
+        WHY THE AMENDMENT EXISTS, measured on the frame inc55 shipped. The
+        band anchored ON the unnamed gate's header, so `solari_S4` ate
+        `GATE DOING 04` and three of its four departures, and the fourth —
+        `14  REWRITE THE ONBOARDING`, row 17 — stood under the only header
+        left above it, which was `GATE BACKLOG 05`. The frame did not fail to
+        answer "which gate is this task in"; it answered WRONG, which is
+        worse. Anchoring one row lower leaves the header standing, and the
+        gate a row belongs to is the gate whose header is above it again.
+
+        THE CANDIDATE MUST ALSO FIT. A gate whose block is shorter than the
+        band would push it onto the NEXT gate's header, which the amendment
+        forbids for any gate and not only for the named one, so the next
+        header's index is checked before the anchor is taken.
 
         A CALLER THAT DOES NOT SAY GETS inc40's ANSWER. `about=None` falls
         back to `schedule_head`, so every existing call site — and every one
@@ -8543,9 +8581,12 @@ class Solari(Kit):
         heads = [(i, g) for i, r in enumerate(under) if (g := self.gate_of(r))]
         if not heads:
             return self.schedule_head(under)
-        for i, gate in heads:
-            if gate != named:
-                return i
+        for n, (i, gate) in enumerate(heads):
+            if gate == named:
+                continue
+            nxt = heads[n + 1][0] if n + 1 < len(heads) else len(under)
+            if i + 1 + depth <= nxt:
+                return i + 1
         return self.schedule_foot(under, depth)
 
     def overlay_instead(self, rows, w, h, under, about=None):
@@ -8594,16 +8635,19 @@ class Solari(Kit):
         AND IT NO LONGER COVERS THE GATE IT NAMES (inc55, ruling F). Both
         earlier anchors were the head of the SCHEDULE, and at 100x32 the
         schedule's first row is `GATE BACKLOG 05` — the gate the confirm is
-        about. `band_head` places the band at the head of the first gate
-        block the confirm does NOT name, so the three tasks and the gate they
-        are being removed from are on the frame while the question is asked.
-        WHAT IT COSTS is written down in `inc55.md` §6 and is not hidden
-        here: the band's foot now lands INSIDE the gate it moved onto, so the
-        row under it is that gate's fourth departure's seam. inc50's clause
-        "the schedule under the band opens on a gate header" was true only
-        while the band stood at the schedule's head; it is the price of the
-        ruling and the operator may take the foot placement instead in one
-        argument."""
+        about. `band_head` places the band inside the first gate block the
+        confirm does NOT name, so the three tasks and the gate they are being
+        removed from are on the frame while the question is asked.
+
+        AND IT NO LONGER COVERS ANY GATE'S HEADER (inc65, F amended). inc55
+        anchored ON the unnamed gate's header and the cost was not the one it
+        declared: `GATE DOING 04` went under the band with three of its four
+        departures, and the fourth stood under `GATE BACKLOG 05` — a task
+        filed in a gate it is not in. The anchor is one row lower and the
+        header stands; the band's foot still lands inside that gate, so the
+        row under it is a departure's seam, and inc50's clause "the schedule
+        under the band opens on a gate header" is still the price of the
+        ruling."""
         c = self.c
         bar = (f"[{self.t.get('ground', '#000000')} on {c['accent']}]"
                f"{mark(' ' * w)}[/]")
