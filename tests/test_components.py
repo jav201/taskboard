@@ -5645,6 +5645,268 @@ def test_the_role_law_bites_on_the_declaration_industrial_shipped(monkeypatch):
     for lang in LANGS:
         test_a_token_has_exactly_one_role(lang)
 
+
+# ---------------------------------------------------------------------------
+# inc74 (rework-7a) — K7's `dim` clause and L7. Which `dim` runs CLASSIFY.
+# ---------------------------------------------------------------------------
+#: THE RULING (orchestrator, 2026-09-07, K7): *`dim` >= 3:1 wherever it
+#: classifies (a severity rung on a log row, a dash count, a state mark); a
+#: purely decorative leader or seam is exempt by seat, named.*
+#: And L7: *the `info` rung may be air (blueprint, ledger, doctrine) or drawn;
+#: if drawn it obeys K7 (>= 3:1).*
+#:
+#: `dim` IS UNDER 3:1 IN ALL ELEVEN AND UNDER 1.6:1 IN FIVE
+#: (`DIM_AGAINST_GROUND`, inc70, which measured it and left it as a roster).
+#: So the ruling's first branch — raise `dim` — is unavailable everywhere, and
+#: what this law does is the second: it says which SEATS may spend it.
+#:
+#: THE TABLE IS SEATS, NOT CODE LINES. There are 160 `c["dim"]` sites in
+#: `language.py` and enumerating them would be a list of expressions, not of
+#: readings. A seat is something a reader points at, so each row below is
+#: rendered through the kit's own contract method and read back.
+#:
+#:   CLASSIFIES  the run is the only thing saying WHICH KIND this is. If the
+#:               tier is under 3:1 the seat moves to `mut` — never the token,
+#:               which is ten kits' ground.
+#:   DECORATES   the run leads, seams, rails or pages. WCAG 1.4.11 is a floor
+#:               for a component boundary and a leader is not one; round four
+#:               said so itself (§8.4: *"applying 4.5:1 to a dot leader is
+#:               probably the wrong instrument"*).
+#:   CARRIED     the run classifies AND a second, non-colour channel already
+#:               carries the classification, with the law that proves it named.
+#:               This is the only branch that lets a classifying seat keep
+#:               `dim`, and it may not be claimed without a green law.
+DIM_CLASSIFIES = {
+    "log.rung": ("classifies",
+                 "the mark that says WHICH KIND of event a row is. Seven "
+                 "kits painted it between 1.35:1 and 1.96:1 and round four's "
+                 "criterion answered two of eight. inc74 moved the SEAT: "
+                 "`log_row`'s tone ladder is `mut / mut / ink`."),
+    "tabs.inactive": ("classifies",
+                      "the words that say which modes exist and which one "
+                      "you are not in. ledger was the only kit of eleven "
+                      "drawing them in `dim` (1.50:1) and inc74 moved the "
+                      "WORD to `mut`; the leader beside it stays `dim`."),
+    "part.disabled": ("carried",
+                      "`test_two_states_of_one_part_are_told_apart_on_a_"
+                      "channel` — every kit separates a DISABLED part from "
+                      "its live one by GLYPH, over every declared table, and "
+                      "the roster of exceptions is "
+                      "`STATES_TOLD_APART_BY_SIZE`. The tier is a second "
+                      "channel over a channel that is asserted green."),
+    "log.time": ("decorates",
+                 "a timestamp is content the row carries, not a class it "
+                 "belongs to; the rung beside it is what classifies."),
+    "field.leader": ("decorates",
+                     "the run of dots between a caption and its figure. It "
+                     "joins two things that are both legible; it says "
+                     "nothing about either."),
+    "tabs.separator": ("decorates",
+                       "the rule between two mode names."),
+    "pane.seam": ("decorates",
+                  "the divider between two panes — solari names it `seam` "
+                  "and it is one step off the flap face BY CONSTRUCTION."),
+    "pager.unlit": ("decorates",
+                    "the unlit dots of a pager. The LIT ones carry the "
+                    "position and are not `dim`; an unlit dot is the track "
+                    "they run on."),
+}
+
+
+def dim_seat_tones(lang: str) -> dict[str, set[str]]:
+    """What tier each seat in `DIM_CLASSIFIES` is actually drawn in, read back
+    off the kit's own contract methods rather than off the source."""
+    k, t = LG.kit(lang), LG.THEMES[lang]
+    seen: dict[str, set[str]] = {}
+
+    def tones(markup: str, want: str) -> set[str]:
+        """Every tier that wraps a run containing `want`."""
+        out = set()
+        for tone, body in re.findall(r"\[([^\]]+)\]([^\[]*)", markup):
+            # CASE-INSENSITIVE, and that is not tidiness: corgi
+            # UPPERCASES its mode legend, so a case-sensitive reader
+            # found no seat there and the law passed on a kit that had
+            # the very defect. The first draft did exactly that.
+            if want and want.lower() in body.lower():
+                out.add(tone.split()[-1])
+        return out
+
+    row = k.log_row("info", "09:41", "board loaded")
+    rung = k.LEVELS["info"].strip()
+    seen["log.rung"] = tones(row, rung) if rung else set()
+    seen["log.time"] = tones(row, "09:41")
+
+    strip = k.tabs(["board", "form", "cfg", "log"], "board")
+    seen["tabs.inactive"] = tones(strip, "form")
+
+    seen["part.disabled"] = {k.part_tone("main", LG.DISABLED, "switch")}
+    return {s: v for s, v in seen.items() if v}
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_dim_run_that_classifies_is_legible_or_has_moved(lang):
+    """K7's `dim` clause, seat by seat, over all eleven.
+
+    THE VERDICT COMES FROM THE TABLE AND THE TIER FROM THE KIT, so neither
+    half can be adjusted to fit the other in one file. A `classifies` seat
+    either clears 3:1 in `dim` or is not drawn in `dim`; a `carried` seat may
+    keep it and must name a law; a `decorates` seat is exempt and must say
+    why.
+
+    THE ROSTER IS NON-VACUOUS BY CONSTRUCTION: `dim_seat_tones` returns only
+    the seats it could actually render, and the assertion below requires the
+    two classifying seats to be among them. A kit that stopped drawing a log
+    or a mode strip would go red here rather than pass by absence."""
+    t = LG.THEMES[lang]
+    dim, ground = t["dim"], t["ground"]
+    legible = contrast(dim, ground) >= 3.0
+    tones = dim_seat_tones(lang)
+    want = {"tabs.inactive"}
+    if LG.kit(lang).LEVELS["info"].strip():
+        want.add("log.rung")
+    assert want <= set(tones), (lang, sorted(want), sorted(tones))
+    for seat, seen in tones.items():
+        verdict, why = DIM_CLASSIFIES[seat]
+        assert why.strip(), (lang, seat, "a seat with no reason is not a row")
+        if verdict == "classifies" and not legible:
+            assert dim not in seen, (lang, seat, dim, sorted(seen),
+                                     round(contrast(dim, ground), 2))
+    # AND THE LADDER STAYS ORDERED, which is the clause a floor cannot carry
+    assert (contrast(t["ink"], ground) > contrast(t["mut"], ground)
+            > contrast(dim, ground)), lang
+
+
+def test_the_dim_table_covers_what_it_claims_to(monkeypatch):
+    """The table's own vacuity arms, and the shape `MEANING_AT_AN_OPENER` and
+    `THE_GROUND_IS_NOT_A_MARK` already have in this file.
+
+    (a) every verdict is one of the three the ruling allows;
+    (b) the two branches that let a seat KEEP `dim` are both used, so the law
+        is not passing because everything was called decorative;
+    (c) `carried` names a law that exists and is green — this is the only
+        branch that excuses a classifying seat, and a citation nobody runs is
+        not a citation."""
+    assert {v for v, _ in DIM_CLASSIFIES.values()} == {
+        "classifies", "decorates", "carried"}
+    assert sum(v == "classifies" for v, _ in DIM_CLASSIFIES.values()) == 2
+    assert sum(v == "carried" for v, _ in DIM_CLASSIFIES.values()) == 1
+
+    cited = DIM_CLASSIFIES["part.disabled"][1]
+    assert "test_two_states_of_one_part_are_told_apart_on_a_channel" in cited
+    for lang in LANGS:
+        test_two_states_of_one_part_are_told_apart_on_a_channel(lang)
+
+
+def test_the_dim_law_bites_on_the_two_seats_inc74_moved(monkeypatch):
+    """TEETH, on the two seats and the readings round four measured.
+
+    The `log_row` arm restores `dim` at the rung for ALL ELEVEN at once,
+    because the seat is the base's and the defect was the corpus's — seven
+    kits drew it and four spend air or words there. The `tabs` arm is
+    ledger's alone, which is what the measurement said: ten kits already gave
+    an inactive label `mut`."""
+    for lang in LANGS:
+        test_a_dim_run_that_classifies_is_legible_or_has_moved(lang)
+
+    old = LG.Kit.log_row
+
+    def dim_rung(self, level, time, message, tail=False):
+        c = self.c
+        mk = self.LEVELS.get(level, self.LEVELS["info"])
+        tone = {"info": c["dim"], "warn": c["mut"]}.get(level, c["ink"])
+        body = c["mut"] if level == "info" else c["ink"]
+        return (f"[{c['dim']}]{LG.mark(str(time))}[/] "
+                f"[{tone}]{LG.mark(mk)}[/] "
+                f"[{body}]{LG.mark(str(message))}[/]")
+
+    monkeypatch.setattr(LG.Kit, "log_row", dim_rung)
+    red = [l for l in LANGS
+           if not _passes(test_a_dim_run_that_classifies_is_legible_or_has_moved, l)]
+    # EIGHT OF THE ELEVEN, and the three that survive are the three the
+    # ruling predicted plus one it did not:
+    #   blueprint, ledger  the rung is AIR by doctrine (L7), so there is no
+    #                      mark for a tier to be wrong about;
+    #   prism              its `dim` is 3.25:1, the only one of the eleven
+    #                      over the 3:1 floor, so the seat may keep it.
+    # solari IS in the list and its rung is three WORDS (`OK ` / `DLY` /
+    # `CNX`) -- the brief's own count said nine languages draw it under 2:1
+    # and the measurement says EIGHT, with solari among them and prism not.
+    assert set(red) == {"instrument", "swiss", "industrial", "nord",
+                        "darkside", "naught", "corgi", "solari"}, red
+    monkeypatch.undo()
+
+    k = LG.kit("ledger")
+    old_tabs = LG.Ledger.tabs
+
+    def dim_tabs(self, options, active):
+        c = self.c
+        return f"[{self.rule_color}] {self.RULE_V} [/]".join(
+            f"[{c['ink']}]{self.tally} {o.upper()}[/]" if o == active
+            else f"[{c['dim']}]{self.LEAD} {o}[/]" for o in options)
+
+    monkeypatch.setattr(LG.Ledger, "tabs", dim_tabs)
+    assert round(contrast(LG.THEMES["ledger"]["dim"],
+                          LG.THEMES["ledger"]["ground"]), 2) == 1.50
+    with pytest.raises(AssertionError):
+        test_a_dim_run_that_classifies_is_legible_or_has_moved("ledger")
+    for other in LANGS:
+        if other != "ledger":
+            test_a_dim_run_that_classifies_is_legible_or_has_moved(other)
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        test_a_dim_run_that_classifies_is_legible_or_has_moved(lang)
+
+
+def _passes(fn, *args) -> bool:
+    try:
+        fn(*args)
+    except AssertionError:
+        return False
+    return True
+
+
+#: L7, MEASURED IN THE ARTEFACT AFTER inc74. The `info` rung's tier, per kit,
+#: and what each kit spends at that seat. Four of the eleven draw NOTHING
+#: there and their reason is doctrine; the seven that draw a mark now draw it
+#: in `mut`, which is `MUT_FLOOR` or better in ten and solari's named
+#: exemption in one.
+#:
+#: ROUND FOUR'S §0b IS THE BEFORE-COLUMN and every number in it is inc73's
+#: reader reproducing it: instrument 1.74 · swiss 1.75 · industrial 1.96 ·
+#: nord 1.69 · darkside 1.39 · naught 1.35 · corgi 1.71 · prism 3.25.
+INFO_RUNG_IS_AIR = {
+    "blueprint": "`\"  \"` — a line-type ladder in which ABSENCE is the calm "
+                 "state (RULED doctrine, spec.md §16.1). A drawing office "
+                 "does not rule a line to say there is nothing to note.",
+    "ledger": "`\"  \"` — the same doctrine, and the one inc60 cited as its "
+              "precedent. Round four reversed its own objection to that "
+              "precedent after measuring the corpus (§2.11 `S5`).",
+}
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_info_rung_is_air_by_doctrine_or_legible_by_tier(lang):
+    """L7, and it is the same law read from the other end: the seat that
+    classifies a CALM row either says nothing at all — with a citation — or is
+    painted in a tier a reader has.
+
+    solari IS NEITHER AND IS COUNTED WITH THE DRAWN, deliberately: its rungs
+    are WORDS (`OK ` / `DLY` / `CNX`), so the mark is text and text is exactly
+    what `mut` is for. It is the one kit whose severity ladder needs no glyph
+    argument at all."""
+    k, t = LG.kit(lang), LG.THEMES[lang]
+    rung = k.LEVELS["info"]
+    if not rung.strip():
+        assert lang in INFO_RUNG_IS_AIR, (lang, "air with no citation")
+        assert INFO_RUNG_IS_AIR[lang].strip(), lang
+        return
+    assert lang not in INFO_RUNG_IS_AIR, (lang, "a citation for a drawn rung")
+    tones = dim_seat_tones(lang)["log.rung"]
+    assert tones == {t["mut"]}, (lang, sorted(tones))
+    if lang not in THE_BAND_IS_A_SECOND_GROUND:
+        assert contrast(t["mut"], t["ground"]) >= MUT_FLOOR, lang
+
 # ---------------------------------------------------------------------------
 # inc64 (rework-6a) — L8 and L9: more value is more ink, in one direction
 # ---------------------------------------------------------------------------

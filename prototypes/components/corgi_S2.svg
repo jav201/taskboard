@@ -2,13 +2,10 @@
 <title>taskboard · corgi · S2 form with validation</title>
 <rect width="860.0" height="564.0" fill="#0d0d0d"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<text x="10.0" y="23.3" fill="#9a9a9a">[1]</text>
-<text x="35.2" y="23.3" fill="#3a3a3a">BOARD</text>
+<text x="10.0" y="23.3" fill="#9a9a9a">[1]BOARD</text>
 <text x="85.6" y="23.3" fill="#6fe36f">[2]F O R M</text>
-<text x="178.0" y="23.3" fill="#9a9a9a">[3]</text>
-<text x="203.2" y="23.3" fill="#3a3a3a">CFG</text>
-<text x="236.8" y="23.3" fill="#9a9a9a">[4]</text>
-<text x="262.0" y="23.3" fill="#3a3a3a">LOG</text>
+<text x="178.0" y="23.3" fill="#9a9a9a">[3]CFG</text>
+<text x="236.8" y="23.3" fill="#9a9a9a">[4]LOG</text>
 <text x="10.0" y="40.3" fill="#ff6600">[N]</text>
 <text x="43.6" y="40.3" fill="#f2f2f2">N E W   T A S K</text>
 <text x="186.4" y="40.3" fill="#9a9a9a">5 FIELDS  ·  1 INVALID</text>
