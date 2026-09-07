@@ -5403,14 +5403,36 @@ class Instrument(Kit):
     # else in this alphabet.
     PANE_RULE = "⠸"
 
-    # THE REQUIRED MARK — ONE DOT, the least this matrix can light. LANGUAGES
-    # .md §1: "numerals and icons DRAWN ON A COARSE DOT GRID ... borders
-    # almost absent". Severity in this language is dot COUNT (`⠂⠂ / ⠆⠆ /
-    # ⠇⠇`), so an obligation — which is a property and not a severity — is
-    # the count's floor: one dot, at the top of the cell, where a trace
-    # enters. Not `⡀`: that is prism's dot and it sits at the BOTTOM, on a
-    # different reading of the same grid.
-    REQUIRED = "⠁"
+    # THE REQUIRED MARK — THE DATUM PAIR, and it used to be one dot (inc35).
+    #
+    # WHY IT MOVED (inc82, on ruling Q1). inc35 chose `⠁` for a reason that
+    # is still right: severity in this language is dot COUNT (`⠂⠂ / ⠆⠆ /
+    # ⠇⠇`, the LEFT COLUMN), so an obligation — which is a property and not a
+    # severity — may not join the count, and `⠁` sat at the TOP of the cell,
+    # where a trace enters, off the ladder entirely.  What the raster says is
+    # that the count's floor has no AREA: at Cascadia Mono 16 px in a 9x19
+    # box, `⠁` at its own declared seat measures **coverage 5.8 % · effective
+    # 3.77 · declared 16.52:1**.  It holds the second-best contrast ratio of
+    # the eleven obligations and it is three pixels; round five's criterion
+    # (*"in `instrument_S2.png`, point at the required fields"*) has no
+    # answer.  A ratio cannot say that, which is why it took a raster.
+    #
+    # WHAT `⣉` IS, IN THIS LANGUAGE'S OWN GRID: the cell's TOP ROW AND ITS
+    # BOTTOM ROW, lit together — a scope's DATUM PAIR, the two marks that say
+    # where a reading is bounded.  It keeps every clause of inc35's argument
+    # and fixes the one that failed:
+    #   * it is not on the ladder, and it CANNOT be — the ladder is a COLUMN
+    #     read as a count and this is two ROWS, which is an axis the count
+    #     has no way to express;
+    #   * it still opens at the top of the cell, where a trace enters;
+    #   * it is not `⠒` (the graticule, the middle row) and not `⠸` (the
+    #     graticule COLUMN this language rules its panes with, inc46);
+    #   * it draws nowhere else in the corpus — zero occurrences over the 66
+    #     frames before this change.
+    # It measures **coverage 23.4 % · effective 3.77**, which clears both
+    # clauses of Q1 with the contrast unchanged: the fix is area and only
+    # area, which is exactly what the round diagnosed.
+    REQUIRED = "⣉"
     DANGER_FORM = ("⠛", "⠛")               # the top row raised, both sides
     # SEVERITY BY DOT COUNT, which is the only ladder a dot-matrix owns:
     # one lit dot, two, three. It must not reach `⠿` (this language's
@@ -7761,10 +7783,37 @@ class Prism(Kit):
     # THE VALIDATION ROW, and this language is airy: the message stands and
     # the line ends. The mark is the ember at full strength, its own ERROR.
     ERROR_FILL = ""
-    # THE EMBER'S LEADING CELL -- the frontier `field_row` draws, at one dot.
-    # "Quantity is a solid field being CONSUMED": a required seat is a field
-    # the value has not reached yet.
-    REQUIRED = "⡀"
+    # THE EMBER'S FRONTIER, RISEN -- and it used to be the leading dot.
+    #
+    # WHY IT MOVED (inc82, on ruling Q1). "Quantity is a solid field being
+    # CONSUMED", so a required seat is a field the value has not reached yet,
+    # and the leading dot `⡀` said that in the smallest mark the ember owns.
+    # The raster says how small: at Cascadia Mono 16 px in a 9x19 box, `⡀` at
+    # its own declared seat measures **coverage 5.3 % · effective 4.40 ·
+    # declared 16.02:1** -- the WORST obligation of the eleven by area and
+    # the second-best by contrast, which is the pair of numbers that made
+    # ruling Q1 two clauses instead of a product. Round five's criterion
+    # (*"in `prism_S2.png`, point at the required fields"*) has no answer.
+    #
+    # AND IT WAS THE FIELD LEADER'S OPENER AT THE SAME TIME. `FIELD_LEAD` is
+    # `⡀⡤⣶`, so every read-only definition row in `prism_S1` opened on the
+    # obligation mark -- one cell, two jobs, and the census had the row.
+    # Moving `REQUIRED` off `⡀` closes that as a side effect, and the leader
+    # keeps its own opener.
+    #
+    # WHAT `⣆` IS, IN THE EMBER'S OWN ALPHABET: the bottom row alight with
+    # the frontier RISEN one step on the leading edge -- the ramp at the
+    # half-cell precision the meter's frontier already works in, one step
+    # above `⡀` and below every rung.  It is not a severity rung and cannot
+    # be mistaken for one: the rungs are FLAT BANDS (`⣀` one row, `⣤` two,
+    # `⣿` four) and this is a RISING EDGE, which is the same distinction
+    # inc59 drew between the ember read from the bottom and a control read
+    # from the top.  It draws nowhere else in the corpus -- zero occurrences
+    # over the 66 frames before this change -- and `⣇`, the one declared cell
+    # a dot away from it, is a stepper state no frame renders.
+    # It measures **coverage 21.6 % · effective 4.22**: the fix is area and
+    # only area.
+    REQUIRED = "⣆"
 
     LEVELS = {"info": "⣀⣀", "warn": "⣤⣤", "error": "⣿⣿"}
 

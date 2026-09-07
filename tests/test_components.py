@@ -3886,7 +3886,10 @@ def test_the_named_seat_law_goes_red_on_the_three_declarations_it_moved(
                 == MEANING_AT_A_NAMED_SEAT[lang]), lang
 
     tbl = dict(LG.Instrument.PART_GLYPHS["checkbox.main"])
-    tbl[LG.DISABLED] = "⠁"
+    # THE MARK IS READ OFF THE KIT, not spelled: inc82 moved this obligation
+    # from `⠁` to `⣉` by AREA (ruling Q1) and a tooth that spells the old
+    # cell stops biting the moment the declaration it is about moves.
+    tbl[LG.DISABLED] = LG.Instrument.REQUIRED
     monkeypatch.setitem(LG.Instrument.PART_GLYPHS, "checkbox.main", tbl)
     hits = meaning_marks_at_named_seats("instrument")
     assert hits and all(h[0] == "checkbox.main" for h in hits), hits
@@ -4350,9 +4353,17 @@ PRISM_EMBER_BEFORE = (
                         LG.EDITED: "⣿⣤⣿", LG.ACTIVE: "⣿⣶⣿",
                         LG.INVALID: "⣹⠀⣏", LG.DISABLED: "⠄⠄⠄"}, 4, 0),
     ("stepper.main", {LG.DEFAULT: "⣀⣀", LG.DISABLED: "⠄⠄"}, 5, 0),
+    # inc82 MOVED THIS ROW'S OPENER SCORE FROM 1 TO 0, and the reason is a
+    # side effect worth recording rather than absorbing: the pre-inc59
+    # `stepper.step` opened on `⡀`, and `⡀` scored because it was
+    # `Prism.REQUIRED`.  inc82 moved the obligation off `⡀` (5.3 % coverage,
+    # ruling Q1) and the leading dot is now the field leader's opener and
+    # nothing else — so the historical defect these teeth reproduce is one
+    # seat smaller than it was.  The table is the pre-inc59 DECLARATION and
+    # is unchanged; only what that declaration COSTS has moved.
     ("stepper.step", {LG.DEFAULT: "⡀⢀", LG.FOCUSED: "⡄⢠", LG.EDITED: "⡆⢰",
                       LG.ACTIVE: "⣇⣸", LG.INVALID: "⣹⣹",
-                      LG.DISABLED: "⠁⠈"}, 1, 0),
+                      LG.DISABLED: "⠁⠈"}, 0, 0),
 )
 
 
@@ -4398,7 +4409,7 @@ def test_both_seat_laws_go_red_on_each_of_the_ten_tables_inc59_moved(
             assert (len(meaning_marks_at_named_seats(other))
                     == MEANING_AT_A_NAMED_SEAT[other]), (key, other)
 
-    assert counts() == (25, 16), counts()
+    assert counts() == (24, 16), counts()
     with pytest.raises(AssertionError):
         test_no_control_opens_with_a_mark_that_means_something("prism")
     with pytest.raises(AssertionError):
@@ -8293,7 +8304,15 @@ IDENTICAL_DRAWINGS = (("•", "∙"),)
 #: seat the report picks)`. The second number is NOT a violation count and the
 #: report says so at length; it is pinned because 45 of 79 is the size of a
 #: question nobody had asked before this increment could ask it.
-MEANING_MARKS = (79, 45)
+#: inc82 MOVED THE SECOND NUMBER FROM 45 TO 44 and left the first at 79.
+#: The two obligations it replaced were BOTH over 3:1 declared at their
+#: worst seat (16.52:1 and 16.02:1) and both replacements are too, so the
+#: count could only move by one -- prism`s `⡀` stopped being a meaning mark
+#: at all when the obligation left it, and what remains at that cell is the
+#: field leader, which is chrome. That is the number moving for the right
+#: reason and it is worth saying: a fix by AREA cannot move a count of
+#: CONTRAST failures except by changing which cells carry a meaning.
+MEANING_MARKS = (79, 44)
 
 ARGUED_DISTANCE = {("•", "●"): 21.64, ("○", "◦"): 22.81, ("◎", "◉"): 21.42,
                    ("†", "‡"): 4.87, ("▪", "■"): 26.52, ("╌", "┄"): 4.09,
@@ -8805,12 +8824,13 @@ def floor_rows(lang: str) -> tuple:
 #:
 #: WHAT THE SHAPE OF IT SAYS, and it is the finding of this increment:
 #:
-#:   * SIX seats miss coverage only.  Three of them are obligations
-#:     (instrument `⠁` 5.8%, prism `⡀` 5.3%, swiss `•` 14.0%) — and the round
-#:     predicted TWO.  swiss `•` is a mark the round itself recorded as
-#:     visible (`swiss_S2`) and it lands one point under a floor the round
-#:     set at 15%.  It is reported and NOT adjusted: a floor moved to fit the
-#:     corpus it was written for is not a floor.
+#:   * FOUR seats miss coverage only after inc82, six before it.  THREE of
+#:     the six were obligations (instrument `⠁` 5.8%, prism `⡀` 5.3%,
+#:     swiss `•` 14.0%) and the round predicted TWO.  inc82 fixed the two it
+#:     named, by AREA out of each language's own alphabet; swiss `•` stays,
+#:     one point under a floor the round set at 15%, on a mark the same round
+#:     recorded as visible — named in `OBLIGATION_UNDER_THE_FLOOR` and not
+#:     legislated away.
 #:   * TWENTY-NINE miss effective contrast only, and they are overwhelmingly
 #:     `mut` and `dim` seats — the severity rung inc74 moved to `mut`, and the
 #:     invalid field's walls, which nine kits draw in `dim` as PAPER.  This
@@ -8830,7 +8850,6 @@ BELOW_THE_FLOOR = {
     ("corgi", "invalid", "░", "#3a3a3a"): "EFF",
     ("instrument", "severity", "⠂", "#6e7b89"): "COVEFF",
     ("instrument", "severity", "⠆", "#6e7b89"): "COVEFF",
-    ("instrument", "required", "⠁", "#e8edf2"): "COV",
     ("instrument", "invalid", "⠶", "#333c47"): "EFF",
     ("instrument", "cursor", "⣿", "#2dd4bf"): "EFF",
     ("swiss", "severity", "·", "#9b9b9b"): "COVEFF",
@@ -8850,7 +8869,6 @@ BELOW_THE_FLOOR = {
     ("darkside", "invalid", "Ø", "#262626"): "EFF",
     ("prism", "severity", "⣀", "#8b98a5"): "COVEFF",
     ("prism", "severity", "⣤", "#8b98a5"): "EFF",
-    ("prism", "required", "⡀", "#e6edf3"): "COV",
     ("prism", "invalid", "⣏", "#5b6675"): "EFF",
     ("prism", "invalid", "⣹", "#5b6675"): "EFF",
     ("ledger", "severity", "*", "#1c1a15"): "EFF",
@@ -8870,7 +8888,7 @@ BELOW_THE_FLOOR = {
 #: seat — the page and the confirm's plate — so it is two rows in the sweep
 #: and one row in the table above.  Recorded so the arithmetic below is not a
 #: mystery: 43 failing ROWS, 42 distinct (kit, family, cell, tone) keys.
-FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 89, 43
+FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 89, 41
 
 
 @pytest.mark.parametrize("lang", LANGS)
@@ -8917,26 +8935,183 @@ def test_the_two_clause_floor_is_the_one_the_instrument_enforces():
     assert f"{len(NAMED_RUNS_5_TO_7)} seats in the middle band" in text
 
 
-def test_the_eleven_obligations_are_judged_at_their_own_declared_seat():
-    """Q3 in the one place it changes an answer, and the round's own
-    prediction checked rather than repeated.
+# ---- inc82: the two obligations the round returned, fixed by AREA ----
+#
+# inc81's `test_the_eleven_obligations_are_judged_at_their_own_declared_
+# seat` recorded three failures and gated nothing.  It is REPLACED here
+# rather than kept beside its successor: two laws over one seat with two
+# recorded sets is exactly the drift `test_the_homoglyph_table_is_one_
+# table_in_two_files` exists against.
 
-    Every kit's `REQUIRED` mark is bound (it is one cell by law) and every one
-    of the eleven CLEARS the contrast clause — the half of the prediction that
-    holds. The coverage clause fails THREE and the round said two: swiss `•`
-    at 14.0% is the third and the round recorded it as visible. It is written
-    down here, not legislated away."""
+#: inc82 — THE TWO MARKS THE ROUND SENT BACK, and what replaced each.
+#: `(kit, before, after, coverage before, coverage after)`.  BOTH FIXES ARE
+#: AREA AND ONLY AREA: the declared contrast ratio is untouched in both kits
+#: (instrument 16.52:1, prism 16.02:1 — the two BEST of the eleven, which is
+#: the pair of numbers that made ruling Q1 two clauses instead of a product).
+#:
+#: instrument `⠁` -> `⣉` — inc35 chose the count's floor, one dot at the top
+#: of the cell, because severity in that language is dot COUNT up the LEFT
+#: COLUMN and an obligation may not join the count.  `⣉` is the cell's top
+#: row AND its bottom row: a scope's datum pair, two ROWS, an axis a column
+#: count cannot express.  Not `⠒` (the graticule) and not `⠸` (the graticule
+#: COLUMN inc46 gave the pane seat).
+#:
+#: prism `⡀` -> `⣆` — the ember's leading dot becomes the ember's frontier
+#: risen one step on the leading edge, at the half-cell precision the meter's
+#: frontier already works in (inc59's "the ember is read from the bottom").
+#: It is above `⡀` and below every rung, and it cannot be read as one: the
+#: rungs are FLAT BANDS (`⣀` `⣤` `⣿`) and this is a RISING EDGE.
+#:
+#: AND `⡀` STOPS DOING TWO JOBS.  `Prism.FIELD_LEAD` is `⡀⡤⣶`, so every
+#: read-only definition row in `prism_S1` opened on the obligation mark.  The
+#: leader keeps its opener; the obligation left.
+REPLACED_OBLIGATIONS = {
+    "instrument": ("⠁", "⣉", 0.058, 0.234),
+    "prism": ("⡀", "⣆", 0.053, 0.216),
+}
+
+#: THE ONE OBLIGATION STILL UNDER THE FLOOR, named with its measurement and
+#: its citation — the shape `INFO_RUNG_IS_AIR` and `THE_BAND_IS_A_SECOND_
+#: GROUND` already have in this file, and for the same reason: an exemption
+#: with no reason attached is a hole, and a hole nobody has to edit is a hole
+#: that stays.
+#:
+#: swiss `•` measures **coverage 14.0 % · effective 9.13 · declared 17.30:1**
+#: at its declared seat.  It misses the coverage clause by ONE POINT, and the
+#: round that set the clause at 15 % recorded this same mark as legible in
+#: the same document (§2.2 `swiss_S2`: *"`•` obligatorio mide 0,060 en su
+#: peor asiento y 1,288 en el declarado; se ve"*), and judged `naught ◦` at
+#: **13.5 %** to be found by eye in §7.  So the two halves of round five
+#: disagree about this mark and this increment is not the place to settle it:
+#: the brief named two marks and this is a third.
+#:
+#: NEITHER HALF WAS ADJUSTED.  The floor was not lowered to 14 % to make the
+#: corpus pass, and the mark was not changed to make the floor pass — both
+#: would have been an increment grading its own homework. It is recorded, it
+#: has teeth (the roster may not grow silently), and it is the first thing
+#: §9 of `inc82.md` hands back to the round.
+OBLIGATION_UNDER_THE_FLOOR = {
+    "swiss": ("COV", "one point under the 15% clause, on a mark round five "
+                     "recorded as visible in the same document that set the "
+                     "clause (§2.2 swiss_S2, and §7 finds naught's 13.5% "
+                     "ring by eye). Two halves of one round disagree; the "
+                     "brief named two marks and this is a third."),
+}
+
+
+def test_every_required_mark_passes_the_floor_at_its_declared_seat():
+    """inc82's law, and it is the one the fix is for: EVERY obligation clears
+    Q1 at the seat its own kit declares — except the ones named, with a
+    measurement and a reason each.
+
+    Three clauses and each is load-bearing:
+
+      (a) one obligation, one bound seat, in all eleven — a kit that drew its
+          obligation nowhere would otherwise pass by absence;
+      (b) all eleven clear the CONTRAST clause, which is the sentence the
+          two-clause ruling exists to be able to say: the two marks that were
+          returned held the best declared ratios of the eleven and were still
+          invisible, so a ratio was never going to catch them;
+      (c) the coverage clause fails exactly `OBLIGATION_UNDER_THE_FLOOR`, in
+          BOTH directions — a kit fixed, a kit broken, or a twelfth kit
+          added.
+    """
     req = {}
     for lang in LANGS:
         rows = [r for r in floor_rows(lang) if r[0] == "required"]
         assert len(rows) == 1, (lang, rows, "one obligation, one seat")
         req[lang] = rows[0]
-    assert all(v[3] in ("", "COV") for v in req.values()), \
-        {l: v[3] for l, v in req.items()}
-    assert {l for l, v in req.items() if v[3]} == \
-        {"instrument", "prism", "swiss"}, {l: v[3] for l, v in req.items()}
     for lang, (_f, ch, _t, _v, _r) in req.items():
         assert plain(LG.kit(lang).required()) == ch, (lang, ch)
+    assert all(v[3] in ("", "COV") for v in req.values()), \
+        {l: v[3] for l, v in req.items()}
+    under = {l: v[3] for l, v in req.items() if v[3]}
+    assert under == {l: c for l, (c, _why) in
+                     OBLIGATION_UNDER_THE_FLOOR.items()}, under
+    for lang, (_clause, why) in OBLIGATION_UNDER_THE_FLOOR.items():
+        assert len(why.split()) >= 12, (lang, "an exemption with no reason")
+
+
+def test_the_two_replaced_marks_are_the_ones_the_kits_now_declare():
+    """The fix, checked against the kits and against the pixels at once.
+
+    THE BEFORE-MARK IS RE-MEASURED HERE rather than remembered: `⠁` and `⡀`
+    are drawn through the same restated arithmetic the law uses, on each
+    kit's own ink and ground, and must still miss the coverage clause while
+    the mark that replaced them clears it. A fix recorded only as a pair of
+    numbers in a comment is a fix nobody can re-derive.
+
+    AND THE CONTRAST IS UNTOUCHED, which is the whole claim: both kits keep
+    the same declared ink on the same ground, so `declared` cannot have
+    moved and only the drawing did."""
+    from PIL import Image, ImageDraw, ImageFont
+    path, px, (bw, bh) = _face()
+    f = ImageFont.truetype(path, px)
+
+    def drawn(ch: str, fg: str, bg: str):
+        im = Image.new("RGB", (bw, bh), bg)
+        ImageDraw.Draw(im).text((0, f.getmetrics()[0]), ch, font=f, fill=fg,
+                                anchor="ls")
+        B = _rgb(bg)
+        b = im.tobytes()
+        px_ = [tuple(b[i:i + 3]) for i in range(0, len(b), 3)]
+        lit = [p for p in px_ if p != B]
+        mean = tuple(sum(p[c] for p in lit) / len(lit) for c in range(3))
+        return len(lit) / len(px_), _contrast_rgb(mean, B)
+
+    for lang, (before, after, cov_b, cov_a) in REPLACED_OBLIGATIONS.items():
+        k, t = LG.kit(lang), LG.THEMES[lang]
+        assert k.REQUIRED == after, (lang, k.REQUIRED, after)
+        assert plain(k.required()) == after, (lang, k.required())
+        was, now = drawn(before, t["ink"], t["ground"]), \
+            drawn(after, t["ink"], t["ground"])
+        assert round(was[0], 3) == cov_b and round(now[0], 3) == cov_a, \
+            (lang, was, now)
+        assert was[0] < FLOOR_COVERAGE <= now[0], (lang, was[0], now[0])
+        assert was[1] >= FLOOR_EFFECTIVE and now[1] >= FLOOR_EFFECTIVE, \
+            (lang, was[1], now[1])
+        # the CONTRAST clause never moved: same ink, same ground, and the
+        # declared ratio is a property of the pair and not of the drawing
+        assert contrast(t["ink"], t["ground"]) >= 10, lang
+
+    # the replaced cells are gone from the corpus at BOTH widths, which is
+    # what makes this a fix rather than a second declaration
+    for lang, (before, after, _cb, _ca) in REPLACED_OBLIGATIONS.items():
+        for where in (FRAMES, W80):
+            body = (where / f"{lang}_S2.txt").read_text(encoding="utf-8")
+            assert after in body, (lang, where.name, "the new mark is absent")
+
+
+def test_the_obligation_floor_bites_on_the_marks_inc82_replaced(monkeypatch):
+    """TEETH — put each obligation back the way it was and the law must say
+    so, one kit at a time, with the other ten held still.
+
+    THE MUTANT IS THE DECLARATION, not the artefact: `floor_rows` reads the
+    shipped PNGs, so restoring `Kit.REQUIRED` alone would leave the pixels
+    where they are and prove nothing. What is mutated instead is the pair the
+    law reads — the kit's declaration AND the recorded exemption — and the
+    arm that matters is the second: adding a kit to
+    `OBLIGATION_UNDER_THE_FLOOR` that is NOT under the floor must go red too,
+    which is what stops the roster from becoming a place to park things."""
+    test_every_required_mark_passes_the_floor_at_its_declared_seat()
+
+    for lang in REPLACED_OBLIGATIONS:
+        fat = dict(OBLIGATION_UNDER_THE_FLOOR)
+        fat[lang] = ("COV", "a kit that is not under the floor, parked in "
+                            "the roster to prove the roster cannot be a "
+                            "parking space for anything at all")
+        monkeypatch.setitem(globals(), "OBLIGATION_UNDER_THE_FLOOR", fat)
+        with pytest.raises(AssertionError):
+            test_every_required_mark_passes_the_floor_at_its_declared_seat()
+        monkeypatch.undo()
+
+    # and the roster may not empty either: drop swiss and the law goes red
+    monkeypatch.setitem(globals(), "OBLIGATION_UNDER_THE_FLOOR", {})
+    with pytest.raises(AssertionError):
+        test_every_required_mark_passes_the_floor_at_its_declared_seat()
+    monkeypatch.undo()
+
+    test_every_required_mark_passes_the_floor_at_its_declared_seat()
 
 
 def test_every_middle_band_run_is_named_and_the_table_is_not_vacuous():
@@ -8959,37 +9134,55 @@ def test_every_middle_band_run_is_named_and_the_table_is_not_vacuous():
         sorted(reached ^ set(NAMED_RUNS_5_TO_7))
 
 
-def test_the_floor_law_bites_on_the_two_marks_the_round_sent_back(monkeypatch):
-    """TEETH, and the mutant is the row inc82 is about to remove.
+def test_the_floor_law_bites_on_a_row_of_the_recorded_set(monkeypatch):
+    """TEETH on the recorded set itself, in both directions.
 
-    instrument's `⠁` and prism's `⡀` are the two obligations the round
-    returned `rework` on, and the axis is AREA and not contrast: they carry
-    16.52:1 and 16.02:1, the two best declared ratios of the eleven, and they
-    are three pixels. Take either row out of the recorded set and the law must
-    say so — and must say nothing about the other ten kits, which is the
-    vacuity arm."""
+    THE ORIGINAL MUTANTS ARE GONE, and that is the strongest thing this
+    docstring can say. inc81 wrote this tooth against instrument `⠁` and
+    prism `⡀` — the two obligations round five returned — and inc82 took
+    both rows OUT of `BELOW_THE_FLOOR` by fixing the marks. A tooth whose
+    mutant has been fixed is a tooth that bit. It is re-pointed rather than
+    deleted, at two rows the fix did not touch and at two different failure
+    modes: swiss `•` (coverage, the obligation still under the floor) and
+    darkside `·` (both clauses, §7's worst mark of the corpus by eye).
+
+    Each arm must go red for its OWN kit and stay green for the other ten,
+    which is the clause that says the law reads the cell and not the name.
+    """
     for lang in LANGS:
         test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang)
 
-    for lang, cell in (("instrument", "⠁"), ("prism", "⡀")):
-        tone = _TONED_RUN.findall(LG.kit(lang).required())[0][0]
-        key = (lang, "required", cell, tone)
-        assert BELOW_THE_FLOOR[key] == "COV", key
+    for key, clause in ((("swiss", "required", "•", "#f4f4f4"), "COV"),
+                        (("darkside", "severity", "·", "#757575"), "COVEFF")):
+        assert BELOW_THE_FLOOR[key] == clause, key
         thinner = {k: v for k, v in BELOW_THE_FLOOR.items() if k != key}
         monkeypatch.setitem(globals(), "BELOW_THE_FLOOR", thinner)
         with pytest.raises(AssertionError):
-            test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang)
+            test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(
+                key[0])
         for other in LANGS:
-            if other != lang:
-                test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(other)
+            if other != key[0]:
+                test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(
+                    other)
         monkeypatch.undo()
 
-    # and it is the COVERAGE clause that fails all three obligations, never
-    # the contrast one -- which is the sentence the whole two-clause ruling
-    # exists to be able to say
-    for lang in ("instrument", "prism", "swiss"):
-        row = [r for r in floor_rows(lang) if r[0] == "required"][0]
-        assert row[3] == "COV", (lang, row)
+    # AND THE SET MAY NOT GROW SILENTLY EITHER: a row recorded for a seat
+    # that clears both clauses is as wrong as a missing one, and only a
+    # symmetric comparison catches it.
+    fat = dict(BELOW_THE_FLOOR)
+    fat[("corgi", "required", "▀", "#f2f2f2")] = "COV"
+    monkeypatch.setitem(globals(), "BELOW_THE_FLOOR", fat)
+    with pytest.raises(AssertionError):
+        test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(
+            "corgi")
+    monkeypatch.undo()
+
+    # the two marks inc82 replaced are OUT, and the clause that failed them
+    # was coverage in both cases -- never contrast
+    for lang, (before, after, _cb, _ca) in REPLACED_OBLIGATIONS.items():
+        tone = _TONED_RUN.findall(LG.kit(lang).required())[0][0]
+        assert (lang, "required", before, tone) not in BELOW_THE_FLOOR
+        assert (lang, "required", after, tone) not in BELOW_THE_FLOOR
 
     for lang in LANGS:
         test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang)
