@@ -158,37 +158,95 @@ NAMED_RUNS = {
 #: this file keeps no second list of what a meaning is (the docstring's own
 #: standing promise).  These calls only say what the cell is PAINTED IN when
 #: it does that job, which is the half a census of declarations cannot have.
+#:
+#: AND EACH CALL DECLARES THE PROSE IT HANDS THE CONTRACT (inc87, on the
+#: ruling "declared seat by seat, not by character").  The intersection with
+#: `role_map` is keyed by CHARACTER, and a character is not a seat: darkside's
+#: severity rung is the lowercase letter `o`, so every `o` in `board loaded`
+#: was credited to the severity family and the derivation read the log's
+#: MESSAGE as the rung.  The contract methods return the caller's own text
+#: byte for byte (`log_row`'s docstring says so in those words), so the
+#: columns that text occupies are known exactly -- and a column the CALLER
+#: filled is never a column the KIT declares.  PROSE NEVER COUNTS.
 A_SEAT_CALLS = (
-    ("severity", lambda k: [k.log_row(lv, "09:41", "board loaded")
-                            for lv in ("info", "warn", "error")]),
-    ("danger", lambda k: [k.button("Delete", danger=True)]),
-    ("required", lambda k: [k.required()]),
-    ("cursor", lambda k: [k.menu(["a", "b"], 0)[0]]),
-    ("invalid", lambda k: [k.textfield("12/09/26", state=LG.INVALID, w=14)]),
+    ("severity", ("09:41", "board loaded"),
+     lambda k: [k.log_row(lv, "09:41", "board loaded")
+                for lv in ("info", "warn", "error")]),
+    ("danger", ("Delete",), lambda k: [k.button("Delete", danger=True)]),
+    ("required", (), lambda k: [k.required()]),
+    ("cursor", ("a", "b"), lambda k: [k.menu(["a", "b"], 0)[0]]),
+    ("invalid", ("12/09/26",),
+     lambda k: [k.textfield("12/09/26", state=LG.INVALID, w=14)]),
 )
 
 _TONED = re.compile(r"\[([^\]]+)\]([^\[]*)")
 
 
+def toned_columns(markup: str) -> tuple[str, list[tuple[int, int, str]]]:
+    """The row as it reaches the glass, and where each toned run sits in it.
+
+    `(plain, [(start, stop, tone), ...])` with `start`/`stop` indexing
+    `plain`, so a seat can be located by COLUMN rather than by character.
+    """
+    plain: list[str] = []
+    spans: list[tuple[int, int, str]] = []
+    at = pos = 0
+    for m in _TONED.finditer(markup):
+        if m.start() > pos:                     # text before the first tag
+            gap = markup[pos:m.start()]
+            plain.append(gap)
+            at += len(gap)
+        tone, body = m.group(1).split()[-1], m.group(2)
+        if tone.startswith("#"):
+            spans.append((at, at + len(body), tone))
+        plain.append(body)
+        at += len(body)
+        pos = m.end()
+    if pos < len(markup):
+        plain.append(markup[pos:])
+    return "".join(plain), spans
+
+
+def prose_columns(plain: str, content: tuple[str, ...]) -> set[int]:
+    """Every column of `plain` the CALLER's own text occupies.
+
+    Every occurrence of each string is masked, not the first: a derivation
+    that guessed which copy of the caller's text was the real one would be
+    deciding by position what it is supposed to be reading off the contract.
+    """
+    out: set[int] = set()
+    for text in content:
+        text = LG.mark(str(text))
+        if not text:
+            continue
+        at = plain.find(text)
+        while at >= 0:
+            out.update(range(at, at + len(text)))
+            at = plain.find(text, at + 1)
+    return out
+
+
 def declared_tones(lang: str) -> dict[str, set[tuple[str, str]]]:
     """`family -> {(cell, tone)}`, read off the kit's own contract methods.
 
-    Only cells `role_map` already credits to that family survive, so a letter
-    that happens to sit inside a log message is not promoted to a severity
-    rung by being printed next to one.
+    THE SEAT IS A COLUMN AND NOT A CHARACTER (inc87).  A cell survives only
+    if `role_map` credits it to the family AND it stands in a column the
+    contract itself painted -- so `log_row`'s rung column is a severity seat
+    and the same letter inside the message it prints beside is not.
     """
     k = LG.kit(lang)
     named, _ = CC.role_map(lang)
     out: dict[str, set[tuple[str, str]]] = {}
-    for family, call in A_SEAT_CALLS:
+    for family, content, call in A_SEAT_CALLS:
         for markup in call(k):
-            for tone, body in _TONED.findall(markup):
-                tone = tone.split()[-1]
-                if not tone.startswith("#"):
-                    continue
-                for ch in body:
-                    if family in named.get(ch, {}):
-                        out.setdefault(family, set()).add((ch, tone))
+            plain, spans = toned_columns(markup)
+            prose = prose_columns(plain, content)
+            for a, b, tone in spans:
+                for i in range(a, b):
+                    if i in prose:
+                        continue
+                    if family in named.get(plain[i], {}):
+                        out.setdefault(family, set()).add((plain[i], tone))
     return out
 
 
@@ -714,6 +772,17 @@ def report() -> str:
     w.append("`menu`, `textfield(INVALID)` -- intersected with the census's")
     w.append("`role_map`, so this file still keeps no second list of what a")
     w.append("meaning is. Five calls, not fifty-five rows.")
+    w.append("")
+    w.append("AND THE SEAT IS A COLUMN, NOT A CHARACTER (inc87). `role_map` is")
+    w.append("keyed by cell, so a mark that IS a letter credited every copy of")
+    w.append("that letter in the row to the family: darkside's severity rung")
+    w.append("is a lowercase `o` and the derivation was reading `board loaded`")
+    w.append("as a rung. Each call now declares the text it hands the")
+    w.append("contract -- which comes back byte for byte -- and the columns")
+    w.append("that text fills are struck out before the intersection. PROSE")
+    w.append("NEVER COUNTS. Two rows left the table with it: `darkside")
+    w.append("severity o #757575`, which was the message, and `industrial")
+    w.append("invalid / #f2f2f2`, which was the value's own date separators.")
     w.append("")
 
     sheets = Sheets()

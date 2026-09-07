@@ -598,6 +598,17 @@ exercised -- `log_row`, `button(danger=True)`, `required`,
 `role_map`, so this file still keeps no second list of what a
 meaning is. Five calls, not fifty-five rows.
 
+AND THE SEAT IS A COLUMN, NOT A CHARACTER (inc87). `role_map` is
+keyed by cell, so a mark that IS a letter credited every copy of
+that letter in the row to the family: darkside's severity rung
+is a lowercase `o` and the derivation was reading `board loaded`
+as a rung. Each call now declares the text it hands the
+contract -- which comes back byte for byte -- and the columns
+that text fills are struck out before the intersection. PROSE
+NEVER COUNTS. Two rows left the table with it: `darkside
+severity o #757575`, which was the message, and `industrial
+invalid / #f2f2f2`, which was the value's own date separators.
+
 kit         family     gl tone        cov    eff   decl     run  seat      verdict 
 ------------------------------------------------------------------------------
 naught      severity    ∙ #8a8a8a  14.0%   3.50   6.08     1-9  S1 r10    FAIL COV
@@ -634,7 +645,6 @@ industrial  severity    ▪ #f2f2f2  17.5%   8.82  15.55       2  S5 r10    pass
 industrial  severity    ▫ #f2f2f2  17.0%   5.82  15.55       2  S5 r8     pass    
 industrial  danger      ╱ #f2f2f2  28.7%   5.67  15.55       2  S3 r19    pass    
 industrial  required    ! #f2f2f2  18.7%   4.54  15.55       1  S2 r3     pass    
-industrial  invalid     / #f2f2f2  26.3%   5.02  15.55       1  S2 r5     pass    
 industrial  invalid     ▌ #f2f2f2  55.6%  13.43  15.55       1  S2 r5     pass    
 industrial  invalid     ▐ #f2f2f2  55.6%  11.51  15.55       1  S2 r5     pass    
 industrial  cursor      ▶ #ff6039  35.1%   2.97   5.79       1  S1 r9     FAIL EFF
@@ -645,7 +655,6 @@ nord        required    * #eceff4  30.4%   3.67  10.84       1  S2 r3     pass
 nord        invalid     ? #eceff4  26.3%   4.29  10.84       1  S2 r5     pass    
 nord        cursor      ▸ #8fbcbb  21.6%   3.28   5.99       1  S1 r0     pass    
 darkside    severity    O #f5f5f5  40.9%   6.99  19.26       1  S5 r10    pass    
-darkside    severity    o #757575  28.1%   2.51   4.56       1  S1 r0     FAIL EFF
 darkside    severity    o #f5f5f5  28.1%   8.34  19.26     1-2  S1 r0     pass    
 darkside    severity    · #757575   4.7%   1.90   4.56       1  S5 r8     FAIL COVEFF
 darkside    danger      ▚ #f5f5f5  57.9%  13.94  19.26       1  S3 r19    pass    
@@ -687,10 +696,10 @@ blueprint   required    ═ #eef4f8  26.3%   5.62  10.60       1  S2 r2     pass
 blueprint   invalid     ╲ #eef4f8  28.7%   4.47  10.60       1  S2 r4     pass    
 blueprint   cursor      ┌ #eef4f8  24.6%   4.33  10.60       1  S1 r8     pass    
 ------------------------------------------------------------------------------
-F1. 86 BOUND SEATS, 68 PASS, 18 FAIL
+F1. 84 BOUND SEATS, 67 PASS, 17 FAIL
 
     coverage only    4
-    effective only   6
+    effective only   5
     both clauses     8
 
 F2. THE ELEVEN OBLIGATIONS, which is the row the round predicted

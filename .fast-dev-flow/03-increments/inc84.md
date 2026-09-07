@@ -156,6 +156,30 @@ new      66 png/<name>.grey.png                              -- the greyscale ca
 **Gallery 30–51: none changed byte-wise** (`capture_languages.py` run plain; `git status --porcelain`
 empty on `prototypes/gallery/`).
 
+> ### CORRECTION — 2026-09-07, inc87 (orchestrator's ruling, `rework-9`)
+>
+> **The line above is wrong, and the way it is wrong is worth more than the two entries it
+> miscounts.** Gallery 30–51 are the twenty-two numbered frames of the SKILL's own gallery
+> (`assets/gallery/30_…` to `51_…`), and each is a copy of one sheet in `prototypes/components/`.
+> They are **not** the twenty-two board and component grids in `prototypes/gallery/`, which is what
+> `capture_languages.py` writes and what `git status --porcelain` was run against. Two directories
+> are called "gallery" in this repo and the packet checked the wrong one.
+>
+> **What actually changed: entries 35 `corgi_S6` and 36 `ledger_S6`.** This increment moved all
+> eleven `S6` sheets at 100×32 (the docked key bar) and two of the twenty-two gallery sources are
+> `S6` sheets. Verified two ways: `git show --name-only 12ee92c -- prototypes/components` lists
+> `corgi_S6.txt` and `ledger_S6.txt` and no other gallery source, and each installed frame is
+> byte-identical to its component sheet today (`cmp` on all eight spot-checked pairs, including the
+> four pairs `inc67.md` and `inc69.md` name independently: 32 `prism_S3`, 35 `corgi_S6`,
+> 37 `corgi_S1`, 43 `prism_S4`, 46 `swiss_S1`).
+>
+> The 80×24 sheets this increment also moved (11 `S1`, 10 `S4`, 9 `S6`) are **not** in the count:
+> the skill's gallery is installed at 100×32 only.
+>
+> Corrected in place with a date rather than rewritten, which is this programme's rule for a claim
+> that shipped. `inc85.md`'s and `inc86.md`'s "none changed" for 30–51 are **not** affected — inc85
+> moved zero `.txt` at either width and inc86 moved no frame at all.
+
 ## §7 — deviations, named
 
 - **`GREY_DISTINCT = 1.10` is a REPORTING threshold and nothing is gated on it.** It is roughly the
