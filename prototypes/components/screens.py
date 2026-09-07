@@ -453,13 +453,20 @@ def s4(sh: Sheet) -> None:
     rows below are the caller's words -- a title, two lines, two answers --
     and what separates them from the board behind them is now the language's,
     read out of `MODAL_BORDER_REFUSED` and composed by `Kit.overlay`.
+
+    AND THE SHEET SAYS WHAT THE QUESTION IS ABOUT (inc55, ruling F).
+    `F.MODAL_ABOUT` is the column `MODAL_BODY` names in prose, handed over as
+    data. This file is the one place that knows both the words and the board
+    behind them, so it is the one place that can say it without a kit reading
+    English. Ten languages ignore it; solari uses it to stop covering the gate
+    the confirm is about.
     """
     k, c = sh.k, sh.k.c
     under, back = _under(sh)
     rows = [f"[{c['ink']}]{LG.mark(F.MODAL_TITLE)}[/]", ""]
     rows += [f"[{c['mut']}]{LG.mark(b)}[/]" for b in F.MODAL_BODY]
     rows += ["", answers(sh)]
-    out = k.overlay(rows, W, H, under)
+    out = k.overlay(rows, W, H, under, about=F.MODAL_ABOUT)
     for line in out:
         sh.row(line)
     carry(sh, out, under, back)
@@ -525,7 +532,8 @@ def s4_blueprint(sh: Sheet) -> None:
              for b in F.MODAL_BODY]
     rows += ["", k.button("DELETE", 8, FOCUSED, danger=True, knockout=True)
              + "   " + k.button("CANCEL", 8, DEFAULT)]
-    out = k.overlay(rows, W, H - len(sh.chrome_tail), under)
+    out = k.overlay(rows, W, H - len(sh.chrome_tail), under,
+                    about=F.MODAL_ABOUT)
     for line in out:
         sh.row(line)
     carry(sh, out, under, back)

@@ -80,6 +80,13 @@ DANGER_ACTION = "Delete all"
 MODAL_TITLE = "Delete 3 tasks?"
 MODAL_BODY = ["3 tasks will be removed from BACKLOG.",
               "This cannot be undone."]
+#: THE COLUMN THE CONFIRM IS ABOUT, as DATA rather than as prose (inc55).
+#: `MODAL_BODY` already says it in a sentence, and a kit that had to learn it
+#: from there would be a parser of this file's English -- eleven parsers, one
+#: per language, of one fixture's wording.  It is the same fact stated where a
+#: caller can hand it over, and it is READ OFF `COLUMNS` so a fixture that
+#: renames its first column cannot leave the two halves disagreeing.
+MODAL_ABOUT = COLUMNS[0][0]
 MODAL_BUTTONS = [("Delete", True), ("Cancel", False)]     # (label, is_default)
 MODAL_COUNT = 3
 

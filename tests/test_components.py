@@ -1853,15 +1853,40 @@ def solari_s4_rows(k):
     hands the same six to all eleven kits. The teeth below have to run THAT
     block and not a three-row stand-in, because the whole finding is about how
     many rows the block occupies; a stand-in whose length was chosen here
-    would be the test deciding its own outcome."""
+    would be the test deciding its own outcome.
+
+    THE FOUR ROWS ARE FOUND, NOT COUNTED (inc55). This used to slice `[4:8]`,
+    which was the band's seat while the band stood at the schedule's head;
+    ruling F moved it, and a hard-coded slice would have gone on returning
+    four rows of BOARD without failing. The band is read off the frame with
+    `modal_band` and the words are what lies between its bar and its seam."""
+    band = modal_band("solari")
     said = [r.rstrip() for r in (FRAMES / "solari_S4.txt").read_text(
-        encoding="utf-8").rstrip("\n").split("\n")[4:8]]
+        encoding="utf-8").rstrip("\n").split("\n")[band[0] + 1: band[-1]]]
+    assert len(said) == 4, said
     return ([LG.mark(said[0]), ""] + [LG.mark(s) for s in said[1:3]]
             + ["", LG.mark(said[3])])
 
 
-def test_solaris_band_is_its_content_and_the_board_under_it_opens_on_a_gate():
-    """THE BAND SHRINKS TO ITS CONTENT, AND WHAT IS UNDER IT IS A SCHEDULE.
+def test_solaris_band_is_its_content_and_stands_at_a_gates_head():
+    """THE BAND SHRINKS TO ITS CONTENT, AND IT STANDS AT A GATE'S HEAD.
+
+    CLAUSE 2 CHANGED ENDS IN inc55 (ruling F), and that is written here
+    rather than left in a commit message, because a clause that quietly got
+    weaker is how a law becomes decoration:
+
+      inc50 clause 2   the row immediately BELOW the band is a gate header
+      inc55 clause 2   the row the band STARTS on is a gate header
+
+    Both are the same sentence read from opposite ends — *a band takes a
+    gate's head, not the middle of one*. inc50 could only assert the foot,
+    because the band stood at the schedule's head and the head there is the
+    plate's business, not a gate's. Ruling F moves the band off the gate the
+    confirm NAMES, so the head becomes the assertable end and the foot now
+    lands INSIDE the gate the band moved onto. **That cost is real, it is
+    named in `inc55.md` §6 and at `Solari.overlay_instead`, and the row under
+    the band is a departure's orphan seam again.** Clauses 1 and 3 are
+    inc50's, word for word.
 
     inc40 moved the band off the station's plate and the round measured what
     that cost: *"la banda no encogió, se deslizó tres filas"*. It gave back
@@ -1879,20 +1904,14 @@ def test_solaris_band_is_its_content_and_the_board_under_it_opens_on_a_gate():
        and between the first word and the seam there is no empty row.
        `MODAL_BORDER_REFUSED["solari"]` calls it a BAND, and a band with air
        in it is two bands.
-    2. THE SCHEDULE UNDER IT OPENS ON A GATE HEADER. Not on a seam, not on a
-       task row: the row immediately below the band is a header, at its own
-       index, byte for byte the page's.
+    2. THE BAND STANDS AT A GATE'S HEAD (inc55). The row the band starts on
+       is a gate header on the PAGE, at its own index — not a seam and not a
+       task row. Ruling F is what makes this the assertable end; see the top
+       of this docstring for the clause it replaces and what that cost.
     3. IT IS STILL AN OVERLAY. Every row outside the band is the page's row at
        the same index — inc40's second half, re-asserted here because a
        "shrink" implemented by inserting rows would satisfy clause 2 and push
-       the whole board down.
-
-    WHAT THIS LAW DOES NOT SAY, and it is the round's question (F): the band
-    still covers `GATE BACKLOG 05`, which is the gate the confirm NAMES ("3
-    tasks will be removed from BACKLOG"). At 100x32 an overlay band at the
-    head of the schedule cannot avoid it, because the gate header IS the
-    schedule's first row. Whether a solari confirm may ever eat the gate it
-    names is the operator's ruling and this increment does not take it."""
+       the whole board down."""
     s1, s4 = page_rows("solari"), (FRAMES / "solari_S4.txt").read_text(
         encoding="utf-8").rstrip("\n").split("\n")
     band = modal_band("solari")
@@ -1905,10 +1924,8 @@ def test_solaris_band_is_its_content_and_the_board_under_it_opens_on_a_gate():
     assert set(s4[said[-1]].strip()) == {"▁"}, s4[said[-1]]   # the seam closes
     assert "Delete 3 tasks?" in s4[said[0]], s4[said[0]]
 
-    # 2 — the schedule under it opens on a gate header, at its own index
-    below = band[-1] + 1
-    assert _GATE_HEAD.search(s4[below]), (below, s4[below])
-    assert s4[below].rstrip() == s1[below].rstrip(), (s4[below], s1[below])
+    # 2 — the band starts on a gate header of the page, at its own index
+    assert _GATE_HEAD.search(s1[band[0]]), (band[0], s1[band[0]])
 
     # 3 — still an overlay: nothing outside the band moved
     assert all(s4[i].rstrip() == s1[i].rstrip()
@@ -1940,7 +1957,7 @@ def test_an_unshrunk_band_leaves_the_schedule_opening_on_an_orphan_seam(
     assert len(band) == 6 and band[0] == 3, band
     assert _GATE_HEAD.search(out[band[-1] + 1]), out[band[-1] + 1]
 
-    def unshrunk(self, rows, w, h, under):
+    def unshrunk(self, rows, w, h, under, about=None):
         c = self.c
         bar = (f"[{self.t.get('ground', '#000000')} on {c['accent']}]"
                f"{LG.mark(' ' * w)}[/]")
@@ -1961,6 +1978,161 @@ def test_an_unshrunk_band_leaves_the_schedule_opening_on_an_orphan_seam(
     orphan = out[band[-1] + 1]
     assert not _GATE_HEAD.search(orphan), orphan
     assert set(orphan.strip()) == {"▁"}, orphan           # a seam, not a gate
+
+
+# ---------------------------------------------------------------------------
+# inc55 (rework-5b) - a confirm never covers the gate it names (ruling F)
+# ---------------------------------------------------------------------------
+#: the same header shape as `_GATE_HEAD`, with the gate's NAME captured. Two
+#: patterns rather than one so `_GATE_HEAD`'s call sites keep reading as a
+#: yes/no question about a row.
+_GATE_NAMED = re.compile(r"GATE ([A-Z]+) \d\d\s")
+
+
+def gate_blocks(rows):
+    """`{name: [indices]}` — every gate on a page and the whole block it owns,
+    from its header down to the row before the next gate's header.
+
+    A BLOCK AND NOT A HEADER, because ruling F's law is about the gate's
+    DEPARTURES as well: a confirm that left `GATE BACKLOG 05` on the frame and
+    took the two flights under it would still have hidden what it is about."""
+    heads = [(i, m.group(1)) for i, r in enumerate(rows)
+             if (m := _GATE_NAMED.search(r))]
+    out = {}
+    for j, (i, name) in enumerate(heads):
+        end = heads[j + 1][0] if j + 1 < len(heads) else len(rows)
+        out[name] = list(range(i, end))
+    return out
+
+
+def test_a_solari_confirm_never_covers_the_gate_it_names():
+    """RULING F (orchestrator, 2026-09-06, on the operator's delegation):
+    *a confirm never covers the gate it names.*
+
+    `MODAL_BODY` says "3 tasks will be removed from BACKLOG" and every anchor
+    this band has had — index 0 (pre-inc40), the schedule's head (inc40),
+    the schedule's head shrunk (inc50) — put the band on `GATE BACKLOG 05`
+    and its two departures. `inc50.md` §4 named the three ways out and called
+    them design decisions; this is the first of them, taken.
+
+    THE NAME IS INTERSECTED, NOT PARSED. This file does not import the
+    prototype fixture, and reading "removed from BACKLOG" with a regular
+    expression would make the law a reader of one sentence's English. The
+    gates the PAGE declares are a set; the words the BAND says are a string;
+    the gate the confirm names is the one member of the first that appears in
+    the second, and there is asserted to be exactly one. A fixture that
+    renamed its columns would move both halves together.
+
+    TWO READINGS, and the second is what stops the first being a lucky
+    fixture. The shipped frame is asked whether the named gate's block
+    survived; then the MECHANISM is asked the same question about EVERY gate
+    on the page in turn, so a placement that happened to miss BACKLOG while
+    eating whichever gate it was pointed at goes red."""
+    s1 = page_rows("solari")
+    s4 = (FRAMES / "solari_S4.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")
+    band = modal_band("solari")
+    blocks = gate_blocks(s1)
+    assert len(blocks) >= 2, blocks              # a one-gate page is the foot case
+
+    words = " ".join(s4[i] for i in band)
+    named = [g for g in blocks if g in words]
+    assert len(named) == 1, (named, words)       # the gate the confirm is about
+    for i in blocks[named[0]]:
+        assert s4[i].rstrip() == s1[i].rstrip(), (named[0], i, s4[i], s1[i])
+    assert not (set(band) & set(blocks[named[0]])), (band, blocks[named[0]])
+
+    # and the same question of the mechanism, once per gate on the page
+    k = LG.kit("solari")
+    under, w, h = page_markup("solari"), len(s1[0]), len(s1)
+    rows = solari_s4_rows(k)
+    for gate, block in blocks.items():
+        out = [plain(r) for r in k.overlay(rows, w, h, under, about=gate)]
+        for i in block:
+            assert out[i].rstrip() == s1[i].rstrip(), (gate, i, out[i])
+
+
+def test_the_bands_old_anchor_ate_the_gate_the_confirm_names(monkeypatch):
+    """TEETH, and they are the round's own evidence rather than a description
+    of it: `band_head` put back to `schedule_head` IS the inc50 body, and
+    under it the band covers `GATE BACKLOG 05`, `AUDIT THE THEME TOKENS` and
+    `DROP THE LEGACY SHIM` — the gate the confirm names and both of its
+    departures.
+
+    THE LAW MUST NAME THE GATE AND THE FLIGHTS, not merely fail. A teeth arm
+    that asserted "something differs" would stay green if the band moved one
+    row for an unrelated reason.
+
+    THE THIRD ARM IS THE DEFAULT. `about=None` is documented at
+    `Kit.overlay` as "a caller that did not say leaves every language exactly
+    where it was", and every other test in this file relies on it — so it is
+    asserted here rather than trusted: with no `about`, the band is inc50's,
+    at the schedule's head, eating BACKLOG."""
+    k = LG.kit("solari")
+    s1 = page_rows("solari")
+    under, w, h = page_markup("solari"), len(s1[0]), len(s1)
+    rows = solari_s4_rows(k)
+    blocks = gate_blocks(s1)
+
+    def band_of(**kw):
+        out = [plain(r) for r in k.overlay(rows, w, h, under, **kw)]
+        return [i for i, (a, b) in enumerate(zip(s1, out))
+                if a.rstrip() != b.rstrip()], out
+
+    band, _ = band_of(about="BACKLOG")
+    assert not (set(band) & set(blocks["BACKLOG"])), band
+
+    monkeypatch.setattr(LG.Solari, "band_head",
+                        lambda self, under, depth, about=None:
+                        self.schedule_head(under))
+    band, _ = band_of(about="BACKLOG")
+    eaten = [s1[i] for i in band]
+    assert any("GATE BACKLOG 05" in r for r in eaten), eaten
+    assert any("AUDIT THE THEME TOKENS" in r for r in eaten), eaten
+    assert any("DROP THE LEGACY SHIM" in r for r in eaten), eaten
+
+    monkeypatch.undo()
+    assert band_of()[0] == band, "about=None is inc50's anchor"
+
+
+def test_a_page_whose_every_gate_is_named_puts_the_band_at_the_foot():
+    """THE FALLBACK, WHICH NO FRAME IN THIS REPO REACHES.
+
+    Ruling F's second sentence: *if every gate is named or the page has one
+    gate, the band goes to the foot of the schedule (above the plate's
+    closing seam, if any)*. The sweep's confirm names one of four gates, so
+    this branch is exercised HERE and nowhere else — which is the reason it
+    is asserted at all rather than left to be discovered dead.
+
+    THE PAGE IS SYNTHETIC AND SAYS SO. It is built to the shape
+    `schedule_head` and `gate_of` read — a masthead, a full-measure seam, one
+    gate, its departures, and a closing seam — because the claim is about a
+    page with ONE gate and the shipped page has four."""
+    k = LG.kit("solari")
+    seam = "▁" * 40
+    page = ["THE PLATE", seam,
+            "   GATE BACKLOG 05   STATUS",
+            "    21  AUDIT THE THEME TOKENS",
+            "    30  DROP THE LEGACY SHIM",
+            "", "", "", "", "", "", "", seam]
+    under = [LG.mark(r) for r in page]
+    assert k.schedule_head(under) == 2
+    assert k.gate_of(under[2]) == "BACKLOG"
+
+    # named: the band cannot stand at the only gate, so it takes the foot,
+    # above the page's closing seam
+    assert k.band_head(under, 6, "BACKLOG") == len(page) - 1 - 6
+    # not named: the first gate the confirm does not name is the only gate
+    assert k.band_head(under, 6, "DOING") == 2
+    # and a caller that says nothing is still inc40's answer
+    assert k.band_head(under, 6, None) == k.schedule_head(under)
+
+    out = [plain(r) for r in k.overlay(
+        [LG.mark("Delete 3 tasks?"), "", LG.mark("body"), "",
+         LG.mark("Delete   Cancel")], 40, len(page), under, about="BACKLOG")]
+    assert out[-1].rstrip() == page[-1].rstrip()          # the closing seam
+    assert all(out[i].rstrip() == page[i].rstrip() for i in range(5))
+    assert any("Delete 3 tasks?" in r for r in out[-7:])
 
 
 # ---------------------------------------------------------------------------
