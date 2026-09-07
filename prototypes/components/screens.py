@@ -320,7 +320,36 @@ def s1(sh: Sheet) -> None:
 # S2 -- FORM WITH VALIDATION
 # ===========================================================================
 def s2(sh: Sheet) -> None:
+    """THE FORM -- AND THE ONE SHEET THAT TELLS ITS KIT WHAT THE BOARD'S MOOD
+    IS (inc56, ruling G).
+
+    `Kit.mood` is the only board-wide fact a kit gets, and until this line no
+    screen in this file ever set it: all 66 frames were composed by kits whose
+    mood was the constructor's default `"clear"`.  The fixture has had an
+    overdue task the whole time (`Rate-limit the API`), so the board was in
+    `alert` and every frame said otherwise -- which is why blueprint's
+    first-fixation law, the corpus's ONE knockout, was exercised in a test and
+    appeared in no picture (round decision G).
+
+    WHY THIS SHEET AND NOT ALL SIX, and the reason is arithmetic rather than
+    taste.  `s4_blueprint` spends that language's single knockout on the
+    destructive default answer under operator ruling 10, and it is affordable
+    there *because the title block's knockout is unspent* -- its own docstring
+    says so and `test_exactly_one_knockout_per_view_still_holds_on_blueprints_
+    confirm` counts it.  An alert mood on S4 would light the title block as
+    well and put TWO knockouts on one view, which is the ruling's own
+    condition broken.  So the fact is handed over on the sheet that has no
+    knockout of its own, and the corpus now shows the mechanism once.
+
+    WHAT THIS COSTS, named rather than left to be found: the same seeded board
+    is `alert` on S2 and `clear` on the other five, so two frames of one
+    fixture disagree about the same fact.  The honest fix is a mood on every
+    sheet and a per-item knockout that does not collide with ruling 10's --
+    `Blueprint`'s class docstring already names the per-item knockout as the
+    follow-up -- and that is a design increment, not this one.
+    """
     k, c = sh.k, sh.k.c
+    k.mood = F.MOOD
     chrome(sh, "form")
     header(sh, "NEW TASK", "5 fields  ·  1 invalid")
 

@@ -2158,10 +2158,16 @@ _STYLE_WORDS = ("reverse", "bold", "underline", "italic")
 #: exporter could see it. `solari_S6` was already here for a different reason
 #: (its bands) and its `reverse {ink}` resolves to the SAME hue those bands
 #: use, so the SET did not move even though six new rects did.
+#:
+#: AND IT IS 16 SINCE inc56, WITH `blueprint_S2` — the frame round decision
+#: (G) said did not exist. The first-fixation law fires on the `alert` mood
+#: alone and no sheet had ever set one, so the corpus's ONE knockout mechanism
+#: was asserted in a test and in no image. `screens.s2` now hands the kit the
+#: mood the fixture's own tasks imply, and the title block reverses.
 GROUNDED_FRAMES = ("industrial_S1", "darkside_S1", "prism_S1", "ledger_S1",
-                   "solari_S1", "solari_S2", "solari_S3", "prism_S4",
-                   "ledger_S4", "solari_S4", "blueprint_S4", "solari_S5",
-                   "solari_S6", "industrial_S6", "darkside_S6")
+                   "solari_S1", "solari_S2", "blueprint_S2", "solari_S3",
+                   "prism_S4", "ledger_S4", "solari_S4", "blueprint_S4",
+                   "solari_S5", "solari_S6", "industrial_S6", "darkside_S6")
 
 
 def sheet_rows(lang, screen):
@@ -2271,11 +2277,18 @@ def test_the_ground_law_is_not_vacuous():
     renounced hue by commitment, on terminals that render bold as "brighter"
     — and became a ±1 grey STEP of ground, which is the channel §8 says this
     language owns. A frame arriving on this roster is the same event as a
-    frame leaving it, and both have to be looked at."""
+    frame leaving it, and both have to be looked at.
+
+    AND IT IS 16 SINCE inc56, and this one arrived because a fact was handed
+    over rather than because a declaration changed: `blueprint_S2` joined when
+    `screens.s2` started telling its kit the board's mood. Nothing in
+    `Blueprint` moved — `_state_cell` has reversed on `alert` since inc17 —
+    and the roster is where "the mechanism is now in a picture" becomes a
+    number."""
     got = tuple(f"{lang}_{sc}" for sc in SCREENS for lang in LANGS
                 if declared_grounds(lang, sc))
     assert sorted(got) == sorted(GROUNDED_FRAMES), got
-    assert len(got) == 15
+    assert len(got) == 16
 
 
 def test_blueprints_knockout_is_where_operator_ruling_10_put_it():
@@ -2431,6 +2444,90 @@ def test_exactly_one_knockout_per_view_still_holds_on_blueprints_confirm():
     assert sum(r.count(" on ") for r in rows) == 1, \
         [r for r in rows if " on " in r]
     assert any("╞ ━DELETE━ ╡" in plain(r) for r in rows), "the seat is gone"
+
+
+# ---------------------------------------------------------------------------
+# inc56 (rework-5b) - the corpus's one knockout is finally in a picture (G)
+# ---------------------------------------------------------------------------
+def test_blueprints_first_fixation_is_painted_on_the_form():
+    """RULING G (orchestrator, 2026-09-06, on the operator's delegation): *the
+    S2 fixture carries one alert-mood item for all eleven.*
+
+    `PROTOTYPE-inheritors-2.md` §6 G: blueprint's first-fixation law is
+    *"ejercitada en un test y no está en ninguna imagen"*. `_state_cell`
+    reverses on the `alert` mood alone; `Kit.mood` is set by the app from the
+    real task list; and no screen builder in `screens.py` had ever set it, so
+    all 66 frames were composed by kits carrying the constructor's default.
+    The fixture has had an overdue task since it was written. `screens.s2`
+    now hands the fact over and the title block reverses.
+
+    THIS EXTENDS inc41's TIER COMPARISON THE WAY inc54 DID. inc41 asserts
+    *declared == painted* over 66 frames as SETS; inc54 asserted WHICH run
+    carries the ground on S4 and what is inside it. This asserts the same of
+    the ALERT run on S2 — the rect is found by the kit's own ink, and the
+    reversed text is matched at the RECT'S OWN X, because the state cell is
+    the fourth thing on that row and a search by colour alone would find the
+    mode strip's words first.
+
+    AND THE MECHANISM IS SHOWN SPENT RATHER THAN MERELY PRESENT: the same
+    kit's seat is read in both moods, so "the title block reverses" cannot
+    pass on a cell that reverses in every mood."""
+    import fixture
+    rows = sheet_rows("blueprint", "S2")
+    assert fixture.MOOD == "alert", fixture.MOOD
+
+    # exactly one knockout on this view, and it is the state cell
+    assert sum(r.count(" on ") for r in rows) == 1, \
+        [r for r in rows if " on " in r]
+    knocked = [r for r in rows if " on " in r][0]
+    assert "├ OVERDUE ┤" in plain(knocked), plain(knocked)
+
+    # the .txt carries the SHAPE (the two-channel law); the .svg the ground
+    txt = (FRAMES / "blueprint_S2.txt").read_text(encoding="utf-8")
+    assert "├ OVERDUE ┤" in txt and "├ CLEAR ┤" not in txt
+
+    k = LG.kit("blueprint")
+    svg = (FRAMES / "blueprint_S2.svg").read_text(encoding="utf-8")
+    rect = re.search(r'<rect x="([\d.]+)"[^>]*fill="%s"/>'
+                     % re.escape(k.c["ink"]), svg)
+    assert rect, "the alert run is not painted"
+    run = re.search(r'<text x="%s"[^>]*fill="%s">([^<]*)</text>'
+                    % (re.escape(rect.group(1)), re.escape(k.t["ground"])), svg)
+    assert run, rect.group(0)
+    assert run.group(1).replace(" ", " ") == "├ OVERDUE ┤"
+
+    # spent, not merely present
+    calm = LG.kit("blueprint")
+    assert calm.mood == "clear"
+    assert calm._state_cell() == ("├ CLEAR ┤", False)
+    calm.mood = "alert"
+    assert calm._state_cell() == ("├ OVERDUE ┤", True)
+
+
+def test_a_form_never_told_the_mood_shows_no_first_fixation(monkeypatch):
+    """TEETH. The picture depends on the FACT being handed over, and this is
+    the arm that says so: with `F.MOOD` back at `clear` — which is what every
+    sheet in this file did until inc56 — blueprint's S2 carries no reversed
+    run at all and the title block reads `CLEAR`.
+
+    IT PATCHES THE FIXTURE AND NOT THE KIT, deliberately. Patching
+    `Blueprint.mood` would prove the kit reads an attribute; what round
+    decision (G) is about is that nobody ever WROTE to it, so the teeth have
+    to run the real composition with the real default."""
+    sheet_rows("blueprint", "S2")            # puts screens on the path
+    import fixture
+    import screens
+    monkeypatch.setattr(fixture, "MOOD", "clear")
+    rows = screens.build("blueprint", "S2").rows
+    assert sum(r.count(" on ") for r in rows) == 0, \
+        [r for r in rows if " on " in r]
+    assert any("├ CLEAR ┤" in plain(r) for r in rows), \
+        [plain(r) for r in rows[-3:]]
+    # ... and the ten that do not read the mood are unmoved either way
+    for lang in LANGS:
+        if lang == "blueprint":
+            continue
+        assert screens.build(lang, "S2").rows == sheet_rows(lang, "S2"), lang
 
 
 #: the sheet's own query, from the fixture the six result rows are built from.

@@ -57,6 +57,23 @@ NOTES = ["Redirect drops the ?next= param when the", "session cookie is renewed 
 #: Save is DISABLED because `due` is invalid.  Cancel is the secondary action.
 SAVE_ENABLED = False
 
+#: THE BOARD'S MOOD, DERIVED FROM `TASKS` RATHER THAN TYPED (inc56, ruling G).
+#: `Kit.mood` is the ONE board-wide fact a kit is ever given, and the app
+#: computes it from the real task list -- "anything overdue and not done"
+#: (`Blueprint._state_cell`).  This file has had such an item since it was
+#: written (`Rate-limit the API`, two days late, still open), and no screen had
+#: ever handed the fact to a kit: every one of the 66 frames was composed by a
+#: kit whose `mood` was the constructor's default.
+#:
+#: THE CONSEQUENCE WAS ROUND DECISION (G).  Blueprint's first-fixation law --
+#: the ONE knockout in an eleven-language corpus -- fires on `alert` alone, so
+#: the language's signature mechanism was asserted in a test and appeared in no
+#: image anybody could look at.  Derived and not typed so that a fixture whose
+#: tasks all come back on time says `busy` here without anyone remembering to.
+MOOD = ("alert" if any(d is not None and d < 0 and phase != "done"
+                       for _t, _p, phase, d, _pr, _s in TASKS)
+        else "busy" if TASKS else "clear")
+
 # -- S3: settings ------------------------------------------------------------
 #: (label, on, disabled)
 SWITCHES = [

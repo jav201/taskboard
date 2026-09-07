@@ -44,14 +44,15 @@
 <text x="144.4" y="295.3" fill="#24486b">Save is held until due parses</text>
 <text x="68.8" y="516.3" fill="#eef4f8">┌</text>
 <text x="110.8" y="516.3" fill="#eef4f8">┐</text>
-<text x="287.2" y="516.3" fill="#7fa8c4">─────────</text>
+<text x="270.4" y="516.3" fill="#7fa8c4">───────────</text>
+<rect x="270.4" y="520.0" width="92.4" height="17.0" fill="#eef4f8"/>
 <text x="18.4" y="533.3" fill="#7fa8c4">board</text>
 <text x="77.2" y="533.3" fill="#eef4f8">FORM</text>
 <text x="127.6" y="533.3" fill="#7fa8c4">cfg</text>
 <text x="169.6" y="533.3" fill="#7fa8c4">log</text>
-<text x="287.2" y="533.3" fill="#7fa8c4">├ CLEAR ┤</text>
+<text x="270.4" y="533.3" fill="#123a5c">├ OVERDUE ┤</text>
 <text x="68.8" y="550.3" fill="#eef4f8">└</text>
 <text x="110.8" y="550.3" fill="#eef4f8">┘</text>
-<text x="287.2" y="550.3" fill="#7fa8c4">─────────</text>
+<text x="270.4" y="550.3" fill="#7fa8c4">───────────</text>
 </g>
 </svg>
