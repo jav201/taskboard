@@ -5010,10 +5010,37 @@ class Corgi(Kit):
 
         The board is still gone — the panes, the schedule, the detail pane,
         the pager and the meter are not drawn and no backdrop is dimmed —
-        which is the half of the refusal that is about the board."""
+        which is the half of the refusal that is about the board.
+
+        AND THE MODE HAS AN EDGE (inc75, C8's second half). inc65 gave the
+        strip back and left the other thirty-one rows blank, so the question
+        had no opener, no closer and no box, and round four's §7.4 said the
+        exemption had been RENAMED rather than retired: *"the frame is still
+        without an opener, without a closer and without a box, which is word
+        for word the axis by which `swiss_S4` and `ledger_S4` are `rework`."*
+
+        THE WALLS ARE THE DISPLAY FRAME'S OWN BAR. `PANE_RULE` is `▓` — the
+        milled top step of this kit's shade ramp, put there by inc67 (K5)
+        precisely so that a partition carries no rung of anything: *"THE BANK
+        IS THE READING, THE PANEL IS THE MILLED METAL. A pane edge is
+        panel."* A mode's edge is the same kind of edge as a pane's, so it is
+        the same bar and no new cell enters the language.
+
+        THEY ARE DRAWN IN `mut` AND NOT IN `dim`, which is the one place this
+        seat departs from `pane_split`. A seam divides two things a reader can
+        already see; these two rows are the only thing saying where an
+        IRREVERSIBLE question begins and ends, and `DIM_CLASSIFIES` (inc74)
+        is the table that draws that line. corgi's `dim` is 1.71:1.
+
+        Still not a box: two bars, no vertical, no corner. The refusal was
+        never about walls — it is about a dialog floating over a board — and
+        there is still no board behind."""
+        c = self.c
         head = under[0] if under else ""
-        y = max(1, (h - len(rows)) // 2)
-        out = [head] + [""] * (y - 1) + list(rows)
+        bar = f"[{c['mut']}]{mark(self.PANE_RULE * w)}[/]"
+        block = [bar] + list(rows) + [bar]
+        y = max(1, (h - len(block)) // 2)
+        out = [head] + [""] * (y - 1) + block
         return (out + [""] * h)[:h]
 
     # THE PANE SEAT IS THE DISPLAY FRAME — a SOLID BAR, single-cell gutters.
@@ -6921,8 +6948,29 @@ class Industrial(Kit):
         # The plate goes back the way it is set in every other state and the
         # hatch `/` in the paper carries the sixth, which is exactly where
         # this table already puts `·`, `_`, `-` and `#`.
+        # THE PAPER IS A CELL NO VALUE CAN CONTAIN (inc75, the `/`
+        # ruling). INVALID papered the field in `/`, and the value
+        # lying on it is a DATE: `industrial_S2` row 6 read
+        # `▐12/09/26//////…▌`, where 26 of the 28 slashes were paper
+        # and two were the value's own separators, with no frontier
+        # between them. Round four's §7.6 put the criterion plainly --
+        # "say where the entered value ends and the paper begins. No
+        # answer except by knowing in advance that a date carries two
+        # slashes" -- and named it the collision inc71 measured in the
+        # DECLARATION and could not show in the corpus.
+        #
+        # `░` IS THE SHADE RAMP THIS KIT ALREADY OWNS (`░ ▓ █`, beside
+        # the plate's `▐ ▌`), it is `indicator[DISABLED]` and carries
+        # no A-family, and -- the point -- IT IS NOT A CHARACTER A
+        # VALUE CAN BE TYPED WITH. A field's paper stops being
+        # something the value might have said. The `DANGER_FORM` is
+        # untouched (ruling C, still): `╱` is nowhere near this seat.
+        #
+        # AND THE INVALID MARKS AT `slider.knob` AND `stepper.step`
+        # STAY `/`, by the same ruling. What moves is the one seat
+        # where paper and value meet.
         "textfield.main": {DEFAULT: "▐·▌", FOCUSED: "▐_▌", EDITED: "▐-▌",
-                           ACTIVE: "▐#▌", INVALID: "▐/▌",
+                           ACTIVE: "▐#▌", INVALID: "▐░▌",
                            DISABLED: "(-)"},
         "textfield.caret": {DEFAULT: "|"},
         # ASCII AND CODED, this language's whole register, and its bracketed

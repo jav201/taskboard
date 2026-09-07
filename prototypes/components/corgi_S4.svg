@@ -6,6 +6,7 @@
 <text x="119.2" y="23.3" fill="#9a9a9a">[2]FORM</text>
 <text x="186.4" y="23.3" fill="#9a9a9a">[3]CFG</text>
 <text x="245.2" y="23.3" fill="#9a9a9a">[4]LOG</text>
+<text x="10.0" y="227.3" fill="#9a9a9a">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</text>
 <text x="10.0" y="244.3" fill="#f2f2f2">Delete 3 tasks?</text>
 <text x="10.0" y="278.3" fill="#9a9a9a">3 tasks will be removed from BACKLOG.</text>
 <text x="10.0" y="295.3" fill="#9a9a9a">This cannot be undone.</text>
@@ -13,5 +14,6 @@
 <text x="26.8" y="329.3" fill="#f2f2f2"> █Delete█ </text>
 <text x="110.8" y="329.3" fill="#ff6600">▜▜</text>
 <text x="152.8" y="329.3" fill="#f2f2f2">▒▒  Cancel  ▒▒</text>
+<text x="10.0" y="346.3" fill="#9a9a9a">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</text>
 </g>
 </svg>
