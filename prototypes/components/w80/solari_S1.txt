@@ -1,7 +1,7 @@
  BOARD  form  cfg  log                                                          
  BOARD  16 TASKS  ·  4 PROJECTS                                                 
 ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-   GATE BACKLOG 05              STATUS    PROJ          PRI     DETAIL  FIX     
+   GATE BACKLOG 05              STATUS    PROJ          PRI     DETAIL  FI═     
     21  AUDIT THE THEME TOKENS                ON TIME   LOW    ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
     ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁   PROJECT ▁▁▁▁▁ Web
     30  DROP THE LEGACY SHIM                  ON TIME   NORM   PHASE ▁▁▁▁▁ doing

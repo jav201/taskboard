@@ -20,13 +20,13 @@ COMMAND  query 're'  ·  6 results
     ◦◦∙∙∙∙∙◦◦                                                                                       
      empty                                                                                          
                                                                                                     
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
   enter∙run   esc∙close   ^p∙prev   ^n∙next                                                         
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    

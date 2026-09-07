@@ -11,7 +11,7 @@
 <rect x="26.8" y="61.0" width="487.2" height="17.0" fill="#f0ede4"/>
 <rect x="539.2" y="61.0" width="142.8" height="17.0" fill="#f0ede4"/>
 <text x="26.8" y="74.3" fill="#0b0b0c"> GATE BACKLOG 05              STATUS    PROJ          PRI </text>
-<text x="539.2" y="74.3" fill="#0b0b0c"> DETAIL  FIX     </text>
+<text x="539.2" y="74.3" fill="#0b0b0c"> DETAIL  FI═     </text>
 <rect x="43.6" y="78.0" width="16.8" height="17.0" fill="#17171a"/>
 <text x="43.6" y="91.3" fill="#f0ede4">21</text>
 <text x="60.4" y="91.3" fill="#e0e0e0">  AUDIT THE THEME TOKENS                </text>

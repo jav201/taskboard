@@ -55,7 +55,7 @@ def pad(s: str, n: int) -> str:
     return s + " " * max(0, n - wid(s))
 
 
-def clip(s: str, n: int) -> str:
+def clip(s: str, n: int, k=None) -> str:
     """Markup cut to at most `n` CELLS, with every open style closed.
 
     WHY THIS IS NEEDED AND NOT A CONVENIENCE.  A kit method handed `w` does
@@ -66,7 +66,18 @@ def clip(s: str, n: int) -> str:
     `redirect` and `Web` on lines of their own in three languages and the
     frame still looked plausible.  Clipping is the honest failure, and
     `Sheet.body()` reports every row it had to cut rather than swallowing it.
+
+    AND WITH A KIT, THE CUT IS SAID (C13, inc84).  "The honest failure" was
+    honest to the WRITER -- `body()` reports it on stdout -- and silent to
+    the READER, who gets `phase: do` and no way to know a byte went missing.
+    Pass `k` and the last cell of a cut row becomes that language's
+    `DISCLOSE`, in `dim`: the mark `Kit.elide` spends on plain text and the
+    one `textarea`'s wrap has spent since inc30.  It takes a cell OF THE
+    BUDGET, so a marked clip is never wider than an unmarked one.
     """
+    if k is not None and wid(s) > n:
+        return (clip(s, max(0, n - 1))
+                + f"[{k.c['dim']}]{LG.mark(k.DISCLOSE)}[/]")
     out: list[str] = []
     count = depth = i = 0
     while i < len(s) and count < n:
@@ -136,6 +147,21 @@ class Sheet:
         #: which the first sweep did -- breaks the one frame commitment the
         #: language has.  `build()` places these last.
         self.chrome_tail: list[str] = []
+        #: THE FOOT, AND IT IS THE ROW THAT SAYS HOW TO LEAVE (C12, inc84).
+        #: A key bar appended with `row()` lands wherever the builder's
+        #: content happened to end, and round five measured what that costs
+        #: at 24 rows: instrument, nord, blueprint and prism LOSE the S6 key
+        #: bar entirely -- `enter run - esc close - ^p prev - ^n next`, the
+        #: one row that says how the palette is closed, clipped off the
+        #: bottom by `body()`.  Seven kits kept it by having shorter content,
+        #: which is luck and not composition.
+        #:
+        #: A key bar is a FOOTER and every terminal app docks one.  `build()`
+        #: reserves it at the bottom of the frame at whatever height the
+        #: frame has, above `chrome_tail` -- so blueprint's stamp keeps the
+        #: bottom corner its own commitment names and the key bar sits on the
+        #: row above it.
+        self.foot: list[str] = []
 
     def row(self, markup: str = "", *cands: Cand) -> None:
         """Append one row.  Every hand-drawn element in it is declared here."""
@@ -162,6 +188,21 @@ class Sheet:
         the first sweep."""
         rows = self.cands[cd.name][1] if cd.name in self.cands else []
         self.cands[cd.name] = (cd, rows)
+
+    def dock(self, markup: str, *cands: Cand) -> None:
+        """Reserve a row at the FOOT of the frame, whatever height it has.
+
+        Declared exactly like `row()` -- a docked row is still a drawn row
+        and still declares whatever it draws by hand -- and placed by
+        `build()` rather than by position in the builder."""
+        self.foot.append(markup)
+        n = H - len(self.foot) - len(self.chrome_tail) + 1
+        for cd in cands:
+            if cd.name in self.cands:
+                self.cands[cd.name][1].append(n)
+            else:
+                self.cands[cd.name] = (cd, [n])
+            self._used.add(cd.name)
 
     def blank(self, n: int = 1) -> None:
         for _ in range(n):
@@ -250,15 +291,22 @@ def s1(sh: Sheet) -> None:
 
     # -- the detail pane's rows, built first so the two panes can be zipped --
     det: list[str] = []
-    for line in k.sect("DETAIL", F.TASKS[F.SELECTED][0][:right - 14], right, 3):
-        det.append(clip(line, right))
+    # THE TITLE IS ELIDED, NOT SLICED (C13, inc84).  This read
+    # `F.TASKS[F.SELECTED][0][:right - 14]` -- a bare Python slice, which at
+    # 100 columns had room to spare and at 80 turned `Fix login redirect`
+    # into `Fix` with nothing to say a cut had happened.  `Kit.elide` spends
+    # the language's own `DISCLOSE`, which is what that mark means in all
+    # eleven and what `textarea`'s wrap mark already spends.
+    for line in k.sect("DETAIL", k.elide(F.TASKS[F.SELECTED][0], right - 14),
+                       right, 3):
+        det.append(clip(line, right, k))
     # THE DEFINITION ROWS, through the kit (inc15).  This loop used to draw
     # ledger's dot leaders in five languages -- one language's typographic
     # argument generalised into four that never chose it.  Each language now
     # answers for itself: air to a right column, an engraved silkscreen, a
     # dimension, an ember frontier, an unlit lattice, dot leaders.
     for cap, val in F.DETAIL:
-        det.append(clip(k.field_row(cap, val, right), right))
+        det.append(clip(k.field_row(cap, val, right), right, k))
     det.append("")
     det.append(k.meter(F.WORK[0], F.WORK[1], F.COUNTS, right).split("\n")[0])
 
@@ -657,8 +705,11 @@ def s6(sh: Sheet) -> None:
         sh.row("    " + line)
     sh.blank()
 
-    # the hint row: the kit owns the notation, the fixture owns every key
-    sh.row("  " + k.keyhint(F.HINTS, W - 4))
+    # THE HINT ROW IS DOCKED (C12, inc84): the kit owns the notation, the
+    # fixture owns every key, and the FRAME owns where it goes -- the last
+    # row, at any height.  Appended with `row()` it landed wherever the
+    # content ended, and at 24 rows four of the eleven lost it altogether.
+    sh.dock("  " + k.keyhint(F.HINTS, W - 4))
 
 
 # ===========================================================================
@@ -684,11 +735,16 @@ def build(lang: str, screen: str) -> Sheet:
     sh = Sheet(kit, lang, screen)
     fn = BUILDERS[screen].get(lang, BASE[screen])
     fn(sh)
-    if sh.chrome_tail:
-        n = len(sh.chrome_tail)
+    # THE DOCKED ROWS, in the order their commitments demand: the key bar
+    # first and the title block LAST, because blueprint's whole frame budget
+    # is a stamp "docked to the BOTTOM corner" and a key bar under it would
+    # take the corner the language's identity lives in.
+    tail = sh.foot + sh.chrome_tail
+    if tail:
+        n = len(tail)
         sh.rows = sh.rows[:H - n]
         while len(sh.rows) < H - n:
             sh.rows.append("")
-        sh.rows += sh.chrome_tail
+        sh.rows += tail
     sh.rows = sh.rows[:H]
     return sh

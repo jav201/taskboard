@@ -55,21 +55,21 @@
 <text x="43.6" y="346.3" fill="#ff6039"> █      █ </text>
 <text x="43.6" y="363.3" fill="#ff6039">  ██████  </text>
 <text x="43.6" y="380.3" fill="#4a4a4a"> empty</text>
-<text x="26.8" y="414.3" fill="#777777">▐</text>
-<text x="35.2" y="414.3" fill="#f2f2f2">enter</text>
-<text x="77.2" y="414.3" fill="#777777">▌</text>
-<text x="94.0" y="414.3" fill="#959595">RUN</text>
-<text x="144.4" y="414.3" fill="#777777">▐</text>
-<text x="152.8" y="414.3" fill="#f2f2f2">esc</text>
-<text x="178.0" y="414.3" fill="#777777">▌</text>
-<text x="194.8" y="414.3" fill="#959595">CLOSE</text>
-<text x="262.0" y="414.3" fill="#777777">▐</text>
-<text x="270.4" y="414.3" fill="#f2f2f2">^p</text>
-<text x="287.2" y="414.3" fill="#777777">▌</text>
-<text x="304.0" y="414.3" fill="#959595">PREV</text>
-<text x="362.8" y="414.3" fill="#777777">▐</text>
-<text x="371.2" y="414.3" fill="#f2f2f2">^n</text>
-<text x="388.0" y="414.3" fill="#777777">▌</text>
-<text x="404.8" y="414.3" fill="#959595">NEXT</text>
+<text x="26.8" y="550.3" fill="#777777">▐</text>
+<text x="35.2" y="550.3" fill="#f2f2f2">enter</text>
+<text x="77.2" y="550.3" fill="#777777">▌</text>
+<text x="94.0" y="550.3" fill="#959595">RUN</text>
+<text x="144.4" y="550.3" fill="#777777">▐</text>
+<text x="152.8" y="550.3" fill="#f2f2f2">esc</text>
+<text x="178.0" y="550.3" fill="#777777">▌</text>
+<text x="194.8" y="550.3" fill="#959595">CLOSE</text>
+<text x="262.0" y="550.3" fill="#777777">▐</text>
+<text x="270.4" y="550.3" fill="#f2f2f2">^p</text>
+<text x="287.2" y="550.3" fill="#777777">▌</text>
+<text x="304.0" y="550.3" fill="#959595">PREV</text>
+<text x="362.8" y="550.3" fill="#777777">▐</text>
+<text x="371.2" y="550.3" fill="#f2f2f2">^n</text>
+<text x="388.0" y="550.3" fill="#777777">▌</text>
+<text x="404.8" y="550.3" fill="#959595">NEXT</text>
 </g>
 </svg>

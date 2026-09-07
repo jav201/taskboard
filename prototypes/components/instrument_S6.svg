@@ -50,17 +50,17 @@
 <text x="43.6" y="380.3" fill="#2dd4bf">⠀⠈⠉⣶⣶⣶⣶⣶⣶⣶⣶⣶⠉⠁⠀</text>
 <text x="43.6" y="397.3" fill="#2dd4bf">⠀⠀⠀⠛⠛⠛⠛⠛⠛⠛⠛⠛⠀⠀⠀</text>
 <text x="43.6" y="414.3" fill="#333c47"> empty</text>
-<text x="26.8" y="448.3" fill="#2dd4bf">enter</text>
-<text x="68.8" y="448.3" fill="#333c47">⠒</text>
-<text x="77.2" y="448.3" fill="#6e7b89">run</text>
-<text x="127.6" y="448.3" fill="#2dd4bf">esc</text>
-<text x="152.8" y="448.3" fill="#333c47">⠒</text>
-<text x="161.2" y="448.3" fill="#6e7b89">close</text>
-<text x="228.4" y="448.3" fill="#2dd4bf">^p</text>
-<text x="245.2" y="448.3" fill="#333c47">⠒</text>
-<text x="253.6" y="448.3" fill="#6e7b89">prev</text>
-<text x="312.4" y="448.3" fill="#2dd4bf">^n</text>
-<text x="329.2" y="448.3" fill="#333c47">⠒</text>
-<text x="337.6" y="448.3" fill="#6e7b89">next</text>
+<text x="26.8" y="550.3" fill="#2dd4bf">enter</text>
+<text x="68.8" y="550.3" fill="#333c47">⠒</text>
+<text x="77.2" y="550.3" fill="#6e7b89">run</text>
+<text x="127.6" y="550.3" fill="#2dd4bf">esc</text>
+<text x="152.8" y="550.3" fill="#333c47">⠒</text>
+<text x="161.2" y="550.3" fill="#6e7b89">close</text>
+<text x="228.4" y="550.3" fill="#2dd4bf">^p</text>
+<text x="245.2" y="550.3" fill="#333c47">⠒</text>
+<text x="253.6" y="550.3" fill="#6e7b89">prev</text>
+<text x="312.4" y="550.3" fill="#2dd4bf">^n</text>
+<text x="329.2" y="550.3" fill="#333c47">⠒</text>
+<text x="337.6" y="550.3" fill="#6e7b89">next</text>
 </g>
 </svg>

@@ -654,23 +654,135 @@
   [
    [
     0,
-    "    ",
+    "  ",
     "#e0e0e0",
     "#123a5c",
     false,
     false
    ],
    [
-    4,
-    " NO ITEMS ON SHEET",
+    2,
+    "enter",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    7,
+    "──",
     "#24486b",
     "#123a5c",
     false,
     false
    ],
    [
-    22,
-    "                                                          ",
+    9,
+    "RUN",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    12,
+    "   ",
+    "#e0e0e0",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    15,
+    "esc",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    18,
+    "──",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    20,
+    "CLOSE",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    25,
+    "   ",
+    "#e0e0e0",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    28,
+    "^p",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    30,
+    "──",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    32,
+    "PREV",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    36,
+    "   ",
+    "#e0e0e0",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    39,
+    "^n",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    41,
+    "──",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    43,
+    "NEXT",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    47,
+    "                                 ",
     "#e0e0e0",
     "#123a5c",
     false,
