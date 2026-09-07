@@ -1,11 +1,11 @@
 ◦ board  ◦ form  ∙ CFG  ◦ log                                                                       
 SETTINGS  5 switches  ·  2 selects  ·  1 slider                                                     
 ◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦ 
-  notify on overdue         ∙∙◉                                                                     
-  daily digest              ∙∙◉                                                                     
+  notify on overdue         ⊖⊖◉                                                                     
+  daily digest              ⊖⊖◉                                                                     
   sound                     ◉◦◦                                                                     
-  sync to remote            ◌··   (no remote configured)                                            
-  compact rows              ∙∙◉                                                                     
+  sync to remote            ◌⋅⋅   (no remote configured)                                            
+  compact rows              ⊖⊖◉                                                                     
                                                                                                     
   start of week             ◦mon    ◍◦                                                              
   theme                     ◦dark   ◍◦                                                              

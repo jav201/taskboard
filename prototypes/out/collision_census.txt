@@ -8,13 +8,12 @@ language's alphabet and is counted but not listed. Read the module
 docstring of prototypes/collision_census.py for the argument.
 
 ------------------------------------------------------------------------------
-NAUGHT   5 colliding cells   (LEVELS ◦◦/∙◦/∙∙  DANGER ∙∙  REQUIRED ◉  CUR ●)
+NAUGHT   4 colliding cells   (LEVELS ◦◦/∙◦/∙∙  DANGER ∙∙  REQUIRED ⊛  CUR ●)
 ------------------------------------------------------------------------------
+  ◦   [8 families]  LEVELS[info] + LEVELS[warn]  ·  button.main close (default)  ·  button.main open (default)  ·  checkbox.main mark (checked,default)  ·  field.leader mark (declared)  ·  radio.main mark (active,checked+active)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.indicator mark (checked+disabled,disabled)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (default)  ·  textfield.main mid (edited)  ·  textfield.main open (default)
+  ⋅   [7 families]  INVALID textfield.main mid  ·  button.main close (disabled)  ·  button.main open (disabled)  ·  checkbox.main mark (checked+disabled,disabled)  ·  radio.main mark (checked+disabled,disabled)  ·  stepper.main close (disabled)  ·  stepper.main open (disabled)  ·  switch.main mark (checked+disabled,disabled)  ·  textfield.main close (disabled)  ·  textfield.main mid (active,default,disabled,focused)  ·  textfield.main open (disabled)
   ●   [7 families]  CUR  ·  button.main close (active)  ·  button.main mid (active)  ·  button.main open (active)  ·  checkbox.knob mark (checked+focused,focused)  ·  radio.knob mark (active,checked+active)  ·  stepper.step close (default)  ·  stepper.step open (default)  ·  switch.knob mark (active,checked+active)  ·  textfield.main close (active)  ·  textfield.main open (active)
-  ◦   [7 families]  LEVELS[info] + LEVELS[warn]  ·  button.main close (default)  ·  button.main open (default)  ·  checkbox.main mark (checked,default)  ·  field.leader mark (declared)  ·  radio.main mark (active,checked+active)  ·  switch.indicator mark (checked+disabled,disabled)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (default)  ·  textfield.main open (default)
-  ·   [5 families]  INVALID textfield.main mid  ·  checkbox.main mark (checked+disabled,disabled)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (checked+disabled,disabled)  ·  textfield.main mid (active,default,focused)
-  ◉   [5 families]  REQUIRED  ·  checkbox.knob mark (checked,default)  ·  stepper.step close (active)  ·  stepper.step open (active)  ·  switch.knob mark (checked,default)  ·  textfield.caret mark (active,default,disabled,edited,focused)
-  ∙   [4 families]  LEVELS[error] + LEVELS[warn]  ·  DANGER_FORM close + DANGER_FORM open  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (edited)
+  ∙   [2 families]  LEVELS[error] + LEVELS[warn]  ·  DANGER_FORM close + DANGER_FORM open
   ... 4 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
@@ -79,7 +78,7 @@ LEDGER   2 colliding cells   (LEVELS   /* /**  DANGER ()  REQUIRED †  CUR ▶)
 ------------------------------------------------------------------------------
   ▶   [7 families]  CUR  ·  button.main open (active,focused)  ·  checkbox.knob open (active,checked+active,checked+focused,focused)  ·  checkbox.main open (active,checked+active,checked+focused,focused)  ·  radio.knob open (active,checked+active,checked+focused,focused)  ·  radio.main open (active,checked+active,checked+focused,focused)  ·  stepper.step close (focused)  ·  switch.knob mark (checked+focused,focused)  ·  textfield.main open (active,edited,focused)
   ·   [6 families]  INVALID textfield.main mid  ·  checkbox.main mid (active,checked+active)  ·  field.leader mark (declared)  ·  radio.main mid (active,checked+active)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
-  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 8 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
@@ -103,7 +102,7 @@ BLUEPRINT   2 colliding cells   (LEVELS   /╌╌/━━  DANGER ━━  REQUIRE
 LANGUAGE x COLLISIONS
 ==============================================================================
 language       colliding cells
-naught                       5
+naught                       4
 corgi                        2
 instrument                   4
 swiss                        2
@@ -115,7 +114,7 @@ ledger                       2
 solari                       3
 blueprint                    2
 ------------------------------
-TOTAL                       26
+TOTAL                       25
 
 zero collisions: NONE -- all eleven overload at least one cell
 
@@ -131,15 +130,10 @@ These rows are NOT added to the counts above: a homoglyph row is a
 question about two drawings, and the count is a question about one
 cell.
 
-NAUGHT   2 row(s)
-  · is invalid   and its homoglyph ∙ is switch + textfield chrome
-  ∙ is danger + severity   and its homoglyph · is checkbox + stepper + switch + textfield chrome
 DARKSIDE   1 row(s)
   o is severity   and its homoglyph ◦ is radio chrome
-LEDGER   1 row(s)
-  · is invalid   and its homoglyph ∙ is textfield chrome
 
-TOTAL homoglyph rows             4
+TOTAL homoglyph rows             1
 
 This is the input to the language-level rework, not a verdict. A cell
 here is the question 'did you mean these two to be the same mark?'.

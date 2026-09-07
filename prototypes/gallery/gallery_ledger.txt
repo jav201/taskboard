@@ -27,7 +27,7 @@
                                 textfield  task·caret 2                                                               
                                            │task······│   default                                                     
                                            ▶task······│   focused                                                     
-                                           ▶ta▏sk∙∙∙∙∙│   edited                                                      
+                                           ▶ta▏sk─────│   edited                                                      
                                                                                                                       
                                                                                                                       
                                                                                                                       
