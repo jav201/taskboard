@@ -153,20 +153,20 @@
 <rect x="732.4" y="401.0" width="16.8" height="17.0" fill="#f2ecdd"/>
 <text x="371.2" y="414.3" fill="#2b3a67">▶ </text>
 <text x="388.0" y="414.3" fill="#1c1a15">ok</text>
-<text x="404.8" y="414.3" fill="#2b3a67"> │</text>
+<text x="404.8" y="414.3" fill="#2b3a67"> ◀</text>
 <text x="438.4" y="414.3" fill="#2b3a67">▶ </text>
 <text x="455.2" y="414.3" fill="#1c1a15">Refresh</text>
-<text x="514.0" y="414.3" fill="#2b3a67"> │</text>
+<text x="514.0" y="414.3" fill="#2b3a67"> ◀</text>
 <text x="556.0" y="414.3" fill="#c4b99f">focused</text>
 <rect x="262.0" y="418.0" width="453.6" height="17.0" fill="#f2ecdd"/>
 <rect x="715.6" y="418.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="418.0" width="16.8" height="17.0" fill="#f2ecdd"/>
-<text x="371.2" y="431.3" fill="#2b3a67">▶ </text>
+<text x="371.2" y="431.3" fill="#2b3a67">▶─</text>
 <text x="388.0" y="431.3" fill="#1c1a15">ok</text>
-<text x="404.8" y="431.3" fill="#2b3a67"> ◀</text>
-<text x="438.4" y="431.3" fill="#2b3a67">▶ </text>
+<text x="404.8" y="431.3" fill="#2b3a67">─◀</text>
+<text x="438.4" y="431.3" fill="#2b3a67">▶─</text>
 <text x="455.2" y="431.3" fill="#1c1a15">Refresh</text>
-<text x="514.0" y="431.3" fill="#2b3a67"> ◀</text>
+<text x="514.0" y="431.3" fill="#2b3a67">─◀</text>
 <text x="556.0" y="431.3" fill="#c4b99f">active</text>
 <rect x="262.0" y="435.0" width="453.6" height="17.0" fill="#f2ecdd"/>
 <rect x="715.6" y="435.0" width="16.8" height="17.0" fill="#000000"/>

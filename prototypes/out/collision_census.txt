@@ -36,11 +36,12 @@ INSTRUMENT   4 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  RE
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-SWISS   2 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
+SWISS   3 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
 ------------------------------------------------------------------------------
+  ┆   [5 families]  INVALID textfield.main mid  ·  checkbox.knob open (checked+disabled,disabled)  ·  checkbox.main open (checked+disabled,disabled)  ·  stepper.step close (disabled)  ·  stepper.step open (disabled)  ·  switch.knob mark (checked+disabled,disabled)  ·  textfield.main open (disabled)
   ·   [2 families]  LEVELS[info]  ·  textfield.main mid (edited)
   ─   [2 families]  LEVELS[warn]  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)
-  ... 8 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 1 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
@@ -105,7 +106,7 @@ language       colliding cells
 naught                       4
 corgi                        2
 instrument                   4
-swiss                        2
+swiss                        3
 industrial                   2
 nord                         1
 darkside                     1
@@ -114,7 +115,7 @@ ledger                       2
 solari                       3
 blueprint                    2
 ------------------------------
-TOTAL                       25
+TOTAL                       26
 
 zero collisions: NONE -- all eleven overload at least one cell
 

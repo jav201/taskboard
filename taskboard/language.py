@@ -5710,12 +5710,22 @@ class Swiss(Kit):
 
     def overlay_instead(self, rows, w, h, under, about=None):
         """NO BOXES, at any width — so the question is set at the grid's first
-        column under the SINGLE HAIRLINE this language allows itself, with the
-        page dimmed behind. The rule is the masthead's, not a lid's: it runs
-        the full measure and nothing turns a corner."""
+        column BETWEEN two hairlines, with the page dimmed behind. The rules
+        are the masthead's, not a lid's: they run the full measure, they are
+        the same weight, and nothing turns a corner.
+
+        BOTH RULES, SINCE inc66 (C2). It used to open on one and close on
+        nothing, and `swiss_S4` was one of the two frames in the corpus where
+        "say where the modal ends" had no answer — in a confirm that destroys
+        data, named as still open in `spec.md` §11.3 since `rework-3` and
+        untouched by five batches. A band closed at one end is not a band; it
+        is a rule with text after it, and everything below the question read
+        as part of the question. Two rules of the same weight are the
+        editorial device for a band and are still not a box: no vertical, no
+        corner, no lid."""
         c = self.c
         rule = f"[{self.rule_color}]{mark('─' * w)}[/]"
-        block = [rule, ""] + list(rows)
+        block = [rule, ""] + list(rows) + ["", rule]
         y = max(0, (h - len(block)) // 2)
         out = []
         for i in range(h):
@@ -6109,8 +6119,26 @@ class Swiss(Kit):
         # inc39's law is still satisfied by construction: the mark that opens
         # a rejected field is a mark this language opens fields with, and
         # there is no closing mark left to turn round.
+        #
+        # inc66, RULING C's FOLLOW-THROUGH: THE FREED CHANNEL GETS FILLED.
+        # inc52 took `╲` off this seat and put the doubled stroke on it, and
+        # nothing moved into the channel that opened: `swiss_S2` row 6 read
+        # `║12/09/26` -- one wall and eight characters, no paper and no
+        # closer, so "how far does the date field go" had no answer at all.
+        # The frame lost a wrong answer and gained none.
+        #
+        # THE REJECTED FIELD IS THE ONE FIELD THAT SPENDS ALL THREE CELLS,
+        # and every one of them is a stroke weight this language already
+        # owns (`┆ │ ┃ █` and the doubled `║`). The walls are the doubled
+        # rule on BOTH sides -- a value struck out is bracketed, not merely
+        # marked -- and the paper is `┆`, the lightest stroke in the ladder,
+        # so the walls stand above their own ground. EXTENT is the channel:
+        # the field now says where it ends, which is the thing the round
+        # measured missing, and it says it in the only ornament this
+        # language has. The RUNE is excluded from the invalid MEANING family
+        # by name (inc52), so a paper is not a second rejection mark.
         "textfield.main": {DEFAULT: "│  ", FOCUSED: "┃  ", EDITED: "┃· ",
-                           ACTIVE: "█  ", INVALID: "║  ",
+                           ACTIVE: "█  ", INVALID: "║┆║",
                            DISABLED: "┆  "},
         "textfield.caret": {DEFAULT: "▏"},
         # WEIGHT, the only ornament this language owns, spent on a shaft this
@@ -8220,9 +8248,33 @@ class Ledger(Kit):
                        DISABLED: "╌▫┊"},
         # AN ENTRY IN THE LEDGER: the word sits in a ruled cell. The tally
         # pointer arrives when the cursor does (the same ▶ its checkbox and
-        # radio grow), and the press CLOSES the entry on both sides — a line
-        # posted, which is this language's whole metaphor for an action taken.
-        "button.main": {DEFAULT: "│  │", FOCUSED: "▶  │", ACTIVE: "▶  ◀",
+        # radio grow), and the press RULES the entry through — a line posted,
+        # which is this language's whole metaphor for an action taken.
+        #
+        # inc66 (C2): THE CURSOR BRACKETS THE ENTRY, IT DOES NOT HALF-OPEN IT.
+        # FOCUSED read `▶  │` -- the tally pointer on the left and the COLUMN
+        # RULE on the right -- so a focused entry had no wall PAIR, and on the
+        # one row of the corpus where two buttons stand side by side the
+        # result was unreadable: `ledger_S4` row 32 is
+        # `▶  (Delete)  │   │   Cancel   │`, one `▶` and three `│`, where the
+        # closing rule of the dangerous answer is byte for byte the opening
+        # rule of the safe one. The only mark saying where `(Delete)` ended
+        # was its own DANGER_FORM parenthesis.
+        #
+        # `◀` IS THIS KIT'S OWN CELL and no new one enters the language: it is
+        # already the closing rule at `textfield.main[ACTIVE]` and the BROUGHT
+        # BACK direction of the stepper. Focus takes the matched pair; the
+        # press keeps its own state by RULING THE ENTRY THROUGH -- the same
+        # SOLID rule `textfield.main[EDITED]` takes, and for the kit's own
+        # stated reason: `─` "is the same stroke the bar's fill draws and it
+        # carries no meaning anywhere". A posted entry is ruled through.
+        #
+        # NOT `▶··◀`, WHICH WAS THE FIRST ANSWER AND WAS MEASURED. The dot
+        # leader is this language's `field.leader` and already carries six
+        # families in the census; putting a button's middle on it took the row
+        # to seven for nothing. `─` carries none, and the census's count for
+        # ledger is unmoved.
+        "button.main": {DEFAULT: "│  │", FOCUSED: "▶  ◀", ACTIVE: "▶──◀",
                         DISABLED: "╌  ╌"},
         # A RULED COLUMN, and the paper is the DOT LEADER this language rules
         # every gap with. The tally pointer arrives with the cursor and the

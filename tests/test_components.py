@@ -1776,10 +1776,28 @@ def test_a_modal_changes_one_contiguous_band_of_the_page(lang):
     page would push everything down, and the frame would still be `h` rows of
     plausible-looking board — `test_an_overlay_returns_the_rectangle_it_was_
     asked_for` would stay green while every row below the question was one row
-    off. Measured on the shipped frames, against the shipped page."""
+    off. Measured on the shipped frames, against the shipped page.
+
+    A ROW THE MODAL DRAWS BLANK OVER A BLANK PAGE ROW IS STILL THE MODAL'S
+    (inc66). `modal_band` reads the rows that DIFFER, which is the only thing
+    a shipped frame can be asked; a band with air in it, laid over a page that
+    also has air there, comes back with a HOLE in the run. That is exactly
+    what happened the moment `swiss_S4` gained its closing rule and the
+    block's two air rows landed on the page's own air: the composition was
+    right and the proxy was wrong. So the run is measured END TO END, and
+    every row inside it that did not change must be blank on BOTH sides. The
+    half that carries the meaning of "overlay" -- every row OUTSIDE the run is
+    the page's own row at the same index -- is untouched and is asserted
+    below."""
     band = modal_band(lang)
     assert band, lang
-    assert band == list(range(band[0], band[-1] + 1)), (lang, band)
+    s1 = page_rows(lang)
+    s4 = (FRAMES / f"{lang}_S4.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")
+    for i in range(band[0], band[-1] + 1):
+        if i in band:
+            continue
+        assert not s1[i].strip() and not s4[i].strip(), (lang, i, s1[i], s4[i])
 
 
 @pytest.mark.parametrize("lang", LANGS)
@@ -5322,3 +5340,226 @@ def test_the_wrong_gate_law_bites_on_the_anchor_inc55_shipped(monkeypatch):
     monkeypatch.undo()
     out = [plain(r) for r in k.overlay(rows, w, h, under, about="BACKLOG")]
     assert tasks_as_filed(out)["Rewrite the onboarding"] == ("DOING", "DOING")
+
+
+# ---------------------------------------------------------------------------
+# inc66 (rework-6a) — C2: both answers are walled, and the confirm closes
+# ---------------------------------------------------------------------------
+#: inc38's ruling, quoted so the exemption below cannot outlive it. Kept as a
+#: string in this file rather than read off the kit because it is a RULING
+#: about swiss and not a declaration of swiss's.
+ONE_MARK_ONE_SIDE = ("inc38: no wall around a button at any width, derived "
+                     "from the codepoint -- in a language whose divider is "
+                     "alignment the extent of a control is the next column's "
+                     "job")
+
+#: the ONE language that declares NO closing wall on a button, with the
+#: citation that earns it. `Swiss.button.main` is `"▫   "` / `"▪   "` /
+#: `"■   "` / `"    "` — a mark on the left and air on the right — because
+#: inc38 took the walls off this seat by name ("no wall around a button at any
+#: width"): in a language whose divider is alignment, the extent of a control
+#: is the next column's business. A language may renounce the closing wall; it
+#: may not close with a cell that is another control's opener, which is what
+#: the pair clause below is for.
+BUTTON_HAS_NO_CLOSER = ("swiss",)
+
+#: the mirror of every wall this corpus opens a button with, derived once from
+#: the eleven kits and written down. A wall closes a seat when the closing cell
+#: is the SAME mark (a symmetric bracket: `▬ ▬`, `⠿ ⠿`, `▔ ▔`) or this mark's
+#: mirror. Every entry below is a pair some kit already declares AT THIS SEAT;
+#: nothing is invented here, and a language reaching for an unlisted asymmetric
+#: pair has to add it and say why.
+WALL_MIRRORS = {
+    "(": ")", "[": "]", "├": "┤", "┣": "┫", "╞": "╡", "▐": "▌",
+    "▛": "▜", "▶": "◀", "⠸": "⠇", "⠼": "⠧", "⣸": "⣇",
+}
+
+#: three measures, because the round judged the corpus at ONE (§8.2) and the
+#: destructive seat is where that hurts: `inc54.md` §7 wrote that blueprint's
+#: answer went from 8 cells to 12 and that "nothing in this repo renders S4
+#: below 100", so the two answers colliding at a narrow measure was untested
+#: rather than safe.
+_ANSWER_WIDTHS = (8, 12, 20)
+
+
+def declared_walls(k, state):
+    """`(opener, closer)` for a button in `state`, split the way
+    `Kit.button` splits them: the declared slot in half, the caller's word
+    between."""
+    slot = k.part_glyph("main", state, "button")
+    return slot[:len(slot) // 2], slot[len(slot) // 2:]
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_both_answers_of_a_confirm_are_walled_by_their_declared_pair(lang):
+    """C2, THE HALF THAT IS ABOUT THE TWO BUTTONS.
+
+    `ledger_S4` row 32 read `▶  (Delete)  │   │   Cancel   │` — one `▶` and
+    three `│`. `button.main[FOCUSED]` was `▶  │`: the tally pointer on the
+    left and the COLUMN RULE on the right, which is the cell this page draws
+    about forty times and is also the safe answer's OPENER. So the closing
+    mark of the irreversible answer and the opening mark of the safe one
+    standing next to it were the same cell, and the only thing saying where
+    `(Delete)` ended was its own DANGER_FORM parenthesis — the mark whose job
+    is to say the button is dangerous, not to say where it stops.
+
+    TWO CLAUSES, AT THREE WIDTHS:
+
+    1. each answer opens with the first half and closes with the second half
+       of its own declared slot — asked of the KIT, so a sheet cannot satisfy
+       it by drawing walls of its own;
+    2. the outer cell each answer CLOSES on is a PAIR with the one it opens
+       on: the same mark, or that mark's declared mirror. This is the one the
+       frame failed, and it is why the row was unreadable — a seat that ends
+       on a cell unrelated to the one it began with has no shape a reader can
+       close, so `(Delete)`'s right-hand `│` read as `Cancel`'s left-hand one.
+
+    WHY "SAME OR MIRROR" AND NOT "DIFFERENT FROM THE NEXT BUTTON'S OPENER",
+    which was the first draft and was measured wrong. prism closes on `⠿` and
+    opens on `⠿` — `⠿⠛ ⣿Delete⣿ ⠛⠿   ⠿⠉  Cancel  ⠉⠿` — so the two seats'
+    adjacent cells ARE the same mark, and the row reads perfectly because each
+    seat is symmetric about its own word. SYMMETRY is what closes a seat;
+    difference from a neighbour is not, and the first draft went red on prism
+    for doing the right thing.
+
+    THE ONE EXEMPTION IS NAMED AND ITS CITATION IS CHECKED. swiss declares no
+    closing wall at all (`BUTTON_HAS_NO_CLOSER`), by inc38's ruling, so clause
+    2 has nothing to close — and the arm asserts the closer really IS blank
+    rather than letting a language slip out of the clause by accident."""
+    k = LG.kit(lang)
+    d_open, d_close = declared_walls(k, LG.FOCUSED)
+    s_open, s_close = declared_walls(k, LG.DEFAULT)
+
+    for w in _ANSWER_WIDTHS:
+        danger = plain(k.button("Delete", w, LG.FOCUSED, danger=True))
+        safe = plain(k.button("Cancel", w, LG.DEFAULT))
+        assert danger.startswith(d_open), (lang, w, danger, d_open)
+        assert danger.endswith(d_close), (lang, w, danger, d_close)
+        assert safe.startswith(s_open), (lang, w, safe, s_open)
+        assert safe.endswith(s_close), (lang, w, safe, s_close)
+
+    for state in (LG.FOCUSED, LG.DEFAULT, LG.ACTIVE, LG.DISABLED):
+        opens, shuts = declared_walls(k, state)
+        a, b = opens.strip()[:1], shuts.strip()[-1:]
+        if lang in BUTTON_HAS_NO_CLOSER:
+            assert b == "", (lang, state, shuts)
+            assert "no wall around a button" in ONE_MARK_ONE_SIDE, lang
+            continue
+        assert a and b, (lang, state, opens, shuts)
+        assert b == WALL_MIRRORS.get(a, a), (lang, state, a, b)
+
+
+def test_the_answer_pair_law_bites_on_the_declaration_ledger_shipped(
+        monkeypatch):
+    """TEETH. `button.main[FOCUSED]` put back to `▶  │` on the real kit, and
+    the clause watched going red — on ledger and on nothing else."""
+    saved = dict(LG.Ledger.PART_GLYPHS)
+    monkeypatch.setattr(LG.Ledger, "PART_GLYPHS", dict(
+        saved, **{"button.main": {LG.DEFAULT: "│  │", LG.FOCUSED: "▶  │",
+                                  LG.ACTIVE: "▶  ◀", LG.DISABLED: "╌  ╌"}}))
+    red = []
+    for lang in LANGS:
+        if lang in BUTTON_HAS_NO_CLOSER:
+            continue
+        k = LG.kit(lang)
+        for state in (LG.FOCUSED, LG.DEFAULT, LG.ACTIVE, LG.DISABLED):
+            opens, shuts = declared_walls(k, state)
+            a, b = opens.strip()[:1], shuts.strip()[-1:]
+            if b != WALL_MIRRORS.get(a, a):
+                red.append((lang, state))
+    assert red == [("ledger", LG.FOCUSED)], red
+    k = LG.kit("ledger")
+    row = (plain(k.button("Delete", 9, LG.FOCUSED, danger=True)) + "   "
+           + plain(k.button("Cancel", 8, LG.DEFAULT)))
+    assert row.count("│") == 3 and row.count("▶") == 1, row
+
+    monkeypatch.undo()
+    k = LG.kit("ledger")
+    row = (plain(k.button("Delete", 9, LG.FOCUSED, danger=True)) + "   "
+           + plain(k.button("Cancel", 8, LG.DEFAULT)))
+    assert row.count("│") == 2 and row.count("◀") == 1, row
+
+
+#: every S4's confirm and where it ENDS, read off the shipped frames: the
+#: language, and the row that closes the question. A language whose confirm
+#: has no closing row at all is in this table with `None` and has to argue for
+#: it in the test below — which is what C2 is.
+def confirm_span(lang):
+    """`(first, last)` index of the rows S4 changes — the confirm's own
+    extent on the page, from `modal_band`."""
+    band = modal_band(lang)
+    return band[0], band[-1]
+
+
+def test_every_confirm_says_where_it_ends():
+    """C2, THE HALF THAT IS ABOUT THE BAND. *Say where the modal ends.*
+
+    `swiss_S4` opened on a 100-cell rule and closed on nothing — named as
+    still open in `spec.md` §11.3 since `rework-3` and untouched by five
+    batches — and `ledger_S4` did the same with its destructive answer on the
+    terminal's LAST ROW. Both are confirms that destroy data.
+
+    WHAT COUNTS AS AN END, and it is deliberately weak: the last row the
+    confirm changes must SAY something. A band that ends in a rule, a seam, a
+    lid, a button or a word has an end a reader can point at; a band whose
+    last changed row is blank has stopped rather than closed. Weak, because
+    eleven languages close a question eleven ways and a law that demanded a
+    rule would be one language's taste made into a rule for the other ten.
+
+    ledger is the one that closes on its ANSWERS row, and that is checked by
+    name rather than waved through: this language posts the question at the
+    foot of the page under a rule, so its last row is the entry itself."""
+    ends = {}
+    for lang in LANGS:
+        if lang in MODAL_KEEPS_ONLY_THE_HEAD:
+            # A CONFIRM WITH NO PAGE BEHIND IT HAS NO EXTENT TO CLOSE: this
+            # language's question IS the surface, so "where does the modal
+            # end" is answered by the screen. Its citation is asserted here
+            # and again in `test_corgis_confirm_keeps_the_mode_strip_and_
+            # nothing_else`.
+            assert "the board is gone" in LG.MODAL_BORDER_REFUSED[lang], lang
+            continue
+        rows = (FRAMES / f"{lang}_S4.txt").read_text(
+            encoding="utf-8").rstrip("\n").split("\n")
+        first, last = confirm_span(lang)
+        ends[lang] = rows[last].strip()
+        assert ends[lang], (lang, first, last, "the band ends on a blank row")
+    assert len(ends) == len(LANGS) - len(MODAL_KEEPS_ONLY_THE_HEAD), ends
+    assert "Cancel" in ends["ledger"], ends["ledger"]
+    assert set(ends["swiss"]) == {"─"}, ends["swiss"]
+
+
+def test_swisss_rejected_field_has_a_wall_paper_and_a_closer():
+    """RULING C's FOLLOW-THROUGH (orchestrator, 2026-09-07): *the channel C
+    freed on swiss gets filled: the invalid text field has a wall, paper and a
+    closer from swiss's own alphabet.*
+
+    inc52 took `╲` — half this language's `DANGER_FORM` — off the rejected
+    field's wall and put the doubled stroke there, which was right. Nothing
+    moved into the channel that opened: `swiss_S2` row 6 read `║12/09/26`,
+    one wall and eight characters, no paper and no closer. *How far does the
+    date field go* had no answer, and the frame had traded a wrong answer for
+    none.
+
+    THE REJECTED FIELD IS NOW THE ONE FIELD IN THIS LANGUAGE THAT SPENDS ALL
+    THREE CELLS, and all three come from the stroke ladder it already owns
+    (`┆ │ ┃ █` and the doubled `║`). Asserted here as the thing a reader does:
+    the row has a first cell, a last cell, and something between them that is
+    neither the value nor air."""
+    k = LG.kit("swiss")
+    wall, paper, closer = k.part_glyph("main", LG.INVALID, "textfield")
+    assert (wall, closer) == ("║", "║"), (wall, closer)
+    assert paper == "┆", paper          # the lightest stroke of the ladder
+    # every cell of the seat is a weight this language already spends at
+    # this very part -- no new mark entered the alphabet
+    ladder = {ch for slot in k.PART_GLYPHS["textfield.main"].values()
+              for ch in slot if ch != " "}
+    assert {wall, paper, closer} <= ladder, (wall, paper, closer, ladder)
+    # and the DANGER_FORM is still nowhere near it (ruling C, inc52)
+    assert not ({wall, paper, closer} & set(k.DANGER_FORM)), k.DANGER_FORM
+    # the shipped frame: a wall, the value, the paper, a closer
+    row = [r for r in (FRAMES / "swiss_S2.txt").read_text(
+        encoding="utf-8").split("\n") if "12/09/26" in r][0].rstrip()
+    assert row.lstrip().startswith("due•"), row
+    assert row.endswith(closer), row
+    assert row.count(paper) > 10, row

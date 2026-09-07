@@ -20,6 +20,7 @@
 <text x="52.0" y="125.3" fill="#f4f4f4">•</text>
 <text x="144.4" y="125.3" fill="#3d3d3d">║</text>
 <text x="152.8" y="125.3" fill="#f4f4f4">12/09/26</text>
+<text x="220.0" y="125.3" fill="#3d3d3d">┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆┆║</text>
 <text x="144.4" y="142.3" fill="#e2231a">━</text>
 <text x="161.2" y="142.3" fill="#f4f4f4">expected YYYY-MM-DD</text>
 <text x="26.8" y="176.3" fill="#8a8a8a">priority</text>
