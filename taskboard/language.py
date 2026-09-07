@@ -1486,6 +1486,66 @@ def split_field_glyph(glyph: str) -> tuple[str, str, str]:
     return glyph[:h], glyph[h], glyph[h + 1:]
 
 
+#: WHICH SEVERITY RUNGS ARE PAINTED IN `ink` BECAUSE `mut` CANNOT CARRY THEM
+#: (inc85, ruling "Q1 over K6", 2026-09-07).  `kit -> the levels whose rung
+#: leaves the mut tier`.
+#:
+#: THE COLLISION THIS TABLE SETTLES.  K6 asks `mut` for **4.5:1 DECLARED**
+#: against every ground it is painted on and all eleven kits pay it.  Q1 asks
+#: a MEANING MARK for **3:1 EFFECTIVE** at its declared seat -- the ratio
+#: between the mean colour of the pixels the glyph actually paints and the
+#: ground under them -- and a thin glyph at 4.5:1 declared lands near 2:1
+#: effective, because antialiasing puts most of a hairline's pixels partway
+#: back to the ground.  Both floors are green in this repo and they disagree,
+#: and the ruling says which wins: **Q1 governs meaning marks, K6 governs text
+#: runs**, and a meaning mark under Q1's effective clause takes `ink` AT THE
+#: SEAT -- inc74's `log_row` precedent, where the same seat left `dim` for
+#: `mut` and no token moved.  Nothing here changes a token: `mut` is still
+#: `mut` and the row's MESSAGE is still set in it, because a message is a text
+#: run and K6 is its floor.
+#:
+#: THE MEASUREMENT, per row, `mut -> ink` effective at the declared seat
+#: (`legibility.txt` section F, and restated in the suite):
+#:
+#:   swiss       warn `─`    2.87 -> 5.81
+#:   industrial  info `▫▫`   2.77 -> 5.82
+#:   industrial  warn `▪▪`   3.73 -> 8.82   CARRIED, and it is the one row
+#:               here that was already GREEN.  industrial's hollow square is
+#:               thinner than its filled one at the same tier, so applying the
+#:               ruling to `info` alone would have left the ladder INVERTED --
+#:               the calm rung louder than the noteworthy one.  A ladder that
+#:               descends is not a ladder, so `warn` comes with it.
+#:   nord        warn `! `   2.17 -> 3.81
+#:   darkside    warn `o `   2.51 -> 8.34
+#:   ledger      warn `* `   1.91 -> 2.86   STILL UNDER THE FLOOR, and it is
+#:               recorded rather than hidden: ledger's `*` misses 3:1 in the
+#:               loudest neutral this kit owns, which is where its ERROR rung
+#:               already stood.  The seat moves because the ruling says a mark
+#:               in `mut` under the clause takes `ink`; it does not pass, and
+#:               `BELOW_THE_FLOOR` still carries the row.
+#:   prism       warn `⣤⣤`   2.31 -> 4.21
+#:   solari      info `OK `  2.07 / 2.31 -> 6.51 / 7.92
+#:   solari      warn `DLY`  1.94..2.59 -> 5.67..9.84
+#:   blueprint   warn `━ `   2.90 -> 5.60
+#:
+#: THE THREE KITS THAT ARE NOT HERE, each for its own reason and none of them
+#: "it passed": `corgi` clears the clause in `mut` at both rungs (4.77, 6.46);
+#: `naught` and `instrument` miss the COVERAGE clause as well as the contrast
+#: one, and a tone move does not cure an area failure -- that is inc82's kind
+#: of move (a glyph out of the language's own alphabet) and it needs a round,
+#: not an increment.  They stay in `BELOW_THE_FLOOR` with both clauses named.
+RUNG_TAKES_INK: dict[str, tuple[str, ...]] = {
+    "swiss": ("warn",),
+    "industrial": ("info", "warn"),
+    "nord": ("warn",),
+    "darkside": ("warn",),
+    "prism": ("warn",),
+    "ledger": ("warn",),
+    "solari": ("info", "warn"),
+    "blueprint": ("warn",),
+}
+
+
 class Kit:
     """Base kit = the `nord` language: deliberately the terminal's own
     conventional idiom (base16 doctrine: it inherits the environment and has
@@ -2329,6 +2389,33 @@ class Kit:
         other reader of a field's rune uses the same one."""
         return split_field_glyph(self.part_glyph("main", state, name))
 
+    def field_wall_tone(self, state: str, name: str = "textfield") -> str:
+        """The tier a field's TWO WALLS are painted in — and it is `ink` when
+        the field is INVALID, in all eleven (inc85, ruling "Q1 over K6").
+
+        A WALL IS NOT PAPER WHEN IT IS THE REFUSAL. Every other state's walls
+        are the field's chrome: the ground someone else's words lie on, drawn
+        one tier under them so the value stays the loudest thing in the row.
+        The INVALID walls are the opposite seat wearing the same clothes —
+        they are the only thing on the row that says THIS VALUE WAS REFUSED,
+        which is a MEANING MARK and `role_map` has credited them to the
+        `invalid` family since the census existed. Round five's floor judges
+        them there, and all eleven missed it: `═` at 1.11:1 effective, `░` at
+        1.05, `╲` at 1.14, `◑` and `Ø` at 1.18 — a refusal mark drawn at the
+        level of the page it refuses on.
+
+        THE SEAT MOVES AND THE TOKEN DOES NOT, which is inc74's precedent for
+        the third time: `dim` is still `dim`, the field's PAPER is still drawn
+        in it (it is paper, and Q2 classifies it as structure), and what
+        changes is the tier of two cells per field.
+
+        ONE METHOD FOR THREE CALLERS — `textfield`, `textarea` and `select`
+        all lay the same walls, and a rule spelled at three call sites is a
+        rule that will be true at two of them."""
+        if control_of(state) == INVALID:
+            return self.c["ink"]
+        return self.part_tone("main", state, name)
+
     def component_cells(self, name: str, val: float, lo: float, hi: float,
                         w: int = 10, state: str = DEFAULT,
                         wrap: bool = False,
@@ -2764,7 +2851,7 @@ class Kit:
                                      else cpos - start)
         op, rune, cl = self.field_form(state, "textfield")
         lit = self.check_tone(bool(text) or not ph, state)
-        ground = self.part_tone("main", state, "textfield")
+        ground = self.field_wall_tone(state, "textfield")
         body = []
         for i, (part, glyph, tone) in enumerate(cells):
             ch = view[i] if i < len(view) else None
@@ -2814,7 +2901,7 @@ class Kit:
         which is stated here rather than discovered in a frame."""
         w, h = max(1, int(w)), max(1, int(h))
         op, rune, cl = self.field_form(state, "textfield")
-        ground = self.part_tone("main", state, "textfield")
+        ground = self.field_wall_tone(state, "textfield")
         lit = self.check_tone(True, state)
         cg = self.part_glyph("caret", state, "textfield")
         ct = self.part_tone("caret", state, "textfield")
@@ -2939,7 +3026,7 @@ class Kit:
         st = group_states(len(opts), i, state, focus=i)[i]
         c = self.c
         op, _, cl = self.field_form(state, "textfield")
-        tone = self.part_tone("main", state, "textfield")
+        tone = self.field_wall_tone(state, "textfield")
         field = max(int(w), max(len(o) for o in opts))
         return (f"[{tone}]{mark(op)}[/]"
                 f"[{self.check_tone(is_checked(st), st)}]"
@@ -3232,10 +3319,22 @@ class Kit:
         `calm` against `noteworthy` — and info against warn is carried by the
         glyph ladder, which is what the paragraph above already calls the
         channel ("the level READS WITH THE COLOUR REMOVED").
+
+        AND IN EIGHT KITS THE QUIET TIER TURNED OUT TO BE ONE RUNG TOO QUIET
+        (inc85, ruling "Q1 over K6"). `mut` clears K6's 4.5:1 DECLARED in all
+        eleven and a thin rung drawn in it lands near 2:1 EFFECTIVE, which is
+        Q1's clause and the harder one. `RUNG_TAKES_INK` names the seats that
+        leave the tier, with the measurement per row. THE TOKEN DID NOT MOVE
+        AND THE MESSAGE DID NOT EITHER: an info row's words are still `mut`,
+        because a message is a TEXT RUN and K6 is the floor written for it.
+        Where a kit's whole ladder ends in `ink` the level is carried by the
+        glyph ladder alone — which the paragraph above already declares as
+        the channel, so nothing is lost that this contract was relying on.
         """
         c = self.c
         mk = self.LEVELS.get(level, self.LEVELS["info"])
-        tone = c["mut"] if level in ("info", "warn") else c["ink"]
+        tone = (c["ink"] if level in RUNG_TAKES_INK.get(self.name, ())
+                else c["mut"] if level in ("info", "warn") else c["ink"])
         body = c["mut"] if level == "info" else c["ink"]
         row = (f"[{c['dim']}]{mark(str(time))}[/] "
                f"[{tone}]{mark(mk)}[/] "

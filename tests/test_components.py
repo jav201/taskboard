@@ -5793,8 +5793,12 @@ DIM_CLASSIFIES = {
     "log.rung": ("classifies",
                  "the mark that says WHICH KIND of event a row is. Seven "
                  "kits painted it between 1.35:1 and 1.96:1 and round four's "
-                 "criterion answered two of eight. inc74 moved the SEAT: "
-                 "`log_row`'s tone ladder is `mut / mut / ink`."),
+                 "criterion answered two of eight. inc74 moved the SEAT out "
+                 "of `dim` into `mut`, and inc85 moved eight kits again — "
+                 "out of `mut` into `ink` — because `mut` clears K6's "
+                 "DECLARED floor and misses Q1's EFFECTIVE one at a thin "
+                 "rung. `RUNG_TAKES_INK` names every seat with its "
+                 "measurement; the token never moved either time."),
     "tabs.inactive": ("classifies",
                       "the words that say which modes exist and which one "
                       "you are not in. ledger was the only kit of eleven "
@@ -6007,7 +6011,17 @@ def test_the_info_rung_is_air_by_doctrine_or_legible_by_tier(lang):
     solari IS NEITHER AND IS COUNTED WITH THE DRAWN, deliberately: its rungs
     are WORDS (`OK ` / `DLY` / `CNX`), so the mark is text and text is exactly
     what `mut` is for. It is the one kit whose severity ladder needs no glyph
-    argument at all."""
+    argument at all.
+
+    AND `mut` IS NO LONGER THE ONLY TIER THE ANSWER MAY BE (inc85). The tier
+    the rung is drawn in comes from `RUNG_TAKES_INK`, which names the seats
+    where `mut` was measured under Q1's effective clause at the declared seat
+    and the mark took `ink` instead. `ink` is emphatically "a tier a reader
+    has", so L7's sentence is unchanged; what moved is which tier answers it,
+    in two kits (industrial and solari) at the CALM rung. THE TIER STILL
+    COMES FROM THE KIT AND THE VERDICT FROM THIS FILE, so a kit cannot pass
+    by declaring itself into the roster: a kit in `RUNG_TAKES_INK` that keeps
+    drawing its info rung in `mut` goes red here."""
     k, t = LG.kit(lang), LG.THEMES[lang]
     rung = k.LEVELS["info"]
     if not rung.strip():
@@ -6015,9 +6029,10 @@ def test_the_info_rung_is_air_by_doctrine_or_legible_by_tier(lang):
         assert INFO_RUNG_IS_AIR[lang].strip(), lang
         return
     assert lang not in INFO_RUNG_IS_AIR, (lang, "a citation for a drawn rung")
+    in_ink = "info" in LG.RUNG_TAKES_INK.get(lang, ())
     tones = dim_seat_tones(lang)["log.rung"]
-    assert tones == {t["mut"]}, (lang, sorted(tones))
-    if lang not in THE_BAND_IS_A_SECOND_GROUND:
+    assert tones == {t["ink"] if in_ink else t["mut"]}, (lang, sorted(tones))
+    if not in_ink and lang not in THE_BAND_IS_A_SECOND_GROUND:
         assert contrast(t["mut"], t["ground"]) >= MUT_FLOOR, lang
 
 
@@ -8350,7 +8365,13 @@ IDENTICAL_DRAWINGS = (("•", "∙"),)
 #: field leader, which is chrome. That is the number moving for the right
 #: reason and it is worth saying: a fix by AREA cannot move a count of
 #: CONTRAST failures except by changing which cells carry a meaning.
-MEANING_MARKS = (79, 44)
+#: inc85 MOVED IT FROM 44 TO 38 and again left the first at 79. Twenty-six
+#: seats left `mut`/`dim` for `ink` under the ruling "Q1 over K6", and six of
+#: them were also under 3:1 DECLARED at the WORST seat this second number is
+#: counted at. The two numbers move independently on purpose: this one is
+#: judged at the worst seat (Q3's notice) and `FLOOR_SEATS_FAILING` at the
+#: declared one.
+MEANING_MARKS = (79, 38)
 
 ARGUED_DISTANCE = {("•", "●"): 21.64, ("○", "◦"): 22.81, ("◎", "◉"): 21.42,
                    ("†", "‡"): 4.87, ("▪", "■"): 26.52, ("╌", "┄"): 4.09,
@@ -9018,7 +9039,7 @@ def floor_rows(lang: str) -> tuple:
 
 
 #: WHAT IS UNDER THE FLOOR TODAY, at the declared seat, over all eleven.
-#: 89 bound seats, 46 clear both clauses and 43 miss one or both.
+#: 86 bound seats, 68 clear both clauses and 18 miss one or both.
 #:
 #: THIS IS A RECORDED SET AND NOT A GATE — the shape `SECOND_WIDTH_RED` and
 #: `DIM_CLASSIFIES` already have in this file, and for the identical reason:
@@ -9026,73 +9047,64 @@ def floor_rows(lang: str) -> tuple:
 #: rather than as a discovery.  It goes red in BOTH directions: a kit fixed, a
 #: kit broken, a twelfth kit added, or a token moved.
 #:
-#: WHAT THE SHAPE OF IT SAYS, and it is the finding of this increment:
+#: WHAT THE SHAPE OF IT SAYS, after inc85 took the ruling "Q1 over K6":
 #:
-#:   * FOUR seats miss coverage only after inc82, six before it.  THREE of
-#:     the six were obligations (instrument `⠁` 5.8%, prism `⡀` 5.3%,
-#:     swiss `•` 14.0%) and the round predicted TWO.  inc82 fixed the two it
-#:     named, by AREA out of each language's own alphabet; swiss `•` stays,
-#:     one point under a floor the round set at 15%, on a mark the same round
-#:     recorded as visible — named in `OBLIGATION_UNDER_THE_FLOOR` and not
-#:     legislated away.
-#:   * TWENTY-NINE miss effective contrast only, and they are overwhelmingly
-#:     `mut` and `dim` seats — the severity rung inc74 moved to `mut`, and the
-#:     invalid field's walls, which nine kits draw in `dim` as PAPER.  This
-#:     is a collision between two floors in one repo: K6 asks `mut` for
-#:     4.5:1 DECLARED, and a thin glyph at 4.5:1 declared lands near 2:1
-#:     EFFECTIVE.  Q1 is strictly the harder floor for everything that is not
-#:     solid, and nobody has ruled on which one wins.
+#:   * FOUR seats miss coverage only — unchanged by inc85 and unchangeable by
+#:     it, because a tone cannot add area.  THREE of the six before inc82
+#:     were obligations (instrument `⠁` 5.8%, prism `⡀` 5.3%, swiss `•`
+#:     14.0%) and the round predicted TWO.  inc82 fixed the two it named, by
+#:     AREA out of each language's own alphabet; swiss `•` stays, one point
+#:     under a floor the round set at 15%, on a mark the same round recorded
+#:     as visible — named in `OBLIGATION_UNDER_THE_FLOOR`, exempt by name in
+#:     `SEEN_BY_EYE`, and not legislated away.
+#:   * SIX miss effective contrast only, and there were TWENTY-NINE before
+#:     this increment.  The twenty-nine were a collision between two floors
+#:     in one repo: K6 asks `mut` for 4.5:1 DECLARED, and a thin glyph at
+#:     4.5:1 declared lands near 2:1 EFFECTIVE.  The ruling says Q1 governs
+#:     MEANING MARKS and K6 governs TEXT RUNS, so twenty-five of the
+#:     twenty-nine took `ink` at the seat (`RUNG_TAKES_INK` and
+#:     `Kit.field_wall_tone`) and twenty-three of those cleared the clause.
+#:     The six that remain are named one by one in `EFFECTIVE_UNCURED`, and
+#:     not one of them is "a `mut` seat nobody looked at".
 #:   * EIGHT miss both, and they are the marks §7 of the round put in its ten
 #:     worst by eye: the three `·` severity rungs, instrument's `⠂`/`⠆`,
 #:     prism's `⣀`, naught's `◦`.  The two clauses and the eye agree here.
+#:     THEY WERE LEFT WHERE THEY ARE, and that is this increment's boundary:
+#:     the ruling's remedy is a TONE and their failure is an AREA, so moving
+#:     them would have cured nothing and spent a tier.  A coverage fix is
+#:     inc82's kind of move — a glyph out of the language's own alphabet —
+#:     and it needs a round, not an increment.
 BELOW_THE_FLOOR = {
     ("naught", "severity", "∙", "#8a8a8a"): "COV",
     ("naught", "severity", "∙", "#f5f5f5"): "COV",
     ("naught", "severity", "◦", "#8a8a8a"): "COVEFF",
     ("naught", "danger", "∙", "#f5f5f5"): "COV",
-    ("naught", "invalid", "◑", "#242424"): "EFF",
-    ("corgi", "invalid", "░", "#3a3a3a"): "EFF",
+    ("corgi", "invalid", "░", "#f2f2f2"): "EFF",
     ("instrument", "severity", "⠂", "#6e7b89"): "COVEFF",
     ("instrument", "severity", "⠆", "#6e7b89"): "COVEFF",
-    ("instrument", "invalid", "⠶", "#333c47"): "EFF",
     ("instrument", "cursor", "⣿", "#2dd4bf"): "EFF",
     ("swiss", "severity", "·", "#9b9b9b"): "COVEFF",
-    ("swiss", "severity", "─", "#9b9b9b"): "EFF",
     ("swiss", "required", "•", "#f4f4f4"): "COV",
-    ("swiss", "invalid", "║", "#3d3d3d"): "EFF",
     ("swiss", "cursor", "▮", "#e7372e"): "EFF",
-    ("industrial", "severity", "▫", "#959595"): "EFF",
-    ("industrial", "invalid", "▌", "#4a4a4a"): "EFF",
-    ("industrial", "invalid", "▐", "#4a4a4a"): "EFF",
     ("industrial", "cursor", "▶", "#ff6039"): "EFF",
-    ("nord", "severity", "!", "#919cb0"): "EFF",
     ("nord", "severity", "·", "#919cb0"): "COVEFF",
-    ("nord", "invalid", "?", "#4c566a"): "EFF",
     ("darkside", "severity", "o", "#757575"): "EFF",
     ("darkside", "severity", "·", "#757575"): "COVEFF",
-    ("darkside", "invalid", "Ø", "#262626"): "EFF",
     ("prism", "severity", "⣀", "#8b98a5"): "COVEFF",
-    ("prism", "severity", "⣤", "#8b98a5"): "EFF",
-    ("prism", "invalid", "⣏", "#5b6675"): "EFF",
-    ("prism", "invalid", "⣹", "#5b6675"): "EFF",
     ("ledger", "severity", "*", "#1c1a15"): "EFF",
-    ("ledger", "severity", "*", "#635e52"): "EFF",
-    ("ledger", "invalid", "‡", "#c4b99f"): "EFF",
-    ("solari", "severity", "D", "#6e6a60"): "EFF",
-    ("solari", "severity", "K", "#6e6a60"): "EFF",
-    ("solari", "severity", "L", "#6e6a60"): "EFF",
-    ("solari", "severity", "O", "#6e6a60"): "EFF",
-    ("solari", "severity", "Y", "#6e6a60"): "EFF",
-    ("solari", "invalid", "═", "#1f1f22"): "EFF",
-    ("blueprint", "severity", "━", "#7fa8c4"): "EFF",
-    ("blueprint", "invalid", "╲", "#24486b"): "EFF",
 }
 
 #: prism's `⣀` is the one drawing that sits on TWO grounds at its declared
 #: seat — the page and the confirm's plate — so it is two rows in the sweep
 #: and one row in the table above.  Recorded so the arithmetic below is not a
-#: mystery: 43 failing ROWS, 42 distinct (kit, family, cell, tone) keys.
-FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 89, 41
+#: mystery: 18 failing ROWS, 17 distinct (kit, family, cell, tone) keys.
+#:
+#: THE BOUND COUNT FELL AS WELL, 89 -> 86, and that is what a tier move looks
+#: like from the counter's side: a seat drawn in two tones is two rows, and
+#: `ledger *`, `nord !` and `darkside o` each collapsed to one when the quiet
+#: copy moved onto the loud one.  It is asserted beside the failing count so
+#: a seat that stops being DRAWN cannot be mistaken for a seat that passed.
+FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 86, 18
 
 
 @pytest.mark.parametrize("lang", LANGS)
@@ -9390,6 +9402,326 @@ def test_the_floor_law_bites_on_a_row_of_the_recorded_set(monkeypatch):
 
     for lang in LANGS:
         test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang)
+
+
+# ---- inc85: Q1 over K6 -- the seats that left the quiet tier ---------------
+#
+# THE RULING (orchestrator, 2026-09-07, on the operator's delegation):
+#
+#   Q1 governs MEANING MARKS (runs of 1-4 cells carrying an A-family role);
+#   K6 governs TEXT RUNS.  Where a meaning mark is painted in `mut` or `dim`
+#   and fails Q1's effective contrast at its declared seat, the mark takes
+#   `ink` at that seat (inc74's `log_row` precedent), never a token move.
+#   Decorative seats -- Q2's >= 8 structure and the named 5-7 table -- are
+#   untouched.
+#
+# inc81 recorded 29 seats whose ONLY failure was the effective clause and
+# said nobody had ruled on which floor won.  This is that ruling, taken.
+
+
+def _drawn(ch: str, fg: str, bg: str) -> tuple:
+    """`(coverage, effective)` for one glyph drawn on one ground.
+
+    THE SAME FOUR LINES `test_the_two_replaced_marks_are_the_ones_the_kits_
+    now_declare` spells inline, and they are restated rather than imported
+    from `legibility.py` for the standing reason this file gives at inc73:
+    the instrument's arithmetic and the suite's must be able to disagree, or
+    a wrong measure would be checked against itself.  What is NOT restated is
+    the face -- `_face()` reads it off a shipped sidecar."""
+    from PIL import Image, ImageDraw, ImageFont
+    path, px, (bw, bh) = _face()
+    f = ImageFont.truetype(path, px)
+    im = Image.new("RGB", (bw, bh), bg)
+    ImageDraw.Draw(im).text((0, f.getmetrics()[0]), ch, font=f, fill=fg,
+                            anchor="ls")
+    B = _rgb(bg)
+    b = im.tobytes()
+    px_ = [tuple(b[i:i + 3]) for i in range(0, len(b), 3)]
+    lit = [p for p in px_ if p != B]
+    if not lit:
+        return 0.0, 1.0
+    mean = tuple(sum(p[c] for p in lit) / len(lit) for c in range(3))
+    return len(lit) / len(px_), _contrast_rgb(mean, B)
+
+
+#: EVERY SEAT THE RULING MOVED, with the effective contrast on both sides of
+#: the move.  `(kit, family, cell) -> (the tier it left, before, after)`.
+#:
+#: TWENTY-SIX ROWS AND TWO MECHANISMS, and neither is a table of exceptions:
+#:
+#:   THIRTEEN SEVERITY RUNGS leave `mut` through `language.RUNG_TAKES_INK`,
+#:   which is the seat inc74 already moved once (out of `dim`) for the same
+#:   kind of reason and with the same kind of evidence.
+#:
+#:   THIRTEEN INVALID WALLS leave `dim` through `Kit.field_wall_tone`, in all
+#:   eleven at once, because all eleven missed: `═` at 1.11:1 effective, `░`
+#:   at 1.05, `╲` at 1.14, `◑` and `Ø` at 1.18 -- the mark that says A VALUE
+#:   WAS REFUSED, drawn at the level of the page it refuses on.  The field's
+#:   PAPER keeps `dim`: paper is not a mark, and Q2 classifies the run it
+#:   makes as structure.
+#:
+#: THE TWO ROWS THAT ARE NOT A CURE, named here rather than filtered out:
+#:   `industrial ▪` was ALREADY GREEN at 3.73 and moves anyway (see
+#:   `CARRIED_BY_THE_LADDER`); `ledger *` and `corgi ░` move and STILL MISS
+#:   (see `EFFECTIVE_UNCURED`).  A roster that only held the rows that worked
+#:   would be a report and not a record.
+SEATS_MOVED_TO_INK = {
+    ("swiss", "severity", "─"): ("mut", 2.87, 5.81),
+    ("industrial", "severity", "▫"): ("mut", 2.77, 5.82),
+    ("industrial", "severity", "▪"): ("mut", 3.73, 8.82),
+    ("nord", "severity", "!"): ("mut", 2.17, 3.81),
+    ("darkside", "severity", "o"): ("mut", 2.51, 8.34),
+    ("prism", "severity", "⣤"): ("mut", 2.31, 4.21),
+    ("ledger", "severity", "*"): ("mut", 1.91, 2.86),
+    ("solari", "severity", "O"): ("mut", 2.07, 6.51),
+    ("solari", "severity", "K"): ("mut", 2.31, 7.92),
+    ("solari", "severity", "D"): ("mut", 2.36, 8.48),
+    ("solari", "severity", "L"): ("mut", 2.59, 9.84),
+    ("solari", "severity", "Y"): ("mut", 1.94, 5.67),
+    ("blueprint", "severity", "━"): ("mut", 2.90, 5.60),
+    ("naught", "invalid", "◑"): ("dim", 1.18, 7.33),
+    ("corgi", "invalid", "░"): ("dim", 1.05, 1.44),
+    ("instrument", "invalid", "⠶"): ("dim", 1.24, 4.40),
+    ("swiss", "invalid", "║"): ("dim", 1.40, 7.95),
+    ("industrial", "invalid", "▌"): ("dim", 1.86, 13.43),
+    ("industrial", "invalid", "▐"): ("dim", 1.76, 11.51),
+    ("nord", "invalid", "?"): ("dim", 1.34, 4.29),
+    ("darkside", "invalid", "Ø"): ("dim", 1.18, 7.22),
+    ("prism", "invalid", "⣏"): ("dim", 1.64, 3.96),
+    ("prism", "invalid", "⣹"): ("dim", 1.64, 3.97),
+    ("ledger", "invalid", "‡"): ("dim", 1.25, 3.76),
+    ("solari", "invalid", "═"): ("dim", 1.11, 7.64),
+    ("blueprint", "invalid", "╲"): ("dim", 1.14, 4.47),
+}
+
+#: THE ONE SEAT THAT WAS GREEN AND MOVED ANYWAY, with the sentence that
+#: justifies it.  industrial's ladder is `▫▫ / ▪▪ / ■■` and the HOLLOW square
+#: is thinner than the FILLED one at the same tier, so the calm rung missed
+#: the clause (2.77) where the noteworthy one cleared it (3.73).  Applying
+#: the ruling to `info` alone would have left `ink / mut / ink` -- the calm
+#: rung LOUDER than the one above it.  A ladder that descends is not a
+#: ladder, so `warn` came with it.  Named because it is the only row in this
+#: increment that touches a seat no measurement condemned.
+CARRIED_BY_THE_LADDER = {("industrial", "severity", "▪")}
+
+#: WHAT IS STILL UNDER THE EFFECTIVE CLAUSE AND ONLY THAT CLAUSE, one row per
+#: seat with the kind of thing it is.  Six rows, three kinds, and every kind
+#: is a reason the ruling's remedy does not reach -- which is the point of
+#: writing them down instead of leaving `EFF` as a bare count.
+#:
+#: `no louder neutral`   the mark is ALREADY in the loudest neutral the kit
+#:                       owns and still misses.  Two rows, and both are
+#:                       facts about the DRAWING rather than about the tone.
+#: `a hue, not a neutral` the cursor, painted in `accent`.  The ruling moves
+#:                       marks out of `mut` and `dim`; a hue is neither, and
+#:                       moving a cursor to `ink` would spend the one channel
+#:                       that says WHERE YOU ARE.  Handed back, not taken.
+#: `a letter of the message` the row is not a rung at all -- see the reason.
+EFFECTIVE_UNCURED = {
+    ("corgi", "invalid", "░", "#f2f2f2"): (
+        "no louder neutral",
+        "`░` is a DITHER, not a glyph: at 9x19 its lit pixels are almost all "
+        "partway back to the ground, so 68.4% coverage carries a mean colour "
+        "1.44:1 off the page even in `ink` at 17.36:1 declared. No tier this "
+        "kit owns can fix a mark whose pixels are mostly not there; only "
+        "another cell can, and that is a glyph decision for a round."),
+    ("ledger", "severity", "*", "#1c1a15"): (
+        "no louder neutral",
+        "ledger's warn rung moved out of `mut` (1.91) onto the row its own "
+        "ERROR rung already occupied, and the row still measures 2.86 at "
+        "13.36:1 declared. `*` is a small high asterisk on the corpus's one "
+        "light ground; `ink` is the loudest neutral there is here, so the "
+        "seat has run out of tiers and the remedy left is a wider mark."),
+    ("instrument", "cursor", "⣿", "#2dd4bf"): (
+        "a hue, not a neutral",
+        "the cursor is `accent` in all three of these rows, and `accent` is "
+        "neither `mut` nor `dim` -- the ruling names the two quiet neutrals "
+        "and this is the channel that says WHERE YOU ARE. Moving it to `ink` "
+        "would delete the distinction the mark exists for, so the three "
+        "cursor rows are handed back to the round rather than taken here."),
+    ("swiss", "cursor", "▮", "#e7372e"): (
+        "a hue, not a neutral",
+        "swiss's cursor is the kit's one red at 4.52:1 declared and 2.57 "
+        "effective; the same sentence as instrument's, and the same refusal. "
+        "This kit rations its red -- `LANGUAGES.md` -- so a cursor repainted "
+        "in `ink` would not be a quieter cursor, it would be no cursor."),
+    ("industrial", "cursor", "▶", "#ff6039"): (
+        "a hue, not a neutral",
+        "the third of the three, at 2.97 effective -- three hundredths under "
+        "the clause on a 5.79:1 declared hue. Recorded at the same width as "
+        "the other two so the round can see that the cursor family fails as "
+        "a FAMILY and not as one kit's mistake."),
+    ("darkside", "severity", "o", "#757575"): (
+        "a letter of the message",
+        "THIS ROW IS NOT A RUNG. darkside's warn rung is the lowercase "
+        "letter `o`, so the census credits every `o` in the corpus to the "
+        "severity family, and the cells this row measures are the `o` of "
+        "`form`, `log` and `fix login redirect` -- prose, set in `mut` "
+        "because a message is a TEXT RUN and K6 is the floor written for it. "
+        "The rung itself moved to `ink` and measures 8.34. It is the one kit "
+        "of eleven whose ladder is a lowercase letter, which is why it is "
+        "the only kit where the declared-seat derivation cannot tell a mark "
+        "from the words beside it. Handed back as an instrument question."),
+}
+
+
+def test_every_seat_the_ruling_moved_is_drawn_in_ink_and_measured_there():
+    """The ruling, over all twenty-six seats, from BOTH ends at once.
+
+    THE TIER COMES FROM THE KIT AND THE NUMBERS FROM THE PIXELS, which is the
+    construction every law in this section uses: `declared_tones` renders the
+    kit's own contract method and says what tier the mark is painted in, and
+    `_drawn` re-measures the glyph on that kit's ground at the tier it LEFT
+    and at the tier it took. Neither half can be adjusted to fit the other.
+
+    FOUR CLAUSES AND EACH IS LOAD-BEARING:
+
+      (a) every moved seat is painted in `ink` by the kit TODAY, and the tier
+          it left is a real, different tier of the same kit;
+      (b) both recorded numbers reproduce to two places -- a fix recorded as
+          a pair of numbers nobody can re-derive is not a record;
+      (c) the move is always UPWARD (`after > before`), which is the whole
+          claim, and the `before` is under the clause except for the one seat
+          `CARRIED_BY_THE_LADDER` names;
+      (d) the move CLEARS the clause except for the seats `EFFECTIVE_UNCURED`
+          names -- so a seat that moved and did not help cannot be quietly
+          counted as a fix."""
+    # THE SEATS THE MOVE DID NOT CURE, and it is the `no louder neutral` rows
+    # and only those: the other four uncured rows are seats this ruling never
+    # touched (three cursors in a hue) or a row that is not the seat at all --
+    # `darkside o` in `mut` is the letter `o` of a log MESSAGE, and its RUNG
+    # moved and cleared at 8.34, which is why the two are keyed differently.
+    uncured = {(k[0], k[1], k[2]) for k, (kind, _w) in EFFECTIVE_UNCURED.items()
+               if kind == "no louder neutral"}
+    for (lang, fam, ch), (frm, was, now) in SEATS_MOVED_TO_INK.items():
+        t = LG.THEMES[lang]
+        assert t[frm] != t["ink"], (lang, frm, "the tier it left is `ink`")
+        assert (fam, ch, t["ink"]) in declared_seat_tones(lang), \
+            (lang, fam, ch, "not painted in `ink` by the kit's own method")
+        _, before = _drawn(ch, t[frm], t["ground"])
+        _, after = _drawn(ch, t["ink"], t["ground"])
+        assert (round(before, 2), round(after, 2)) == (was, now), \
+            (lang, fam, ch, round(before, 2), round(after, 2))
+        assert after > before, (lang, fam, ch, before, after)
+        quiet = before < FLOOR_EFFECTIVE
+        assert quiet == ((lang, fam, ch) not in CARRIED_BY_THE_LADDER), \
+            (lang, fam, ch, before, "a green seat moved with no reason named")
+        assert (after >= FLOOR_EFFECTIVE) == ((lang, fam, ch) not in uncured), \
+            (lang, fam, ch, after)
+
+    # AND THE ROSTER IS NOT A LIST OF WHATEVER MOVED: both mechanisms are
+    # exercised in every kit that has one, so a kit that stopped drawing an
+    # invalid field would go red here rather than pass by absence.
+    walls = {k[0] for k in SEATS_MOVED_TO_INK if k[1] == "invalid"}
+    assert walls == set(LANGS), sorted(set(LANGS) - walls)
+    rungs = {k[0] for k in SEATS_MOVED_TO_INK if k[1] == "severity"}
+    assert rungs == set(LG.RUNG_TAKES_INK), sorted(rungs ^ set(LG.RUNG_TAKES_INK))
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
+        lang):
+    """THE LAW OF THIS INCREMENT, in one sentence: no meaning mark whose only
+    failure at its declared seat is Q1's effective clause is still painted in
+    `mut` or `dim`.
+
+    That is the ruling's own wording turned into something that can go red,
+    and it is judged on the SHIPPED PIXELS (`floor_rows` reads the PNGs) with
+    the tier read off the theme. The one row that is still quiet is
+    `darkside o`, and `EFFECTIVE_UNCURED` says in twelve words or more why it
+    is a letter of a log MESSAGE rather than a rung -- which is the other
+    half of the same ruling (K6 governs text runs) and not an exemption from
+    it.
+
+    THE ROSTER IS SYMMETRIC, so it cannot become a parking space: every
+    `EFF`-only row of the corpus is named, and every named row must still be
+    an `EFF`-only row of the corpus."""
+    t = LG.THEMES[lang]
+    got = {(lang, fam, ch, tone)
+           for fam, ch, tone, v, _r in floor_rows(lang) if v == "EFF"}
+    want = {k for k in EFFECTIVE_UNCURED if k[0] == lang}
+    assert got == want, (lang, sorted(got ^ want))
+    for key in got:
+        kind, why = EFFECTIVE_UNCURED[key]
+        assert len(why.split()) >= 12, (key, "an exemption with no reason")
+        if key[3] in (t["mut"], t["dim"]):
+            assert kind == "a letter of the message", \
+                (key, kind, "a meaning mark left in the quiet tier")
+
+
+def test_the_uncured_table_covers_what_it_claims_to():
+    """The roster's own vacuity arms, the shape `DIM_CLASSIFIES` already has.
+
+    (a) every kind is one of the three the increment named, and all three are
+        USED -- a table where everything is "a hue" would be a filter;
+    (b) the two `no louder neutral` rows are asserted to BE in `ink`, which
+        is the claim their name makes;
+    (c) the three `a hue` rows are asserted NOT to be a neutral of their kit,
+        which is the claim theirs makes."""
+    kinds = {k for k, _ in EFFECTIVE_UNCURED.values()}
+    assert kinds == {"no louder neutral", "a hue, not a neutral",
+                     "a letter of the message"}, sorted(kinds)
+    for (lang, _f, _c, tone), (kind, _why) in EFFECTIVE_UNCURED.items():
+        t = LG.THEMES[lang]
+        if kind == "no louder neutral":
+            assert tone == t["ink"], (lang, tone)
+        if kind == "a hue, not a neutral":
+            assert tone not in (t["ink"], t["mut"], t["dim"]), (lang, tone)
+
+
+def test_the_ink_move_bites_when_one_seat_keeps_its_mut(monkeypatch):
+    """TEETH — put ONE seat back in `mut` and the law must say so.
+
+    THE ARM IS `swiss ─`, and it is chosen rather than convenient. It has to
+    be a rung whose glyph is that rung ALONE: blueprint's warn and error are
+    both `━` and nord's and ledger's are both the error glyph repeated, so
+    reverting any of those three leaves the `(family, cell, ink)` triple
+    standing on the ERROR rung and the mutant would pass while the seat was
+    quiet. swiss's ladder is `· / ─ / ━`, three distinct cells, so removing
+    `warn` from `RUNG_TAKES_INK` removes `('severity', '─', ink)` and nothing
+    else. That is a fact about the corpus this tooth had to find, and it is
+    written down because the obvious arm was the silent one.
+
+    THE OTHER TEN ARE ASSERTED STILL GREEN under the same mutant, which is
+    the clause that says the law reads the seat and not the name."""
+    for lang in LANGS:
+        test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
+            lang)
+    test_every_seat_the_ruling_moved_is_drawn_in_ink_and_measured_there()
+
+    t = LG.THEMES["swiss"]
+    quiet = dict(LG.RUNG_TAKES_INK)
+    quiet["swiss"] = ()
+    monkeypatch.setattr(LG, "RUNG_TAKES_INK", quiet)
+    # `declared_seat_tones` is memoised, so the mutant has to invalidate it or
+    # the tooth would be asking the cache what the kit says
+    declared_seat_tones.cache_clear()
+    # the seat is back in `mut`, so the moved-seat law loses its `ink` clause
+    assert ("severity", "─", t["ink"]) not in declared_seat_tones("swiss")
+    assert ("severity", "─", t["mut"]) in declared_seat_tones("swiss")
+    with pytest.raises(AssertionError):
+        test_every_seat_the_ruling_moved_is_drawn_in_ink_and_measured_there()
+    for other in LANGS:
+        if other == "swiss":
+            continue
+        for fam, ch in ((f, c) for (l, f, c) in SEATS_MOVED_TO_INK
+                        if l == other):
+            assert (fam, ch, LG.THEMES[other]["ink"]) in \
+                declared_seat_tones(other), (other, fam, ch)
+    monkeypatch.undo()
+    declared_seat_tones.cache_clear()
+
+    # and the roster may not be emptied to make the law pass either
+    monkeypatch.setitem(globals(), "EFFECTIVE_UNCURED", {})
+    with pytest.raises(AssertionError):
+        test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
+            "corgi")
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
+            lang)
+    test_every_seat_the_ruling_moved_is_drawn_in_ink_and_measured_there()
 
 
 # ---- K8 / E6: the run with no glyph ---------------------------------------
