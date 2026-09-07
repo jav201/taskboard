@@ -2411,3 +2411,157 @@ wrote it.
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1370 → 1371 passed** (+1, inc79's law; inc80 adds none). The clipboard test red at the baseline and named in every packet — environment-coupled (§10.6), reported, not counted, not touched. `verify_language.py` **ALL PASSED exit 0** at both increments. `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` refusals `[]` for all eleven. `collision_census.py` **TOTAL 28, homoglyph rows 24 — unchanged**. `raster.py` **66 PNGs identical across two PROCESSES**. `second_width.py` 0 rows cut, 330 pairs distinct. `git status --porcelain` empty on every regenerated artefact directory (`prototypes/components/`, `.../png/`, `.../w80/`, `prototypes/gallery/`) at both increments. |
 | Notes | **Two increments, one agent, 1–2 source files each, zero kit edits, zero frame/PNG/JSON changes.** Both fixes are to INSTRUMENTS the fifth round will use (a density reading, a suite law), not to a language. 421 ink cells reclassified as blank (console-printed density numbers only — instrument and prism, nothing else); one law-arm out of 79 flips from RED to GREEN, leaving solari's ruling-F failure at 24 rows as the one arm still red, on purpose. `rework-7b`'s close already named the fifth round as the next task; this batch changes nothing about that except making the instrument's own numbers trustworthy before the round reads them. |
+
+## 22. Batch `rework-8` — the six reworks of `PROTOTYPE-inheritors-5.md`, and the three questions it answered
+
+`PROTOTYPE-inheritors-5.md` is the first round in this programme that **looked**: 132 PNGs at Cascadia
+Mono 16 px in a 9×19 box, at two widths. It returned **keep 14 · note 46 · rework 6**, refuted five
+objections three rounds had treated as settled, inverted one, and raised four that only a raster can
+raise. It also answered the three questions `legibility.py` §E had left open and recommended a
+placement fix for solari. **This batch is those answers, taken.**
+
+### 22.1 The rulings, as given
+
+> (orchestrator, 2026-09-07, on the operator's delegation — all adopted from round five's own
+> recommendations)
+>
+> **Q1** the legibility floor is two clauses, not a product: coverage ≥ 15 % of the cell AND effective
+> contrast ≥ 3:1, both at the declared seat.
+> **Q2** runs of 1–4 cells carrying an A-family role are bound by the floor; runs of ≥ 8 cells of one
+> glyph are structure, bound only to "not equal to the ground"; 5–7 named per seat like
+> `DIM_CLASSIFIES`.
+> **Q3** the floor is judged at the declared seat; the worst seat is reported as a notice, never red.
+> **F at 24 rows** the band takes the nearest full-measure position that cuts no gate block, below
+> first then above; if neither fits, the band is the whole page (a full-screen confirm);
+> `LANGUAGES.md` gets no minimum height.
+> **K8/E6** a run of blank cells on a non-ground background is ink; the census, `painted_runs()` and
+> `legibility.py` count it (18 runs in 3 kits today); it obeys Q2 as structure.
+> **Greyscale** `raster.py` also writes a greyscale PNG per frame (luminance only); L12's three
+> hue-only match channels are judged on it, and a match that vanishes in grey is recorded as a Limit
+> of the language, not fixed.
+
+### 22.2 What each increment did
+
+| inc | ruling | what it did | frames |
+| --- | --- | --- | --- |
+| 81 | **Q1 Q2 Q3 · K8 E6** | the floor stops being a proposal. The DECLARED seat is derived from each kit's own contract methods — five calls, not fifty-five rows — intersected with the census's `role_map`; Q2's run classes are read off the `.txt`; `painted_runs()` walks the RECTS so a run with no glyph can be named. `legibility.txt` gains §F (the floor as law) and §G (the glyphless run). | **0** |
+| 82 | **Q1**, the two marks the round returned | instrument `⠁` → `⣉` (5.8 % → 23.4 % coverage), prism `⡀` → `⣆` (5.3 % → 21.6 %). Both from the language's own alphabet, both AREA and only area; the declared ratios (16.52:1, 16.02:1 — the two **best** of the eleven) untouched. | **4** |
+| 83 | **F at 24 rows · K10** | `Solari.band_head` stops walking gates and scans POSITIONS, below the named block then above, taking the whole page when neither fits. blueprint's four modal corners become a crosshair: a corner promises two walls at 44 cells' distance and a crosshair promises nothing. | **2** |
+| 84 | **C12 C13 · greyscale** | the S6 key bar is DOCKED — a footer, at any height. `Kit.elide` marks a cut with the language's own `DISCLOSE`. `raster.py` writes 66 greyscale PNGs at WCAG relative luminance and `legibility.txt` gains §H. | **30** |
+
+### 22.3 The findings, in the order they landed
+
+1. **The round's own prediction is wrong by one, and it is the round's own arithmetic.** §7 Q1 says
+   *«los once obligatorios pasan el contraste y dos fallan la cobertura»*. Measured at the declared
+   seat, **three** fail: swiss `•` at **14.0 %**, one point under the 15 % the round set — on a mark
+   the same round recorded as visible (§2.2 `swiss_S2`) in a document whose §7 also finds `naught ◦`
+   at **13.5 %** by eye. **Neither the floor nor the mark was adjusted.** It is named in
+   `OBLIGATION_UNDER_THE_FLOOR` with its measurement and handed back.
+2. **Two floors in one repo contradict and nobody has ruled on which wins.** 29 of the 41 seats under
+   Q1 miss the effective-contrast clause **only**, and they are overwhelmingly `mut` and `dim`: the
+   severity rung inc74 moved to `mut`, and the invalid field's walls, which nine kits draw in `dim` as
+   PAPER. K6 asks `mut` for **4.5:1 declared**; a thin glyph at 4.5:1 declared lands near **2:1
+   effective**. Q1 is strictly the harder floor for anything that is not solid.
+3. **The two clauses and the eye agree exactly where §7 said they would.** The 8 seats that miss BOTH
+   are the marks round five listed as *"no se encuentra a ojo"*: the three `·` severity rungs,
+   instrument `⠂`/`⠆`, prism `⣀`, naught `◦`.
+4. **The glyphless run has two honest counts.** The sidecar's colour-run unit — the unit round five
+   counted — gives **18** runs of ≥ 8 blank cells in 3 kits; the rect sweep, which subtracts the cells
+   a glyph lands in, gives **60** in the same 3 kits. Both are true; the ruling names the first. And
+   `solari_S4` row 10 has **no `<text>` element at all**, so every instrument that walks `<text>` was
+   structurally incapable of reaching it — E6, as an assertion instead of a complaint.
+5. **The shipped solari frames did not have to move.** The new position scan reproduces inc55's and
+   inc65's anchors wherever they were already right, so `solari_S4` is byte-identical at both widths.
+   What changed is two mechanism arms nobody could see (`about=BLOCKED` 10 → 23 at 32 rows,
+   `about=DONE` 10 → 13) and the one that was red: at 24 rows a confirm about `DOING` now takes the
+   whole page. **A rule can be wrong in three places and only fail in one.**
+6. **The greyscale capture amends L12 rather than closing it.** Round five wrote *«en escala de grises
+   no queda nada»* and could not check it. Checked: **none** of the hue kits reaches 1.00:1. A
+   luminance step survives — nord 1.34, swiss 1.52, prism 1.59, instrument 2.34 against the body they
+   stand in — thin, and **all four under 3:1**. Right in shape, wrong in degree. And there are **four**
+   hue-only kits, not three: swiss has the same branch and round five discussed it without adding it.
+7. **C13 reaches 21 frames at 80 columns, not 11.** The detail panel is drawn on `S1` **and on the
+   board behind `S4`**, so the silent cut was in eleven `S1` and ten `S4` (corgi's confirm keeps no
+   board).
+8. **The key bar's position was wrong in all eleven, not four.** Round five counted the four that LOSE
+   it at 24 rows; with `dock` reverted to `row` the bar is off the last row in **every** kit at 32 rows
+   too. It was simply not fatal there.
+9. **`test_win_clipboard_roundtrip` is demonstrably flaky, not deterministically red.** Five full-suite
+   runs across this batch: **red, red, green, green, green**, with nothing it touches edited. It is the
+   environment-coupled test this worktree's brief names — reported, not counted, not touched.
+
+### 22.4 The laws this batch added
+
+**Twenty-one laws and eight teeth**, `pytest -q` **1371 → 1449 (+78)**, and no increment imports
+`raster.py` or `legibility.py` into the suite — the stance `test_this_files_picture_metrics_are_the_
+exporters` has taken since inc73: the instrument's arithmetic is restated in the test file and checked
+against the artefact it shipped, so the two can only agree by being right.
+
+- **inc81** — Q1/Q2/Q3 over every meaning mark at its declared seat, with `BELOW_THE_FLOOR` as a
+  recorded set (43 rows) asserted in both directions; the two clauses and the two run boundaries read
+  off `legibility.py`'s SOURCE; Q2's middle band named per seat and every named row required to be
+  reached; the 18 glyphless runs and Q2's structure clause; E6 as an assertion. **Teeth:** two rows of
+  the recorded set removed one at a time; the plate repainted at the ground's own colour **in the
+  sidecar, never in the corpus**.
+- **inc82** — every REQUIRED mark clears Q1 at its own declared seat, with the exemption roster
+  asserted in both directions; the before-mark **re-measured** through the same restated arithmetic.
+  **Teeth:** the roster parked and emptied; and inc81's tooth **re-pointed**, because its original
+  mutants were the two rows this increment removed — *a tooth whose mutant has been fixed is a tooth
+  that bit.*
+- **inc83** — ruling F two-branched over every gate at both heights, with `SOLARI_TAKES_THE_PAGE`
+  recording the single whole-page case; K10 as a law about a PROMISE and not a distance (a kit in
+  `MODAL_BORDER_REFUSED` spends none of the four CORNER cells of its own `MODAL_BOX` — corners, not
+  strokes, because swiss and ledger rule their bands with `─` and neither claims a box).
+  **Teeth:** inc55's placement rule re-installed and watched producing the old arithmetic (rows 17 and
+  18 at 80×24, nothing at 100×32); blueprint's corners put back.
+- **inc84** — the key bar present and last at both widths; `elide` marks with the language's own
+  disclosure; no detail title cut without saying so at either width; the greyscale pass is the declared
+  transform, pixel by pixel and colour by colour; L12 measured. **Teeth:** `dock` reverted to `row`;
+  `elide` reverted to a bare slice.
+
+### 22.5 What this batch refused to do, and why each refusal is written down
+
+- **swiss `•` was not fixed and the floor was not lowered.** The brief named two marks; this is a
+  third, and both available moves would have been an increment grading its own homework in the same
+  breath it wrote it — `rework-7c`'s founding principle.
+- **`collision_census.py` does not count the glyphless run and cannot.** It reads DECLARATIONS and
+  never opens a frame; its `TOTAL` is a count of cells a kit declares, and a run that exists only in a
+  picture has no declaration to be counted in. The frame-side count lives in `legibility.py` §G and in
+  the suite. Named in `inc81.md` §7 for the round to overrule.
+- **K10 is enforced as a promise, not as a distance.** A threshold would have to be invented inside the
+  increment, would differ per glyph and per face, and round five's own §7 warns against exactly that.
+  The 44-cells-versus-2 measurement is in the docstring as evidence and nowhere as a constant.
+- **The one-gate fallback still lets solari's band sit inside the named gate.** That is inc55's second
+  sentence, untouched, unreachable from any shipped frame, and asserted by its own law.
+- **No minimum height was added to `LANGUAGES.md`**, per the ruling. solari renders at 24 rows; what it
+  does there is take the screen.
+- **The greyscale pass does not model colour vision deficiency**, and §H says so at length.
+
+### 22.6 The artefacts
+
+```
+census        TOTAL 28 -> 27 (prism's `⡀` was REQUIRED and FIELD_LEAD's opener at once);
+              homoglyph rows 24, unchanged
+legibility    591 -> 870 lines; sections F (the floor as law), G (the glyphless run),
+              H (the match in greyscale); MEANING_MARKS 45 -> 44 under 3:1 declared
+raster        66 png + 66 grey.png + 66 json, 132 identical across two PROCESSES
+frames        36 changed: 100x32 -- instrument_S2, prism_S2, blueprint_S4, 11 x S6
+                          80x24  -- the same four, plus 11 x S1, 10 x S4, 9 x S6
+gallery       30-51: NONE changed byte-wise.  `capture_languages.py` run plain at every
+              increment that touched a kit; `git status --porcelain` empty on
+              `prototypes/gallery/` every time.  The board and gallery frames draw no
+              obligation mark, no modal and no key bar.
+skill         `export_to_skill.py`: 11 languages round-trip, captures 0 written /
+              66 already identical, SURFACES.md 11 postures.  The skill repo is not
+              committed from here.
+```
+
+### 22.7 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief (this worktree's own instructions) was the spec; this section is the record |
+| Phase B (implement) | **done** — inc81, inc82, inc83, inc84 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1371 → 1449 (+78)**. `test_win_clipboard_roundtrip` red at the baseline and in inc81/inc82, **green in inc83 and inc84** — environment-coupled, reported, not counted, not touched (§22.3.9). `verify_language.py` **ALL PASSED exit 0** at every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` refusals `[]` for all eleven. `collision_census.py` TOTAL **27**, homoglyph rows 24. `raster.py` **132 PNGs identical across two PROCESSES**. `legibility.py` **byte-identical across two PROCESSES**. `second_width.py` 0 rows cut, 330 pairs distinct, and **`SECOND_WIDTH_RED` is now empty** — 0 red, both solari arms. `capture_languages.py` 22 grids identical across two processes, gallery unchanged. `export_to_skill.py` clean. |
+| Notes | **Four increments, one agent, 2–5 source files each.** Three of the six `rework` frames the round returned are answered (`instrument_S2`, `prism_S2`, `blueprint_S4`) and `solari_S4`'s two axes are both addressed without the frame moving. **`naught_S2` and `naught_S4` are untouched** — L10 and the `DANGER_FORM` frame are not in this brief and remain the round's oldest open reworks. Three questions go back: swiss `•` at 14.0 %, K6 against Q1, and L12 in its thin form. |
