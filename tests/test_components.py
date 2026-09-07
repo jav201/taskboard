@@ -8873,15 +8873,83 @@ RUN_MEANING_MAX, RUN_STRUCTURE_MIN = 4, 8
 #: say what the cell is PAINTED IN while it does that job.  Without the
 #: intersection a letter standing inside a log message would be promoted to a
 #: severity rung for sitting next to one.
-A_SEAT_CALLS = (
-    ("severity", lambda k: [k.log_row(lv, "09:41", "board loaded")
-                            for lv in ("info", "warn", "error")]),
-    ("danger", lambda k: [k.button("Delete", danger=True)]),
-    ("required", lambda k: [k.required()]),
-    ("cursor", lambda k: [k.menu(["a", "b"], 0)[0]]),
-    ("invalid", lambda k: [k.textfield("12/09/26", state=LG.INVALID, w=14)]),
-)
+#:
+#: AND THE INTERSECTION IS BY COLUMN, NOT BY CHARACTER (inc87, on the ruling
+#: "declared seat by seat, not by character").  `role_map` is keyed by CELL,
+#: so for the one kit of eleven whose rung is a letter — darkside's `o` — the
+#: intersection credited every `o` in the row to the severity family and the
+#: derivation read the log's MESSAGE as the rung.  So each call now declares
+#: the PROSE it hands the contract as well.  The contract methods return the
+#: caller's own text byte for byte (`log_row`'s docstring says exactly that),
+#: so the columns that text occupies are known, and they are struck out
+#: before the intersection is taken.  PROSE NEVER COUNTS.
+#:
+#: EVERY OCCURRENCE OF EACH STRING IS STRUCK, not the first: a derivation
+#: that guessed which copy of the caller's text was the real one would be
+#: deciding by position what it is here to read off the contract.  The cost
+#: of that choice is named rather than hidden — a caller who handed a
+#: contract the kit's OWN MARK as its content would strike the mark too — and
+#: the law's third clause is what stands against it: the strike may never
+#: empty a family, in any kit.
+_SEAT_PROSE = {"time": "09:41", "message": "board loaded", "label": "Delete",
+               "option": "a", "value": "12/09/26"}
+
+
+def seat_calls(prose=None):
+    """The five contract calls, with the caller's own words swappable.
+
+    `(family, the text handed in, the call)`.  The words are a parameter so a
+    law can ask the question the mechanism cannot ask itself: does the
+    declared seat MOVE when the caller changes what it says?
+    """
+    p = dict(_SEAT_PROSE, **(prose or {}))
+    return (
+        ("severity", (p["time"], p["message"]),
+         lambda k: [k.log_row(lv, p["time"], p["message"])
+                    for lv in ("info", "warn", "error")]),
+        ("danger", (p["label"],),
+         lambda k: [k.button(p["label"], danger=True)]),
+        ("required", (), lambda k: [k.required()]),
+        ("cursor", (p["option"], "b"),
+         lambda k: [k.menu([p["option"], "b"], 0)[0]]),
+        ("invalid", (p["value"],),
+         lambda k: [k.textfield(p["value"], state=LG.INVALID, w=14)]),
+    )
+
+
+A_SEAT_CALLS = seat_calls()
 _TONED_RUN = re.compile(r"\[([^\]]+)\]([^\[]*)")
+
+
+def _row_columns(markup: str):
+    """`(plain, [(start, stop, tone), ...])` — the row as it reaches the
+    glass, and where each toned run stands in it."""
+    plain, spans, at, pos = [], [], 0, 0
+    for m in _TONED_RUN.finditer(markup):
+        if m.start() > pos:
+            plain.append(markup[pos:m.start()])
+            at += m.start() - pos
+        tone, body = m.group(1).split()[-1], m.group(2)
+        if tone.startswith("#"):
+            spans.append((at, at + len(body), tone))
+        plain.append(body)
+        at += len(body)
+        pos = m.end()
+    if pos < len(markup):
+        plain.append(markup[pos:])
+    return "".join(plain), spans
+
+
+def _prose_columns(plain: str, content) -> set:
+    """Every column of `plain` the CALLER's own text occupies."""
+    out = set()
+    for text in content:
+        text = LG.mark(str(text))
+        at = plain.find(text) if text else -1
+        while at >= 0:
+            out.update(range(at, at + len(text)))
+            at = plain.find(text, at + 1)
+    return out
 
 
 @functools.lru_cache(maxsize=None)
@@ -8895,22 +8963,201 @@ def _census():
     return cc
 
 
-@functools.lru_cache(maxsize=None)
-def declared_seat_tones(lang: str) -> tuple:
-    """`((family, cell, tone), ...)` — where this kit declares each meaning."""
+def seat_tones(lang: str, calls=None) -> tuple:
+    """`((family, cell, tone), ...)` — where this kit declares each meaning.
+
+    A cell survives only if the census credits it to the family AND it stands
+    in a column the contract itself painted, so `log_row`'s rung column is a
+    severity seat and the same letter inside the message printed beside it is
+    not.
+    """
     k, cc = LG.kit(lang), _census()
     named, _ = cc.role_map(lang)
     out = set()
-    for family, call in A_SEAT_CALLS:
+    for family, content, call in (calls or A_SEAT_CALLS):
+        for markup in call(k):
+            plain, spans = _row_columns(markup)
+            prose = _prose_columns(plain, content)
+            for a, b, tone in spans:
+                for i in range(a, b):
+                    if i not in prose and family in named.get(plain[i], {}):
+                        out.add((family, plain[i], tone))
+    return tuple(sorted(out))
+
+
+@functools.lru_cache(maxsize=None)
+def declared_seat_tones(lang: str) -> tuple:
+    """The seats as this corpus ships them."""
+    return seat_tones(lang)
+
+
+#: WHAT THE CHARACTER-KEYED DERIVATION CREDITED AND THE COLUMN-KEYED ONE DOES
+#: NOT.  Two rows in eleven kits, and neither is a mark:
+PROSE_NOT_A_SEAT = {
+    ("darkside", "severity", "o", "#757575"): (
+        "THE LOG'S MESSAGE. darkside is the one kit of eleven whose severity "
+        "rung is a lowercase LETTER, so `role_map` credits every `o` in the "
+        "corpus to the severity family and the derivation read the `o` of "
+        "`board loaded` -- and of `form`, `log` and `fix login redirect` in "
+        "the shipped frames -- as a rung painted in `mut`. The rung itself "
+        "moved to `ink` in inc85 and measures 8.34; this row measured 2.51 "
+        "and was the last `EFF`-only seat left in a quiet tier, which is "
+        "exactly how a derivation defect disguises itself as a legibility "
+        "finding. `legibility.py`'s own docstring claimed the intersection "
+        "with `role_map` prevented this, and it did not, because `role_map` "
+        "is keyed by CHARACTER."),
+    ("industrial", "invalid", "/", "#f2f2f2"): (
+        "THE VALUE'S DATE SEPARATORS. industrial declares `/` as the INVALID "
+        "mark of its slider knob and its stepper step, and the field this "
+        "derivation exercises is handed the value `12/09/26` -- so the two "
+        "slashes of the date were read as the field's rejection mark. The "
+        "field's own invalid marks are `▐` and `▌` and both are still here. "
+        "FOUND BY LOOKING: the ruling names darkside and this row came with "
+        "the mechanism, which is the difference between fixing a defect and "
+        "fixing an instance of one. What it also shows is that the slider "
+        "and the stepper have no seat call of their own -- `/` was passing "
+        "at 5.02 on cells that were never its seat -- and that is handed "
+        "back rather than answered here."),
+}
+
+
+def _blind_seat_tones(lang: str) -> set:
+    """The derivation as it stood before inc87: keyed by CHARACTER.
+
+    Restated in four lines rather than kept behind a flag, because a law that
+    can only see the defect through the switch that fixes it is a law about
+    the switch."""
+    k, cc = LG.kit(lang), _census()
+    named, _ = cc.role_map(lang)
+    out = set()
+    for family, _content, call in A_SEAT_CALLS:
         for markup in call(k):
             for tone, body in _TONED_RUN.findall(markup):
                 tone = tone.split()[-1]
                 if not tone.startswith("#"):
                     continue
-                for ch in body:
-                    if family in named.get(ch, {}):
-                        out.add((family, ch, tone))
-    return tuple(sorted(out))
+                out |= {(family, ch, tone) for ch in body
+                        if family in named.get(ch, {})}
+    return out
+
+
+def _words_without_the_kits_marks(lang: str, n: int) -> str:
+    """`n` characters this kit credits to no family at all."""
+    named, _ = _census().role_map(lang)
+    pool = [c for c in "wzq238" if c not in named]
+    assert pool, (lang, "no neutral character left to write prose with")
+    return "".join(pool[i % len(pool)] for i in range(n))
+
+
+def _words_made_of_the_kits_ladder(lang: str, n: int) -> str:
+    """`n` characters of this kit's OWN severity ladder, in order."""
+    lv = LG.kit(lang).LEVELS
+    src = "".join(lv[level] for level in ("info", "warn", "error"))
+    return (src * (n // len(src) + 1))[:n]
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_declared_seat_is_a_column_the_contract_paints_not_a_character(
+        lang):
+    """inc87's law: A DECLARED SEAT DOES NOT MOVE WHEN THE CALLER CHANGES
+    ITS WORDS.
+
+    That is the ruling ("declared seat by seat, not by character ... prose
+    never counts") turned into a property the mechanism cannot assert about
+    itself. The derivation strikes out the columns the caller's text fills;
+    this law never mentions columns. It changes the words and checks the
+    answer, which is the only way the two can agree by being right.
+
+    FOUR CLAUSES:
+
+      (a) SWAP THE PROSE FOR TEXT THIS KIT CREDITS TO NOTHING -- the time,
+          the message, the button's label, the menu option and the field's
+          value, all at their original lengths so no window moves -- and the
+          seats are IDENTICAL. The old derivation fails here on darkside
+          (the `o` of `board loaded` goes away with the message) and on
+          industrial (the `/` of the date).
+      (b) SWAP THE MESSAGE FOR THIS KIT'S OWN SEVERITY LADDER, repeated to
+          the same twelve columns, and the seats are IDENTICAL AGAIN. This
+          is the darkside defect performed deliberately in all eleven kits:
+          under the old derivation every kit's message would now declare
+          every rung of its own ladder at the message's tier.
+      (c) ALL FIVE FAMILIES STILL HAVE A SEAT, in every kit. The strike is by
+          string occurrence, so a caller who handed a contract the kit's own
+          mark as content would strike the mark -- this is the clause that
+          stands against it, and it is why (b) swaps the MESSAGE and not the
+          one-character menu option.
+      (d) EVERYTHING THE OLD DERIVATION SAW AND THIS ONE DOES NOT is named in
+          `PROSE_NOT_A_SEAT`, with a reason, and nothing else is lost.
+    """
+    ships = set(declared_seat_tones(lang))
+
+    quiet = {"time": _words_without_the_kits_marks(lang, 5),
+             "message": _words_without_the_kits_marks(lang, 12),
+             "label": _words_without_the_kits_marks(lang, 6),
+             "option": _words_without_the_kits_marks(lang, 1),
+             "value": _words_without_the_kits_marks(lang, 8)}
+    assert set(seat_tones(lang, seat_calls(quiet))) == ships, \
+        (lang, "the seat moved when the caller changed its words")
+
+    loud = {"message": _words_made_of_the_kits_ladder(lang, 12)}
+    assert loud["message"] != _SEAT_PROSE["message"], lang
+    assert set(seat_tones(lang, seat_calls(loud))) == ships, \
+        (lang, loud["message"], "a message of marks was read as marks")
+
+    assert {fam for fam, _c, _t in ships} == set(_census().A_FAMILIES), \
+        (lang, "the prose strike emptied a family")
+
+    lost = _blind_seat_tones(lang) - ships
+    named = {(f, c, t) for (l, f, c, t) in PROSE_NOT_A_SEAT if l == lang}
+    assert lost == named, (lang, sorted(lost ^ named))
+    for key in named:
+        assert len(PROSE_NOT_A_SEAT[(lang,) + key].split()) >= 20, key
+
+
+def test_the_seat_derivation_bites_when_it_reads_by_character(monkeypatch):
+    """TEETH -- put the character-keyed derivation back and everything that
+    stands on the fix must go red.
+
+    THE MUTANT IS THE STRIKE ITSELF, not the roster: `_prose_columns` is made
+    to return nothing, which is precisely the code that shipped before inc87.
+    Three separate laws must notice, and they are chosen because they are the
+    three different things the defect was doing at once -- inventing a seat,
+    inventing a FAILING seat, and miscounting the corpus.
+    """
+    for lang in LANGS:
+        test_the_declared_seat_is_a_column_the_contract_paints_not_a_character(
+            lang)
+    test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(
+        "darkside")
+
+    monkeypatch.setitem(globals(), "_prose_columns",
+                        lambda plain, content: set())
+    declared_seat_tones.cache_clear()
+    floor_rows.cache_clear()
+
+    # 1. the seat comes back, and it is the message
+    assert ("severity", "o", LG.THEMES["darkside"]["mut"]) in \
+        declared_seat_tones("darkside")
+    assert ("invalid", "/", LG.THEMES["industrial"]["ink"]) in \
+        declared_seat_tones("industrial")
+    # 2. the invariance law goes red on both kits and on neither of the nine
+    for lang in ("darkside", "industrial"):
+        with pytest.raises(AssertionError):
+            test_the_declared_seat_is_a_column_the_contract_paints_not_a_character(
+                lang)
+    # 3. and the floor table grows a row that is a log message
+    with pytest.raises(AssertionError):
+        test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(
+            "darkside")
+
+    monkeypatch.undo()
+    declared_seat_tones.cache_clear()
+    floor_rows.cache_clear()
+    for lang in LANGS:
+        test_the_declared_seat_is_a_column_the_contract_paints_not_a_character(
+            lang)
+    test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(
+        "darkside")
 
 
 def _txt_run(rows, x: int, y: int, ch: str) -> int:
@@ -9039,7 +9286,7 @@ def floor_rows(lang: str) -> tuple:
 
 
 #: WHAT IS UNDER THE FLOOR TODAY, at the declared seat, over all eleven.
-#: 86 bound seats, 68 clear both clauses and 18 miss one or both.
+#: 84 bound seats, 67 clear both clauses and 17 miss one or both.
 #:
 #: THIS IS A RECORDED SET AND NOT A GATE — the shape `SECOND_WIDTH_RED` and
 #: `DIM_CLASSIFIES` already have in this file, and for the identical reason:
@@ -9057,15 +9304,18 @@ def floor_rows(lang: str) -> tuple:
 #:     under a floor the round set at 15%, on a mark the same round recorded
 #:     as visible — named in `OBLIGATION_UNDER_THE_FLOOR`, exempt by name in
 #:     `SEEN_BY_EYE`, and not legislated away.
-#:   * SIX miss effective contrast only, and there were TWENTY-NINE before
-#:     this increment.  The twenty-nine were a collision between two floors
-#:     in one repo: K6 asks `mut` for 4.5:1 DECLARED, and a thin glyph at
-#:     4.5:1 declared lands near 2:1 EFFECTIVE.  The ruling says Q1 governs
-#:     MEANING MARKS and K6 governs TEXT RUNS, so twenty-five of the
-#:     twenty-nine took `ink` at the seat (`RUNG_TAKES_INK` and
-#:     `Kit.field_wall_tone`) and twenty-three of those cleared the clause.
-#:     The six that remain are named one by one in `EFFECTIVE_UNCURED`, and
-#:     not one of them is "a `mut` seat nobody looked at".
+#:   * FIVE miss effective contrast only, and there were TWENTY-NINE before
+#:     inc85.  The twenty-nine were a collision between two floors in one
+#:     repo: K6 asks `mut` for 4.5:1 DECLARED, and a thin glyph at 4.5:1
+#:     declared lands near 2:1 EFFECTIVE.  The ruling says Q1 governs MEANING
+#:     MARKS and K6 governs TEXT RUNS, so twenty-five of the twenty-nine took
+#:     `ink` at the seat (`RUNG_TAKES_INK` and `Kit.field_wall_tone`) and
+#:     twenty-three of those cleared the clause.  The SIXTH survivor was
+#:     never a mark: inc87's derivation fix took `darkside o #757575` out of
+#:     the table, because those cells are the letter `o` of a log MESSAGE and
+#:     a message is prose.  The five that remain are named one by one in
+#:     `EFFECTIVE_UNCURED`, and NOT ONE OF THEM IS STILL PAINTED IN A QUIET
+#:     TIER — two are already in `ink` and three are a hue.
 #:   * EIGHT miss both, and they are the marks §7 of the round put in its ten
 #:     worst by eye: the three `·` severity rungs, instrument's `⠂`/`⠆`,
 #:     prism's `⣀`, naught's `◦`.  The two clauses and the eye agree here.
@@ -9088,7 +9338,6 @@ BELOW_THE_FLOOR = {
     ("swiss", "cursor", "▮", "#e7372e"): "EFF",
     ("industrial", "cursor", "▶", "#ff6039"): "EFF",
     ("nord", "severity", "·", "#919cb0"): "COVEFF",
-    ("darkside", "severity", "o", "#757575"): "EFF",
     ("darkside", "severity", "·", "#757575"): "COVEFF",
     ("prism", "severity", "⣀", "#8b98a5"): "COVEFF",
     ("ledger", "severity", "*", "#1c1a15"): "EFF",
@@ -9097,14 +9346,18 @@ BELOW_THE_FLOOR = {
 #: prism's `⣀` is the one drawing that sits on TWO grounds at its declared
 #: seat — the page and the confirm's plate — so it is two rows in the sweep
 #: and one row in the table above.  Recorded so the arithmetic below is not a
-#: mystery: 18 failing ROWS, 17 distinct (kit, family, cell, tone) keys.
+#: mystery: 17 failing ROWS, 16 distinct (kit, family, cell, tone) keys.
 #:
-#: THE BOUND COUNT FELL AS WELL, 89 -> 86, and that is what a tier move looks
-#: like from the counter's side: a seat drawn in two tones is two rows, and
-#: `ledger *`, `nord !` and `darkside o` each collapsed to one when the quiet
-#: copy moved onto the loud one.  It is asserted beside the failing count so
-#: a seat that stops being DRAWN cannot be mistaken for a seat that passed.
-FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 86, 18
+#: THE BOUND COUNT FELL TWICE, 89 -> 86 -> 84, and the two falls are
+#: different events.  inc85's was a TIER MOVE seen from the counter's side: a
+#: seat drawn in two tones is two rows, and `ledger *`, `nord !` and
+#: `darkside o` each collapsed to one when the quiet copy moved onto the loud
+#: one.  inc87's is a DERIVATION FIX: `darkside severity o #757575` and
+#: `industrial invalid / #f2f2f2` were never seats at all — the first is the
+#: message, the second is the date separators of the value the field was
+#: handed — and `PROSE_NOT_A_SEAT` names both.  Both counts are asserted so a
+#: seat that stops being DRAWN cannot be mistaken for a seat that passed.
+FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 84, 17
 
 
 @pytest.mark.parametrize("lang", LANGS)
@@ -9665,8 +9918,8 @@ SEATS_MOVED_TO_INK = {
 CARRIED_BY_THE_LADDER = {("industrial", "severity", "▪")}
 
 #: WHAT IS STILL UNDER THE EFFECTIVE CLAUSE AND ONLY THAT CLAUSE, one row per
-#: seat with the kind of thing it is.  Six rows, three kinds, and every kind
-#: is a reason the ruling's remedy does not reach -- which is the point of
+#: seat with the kind of thing it is.  Five rows, two kinds, and both kinds
+#: are a reason the ruling's remedy does not reach -- which is the point of
 #: writing them down instead of leaving `EFF` as a bare count.
 #:
 #: `no louder neutral`   the mark is ALREADY in the loudest neutral the kit
@@ -9676,7 +9929,15 @@ CARRIED_BY_THE_LADDER = {("industrial", "severity", "▪")}
 #:                       marks out of `mut` and `dim`; a hue is neither, and
 #:                       moving a cursor to `ink` would spend the one channel
 #:                       that says WHERE YOU ARE.  Handed back, not taken.
-#: `a letter of the message` the row is not a rung at all -- see the reason.
+#:
+#: THERE WAS A THIRD KIND AND inc87 RETIRED IT.  `a letter of the message`
+#: held one row -- `darkside severity o #757575` -- and that row was never a
+#: seat: the derivation was keyed by CHARACTER, so the `o` of `board loaded`
+#: was credited to the one kit of eleven whose severity rung is the letter
+#: `o`.  The kind is gone because the row is gone, and `PROSE_NOT_A_SEAT` is
+#: where it went.  WHAT THAT LEAVES IS STRONGER THAN WHAT IT REMOVED: not one
+#: row here is painted in a quiet tier any more, so the law below stopped
+#: needing an exception to state the ruling it exists for.
 EFFECTIVE_UNCURED = {
     ("corgi", "invalid", "░", "#f2f2f2"): (
         "no louder neutral",
@@ -9711,17 +9972,6 @@ EFFECTIVE_UNCURED = {
         "the clause on a 5.79:1 declared hue. Recorded at the same width as "
         "the other two so the round can see that the cursor family fails as "
         "a FAMILY and not as one kit's mistake."),
-    ("darkside", "severity", "o", "#757575"): (
-        "a letter of the message",
-        "THIS ROW IS NOT A RUNG. darkside's warn rung is the lowercase "
-        "letter `o`, so the census credits every `o` in the corpus to the "
-        "severity family, and the cells this row measures are the `o` of "
-        "`form`, `log` and `fix login redirect` -- prose, set in `mut` "
-        "because a message is a TEXT RUN and K6 is the floor written for it. "
-        "The rung itself moved to `ink` and measures 8.34. It is the one kit "
-        "of eleven whose ladder is a lowercase letter, which is why it is "
-        "the only kit where the declared-seat derivation cannot tell a mark "
-        "from the words beside it. Handed back as an instrument question."),
 }
 
 
@@ -9747,10 +9997,10 @@ def test_every_seat_the_ruling_moved_is_drawn_in_ink_and_measured_there():
           names -- so a seat that moved and did not help cannot be quietly
           counted as a fix."""
     # THE SEATS THE MOVE DID NOT CURE, and it is the `no louder neutral` rows
-    # and only those: the other four uncured rows are seats this ruling never
-    # touched (three cursors in a hue) or a row that is not the seat at all --
-    # `darkside o` in `mut` is the letter `o` of a log MESSAGE, and its RUNG
-    # moved and cleared at 8.34, which is why the two are keyed differently.
+    # and only those: the other three uncured rows are seats this ruling
+    # never touched -- three cursors in a hue. `darkside o` was a fourth
+    # until inc87 showed that row to be the log MESSAGE and not the rung;
+    # the RUNG moved and cleared at 8.34, and that is the number below.
     uncured = {(k[0], k[1], k[2]) for k, (kind, _w) in EFFECTIVE_UNCURED.items()
                if kind == "no louder neutral"}
     for (lang, fam, ch), (frm, was, now) in SEATS_MOVED_TO_INK.items():
@@ -9787,11 +10037,15 @@ def test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
 
     That is the ruling's own wording turned into something that can go red,
     and it is judged on the SHIPPED PIXELS (`floor_rows` reads the PNGs) with
-    the tier read off the theme. The one row that is still quiet is
-    `darkside o`, and `EFFECTIVE_UNCURED` says in twelve words or more why it
-    is a letter of a log MESSAGE rather than a rung -- which is the other
-    half of the same ruling (K6 governs text runs) and not an exemption from
-    it.
+    the tier read off the theme.
+
+    AND SINCE inc87 IT HAS NO EXCEPTION LEFT. The one row that was still
+    quiet after inc85 was `darkside o #757575`, and inc87's derivation fix
+    established that those cells are the letter `o` of a log MESSAGE and not
+    the rung at all. So the clause is absolute now: NOT ONE `EFF`-only row of
+    this corpus is painted in `mut` or `dim`, in any kit. A law that used to
+    carry a named survivor carries none, which is the strongest form this
+    sentence has had.
 
     THE ROSTER IS SYMMETRIC, so it cannot become a parking space: every
     `EFF`-only row of the corpus is named, and every named row must still be
@@ -9804,23 +10058,22 @@ def test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet(
     for key in got:
         kind, why = EFFECTIVE_UNCURED[key]
         assert len(why.split()) >= 12, (key, "an exemption with no reason")
-        if key[3] in (t["mut"], t["dim"]):
-            assert kind == "a letter of the message", \
-                (key, kind, "a meaning mark left in the quiet tier")
+        assert key[3] not in (t["mut"], t["dim"]), \
+            (key, kind, "a meaning mark left in the quiet tier")
 
 
 def test_the_uncured_table_covers_what_it_claims_to():
     """The roster's own vacuity arms, the shape `DIM_CLASSIFIES` already has.
 
-    (a) every kind is one of the three the increment named, and all three are
-        USED -- a table where everything is "a hue" would be a filter;
+    (a) every kind is one of the two that survive inc87, and both are USED --
+        a table where everything is "a hue" would be a filter;
     (b) the two `no louder neutral` rows are asserted to BE in `ink`, which
         is the claim their name makes;
     (c) the three `a hue` rows are asserted NOT to be a neutral of their kit,
         which is the claim theirs makes."""
     kinds = {k for k, _ in EFFECTIVE_UNCURED.values()}
-    assert kinds == {"no louder neutral", "a hue, not a neutral",
-                     "a letter of the message"}, sorted(kinds)
+    assert kinds == {"no louder neutral", "a hue, not a neutral"}, \
+        sorted(kinds)
     for (lang, _f, _c, tone), (kind, _why) in EFFECTIVE_UNCURED.items():
         t = LG.THEMES[lang]
         if kind == "no louder neutral":
