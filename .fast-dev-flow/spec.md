@@ -2368,3 +2368,46 @@ artefacts   66 png + 66 json (2.6 + 1.0 MB) - 1 report (591 lines) - 264 files a
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1338 → 1370 passed** (+32), the clipboard test red at the baseline and named in every packet — environment-coupled (§10.6), reported, not counted, not touched. `verify_language.py` **ALL PASSED exit 0** at every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` refusals `[]` for all eleven. `collision_census.py` **TOTAL 28, homoglyph rows 24 — unchanged at every increment**. `raster.py` **66 PNGs identical across two PROCESSES**. `legibility.py` **byte-identical across two PROCESSES**. `second_width.py` 0 rows cut, 330 pairs distinct. `capture_languages.py` and `export_to_skill.py` **not run** — no kit, token or gallery artefact was touched, and running them would have been the only way to move one. |
 | Notes | **Three increments, one agent, 2–3 source files each.** Eleven laws, two teeth, **zero kit edits**. The 66 `.txt`, the 66 `.svg`, the 22 gallery artefacts and the census are byte-identical to `0ec5904`. **E2 is closed as an instrument and none of the seven objections it was blocking has a verdict** — that is the fifth round's job, and this batch exists so it can fail in a way the fourth could not. |
+
+## 21. Batch `rework-7c` — two defects `rework-7b` found by looking and did not fix
+
+`rework-7b`'s own increments (inc77 §7.1, inc78 §5) named two defects in the INSTRUMENT itself — not in
+a language — and declined to fix either inside the increment that found it, on the batch's own stated
+principle: *"changing a law to make a red go away in the increment that found it is how a gate stops
+meaning anything."* This batch is those two fixes, judged separately and later, by the same reasoning
+that makes a postponed fix trustworthy: nobody was grading their own homework in the same breath they
+wrote it.
+
+### 21.1 What each increment did
+
+| inc | defect | fix | files |
+| --- | --- | --- | --- |
+| 79 | `capture_languages.ink()` counted U+2800 BRAILLE PATTERN BLANK as ink — 421 cells over the 66 frames, instrument 174 and prism 247 — because it never read a `BLANKS` constant at all (it excluded space + U+00A0 NBSP, a set matching 0 characters in the corpus). `verify_ink.py`'s own `BLANKS` (inc44) already excluded the right pair. | `BLANKS` declared once in `capture_languages.py`, `ink()` reads it; a new law checks `verify_ink.py`'s own `BLANKS` against it by source text (restated and checked, not imported — importing `capture_languages` into `verify_ink.py` would pull in Textual and its `TEXTUAL_ANIMATIONS=none` side effect, changing the exact live-widget subsystem `verify_ink.py`'s own docstring names as an open, undiagnosed drift). | `prototypes/capture_languages.py`, `tests/test_components.py` |
+| 80 | `test_a_confirm_opens_and_closes_on_marks_of_its_own`'s solari arm asserted "full measure" as `any(w > 800)` — `100 cols x 8.4 CW` with room to spare, true only at 100 columns. At 80 columns the page itself is 672 units and 800 is larger than the page, so the law read RED against a frame inc78 confirmed was correct. | The predicate reads the frame's own page width off its own canvas rect (`page_w = canvas_w - 2*PAD`) instead of a fixed constant, so it asks the same question at every width. `SECOND_WIDTH_RED` drops the now-green entry; the recorded-set test that pins it was checked by hand to still have teeth (staled the set back on a scratch copy, confirmed RED, reverted). | `tests/test_components.py` |
+
+### 21.2 What this batch refused to do, and why each refusal is written down
+
+- **inc79 deviated from the brief's literal instruction** ("move `BLANKS` to the module both already
+  import") because no such module exists without either editing a kit file (`taskboard/themes.py`,
+  explicitly off-limits) or importing `capture_languages` into `verify_ink.py` and inheriting a side
+  effect (`TEXTUAL_ANIMATIONS=none`) onto a subsystem (`verify_ink.py`'s live mode) this batch was not
+  asked to touch. The deviation — one definition enforced by a checked restatement instead of a runtime
+  import — is named in `inc79.md` §0 for the round to overrule if it disagrees.
+- **inc80 did not fix solari's ruling-F failure at 24 rows** (inc78's other red arm) — that is a HEIGHT
+  finding about a language's placement rule, not a width-bound instrument defect, and the brief for
+  `rework-7b` already ruled *"do not fix languages here; the round judges."* It remains red, on
+  purpose, in `SECOND_WIDTH_RED`.
+- **inc79 did not unify `collision_census.py`'s and `test_components.py`'s own `BLANKS` definitions**
+  (a third and fourth copy of the same two-character constant) — both are already correct and neither
+  consumes `capture_languages.ink()`; folding them in would have been scope beyond the brief's own two
+  named files.
+
+### 21.3 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief (this worktree's own instructions) was the spec; this section is the record |
+| Phase B (implement) | **done** — inc79, inc80 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1370 → 1371 passed** (+1, inc79's law; inc80 adds none). The clipboard test red at the baseline and named in every packet — environment-coupled (§10.6), reported, not counted, not touched. `verify_language.py` **ALL PASSED exit 0** at both increments. `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` refusals `[]` for all eleven. `collision_census.py` **TOTAL 28, homoglyph rows 24 — unchanged**. `raster.py` **66 PNGs identical across two PROCESSES**. `second_width.py` 0 rows cut, 330 pairs distinct. `git status --porcelain` empty on every regenerated artefact directory (`prototypes/components/`, `.../png/`, `.../w80/`, `prototypes/gallery/`) at both increments. |
+| Notes | **Two increments, one agent, 1–2 source files each, zero kit edits, zero frame/PNG/JSON changes.** Both fixes are to INSTRUMENTS the fifth round will use (a density reading, a suite law), not to a language. 421 ink cells reclassified as blank (console-printed density numbers only — instrument and prism, nothing else); one law-arm out of 79 flips from RED to GREEN, leaving solari's ruling-F failure at 24 rows as the one arm still red, on purpose. `rework-7b`'s close already named the fifth round as the next task; this batch changes nothing about that except making the instrument's own numbers trustworthy before the round reads them. |
