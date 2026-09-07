@@ -783,3 +783,200 @@ reader's channel is shape), **K4** (no law compares two states of one part), **L
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1040 → 1040 → 1042 → 1054 passed** (inc49 widened a law without adding a test function; inc50 +2; inc51 +12), the clipboard red throughout and named in every packet. `verify_language.py` **ALL PASSED** after every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66. `capture_languages.py` after every increment; **2 gallery artefacts moved in total**. `collision_census.py` self-check green after every increment; **TOTAL 48 → 36**. `export_to_skill.py` at the close: `2 written, 64 already identical`, re-run `0 written, 66 already identical`. **The skill repo was not committed.** |
 | Notes | **2 source files across 3 increments, one agent** (`taskboard/language.py`, `tests/test_components.py`), plus 6 regenerated frame artefacts, 2 gallery artefacts, the census table, three packets and this section. **Every increment's law was watched failing BY HAND on the real declaration, with the output quoted verbatim in its packet**, in addition to its monkeypatched teeth. |
+
+## 13. Batch `rework-5a` — three of the seven questions `PROTOTYPE-inheritors-2.md` §6 put to the operator
+
+`rework-4` closed the three items that were defects on the record and left **every** §6 question
+untouched — §12.6 is the table of what it did not decide. **The operator then delegated those decisions
+to the orchestrator ("confío en tu juicio"), and this batch is three of them carried out: C, D and C1.
+Three increments, one agent. The rulings are quoted verbatim in each packet's §0 and are reproduced here,
+because a ruling that lives only in a chat is a ruling nobody can argue with later.**
+
+### 13.1 The three rulings, as given
+
+> **C — `INVALID` never takes `DANGER_FORM`.** "Does not parse" and "destroys data" are two meanings.
+> inc39's rule ("where un-flipping collides, the walls take the language's DANGER_FORM") is revoked.
+> Apply inc51's clause 2 to the text field: `textfield[INVALID]` walls and `stepper.step[INVALID]` draw
+> from the cells the kit already spends on a rejected value at its knob (the declared invalid channel),
+> never from `DANGER_FORM`, `LEVELS` or `REQUIRED`.
+
+> **D — channels are count, weight, position and direction; diameter alone is not a channel.** Write it
+> into the rule's docstring in `tests/test_components.py` and into `collision_census.py`'s header. Add a
+> homoglyph table to the census so it flags a meaning mark whose homoglyph is chrome; print the rows it
+> adds and fix the ones this ruling covers.
+
+> **C1 — the destructive default answer is a button that carries the knockout.** Ruling 10 of 2026-09-04
+> moved the knockout to the default answer; it did not say the default answer stops being a button.
+
+The full text of each, with its by-name lists and its teeth clause, is in `inc52.md` §0, `inc53.md` §0 and
+`inc54.md` §0 under the heading **"Ruling (orchestrator, 2026-09-06, on the operator's delegation)"**.
+
+### 13.2 What each increment did
+
+| inc | ruling | what moved | frames |
+| --- | --- | --- | --- |
+| 52 | **C** | **Ten declarations in four kits, and one kit's `DANGER_FORM` instead.** swiss `╲` → `║` (knob, field, stepper); blueprint `├`/`━` → `╱`; corgi `▀▄` → `░░`; instrument `⠸⠶⠇` → `⠶⠶⠶`; **darkside's `DANGER_FORM` `("Ø","Ø")` → `("▚","▞")`**, because that kit's own comment says the danger form took `Ø` FROM the invalid wall. `invalid` becomes the fifth family of the one-mark-one-meaning law; the opener law's now-groundless INVALID exemption is deleted. | `blueprint_S2` `corgi_S2` `instrument_S2` `swiss_S2` `darkside_S3` `darkside_S4` |
+| 53 | **D** | The word **channel** is defined in both instruments. The census gains `HOMOGLYPHS` (five adjacent-size pairs), `homoglyph_rows()`, a `HOMOGLYPH_ROSTER` over all eleven and a second self-check. Five rows on first run; two fixed — swiss's chosen option `●` → `▪` and darkside's field leader `◦` → `▔`. The four accepted homoglyph moves are written into the table with the channel each spends. | `swiss_S2` `darkside_S1` `darkside_S3` `darkside_S4` · gallery `gallery_swiss` |
+| 54 | **C1** | `Kit.button` gains a `knockout` keyword (**not** a composition — `mark()` would escape the button's own tags), one span over the whole seat. `Blueprint.knockout` moves up to `Kit` so ten languages can refuse. `screens.s4_blueprint` composes a button. New law over all eleven S4s, read off the shipped frames. | `blueprint_S4` |
+
+### 13.3 The laws this batch added, widened or deleted
+
+- **inc52 — `invalid` is a MEANING.** `_meaning_marks` gains a fifth family built by `_invalid_marks()`
+  from `knob[INVALID]`, the two **WALLS** of `textfield.main[INVALID]` and `stepper.step[INVALID]`. **The
+  RUNE is excluded by name and has its own test**: a field's glyph is *"wall, RUNE, wall"* and the rune is
+  the paper the value lies on in every state, so counting it would have turned "what a field is made of
+  here" into "your value is wrong". `DANGER_IS_THE_TOP_RUNG` survives and its scope is written down: it
+  covers `danger` against `ladder` and nothing else, because a rung set as a form is a TIER of one
+  declared channel and a rejection is not a tier of a destruction. **Teeth: ten parametrised arms, one per
+  moved declaration, each naming the language and the two roles and holding the other ten still; an
+  eleventh arm for darkside's restored `DANGER_FORM`; a twelfth for the rune exclusion in both
+  directions.**
+- **inc52 — one exemption DELETED.** `meaning_marks_at_an_opener`'s *"a field whose INVALID walls are that
+  language's own `DANGER_FORM`"* had inc39's ruling under it and now has nothing. **Measured firing ZERO
+  times before it was removed**, so the rosters are unchanged by the deletion and corgi's −2 is the
+  declarations moving.
+- **inc53 — the four channels, written into `tests/test_components.py`'s section head and
+  `collision_census.py`'s module docstring**, each with the increment that spent it. `tier` is not one of
+  the four and survives in exactly one place, by name: the `DANGER_IS_THE_TOP_RUNG` exemption.
+- **inc53 — the homoglyph check is ASYMMETRIC** (one side a meaning, one side chrome), its rows are
+  **never folded into the per-language counts**, and the pairs are **adjacent sizes only**: chaining
+  `· ∙ • ●` into a transitive family was measured at **19 rows against 5** and refused.
+- **inc54 — the destructive default answer.** *In every language's S4 the irreversible default answer
+  carries this language's DANGER FORM, this language's FOCUSED WALLS, and — where the registry spends a
+  knockout — the KNOCKOUT TIER over the whole seat, in the `.txt` and in the `.svg`.* Read off the shipped
+  frames with a pattern built from the KIT's declarations, so it is not `screens.py` asserting that it
+  equals itself. It **extends inc41's tier comparison**: inc41 asserts *declared == painted* over all 66
+  frames as SETS; this asserts which run carries the ground and what is inside it.
+
+### 13.4 The census, and the number the batch is about
+
+```
+language      rework-4   inc52   inc53   inc54            homoglyph rows (inc53 on)
+naught             5        5       5       5               naught     2
+corgi              5        5       5       5               darkside   1
+instrument         5        4       4       4               ledger     1
+swiss              3        2       2       2               the other eight  0
+industrial         2        2       2       2               -----------------
+nord               1        1       1       1               TOTAL      4
+darkside           2        1       1       1
+prism              4        4       4       4
+ledger             2        2       2       2
+solari             3        3       3       3
+blueprint          4        4       4       4
+--------------------------------------------
+TOTAL             36       33      33      33
+```
+
+**And the number that matters more — PAIRS of meanings sharing a cell, with the four
+`DANGER_IS_THE_TOP_RUNG` exemptions held aside — falls 8 → 0.** Measured with the law's own reader on
+HEAD's ten strings and darkside's `("Ø","Ø")` put back:
+
+```
+before   corgi invalid×ladder ▄ · corgi invalid×required ▀ · instrument invalid×ladder ⠇
+         swiss danger×invalid ╲ · darkside danger×invalid Ø
+         blueprint danger×invalid ━ · blueprint invalid×ladder ━ · blueprint invalid×required ├
+         ------------------------------------------------------------ 8 live, 4 exempt
+after                                                                 0 live, 4 exempt
+```
+
+**After `rework-5a` no language has two meanings on one cell that the exemption does not cover. That is
+the first time it has been true in the corpus.** The four that remain are `naught ∙`, `corgi █`,
+`prism ⣿` and `blueprint ━` — the danger form as the ladder's TOP rung, each with the citation its kit
+carries.
+
+### 13.5 The rosters
+
+```
+MEANING_AT_AN_OPENER    rework-4   inc52          MEANING_AT_A_NAMED_SEAT   unchanged, all eleven
+  corgi                     40       38             (knob[INVALID] is not a state `component_states`
+  naught                     3        3              derives for a checkbox, a radio or a switch,
+  prism                     25       25              so no knob seat moved)
+  blueprint                 12       12
+  the other seven            0        0
+```
+
+corgi's −2 is `▄▀·▀▄` (opening on the warn rung) and `▀▄▄▀` (opening on `REQUIRED`) moving onto the
+ghost. **The three languages that have never had an increment still carry the three biggest rosters**,
+which is decision **A** and is still open.
+
+### 13.6 Frames, and what the skill holds
+
+**Eight distinct frames moved across the batch** (`darkside_S4` twice, `darkside_S3` twice,
+`swiss_S2` twice):
+
+```
+inc52   blueprint_S2  corgi_S2  instrument_S2  swiss_S2  darkside_S3  darkside_S4
+inc53   swiss_S2  darkside_S1  darkside_S3  darkside_S4
+inc54   blueprint_S4
+```
+
+**Gallery: 2 of the 22 — `gallery_swiss.{txt,svg}`**, the component strip's four radio rows. No board
+draws an invalid field, a destructive button or a field row, which is why nothing else moved.
+
+**The skill's installed gallery frames 44–51: ONE changed byte-wise —
+`49_darkside-modal-rounded-lid.txt`, whose source is `darkside_S4`.** It is stale in TWO places at once:
+the danger form (`ØDeleteØ` → `▚Delete▞`, inc52) and the six field-row leaders (`◦` → `▔`, inc53). The
+other seven — `44_instrument-list-graticule`, `45_industrial-list-plate`, `46_swiss-list-next-column`,
+`47_solari-list-gate-seam`, `48_industrial-modal-plate-lid`, `50_solari-form-printed-severity`,
+`51_instrument-monitor-dot-ladder` — were compared byte for byte against their sources and are identical.
+
+**And 49 was NOT re-installed by this batch, deliberately.** `export_to_skill.py` copies
+`prototypes/gallery/*` into `assets/languages/` and does not touch `assets/gallery/` — that curated set
+has always been installed by hand (§12.5 records the same for the five §11.4 listed). The batch's
+constraint is *"the skill is edited only through `export_to_skill.py`"*, so the copy was not made.
+**`49_darkside-modal-rounded-lid` is stale and somebody has to re-install it or teach the exporter that
+directory.**
+
+### 13.7 What was NOT touched, by name
+
+| | the question | this batch's contact with it |
+| --- | --- | --- |
+| **A** | corgi, prism and blueprint have never had an increment | **edited corgi's and blueprint's invalid channels and judged no frame of either.** Their rosters are still the three biggest |
+| **C** | `INVALID` takes the `DANGER_FORM` | **DECIDED — revoked (inc52).** inc51's two applications (swiss `╲╲`, blueprint `━━`) are reverted along with five others |
+| **D** | are diameter and rotation channels a language declares? | **DECIDED — count, weight, position, direction; diameter alone is not one (inc53).** Rotation was NOT decided: the ruling names four channels and rotation is not among them, and inc39's field law already forbids orientation as the ONLY channel of a field's state while blueprint's radio spends it on purpose with a citation. **That half of D is still open** |
+| **E** | `darkside_S1`: the rail, or the `.txt` stops being the work | **untouched, and inc53 stayed off the vertical stroke to keep it that way** — the ruling suggested `▏` for the field leader and inc48's measurement (16 → 22 vertical strokes on that very frame) is why `▔` was taken instead |
+| **F** | may a solari confirm eat the gate it names? | untouched |
+| **G** | blueprint's first-fixation law is in a test and in no image | **untouched, and inc54 made the knockout BIGGER** (8 cells → 12) without answering it |
+| **C1** | `blueprint_S4`'s destructive control is built with `knockout_cell` | **DECIDED — it is a button now (inc54)** |
+
+Also still open and outside this batch: **K2** (the laws compare code points — inc53's homoglyph table is
+the first crack in it, and it is a table of code points too), **K4**, **L1–L6**, **C2**, **C4**–**C7**,
+**E2** (the `.svg` carries no font metric, so no homoglyph objection can be *resolved* from the artefact)
+and **E3**.
+
+### 13.8 Found by looking
+
+- **Ruling D reaches two LADDERS this batch did not touch, and it is the sharpest thing it leaves open.**
+  swiss's button ladder is `▫ ▪ ■` (inc46: *"ONE SHAPE AT THREE WEIGHTS"*) and **industrial's SEVERITY
+  ladder is `▫▫ ▪▪ ■■`** — one square at three DIAMETERS. LANGUAGES.md §3 says industrial's palette
+  *"FAILS WHEN COLOUR MUST CARRY SEVERITY"*, so the square's size is all it has; ruling D says size alone
+  is not a channel. **Both statements cannot be right.** No instrument here reaches it — a ladder is one
+  declaration everywhere in this corpus — so the batch did not have to choose and did not.
+- **`╳` is this corpus's DEAD mark and it was refused three times in inc52** (swiss, blueprint, corgi),
+  where it was the obvious answer each time. `Kit` spends it at four disabled seats and corgi and nord
+  re-declare it. Dead and refused are two claims — inc45 §7 refused `×` for nord on the same ground.
+- **`field_row` is drawn outside `PART_GLYPHS` in all eleven**, so the census can reach none of the eleven
+  field leaders. Only darkside's was named by a ruling; ten others are unmeasured by any instrument here.
+- **`◦` was `LG.NA.OFF`, naught's own unlit pixel, on six rows of every darkside detail pane**, just
+  outside `verify_language`'s *"naught's pixel pair is exclusive to naught on the board"* — which is
+  scoped to the meter. A second, independent reason for inc53's move, found while writing its test.
+- **The ruling's frame predictions were wrong twice in inc53** (`swiss S3/S6` and `darkside S1/S2`), and
+  the call sites in `screens.py` explain both: `radio_group` is called only in `s2`, and `field_row` in
+  `s1` (which `s4` overlays) and in `s3`'s danger-zone CAPTION.
+- **There are now TWO ways to reverse a cell** — `knockout_cell` (the title block) and
+  `button(knockout=True)` (a control) — and the difference between them is exactly the distinction inc54
+  exists to draw. A caller who reaches for the wrong one gets C1 back, and only inc54's law is watching.
+- **`test_win_clipboard_roundtrip` moved in BOTH directions this batch.** It was RED at `6970cac`, GREEN
+  on every reported gate run, and RED once mid-inc54 between two green runs of the same tree. It drives
+  the real Windows clipboard through PowerShell (§10.6). **Reported, not counted, not touched — and
+  `1083 passed` is not evidence that it was fixed.**
+
+### 13.9 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc52 · inc53 · inc54 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1054 → 1067 → 1070 → 1083 passed** (inc52 +12 tests +1 clipboard; inc53 +3; inc54 +13), the clipboard test named in every packet. `verify_language.py` **ALL PASSED** exit 0 after every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66, refusals `[]` for all eleven. `capture_languages.py` after every increment; **2 gallery artefacts moved in total**. `collision_census.py` **both** self-checks green after every increment; **TOTAL 36 → 33**, homoglyph rows **4**. `export_to_skill.py` at the close: `2 written, 64 already identical`, re-run `0 written, 66 already identical`. **The skill repo was not committed.** |
+| Notes | **4 source files across 3 increments, one agent** (`taskboard/language.py`, `tests/test_components.py`, `prototypes/collision_census.py`, `prototypes/components/screens.py`) — never more than 3 in one increment — plus 11 regenerated frame artefacts over 8 distinct frames, 2 gallery artefacts, the census table, three packets and this section. **Every increment's law was watched failing BY HAND on the real declaration or the real composition, with the output quoted verbatim in its packet**, in addition to its monkeypatched teeth. |
