@@ -92,14 +92,12 @@ SOLARI   3 colliding cells   (LEVELS OK /DLY/CNX  DANGER ▀▄  REQUIRED ▮  C
   ... 1 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-BLUEPRINT   4 colliding cells   (LEVELS ··/╌╌/━━  DANGER ━━  REQUIRED ├  CUR ┌)
+BLUEPRINT   2 colliding cells   (LEVELS   /╌╌/━━  DANGER ━━  REQUIRED ═  CUR ┌)
 ------------------------------------------------------------------------------
-  ·   [6 families]  LEVELS[info]  ·  INVALID textfield.main mid  ·  field.leader open (declared)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
-  ├   [6 families]  REQUIRED  ·  button.main open (default)  ·  checkbox.knob open (checked,default)  ·  checkbox.main open (checked,default)  ·  radio.knob close (checked,default)  ·  radio.main close (checked,default)  ·  stepper.step close (default)  ·  textfield.main open (default)
-  ╌   [6 families]  LEVELS[warn]  ·  checkbox.knob mid (checked+disabled,disabled)  ·  radio.knob mid (checked+disabled,disabled)  ·  stepper.main close (disabled)  ·  stepper.main open (disabled)  ·  switch.main mark (checked+disabled,disabled)  ·  textfield.main mid (disabled,edited)
+  ·   [5 families]  INVALID textfield.main mid  ·  field.leader open (declared)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
   ━   [2 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open
-  ... 9 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 1 further cells would collide if slider/bar/scrollbar were in the B set
 
 ==============================================================================
 LANGUAGE x COLLISIONS
@@ -115,9 +113,9 @@ darkside                     1
 prism                        2
 ledger                       2
 solari                       3
-blueprint                    4
+blueprint                    2
 ------------------------------
-TOTAL                       28
+TOTAL                       26
 
 zero collisions: NONE -- all eleven overload at least one cell
 

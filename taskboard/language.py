@@ -9013,12 +9013,24 @@ class Blueprint(Kit):
     * **NOTHING IS BOXED, at any width.** `layout="field"` lays items on an
       open field and hangs their metadata off an EXTENSION LEADER
       (`·── PROJ ── BACKLOG ── HIGH`). The only box-drawing glyphs this
-      language draws are `─ ━ ├ ┤ ╌` (the dimension vocabulary), `┌ ┐ └ ┘`
-      (registration marks) and the hatch — TEN, and not one of them is a
+      language draws are `─ ━ ═ ├ ┤ ╌ ┄` (the dimension vocabulary), `┌ ┐ └ ┘`
+      (registration marks) and the hatch — TWELVE, and not one of them is a
       vertical stroke or a rectangle junction, so a containing box here is not
       merely absent: it is unconstructable. (A terminator may stand alone in a
       two-cell seat — the calendar day — where a span does not fit. That is a
       renunciation, and it is the only place it happens.);
+
+      **THE COUNT READ TEN UNTIL inc60 AND TWO OF THE TWELVE ARE THAT
+      INCREMENT'S.** `═` is `REQUIRED`, a doubled RUN, because obligation had
+      been standing on `├` — the terminator that opens every dimension,
+      every button, every checkbox and every field on this sheet, so it said
+      nothing about which extent must be figured. `┄` is the DEAD run, which
+      `indicator[DISABLED]` had drawn all along without the count noticing;
+      the other dead seats had `╌`, and `╌` is `LEVELS["warn"]`. **Neither
+      addition is a vertical or a junction, so the sentence above still
+      holds** — that is the whole reason they were affordable. The hatch is
+      still ONE mark: `╱` held, `╲` refused, the drawing office's own
+      opposite-direction convention for adjacent parts;
     * **a SERIES is an ORDINATE DIMENSION STACK** (`series()`). A conventional
       chart axis is `│` and `└` and is therefore unconstructable here, but an
       axis is not the only way to draw a trace: a drawing office schedules
@@ -9819,13 +9831,45 @@ class Blueprint(Kit):
     # rationed to overdue and nothing else, and `log_row` already guards it.
     ERROR_FILL = "╌"
     ERROR_TONE = "ink"
-    # AN OPENING TERMINATOR. On a drawing an unfigured dimension is a
-    # REFERENCE and a figured one is required; the mark that says an extent
-    # must be given is the terminator that opens it. `━` was the other
-    # candidate and it is spent twice already (DANGER_FORM, ERROR).
-    REQUIRED = "├"
+    # A DOUBLED RUN, and NOT A TERMINATOR (inc60).
+    #
+    # This read `├`, on the argument that "the mark that says an extent must
+    # be given is the terminator that opens it" -- and the argument does not
+    # survive the sheet. `├` opens EVERY dimension here, required or not: on
+    # `blueprint_S2` it stands after `title` and after `due` as the
+    # obligation mark, and eleven rows later it opens `├ ┤ api`, `├╪┤ ui`,
+    # `├Redirect drops...╌┤` and `├   Cancel   ┤`. A mark on every span says
+    # nothing about which span must be figured.
+    #
+    # THE RULE inc60 WRITES: THE TERMINATORS ARE CHROME AND NOTHING ELSE. `├`
+    # `┤` and their weight ramp (`╞ ╡ ┣ ┫ ╎ ╏`) fix where a run BEGINS and
+    # ENDS, and every control on this sheet is built out of them, so no
+    # meaning may be one. A MEANING IS A LINE TYPE.
+    #
+    # So an extent that must be figured is drawn as a DOUBLED run. It is a
+    # run and not a terminator, so it can never be the mark that opens a
+    # control; it is at a weight and a count no other run spends (`─` thin,
+    # `━` heavy, `╌` double DASH, `┄` triple dash); and -- the reason it is
+    # affordable at all -- IT ADDS NO VERTICAL AND NO JUNCTION, so the class
+    # docstring's "a containing box here is not merely absent: it is
+    # unconstructable" survives it. `━` was the other candidate and is spent
+    # twice already (`DANGER_FORM`, `LEVELS["error"]`).
+    #
+    # IT IS AN ELEVENTH MARK AND THE COUNT IS CORRECTED RATHER THAN HIDDEN:
+    # the docstring's list above now reads eleven, with this one named.
+    REQUIRED = "═"
 
-    LEVELS = {"info": "··", "warn": "╌╌", "error": "━━"}
+    # THE LINE-TYPE LADDER, and INFO IS NO LINE AT ALL (inc60).
+    #
+    # `··` was `LEVELS["info"]` AND `LEAD`, this drawing's leader-origin dot
+    # -- so the same cell ruled every gap on the sheet, floored every field,
+    # opened the stepper's ground at five states and reported the calmest
+    # severity there is. The sheet's own commitment settles which one gives
+    # way: "alert is spent on OVERDUE and nothing else. A CALM SHEET CARRIES
+    # ZERO ALERT." A drawing office does not draw a line to say there is
+    # nothing to note. `Ledger.LEVELS` is the precedent in this corpus and
+    # has carried a blank info rung since inc45.
+    LEVELS = {"info": "  ", "warn": "╌╌", "error": "━━"}
 
     MATCH_STYLE = "bold {ink}"             # the heavy weight, in type
 
@@ -9839,7 +9883,27 @@ class Blueprint(Kit):
                           for k, v in pairs)
 
     PART_GLYPHS = {
-        "main": {DEFAULT: LEAD, DISABLED: BREAK},
+        # THE DEAD RUNS, AND THERE ARE TWO OF THEM (inc60).
+        #
+        # Every dead seat on this sheet read `╌`, and `╌` is
+        # `LEVELS["warn"]` as well as the CLIP flag -- so a switch nobody may
+        # throw, a checkbox nobody may tick and a field nobody may type in
+        # all said "warning". A dead run is now the DASH AT A FINER COUNT,
+        # which is ruling D's first channel and already this kit's own answer
+        # at `indicator[DISABLED]`: `╌` TWO dashes (the clip flag, the warn
+        # rung), `┄` THREE, `┈` FOUR.
+        #
+        # AND THE SPLIT INTO TWO IS `verify_language`'S, NOT A PREFERENCE.
+        # The first answer sent every dead run to `┄` and went RED three
+        # times over -- "the disabled indicator differs in SHAPE from the
+        # track ... an extent separated from its range by hue alone is the
+        # colour-only defect one cell in" -- because the switch's dead TRACK
+        # and its dead INDICATOR had collapsed onto one mark. So the two dead
+        # runs follow the two LIVE ones they replace: a dead LEADER (`·`, the
+        # mark this drawing rules every gap with) is `┈`, a dead EXTENT (`─`,
+        # the span itself) is `┄`, and the ground fades one count further
+        # than the thing lying on it.
+        "main": {DEFAULT: LEAD, DISABLED: "┈"},
         "indicator": {DEFAULT: EXT, DISABLED: "┄"},
         # THE SHEET'S TENTH GLYPH, AND THE ONLY ONE THAT IS NEITHER A
         # DIMENSION NOR A REGISTRATION MARK (inc52). INVALID read `├`, which
@@ -9852,8 +9916,19 @@ class Blueprint(Kit):
         # is HATCHED. `━` is unavailable (it is `LEVELS["error"]` AND the
         # `DANGER_FORM`) and `╳` is unavailable (this corpus's DEAD mark, at
         # four seats of `Kit`).
+        #
+        # AND THE HATCH RUNS THE OTHER WAY (inc60), because inc52 took a
+        # mark that was already spoken for. `hatch="╱"` is HELD -- LANGUAGES
+        # .md §11: "held work is HATCHED, never coloured (`hatch='╱'`), so
+        # blocked reads with the colour stripped away" -- and `Blueprint.
+        # icon` says the same in this file ("HELD is the HATCH itself").
+        # BLOCKED and REFUSED are two claims. A drawing office hatches
+        # ADJACENT PARTS IN OPPOSITE DIRECTIONS for exactly this reason, so
+        # the hatch stays ONE mark of the ten and spends the channel it has
+        # always spent: `╱` is held, `╲` is refused, and DIRECTION is one of
+        # ruling D's four.
         "knob": {DEFAULT: CLOSE, FOCUSED: "╡", EDITED: "╪",
-                 ACTIVE: "┫", INVALID: "╱",
+                 ACTIVE: "┫", INVALID: "╲",
                  DISABLED: "╎"},
         # NOTHING IS BOXED ON THIS SHEET, and the checkbox does not get to
         # break that. So it is not a box: it is a DATUM between two
@@ -9863,8 +9938,11 @@ class Blueprint(Kit):
         # not about brackets.
         "checkbox.main": {DEFAULT: "├ ┤", FOCUSED: "╞ ╡", ACTIVE: "┣ ┫",
                           DISABLED: "╎ ╎"},
+        # inc60: the dead datum read `╎╌╎`, and `╌` is `LEVELS["warn"]`, so
+        # a checkbox nobody may tick carried a warning at its own knob. It
+        # takes the dead EXTENT, `┄` -- see the two dead runs above.
         "checkbox.knob": {DEFAULT: "├╪┤", FOCUSED: "╞╪╡", ACTIVE: "┣╪┫",
-                          DISABLED: "╎╌╎"},
+                          DISABLED: "╎┄╎"},
         # THE DATUM TURNED INWARD. The checkbox's terminators point out (a
         # dimension measured across a gap); the radio's point IN, which on a
         # drawing is a callout selecting one item from a schedule. Nothing is
@@ -9873,7 +9951,7 @@ class Blueprint(Kit):
         "radio.main": {DEFAULT: "┤ ├", FOCUSED: "╡ ╞", ACTIVE: "┫ ┣",
                        DISABLED: "╏ ╏"},
         "radio.knob": {DEFAULT: "┤○├", FOCUSED: "╡◉╞", ACTIVE: "┫●┣",
-                       DISABLED: "╏╌╏"},
+                       DISABLED: "╏┄╏"},          # inc60: the dead run
         # A TITLE-BLOCK CELL: two extension lines with the callout between
         # them, which is how this language bounds anything at all — nothing
         # is BOXED here, and two verticals are a dimension, not a box. The
@@ -9892,9 +9970,16 @@ class Blueprint(Kit):
         # an extent nor a datum. THE RUNE STAYS `·`: it is the paper this
         # field is made of in every state, not a rejection mark, and moving
         # it would have said the value's own cells were wrong.
-        "textfield.main": {DEFAULT: "├·┤", FOCUSED: "╞·╡", EDITED: "╞╌╡",
-                           ACTIVE: "┣·┫", INVALID: "╱·╱",
-                           DISABLED: "╎╌╎"},
+        #
+        # inc60: EDITED's paper read `╌`, `LEVELS["warn"]` -- so a field
+        # somebody was typing into carried a warning under the caret. It
+        # banks up to the EXTENSION LINE instead, which is the same move it
+        # always made (a leader becoming a continuous run) said with a mark
+        # that means nothing: `─` is this sheet's span line and carries no
+        # severity anywhere.
+        "textfield.main": {DEFAULT: "├·┤", FOCUSED: "╞·╡", EDITED: "╞─╡",
+                           ACTIVE: "┣·┫", INVALID: "╲·╲",
+                           DISABLED: "╎┈╎"},
         "textfield.caret": {DEFAULT: "╪"},
         # A DIMENSION ON A LONG SHEET, and NOTHING IS FILLED — this sheet's
         # law survives the new component, which is what a language law is
@@ -9910,7 +9995,11 @@ class Blueprint(Kit):
         # the whole state channel. Where the schedule ends there is no
         # terminator to draw, only the LEADER this drawing rules every gap
         # with.
-        "stepper.main": {DEFAULT: LEAD + LEAD, DISABLED: BREAK + BREAK},
+        # inc60: the dead schedule read `╌╌`, `LEVELS["warn"]` twice over,
+        # at the one seat the named-seat law watches hardest. Its LIVE
+        # ground is the LEADER, so its dead one is the dead leader `┈┈` --
+        # and `··` stopped being a severity rung when info went to air.
+        "stepper.main": {DEFAULT: LEAD + LEAD, DISABLED: "┈┈"},
         "stepper.step": {DEFAULT: "┤├", FOCUSED: "╡╞", EDITED: "╪╪",
                          # inc51: this read `├┤`, DEFAULT `┤├` with the
                          # terminators exchanged -- and `├` is also this
@@ -9919,7 +10008,9 @@ class Blueprint(Kit):
                          # `━━`, which is `LEVELS["error"]` and the
                          # `DANGER_FORM` at once; it takes the hatch the
                          # knob now wears.
-                         ACTIVE: "┫┣", INVALID: "╱╱",
+                         # inc60: and then the HELD hatch, which this sheet
+                         # already spends on blocked work -- so it turns.
+                         ACTIVE: "┫┣", INVALID: "╲╲",
                          DISABLED: "╏╏"},
     }
 
