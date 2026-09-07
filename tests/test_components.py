@@ -3358,9 +3358,16 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                 the KNOB takes the QUADRANT family (`▙▟ ▛▜ ▘▝ ▖▗`),
 #:                 which is inc46's "a knob drawn like the fill is not a
 #:                 knob" made structural rather than repeated.
-#:   prism     16  8 + 8. `⣿` ON, `⣤` dead — the top two rungs — and inc49
-#:                 adds `⣿` and `⣀` at the checkbox's and the radio's knob.
-#:                 prism has never had an increment. Open.
+#:   prism      0  WAS 16 (8 + 8) and is ZERO since inc59 (`rework-5c`,
+#:                 ruling A). `⣿` was the switch's ON indicator and `⣤` its
+#:                 dead one — the ladder's top two rungs — and the radio's
+#:                 chosen cell was `⣿` at six more seats. inc59's ruling: THE
+#:                 EMBER IS READ FROM THE BOTTOM, A CONTROL IS READ FROM THE
+#:                 TOP. The switch takes scoped tables on the top-carved
+#:                 ramp (`⠉ ⠛ ⠿`) and the radio's chosen cell takes the HALF
+#:                 CELL `⢸`, which is this kit's own sentence about the part
+#:                 it is: "the knob is a HALF-CELL mark ... the only
+#:                 vocabulary here whose grip can sit inside a cell".
 #:   blueprint 12  8 + 4. `╌` is `LEVELS["warn"]` and this language's whole
 #:                 DISABLED vocabulary — five parts wear it — and inc49 adds
 #:                 `├`, `REQUIRED`, at the checkbox's and the radio's knob.
@@ -3379,10 +3386,11 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #: SOLARI WAS 6 AND IS 0 (inc47): `▁` was `REQUIRED` and the switch's
 #: indicator and eighteen more chrome seats; obligation moved to `▮` and the
 #: seam went back to being alphabet. instrument and swiss went to zero in
-#: inc46, darkside in inc49. Seven of the eleven are clean.
+#: inc46, darkside in inc49, corgi in inc58 and prism in inc59. NINE of the
+#: eleven are clean.
 MEANING_AT_A_NAMED_SEAT = {"naught": 12, "corgi": 0, "instrument": 0,
                            "swiss": 0, "industrial": 0, "nord": 0,
-                           "darkside": 0, "prism": 16, "ledger": 0,
+                           "darkside": 0, "prism": 0, "ledger": 0,
                            "solari": 0, "blueprint": 12}
 
 
@@ -3579,25 +3587,31 @@ OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                  above `▁▁█Delete all█▁▁`. So the controls moved instead:
 #:                  the four driven heights are the readings, the shade ramp
 #:                  and the quadrants are the panel.
-#:   prism      25  19 + 6. `⣿` is `LEVELS["error"]`, the `DANGER_FORM` and
-#:                  the opening cell of the button, the checkbox and the
-#:                  field; inc51 adds `⣀⣀` (the ground, five states) and
-#:                  `⡀⢀` (the DEFAULT step, whose first cell is `REQUIRED`).
-#:                  Never had an increment.
+#:   prism       0  WAS 25 (19 + 6) and is ZERO since inc59 (`rework-5c`,
+#:                  ruling A). `⣿` was `LEVELS["error"]`, the `DANGER_FORM`
+#:                  **and** the opening cell of the button, the checkbox and
+#:                  the field, so `prism_S4` drew
+#:                  `⣿⣤ ⣿Delete⣿ ⣤⣿   ⣿⣀  Cancel  ⣀⣿` — the destructive
+#:                  form and the safe button's WALL, the same cell, eight
+#:                  columns apart on ONE ROW. inc51's five ground seats and
+#:                  the DEFAULT step (`⡀⢀`, opening on `REQUIRED`) went with
+#:                  them. The ember fills the cell from the bottom; a control
+#:                  is the same dot-rows read from the TOP and stops one row
+#:                  short of `⣿` by construction.
 #:   blueprint  12  6 + 6. `├` is `REQUIRED` and the dimension's opening
 #:                  terminator — §9.4's `blueprint_S2` — and inc51 adds the
 #:                  ground, `··` at five states (`LEVELS["info"]` is `··`)
 #:                  and `╌╌` at the dead one (`LEVELS["warn"]`). Never had an
 #:                  increment.
 #:
-#: EIGHT ARE ZERO: instrument (inc46), swiss (inc46 and inc51), industrial
-#: (inc48), darkside (inc48), nord (inc51), ledger and solari (inc47), and
-#: corgi (inc58). **swiss and nord stayed at zero through the stepper's
+#: NINE ARE ZERO: instrument (inc46), swiss (inc46 and inc51), industrial
+#: (inc48), darkside (inc48), nord (inc51), ledger and solari (inc47),
+#: corgi (inc58) and prism (inc59). **swiss and nord stayed at zero through the stepper's
 #: arrival because inc51 paid their two `stepper.main` declarations rather
 #: than exempting them** — see `OPENING_CONTROLS` above for the bill and who
 #: paid it.
 MEANING_AT_AN_OPENER = {"naught": 3, "corgi": 0, "instrument": 0, "swiss": 0,
-                        "industrial": 0, "nord": 0, "darkside": 0, "prism": 25,
+                        "industrial": 0, "nord": 0, "darkside": 0, "prism": 0,
                         "ledger": 0, "solari": 0, "blueprint": 12}
 
 
@@ -3856,6 +3870,158 @@ def test_corgi_draws_no_control_as_a_driven_bar():
 
 
 # ===========================================================================
+# inc59 (rework-5c) — prism's ember is read from the bottom
+# ===========================================================================
+#: THE TEN DECLARATIONS inc59 MOVED, in the same shape as `CORGI_BANK_BEFORE`
+#: one screen up: `(key, the table HEAD carried, opener seats, named seats)`,
+#: `None` for a key that DID NOT EXIST. prism declared no `switch.main` and
+#: no `switch.indicator`, so its hardware toggle was drawn from the SLIDER's
+#: tables — the off-track was `LEVELS["info"]`, the on-track was
+#: `LEVELS["error"]` and the `DANGER_FORM`, the dead on-track was
+#: `LEVELS["warn"]`.
+#:
+#: THE RULING (orchestrator, 2026-09-06, decision **A**): THE EMBER IS READ
+#: FROM THE BOTTOM AND A CONTROL IS READ FROM THE TOP. prism's ramp is the
+#: four dot-ROWS of a braille cell filling upward — `⣀` one row, `⣤` two,
+#: `⣶` three, `⣿` the whole cell — and three of those plus the leading dot
+#: `⡀` carry a meaning. No control draws a rung of that ramp; where a control
+#: needs a field it draws the SAME dot-rows read from the TOP (`⠁ ⠉ ⠛ ⠿`),
+#: the identical shape ladder at the opposite POSITION in the cell (ruling
+#: D's third channel), stopping one row short of `⣿` by construction.
+#:
+#: IT IS THE KIT'S OWN KNOB RULE, WIDENED. `Prism.PART_GLYPHS["knob"]`
+#: already said "every state is a BROKEN field ... precisely so the knob can
+#: never be mistaken for a full cell of fire". That was true of one part and
+#: false of every other, and `prism_S4` is what it cost: `⣿⣤ ⣿Delete⣿ ⣤⣿
+#: ⣿⣀  Cancel  ⣀⣿` — the DANGER FORM and the safe button's WALL, the same
+#: cell, eight columns apart on ONE ROW.
+#:
+#: `switch.main` IS WORTH ZERO ON BOTH ROSTERS AND MOVED ANYWAY, which is the
+#: entry a reader should look at hardest. Its glyph is ONE cell, so the
+#: opener law skips it (`len(glyph) < 2`), and `main` is a named seat only
+#: when the control is dead. So `⣀` — `LEVELS["info"]` — was the off-track of
+#: every prism switch and NO law in this file reached it. It moved under the
+#: ruling, not under a roster, and this row is where that is written down.
+PRISM_EMBER_BEFORE = (
+    ("switch.main", None, 0, 0),
+    ("switch.indicator", None, 0, 8),
+    ("checkbox.main", {LG.DEFAULT: "⣿⣀⣿", LG.FOCUSED: "⣷⣀⣷",
+                       LG.ACTIVE: "⣾⣀⣾", LG.DISABLED: "⠄⠄⠄"}, 2, 0),
+    ("checkbox.knob", {LG.DEFAULT: "⣿⠀⣿", LG.FOCUSED: "⣷⠀⣷",
+                       LG.ACTIVE: "⣾⠀⣾", LG.DISABLED: "⠄⠀⠄"}, 2, 2),
+    ("radio.main", {LG.DEFAULT: "⣀⣀⣀", LG.FOCUSED: "⣤⣤⣤",
+                    LG.ACTIVE: "⣶⣶⣶", LG.DISABLED: "⠄⠄⠄"}, 4, 0),
+    ("radio.knob", {LG.DEFAULT: "⣀⣿⣀", LG.FOCUSED: "⣤⣿⣤",
+                    LG.ACTIVE: "⣶⣿⣶", LG.DISABLED: "⠄⠁⠄"}, 4, 6),
+    ("button.main", {LG.DEFAULT: "⣿⣀⣀⣿", LG.FOCUSED: "⣿⣤⣤⣿",
+                     LG.ACTIVE: "⣿⣿⣿⣿", LG.DISABLED: "⠄⠄⠄⠄"}, 3, 0),
+    ("textfield.main", {LG.DEFAULT: "⣿⠀⣿", LG.FOCUSED: "⣿⣀⣿",
+                        LG.EDITED: "⣿⣤⣿", LG.ACTIVE: "⣿⣶⣿",
+                        LG.INVALID: "⣹⠀⣏", LG.DISABLED: "⠄⠄⠄"}, 4, 0),
+    ("stepper.main", {LG.DEFAULT: "⣀⣀", LG.DISABLED: "⠄⠄"}, 5, 0),
+    ("stepper.step", {LG.DEFAULT: "⡀⢀", LG.FOCUSED: "⡄⢠", LG.EDITED: "⡆⢰",
+                      LG.ACTIVE: "⣇⣸", LG.INVALID: "⣹⣹",
+                      LG.DISABLED: "⠁⠈"}, 1, 0),
+)
+
+
+def test_both_seat_laws_go_red_on_each_of_the_ten_tables_inc59_moved(
+        monkeypatch):
+    """TEETH — the same shape inc58 used for corgi, because the same shape of
+    defect was found in the same batch and two languages that failed for one
+    reason should be watched failing the same way.
+
+    THE COUNTS ARE CUMULATIVE, restored in declaration order, so each arm
+    asserts the total after ITS table goes back. That is what makes the two
+    zero-scoring arms legible rather than suspicious: `switch.main` scores
+    nothing on either roster and `switch.indicator` scores nothing on the
+    opener roster, because a one-cell glyph has no opener — and both were
+    still drawing the severity ladder.
+
+    THE OTHER TEN LANGUAGES ARE HELD STILL in every arm."""
+    def counts():
+        return (len(meaning_marks_at_an_opener("prism")),
+                len(meaning_marks_at_named_seats("prism")))
+
+    assert counts() == (0, 0), meaning_marks_at_an_opener("prism")
+
+    glyphs = dict(LG.Prism.PART_GLYPHS)
+    want_open = want_named = 0
+    for key, table, d_open, d_named in PRISM_EMBER_BEFORE:
+        if table is None:
+            assert key in glyphs, (key, "inc59 declared it; the arm deletes it")
+            del glyphs[key]
+        else:
+            assert glyphs[key] != table, (key, "already the pre-inc59 table")
+            glyphs[key] = table
+        monkeypatch.setattr(LG.Prism, "PART_GLYPHS", dict(glyphs))
+        want_open += d_open
+        want_named += d_named
+        assert counts() == (want_open, want_named), (
+            key, counts(), (want_open, want_named))
+        for other in LANGS:
+            if other == "prism":
+                continue
+            assert (len(meaning_marks_at_an_opener(other))
+                    == MEANING_AT_AN_OPENER[other]), (key, other)
+            assert (len(meaning_marks_at_named_seats(other))
+                    == MEANING_AT_A_NAMED_SEAT[other]), (key, other)
+
+    assert counts() == (25, 16), counts()
+    with pytest.raises(AssertionError):
+        test_no_control_opens_with_a_mark_that_means_something("prism")
+    with pytest.raises(AssertionError):
+        test_a_meaning_never_stands_at_a_disabled_or_indicator_seat("prism")
+    monkeypatch.undo()
+    assert counts() == (0, 0)
+
+
+def test_prism_draws_no_control_on_the_embers_own_rungs():
+    """THE RULING'S SENTENCE, over every cell of every ruled control.
+
+    THE BAR SET IS THE WHOLE RAMP AND NOT THE THREE RUNGS THAT MEAN
+    SOMETHING. `RAMP` is `⣀ ⣤ ⣶ ⣿` and `LEVELS` spends three of the four, so
+    a control reaching for `⣶` — the step nothing means today — would be
+    reaching into the readings' register anyway. That is the same widening
+    `test_corgi_draws_no_control_as_a_driven_bar` makes for the block bank
+    one increment earlier, and for the same reason: the ruling is about the
+    REGISTER, not about today's bookkeeping.
+
+    THE SLIDER, THE BAR AND THE SCROLL BAR ARE OUT by name. They are a
+    QUANTITY, and this kit says a quantity IS the ember ("the slider's track
+    is every value the knob could take, so it is the ramp's floor"), so
+    `main`, `indicator` and `scrollbar.*` keep it. The cost is in the census:
+    prism's "would collide if slider/bar/scrollbar were in the B set" goes
+    0 → 2.
+
+    AND THE CHECKBOX'S LADDER NOW CLIMBS. Its walls ran `⣿` (8 dots) at rest,
+    `⣷` (7) focused, `⣾` (7) active — a control that DIMMED when the reader
+    arrived at it. Asserted in dot COUNTS, off the shipped declarations."""
+    k = LG.kit("prism")
+    ramp = set(k.RAMP)
+    assert ramp == set("⣀⣤⣶⣿"), k.RAMP
+    for comp in RULED_CONTROLS:
+        for part in LG.COMPONENT_PARTS[comp]:
+            for st in LG.component_states(comp):
+                glyph = k.part_glyph(part, st, comp)
+                assert not (set(glyph) & ramp), (
+                    comp, part, st, glyph, "".join(sorted(set(glyph) & ramp)))
+    # the two tables that keep the ember, and the scoping that lets them
+    assert k.PART_GLYPHS["main"][LG.DEFAULT] == "⣀", "the slider's shaft"
+    assert k.PART_GLYPHS["indicator"][LG.DEFAULT] == "⣿", "the slider's fill"
+    assert k.part_key("switch", "indicator") == "switch.indicator"
+    assert k.part_key("slider", "indicator") == "indicator"
+
+    def dots(g):
+        return sum(bin(ord(ch) - 0x2800).count("1") for ch in g)
+
+    walls = [k.part_glyph("main", st, "checkbox")[0]
+             for st in (LG.DEFAULT, LG.FOCUSED, LG.ACTIVE)]
+    assert dots(walls[0]) < dots(walls[1]), (walls, [dots(w) for w in walls])
+    assert dots(walls[0]) < dots(walls[2]), (walls, [dots(w) for w in walls])
+
+
+# ===========================================================================
 # inc51 (rework-4) — the stepper's own law, the one inc39 said it needed
 # ===========================================================================
 #: THE PAIRS THAT SAID "REJECTED" BY TURNING ROUND, and what each of them is
@@ -3874,7 +4040,11 @@ STEP_TURNS = {
     "instrument": ("⢠⡄", "⠶⠶", True),
     "swiss": ("›‹", "╲╲", True),
     "industrial": ("><", "//", True),
-    "prism": ("⢀⡀", "⣹⣹", True),
+    # inc59 moved this language's DEFAULT step off `⡀⢀` -- `⡀` is `REQUIRED`,
+    # so a stepper at rest said the seat was compulsory -- and the turn this
+    # arm restores is the turn of what the step reads TODAY. `⠠⠄` is `⠄⠠`
+    # exchanged, the same defect inc51 found, respelt by inc59.
+    "prism": ("⠠⠄", "⣹⣹", True),
     "blueprint": ("├┤", "━━", True),
 }
 

@@ -7268,9 +7268,60 @@ class Prism(Kit):
                           f"[{c['mut']}]{mark(str(v))}[/]"
                           for k, v in pairs)
 
+    # ======================================================================
+    # THE EMBER IS READ FROM THE BOTTOM; A CONTROL IS READ FROM THE TOP
+    # (inc59).
+    #
+    # This kit's ramp is the four dot-ROWS of a braille cell filling UPWARD --
+    # `⣀` one row, `⣤` two, `⣶` three, `⣿` the whole cell, nothing left to
+    # burn -- and `⡀` is its leading dot.  Three of those five and the
+    # leading dot carry a MEANING: `LEVELS["info"]`, `LEVELS["warn"]`,
+    # `LEVELS["error"]` / `DANGER_FORM`, and `REQUIRED`.  Until this
+    # increment every control was drawn out of the same four cells, which is
+    # the defect the whole batch is about, at 25 opener seats and 16 named
+    # seats.
+    #
+    #   THE RULE: no control draws a rung of the ember.  Where a control
+    #   needs a field it draws the SAME dot-rows READ FROM THE TOP --
+    #   `⠁` one, `⠉` one row, `⠛` two, `⠿` three -- which is the identical
+    #   shape ladder at the opposite POSITION in the cell (ruling D's third
+    #   channel) and stops one row short of `⣿` by construction.
+    #
+    # IT IS THE KNOB'S OWN RULE, WIDENED.  `knob` below already says "every
+    # state is a BROKEN field ... precisely so the knob can never be mistaken
+    # for a full cell of fire".  That sentence was true of one part and false
+    # of every other, and the frames say what it cost: `prism_S4` drew
+    # `⣿⣤ ⣿Delete⣿ ⣤⣿   ⣿⣀  Cancel  ⣀⣿` -- the DANGER FORM around the
+    # irreversible answer and the WALL of the safe button, the same cell,
+    # eight columns apart on one row.  `prism_S2` drew `⣿⣿ expected
+    # YYYY-MM-DD`, the error rung as the message's own leader, five rows from
+    # `⣿⣀⣿ api`, a checkbox.
+    #
+    # THE BROKEN FIELDS ARE NOT RUNGS AND ARE UNTOUCHED: `⣷` `⣾` `⢿` at the
+    # walls and the grip, `⣹` `⣏` at the refused value (inc51, inc52), `⢸`
+    # the half cell.  So is the residue `⠄` `⠁` `⠈`.  What moved is exactly
+    # the cells that mean something.
+    #
+    # AND THE CHECKBOX GOT ITS LADDER THE RIGHT WAY ROUND AS A SIDE EFFECT.
+    # Its walls ran `⣿` (8 dots) at rest, `⣷` (7) focused, `⣾` (7) active --
+    # a control that DIMMED when the reader arrived.  At `⠿` (6) the ladder
+    # climbs.
+    # ======================================================================
     PART_GLYPHS = {
+        # THE SLIDER'S AND THE BAR'S, and theirs alone since inc59.  These
+        # are a QUANTITY: "the slider's track is every value the knob could
+        # take, so it is the ramp's floor", and a quantity in this language
+        # IS the ember.  The hardware toggle is a control and takes the
+        # scoped tables below.
         "main": {DEFAULT: "⣀", DISABLED: "⠄"},
         "indicator": {DEFAULT: "⣿", DISABLED: "⣤"},
+        # THE TOGGLE'S TRACK, scoped away from the slider's in inc59.  It was
+        # falling through to the pair above, so the off-track was
+        # `LEVELS["info"]`, the on-track was `LEVELS["error"]` and the
+        # DANGER_FORM at eight named seats, and the dead on-track was
+        # `LEVELS["warn"]`.  Read from the top: one row idle, three alight.
+        "switch.main": {DEFAULT: "⠉", DISABLED: "⠄"},
+        "switch.indicator": {DEFAULT: "⠿", DISABLED: "⠛"},
         # THE KNOB IS NEVER THE FILL.  Its first version took `⣿` at focused --
         # the same glyph as `indicator` -- so the grip vanished into the run it
         # was supposed to sit on.  Every state below is a BROKEN field (a dot
@@ -7285,27 +7336,53 @@ class Prism(Kit):
         # The WALLS carry the control state and the CENTRE carries the checked
         # bit -- and the walls are identical between `main` and `knob` in every
         # state, so the box survives the mark instead of being redrawn by it.
-        "checkbox.main": {DEFAULT: "⣿⣀⣿", FOCUSED: "⣷⣀⣷", ACTIVE: "⣾⣀⣾",
+        #
+        # inc59: the intact wall `⣿` and the intact centre `⣀` were
+        # `LEVELS["error"]` / `DANGER_FORM` and `LEVELS["info"]`.  Both are
+        # read from the top now; the two BROKEN walls the kit already
+        # declared are unchanged, and the ladder climbs instead of dimming.
+        "checkbox.main": {DEFAULT: "⠿⠉⠿", FOCUSED: "⣷⠉⣷", ACTIVE: "⣾⠉⣾",
                           DISABLED: "⠄⠄⠄"},
-        "checkbox.knob": {DEFAULT: "⣿⠀⣿", FOCUSED: "⣷⠀⣷", ACTIVE: "⣾⠀⣾",
+        "checkbox.knob": {DEFAULT: "⠿⠀⠿", FOCUSED: "⣷⠀⣷", ACTIVE: "⣾⠀⣾",
                           DISABLED: "⠄⠀⠄"},
         # THE RADIO IS THE INVERSE: one lit cell in a dim run.  Checkbox
         # carves, radio LIGHTS -- so the two families differ in direction, not
         # in brightness, and a greyscale eye reads which is which.
-        "radio.main": {DEFAULT: "⣀⣀⣀", FOCUSED: "⣤⣤⣤", ACTIVE: "⣶⣶⣶",
+        #
+        # inc59 MAKES THAT SENTENCE LITERAL.  The run was the ember itself
+        # (`⣀ ⣤`, the info and warn rungs) and the chosen cell was `⣿`, the
+        # error rung and the danger form, at six named seats.  The run is now
+        # rows read from the top and the CHOSEN cell is the half cell -- "the
+        # knob is a HALF-CELL mark (⢸ / ⡇), the only vocabulary here whose
+        # grip can sit inside a cell", this kit's own words about the part
+        # this IS.  A column standing in a run of rows: the two differ in
+        # DIRECTION and not in how many dots are alight, which is what the
+        # comment above always claimed.
+        "radio.main": {DEFAULT: "⠉⠉⠉", FOCUSED: "⠛⠛⠛", ACTIVE: "⠿⠿⠿",
                        DISABLED: "⠄⠄⠄"},
-        "radio.knob": {DEFAULT: "⣀⣿⣀", FOCUSED: "⣤⣿⣤", ACTIVE: "⣶⣿⣶",
+        "radio.knob": {DEFAULT: "⠉⢸⠉", FOCUSED: "⠛⢸⠛", ACTIVE: "⠿⢸⠿",
                        DISABLED: "⠄⠁⠄"},
         # THE BUTTON'S WALLS ARE FIELD AND ITS AIR IS RESIDUE; the press does
         # not invert, it BREATHES -- the whole control comes alight, which is
         # the one event in this language that adds fire instead of spending it.
-        "button.main": {DEFAULT: "⣿⣀⣀⣿", FOCUSED: "⣿⣤⣤⣿", ACTIVE: "⣿⣿⣿⣿",
+        #
+        # inc59: every cell of this control was a rung.  The press still does
+        # not invert and still BREATHES -- the whole seat comes alight -- it
+        # simply stops one dot-row short of the ember's top, which is what
+        # keeps `⠿⠉⠉⠿  Cancel` off the same cell as `⣿Delete⣿`.
+        "button.main": {DEFAULT: "⠿⠉⠉⠿", FOCUSED: "⠿⠛⠛⠿", ACTIVE: "⠿⠿⠿⠿",
                         DISABLED: "⠄⠄⠄⠄"},
         # THE FIELD'S GROUND: walls of fire, paper of ash.  EDITED banks the
         # paper up a step, so the state a caret lives in is legible in the
         # instant between two keystrokes.
-        "textfield.main": {DEFAULT: "⣿⠀⣿", FOCUSED: "⣿⣀⣿", EDITED: "⣿⣤⣿",
-                           ACTIVE: "⣿⣶⣿", INVALID: "⣹⠀⣏",
+        #
+        # inc59: the walls were `⣿` and the paper ran `⣀ ⣤ ⣶`, so a field at
+        # rest was walled with the error rung and a field being typed into
+        # was papered with the warn rung.  Both are read from the top, and
+        # the paper's ladder is one dot short at each step so the wall always
+        # stands above it: 0, 1, 2, 4 dots inside a wall of 6.
+        "textfield.main": {DEFAULT: "⠿⠀⠿", FOCUSED: "⠿⠁⠿", EDITED: "⠿⠉⠿",
+                           ACTIVE: "⠿⠛⠿", INVALID: "⣹⠀⣏",
                            DISABLED: "⠄⠄⠄"},
         # the caret is HALF a cell, which is the finest mark this base owns
         "textfield.caret": {DEFAULT: "⡆"},
@@ -7319,12 +7396,32 @@ class Prism(Kit):
         # dot-column, the step forward the right.  Position says direction --
         # and at an end the ground's half draws instead, so CLAMP and WRAP
         # differ in shape.
-        "stepper.main": {DEFAULT: "⣀⣀", DISABLED: "⠄⠄"},
+        # inc59: the ground was `⣀⣀`, `LEVELS["info"]` at five states -- five
+        # of this language's twenty-five opener seats in one line.
+        "stepper.main": {DEFAULT: "⠉⠉", DISABLED: "⠄⠄"},
         # ACTIVE stops one dot short of a full column on purpose: `⡇` is a
         # CLOSED seat in this file (#46 census -- five claimed half-cell fills
         # and a sixth would be an unaccounted one), and the step reads the same
         # at ⡆ because what it says is DIRECTION, not extent.
-        "stepper.step": {DEFAULT: "⡀⢀", FOCUSED: "⡄⢠", EDITED: "⡆⢰",
+        #
+        # inc59 MOVES DEFAULT AND NOTHING ELSE.  It read `⡀⢀` and `⡀` is
+        # `REQUIRED` -- "the ember's LEADING CELL, the frontier `field_row`
+        # draws, at one dot" -- so a stepper at rest said the seat was
+        # compulsory.  `⠄⠠` is the same pair one dot-row UP: one dot a side,
+        # left for back and right for forward, so DIRECTION is unchanged --
+        # and every rung is still a SUPERSET of the one below it (`⠄⠠` ->
+        # `⡄⢠` adds the bottom dot), 1, 2, 3, 5 dots a side.
+        #
+        # NOT ROW TWO, WHICH WAS THE FIRST ANSWER AND WENT RED IN
+        # `verify_language` -- and it is named in DOT NUMBERS here for the
+        # reason that law states about itself.  Its #44 counts every
+        # occurrence of the dot-5 cell IN THIS PACKAGE, COMMENTS INCLUDED,
+        # and asserts there are exactly THREE: `COVER_RAMPS["braille"][0]`,
+        # `Instrument.BLANK` and `Instrument.radio.main`.  The law's own
+        # comment says "the fix for a red is never to narrow the law that
+        # found it", so the step took row THREE instead.  Dots 3 and 6 are
+        # counted by nothing.
+        "stepper.step": {DEFAULT: "⠄⠠", FOCUSED: "⡄⢠", EDITED: "⡆⢰",
                          # inc51: this read `⢀⡀`, DEFAULT `⡀⢀` turned
                          # round -- two frontier cells swapped, which is an
                          # ORIENTATION and not a rung of the ember ramp.

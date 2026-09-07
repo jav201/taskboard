@@ -67,14 +67,12 @@ DARKSIDE   1 colliding cells   (LEVELS · /o /O   DANGER ▚▞  REQUIRED ▪  C
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-PRISM   4 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⡀  CUR ▸)
+PRISM   2 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⡀  CUR ▸)
 ------------------------------------------------------------------------------
-  ⣀   [7 families]  LEVELS[info]  ·  button.main mid (default)  ·  checkbox.main mid (active,checked,checked+active,checked+focused,default,focused)  ·  radio.knob close (checked,default)  ·  radio.knob open (checked,default)  ·  radio.main close (checked,default)  ·  radio.main mid (checked,default)  ·  radio.main open (checked,default)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (focused)
-  ⣿   [7 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  button.main close (active,default,focused)  ·  button.main mid (active)  ·  button.main open (active,default,focused)  ·  checkbox.knob close (checked,default)  ·  checkbox.knob open (checked,default)  ·  checkbox.main close (checked,default)  ·  checkbox.main open (checked,default)  ·  radio.knob mid (active,checked,checked+active,checked+focused,default,focused)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (active,default,edited,focused)  ·  textfield.main open (active,default,edited,focused)
-  ⣤   [5 families]  LEVELS[warn]  ·  button.main mid (focused)  ·  radio.knob close (checked+focused,focused)  ·  radio.knob open (checked+focused,focused)  ·  radio.main close (checked+focused,focused)  ·  radio.main mid (checked+focused,focused)  ·  radio.main open (checked+focused,focused)  ·  switch.indicator mark (checked+disabled,disabled)  ·  textfield.main mid (edited)
-  ⡀   [3 families]  REQUIRED  ·  field.leader open (declared)  ·  stepper.step open (default)
-  ... 6 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 0 further cells would collide if slider/bar/scrollbar were in the B set
+  ⡀   [2 families]  REQUIRED  ·  field.leader open (declared)
+  ⣿   [2 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open
+  ... 9 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 2 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
 LEDGER   2 colliding cells   (LEVELS   /* /**  DANGER ()  REQUIRED †  CUR ▶)
@@ -114,12 +112,12 @@ swiss                        2
 industrial                   2
 nord                         1
 darkside                     1
-prism                        4
+prism                        2
 ledger                       2
 solari                       3
 blueprint                    4
 ------------------------------
-TOTAL                       30
+TOTAL                       28
 
 zero collisions: NONE -- all eleven overload at least one cell
 
