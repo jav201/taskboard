@@ -3,7 +3,7 @@ SETTINGS  ·── 5 SWITCHES  ·  2 SELECTS  ·  1 SLIDER
   notify on overdue         ├─┤                                                                     
   daily digest              ├─┤                                                                     
   sound                     ├┤·                                                                     
-  sync to remote            ├╎┈   (no remote configured)                                            
+  sync to remote            ├╎╌   (no remote configured)                                            
   compact rows              ├─┤                                                                     
                                                                                                     
   start of week             ├mon    ╌┤                                                              

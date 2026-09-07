@@ -596,11 +596,15 @@ FOUND_BY_HAND = (
 #:                   INVISIBLE to this file until inc68 widened it to
 #:                   meaning x meaning. Ruling D amended names it.
 #:        naught     `∙` (danger + error) against `●` (`CUR`).
-#:   2  BLUEPRINT'S DASH LADDER. `╌` is `LEVELS["warn"]` and `┄`/`┈` are the
-#:      dead runs inc60 built. Formally a COUNT channel and formally allowed
-#:      by ruling D; the round's objection (§2.7) is that counting dashes in
-#:      a 12px cell is not a channel a reader has. E2 — no font metric — is
-#:      why it cannot be settled from the artefact.
+#:   0  BLUEPRINT, AND THE TWO ROWS CLOSED IN inc72. They were its DASH
+#:      LADDER: `╌` was `LEVELS["warn"]` and `┄`/`┈` were the dead runs inc60
+#:      built, formally a COUNT channel and formally allowed by ruling D,
+#:      with the round's objection (§2.7) that counting dashes in a 12px cell
+#:      is not a channel a reader has. inc72 retired `┄` and `┈`: the dead
+#:      ground took `╌` back and the dead extent took the dashed VERTICAL
+#:      `╏`, which is DIRECTION, and the warn rung moved to `" ━"`, which is
+#:      COUNT OF CELLS DRAWN. Nothing in the kit is now told from anything
+#:      else by how many dashes are inside one cell.
 #:   1  SOLARI, AND IT IS THIS FILE'S OWN FALSE POSITIVE. `LEVELS` here is
 #:      three WORDS (`OK ` / `DLY` / `CNX`) and `_cells` splits a word into
 #:      letters, so the `O` of `OK` is read as a severity MARK and matches
@@ -616,9 +620,15 @@ FOUND_BY_HAND = (
 #: TWENTY-SIX, AFTER rework-6c. corgi, ledger, solari and blueprint drop one
 #: row each (the invalid-rune bucket above); naught is unchanged at 12
 #: because its two rune rows reclassify rather than close.
+#:
+#: TWENTY-FOUR, AFTER inc72 (`rework-7a`): blueprint's two go, and they are
+#: the first rows in this roster closed by RETIRING CELLS rather than by
+#: widening the reader. naught stays at 12 — the radio's resting cells left
+#: the ring family, which is what `naught_S2` is judged on, but the family
+#: still holds every OTHER state of both controls.
 HOMOGLYPH_ROSTER = {"naught": 12, "corgi": 0, "instrument": 0, "swiss": 1,
                     "industrial": 0, "nord": 1, "darkside": 8, "prism": 0,
-                    "ledger": 1, "solari": 1, "blueprint": 2}
+                    "ledger": 1, "solari": 1, "blueprint": 0}
 
 
 def _self_check() -> None:
