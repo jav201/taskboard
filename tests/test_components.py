@@ -3030,6 +3030,11 @@ def test_no_language_that_refuses_the_pane_rule_draws_it_round_its_button(lang):
 #: would have made "your value is wrong" out of "this is what a field is made
 #: of here".
 #:
+#: THE SPLIT IS `LG.split_field_glyph` (rework-6c) — the same function
+#: `Kit.field_form` calls and `collision_census.py::role_map` calls, so this
+#: law and the census read the rune off one definition and cannot disagree
+#: about which cell it is again.
+#:
 #: A FALLBACK IS NOT A DECLARATION, the same line `collision_census.py` draws:
 #: only a table that has the key at all is read.
 def _invalid_marks(k) -> str:
@@ -3039,8 +3044,8 @@ def _invalid_marks(k) -> str:
         if not g:
             continue
         if key == "textfield.main":
-            h = len(g) // 2
-            out += [g[:h], g[h + 1:]]          # the two WALLS, not the rune
+            op, _rune, cl = LG.split_field_glyph(g)
+            out += [op, cl]                     # the two WALLS, not the rune
         else:
             out.append(g)
     return "".join(out)
@@ -3339,7 +3344,7 @@ def test_the_rune_is_excluded_from_the_invalid_channel_by_name(monkeypatch):
     So the meaning is patched in: `LEVELS["info"]` is set to the rune's own
     cell for the duration, and the two directions are asked of that."""
     k = LG.kit("blueprint")
-    rune = k.PART_GLYPHS["textfield.main"][LG.INVALID][1]
+    rune = LG.split_field_glyph(k.PART_GLYPHS["textfield.main"][LG.INVALID])[1]
     assert rune == "·", rune
 
     # ... and the corpus really has none left, which is what makes the patch
@@ -3349,7 +3354,7 @@ def test_the_rune_is_excluded_from_the_invalid_channel_by_name(monkeypatch):
         g = kk.PART_GLYPHS.get("textfield.main", {}).get(LG.INVALID)
         if not g:
             continue
-        r = g[len(g) // 2]
+        r = LG.split_field_glyph(g)[1]
         live = {f: v for f, v in _meaning_marks(kk).items() if f != "invalid"}
         assert not any(r in _cells(v) for v in live.values()), (lang, r)
 
@@ -3363,6 +3368,40 @@ def test_the_rune_is_excluded_from_the_invalid_channel_by_name(monkeypatch):
     monkeypatch.setitem(k.PART_GLYPHS, "textfield.main", tbl)
     assert frozenset(("ladder", "invalid")) in {
         frozenset(r[:2]) for r in shared_cell_pairs("blueprint")}
+
+
+def test_the_census_and_the_law_read_the_rune_off_one_function(monkeypatch):
+    """rework-6c: `LG.split_field_glyph` is the one place that decides which
+    cell of a rejected field is the RUNE. Before it existed, the LAW
+    (`_invalid_marks`) and the CENSUS (`collision_census.role_map`) each
+    split the glyph by hand — and could disagree, which is exactly what
+    happened for five languages since inc52 and a sixth since inc66: twelve
+    rows (six collisions, six homoglyphs) waiting on one decision (`spec.md`
+    §15.5, §17.4, §17.8). This proves the two now read one function rather
+    than two copies of the same arithmetic: break the split and both
+    instruments move together, on the same live declaration."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_census", FRAMES.parent / "collision_census.py")
+    census = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(census)
+
+    k = LG.kit("blueprint")
+    glyph = k.PART_GLYPHS["textfield.main"][LG.INVALID]
+    op, rune, cl = LG.split_field_glyph(glyph)
+    assert rune == "·", (op, rune, cl)
+
+    # TODAY: neither instrument reads the rune as a rejection mark.
+    assert "·" not in _invalid_marks(k)
+    named, _ = census.role_map("blueprint")
+    assert "invalid" not in named.get("·", {}), named.get("·")
+
+    # MOVE THE SPLIT, and both move: with the rune read one cell early, the
+    # real rune becomes a WALL to both readers at once, not to one of them.
+    monkeypatch.setattr(LG, "split_field_glyph", lambda g: ("", g[0], g[1:]))
+    assert "·" in _invalid_marks(k)
+    named2, _ = census.role_map("blueprint")
+    assert "invalid" in named2.get("·", {}), named2.get("·")
 
 
 # ===========================================================================
