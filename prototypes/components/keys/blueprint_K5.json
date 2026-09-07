@@ -4,6 +4,8 @@
  "name": "invalid",
  "keys": [
   "c",
+  "down",
+  "down",
   "1",
   "2",
   "slash",
@@ -17,14 +19,9 @@
  "law": "the field carries the language's declared INVALID walls (field_form(INVALID, 'textfield')), painted in the wall tone field_wall_tone(INVALID) names",
  "screen": "ConfigScreen",
  "focus": {
-  "id": "cfg-scroll",
-  "cls": "VerticalScroll",
-  "region": [
-   0,
-   3,
-   100,
-   28
-  ]
+  "id": null,
+  "cls": null,
+  "region": null
  },
  "band": null,
  "settle_reads": 8,
@@ -101,7 +98,7 @@
    ],
    [
     2,
-    " ┌ ",
+    "   ",
     "#eef4f8",
     "#123a5c",
     false,
@@ -125,7 +122,7 @@
    ],
    [
     7,
-    "╡ ",
+    "┤ ",
     "#eef4f8",
     "#123a5c",
     false,
@@ -141,7 +138,23 @@
    ],
    [
     12,
-    " Nearest deadline     ╡◉╞ fast  ",
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    13,
+    "Nearest deadline    ",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    33,
+    " ┤○├ fast  ",
     "#eef4f8",
     "#123a5c",
     false,
@@ -214,40 +227,6 @@
    [
     63,
     "                                     ",
-    "#ffffff",
-    "#123a5c",
-    false,
-    false
-   ]
-  ],
-  [
-   [
-    0,
-    "  ",
-    "#ffffff",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    2,
-    "     ",
-    "#eef4f8",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    7,
-    "Days until the soonest open task is due. The default hero.",
-    "#24486b",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    65,
-    "                                   ",
     "#ffffff",
     "#123a5c",
     false,
@@ -411,7 +390,7 @@
    ],
    [
     2,
-    "   ",
+    " ┌ ",
     "#eef4f8",
     "#123a5c",
     false,
@@ -435,7 +414,7 @@
    ],
    [
     7,
-    "┤ ",
+    "╡ ",
     "#eef4f8",
     "#123a5c",
     false,
@@ -451,23 +430,7 @@
    ],
    [
     12,
-    " ",
-    "#eef4f8",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    13,
-    "Work in flight      ",
-    "#7fa8c4",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    33,
-    " ┤○├ fast  ",
+    " Work in flight       ╡◉╞ fast  ",
     "#eef4f8",
     "#123a5c",
     false,
@@ -531,56 +494,8 @@
    ],
    [
     62,
-    " ",
+    " ╲12/99/26╲",
     "#eef4f8",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    63,
-    "├",
-    "#24486b",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    64,
-    "──",
-    "#7fa8c4",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    66,
-    "┤",
-    "#eef4f8",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    67,
-    "····",
-    "#24486b",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    71,
-    " ",
-    "#eef4f8",
-    "#123a5c",
-    false,
-    false
-   ],
-   [
-    72,
-    "3",
-    "#7fa8c4",
     "#123a5c",
     false,
     false
@@ -588,6 +503,40 @@
    [
     73,
     "                           ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "     ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    7,
+    "Tasks in the DOING phase, against a limit you set.",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    57,
+    "                                           ",
     "#ffffff",
     "#123a5c",
     false,

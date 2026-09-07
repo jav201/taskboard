@@ -79,13 +79,43 @@ class Step(NamedTuple):
     law: str
 
 
-#: THE DATE THE WIDGET HAS NO FIELD FOR.  `12/99/26` is a day-99 month, which
-#: `taskboard.models.parse_iso` refuses and which every one of the eleven kits
-#: draws a state for (`field_form(INVALID, "textfield")`).  The keys are sent
-#: at the screen the app offers for editing -- `c`, the config screen -- and
-#: the trailing `tab` is the BLUR, because an invalid state that only appears
+#: THE VALUE THE FIELD REFUSES.  `12/99/26` is the brief's date and it is not
+#: a date the widget has a field for -- inc91 measured that there was no typed
+#: seat at all, and inc93 gave the one value the engine already had (a
+#: signal's THRESHOLD) its keyboard.  The keys are unchanged from inc91: a
+#: threshold is a number and `12/99/26` is not one, so the same eight
+#: keystrokes are refused by the seat that now exists.
+#:
+#: THE TWO `down` PRESSES IN FRONT OF THEM ARE inc93's ONE CHANGE TO THE
+#: SCRIPT, and they are a finding rather than a convenience: **only two of the
+#: six signals have a threshold at all**, and the cursor opens on one that
+#: does not.  A script that typed at the first row would have measured a row
+#: with no seat and called the app broken.
+#:
+#: The trailing `tab` is the BLUR, because an invalid state that only appears
 #: while the caret is in the field is a state nobody sees.
 DATE_KEYS = ("1", "2", "slash", "9", "9", "slash", "2", "6")
+
+#: What those keystrokes SAY, which is what the field has to be drawn around.
+#: Derived from the keys rather than typed twice, so a script that presses
+#: something else cannot leave the law looking for the old string.
+REFUSED = "".join("/" if k == "slash" else k for k in DATE_KEYS)
+
+#: THE THREE KITS WHOSE MATCH CHANNEL THE FRAMEWORK CANNOT SPEND, and this is
+#: a limit of TEXTUAL rather than of any language.  `Widget.get_visual_style
+#: (..., partial=True)` builds its `VisualStyle` from five flags -- bold, dim,
+#: italic, underline, strike -- and **`reverse` is not among them**; an opaque
+#: `background` in a partial style resolves to transparent by the same
+#: function's own blend (`background.blend(tint, 1 - tint.a)` with `a == 1`).
+#: Measured both ways in `prototypes/out/_probe_rev.py`: `text-style: reverse`
+#: and `background: <ink>` on `command-palette--highlight` change nothing but
+#: the foreground.
+#:
+#: So industrial, darkside and solari get their match INK in the palette and
+#: not their PLATE.  Recorded, not faked: giving them a second channel here
+#: would be the app choosing a channel the kit did not declare, which is
+#: exactly what the "match tier by channel" ruling forbids.
+PALETTE_CANNOT_REVERSE = ("industrial", "darkside", "solari")
 
 #: THE QUERY WITH ONE MATCH.  `refre` hits `Refresh now` and nothing else in
 #: the palette `get_system_commands` registers, in all eleven -- the commands
@@ -105,7 +135,7 @@ SCRIPT: tuple[Step, ...] = (
     Step(4, "escape", ("escape",),
          "the band is gone and the page is restored cell for cell to the "
          "frame the modal covered"),
-    Step(5, "invalid", ("c",) + DATE_KEYS + ("tab",),
+    Step(5, "invalid", ("c", "down", "down") + DATE_KEYS + ("tab",),
          "the field carries the language's declared INVALID walls "
          "(field_form(INVALID, 'textfield')), painted in the wall tone "
          "field_wall_tone(INVALID) names"),
@@ -405,8 +435,9 @@ def _at(row, x: int, glyph: str, tone: str) -> bool:
                for i, ch in enumerate(glyph))
 
 
-def field_seats(cells, op: str, cl: str, tone: str) -> list[tuple[int, int]]:
-    """Every place a FIELD is drawn: an opening wall, paper, a closing wall.
+def field_seats(cells, op: str, cl: str, tone: str,
+                value: str) -> list[tuple[int, int]]:
+    """Every place a FIELD is drawn around `value`: wall, the value, wall.
 
     **THE FIRST VERSION OF THIS LAW WAS A CHARACTER SCAN AND IT PASSED TWICE
     ON A SCREEN THAT HAS NO FIELD.**  It asked whether any cell anywhere
@@ -416,26 +447,32 @@ def field_seats(cells, op: str, cl: str, tone: str) -> list[tuple[int, int]]:
     everywhere.  That is spec.md section 23.3.1 exactly, one instrument
     further out: `role_map` keyed by CHARACTER credited darkside's prose `o`
     to its severity family, and inc87 fixed it by asking what the CONTRACT
-    PAINTS instead.  A law written the old way here would have shipped two
-    green cells for a state neither kit draws.
+    PAINTS instead.
 
-    So the seat is the SHAPE `field_form` declares -- wall, one or more cells
-    of paper, wall -- with both walls in `field_wall_tone`'s tier and the
-    paper in a different one, which is that method's own doctrine ("the
-    field's PAPER is still drawn in `dim` ... what changes is the tier of two
-    cells per field").  Returned as `(row, column)` pairs so a caller can say
-    WHERE, not merely how many.
+    **AND THE SECOND VERSION WAS WRONG THE OTHER WAY, WHICH inc93 MEASURED.**
+    It asked for wall, PAPER IN ANOTHER TIER, wall -- `field_wall_tone`'s own
+    doctrine, *"the field's PAPER is still drawn in `dim` ... what changes is
+    the tier of two cells per field"*.  A field showing an eight-character
+    value in an eight-cell window draws **no paper at all**: the shipped frame
+    is `╲12/99/26╲`, one run, walls and value alike in `ink`.  The clause was
+    describing an EMPTY field and the seat under test is a FULL one.
+
+    So the seat is the wall, THE VALUE THE SCRIPT TYPED, and the wall -- which
+    binds three things at once (the glyphs the language declares, the tier
+    `field_wall_tone` names, and the bytes the user actually said) and cannot
+    be satisfied by chrome, because no kit's chrome spells `12/99/26`.
+    Returned as `(row, column)` pairs so a caller can say WHERE.
     """
     out: list[tuple[int, int]] = []
+    want = op + value + cl
     for y, row in enumerate(cells):
-        for x in range(len(row)):
+        for x in range(len(row) - len(want) + 1):
             if not _at(row, x, op, tone):
                 continue
             i = x + len(op)
-            j = i
-            while j < len(row) and row[j][1].lower() != tone.lower():
-                j += 1
-            if j > i and _at(row, j, cl, tone):
+            if "".join(c[0] for c in row[i:i + len(value)]) != value:
+                continue
+            if _at(row, i + len(value), cl, tone):
                 out.append((y, x))
     return out
 
@@ -488,35 +525,23 @@ def judge(lang: str, sides: dict[int, dict]) -> dict[int, tuple[bool, str]]:
     # a loose character: see `field_seats`.
     op, _rune, cl = k.field_form(LG.INVALID, "textfield")
     tone = k.field_wall_tone(LG.INVALID, "textfield")
-    seats = field_seats(cells[5], op, cl, tone)
+    seats = field_seats(cells[5], op, cl, tone, REFUSED)
     loose = sum(1 for row in cells[5] for c in row
                 if c[0] in (op, cl) and c[1].lower() == tone.lower())
-    v[5] = (bool(seats), f"field {op!r}..{cl!r} in {tone} on "
+    v[5] = (bool(seats), f"field {op!r}{REFUSED}{cl!r} in {tone} on "
                          f"{sides[5]['screen']}: {len(seats)} seats "
                          f"({loose} loose cells carry a wall glyph)")
 
     # K6 -- the run the query found, on the channel the kit declares.
-    #
-    # REVERSE IS READ OFF THE BACKGROUND, and it has to be.  `cell_grid`
-    # resolves `Style.reverse` into the (ink, ground) pair it always was, so a
-    # reverse match run arrives with the match ink in the BG field -- reading
-    # `fg` for those three kits would have asked darkside, industrial and
-    # solari a question about the wrong half of the cell.
     style = k.MATCH_STYLE
     word, token = style.split()[0], style.strip().split()[-1].strip("{}")
     ink = t.get(token, t["ink"])
-    found = []
-    for row in cells[6]:
-        for c in row:
-            if not c[0].strip():
-                continue
-            if word == "reverse":
-                if c[2].lower() == ink.lower():
-                    found.append(c)
-            elif c[1].lower() == ink.lower() and c[3 if word == "bold" else 4]:
-                found.append(c)
+    found = [c for row in cells[6] for c in row
+             if c[0].strip() and c[1].lower() == ink.lower()
+             and (word == "reverse" or c[3 if word == "bold" else 4])]
+    note = " (PALETTE_CANNOT_REVERSE)" if word == "reverse" else ""
     v[6] = (bool(found), f"{style} -> {word} {ink}: {len(found)} cells "
-                         f"on {sides[6]['screen']}")
+                         f"on {sides[6]['screen']}{note}")
     return v
 
 
@@ -637,6 +662,42 @@ def main(argv: list[str]) -> int:
         for s in SCRIPT:
             ok, why = verdicts[lang][s.n]
             print(f"  {lang:<11} K{s.n} {'ok  ' if ok else 'FAIL'} {why}")
+
+    # THE CHANNELS, which are what the ROUND argues about.  The verdict table
+    # above says whether a step happened; this says WHAT IT WAS MADE OF, and
+    # the two numbers the round turns into objections are here: how many
+    # GLYPHS the focus ring moves (three kits: none) and how many distinct
+    # texts the app's one modal has across eleven languages (four).
+    print(f"\n  {'language':<11} {'focus ring':<22} {'modal .txt':<12} "
+          f"{'match run'}")
+    texts: dict[str, list[str]] = {}
+    for lang in LANGS:
+        texts.setdefault(
+            (OUT / f"{lang}_K3.txt").read_text(encoding="utf-8"),
+            []).append(lang)
+    group = {l: i for i, ls in enumerate(texts.values()) for l in ls}
+    for lang in LANGS:
+        sides = by[lang]
+        c1, c2 = cells_of(sides[1]), cells_of(sides[2])
+        x, y, w, h = sides[2]["focus"]["region"]
+        gl = sum(1 for yy in range(y, y + h) for xx in range(x, x + w)
+                 if c1[yy][xx][0] != c2[yy][xx][0])
+        bg = sum(1 for yy in range(y, y + h) for xx in range(x, x + w)
+                 if c1[yy][xx][2] != c2[yy][xx][2])
+        k, t = LG.kit(lang), TH.THEMES[lang]
+        style = k.MATCH_STYLE
+        word = style.split()[0]
+        mink = t.get(style.strip().split()[-1].strip("{}"), t["ink"]).lower()
+        row = next(r for r in cells_of(sides[6])
+                   if "Refresh now" in "".join(c[0] for c in r))
+        hits = sum(1 for c in row if c[0].strip() and c[1].lower() == mink)
+        flag = sum(1 for c in row if c[0].strip() and c[1].lower() == mink
+                   and word != "reverse" and c[3 if word == "bold" else 4])
+        print(f"  {lang:<11} {gl} glyph + {bg}/{w * h} ground   "
+              f"group {group[lang]}      {style:<19} "
+              f"{hits} ink, {flag} on channel")
+    print(f"  the eleven draw {len(texts)} distinct modal texts; the largest "
+          f"group is {max(len(v) for v in texts.values())}")
 
     print("\n  re-running the script in a fresh process to check "
           "determinism...")

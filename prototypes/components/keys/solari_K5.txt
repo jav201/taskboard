@@ -1,10 +1,10 @@
                                                                                                     
    SIGNALS  WHAT THE WIDGET WATCHES                                                                 
   ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁    
-   ▼ ▁▁▲ ON  DEP Nearest deadline     ▔◉▔ fast  ▁▁▁ slow    1s   2                                  
-       Days until the soonest open task is due. The default hero.                                   
+     ▁▁▼ ON  DEP Nearest deadline     ▁●▁ fast  ▁▁▁ slow    1s   2                                  
      ▁▁▼ ON  LATE Overdue count        ▁●▁ fast  ▁▁▁ slow    2s   2                                 
-     ▁▁▼ ON  BRD Work in flight       ▁●▁ fast  ▁▁▁ slow    2s   4 ▁▁▼····· 03                      
+   ▼ ▁▁▲ ON  BRD Work in flight       ▔◉▔ fast  ▁▁▁ slow    2s   4 ═12/99/26═                       
+       Tasks in the DOING phase, against a limit you set.                                           
      ▁▁▼ ON  HELD Blocked              ▁●▁ fast  ▁▁▁ slow    3s   1                                 
      ▁▁▼ ON  DAY Workday budget       ▁▁▁ fast  ▁●▁ slow   30s   9 ▁▁▁▁▼··· 18                      
      ▁▁▼ ON  SKD Board file           ▁▁▁ fast  ▁●▁ slow   20s   7                                  

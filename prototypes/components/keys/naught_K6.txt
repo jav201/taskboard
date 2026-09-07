@@ -5,11 +5,11 @@
                                                                                                     
   🔎 refre                                                                                           
                                                                                                     
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
                                                                                                     
   Refresh now                                                                                       
   Recompute every signal immediately                                                                
 ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-     ⊖⊖◉ ◦∙ Work in flight       ⊚ fast  ◌ slow    2s   4 ∙∙◉◦◦◦◦◦ 3                                
      ⊖⊖◉ ◦◦ Blocked              ⊚ fast  ◌ slow    3s   1                                           
      ⊖⊖◉ ∙  Workday budget       ◌ fast  ⊚ slow   30s   9 ∙∙∙∙◉◦◦◦ 18                               
      ⊖⊖◉ ◦  Board file           ◌ fast  ⊚ slow   20s   7                                           

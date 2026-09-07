@@ -4,6 +4,8 @@
  "name": "invalid",
  "keys": [
   "c",
+  "down",
+  "down",
   "1",
   "2",
   "slash",
@@ -17,14 +19,9 @@
  "law": "the field carries the language's declared INVALID walls (field_form(INVALID, 'textfield')), painted in the wall tone field_wall_tone(INVALID) names",
  "screen": "ConfigScreen",
  "focus": {
-  "id": "cfg-scroll",
-  "cls": "VerticalScroll",
-  "region": [
-   0,
-   3,
-   100,
-   28
-  ]
+  "id": null,
+  "cls": null,
+  "region": null
  },
  "band": null,
  "settle_reads": 8,
@@ -141,23 +138,7 @@
    ],
    [
     2,
-    " ",
-    "#f2f2f2",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    3,
-    "▶",
-    "#ff623b",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    4,
-    " ",
+    "   ",
     "#f2f2f2",
     "#1a1a1a",
     false,
@@ -181,8 +162,8 @@
    ],
    [
     7,
-    "I",
-    "#ff623b",
+    "|",
+    "#f2f2f2",
     "#1a1a1a",
     false,
     false
@@ -213,23 +194,23 @@
    ],
    [
     13,
-    " Nearest deadline     ",
+    " ",
     "#f2f2f2",
     "#1a1a1a",
     false,
     false
    ],
    [
-    35,
-    "<#>",
-    "#ff623b",
+    14,
+    "Nearest deadline    ",
+    "#959595",
     "#1a1a1a",
     false,
     false
    ],
    [
-    38,
-    " fast  ",
+    34,
+    " <O> fast  ",
     "#f2f2f2",
     "#1a1a1a",
     false,
@@ -302,40 +283,6 @@
    [
     64,
     "                                    ",
-    "#ffffff",
-    "#1a1a1a",
-    false,
-    false
-   ]
-  ],
-  [
-   [
-    0,
-    "  ",
-    "#ffffff",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    2,
-    "     ",
-    "#f2f2f2",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    7,
-    "Days until the soonest open task is due. The default hero.",
-    "#4a4a4a",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    65,
-    "                                   ",
     "#ffffff",
     "#1a1a1a",
     false,
@@ -515,7 +462,23 @@
    ],
    [
     2,
-    "   ",
+    " ",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    3,
+    "▶",
+    "#ff623b",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    4,
+    " ",
     "#f2f2f2",
     "#1a1a1a",
     false,
@@ -539,8 +502,8 @@
    ],
    [
     7,
-    "|",
-    "#f2f2f2",
+    "I",
+    "#ff623b",
     "#1a1a1a",
     false,
     false
@@ -571,23 +534,23 @@
    ],
    [
     13,
-    " ",
+    " Work in flight       ",
     "#f2f2f2",
     "#1a1a1a",
     false,
     false
    ],
    [
-    14,
-    "Work in flight      ",
-    "#959595",
+    35,
+    "<#>",
+    "#ff623b",
     "#1a1a1a",
     false,
     false
    ],
    [
-    34,
-    " <O> fast  ",
+    38,
+    " fast  ",
     "#f2f2f2",
     "#1a1a1a",
     false,
@@ -651,56 +614,8 @@
    ],
    [
     63,
-    " ",
+    " ▐12/99/26▌",
     "#f2f2f2",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    64,
-    "[",
-    "#4a4a4a",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    65,
-    "██",
-    "#959595",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    67,
-    "|",
-    "#f2f2f2",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    68,
-    "···]",
-    "#4a4a4a",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    72,
-    " ",
-    "#f2f2f2",
-    "#1a1a1a",
-    false,
-    false
-   ],
-   [
-    73,
-    "3",
-    "#959595",
     "#1a1a1a",
     false,
     false
@@ -708,6 +623,40 @@
    [
     74,
     "                          ",
+    "#ffffff",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    2,
+    "     ",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    7,
+    "Tasks in the DOING phase, against a limit you set.",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    57,
+    "                                           ",
     "#ffffff",
     "#1a1a1a",
     false,

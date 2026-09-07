@@ -12536,15 +12536,25 @@ async def main():
                   "simply ON, which is why the blink could not move a single "
                   "law that measured this block before it existed",
                   blk(None) == base)
+            _cfg_src = inspect.getsource(getattr(APPMOD_M, "ConfigScreen"))
             check("the blink is AMBIENT and its period is the language's — "
-                  "and it is GALLERY-ONLY, which is stated rather than faked: "
-                  "pass 53 read this app for a live text seat and found none, "
-                  "so the first loop this contract ships runs where its "
-                  "component already lives",
+                  "and it is GALLERY-ONLY, which since inc93 is a claim about "
+                  "the BLINK and no longer about the FIELD. Pass 53 found no "
+                  "live text seat and refused to invent one; the key round "
+                  "measured what that refusal cost (the INVALID state all "
+                  "eleven kits draw at S2, reachable by no key in any of "
+                  "them) and the config screen now has one. What stays here "
+                  "is the LOOP: the live seat calls `textfield` with no "
+                  "`tick` and no `caret_on`, so its caret is simply on and "
+                  "nothing moves on a surface whose whole job is to be read",
                   bm.regime == LG.AMBIENT
                   and bm.total_ms >= LG.AMBIENT_MIN_MS
-                  and not [w for w in (getattr(APPMOD_M, "ConfigScreen"),)
-                           if "textfield" in inspect.getsource(w)],
+                  # `tick=` and `caret_on=` as ARGUMENTS, not as words: the
+                  # first version of this clause looked for "tick" and found
+                  # it in the motion player's own prose ("a recompute per
+                  # tick"), which is a check reading English rather than code.
+                  and "textfield(" in _cfg_src
+                  and "caret_on" not in _cfg_src and "tick=" not in _cfg_src,
                   f"{bm.total_ms:.0f} ms")
             app.pop_screen()
             await pilot.pause()

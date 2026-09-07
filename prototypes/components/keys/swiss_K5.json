@@ -4,6 +4,8 @@
  "name": "invalid",
  "keys": [
   "c",
+  "down",
+  "down",
   "1",
   "2",
   "slash",
@@ -17,14 +19,9 @@
  "law": "the field carries the language's declared INVALID walls (field_form(INVALID, 'textfield')), painted in the wall tone field_wall_tone(INVALID) names",
  "screen": "ConfigScreen",
  "focus": {
-  "id": "cfg-scroll",
-  "cls": "VerticalScroll",
-  "region": [
-   0,
-   4,
-   100,
-   27
-  ]
+  "id": null,
+  "cls": null,
+  "region": null
  },
  "band": null,
  "settle_reads": 8,
@@ -127,23 +124,7 @@
    ],
    [
     2,
-    " ",
-    "#f4f4f4",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    3,
-    "▮",
-    "#eb574f",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    4,
-    " ",
+    "   ",
     "#f4f4f4",
     "#101010",
     false,
@@ -159,31 +140,23 @@
    ],
    [
     7,
-    "┃",
-    "#eb574f",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    8,
-    " Nearest deadline     ",
+    "│ ",
     "#f4f4f4",
     "#101010",
     false,
     false
    ],
    [
-    30,
-    "╹▪ ",
-    "#eb574f",
+    9,
+    "Nearest deadline    ",
+    "#9b9b9b",
     "#101010",
     false,
     false
    ],
    [
-    33,
-    " fast  ",
+    29,
+    " ╵▪  fast  ",
     "#f4f4f4",
     "#101010",
     false,
@@ -256,40 +229,6 @@
    [
     59,
     "                                         ",
-    "#ffffff",
-    "#101010",
-    false,
-    false
-   ]
-  ],
-  [
-   [
-    0,
-    "  ",
-    "#ffffff",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    2,
-    "     ",
-    "#f4f4f4",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    7,
-    "Days until the soonest open task is due. The default hero.",
-    "#3d3d3d",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    65,
-    "                                   ",
     "#ffffff",
     "#101010",
     false,
@@ -429,7 +368,23 @@
    ],
    [
     2,
-    "   ",
+    " ",
+    "#f4f4f4",
+    "#101010",
+    false,
+    false
+   ],
+   [
+    3,
+    "▮",
+    "#eb574f",
+    "#101010",
+    false,
+    false
+   ],
+   [
+    4,
+    " ",
     "#f4f4f4",
     "#101010",
     false,
@@ -445,23 +400,31 @@
    ],
    [
     7,
-    "│ ",
+    "┃",
+    "#eb574f",
+    "#101010",
+    false,
+    false
+   ],
+   [
+    8,
+    " Work in flight       ",
     "#f4f4f4",
     "#101010",
     false,
     false
    ],
    [
-    9,
-    "Work in flight      ",
-    "#9b9b9b",
+    30,
+    "╹▪ ",
+    "#eb574f",
     "#101010",
     false,
     false
    ],
    [
-    29,
-    " ╵▪  fast  ",
+    33,
+    " fast  ",
     "#f4f4f4",
     "#101010",
     false,
@@ -525,39 +488,7 @@
    ],
    [
     58,
-    " ",
-    "#f4f4f4",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    59,
-    "▀▀",
-    "#9b9b9b",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    61,
-    "│",
-    "#f4f4f4",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    62,
-    "─────",
-    "#3d3d3d",
-    "#101010",
-    false,
-    false
-   ],
-   [
-    67,
-    "  ",
+    " ║12/99/26║",
     "#f4f4f4",
     "#101010",
     false,
@@ -565,15 +496,41 @@
    ],
    [
     69,
-    "3",
-    "#9b9b9b",
+    "                               ",
+    "#ffffff",
+    "#101010",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
     "#101010",
     false,
     false
    ],
    [
-    70,
-    "                              ",
+    2,
+    "     ",
+    "#f4f4f4",
+    "#101010",
+    false,
+    false
+   ],
+   [
+    7,
+    "Tasks in the DOING phase, against a limit you set.",
+    "#3d3d3d",
+    "#101010",
+    false,
+    false
+   ],
+   [
+    57,
+    "                                           ",
     "#ffffff",
     "#101010",
     false,
