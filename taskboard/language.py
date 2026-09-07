@@ -1517,12 +1517,17 @@ def split_field_glyph(glyph: str) -> tuple[str, str, str]:
 #:               descends is not a ladder, so `warn` comes with it.
 #:   nord        warn `! `   2.17 -> 3.81
 #:   darkside    warn `o `   2.51 -> 8.34
-#:   ledger      warn `* `   1.91 -> 2.86   STILL UNDER THE FLOOR, and it is
-#:               recorded rather than hidden: ledger's `*` misses 3:1 in the
-#:               loudest neutral this kit owns, which is where its ERROR rung
-#:               already stood.  The seat moves because the ruling says a mark
-#:               in `mut` under the clause takes `ink`; it does not pass, and
-#:               `BELOW_THE_FLOOR` still carries the row.
+#:   ledger      warn `§ `   2.45 -> 4.42   THE CELL CHANGED UNDER THIS ROW
+#:               (inc88).  inc85 moved this seat and recorded that the move
+#:               did not cure it: `*` measured 1.91 in `mut` and 2.86 in
+#:               `ink`, still under 3:1 on the corpus's one light ground,
+#:               because a small high asterisk has run out of tiers before it
+#:               has enough area.  inc88 fixed it by DRAWING -- `*` -> `§`,
+#:               the next free mark of this kit's own printer's order -- and
+#:               the numbers here are the new cell at the same two tiers.
+#:               The seat still belongs in this table: `§` in `mut` is 2.45
+#:               and still under the clause, so the tier move is still what
+#:               carries it over.
 #:   prism       warn `⣤⣤`   2.31 -> 4.21
 #:   solari      info `OK `  2.07 / 2.31 -> 6.51 / 7.92
 #:   solari      warn `DLY`  1.94..2.59 -> 5.67..9.84
@@ -5320,8 +5325,11 @@ class Corgi(Kit):
         # `REQUIRED` at the same grip focused. The grip takes the quadrant
         # family instead; the ghost, the cross and the shade steps below it
         # are inc52's and are untouched.
+        # inc88: the ghost is a DITHER and a dither is not a mark at
+        # 9x19.  See the field's own table below for the whole argument
+        # and for the cell that was ruled and refused.
         "knob": {DEFAULT: "▙▟", FOCUSED: "▛▜", EDITED: "▘▝",
-                 ACTIVE: "▖▗", INVALID: "░░",
+                 ACTIVE: "▖▗", INVALID: "▚▞",
                  DISABLED: "╳╳"},
         # THE CHECK IS THE KEY LATCHED DOWN, not a segment driven (inc58).
         # The box read `▁▁ ▔▔ ▂▂` and the check `██` -- the info rung, a
@@ -5376,7 +5384,46 @@ class Corgi(Kit):
                            # the ghost the knob now wears; the rune stays
                            # `·`, because a rune is the paper this field is
                            # made of in every state and not a rejection mark.
-                           INVALID: "░░·░░",
+                           #
+                           # inc88: THE GHOST WAS THE RIGHT READING AND THE
+                           # WRONG DRAWING. `░` in `ink` measures 1.44
+                           # EFFECTIVE at 17.36:1 declared -- 68.4% of the
+                           # cell covered and the mark still under Q1's
+                           # clause, because a dither's lit pixels are
+                           # almost all partway back to the ground. No tier
+                           # can fix that; only another cell can.
+                           #
+                           # THE RULING NAMED `▓` AND THE CENSUS REFUSED IT.
+                           # `▓` clears the clause (100%, 3.47) and it is
+                           # the cell this kit's ACTIVE state already wears
+                           # -- and the switch indicator's, the checkbox
+                           # knob's, the radio's, the button's, the
+                           # stepper's, the pane rule's and the mascot's.
+                           # Measured: `collision_census.py` goes 27 -> 28
+                           # and `▓` carries NINE families, one of them the
+                           # field's own "you are typing here". That is
+                           # ruling C reversed -- a language's INVALID mark
+                           # is its own -- and it is the exact defect inc52
+                           # fixed, which is why `░` was chosen: the one
+                           # cell no meaning and no other state spends.
+                           #
+                           # SO THE CRITERION IS KEPT AND THE FAMILY MOVES.
+                           # The shade ramp has no free cell left (`▒` and
+                           # `▓` are both control states), and inc58 forbids
+                           # drawing a control as a driven bar, which rules
+                           # out every eighth-block. What is left is the
+                           # QUADRANT family -- which is already this
+                           # field's wall vocabulary (`▛▛·▜▜` focused,
+                           # `▛▛▒▜▜` edited) -- and the two DIAGONAL halves
+                           # are free in all eleven states of every control
+                           # this kit draws. Mirrored, like every other wall
+                           # pair here: `▚▚` and `▞▞`, 57.9% at 12.80 and
+                           # 60.2% at 13.83. The reading changes with the
+                           # drawing and it is a better one: the shoulders
+                           # are STRUCK, not unlit. A ghost says the machine
+                           # did not drive this; a strike says the machine
+                           # refused it, which is what the state means.
+                           INVALID: "▚▚·▞▞",
                            DISABLED: "·····"},
         "textfield.caret": {DEFAULT: "▌"},
         # A SEGMENT BANK, doubled like everything this language draws: the
@@ -5408,7 +5455,14 @@ class Corgi(Kit):
                          # rung, one key each. inc51's clause 2 still holds
                          # by construction: the cells come from this kit's
                          # own INVALID knob.
-                         ACTIVE: "▖▖▗▗", INVALID: "░░░░",
+                         #
+                         # inc88: the knob moved off the ghost, so this moves
+                         # with it -- clause 2 of inc51 is "whatever cells the
+                         # kit spends on a rejected value at its knob and at
+                         # its field are the cells its stepper spends", and a
+                         # stepper left behind would be the first place this
+                         # language said REFUSED in a cell nothing else does.
+                         ACTIVE: "▖▖▗▗", INVALID: "▚▚▞▞",
                          DISABLED: "╳╳╳╳"},
     }
 
@@ -5498,13 +5552,20 @@ class Instrument(Kit):
     LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
     `MATCH_STYLE` spends `accent` and nothing else, so with the colour taken
     away the mark keeps only the luminance step the accent happens to carry:
-    **2.34:1 against the body it stands in**, measured on the greyscale PNGs
+    **2.42:1 against the body it stands in**, measured on the greyscale PNGs
     `raster.py` writes (`legibility.txt` section H). Three to one is what a
     mark of this size would need. IT IS RECORDED AND NOT FIXED — a hue-only
     match channel under 3:1 in grey is a LIMIT of this language rather than a
     defect of it, because the second channel that would close it (a weight, a
     rule, a bracket) is a different language. This is the highest of the four
     hue-only kits and the only one over 2:1.
+
+    THE NUMBER MOVED WITH THE CURSOR AND NOT WITH THE MATCH (inc88): `accent`
+    took the smallest hue-preserving lightness step that clears Q1 at `⣿`,
+    and this channel is painted in the same token, so the Limit improved from
+    2.34 to 2.42 as a side effect. It is still under three to one and it is
+    still a Limit; what changed is that this kit is now the only one of the
+    four whose grey step moved at all, and it moved the right way.
     """
 
     # HALF IS COMPOSED, NOT CHOSEN (#46): the full cell's left sub-column OR
@@ -8852,7 +8913,26 @@ class Ledger(Kit):
     # the mechanism used when you COUNT rather than measure" is this
     # language's own commitment, so a ladder that counts is the ladder it
     # already believes in. One width, three shapes (ruling 8) as before.
-    LEVELS = {"info": "  ", "warn": "* ", "error": "**"}
+    #
+    # inc88: THE ORDER IS KEPT AND THE MARK ADVANCES ALONG IT. `*` is the
+    # thinnest mark of the six and this is the corpus's one LIGHT ground, so
+    # the rung measured 1.91 EFFECTIVE in `mut` and 2.86 in `ink` -- inc85
+    # spent a tier on it and it still missed Q1's clause, because a small
+    # high asterisk has run out of tiers before it has enough area. Round
+    # five's §7 row #9 is the evidence for what the remedy is: `naught ∙` at
+    # 14.0% is *"la mas facil de las diez ... un disco macizo"* -- a reader
+    # finds MASS, and the product that ranked these ten did not.
+    #
+    # SO THE LADDER TAKES THE NEXT FREE MARK OF ITS OWN ORDER. `†` and `‡`
+    # are still spoken for; `‖` is not in the face this corpus is measured on
+    # (it rasters as the fallback box, 39.2% at 6.24, which is the same
+    # figure eleven other absent glyphs return); `§` is free in every state
+    # of every control this kit draws. 30.4% -> 51.5% coverage, 2.86 -> 4.42
+    # effective in `ink`, and 2.45 in `mut`, which is why the seat stays in
+    # `RUNG_TAKES_INK`. THE DOUBLING IS UNTOUCHED -- the ladder still COUNTS,
+    # which is this language's own commitment and the reason `error` stays
+    # distinct without a second shape.
+    LEVELS = {"info": "  ", "warn": "§ ", "error": "§§"}
 
     # A LEDGER RULES UNDER A REFERENCED FIGURE. Underline is not a hue, and
     # it is the mark this genre already uses to point at an amount without

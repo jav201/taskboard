@@ -9,12 +9,12 @@
 <text x="10.0" y="40.3" fill="#f4f4f4">C O M M A N D</text>
 <text x="144.4" y="40.3" fill="#9b9b9b">query &#x27;re&#x27;  ·  6 results</text>
 <text x="10.0" y="57.3" fill="#3d3d3d">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
-<text x="26.8" y="91.3" fill="#e7372e">&gt; </text>
+<text x="26.8" y="91.3" fill="#eb574f">&gt; </text>
 <text x="43.6" y="91.3" fill="#3d3d3d">┃</text>
 <text x="52.0" y="91.3" fill="#f4f4f4">re</text>
-<text x="68.8" y="91.3" fill="#e7372e">▏</text>
+<text x="68.8" y="91.3" fill="#eb574f">▏</text>
 <text x="77.2" y="91.3" fill="#3d3d3d">····································· </text>
-<text x="26.8" y="125.3" fill="#e7372e">▮</text>
+<text x="26.8" y="125.3" fill="#eb574f">▮</text>
 <text x="43.6" y="125.3" fill="#e7372e" font-weight="bold">re</text>
 <text x="60.4" y="125.3" fill="#9b9b9b">direct to task</text>
 <text x="413.2" y="125.3" fill="#3d3d3d">enter</text>
@@ -32,19 +32,19 @@
 <text x="77.2" y="210.3" fill="#e7372e" font-weight="bold">re</text>
 <text x="94.0" y="210.3" fill="#9b9b9b">minder</text>
 <text x="26.8" y="244.3" fill="#3d3d3d">───────────────────────────────────────────────────────────────────────────────────────────────</text>
-<text x="26.8" y="261.3" fill="#e7372e">&gt; </text>
+<text x="26.8" y="261.3" fill="#eb574f">&gt; </text>
 <text x="43.6" y="261.3" fill="#3d3d3d">┃</text>
 <text x="52.0" y="261.3" fill="#f4f4f4">zzq</text>
-<text x="77.2" y="261.3" fill="#e7372e">▏</text>
+<text x="77.2" y="261.3" fill="#eb574f">▏</text>
 <text x="85.6" y="261.3" fill="#3d3d3d">···································· </text>
 <text x="43.6" y="295.3" fill="#3d3d3d"> nothing here</text>
-<text x="26.8" y="550.3" fill="#e7372e">enter</text>
+<text x="26.8" y="550.3" fill="#eb574f">enter</text>
 <text x="94.0" y="550.3" fill="#9b9b9b">run</text>
-<text x="169.6" y="550.3" fill="#e7372e">esc</text>
+<text x="169.6" y="550.3" fill="#eb574f">esc</text>
 <text x="220.0" y="550.3" fill="#9b9b9b">close</text>
-<text x="312.4" y="550.3" fill="#e7372e">^p</text>
+<text x="312.4" y="550.3" fill="#eb574f">^p</text>
 <text x="354.4" y="550.3" fill="#9b9b9b">prev</text>
-<text x="438.4" y="550.3" fill="#e7372e">^n</text>
+<text x="438.4" y="550.3" fill="#eb574f">^n</text>
 <text x="480.4" y="550.3" fill="#9b9b9b">next</text>
 </g>
 </svg>
