@@ -4137,15 +4137,30 @@ class Naught(Kit):
     # cell in the corpus by family count, and naught had no frame among the
     # sixteen to say so.
     #
-    # THE LADDER IS A CHARGE RAMP AND IT WAS ALREADY DECLARED. `⋅ · ◦ ∙ ◉ ●`
+    # THE LADDER IS A CHARGE RAMP AND IT WAS ALREADY DECLARED. `⋅ ◦ ∙ ◉ ●`
     # is this language's own vocabulary, spent across `PART_GLYPHS` from the
     # faintest lattice dot to the pressed key; `◉` is the rung the knob wears
     # ("a dot with an EYE") and the caret wears ("the one LIT dot in the
-    # lattice"). Obligation takes the tier ABOVE the plain lit dot the cursor
-    # spends, so the two are distinct on the one channel this language
-    # declares -- LANGUAGES.md §0, "quantity is a row of discrete lit dots
-    # ... HOW MANY ARE LIT is the signal". Charge, not position.
-    REQUIRED = "◉"
+    # lattice"). It read `· ` between `⋅` and `◦` until inc61 retired that
+    # cell -- see `PART_GLYPHS` below.
+    #
+    # AND THAT RAMP IS WHY OBLIGATION LEFT IT (inc61). Taking the tier above
+    # the cursor's put a MEANING on a rung of the CONTROL ramp: `◉` is the
+    # resting grip of every switch and slider, the mark of a CHECKED
+    # checkbox, and the stepper's pressed key -- so `naught_S2` read
+    # `title◉` and `due◉` three rows above `◉ ui  ◉ urgent`, obligation and
+    # "this option is ON" in one cell on one screen. spec §11.5 had already
+    # written the argument's limit down: "naught and solari have no unspent
+    # cell left ... that argument is available exactly twice and it has been
+    # spent twice."
+    #
+    # `⊛` IS THE ASTERISK, which is what every form on earth marks a
+    # compulsory field with, drawn as a BURST INSIDE A CIRCLE so it stays in
+    # this language's one shape. It is the only circle here that is neither
+    # a CHARGE level (`◌ ○ ◑ ◍ ◎ ◉ ●`) nor a CHOICE (`⊙ ⊚ ⊗`, the radio's
+    # grip), and it is East-Asian-Width NEUTRAL -- the property §0's pass-10
+    # chose the pixel pair for, and the one `·` and `●` fail.
+    REQUIRED = "⊛"
 
     LEVELS = {"info": "◦◦", "warn": "∙◦", "error": "∙∙"}
 
@@ -4159,9 +4174,60 @@ class Naught(Kit):
                           f"[{c['mut']}]{mark(str(v))}[/]"
                           for k, v in pairs)
 
+    # ======================================================================
+    # THE LATTICE COUNTS; THE PIXEL CHARGES (inc61).
+    #
+    # This language reads the WORK by counting lit dots -- `◦◦` none lit,
+    # `∙◦` one, `∙∙` two, which is LANGUAGES.md §0's "quantity is a row of
+    # discrete lit dots ... HOW MANY ARE LIT is the signal" -- and it reads a
+    # CONTROL by how much of ONE pixel is charged (`⋅ ◦ ∙ ◉ ●` and the ring
+    # family `◌ ○ ◑ ◍ ◎`). Two channels, and until inc61 they shared cells.
+    #
+    #   THE RULE: `NA.ON` -- the LIT lattice dot -- belongs to the count and
+    #   to nothing else. No control seat draws it.
+    #
+    # `NA.OFF` IS THE EXCEPTION AND IT IS NAMED. The unlit dot is this
+    # language's BLANK: §0 makes the unlit grid VISIBLE ("dark dots render in
+    # the dim tier rather than as spaces ... that faint lattice IS the
+    # signature"), so where ledger and blueprint write an info rung as `"  "`
+    # this one writes `◦◦`, and `naught_S1` draws some seven hundred of them
+    # ruling every gap, leader and pane. A ground is not a mark. The
+    # exemption is `THE_GROUND_IS_NOT_A_MARK` in `tests/test_components.py`,
+    # one language and one cell.
+    #
+    # AND `·` IS RETIRED. inc45 declared the charge ramp as `⋅ · ◦ ∙ ◉ ●`,
+    # six rungs -- but `·` (U+00B7) is the HOMOGLYPH of `∙` (U+2219), and
+    # ruling D says a language may not tell a MEANING apart from its own
+    # CHROME by size alone. `∙` carries `DANGER_FORM` and two severity rungs;
+    # `·` was chrome at four components, and the census printed both
+    # directions of it as this language's TWO homoglyph rows. §0 had already
+    # measured the cell and said so -- "`•` (U+2022), `·` (U+00B7) and `●`
+    # (U+25CF) MEASURED AND REJECTED" -- and it is the one cell of the ramp
+    # that is East-Asian-Width AMBIGUOUS while `⋅ ◦ ∙ ◉` are Neutral, which
+    # is the very property §0's pass-10 chose the pixel pair for. The ramp is
+    # five rungs now: `⋅ ◦ ∙ ◉ ●`.
+    # ======================================================================
     PART_GLYPHS = {
-        "main": {DEFAULT: NA.OFF, DISABLED: "·"},
+        # inc61: the dead shaft read `·`. It joins the ramp's faintest rung.
+        "main": {DEFAULT: NA.OFF, DISABLED: "⋅"},
+        # THE SLIDER'S AND THE BAR'S FILL, and theirs alone since inc61 --
+        # "quantity is a row of discrete LIT DOTS", so a quantity IS the
+        # count and belongs on `NA.ON`. The hardware toggle is a control and
+        # takes its own scoped table below.
         "indicator": {DEFAULT: NA.ON, DISABLED: NA.OFF},
+        # THE TOGGLE'S LIVE TRACK, scoped away from the slider's in inc61.
+        # It was falling through to `indicator`, so the ON track was `NA.ON`
+        # at six named seats -- and the composer draws the track TWO cells
+        # wide, so `naught_S3` rendered every live switch as `∙∙◉`, and
+        # `∙∙` is `LEVELS["error"]` and the `DANGER_FORM` byte for byte,
+        # twelve rows above `◦ ∙Delete all∙ ◦`.
+        #
+        # `⊖` IS THE CONTACT CLOSED: a bar bridging the pixel, which is what
+        # a switch that is ON physically is, drawn in the circled family this
+        # kit already keeps beside the charge ramp (`⊙ ⊚ ⊗` at the radio's
+        # grip). It is East-Asian-Width Neutral, measured, like every other
+        # cell §0's pass-10 kept.
+        "switch.indicator": {DEFAULT: "⊖", DISABLED: NA.OFF},
         "knob": {DEFAULT: "◉", FOCUSED: "◍", EDITED: "◎",
                  ACTIVE: "●", INVALID: "◑",
                  DISABLED: "◌"},
@@ -4172,7 +4238,7 @@ class Naught(Kit):
         # interior to keep the mark inside of. Wrapping the dot in brackets
         # to satisfy a law would be drawing another language's checkbox.
         "checkbox.main": {DEFAULT: "◦", FOCUSED: "○", ACTIVE: "◌",
-                          DISABLED: "·"},
+                          DISABLED: "⋅"},          # inc61: `·` retired
         "checkbox.knob": {DEFAULT: "◉", FOCUSED: "●", ACTIVE: "◍",
                           DISABLED: "◎"},
         # THE ONE LANGUAGE THAT CANNOT AFFORD THE ROUND-VS-SQUARE
@@ -4196,8 +4262,17 @@ class Naught(Kit):
         # A LATTICE SEAT: unlit dots hold the field open and the paper IS the
         # lattice. EDITED tightens the weave, because that is the state the
         # words are landing in.
-        "textfield.main": {DEFAULT: "◦·◦", FOCUSED: "○·○", EDITED: "○∙○",
-                           ACTIVE: "●·●", INVALID: "◑·◑",
+        # inc61: the paper was `·` and EDITED banked it UP TO `∙` -- the
+        # LIT dot, which is `DANGER_FORM` and two severity rungs, and a
+        # state told from its own paper BY SIZE, which is what ruling D
+        # forbids. The paper is the ramp's faintest rung and EDITED takes
+        # the LATTICE: the paper LIGHTS one charge step, `⋅` -> `◦`, which
+        # is this language's own channel. NOT `◍`, which was the first
+        # answer and is a one-cell EDITED mark used at a FIFTEEN-cell seat:
+        # the paper is the whole measure, and a run of filled circles is a
+        # different claim from a grip that has been turned.
+        "textfield.main": {DEFAULT: "◦⋅◦", FOCUSED: "○⋅○", EDITED: "○◦○",
+                           ACTIVE: "●⋅●", INVALID: "◑⋅◑",
                            DISABLED: "⋅⋅⋅"},
         # the one LIT dot in the lattice — naught marks by lighting, never by
         # colour, and the red ration reaches this seat through the actuator
@@ -4218,7 +4293,11 @@ class Naught(Kit):
         # what this lattice has always done. The end is a dot going out: at a
         # clamped floor the left seat drops to the unlit lattice and the eye
         # reads a wall, not a colour.
-        "stepper.main": {DEFAULT: "··", DISABLED: "⋅⋅"},
+        # inc61: the live rail read `··` and the dead one `⋅⋅`, two rungs
+        # of the ramp one size apart. With `·` retired the live rail is the
+        # UNLIT LATTICE this language rules every gap with, and the dead one
+        # is the faintest rung.
+        "stepper.main": {DEFAULT: NA.OFF * 2, DISABLED: "⋅⋅"},
         "stepper.step": {DEFAULT: "●●", FOCUSED: "○○", EDITED: "◍◍",
                          ACTIVE: "◉◉", INVALID: "◑◑",
                          DISABLED: "◌◌"},
@@ -8127,7 +8206,21 @@ class Ledger(Kit):
         # is wrong for a stated reason: a gap is a SPACE, and a space is the
         # one character the user's own value certainly contains. A mark that
         # can be confused with content is not a mark.
-        "textfield.main": {DEFAULT: "│·│", FOCUSED: "▶·│", EDITED: "▶∙│",
+        #
+        # inc61: EDITED banked the leader UP TO `∙`, which is `·` at another
+        # SIZE -- the pair `("·", "∙")` sits in `collision_census.HOMOGLYPHS`
+        # by name, and it was this language's ONE homoglyph row. Ruling D:
+        # "diameter alone is not a channel", and it does not become one
+        # because the two drawings are two STATES of one part rather than a
+        # meaning and its chrome. The state takes `◆`, which is already this
+        # kit's EDITED mark at `knob` and at `stepper.step`, so a field being
+        # written into now says EDITED with the same mark every other control
+        # here says it with -- except that a one-cell EDITED mark is not a
+        # FIFTEEN-cell paper, so the state takes this kit's RULE instead:
+        # at rest the space an entry goes in is a dot leader, and while it
+        # is being written the rule is SOLID. `─` is the same stroke the
+        # bar's fill draws and it carries no meaning anywhere.
+        "textfield.main": {DEFAULT: "│·│", FOCUSED: "▶·│", EDITED: "▶─│",
                            ACTIVE: "▶·◀", INVALID: "‡·‡",
                            DISABLED: "╌╌╌"},
         "textfield.caret": {DEFAULT: "▏"},

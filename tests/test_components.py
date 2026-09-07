@@ -3375,14 +3375,16 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #: line, which is the only way a roster stays a record instead of a
 #: decoration (`HANDED_FIELDS`, one screen up, is the same bargain).
 #:
-#:   naught    12  8 + 4. `∙` is the switch's ON indicator and `◦` its dead
-#:                 one, and both are rungs of the count ladder; inc49 adds
-#:                 `◉`, `REQUIRED`, at the switch's and the checkbox's knob.
-#:                 Naught has ONE round pixel at six charges and spec §11.5
-#:                 says it in writing — "naught and solari have no unspent
-#:                 cell left … that argument is available exactly twice and
-#:                 it has been spent twice". Open, and it was open before
-#:                 this increment widened it.
+#:   naught     0  WAS 12 (8 + 4) and is ZERO since inc61 (`rework-5c`,
+#:                 ruling A) — the LAST of the eleven. `∙` was the switch's
+#:                 ON indicator, and the composer draws that track TWO cells
+#:                 wide, so `naught_S3` rendered every live switch as `∙∙◉`
+#:                 — `∙∙` is `LEVELS["error"]` and the `DANGER_FORM` byte
+#:                 for byte, twelve rows above `◦ ∙Delete all∙ ◦`. `◉` was
+#:                 `REQUIRED` at both knobs. The live track is scoped to
+#:                 `switch.indicator` and takes `⊖`, the contact CLOSED;
+#:                 obligation takes `⊛`. `◦`, the dead track, is exempt by
+#:                 name — `THE_GROUND_IS_NOT_A_MARK`, one language, one cell.
 #:   corgi      0  WAS 16 (8 + 8) and is ZERO since inc58 (`rework-5c`,
 #:                 ruling A). The segment bank was the switch's whole
 #:                 track — `▄▄` ON, `▁▁` dead, `LEVELS["warn"]` and
@@ -3428,12 +3430,59 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #: SOLARI WAS 6 AND IS 0 (inc47): `▁` was `REQUIRED` and the switch's
 #: indicator and eighteen more chrome seats; obligation moved to `▮` and the
 #: seam went back to being alphabet. instrument and swiss went to zero in
-#: inc46, darkside in inc49, corgi in inc58, prism in inc59 and blueprint in
-#: inc60. TEN of the eleven are clean.
-MEANING_AT_A_NAMED_SEAT = {"naught": 12, "corgi": 0, "instrument": 0,
+#: inc46, darkside in inc49, corgi in inc58, prism in inc59, blueprint in
+#: inc60 and naught in inc61. **ALL ELEVEN are clean.**
+MEANING_AT_A_NAMED_SEAT = {"naught": 0, "corgi": 0, "instrument": 0,
                            "swiss": 0, "industrial": 0, "nord": 0,
                            "darkside": 0, "prism": 0, "ledger": 0,
                            "solari": 0, "blueprint": 0}
+
+
+#: THE SECOND NAMED EXEMPTION, ONE LANGUAGE AND ONE CELL (inc61) — and it is
+#: an extension of `BLANKS`, not of the rule.
+#:
+#: `BLANKS` above says the ASCII space and U+2800 BRAILLE PATTERN BLANK are
+#: "not a cell — a language that pads two roles with the same nothing has not
+#: overloaded anything". **naught's nothing is not a space.** LANGUAGES.md §0
+#: commits it to a VISIBLE unlit grid — "dark dots render in the dim tier
+#: rather than as spaces ... that faint lattice IS the signature" — so where
+#: ledger and blueprint write an info rung as `"  "`, naught writes `◦◦`, two
+#: UNLIT dots, and `naught_S1` draws some seven hundred more of them ruling
+#: every gap, every leader and both panes. A ground is not a mark.
+#:
+#: WHAT IT COVERS AND WHERE IT STOPS. `NA.OFF` only, at the two seat laws
+#: only. `NA.ON` — the LIT dot — is NOT in it and never will be: it carries
+#: `DANGER_FORM` and two rungs of the ladder, and inc61 moved every control
+#: off it (the switch's live track was drawing `∙∙`, byte for byte
+#: `LEVELS["error"]`, on five rows of `naught_S3`). The one-mark-one-meaning
+#: law is untouched — a ladder's rungs are MEANT to share cells — and so is
+#: the census, whose rows are questions rather than verdicts.
+#:
+#: DERIVED, NOT TYPED: the cell is read from `LG.NA.OFF`, so a kit that moves
+#: its unlit pixel moves the exemption with it and cannot leave a stale
+#: literal behind.
+THE_GROUND_IS_NOT_A_MARK = {
+    "naught": ("`NA.OFF` — the UNLIT lattice dot. LANGUAGES.md §0: \"the "
+               "unlit grid is visible ... that faint lattice IS the "
+               "signature\". It is this language's BLANK, the way `\"  \"` "
+               "is ledger's and blueprint's."),
+}
+
+
+def _seat_meanings(k, lang: str) -> set[str]:
+    """The cells a MEANING would be read from at a control seat, with the
+    named ground exemption subtracted.
+
+    ONE FUNCTION FOR BOTH SEAT LAWS, so the opener law and the named-seat law
+    can never drift apart about what a meaning is — which is the drift
+    `test_the_homoglyph_table_is_one_table_in_two_files` exists to prevent
+    one screen up, applied to this file's own two readers."""
+    out = (set("".join(k.LEVELS.values())) | {k.REQUIRED}
+           | set("".join(k.DANGER_FORM))) - set(BLANKS)
+    if lang in THE_GROUND_IS_NOT_A_MARK:
+        assert THE_GROUND_IS_NOT_A_MARK[lang].strip(), lang
+        out -= {LG.NA.OFF}
+    return out
 
 
 #: THE KNOB SEATS THE REGISTRY REACHES. `COMPONENT_PARTS` gives the switch,
@@ -3456,8 +3505,7 @@ def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
     spends its cursor cell on a knob has not told anybody their data is
     rejected. Named, so the narrowing is a decision and not an oversight."""
     k = LG.kit(lang)
-    meanings = (set("".join(k.LEVELS.values())) | {k.REQUIRED}
-                | set("".join(k.DANGER_FORM))) - set(" ⠀")
+    meanings = _seat_meanings(k, lang)
     out = []
     for comp in RULED_CONTROLS:
         for part in LG.COMPONENT_PARTS[comp]:
@@ -3606,15 +3654,19 @@ OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #: `MEANING_AT_A_NAMED_SEAT` and `HANDED_FIELDS` make, for the same reason:
 #: a roster is a record only while somebody has to edit it.
 #:
-#:   naught      3  2 + 1. `◦` opens the button and the field, and
-#:                  `LEVELS["info"]` is `◦◦`; inc51 adds `◉◉`, the ACTIVE
-#:                  step, whose first cell is `REQUIRED`. The first two are
-#:                  the roster's arguable entry: naught's info rung is ZERO
-#:                  LIT DOTS — the unlit lattice, which LANGUAGES.md §0 calls
-#:                  this language's visible GROUND — so "nothing is lit" and
-#:                  "an empty seat" may be one meaning rather than two. The
-#:                  argument is written here and NOT granted: an exemption is
-#:                  the operator's, and silence is not one.
+#:   naught      0  WAS 3 (2 + 1) and is ZERO since inc61 (`rework-5c`,
+#:                  ruling A). `◉◉`, the ACTIVE step, opened on `REQUIRED`
+#:                  and obligation moved off the charge ramp. **The other
+#:                  two were the argument this comment carried unresolved
+#:                  since inc48 and it is GRANTED now**: `◦` opens the button
+#:                  and the field, `LEVELS["info"]` is `◦◦`, and naught's
+#:                  info rung is ZERO LIT DOTS — the unlit lattice
+#:                  LANGUAGES.md §0 calls this language's visible GROUND. So
+#:                  "nothing is lit" and "an empty seat" ARE one thing, the
+#:                  way `"  "` is one thing for ledger and blueprint. The
+#:                  exemption is `THE_GROUND_IS_NOT_A_MARK`, by name, with
+#:                  its citation, and ruling A is the authority the comment
+#:                  said it was waiting for.
 #:   corgi       0  WAS 38 — the widest entry this roster ever carried — and
 #:                  is ZERO since inc58 (`rework-5c`, ruling A). The segment
 #:                  bank was `LEVELS` and the chrome ladder at once
@@ -3652,14 +3704,16 @@ OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                  sheet's own commitment ("a calm sheet carries zero
 #:                  alert") and `Ledger.LEVELS`'s precedent since inc45.
 #:
-#: TEN ARE ZERO: instrument (inc46), swiss (inc46 and inc51), industrial
-#: (inc48), darkside (inc48), nord (inc51), ledger and solari (inc47),
-#: corgi (inc58), prism (inc59) and blueprint (inc60). **naught is the last
-#: one, and inc61 is its increment.** **swiss and nord stayed at zero through the stepper's
+#: **ALL ELEVEN ARE ZERO SINCE inc61**: instrument (inc46), swiss (inc46 and
+#: inc51), industrial (inc48), darkside (inc48), nord (inc51), ledger and
+#: solari (inc47), corgi (inc58), prism (inc59), blueprint (inc60) and naught
+#: (inc61). Two exemptions carry the corpus and both are by name with a
+#: citation: `DANGER_IS_THE_TOP_RUNG` (four languages) and
+#: `THE_GROUND_IS_NOT_A_MARK` (naught's unlit dot). **swiss and nord stayed at zero through the stepper's
 #: arrival because inc51 paid their two `stepper.main` declarations rather
 #: than exempting them** — see `OPENING_CONTROLS` above for the bill and who
 #: paid it.
-MEANING_AT_AN_OPENER = {"naught": 3, "corgi": 0, "instrument": 0, "swiss": 0,
+MEANING_AT_AN_OPENER = {"naught": 0, "corgi": 0, "instrument": 0, "swiss": 0,
                         "industrial": 0, "nord": 0, "darkside": 0, "prism": 0,
                         "ledger": 0, "solari": 0, "blueprint": 0}
 
@@ -3679,8 +3733,7 @@ def meaning_marks_at_an_opener(lang: str) -> list[tuple]:
     moved off it in the same increment, so the rosters below are unchanged by
     the deletion itself and corgi's -2 is the DECLARATIONS moving."""
     k = LG.kit(lang)
-    meanings = (set("".join(k.LEVELS.values())) | {k.REQUIRED}
-                | set("".join(k.DANGER_FORM))) - set(" ⠀")
+    meanings = _seat_meanings(k, lang)
     out = []
     for comp in OPENING_CONTROLS:
         for part in LG.COMPONENT_PARTS[comp]:
@@ -4227,6 +4280,194 @@ def test_blueprint_says_nothing_when_there_is_nothing_to_note():
     assert "·" not in "".join(k.LEVELS.values())
     # ... and obligation is a RUN now, not a terminator.
     assert k.REQUIRED == "═" and k.REQUIRED not in (k.OPEN, k.CLOSE)
+
+
+# ===========================================================================
+# inc61 (rework-5c) — naught's lattice counts and its pixel charges
+# ===========================================================================
+#: WHAT THE GROUND EXEMPTION IS WORTH, ON THE SHIPPED KIT — `(opener, named)`
+#: with `THE_GROUND_IS_NOT_A_MARK` emptied and nothing else touched.
+#:
+#: IT GREW BY FIVE SEATS INSIDE THIS INCREMENT AND THAT IS THE COST, PRINTED.
+#: Before inc61 the exemption would have covered 2 openers (`button.main` and
+#: `textfield.main`, both opening on `◦`). inc61 retired `·` (§ the ramp) and
+#: `stepper.main`'s live rail could not take `⋅` — that is its DISABLED mark
+#: — so the rail moved onto the UNLIT LATTICE, `◦◦`, and five more seats now
+#: sit under the exemption. **Without it naught's opener roster would read 7,
+#: worse than the 3 it carried before this increment**, and a reader who only
+#: saw "3 → 0" would never learn that.
+GROUND_EXEMPTION_IS_WORTH = (7, 2)
+
+#: THE TWO DECLARATIONS inc61 MOVED IN naught, and what each is worth.
+#: `switch.indicator` DID NOT EXIST — the toggle fell through to the SLIDER's
+#: `indicator`, `NA.ON`, so its live track was the lit lattice dot at six
+#: named seats. The composer draws that track TWO cells wide, so the frame
+#: rendered `∙∙`, which is `LEVELS["error"]` and the `DANGER_FORM` byte for
+#: byte.
+NAUGHT_LATTICE_BEFORE = (
+    ("switch.indicator", None, (0, 6)),
+    ("REQUIRED", "◉", (1, 10)),
+)
+
+
+def test_the_seat_laws_go_red_on_the_two_declarations_inc61_moved(monkeypatch):
+    """TEETH — the last of the eleven, and the arms are of two KINDS because
+    the two defects were: a table that did not exist, and a meaning standing
+    on a rung of the control ramp.
+
+    THE ARMS ARE CUMULATIVE and the counts are asserted after each, so the
+    six named seats the unscoped switch is worth are legible apart from the
+    four the obligation mark is."""
+    def counts():
+        return (len(meaning_marks_at_an_opener("naught")),
+                len(meaning_marks_at_named_seats("naught")))
+
+    assert counts() == (0, 0)
+    glyphs = dict(LG.Naught.PART_GLYPHS)
+    for key, value, want in NAUGHT_LATTICE_BEFORE:
+        if key in glyphs or value is None:
+            assert key in glyphs, key
+            del glyphs[key]
+            monkeypatch.setattr(LG.Naught, "PART_GLYPHS", dict(glyphs))
+        else:
+            assert getattr(LG.Naught, key) != value, key
+            monkeypatch.setattr(LG.Naught, key, value)
+        assert counts() == want, (key, counts(), want)
+        for other in LANGS:
+            if other == "naught":
+                continue
+            assert (len(meaning_marks_at_an_opener(other))
+                    == MEANING_AT_AN_OPENER[other]), (key, other)
+            assert (len(meaning_marks_at_named_seats(other))
+                    == MEANING_AT_A_NAMED_SEAT[other]), (key, other)
+
+    with pytest.raises(AssertionError):
+        test_no_control_opens_with_a_mark_that_means_something("naught")
+    with pytest.raises(AssertionError):
+        test_a_meaning_never_stands_at_a_disabled_or_indicator_seat("naught")
+    monkeypatch.undo()
+    assert counts() == (0, 0)
+
+
+def test_the_ground_exemption_is_measured_and_not_a_silence(monkeypatch):
+    """AN EXEMPTION NOBODY HAS PRICED IS A SILENCE WITH A NAME ON IT.
+
+    `THE_GROUND_IS_NOT_A_MARK` is the second exemption in this file and the
+    first one granted since inc45. This asks what it costs on the SHIPPED
+    kit — empty the table, change nothing else, and read both rosters — and
+    asserts the number, so a later increment that quietly leans more weight
+    on it has to edit this line.
+
+    IT ALREADY GREW ONCE, INSIDE THE INCREMENT THAT GRANTED IT. See
+    `GROUND_EXEMPTION_IS_WORTH`: retiring `·` pushed `stepper.main`'s live
+    rail onto `◦◦`, five seats, because `⋅` is that part's DISABLED mark.
+
+    AND IT REACHES EXACTLY ONE LANGUAGE, asserted over all eleven: emptying
+    it moves naught and nothing else."""
+    before = {lang: (len(meaning_marks_at_an_opener(lang)),
+                     len(meaning_marks_at_named_seats(lang)))
+              for lang in LANGS}
+    assert set(THE_GROUND_IS_NOT_A_MARK) == {"naught"}
+    assert THE_GROUND_IS_NOT_A_MARK["naught"].strip()
+    assert all(v == (0, 0) for v in before.values()), before
+
+    # the table is this module's own global, so it is patched where the two
+    # readers actually look it up rather than through an import path.
+    monkeypatch.setitem(globals(), "THE_GROUND_IS_NOT_A_MARK", {})
+    after = {lang: (len(meaning_marks_at_an_opener(lang)),
+                    len(meaning_marks_at_named_seats(lang)))
+             for lang in LANGS}
+    assert after["naught"] == GROUND_EXEMPTION_IS_WORTH, after["naught"]
+    assert all(after[l] == (0, 0) for l in LANGS if l != "naught"), after
+    # ... and the cell it covers is DERIVED, so a kit that moves its unlit
+    # pixel moves the exemption with it.
+    assert LG.NA.OFF == "◦" and LG.NA.OFF in LG.kit("naught").LEVELS["info"]
+
+
+def test_no_control_draws_naughts_lit_lattice_dot():
+    """THE RULING'S SENTENCE: `NA.ON` belongs to the COUNT and to nothing
+    else.
+
+    naught reads the work by counting lit dots — `◦◦` none, `∙◦` one, `∙∙`
+    two, LANGUAGES.md §0's "how many are lit is the signal" — and reads a
+    control by how much of ONE pixel is charged. The two channels shared
+    cells until this increment: the switch's live track was `NA.ON` and the
+    composer draws it two cells wide, so `naught_S3` rendered `∙∙`, the error
+    rung and the danger form byte for byte, on five rows.
+
+    THE SLIDER AND THE BAR KEEP IT, by name and with the cost declared: "a
+    quantity is a row of discrete LIT DOTS" is §0, so a quantity IS the
+    count. They are outside the census's B set, so the cell produces no row —
+    which is the same trade corgi (inc58) and prism (inc59) made."""
+    k = LG.kit("naught")
+    for comp in RULED_CONTROLS:
+        for part in LG.COMPONENT_PARTS[comp]:
+            for st in LG.component_states(comp):
+                glyph = k.part_glyph(part, st, comp)
+                assert LG.NA.ON not in glyph, (comp, part, st, glyph)
+    assert k.PART_GLYPHS["indicator"][LG.DEFAULT] == LG.NA.ON, "the fill"
+    assert k.part_key("switch", "indicator") == "switch.indicator"
+    assert k.part_key("slider", "indicator") == "indicator"
+
+
+def test_the_charge_ramp_retired_its_ambiguous_rung():
+    """`·` IS GONE FROM naught, and the three reasons are asserted rather
+    than recited.
+
+    (1) It is the HOMOGLYPH of `NA.ON`, which carries the danger form and two
+    severity rungs — `("·", "∙")` is in the census's own `HOMOGLYPHS` table,
+    and ruling D forbids telling a MEANING from its CHROME that way.
+    (2) LANGUAGES.md §0's pass-10 had already measured it: "`•` (U+2022), `·`
+    (U+00B7) and `●` (U+25CF) measured and rejected".
+    (3) It is East-Asian-Width AMBIGUOUS, and width safety is the property
+    that pass chose the pixel pair for.
+
+    THE LADDER IS STILL A LADDER. Five rungs, `⋅ ◦ ∙ ◉ ●`, and the two the
+    retirement collapsed onto each other are asserted distinct at the one
+    part where both appear."""
+    import unicodedata as U
+    k = LG.kit("naught")
+    assert ("·", "∙") in HOMOGLYPHS or ("∙", "·") in HOMOGLYPHS
+    assert U.east_asian_width("·") == "A"
+    assert all(U.east_asian_width(c) == "N" for c in "⋅◦∙◉"), "the ramp"
+
+    drawn = "".join(k.part_glyph(part, st, comp)
+                    for comp in RULED_CONTROLS
+                    for part in LG.COMPONENT_PARTS[comp]
+                    for st in LG.component_states(comp))
+    assert "·" not in drawn, sorted(set(drawn))
+    step = k.PART_GLYPHS["stepper.main"]
+    assert step[LG.DEFAULT] != step[LG.DISABLED], step
+
+
+def test_ledger_does_not_bank_its_own_paper_up_by_size():
+    """RULING D, applied to two STATES of one part rather than to a meaning
+    against its chrome — which is the widening this increment had to decide.
+
+    ledger's field papered its EDITED state by drawing the leader `·` one
+    size larger, `∙`. The census read that as this language's one homoglyph
+    row (the A side being the INVALID rune, which the test law excludes by
+    name — so the row could only be closed from the CHROME side). Diameter
+    alone is not a channel, and it does not become one because both drawings
+    belong to the same part.
+
+    EDITED TAKES THE RULE. `◆` was the first answer — this kit's own EDITED
+    mark at the knob and at the stepper's step — and it is a ONE-CELL grip
+    mark at a FIFTEEN-CELL seat: the field's paper is the whole measure, and
+    a run of filled diamonds is a different claim from a grip that has been
+    turned. So the space an entry goes in is a dot leader at rest and a SOLID
+    RULE while it is being written, which is what a ledger does. The rule is
+    read off `indicator[DEFAULT]`, the same stroke the bar's fill draws, so
+    it is this kit's own mark rather than a literal chosen here."""
+    k = LG.kit("ledger")
+    edited = k.PART_GLYPHS["textfield.main"][LG.EDITED]
+    rune = k.PART_GLYPHS["textfield.main"][LG.DEFAULT][1]
+    assert rune == "·" and "∙" not in edited, (rune, edited)
+    assert _twin(rune) not in edited, (rune, _twin(rune), edited)
+    rule = k.PART_GLYPHS["indicator"][LG.DEFAULT]
+    assert rule in edited, (rule, edited)
+    # ... and the rule carries no meaning anywhere in this kit.
+    assert rule not in _seat_meanings(k, "ledger"), rule
 
 
 # ===========================================================================

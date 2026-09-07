@@ -416,21 +416,31 @@ FOUND_BY_HAND = (
 #: test suite's rosters make: a number is a record only while somebody has to
 #: edit it. A row here is NOT a defect; it is the question ruling D asks.
 #:
-#:   naught     2  `∙` (error+danger) against `·` at four controls, and `·`
-#:                 (the invalid rune) against `∙` at two. naught's whole
-#:                 alphabet is one round pixel at six charges, so this is
-#:                 that alphabet's own cost and no unspent cell exists.
-#:                 Decision A / spec §11.5, not fixed.
+#:   naught     0  WAS 2 and closed by inc61 (`rework-5c`, ruling A).
+#:                 `∙` (error+danger) stood against `·` at four controls,
+#:                 and `·` (the invalid rune) against `∙` at two — the
+#:                 alphabet was one round pixel at SIX charges and two of
+#:                 the six were `·` and `∙`. inc61 RETIRED `·`: it is the
+#:                 homoglyph of the lit dot, it is the one rung of the
+#:                 ramp that is East-Asian-Width AMBIGUOUS, and
+#:                 LANGUAGES.md §0's own pass-10 had already "measured and
+#:                 rejected" it. Five charges now: `⋅ ◦ ∙ ◉ ●`.
 #:   darkside   1  `o` is `LEVELS["warn"]` and `◦` is `radio.knob[default]`.
 #:                 inc53 moved the FIELD LEADER off `◦`; the radio's unchosen
 #:                 lamp still draws it, and the ruling covers the leader only.
 #:                 The leader is invisible to this census either way — it is
 #:                 drawn in `field_row`, outside `PART_GLYPHS` (inc49 §11).
-#:   ledger     1  `·` is the invalid rune and `∙` is `textfield` chrome.
+#:   ledger     0  WAS 1 and closed by inc61. `·` is the invalid rune and
+#:                 `∙` was the EDITED field's paper — one part telling two
+#:                 of its own STATES apart by size, which ruling D
+#:                 forbids whether the two drawings are a meaning and
+#:                 its chrome or two states of one seat. EDITED takes
+#:                 `◆`, this kit's own EDITED mark at the knob and the
+#:                 step.
 #:   swiss      0  closed by inc53: the radio's chosen mark left `●`.
-HOMOGLYPH_ROSTER = {"naught": 2, "corgi": 0, "instrument": 0, "swiss": 0,
+HOMOGLYPH_ROSTER = {"naught": 0, "corgi": 0, "instrument": 0, "swiss": 0,
                     "industrial": 0, "nord": 0, "darkside": 1, "prism": 0,
-                    "ledger": 1, "solari": 0, "blueprint": 0}
+                    "ledger": 0, "solari": 0, "blueprint": 0}
 
 
 def _self_check() -> None:

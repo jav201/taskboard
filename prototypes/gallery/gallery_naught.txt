@@ -14,10 +14,10 @@
                               ▌  ◦◦∙◦◦◦∙◦◦                                             ▐                              
                               ▌  ◦◦◦∙∙∙◦◦◦                                             ▐                              
                               ▌  checkable  switch    checkbox  off·on                 ▐                              
-                              ▌             ◉◦◦  ∙∙◉  ◦  ◉   default                   ▐                              
-                              ▌             ◍◦◦  ∙∙◍  ○  ●   focused                   ▐                              
-                              ▌             ●◦◦  ∙∙●  ◌  ◍   active                    ▐                              
-                              ▌             ◌··  ◦◦◌  ·  ◎   disabled                  ▐                              
+                              ▌             ◉◦◦  ⊖⊖◉  ◦  ◉   default                   ▐                              
+                              ▌             ◍◦◦  ⊖⊖◍  ○  ●   focused                   ▐                              
+                              ▌             ●◦◦  ⊖⊖●  ◌  ◍   active                    ▐                              
+                              ▌             ◌⋅⋅  ◦◦◌  ⋅  ◎   disabled                  ▐                              
                               ▌  radio      lo·mid·hi  set=mid cursor=hi               ▐                              
                               ▌             ○ lo  ⊙ mid  ○ hi   default                ▐                              
                               ▌             ○ lo  ⊙ mid  ◌ hi   focused                ▐                              
