@@ -1,0 +1,1119 @@
+{
+ "lang": "solari",
+ "screen": "S1",
+ "ground": "#0b0b0c",
+ "cols": 80,
+ "rows": 24,
+ "image": {
+  "w": 720,
+  "h": 456
+ },
+ "txt": {
+  "cols": 80,
+  "rows": 24
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    " BOARD ",
+    "#0b0b0c",
+    "#f0ede4",
+    false,
+    false
+   ],
+   [
+    7,
+    " form  cfg  log ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    23,
+    "                                                         ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " BOARD  16 TASKS  ·  4 PROJECTS                                                 ",
+    "#0b0b0c",
+    "#f0ede4",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    2,
+    " GATE BACKLOG 05              STATUS    PROJ          PRI ",
+    "#0b0b0c",
+    "#f0ede4",
+    false,
+    false
+   ],
+   [
+    60,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    " DETAIL  FIX     ",
+    "#0b0b0c",
+    "#f0ede4",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "21",
+    "#f0ede4",
+    "#17171a",
+    false,
+    false
+   ],
+   [
+    6,
+    "  AUDIT THE THEME TOKENS                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    46,
+    "ON TIME ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    54,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    56,
+    "LOW ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    "PROJECT",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    70,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    71,
+    "▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    76,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    77,
+    "Web",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "30",
+    "#f0ede4",
+    "#17171a",
+    false,
+    false
+   ],
+   [
+    6,
+    "  DROP THE LEGACY SHIM                  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    46,
+    "ON TIME ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    54,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    56,
+    "NORM",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    "PHASE",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    68,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    69,
+    "▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    74,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    75,
+    "doing",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    "DUE",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    66,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    67,
+    "▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    77,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    78,
+    "3d",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                               ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    "PRIORITY",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    71,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    72,
+    "▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    75,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    76,
+    "high",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▼",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    1,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    2,
+    " GATE DOING 04                STATUS    PROJ          PRI ",
+    "#0b0b0c",
+    "#f0ede4",
+    false,
+    false
+   ],
+   [
+    60,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    "STATUS",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    69,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    70,
+    "▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    75,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    76,
+    "open",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▼",
+    "#f5a300",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    1,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "03",
+    "#0b0b0c",
+    "#f5a300",
+    false,
+    false
+   ],
+   [
+    6,
+    "  FIX LOGIN REDIRECT                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    46,
+    "BOARDING",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    54,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    56,
+    "HIGH",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    "OWNER",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    68,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    69,
+    "▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    73,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    74,
+    "jav201",
+    "#f0ede4",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "02",
+    "#0b0b0c",
+    "#e03a2f",
+    false,
+    false
+   ],
+   [
+    6,
+    "  RATE-LIMIT THE API                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    46,
+    "LATE    ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    54,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    56,
+    "HIGH",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "   ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    63,
+    "DONE ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    68,
+    "007",
+    "#f0ede4",
+    "#17171a",
+    false,
+    false
+   ],
+   [
+    71,
+    " OF ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    75,
+    "016",
+    "#f0ede4",
+    "#17171a",
+    false,
+    false
+   ],
+   [
+    78,
+    "  ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "09",
+    "#f0ede4",
+    "#17171a",
+    false,
+    false
+   ],
+   [
+    6,
+    "  PORT THE CSV IMPORTER                 ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    46,
+    "ON TIME ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    54,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    56,
+    "NORM",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "14",
+    "#f0ede4",
+    "#17171a",
+    false,
+    false
+   ],
+   [
+    6,
+    "  REWRITE THE ONBOARDING                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    46,
+    "ON TIME ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    54,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    56,
+    "LOW ",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    2,
+    " GATE BLOCKED 00              STATUS    PROJ          PRI ",
+    "#0b0b0c",
+    "#f0ede4",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    " NO DEPARTURES",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    18,
+    "                                                              ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "view",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    4,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    5,
+    "▔",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    6,
+    "▄▄▄▄",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    10,
+    "▔▔▔▔▔▔▔",
+    "#1f1f22",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    17,
+    " ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    18,
+    "3-10 of 23",
+    "#6e6a60",
+    "#0b0b0c",
+    false,
+    false
+   ],
+   [
+    28,
+    "                                                    ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#0b0b0c",
+    false,
+    false
+   ]
+  ]
+ ]
+}

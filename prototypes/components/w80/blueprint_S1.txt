@@ -1,0 +1,24 @@
+BOARD  ·── 16 TASKS  ·  4 PROJECTS                                              
+                                                                                
+  BACKLOG                                   ├─ 05 ─┤        ┤ ├DETAIL  ·── FIX  
+    AUDIT THE THEME TOKENS                  ├╌─── 21D ─────┤                    
+    ·── DOCS ── BACKLOG ── LOW                                 PROJECT ·──── Web
+    DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   PHASE ·──── doing
+    ·── API ── BACKLOG ── NORM                                 DUE ·───────── 3d
+                                                               PRIORITY ·── high
+┌ DOING                                     ├ 04 ─┤            STATUS ·──── open
+┌   FIX LOGIN REDIRECT                      ├───┤ 03D          OWNER ·─── jav201
+    ·── WEB ── DOING ── HIGH                                                    
+    RATE-LIMIT THE API                      ├──┤ 02D!          WORK ├───┤ 07/16 
+    ·── API ── DOING ── HIGH                                                    
+    PORT THE CSV IMPORTER                   ├── 09D ──┤                         
+    ·── API ── DOING ── NORM                                                    
+    REWRITE THE ONBOARDING                  ├──── 14D ─────┤                    
+    ·── WEB ── DOING ── LOW                                                     
+                                                                                
+  BLOCKED                                   ├┤ 00                               
+      ▌▄▄▐        ▌▄▄▐                                                          
+      ▌▄▄▐        ▌▄▄▐                                                          
+┌     ┐                          ─────────                                      
+ BOARD  form  cfg  log           ├ CLEAR ┤                                      
+└     ┘                          ─────────                                      

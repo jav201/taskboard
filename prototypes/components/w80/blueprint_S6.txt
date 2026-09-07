@@ -1,0 +1,24 @@
+COMMAND  ·── QUERY 'RE'  ·  6 RESULTS                                           
+                                                                                
+  > ╞re╪─────────────────────────────────────╡                                  
+                                                                                
+  ┌ redirect to task                            enter                           
+    rename project                                                              
+    refresh board                               r                               
+    archive released                                                            
+    restore from backup                                                         
+    set reminder                                                                
+                                                                                
+                                                                                
+  > ╞zzq╪────────────────────────────────────╡                                  
+                                                                                
+      ▌▄▄▐        ▌▄▄▐                                                          
+      ▌▄▄▐        ▌▄▄▐                                                          
+                                                                                
+    ▀▀                ▀▀                                                        
+      ▀▀            ▀▀                                                          
+        ▀▀▀▀▀▀▀▀▀▀▀▀                                                            
+     NO ITEMS ON SHEET                                                          
+┌     ┐                          ─────────                                      
+ BOARD  form  cfg  log           ├ CLEAR ┤                                      
+└     ┘                          ─────────                                      

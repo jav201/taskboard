@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692.0 428.0" role="img" aria-label="taskboard · industrial · S4 modal dialog">
+<title>taskboard · industrial · S4 modal dialog</title>
+<rect width="692.0" height="428.0" fill="#1a1a1a"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="10.0" y="23.3" fill="#4a4a4a">[1]BOARD [2]form [3]cfg [4]log</text>
+<text x="10.0" y="40.3" fill="#4a4a4a">[BOARD]  16 tasks  ·  4 projects</text>
+<text x="10.0" y="57.3" fill="#4a4a4a">───────────────────────────────────────────────────────────────────────────────</text>
+<text x="10.0" y="74.3" fill="#4a4a4a">  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fix</text>
+<text x="10.0" y="91.3" fill="#4a4a4a">    ▐ 05 ▌ Audit the theme tokens                      [21d]▌ ▐────────────────</text>
+<text x="10.0" y="108.3" fill="#4a4a4a">           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT       Web</text>
+<text x="10.0" y="125.3" fill="#4a4a4a">    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE       doing</text>
+<text x="10.0" y="142.3" fill="#4a4a4a">           [PH:BACK][DUE:30D][PR:N]                         ▌ ▐DUE            3d</text>
+<text x="169.6" y="159.3" fill="#f2f2f2">▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜</text>
+<text x="169.6" y="176.3" fill="#f2f2f2">▌</text>
+<text x="186.4" y="176.3" fill="#f2f2f2">Delete 3 tasks?</text>
+<text x="505.6" y="176.3" fill="#f2f2f2">▐</text>
+<text x="169.6" y="193.3" fill="#f2f2f2">▌</text>
+<text x="505.6" y="193.3" fill="#f2f2f2">▐</text>
+<text x="169.6" y="210.3" fill="#f2f2f2">▌</text>
+<text x="186.4" y="210.3" fill="#959595">3 tasks will be removed from BACKLOG.</text>
+<text x="505.6" y="210.3" fill="#f2f2f2">▐</text>
+<text x="169.6" y="227.3" fill="#f2f2f2">▌</text>
+<text x="186.4" y="227.3" fill="#959595">This cannot be undone.</text>
+<text x="505.6" y="227.3" fill="#f2f2f2">▐</text>
+<text x="169.6" y="244.3" fill="#f2f2f2">▌</text>
+<text x="505.6" y="244.3" fill="#f2f2f2">▐</text>
+<text x="169.6" y="261.3" fill="#f2f2f2">▌</text>
+<text x="186.4" y="261.3" fill="#ff6039">▐_</text>
+<text x="203.2" y="261.3" fill="#f2f2f2">╱╱Delete╱╱</text>
+<text x="287.2" y="261.3" fill="#ff6039">_▌</text>
+<text x="329.2" y="261.3" fill="#f2f2f2">▐   Cancel   ▌</text>
+<text x="505.6" y="261.3" fill="#f2f2f2">▐</text>
+<text x="169.6" y="278.3" fill="#f2f2f2">▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟</text>
+<text x="10.0" y="295.3" fill="#4a4a4a">    ▐ 04 ▌ Rewrite the onboarding                      [14d]▌ ▐</text>
+<text x="10.0" y="312.3" fill="#4a4a4a">           [PH:DOIN][DUE:14D][PR:L]                         ▌ ▐</text>
+<text x="10.0" y="329.3" fill="#4a4a4a">                                                            ▌ ▐</text>
+<text x="10.0" y="346.3" fill="#4a4a4a">  ▐▌ [3]BLOCKED                                         [ 0]▌ ▐</text>
+<text x="10.0" y="363.3" fill="#4a4a4a">     ██    ██                                               ▌ ▐</text>
+<text x="10.0" y="380.3" fill="#4a4a4a">     ██    ██                                               ▌ ▐</text>
+<text x="10.0" y="397.3" fill="#4a4a4a">view [-###------] 3-10 of 23                                </text>
+</g>
+</svg>

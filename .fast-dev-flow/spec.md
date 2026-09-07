@@ -2249,3 +2249,122 @@ nowhere else. **The skill repo is not committed**, per the batch's own standing 
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1249 → 1338 passed** (+89), the clipboard test red at the baseline and named in every packet — environment-coupled (§10.6), reported, not counted, not touched. `verify_language.py` **ALL PASSED exit 0** at every increment (and RED three times inside inc72, on the first draft of the blueprint fix — §19.9). `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` 66 of 66, refusals `[]` for all eleven. `capture_languages.py plain` 22 grids identical across two processes at every increment. `collision_census.py` both self-checks green; **TOTAL 30 → 28**, **homoglyph rows 26 → 24**. `export_to_skill.py` **14 written, 52 identical**. |
 | Notes | **Four increments, one agent, 2–3 source files each** (`taskboard/language.py`, `taskboard/themes.py`, `tests/test_components.py`, `prototypes/collision_census.py`). Twelve laws, eight teeth, one law retired, three constants re-measured. **Two of the brief's seven rulings were reported back with arithmetic and corrected by the orchestrator before any token moved**, which is the batch's own finding and is why §19.5 exists. |
+
+---
+
+## 20. Batch `rework-7b` — the instrument the fifth round was refused three times
+
+`PROTOTYPE-inheritors-4.md` §9d ends with a recommendation and not a rework list: *«parar la ronda y
+cambiar el instrumento … construir el raster (E2) y solo entonces correr la ronda cinco, contra el
+raster y a dos anchos.»* **This batch is that instrument and nothing else.** Three increments, one
+agent, 2–3 source files each. **No kit was edited, no token moved, no frame moved:** the 66 `.txt`,
+the 66 `.svg` and the census's `28 / 24` are byte-for-byte what `0ec5904` shipped.
+
+### 20.1 The ruling, as given
+
+> **The fifth round runs against a raster at real cell size, not against svg attributes; the raster is
+> an instrument the suite owns.** (orchestrator, 2026-09-07, on the operator's delegation)
+
+Three sub-rulings, one per increment: the font is a **declared constant, never inferred**; the
+legibility floor is **proposed, not enforced**; the second width **judges and does not fix** —
+*"Do not fix languages here; the round judges."*
+
+### 20.2 What each increment did
+
+| inc | ruling | what it built | artefacts |
+| --- | --- | --- | --- |
+| 76 | **E2**, three rounds open | `raster.py`: 66 PNGs at **Cascadia Mono 16 px, 9×19 px per cell**, measured off the font, byte-identical across two processes. `render.one()` splits into `frame()` + two `write_text` calls so the PNG and the SVG come out of one `cell_grid`. | **66 png + 66 json** · 0 of 132 existing artefacts moved |
+| 77 | the four measures | `legibility.py` → `prototypes/out/legibility.txt` (591 lines): ink area per glyph, homoglyph XOR distance, per-cell coverage and effective contrast, coverage × effective for all 79 meaning marks. | **1 report** · 0 artefacts moved |
+| 78 | a second width | `second_width.py`: the same six screens at **80×24**, txt + svg + png + json, and 79 law-arms asked of them. | **264 in `w80/`** · 0 artefacts moved |
+
+### 20.3 The five findings the batch produced, in the order they landed
+
+1. **`•` U+2022 and `∙` U+2219 are LITERALLY ONE DRAWING** in this face: XOR area `0.0`, not `0.004`,
+   found by sweeping all **20 706** pairs of the corpus's painted glyphs rather than by reading a
+   family list. `HOMOGLYPH_FAMILIES` puts them in one row on the strength of a reading and this is the
+   first artefact that can say the reading was not a guess. **No kit draws both** — naught spends `∙`
+   134 times (danger + severity), swiss spends `•` twice (required) — so it is two languages holding
+   one drawing for incompatible meanings, and it is stated that way rather than as a collision.
+2. **Seven of the ten pairs four rounds argued about are 15–27 % of a cell apart.** `• ●` 21.64,
+   `○ ◦` 22.81, `◎ ◉` 21.42, `▪ ■` 26.52, `▬ ◦` 17.09, `⠇ ⠸` 15.13. The three that survive the
+   measurement are the dash ladder (`┄ ┈` 2.79, `╌ ┄` 4.09, `╌ ┈` 4.46) and `† ‡` at 4.87 — which is
+   the set the rounds treated as tightest. **The instrument agrees with the reading where the reading
+   was careful and contradicts it where it was not.** And the census's tightest row is **darkside
+   `▪ ▫` at 3.20 %**, not ledger's `† ‡` at 4.87 — the ranking three documents assert is wrong by one
+   place.
+3. **Ruling F fails for solari at 24 rows.** *A confirm never covers the gate it names*: at 32 rows a
+   confirm about `DOING` puts its band at 24–28, clear below `DOING`'s block; at 24 rows there is no
+   below, the band lands at 17–22 and eats rows 17 and 18, which are `DOING`'s own departures. **The
+   placement rule was written, and tested, on a page that always had somewhere to go.**
+4. **`⠀` U+2800 draws nothing and `capture_languages.ink()` counts it as ink 421 times** — instrument
+   174, prism 247. Every density argument four rounds made about those two kits counts 421 cells of
+   nothing. A defect of the DENSITY MEASURE, not of the kits; not fixed, because `ink()` is shared with
+   the board sweep.
+5. **A law's magic number outlived the width it was measured at.**
+   `test_a_confirm_opens_and_closes_on_marks_of_its_own` spells "at full measure" as `any(w > 800)`;
+   800 is 100 cells × 8.4 units. At 80 columns solari's plate is 672 units and IS at full measure.
+   **The frame is correct and the law is wrong**, and the fix is deliberately not taken in the
+   increment that found it.
+
+### 20.4 The laws this batch added
+
+**Eleven laws and two teeth, all reading artefacts as bytes** — no increment imports `raster.py` or
+`legibility.py` into the suite, on the stance `test_this_files_picture_metrics_are_the_exporters`
+already takes: the instrument's declarations are restated in the test file and checked against the
+artefact it shipped, so the two can only agree by being right.
+
+- **inc76** — the raster's declarations are the ones the suite measures against (source + all 66
+  sidecars); cells × box = pixels, read out of the **IHDR by hand**; **every pixel of every distinct
+  cell lies on the segment between that cell's two declared colours**, within one unit per channel
+  (7081 distinct cells, worst error 1), with tile identity as the no-bleed clause; the face's full
+  block leaves a seam. **Teeth on three mutants of `instrument`'s shipped PNGs**, including inc63's
+  wrong-ground defect reproduced in the new artefact.
+- **inc77** — a homoglyph distance is zero only when the drawings are one (20 706 pairs, exactly one
+  zero, named); the ten argued pairs measured independently AND parsed out of the shipped report; the
+  report on disk is the one this corpus produces. **Teeth: the swap the brief named** — make ledger's
+  `‡` the same drawing as its `†` and the corpus's zero-pair sweep returns two where it returned one.
+- **inc78** — the 80×24 corpus is the rectangle it claims; **53 law-arms re-run with `FRAMES` pointed
+  at `w80/`, with a control arm that runs the same 53 at 100×32 first**; and ruling F's failure stated
+  in arithmetic rather than in a test id.
+
+### 20.5 What the batch refused to do, and why each refusal is written down
+
+- **The floor is proposed and not enforced.** Coverage × effective contrast has no published precedent
+  (WCAG 1.4.3 and 1.4.11 are both ratios), half of what it would fail is decoration and no instrument
+  can tell which half, and the face is not the terminal. **45 of the 79 meaning marks are under 3:1 on
+  declared contrast at the seat the report picks** — labelled in the report itself as **the size of the
+  question and not a count of violations**, because inc74 judged those seats one at a time and
+  `DIM_CLASSIFIES` is the shape that answer takes.
+- **Three questions are left for a ruling:** is it coverage × effective or two clauses with two floors;
+  does it bind every meaning mark or only the ones a `DIM_CLASSIFIES`-shaped list says classify; is a
+  mark judged at its worst seat or its declared one — **the answer changes which kits are in the top
+  ten.**
+- **solari's ruling-F failure is recorded and not fixed**, and so is the `w > 800` clause. Changing a
+  law to make a red go away in the increment that found it is how a gate stops meaning anything.
+- **No new dependency.** `fontTools` would have been the obvious way to ask which glyphs a face covers;
+  the question is asked of FreeType instead — a glyph is missing when its bitmap equals what two absent
+  codepoints draw — and the two methods were cross-checked (identical answers on four faces,
+  4 / 4 / 64 / 87) before the dependency was declined.
+
+### 20.6 The instrument, in numbers
+
+```
+face        Cascadia Mono 16 px, C:\WINDOWS\Fonts\CascadiaMono.ttf   (Windows Terminal's default)
+cell        9 x 19 px, measured: advance 9.0, ascent 15, descent 4   (the .svg's 8.4 x 17 is nominal)
+bold        the variable font's `Bold` instance, not a synthetic stroke
+fallback    Segoe UI Symbol for the 4 cells Cascadia lacks -- the three circled operators and the dot
+            operator -- at 11/11/11/16 px, centred
+rejected    Cascadia Code (ligatures), Consolas (64 cells missing), Lucida Console (87)
+corpus      206 distinct cells, 205 painted, 36 993 painted cells, 7081 distinct drawings
+artefacts   66 png + 66 json (2.6 + 1.0 MB) - 1 report (591 lines) - 264 files at 80x24 (4.1 MB)
+```
+
+### 20.7 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc76, inc77, inc78 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1338 → 1370 passed** (+32), the clipboard test red at the baseline and named in every packet — environment-coupled (§10.6), reported, not counted, not touched. `verify_language.py` **ALL PASSED exit 0** at every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` refusals `[]` for all eleven. `collision_census.py` **TOTAL 28, homoglyph rows 24 — unchanged at every increment**. `raster.py` **66 PNGs identical across two PROCESSES**. `legibility.py` **byte-identical across two PROCESSES**. `second_width.py` 0 rows cut, 330 pairs distinct. `capture_languages.py` and `export_to_skill.py` **not run** — no kit, token or gallery artefact was touched, and running them would have been the only way to move one. |
+| Notes | **Three increments, one agent, 2–3 source files each.** Eleven laws, two teeth, **zero kit edits**. The 66 `.txt`, the 66 `.svg`, the 22 gallery artefacts and the census are byte-identical to `0ec5904`. **E2 is closed as an instrument and none of the seven objections it was blocking has a verdict** — that is the fifth round's job, and this batch exists so it can fail in a way the fourth could not. |

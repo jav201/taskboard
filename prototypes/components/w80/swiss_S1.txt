@@ -1,0 +1,24 @@
+B O A R D   form   cfg   log                                                    
+B O A R D   16 tasks  ·  4 projects                                             
+─────────────────────────────────────────────────────────────────────────────── 
+                                                                                
+  B A C K L O G                 5                              D E T A I L   Fix
+  ─────────────────────────────────────────────────────────    ──────────────── 
+    Audit the theme tokens       21d                                            
+    Drop the legacy shim         30d                           project        We
+                                                               phase          do
+▮ D O I N G                     4                              due            3d
+▮   Fix login redirect           3d                            priority       hi
+    Rate-limit the API           2d!                           status         op
+    Port the CSV importer        9d                            owner          ja
+    Rewrite the onboarding       14d                                            
+                                                               ━━━────  44%     
+  B L O C K E D                                                                 
+     nothing here                                                               
+                                                                                
+  D O N E                       7                                               
+                                                                                
+                                                                                
+                                                                                
+view ┄▬▬▬▬┄┄┄┄┄┄┄ 3-10 of 23                                                    
+                                                                                

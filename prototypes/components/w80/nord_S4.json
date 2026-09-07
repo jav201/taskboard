@@ -1,0 +1,695 @@
+{
+ "lang": "nord",
+ "screen": "S4",
+ "ground": "#2e3440",
+ "cols": 80,
+ "rows": 24,
+ "image": {
+  "w": 720,
+  "h": 456
+ },
+ "txt": {
+  "cols": 80,
+  "rows": 24
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    "▸board │  form │  cfg │  log",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "BOARD  16 tasks  ·  4 projects",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    "                                                  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  BACKLOG 5▂                                                 │ DETAIL  Fix",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    74,
+    "      ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ─────────────────────────────────────────────────────────  │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    Audit the theme tokens                              21d  │ project       Web",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "      Docs · backlog                                         │ phase       doing",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    Drop the legacy shim                                30d  │ due            3d",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "┌───────────────────────────────────────┐",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    21,
+    "Delete 3 tasks?",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    36,
+    "                       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    59,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    20,
+    "                                       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    59,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    21,
+    "3 tasks will be removed from BACKLOG.",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    58,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    59,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    21,
+    "This cannot be undone.",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    "                ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    59,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    20,
+    "                                       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    59,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    21,
+    "▐ ",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    23,
+    " #Delete# ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    33,
+    " ▌",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    35,
+    "   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    38,
+    "[   Cancel   ]",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    52,
+    "       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    59,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "└───────────────────────────────────────┘",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    Port the CSV importer                                9d  │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "      API · doing                                            │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    Rewrite the onboarding                              14d  │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "      Web · doing                                            │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                             │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  BLOCKED 0                                                  │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                 ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "view ░████░░░░░░░ 3-10 of 23                                ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ]
+ ]
+}

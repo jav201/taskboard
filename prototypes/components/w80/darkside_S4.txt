@@ -1,0 +1,24 @@
+(●)board  ( )form  ( )cfg  ( )log                                               
+board  16 tasks  ·  4 projects                                                  
+                                                                                
+  ▏  backlog 5                                                 detail  fix      
+    ▏  audit the theme tokens                           21d                     
+    ▏    backlog · d21                                         project     ▔ Web
+    ▏  drop the legacy shim                             30d    phase     ▔ doing
+    ▏    backlog · d30                                         due          ▔ 3d
+                   ╭───────────────────────────────────────╮                    
+                   │ Delete 3 tasks?                       │                    
+                   │                                       │                    
+                   │ 3 tasks will be removed from BACKLOG. │                    
+                   │ This cannot be undone.                │                    
+                   │                                       │                    
+                   │ ▮  ▚Delete▞  ▮   ▬   Cancel   ▬       │                    
+                   ╰───────────────────────────────────────╯                    
+    ▏  rewrite the onboarding                           14d                     
+    ▏    doing · d14                                                            
+                                                                                
+  ▏  blocked 0                                                                  
+     nothing here                                                               
+                                                                                
+view ▁████▁▁▁▁▁▁▁ 3-10 of 23                                                    
+                                                                                
