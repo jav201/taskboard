@@ -1,0 +1,32 @@
+                                                                                                    
+  [S] S I G N A L S  WHAT THE WIDGET WATCHES                                                        
+  ─────────────────────────────────────────────────────────────────────────────────────────────     
+▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+                                                                                                    
+  🔎 refre                                                                                           
+                                                                                                    
+                                                                                                    
+  Refresh now                                                                                       
+  Recompute every signal immediately                                                                
+▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+     ▒▒Refresh▒▒  recompute every signal now                                                        
+                                                                                                    
+   esc/q back · space toggle · [ threshold - · ] threshold + · r refresh                            
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+ esc/q Back  space Toggle  [ Threshold -  ] Threshold +  r Refresh  ? Keys  t Language  ▏^p palette 

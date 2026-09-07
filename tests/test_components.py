@@ -11563,3 +11563,330 @@ def test_the_match_that_rides_hue_alone_keeps_a_thin_step_in_grey():
     text = LEGIBILITY.read_text(encoding="utf-8")
     assert (f"{len(hue)} kits carry the match on HUE ALONE") in text
     assert "0 of them lose it in grey" in text, "the report is stale"
+
+
+# ---------------------------------------------------------------------------
+# inc91 - THE ROUND THAT PRESSES A KEY.  What five rounds could not look at.
+#
+# `PROTOTYPE-inheritors-5.md` converged on one sentence - *"a frame cannot fail
+# on focus because a frame has no focus"* - and `SESION-PERSONA.md` section 7.3
+# named the instrument that had been sitting unused since the corpus existed:
+# `App.run_test()` + `Pilot`.  `prototypes/components/keys.py` drives the real
+# widget slice through a six-step script in each of the eleven languages and
+# writes 66 frames plus a sidecar apiece.
+#
+# READ AS ARTEFACTS, NOT IMPORTED - the stance this file has taken since inc73.
+# The script is DECLARED AGAIN here, so the two declarations can only agree by
+# somebody editing both; a step renamed in the instrument and not here fails
+# loud rather than quietly measuring a different press.
+# ---------------------------------------------------------------------------
+
+KEYS = FRAMES / "keys"
+
+#: The six steps, restated.  `keys.SCRIPT` is the other copy.
+KEY_SCRIPT = {
+    1: ("initial", ()),
+    2: ("focus", ("tab", "tab", "tab")),
+    3: ("modal", ("question_mark",)),
+    4: ("escape", ("escape",)),
+    5: ("invalid", ("c", "1", "2", "slash", "9", "9", "slash", "2", "6",
+                    "tab")),
+    6: ("match", ("ctrl+p", "r", "e", "f", "r", "e")),
+}
+
+#: THE FRAME THE FOURTH STEP IS JUDGED AGAINST, and it is K2 rather than K1.
+#: A law that asked `escape` to give back K1 would be asking it to undo the
+#: three tabs the script pressed one step earlier.  What a modal owes is the
+#: page it COVERED.
+KEY_RESTORE_AGAINST = 2
+
+#: THE TWO STEPS NO KEY IN THIS APP CAN REACH, recorded with the reason.  This
+#: is a STALE CHECK in the shape `SEEN_BY_EYE` established: the day the widget
+#: grows a live invalid seat or the palette starts speaking the language, the
+#: law below goes red and somebody has to come here and delete a row on
+#: purpose.  A recorded failure that could quietly become a pass is a record
+#: nobody is keeping.
+KEY_UNREACHABLE = {
+    5: "the widget has no live TYPED seat, so the INVALID state all eleven "
+       "kits draw at S2 is reachable by no key",
+    6: "the command palette paints Textual's own chrome, so the one live "
+       "match run in the app is in no kit's MATCH_STYLE",
+}
+
+
+def _key_side(lang: str, n: int) -> dict:
+    import json
+    return json.loads((KEYS / f"{lang}_K{n}.json").read_text(encoding="utf-8"))
+
+
+def _key_cells(side: dict) -> list[list]:
+    """The sidecar's runs back to a grid of `(ch, fg, bg, bold, underline)`.
+
+    An EMPTY run text is the continuation cell of a double-width glyph - the
+    command palette's prompt is the corpus's first - and it is kept as its own
+    column so that column N of this grid is column N of the terminal.
+    """
+    out = []
+    for runs in side["grid"]:
+        row = []
+        for _x0, text, fg, bg, bold, und in runs:
+            if text:
+                for ch in text:
+                    row.append((ch, fg, bg, bold, und))
+            else:
+                row.append(("", fg, bg, bold, und))
+        out.append(row)
+    return out
+
+
+def _key_box(cells, region):
+    x, y, w, h = region
+    return [tuple(r[x:x + w]) for r in cells[y:y + h] if r]
+
+
+def test_the_key_script_the_frames_were_taken_with_is_the_one_declared():
+    """THE ROSTER, and it is the law that makes the other five mean anything.
+
+    66 sidecars, each carrying the step it is, the keys that were pressed to
+    reach it, the viewport and the language.  Two independent declarations of
+    the script - this dict and `keys.SCRIPT` - must agree, because a frame
+    labelled `K3 modal` that was taken by pressing something else is a frame
+    every later law would misread."""
+    for lang in LANGS:
+        for n, (name, keys) in KEY_SCRIPT.items():
+            s = _key_side(lang, n)
+            assert s["lang"] == lang and s["step"] == n, (lang, n)
+            assert s["name"] == name, (lang, n, s["name"], name)
+            assert tuple(s["keys"]) == keys, (lang, n, s["keys"])
+            assert (s["cols"], s["rows"]) == (100, 32), (lang, n, s["cols"])
+            assert s["ground"] == LG.THEMES[lang]["ground"], (lang, n)
+    assert len(list(KEYS.glob("*_K?.json"))) == len(LANGS) * len(KEY_SCRIPT)
+    for ext in ("txt", "svg", "png"):
+        assert len(list(KEYS.glob("*_K?." + ext))) == \
+            len(LANGS) * len(KEY_SCRIPT), ext
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_seat_that_holds_focus_is_drawn_differently_when_it_holds_it(lang):
+    """K2 - THE FIRST THING IN THIS CORPUS THAT COULD EVER FAIL ON FOCUS.
+
+    Three tabs move the ring off the app's `AUTO_FOCUS` seat and onto a third
+    one.  The law is judged on the FOCUSED WIDGET'S OWN REGION and nowhere
+    else: an app that redrew a clock somewhere on the page would otherwise
+    pass a focus law by accident.
+
+    The tooth is in the same function, because the mutant is the FRAME and not
+    the code: the same measurement is run over a pair that did not move, and
+    it must find nothing."""
+    a, b = _key_side(lang, 1), _key_side(lang, 2)
+    region = b["focus"]["region"]
+    assert region is not None, (lang, "nothing holds focus after three tabs")
+    assert b["focus"]["id"] != a["focus"]["id"], (lang, "the ring never moved")
+    before = _key_box(_key_cells(a), region)
+    after = _key_box(_key_cells(b), region)
+    moved = [(x, y) for y, (ra, rb) in enumerate(zip(before, after))
+             for x, (p, q) in enumerate(zip(ra, rb)) if p != q]
+    assert moved, (lang, b["focus"]["id"], region,
+                   "the seat that holds focus is drawn exactly as it was "
+                   "drawn without it")
+    same = [(x, y) for y, (ra, rb) in enumerate(zip(before, before))
+            for x, (p, q) in enumerate(zip(ra, rb)) if p != q]
+    assert not same, "the measurement finds a difference where there is none"
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_modal_draws_a_band_and_the_band_is_the_kits_own_panel(lang):
+    """K3 - the modal is OPEN, which is not a thing a sheet can be.
+
+    Two clauses.  The band EXISTS - the screen the key pushed has a box with a
+    rectangle of its own - and the band's ground is this kit's `panel`, not the
+    skeleton's `#0d1219`.  The second clause is the one with a history:
+    `widget.tcss` hard-codes `#0d1219` for both modal boxes and
+    `themes.tcss()` overrides it per language, so a law that only asked
+    whether a box existed would have passed on eleven identical boxes."""
+    s = _key_side(lang, 3)
+    band = s["band"]
+    assert band is not None, (lang, s["screen"], "no modal box")
+    assert band[2] > 0 and band[3] > 0, (lang, band)
+    inside = _key_box(_key_cells(s), band)
+    grounds = {c[2] for row in inside for c in row}
+    panel = LG.THEMES[lang]["panel"]
+    assert panel in grounds, (lang, panel, sorted(grounds))
+    assert "#0d1219" not in grounds or panel == "#0d1219", \
+        (lang, "the skeleton's own modal ground reached the frame")
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_escape_gives_back_the_page_the_modal_covered(lang):
+    """K4 - the round's one law about UNDOING something.
+
+    Cell for cell against K2, which is the frame the modal was drawn over.
+    And the second clause is what stops this passing on a dead app: K4 must
+    NOT equal K1, because three tabs moved the ring and a page that came back
+    identical to K1 would have thrown the focus walk away."""
+    a = _key_cells(_key_side(lang, 4))
+    b = _key_cells(_key_side(lang, KEY_RESTORE_AGAINST))
+    one = _key_cells(_key_side(lang, 1))
+    assert len(a) == len(b), (lang, len(a), len(b))
+    bad = [(x, y) for y, (ra, rb) in enumerate(zip(a, b))
+           for x, (p, q) in enumerate(zip(ra, rb)) if p != q]
+    assert not bad, (lang, len(bad), bad[:6])
+    assert a != one, (lang, "escape gave back a page that predates the tabs")
+
+
+def _invalid_field_seats(lang: str, cells) -> list:
+    """Every place the language's INVALID FIELD is drawn: wall, paper, wall.
+
+    ASKED AS A SEAT AND NOT AS A CHARACTER, and the difference was measured
+    rather than assumed.  Asked as *"is any cell anywhere drawing the wall
+    glyph in the wall tone"*, this passed on instrument (5 cells) and
+    industrial (2) - both of which spend those glyphs as chrome elsewhere.
+    That is `spec.md` section 23.3.1 one instrument further out: `role_map`
+    keyed by CHARACTER credited darkside's prose `o` to its severity family,
+    and inc87 fixed it by asking what the CONTRACT PAINTS.  The shape below is
+    `field_form`'s own, with the walls in `field_wall_tone`'s tier and the
+    paper in another - that method's own doctrine."""
+    k = LG.kit(lang)
+    op, _rune, cl = k.field_form(LG.INVALID, "textfield")
+    tone = k.field_wall_tone(LG.INVALID, "textfield").lower()
+
+    def at(row, x, glyph):
+        return all(x + i < len(row) and row[x + i][0] == ch
+                   and row[x + i][1].lower() == tone
+                   for i, ch in enumerate(glyph))
+
+    seats = []
+    for y, row in enumerate(cells):
+        for x in range(len(row)):
+            if not at(row, x, op):
+                continue
+            j = x + len(op)
+            while j < len(row) and row[j][1].lower() != tone:
+                j += 1
+            if j > x + len(op) and at(row, j, cl):
+                seats.append((y, x))
+    return seats
+
+
+def _match_run(lang: str, cells) -> list:
+    """Every cell painted in the channel this kit's `MATCH_STYLE` declares.
+
+    REVERSE IS READ OFF THE BACKGROUND.  `cell_grid` resolves `Style.reverse`
+    into the (ink, ground) pair it always was, so a reverse match run arrives
+    with the match ink in the BG field - reading `fg` for darkside, industrial
+    and solari would have asked the wrong half of the cell."""
+    style = LG.kit(lang).MATCH_STYLE
+    word = style.split()[0]
+    t = LG.THEMES[lang]
+    ink = t.get(style.strip().split()[-1].strip("{}"), t["ink"]).lower()
+    out = []
+    for row in cells:
+        for c in row:
+            if not c[0].strip():
+                continue
+            if word == "reverse":
+                if c[2].lower() == ink:
+                    out.append(c)
+            elif c[1].lower() == ink and c[3 if word == "bold" else 4]:
+                out.append(c)
+    return out
+
+
+def test_the_two_states_no_key_can_reach_are_recorded_with_a_stale_check():
+    """K5 AND K6 - THE ROUND'S RESULT, written as a law that will go red.
+
+    `inc91` was told to record and not to fix, and a recorded failure that
+    nothing watches is a sentence.  So the failure itself is asserted: in all
+    eleven languages the config screen draws NO field in the language's
+    `field_form(INVALID, 'textfield')` shape, and the command palette paints
+    NO run in the language's own `MATCH_STYLE`.
+
+    THE DAY EITHER IS FIXED THIS LAW GOES RED, which is the point.  It is the
+    same machinery `SEEN_BY_EYE` needed for an exemption an instrument cannot
+    re-derive: somebody has to come here and delete a row on purpose."""
+    assert set(KEY_UNREACHABLE) == {5, 6}
+    for lang in LANGS:
+        seats = _invalid_field_seats(lang, _key_cells(_key_side(lang, 5)))
+        assert not seats, (lang, KEY_UNREACHABLE[5],
+                           "an invalid field became reachable - delete row 5",
+                           seats)
+        painted = _match_run(lang, _key_cells(_key_side(lang, 6)))
+        assert not painted, (lang, KEY_UNREACHABLE[6],
+                             "the palette started speaking the language - "
+                             "delete row 6")
+
+
+def test_the_two_recorded_failures_are_failures_of_the_app_not_of_the_law():
+    """THE TEETH OF THE RECORD, and they are the arms that matter most.
+
+    A law that asserts a failure passes trivially if its measurement is
+    broken - the emptiest possible way for `not seats` to hold is for
+    `_invalid_field_seats` to be unable to find a field at all.  So both
+    measurements are run against a frame that DOES carry what they look for,
+    built out of the kit's own declarations, and both must find it.
+
+    The invalid arm builds the seat `field_form` describes; the match arm
+    builds a run in the channel `MATCH_STYLE` names.  Neither is a frame the
+    app produces - that is the finding - and both are frames every one of the
+    eleven kits knows how to draw."""
+    for lang in LANGS:
+        k, t = LG.kit(lang), LG.THEMES[lang]
+        op, rune, cl = k.field_form(LG.INVALID, "textfield")
+        tone = k.field_wall_tone(LG.INVALID, "textfield")
+        paper = t["dim"]
+        assert paper.lower() != tone.lower(), (lang, "wall and paper agree")
+        row = ([(c, tone, t["ground"], False, False) for c in op]
+               + [(rune or " ", paper, t["ground"], False, False)] * 6
+               + [(c, tone, t["ground"], False, False) for c in cl])
+        assert _invalid_field_seats(lang, [row]), \
+            (lang, "the seat law cannot find the seat its own kit declares")
+
+        style = k.MATCH_STYLE
+        word = style.split()[0]
+        ink = t.get(style.strip().split()[-1].strip("{}"), t["ink"])
+        if word == "reverse":
+            run = [("x", t["ground"], ink, False, False)] * 5
+        else:
+            run = [("x", ink, t["ground"], word == "bold",
+                    word == "underline")] * 5
+        assert _match_run(lang, [run]), \
+            (lang, style, "the match law cannot find its own kit's channel")
+
+
+def test_the_live_search_seat_prints_a_cell_the_measured_face_has_not_got():
+    """THE CORPUS'S FIRST DOUBLE-WIDTH CELL, and nobody chose it.
+
+    Textual's command palette draws its prompt as `U+1F50E`.  Cascadia Mono
+    does not have it, so the raster falls back; it is two columns wide, so it
+    is the first cell in this corpus that does not fit the grid every measure
+    since inc76 has assumed.  Both facts are asserted here rather than left in
+    a docstring, and the uncovered set is asked of the RASTERISER - a `.notdef`
+    bitmap comparison, the same technique `raster.uncovered` uses and for the
+    same reason: a cmap says what a face CLAIMS.
+
+    AND THE SET IS NOT THE SHEETS' SET.  `raster.FALLBACK_CELLS` is the four
+    the 66 sheets spend; the live app spends three of them plus the prompt,
+    and neither the starred operator nor the dot operator.  Two cells the
+    sheets draw are drawn by no screen the app HAS."""
+    from PIL import ImageFont
+    from rich.cells import cell_len
+    seen = set()
+    for p in sorted(KEYS.glob("*_K?.txt")):
+        seen |= set(p.read_text(encoding="utf-8"))
+    seen.discard("\n")
+    path, px, _box = _face()
+    face = ImageFont.truetype(path, px)
+
+    def sig(ch):
+        m = face.getmask(ch, mode="L")
+        return m.size, bytes(m)
+
+    absent = sig("\ue000")
+    assert absent == sig("\U0010fffd"), "`.notdef` cannot be recognised"
+    missing = "".join(sorted(c for c in seen if sig(c) == absent))
+    assert missing == "\u2296\u2299\u229a\U0001f50e", missing
+    assert "\u229b" not in seen and "\u22c5" not in seen, \
+        "two cells of the sheets' fallback set are now drawn by the app"
+    assert cell_len("\U0001f50e") == 2, "the prompt stopped being wide"
+    wide = sorted(c for c in seen if cell_len(c) == 2)
+    assert wide == ["\U0001f50e"], (wide, "a second wide cell arrived")

@@ -1,0 +1,32 @@
+                                                                                                    
+                              ▄▄▄▄                               ────                               
+                            ▄▄    ▌▐                             ····                               
+                                  ▌▐                             ····────                           
+                                ▀▀                               ········                           
+                              ▀▀                                 ········                           
+                            ▌▐                                   ········────····················   
+                            ▌▀▀▀▀▀▀▀                             LOAD · 8 WK                        
+                                                                                                    
+                           DAYS OVERDUE                                                             
+                                                                                                    
+  WORK ├───────────┤ 02/15  13%                                                                     
+  ├─ 09 ─┤ ├───┤ 04 ├─┤ 02 LOAD                                                                     
+                                                                                                    
+   DIM 2 ──        OVR 2 ──        WIP 4 ── WORK   ╱╱ 1 ──         DAY 9 ──        SHT 7 ── BOARD   
+                                                                                                    
+   BACKLOG                                                                    ├─── 09 ───┤          
+   FIX CHECKOUT 500 ERROR                                                     ├╱╱╱╱ HELD ╱╱╱╱┤      
+   ·── WEBSITE REDESIGN ── BACKLOG ── HIGH                                                          
+   COMPRESS DATABASE BACKUPS                                                  ├─┤ 01D!              
+   ·── DATA WAREHOUSE ── BACKLOG ── NORM                                                            
+   RENEW TLS CERTIFICATE                                                      ├───┤ 03D             
+   ·── BACKLOG ── HIGH                                                                              
+   WRITE API REFERENCE                                                        ├ 05D ┤               
+   ·── API PLATFORM ── BACKLOG ── NORM                                                              
+   SHUT DOWN LEGACY SERVERS                                                   ├─ 08D ──┤            
+   ·── LEGACY SUNSET ── BACKLOG ── NORM                                                             
+  ┌     ┐                                 ────────────────────────────────────────────────────────  
+   BOARD  lanes  agenda  gantt            SHEET TASKBOARD  REV 2026-08-03  WORK 02/15  ├ OVERDUE ┤  
+  └     ┘                                 ────────────────────────────────────────────────────────  
+                                                                                                    
+ 1 2 3 4 Views  c Signals  ? Keys  v Size  r Refresh  t Language  g Gallery  q Quit     ▏^p palette 

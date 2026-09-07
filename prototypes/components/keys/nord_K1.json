@@ -1,0 +1,2221 @@
+{
+ "lang": "nord",
+ "step": 1,
+ "name": "initial",
+ "keys": [],
+ "law": "the page as it opens, with the app's own AUTO_FOCUS seat lit",
+ "screen": "Aperture",
+ "focus": {
+  "id": "hero",
+  "cls": "Hero",
+  "region": [
+   2,
+   1,
+   96,
+   9
+  ]
+ },
+ "band": null,
+ "settle_reads": 9,
+ "ground": "#2e3440",
+ "cols": 100,
+ "rows": 32,
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "grid": [
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "╭──────────────────────────────────────────────────────────────────────────────────────────────╮",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "                            ▐████▌  ",
+    "#cf888f",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    39,
+    "                                                          ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "                          ██▌    ▐██",
+    "#cf888f",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    39,
+    "                                                          ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "                                 ▐██",
+    "#cf888f",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    39,
+    "                                                          ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "                               ██▌  ",
+    "#cf888f",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    39,
+    "                                                          ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "                            ▐██     ",
+    "#cf888f",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    39,
+    "                                                          ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "                          ██▌       ",
+    "#cf888f",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    39,
+    "                                                          ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "                          ██████████",
+    "#cf888f",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    39,
+    "                             ",
+    "#eceff4",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    68,
+    "█▅▂",
+    "#919cb0",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    71,
+    "░░░░░",
+    "#4c566a",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    76,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    77,
+    "LOAD · 8 WK",
+    "#4c566a",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    88,
+    "         ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "│",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "╰──────────────────────────────────────────────────────────────────────────────────────────────╯",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " 13%",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    6,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    7,
+    "━━━━━━━━━━━───────────────────────────────────────────────────────────────────────────",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    93,
+    "       ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "████████████████████████████▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂  ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    88,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    89,
+    "flow",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    93,
+    "       ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "▸board",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    8,
+    " │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    11,
+    " lanes",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    17,
+    " │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    20,
+    " agenda",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    27,
+    " │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    " gantt",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    36,
+    "                                                                ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "@",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    4,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    5,
+    "  2",
+    "#cf888f",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    8,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    9,
+    "Nearest ",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    17,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "!",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    20,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    21,
+    "  2",
+    "#cf888f",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    24,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    25,
+    "Overdue ",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    33,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    35,
+    "~",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    36,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    37,
+    "  4",
+    "#ebcb8b",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    40,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    41,
+    "Work in ",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    49,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    51,
+    "x",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    52,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    53,
+    "  1",
+    "#ebcb8b",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    56,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    57,
+    "Blocked",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    64,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    67,
+    "$",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    68,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    69,
+    "  9",
+    "#ebcb8b",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    72,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    73,
+    "Workday ",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    81,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    83,
+    "#",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    84,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    85,
+    "  7",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    88,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    89,
+    "Board fi",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "BACKLOG",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    11,
+    "9▄",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    13,
+    "                ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#2e3440",
+    "#003054",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    3,
+    "─────────────────────",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    24,
+    "     ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#2e3440",
+    "#003054",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "F I X   C H E C K O U T   5 0 0   E R R O R",
+    "#eceff4",
+    "#2e3440",
+    true,
+    false
+   ],
+   [
+    77,
+    "                       ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#2e3440",
+    "#003054",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "▸",
+    "#8fbcbb",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    4,
+    " Fix checkout 500… ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    23,
+    "blk",
+    "#cf888f",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#2e3440",
+    "#003054",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "PROJECT  ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    "Website Redesign",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    59,
+    "                                         ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "  ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "Compress databas…",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    22,
+    " ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    23,
+    "1d!",
+    "#cf888f",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#2e3440",
+    "#003054",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "PHASE    ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    "Backlog",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    50,
+    "                                                  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "  ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "Renew TLS certifi…",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    23,
+    " ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    24,
+    "3d",
+    "#ebcb8b",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#2e3440",
+    "#003054",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "PRIORITY ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    "high",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    47,
+    "                                                     ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "  ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "Write API referen…",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    23,
+    " ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    24,
+    "5d",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#eceff4",
+    "#000000",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "STATE    ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    "blocked",
+    "#cf888f",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    50,
+    "                                                  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "  ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "Shut down legacy …",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    23,
+    " ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    24,
+    "8d",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#eceff4",
+    "#000000",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "  ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "Deprecate v1 endp…",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    23,
+    " ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    24,
+    "9d",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#eceff4",
+    "#000000",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "PROGRESS ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    "━━━━━━━",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    50,
+    "─────────────",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    " ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    64,
+    "1/3",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    67,
+    "                                 ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "  ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "Add push notific…",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    22,
+    " ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    23,
+    "18d",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#eceff4",
+    "#000000",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "                                                                ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "  ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "Plan Q3 roadmap",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    20,
+    "    ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    24,
+    "--",
+    "#4c566a",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#eceff4",
+    "#000000",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "                                                                ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "  ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "Update onboarding…",
+    "#919cb0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    23,
+    " ",
+    "#eceff4",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    24,
+    "--",
+    "#4c566a",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    "   ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    29,
+    "  ",
+    "#eceff4",
+    "#000000",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "                                                                ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    1,
+    "1",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    3,
+    "2",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    4,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    5,
+    "3",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    6,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    7,
+    "4",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    8,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    9,
+    "Views",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    14,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    15,
+    " c ",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    18,
+    "Signals ",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    26,
+    " ? ",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    29,
+    "Keys ",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    34,
+    " v ",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    37,
+    "Size ",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    42,
+    " r ",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    45,
+    "Refresh ",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    53,
+    " t ",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    56,
+    "Language ",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    65,
+    " g ",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    68,
+    "Gallery ",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    76,
+    " q ",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    79,
+    "Quit ",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    84,
+    "    ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    88,
+    "▏",
+    "#5c616e",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    89,
+    "^p",
+    "#8fbcbb",
+    "#3b4252",
+    true,
+    false
+   ],
+   [
+    91,
+    " palette",
+    "#e0e0e0",
+    "#3b4252",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#ffffff",
+    "#3b4252",
+    false,
+    false
+   ]
+  ]
+ ]
+}

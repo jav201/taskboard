@@ -1,0 +1,32 @@
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                   ╭────────────────────────────────────────────────────────────╮                   
+                   │                                                            │                   
+                   │  KEYS                                                      │                   
+                   │                                                            │                   
+                   │    VIEWS        MOTION                                     │                   
+                   │    1 Board      ← / h     Left                             │                   
+                   │    2 Lanes      → / l     Right                            │                   
+                   │    3 Agenda     ↑ / k     Up                               │                   
+                   │    4 Gantt      ↓ / j     Down                             │                   
+                   │                 tab       Next                             │                   
+                   │    ACTIONS      shift+tab Prev                             │                   
+                   │    c Signals                                               │                   
+                   │    ? Keys       SYSTEM                                     │                   
+                   │    v Size       ctrl+q    Quit anywhere                    │                   
+                   │    r Refresh    ctrl+p    Palette                          │                   
+                   │    t Language                                              │                   
+                   │    g Gallery                                               │                   
+                   │    q Quit                                                  │                   
+                   │                                                            │                   
+                   │    esc/?/q close                                           │                   
+                   │                                                            │                   
+                   ╰────────────────────────────────────────────────────────────╯                   
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+ esc/?/q Close                                                                                      

@@ -1,0 +1,32 @@
+                                                                                                    
+  S I G N A L S   what the widget watches                                                           
+  ─────────────────────────────────────────────────────────────────────────────────────────────     
+                                                                                                    
+   ▮ ▀▀┃ Nearest deadline     ╹▪  fast  ╵   slow    1s   2                                          
+       Days until the soonest open task is due. The default hero.                                   
+     ▀▀│ Overdue count        ╵▪  fast  ╵   slow    2s   2                                          
+     ▀▀│ Work in flight       ╵▪  fast  ╵   slow    2s   4 ▀▀│─────  3                              
+     ▀▀│ Blocked              ╵▪  fast  ╵   slow    3s   1                                          
+     ▀▀│ Workday budget       ╵   fast  ╵▪  slow   30s   9 ▀▀▀▀│───  18                             
+     ▀▀│ Board file           ╵   fast  ╵▪  slow   20s   7                                          
+                                                                                                    
+     ▫ Refresh    recompute every signal now                                                        
+                                                                                                    
+   esc/q back · space toggle · [ threshold - · ] threshold + · r refresh                            
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+ esc/q Back  space Toggle  [ Threshold -  ] Threshold +  r Refresh  ? Keys  t Language  ▏^p palette 

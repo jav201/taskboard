@@ -1,0 +1,1607 @@
+{
+ "lang": "instrument",
+ "step": 3,
+ "name": "modal",
+ "keys": [
+  "question_mark"
+ ],
+ "law": "a modal is open: the band exists, and its ground is the kit's own panel rather than the skeleton's",
+ "screen": "HelpScreen",
+ "focus": {
+  "id": null,
+  "cls": null,
+  "region": null
+ },
+ "band": [
+  19,
+  4,
+  62,
+  22
+ ],
+ "settle_reads": 8,
+ "ground": "#0a0d12",
+ "cols": 100,
+ "rows": 32,
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "grid": [
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "                                                            ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "KEYS",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "                                                      ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "                                                            ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    24,
+    "VIEWS",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    29,
+    "        ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    37,
+    "MOTION",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    43,
+    "                                     ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  1 ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Board   ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ← / h     ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    47,
+    "Left         ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  2 ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Lanes   ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   → / l     ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    47,
+    "Right        ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  3 ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Agenda  ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ↑ / k     ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    47,
+    "Up           ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  4 ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Gantt   ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ↓ / j     ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    47,
+    "Down         ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "               tab       ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    47,
+    "Next         ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    24,
+    "ACTIONS",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    31,
+    "      shift+tab ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    47,
+    "Prev         ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  c ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Signals ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    37,
+    "                                           ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  ? ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Keys    ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    37,
+    "SYSTEM",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    43,
+    "                                     ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  v ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Size    ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ctrl+q    ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    47,
+    "Quit anywhere",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  r ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Refresh ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ctrl+p    ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    47,
+    "Palette      ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                    ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  t ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Language",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    37,
+    "                                           ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  g ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Gallery ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    37,
+    "                                           ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  q ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    26,
+    "Quit    ",
+    "#6e7b89",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    34,
+    "   ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    37,
+    "                                           ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "               ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    37,
+    "                                           ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "  ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    22,
+    "  ",
+    "#e8edf2",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    24,
+    "esc/?/q close",
+    "#333c47",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    37,
+    "                                           ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▌",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    20,
+    "                                                            ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    80,
+    "▐",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ],
+   [
+    19,
+    "▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟",
+    "#39d7c3",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    81,
+    "                   ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0a0d12",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " esc/?/q ",
+    "#39d7c3",
+    "#0e131a",
+    true,
+    false
+   ],
+   [
+    9,
+    "Close ",
+    "#e0e0e0",
+    "#0e131a",
+    false,
+    false
+   ],
+   [
+    15,
+    "                                                                                     ",
+    "#ffffff",
+    "#0e131a",
+    false,
+    false
+   ]
+  ]
+ ]
+}
