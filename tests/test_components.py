@@ -9330,6 +9330,166 @@ def test_the_obligation_floor_bites_on_the_marks_inc82_replaced(monkeypatch):
     test_every_required_mark_passes_the_floor_at_its_declared_seat()
 
 
+# ---- inc86: the exemption an EYE grants, and the review that revokes it ----
+#
+# THE RULING (orchestrator, 2026-09-07, on the operator's delegation):
+#
+#   swiss `•`: the floor stays at 15 %; swiss's obligation mark is exempt by
+#   name (`SEEN_BY_EYE`) with round five's eye-read as the evidence and the
+#   human session as the review that can revoke it.  Neither the floor nor
+#   the mark moves.
+#
+# THIS IS THE FIRST EXEMPTION IN THE PROGRAMME GRANTED BY A READING RATHER
+# THAN BY A MEASUREMENT, and that is exactly why it needs more machinery than
+# a comment: an instrument can re-derive its own numbers every run, and an eye
+# cannot.  So the roster carries three fields -- what is missed, WHO SAW IT
+# and where they wrote it down, and WHO CAN TAKE IT BACK -- and the laws below
+# make the exemption expire on its own terms rather than on nobody's.
+
+#: THE EYE ROSTER.  `(kit, family, cell, tone) -> (clause, evidence, review)`.
+#:
+#: `clause`    the clause the mark misses, with its measurement.  Only this
+#:             clause is exempted: a mark that starts missing a SECOND clause
+#:             is a different mark and the exemption does not travel.
+#: `evidence`  the reading, with the document and the section it is written
+#:             in, so a reader can go and disagree with it.
+#: `review`    who can revoke it.  An exemption nobody can withdraw is not an
+#:             exemption, it is a hole with a citation.
+SEEN_BY_EYE = {
+    ("swiss", "required", "•", "#f4f4f4"): (
+        "COV",
+        "coverage 14.0% at the declared seat -- ONE POINT under the 15% "
+        "clause, at effective 9.13 and declared 17.30:1, so the contrast "
+        "half of Q1 is not in question here and never was. Round five §2.2 "
+        "`swiss_S2`, on the RASTER at Cascadia Mono 16px in a 9x19 box: *"
+        "\"`•` obligatorio mide 0,060 en su peor asiento y 1,288 en el "
+        "declarado; se ve\"* -- and §7 of the same document finds `naught "
+        "◦` at 13.5% by eye as well. The round that SET the clause read "
+        "this mark and reported it visible.",
+        "the human session. The operator's own review is the only thing "
+        "that can revoke this row -- not an increment, not a re-measurement, "
+        "and not the next round's arithmetic, because arithmetic is what "
+        "the exemption exists to overrule.",
+    ),
+}
+
+
+def test_the_eye_exemption_is_named_measured_and_still_needed():
+    """The roster, from all four sides at once.
+
+    (a) EVERY ROW IS STILL UNDER THE FLOOR, measured off the shipped pixels
+        rather than off `BELOW_THE_FLOOR` -- so the exemption is checked
+        against the corpus and not against another record of it;
+    (b) the clause it exempts is the clause the corpus actually misses, to
+        the letter: an exemption for `COV` on a mark that has started
+        missing `COVEFF` has stopped describing its own mark;
+    (c) the evidence and the review are both real sentences, and the
+        evidence cites a document and a section;
+    (d) THE TWO TABLES ABOUT THIS MARK NAME THE SAME MARK.
+        `OBLIGATION_UNDER_THE_FLOOR` is inc82's MEASUREMENT of it and this is
+        inc86's EXEMPTION of it; two tables drifting apart about one row is
+        the failure `test_the_homoglyph_table_is_one_table_in_two_files`
+        exists against, so every obligation under the floor must be exempt
+        here and every exemption here that is an obligation must be there.
+    """
+    assert SEEN_BY_EYE, "an empty eye roster is not an exemption"
+    for (lang, fam, ch, tone), (clause, evidence, review) in \
+            SEEN_BY_EYE.items():
+        rows = {(f, c, t): v for f, c, t, v, _r in floor_rows(lang)}
+        assert (fam, ch, tone) in rows, (lang, fam, ch, tone, "not a seat")
+        assert rows[(fam, ch, tone)] == clause, \
+            (lang, ch, rows[(fam, ch, tone)], clause,
+             "the exemption is for a clause this mark no longer misses")
+        assert len(evidence.split()) >= 25, (lang, "evidence is not a reading")
+        assert "§" in evidence, (lang, "an eye-read with no section cited")
+        assert len(review.split()) >= 12, (lang, "nobody can revoke this")
+
+    obligations = {k[0] for k in SEEN_BY_EYE if k[1] == "required"}
+    assert obligations == set(OBLIGATION_UNDER_THE_FLOOR), \
+        sorted(obligations ^ set(OBLIGATION_UNDER_THE_FLOOR))
+
+
+def test_the_eye_exemption_goes_stale_the_moment_the_mark_passes(monkeypatch):
+    """THE STALE CHECK, and it is the half of this increment that has teeth.
+
+    An exemption granted by a reading cannot re-derive itself, so the only
+    thing that can retire it is a law that goes RED when it stops being
+    needed. The arm below is the corpus with swiss's mark passing: the row is
+    then an exemption for a mark that does not need one, the law fails, and
+    the failure says RETIRE IT rather than saying nothing at all.
+
+    THE MUTANT IS THE MEASUREMENT, NOT THE ROSTER, which is the shape
+    `test_the_obligation_floor_bites_on_the_marks_inc82_replaced` already
+    uses: `floor_rows` is patched to report the seat as a pass -- the state
+    the corpus would be in if somebody widened `•` the way inc82 widened
+    instrument's `⠁` -- and the law must notice on its own.
+
+    AND THE SECOND ARM IS THE ONE THAT MATTERS MORE: an exemption whose
+    CLAUSE has changed is stale too. A mark that slid from `COV` to `COVEFF`
+    is a mark round five did not read, and the roster may not cover it by
+    inheritance."""
+    test_the_eye_exemption_is_named_measured_and_still_needed()
+    key = ("swiss", "required", "•", "#f4f4f4")
+    real = floor_rows
+
+    def passing(lang):
+        return tuple((f, c, t, "" if (f, c, t) == key[1:] else v, r)
+                     for f, c, t, v, r in real(lang))
+
+    monkeypatch.setitem(globals(), "floor_rows", passing)
+    with pytest.raises(AssertionError):
+        test_the_eye_exemption_is_named_measured_and_still_needed()
+    monkeypatch.undo()
+
+    def slid(lang):
+        return tuple((f, c, t, "COVEFF" if (f, c, t) == key[1:] else v, r)
+                     for f, c, t, v, r in real(lang))
+
+    monkeypatch.setitem(globals(), "floor_rows", slid)
+    with pytest.raises(AssertionError):
+        test_the_eye_exemption_is_named_measured_and_still_needed()
+    monkeypatch.undo()
+
+    test_the_eye_exemption_is_named_measured_and_still_needed()
+
+
+def test_the_hue_only_limit_is_written_into_the_kit_that_carries_it():
+    """L12 as a LIMIT, in the four kits that have it and in no other.
+
+    THE RULING (2026-09-07): *a hue-only match channel that falls under 3:1
+    in grey is a Limit of that language, recorded in the kit docstring and in
+    `spec.md`, not fixed.*
+
+    Three clauses, and the third is the one that makes this a law rather than
+    a spell-check:
+
+      (a) exactly the kits whose match channel is HUE carry the paragraph --
+          so a kit that GAINS a second channel and keeps the note goes red,
+          and so does a kit that loses one and does not write it;
+      (b) each paragraph carries ITS OWN number to two decimals, which is the
+          number `MATCH_IN_GREY` records and
+          `test_the_match_that_rides_hue_alone_keeps_a_thin_step_in_grey`
+          re-measures off the greyscale PNGs;
+      (c) each says the word LIMIT and cites the ruling, because a number in
+          a docstring with no verdict beside it is a measurement somebody
+          left lying around."""
+    hue = {l for l in LANGS if match_branch(l)[0] == "hue"}
+    assert hue == set(MATCH_IN_GREY), sorted(hue ^ set(MATCH_IN_GREY))
+    for lang in LANGS:
+        doc = type(LG.kit(lang)).__doc__ or ""
+        assert ("L12" in doc) == (lang in hue), \
+            (lang, "L12" in doc, lang in hue)
+        if lang not in hue:
+            continue
+        assert f"{MATCH_IN_GREY[lang]:.2f}:1" in doc, \
+            (lang, MATCH_IN_GREY[lang], "the kit's own number is not in it")
+        assert "LIMIT" in doc, (lang, "a number with no verdict beside it")
+        assert "RECORDED AND NOT FIXED" in doc, (lang, "no disposition")
+    # and the four numbers are DISTINCT, so no kit inherited another's
+    quoted = {lang: f"{MATCH_IN_GREY[lang]:.2f}:1" for lang in hue}
+    assert len(set(quoted.values())) == len(quoted), quoted
+
+
 def test_every_middle_band_run_is_named_and_the_table_is_not_vacuous():
     """Q2's third class, and the vacuity arms `DIM_CLASSIFIES` already has.
 
