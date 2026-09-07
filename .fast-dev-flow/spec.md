@@ -2766,3 +2766,209 @@ skill         `export_to_skill.py`: 11 languages round-trip, captures 2 WRITTEN 
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1449 → 1466 (+17)**, **zero failed** at both increments; `test_win_clipboard_roundtrip` green in both runs — environment-coupled, reported, not counted, not touched. `verify_language.py` **ALL PASSED exit 0**. `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` refusals `[]` for all eleven. `collision_census.py` TOTAL **27**, homoglyph rows **24**, both unchanged. `raster.py` **132 PNGs identical across two PROCESSES**. `legibility.py` **byte-identical across two PROCESSES**. `second_width.py` 0 rows cut, 330 pairs distinct. `capture_languages.py` 22 grids identical across two processes. `export_to_skill.py` at the close: 11 languages round-trip, **captures 2 written / 64 already identical** (the two gallery grids inc85 moved), SURFACES.md 11 postures. The skill repo is not committed from here. |
 | Notes | **Two increments, one agent, ≤ 4 source files each.** All three of `rework-8`'s handed-back questions are answered. What goes back to the round: the `darkside o` derivation defect (§23.3.1, an instrument question this batch found and refused to fix in the increment that found it); the three cursors in `accent`, which fail Q1's effective clause as a FAMILY and which the ruling does not reach; `corgi ░` and `ledger *`, which no tier in their own kit can fix; and the eight seats that miss BOTH clauses, which want inc82's kind of move — a glyph out of the language's own alphabet. **`naught_S2` and `naught_S4` remain untouched**, as they have since `rework-8`: L10 and the `DANGER_FORM` frame are the round's oldest open reworks and are in no brief yet. |
+
+---
+
+## 24. Batch `rework-9` — the floor emptied of everything but area, and the one alphabet that ran out
+
+`rework-8c` (§23) closed with five things handed back to the round. **The operator delegated all five
+to the orchestrator; four increments, one agent.** This section is the record. Every ruling is quoted
+verbatim in each packet's §0 and reproduced here, because a ruling that lives only in a chat is a
+ruling nobody can argue with later.
+
+### 24.1 The rulings, as given
+
+> (orchestrator, 2026-09-07, on the operator's delegation)
+>
+> **Declared seat by seat, not by character:** the declared-seat derivation intersects the mark with
+> the seat its contract method paints (`log_row`'s rung column, not any cell with the same
+> character); prose never counts.
+>
+> **Cursors are marks:** the three cursors in `accent` (instrument `⣿` 2.94, swiss `▮` 2.57,
+> industrial `▶` 2.97) obey Q1's effective clause; fix by the smallest hue-preserving lightness step
+> of `accent`, and re-run the match-tier law (inc73) since `accent` is a match ink in some kits: both
+> must hold.
+>
+> **Drawing problems are fixed by drawing:** corgi's invalid wall `░` (1.44 in ink, a dither) takes
+> the heavy shade `▓` (panel register, inc67), and ledger's warn rung `*` (2.86 on light paper) takes
+> a heavier printer's mark by area from ledger's own alphabet (`¶`, `§`, `※` or `**`'s sibling; cite
+> #9 and keep error distinct), both judged by Q1 at the seat.
+>
+> **Both-clause seats move by area** (inc82's kind): the eight seats failing coverage AND contrast
+> take a bigger glyph from their language's alphabet; `naught ◦` (13.5 %) is among them and gets no
+> eye exemption.
+>
+> **naught_S2 L10:** the 12 homoglyph rows and 8 state rows on naught's form are fixed by SHAPE and
+> COUNT (the lattice counts, the pixel charges: inc61), so the form's marks stop resting on one
+> drawing.
+>
+> **inc84 §6 correction:** the packet's claim "gallery 30–51 none changed" was read off
+> `prototypes/gallery/` (boards), not the component grids; entries 35 and 36 did change. Correct the
+> packet in place with a dated note, never silently.
+
+### 24.2 What each increment did
+
+| inc | ruling | what it did | frames |
+| --- | --- | --- | --- |
+| 87 | **declared seat · inc84 §6** | The derivation intersected `role_map` (keyed by CELL) with every character of every toned run, so darkside — the one kit of eleven whose rung is the letter `o` — had the `o` of `board loaded` credited to severity. Each contract call now declares the PROSE it hands in; the columns that text fills are struck before the intersection. **Two rows left the floor table and neither was a mark.** `inc84.md` §6 corrected in place, dated: two directories in this repo are called "gallery" and the packet checked the wrong one. | **0** |
+| 88 | **cursors · corgi `░` · ledger `*`** | The three cursors take the smallest hue-preserving lightness step of `accent`, walked at 0.0002 of a turn so every smaller step is measured and misses. corgi's invalid wall goes `░░·░░` → `▚▚·▞▞` — **the ruling's `▓` was refused, measured**. ledger's rung advances along its own printer's order, `* † ‡ § ‖ ¶`, to `§`. **The `EFF`-only column empties.** | **3** `.txt` + 21 `.svg` at each width |
+| 89 | **both-clause seats** | Five of the six severity ladders take a bigger cell out of their own alphabet, each along the axis its kit declares; the area move drags the tier with it and `RUNG_TAKES_INK` goes 8 kits to 10. **naught is refused by an enumeration** — the ruling's move was made, measured and rejected by two standing laws. **The both-clause column empties.** | **6** `.txt` at each width |
+| 90 | **naught_S2 L10** | L10 enumerated: twenty rows on **nine drawings**, fourteen pairs with the distance between each, three channels and the reason the language can spend none of them. The refusal is a roster with teeth, not a sentence. | **0** |
+
+### 24.3 The findings, in the order they landed
+
+1. **The ruling named one kit and the mechanism found a second, in a family nobody was looking at.**
+   `industrial invalid / #f2f2f2` was **passing** at 5.02 — and the cells it was passing on were the
+   two slashes of the date `12/09/26` the field had been handed. industrial declares `/` as the
+   INVALID mark of its slider knob and its stepper step, and those two seats have **no contract call
+   of their own**, so the mark had never been measured at its own seat and still has not been.
+2. **inc84 checked the wrong directory and the mistake is structural, not careless.**
+   `prototypes/gallery/` holds the 22 board and component GRIDS `capture_languages.py` writes; the
+   skill's `assets/gallery/` holds the 22 numbered frames **30–51**, each a copy of one sheet in
+   `prototypes/components/`. Entries **35 `corgi_S6`** and **36 `ledger_S6`** did change. Verified two
+   ways and cross-read against the four entries `inc67.md` names and the one `inc69.md` corrects.
+3. **The cell the ruling named for corgi would have re-created the defect inc52 fixed, and the census
+   said so in one number.** `▓` clears Q1 comfortably and is the cell corgi's textfield already wears
+   when it is ACTIVE — and seven other components'. Taking it put the census at **28** with `▓`
+   carrying **nine families**. That is ruling C reversed. The criterion inc52 stated was kept and the
+   family moved instead.
+4. **And the cell taken instead closed a collision nobody was aiming at.** `░` was never as free as
+   inc52's comment claimed: `meter.track`, `spark.floor` and `scrollbar.main` all spend it, and
+   inc67's ruling A-amended brought those into the census two batches AFTER inc52 wrote the sentence.
+   corgi 4 → 3 colliding cells; **TOTAL 27 → 26**.
+5. **swiss's one red cannot be both inks, and the arithmetic is a scissors.** Q1 pushes the cursor's
+   ink UP in lightness; inc73's achromatic fallback asks the match ink to stay 1.5:1 away from `mut`,
+   which pushes it DOWN. The whole-token move was made first and measured — the match law went red at
+   **1.26** against a floor of 1.5 — so `accent` moved alone. The kit still spends one HUE at two
+   lightnesses, which is what its own grey ladder does three times over.
+6. **`‖` is not in the measured face, and the fallback box is how you can tell.** Eleven candidate
+   glyphs return **39.2 % coverage at 6.24 effective**, to six digits, because they are all the same
+   tofu rectangle. `raster.py` declares the four the corpus uses and asserts the set is exactly those,
+   so the gate would have caught a twelfth — but not a candidate chosen from a list read by eye, and
+   this batch came within one row of taking `‖` as ledger's next printer's mark for that reason.
+7. **The invisible calm rung was also the wrong drawing, and only one of those two facts had an
+   instrument.** Three of the six calm rungs were the identical character `·` in three languages that
+   share no other cell, and `·` is a homoglyph of `●` — what a radio and a checkbox rest on. Fixing
+   the one that could be MEASURED (area) closed the one that could only be argued (shape): census
+   26 → **23**, homoglyph rows 24 → **22**.
+8. **darkside is the first language of the eleven with NO cell doing two jobs.** Its colliding-cell
+   count goes 1 → 0 and the census's own line changes from *"zero collisions: NONE — all eleven
+   overload at least one cell"* to *"zero collisions: darkside"*. Eleven batches of ruling D reached
+   one; a ruling about legibility reached the last one.
+9. **Closing the last live `FOUND_BY_HAND` row tripped that roster's vacuity guard, and the guard was
+   right.** Two live rows were added the way the original five were found — by opening a frame and
+   looking — rather than by relaxing the guard: `blueprint ━` and `corgi █`, where the error rung and
+   the danger form are one cell.
+10. **naught's alphabet ran out, and it had said so four batches ago.** The ruling's move
+    (`○○ / ⬤○ / ⬤⬤`) was made and measured before it was refused: `○` OPENS four controls and that
+    law has had no exemptions since inc52, and the three circles the face has that naught does not
+    spend are **all larger than its gravest rung**. `spec.md` §11.5 wrote the limit long before:
+    *"naught and solari have no unspent cell left."*
+11. **L10 is twenty rows on nine drawings, and that is this language's founding rule measured.**
+    Three solid dots at three sizes (`⋅ ∙ ●`) and six ringed things at six diameters and fills
+    (`◦ ○ ◎ ◉ ⊙ ⊛`). The tightest pair is **`○` against `◉` at 5.82 %** — `stepper.step` focused
+    against active — within a point of the tightest pair in the whole corpus.
+12. **Three teeth in three increments had to be re-pointed, and every one was a tooth that bit.**
+    `test_the_floor_law_bites_on_a_row_of_the_recorded_set` has now been re-aimed twice; the invalid
+    channel's and the opener's each needed a second restore, because the historical declaration they
+    put back no longer collides with a ladder that has moved. All three now restore the pre-inc89
+    `LEVELS` alongside the pre-inc52 or pre-inc46 table.
+
+### 24.4 The floor, batch to batch
+
+```
+                        bound   pass   FAIL    COV   EFF  COVEFF
+rework-8c close (inc86)    86     68     18      4     6       8
+inc87 (derivation)         84     67     17      4     5       8
+inc88 (hue and drawing)    85     73     12      4     0       8
+inc89 (area)               83     79      4      4     0       0
+```
+
+**`BELOW_THE_FLOOR` is 18 rows → 4, and the four are one number.** Every remaining seat measures
+**exactly 14.0 %** of the cell — one point under a clause the round set at 15 % — and it is asserted,
+because a reader who does not know it will read four failures where there is one:
+
+```
+naught      severity ∙ #f5f5f5  COV   14.0%   9.66   the disc
+naught      severity ◦ #f5f5f5  COV   14.0%   5.68   the ring; §24.3.10
+naught      danger   ∙ #f5f5f5  COV   14.0%   9.66   DANGER_FORM, in no brief
+swiss       required • #f4f4f4  COV   14.0%   9.13   exempt by EYE (inc86)
+```
+
+**Three of the four are one kit's, and they are one alphabet's ceiling rather than three defects.**
+
+### 24.5 The laws this batch added
+
+**Eleven laws and seven teeth**, `pytest -q` **1466 → 1499 (+33)**, and no increment imports
+`raster.py` or `legibility.py` into the suite — the stance this file has taken since inc73.
+
+- **inc87** — `test_the_declared_seat_is_a_column_the_contract_paints_not_a_character` (×11): the
+  mechanism strikes columns and the law never mentions columns. It swaps the caller's words twice —
+  once for text the kit credits to nothing, once for **the kit's own severity ladder repeated to the
+  same twelve columns** — and requires the seats to be identical both times. **Teeth:** the strike
+  itself is mutated back to the character scan, and three separate laws must notice.
+- **inc88** — `test_the_cursor_took_the_smallest_hue_preserving_step_that_clears` (×3), whose fifth
+  clause is the word SMALLEST: every colour the hue's own ray can reach between the two must still
+  miss. `test_the_swiss_red_is_one_hue_at_two_lightnesses_and_says_why`.
+  `test_a_mark_no_tier_could_fix_took_another_cell_of_its_own_alphabet` (×3), whose fourth clause is
+  ruling C measured. `test_the_cell_the_ruling_named_is_one_the_census_refuses` — a refusal that is a
+  COUNT. **Teeth:** an overshoot by ONE colour on the same ray, and corgi's wall set to the cell the
+  ruling named.
+- **inc89** — `test_a_severity_ladder_that_missed_by_area_took_a_bigger_cell` (×5), which records
+  BOTH coverage tables because "bigger" is a comparison; `test_the_ladder_naught_could_not_move_is_refused_by_an_enumeration`,
+  which walks the refusal. **Teeth:** each ladder put back and re-measured, and **the raid the
+  refusal refuses, executed** — naught's ladder set to `○○ / ⬤○ / ⬤⬤` with the four opener hits
+  named.
+- **inc90** — `test_l10_is_twenty_rows_on_nine_drawings_and_names_why_each_stands` and
+  `test_the_two_channels_the_l10_ruling_names_are_both_blocked`. **Teeth:** the roster in both
+  directions, and one control seat made to draw the lit lattice dot — inc61's rule executed rather
+  than quoted.
+
+### 24.6 What this batch refused to do, and why each refusal is written down
+
+- **corgi's `▓`.** §24.3.3. The refusal is a number (nine families, census 27 → 28), a law, and a
+  tooth that takes the cell.
+- **naught's `○`.** §24.3.10. The refusal is an enumeration, a law that walks it, and a tooth that
+  performs the raid.
+- **L10's redrawing.** The ruling names two channels; **this language can spend neither** and inc90
+  proves both blocked. What L10 needs is a cell naught does not have, and the one real second channel
+  it does have — the circled operator's interior mark — has three of its five members outside the
+  measured face already. **Widening `FALLBACK_CELLS` is a new alphabet for a language and needs a
+  round, not an increment.**
+- **`slider` and `stepper` get no seat call.** §24.3.1. Adding two would change the bound count in
+  the same increment that changed the derivation, and the two effects would be unreadable apart.
+
+### 24.7 The artefacts
+
+```
+legibility    867 -> 876 lines.  Section F: 86 bound / 18 fail -> 83 / 4, with
+              effective-only 6 -> 0 and both-clause 8 -> 0.  MEANING_MARKS
+              (79, 38) -> (80, 32).
+census        TOTAL 27 -> 23; homoglyph rows 24 -> 22; darkside 1 -> 0
+              colliding cells, the first zero in eleven languages.
+              FOUND_BY_HAND: instrument `⠇` closed by inc89, two live rows
+              added by looking because the vacuity guard demanded them.
+raster        132 identical across two PROCESSES (66 colour + 66 grey)
+frames        inc87 0 · inc88 3 .txt + 21 .svg at each width · inc89 6 .txt at
+              each width · inc90 0.  Nine `.txt` in total, at both widths.
+gallery       inc88 6 artefacts (3 frames: industrial, instrument, swiss);
+              inc87, inc89 and inc90 none.
+gallery 30-51 read off `prototypes/components/`, and byte-wise in `.txt`:
+              inc87 none · inc88 entry 40 `ledger_S2` · inc89 entry 51
+              `instrument_S5` · inc90 none.  inc84's own claim corrected in
+              place: entries 35 `corgi_S6` and 36 `ledger_S6`.
+skill         `export_to_skill.py` at the close: 11 languages round-trip,
+              captures 6 WRITTEN and 60 already identical (the six gallery
+              artefacts inc88 moved), SURFACES.md 11 postures; re-run gives
+              0 written / 66 identical.  The skill repo is not committed.
+```
+
+### 24.8 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief (this worktree's own instructions) was the spec; this section is the record |
+| Phase B (implement) | **done** — inc87, inc88, inc89, inc90 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1466 → 1478 → 1488 → 1496 → 1499 (+33)**. `test_win_clipboard_roundtrip` is environment-coupled: green in the inc87 and inc88 runs, red in the inc89 and inc90 runs, **reported in every packet, counted in none, and not touched**. `verify_language.py` **ALL PASSED exit 0** after every increment. `render.py` 66 `.txt` + 66 `.svg` / 330 pairs / 0 hand-drawn, every time. `raster.py` **132 PNGs identical across two PROCESSES** (66 colour + 66 grey), every time. `legibility.py` **byte-identical across two PROCESSES**, every time; 867 → 876 lines. `second_width.py` 0 rows cut in 0 frames, 330 pairs distinct. `matrix.py` refusals `[]` for all eleven. `collision_census.py` TOTAL **27 → 23**, homoglyph rows **24 → 22**, both self-checks green. `capture_languages.py` run plain at inc88 and inc89: 22 grids identical across two processes. `export_to_skill.py` at the close: **6 written / 60 identical**, re-run **0 / 66**. |
+| Notes | **Four increments, one agent, ≤ 4 source files each.** All five of `rework-8c`'s handed-back questions are answered — four by a fix and the fifth (§23.8's `naught_S2`) by an enumeration with teeth. What goes back to the round: **naught's three 14.0 % rows and L10**, which are one alphabet's ceiling and want a cell the language does not have; the **slider's and the stepper's invalid marks**, which have no contract call and are therefore unmeasured at their own seat; the **census total**, which moved twice in this batch and is pinned by no law; and **`naught_S4`**, the `DANGER_FORM` frame, which has still been in no brief. |
