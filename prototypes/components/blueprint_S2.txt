@@ -27,6 +27,6 @@ NEW TASK  ·── 5 FIELDS  ·  1 INVALID
                                                                                                     
                                                                                                     
                                                                                                     
-       ┌    ┐                    ─────────                                                          
- board  FORM  cfg  log           ├ CLEAR ┤                                                          
-       └    ┘                    ─────────                                                          
+       ┌    ┐                  ───────────                                                          
+ board  FORM  cfg  log         ├ OVERDUE ┤                                                          
+       └    ┘                  ───────────                                                          
