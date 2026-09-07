@@ -27,9 +27,29 @@ THE TWO SETS, and they are the operator's own words.
        so the chrome a language actually draws, not the table it happens to
        have typed.
 
+WHAT A CHANNEL IS (ruling D, orchestrator, 2026-09-06, on the operator's
+delegation).  Every "these two are told apart by X" argument in this corpus
+has to name X, and X may be one of FOUR things:
+
+    COUNT      how many marks -- `◎ ◉` against `· o O`, two concentric
+               strokes against one.
+    WEIGHT     how much ink one mark spends -- `O` against `▊`.
+    POSITION   where the mark stands -- a caret inside a value against chrome
+               at an opener.
+    DIRECTION  which way it points -- `▪` against `▶`.
+
+DIAMETER ALONE IS NOT A CHANNEL.  Two drawings that differ only in HOW BIG
+they are read as one mark at a 12px cell, so `• / ●` is one bullet and
+`o / ◦` is one ring.  A language may not tell a MEANING apart from its CHROME
+that way.  The pairs this census treats as one drawing are `HOMOGLYPHS`
+below, and the moves accepted under the ruling are named there too.
+
 WHAT COUNTS AS A COLLISION, stated so it can be argued with.  A cell collides
 when it carries roles from two or more A-families, OR from at least one
-A-family and at least one B-family.
+A-family and at least one B-family.  A cell ALSO collides through its
+HOMOGLYPH -- listed in its own section at the foot of the report and NEVER
+folded into the per-language count, because a homoglyph row is a question
+about two drawings and the count is a question about one cell.
 
   * A x B is the operator's question verbatim: instrument's `⠇` is the ERROR
     rung and the opener of a SAFE button.
@@ -80,6 +100,41 @@ OTHERS = ("slider", "bar", "scrollbar")
 #: the A-families. One per KIND of meaning, not one per declaration -- two
 #: severity rungs sharing a cell is a severity problem, not a collision.
 A_FAMILIES = ("severity", "danger", "required", "invalid", "cursor")
+
+#: PAIRS THIS CENSUS TREATS AS ONE DRAWING (ruling D, inc53), decided and
+#: listed rather than left to judgement. Each is one shape at two DIAMETERS,
+#: adjacent in size, drawn by at least one kit in this corpus:
+#:
+#:   • ●   BULLET / BLACK CIRCLE           the solid disc
+#:   · ∙   MIDDLE DOT / BULLET OPERATOR    the small solid disc
+#:   ○ O   WHITE CIRCLE / LATIN O          the ring
+#:   o ◦   LATIN o / WHITE BULLET          the small ring
+#:   ▪ ■   SMALL / FULL BLACK SQUARE       the solid square
+#:
+#: THEY ARE PAIRS AND NOT FAMILIES, and that is the decision the ruling left
+#: open. Chaining `· ∙ • ●` into one transitive family would put a MIDDLE DOT
+#: and a BLACK CIRCLE in one drawing -- a tenfold size difference, which a
+#: reader separates at any cell height -- and it produced 20 rows against 6
+#: when it was measured. Adjacent sizes only.
+#:
+#: `▪ ■` IS IN THE TABLE AND COSTS NOTHING TODAY (zero rows). It is listed on
+#: the same argument as `• ●` rather than left out because it happens to be
+#: quiet, and it is the pair that would catch a language moving a meaning
+#: onto one square while its chrome holds the other.
+#:
+#: WHAT THIS IS FOR: a language that resolves a collision by moving to the
+#: same drawing at another size has moved nothing.
+#: `PROTOTYPE-inheritors-2.md` §0b counted five such moves in the six
+#: languages that had an increment. FOUR ARE ACCEPTED, each with the channel
+#: it spends, and are absent from this table by construction:
+#:
+#:   industrial  `▪ -> ▶`   DIRECTION (a square against a pointer)
+#:   solari      `▁ -> ▮`   SHAPE FAMILY (a ground against a slab)
+#:   darkside    `O -> ▊`   WEIGHT (a letterform ring against a stroke)
+#:   darkside    `◎ ◉` against `· o O`   COUNT (two strokes against one)
+#:
+#: The fifth, swiss `• -> ●`, is a homoglyph and inc53 moved it.
+HOMOGLYPHS = (("•", "●"), ("·", "∙"), ("○", "O"), ("o", "◦"), ("▪", "■"))
 
 
 def _cells(glyph: str) -> list[tuple[str, str]]:
@@ -156,6 +211,32 @@ def role_map(lang: str) -> tuple[dict[str, dict[str, set[str]]], dict[str, dict[
                     else:
                         add(bag, cell, comp, f"{comp}.{part} {pos} [{state}]")
     return named, other
+
+
+def homoglyph_rows(lang: str) -> list[tuple]:
+    """`(cell, [A-families], its homoglyph, [B-families])` for every pair in
+    `HOMOGLYPHS` where ONE side carries a meaning and the OTHER carries a
+    control's chrome.
+
+    ONE SIDE MEANING, ONE SIDE CHROME, and the asymmetry is the ruling's:
+    *"flags a meaning mark whose homoglyph is chrome"*. Two chrome cells that
+    are one drawing are an ALPHABET, exactly as B x B is; two MEANINGS that
+    are one drawing are a severity/obligation question this file already asks
+    of the cell itself and would answer twice here. Both directions of each
+    pair are read, so it does not matter which of the two the kit declared
+    first."""
+    named, _ = role_map(lang)
+    out = []
+    for a, b in HOMOGLYPHS:
+        for x, y in ((a, b), (b, a)):
+            fx, fy = named.get(x), named.get(y)
+            if not fx or not fy:
+                continue
+            av = sorted(f for f in fx if f in A_FAMILIES)
+            bv = sorted(f for f in fy if f not in A_FAMILIES)
+            if av and bv:
+                out.append((x, av, y, bv))
+    return out
 
 
 def collides(fams: dict[str, set[str]]) -> bool:
@@ -242,6 +323,32 @@ def report() -> list[str]:
     answer = ", ".join(clean) if clean else         "NONE -- all eleven overload at least one cell"
     w(f"zero collisions: {answer}")
     w("")
+
+    w("=" * 78)
+    w("HOMOGLYPHS — one drawing at two diameters, meaning against chrome")
+    w("=" * 78)
+    w("Ruling D (2026-09-06): a channel is COUNT, WEIGHT, POSITION or")
+    w("DIRECTION. Diameter alone is none of them, so a language that tells a")
+    w("MEANING apart from its own CHROME by size alone has told them apart")
+    w("with nothing. The pairs read as one drawing are:")
+    w("    " + "   ".join(f"{a} {b}" for a, b in HOMOGLYPHS))
+    w("These rows are NOT added to the counts above: a homoglyph row is a")
+    w("question about two drawings, and the count is a question about one")
+    w("cell.")
+    w("")
+    total = 0
+    for lang in LG.KITS:
+        rows = homoglyph_rows(lang)
+        total += len(rows)
+        if not rows:
+            continue
+        w(f"{lang.upper()}   {len(rows)} row(s)")
+        for cell, av, twin, bv in rows:
+            w(f"  {cell} is {' + '.join(av)}   and its homoglyph {twin} is "
+              f"{' + '.join(bv)} chrome")
+    w("")
+    w(f"{'TOTAL homoglyph rows':<30}{total:>4}")
+    w("")
     w("This is the input to the language-level rework, not a verdict. A cell")
     w("here is the question 'did you mean these two to be the same mark?'.")
     return out
@@ -276,7 +383,35 @@ FOUND_BY_HAND = (
 )
 
 
+#: THE HOMOGLYPH ROSTER, per language, counted (inc53) — the same bargain the
+#: test suite's rosters make: a number is a record only while somebody has to
+#: edit it. A row here is NOT a defect; it is the question ruling D asks.
+#:
+#:   naught     2  `∙` (error+danger) against `·` at four controls, and `·`
+#:                 (the invalid rune) against `∙` at two. naught's whole
+#:                 alphabet is one round pixel at six charges, so this is
+#:                 that alphabet's own cost and no unspent cell exists.
+#:                 Decision A / spec §11.5, not fixed.
+#:   darkside   1  `o` is `LEVELS["warn"]` and `◦` is `radio.knob[default]`.
+#:                 inc53 moved the FIELD LEADER off `◦`; the radio's unchosen
+#:                 lamp still draws it, and the ruling covers the leader only.
+#:                 The leader is invisible to this census either way — it is
+#:                 drawn in `field_row`, outside `PART_GLYPHS` (inc49 §11).
+#:   ledger     1  `·` is the invalid rune and `∙` is `textfield` chrome.
+#:   swiss      0  closed by inc53: the radio's chosen mark left `●`.
+HOMOGLYPH_ROSTER = {"naught": 2, "corgi": 0, "instrument": 0, "swiss": 0,
+                    "industrial": 0, "nord": 0, "darkside": 1, "prism": 0,
+                    "ledger": 1, "solari": 0, "blueprint": 0}
+
+
 def _self_check() -> None:
+    for lang, want in HOMOGLYPH_ROSTER.items():
+        got = homoglyph_rows(lang)
+        assert len(got) == want, (f"HOMOGLYPH ROSTER: {lang} has {len(got)} "
+                                  f"row(s), the roster says {want}: {got}")
+    assert any(HOMOGLYPH_ROSTER.values()), (
+        "HOMOGLYPH SELF-CHECK VACUOUS: the table finds nothing anywhere, so "
+        "a broken pair list would look like a clean corpus")
     live = closed = 0
     for lang, cell, want, closed_by in FOUND_BY_HAND:
         named, _ = role_map(lang)
@@ -297,6 +432,9 @@ def _self_check() -> None:
     print(f"self-check  {live} of the {len(FOUND_BY_HAND)} collisions the round "
           f"found by hand still come back out of the census; {closed} are "
           "asserted CLOSED and cannot grow back")
+    print(f"self-check  the homoglyph roster is exact for all eleven "
+          f"({sum(HOMOGLYPH_ROSTER.values())} rows, "
+          f"{sum(1 for v in HOMOGLYPH_ROSTER.values() if v)} languages)")
 
 
 def main() -> int:

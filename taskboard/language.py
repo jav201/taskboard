@@ -5705,23 +5705,37 @@ class Swiss(Kit):
                           DISABLED: "┆  "},
         "checkbox.knob": {DEFAULT: "│▪ ", FOCUSED: "┃▪ ", ACTIVE: "█▪ ",
                           DISABLED: "┆▪ "},
-        # THE TYPOGRAPHIC DISTINCTION, which this language of all ten is
-        # entitled to make: a square bullet marks a box, a ROUND bullet marks
-        # a choice. The rules shorten to half-height ticks so the well reads
-        # lighter than the box beside it — Swiss separates by weight, and it
-        # is spending weight here rather than inventing an ornament.
-        # ONE MARK, ONE SIDE here too (inc46), on the half-height ticks this
-        # control already had. AND THE ROUND BULLET IS `●` IN EVERY STATE:
-        # the knob read `•`, which is `REQUIRED` (inc35, "the ladder's mark
-        # set solid"), so an obligation beside a caption and a chosen option
-        # in a group were one cell -- `swiss_S4` puts that same `•` on the
-        # focus ring of an irreversible button. Obligation keeps `•`; the
-        # choice takes the solid round bullet this knob already wore when it
-        # was pressed. Square marks a box, round marks a choice, unchanged.
+        # THE DISTINCTION MOVES TO THE RULE THAT LEADS THE WELL (inc53).
+        #
+        # It used to be the bullet's SHAPE: "a square bullet marks a box, a
+        # ROUND bullet marks a choice". inc46 then moved the choice off `•`
+        # (which is `REQUIRED`) and onto `●`, and `●` against `•` is one
+        # solid disc at two DIAMETERS -- ruling D of 2026-09-06 says a
+        # channel is COUNT, WEIGHT, POSITION or DIRECTION and that diameter
+        # alone is none of them. So the obligation mark and the chosen option
+        # were still one drawing, and this language's whole round family
+        # (`· • ●`) is that same disc at three diameters, which leaves no
+        # round cell to move to.
+        #
+        # COUNT WAS AVAILABLE AND WAS REFUSED, with the bill named: `╵••` is
+        # two marks against `REQUIRED`'s one, and it puts `REQUIRED`'s OWN
+        # CELL at a `radio.knob` seat -- the seat inc49's law names -- taking
+        # this language from a clean roster to a counted one. A cheaper
+        # answer exists, so the bill is not paid.
+        #
+        # THE CHEAPER ANSWER IS THAT THE DISTINCTION IS ALREADY DRAWN. A
+        # checkbox here leads with a FULL-HEIGHT rule (`│ ┃ █ ┆`) and a radio
+        # with a HALF-HEIGHT tick (`╵ ╹ ▀ ╎`), in every state, which is
+        # weight and extent -- this language's declared channel ("hierarchy
+        # by weight, generous emptiness"). The bullet's shape was a SECOND
+        # channel saying the same thing, and it cost `REQUIRED` its cell. So
+        # both controls set the square bullet this language already sets
+        # inside a box, and the rule that leads them is what says which
+        # control it is.
         "radio.main": {DEFAULT: "╵  ", FOCUSED: "╹  ", ACTIVE: "▀  ",
                        DISABLED: "╎  "},
-        "radio.knob": {DEFAULT: "╵● ", FOCUSED: "╹● ", ACTIVE: "▀● ",
-                       DISABLED: "╎● "},
+        "radio.knob": {DEFAULT: "╵▪ ", FOCUSED: "╹▪ ", ACTIVE: "▀▪ ",
+                       DISABLED: "╎▪ "},
         # THE ONE LANGUAGE THAT RENOUNCES THE WALLS, and the increment that
         # closed `inheritors-2` §8's last debt. This slot used to read
         # `│  │ / ┃  ┃ / █  █ / ┆  ┆` under a comment that said the walls
@@ -6583,20 +6597,39 @@ class Darkside(Kit):
         dos últimas filas", and `nord_S3` is the one language of the seven
         that already answered it -- bare caption, bracketed button.
 
-        THE SEAT BECOMES THE SMALLEST RING THIS ALPHABET DRAWS. `◦` is spent
-        on nothing here but an unchosen radio -- it is not a rung, not a
-        control's shoulder, not a switch indicator and not a disabled mark --
-        and it is the lightest cell available, which is what a seat under a
-        figure should be in a language whose second word is AIRY.
+        THE SEAT IS THE RAIL LAID FLAT (inc53). It was `◦` (inc48), "the
+        smallest ring this alphabet draws", and TWO things were wrong with a
+        ring here.
 
-        NOT THE RAIL, and the reason is a MEASUREMENT rather than a taste.
-        `▏` was the first answer, because this docstring had always claimed
-        the mark was "RAIL-weight" -- but `darkside_S1`'s objection is that
-        this language "se prohibió el trazo vertical en el único sitio donde
-        hacía falta y lo imprime catorce veces donde no", and routing the
-        detail pane's six field rows through the rail took that frame from 16
-        vertical strokes to 22. A fix that makes the frame it was measured
-        against worse is not a fix.
+        `◦` AGAINST `o` IS ONE DRAWING AT TWO DIAMETERS, and `LEVELS["warn"]`
+        is `o `. Ruling D of 2026-09-06: a channel is COUNT, WEIGHT, POSITION
+        or DIRECTION, and diameter alone is none of them -- so the seat under
+        every figure in the detail pane and the middle rung of the severity
+        ladder were the same mark. A LETTERFORM LADDER (`· o O`) can only be
+        kept clear of by leaving the letterform family, which is what `▔`
+        does.
+
+        AND `◦` IS `NA.OFF`, naught's own unlit pixel. `verify_language`
+        already holds a law saying so -- "naught's pixel pair is exclusive to
+        naught ON THE BOARD" -- and it is scoped to the meter, so this row
+        was drawing another language's mark just outside the law's reach.
+
+        `▔` IS THE `RAIL` TURNED NINETY DEGREES: the same one-eighth stroke,
+        the lightest weight the block family has, which is what a seat under
+        a figure should be in a language whose second word is AIRY. It is not
+        a rung, not a control's shoulder, not a switch indicator and not a
+        disabled mark -- WHICH `▁` WOULD HAVE BEEN (`indicator[DISABLED]`),
+        and that is why the seat is not the lower eighth.
+
+        NOT THE RAIL ITSELF, and the reason is a MEASUREMENT rather than a
+        taste. `▏` was the first answer, because this docstring had always
+        claimed the mark was "RAIL-weight" -- but `darkside_S1`'s objection is
+        that this language "se prohibió el trazo vertical en el único sitio
+        donde hacía falta y lo imprime catorce veces donde no", and routing
+        the detail pane's six field rows through the rail took that frame from
+        16 vertical strokes to 22. A fix that makes the frame it was measured
+        against worse is not a fix, and that frame is still round-2's open
+        decision E. `▔` is horizontal, so it costs that count nothing.
 
         AND THE ROW MAY NOT SIMPLY GO BARE, which is worth writing down rather
         than discovering twice. Dropping the mark makes this method byte for
@@ -6609,7 +6642,7 @@ class Darkside(Kit):
         cap, val = str(caption).lower(), str(value)
         gap = max(1, w - len(cap) - len(val) - 2)
         return (f"[{c['dim']}]{mark(cap)}[/]" + " " * gap
-                + f"[{c['dim']}]{mark('◦')}[/] "
+                + f"[{c['dim']}]{mark('▔')}[/] "
                 + f"[{c['ink']}]{mark(val)}[/]")
 
     def keyhint(self, pairs, w=0):
