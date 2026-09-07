@@ -5296,8 +5296,15 @@ def _unescape(s: str) -> str:
     return s
 
 
+#: WHAT COUNTS AS AN EMPTY CELL IN THE PICTURE. The two `capture_languages`
+#: and `verify_ink` already agree on (inc79: the ASCII space and U+2800
+#: BRAILLE PATTERN BLANK) plus the NBSP the exporter substitutes for a space
+#: so an SVG viewer does not collapse it — the same character, one layer down.
+_SVG_BLANKS = " \xa0⠀"
+
+
 def painted_runs(svg: str):
-    """`(ink, ground, text, bold, underline)` for every painted stretch.
+    """`(ink, ground, text, bold, underline, blank)` for every painted stretch.
 
     THE GROUND IS THE ONE UNDER THE RUN, not the canvas — which is K6 in one
     sentence and the thing inc70's law could not ask. A `<text>` element is
@@ -5309,20 +5316,33 @@ def painted_runs(svg: str):
     produced two contrasts of 1.00:1 and 1.03:1 that were the measurer's
     artefacts and not the picture's.
 
-    Blank stretches are dropped: a run of spaces has an ink colour and no ink.
+    A GLYPHLESS RUN IS INK (K8, ruled 2026-09-07), and until inc81 nothing in
+    this programme could say so. `solari_S4` row 10 is a hundred blank cells
+    on `#f5a300` — the band's OPENER and the brightest thing that kit draws —
+    and it has NO `<text>` ELEMENT AT ALL: the exporter writes the plate as a
+    rect and writes nothing over it, so a reader that walks `<text>` cannot
+    reach it however carefully it is written. So the sweep below walks the
+    RECTS as well, subtracts the cells a glyph actually lands in, and returns
+    what is left as a run with `ink=None` and `blank=True`.
+
+    Blank stretches ON THE CANVAS are still dropped: an empty cell of the page
+    is the page, and counting it would make every sheet one run.
     """
     canvas = _CANVAS_RECT.search(svg).group(3)
     rows: dict[int, list] = {}
     for x, y, w, h, fill in _RECT_RUN.findall(svg):
         r = round((float(y) - _PAD) / _LH)
         rows.setdefault(r, []).append((float(x), float(x) + float(w), fill))
-    out = []
+    out, drawn = [], {}
     for x, y, fill, attrs, body in _TEXT_RUN.findall(svg):
         r = round((float(y) - _BASE - _PAD) / _LH)
         bold, und = "bold" in attrs, "underline" in attrs
+        c0 = round((float(x) - _PAD) / _CW)
         cur, buf = None, ""
         for i, ch in enumerate(_unescape(body)):
             cx = float(x) + (i + 0.5) * _CW
+            if ch not in _SVG_BLANKS:
+                drawn.setdefault(r, set()).add(c0 + i)
             bg = canvas
             for x0, x1, rf in rows.get(r, ()):
                 if x0 - 0.01 <= cx <= x1 + 0.01:
@@ -5330,11 +5350,26 @@ def painted_runs(svg: str):
                     break
             if bg != cur:
                 if buf.strip():
-                    out.append((fill, cur, buf, bold, und))
+                    out.append((fill, cur, buf, bold, und, False))
                 cur, buf = bg, ""
             buf += ch
         if buf.strip():
-            out.append((fill, cur, buf, bold, und))
+            out.append((fill, cur, buf, bold, und, False))
+    for r in sorted(rows):
+        for x0, x1, rf in rows[r]:
+            if rf == canvas:
+                continue
+            span, buf = range(round((x0 - _PAD) / _CW),
+                              round((x1 - _PAD) / _CW)), 0
+            for col in span:
+                if col in drawn.get(r, ()):
+                    if buf:
+                        out.append((None, rf, " " * buf, False, False, True))
+                    buf = 0
+                else:
+                    buf += 1
+            if buf:
+                out.append((None, rf, " " * buf, False, False, True))
     return out
 
 
@@ -5367,7 +5402,14 @@ def runs_under_floor(lang: str) -> list[tuple]:
     bad = []
     for screen in SCREENS:
         svg = (FRAMES / f"{lang}_{screen}.svg").read_text(encoding="utf-8")
-        for ink, ground, text, _b, _u in painted_runs(svg):
+        for ink, ground, text, _b, _u, blank in painted_runs(svg):
+            # A GLYPHLESS RUN CARRIES NO TIER (K8/inc81). It is surface, not
+            # text, and `TIER_FLOOR` is WCAG 1.4.3 on words a reader reads;
+            # the clause that binds it is Q2's "not equal to the ground" and
+            # `test_a_glyphless_run_on_a_second_ground_is_ink` is where that
+            # is asked.
+            if blank:
+                continue
             for tier in by_hex.get(ink, ()):
                 c = contrast(ink, ground)
                 if c < TIER_FLOOR[tier]:
@@ -5535,7 +5577,8 @@ def test_the_match_run_is_legible_and_distinct_on_its_declared_channel(lang):
         svg = (FRAMES / f"{lang}_S6.svg").read_text(encoding="utf-8")
         rects = [f for _x, _y, _w, _h, f in _RECT_RUN.findall(svg)]
         assert ground in rects, (lang, ground, sorted(set(rects)))
-        knocked = [r for r in painted_runs(svg) if r[1] == ground]
+        knocked = [r for r in painted_runs(svg)
+                   if r[1] == ground and not r[5]]
         assert knocked, (lang, "a reverse match with no run on its own rect")
         assert {r[0] for r in knocked} == {ink}, (lang, {r[0] for r in knocked})
     else:
@@ -8544,3 +8587,552 @@ def test_ruling_F_fails_at_eighty_by_twenty_four_because_the_page_ran_out(
     narrow = eaten(W80)
     assert narrow["DOING"] == [17, 18], narrow
     assert not narrow["BACKLOG"] and not narrow["BLOCKED"], narrow
+
+
+# ---------------------------------------------------------------------------
+# inc81 — THE FLOOR STOPS BEING A PROPOSAL, and the glyphless run gets a law.
+#
+# `legibility.py` §E asked three questions and enforced nothing.  The round
+# answered all three and the orchestrator adopted the answers verbatim
+# (2026-09-07, on the operator's delegation):
+#
+#   Q1  coverage >= 15% of the cell AND effective contrast >= 3:1, TWO
+#       CLAUSES and not a product, both at the declared seat.
+#   Q2  a run of 1-4 cells carrying an A-family role is bound by the floor; a
+#       run of >= 8 cells of one glyph is STRUCTURE and owes only "not equal
+#       to the ground"; 5-7 is named per seat, like `DIM_CLASSIFIES`.
+#   Q3  judged at the DECLARED seat.  The worst seat is a NOTICE, never a red.
+#
+#   K8  a run of blank cells on a non-ground background is INK, and is
+#       counted.  It obeys Q2 as structure.
+#
+# NOT IMPORTED, MEASURED HERE, which is the stance this file already takes
+# twice over (`test_this_files_picture_metrics_are_the_exporters`,
+# `test_the_legibility_report_on_disk_is_the_one_this_corpus_produces`): the
+# instrument's arithmetic is restated and checked against the report it
+# shipped, so the two can only agree by being right.
+# ---------------------------------------------------------------------------
+
+#: Q1, the two clauses, restated and checked against `legibility.py`'s source.
+FLOOR_COVERAGE, FLOOR_EFFECTIVE = 0.15, 3.0
+#: Q2, the two boundaries of the run-length classes.
+RUN_MEANING_MAX, RUN_STRUCTURE_MIN = 4, 8
+
+#: THE FIVE CONTRACT CALLS THAT SAY WHERE A FAMILY'S DECLARED SEAT IS.  Q3
+#: turns on the word "declared" and a declared seat is not a row number: it is
+#: the `(cell, tone)` pair the kit's OWN method paints when the family is
+#: exercised.  Five calls instead of fifty-five hand-written rows, so a kit
+#: that moves the tone of its severity rung moves its own seat and nothing
+#: here has to be edited to keep up.
+#:
+#: WHICH FAMILY A CELL CARRIES IS STILL THE CENSUS'S ANSWER — these calls only
+#: say what the cell is PAINTED IN while it does that job.  Without the
+#: intersection a letter standing inside a log message would be promoted to a
+#: severity rung for sitting next to one.
+A_SEAT_CALLS = (
+    ("severity", lambda k: [k.log_row(lv, "09:41", "board loaded")
+                            for lv in ("info", "warn", "error")]),
+    ("danger", lambda k: [k.button("Delete", danger=True)]),
+    ("required", lambda k: [k.required()]),
+    ("cursor", lambda k: [k.menu(["a", "b"], 0)[0]]),
+    ("invalid", lambda k: [k.textfield("12/09/26", state=LG.INVALID, w=14)]),
+)
+_TONED_RUN = re.compile(r"\[([^\]]+)\]([^\[]*)")
+
+
+@functools.lru_cache(maxsize=None)
+def _census():
+    """`collision_census` loaded from source, the way inc77's law loads it."""
+    import importlib.util
+    src = FRAMES.parents[0] / "collision_census.py"
+    spec = importlib.util.spec_from_file_location("_census_inc81", src)
+    cc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cc)
+    return cc
+
+
+@functools.lru_cache(maxsize=None)
+def declared_seat_tones(lang: str) -> tuple:
+    """`((family, cell, tone), ...)` — where this kit declares each meaning."""
+    k, cc = LG.kit(lang), _census()
+    named, _ = cc.role_map(lang)
+    out = set()
+    for family, call in A_SEAT_CALLS:
+        for markup in call(k):
+            for tone, body in _TONED_RUN.findall(markup):
+                tone = tone.split()[-1]
+                if not tone.startswith("#"):
+                    continue
+                for ch in body:
+                    if family in named.get(ch, {}):
+                        out.add((family, ch, tone))
+    return tuple(sorted(out))
+
+
+def _txt_run(rows, x: int, y: int, ch: str) -> int:
+    """The uninterrupted horizontal stretch of `ch` the seat sits in.
+
+    OFF THE TEXT AND NOT OFF THE SVG'S RUN ENCODING: the exporter splits a run
+    wherever the colour changes, so a hundred cells of one glyph in two tiers
+    is two svg runs and ONE drawn stroke — and it is the stroke the eye
+    integrates along, which is the whole of §0b.
+    """
+    row = rows[y]
+    a = b = x
+    while a > 0 and row[a - 1] == ch:
+        a -= 1
+    while b + 1 < len(row) and row[b + 1] == ch:
+        b += 1
+    return b - a + 1
+
+
+def _lum_rgb(rgb) -> float:
+    ch = []
+    for v in rgb:
+        v /= 255
+        ch.append(v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2]
+
+
+def _contrast_rgb(a, b) -> float:
+    la, lb = _lum_rgb(a), _lum_rgb(b)
+    return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
+
+
+def _measure_cell(im, side, x: int, y: int, bg: str):
+    """`(coverage, effective)` for one cell of a shipped PNG.
+
+    `coverage` is the share of the box whose pixels differ from the ground at
+    all; `effective` is the contrast between the MEAN COLOUR of exactly those
+    pixels and the ground under them.  Section C of `legibility.txt` in four
+    lines, and the point of restating it is that a hairline holding 16:1 has
+    almost none of its pixels at the colour that ratio describes.
+    """
+    w, h = side["cell"]["w"], side["cell"]["h"]
+    B = _rgb(bg)
+    px = [im.getpixel((x * w + dx, y * h + dy))
+          for dy in range(h) for dx in range(w)]
+    lit = [p for p in px if p != B]
+    if not lit:
+        return 0.0, 1.0
+    mean = tuple(sum(p[c] for p in lit) / len(lit) for c in range(3))
+    return len(lit) / len(px), _contrast_rgb(mean, B)
+
+
+#: THE MIDDLE BAND, NAMED PER SEAT, which is what Q2 asks for and what
+#: `DIM_CLASSIFIES` is the shape of.  The corpus draws exactly three and all
+#: three are naught's `∙` — its `DANGER_FORM` and the two upper rungs of its
+#: severity ladder.  `bound` puts the seat under Q1's two clauses; `structure`
+#: would put it under the >= 8 clause.  A middle-band run that is not named
+#: here makes `floor_rows` raise rather than pick a side for it.
+NAMED_RUNS_5_TO_7 = {
+    ("naught", "severity", "∙", "#8a8a8a"):
+        ("bound", "the muted severity rung, seven cells wide on a log row "
+                  "that spends it as a MARK. Seven cells of a 14.0%-coverage "
+                  "disc still names the row's kind and nothing else."),
+    ("naught", "severity", "∙", "#f5f5f5"):
+        ("bound", "the same rung in `ink` on the graver rows: the tier moved, "
+                  "the job did not."),
+    ("naught", "danger", "∙", "#f5f5f5"):
+        ("bound", "`DANGER_FORM` — the mark that says a button is "
+                  "irreversible. Five or six cells of it is the button's own "
+                  "shoulder; the 100-cell stretches of the same cell in "
+                  "`naught_S4` are structure and classify there, which is the "
+                  "distinction this row exists to keep."),
+}
+
+
+@functools.lru_cache(maxsize=None)
+def floor_rows(lang: str) -> tuple:
+    """Every BOUND seat of this kit: `(family, cell, tone, verdict, runs)`.
+
+    Q2 decides what is bound.  A drawing is bound when at least one of its
+    occurrences sits in a run of 1-4 cells, or when `NAMED_RUNS_5_TO_7` says
+    the middle-band seat is bound.  A drawing every one of whose occurrences
+    is 8 cells or longer is structure and is not here at all — the continuity
+    replaces the area, which is §0b measured rather than asserted.
+
+    `verdict` is `""` for a pass, else the clauses missed: `COV`, `EFF` or
+    `COVEFF`.
+    """
+    from PIL import Image
+    want: dict[str, set[tuple[str, str]]] = {}
+    for family, ch, tone in declared_seat_tones(lang):
+        want.setdefault(ch, set()).add((family, tone))
+    seen: dict[tuple, list] = {}
+    for screen in SCREENS:
+        name = f"{lang}_{screen}"
+        side = _raster_json(name)
+        rows = (FRAMES / f"{name}.txt").read_text(
+            encoding="utf-8").rstrip("\n").split("\n")
+        im = None
+        for x, y, ch, fg, bg, bold, und in _cells_of(side):
+            for family, tone in want.get(ch, ()):
+                if fg != tone:
+                    continue
+                key = (family, ch, tone, bg, bold, und)
+                if key not in seen:
+                    if im is None:
+                        with Image.open(RASTER / f"{name}.png") as raw:
+                            im = raw.convert("RGB")
+                    seen[key] = [*_measure_cell(im, side, x, y, bg), []]
+                seen[key][2].append(_txt_run(rows, x, y, ch))
+    out = []
+    for (family, ch, tone, bg, bold, und), (cov, eff, runs) in seen.items():
+        classes = {("meaning" if n <= RUN_MEANING_MAX else
+                    "structure" if n >= RUN_STRUCTURE_MIN else "named")
+                   for n in runs}
+        named = NAMED_RUNS_5_TO_7.get((lang, family, ch, tone))
+        if "named" in classes:
+            assert named, (lang, family, ch, tone, sorted(runs),
+                           "a 5-7 run with no seat named in NAMED_RUNS_5_TO_7")
+        if "meaning" not in classes and not (named and named[0] == "bound"):
+            continue
+        verdict = ("COV" if cov < FLOOR_COVERAGE else "") + \
+                  ("EFF" if eff < FLOOR_EFFECTIVE else "")
+        out.append((family, ch, tone, verdict, tuple(sorted(set(runs)))))
+    return tuple(sorted(out))
+
+
+#: WHAT IS UNDER THE FLOOR TODAY, at the declared seat, over all eleven.
+#: 89 bound seats, 46 clear both clauses and 43 miss one or both.
+#:
+#: THIS IS A RECORDED SET AND NOT A GATE — the shape `SECOND_WIDTH_RED` and
+#: `DIM_CLASSIFIES` already have in this file, and for the identical reason:
+#: the round judges, the increment records, and a fix shows up as a diff
+#: rather than as a discovery.  It goes red in BOTH directions: a kit fixed, a
+#: kit broken, a twelfth kit added, or a token moved.
+#:
+#: WHAT THE SHAPE OF IT SAYS, and it is the finding of this increment:
+#:
+#:   * SIX seats miss coverage only.  Three of them are obligations
+#:     (instrument `⠁` 5.8%, prism `⡀` 5.3%, swiss `•` 14.0%) — and the round
+#:     predicted TWO.  swiss `•` is a mark the round itself recorded as
+#:     visible (`swiss_S2`) and it lands one point under a floor the round
+#:     set at 15%.  It is reported and NOT adjusted: a floor moved to fit the
+#:     corpus it was written for is not a floor.
+#:   * TWENTY-NINE miss effective contrast only, and they are overwhelmingly
+#:     `mut` and `dim` seats — the severity rung inc74 moved to `mut`, and the
+#:     invalid field's walls, which nine kits draw in `dim` as PAPER.  This
+#:     is a collision between two floors in one repo: K6 asks `mut` for
+#:     4.5:1 DECLARED, and a thin glyph at 4.5:1 declared lands near 2:1
+#:     EFFECTIVE.  Q1 is strictly the harder floor for everything that is not
+#:     solid, and nobody has ruled on which one wins.
+#:   * EIGHT miss both, and they are the marks §7 of the round put in its ten
+#:     worst by eye: the three `·` severity rungs, instrument's `⠂`/`⠆`,
+#:     prism's `⣀`, naught's `◦`.  The two clauses and the eye agree here.
+BELOW_THE_FLOOR = {
+    ("naught", "severity", "∙", "#8a8a8a"): "COV",
+    ("naught", "severity", "∙", "#f5f5f5"): "COV",
+    ("naught", "severity", "◦", "#8a8a8a"): "COVEFF",
+    ("naught", "danger", "∙", "#f5f5f5"): "COV",
+    ("naught", "invalid", "◑", "#242424"): "EFF",
+    ("corgi", "invalid", "░", "#3a3a3a"): "EFF",
+    ("instrument", "severity", "⠂", "#6e7b89"): "COVEFF",
+    ("instrument", "severity", "⠆", "#6e7b89"): "COVEFF",
+    ("instrument", "required", "⠁", "#e8edf2"): "COV",
+    ("instrument", "invalid", "⠶", "#333c47"): "EFF",
+    ("instrument", "cursor", "⣿", "#2dd4bf"): "EFF",
+    ("swiss", "severity", "·", "#9b9b9b"): "COVEFF",
+    ("swiss", "severity", "─", "#9b9b9b"): "EFF",
+    ("swiss", "required", "•", "#f4f4f4"): "COV",
+    ("swiss", "invalid", "║", "#3d3d3d"): "EFF",
+    ("swiss", "cursor", "▮", "#e7372e"): "EFF",
+    ("industrial", "severity", "▫", "#959595"): "EFF",
+    ("industrial", "invalid", "▌", "#4a4a4a"): "EFF",
+    ("industrial", "invalid", "▐", "#4a4a4a"): "EFF",
+    ("industrial", "cursor", "▶", "#ff6039"): "EFF",
+    ("nord", "severity", "!", "#919cb0"): "EFF",
+    ("nord", "severity", "·", "#919cb0"): "COVEFF",
+    ("nord", "invalid", "?", "#4c566a"): "EFF",
+    ("darkside", "severity", "o", "#757575"): "EFF",
+    ("darkside", "severity", "·", "#757575"): "COVEFF",
+    ("darkside", "invalid", "Ø", "#262626"): "EFF",
+    ("prism", "severity", "⣀", "#8b98a5"): "COVEFF",
+    ("prism", "severity", "⣤", "#8b98a5"): "EFF",
+    ("prism", "required", "⡀", "#e6edf3"): "COV",
+    ("prism", "invalid", "⣏", "#5b6675"): "EFF",
+    ("prism", "invalid", "⣹", "#5b6675"): "EFF",
+    ("ledger", "severity", "*", "#1c1a15"): "EFF",
+    ("ledger", "severity", "*", "#635e52"): "EFF",
+    ("ledger", "invalid", "‡", "#c4b99f"): "EFF",
+    ("solari", "severity", "D", "#6e6a60"): "EFF",
+    ("solari", "severity", "K", "#6e6a60"): "EFF",
+    ("solari", "severity", "L", "#6e6a60"): "EFF",
+    ("solari", "severity", "O", "#6e6a60"): "EFF",
+    ("solari", "severity", "Y", "#6e6a60"): "EFF",
+    ("solari", "invalid", "═", "#1f1f22"): "EFF",
+    ("blueprint", "severity", "━", "#7fa8c4"): "EFF",
+    ("blueprint", "invalid", "╲", "#24486b"): "EFF",
+}
+
+#: prism's `⣀` is the one drawing that sits on TWO grounds at its declared
+#: seat — the page and the confirm's plate — so it is two rows in the sweep
+#: and one row in the table above.  Recorded so the arithmetic below is not a
+#: mystery: 43 failing ROWS, 42 distinct (kit, family, cell, tone) keys.
+FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING = 89, 43
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang):
+    """Q1 + Q2 + Q3, over every meaning mark this kit declares.
+
+    THE VERDICT COMES FROM THE PIXELS AND THE SEAT FROM THE KIT, so neither
+    half can be adjusted to fit the other in one file — the same construction
+    `test_a_dim_run_that_classifies_is_legible_or_has_moved` uses.
+
+    AND THE ROSTER IS NON-VACUOUS BY CONSTRUCTION: every kit must show a bound
+    seat for its obligation, its danger form and its severity ladder, so a kit
+    that stopped drawing one would go red here rather than pass by absence.
+    """
+    got = {(lang, fam, ch, tone): v
+           for fam, ch, tone, v, _runs in floor_rows(lang) if v}
+    want = {k: v for k, v in BELOW_THE_FLOOR.items() if k[0] == lang}
+    assert got == want, (lang, sorted(set(got.items()) ^ set(want.items())))
+    fams = {fam for fam, _c, _t, _v, _r in floor_rows(lang)}
+    assert {"required", "danger", "severity"} <= fams, \
+        (lang, sorted(fams), "a kit with no bound seat is not a pass")
+
+
+def test_the_two_clause_floor_is_the_one_the_instrument_enforces():
+    """The two clauses, the two run boundaries and the counts, read off
+    `legibility.py`'s SOURCE and off the report it shipped.
+
+    A floor asserted in this file and a different floor measured in the
+    instrument would be two rulings wearing one name, which is exactly the
+    failure `test_this_files_picture_metrics_are_the_exporters` exists
+    against."""
+    src = (FRAMES / "legibility.py").read_text(encoding="utf-8")
+    assert f"COVERAGE_FLOOR = {FLOOR_COVERAGE}" in src, "coverage clause"
+    assert f"EFFECTIVE_FLOOR = {FLOOR_EFFECTIVE}" in src, "contrast clause"
+    assert f"MEANING_MAX = {RUN_MEANING_MAX}" in src, "the 1-4 class"
+    assert f"STRUCTURE_MIN = {RUN_STRUCTURE_MIN}" in src, "the >= 8 class"
+    bound = sum(len(floor_rows(l)) for l in LANGS)
+    failing = sum(1 for l in LANGS for r in floor_rows(l) if r[3])
+    assert (bound, failing) == (FLOOR_SEATS_BOUND, FLOOR_SEATS_FAILING), \
+        (bound, failing)
+    text = LEGIBILITY.read_text(encoding="utf-8")
+    assert (f"F1. {bound} BOUND SEATS, {bound - failing} PASS, "
+            f"{failing} FAIL") in text, "the report is stale"
+    assert f"{len(NAMED_RUNS_5_TO_7)} seats in the middle band" in text
+
+
+def test_the_eleven_obligations_are_judged_at_their_own_declared_seat():
+    """Q3 in the one place it changes an answer, and the round's own
+    prediction checked rather than repeated.
+
+    Every kit's `REQUIRED` mark is bound (it is one cell by law) and every one
+    of the eleven CLEARS the contrast clause — the half of the prediction that
+    holds. The coverage clause fails THREE and the round said two: swiss `•`
+    at 14.0% is the third and the round recorded it as visible. It is written
+    down here, not legislated away."""
+    req = {}
+    for lang in LANGS:
+        rows = [r for r in floor_rows(lang) if r[0] == "required"]
+        assert len(rows) == 1, (lang, rows, "one obligation, one seat")
+        req[lang] = rows[0]
+    assert all(v[3] in ("", "COV") for v in req.values()), \
+        {l: v[3] for l, v in req.items()}
+    assert {l for l, v in req.items() if v[3]} == \
+        {"instrument", "prism", "swiss"}, {l: v[3] for l, v in req.items()}
+    for lang, (_f, ch, _t, _v, _r) in req.items():
+        assert plain(LG.kit(lang).required()) == ch, (lang, ch)
+
+
+def test_every_middle_band_run_is_named_and_the_table_is_not_vacuous():
+    """Q2's third class, and the vacuity arms `DIM_CLASSIFIES` already has.
+
+    (a) every named row has a verdict the ruling allows and a reason a reader
+        can check; (b) every row in the table is actually REACHED by the
+        sweep, so a seat that stopped existing does not sit here forever; and
+        (c) the sweep raises on a middle run that is not named — which is the
+        clause that makes the table a decision rather than a filter."""
+    assert {v for v, _ in NAMED_RUNS_5_TO_7.values()} <= {"bound", "structure"}
+    for key, (verdict, why) in NAMED_RUNS_5_TO_7.items():
+        assert len(why.split()) >= 8, (key, "a seat with no reason is a hole")
+    reached = set()
+    for lang in LANGS:
+        for fam, ch, tone, _v, runs in floor_rows(lang):
+            if any(RUN_MEANING_MAX < n < RUN_STRUCTURE_MIN for n in runs):
+                reached.add((lang, fam, ch, tone))
+    assert reached == set(NAMED_RUNS_5_TO_7), \
+        sorted(reached ^ set(NAMED_RUNS_5_TO_7))
+
+
+def test_the_floor_law_bites_on_the_two_marks_the_round_sent_back(monkeypatch):
+    """TEETH, and the mutant is the row inc82 is about to remove.
+
+    instrument's `⠁` and prism's `⡀` are the two obligations the round
+    returned `rework` on, and the axis is AREA and not contrast: they carry
+    16.52:1 and 16.02:1, the two best declared ratios of the eleven, and they
+    are three pixels. Take either row out of the recorded set and the law must
+    say so — and must say nothing about the other ten kits, which is the
+    vacuity arm."""
+    for lang in LANGS:
+        test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang)
+
+    for lang, cell in (("instrument", "⠁"), ("prism", "⡀")):
+        tone = _TONED_RUN.findall(LG.kit(lang).required())[0][0]
+        key = (lang, "required", cell, tone)
+        assert BELOW_THE_FLOOR[key] == "COV", key
+        thinner = {k: v for k, v in BELOW_THE_FLOOR.items() if k != key}
+        monkeypatch.setitem(globals(), "BELOW_THE_FLOOR", thinner)
+        with pytest.raises(AssertionError):
+            test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang)
+        for other in LANGS:
+            if other != lang:
+                test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(other)
+        monkeypatch.undo()
+
+    # and it is the COVERAGE clause that fails all three obligations, never
+    # the contrast one -- which is the sentence the whole two-clause ruling
+    # exists to be able to say
+    for lang in ("instrument", "prism", "swiss"):
+        row = [r for r in floor_rows(lang) if r[0] == "required"][0]
+        assert row[3] == "COV", (lang, row)
+
+    for lang in LANGS:
+        test_a_meaning_mark_clears_the_two_clause_floor_at_its_declared_seat(lang)
+
+
+# ---- K8 / E6: the run with no glyph ---------------------------------------
+
+#: THE EIGHTEEN, and they are the whole of what eleven batches of instruments
+#: could not see: a run of blank cells painted on a rect that is not the
+#: canvas.  `(kit, screen, row, x, cells, surface)`.
+#:
+#: `solari_S4` ROW 10 IS THE ONE THAT MATTERS: a hundred blank cells on
+#: `#f5a300`, the brightest thing that kit draws, and it is the OPENER of the
+#: band whose CLOSER round four called the only mark there — because the
+#: closer is a hundred `▁` and a `▁` is a glyph.  Read off the raster
+#: sidecars, which carry the ground each cell was actually painted on.
+GLYPHLESS_RUNS = (
+    ("industrial", "S1", 3, 15, 41, "#2e2e2e"),
+    ("industrial", "S1", 4, 33, 22, "#2e2e2e"),
+    ("industrial", "S1", 5, 35, 25, "#2e2e2e"),
+    ("industrial", "S1", 6, 31, 24, "#2e2e2e"),
+    ("industrial", "S1", 7, 35, 25, "#2e2e2e"),
+    ("industrial", "S1", 9, 13, 43, "#2e2e2e"),
+    ("industrial", "S1", 10, 29, 27, "#2e2e2e"),
+    ("industrial", "S1", 11, 34, 26, "#2e2e2e"),
+    ("industrial", "S1", 12, 29, 26, "#2e2e2e"),
+    ("industrial", "S1", 13, 35, 25, "#2e2e2e"),
+    ("industrial", "S1", 14, 32, 24, "#2e2e2e"),
+    ("industrial", "S1", 15, 34, 26, "#2e2e2e"),
+    ("industrial", "S1", 16, 33, 22, "#2e2e2e"),
+    ("industrial", "S1", 17, 35, 25, "#2e2e2e"),
+    ("industrial", "S1", 19, 15, 41, "#2e2e2e"),
+    ("industrial", "S1", 28, 12, 44, "#2e2e2e"),
+    ("prism", "S4", 29, 0, 63, "#1f2630"),
+    ("solari", "S4", 10, 0, 100, "#f5a300"),
+)
+
+_CELL_BLANKS = " ⠀"
+
+
+def glyphless_runs(lang: str) -> list[tuple]:
+    """Runs of `RUN_STRUCTURE_MIN` blank cells or more on a second ground.
+
+    THE UNIT IS THE SIDECAR'S OWN RUN — one stretch of cells sharing ink,
+    ground, weight and decoration — because that is the unit the exporter
+    paints and the unit round five counted.  A finer reading (every blank cell
+    inside a rect, whatever run it was written in) returns 60 stretches rather
+    than 18; both are true, they answer different questions, and the one the
+    ruling names is this one.
+    """
+    out = []
+    for screen in SCREENS:
+        side = _raster_json(f"{lang}_{screen}")
+        canvas = side["ground"]
+        for y, runs in enumerate(side["grid"]):
+            for x0, text, fg, bg, bold, und in runs:
+                if bg == canvas or und or len(text) < RUN_STRUCTURE_MIN:
+                    continue
+                if all(c in _CELL_BLANKS for c in text):
+                    out.append((lang, screen, y, x0, len(text), bg))
+    return out
+
+
+def test_a_glyphless_run_on_a_second_ground_is_ink():
+    """K8, and it is the first law in eleven batches that reads a stretch of
+    the picture with no drawing in it.
+
+    Two clauses, and the second is the whole of Q2 for structure: every one of
+    these runs is 8 cells or longer, so what it owes is not an area and not a
+    ratio — it is that the surface is NOT THE GROUND. A plate the colour of
+    the page is a plate nobody can see, and that is the only way one of these
+    can be wrong.
+
+    THE COUNT IS PINNED because the finding is the count: eighteen runs in
+    three kits, and one of them is a modal's opener."""
+    got = [r for lang in LANGS for r in glyphless_runs(lang)]
+    assert tuple(got) == GLYPHLESS_RUNS, sorted(set(got) ^ set(GLYPHLESS_RUNS))
+    assert len({r[0] for r in got}) == 3, sorted({r[0] for r in got})
+    for lang, screen, y, x0, n, bg in got:
+        canvas = _raster_json(f"{lang}_{screen}")["ground"]
+        assert bg != canvas, (lang, screen, y, "surface equals the ground")
+        assert n >= RUN_STRUCTURE_MIN, (lang, screen, y, n)
+
+
+def test_the_exporter_paints_a_surface_no_text_run_can_name():
+    """E6, as an assertion instead of a complaint.
+
+    `solari_S4` row 10 is a hundred blank cells on amber and the svg has NO
+    `<text>` ELEMENT ON THAT ROW AT ALL — the exporter writes the plate as a
+    rect and writes nothing over it. So every instrument in this programme
+    that walks `<text>` was structurally incapable of reaching it, however
+    carefully it was written, and `painted_runs` now walks the RECTS too.
+
+    THE ARITHMETIC OF THE TWO READINGS, said out loud rather than reconciled:
+    the sidecar's colour-run unit gives 18 stretches of 8 cells or more; the
+    rect sweep, which subtracts the cells a glyph lands in and returns what is
+    left, gives 60 in the same three kits. Neither is wrong; the ruling names
+    the first."""
+    svg = (FRAMES / "solari_S4.svg").read_text(encoding="utf-8")
+    rows_with_text = {round((float(y) - _BASE - _PAD) / _LH)
+                      for _x, y, _f, _a, _b in _TEXT_RUN.findall(svg)}
+    assert 10 not in rows_with_text, "the band's opener grew a text run"
+    assert 9 in rows_with_text and 11 in rows_with_text, "wrong row"
+    opener = [r for r in painted_runs(svg)
+              if r[5] and r[1] == "#f5a300" and len(r[2]) == 100]
+    assert len(opener) == 1, [r[1:3] for r in painted_runs(svg) if r[5]][:6]
+
+    wide = [r for lang in LANGS for screen in SCREENS
+            for r in painted_runs((FRAMES / f"{lang}_{screen}.svg").read_text(
+                encoding="utf-8"))
+            if r[5] and len(r[2]) >= RUN_STRUCTURE_MIN]
+    assert len(wide) == 60, len(wide)
+    assert {r[1] for r in wide} == {"#1f2630", "#2e2e2e", "#f0ede4",
+                                    "#f5a300"}, sorted({r[1] for r in wide})
+    assert len([r for lang in LANGS for r in glyphless_runs(lang)]) == 18
+
+
+def test_the_glyphless_law_bites_when_the_plate_becomes_the_page(monkeypatch):
+    """TEETH, and the mutant is the only way a surface run can be wrong: paint
+    the plate the colour of the ground it stands on.
+
+    solari's band opener is the arm that matters — it is the row the round
+    called the brightest thing the kit draws, and at the ground's own colour
+    it is a hundred cells of nothing at all. The SIDECAR is mutated and not
+    the corpus: the shipped PNGs are artefacts, and an increment that rewrites
+    one to make a law bite has proved nothing."""
+    test_a_glyphless_run_on_a_second_ground_is_ink()
+    real = _raster_json
+
+    def flat(name: str) -> dict:
+        side = dict(real(name))
+        if name != "solari_S4":
+            return side
+        side["grid"] = [[[x0, t, fg, (side["ground"] if y == 10 else bg),
+                          b, u] for x0, t, fg, bg, b, u in runs]
+                        for y, runs in enumerate(side["grid"])]
+        return side
+
+    monkeypatch.setitem(globals(), "_raster_json", flat)
+    got = [r for lang in LANGS for r in glyphless_runs(lang)]
+    assert len(got) == 17, len(got)
+    assert not [r for r in got if r[0] == "solari"], got
+    with pytest.raises(AssertionError):
+        test_a_glyphless_run_on_a_second_ground_is_ink()
+    monkeypatch.undo()
+    test_a_glyphless_run_on_a_second_ground_is_ink()

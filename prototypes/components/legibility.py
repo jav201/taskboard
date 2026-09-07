@@ -45,6 +45,7 @@ closed).
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -70,6 +71,185 @@ OUT = ROOT / "prototypes" / "out" / "legibility.txt"
 #: therefore three pairs; the rest are two.
 ARGUED = (("•", "●"), ("○", "◦"), ("◎", "◉"), ("†", "‡"), ("▪", "■"),
           ("╌", "┄"), ("╌", "┈"), ("┄", "┈"), ("▬", "◦"), ("⠇", "⠸"))
+
+# ===========================================================================
+# inc81 -- THE FLOOR STOPS BEING A PROPOSAL.  Q1, Q2 and Q3, as given.
+#
+# Section E below asked three questions and enforced nothing.  The round
+# answered all three and the orchestrator adopted the answers verbatim
+# (2026-09-07, on the operator's delegation):
+#
+#   Q1  the legibility floor is TWO CLAUSES, not a product: coverage >= 15%
+#       of the cell AND effective contrast >= 3:1, both at the declared seat.
+#   Q2  runs of 1-4 cells carrying an A-family role are bound by the floor;
+#       runs of >= 8 cells of one glyph are STRUCTURE, bound only to "not
+#       equal to the ground"; 5-7 named per seat like `DIM_CLASSIFIES`.
+#   Q3  the floor is judged at the DECLARED seat; the worst seat is reported
+#       as a notice, never as a red.
+#
+# WHY TWO CLAUSES AND NOT THE PRODUCT, in the round's own arithmetic: `prism
+# ⡀` holds 16.02:1 and cannot be seen, and `solari ▁` holds 1.20:1 and can.
+# The product mixes two failures whose fixes are opposite -- one is answered
+# by drawing another cell, the other by nothing at all -- and a single number
+# hides which one a row is.
+# ===========================================================================
+
+#: Q1, the two clauses.  `COVERAGE` is the share of the cell whose pixels
+#: differ from the ground at all; `EFFECTIVE` is the contrast between the
+#: MEAN COLOUR of exactly those pixels and the ground under them.  Both are
+#: section C's definitions and neither is new here.
+COVERAGE_FLOOR = 0.15
+EFFECTIVE_FLOOR = 3.0
+
+#: Q2, the run-length classes.  A RUN is the uninterrupted horizontal stretch
+#: of ONE glyph the `.txt` draws through the seat -- measured on the artefact,
+#: not declared, because §0b of the round is a fact about the picture: the
+#: same cell at the same contrast is legible at 55 cells of length and
+#: invisible at one.
+MEANING_MAX = 4        # 1..4 cells of an A-family glyph: bound by both clauses
+STRUCTURE_MIN = 8      # >= 8 cells of one glyph: bound only to "not the ground"
+
+#: THE 5-7 RUNS, named per seat exactly as `DIM_CLASSIFIES` names its own.
+#: The corpus draws THREE of them and all three are naught's `∙`, which is
+#: that kit's `DANGER_FORM` and the top two rungs of its severity ladder --
+#: so the middle band is not an empty branch and is not a crowd either.
+#:
+#: A row is `(kit, family, cell, tone) -> (verdict, why)`.  The verdicts are
+#: the two the ruling leaves available at this length: `bound` puts the run
+#: under Q1's two clauses like a 1-4 run, `structure` puts it under the
+#: >= 8 clause.  Nothing may be here without a reason a reader can check.
+NAMED_RUNS = {
+    ("naught", "severity", "∙", "#8a8a8a"):
+        ("bound",
+         "the muted severity rung of `naught_S5`, drawn seven cells wide "
+         "where a log row spends it as a MARK and not as a rule. Seven "
+         "cells of a 14.0%-coverage disc is still a mark: it names the "
+         "row's kind and nothing else joins it."),
+    ("naught", "severity", "∙", "#f5f5f5"):
+        ("bound",
+         "the same rung in `ink` on the graver rows. Same seat, same "
+         "reading; the tier changed, the job did not."),
+    ("naught", "danger", "∙", "#f5f5f5"):
+        ("bound",
+         "`DANGER_FORM`, which is the mark that says a button is "
+         "irreversible. A five- or six-cell stretch of it is the button's "
+         "own shoulder and not a rule across the page -- the 100-cell "
+         "stretches of the same cell in `naught_S4` are structure and are "
+         "classified there, which is the distinction this row exists to "
+         "keep."),
+}
+
+#: THE A-FAMILY SEATS, DERIVED AND NOT ENUMERATED.  Q3 says the floor is
+#: judged at the DECLARED seat, and a declared seat is not a row number: it is
+#: the (cell, tone) pair the kit's OWN CONTRACT METHOD paints when the family
+#: is exercised.  So the table below is five calls, not fifty-five rows, and a
+#: kit that changes the tone of its severity rung moves its own seat.
+#:
+#: `collision_census.role_map` still decides WHICH FAMILY a cell carries --
+#: this file keeps no second list of what a meaning is (the docstring's own
+#: standing promise).  These calls only say what the cell is PAINTED IN when
+#: it does that job, which is the half a census of declarations cannot have.
+A_SEAT_CALLS = (
+    ("severity", lambda k: [k.log_row(lv, "09:41", "board loaded")
+                            for lv in ("info", "warn", "error")]),
+    ("danger", lambda k: [k.button("Delete", danger=True)]),
+    ("required", lambda k: [k.required()]),
+    ("cursor", lambda k: [k.menu(["a", "b"], 0)[0]]),
+    ("invalid", lambda k: [k.textfield("12/09/26", state=LG.INVALID, w=14)]),
+)
+
+_TONED = re.compile(r"\[([^\]]+)\]([^\[]*)")
+
+
+def declared_tones(lang: str) -> dict[str, set[tuple[str, str]]]:
+    """`family -> {(cell, tone)}`, read off the kit's own contract methods.
+
+    Only cells `role_map` already credits to that family survive, so a letter
+    that happens to sit inside a log message is not promoted to a severity
+    rung by being printed next to one.
+    """
+    k = LG.kit(lang)
+    named, _ = CC.role_map(lang)
+    out: dict[str, set[tuple[str, str]]] = {}
+    for family, call in A_SEAT_CALLS:
+        for markup in call(k):
+            for tone, body in _TONED.findall(markup):
+                tone = tone.split()[-1]
+                if not tone.startswith("#"):
+                    continue
+                for ch in body:
+                    if family in named.get(ch, {}):
+                        out.setdefault(family, set()).add((ch, tone))
+    return out
+
+
+class Sheets:
+    """The 66 `.txt`, and the run a seat sits in.
+
+    Run length is read off the TEXT and not off the svg's run encoding: the
+    exporter splits a run wherever the colour changes, so a hundred cells of
+    one glyph in two tiers is two svg runs and one drawn stroke, and it is the
+    stroke the eye integrates along.
+    """
+
+    def __init__(self) -> None:
+        self.rows: dict[tuple[str, str], list[str]] = {}
+        for lang in LG.KITS:
+            for screen in S.SCREENS:
+                self.rows[(lang, screen)] = (
+                    HERE / f"{lang}_{screen}.txt").read_text(
+                        encoding="utf-8").rstrip("\n").split("\n")
+
+    def run(self, lang: str, screen: str, x: int, y: int, ch: str) -> int:
+        row = self.rows[(lang, screen)][y]
+        a = b = x
+        while a > 0 and row[a - 1] == ch:
+            a -= 1
+        while b + 1 < len(row) and row[b + 1] == ch:
+            b += 1
+        return b - a + 1
+
+
+def run_class(n: int) -> str:
+    """Q2 in one function: `meaning` / `named` / `structure`."""
+    if n <= MEANING_MAX:
+        return "meaning"
+    return "structure" if n >= STRUCTURE_MIN else "named"
+
+
+def blank_runs() -> list[tuple]:
+    """K8 / E6 -- every run of BLANK cells painted on a second ground.
+
+    `(kit, screen, row, x, cells, ground, canvas, contrast)`, structure runs
+    (>= 8 cells) only, which is the length the ruling classifies them at.
+
+    THE OBJECTION IN ONE SENTENCE: a run of spaces on a rect that is not the
+    canvas is INK -- `solari_S4` row 10 is a hundred of them on `#f5a300` and
+    is the brightest thing in that kit -- and eleven batches of instruments
+    read glyphs, so no census, no family table, no coverage measure and no law
+    could name it.  Ruling K8 (orchestrator, 2026-09-07): it is counted, and
+    it obeys Q2 as structure, which asks only that it not equal the ground.
+
+    Read off the SIDECAR, which already carries the ground the cell was
+    actually painted on -- the same resolution `Cells` reads for glyphs.
+    """
+    out = []
+    for lang in LG.KITS:
+        for screen in S.SCREENS:
+            side = json.loads((PNG / f"{lang}_{screen}.json").read_text(
+                encoding="utf-8"))
+            canvas = side["ground"]
+            for y, runs in enumerate(side["grid"]):
+                for x0, text, fg, bg, bold, und in runs:
+                    if bg == canvas or und:
+                        continue
+                    if len(text) < STRUCTURE_MIN:
+                        continue
+                    if any(c not in CC.BLANKS for c in text):
+                        continue
+                    out.append((lang, screen, y, x0, len(text), bg, canvas,
+                                contrast(rgb(bg), rgb(canvas))))
+    return out
 
 #: WCAG 2.x, the same arithmetic `tests/test_components.py` and four packets
 #: use.  Restated rather than imported because the test file is a test file;
@@ -434,7 +614,7 @@ def report() -> str:
                  f"{eff:>6.2f} {dec:>6.2f} {prod:>8.3f}")
 
     # ---- E ---------------------------------------------------------------
-    h("E. A FLOOR TO PROPOSE, NOT TO ENFORCE")
+    h("E. THE PRODUCT, AND WHY THE RULING DID NOT TAKE IT")
     w.append("")
     lo = sorted(table)
     w.append(f"The {len(table)} meaning marks the corpus draws span "
@@ -457,32 +637,179 @@ def report() -> str:
     w.append("no way to tell the two apart, because the svg carries a colour")
     w.append("and not a drawing.")
     w.append("")
-    w.append("WHY IT IS NOT ENFORCED HERE. Three reasons and they are not")
-    w.append("excuses:")
+    w.append("AND THE ROUND DID NOT TAKE THE PRODUCT. The three questions")
+    w.append("this section left open were answered on 2026-09-07 and section")
+    w.append("F is the answer, enforced. The product stays here because it is")
+    w.append("what produced the question -- and because the round's own §7")
+    w.append("says why it is a bad ranking: `naught ◦` at 13.5% coverage is")
+    w.append("found by eye and `instrument ⠇` at 15.8% is not, so the order")
+    w.append("the product gives is not the order a reader sees. A threshold")
+    w.append("that separates `found` from `not found` is defensible; a league")
+    w.append("table is not.")
     w.append("")
-    w.append("  1. The product has no published precedent. WCAG 1.4.3 is a")
-    w.append("     ratio and 1.4.11 is a ratio; nothing in either standard")
-    w.append("     multiplies by area. A floor invented inside an increment")
-    w.append("     and asserted in the same increment is a number nobody")
-    w.append("     argued with.")
-    w.append("  2. Half of what it would fail is DECORATION, and this file")
-    w.append("     cannot tell which half. That is round four's §8.4 verbatim")
-    w.append("     and inc74's `DIM_CLASSIFIES` is the shape the answer takes")
-    w.append("     -- a seat list with verdicts, written by somebody who")
-    w.append("     decides, not a threshold.")
-    w.append("  3. The face is not the terminal. Windows Terminal draws its")
-    w.append("     own box and block glyphs, so every row here whose glyph is")
-    w.append("     box drawing is a number about Cascadia's version of it.")
+    w.append("WHAT SURVIVES UNCHANGED as a limit of the whole instrument: the")
+    w.append("face is not the terminal. Windows Terminal draws its own box and")
+    w.append("block glyphs, so every row in this file whose glyph is box")
+    w.append("drawing is a number about Cascadia's version of it.")
+
+    # ---- F ---------------------------------------------------------------
+    h("F. THE FLOOR AS LAW -- Q1, Q2 and Q3, at the declared seat")
     w.append("")
-    w.append("WHAT A RULING WOULD NEED TO SAY, in one line each:")
+    w.append(f"Q1  coverage >= {COVERAGE_FLOOR:.0%} of the cell AND effective "
+             f"contrast >= {EFFECTIVE_FLOOR:.0f}:1,")
+    w.append("    two clauses, both at the declared seat. Not a product.")
+    w.append(f"Q2  a run of 1..{MEANING_MAX} cells carrying an A-family role "
+             f"is bound; a run of")
+    w.append(f"    >= {STRUCTURE_MIN} cells of one glyph is STRUCTURE and owes "
+             f"only `not equal to")
+    w.append(f"    the ground`; {MEANING_MAX + 1}..{STRUCTURE_MIN - 1} is "
+             f"named per seat in `NAMED_RUNS`.")
+    w.append("Q3  judged at the DECLARED seat. Section D's worst seat is a")
+    w.append("    NOTICE and is never a red.")
     w.append("")
-    w.append("  - is coverage x effective the measure, or coverage AND")
-    w.append("    effective as two clauses with two floors?")
-    w.append("  - does it bind every meaning mark, or only the ones a")
-    w.append("    `DIM_CLASSIFIES`-shaped list says classify?")
-    w.append("  - is a mark judged at its worst seat or at its declared one?")
-    w.append("    Section D reports the worst; the answer changes which kits")
-    w.append("    are in the top ten.")
+    w.append("THE DECLARED SEAT IS DERIVED, NOT LISTED. It is the (cell, tone)")
+    w.append("pair the kit's own contract method paints when the family is")
+    w.append("exercised -- `log_row`, `button(danger=True)`, `required`,")
+    w.append("`menu`, `textfield(INVALID)` -- intersected with the census's")
+    w.append("`role_map`, so this file still keeps no second list of what a")
+    w.append("meaning is. Five calls, not fifty-five rows.")
+    w.append("")
+
+    sheets = Sheets()
+    floor_rows, notice_rows, mid_rows = [], [], []
+    for lang in LG.KITS:
+        dec = declared_tones(lang)
+        for family in CC.A_FAMILIES:
+            for ch, tone in sorted(dec.get(family, ())):
+                for cov, eff, dc, fg, bg, bold, und, seats in cells.of(lang, ch):
+                    if fg != tone:
+                        continue
+                    lens = [sheets.run(lang, sc, x, y, ch)
+                            for sc, x, y in seats]
+                    classes = {run_class(n) for n in lens}
+                    key = (lang, family, ch, tone)
+                    if "named" in classes:
+                        mid_rows.append((key, sorted(
+                            n for n in lens if run_class(n) == "named")))
+                    bound = "meaning" in classes or (
+                        key in NAMED_RUNS and NAMED_RUNS[key][0] == "bound")
+                    if not bound:
+                        continue
+                    miss = ("COV" if cov < COVERAGE_FLOOR else "") + \
+                           ("EFF" if eff < EFFECTIVE_FLOOR else "")
+                    sc, x, y = seats[0]
+                    floor_rows.append((lang, family, ch, tone, cov, eff, dc,
+                                       min(lens), max(lens), miss,
+                                       f"{sc} r{y}", bg))
+
+    w.append(f"{'kit':<11} {'family':<9} {'gl':>3} {'tone':<8} {'cov':>6} "
+             f"{'eff':>6} {'decl':>6} {'run':>7}  {'seat':<9} {'verdict':<8}")
+    w.append("-" * 78)
+    for (lang, family, ch, tone, cov, eff, dc, lo_n, hi_n, miss, where,
+         bg) in floor_rows:
+        span = f"{lo_n}" if lo_n == hi_n else f"{lo_n}-{hi_n}"
+        w.append(f"{lang:<11} {family:<9} {ch:>3} {tone:<8} {cov:>5.1%} "
+                 f"{eff:>6.2f} {dc:>6.2f} {span:>7}  {where:<9} "
+                 f"{('FAIL ' + miss) if miss else 'pass':<8}")
+    bad = [r for r in floor_rows if r[9]]
+    w.append("-" * 78)
+    w.append(f"F1. {len(floor_rows)} BOUND SEATS, "
+             f"{len(floor_rows) - len(bad)} PASS, {len(bad)} FAIL")
+    w.append("")
+    w.append(f"    coverage only    "
+             f"{sum(1 for r in bad if r[9] == 'COV')}")
+    w.append(f"    effective only   "
+             f"{sum(1 for r in bad if r[9] == 'EFF')}")
+    w.append(f"    both clauses     "
+             f"{sum(1 for r in bad if r[9] == 'COVEFF')}")
+    w.append("")
+
+    w.append("F2. THE ELEVEN OBLIGATIONS, which is the row the round predicted")
+    w.append("")
+    w.append(f"{'kit':<11} {'gl':>3} {'cov':>6} {'eff':>6} {'decl':>7} "
+             f"{'verdict':<12}")
+    w.append("-" * 52)
+    req = [r for r in floor_rows if r[1] == "required"]
+    for lang, family, ch, tone, cov, eff, dc, lo_n, hi_n, miss, where, bg in req:
+        w.append(f"{lang:<11} {ch:>3} {cov:>5.1%} {eff:>6.2f} {dc:>6.2f} "
+                 f"{('FAIL ' + miss) if miss else 'pass':<12}")
+    req_bad = [r for r in req if r[9]]
+    w.append("-" * 52)
+    w.append(f"{len(req)} obligations, {len(req_bad)} under the floor: "
+             + ", ".join(f"{r[0]} {r[2]}" for r in req_bad))
+    w.append("")
+    w.append("    ALL ELEVEN CLEAR THE CONTRAST CLAUSE, which is the half of")
+    w.append("    the round's prediction that holds. The round predicted TWO")
+    w.append(f"    coverage failures and there are {len(req_bad)}. The third")
+    w.append("    is swiss `•` at 14.0%, one point under a floor the round set")
+    w.append("    at 15% and a mark the round itself recorded as visible")
+    w.append("    (`swiss_S2`: *\"`•` obligatorio ... se ve\"*). It is reported")
+    w.append("    and not adjusted: a floor moved to fit the corpus it was")
+    w.append("    written for is not a floor.")
+    w.append("")
+
+    w.append(f"F3. THE {MEANING_MAX + 1}-{STRUCTURE_MIN - 1} RUNS, named per "
+             f"seat")
+    w.append("")
+    seen_mid = sorted({k for k, _ in mid_rows})
+    for key in seen_mid:
+        lens = sorted({n for k, ns in mid_rows if k == key for n in ns})
+        verdict, why = NAMED_RUNS[key]
+        w.append(f"    {key[0]} {key[1]} {key[2]} {key[3]}  "
+                 f"run {lens}  -> {verdict}")
+    w.append("")
+    w.append(f"    {len(seen_mid)} seats in the middle band, all of them "
+             f"naught's `∙`.")
+    w.append("    Every one is NAMED in `NAMED_RUNS` with a reason; an")
+    w.append("    unnamed middle run is a hole in the ruling and the law")
+    w.append("    below goes red on it rather than choosing a side.")
+    w.append("")
+
+    w.append("F4. THE WORST SEAT, AS A NOTICE (Q3)")
+    w.append("")
+    w.append("    Section D reports every mark at its WORST seat and 45 of 79")
+    w.append("    sit under 3:1 declared there. Under Q3 that is a notice and")
+    w.append("    not a verdict: the worst seat of a mark is almost always its")
+    w.append("    DECORATIVE one -- `instrument ·` in a masthead, `ledger ·`")
+    w.append("    in a leader -- so a kit judged by its worst seat is a kit")
+    w.append("    failed for its decoration. The declared seat is above.")
+
+    # ---- G ---------------------------------------------------------------
+    h("G. THE GLYPHLESS RUN -- K8 / E6, the ink no instrument could see")
+    w.append("")
+    w.append("A run of BLANK cells painted on a rect that is not the canvas is")
+    w.append("INK. `solari_S4` row 10 is a hundred of them on `#f5a300` and is")
+    w.append("the brightest thing that kit draws; it is the OPENER of the")
+    w.append("band whose closer round four called the only mark there.")
+    w.append("Eleven batches of instruments read glyphs, so no census, no")
+    w.append("family table, no coverage measure and no law in this programme")
+    w.append("could name it. Ruling K8 (2026-09-07): it is counted.")
+    w.append("")
+    blanks = blank_runs()
+    w.append(f"{'kit':<11} {'sheet':<6} {'row':>4} {'x':>4} {'cells':>6} "
+             f"{'surface':<9} {'canvas':<9} {'ratio':>7}")
+    w.append("-" * 66)
+    for lang, screen, y, x0, n, bg, canvas, ratio in blanks:
+        w.append(f"{lang:<11} {screen:<6} {y:>4} {x0:>4} {n:>6} "
+                 f"{bg:<9} {canvas:<9} {ratio:>6.2f}")
+    w.append("-" * 66)
+    kits = sorted({r[0] for r in blanks})
+    w.append(f"{len(blanks)} runs of {STRUCTURE_MIN} cells or more, in "
+             f"{len(kits)} kits: {', '.join(kits)}")
+    w.append("")
+    w.append("EVERY ONE IS STRUCTURE UNDER Q2 and therefore owes exactly one")
+    w.append("thing -- not to equal the ground it is painted on. All "
+             f"{len(blanks)} clear")
+    w.append("it. That is a weak clause and it is the right one: a plate is")
+    w.append("not a mark and a coverage floor has nothing to say about a")
+    w.append("surface with no drawing in it.")
+    w.append("")
+    w.append("WHAT IS STILL NOT COUNTED, said out loud: "
+             "`collision_census.py` reads")
+    w.append("DECLARATIONS and not frames, so its TOTAL cannot move for a run")
+    w.append("that exists only in a picture. The frame-side count is here and")
+    w.append("in the suite; the census's 28 is unchanged and means what it")
+    w.append("always meant.")
     w.append("")
     return "\n".join(w) + "\n"
 
@@ -523,7 +850,8 @@ def main(argv: list[str]) -> int:
     lines = text.split("\n")
     print(f"  {len(lines)} lines -> {OUT}")
     for line in lines:
-        if line.startswith(("A.", "A1.", "B.", "C.", "D.", "E.")):
+        if line.startswith(("A.", "A1.", "B.", "C.", "D.", "E.", "F.", "F1.",
+                            "G.")):
             print(f"    {line}")
     print("\n  re-measuring in a fresh process...")
     if not check_reproducible(text):

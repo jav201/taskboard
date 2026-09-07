@@ -539,7 +539,7 @@ rank kit          gl family                      cov     eff    decl  cov*eff
   10 instrument    ⠇ severity                 15.8%   1.24   1.74    0.196
 
 ==============================================================================
-E. A FLOOR TO PROPOSE, NOT TO ENFORCE
+E. THE PRODUCT, AND WHY THE RULING DID NOT TAKE IT
 ==============================================================================
 
 The 79 meaning marks the corpus draws span 0.053 to 9.802 on coverage x effective.
@@ -561,30 +561,229 @@ wearing a passing ratio -- and four rounds of this programme had
 no way to tell the two apart, because the svg carries a colour
 and not a drawing.
 
-WHY IT IS NOT ENFORCED HERE. Three reasons and they are not
-excuses:
+AND THE ROUND DID NOT TAKE THE PRODUCT. The three questions
+this section left open were answered on 2026-09-07 and section
+F is the answer, enforced. The product stays here because it is
+what produced the question -- and because the round's own §7
+says why it is a bad ranking: `naught ◦` at 13.5% coverage is
+found by eye and `instrument ⠇` at 15.8% is not, so the order
+the product gives is not the order a reader sees. A threshold
+that separates `found` from `not found` is defensible; a league
+table is not.
 
-  1. The product has no published precedent. WCAG 1.4.3 is a
-     ratio and 1.4.11 is a ratio; nothing in either standard
-     multiplies by area. A floor invented inside an increment
-     and asserted in the same increment is a number nobody
-     argued with.
-  2. Half of what it would fail is DECORATION, and this file
-     cannot tell which half. That is round four's §8.4 verbatim
-     and inc74's `DIM_CLASSIFIES` is the shape the answer takes
-     -- a seat list with verdicts, written by somebody who
-     decides, not a threshold.
-  3. The face is not the terminal. Windows Terminal draws its
-     own box and block glyphs, so every row here whose glyph is
-     box drawing is a number about Cascadia's version of it.
+WHAT SURVIVES UNCHANGED as a limit of the whole instrument: the
+face is not the terminal. Windows Terminal draws its own box and
+block glyphs, so every row in this file whose glyph is box
+drawing is a number about Cascadia's version of it.
 
-WHAT A RULING WOULD NEED TO SAY, in one line each:
+==============================================================================
+F. THE FLOOR AS LAW -- Q1, Q2 and Q3, at the declared seat
+==============================================================================
 
-  - is coverage x effective the measure, or coverage AND
-    effective as two clauses with two floors?
-  - does it bind every meaning mark, or only the ones a
-    `DIM_CLASSIFIES`-shaped list says classify?
-  - is a mark judged at its worst seat or at its declared one?
-    Section D reports the worst; the answer changes which kits
-    are in the top ten.
+Q1  coverage >= 15% of the cell AND effective contrast >= 3:1,
+    two clauses, both at the declared seat. Not a product.
+Q2  a run of 1..4 cells carrying an A-family role is bound; a run of
+    >= 8 cells of one glyph is STRUCTURE and owes only `not equal to
+    the ground`; 5..7 is named per seat in `NAMED_RUNS`.
+Q3  judged at the DECLARED seat. Section D's worst seat is a
+    NOTICE and is never a red.
+
+THE DECLARED SEAT IS DERIVED, NOT LISTED. It is the (cell, tone)
+pair the kit's own contract method paints when the family is
+exercised -- `log_row`, `button(danger=True)`, `required`,
+`menu`, `textfield(INVALID)` -- intersected with the census's
+`role_map`, so this file still keeps no second list of what a
+meaning is. Five calls, not fifty-five rows.
+
+kit         family     gl tone        cov    eff   decl     run  seat      verdict 
+------------------------------------------------------------------------------
+naught      severity    ∙ #8a8a8a  14.0%   3.50   6.08     1-9  S1 r10    FAIL COV
+naught      severity    ∙ #f5f5f5  14.0%   9.66  19.26     1-8  S1 r0     FAIL COV
+naught      severity    ◦ #8a8a8a  14.0%   2.40   6.08     1-2  S1 r10    FAIL COVEFF
+naught      danger      ∙ #f5f5f5  14.0%   9.66  19.26     1-8  S1 r0     FAIL COV
+naught      required    ⊛ #f5f5f5  28.1%   3.45  19.26       1  S2 r3     pass    
+naught      invalid     ◑ #242424  36.3%   1.18   1.35       1  S2 r5     FAIL EFF
+naught      cursor      ● #e51b24  40.9%   3.00   4.51       1  S1 r14    pass    
+corgi       severity    ▁ #9a9a9a  15.8%   4.77   6.91       2  S5 r8     pass    
+corgi       severity    ▄ #9a9a9a  52.6%   6.46   6.91       2  S5 r10    pass    
+corgi       severity    █ #f2f2f2  100.0%  16.90  17.36     1-2  S3 r19    pass    
+corgi       danger      █ #f2f2f2  100.0%  16.90  17.36     1-2  S3 r19    pass    
+corgi       required    ▀ #f2f2f2  57.9%  16.93  17.36       1  S2 r3     pass    
+corgi       invalid     ░ #3a3a3a  68.4%   1.05   1.71       2  S1 r12    FAIL EFF
+corgi       cursor      ▐ #ff6600  55.6%   5.03   6.62       1  S1 r8     pass    
+instrument  severity    ⠂ #6e7b89   5.3%   1.90   4.50       2  S5 r8     FAIL COVEFF
+instrument  severity    ⠆ #6e7b89  10.5%   1.90   4.50       2  S5 r10    FAIL COVEFF
+instrument  severity    ⠇ #e8edf2  16.4%   4.16  16.52     1-2  S2 r16    pass    
+instrument  danger      ⠛ #e8edf2  22.8%   3.92  16.52       1  S3 r19    pass    
+instrument  required    ⠁ #e8edf2   5.8%   3.77  16.52       1  S2 r3     FAIL COV
+instrument  invalid     ⠶ #333c47  21.1%   1.24   1.74    1-27  S2 r5     FAIL EFF
+instrument  cursor      ⣿ #2dd4bf  44.4%   2.94  10.45    1-21  S1 r0     FAIL EFF
+swiss       severity    · #9b9b9b   4.7%   2.64   6.85       1  S1 r1     FAIL COVEFF
+swiss       severity    ─ #9b9b9b  15.8%   2.87   6.85       1  S5 r11    FAIL EFF
+swiss       severity    ━ #f4f4f4  26.3%   7.91  17.30       1  S5 r13    pass    
+swiss       danger      ╱ #f4f4f4  28.7%   5.95  17.30       1  S3 r20    pass    
+swiss       danger      ╲ #f4f4f4  28.7%   5.94  17.30       1  S3 r20    pass    
+swiss       required    • #f4f4f4  14.0%   9.13  17.30       1  S2 r4     FAIL COV
+swiss       invalid     ║ #3d3d3d  55.6%   1.40   1.75       1  S2 r6     FAIL EFF
+swiss       cursor      ▮ #e7372e  38.6%   2.57   4.52       1  S1 r9     FAIL EFF
+industrial  severity    ■ #f2f2f2  47.4%  11.02  15.55       2  S5 r12    pass    
+industrial  severity    ▪ #959595  17.5%   3.73   5.81       2  S5 r10    pass    
+industrial  severity    ▫ #959595  17.0%   2.77   5.81       2  S5 r8     FAIL EFF
+industrial  danger      ╱ #f2f2f2  28.7%   5.67  15.55       2  S3 r19    pass    
+industrial  required    ! #f2f2f2  18.7%   4.54  15.55       1  S2 r3     pass    
+industrial  invalid     / #f2f2f2  26.3%   5.02  15.55       1  S2 r5     pass    
+industrial  invalid     ▌ #4a4a4a  55.6%   1.86   1.96       1  S1 r3     FAIL EFF
+industrial  invalid     ▐ #4a4a4a  55.6%   1.76   1.96       1  S1 r3     FAIL EFF
+industrial  cursor      ▶ #ff6039  35.1%   2.97   5.79       1  S1 r9     FAIL EFF
+nord        severity    ! #919cb0  18.7%   2.17   4.51       1  S5 r10    FAIL EFF
+nord        severity    ! #eceff4  18.7%   3.81  10.84       2  S5 r12    pass    
+nord        severity    · #919cb0   4.7%   2.26   4.51       1  S1 r1     FAIL COVEFF
+nord        danger      # #eceff4  41.5%   5.07  10.84       1  S3 r19    pass    
+nord        required    * #eceff4  30.4%   3.67  10.84       1  S2 r3     pass    
+nord        invalid     ? #4c566a  25.1%   1.34   1.69       1  S2 r5     FAIL EFF
+nord        cursor      ▸ #8fbcbb  21.6%   3.28   5.99       1  S1 r0     pass    
+darkside    severity    O #f5f5f5  40.9%   6.99  19.26       1  S5 r10    pass    
+darkside    severity    o #757575  28.1%   2.51   4.56       1  S1 r0     FAIL EFF
+darkside    severity    o #f5f5f5  28.1%   8.34  19.26     1-2  S1 r0     pass    
+darkside    severity    · #757575   4.7%   1.90   4.56       1  S5 r8     FAIL COVEFF
+darkside    danger      ▚ #f5f5f5  57.9%  13.94  19.26       1  S3 r19    pass    
+darkside    danger      ▞ #f5f5f5  60.2%  15.12  19.26       1  S3 r19    pass    
+darkside    required    ▪ #f5f5f5  17.5%  10.10  19.26       1  S2 r3     pass    
+darkside    invalid     Ø #262626  52.0%   1.18   1.39       1  S2 r5     FAIL EFF
+darkside    cursor      ▊ #1783ff  88.9%   4.47   5.73       1  S1 r9     pass    
+prism       severity    ⣀ #8b98a5   9.9%   2.38   5.18       1  S4 r23    FAIL COVEFF
+prism       severity    ⣀ #8b98a5  11.1%   2.25   6.43       2  S5 r8     FAIL COVEFF
+prism       severity    ⣤ #8b98a5  21.6%   2.31   6.43       2  S5 r10    FAIL EFF
+prism       severity    ⣿ #e6edf3  44.4%   4.06  16.02     1-2  S3 r19    pass    
+prism       danger      ⣿ #e6edf3  44.4%   4.06  16.02     1-2  S3 r19    pass    
+prism       required    ⡀ #e6edf3   5.3%   4.40  16.02       1  S2 r3     FAIL COV
+prism       invalid     ⣏ #5b6675  31.6%   1.64   3.25       1  S2 r5     FAIL EFF
+prism       invalid     ⣹ #5b6675  31.6%   1.64   3.25       1  S2 r5     FAIL EFF
+prism       cursor      ▸ #2dd4bf  21.6%   4.48  10.17       1  S1 r0     pass    
+ledger      severity    * #1c1a15  30.4%   2.86  13.36       2  S2 r6     FAIL EFF
+ledger      severity    * #635e52  30.4%   1.91   4.96       1  S5 r10    FAIL EFF
+ledger      danger      ( #1c1a15  27.5%   4.60  13.36       1  S3 r19    pass    
+ledger      danger      ) #1c1a15  31.6%   3.61  13.36       1  S3 r19    pass    
+ledger      required    † #1c1a15  21.6%   3.19  13.36       1  S2 r3     pass    
+ledger      invalid     ‡ #c4b99f  25.1%   1.25   1.50       1  S2 r5     FAIL EFF
+ledger      cursor      ▶ #2b3a67  35.1%   3.33   8.48       1  S1 r10    pass    
+solari      severity    C #f0ede4  31.0%   6.73  16.81       1  S2 r16    pass    
+solari      severity    D #6e6a60  36.8%   2.36   3.65       1  S1 r7     FAIL EFF
+solari      severity    K #6e6a60  33.9%   2.31   3.65       1  S4 r12    FAIL EFF
+solari      severity    L #6e6a60  19.9%   2.59   3.65       1  S1 r4     FAIL EFF
+solari      severity    N #f0ede4  43.3%   6.90  16.81       1  S2 r10    pass    
+solari      severity    O #6e6a60  40.4%   2.07   3.65       1  S1 r4     FAIL EFF
+solari      severity    X #f0ede4  34.5%   6.20  16.81       1  S5 r12    pass    
+solari      severity    Y #6e6a60  28.7%   1.94   3.65       1  S1 r8     FAIL EFF
+solari      danger      ▀ #f0ede4  57.9%  16.38  16.81       1  S3 r19    pass    
+solari      danger      ▄ #f0ede4  52.6%  15.52  16.81       1  S3 r19    pass    
+solari      required    ▮ #f0ede4  38.6%   7.67  16.81       1  S2 r3     pass    
+solari      invalid     ═ #1f1f22  26.3%   1.11   1.20       1  S2 r5     FAIL EFF
+solari      cursor      ▼ #f5a300  32.2%   4.79   9.48       1  S1 r9     pass    
+blueprint   severity    ━ #7fa8c4  26.3%   2.90   4.65       1  S5 r9     FAIL EFF
+blueprint   severity    ━ #eef4f8  26.3%   5.60  10.60     1-2  S2 r5     pass    
+blueprint   danger      ━ #eef4f8  26.3%   5.60  10.60     1-2  S2 r5     pass    
+blueprint   required    ═ #eef4f8  26.3%   5.62  10.60       1  S2 r2     pass    
+blueprint   invalid     ╲ #24486b  25.7%   1.14   1.24       1  S2 r4     FAIL EFF
+blueprint   cursor      ┌ #eef4f8  24.6%   4.33  10.60       1  S1 r8     pass    
+------------------------------------------------------------------------------
+F1. 89 BOUND SEATS, 46 PASS, 43 FAIL
+
+    coverage only    6
+    effective only   29
+    both clauses     8
+
+F2. THE ELEVEN OBLIGATIONS, which is the row the round predicted
+
+kit          gl    cov    eff    decl verdict     
+----------------------------------------------------
+naught        ⊛ 28.1%   3.45  19.26 pass        
+corgi         ▀ 57.9%  16.93  17.36 pass        
+instrument    ⠁  5.8%   3.77  16.52 FAIL COV    
+swiss         • 14.0%   9.13  17.30 FAIL COV    
+industrial    ! 18.7%   4.54  15.55 pass        
+nord          * 30.4%   3.67  10.84 pass        
+darkside      ▪ 17.5%  10.10  19.26 pass        
+prism         ⡀  5.3%   4.40  16.02 FAIL COV    
+ledger        † 21.6%   3.19  13.36 pass        
+solari        ▮ 38.6%   7.67  16.81 pass        
+blueprint     ═ 26.3%   5.62  10.60 pass        
+----------------------------------------------------
+11 obligations, 3 under the floor: instrument ⠁, swiss •, prism ⡀
+
+    ALL ELEVEN CLEAR THE CONTRAST CLAUSE, which is the half of
+    the round's prediction that holds. The round predicted TWO
+    coverage failures and there are 3. The third
+    is swiss `•` at 14.0%, one point under a floor the round set
+    at 15% and a mark the round itself recorded as visible
+    (`swiss_S2`: *"`•` obligatorio ... se ve"*). It is reported
+    and not adjusted: a floor moved to fit the corpus it was
+    written for is not a floor.
+
+F3. THE 5-7 RUNS, named per seat
+
+    naught danger ∙ #f5f5f5  run [5, 6]  -> bound
+    naught severity ∙ #8a8a8a  run [7]  -> bound
+    naught severity ∙ #f5f5f5  run [5, 6]  -> bound
+
+    3 seats in the middle band, all of them naught's `∙`.
+    Every one is NAMED in `NAMED_RUNS` with a reason; an
+    unnamed middle run is a hole in the ruling and the law
+    below goes red on it rather than choosing a side.
+
+F4. THE WORST SEAT, AS A NOTICE (Q3)
+
+    Section D reports every mark at its WORST seat and 45 of 79
+    sit under 3:1 declared there. Under Q3 that is a notice and
+    not a verdict: the worst seat of a mark is almost always its
+    DECORATIVE one -- `instrument ·` in a masthead, `ledger ·`
+    in a leader -- so a kit judged by its worst seat is a kit
+    failed for its decoration. The declared seat is above.
+
+==============================================================================
+G. THE GLYPHLESS RUN -- K8 / E6, the ink no instrument could see
+==============================================================================
+
+A run of BLANK cells painted on a rect that is not the canvas is
+INK. `solari_S4` row 10 is a hundred of them on `#f5a300` and is
+the brightest thing that kit draws; it is the OPENER of the
+band whose closer round four called the only mark there.
+Eleven batches of instruments read glyphs, so no census, no
+family table, no coverage measure and no law in this programme
+could name it. Ruling K8 (2026-09-07): it is counted.
+
+kit         sheet   row    x  cells surface   canvas      ratio
+------------------------------------------------------------------
+industrial  S1        3   15     41 #2e2e2e   #1a1a1a     1.28
+industrial  S1        4   33     22 #2e2e2e   #1a1a1a     1.28
+industrial  S1        5   35     25 #2e2e2e   #1a1a1a     1.28
+industrial  S1        6   31     24 #2e2e2e   #1a1a1a     1.28
+industrial  S1        7   35     25 #2e2e2e   #1a1a1a     1.28
+industrial  S1        9   13     43 #2e2e2e   #1a1a1a     1.28
+industrial  S1       10   29     27 #2e2e2e   #1a1a1a     1.28
+industrial  S1       11   34     26 #2e2e2e   #1a1a1a     1.28
+industrial  S1       12   29     26 #2e2e2e   #1a1a1a     1.28
+industrial  S1       13   35     25 #2e2e2e   #1a1a1a     1.28
+industrial  S1       14   32     24 #2e2e2e   #1a1a1a     1.28
+industrial  S1       15   34     26 #2e2e2e   #1a1a1a     1.28
+industrial  S1       16   33     22 #2e2e2e   #1a1a1a     1.28
+industrial  S1       17   35     25 #2e2e2e   #1a1a1a     1.28
+industrial  S1       19   15     41 #2e2e2e   #1a1a1a     1.28
+industrial  S1       28   12     44 #2e2e2e   #1a1a1a     1.28
+prism       S4       29    0     63 #1f2630   #0d1117     1.24
+solari      S4       10    0    100 #f5a300   #0b0b0c     9.48
+------------------------------------------------------------------
+18 runs of 8 cells or more, in 3 kits: industrial, prism, solari
+
+EVERY ONE IS STRUCTURE UNDER Q2 and therefore owes exactly one
+thing -- not to equal the ground it is painted on. All 18 clear
+it. That is a weak clause and it is the right one: a plate is
+not a mark and a coverage floor has nothing to say about a
+surface with no drawing in it.
+
+WHAT IS STILL NOT COUNTED, said out loud: `collision_census.py` reads
+DECLARATIONS and not frames, so its TOTAL cannot move for a run
+that exists only in a picture. The frame-side count is here and
+in the suite; the census's 28 is unchanged and means what it
+always meant.
 
