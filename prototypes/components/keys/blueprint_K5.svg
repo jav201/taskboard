@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard - blueprint - K5 invalid">
+<title>taskboard - blueprint - K5 invalid</title>
+<rect width="860.0" height="564.0" fill="#123a5c"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<text x="26.8" y="40.3" fill="#eef4f8">SIGNALS  </text>
+<text x="102.4" y="40.3" fill="#7fa8c4">·── WHAT THE WIDGET WATCHES</text>
+<text x="26.8" y="74.3" fill="#eef4f8"> ┌ </text>
+<text x="52.0" y="74.3" fill="#24486b">├</text>
+<text x="60.4" y="74.3" fill="#7fa8c4">─</text>
+<text x="68.8" y="74.3" fill="#eef4f8">╡ </text>
+<text x="85.6" y="74.3" fill="#7fa8c4">DIM</text>
+<text x="110.8" y="74.3" fill="#eef4f8"> Nearest deadline     ╡◉╞ fast  </text>
+<text x="379.6" y="74.3" fill="#24486b">┤ ├</text>
+<text x="413.2" y="74.3" fill="#7fa8c4">slow</text>
+<text x="455.2" y="74.3" fill="#24486b">   1s</text>
+<text x="505.6" y="74.3" fill="#7fa8c4">  2</text>
+<text x="68.8" y="91.3" fill="#24486b">Days until the soonest open task is due. The default hero.</text>
+<text x="52.0" y="108.3" fill="#24486b">├</text>
+<text x="60.4" y="108.3" fill="#7fa8c4">─</text>
+<text x="68.8" y="108.3" fill="#eef4f8">┤ </text>
+<text x="85.6" y="108.3" fill="#7fa8c4">OVR</text>
+<text x="119.2" y="108.3" fill="#7fa8c4">Overdue count       </text>
+<text x="287.2" y="108.3" fill="#eef4f8"> ┤○├ fast  </text>
+<text x="379.6" y="108.3" fill="#24486b">┤ ├</text>
+<text x="413.2" y="108.3" fill="#7fa8c4">slow</text>
+<text x="455.2" y="108.3" fill="#24486b">   2s</text>
+<text x="505.6" y="108.3" fill="#7fa8c4">  2</text>
+<text x="52.0" y="125.3" fill="#24486b">├</text>
+<text x="60.4" y="125.3" fill="#7fa8c4">─</text>
+<text x="68.8" y="125.3" fill="#eef4f8">┤ </text>
+<text x="85.6" y="125.3" fill="#7fa8c4">WIP</text>
+<text x="119.2" y="125.3" fill="#7fa8c4">Work in flight      </text>
+<text x="287.2" y="125.3" fill="#eef4f8"> ┤○├ fast  </text>
+<text x="379.6" y="125.3" fill="#24486b">┤ ├</text>
+<text x="413.2" y="125.3" fill="#7fa8c4">slow</text>
+<text x="455.2" y="125.3" fill="#24486b">   2s</text>
+<text x="505.6" y="125.3" fill="#7fa8c4">  4</text>
+<text x="539.2" y="125.3" fill="#24486b">├</text>
+<text x="547.6" y="125.3" fill="#7fa8c4">──</text>
+<text x="564.4" y="125.3" fill="#eef4f8">┤</text>
+<text x="572.8" y="125.3" fill="#24486b">····</text>
+<text x="614.8" y="125.3" fill="#7fa8c4">3</text>
+<text x="52.0" y="142.3" fill="#24486b">├</text>
+<text x="60.4" y="142.3" fill="#7fa8c4">─</text>
+<text x="68.8" y="142.3" fill="#eef4f8">┤ </text>
+<text x="85.6" y="142.3" fill="#7fa8c4">╱╱</text>
+<text x="110.8" y="142.3" fill="#7fa8c4">Blocked             </text>
+<text x="278.8" y="142.3" fill="#eef4f8"> ┤○├ fast  </text>
+<text x="371.2" y="142.3" fill="#24486b">┤ ├</text>
+<text x="404.8" y="142.3" fill="#7fa8c4">slow</text>
+<text x="446.8" y="142.3" fill="#24486b">   3s</text>
+<text x="497.2" y="142.3" fill="#7fa8c4">  1</text>
+<text x="52.0" y="159.3" fill="#24486b">├</text>
+<text x="60.4" y="159.3" fill="#7fa8c4">─</text>
+<text x="68.8" y="159.3" fill="#eef4f8">┤ </text>
+<text x="85.6" y="159.3" fill="#7fa8c4">DAY</text>
+<text x="119.2" y="159.3" fill="#7fa8c4">Workday budget      </text>
+<text x="295.6" y="159.3" fill="#24486b">┤ ├</text>
+<text x="329.2" y="159.3" fill="#7fa8c4">fast</text>
+<text x="362.8" y="159.3" fill="#eef4f8">  ┤○├ slow </text>
+<text x="455.2" y="159.3" fill="#24486b">  30s</text>
+<text x="505.6" y="159.3" fill="#7fa8c4">  9</text>
+<text x="539.2" y="159.3" fill="#24486b">├</text>
+<text x="547.6" y="159.3" fill="#7fa8c4">───</text>
+<text x="572.8" y="159.3" fill="#eef4f8">┤</text>
+<text x="581.2" y="159.3" fill="#24486b">···</text>
+<text x="614.8" y="159.3" fill="#7fa8c4">18</text>
+<text x="52.0" y="176.3" fill="#24486b">├</text>
+<text x="60.4" y="176.3" fill="#7fa8c4">─</text>
+<text x="68.8" y="176.3" fill="#eef4f8">┤ </text>
+<text x="85.6" y="176.3" fill="#7fa8c4">SHT</text>
+<text x="119.2" y="176.3" fill="#7fa8c4">Board file          </text>
+<text x="295.6" y="176.3" fill="#24486b">┤ ├</text>
+<text x="329.2" y="176.3" fill="#7fa8c4">fast</text>
+<text x="362.8" y="176.3" fill="#eef4f8">  ┤○├ slow </text>
+<text x="455.2" y="176.3" fill="#24486b">  20s</text>
+<text x="505.6" y="176.3" fill="#7fa8c4">  7</text>
+<text x="26.8" y="210.3" fill="#eef4f8">   ├ Refresh ┤  </text>
+<text x="161.2" y="210.3" fill="#24486b">recompute every signal now</text>
+<text x="35.2" y="244.3" fill="#24486b">esc/q back · space toggle · [ threshold - · ] threshold + · r refresh</text>
+<rect x="10.0" y="537.0" width="840.0" height="17.0" fill="#0e2f4a"/>
+<text x="10.0" y="550.3" fill="#eef4f8" font-weight="bold"> esc/q </text>
+<text x="68.8" y="550.3" fill="#e0e0e0">Back </text>
+<text x="110.8" y="550.3" fill="#eef4f8" font-weight="bold"> space </text>
+<text x="169.6" y="550.3" fill="#e0e0e0">Toggle </text>
+<text x="228.4" y="550.3" fill="#eef4f8" font-weight="bold"> [ </text>
+<text x="253.6" y="550.3" fill="#e0e0e0">Threshold - </text>
+<text x="354.4" y="550.3" fill="#eef4f8" font-weight="bold"> ] </text>
+<text x="379.6" y="550.3" fill="#e0e0e0">Threshold + </text>
+<text x="480.4" y="550.3" fill="#eef4f8" font-weight="bold"> r </text>
+<text x="505.6" y="550.3" fill="#e0e0e0">Refresh </text>
+<text x="572.8" y="550.3" fill="#eef4f8" font-weight="bold"> ? </text>
+<text x="598.0" y="550.3" fill="#e0e0e0">Keys </text>
+<text x="640.0" y="550.3" fill="#eef4f8" font-weight="bold"> t </text>
+<text x="665.2" y="550.3" fill="#e0e0e0">Language </text>
+<text x="749.2" y="550.3" fill="#385268">▏</text>
+<text x="757.6" y="550.3" fill="#eef4f8" font-weight="bold">^p</text>
+<text x="774.4" y="550.3" fill="#e0e0e0"> palette</text>
+</g>
+</svg>

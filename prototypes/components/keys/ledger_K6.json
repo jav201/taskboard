@@ -1,0 +1,740 @@
+{
+ "lang": "ledger",
+ "step": 6,
+ "name": "match",
+ "keys": [
+  "ctrl+p",
+  "r",
+  "e",
+  "f",
+  "r",
+  "e"
+ ],
+ "law": "the run the query found carries the channel MATCH_STYLE declares, in the ink MATCH_STYLE declares",
+ "screen": "CommandPalette",
+ "focus": {
+  "id": null,
+  "cls": "CommandInput",
+  "region": [
+   4,
+   4,
+   95,
+   3
+  ]
+ },
+ "band": null,
+ "settle_reads": 8,
+ "ground": "#e9e1cf",
+ "cols": 100,
+ "rows": 32,
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "grid": [
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    2,
+    "SIGNALS ······························································ ",
+    "#161513",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    73,
+    "what the widget watches",
+    "#32302b",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    96,
+    "    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    2,
+    "──────────────────────────────────────────────────────────────────────────────────────────────",
+    "#423e38",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    96,
+    "    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔",
+    "#0a0f13",
+    "#141f27",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " ",
+    "#0a0f13",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    1,
+    "   ",
+    "#ffffff",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    4,
+    "                                                                                               ",
+    "#00ff00",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#0a0f13",
+    "#141f27",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " ",
+    "#0a0f13",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    1,
+    " ",
+    "#ffffff",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    2,
+    "🔎",
+    "#000000",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    4,
+    " ",
+    "#00ff00",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    5,
+    "refre",
+    "#e0e0e0",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#121212",
+    "#e0e0e0",
+    false,
+    false
+   ],
+   [
+    11,
+    "                                                                                       ",
+    "#e0e0e0",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    98,
+    " ",
+    "#00ff00",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#0a0f13",
+    "#141f27",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " ",
+    "#0a0f13",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    1,
+    " ",
+    "#ffffff",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    2,
+    "  ",
+    "#000000",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    4,
+    "                                                                                               ",
+    "#00ff00",
+    "#141f27",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#0a0f13",
+    "#141f27",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#00ff00",
+    "#141f27",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0e395a",
+    true,
+    false
+   ],
+   [
+    2,
+    "Refre",
+    "#e0e0e0",
+    "#0e395a",
+    true,
+    true
+   ],
+   [
+    7,
+    "sh now                                                                                       ",
+    "#e0e0e0",
+    "#0e395a",
+    true,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#0e395a",
+    true,
+    false
+   ],
+   [
+    2,
+    "Recompute every signal immediately",
+    "#98a7b2",
+    "#0e395a",
+    false,
+    false
+   ],
+   [
+    36,
+    "                                                                ",
+    "#e0e0e0",
+    "#0e395a",
+    true,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁",
+    "#000000",
+    "#141f27",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    2,
+    "   │ Refresh │  ",
+    "#161513",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    18,
+    "recompute every signal now",
+    "#59544a",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    44,
+    "                                                        ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#161513",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    3,
+    "esc/q back · space toggle · [ threshold - · ] threshold + · r refresh",
+    "#59544a",
+    "#68645d",
+    false,
+    false
+   ],
+   [
+    72,
+    "                            ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#68645d",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " esc/q ",
+    "#1c2234",
+    "#6b6963",
+    true,
+    false
+   ],
+   [
+    7,
+    "Back ",
+    "#646464",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    12,
+    " space ",
+    "#1c2234",
+    "#6b6963",
+    true,
+    false
+   ],
+   [
+    19,
+    "Toggle ",
+    "#646464",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    26,
+    " [ ",
+    "#1c2234",
+    "#6b6963",
+    true,
+    false
+   ],
+   [
+    29,
+    "Threshold - ",
+    "#646464",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    41,
+    " ] ",
+    "#1c2234",
+    "#6b6963",
+    true,
+    false
+   ],
+   [
+    44,
+    "Threshold + ",
+    "#646464",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    56,
+    " r ",
+    "#1c2234",
+    "#6b6963",
+    true,
+    false
+   ],
+   [
+    59,
+    "Refresh ",
+    "#646464",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    67,
+    " ? ",
+    "#1c2234",
+    "#6b6963",
+    true,
+    false
+   ],
+   [
+    70,
+    "Keys ",
+    "#646464",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    75,
+    " t ",
+    "#1c2234",
+    "#6b6963",
+    true,
+    false
+   ],
+   [
+    78,
+    "Language ",
+    "#646464",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    87,
+    " ",
+    "#e0e0e0",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    88,
+    "▏",
+    "#6a6863",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    89,
+    "^p",
+    "#1c2234",
+    "#6b6963",
+    true,
+    false
+   ],
+   [
+    91,
+    " palette",
+    "#646464",
+    "#6b6963",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#e0e0e0",
+    "#6b6963",
+    false,
+    false
+   ]
+  ]
+ ]
+}

@@ -1,0 +1,1472 @@
+{
+ "lang": "prism",
+ "step": 5,
+ "name": "invalid",
+ "keys": [
+  "c",
+  "1",
+  "2",
+  "slash",
+  "9",
+  "9",
+  "slash",
+  "2",
+  "6",
+  "tab"
+ ],
+ "law": "the field carries the language's declared INVALID walls (field_form(INVALID, 'textfield')), painted in the wall tone field_wall_tone(INVALID) names",
+ "screen": "ConfigScreen",
+ "focus": {
+  "id": "cfg-scroll",
+  "cls": "VerticalScroll",
+  "region": [
+   0,
+   3,
+   100,
+   28
+  ]
+ },
+ "band": null,
+ "settle_reads": 8,
+ "ground": "#0d1117",
+ "cols": 100,
+ "rows": 32,
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "grid": [
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "SIGNALS  ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    11,
+    "what the widget watches",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    34,
+    "                                                                  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    3,
+    "▸",
+    "#2dd4bf",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    4,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    5,
+    "⠿⠿",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "⢿",
+    "#2dd4bf",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    8,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    9,
+    "d",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    10,
+    " Nearest deadline     ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    32,
+    "⠛⢸⠛",
+    "#2dd4bf",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    35,
+    " fast  ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    42,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    45,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    46,
+    "slow",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    50,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    51,
+    "   1s",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    56,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    57,
+    "  2",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    60,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    61,
+    "                                       ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "     ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "Days until the soonest open task is due. The default hero.",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    65,
+    "                                   ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "   ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    5,
+    "⠿⠿",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "⢸ ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    9,
+    "!!",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    11,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    12,
+    "Overdue count       ",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    32,
+    " ⠉⢸⠉ fast  ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    43,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    46,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    47,
+    "slow",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    51,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    52,
+    "   2s",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    57,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    58,
+    "  2",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    61,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    62,
+    "                                      ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "   ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    5,
+    "⠿⠿",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "⢸ ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    9,
+    "w",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    11,
+    "Work in flight      ",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    31,
+    " ⠉⢸⠉ fast  ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    42,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    45,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    46,
+    "slow",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    50,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    51,
+    "   2s",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    56,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    57,
+    "  4",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    60,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    61,
+    "⠿⠿",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    63,
+    "⢸",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    64,
+    "⠉⠉⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    69,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    70,
+    "3",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    71,
+    "                             ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "   ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    5,
+    "⠿⠿",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "⢸ ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    9,
+    "x",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    11,
+    "Blocked             ",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    31,
+    " ⠉⢸⠉ fast  ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    42,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    45,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    46,
+    "slow",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    50,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    51,
+    "   3s",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    56,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    57,
+    "  1",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    60,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    61,
+    "                                       ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "   ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    5,
+    "⠿⠿",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "⢸ ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    9,
+    "$",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    11,
+    "Workday budget      ",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    31,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    32,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    35,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    36,
+    "fast",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    40,
+    "  ⠉⢸⠉ slow ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    51,
+    "  30s",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    56,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    57,
+    "  9",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    60,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    61,
+    "⠿⠿⠿⠿",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    65,
+    "⢸",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    66,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    69,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    70,
+    "18",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    72,
+    "                            ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "   ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    5,
+    "⠿⠿",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    7,
+    "⢸ ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    9,
+    "f",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    11,
+    "Board file          ",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    31,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    32,
+    "⠉⠉⠉",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    35,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    36,
+    "fast",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    40,
+    "  ⠉⢸⠉ slow ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    51,
+    "  20s",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    56,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    57,
+    "  7",
+    "#8b98a5",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    60,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    61,
+    "                                       ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    "   ⠿⠉Refresh⠉⠿  ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    18,
+    "recompute every signal now",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    44,
+    "                                                        ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#e6edf3",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    3,
+    "esc/q back · space toggle · [ threshold - · ] threshold + · r refresh",
+    "#5b6675",
+    "#0d1117",
+    false,
+    false
+   ],
+   [
+    72,
+    "                            ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#0d1117",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " esc/q ",
+    "#2dd4bf",
+    "#161b22",
+    true,
+    false
+   ],
+   [
+    7,
+    "Back ",
+    "#e0e0e0",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    12,
+    " space ",
+    "#2dd4bf",
+    "#161b22",
+    true,
+    false
+   ],
+   [
+    19,
+    "Toggle ",
+    "#e0e0e0",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    26,
+    " [ ",
+    "#2dd4bf",
+    "#161b22",
+    true,
+    false
+   ],
+   [
+    29,
+    "Threshold - ",
+    "#e0e0e0",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    41,
+    " ] ",
+    "#2dd4bf",
+    "#161b22",
+    true,
+    false
+   ],
+   [
+    44,
+    "Threshold + ",
+    "#e0e0e0",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    56,
+    " r ",
+    "#2dd4bf",
+    "#161b22",
+    true,
+    false
+   ],
+   [
+    59,
+    "Refresh ",
+    "#e0e0e0",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    67,
+    " ? ",
+    "#2dd4bf",
+    "#161b22",
+    true,
+    false
+   ],
+   [
+    70,
+    "Keys ",
+    "#e0e0e0",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    75,
+    " t ",
+    "#2dd4bf",
+    "#161b22",
+    true,
+    false
+   ],
+   [
+    78,
+    "Language ",
+    "#e0e0e0",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    87,
+    " ",
+    "#ffffff",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    88,
+    "▏",
+    "#3e4248",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    89,
+    "^p",
+    "#2dd4bf",
+    "#161b22",
+    true,
+    false
+   ],
+   [
+    91,
+    " palette",
+    "#e0e0e0",
+    "#161b22",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#ffffff",
+    "#161b22",
+    false,
+    false
+   ]
+  ]
+ ]
+}

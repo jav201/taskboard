@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860.0 564.0" role="img" aria-label="taskboard - ledger - K3 modal">
+<title>taskboard - ledger - K3 modal</title>
+<rect width="860.0" height="564.0" fill="#e9e1cf"/>
+<g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
+<rect x="169.6" y="95.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<rect x="169.6" y="112.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="125.3" fill="#2b3a67">KEYS</text>
+<rect x="169.6" y="129.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<rect x="169.6" y="146.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="203.2" y="159.3" fill="#635e52">VIEWS</text>
+<text x="312.4" y="159.3" fill="#635e52">MOTION</text>
+<rect x="169.6" y="163.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="176.3" fill="#1c1a15">  1 </text>
+<text x="220.0" y="176.3" fill="#635e52">Board   </text>
+<text x="287.2" y="176.3" fill="#1c1a15">   ← / h     </text>
+<text x="396.4" y="176.3" fill="#635e52">Left         </text>
+<rect x="169.6" y="180.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="193.3" fill="#1c1a15">  2 </text>
+<text x="220.0" y="193.3" fill="#635e52">Lanes   </text>
+<text x="287.2" y="193.3" fill="#1c1a15">   → / l     </text>
+<text x="396.4" y="193.3" fill="#635e52">Right        </text>
+<rect x="169.6" y="197.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="210.3" fill="#1c1a15">  3 </text>
+<text x="220.0" y="210.3" fill="#635e52">Agenda  </text>
+<text x="287.2" y="210.3" fill="#1c1a15">   ↑ / k     </text>
+<text x="396.4" y="210.3" fill="#635e52">Up           </text>
+<rect x="169.6" y="214.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="227.3" fill="#1c1a15">  4 </text>
+<text x="220.0" y="227.3" fill="#635e52">Gantt   </text>
+<text x="287.2" y="227.3" fill="#1c1a15">   ↓ / j     </text>
+<text x="396.4" y="227.3" fill="#635e52">Down         </text>
+<rect x="169.6" y="231.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="244.3" fill="#1c1a15">               tab       </text>
+<text x="396.4" y="244.3" fill="#635e52">Next         </text>
+<rect x="169.6" y="248.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="203.2" y="261.3" fill="#635e52">ACTIONS</text>
+<text x="262.0" y="261.3" fill="#1c1a15">      shift+tab </text>
+<text x="396.4" y="261.3" fill="#635e52">Prev         </text>
+<rect x="169.6" y="265.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="278.3" fill="#1c1a15">  c </text>
+<text x="220.0" y="278.3" fill="#635e52">Signals </text>
+<rect x="169.6" y="282.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="295.3" fill="#1c1a15">  ? </text>
+<text x="220.0" y="295.3" fill="#635e52">Keys    </text>
+<text x="312.4" y="295.3" fill="#635e52">SYSTEM</text>
+<rect x="169.6" y="299.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="312.3" fill="#1c1a15">  v </text>
+<text x="220.0" y="312.3" fill="#635e52">Size    </text>
+<text x="287.2" y="312.3" fill="#1c1a15">   ctrl+q    </text>
+<text x="396.4" y="312.3" fill="#635e52">Quit anywhere</text>
+<rect x="169.6" y="316.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="329.3" fill="#1c1a15">  r </text>
+<text x="220.0" y="329.3" fill="#635e52">Refresh </text>
+<text x="287.2" y="329.3" fill="#1c1a15">   ctrl+p    </text>
+<text x="396.4" y="329.3" fill="#635e52">Palette      </text>
+<rect x="169.6" y="333.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="346.3" fill="#1c1a15">  t </text>
+<text x="220.0" y="346.3" fill="#635e52">Language</text>
+<rect x="169.6" y="350.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="363.3" fill="#1c1a15">  g </text>
+<text x="220.0" y="363.3" fill="#635e52">Gallery </text>
+<rect x="169.6" y="367.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="186.4" y="380.3" fill="#1c1a15">  q </text>
+<text x="220.0" y="380.3" fill="#635e52">Quit    </text>
+<rect x="169.6" y="384.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<rect x="169.6" y="401.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<text x="203.2" y="414.3" fill="#c4b99f">esc/?/q close</text>
+<rect x="169.6" y="418.0" width="520.8" height="17.0" fill="#f2ecdd"/>
+<rect x="10.0" y="537.0" width="840.0" height="17.0" fill="#f2ecdd"/>
+<text x="10.0" y="550.3" fill="#2b3a67" font-weight="bold"> esc/?/q </text>
+<text x="85.6" y="550.3" fill="#e0e0e0">Close </text>
+</g>
+</svg>

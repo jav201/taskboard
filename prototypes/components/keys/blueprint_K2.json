@@ -1,0 +1,1817 @@
+{
+ "lang": "blueprint",
+ "step": 2,
+ "name": "focus",
+ "keys": [
+  "tab",
+  "tab",
+  "tab"
+ ],
+ "law": "focus walked three seats: the seat that HOLDS focus at K2 is drawn differently from the way the same cells were drawn at K1",
+ "screen": "Aperture",
+ "focus": {
+  "id": "t-wip",
+  "cls": "Tile",
+  "region": [
+   34,
+   14,
+   16,
+   1
+  ]
+ },
+ "band": null,
+ "settle_reads": 8,
+ "ground": "#123a5c",
+ "cols": 100,
+ "rows": 32,
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "grid": [
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "                            ▄▄▄▄                               ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    65,
+    "────",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    69,
+    "                            ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "                          ▄▄    ▌▐                             ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    65,
+    "····",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    69,
+    "                            ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "                                ▌▐                             ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    65,
+    "····",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    69,
+    "────",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    73,
+    "                        ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "                              ▀▀                               ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    65,
+    "········",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    73,
+    "                        ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "                            ▀▀                                 ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    65,
+    "········",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    73,
+    "                        ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "                          ▌▐                                   ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    65,
+    "········",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    73,
+    "────",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    77,
+    "····················",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "                          ▌▀▀▀▀▀▀▀",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    36,
+    "                             ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    65,
+    "LOAD · 8 WK",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    76,
+    "                        ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "                         DAYS OVERDUE                        ",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "WORK ",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    7,
+    "├───────────┤ 02/15  13%",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "├─ 09 ─┤",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    10,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    11,
+    "├───┤ 04",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    19,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    20,
+    "├─┤ 02",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    26,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    27,
+    "LOAD",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "DIM",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    6,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    7,
+    "2",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    8,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    9,
+    "──",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    11,
+    "        ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    19,
+    "OVR",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    22,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    23,
+    "2",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    24,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    25,
+    "──",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    27,
+    "       ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    34,
+    " ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    35,
+    "WIP",
+    "#7fa8c4",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    38,
+    " ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    39,
+    "4",
+    "#7fa8c4",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    40,
+    " ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    41,
+    "──",
+    "#24486b",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    43,
+    " ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    44,
+    "WORK",
+    "#7fa8c4",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    48,
+    "  ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    50,
+    " ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    51,
+    "╱╱",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    53,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    54,
+    "1",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    55,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    56,
+    "──",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    58,
+    "         ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    67,
+    "DAY",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    70,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    71,
+    "9",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    72,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    73,
+    "──",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    75,
+    "        ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    83,
+    "SHT",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    86,
+    " 7 ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    89,
+    "──",
+    "#24486b",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    91,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    92,
+    "BOARD",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                 ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#123a5c",
+    "#24486b",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "BACKLOG                                                                  ",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    76,
+    "  ├─── 09 ───┤    ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    94,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#123a5c",
+    "#24486b",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "FIX CHECKOUT 500 ERROR                                                     ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    78,
+    "├╱╱╱╱ HELD ╱╱╱╱┤",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    94,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#123a5c",
+    "#24486b",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "·── WEBSITE REDESIGN ── BACKLOG ── HIGH",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    42,
+    "                                                       ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#123a5c",
+    "#24486b",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "COMPRESS DATABASE BACKUPS                                                  ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    78,
+    "├─┤ 01D!        ",
+    "#ff7a5c",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    94,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "·── DATA WAREHOUSE ── BACKLOG ── NORM",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    40,
+    "                                                         ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "RENEW TLS CERTIFICATE                                                      ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    78,
+    "├───┤ 03D       ",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    94,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "·── BACKLOG ── HIGH",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    22,
+    "                                                                           ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "WRITE API REFERENCE                                                        ├ 05D ┤         ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    94,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "·── API PLATFORM ── BACKLOG ── NORM",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    38,
+    "                                                           ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "SHUT DOWN LEGACY SERVERS                                                   ├─ 08D ──┤      ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    94,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "   ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    3,
+    "·── LEGACY SUNSET ── BACKLOG ── NORM",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    39,
+    "                                                          ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    97,
+    " ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "┌     ┐                                 ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    42,
+    "────────────────────────────────────────────────────────",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    " BOARD  ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    10,
+    "lanes",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    15,
+    "  ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    17,
+    "agenda",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    23,
+    "  ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    25,
+    "gantt",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    30,
+    "            ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    42,
+    "SHEET",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    47,
+    " TASKBOARD  ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    59,
+    "REV",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    62,
+    " 2026-08-03  ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    75,
+    "WORK",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    79,
+    " 02/15  ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    87,
+    "├ OVERDUE ┤",
+    "#123a5c",
+    "#eef4f8",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    2,
+    "└     ┘                                 ",
+    "#eef4f8",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    42,
+    "────────────────────────────────────────────────────────",
+    "#7fa8c4",
+    "#123a5c",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#ffffff",
+    "#123a5c",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    " ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    1,
+    "1",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    2,
+    " ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    3,
+    "2",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    4,
+    " ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    5,
+    "3",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    6,
+    " ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    7,
+    "4",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    8,
+    " ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    9,
+    "Views",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    14,
+    " ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    15,
+    " c ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    18,
+    "Signals ",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    26,
+    " ? ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    29,
+    "Keys ",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    34,
+    " v ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    37,
+    "Size ",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    42,
+    " r ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    45,
+    "Refresh ",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    53,
+    " t ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    56,
+    "Language ",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    65,
+    " g ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    68,
+    "Gallery ",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    76,
+    " q ",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    79,
+    "Quit ",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    84,
+    "    ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    88,
+    "▏",
+    "#385268",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    89,
+    "^p",
+    "#eef4f8",
+    "#0e2f4a",
+    true,
+    false
+   ],
+   [
+    91,
+    " palette",
+    "#e0e0e0",
+    "#0e2f4a",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#ffffff",
+    "#0e2f4a",
+    false,
+    false
+   ]
+  ]
+ ]
+}
