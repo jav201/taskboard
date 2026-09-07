@@ -980,3 +980,199 @@ and **E3**.
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1054 → 1067 → 1070 → 1083 passed** (inc52 +12 tests +1 clipboard; inc53 +3; inc54 +13), the clipboard test named in every packet. `verify_language.py` **ALL PASSED** exit 0 after every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66, refusals `[]` for all eleven. `capture_languages.py` after every increment; **2 gallery artefacts moved in total**. `collision_census.py` **both** self-checks green after every increment; **TOTAL 36 → 33**, homoglyph rows **4**. `export_to_skill.py` at the close: `2 written, 64 already identical`, re-run `0 written, 66 already identical`. **The skill repo was not committed.** |
 | Notes | **4 source files across 3 increments, one agent** (`taskboard/language.py`, `tests/test_components.py`, `prototypes/collision_census.py`, `prototypes/components/screens.py`) — never more than 3 in one increment — plus 11 regenerated frame artefacts over 8 distinct frames, 2 gallery artefacts, the census table, three packets and this section. **Every increment's law was watched failing BY HAND on the real declaration or the real composition, with the output quoted verbatim in its packet**, in addition to its monkeypatched teeth. |
+
+---
+
+## 14. Batch `rework-5b` — three more of the questions `PROTOTYPE-inheritors-2.md` §6 put to the operator
+
+`rework-5a` carried out C, D and C1 and left E, F and G untouched (§13.7). **The operator delegated the
+remaining decisions to the orchestrator on 2026-09-06 ("confío en tu juicio"), and this batch is three
+of them plus the hygiene four rounds had named and nobody had done: F and G as increments, E as a
+ruling written at the seat, and D's addendum recorded. Three increments, one agent. The rulings are
+quoted verbatim in each packet's §0 and are reproduced here, because a ruling that lives only in a chat
+is a ruling nobody can argue with later.**
+
+### 14.1 The rulings, as given
+
+> **D, addendum.** Ruling D governs two *different meanings* that share a shape. A ladder is one meaning
+> at monotone intensities and is one declaration: industrial's severity `▫▫ ▪▪ ■■` passes from hollow to
+> filled (weight) and grows (size) in the same direction, so it stands. Swiss's button ladder `▫ ▪ ■`
+> likewise. Rotation counts as a channel when it is direction the language already spends
+> (opener/closer, up/down), not otherwise.
+
+> **E.** For darkside the SVG is the artefact of record, not the txt; a darkside frame's grey step is a
+> real signal. `darkside_S1` is not reworked on the txt's evidence. Write it into
+> `MODAL_BORDER_REFUSED`'s neighbour comment or the kit docstring, and into
+> `PROTOTYPE-inheritors-2.md`'s decisions section as "ruled".
+
+> **swiss vs darkside resolved in opposite directions in inc52**: accepted as is; the earlier
+> declaration in each kit won, and both kits say so.
+
+> **F.** A confirm never covers the gate it names. The band is placed at the head of the first gate
+> block the confirm does NOT name; if every gate is named or the page has one gate, the band goes to the
+> foot of the schedule (above the plate's closing seam, if any). Implement in `Solari.overlay_instead`
+> by reading the gate the modal text names, without parsing prose: `overlay` gains an optional `about=`
+> the sheet fills, falling back to the head when absent, and every other language ignores it.
+
+> **G.** The S2 fixture carries one alert-mood item for all eleven, so blueprint's first-fixation law
+> (`├ OVERDUE ┤`, reverse on the `alert` mood) appears in a picture instead of only in a test.
+
+The full text of each, with its by-name lists and its teeth clause, is in `inc55.md` §0 (D-addendum, E,
+swiss-vs-darkside and F), `inc56.md` §0 (G) and `inc57.md` §0 (the hygiene brief), under the heading
+**"Ruling (orchestrator, 2026-09-06, on the operator's delegation)"**.
+
+### 14.2 What each increment did
+
+| inc | ruling | what moved | frames |
+| --- | --- | --- | --- |
+| 55 | **F** (+ **E** written, **D-addendum** recorded) | `Kit.overlay` gains `about=`, filled by the sheet from a new fixture constant `MODAL_ABOUT` (the column as DATA, so no kit parses the fixture's English) and ignored by ten languages; `Solari.band_head` / `gate_of` / `schedule_foot` place the band at the head of the first gate the confirm does not name. **inc50's clause 2 changes ends** and the cost is declared. Ruling E written at `Darkside.pane_split_instead` and marked **RULED** in the round's §6. | `solari_S4` |
+| 56 | **G** | `fixture.MOOD` DERIVED from the fixture's own tasks (it has had an overdue one since it was written) and handed over by `screens.s2`. `GROUNDED_FRAMES` 15 → 16. **S2 only, for an arithmetic reason: an alert mood on S4 would light the title block as well as the confirm's `DELETE` and break operator ruling 10's own condition.** | `blueprint_S2` |
+| 57 | the hygiene four | `Kit.FIELD_LEAD` (eleven field leaders, four of them AIR by commitment) and `Kit.IDENT_GLYPHS` (darkside's moon and active tab) declared and READ BY THE CENSUS; darkside's `(O)` moved onto its own grip ramp; the `LEVELS` comment corrected; `capture_languages.py`'s stepper claim corrected. | `darkside_S1`–`S6` |
+
+**7 source files across 3 increments, one agent** — `taskboard/language.py` (55, 57),
+`prototypes/components/screens.py` (55, 56), `prototypes/components/fixture.py` (55, 56),
+`tests/test_components.py` (all three), plus `prototypes/collision_census.py`,
+`prototypes/capture_languages.py` and `prototypes/verify_language.py` in inc57 — never more than 5 in
+one increment.
+
+### 14.3 The laws this batch added or changed
+
+- **inc55 — a confirm never covers the gate it names.** Asked TWICE: off the shipped frame (the named
+  gate's whole BLOCK byte-identical, and no index of it inside the band) and **of the mechanism, once
+  per gate on the page**, which is what stops the first reading being a lucky fixture. The gate's name
+  is **intersected, not parsed** — the gates the page declares are a set, the words the band says are a
+  string, and exactly one member of the first appears in the second. Teeth: the old anchor restored,
+  naming `GATE BACKLOG 05`, `AUDIT THE THEME TOKENS` and `DROP THE LEGACY SHIM`; the `about=None`
+  default asserted rather than trusted; and the foot fallback, **which no frame in this repo reaches**,
+  exercised on a synthetic one-gate page.
+- **inc55 — inc50's clause 2 CHANGED ENDS, and it is written down in the test.** *"The row immediately
+  BELOW the band is a gate header"* became *"the row the band STARTS on is a gate header"*. Both are the
+  same sentence read from opposite ends; inc50 could only assert the foot because the band stood at the
+  schedule's head. **The declared cost: the band's foot now lands inside the gate it moved onto, so the
+  row under it is a departure's orphan seam again — the defect inc50 removed, one gate lower.** Named in
+  `inc55.md` §6, in `Solari.overlay_instead`, in the test docstring and in the round's §6 F, with the
+  operator's two one-line alternatives.
+- **inc56 — blueprint's first fixation is painted on the form.** Exactly one ` on ` tag on
+  `blueprint_S2`, it is the state cell, the `.txt` reads `├ OVERDUE ┤`, and the `.svg` paints a rect of
+  the kit's INK with the text inside it in the kit's GROUND — matched **at the rect's own x**, because
+  the state cell is the fourth thing on that row. **It extends inc41's tier comparison the way inc54
+  did**: inc41 asserts declared == painted as SETS, this asserts which run carries the ground and what
+  is inside it. Teeth patch the FIXTURE and not the kit, because the finding is that nobody ever WROTE
+  to `Kit.mood`; the other ten are asserted byte-identical either way.
+- **inc57 — a field row draws exactly the leader it declares**, over all eleven, with the caller's words
+  subtracted in all three registers. **A constant nothing checks is a comment.** Watched fail by hand on
+  a real drift: `('darkside', {'▁'}, '▔')`.
+- **inc57 — the census reaches every mark declared outside the glyph tables.** Its teeth are the
+  counterfactual: the old identity alphabet put back takes darkside from 1 colliding cell to 3 and the
+  census TOTAL from 33 to **35**, with `severity` and `identity` named on both `o` and `O`.
+
+### 14.4 The census, and the number that matters more
+
+```
+language      rework-5a   inc55   inc56   inc57        homoglyph rows
+naught             5         5       5       5           naught     2
+corgi              5         5       5       5           darkside   1
+instrument         4         4       4       4           ledger     1
+swiss              2         2       2       2           the other eight  0
+industrial         2         2       2       2           ------------------
+nord               1         1       1       1           TOTAL      4
+darkside           1         1       1       1
+prism              4         4       4       4
+ledger             2         2       2       2
+solari             3         3       3       3
+blueprint          4         4       4       4
+--------------------------------------------
+TOTAL             33        33      33      33
+```
+
+**Flat, and that is a finding rather than the absence of one.** inc55 and inc56 are composition
+increments and changed no declaration. inc57 changed what the census can SEE without changing what any
+language MEANS: four existing rows gained a `field.leader` family (`naught ◦`, `prism ⡀`, `ledger ·`,
+`blueprint ·`), two languages' B×B alphabet counts grew (instrument 12 → 14, blueprint 8 → 9), and **no
+new collision was revealed in a language already touched by rework.** The one candidate — ledger's dot
+leader sharing a cell with the field's RUNE — is the exclusion `inc52.md` §0 wrote by name, so nothing
+moved on that ground. The other three are `5c`'s.
+
+**And the instrument itself was measured: `IDENT_GLYPHS` reads 35 under the counterfactual.** Declaring
+darkside's identity alphabet WITHOUT moving it adds two rows, `o` (warn × identity) and `O`
+(error × identity). That is the first time in this worktree the census has been shown catching a defect
+it could not previously see, on the real declaration, with both numbers printed.
+
+### 14.5 Frames, and what the skill holds
+
+**Eight distinct frames moved across the batch, and every one of them by a single row:**
+
+```
+inc55   solari_S4        the band leaves GATE BACKLOG 05 and takes GATE DOING 04's head
+inc56   blueprint_S2     ├ CLEAR ┤ -> ├ OVERDUE ┤, knocked out
+inc57   darkside_S1 S2 S3 S4 S5 S6      (O)mode -> (●)mode, the active tab
+```
+
+**Gallery: 1 of the 22 — `board_darkside`**, the same mode strip. **`gallery_darkside` did NOT move,
+and the reason is E3**: the moon doodle is `PHASES[day % 6]`, today is day 6, and `PHASES[0]` is `"( )"`
+in the old alphabet and in the new one alike. On 29 days in 30 it would have moved. **E3 is alive and
+this batch is its second measurement.**
+
+**The skill's installed gallery frames 44–51: ONE changed byte-wise —
+`49_darkside-modal-rounded-lid.txt`, whose source is `darkside_S4`.** It was already stale from
+`rework-5a` (§13.6: the danger form and the six field-row leaders) and is now stale in a third place,
+the active tab. The other seven — `44_instrument-list-graticule`, `45_industrial-list-plate`,
+`46_swiss-list-next-column`, `47_solari-list-gate-seam`, `48_industrial-modal-plate-lid`,
+`50_solari-form-printed-severity`, `51_instrument-monitor-dot-ladder` — were compared byte for byte
+against their sources at the close and are identical.
+
+**49 was NOT re-installed, deliberately and for the third batch running.** `export_to_skill.py` copies
+`prototypes/gallery/*` into `assets/languages/` and does not touch `assets/gallery/`; the batch's
+constraint is *"the skill is edited only through `export_to_skill.py`"*. **Somebody has to re-install it
+by hand or teach the exporter that directory.**
+
+### 14.6 What was NOT touched, by name
+
+| | the question | this batch's contact with it |
+| --- | --- | --- |
+| **A** | corgi, prism and blueprint have never had an increment | **untouched, and made two of their census rows wider** (inc57's field leaders). Their rosters are still the three biggest |
+| **D** | are diameter and rotation channels? | **the addendum is recorded and it needed no code**: the census's `HOMOGLYPHS` check is ASYMMETRIC (one side a meaning, one side chrome), so two rungs of one ladder can never produce a row — the addendum's own prediction, and `▪ ■` sits in the table scoring zero. The ROTATION half closes for the same reason: `DIRECTION` was already one of the four channels the census's header names |
+| **E** | `darkside_S1`: the rail, or the `.txt` stops being the work | **DECIDED — the `.svg` is the artefact of record for this language (inc55)**, written at `Darkside.pane_split_instead` and marked RULED in the round. What it does NOT close is written with it: the rail's fourteen strokes, and E2 |
+| **F** | may a solari confirm eat the gate it names? | **DECIDED — no (inc55)**, with inc50's clause 2 changing ends as the declared cost |
+| **G** | blueprint's first fixation is in a test and no image | **DECIDED — it is in `blueprint_S2` now (inc56)**, and the ruling's frame count was not met: ONE S2 frame moved, not eleven |
+| **C1**, **C**, **K1**, **K3**, **C3** | | closed in `rework-4` and `rework-5a` |
+
+Still open and outside this batch: **K2** (the laws compare code points), **K4**, **L1–L6**, **C2**,
+**C4**–**C7**, **E2** and **E3**.
+
+### 14.7 Found by looking
+
+- **RULING G'S FRAME PREDICTION WAS WRONG AND THE REASON IS THE BIGGER FINDING.** It expected eleven S2
+  frames; one moved. `self.mood` is read at exactly two places in `taskboard/language.py` —
+  `Naught.face` and `Blueprint._state_cell` — and naught's reaches a frame only through `mascot()` →
+  `Kit.empty_state()`, which S2 does not compose. **Nine of the eleven languages have no board-wide
+  channel at all.** Measured by setting the mood globally in a probe: seven of the 66 frames move
+  (`blueprint_S1`–`S6` and `naught_S6`), and `naught_S2` is not among them.
+- **A global alert mood would break operator ruling 10.** `blueprint_S4` would carry the title block's
+  knockout AND the confirm's. The arithmetic that makes ruling 10 legal is a property of the fixture
+  being calm, and it has now been measured rather than assumed.
+- **`Darkside.SPIN = (".", "o", "O", "o")` is inc57's collision one family over**, and no language's
+  `SPIN` is censused. Defensible — a spinner is motion — and a decision nobody has made in writing.
+- **`prototypes/widget_slice/app.py` has never been edited by any batch in this worktree**, and it is
+  where the component sheet's contents are decided. The stepper is composed there and photographed
+  nowhere, which is what `capture_languages.py`'s docstring was really claiming.
+- **`verify_language` caught something the pytest suite could not, for the third time.** Its `. o O`
+  check went red on inc57's real change; the law was not deleted but told where the doodle went, and
+  the spinner keeps that family.
+- **`solari_S4`'s ink went UP for the third increment running** while the modal moved (22.8 → 26.8 →
+  29.4). Density on this language measures board coverage, which is now a habit rather than an
+  observation.
+- **`test_win_clipboard_roundtrip` moved in both directions again.** Green through all of inc55 and the
+  inc56 gate run, RED in the identical re-run of the same tree after inc56's watch-it-fail restore, and
+  RED in both full-suite runs of inc57. It drives the real Windows clipboard through PowerShell (§10.6).
+  **Reported, not counted, not touched — and `1100 collected` is not a claim about it either way.**
+
+### 14.8 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc55 · inc56 · inc57 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1083 → 1086 → 1088 → 1100** (inc55 +3, inc56 +2, inc57 +12), with the clipboard test red in inc57's runs and named in every packet. `verify_language.py` **ALL PASSED** exit 0 after every increment — and RED first in inc57, on its own `. o O` law, reported rather than skipped. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66, refusals `[]` for all eleven. `capture_languages.py` after every increment; **1 gallery artefact moved in total**. `collision_census.py` both self-checks green after every increment; **TOTAL 33 → 33**, homoglyph rows **4**, and **35 under the counterfactual**. `export_to_skill.py` at the close: `2 written, 64 already identical`, re-run `0 written, 66 already identical`. **The skill repo was not committed.** |
+| Notes | **7 source files across 3 increments, one agent** (`taskboard/language.py`, `prototypes/components/screens.py`, `prototypes/components/fixture.py`, `tests/test_components.py`, `prototypes/collision_census.py`, `prototypes/capture_languages.py`, `prototypes/verify_language.py`) — never more than 5 in one increment — plus 16 regenerated frame artefacts over 8 distinct frames, 2 gallery artefacts, the census table, the round's decisions section, three packets and this section. **Every increment's law was watched failing BY HAND on the real declaration or the real composition, with the output quoted verbatim in its packet**, in addition to its monkeypatched teeth. |
