@@ -6014,7 +6014,16 @@ def test_a_confirm_opens_and_closes_on_marks_of_its_own(lang):
         assert LG.THEMES[lang].get("band") == "reverse", lang
         svg = (FRAMES / f"{lang}_S4.svg").read_text(encoding="utf-8")
         runs = [(float(w), f) for _x, _y, w, _h, f in _RECT_RUN.findall(svg)]
-        assert any(w > 800 for w, _f in runs), (lang, runs[:3])
+        # FULL MEASURE IS RELATIVE TO THE FRAME'S OWN WIDTH (inc80), not to a
+        # constant this suite happened to be written against. `w > 800` was
+        # "100 cols x 8.4 CW, with room to spare" and true only at 100
+        # columns -- at 80 columns the page itself is 672 units wide and 800
+        # is bigger than the page, so no plate could ever satisfy it. `page_w`
+        # is read off THIS frame's own canvas rect, so the question is the
+        # same one at every width the corpus is rendered at.
+        page_w = float(_CANVAS_RECT.search(svg).group(1)) - 2 * _PAD
+        assert any(w >= page_w - 1.0 for w, _f in runs), \
+            (lang, page_w, runs[:3])
         return
     # and the edge is a MARK, not the question's own words: the outermost
     # rows of every other band in this corpus are chrome, never prose
@@ -8411,7 +8420,7 @@ SECOND_WIDTH_LAWS = (
     ("test_a_solari_confirm_never_covers_the_gate_it_names", None),
 )
 
-#: WHAT GOES RED AT 80x24, and it is two arms out of 79.  Recorded so the
+#: WHAT GOES RED AT 80x24, and it is one arm out of 79.  Recorded so the
 #: round has a table to argue with and so a fix shows up as a diff.
 #:
 #: 1. **Ruling F fails for solari.** *A confirm never covers the gate it
@@ -8424,18 +8433,20 @@ SECOND_WIDTH_LAWS = (
 #:    18 are DOING's own departures. **This is a HEIGHT finding wearing a
 #:    width's clothes** and it is the strongest argument in this batch for
 #:    rendering at a second size at all: the placement rule was written, and
-#:    tested, on a page that always had somewhere to go.
+#:    tested, on a page that always had somewhere to go. **Not fixed here —
+#:    a solari design decision, for the round.**
 #:
-#: 2. **A law is width-bound, and the frame is not.** solari's arm of
-#:    `test_a_confirm_opens_and_closes_on_marks_of_its_own` asserts the band
-#:    plate is at full measure by `any(w > 800)` over the svg's rects. 800 is
-#:    100 cells x 8.4 units minus a margin — it means "full measure" only at
-#:    100 columns. At 80 the plate is 672 units wide and IS at full measure.
-#:    **The frame is correct and the law is wrong**, and no amount of
-#:    rendering at 100 could have shown it.
+#: 2. **FIXED (inc80).** solari's arm of
+#:    `test_a_confirm_opens_and_closes_on_marks_of_its_own` used to assert the
+#:    band plate is at full measure by `any(w > 800)` over the svg's rects.
+#:    800 is 100 cells x 8.4 units minus a margin — it meant "full measure"
+#:    only at 100 columns, and at 80 the plate is 672 units wide and WAS at
+#:    full measure, so the law read RED with a correct frame. The predicate
+#:    now reads the page's own width off its canvas rect (`page_w`), so it
+#:    asks the same question at every width; this arm is GREEN at 80x24 and
+#:    stays green at 100x32 (control arm, below).
 SECOND_WIDTH_RED = {
     ("test_a_solari_confirm_never_covers_the_gate_it_names", None),
-    ("test_a_confirm_opens_and_closes_on_marks_of_its_own", "solari"),
 }
 
 
@@ -8472,7 +8483,8 @@ def test_the_frame_laws_at_eighty_by_twenty_four_are_the_ones_recorded(
 
     The verdict is a RECORDED SET and not a gate. The brief is explicit: *"Do
     not fix languages here; the round judges."* So this test is green while
-    two arms are red at 80x24, and it goes red the day that set changes in
+    one arm is red at 80x24 (inc80 fixed the other: a width-bound law, not a
+    solari defect), and it goes red the day that set changes in
     either direction — a language fixed, or a new law that does not survive
     the narrower page.
     """
