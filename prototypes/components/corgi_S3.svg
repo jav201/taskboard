@@ -2,13 +2,10 @@
 <title>taskboard · corgi · S3 settings</title>
 <rect width="860.0" height="564.0" fill="#0d0d0d"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<text x="10.0" y="23.3" fill="#9a9a9a">[1]</text>
-<text x="35.2" y="23.3" fill="#3a3a3a">BOARD</text>
-<text x="85.6" y="23.3" fill="#9a9a9a">[2]</text>
-<text x="110.8" y="23.3" fill="#3a3a3a">FORM</text>
+<text x="10.0" y="23.3" fill="#9a9a9a">[1]BOARD</text>
+<text x="85.6" y="23.3" fill="#9a9a9a">[2]FORM</text>
 <text x="152.8" y="23.3" fill="#6fe36f">[3]C F G</text>
-<text x="228.4" y="23.3" fill="#9a9a9a">[4]</text>
-<text x="253.6" y="23.3" fill="#3a3a3a">LOG</text>
+<text x="228.4" y="23.3" fill="#9a9a9a">[4]LOG</text>
 <text x="10.0" y="40.3" fill="#ff6600">[S]</text>
 <text x="43.6" y="40.3" fill="#f2f2f2">S E T T I N G S</text>
 <text x="186.4" y="40.3" fill="#9a9a9a">5 SWITCHES  ·  2 SELECTS  ·  1 SLIDER</text>

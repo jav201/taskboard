@@ -4,11 +4,14 @@
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
 <text x="10.0" y="23.3" fill="#1c1a15">▪ BOARD</text>
 <text x="68.8" y="23.3" fill="#8a8272"> │ </text>
-<text x="94.0" y="23.3" fill="#c4b99f">· form</text>
+<text x="94.0" y="23.3" fill="#c4b99f">·</text>
+<text x="102.4" y="23.3" fill="#635e52"> form</text>
 <text x="144.4" y="23.3" fill="#8a8272"> │ </text>
-<text x="169.6" y="23.3" fill="#c4b99f">· cfg</text>
+<text x="169.6" y="23.3" fill="#c4b99f">·</text>
+<text x="178.0" y="23.3" fill="#635e52"> cfg</text>
 <text x="211.6" y="23.3" fill="#8a8272"> │ </text>
-<text x="236.8" y="23.3" fill="#c4b99f">· log</text>
+<text x="236.8" y="23.3" fill="#c4b99f">·</text>
+<text x="245.2" y="23.3" fill="#635e52"> log</text>
 <text x="10.0" y="40.3" fill="#1c1a15">COMMAND ···································································</text>
 <text x="648.4" y="40.3" fill="#635e52">query &#x27;re&#x27;  ·  6 results</text>
 <text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>

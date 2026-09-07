@@ -3175,10 +3175,33 @@ class Kit:
         and it is drawn with the language's own DISCLOSE mark, which is the
         same declaration the select spends: the mark that says THERE IS MORE.
         A select points at a list, a log points at the line that has not
-        arrived yet."""
+        arrived yet.
+
+        A RUNG CLASSIFIES, SO IT IS NEVER `dim` (inc74, K7). The tone ladder
+        read `dim / mut / ink`, and round four measured the bottom rung in the
+        artefact: `⠂⠂` at 1.74:1, `·` at 1.75, `▫▫` at 1.96, `·` at 1.69,
+        `·` at 1.39, `◦◦` at 1.35, `▁▁` at 1.71 — seven kits painting the mark
+        that says WHICH KIND OF EVENT THIS IS at the level of their own
+        ground, so its criterion ("point at the log rows that carry a
+        severity") answered two of eight.
+
+        THE SEAT MOVED AND `dim` DID NOT, which is the choice K7 offers and
+        the cheaper of the two by an order of magnitude: raising `dim` to 3:1
+        is a change in the token ten of the eleven spend their GROUND on
+        (`DIM_AGAINST_GROUND` records all eleven numbers and inc70 declined it
+        for exactly that reason). What moves here is one seat.
+
+        SO THE TIER LADDER HAS TWO RUNGS AND THE SHAPE LADDER HAS THREE, and
+        that is stated rather than hidden: this corpus owns two legible
+        neutral tiers (`mut` and `ink`) and a three-rung ladder cannot have
+        three of them. The tier splits where the row's BODY already splits —
+        `calm` against `noteworthy` — and info against warn is carried by the
+        glyph ladder, which is what the paragraph above already calls the
+        channel ("the level READS WITH THE COLOUR REMOVED").
+        """
         c = self.c
         mk = self.LEVELS.get(level, self.LEVELS["info"])
-        tone = {"info": c["dim"], "warn": c["mut"]}.get(level, c["ink"])
+        tone = c["mut"] if level in ("info", "warn") else c["ink"]
         body = c["mut"] if level == "info" else c["ink"]
         row = (f"[{c['dim']}]{mark(str(time))}[/] "
                f"[{tone}]{mark(mk)}[/] "
@@ -5253,7 +5276,16 @@ class Corgi(Kit):
 
         The numbers are not decoration: `[1]`..`[4]` are the app's own view
         bindings, so the strip is a picture of the device's numbered buttons
-        and pressing the number really does what the strip says."""
+        and pressing the number really does what the strip says.
+
+        AN UNLIT LEGEND IS STILL A LEGEND (inc74, K7). The dark labels
+        read `c["dim"]` -- `#3a3a3a`, 1.71:1 -- so the strip named ONE
+        of its four modes while the key numbers beside them stood in
+        `alu` and could be read. This is ledger's defect in the other
+        direction, and a sweep of the eleven found only these two: the
+        mode a reader is NOT in is still a mode a reader has to be able
+        to name. The legend takes `mut`; what says which one is LIT
+        stays the screen's own green."""
         c = self.c
         out, plain = [], []
         for i, o in enumerate(options):
@@ -5261,7 +5293,7 @@ class Corgi(Kit):
             lab = " ".join(o.upper()) if (on and spaced) else o.upper()
             mark = "" if spaced else (self.LIT if on else "")
             out.append(f"[{self.screen if on else self.alu}]\\[{i + 1}][/]"
-                       f"[{self.screen if on else c['dim']}]{mark}{lab}[/]")
+                       f"[{self.screen if on else c['mut']}]{mark}{lab}[/]")
             plain.append(f"[{i + 1}]{mark}{lab}")
         return " ".join(out), len(" ".join(plain))
 
@@ -8670,10 +8702,22 @@ class Ledger(Kit):
         return f" [{self.c['mut']}]{val}[/]"
 
     def tabs(self, options, active):
+        """THE LEADER IS DIM AND THE NAME IS NOT (inc74, K7).
+
+        This seat drew the whole inactive entry -- leader AND word -- in
+        `dim`, and `dim` here is `#c4b99f`, the dot leader, at 1.50:1 on the
+        page. Round four's criterion for `ledger_S1` was "name the four
+        modes", and it answered ONE. The leader is a leader and stays where
+        every other leader on this page is; the WORD says which modes exist
+        and which one you are not in, so it takes `mut`, which is what the
+        base's own `tabs` gives an inactive label in the other ten kits.
+        Measured before it moved: ledger was the ONLY kit of the eleven whose
+        inactive mode label was `dim`."""
         c = self.c
         return f"[{self.rule_color}] {self.RULE_V} [/]".join(
             f"[{c['ink']}]{self.tally} {o.upper()}[/]" if o == active
-            else f"[{c['dim']}]{self.LEAD} {o}[/]" for o in options)
+            else f"[{c['dim']}]{self.LEAD}[/][{c['mut']}] {o}[/]"
+            for o in options)
 
     def mascot(self):
         return []                          # a ledger keeps no pet

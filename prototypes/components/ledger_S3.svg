@@ -2,13 +2,16 @@
 <title>taskboard · ledger · S3 settings</title>
 <rect width="860.0" height="564.0" fill="#e9e1cf"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<text x="10.0" y="23.3" fill="#c4b99f">· board</text>
+<text x="10.0" y="23.3" fill="#c4b99f">·</text>
+<text x="18.4" y="23.3" fill="#635e52"> board</text>
 <text x="68.8" y="23.3" fill="#8a8272"> │ </text>
-<text x="94.0" y="23.3" fill="#c4b99f">· form</text>
+<text x="94.0" y="23.3" fill="#c4b99f">·</text>
+<text x="102.4" y="23.3" fill="#635e52"> form</text>
 <text x="144.4" y="23.3" fill="#8a8272"> │ </text>
 <text x="169.6" y="23.3" fill="#1c1a15">▪ CFG</text>
 <text x="211.6" y="23.3" fill="#8a8272"> │ </text>
-<text x="236.8" y="23.3" fill="#c4b99f">· log</text>
+<text x="236.8" y="23.3" fill="#c4b99f">·</text>
+<text x="245.2" y="23.3" fill="#635e52"> log</text>
 <text x="10.0" y="40.3" fill="#1c1a15">SETTINGS ·····················································</text>
 <text x="539.2" y="40.3" fill="#635e52">5 switches  ·  2 selects  ·  1 slider</text>
 <text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>

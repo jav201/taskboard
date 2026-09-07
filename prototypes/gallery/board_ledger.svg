@@ -34,11 +34,14 @@
 <text x="211.6" y="193.3" fill="#c4b99f">flow</text>
 <text x="26.8" y="227.3" fill="#1c1a15">▪ BOARD</text>
 <text x="85.6" y="227.3" fill="#8a8272"> │ </text>
-<text x="110.8" y="227.3" fill="#c4b99f">· lanes</text>
+<text x="110.8" y="227.3" fill="#c4b99f">·</text>
+<text x="119.2" y="227.3" fill="#635e52"> lanes</text>
 <text x="169.6" y="227.3" fill="#8a8272"> │ </text>
-<text x="194.8" y="227.3" fill="#c4b99f">· agenda</text>
+<text x="194.8" y="227.3" fill="#c4b99f">·</text>
+<text x="203.2" y="227.3" fill="#635e52"> agenda</text>
 <text x="262.0" y="227.3" fill="#8a8272"> │ </text>
-<text x="287.2" y="227.3" fill="#c4b99f">· gantt</text>
+<text x="287.2" y="227.3" fill="#c4b99f">·</text>
+<text x="295.6" y="227.3" fill="#635e52"> gantt</text>
 <text x="35.2" y="261.3" fill="#635e52">due</text>
 <text x="68.8" y="261.3" fill="#a8261f">  2</text>
 <text x="102.4" y="261.3" fill="#635e52">NEARE…</text>
