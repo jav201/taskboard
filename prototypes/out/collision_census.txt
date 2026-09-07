@@ -26,23 +26,21 @@ CORGI   3 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRE
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-INSTRUMENT   4 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⣉  CUR ⣿)
+INSTRUMENT   3 colliding cells   (LEVELS ⢆⢆/⣆⣆/⣖⣖  DANGER ⠛⠛  REQUIRED ⣉  CUR ⣿)
 ------------------------------------------------------------------------------
   ⣿   [7 families]  CUR  ·  bar.indicator mark (default)  ·  checkbox.knob mark (checked,default)  ·  mascot.pixel mark (declared)  ·  meter.fill mark (declared)  ·  spark.peak mark (declared)  ·  scrollbar.indicator mark (default)  ·  slider.indicator mark (active,default,edited,focused)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)
   ⠶   [6 families]  INVALID slider.knob mark + INVALID stepper.step close + INVALID stepper.step open + INVALID textfield.main mark  ·  bar.indicator mark (disabled)  ·  radio.knob mark (checked,default)  ·  slider.indicator mark (disabled)  ·  switch.indicator mark (checked+disabled,disabled)  ·  textfield.main mark (invalid)
-  ⠇   [3 families]  LEVELS[error]  ·  button.main close (default)  ·  textfield.main close (default)
   ⠛   [2 families]  DANGER_FORM close + DANGER_FORM open  ·  checkbox.main mark (checked+focused,focused)
-  ... 14 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 15 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-SWISS   4 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
+SWISS   3 colliding cells   (LEVELS ▁/─/━  DANGER ╲╱  REQUIRED •  CUR ▮)
 ------------------------------------------------------------------------------
   ─   [6 families]  LEVELS[warn]  ·  bar.main mark (default)  ·  meter.track mark (declared)  ·  scrollbar.indicator mark (disabled)  ·  slider.main mark (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)
-  ·   [3 families]  LEVELS[info]  ·  scrollbar.main mark (disabled)  ·  textfield.main mid (edited)
   ━   [2 families]  LEVELS[error]  ·  meter.fill mark (declared)  ·  spark.peak mark (declared)
   ▮   [2 families]  CUR  ·  slider.knob mark (edited)
-  ... 10 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
@@ -54,26 +52,26 @@ INDUSTRIAL   2 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱�
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-NORD   1 colliding cells   (LEVELS · /! /!!  DANGER ##  REQUIRED *  CUR ▸)
+NORD   1 colliding cells   (LEVELS ~ /! /!!  DANGER ##  REQUIRED *  CUR ▸)
 ------------------------------------------------------------------------------
   ▸   [2 families]  CUR  ·  stepper.step close (focused)
   ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-DARKSIDE   1 colliding cells   (LEVELS · /o /O   DANGER ▚▞  REQUIRED ▪  CUR ▊)
+DARKSIDE   0 colliding cells   (LEVELS c /o /O   DANGER ▚▞  REQUIRED ▪  CUR ▊)
 ------------------------------------------------------------------------------
-  ·   [2 families]  LEVELS[info]  ·  textfield.main mid (edited)
+  no cell carries two roles.
   ... 16 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-PRISM   3 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRED ⣆  CUR ▸)
+PRISM   3 colliding cells   (LEVELS ⣤⣤/⣶⣶/⣿⣿  DANGER ⣿⣿  REQUIRED ⣆  CUR ▸)
 ------------------------------------------------------------------------------
   ⣿   [4 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  bar.indicator mark (default)  ·  mascot.pixel mark (declared)  ·  meter.fill mark (declared)
-  ⣀   [3 families]  LEVELS[info]  ·  bar.main mark (default)  ·  meter.track mark (declared)
-  ⣤   [2 families]  LEVELS[warn]  ·  bar.indicator mark (disabled)
-  ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ⣤   [2 families]  LEVELS[info]  ·  bar.indicator mark (disabled)
+  ⣶   [2 families]  LEVELS[warn]  ·  field.leader close (declared)
+  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
@@ -105,19 +103,19 @@ LANGUAGE x COLLISIONS
 language       colliding cells
 naught                       3
 corgi                        3
-instrument                   4
-swiss                        4
+instrument                   3
+swiss                        3
 industrial                   2
 nord                         1
-darkside                     1
+darkside                     0
 prism                        3
 ledger                       1
 solari                       3
 blueprint                    1
 ------------------------------
-TOTAL                       26
+TOTAL                       23
 
-zero collisions: NONE -- all eleven overload at least one cell
+zero collisions: darkside
 
 ==============================================================================
 HOMOGLYPHS — one drawing at another size or fill (ruling D amended)
@@ -153,11 +151,8 @@ NAUGHT   12 row(s)
   ⊛ is required   and its homoglyph ◉ is checkbox + quantity + slider + stepper + switch + textfield chrome
   ⊛ is required   and its homoglyph ⊙ is radio chrome
 SWISS   1 row(s)
-  · is severity   and its homoglyph • is required MEANING
-NORD   1 row(s)
-  · is severity   and its homoglyph ● is radio chrome
-DARKSIDE   8 row(s)
-  · is severity   and its homoglyph ● is checkbox + identity + radio + slider + switch chrome
+  • is required   and its homoglyph · is scrollbar + textfield chrome
+DARKSIDE   7 row(s)
   o is severity   and its homoglyph ◦ is radio chrome
   O is severity   and its homoglyph ◦ is radio chrome
   o is severity   and its homoglyph ◎ is checkbox + identity + slider + switch chrome
@@ -170,7 +165,7 @@ LEDGER   1 row(s)
 SOLARI   1 row(s)
   O is severity   and its homoglyph ◉ is radio chrome
 
-TOTAL homoglyph rows            24
+TOTAL homoglyph rows            22
 
 This is the input to the language-level rework, not a verdict. A cell
 here is the question 'did you mean these two to be the same mark?'.
