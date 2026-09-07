@@ -77,9 +77,27 @@ COMPOSE from the textfield's slots plus their own literals.  Their chrome
 therefore reaches this census through `textfield`, and any mark of their own is
 outside it.  Named because the request listed them.
 
-SLIDER, BAR AND SCROLLBAR ARE OUT OF THE B SET by the same request, which named
-six controls.  How many further cells would collide if they were in is printed
-per language, so the boundary is a number rather than a silence.
+SLIDER, BAR AND SCROLLBAR ARE IN THE B SET SINCE inc67, and the number this
+docstring used to print instead ("how many further cells would collide if they
+were in") was the whole of `PROTOTYPE-inheritors-3.md`'s K5.  They were out by
+the operator's own request, which named six controls; the round found three of
+its eight new `rework` verdicts living exactly in the excluded widget, and the
+orchestrator's RULING A, AMENDED (2026-09-07) puts them back:
+
+    "the census's B set reaches every quantity widget: slider, bar,
+     scrollbar, meter, sparkline, pager, mascot.  Their fill and track cells
+     are chrome; a fill cell may not be a meaning mark of its language."
+
+FOUR OF THE SEVEN WERE ALREADY DECLARED and only the reader excluded them --
+the slider, the bar and the scroll bar are `COMPONENT_PARTS` entries, and the
+PAGER IS THE SCROLL BAR (`screens.s1` calls `k.scrollbar`, so `corgi_S1`'s
+`view ██ ░░ ░░ ░░` and `scrollbar.indicator` are one declaration seen twice).
+The other three -- the METER, the SPARKLINE and the MASCOT -- are drawn
+outside `PART_GLYPHS` in all eleven, so they are DECLARED, at
+`Kit.quantity_glyphs()`, and read here exactly as `FIELD_LEAD` and
+`IDENT_GLYPHS` have been read since inc57.  A mark a language draws and this
+file cannot see is this census's own blind spot; the fix is a declaration
+rather than a bigger reader, for the third time.
 
 THIS FIXES NOTHING.  It is the input to the language-level rework, and a cell
 appearing here is a question ("did you mean these two to be the same mark?"),
@@ -100,10 +118,13 @@ from taskboard import language as LG                              # noqa: E402
 #: that pads two roles with the same nothing has not overloaded anything.
 BLANKS = " ⠀"
 
-#: the six the request named. `bar`, `slider` and `scrollbar` are measured too,
-#: but only to print how much the boundary costs (see the module docstring).
-CONTROLS = ("button", "checkbox", "radio", "switch", "textfield", "stepper")
-OTHERS = ("slider", "bar", "scrollbar")
+#: THE NINE, since inc67. The six the request named plus the three quantity
+#: widgets ruling A amended puts back in set B. `OTHERS` is empty and kept so
+#: the shape of the old boundary stays legible in the diff and so a future
+#: exclusion has a seat to sit in rather than being spelled into `CONTROLS`.
+CONTROLS = ("button", "checkbox", "radio", "switch", "textfield", "stepper",
+            "slider", "bar", "scrollbar")
+OTHERS: tuple[str, ...] = ()
 
 #: MARKS A KIT DECLARES OUTSIDE `PART_GLYPHS` (inc57), as
 #: `(family, attribute, seat)`. They are B-families -- a leader and a doodle
@@ -115,8 +136,17 @@ OTHERS = ("slider", "bar", "scrollbar")
 #: a hole); `IDENT_GLYPHS` is a TUPLE of glyphs, because a moon phase and a
 #: tab mark are drawings with handedness and joining them would invent an
 #: order that is not there.
+#:
+#: inc67 ADDS THE THIRD, and it is the same kind of thing for the third time:
+#: `PANE_RULE` is the cell a language rules the gap between two panes with,
+#: declared on the kit since inc28 and read by nothing but the drawing. It is
+#: not a quantity widget and ruling A does not name it -- it is here because
+#: `corgi_S1` spent `█`, that kit's error rung and danger form, TWENTY-FIVE
+#: rows tall on it, and a fix nothing measures is a fix that can silently
+#: come back.
 DECLARED_MARKS = (("field", "FIELD_LEAD", "field.leader"),
-                  ("identity", "IDENT_GLYPHS", "identity.mark"))
+                  ("identity", "IDENT_GLYPHS", "identity.mark"),
+                  ("pane", "PANE_RULE", "pane.rule"))
 
 #: the A-families. One per KIND of meaning, not one per declaration -- two
 #: severity rungs sharing a cell is a severity problem, not a collision.
@@ -239,6 +269,18 @@ def role_map(lang: str) -> tuple[dict[str, dict[str, set[str]]], dict[str, dict[
         for glyph in glyphs:
             for cell, pos in _cells(glyph):
                 add(named, cell, family, f"{seat} {pos} [declared]")
+
+    # ---- B: the quantity widgets drawn outside `PART_GLYPHS` (inc67) ----
+    #
+    # ONE FAMILY FOR ALL THREE SEATS, and that is the same decision the six
+    # controls get one family each: a meter, a spark and a mascot are one
+    # language's QUANTITY VOCABULARY, and splitting them would let a cell
+    # spent on the meter's fill and on the spark's peak read as a collision
+    # when it is the ramp doing its job in two places. The SEAT is still in
+    # the phrase, so a row says which of the three it came from.
+    for seat, glyph in k.quantity_glyphs().items():
+        for cell, pos in _cells(glyph):
+            add(named, cell, "quantity", f"{seat} {pos} [declared]")
     return named, other
 
 
@@ -336,8 +378,12 @@ def report() -> list[str]:
             w(f"  {cell}   [{len(fams)} families]  {_phrase(fams)}")
         w(f"  ... {bxb} further cells are shared between two CONTROLS only "
           f"(alphabet, not counted)")
-        w(f"  ... {also} further cells would collide if slider/bar/scrollbar "
-          f"were in the B set")
+        if OTHERS:
+            w(f"  ... {also} further cells would collide if "
+              f"{'/'.join(OTHERS)} were in the B set")
+        else:
+            w(f"  ... slider, bar, scrollbar, meter, spark and mascot are IN "
+              f"the B set (inc67, ruling A amended)")
         w("")
 
     w("=" * 78)
@@ -416,7 +462,17 @@ FOUND_BY_HAND = (
 #: test suite's rosters make: a number is a record only while somebody has to
 #: edit it. A row here is NOT a defect; it is the question ruling D asks.
 #:
-#:   naught     0  WAS 2 and closed by inc61 (`rework-5c`, ruling A).
+#:   naught     1  WAS 2, went to 0 at inc61, and is 1 AGAIN AT inc67 — not
+#:                 a regression in the kit but the reader reaching a widget
+#:                 it had never read. `∙` (danger + the error rung) stands
+#:                 against `·` at `scrollbar.main`, the pager's SHAFT, which
+#:                 inc61 could not have moved because the scroll bar was
+#:                 outside set B. It is the same row inc61 closed, alive in
+#:                 the one seat that was invisible: the alphabet is one round
+#:                 pixel at six charges and the shaft is still spending the
+#:                 retired one. Left as a QUESTION for the K2 increment,
+#:                 which is where a homoglyph row belongs.
+#:              (was) WAS 2 and closed by inc61 (`rework-5c`, ruling A).
 #:                 `∙` (error+danger) stood against `·` at four controls,
 #:                 and `·` (the invalid rune) against `∙` at two — the
 #:                 alphabet was one round pixel at SIX charges and two of
@@ -438,7 +494,7 @@ FOUND_BY_HAND = (
 #:                 `◆`, this kit's own EDITED mark at the knob and the
 #:                 step.
 #:   swiss      0  closed by inc53: the radio's chosen mark left `●`.
-HOMOGLYPH_ROSTER = {"naught": 0, "corgi": 0, "instrument": 0, "swiss": 0,
+HOMOGLYPH_ROSTER = {"naught": 1, "corgi": 0, "instrument": 0, "swiss": 0,
                     "industrial": 0, "nord": 0, "darkside": 1, "prism": 0,
                     "ledger": 0, "solari": 0, "blueprint": 0}
 

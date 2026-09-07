@@ -3555,7 +3555,24 @@ def _seat_meanings(k, lang: str) -> set[str]:
 #: `part == "knob"` so the slider's exclusion is visible: the slider is not
 #: in `RULED_CONTROLS`, and that is the census's boundary, not a claim that a
 #: slider's grip may wear a severity rung.
-KNOB_SEATS = (("switch", "knob"), ("checkbox", "knob"), ("radio", "knob"))
+#:
+#: inc67 ADDS THE SLIDER'S (K5, ruling A amended). The exclusion above was
+#: honest and its reason expired: the census's boundary moved, so the slider
+#: is in set B and its grip is a seat like the other three. It costs nothing
+#: -- all eleven knobs are clean (`◉ ▙▟ ⡇ │ | ▌ ◎ ⢸ ▪ ▼ ┤`, not one of them a
+#: rung) -- and it is here so the day one is not, somebody has to edit a
+#: number.
+#:
+#: THE DEAD-MARK CLAUSE IS NOT EXTENDED WITH IT, and the narrowing is
+#: measured rather than assumed. Ruling A amended asks for "the opener/knob
+#: laws where a quantity widget has an opener or a knob"; a slider's DISABLED
+#: track is neither. Measured before it was left out: looping the slider
+#: through the dead clause as well costs exactly ONE row, corgi's
+#: `slider.indicator[disabled]` (`▁▁`, `LEVELS["info"]` -- a dead fill drawn
+#: with the calm rung), and nothing anywhere else. Named so the next round
+#: argues with a number.
+KNOB_SEATS = (("switch", "knob"), ("checkbox", "knob"), ("radio", "knob"),
+              ("slider", "knob"))
 
 
 def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
@@ -3571,11 +3588,14 @@ def meaning_marks_at_named_seats(lang: str) -> list[tuple]:
     k = LG.kit(lang)
     meanings = _seat_meanings(k, lang)
     out = []
-    for comp in RULED_CONTROLS:
+    # the six ruled controls, plus the slider for its KNOB alone (inc67) --
+    # see `KNOB_SEATS` for why the dead clause does not follow it here.
+    for comp in RULED_CONTROLS + ("slider",):
         for part in LG.COMPONENT_PARTS[comp]:
             table = k.PART_GLYPHS[k.part_key(comp, part)]
             for st in LG.component_states(comp):
-                dead = LG.control_of(st) == LG.DISABLED
+                dead = (LG.control_of(st) == LG.DISABLED
+                        and comp in RULED_CONTROLS)
                 if dead and LG.DISABLED not in table:
                     # A FALLBACK IS NOT A DECLARATION, and `collision_census`
                     # already had to learn this: `part_glyph` walks the state
@@ -3671,13 +3691,20 @@ def test_the_named_seat_law_goes_red_on_the_three_declarations_it_moved(
     # ARM THREE — the knob seat, and the one the old clause was blind to.
     # `knob` is the SHARED table, so restoring it moves the switch and leaves
     # `checkbox.knob` (its own table) where inc49 put it: the hits must name
-    # `switch.knob` and nothing else, which is what proves the widening is
-    # what caught it rather than the disabled arm catching it sideways.
+    # the two SHARED knob seats and nothing else, which is what proves the
+    # widening is what caught it rather than the disabled arm catching it
+    # sideways.
+    #
+    # inc67 ADDED THE SECOND OF THOSE TWO. This arm read `switch.knob` alone
+    # until the slider's grip joined `KNOB_SEATS`; darkside's `knob` table is
+    # the switch's AND the slider's, so one restored declaration now shows at
+    # both, and the arm says so rather than being narrowed back to one.
     tbl = dict(LG.Darkside.PART_GLYPHS["knob"])
     tbl[LG.DEFAULT] = "O"
     monkeypatch.setitem(LG.Darkside.PART_GLYPHS, "knob", tbl)
     hits = meaning_marks_at_named_seats("darkside")
-    assert hits and all(h[0] == "switch.knob" for h in hits), hits
+    assert hits, hits
+    assert {h[0] for h in hits} == {"switch.knob", "slider.knob"}, hits
     assert all(h[3] == LG.kit("darkside").LEVELS["error"].strip()
                for h in hits), hits
     assert all(len(meaning_marks_at_named_seats(o))
@@ -3806,6 +3833,24 @@ def meaning_marks_at_an_opener(lang: str) -> list[tuple]:
                 if len(glyph) < 2 or glyph[0] not in meanings:
                     continue
                 out.append((f"{comp}.{part}", st, glyph, glyph[0]))
+    # THE QUANTITY WIDGET THAT HAS AN OPENER, and only that one (inc67, K5,
+    # ruling A amended). Two of the thirteen mechanisms BRACKET their run --
+    # industrial's `[ ... ]` and blueprint's `├ ... ┤` -- and a bracket is an
+    # announcement in exactly the sense this law means: the first cell the eye
+    # reaches before the quantity starts.
+    #
+    # THE SLIDER, THE BAR AND THE SCROLL BAR ARE NOT ASKED, and the narrowing
+    # is structural rather than a scope choice. Their `main` and `indicator`
+    # are a cell the composer REPEATS, so `▁▁`'s "opener" is `▁` and its
+    # "closer" is `▁` -- the same cell twice, with no bracket and nothing
+    # announced. Reading a run's first cell as an opener would ask the fill
+    # law's question a second time in worse words; measured before it was left
+    # out, it fires on corgi FIFTEEN times and on nothing else, and every one
+    # of those fifteen is already a row on `FILL_IS_NOT_A_MEANING`.
+    for seat in ("meter.open", "meter.close"):
+        glyph = k.quantity_glyphs().get(seat, "")
+        if glyph and glyph[0] in meanings:
+            out.append((seat, "declared", glyph, glyph[0]))
     return out
 
 
@@ -3912,8 +3957,15 @@ def test_the_opener_law_goes_red_on_the_two_declarations_inc48_and_inc46_moved(
 CORGI_BANK_BEFORE = (
     ("switch.main", None, 6, 0),
     ("switch.indicator", None, 8, 8),
+    # inc67: the named-seat count on this row went 4 → 6. `knob` is the
+    # SHARED table — the switch's grip and the SLIDER's — and `KNOB_SEATS`
+    # gained `("slider", "knob")`, so one restored declaration now shows at
+    # both. The two extra rows are `slider.knob` at `default` and `focused`,
+    # which is `corgi_S3`'s own finding: this kit drew `██` as the slider's
+    # KNOB twelve rows above `▁▁█Delete all█▁▁` and only the switch's half of
+    # it was ever counted.
     ("knob", {LG.DEFAULT: "██", LG.FOCUSED: "▀▀", LG.EDITED: "▓▓",
-              LG.ACTIVE: "▒▒", LG.INVALID: "░░", LG.DISABLED: "╳╳"}, 4, 4),
+              LG.ACTIVE: "▒▒", LG.INVALID: "░░", LG.DISABLED: "╳╳"}, 4, 6),
     ("checkbox.main", {LG.DEFAULT: "▁▁", LG.FOCUSED: "▔▔", LG.ACTIVE: "▂▂",
                        LG.DISABLED: "··"}, 2, 0),
     ("checkbox.knob", {LG.DEFAULT: "██", LG.FOCUSED: "▛▜", LG.ACTIVE: "▓▓",
@@ -4153,12 +4205,19 @@ def test_prism_draws_no_control_on_the_embers_own_rungs():
     one increment earlier, and for the same reason: the ruling is about the
     REGISTER, not about today's bookkeeping.
 
-    THE SLIDER, THE BAR AND THE SCROLL BAR ARE OUT by name. They are a
-    QUANTITY, and this kit says a quantity IS the ember ("the slider's track
-    is every value the knob could take, so it is the ramp's floor"), so
-    `main`, `indicator` and `scrollbar.*` keep it. The cost is in the census:
-    prism's "would collide if slider/bar/scrollbar were in the B set" goes
-    0 → 2.
+    THE BAR IS OUT BY NAME AND THE SLIDER IS NOT, SINCE inc67. inc59 wrote
+    all three out — "they are a QUANTITY, and this kit says a quantity IS the
+    ember" — and named the cost in the census ("would collide if
+    slider/bar/scrollbar were in the B set: 0 → 2"). K5 collected that cost:
+    `prism_S3` row 16 drew nine cells of the error rung and the danger form
+    four rows above `Delete all` set in the same cell, and ruling A's own
+    condition is that an exemption leave a control's fill distinct from an
+    error rung IN THE FRAME. A SLIDER IS A CONTROL by the registry fact that
+    makes a toggle one (`GRIPS`: it has a knob; `COMPONENT_PARTS`: a switch is
+    a slider whose range is boolean), so it takes the toggle's top-carved
+    tables, and the pager's thumb follows its own shaft off the ember. The
+    READBAR keeps it: no grip, nobody sets it, and it is
+    `THE_METER_IS_THE_SEVERITY_DEVICE`'s second exempt seat.
 
     AND THE CHECKBOX'S LADDER NOW CLIMBS. Its walls ran `⣿` (8 dots) at rest,
     `⣷` (7) focused, `⣾` (7) active — a control that DIMMED when the reader
@@ -4173,10 +4232,20 @@ def test_prism_draws_no_control_on_the_embers_own_rungs():
                 assert not (set(glyph) & ramp), (
                     comp, part, st, glyph, "".join(sorted(set(glyph) & ramp)))
     # the two tables that keep the ember, and the scoping that lets them
-    assert k.PART_GLYPHS["main"][LG.DEFAULT] == "⣀", "the slider's shaft"
-    assert k.PART_GLYPHS["indicator"][LG.DEFAULT] == "⣿", "the slider's fill"
+    assert k.PART_GLYPHS["main"][LG.DEFAULT] == "⣀", "the readbar's floor"
+    assert k.PART_GLYPHS["indicator"][LG.DEFAULT] == "⣿", "the readbar's fill"
+    assert k.part_key("bar", "indicator") == "indicator"
+    # and the three seats that left it in inc67, each scoped like the toggle
     assert k.part_key("switch", "indicator") == "switch.indicator"
-    assert k.part_key("slider", "indicator") == "indicator"
+    assert k.part_key("slider", "indicator") == "slider.indicator"
+    assert (k.part_glyph("main", LG.DEFAULT, "slider"),
+            k.part_glyph("indicator", LG.DEFAULT, "slider")) ==         (k.part_glyph("main", LG.DEFAULT, "switch"),
+         k.part_glyph("indicator", LG.DEFAULT, "switch"))
+    assert k.PART_GLYPHS["scrollbar.indicator"][LG.DEFAULT] == "⠿"
+    assert not (set("⣀⣤⣶⣿") & set(
+        "".join(k.PART_GLYPHS["slider.main"].values())
+        + "".join(k.PART_GLYPHS["slider.indicator"].values())
+        + "".join(k.PART_GLYPHS["scrollbar.indicator"].values()))),         "the slider and the pager are off the ember"
 
     def dots(g):
         return sum(bin(ord(ch) - 0x2800).count("1") for ch in g)
@@ -4227,9 +4296,16 @@ def test_prism_draws_no_control_on_the_embers_own_rungs():
 #: back on `··` is worth the stepper's ground, five states of it, and nothing
 #: on the named-seat roster.
 BLUEPRINT_TABLES_WORTH = (1, 8)
+#: inc67 MOVED THE FIRST OF THESE BY ONE, and the extra row is the point of
+#: the increment rather than noise: restoring `REQUIRED = "├"` now also lights
+#: `meter.open`, because blueprint's `dimension` mechanism opens its span with
+#: the very terminator inc60 took obligation off — a seat no law in this file
+#: could reach until the quantity widgets were declared. 7 → 8.
 BLUEPRINT_SHEET_BEFORE = (
-    ("REQUIRED", "├", (7, 12)),
-    ("LEVELS", {"info": "··", "warn": "╌╌", "error": "━━"}, (12, 12)),
+    ("REQUIRED", "├", (8, 12)),
+    # inc67: 12 → 13 for the same reason as the row above — the arms are
+    # CUMULATIVE, so `meter.open` is still lit from the restored `REQUIRED`.
+    ("LEVELS", {"info": "··", "warn": "╌╌", "error": "━━"}, (13, 12)),
 )
 BLUEPRINT_TABLES_BEFORE = (
     ("main", {LG.DEFAULT: "·", LG.DISABLED: "╌"}),
@@ -4283,7 +4359,7 @@ def test_both_seat_laws_go_red_on_the_two_meanings_inc60_moved(monkeypatch):
             assert (len(meaning_marks_at_named_seats(other))
                     == MEANING_AT_A_NAMED_SEAT[other]), (attr, other)
 
-    assert counts() == (12, 12), counts()
+    assert counts() == (13, 12), counts()
     with pytest.raises(AssertionError):
         test_no_control_opens_with_a_mark_that_means_something("blueprint")
     with pytest.raises(AssertionError):
@@ -4370,7 +4446,10 @@ GROUND_EXEMPTION_IS_WORTH = (7, 2)
 #: byte.
 NAUGHT_LATTICE_BEFORE = (
     ("switch.indicator", None, (0, 6)),
-    ("REQUIRED", "◉", (1, 10)),
+    # inc67: 10 → 11. `◉` is `PART_GLYPHS["knob"][DEFAULT]`, the SHARED knob
+    # table, so restoring obligation onto it now lights the SLIDER's grip as
+    # well as the switch's — `KNOB_SEATS` gained `("slider", "knob")`.
+    ("REQUIRED", "◉", (1, 11)),
 )
 
 
@@ -4934,6 +5013,17 @@ CELL_INK = {
     "▪": 0.30,   # ▪ BLACK SMALL SQUARE
     "▬": 0.50,   # ▬ BLACK RECTANGLE — half a cell, solid
     "▫": 0.15,   # ▫ WHITE SMALL SQUARE — ▪'s outline
+    # inc67: naught's meter left the LIT dot for the CHARGED one, so the
+    # direction law needs a weight for it. Ordinal and placed by the kit's own
+    # ramp, which is the pair the corpus draws side by side: `⋅ ◦ ∙ ◉ ●` — a
+    # ring with a filled centre is more ink than a small filled dot and less
+    # than a full disc, and this file will not pretend to have measured a font.
+    # ONLY THE ONE CELL, and the rest of naught's ramp is deliberately absent:
+    # `○` and `●` are already scored by `mark_ink`'s own hollow/solid rule and
+    # declaring weights for them here made the ticked-box law read a filled
+    # disc as LIGHTER than its outline. A weight is added when a law needs it,
+    # never as a set.
+    "◉": 0.22,   # ◉ FISHEYE — a ring with its centre filled
 }
 #: coverage of the block elements, U+2580–U+259F, as eighths or quarters of a
 #: cell. This is what the glyphs ARE, so it is arithmetic and not taste.
@@ -5563,3 +5653,327 @@ def test_swisss_rejected_field_has_a_wall_paper_and_a_closer():
     assert row.lstrip().startswith("due•"), row
     assert row.endswith(closer), row
     assert row.count(paper) > 10, row
+
+
+# ---------------------------------------------------------------------------
+# inc67 (rework-6b) — K5: the quantity widgets join set B, and a fill cell is
+# not a meaning mark
+# ---------------------------------------------------------------------------
+#: RULING A, AMENDED (orchestrator, 2026-09-07, on the operator's delegation),
+#: verbatim:
+#:
+#:     "the census's B set reaches every quantity widget: slider, bar,
+#:      scrollbar, meter, sparkline, pager, mascot. Their fill and track cells
+#:      are chrome; a fill cell may not be a meaning mark of its language."
+#:
+#: THE SEATS A QUANTITY IS FILLED AT. Three come out of `PART_GLYPHS` — the
+#: `indicator` of the slider, the bar and the scroll bar, which is the PAGER
+#: (`screens.s1` calls `k.scrollbar`) — and three out of `Kit.quantity_glyphs`,
+#: the declaration inc67 adds for the widgets drawn outside the tables.
+#:
+#: THE FILL AND NOT THE TRACK, which is the ruling's own word ("a fill cell
+#: may not be a meaning mark") and is the same narrowing the opener law makes.
+#: A track is the ground a reading is laid on and three languages spend their
+#: calm rung on it deliberately — corgi's two-cell `▁▁`, naught's `◦`,
+#: prism's `⣀` — while the FILL is the datum, the part that grows, the part a
+#: reader is asked to judge an amount from. A language may lay a quantity on
+#: its own ground; it may not say "this much" with the cell it says "this is
+#: an error" with.
+QUANTITY_FILL_SEATS = ("slider.indicator", "bar.indicator",
+                       "scrollbar.indicator")
+DECLARED_FILL_SEATS = ("meter.fill", "spark.peak", "mascot.pixel")
+
+
+#: THE EXEMPTION, BY NAME AND WITH ITS CITATION — the only one this law takes,
+#: and the ruling names its shape: "exemptions by name only where the doctrine
+#: says the meter IS the severity device".
+#:
+#: TWO LANGUAGES DRAW SEVERITY AS A QUANTITY AND SAY SO IN THEIR OWN KITS.
+#: For them a meter filled with the top rung is not a collision, it is the
+#: same instrument read twice — which is the argument `DANGER_IS_THE_TOP_RUNG`
+#: already carries for the danger form, one axis over.
+#:
+#: IT IS NOT A BLANKET AND THE FRAME IS WHY. Ruling A's own condition is that
+#: an exemption "leave the opener of a control distinct from an error rung IN
+#: THE FRAME". `prism_S3` puts nine cells of the slider's fill four rows above
+#: the destructive button, so the SLIDER does not get it and inc67 moved the
+#: slider instead; `prism_S1`'s pager drew the same cell to say "you are
+#: here", so the thumb does not get it either. What is exempt is what the
+#: doctrine actually claims: the METER, and prism's readbar, which is that
+#: same ember read by `component_cells` and has no grip at all.
+THE_METER_IS_THE_SEVERITY_DEVICE = {
+    ("prism", "meter.fill"):
+        "inc59: 'the ember is read from the BOTTOM'. LEVELS is the ember's "
+        "own ramp read as three rungs, and DANGER_IS_THE_TOP_RUNG already "
+        "names its top here. The meter and the ladder are one device.",
+    ("prism", "bar.indicator"):
+        "the readbar is that same ember through `component_cells`; it has no "
+        "grip (`actuator(\"bar\")` is None), so nobody sets it and it is told "
+        "to you. PROTOTYPE-inheritors-3.md 2.10 judges prism_S5's readbar "
+        "correct BY NAME ('aqui la rampa se llena por lo pesado').",
+    ("corgi", "meter.fill"):
+        "inc58: 'THE BANK IS THE READING, THE PANEL IS THE MILLED METAL'. "
+        "LEVELS is the segment bank at three heights, so a segment meter "
+        "drawn on the bank is the bank doing its one job.",
+}
+
+
+#: WHAT STILL FILLS WITH A MEANING, COUNTED PER LANGUAGE — the same bargain
+#: `MEANING_AT_AN_OPENER` and `MEANING_AT_A_NAMED_SEAT` make, and inc48's own
+#: words about the first roster it wrote: "IT IS A MEASUREMENT, NOT A PASS."
+#: A row is `(seat, glyph)`, deduped across states, because a cell a language
+#: draws at a seat in four states is one declaration seen four times.
+#:
+#: THE FOUR FRAMES THE ROUND NAMED ARE FIXED AND THE REST ARE HERE. 22 rows
+#: before this increment, 16 after; the six declarations that moved are:
+#:
+#:   naught  meter.fill        the lit dot -> the CHARGED dot (`NA.CHARGE`).
+#:                             `dot_meter` filled with `NA.ON`, this kit's
+#:                             error rung and danger byte, so `naught_S1` row
+#:                             13 was thirteen of them and row 23's overdue
+#:                             leader was two more. The ladder COUNTS lit
+#:                             dots; the meter CHARGES them.
+#:   corgi   MASCOT_PIXEL      the block base's full cell -> the shade ramp's
+#:                             top step. Eighteen cells of the error rung
+#:                             drawn as a creature in `corgi_S1` and
+#:                             `corgi_S6`.
+#:   corgi   PANE_RULE         the same cell twenty-five rows tall down the
+#:                             middle of `corgi_S1`. This law does not see a
+#:                             pane rule; the census does, and inc67 declared
+#:                             it there.
+#:   prism   slider.main       the slider takes the toggle's top-carved
+#:   prism   slider.indicator  tables — inc59's own split ("a control is read
+#:                             from the TOP") carried out for the second
+#:                             control that has a grip.
+#:   prism   scrollbar.indicator  the shaft had left the ember and the thumb
+#:                             had not.
+#:
+#: WHAT EACH REMAINING ROW IS, so nobody has to re-derive it:
+#:
+#:   naught     3  `slider.indicator` and `bar.indicator` and the creature's
+#:                 own pixel, all the lit dot. The lattice IS this language,
+#:                 and PROTOTYPE-inheritors-3.md 2.8 calls that face the best
+#:                 thing on `naught_S6`. Named, not moved.
+#:   corgi      6  the slider's and the bar's two heights and the pager's top
+#:                 segment, all three the driven bank; plus the spark's peak,
+#:                 which is L6 and belongs to it.
+#:   swiss      3  the hairline meter's heavy rule, the spark's, and the dead
+#:                 scroll thumb's light one. L6 in this language is the whole
+#:                 quantity family: the severity ladder IS the weight ladder.
+#:                 Not exempted, because swiss's own doctrine calls that
+#:                 ladder a HIERARCHY device and not a quantity one — the day
+#:                 somebody argues the other way, this is where it goes.
+#:   prism      1  the mascot's pixel. The creature is drawn through the
+#:                 braille base and its pixel is that base's terminal cell;
+#:                 moving it means either a second base for one drawing or no
+#:                 creature. `prism_S4` puts eight of them three rows under
+#:                 the destructive answer, so it is a real row and it stands.
+#:   solari     1  the pager's thumb, which is `DANGER_FORM`'s lower half —
+#:                 one cell of a two-cell hatch whose other half is nowhere
+#:                 near it. The weakest row on this roster, and still a row.
+#:   blueprint  2  the pager's and the spark's heavy line type. The same
+#:                 shape as swiss: a line-weight ladder spent on severity and
+#:                 on quantity at once.
+FILL_IS_NOT_A_MEANING = {"naught": 3, "corgi": 6, "instrument": 0, "swiss": 3,
+                         "industrial": 0, "nord": 0, "darkside": 0, "prism": 1,
+                         "ledger": 0, "solari": 1, "blueprint": 2}
+
+
+#: HOW MANY OF THE FOUR DECLARED QUANTITY CLAUSES EACH LANGUAGE ANSWERS —
+#: `meter.fill`/`meter.track` as one, `spark.peak`, `spark.floor`,
+#: `mascot.pixel`. A roster and not a constant, because the absences are
+#: DECLARATIONS and each has a reason on its kit:
+#:
+#:   swiss, darkside, ledger  3  no creature — "swiss renounces it", "identity
+#:                               is the doodle, recessive", "a ledger keeps no
+#:                               pet". Four kits renounce the mascot; the
+#:                               fourth is solari.
+#:   blueprint                3  no meter FILL — `dimension` marks a height
+#:                               and never blocks it in, so it declares an
+#:                               opener and a closer instead. It is one of the
+#:                               two `RAMPLESS_METERS`.
+#:   solari                   0  the other `RAMPLESS_METER`, and the only kit
+#:                               with nothing at all here: an odometer's
+#:                               quantity is a row of FIGURES, its spark is
+#:                               the one branch of `Kit.spark` that never
+#:                               reaches a ramp, and it keeps no pet either.
+QUANTITY_SEATS_ANSWERED = {"naught": 4, "corgi": 4, "instrument": 4,
+                           "swiss": 3, "industrial": 4, "nord": 4,
+                           "darkside": 3, "prism": 4, "ledger": 3,
+                           "solari": 0, "blueprint": 3}
+
+
+def meaning_marks_at_a_fill(lang: str) -> list[tuple]:
+    """Every cell a quantity widget FILLS with that this language also spends
+    on severity, danger or obligation, as `(seat, glyph, hit cells)`.
+
+    DEDUPED ACROSS STATES, unlike the two seat laws, and the reason is the
+    unit: a slider's indicator wearing one cell in four control states is ONE
+    declaration seen four times, and counting it four times would make a
+    roster that moves whenever `component_states` grows."""
+    k = LG.kit(lang)
+    meanings = _seat_meanings(k, lang)
+    out = set()
+    for seat in QUANTITY_FILL_SEATS:
+        if (lang, seat) in THE_METER_IS_THE_SEVERITY_DEVICE:
+            continue
+        comp, part = seat.split(".")
+        for st in LG.component_states(comp):
+            glyph = k.part_glyph(part, st, comp)
+            hit = _cells(glyph) & meanings
+            if hit:
+                out.add((seat, glyph, "".join(sorted(hit))))
+    declared = k.quantity_glyphs()
+    for seat in DECLARED_FILL_SEATS:
+        if (lang, seat) in THE_METER_IS_THE_SEVERITY_DEVICE:
+            continue
+        glyph = declared.get(seat, "")
+        hit = _cells(glyph) & meanings
+        if hit:
+            out.add((seat, glyph, "".join(sorted(hit))))
+    return sorted(out)
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_fill_cell_is_never_a_meaning_mark(lang):
+    """K5, and the surface PROTOTYPE-inheritors-3.md 0b called the largest
+    uncovered one in the corpus.
+
+    Every law in this file reads `PART_GLYPHS`, `FIELD_LEAD` or
+    `IDENT_GLYPHS`. The meter, the sparkline and the mascot are drawn outside
+    all three, and the slider, the bar and the scroll bar were declared inside
+    `PART_GLYPHS` but excluded from the census's set B by the operator's own
+    request — so `MEANING_AT_AN_OPENER` and `MEANING_AT_A_NAMED_SEAT` could
+    both read ZERO for eleven languages while three of the round's eight new
+    `rework` verdicts lived in exactly the widget nobody was reading:
+
+        naught_S1  row 13   thirteen lit dots — `LEVELS["error"]` and the
+                   `DANGER_FORM` byte for byte — ten rows above a task whose
+                   overdue leader is the same cell.
+        corgi_S1            forty-seven full blocks, none of them a danger:
+                   twenty-five are the partition, eighteen are a creature, two
+                   are the pager's current page.
+        prism_S1   row 31   the pager's window drawn in the ember's top cell.
+        prism_S3   row 16   nine of the same cell, four rows above
+                   `Delete all` set in it.
+
+    A ROSTER AND NOT A ZERO, on inc48's precedent. The four frames the round
+    named are fixed at their declarations; sixteen rows remain, every one of
+    them written out at `FILL_IS_NOT_A_MEANING` with the language that owns it
+    and the objection it belongs to (L6 carries five of the sixteen). The
+    number can only move when somebody edits it."""
+    assert len(meaning_marks_at_a_fill(lang)) == FILL_IS_NOT_A_MEANING[lang], \
+        (lang, meaning_marks_at_a_fill(lang))
+
+
+def test_the_fill_law_goes_red_on_the_declarations_inc67_moved(monkeypatch):
+    """TEETH, on the REAL declarations this increment changed — three arms,
+    each restoring one of them and naming the seat it comes back at, plus a
+    vacuity check on the exemption.
+
+    A law asserted only against the code that satisfies it is a law nobody has
+    watched fail."""
+    for lang in LANGS:
+        assert (len(meaning_marks_at_a_fill(lang))
+                == FILL_IS_NOT_A_MEANING[lang]), lang
+
+    # ARM ONE — naught's meter fills with the lit dot again, which is what
+    # `dot_meter` did for the whole programme. The row must come back at
+    # `meter.fill` and nowhere else, and it must name that cell.
+    monkeypatch.setitem(LG.METER_CELLS, "dotgrid",
+                        (LG.NA.ON, LG.NA.OFF, None, None))
+    hits = [h for h in meaning_marks_at_a_fill("naught")
+            if h[0] == "meter.fill"]
+    assert hits == [("meter.fill", LG.NA.ON, LG.NA.ON)], hits
+    assert (len(meaning_marks_at_a_fill("naught"))
+            == FILL_IS_NOT_A_MEANING["naught"] + 1)
+    monkeypatch.undo()
+
+    # ARM TWO — prism's pager thumb goes back to the ember's top: `prism_S1`
+    # row 31 verbatim.
+    tbl = dict(LG.Prism.PART_GLYPHS["scrollbar.indicator"])
+    tbl[LG.DEFAULT] = "⣿"
+    monkeypatch.setitem(LG.Prism.PART_GLYPHS, "scrollbar.indicator", tbl)
+    hits = [h for h in meaning_marks_at_a_fill("prism")
+            if h[0] == "scrollbar.indicator"]
+    assert hits == [("scrollbar.indicator", "⣿", "⣿")], hits
+    monkeypatch.undo()
+
+    # ARM THREE — corgi's creature goes back to the block base's full cell.
+    # It is the MASCOT seat and not the pane rule: a pane rule is chrome the
+    # census reads and this law does not, which is why inc67 declared it
+    # there and not here.
+    monkeypatch.setattr(LG.Corgi, "MASCOT_PIXEL", "")
+    hits = [h for h in meaning_marks_at_a_fill("corgi")
+            if h[0] == "mascot.pixel"]
+    assert hits == [("mascot.pixel", "█", "█")], hits
+    monkeypatch.undo()
+
+    # AND THE EXEMPTION IS NOT VACUOUS: empty it and the four rows it covers
+    # come back, in the two languages it names and in no others.
+    before = {l: len(meaning_marks_at_a_fill(l)) for l in LANGS}
+    monkeypatch.setitem(globals(), "THE_METER_IS_THE_SEVERITY_DEVICE", {})
+    after = {l: len(meaning_marks_at_a_fill(l)) for l in LANGS}
+    grew = {l: after[l] - before[l] for l in LANGS if after[l] != before[l]}
+    assert grew == {"prism": 3, "corgi": 1}, grew
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        assert (len(meaning_marks_at_a_fill(lang))
+                == FILL_IS_NOT_A_MEANING[lang]), lang
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_quantity_widget_draws_what_it_declares(lang):
+    """`Kit.quantity_glyphs()` IS BOUND TO THE DRAWING BY THIS LAW.
+
+    A declaration nothing reads is dead metadata, and this contract has
+    refused that at `GRIPS`, `CHECKABLE`, `VIEWED` and `IDENT_GLYPHS`. Two of
+    the three declared seats are read by the drawing directly —
+    `_meter_dotgrid` passes `meter.fill` and `meter.track` into
+    `NA.dot_meter`, and `Kit.mascot` substitutes `MASCOT_PIXEL` — but the
+    other eleven mechanisms spell their cells in eleven different structures
+    (a braille bitmap, groups of five, a printed figure), so one `(fill,
+    track)` pair read at the call site would have to be re-expanded inside
+    each of them anyway. THE TABLE IS THE DECLARATION AND THIS IS WHAT MAKES
+    IT TRUE: every widget is rendered at its floor and at its ceiling and the
+    declared cells have to be the cells that came out.
+
+    THE THREE CLAUSES:
+      * the meter's declared FILL is drawn at 100 % and NOT at 0 %, and its
+        declared TRACK is drawn at 0 % — so a mechanism that swapped its two
+        cells goes red here as well as at the direction law;
+      * the spark's declared PEAK is drawn for a series at its ceiling and its
+        FLOOR for a series of zeros;
+      * the mascot's declared PIXEL is drawn by `mascot()`, and a language
+        that renounces the creature declares no pixel at all.
+
+    `solari` DECLARES NOTHING, and the last assertion is why that is a fact
+    and not a hole: an odometer's quantity is a row of FIGURES, it keeps no
+    pet, and its spark is the one branch that does not route through a ramp.
+    The one kit of the eleven whose whole quantity vocabulary is outside this
+    law, asserted so that a ramp arriving there cannot arrive in silence."""
+    k = LG.kit(lang)
+    q = k.quantity_glyphs()
+    asked = 0
+    if "meter.fill" in q:
+        floor = plain(k.meter(0, 100, [5, 4, 3, 4], 37)).split("\n")[0]
+        ceil = plain(k.meter(100, 100, [5, 4, 3, 4], 37)).split("\n")[0]
+        assert q["meter.fill"] in ceil, (lang, q["meter.fill"], ceil)
+        assert q["meter.fill"] not in floor, (lang, q["meter.fill"], floor)
+        assert q["meter.track"] in floor, (lang, q["meter.track"], floor)
+        asked += 1
+    for seat, series in (("spark.peak", [0, 5, 5]),
+                         ("spark.floor", [0, 0, 0])):
+        if seat not in q:
+            continue
+        drawn = plain(k.spark(series, 9, hi=5))
+        assert q[seat] in drawn, (lang, seat, q[seat], drawn)
+        asked += 1
+    rows = [plain(r) for r in k.mascot()]
+    if rows:
+        assert q["mascot.pixel"] in "".join(rows), (lang, q, rows)
+        asked += 1
+    else:
+        assert "mascot.pixel" not in q, (lang, q)
+    assert asked == QUANTITY_SEATS_ANSWERED[lang], (lang, asked, q)
