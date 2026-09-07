@@ -19,15 +19,12 @@ NAUGHT   5 colliding cells   (LEVELS ◦◦/∙◦/∙∙  DANGER ∙∙  REQUIR
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
-CORGI   5 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRED ▀  CUR ▐)
+CORGI   2 colliding cells   (LEVELS ▁▁/▄▄/██  DANGER ██  REQUIRED ▀  CUR ▐)
 ------------------------------------------------------------------------------
-  ·   [7 families]  INVALID textfield.main mid  ·  button.main close (disabled)  ·  button.main mid (disabled)  ·  button.main open (disabled)  ·  checkbox.main close (checked+disabled,disabled)  ·  checkbox.main open (checked+disabled,disabled)  ·  radio.knob open (checked+disabled,disabled)  ·  radio.main open (checked+disabled,disabled)  ·  stepper.main close (disabled)  ·  stepper.main mid (disabled)  ·  stepper.main open (disabled)  ·  switch.main close (checked+disabled,disabled)  ·  switch.main open (checked+disabled,disabled)  ·  textfield.main close (disabled)  ·  textfield.main mid (active,default,disabled,focused)  ·  textfield.main open (disabled)
-  ▁   [7 families]  LEVELS[info]  ·  button.main close (default)  ·  button.main mid (default)  ·  button.main open (default)  ·  checkbox.main close (checked,default)  ·  checkbox.main open (checked,default)  ·  radio.knob open (checked,default)  ·  radio.main open (checked,default)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main mid (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.indicator close (checked+disabled,disabled)  ·  switch.indicator open (checked+disabled,disabled)  ·  switch.main close (active,checked,checked+active,checked+focused,default,focused)  ·  switch.main open (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (default)  ·  textfield.main mid (default,edited)  ·  textfield.main open (default)
-  ▄   [5 families]  LEVELS[warn]  ·  button.main close (active)  ·  button.main mid (active)  ·  button.main open (active)  ·  stepper.step close (default)  ·  stepper.step mid (default)  ·  stepper.step open (default)  ·  switch.indicator close (active,checked,checked+active,checked+focused,default,focused)  ·  switch.indicator open (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (active)  ·  textfield.main mid (active)  ·  textfield.main open (active)
-  █   [5 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  checkbox.knob close (checked,default)  ·  checkbox.knob open (checked,default)  ·  stepper.step close (active)  ·  stepper.step mid (active)  ·  stepper.step open (active)  ·  switch.knob close (checked,default)  ·  switch.knob open (checked,default)
-  ▀   [3 families]  REQUIRED  ·  stepper.step close (focused)  ·  stepper.step mid (focused)  ·  stepper.step open (focused)  ·  switch.knob close (checked+focused,focused)  ·  switch.knob open (checked+focused,focused)
-  ... 5 further cells are shared between two CONTROLS only (alphabet, not counted)
-  ... 1 further cells would collide if slider/bar/scrollbar were in the B set
+  ·   [7 families]  INVALID textfield.main mid  ·  button.main close (disabled)  ·  button.main mid (disabled)  ·  button.main open (disabled)  ·  checkbox.main close (checked+disabled,disabled)  ·  checkbox.main open (checked+disabled,disabled)  ·  radio.knob open (checked+disabled,disabled)  ·  radio.main open (checked+disabled,disabled)  ·  stepper.main close (disabled)  ·  stepper.main mid (disabled)  ·  stepper.main open (disabled)  ·  switch.indicator close (checked+disabled,disabled)  ·  switch.indicator open (checked+disabled,disabled)  ·  switch.main close (checked+disabled,disabled)  ·  switch.main open (checked+disabled,disabled)  ·  textfield.main close (disabled)  ·  textfield.main mid (active,default,disabled,focused)  ·  textfield.main open (disabled)
+  █   [2 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open
+  ... 11 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 3 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
 INSTRUMENT   4 colliding cells   (LEVELS ⠂⠂/⠆⠆/⠇⠇  DANGER ⠛⠛  REQUIRED ⠁  CUR ⣿)
@@ -111,7 +108,7 @@ LANGUAGE x COLLISIONS
 ==============================================================================
 language       colliding cells
 naught                       5
-corgi                        5
+corgi                        2
 instrument                   4
 swiss                        2
 industrial                   2
@@ -122,7 +119,7 @@ ledger                       2
 solari                       3
 blueprint                    4
 ------------------------------
-TOTAL                       33
+TOTAL                       30
 
 zero collisions: NONE -- all eleven overload at least one cell
 

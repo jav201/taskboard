@@ -1573,8 +1573,19 @@ FLIPPED_OWNER = {"nord": LG.Kit, "instrument": LG.Instrument,
 #: closes are different vocabularies and the law can fire on it. Nobody
 #: decided that; the derivation below noticed it and this line is where it
 #: had to be written down.
-HANDED_FIELDS = ("instrument", "swiss", "industrial", "nord", "ledger",
-                 "blueprint")
+#:
+#: CORGI JOINED IN inc58, for the same kind of reason and by the same
+#: derivation. Its field walls were a bank at a height (`▁▁ … ▁▁`,
+#: `▔▔ … ▔▔`), and a bank has no hand; the walls are now the engraved key's
+#: two SHOULDERS (`▛▛ … ▜▜`), which are mirror images by construction. The
+#: language always drew a key that way — `button.main`'s own comment says
+#: "both shoulders are two cells wide and the label sits in the milled
+#: channel between them" — and only now spells the two shoulders with two
+#: marks. corgi's INVALID walls stay unhanded (`░░ … ░░`, inc52's ghost), so
+#: the law passes on it rather than being widened to a language it cannot
+#: reach.
+HANDED_FIELDS = ("corgi", "instrument", "swiss", "industrial", "nord",
+                 "ledger", "blueprint")
 
 
 def field_walls(k, state):
@@ -3335,10 +3346,18 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                 cell left … that argument is available exactly twice and
 #:                 it has been spent twice". Open, and it was open before
 #:                 this increment widened it.
-#:   corgi     16  8 + 8. The segment bank: `▄▄` ON, `▁▁` dead —
-#:                 `LEVELS["warn"]` and `LEVELS["info"]` — and inc49 adds the
-#:                 knob, `██` (`LEVELS["error"]`) and `▀▀`, plus `▁●` at the
-#:                 radio. corgi has never had an increment. Open.
+#:   corgi      0  WAS 16 (8 + 8) and is ZERO since inc58 (`rework-5c`,
+#:                 ruling A). The segment bank was the switch's whole
+#:                 track — `▄▄` ON, `▁▁` dead, `LEVELS["warn"]` and
+#:                 `LEVELS["info"]` — and the grip of every switch and
+#:                 slider was `██` / `▀▀`, the error rung and the obligation
+#:                 mark. inc58's ruling: THE BANK IS THE READING, THE PANEL
+#:                 IS THE METAL. The four DRIVEN heights (`▁ ▄ ▀ █`) carry
+#:                 the meanings and nothing else; the switch takes scoped
+#:                 `switch.main` / `switch.indicator` on the shade ramp and
+#:                 the KNOB takes the QUADRANT family (`▙▟ ▛▜ ▘▝ ▖▗`),
+#:                 which is inc46's "a knob drawn like the fill is not a
+#:                 knob" made structural rather than repeated.
 #:   prism     16  8 + 8. `⣿` ON, `⣤` dead — the top two rungs — and inc49
 #:                 adds `⣿` and `⣀` at the checkbox's and the radio's knob.
 #:                 prism has never had an increment. Open.
@@ -3347,19 +3366,21 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                 `├`, `REQUIRED`, at the checkbox's and the radio's knob.
 #:                 blueprint has never had an increment. Open.
 #:
-#: THE FOUR ARE NOT NEW FAILURES AND ARE NOT FIXED HERE. Each was already on
-#: this roster before the clause widened, and each is a language
-#: `PROTOTYPE-inheritors-2.md` §6 decision **A** puts to the operator (corgi,
-#: prism and blueprint have never had an increment; naught has no unspent
-#: cell). The one language the blind spot was HIDING — darkside, which read
-#: 0 while wearing the error rung on five knobs — is fixed at its own
-#: declaration in inc49 and is 0 for a reason now.
+#: THE FOUR WERE NOT NEW FAILURES WHEN inc49 WIDENED THE CLAUSE, and they are
+#: the four languages `PROTOTYPE-inheritors-2.md` §6 decision **A** puts to
+#: the operator (corgi, prism and blueprint have never had an increment;
+#: naught has no unspent cell). **Ruling A (orchestrator, 2026-09-06, on the
+#: operator's delegation) gives each of them an increment**, and `rework-5c`
+#: is those increments: corgi in inc58, prism in inc59, blueprint in inc60,
+#: naught and ledger in inc61. The one language the blind spot was HIDING —
+#: darkside, which read 0 while wearing the error rung on five knobs — is
+#: fixed at its own declaration in inc49 and is 0 for a reason now.
 #:
 #: SOLARI WAS 6 AND IS 0 (inc47): `▁` was `REQUIRED` and the switch's
 #: indicator and eighteen more chrome seats; obligation moved to `▮` and the
 #: seam went back to being alphabet. instrument and swiss went to zero in
 #: inc46, darkside in inc49. Seven of the eleven are clean.
-MEANING_AT_A_NAMED_SEAT = {"naught": 12, "corgi": 16, "instrument": 0,
+MEANING_AT_A_NAMED_SEAT = {"naught": 12, "corgi": 0, "instrument": 0,
                            "swiss": 0, "industrial": 0, "nord": 0,
                            "darkside": 0, "prism": 16, "ledger": 0,
                            "solari": 0, "blueprint": 12}
@@ -3544,14 +3565,20 @@ OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                  "an empty seat" may be one meaning rather than two. The
 #:                  argument is written here and NOT granted: an exemption is
 #:                  the operator's, and silence is not one.
-#:   corgi      38  31 + 9 - 2. The segment bank is `LEVELS` and the chrome
-#:                  ladder at once (`▁▁ ▄▄ ██` against `▁▁ ▔▔ ▂▂ ··`), and
-#:                  inc51 added the whole stepper: `▁▁▁▁` at five states of
-#:                  the ground plus four of the step. inc52 takes TWO back —
-#:                  the invalid field (`▄▀·▀▄`, opening on the warn rung) and
-#:                  the invalid step (`▀▄▄▀`, opening on `REQUIRED`) now open
-#:                  on the ghost. Never had an increment; still the widest
-#:                  roster entry in the corpus.
+#:   corgi       0  WAS 38 — the widest entry this roster ever carried — and
+#:                  is ZERO since inc58 (`rework-5c`, ruling A). The segment
+#:                  bank was `LEVELS` and the chrome ladder at once
+#:                  (`▁▁ ▄▄ ██` against `▁▁ ▔▔ ▂▂ ··`), and inc51's stepper
+#:                  added ten seats of it. **An exemption for the whole ramp
+#:                  was measured and refused**: the exemption's own condition
+#:                  is that a control's opener stay distinct from an error
+#:                  rung IN THE FRAME, and `corgi_S2` draws `██` as the
+#:                  error message's leader (`██ expected YYYY-MM-DD`) three
+#:                  rows under `██ ON ui`, the CHECKED checkbox, while
+#:                  `corgi_S3` draws `██` as the slider's KNOB twelve rows
+#:                  above `▁▁█Delete all█▁▁`. So the controls moved instead:
+#:                  the four driven heights are the readings, the shade ramp
+#:                  and the quadrants are the panel.
 #:   prism      25  19 + 6. `⣿` is `LEVELS["error"]`, the `DANGER_FORM` and
 #:                  the opening cell of the button, the checkbox and the
 #:                  field; inc51 adds `⣀⣀` (the ground, five states) and
@@ -3563,12 +3590,13 @@ OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                  and `╌╌` at the dead one (`LEVELS["warn"]`). Never had an
 #:                  increment.
 #:
-#: SEVEN ARE ZERO: instrument (inc46), swiss (inc46 and inc51), industrial
-#: (inc48), darkside (inc48), nord (inc51), ledger and solari (inc47).
-#: **swiss and nord stayed at zero through the stepper's arrival because
-#: inc51 paid their two `stepper.main` declarations rather than exempting
-#: them** — see `OPENING_CONTROLS` above for the bill and who paid it.
-MEANING_AT_AN_OPENER = {"naught": 3, "corgi": 38, "instrument": 0, "swiss": 0,
+#: EIGHT ARE ZERO: instrument (inc46), swiss (inc46 and inc51), industrial
+#: (inc48), darkside (inc48), nord (inc51), ledger and solari (inc47), and
+#: corgi (inc58). **swiss and nord stayed at zero through the stepper's
+#: arrival because inc51 paid their two `stepper.main` declarations rather
+#: than exempting them** — see `OPENING_CONTROLS` above for the bill and who
+#: paid it.
+MEANING_AT_AN_OPENER = {"naught": 3, "corgi": 0, "instrument": 0, "swiss": 0,
                         "industrial": 0, "nord": 0, "darkside": 0, "prism": 25,
                         "ledger": 0, "solari": 0, "blueprint": 12}
 
@@ -3670,6 +3698,161 @@ def test_the_opener_law_goes_red_on_the_two_declarations_inc48_and_inc46_moved(
     for lang in LANGS:
         assert (len(meaning_marks_at_an_opener(lang))
                 == MEANING_AT_AN_OPENER[lang]), lang
+
+
+# ===========================================================================
+# inc58 (rework-5c) — corgi crosses its own frontier
+# ===========================================================================
+#: THE ELEVEN DECLARATIONS inc58 MOVED, as `(glyph-table key, the table HEAD
+#: carried before this increment, the opener seats it is worth, the named
+#: seats it is worth)`. `None` for a table means the key DID NOT EXIST: the
+#: switch had no scoped tables and fell through to the slider's `main` and
+#: `indicator`, which is the whole reason its track was a severity rung.
+#:
+#: ONE ARM EACH, RESTORED ONE AT A TIME, because eleven tables moving in one
+#: increment is eleven independent declarations and a teeth test that patched
+#: them together would prove one thing about eleven. The two counts are the
+#: measurement, not a boolean: a reader who changes one table can see from
+#: this constant what it was worth.
+#:
+#: THE RULING THE ARMS ARE UNDER (orchestrator, 2026-09-06, on the operator's
+#: delegation, decision **A**): THE BANK IS THE READING AND THE PANEL IS THE
+#: METAL. corgi's segment bank is glass driven to a HEIGHT and all four of
+#: its driven steps carry a meaning — `▁` info, `▄` warn, `▀` obligation,
+#: `█` error and the danger form. The shade ramp and the quadrants are not
+#: bars; they are milled aluminium, which is the register `Corgi.field_row`'s
+#: docstring already named ("the two REGISTERS -- engraved aluminium against
+#: driven glass"). A control is never drawn as a driven bar.
+#:
+#: AN EXEMPTION FOR THE WHOLE RAMP WAS MEASURED AND REFUSED, and the
+#: measurement is in the frames rather than in an argument: `corgi_S2` drew
+#: `██` as the error message's own leader (`██ expected YYYY-MM-DD`) three
+#: rows under `██ ON ui`, a CHECKED checkbox, and `corgi_S3` drew `██` as the
+#: slider's KNOB twelve rows above `▁▁█Delete all█▁▁`.
+CORGI_BANK_BEFORE = (
+    ("switch.main", None, 6, 0),
+    ("switch.indicator", None, 8, 8),
+    ("knob", {LG.DEFAULT: "██", LG.FOCUSED: "▀▀", LG.EDITED: "▓▓",
+              LG.ACTIVE: "▒▒", LG.INVALID: "░░", LG.DISABLED: "╳╳"}, 4, 4),
+    ("checkbox.main", {LG.DEFAULT: "▁▁", LG.FOCUSED: "▔▔", LG.ACTIVE: "▂▂",
+                       LG.DISABLED: "··"}, 2, 0),
+    ("checkbox.knob", {LG.DEFAULT: "██", LG.FOCUSED: "▛▜", LG.ACTIVE: "▓▓",
+                       LG.DISABLED: "▒▒"}, 2, 2),
+    ("radio.main", {LG.DEFAULT: "▁◦", LG.FOCUSED: "▔◦", LG.ACTIVE: "▂◦",
+                    LG.DISABLED: "·◦"}, 2, 0),
+    ("radio.knob", {LG.DEFAULT: "▁●", LG.FOCUSED: "▔●", LG.ACTIVE: "▂●",
+                    LG.DISABLED: "·◌"}, 2, 2),
+    ("button.main", {LG.DEFAULT: "▁▁▁▁", LG.FOCUSED: "▔▔▔▔",
+                     LG.ACTIVE: "▄▄▄▄", LG.DISABLED: "····"}, 2, 0),
+    ("textfield.main", {LG.DEFAULT: "▁▁·▁▁", LG.FOCUSED: "▔▔·▔▔",
+                        LG.EDITED: "▔▔▁▔▔", LG.ACTIVE: "▄▄·▄▄",
+                        LG.INVALID: "░░·░░", LG.DISABLED: "·····"}, 2, 0),
+    ("stepper.main", {LG.DEFAULT: "▁▁▁▁", LG.DISABLED: "····"}, 5, 0),
+    ("stepper.step", {LG.DEFAULT: "▄▄▄▄", LG.FOCUSED: "▀▀▀▀",
+                      LG.EDITED: "▓▓▓▓", LG.ACTIVE: "████",
+                      LG.INVALID: "░░░░", LG.DISABLED: "╳╳╳╳"}, 3, 0),
+)
+
+
+def test_both_seat_laws_go_red_on_each_of_the_eleven_tables_inc58_moved(
+        monkeypatch):
+    """TEETH — and corgi needs them more than any language in the corpus,
+    because it is the one whose roster entries were 38 and 16 and are now the
+    two zeroes a reader is most likely to trust without looking.
+
+    EACH ARM RESTORES ONE TABLE and asserts BOTH counts, so an arm cannot
+    pass by moving the other law. The first two arms DELETE a key instead of
+    restoring one, which is the defect in its original shape: corgi declared
+    no `switch.main` and no `switch.indicator` at all, so the hardware toggle
+    was drawn from the SLIDER's tables — `▁▁` and `▄▄`, `LEVELS["info"]` and
+    `LEVELS["warn"]` — at six openers and eight named seats.
+
+    THE OTHER TEN LANGUAGES ARE HELD STILL in every arm. A law that let corgi
+    go red by moving somebody else would be a law about the reader, not about
+    the kit."""
+    def counts():
+        return (len(meaning_marks_at_an_opener("corgi")),
+                len(meaning_marks_at_named_seats("corgi")))
+
+    assert counts() == (0, 0), meaning_marks_at_an_opener("corgi")
+
+    for key, table, want_open, want_named in CORGI_BANK_BEFORE:
+        glyphs = dict(LG.Corgi.PART_GLYPHS)
+        if table is None:
+            assert key in glyphs, (key, "inc58 declared it; the arm deletes it")
+            del glyphs[key]
+        else:
+            assert glyphs[key] != table, (key, "already the pre-inc58 table")
+            glyphs[key] = table
+        monkeypatch.setattr(LG.Corgi, "PART_GLYPHS", glyphs)
+
+        opened, named = counts()
+        assert opened == want_open, (key, opened, want_open,
+                                     meaning_marks_at_an_opener("corgi"))
+        assert named == want_named, (key, named, want_named,
+                                     meaning_marks_at_named_seats("corgi"))
+        if want_open:
+            with pytest.raises(AssertionError):
+                test_no_control_opens_with_a_mark_that_means_something("corgi")
+        if want_named:
+            with pytest.raises(AssertionError):
+                test_a_meaning_never_stands_at_a_disabled_or_indicator_seat(
+                    "corgi")
+        for other in LANGS:
+            if other == "corgi":
+                continue
+            assert (len(meaning_marks_at_an_opener(other))
+                    == MEANING_AT_AN_OPENER[other]), (key, other)
+            assert (len(meaning_marks_at_named_seats(other))
+                    == MEANING_AT_A_NAMED_SEAT[other]), (key, other)
+        monkeypatch.undo()
+
+    assert counts() == (0, 0)
+
+
+def test_corgi_draws_no_control_as_a_driven_bar():
+    """THE RULING ITSELF, and not just its two rosters.
+
+    The seat laws ask about ONE cell — the opener, the knob, the indicator,
+    the dead mark. This asks the ruling's whole sentence of every cell of
+    every ruled control: **a control is never drawn as a driven bar.** The
+    bar set is corgi's own segment bank, `▁▂▃▄▅▆▇█▀▔`, and it is written as
+    the full Unicode run rather than as the four cells that happen to mean
+    something today — the point of the ruling is that the BANK is the
+    reading, so a control that reached for an undeclared step of it (`▃`,
+    `▅`) would be reaching into the readings' register whether or not that
+    step is spoken for yet.
+
+    THE SLIDER, THE BAR AND THE SCROLL BAR ARE OUT, by name and with the
+    cost declared. They are QUANTITY, and a quantity here is a reading: "the
+    reading rides on segment HEIGHT, not on lit-vs-ghost" is this kit's own
+    twice-cured defect, so `main`, `indicator` and `scrollbar.*` keep the
+    bank. What that costs is measured in the census — corgi's
+    "would collide if slider/bar/scrollbar were in the B set" line goes 1 to
+    3 — and is `inc58.md` §4, not a silence.
+
+    THE KNOB IS THE ONE PART DRAWN WITH QUADRANTS, asserted here rather than
+    left to the eye, because it is inc46's "a knob drawn like the fill is not
+    a knob" turned from a lesson into a structure."""
+    k = LG.kit("corgi")
+    bank = set("▁▂▃▄▅▆▇█▀▔")
+    quadrants = set("▖▗▘▝▙▟▛▜")
+    seen_quadrant_parts = set()
+    for comp in RULED_CONTROLS:
+        for part in LG.COMPONENT_PARTS[comp]:
+            for st in LG.component_states(comp):
+                glyph = k.part_glyph(part, st, comp)
+                assert not (set(glyph) & bank), (comp, part, st, glyph,
+                                                 "".join(sorted(set(glyph)
+                                                                & bank)))
+                if set(glyph) & quadrants:
+                    seen_quadrant_parts.add(part)
+    assert seen_quadrant_parts == {"knob", "main", "step"}, seen_quadrant_parts
+    # ... and the tracks that keep the bank are the ones the ruling names.
+    assert k.PART_GLYPHS["main"][LG.DEFAULT] == "▁▁", k.PART_GLYPHS["main"]
+    assert k.PART_GLYPHS["indicator"][LG.DEFAULT] == "▄▄", "the slider's fill"
+    assert k.part_key("switch", "main") == "switch.main"
+    assert k.part_key("slider", "main") == "main"
 
 
 # ===========================================================================
