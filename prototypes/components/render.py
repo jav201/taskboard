@@ -49,7 +49,21 @@ SIZE = (S.W, S.H)
 OUT = HERE
 
 
-async def one(lang: str, screen: str):
+async def frame(lang: str, screen: str, size=None):
+    """The composited frame BEFORE anything is written: `(sh, rect, grid,
+    ground, over)`.
+
+    Split out of `one()` by inc76 so the raster is taken through the SAME
+    render path as the `.txt` and the `.svg`, not a second one.  E2 asked for a
+    picture at a real cell size; a picture taken through a different pipeline
+    would have answered a different question.  `one()` is now this function
+    plus the two `write_text` calls, which is the entire difference between the
+    artefact sweep and an instrument that only wants to look.
+
+    `size` is the viewport and defaults to the sheets' own `(S.W, S.H)`.  It is
+    an argument because inc78 asks the same six screens for a second width, and
+    a second renderer would again have been a second question.
+    """
     from textual.app import App, ComposeResult
     from textual.widgets import Static
 
@@ -75,20 +89,24 @@ async def one(lang: str, screen: str):
             yield Static(body, id="f", markup=True)
 
     app = Frame()
-    async with app.run_test(size=SIZE) as pilot:
+    async with app.run_test(size=size or SIZE) as pilot:
         await pilot.pause()
         rows = await CAP.settle(pilot, app, f"{lang} {screen}")
-        name = f"{lang}_{screen}"
-        title = f"taskboard · {lang} · {screen} {S.TITLES[screen]}"
         # the RECTANGLE LAW: every row padded to the widest, never clipped
         w = max(len(r) for r in rows)
         rect = [r.ljust(w) for r in rows]
-        (OUT / f"{name}.txt").write_text("\n".join(rect) + "\n",
-                                         encoding="utf-8")
         grid, ground = CAP.cell_grid(app, ground)
-        (OUT / f"{name}.svg").write_text(
-            CAP.svg_from_grid(grid, ground, title), encoding="utf-8")
-    return sh, (w, len(rect), CAP.ink(rect)), over
+    return sh, rect, grid, ground, over
+
+
+async def one(lang: str, screen: str):
+    sh, rect, grid, ground, over = await frame(lang, screen)
+    name = f"{lang}_{screen}"
+    title = f"taskboard · {lang} · {screen} {S.TITLES[screen]}"
+    (OUT / f"{name}.txt").write_text("\n".join(rect) + "\n", encoding="utf-8")
+    (OUT / f"{name}.svg").write_text(
+        CAP.svg_from_grid(grid, ground, title), encoding="utf-8")
+    return sh, (len(rect[0]), len(rect), CAP.ink(rect)), over
 
 
 VERDICT_ORDER = {"refused": 0, "evoked": 1}

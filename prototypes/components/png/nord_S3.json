@@ -1,0 +1,991 @@
+{
+ "lang": "nord",
+ "screen": "S3",
+ "ground": "#2e3440",
+ "cols": 100,
+ "rows": 32,
+ "image": {
+  "w": 900,
+  "h": 608
+ },
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    " board",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    6,
+    " │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    9,
+    " form",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    14,
+    " │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    17,
+    "▸cfg",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    21,
+    " │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    24,
+    " log",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "                                                                        ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "SETTINGS",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    8,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    10,
+    "5 switches  ·  2 selects  ·  1 slider",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    47,
+    "                                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "notify on overdue",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    19,
+    "         ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "██",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    "▌",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "daily digest",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    14,
+    "              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "██",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    "▌",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "sound",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    7,
+    "                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "▌",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "──",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "sync to remote",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    16,
+    "            ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "╳╌╌",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    34,
+    "(no remote configured)",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    56,
+    "                                            ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "compact rows",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    14,
+    "              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "██",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    "▌",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "                                                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "start of week",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    15,
+    "             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "[",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "mon    ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    36,
+    "▾]",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    38,
+    "                                                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "theme",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    7,
+    "                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "[",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "dark   ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    36,
+    "▾]",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    38,
+    "                                                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    32,
+    "auto   ",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    39,
+    "                                                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    32,
+    "light  ",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    39,
+    "                                                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    "▸",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    32,
+    "dark   ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    39,
+    "                                                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "row density",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    13,
+    "               ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "█████████",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    37,
+    "▌",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    38,
+    "────",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    42,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    "70",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    45,
+    "                                                       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "───────────────────────────────────────────────────────────────────────────────────────────────",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    97,
+    "   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "danger zone",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    13,
+    "                                                          ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    71,
+    "delete every completed task",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    2,
+    "[ #Delete all# ]",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    18,
+    "   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    21,
+    "7 tasks, not recoverable",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    45,
+    "                                                       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ]
+ ]
+}
