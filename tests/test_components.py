@@ -3830,3 +3830,83 @@ def test_the_stepper_law_goes_red_on_the_six_turns_inc51_moved(monkeypatch):
     with pytest.raises(AssertionError):
         test_a_steppers_halves_are_directions_and_invalid_is_not_a_turn(
             "darkside")
+
+
+# ---------------------------------------------------------------------------
+# inc57 (rework-5b) - the marks a language draws OUTSIDE `PART_GLYPHS`
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_field_row_draws_exactly_the_leader_it_declares(lang):
+    """THE DECLARATION IS LOAD-BEARING, over all eleven.
+
+    `spec.md` §13.8, found by looking and not fixed for two batches:
+    *"`field_row` is drawn outside `PART_GLYPHS` in all eleven, so the census
+    can reach none of the eleven field leaders. Only darkside's was named by a
+    ruling; ten others are unmeasured by any instrument here."* `FIELD_LEAD`
+    is the fix, and a constant nothing checks is a comment — so this asserts
+    that the cells the row DRAWS, once the caller's own words and air are
+    taken out, are exactly the cells the kit DECLARES.
+
+    THE CAPTION AND THE VALUE ARE SUBTRACTED IN EVERY CASE THIS FILE HAS.
+    Four kits upper-case the caption, two lower-case it, so the words go out
+    in all three registers rather than in the one they went in as — the
+    alternative is a law that passes on nine languages and reports a `Z`.
+
+    EMPTY IS ASSERTED TOO, and it is half the point. Four languages lead with
+    AIR by commitment — the base's *"a column is found by ALIGNMENT rather
+    than followed by a line"*, corgi's *"no leader, no right column"*, swiss's
+    second column, industrial's bare register — and this law says they draw
+    nothing rather than leaving it to be noticed."""
+    k = LG.kit(lang)
+    cap, val = "zzz", "qqq"
+    words = set(cap + val + cap.upper() + val.upper()
+                + cap.lower() + val.lower() + " ")
+    drawn = set(plain(k.field_row(cap, val, 48))) - words
+    assert drawn == set(k.FIELD_LEAD), (lang, drawn, k.FIELD_LEAD)
+
+
+def test_the_census_reaches_every_mark_declared_outside_the_glyph_tables():
+    """WHAT `DECLARED_MARKS` BUYS, asserted rather than described — and the
+    darkside row is the evidence that the reader works.
+
+    The census reads `PART_GLYPHS` and five meaning families. Two things a
+    language DRAWS live outside both: the definition row's leader (all eleven)
+    and darkside's identity marks (the moon doodle and the active tab). Until
+    inc57 a meaning could stand at either seat and no instrument in this repo
+    would say so — `spec.md` §12.7 found darkside's `(O)` by reading the
+    source, which is exactly the method a census exists to replace.
+
+    THE COUNTERFACTUAL IS THE TEETH. Put the OLD identity alphabet back and
+    darkside goes from one colliding cell to three: `o` is `LEVELS["warn"]`
+    and `O` is `LEVELS["error"]`, and both were the moon and the active tab.
+    (`(.)` is a FULL STOP and `LEVELS["info"]` is a MIDDLE DOT, so the third
+    rung never collided — two of three, said exactly.)"""
+    import sys
+    root = FRAMES.parents[1]
+    for p in (root, root / "prototypes"):
+        if str(p) not in sys.path:
+            sys.path.insert(0, str(p))
+    import collision_census as CC
+
+    def colliding(lang):
+        named, _ = CC.role_map(lang)
+        return {c: sorted(f) for c, f in named.items() if CC.collides(f)}
+
+    # every language's leader is reachable: it appears in the role map
+    for lang in LANGS:
+        named, _ = CC.role_map(lang)
+        for cell in LG.kit(lang).FIELD_LEAD:
+            assert "field" in named.get(cell, {}), (lang, cell)
+
+    assert list(colliding("darkside")) == ["·"], colliding("darkside")
+
+    old = ("( )", "(.)", "(o)", "(O)", "(o)", "(.)")
+    saved = LG.Darkside.IDENT_GLYPHS
+    try:
+        LG.Darkside.IDENT_GLYPHS = old + ("(O)", "( )")
+        was = colliding("darkside")
+    finally:
+        LG.Darkside.IDENT_GLYPHS = saved
+    assert sorted(was) == ["O", "o", "·"], was
+    assert "severity" in was["O"] and "identity" in was["O"], was["O"]
+    assert "severity" in was["o"] and "identity" in was["o"], was["o"]

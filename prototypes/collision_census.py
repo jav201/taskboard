@@ -25,7 +25,15 @@ THE TWO SETS, and they are the operator's own words.
        button, checkbox, radio, switch, textfield and stepper, resolved
        through `Kit.part_glyph` in EVERY state `component_states` derives --
        so the chrome a language actually draws, not the table it happens to
-       have typed.
+       have typed.  SINCE inc57 IT ALSO READS TWO DECLARED CONSTANTS THAT ARE
+       NOT IN `PART_GLYPHS` -- `FIELD_LEAD` (the cells a language's definition
+       row leads with) and `IDENT_GLYPHS` (the marks its identity draws).
+       Both were literals inside methods until then, which is why `spec.md`
+       §13.8 could write "`field_row` is drawn outside `PART_GLYPHS` in all
+       eleven, so the census can reach none of the eleven field leaders" and
+       §12.7 could write the same of darkside's `(O)` tab.  A mark a language
+       DRAWS and this file cannot SEE is this census's own blind spot, and the
+       fix is a declaration rather than a bigger reader.
 
 WHAT A CHANNEL IS (ruling D, orchestrator, 2026-09-06, on the operator's
 delegation).  Every "these two are told apart by X" argument in this corpus
@@ -96,6 +104,19 @@ BLANKS = " ⠀"
 #: but only to print how much the boundary costs (see the module docstring).
 CONTROLS = ("button", "checkbox", "radio", "switch", "textfield", "stepper")
 OTHERS = ("slider", "bar", "scrollbar")
+
+#: MARKS A KIT DECLARES OUTSIDE `PART_GLYPHS` (inc57), as
+#: `(family, attribute, seat)`. They are B-families -- a leader and a doodle
+#: are chrome, not meanings -- so they collide against A and never against
+#: each other, exactly like a control's wall.
+#:
+#: `FIELD_LEAD` is a STRING of the cells the definition row leads with (`""`
+#: for the four languages whose answer is air, which is a commitment and not
+#: a hole); `IDENT_GLYPHS` is a TUPLE of glyphs, because a moon phase and a
+#: tab mark are drawings with handedness and joining them would invent an
+#: order that is not there.
+DECLARED_MARKS = (("field", "FIELD_LEAD", "field.leader"),
+                  ("identity", "IDENT_GLYPHS", "identity.mark"))
 
 #: the A-families. One per KIND of meaning, not one per declaration -- two
 #: severity rungs sharing a cell is a severity problem, not a collision.
@@ -210,6 +231,14 @@ def role_map(lang: str) -> tuple[dict[str, dict[str, set[str]]], dict[str, dict[
                         add(bag, cell, "invalid", f"INVALID {comp}.{part} {pos}")
                     else:
                         add(bag, cell, comp, f"{comp}.{part} {pos} [{state}]")
+
+    # ---- B: the marks declared OUTSIDE the glyph tables (inc57) ---------
+    for family, attr, seat in DECLARED_MARKS:
+        declared = getattr(k, attr)
+        glyphs = (declared,) if isinstance(declared, str) else tuple(declared)
+        for glyph in glyphs:
+            for cell, pos in _cells(glyph):
+                add(named, cell, family, f"{seat} {pos} [declared]")
     return named, other
 
 

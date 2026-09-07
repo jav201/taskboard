@@ -12,7 +12,7 @@
   █████▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁  13%                                                                           
   █▄▄ flow                                                                                                            
                                                                                                                       
-  (O)board  ( )lanes  ( )agenda  ( )gantt                                                                             
+  (●)board  ( )lanes  ( )agenda  ( )gantt                                                                             
                                                                                                                       
    d   2  !!   2  w   4   x   1  $   9   f   7                                                                        
                                                                                                                       

@@ -6845,10 +6845,25 @@ async def main():
           and _kd.cover_ramp() == LG.COVER_RAMPS["step"],
           f"{''.join(_kdr) or '(unreadable)'} off "
           f"{LG.COVER_RAMPS['step']!r}")
-    check("flow: ... and `. o O` stays where it belongs — darkside's "
-          "SPINNER and its doodle are motion and identity, never data",
+    # WHERE `. o O` LIVES NOW, AND WHY THE DOODLE LEFT IT (inc57). This read
+    # "the SPINNER and its doodle are motion and identity"; the doodle is out
+    # of that family, because `o` is darkside's `LEVELS["warn"]` and `O` its
+    # `LEVELS["error"]` — so the moon waxed through two severity rungs and the
+    # ACTIVE TAB was marked with the error rung, on cells drawn outside
+    # `PART_GLYPHS` where no instrument in this repo could reach them
+    # (`spec.md` §12.7, found by reading the source). The SPINNER keeps the
+    # family: motion is a mark nobody is asked to name. The identity alphabet
+    # is now this kit's own GRIP, and it is declared at `IDENT_GLYPHS` so the
+    # census reads it.
+    _kdi = set("".join(LG.KITS["darkside"].IDENT_GLYPHS)) - set("() ")
+    check("flow: ... and `. o O` stays out of DATA — it is darkside's "
+          "SPINNER and nothing else now; the doodle and the active tab left "
+          "it in inc57, because `o` and `O` are this kit's warn and error "
+          "rungs",
           LG.KITS["darkside"].SPIN == (".", "o", "O", "o")
-          and "(o)" in LG.KITS["darkside"].PHASES)
+          and not (set("oO") & _kdi)
+          and _kdi <= set(LG.KITS["darkside"].PART_GLYPHS["knob"].values()),
+          f"identity cells={''.join(sorted(_kdi))}")
     # PASS 61'S UNLIT RULE, VERBATIM, one mechanism later: the unlit glyph is
     # the mark the language ALREADY DRAWS for an empty position on its own
     # meter — and the bar one row above draws exactly this.

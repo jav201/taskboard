@@ -1,4 +1,4 @@
-(O)board  ( )form  ( )cfg  ( )log                                                                   
+(●)board  ( )form  ( )cfg  ( )log                                                                   
 command  query 're'  ·  6 results                                                                   
                                                                                                     
   > ▮re◆·····································▮                                                      
