@@ -2565,3 +2565,204 @@ skill         `export_to_skill.py`: 11 languages round-trip, captures 0 written 
 | Phase C (close) | this section |
 | Gates | `pytest -q` **1371 → 1449 (+78)**. `test_win_clipboard_roundtrip` red at the baseline and in inc81/inc82, **green in inc83 and inc84** — environment-coupled, reported, not counted, not touched (§22.3.9). `verify_language.py` **ALL PASSED exit 0** at every increment. `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` refusals `[]` for all eleven. `collision_census.py` TOTAL **27**, homoglyph rows 24. `raster.py` **132 PNGs identical across two PROCESSES**. `legibility.py` **byte-identical across two PROCESSES**. `second_width.py` 0 rows cut, 330 pairs distinct, and **`SECOND_WIDTH_RED` is now empty** — 0 red, both solari arms. `capture_languages.py` 22 grids identical across two processes, gallery unchanged. `export_to_skill.py` clean. |
 | Notes | **Four increments, one agent, 2–5 source files each.** Three of the six `rework` frames the round returned are answered (`instrument_S2`, `prism_S2`, `blueprint_S4`) and `solari_S4`'s two axes are both addressed without the frame moving. **`naught_S2` and `naught_S4` are untouched** — L10 and the `DANGER_FORM` frame are not in this brief and remain the round's oldest open reworks. Three questions go back: swiss `•` at 14.0 %, K6 against Q1, and L12 in its thin form. |
+
+## 23. Batch `rework-8c` — the three questions `rework-8` handed back, and the programme's rulings in one table
+
+`rework-8` (§22) closed with three things it deliberately did not do: swiss `•` at 14.0 % coverage,
+K6 against Q1 on 29 seats, and L12 in the thinner form the greyscale capture proved. **The operator
+delegated all three to the orchestrator; two increments, one agent.** The rulings are quoted verbatim
+in each packet's §0 and are reproduced here, because a ruling that lives only in a chat is a ruling
+nobody can argue with later.
+
+### 23.1 The rulings, as given
+
+> (orchestrator, 2026-09-07, on the operator's delegation)
+>
+> **swiss `•`:** the floor stays at 15 %; swiss's obligation mark is exempt by name (`SEEN_BY_EYE`)
+> with round five's eye-read as the evidence and the human session as the review that can revoke it.
+> Neither the floor nor the mark moves.
+>
+> **Q1 over K6 for marks:** Q1 governs meaning marks (runs of 1–4 cells carrying an A-family role);
+> K6 governs text runs. Where a meaning mark is painted in `mut` or `dim` and fails Q1's effective
+> contrast at its declared seat, the mark takes `ink` at that seat (inc74's `log_row` precedent),
+> never a token move. Decorative seats (Q2's ≥ 8 structure and the named 5–7 table) are untouched.
+>
+> **L12:** a hue-only match channel that falls under 3:1 in grey is a Limit of that language,
+> recorded in the kit docstring and in `spec.md`, not fixed.
+
+### 23.2 What each increment did
+
+| inc | ruling | what it did | frames |
+| --- | --- | --- | --- |
+| 85 | **Q1 over K6** | **26 seats leave the quiet tier for `ink`, no token moves.** 13 severity rungs through the module-level roster `language.RUNG_TAKES_INK` (eight kits, each row with its measurement); 13 invalid field WALLS through `Kit.field_wall_tone`, in all eleven, because all eleven missed — `═` at 1.11:1 effective, `░` at 1.05, `╲` at 1.14, `◑` and `Ø` at 1.18. The field's PAPER and the log MESSAGE both keep the quiet tier: they are structure and text, which is K6's half of the same ruling. | **19** at each width + 2 gallery |
+| 86 | **swiss `•` · L12** | `SEEN_BY_EYE` — the programme's first exemption granted by a READING rather than a measurement, with three fields (the clause, the evidence and its citation, the review that can revoke it) and a STALE CHECK that goes red the moment the mark passes or the clause changes. L12 written as a LIMIT into the four hue-only kits' own docstrings with each kit's own grey number, and asserted against `MATCH_IN_GREY`. | **0** |
+
+### 23.3 The findings, in the order they landed
+
+1. **The one `mut` survivor of inc85 is not a mark at all — it is prose.** After the move,
+   `darkside severity o #757575` is still under the effective clause, but its RUNG moved and measures
+   8.34. What the row measures is the letter `o` of `form`, `log` and `fix login redirect`: **darkside
+   is the only kit of eleven whose severity rung is a LOWERCASE LETTER**, so the census credits every
+   `o` in the corpus to the severity family and the declared-seat derivation picks up the log MESSAGE.
+   `legibility.py`'s own docstring claims the intersection with `role_map` prevents exactly this and it
+   does not, because `role_map` is keyed by CHARACTER. **Before inc85 the defect was invisible** — the
+   rung produced the same `(o, mut)` pair, so the row looked like a rung. Recorded, handed back as an
+   instrument question, **not fixed inside the increment that found it**.
+2. **Two seats moved and were not cured, and both are facts about the DRAWING rather than the tone.**
+   `corgi ░` goes 1.05 → **1.44** in `ink` at 17.36:1 declared, because `░` is a DITHER and at 9×19 its
+   lit pixels are almost all partway back to the ground. `ledger *` goes 1.91 → **2.86**, onto the row
+   its own error rung already occupied, on the corpus's one light ground where `ink` is the loudest
+   neutral there is. **No tier fixes either; only another cell would.**
+3. **One seat moved that no measurement condemned, and the reason is the ladder.** industrial's rungs
+   are `▫▫ / ▪▪ / ■■` and the HOLLOW square is thinner than the FILLED one at the same tier, so `info`
+   missed at 2.77 where `warn` cleared at 3.73. Moving `info` alone would have shipped `ink / mut /
+   ink` — the calm rung louder than the one above it. **A ladder that descends is not a ladder.**
+4. **The bound-seat count FELL, 89 → 86, and it is arithmetic and not attrition.** A seat drawn in two
+   tones is two rows; `ledger *`, `nord !` and `darkside o` each collapsed to one when the quiet copy
+   moved onto the loud one. Both counts are asserted so that a seat which stops being DRAWN can never
+   be mistaken for a seat that passed.
+5. **The gallery is not immune this time, and exactly two grids moved.** Every `rework-8` increment
+   could report *"gallery 30–51: none changed byte-wise"* because the board frames draw no obligation
+   mark, no modal and no key bar. **They do draw an invalid field — in two of the eleven** — so
+   `gallery_darkside.svg` and `gallery_solari.svg` changed and no other. Counted by looking for the
+   mark, not inherited from the last four increments.
+6. **`instrument ⠶` is the one kit where a field's wall and its paper are the SAME GLYPH**, so the seat
+   split inc85 makes is visible inside a single field: `⠶` in `ink` at both ends, `⠶` in `dim` for the
+   six paper cells between them, out of one contract call. It is the cleanest demonstration in the
+   corpus that what moved is a SEAT and not a token.
+7. **The eye exemption needed more machinery than a comment, and the reason is one sentence.** An
+   instrument re-derives its own numbers every run; an eye cannot. So `SEEN_BY_EYE` carries WHO SAW IT
+   and WHO CAN TAKE IT BACK as required fields, and the stale check is what retires it — because an
+   exemption that can only be withdrawn by somebody remembering it is a hole with a citation.
+
+### 23.4 The laws this batch added
+
+**Six laws and two teeth**, `pytest -q` **1449 → 1466 (+17)**, and neither increment imports
+`raster.py` or `legibility.py` into the suite — the stance this file has taken since inc73.
+
+- **inc85** — `test_no_meaning_mark_that_only_misses_the_contrast_clause_is_left_quiet` (×11), the
+  ruling's own sentence turned into a red, judged on the shipped pixels with the tier read off the
+  theme and **symmetric** against `EFFECTIVE_UNCURED`;
+  `test_every_seat_the_ruling_moved_is_drawn_in_ink_and_measured_there`, all 26 seats from both ends
+  (tier from the kit, numbers from the pixels) with four clauses including *the move CLEARS the clause
+  except where the roster says otherwise*, so a seat that moved and did not help cannot be counted as a
+  fix; `test_the_uncured_table_covers_what_it_claims_to`, the roster's vacuity arms. **Teeth:** swiss
+  removed from `RUNG_TAKES_INK` — and the arm had to be FOUND, because blueprint's warn and error are
+  both `━` and nord's and ledger's warn rungs are the error glyph with a space, so reverting any of
+  those three leaves the `(family, cell, ink)` triple standing on the error rung and the mutant passes
+  with the seat quiet.
+- **inc86** — `test_the_eye_exemption_is_named_measured_and_still_needed`, four clauses including *the
+  two tables about this mark name the same mark* (`OBLIGATION_UNDER_THE_FLOOR` is inc82's measurement
+  of it, `SEEN_BY_EYE` is inc86's exemption of it, and two tables drifting apart about one row is the
+  failure `test_the_homoglyph_table_is_one_table_in_two_files` exists against);
+  `test_the_hue_only_limit_is_written_into_the_kit_that_carries_it`, L12 in the four kits that have it
+  and in no other, each with its own number to two decimals and the word LIMIT beside it. **Teeth:**
+  the stale check, in two arms — the corpus with swiss's mark PASSING, and the corpus with swiss's mark
+  missing a SECOND clause. Both must go red, because an exemption for a mark that no longer needs one
+  and an exemption for a mark round five did not read are the same kind of stale.
+
+### 23.5 L12, recorded as a Limit in the four kits that carry it
+
+The ruling asks for the record, not the fix. Each number is the match ink against the body it stands
+in, **on the greyscale PNGs**, and each is written into that kit's own class docstring beside the word
+LIMIT and asserted against `MATCH_IN_GREY`:
+
+```
+instrument  2.34:1   the highest of the four, and the only one over 2:1
+prism       1.59:1   the kit that already moved PRIORITY off hue for a nine-unit collision
+swiss       1.52:1   round five's "la peor cifra del corpus", and a limit the kit's own
+                     founding rule produces: no boxes, no markers, no drawn type
+nord        1.34:1   the thinnest, and the one kit where the limit is DOCTRINE -- base16
+                     inherits the user's palette and has by construction no identity of its own
+```
+
+**None of them reaches 1.00:1**, which is what inc84's capture already established against round five's
+*"en escala de grises no queda nada"*; all four are under 3:1, which is why the objection survives in a
+thinner form. What this batch adds is the DISPOSITION: a language may keep a channel it cannot widen,
+provided the language says so where a reader will find it.
+
+### 23.6 The programme's rulings, in one table
+
+Every ruling this programme has taken, with the batch that issued it and the packet that carries it. A
+ruling **recorded** is one that needed no code and says so; the section named is where it lives.
+
+| ruling | batch | what it settles | carried by |
+| --- | --- | --- | --- |
+| **C** | `rework-5a` | a language's INVALID mark is its own, not a red glyph in eleven costumes | `inc52.md` |
+| **C, follow-through** | `rework-6a` | the channel C freed on swiss gets filled: wall, paper, closer from swiss's own alphabet | `inc66.md` |
+| **C1** | `rework-5a` | the knockout is a TIER over a whole seat, not a cell — `Kit.button(knockout=)` | `inc54.md` |
+| **C2** | `rework-6a` | ledger's button states get their own two ends | `inc66.md` |
+| **D** | `rework-5a` | a CHANNEL is defined in both instruments; the homoglyph roster is one table | `inc53.md` |
+| **D, addendum** | `rework-5b` | recorded with `E`, on what a homoglyph pair may share | `inc55.md` |
+| **D, amended (K2)** | `rework-6b` | the homoglyph list is DERIVED, not enumerated (48 pairs from families) | `inc68.md` |
+| **E** | `rework-5b` | written: the exporter's own reading of ground and ink | `inc55.md` |
+| **E4** | `rework-6a` | the exporter reads the kit's DECLARED ground; it never infers it from frequency | `inc63.md` |
+| **E2** | `rework-7b` | the pairs four rounds argued about are irresoluble from the svg — build the raster | `inc76.md` |
+| **E6** | `rework-8` | a frame row with no `<text>` element at all: asserted, not complained about | `inc81.md` |
+| **F** | `rework-5b` | solari's band covers task rows of the first gate the confirm does not name | `inc55.md` |
+| **F, amended** | `rework-6a` | the band never covers a gate HEADER row, of any gate | `inc65.md` |
+| **F at 24 rows** | `rework-8` | the nearest full-measure position that cuts no gate block; the whole page if neither fits | `inc83.md` |
+| **G** | `rework-5b` | the fixture's MOOD is derived from its own tasks, not asserted by a screen | `inc56.md` |
+| **G vs ruling 10** | `rework-6a` | **recorded, no code**: the S4 fixture mood is calm, so G binds on S2 alone | `spec.md` §16.1 |
+| **A** | `rework-5c` | the five languages that never had an increment get one each, guided by the laws | `inc58–61.md` |
+| **A, amended (K5)** | `rework-6b` | the census's B set reaches every quantity widget; a fill cell is not a meaning | `inc67.md` |
+| **L2** | `rework-6b` | a disabled control always carries a mark; air is not a state | `inc69.md` |
+| **L7, measured** | `rework-7a` | the info rung is air by doctrine or legible by tier | `inc74.md` |
+| **L8, L9** | `rework-6a` | prism's checkbox adds ink when ticked; the ember's DONE side is the fire | `inc64.md` |
+| **`mut` contrast** | `rework-6b` | `mut` is body text: ≥ 4.5:1 against the declared ground, ladder kept ordered | `inc70.md` |
+| **one rune** | `rework-6c` | the invalid field's RUNE is chrome; census and laws read it off ONE function | `inc71.md` |
+| **solari `mut`** | `rework-6c` | **recorded as doctrine**: exempt by name with the arithmetic; the stale check stays | `inc71.md`, `spec.md` §18 |
+| **K6** | `rework-7a` | contrast is measured against the background actually UNDER the run | `inc73.md` |
+| **K7, `alert`** | `rework-7a` | `alert` ≥ 4.5:1 against every ground it is painted on, all eleven | `inc73.md` |
+| **K7, `dim`** | `rework-7a` | `dim` ≥ 3:1 wherever it CLASSIFIES; a decorative seat is exempt by name | `inc74.md` |
+| **match tier by channel** | `rework-7a` | legible against its own ground; DISTINCT on the channel `MATCH_STYLE` declares | `inc73.md` |
+| **one token, one role** | `rework-7a` | ground-role and ink-role tokens are disjoint sets in `THEMES` | `inc73.md` |
+| **C8, second half** | `rework-7a` | corgi's confirm gets walls from its display frame; blank rows are not a modal | `inc75.md` |
+| **industrial `/`** | `rework-7a` | a field's paper and a value's separators may not be one glyph | `inc75.md` |
+| **swiss `╎`** | `rework-7a` | **recorded, no code**: consistency with the kit's own dead cell stands | `spec.md` §19.1 |
+| **inc60 info to air** | `rework-6a` | **recorded, no code**: absence is the calm state for blueprint and ledger | `spec.md` §16.1 |
+| **K10** | `rework-8` | a modal border is a PROMISE, not a distance; four corners promise two walls | `inc83.md` |
+| **K8 / E6** | `rework-8` | a run of blank cells on a non-ground background is INK, and is counted | `inc81.md` |
+| **Q1** | `rework-8` | the floor is TWO CLAUSES: coverage ≥ 15 % **and** effective ≥ 3:1, at the declared seat | `inc81.md` (law), `inc82.md` (the two marks) |
+| **Q2** | `rework-8` | runs of 1–4 are bound; ≥ 8 of one glyph is structure; 5–7 named per seat | `inc81.md` |
+| **Q3** | `rework-8` | the floor is judged at the DECLARED seat; the worst seat is a notice, never a red | `inc81.md` |
+| **C12, C13** | `rework-8` | the key bar is a footer and is DOCKED; a cut says so in the language's own mark | `inc84.md` |
+| **greyscale** | `rework-8` | `raster.py` writes a grey PNG per frame at WCAG relative luminance | `inc84.md` |
+| **Q1 over K6** | `rework-8c` | Q1 governs meaning marks, K6 governs text runs; a quiet mark takes `ink` at the seat | `inc85.md` |
+| **swiss `•`** | `rework-8c` | the floor stays at 15 %; the mark is exempt by name, by an EYE, revocable by review | `inc86.md` |
+| **L12** | `rework-8c` | a hue-only match under 3:1 in grey is a LIMIT of that language, recorded not fixed | `inc86.md` (measured in `inc84.md`) |
+
+**Forty-three rows and four of them are `recorded, no code`.** That proportion is the point of the
+table: a programme that only wrote down the rulings it implemented would have no record of the four
+questions it answered by deciding nothing had to move.
+
+### 23.7 The artefacts
+
+```
+legibility    870 -> 867 lines; section F re-measured -- 89 bound seats / 41 fail
+              becomes 86 / 18, with effective-only 29 -> 6.  MEANING_MARKS 44 -> 38
+              at the worst seat (Q3's notice), which moves independently of the
+              declared-seat count and is asserted separately.
+census        TOTAL 27, homoglyph rows 24 -- BOTH UNCHANGED.  A tier is not a
+              declaration `collision_census.py` counts.
+raster        132 identical across two PROCESSES (66 colour + 66 grey)
+frames        19 changed at each width -- 11 x S2 (the invalid field, all eleven)
+              and 8 x S5 (the rung, the eight kits in RUNG_TAKES_INK).
+              ZERO .txt moved, at either width: colour only, which is what a tier
+              move is.  corgi_S5, naught_S5 and instrument_S5 did not move.
+gallery       gallery_darkside.svg and gallery_solari.svg -- the only two of the
+              22 grids that draw an invalid field.  The other 20 byte-identical.
+skill         `export_to_skill.py`: 11 languages round-trip, captures 2 WRITTEN and
+              64 already identical -- the two gallery grids inc85 moved -- and
+              SURFACES.md 11 postures.  The skill repo is not committed from here.
+```
+
+### 23.8 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief (this worktree's own instructions) was the spec; this section is the record |
+| Phase B (implement) | **done** — inc85, inc86 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1449 → 1466 (+17)**, **zero failed** at both increments; `test_win_clipboard_roundtrip` green in both runs — environment-coupled, reported, not counted, not touched. `verify_language.py` **ALL PASSED exit 0**. `render.py` 66 frames / 330 pairs / 0 hand-drawn. `matrix.py` refusals `[]` for all eleven. `collision_census.py` TOTAL **27**, homoglyph rows **24**, both unchanged. `raster.py` **132 PNGs identical across two PROCESSES**. `legibility.py` **byte-identical across two PROCESSES**. `second_width.py` 0 rows cut, 330 pairs distinct. `capture_languages.py` 22 grids identical across two processes. `export_to_skill.py` at the close: 11 languages round-trip, **captures 2 written / 64 already identical** (the two gallery grids inc85 moved), SURFACES.md 11 postures. The skill repo is not committed from here. |
+| Notes | **Two increments, one agent, ≤ 4 source files each.** All three of `rework-8`'s handed-back questions are answered. What goes back to the round: the `darkside o` derivation defect (§23.3.1, an instrument question this batch found and refused to fix in the increment that found it); the three cursors in `accent`, which fail Q1's effective clause as a FAMILY and which the ruling does not reach; `corgi ░` and `ledger *`, which no tier in their own kit can fix; and the eight seats that miss BOTH clauses, which want inc82's kind of move — a glyph out of the language's own alphabet. **`naught_S2` and `naught_S4` remain untouched**, as they have since `rework-8`: L10 and the `DANGER_FORM` frame are the round's oldest open reworks and are in no brief yet. |

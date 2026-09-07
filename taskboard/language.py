@@ -5494,6 +5494,17 @@ class Instrument(Kit):
     a labelled DAY RETICLE, and every task hangs a braille trace sample off it
     — same origin, same cells, one cell per day. Under any other `layout` the
     previous bench-readout composition comes back byte-for-byte.
+
+    LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
+    `MATCH_STYLE` spends `accent` and nothing else, so with the colour taken
+    away the mark keeps only the luminance step the accent happens to carry:
+    **2.34:1 against the body it stands in**, measured on the greyscale PNGs
+    `raster.py` writes (`legibility.txt` section H). Three to one is what a
+    mark of this size would need. IT IS RECORDED AND NOT FIXED — a hue-only
+    match channel under 3:1 in grey is a LIMIT of this language rather than a
+    defect of it, because the second channel that would close it (a weight, a
+    rule, a bracket) is a different language. This is the highest of the four
+    hue-only kits and the only one over 2:1.
     """
 
     # HALF IS COMPOSED, NOT CHOSEN (#46): the full cell's left sub-column OR
@@ -6101,7 +6112,19 @@ class Swiss(Kit):
     set on a type GRID of `columns` columns — subject · byline · figure — and
     the single hairline is the masthead rule under the LEADING phase, not one
     rule per head. Under any other `layout` the previous full-width flow rows
-    come back, byte for byte (`_flow_*`)."""
+    come back, byte for byte (`_flow_*`).
+
+    LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
+    `MATCH_STYLE` spends `accent` — this kit's one red — and nothing else, so
+    with the colour taken away the mark keeps only the luminance step the red
+    happens to carry: **1.52:1 against the body it stands in**, measured on
+    the greyscale PNGs `raster.py` writes (`legibility.txt` section H).
+    IT IS RECORDED AND NOT FIXED — a hue-only match channel under 3:1 in grey
+    is a LIMIT of this language rather than a defect of it. Here it is a limit
+    the kit's own founding rule produces: a language with no boxes, no
+    markers and no drawn type has spent every channel but colour before the
+    match is reached, and round five was arguing about this exact cell when it
+    called `swiss_S6` *"la peor cifra del corpus"*."""
 
     # THE GRID. Two constants decide everything, so the drop rule is derived
     # rather than tabulated:
@@ -7185,7 +7208,19 @@ class Nord(Kit):
     imitation of the pattern, not the pattern.
 
     Under any other `layout` every method below falls through to `super()`,
-    i.e. the base kit, and nord renders byte-for-byte as it always did."""
+    i.e. the base kit, and nord renders byte-for-byte as it always did.
+
+    LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
+    `MATCH_STYLE` spends `accent` and nothing else, so with the colour taken
+    away the mark keeps only the luminance step the accent happens to carry:
+    **1.34:1 against the body it stands in** — the THINNEST of the four
+    hue-only kits — measured on the greyscale PNGs `raster.py` writes
+    (`legibility.txt` section H). IT IS RECORDED AND NOT FIXED — a hue-only
+    match channel under 3:1 in grey is a LIMIT of this language rather than a
+    defect of it. And this kit is the one where that sentence is doctrine
+    rather than a concession: base16 INHERITS the user's environment, so the
+    match is whatever the palette gives it, and a second channel invented
+    here would be an identity nord has by construction none of."""
 
     # ======================================================================
     # THE SEVEN THIS LANGUAGE DOES NOT OVERRIDE, AND WHY THAT IS AN ANSWER
@@ -7866,6 +7901,18 @@ class Prism(Kit):
     field). Each cell is field or figure and never both, so the
     two-colours-per-cell law is satisfied BY COMPOSITION instead of policed
     afterwards.
+
+    LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
+    `MATCH_STYLE` spends `accent` and nothing else, so with the colour taken
+    away the mark keeps only the luminance step the accent happens to carry:
+    **1.59:1 against the body it stands in**, measured on the greyscale PNGs
+    `raster.py` writes (`legibility.txt` section H).
+    IT IS RECORDED AND NOT FIXED — a hue-only match channel under 3:1 in grey
+    is a LIMIT of this language rather than a defect of it. And it is worth
+    naming HERE in particular: this kit already moved PRIORITY off hue and
+    onto a glyph (`!2`) for a collision of nine rgb units, so the match is
+    the one place left where prism still asks colour to carry a distinction
+    by itself.
     """
 
     DISCLOSE = "⣶"                        # the field continues
