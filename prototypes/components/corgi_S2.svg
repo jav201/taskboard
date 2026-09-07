@@ -15,11 +15,11 @@
 <text x="10.0" y="57.3" fill="#9a9a9a">───────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="74.3" fill="#9a9a9a">title</text>
 <text x="68.8" y="74.3" fill="#f2f2f2">▀</text>
-<text x="144.4" y="74.3" fill="#3a3a3a">▔▔</text>
+<text x="144.4" y="74.3" fill="#3a3a3a">▛▛</text>
 <text x="161.2" y="74.3" fill="#f2f2f2">Fix login</text>
 <text x="236.8" y="74.3" fill="#ff6600">▌</text>
 <text x="245.2" y="74.3" fill="#f2f2f2"> redirect</text>
-<text x="320.8" y="74.3" fill="#3a3a3a">▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▔▔</text>
+<text x="320.8" y="74.3" fill="#3a3a3a">▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▜▜</text>
 <text x="26.8" y="108.3" fill="#9a9a9a">due</text>
 <text x="52.0" y="108.3" fill="#f2f2f2">▀</text>
 <text x="144.4" y="108.3" fill="#3a3a3a">░░</text>
@@ -28,34 +28,34 @@
 <text x="144.4" y="125.3" fill="#d92b1a">██</text>
 <text x="169.6" y="125.3" fill="#f2f2f2">expected YYYY-MM-DD</text>
 <text x="26.8" y="159.3" fill="#9a9a9a">priority</text>
-<text x="144.4" y="159.3" fill="#3a3a3a">▁◦</text>
+<text x="144.4" y="159.3" fill="#3a3a3a">▒◦</text>
 <text x="169.6" y="159.3" fill="#9a9a9a">low</text>
-<text x="211.6" y="159.3" fill="#3a3a3a">▁◦</text>
+<text x="211.6" y="159.3" fill="#3a3a3a">▒◦</text>
 <text x="236.8" y="159.3" fill="#9a9a9a">norm</text>
-<text x="287.2" y="159.3" fill="#f2f2f2">▁●</text>
+<text x="287.2" y="159.3" fill="#f2f2f2">▒●</text>
 <text x="312.4" y="159.3" fill="#f2f2f2">high</text>
 <text x="26.8" y="193.3" fill="#9a9a9a">tags</text>
-<text x="144.4" y="193.3" fill="#3a3a3a">▁▁</text>
+<text x="144.4" y="193.3" fill="#3a3a3a">▒▒</text>
 <text x="169.6" y="193.3" fill="#9a9a9a">--</text>
 <text x="194.8" y="193.3" fill="#9a9a9a">api</text>
-<text x="236.8" y="193.3" fill="#f2f2f2">██</text>
+<text x="236.8" y="193.3" fill="#f2f2f2">▓▓</text>
 <text x="262.0" y="193.3" fill="#f2f2f2">ON</text>
 <text x="287.2" y="193.3" fill="#9a9a9a">ui</text>
-<text x="320.8" y="193.3" fill="#f2f2f2">██</text>
+<text x="320.8" y="193.3" fill="#f2f2f2">▓▓</text>
 <text x="346.0" y="193.3" fill="#f2f2f2">ON</text>
 <text x="371.2" y="193.3" fill="#9a9a9a">urgent</text>
 <text x="26.8" y="227.3" fill="#9a9a9a">notes</text>
-<text x="144.4" y="227.3" fill="#3a3a3a">▁▁</text>
+<text x="144.4" y="227.3" fill="#3a3a3a">▒▒</text>
 <text x="161.2" y="227.3" fill="#f2f2f2">Redirect drops the ?next= param w</text>
 <text x="438.4" y="227.3" fill="#ff6600">▄</text>
-<text x="446.8" y="227.3" fill="#3a3a3a">▁▁</text>
-<text x="144.4" y="244.3" fill="#3a3a3a">▁▁</text>
+<text x="446.8" y="227.3" fill="#3a3a3a">▒▒</text>
+<text x="144.4" y="244.3" fill="#3a3a3a">▒▒</text>
 <text x="161.2" y="244.3" fill="#f2f2f2">session cookie is renewed mid-fli</text>
 <text x="438.4" y="244.3" fill="#ff6600">▄</text>
-<text x="446.8" y="244.3" fill="#3a3a3a">▁▁</text>
-<text x="144.4" y="261.3" fill="#3a3a3a">▁▁··································▁▁</text>
+<text x="446.8" y="244.3" fill="#3a3a3a">▒▒</text>
+<text x="144.4" y="261.3" fill="#3a3a3a">▒▒··································▒▒</text>
 <text x="144.4" y="295.3" fill="#3a3a3a">··   Save   ··</text>
-<text x="287.2" y="295.3" fill="#f2f2f2">▁▁  Cancel  ▁▁</text>
+<text x="287.2" y="295.3" fill="#f2f2f2">▒▒  Cancel  ▒▒</text>
 <text x="144.4" y="312.3" fill="#3a3a3a">Save is held until due parses</text>
 </g>
 </svg>

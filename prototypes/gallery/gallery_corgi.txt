@@ -16,17 +16,17 @@
                               │  █        █                                            │                              
                               │   █      █                                             │                              
                               │    ██████                                              │                              
-                              │  switch     ██ ▁▁ --  ▄▄ ██ ON   default  off·on       │                              
-                              │             ▀▀ ▁▁ --  ▄▄ ▀▀ ON   focused               │                              
-                              │             ▒▒ ▁▁ --  ▄▄ ▒▒ ON   active                │                              
-                              │             ╳╳ ·· --  ▁▁ ╳╳ ON   disabled              │                              
-                              │  checkbox   ▁▁ --  ██ ON   default  off·on             │                              
-                              │             ▔▔ --  ▛▜ ON   focused                     │                              
-                              │             ▂▂ --  ▓▓ ON   active                      │                              
-                              │             ·· --  ▒▒ ON   disabled                    │                              
+                              │  switch     ▙▟ ▒▒ --  ▓▓ ▙▟ ON   default  off·on       │                              
+                              │             ▛▜ ▒▒ --  ▓▓ ▛▜ ON   focused               │                              
+                              │             ▖▗ ▒▒ --  ▓▓ ▖▗ ON   active                │                              
+                              │             ╳╳ ·· --  ·· ╳╳ ON   disabled              │                              
+                              │  checkbox   ▒▒ --  ▓▓ ON   default  off·on             │                              
+                              │             ▛▜ --  ▙▟ ON   focused                     │                              
+                              │             ▖▗ --  ▘▝ ON   active                      │                              
+                              │             ·· --  ╳╳ ON   disabled                    │                              
                               │  radio      lo·mid·hi  set=mid cursor=hi               │                              
-                              │             ▁◦ lo  ▁● mid  ▁◦ hi   default             │                              
-                              │             ▁◦ lo  ▁● mid  ▔◦ hi   focused             │                              
+                              │             ▒◦ lo  ▒● mid  ▒◦ hi   default             │                              
+                              │             ▒◦ lo  ▒● mid  ▛◦ hi   focused             │                              
                               │                                                        │                              
                               └────────────────────────────────────────────────────────┘                              
                                                                                                                       

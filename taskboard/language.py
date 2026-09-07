@@ -4698,9 +4698,65 @@ class Corgi(Kit):
                           f"[{c['mut']}]{mark(str(v).upper())}[/]"
                           for k, v in pairs)
 
+    # ======================================================================
+    # THE BANK IS THE READING, THE PANEL IS THE METAL (inc58).
+    #
+    # This kit owns TWO ramps and had never said which was which. The
+    # SEGMENT BANK is glass driven to a HEIGHT -- `▁` an eighth, `▄` a half,
+    # `▀` the upper half, `█` the whole cell -- and every one of those four
+    # cells carries a MEANING here: `LEVELS["info"]`, `LEVELS["warn"]`,
+    # `REQUIRED` and `LEVELS["error"]` / `DANGER_FORM`. The SHADE RAMP
+    # (`· ░ ▒ ▓`) and the QUADRANTS (`▛▜ ▙▟ ▘▝ ▖▗`) are not bars at all;
+    # they are a texture and a corner, milled aluminium rather than lit
+    # glass. `field_row`'s own docstring already names the frontier -- "the
+    # two REGISTERS -- engraved aluminium against driven glass" -- and this
+    # increment moves every CONTROL across it.
+    #
+    #   THE RULE: a control is never drawn as a driven bar, and a meaning is
+    #   never drawn as a texture.
+    #
+    # WHY NOT AN EXEMPTION, MEASURED RATHER THAN ARGUED. `DANGER_IS_THE_TOP_
+    # RUNG` covers `danger` against `ladder` and nothing else; an exemption
+    # for the whole ramp would have to leave a control's opener distinct
+    # from an error rung IN THE FRAME, and two shipped frames say it does
+    # not. On `corgi_S2` `██` is the error message's own leader
+    # (`██ expected YYYY-MM-DD`) and, three rows above it, the CHECKED
+    # checkbox (`██ ON ui`, `██ ON urgent`). On `corgi_S3` `██` is the
+    # slider's KNOB (`▄▄ ▄▄ ▄▄ ██ ▁▁[70]`) and, twelve rows down, the danger
+    # form around the one irreversible control on the screen
+    # (`▁▁█Delete all█▁▁`). One cell, four readings, one screen.
+    #
+    # WHAT DID NOT MOVE, AND THE COST IS DECLARED. `main` and `indicator`
+    # keep the bank, because for the SLIDER and the BAR they are a QUANTITY
+    # and a quantity here is a reading: "the reading rides on segment
+    # HEIGHT, not on lit-vs-ghost" is this kit's own twice-cured defect and
+    # moving the fill to a shade would re-open it. The SWITCH is hardware
+    # and takes its own scoped tables below, so the base pair is now reached
+    # by the slider and the bar alone -- which are outside the census's B
+    # set by request, so corgi's census count falls for a reason that is
+    # THE READER LOSING REACH and not a cell moving. Named here and counted
+    # in `inc58.md` §4 rather than left to look like a fix.
+    #
+    # THE KNOB IS THE ONLY PART DRAWN WITH QUADRANTS, which is inc46's own
+    # lesson ("a knob drawn like the fill is not a knob") made structural:
+    # a grip is a shape family, not a rung. `▛▜` shoulders PROUD (the
+    # reader's key), `▙▟` shoulders SEATED (the grip at rest, the key
+    # latched), `▘▝` the upper corners alone (the key turning) and `▖▗` the
+    # lower corners alone (the key pressed flush). Four marks on POSITION,
+    # which is one of ruling D's four channels.
+    # ======================================================================
     PART_GLYPHS = {
+        # THE SLIDER'S AND THE BAR'S, and theirs alone since inc58 -- a
+        # QUANTITY on the driven bank. The switch's track is `switch.main`.
         "main": {DEFAULT: "▁▁", DISABLED: "··"},
         "indicator": {DEFAULT: "▄▄", DISABLED: "▁▁"},
+        # THE HARDWARE TOGGLE'S TRACK, scoped away from the slider's in
+        # inc58: idle metal, driven metal, and no metal at all. Dead is dead
+        # on both sides and the KNOB's position says which side the switch
+        # is lying on -- `╳╳··` off, `··╳╳` on -- so the dead pair needs no
+        # third cell.
+        "switch.main": {DEFAULT: "▒▒", DISABLED: "··"},
+        "switch.indicator": {DEFAULT: "▓▓", DISABLED: "··"},
         # THE BANK THE MACHINE REFUSED TO DRIVE (inc52). INVALID read `▀▄`,
         # the two half-banks lit against each other -- and BOTH of those
         # cells are declarations: `▀` is `REQUIRED` ("the upper bank lit")
@@ -4717,37 +4773,63 @@ class Corgi(Kit):
         # DEAD mark at four seats of `Kit` and this kit's own `DISABLED` --
         # dead and refused are two claims, and inc45 §7 refused a cross for
         # nord on exactly that ground.
-        "knob": {DEFAULT: "██", FOCUSED: "▀▀", EDITED: "▓▓",
-                 ACTIVE: "▒▒", INVALID: "░░",
+        #
+        # inc58: DEFAULT read `██` and FOCUSED `▀▀` -- `LEVELS["error"]` /
+        # `DANGER_FORM` at the grip of every switch and every slider, and
+        # `REQUIRED` at the same grip focused. The grip takes the quadrant
+        # family instead; the ghost, the cross and the shade steps below it
+        # are inc52's and are untouched.
+        "knob": {DEFAULT: "▙▟", FOCUSED: "▛▜", EDITED: "▘▝",
+                 ACTIVE: "▖▗", INVALID: "░░",
                  DISABLED: "╳╳"},
-        # the LCD's check is a segment DRIVEN, not a tick drawn: the box is
-        # the baseline segment, the mark is the same cell at full height.
-        # Two segment cells wide, so the containment law is span-equality
-        # here too — a two-cell box is a frame with no interior.
-        "checkbox.main": {DEFAULT: "▁▁", FOCUSED: "▔▔", ACTIVE: "▂▂",
+        # THE CHECK IS THE KEY LATCHED DOWN, not a segment driven (inc58).
+        # The box read `▁▁ ▔▔ ▂▂` and the check `██` -- the info rung, a
+        # hairline one size off `REQUIRED`, and the error rung. Both banks
+        # go: the empty box is idle metal and the set box is metal DRIVEN
+        # (`▒▒` against `▓▓`, the shade ramp), and the shoulders say where
+        # the reader is -- PROUD on an empty key, SEATED on a latched one,
+        # which is direction and not size.
+        "checkbox.main": {DEFAULT: "▒▒", FOCUSED: "▛▜", ACTIVE: "▖▗",
                           DISABLED: "··"},
-        "checkbox.knob": {DEFAULT: "██", FOCUSED: "▛▜", ACTIVE: "▓▓",
-                          DISABLED: "▒▒"},
+        "checkbox.knob": {DEFAULT: "▓▓", FOCUSED: "▙▟", ACTIVE: "▘▝",
+                          DISABLED: "╳╳"},
         # THE LED BESIDE THE LABEL, which is what this hardware actually
         # does: a parameter is CHOSEN by a lamp lighting next to its printed
         # name, while a setting is DRIVEN by a segment. Cell one is the
         # segment carrying the control state, cell two is the lamp carrying
         # the choice — so the two channels sit in two different cells and
         # neither is a colour.
-        "radio.main": {DEFAULT: "▁◦", FOCUSED: "▔◦", ACTIVE: "▂◦",
+        #
+        # inc58 moves CELL ONE only: `▁ ▔ ▂` was a three-step height ladder
+        # whose bottom rung is `LEVELS["info"]`, so the segment becomes
+        # metal (`▒` idle, `▛` the shoulder proud, `▓` under the finger).
+        # THE LAMP IS UNTOUCHED -- it is the choice, and it was never a bar.
+        "radio.main": {DEFAULT: "▒◦", FOCUSED: "▛◦", ACTIVE: "▓◦",
                        DISABLED: "·◦"},
-        "radio.knob": {DEFAULT: "▁●", FOCUSED: "▔●", ACTIVE: "▂●",
+        "radio.knob": {DEFAULT: "▒●", FOCUSED: "▛●", ACTIVE: "▓●",
                        DISABLED: "·◌"},
         # an ENGRAVED KEY: this language draws in doubled cells, so both
         # shoulders are two cells wide and the label sits in the milled
-        # channel between them. Pressed = the shoulders swell (▄▄), which is
-        # the same segment vocabulary its slider and checkbox already speak.
-        "button.main": {DEFAULT: "▁▁▁▁", FOCUSED: "▔▔▔▔", ACTIVE: "▄▄▄▄",
+        # channel between them.
+        #
+        # inc58: the key was a bank -- `▁▁▁▁` DEFAULT is `LEVELS["info"]`
+        # twice over and `▄▄▄▄` ACTIVE is `LEVELS["warn"]`, so `▁▁ Cancel ▁▁`
+        # on `corgi_S4` opened the safe answer with a severity rung. Pressed
+        # is still the shoulders SWELLING, said in metal: idle `▒▒`, the
+        # shoulders proud under focus, and the whole key dark under the
+        # finger.
+        "button.main": {DEFAULT: "▒▒▒▒", FOCUSED: "▛▛▜▜", ACTIVE: "▓▓▓▓",
                         DISABLED: "····"},
         # FIVE cells, because this language doubles: two cells of wall a side
         # and the rune in the middle. The words sit in a milled channel.
-        "textfield.main": {DEFAULT: "▁▁·▁▁", FOCUSED: "▔▔·▔▔",
-                           EDITED: "▔▔▁▔▔", ACTIVE: "▄▄·▄▄",
+        #
+        # inc58: the walls were the same bank the key was, so a field at
+        # rest opened on `LEVELS["info"]` and a field being driven opened on
+        # `LEVELS["warn"]`. They take the metal register; EDITED keeps its
+        # shape -- focus walls with the rune FILLED -- and the fill is now
+        # `▒`, metal in the channel, rather than `▁`.
+        "textfield.main": {DEFAULT: "▒▒·▒▒", FOCUSED: "▛▛·▜▜",
+                           EDITED: "▛▛▒▜▜", ACTIVE: "▓▓·▓▓",
                            # inc52: the walls read `▄▀` / `▀▄`, which is
                            # `LEVELS["warn"]` beside `REQUIRED`. They take
                            # the ghost the knob now wears; the rune stays
@@ -4766,21 +4848,26 @@ class Corgi(Kit):
         # THE PARAMETER KEYS, and this is the component this language was
         # waiting for: a TE panel spins its numbered parameters with two keys
         # beside the readout, which is a stepper and has never been anything
-        # else. Doubled like everything here — two cells a side — and the
-        # reading rides SEGMENT HEIGHT, never hue, which is this language's
-        # own twice-cured defect.
+        # else. Doubled like everything here — two cells a side.
         #
-        # THE DEAD KEY IS A GHOST SEGMENT: present, not driven, exactly what
-        # an LCD shows where nothing is on. So a clamped stepper at its floor
-        # reads `▁▁ lo ▄▄` — the key is still in the panel and it is plainly
-        # not lit, which is what a hardware end stop looks like.
-        "stepper.main": {DEFAULT: "▁▁▁▁", DISABLED: "····"},
-        "stepper.step": {DEFAULT: "▄▄▄▄", FOCUSED: "▀▀▀▀", EDITED: "▓▓▓▓",
+        # inc58: the keys were the WHOLE bank at once -- `▄▄▄▄` at rest,
+        # `▀▀▀▀` focused, `████` pressed, which is `LEVELS["warn"]`,
+        # `REQUIRED` and `LEVELS["error"]` / `DANGER_FORM` on three states
+        # of one control. Ten of corgi's thirty-eight opener seats were this
+        # one table. The keys are hardware and take the metal register: idle
+        # metal, the shoulders proud under focus, the upper corners while
+        # the value is turning, the lower corners while the key is down.
+        #
+        # THE DEAD KEY IS STILL PRESENT AND PLAINLY NOT LIT -- the ground
+        # goes to `····` and the key to `╳╳╳╳`, both unchanged, which is
+        # what a hardware end stop looks like.
+        "stepper.main": {DEFAULT: "▒▒▒▒", DISABLED: "····"},
+        "stepper.step": {DEFAULT: "▓▓▓▓", FOCUSED: "▛▛▜▜", EDITED: "▘▘▝▝",
                          # inc52: this read `▀▄▄▀` -- `REQUIRED` and the warn
                          # rung, one key each. inc51's clause 2 still holds
                          # by construction: the cells come from this kit's
                          # own INVALID knob.
-                         ACTIVE: "████", INVALID: "░░░░",
+                         ACTIVE: "▖▖▗▗", INVALID: "░░░░",
                          DISABLED: "╳╳╳╳"},
     }
 
