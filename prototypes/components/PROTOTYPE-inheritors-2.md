@@ -921,13 +921,21 @@ revierte; hoy está aplicado sin que nadie lo haya aprobado como tal.
 lista de canales. Si es no, esos seis están a medias y las tres leyes necesitan una cláusula de
 familia de forma.
 
-**E. `darkside_S1` y «el `.txt` es la obra».** La pregunta 10 de la primera ronda sigue sin fallo:
-o el rail cede, o la convención admite una excepción escrita para este lenguaje. `spec.md` §11.3 dice
-literalmente que la decisión es del operador.
+**E. `darkside_S1` y «el `.txt` es la obra».** — **RULED (2026-09-06, `rework-5b` inc55).** Para este
+lenguaje **el `.svg` es el artefacto de registro, no el `.txt`, y el escalón gris de un frame darkside
+es una señal real**. `darkside_S1` **no** se reworkea sobre la evidencia del `.txt`. Escrito en el
+propio asiento (`Darkside.pane_split_instead`) para que quien lea un `.txt` pelado encuentre la
+resolución antes que la objeción. Lo que **no** queda resuelto: los catorce trazos del rail en ese
+frame (inc48 los dejó en 16, `▬` 6 → 0) y **E2** — el `.svg` sigue sin métrica de fuente.
 
-**F. `solari_S4`.** ¿«Una salida se apodera de la cabecera del tablero» es doctrina escrita de este
-lenguaje, o un confirm destructivo tiene que dejar en pantalla el gate que nombra? Hoy la banda se
-come `GATE BACKLOG` y sus dos tareas, y el tablero superviviente arranca en una costura huérfana.
+**F. `solari_S4`.** — **RULED (2026-09-06, `rework-5b` inc55): un confirm nunca tapa el gate que
+nombra.** La banda se coloca en la cabecera del primer bloque de gate que el confirm **no** nombra; si
+todos están nombrados o la página tiene un solo gate, va al pie del horario. Implementado en
+`Solari.band_head`, con `overlay(..., about=)` que la hoja rellena y que los otros diez lenguajes
+ignoran. `GATE BACKLOG 05` y sus dos salidas están ahora en el frame. **Coste declarado:** la cláusula
+2 de inc50 («debajo de la banda abre una cabecera de gate») cambia de extremo — ahora se asegura la
+cabecera **donde la banda empieza**, y la fila bajo la banda vuelve a ser una costura huérfana, la de
+`PORT THE CSV IMPORTER`. Escrito en `inc55.md` §6 y en el docstring del método.
 
 **G. La ley de primera fijación de blueprint está ejercitada en un test y no está en ninguna
 imagen.** El knockout del title block sólo se enciende en el mood `alert` y el fixture está en

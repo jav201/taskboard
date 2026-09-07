@@ -3074,7 +3074,7 @@ class Kit:
         return f"[{self.c['dim']}]{mark(visible(row))}[/]"
 
     def overlay(self, rows: list[str], w: int, h: int,
-                under: list[str]) -> list[str]:
+                under: list[str], about: str | None = None) -> list[str]:
         """A QUESTION IN FRONT OF A PAGE — `h` rows of `w` cells, composed.
 
         BASE (nord) IS THE TERMINAL'S OWN MODAL: a box, centred, over a page
@@ -3096,10 +3096,21 @@ class Kit:
         overrode the entry point would never consult the table, so a false
         entry against it could not be wrong out loud. What a language
         overrides is `overlay_box` (it draws a lid, in its own chrome) or
-        `overlay_instead` (it may not)."""
+        `overlay_instead` (it may not).
+
+        `about` IS WHAT THE QUESTION IS ABOUT, AND IT IS DATA (inc57→inc55,
+        ruling F). A confirm that says "3 tasks will be removed from BACKLOG"
+        names a REGION of the page behind it, and a language that posts its
+        question ACROSS the page rather than in a box has to be able to place
+        it somewhere else. The caller passes the name because the caller is
+        the one that has it; the alternative is a kit reading the modal's
+        prose, which would make every kit a parser of the fixture's English.
+        Ten languages ignore it — a lid is centred and covers the middle
+        whatever the question is about — and `None` is the honest default: a
+        caller that did not say leaves every language exactly where it was."""
         if self.name in MODAL_BORDER_REFUSED:
-            return self.overlay_instead(rows, w, h, under)
-        return self.overlay_box(rows, w, h, under)
+            return self.overlay_instead(rows, w, h, under, about)
+        return self.overlay_box(rows, w, h, under, about)
 
     #: The lid a language that may draw one draws, in `DISPLAY_BOX`'s own
     #: order: (tl, tr, bl, br, top, bottom, left, right). EIGHT cells rather
@@ -3110,8 +3121,13 @@ class Kit:
     MODAL_BOX = "┌┐└┘──││"
 
     def overlay_box(self, rows: list[str], w: int, h: int,
-                    under: list[str]) -> list[str]:
-        """The drawing branch: `MODAL_BOX`, centred, over a receded page."""
+                    under: list[str], about: str | None = None) -> list[str]:
+        """The drawing branch: `MODAL_BOX`, centred, over a receded page.
+
+        `about` is accepted and ignored: a lid is centred, so what the
+        question is about cannot move it. The parameter is here so the two
+        branches have ONE signature and a language that overrides either one
+        cannot be handed something it did not declare."""
         c = self.c
         tl, tr, bl, br, top, bot, lt, rt = self.MODAL_BOX
         body = [visible(r) for r in rows]
@@ -3133,13 +3149,18 @@ class Kit:
         return out
 
     def overlay_instead(self, rows: list[str], w: int, h: int,
-                        under: list[str]) -> list[str]:
+                        under: list[str],
+                        about: str | None = None) -> list[str]:
         """WHAT A LANGUAGE DOES WHEN IT MAY NOT DRAW THE BOX.
 
         The base answer is the mildest one available: the question stands on
         the page with nothing around it, and the page recedes. A language in
         the registry that overrides nothing still cannot draw a lid, which is
-        the registry doing its job even where nobody has done the design."""
+        the registry doing its job even where nobody has done the design.
+
+        `about` is accepted and ignored here for the same reason
+        `overlay_box` ignores it: the block is CENTRED, and a centred block
+        has no placement decision to make."""
         y = max(0, (h - len(rows)) // 2)
         out = []
         for i in range(h):
@@ -4036,7 +4057,7 @@ class Naught(Kit):
     # knob is a dot with an EYE — the old knob was the lit dot in a brighter
     # grey, which is a colour-only knob, and at value 0 there was no knob on
     # the screen at all (COMPONENTS.md's 2-channel law, failed twice).
-    def overlay_instead(self, rows, w, h, under):
+    def overlay_instead(self, rows, w, h, under, about=None):
         """THE LATTICE CHARGE (operator ruling 4), and no overlay at all.
 
         "No frames at all" is one of four commitments, so there is no box to
@@ -4576,7 +4597,7 @@ class Corgi(Kit):
     # remaining ones and separated them by hue alone — greyscale it and the
     # value disappeared (DATAVIZ.md's note on LCD sparks, exactly).
     SLOT_SEP = " "
-    def overlay_instead(self, rows, w, h, under):
+    def overlay_instead(self, rows, w, h, under, about=None):
         """THE MODE TAKES OVER THE SCREEN, so there is nothing behind.
 
         "No persistent navigation chrome; its answer to smallness is FEWER
@@ -4885,7 +4906,7 @@ class Instrument(Kit):
                           f"[{c['mut']}]{mark(str(v))}[/]"
                           for k_, v in pairs)
 
-    def overlay_instead(self, rows, w, h, under):
+    def overlay_instead(self, rows, w, h, under, about=None):
         """"Borders almost absent", so the question is not boxed — it is
         BANDED: two full-width graticule rules, the question between them,
         the page unlit behind. Whitespace structure with the dot identity,
@@ -5455,7 +5476,7 @@ class Swiss(Kit):
             f"[{c['accent']}]{mark(str(k_))}[/]" + " " * self.GUTTER
             + f"[{c['mut']}]{mark(str(v))}[/]" for k_, v in pairs)
 
-    def overlay_instead(self, rows, w, h, under):
+    def overlay_instead(self, rows, w, h, under, about=None):
         """NO BOXES, at any width — so the question is set at the grid's first
         column under the SINGLE HAIRLINE this language allows itself, with the
         page dimmed behind. The rule is the masthead's, not a lid's: it runs
@@ -6562,7 +6583,21 @@ class Darkside(Kit):
 
         AND IT DOES NOT SURVIVE THE `.txt`: a background is not a cell, so a
         cell grid shows `w` spaces. It DOES survive greyscale, which is the
-        law that applies — a grey step is a step with every hue removed."""
+        law that applies — a grey step is a step with every hue removed.
+
+        RULED (orchestrator, 2026-09-06, on the operator's delegation —
+        decision E of `PROTOTYPE-inheritors-2.md` §6): **for this language the
+        `.svg` is the artefact of record, not the `.txt`, and a darkside
+        frame's grey step is a real signal.** `darkside_S1` is NOT reworked on
+        the `.txt`'s evidence. The round's objection — *"o el rail cede, o el
+        `.txt` deja de ser la obra para este lenguaje"* — asked for exactly
+        this verdict and named it the operator's; `spec.md` §11.3 carried it
+        forward as open through two batches. It is closed here, at the seat
+        that draws the thing, so that the next reader of a bare `darkside`
+        `.txt` finds the ruling before the objection. What is NOT ruled: the
+        rail's fourteen strokes elsewhere on that frame (inc48 held them at
+        16, `▬` 6 → 0), and E2 — the `.svg` still carries no font metric, so
+        an artefact cannot settle a homoglyph question either way."""
         return [f"[{self.c['mut']} on {self.depth_ground()}]{' ' * w}[/]"
                 for _ in range(max(0, h))]
 
@@ -7668,7 +7703,7 @@ class Ledger(Kit):
     # dots on both sides of the mark in two greys — an indicator separated
     # from the track by hue alone, which is the defect this language's own
     # meter was fixed for two passes ago.
-    def overlay_instead(self, rows, w, h, under):
+    def overlay_instead(self, rows, w, h, under, about=None):
         """A LEDGER HAS NO SURFACE IN FRONT OF THE PAGE, so the question is
         POSTED on it.
 
@@ -8035,7 +8070,84 @@ class Solari(Kit):
                 return i + 1
         return 0
 
-    def overlay_instead(self, rows, w, h, under):
+    def gate_of(self, row: str) -> str | None:
+        """THE GATE A HEADER ROW NAMES, or `None` if the row is not one.
+
+        Read off THIS KIT'S OWN FORMAT STRING and not off the page's English:
+        `head()` four methods down writes `f" GATE {name.upper()} {count:02d}"`
+        at the left of the band, so a header is three tokens — the word
+        `GATE`, the name, and the load as two digits — and everything after
+        them is the surviving columns' captions.
+
+        THE WORD IS LOCATED RATHER THAN ASSUMED TO BE FIRST. A gate the
+        cursor is standing in carries `CUR` in the gutter (`▼  GATE DOING
+        04`), so `parts[0]` is the flap indicator on exactly the gate the
+        operator is looking at — which is the one row this method must not
+        miss."""
+        parts = visible(row).split()
+        if "GATE" not in parts:
+            return None
+        i = parts.index("GATE")
+        if i + 2 < len(parts) and len(parts[i + 2]) == 2 \
+                and parts[i + 2].isdigit():
+            return parts[i + 1]
+        return None
+
+    def schedule_foot(self, under: list[str], depth: int) -> int:
+        """WHERE A BAND SITS WHEN EVERY GATE IS SPOKEN FOR (ruling F's
+        fallback): its closing seam lands on the last row the page says
+        something on, and above a full-measure seam if the page closes with
+        one — the plate at the foot, the mirror of the one `schedule_head`
+        protects at the head.
+
+        Clamped to `schedule_head`, so a page shorter than the block still
+        keeps its masthead. **No frame in this repo reaches this branch** —
+        the fixture's confirm names one of four gates — and it is exercised
+        by `tests/test_components.py` alone. Said plainly rather than left
+        for somebody to discover that the fallback was never run."""
+        i = len(under)
+        while i > 0 and not visible(under[i - 1]).strip():
+            i -= 1
+        body = visible(under[i - 1]).rstrip() if i else ""
+        if body and set(body) == {self.SEAM}:
+            i -= 1
+        return max(self.schedule_head(under), i - depth)
+
+    def band_head(self, under: list[str], depth: int,
+                  about: str | None = None) -> int:
+        """WHERE THE BAND GOES — AND THE ONE GATE IT MAY NEVER COVER.
+
+        RULING F (orchestrator, 2026-09-06, on the operator's delegation): *a
+        confirm never covers the gate it names.* inc40 put the band at the
+        head of the SCHEDULE and inc50 shrank it to its content, and at both
+        anchors it landed on `GATE BACKLOG 05` — the gate `MODAL_BODY` says
+        the three tasks are being removed from. `inc50.md` §4 wrote down that
+        an announcement at the head of the schedule cannot avoid it, because
+        the gate header IS the schedule's first row, and named the three ways
+        out as design decisions. This is one of them, taken.
+
+        THE BAND TAKES THE HEAD OF THE FIRST GATE BLOCK THE CONFIRM DOES NOT
+        NAME. Not an offset and not a row count: the gates are found on the
+        page by `gate_of`, and the band anchors on the first header whose
+        name is not `about`. If every gate is named, or the page has one gate,
+        it goes to the foot (`schedule_foot`).
+
+        A CALLER THAT DOES NOT SAY GETS inc40's ANSWER. `about=None` falls
+        back to `schedule_head`, so every existing call site — and every one
+        of the other ten languages, which ignore the argument entirely —
+        renders byte for byte what it rendered before."""
+        if about is None:
+            return self.schedule_head(under)
+        named = str(about).upper()
+        heads = [(i, g) for i, r in enumerate(under) if (g := self.gate_of(r))]
+        if not heads:
+            return self.schedule_head(under)
+        for i, gate in heads:
+            if gate != named:
+                return i
+        return self.schedule_foot(under, depth)
+
+    def overlay_instead(self, rows, w, h, under, about=None):
         """A BOARD HAS NO SURFACE IN FRONT OF IT. "One shape, the row" is the
         commitment that already took this language's pixels ("an image cannot
         flip"), and it takes the dialog for the same reason: a question is
@@ -8076,15 +8188,27 @@ class Solari(Kit):
         sheet's rows are shared by all eleven — ten of them draw a lid or a
         rule around those words and want the air.
 
-        Six rows instead of eight, and the row under the band is
-        `GATE DOING 04` at its own index: the schedule under the announcement
-        opens on a HEADER again."""
+        Six rows instead of eight, and no air inside the band.
+
+        AND IT NO LONGER COVERS THE GATE IT NAMES (inc55, ruling F). Both
+        earlier anchors were the head of the SCHEDULE, and at 100x32 the
+        schedule's first row is `GATE BACKLOG 05` — the gate the confirm is
+        about. `band_head` places the band at the head of the first gate
+        block the confirm does NOT name, so the three tasks and the gate they
+        are being removed from are on the frame while the question is asked.
+        WHAT IT COSTS is written down in `inc55.md` §6 and is not hidden
+        here: the band's foot now lands INSIDE the gate it moved onto, so the
+        row under it is that gate's fourth departure's seam. inc50's clause
+        "the schedule under the band opens on a gate header" was true only
+        while the band stood at the schedule's head; it is the price of the
+        ruling and the operator may take the foot placement instead in one
+        argument."""
         c = self.c
         bar = (f"[{self.t.get('ground', '#000000')} on {c['accent']}]"
                f"{mark(' ' * w)}[/]")
         said = [r for r in rows if visible(r).strip()]
         block = [bar] + said + [self.seam(w)]
-        y = self.schedule_head(under)
+        y = self.band_head(under, len(block), about)
         out = []
         for i in range(h):
             if y <= i < y + len(block):
@@ -9323,7 +9447,7 @@ class Blueprint(Kit):
     # terminator is the knob, and the unmeasured remainder is leader dots.
     # Nothing is filled and nothing is boxed, which is this sheet's law.
     COMP_CHROME = (OPEN, "")
-    def overlay_instead(self, rows, w, h, under):
+    def overlay_instead(self, rows, w, h, under, about=None):
         """REGISTRATION MARKS, and the four corners NEVER JOIN.
 
         "Not one element on this sheet is boxed, at any width", and the ten
