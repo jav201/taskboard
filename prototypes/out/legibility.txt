@@ -3,7 +3,7 @@ legibility.txt -- the 66 frames measured on the RASTER, not on the svg
   face      Cascadia Mono 16px  C:\WINDOWS\Fonts\CascadiaMono.ttf
   cell      9x19 px = 171 pixels
   fallback  Segoe UI Symbol for ⊖⊚⊛⋅ (sizes {'⊖': 11, '⊚': 11, '⊛': 11, '⋅': 16})
-  corpus    208 distinct painted glyphs, 36993 painted cells, 2800 distinct (kit, glyph, ink, ground, weight, decoration) drawings
+  corpus    208 distinct painted glyphs, 36993 painted cells, 2798 distinct (kit, glyph, ink, ground, weight, decoration) drawings
 
   Every number below is an AREA or a RATIO measured on pixels a
   font actually drew. E2 (the svg carries no font metric) is
@@ -448,7 +448,7 @@ kit          gl family                      cov     eff    decl  cov*eff  where
 naught        ∙ danger+severity          14.0%   1.20   1.35    0.169  S4 r0         
 naught        ⊛ required                 28.1%   3.45  19.26    0.968  S2 r3         
 naught        ● cursor                   40.4%   1.24   1.35    0.499  S4 r20        
-naught        ◑ invalid                  36.3%   1.18   1.35    0.426  S2 r5         
+naught        ◑ invalid                  38.0%   7.33  19.26    2.787  S2 r5         
 naught        ◦ severity                 13.5%   1.14   1.35    0.154  S1 r0         
 corgi         ▀ required                 57.9%  16.93  17.36    9.802  S2 r3         
 corgi         ▁ severity                 15.8%   1.49   1.71    0.236  S3 r15        
@@ -467,7 +467,7 @@ swiss         · severity                  4.7%   1.28   1.75    0.060  S2 r4
 swiss         • required                 14.0%   9.13  17.30    1.281  S2 r4         
 swiss         ─ severity                 15.8%   1.31   1.75    0.207  S1 r2         
 swiss         ━ severity                 26.3%   2.55   4.52    0.672  S1 r14        
-swiss         ║ invalid                  55.6%   1.40   1.75    0.778  S2 r6         
+swiss         ║ invalid                  55.6%   7.95  17.30    4.415  S2 r6         
 swiss         ╱ danger                   28.7%   5.95  17.30    1.705  S3 r20        
 swiss         ╲ danger                   28.7%   5.94  17.30    1.703  S3 r20        
 swiss         ▮ cursor                   37.4%   1.42   1.75    0.531  S4 r9         
@@ -477,20 +477,20 @@ industrial    ╱ danger                   28.7%   5.67  15.55    1.624  S3 r19
 industrial    ▌ invalid                  55.6%   1.86   1.96    1.031  S1 r3         
 industrial    ▐ invalid                  55.6%   1.76   1.96    0.975  S1 r3         
 industrial    ■ severity                 47.4%   4.36   5.79    2.064  S2 r6         
-industrial    ▪ severity                 17.5%   3.73   5.81    0.655  S5 r10        
-industrial    ▫ severity                 17.0%   2.77   5.81    0.470  S5 r8         
+industrial    ▪ severity                 17.5%   8.82  15.55    1.548  S5 r10        
+industrial    ▫ severity                 17.0%   5.82  15.55    0.988  S5 r8         
 industrial    ▶ cursor                   33.3%   1.52   1.96    0.506  S4 r9         
 nord          ! severity                 18.7%   2.14   4.50    0.400  S1 r14        
 nord          # danger                   41.5%   5.07  10.84    2.104  S3 r19        
 nord          * required                 30.4%   3.67  10.84    1.115  S2 r3         
-nord          ? invalid                  25.1%   1.34   1.69    0.336  S2 r5         
+nord          ? invalid                  26.3%   4.29  10.84    1.130  S2 r5         
 nord          · severity                  4.7%   1.30   1.69    0.061  S1 r6         
 nord          ▚ invalid                      --      --      --       --  NOT DRAWN
 nord          ▸ cursor                   20.5%   1.41   1.69    0.288  S4 r0         
 darkside      O severity                 40.4%   2.30   4.56    0.926  S4 r15        
 darkside      o severity                 28.1%   1.20   1.39    0.336  S1 r1         
 darkside      · severity                  4.7%   1.13   1.39    0.053  S1 r1         
-darkside      Ø invalid                  52.0%   1.18   1.39    0.614  S2 r5         
+darkside      Ø invalid                  52.6%   7.22  19.26    3.799  S2 r5         
 darkside      ▊ cursor                   88.9%   1.30   1.39    1.159  S4 r9         
 darkside      ▚ danger                   57.9%  13.94  19.26    8.069  S3 r19        
 darkside      ▞ danger                   60.2%  15.12  19.26    9.108  S3 r19        
@@ -498,15 +498,15 @@ darkside      ▪ required                 17.5%  10.10  19.26    1.772  S2 r3
 prism         ▸ cursor                   21.1%   2.95   5.18    0.621  S4 r0         
 prism         ⣀ severity                  9.9%   1.46   2.41    0.145  S1 r12        
 prism         ⣆ required                 21.6%   4.22  16.02    0.913  S2 r3         
-prism         ⣏ invalid                  31.6%   1.64   3.25    0.518  S2 r5         
-prism         ⣤ severity                 21.6%   2.31   6.43    0.499  S5 r10        
-prism         ⣹ invalid                  31.6%   1.64   3.25    0.518  S2 r5         
+prism         ⣏ invalid                  33.9%   3.96  16.02    1.345  S2 r5         
+prism         ⣤ severity                 21.6%   4.21  16.02    0.912  S5 r10        
+prism         ⣹ invalid                  33.9%   3.97  16.02    1.347  S2 r5         
 prism         ⣿ danger+severity          44.4%   1.89   5.15    0.842  S2 r6         
 ledger        ( danger                   26.9%   1.29   1.50    0.347  S3 r6         
 ledger        ) danger                   31.0%   1.24   1.50    0.386  S3 r6         
-ledger        * severity                 30.4%   1.91   4.96    0.581  S5 r10        
+ledger        * severity                 30.4%   2.86  13.36    0.870  S2 r6         
 ledger        † required                 21.6%   3.19  13.36    0.691  S2 r3         
-ledger        ‡ invalid                  25.1%   1.25   1.50    0.313  S2 r5         
+ledger        ‡ invalid                  25.1%   3.76  13.36    0.946  S2 r5         
 ledger        ▶ cursor                   33.3%   1.29   1.50    0.431  S2 r3         
 solari        C severity                 31.0%   1.10   1.20    0.342  S4 r1         
 solari        D severity                 33.9%   1.13   1.20    0.385  S1 r20        
@@ -516,15 +516,15 @@ solari        N severity                 43.3%   1.11   1.20    0.478  S1 r20
 solari        O severity                 39.2%   1.11   1.20    0.434  S1 r20        
 solari        X severity                 33.3%   1.10   1.20    0.367  S4 r3         
 solari        Y severity                 27.5%   1.10   1.20    0.302  S4 r6         
-solari        ═ invalid                  26.3%   1.11   1.20    0.293  S2 r5         
+solari        ═ invalid                  26.3%   1.11   1.20    0.293  S3 r9         
 solari        ▀ danger                   57.9%  16.38  16.81    9.485  S3 r19        
 solari        ▄ danger                   52.6%   1.19   1.20    0.624  S4 r30        
 solari        ▮ required                 38.6%   4.66   9.48    1.798  S2 r3         
 solari        ▼ cursor                   31.0%   1.12   1.20    0.348  S4 r9         
-blueprint     ━ danger+severity          26.3%   2.90   4.65    0.764  S5 r9         
+blueprint     ━ danger+severity          26.3%   4.13  10.60    1.086  S4 r16        
 blueprint     ┌ cursor                   24.6%   1.12   1.24    0.276  S4 r8         
 blueprint     ═ required                 26.3%   5.62  10.60    1.479  S2 r2         
-blueprint     ╲ invalid                  25.7%   1.14   1.24    0.294  S2 r4         
+blueprint     ╲ invalid                  28.7%   4.47  10.60    1.280  S2 r4         
 
 D1. THE TEN WORST MEANING MARKS IN THE CORPUS
 
@@ -547,7 +547,7 @@ E. THE PRODUCT, AND WHY THE RULING DID NOT TAKE IT
 
 The 79 meaning marks the corpus draws span 0.053 to 9.802 on coverage x effective.
 
-AND 44 OF THEM ARE UNDER 3:1 ON DECLARED
+AND 38 OF THEM ARE UNDER 3:1 ON DECLARED
 CONTRAST AT THE SEAT REPORTED HERE. That number is NOT a count
 of violations and must not be read as one. `worst seat` is this
 report's own choice of where to look, and inc74 judged seats one
@@ -605,45 +605,44 @@ naught      severity    ∙ #f5f5f5  14.0%   9.66  19.26     1-8  S1 r0     FAIL
 naught      severity    ◦ #8a8a8a  14.0%   2.40   6.08     1-2  S1 r10    FAIL COVEFF
 naught      danger      ∙ #f5f5f5  14.0%   9.66  19.26     1-8  S1 r0     FAIL COV
 naught      required    ⊛ #f5f5f5  28.1%   3.45  19.26       1  S2 r3     pass    
-naught      invalid     ◑ #242424  36.3%   1.18   1.35       1  S2 r5     FAIL EFF
+naught      invalid     ◑ #f5f5f5  38.0%   7.33  19.26       1  S2 r5     pass    
 naught      cursor      ● #e51b24  40.9%   3.00   4.51       1  S1 r14    pass    
 corgi       severity    ▁ #9a9a9a  15.8%   4.77   6.91       2  S5 r8     pass    
 corgi       severity    ▄ #9a9a9a  52.6%   6.46   6.91       2  S5 r10    pass    
 corgi       severity    █ #f2f2f2  100.0%  16.90  17.36     1-2  S3 r19    pass    
 corgi       danger      █ #f2f2f2  100.0%  16.90  17.36     1-2  S3 r19    pass    
 corgi       required    ▀ #f2f2f2  57.9%  16.93  17.36       1  S2 r3     pass    
-corgi       invalid     ░ #3a3a3a  68.4%   1.05   1.71       2  S1 r12    FAIL EFF
+corgi       invalid     ░ #f2f2f2  68.4%   1.44  17.36       2  S2 r5     FAIL EFF
 corgi       cursor      ▐ #ff6600  55.6%   5.03   6.62       1  S1 r8     pass    
 instrument  severity    ⠂ #6e7b89   5.3%   1.90   4.50       2  S5 r8     FAIL COVEFF
 instrument  severity    ⠆ #6e7b89  10.5%   1.90   4.50       2  S5 r10    FAIL COVEFF
 instrument  severity    ⠇ #e8edf2  16.4%   4.16  16.52     1-2  S2 r16    pass    
 instrument  danger      ⠛ #e8edf2  22.8%   3.92  16.52       1  S3 r19    pass    
 instrument  required    ⣉ #e8edf2  23.4%   3.77  16.52       1  S2 r3     pass    
-instrument  invalid     ⠶ #333c47  21.1%   1.24   1.74    1-27  S2 r5     FAIL EFF
+instrument  invalid     ⠶ #e8edf2  21.1%   4.40  16.52    1-27  S2 r5     pass    
 instrument  cursor      ⣿ #2dd4bf  44.4%   2.94  10.45    1-21  S1 r0     FAIL EFF
 swiss       severity    · #9b9b9b   4.7%   2.64   6.85       1  S1 r1     FAIL COVEFF
-swiss       severity    ─ #9b9b9b  15.8%   2.87   6.85       1  S5 r11    FAIL EFF
+swiss       severity    ─ #f4f4f4  15.8%   5.81  17.30       1  S5 r11    pass    
 swiss       severity    ━ #f4f4f4  26.3%   7.91  17.30       1  S5 r13    pass    
 swiss       danger      ╱ #f4f4f4  28.7%   5.95  17.30       1  S3 r20    pass    
 swiss       danger      ╲ #f4f4f4  28.7%   5.94  17.30       1  S3 r20    pass    
 swiss       required    • #f4f4f4  14.0%   9.13  17.30       1  S2 r4     FAIL COV
-swiss       invalid     ║ #3d3d3d  55.6%   1.40   1.75       1  S2 r6     FAIL EFF
+swiss       invalid     ║ #f4f4f4  55.6%   7.95  17.30       1  S2 r6     pass    
 swiss       cursor      ▮ #e7372e  38.6%   2.57   4.52       1  S1 r9     FAIL EFF
 industrial  severity    ■ #f2f2f2  47.4%  11.02  15.55       2  S5 r12    pass    
-industrial  severity    ▪ #959595  17.5%   3.73   5.81       2  S5 r10    pass    
-industrial  severity    ▫ #959595  17.0%   2.77   5.81       2  S5 r8     FAIL EFF
+industrial  severity    ▪ #f2f2f2  17.5%   8.82  15.55       2  S5 r10    pass    
+industrial  severity    ▫ #f2f2f2  17.0%   5.82  15.55       2  S5 r8     pass    
 industrial  danger      ╱ #f2f2f2  28.7%   5.67  15.55       2  S3 r19    pass    
 industrial  required    ! #f2f2f2  18.7%   4.54  15.55       1  S2 r3     pass    
 industrial  invalid     / #f2f2f2  26.3%   5.02  15.55       1  S2 r5     pass    
-industrial  invalid     ▌ #4a4a4a  55.6%   1.86   1.96       1  S1 r3     FAIL EFF
-industrial  invalid     ▐ #4a4a4a  55.6%   1.76   1.96       1  S1 r3     FAIL EFF
+industrial  invalid     ▌ #f2f2f2  55.6%  13.43  15.55       1  S2 r5     pass    
+industrial  invalid     ▐ #f2f2f2  55.6%  11.51  15.55       1  S2 r5     pass    
 industrial  cursor      ▶ #ff6039  35.1%   2.97   5.79       1  S1 r9     FAIL EFF
-nord        severity    ! #919cb0  18.7%   2.17   4.51       1  S5 r10    FAIL EFF
-nord        severity    ! #eceff4  18.7%   3.81  10.84       2  S5 r12    pass    
+nord        severity    ! #eceff4  18.7%   3.81  10.84     1-2  S5 r10    pass    
 nord        severity    · #919cb0   4.7%   2.26   4.51       1  S1 r1     FAIL COVEFF
 nord        danger      # #eceff4  41.5%   5.07  10.84       1  S3 r19    pass    
 nord        required    * #eceff4  30.4%   3.67  10.84       1  S2 r3     pass    
-nord        invalid     ? #4c566a  25.1%   1.34   1.69       1  S2 r5     FAIL EFF
+nord        invalid     ? #eceff4  26.3%   4.29  10.84       1  S2 r5     pass    
 nord        cursor      ▸ #8fbcbb  21.6%   3.28   5.99       1  S1 r0     pass    
 darkside    severity    O #f5f5f5  40.9%   6.99  19.26       1  S5 r10    pass    
 darkside    severity    o #757575  28.1%   2.51   4.56       1  S1 r0     FAIL EFF
@@ -652,48 +651,46 @@ darkside    severity    · #757575   4.7%   1.90   4.56       1  S5 r8     FAIL 
 darkside    danger      ▚ #f5f5f5  57.9%  13.94  19.26       1  S3 r19    pass    
 darkside    danger      ▞ #f5f5f5  60.2%  15.12  19.26       1  S3 r19    pass    
 darkside    required    ▪ #f5f5f5  17.5%  10.10  19.26       1  S2 r3     pass    
-darkside    invalid     Ø #262626  52.0%   1.18   1.39       1  S2 r5     FAIL EFF
+darkside    invalid     Ø #f5f5f5  52.6%   7.22  19.26       1  S2 r5     pass    
 darkside    cursor      ▊ #1783ff  88.9%   4.47   5.73       1  S1 r9     pass    
 prism       severity    ⣀ #8b98a5   9.9%   2.38   5.18       1  S4 r23    FAIL COVEFF
 prism       severity    ⣀ #8b98a5  11.1%   2.25   6.43       2  S5 r8     FAIL COVEFF
-prism       severity    ⣤ #8b98a5  21.6%   2.31   6.43       2  S5 r10    FAIL EFF
+prism       severity    ⣤ #e6edf3  21.6%   4.21  16.02       2  S5 r10    pass    
 prism       severity    ⣿ #e6edf3  44.4%   4.06  16.02     1-2  S3 r19    pass    
 prism       danger      ⣿ #e6edf3  44.4%   4.06  16.02     1-2  S3 r19    pass    
 prism       required    ⣆ #e6edf3  21.6%   4.22  16.02       1  S2 r3     pass    
-prism       invalid     ⣏ #5b6675  31.6%   1.64   3.25       1  S2 r5     FAIL EFF
-prism       invalid     ⣹ #5b6675  31.6%   1.64   3.25       1  S2 r5     FAIL EFF
+prism       invalid     ⣏ #e6edf3  33.9%   3.96  16.02       1  S2 r5     pass    
+prism       invalid     ⣹ #e6edf3  33.9%   3.97  16.02       1  S2 r5     pass    
 prism       cursor      ▸ #2dd4bf  21.6%   4.48  10.17       1  S1 r0     pass    
-ledger      severity    * #1c1a15  30.4%   2.86  13.36       2  S2 r6     FAIL EFF
-ledger      severity    * #635e52  30.4%   1.91   4.96       1  S5 r10    FAIL EFF
+ledger      severity    * #1c1a15  30.4%   2.86  13.36     1-2  S2 r6     FAIL EFF
 ledger      danger      ( #1c1a15  27.5%   4.60  13.36       1  S3 r19    pass    
 ledger      danger      ) #1c1a15  31.6%   3.61  13.36       1  S3 r19    pass    
 ledger      required    † #1c1a15  21.6%   3.19  13.36       1  S2 r3     pass    
-ledger      invalid     ‡ #c4b99f  25.1%   1.25   1.50       1  S2 r5     FAIL EFF
+ledger      invalid     ‡ #1c1a15  25.1%   3.76  13.36       1  S2 r5     pass    
 ledger      cursor      ▶ #2b3a67  35.1%   3.33   8.48       1  S1 r10    pass    
 solari      severity    C #f0ede4  31.0%   6.73  16.81       1  S2 r16    pass    
-solari      severity    D #6e6a60  36.8%   2.36   3.65       1  S1 r7     FAIL EFF
-solari      severity    K #6e6a60  33.9%   2.31   3.65       1  S4 r12    FAIL EFF
-solari      severity    L #6e6a60  19.9%   2.59   3.65       1  S1 r4     FAIL EFF
+solari      severity    D #f0ede4  36.8%   8.48  16.81     1-2  S2 r6     pass    
+solari      severity    K #f0ede4  34.5%   7.92  16.81       1  S5 r8     pass    
+solari      severity    L #f0ede4  19.9%   9.84  16.81       1  S5 r10    pass    
 solari      severity    N #f0ede4  43.3%   6.90  16.81       1  S2 r10    pass    
-solari      severity    O #6e6a60  40.4%   2.07   3.65       1  S1 r4     FAIL EFF
+solari      severity    O #f0ede4  40.9%   6.51  16.81       1  S2 r10    pass    
 solari      severity    X #f0ede4  34.5%   6.20  16.81       1  S5 r12    pass    
-solari      severity    Y #6e6a60  28.7%   1.94   3.65       1  S1 r8     FAIL EFF
+solari      severity    Y #f0ede4  29.2%   5.67  16.81     1-4  S2 r6     pass    
 solari      danger      ▀ #f0ede4  57.9%  16.38  16.81       1  S3 r19    pass    
 solari      danger      ▄ #f0ede4  52.6%  15.52  16.81       1  S3 r19    pass    
 solari      required    ▮ #f0ede4  38.6%   7.67  16.81       1  S2 r3     pass    
-solari      invalid     ═ #1f1f22  26.3%   1.11   1.20       1  S2 r5     FAIL EFF
+solari      invalid     ═ #f0ede4  26.3%   7.64  16.81       1  S2 r5     pass    
 solari      cursor      ▼ #f5a300  32.2%   4.79   9.48       1  S1 r9     pass    
-blueprint   severity    ━ #7fa8c4  26.3%   2.90   4.65       1  S5 r9     FAIL EFF
 blueprint   severity    ━ #eef4f8  26.3%   5.60  10.60     1-2  S2 r5     pass    
 blueprint   danger      ━ #eef4f8  26.3%   5.60  10.60     1-2  S2 r5     pass    
 blueprint   required    ═ #eef4f8  26.3%   5.62  10.60       1  S2 r2     pass    
-blueprint   invalid     ╲ #24486b  25.7%   1.14   1.24       1  S2 r4     FAIL EFF
+blueprint   invalid     ╲ #eef4f8  28.7%   4.47  10.60       1  S2 r4     pass    
 blueprint   cursor      ┌ #eef4f8  24.6%   4.33  10.60       1  S1 r8     pass    
 ------------------------------------------------------------------------------
-F1. 89 BOUND SEATS, 48 PASS, 41 FAIL
+F1. 86 BOUND SEATS, 68 PASS, 18 FAIL
 
     coverage only    4
-    effective only   29
+    effective only   6
     both clauses     8
 
 F2. THE ELEVEN OBLIGATIONS, which is the row the round predicted

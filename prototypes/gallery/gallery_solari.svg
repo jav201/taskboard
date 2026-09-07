@@ -212,9 +212,9 @@
 <rect x="262.0" y="486.0" width="453.6" height="17.0" fill="#17171a"/>
 <rect x="715.6" y="486.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="486.0" width="16.8" height="17.0" fill="#17171a"/>
-<text x="371.2" y="499.3" fill="#1f1f22">═</text>
-<text x="379.6" y="499.3" fill="#f0ede4">task</text>
-<text x="413.2" y="499.3" fill="#1f1f22">······═</text>
+<text x="371.2" y="499.3" fill="#f0ede4">═task</text>
+<text x="413.2" y="499.3" fill="#1f1f22">······</text>
+<text x="463.6" y="499.3" fill="#f0ede4">═   </text>
 <text x="497.2" y="499.3" fill="#1f1f22">invalid</text>
 <rect x="262.0" y="503.0" width="453.6" height="17.0" fill="#17171a"/>
 <rect x="715.6" y="503.0" width="16.8" height="17.0" fill="#000000"/>
