@@ -5606,23 +5606,29 @@ class Instrument(Kit):
     — same origin, same cells, one cell per day. Under any other `layout` the
     previous bench-readout composition comes back byte-for-byte.
 
-    LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
-    `MATCH_STYLE` spends `accent` and nothing else, so with the colour taken
-    away the mark keeps only the luminance step the accent happens to carry:
-    **2.42:1 against the body it stands in**, measured on the greyscale PNGs
-    `raster.py` writes (`legibility.txt` section H). Three to one is what a
-    mark of this size would need. IT IS RECORDED AND NOT FIXED — a hue-only
-    match channel under 3:1 in grey is a LIMIT of this language rather than a
-    defect of it, because the second channel that would close it (a weight, a
-    rule, a bracket) is a different language. This is the highest of the four
-    hue-only kits and the only one over 2:1.
+    LIMIT (L12 corrected, inc92, ruling of 2026-09-07). THE MATCH MARK IS
+    FOUND BY AREA IN GREY, NOT BY TONE. inc86 recorded this kit as carrying
+    the match on hue alone. **It does not and it never did**: `MATCH_STYLE` is
+    `underline {accent}` and every one of the six match runs on `S6` is drawn
+    with a rule under it, which the raster's sidecar has recorded since inc43
+    and the old classification never read — it asked the STYLE's token and
+    never its word.
 
-    THE NUMBER MOVED WITH THE CURSOR AND NOT WITH THE MATCH (inc88): `accent`
+    What is true of the old note is its thinner half, and it is measured on
+    `instrument_S6.grey.png` over the seat `Kit.match` paints: the run's own
+    pixels stand at **2.31:1 against the body beside them**, under the three
+    to one a mark of this size would need. What carries the channel instead is
+    AREA — 1.30x the body's lit coverage and 2.42x its ink.
+    IT IS RECORDED AND NOT FIXED: a match found in grey by area rather than by
+    tone is a LIMIT of this language rather than a defect of it, and whether
+    30 % more lit area is FOUND by an eye is the human session's question
+    (`SESION-PERSONA.md` F18/F20) and nobody has run it.
+
+    THE TONE MOVED WITH THE CURSOR AND NOT WITH THE MATCH (inc88): `accent`
     took the smallest hue-preserving lightness step that clears Q1 at `⣿`,
-    and this channel is painted in the same token, so the Limit improved from
-    2.34 to 2.42 as a side effect. It is still under three to one and it is
-    still a Limit; what changed is that this kit is now the only one of the
-    four whose grey step moved at all, and it moved the right way.
+    and this channel is painted in the same token. This is the widest
+    effective step of the four kits the old table named, and the only one of
+    them carrying a decoration as well as a weight.
     """
 
     # HALF IS COMPOSED, NOT CHOSEN (#46): the full cell's left sub-column OR
@@ -6250,17 +6256,27 @@ class Swiss(Kit):
     rule per head. Under any other `layout` the previous full-width flow rows
     come back, byte for byte (`_flow_*`).
 
-    LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
-    `MATCH_STYLE` spends `accent` — this kit's one red — and nothing else, so
-    with the colour taken away the mark keeps only the luminance step the red
-    happens to carry: **1.52:1 against the body it stands in**, measured on
-    the greyscale PNGs `raster.py` writes (`legibility.txt` section H).
-    IT IS RECORDED AND NOT FIXED — a hue-only match channel under 3:1 in grey
-    is a LIMIT of this language rather than a defect of it. Here it is a limit
-    the kit's own founding rule produces: a language with no boxes, no
-    markers and no drawn type has spent every channel but colour before the
-    match is reached, and round five was arguing about this exact cell when it
-    called `swiss_S6` *"la peor cifra del corpus"*."""
+    LIMIT (L12 corrected, inc92, ruling of 2026-09-07). THE ONE SEAT IN THE
+    CORPUS WHERE AREA AND DEPTH DISAGREE. inc86 recorded this kit as carrying
+    the match on hue alone; `MATCH_STYLE` is `bold {alert}` and the run IS
+    drawn in the bold instance, which the old derivation could not see because
+    it read the STYLE's token and never its word.
+
+    Measured on `swiss_S6.grey.png` over the seat `Kit.match` paints:
+    **1.17:1 against the body beside it**, the thinnest effective step of the
+    eleven. The run covers **1.21x** that body's lit area and yet carries only
+    **1.07x** its ink, because this red falls DARKER than the grey of the body
+    and depth cancels most of what area gained. The ruling's own disposition —
+    *if weight is present it passes on weight, else it is a Limit* — is what
+    admits it, and swiss is the only kit of eleven that needs that arm.
+
+    IT IS RECORDED AND NOT FIXED: a match found in grey by 21 % of area is a
+    LIMIT of this language rather than a defect of it, and here it is a limit
+    the kit's own founding rule produces — a language with no boxes, no
+    markers and no drawn type has spent every channel but colour and weight
+    before the match is reached. Round five was arguing about this exact cell
+    when it called `swiss_S6` *"la peor cifra del corpus"*, and it was closer
+    to right than the four rounds that answered it with a token."""
 
     # THE GRID. Two constants decide everything, so the drop rule is derived
     # rather than tabulated:
@@ -7358,17 +7374,21 @@ class Nord(Kit):
     Under any other `layout` every method below falls through to `super()`,
     i.e. the base kit, and nord renders byte-for-byte as it always did.
 
-    LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
-    `MATCH_STYLE` spends `accent` and nothing else, so with the colour taken
-    away the mark keeps only the luminance step the accent happens to carry:
-    **1.34:1 against the body it stands in** — the THINNEST of the four
-    hue-only kits — measured on the greyscale PNGs `raster.py` writes
-    (`legibility.txt` section H). IT IS RECORDED AND NOT FIXED — a hue-only
-    match channel under 3:1 in grey is a LIMIT of this language rather than a
-    defect of it. And this kit is the one where that sentence is doctrine
-    rather than a concession: base16 INHERITS the user's environment, so the
-    match is whatever the palette gives it, and a second channel invented
-    here would be an identity nord has by construction none of."""
+    LIMIT (L12 corrected, inc92, ruling of 2026-09-07). THE MATCH MARK IS
+    FOUND BY AREA IN GREY, NOT BY TONE. inc86 recorded this kit as carrying
+    the match on hue alone; `MATCH_STYLE` is `bold {accent}` and the run IS
+    drawn in the bold instance, which the old derivation could not see because
+    it read the STYLE's token and never its word.
+
+    Measured on `nord_S6.grey.png` over the seat `Kit.match` paints:
+    **1.44:1 against the body beside it**, carried by 1.22x that body's lit
+    area and 1.74x its ink. IT IS RECORDED AND NOT FIXED: a match found in
+    grey by 22 % of area is a LIMIT of this language rather than a defect of
+    it. And this kit is the one where that sentence is doctrine rather than a
+    concession: base16 INHERITS the user's environment, so the TONE is
+    whatever the palette gives it, and the weight is the only half of the
+    channel nord owns — which is exactly the half the old table said it did
+    not have."""
 
     # ======================================================================
     # THE SEVEN THIS LANGUAGE DOES NOT OVERRIDE, AND WHY THAT IS AN ANSWER
@@ -8068,17 +8088,21 @@ class Prism(Kit):
     two-colours-per-cell law is satisfied BY COMPOSITION instead of policed
     afterwards.
 
-    LIMIT (L12, inc86, ruling of 2026-09-07). THE MATCH MARK RIDES HUE ALONE.
-    `MATCH_STYLE` spends `accent` and nothing else, so with the colour taken
-    away the mark keeps only the luminance step the accent happens to carry:
-    **1.59:1 against the body it stands in**, measured on the greyscale PNGs
-    `raster.py` writes (`legibility.txt` section H).
-    IT IS RECORDED AND NOT FIXED — a hue-only match channel under 3:1 in grey
-    is a LIMIT of this language rather than a defect of it. And it is worth
-    naming HERE in particular: this kit already moved PRIORITY off hue and
-    onto a glyph (`!2`) for a collision of nine rgb units, so the match is
-    the one place left where prism still asks colour to carry a distinction
-    by itself.
+    LIMIT (L12 corrected, inc92, ruling of 2026-09-07). THE MATCH MARK IS
+    FOUND BY AREA IN GREY, NOT BY TONE. inc86 recorded this kit as carrying
+    the match on hue alone; `MATCH_STYLE` is `bold {accent}` and the run IS
+    drawn in the bold instance, which the old derivation could not see because
+    it read the STYLE's token and never its word.
+
+    Measured on `prism_S6.grey.png` over the seat `Kit.match` paints:
+    **1.76:1 against the body beside it**, carried by 1.22x that body's lit
+    area and 1.82x its ink. IT IS RECORDED AND NOT FIXED: a match found in
+    grey by 22 % of area is a LIMIT of this language rather than a defect of
+    it. And the correction matters HERE in particular, because the old note
+    said the opposite of what is true: this kit had already moved PRIORITY off
+    hue and onto a glyph (`!2`) for a collision of nine rgb units, and the
+    match was the one seat it was accused of leaving to colour alone. It never
+    was — the weight was always there and no instrument read it.
     """
 
     DISCLOSE = "⣶"                        # the field continues
