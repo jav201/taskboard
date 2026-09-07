@@ -152,40 +152,52 @@ DECLARED_MARKS = (("field", "FIELD_LEAD", "field.leader"),
 #: severity rungs sharing a cell is a severity problem, not a collision.
 A_FAMILIES = ("severity", "danger", "required", "invalid", "cursor")
 
-#: PAIRS THIS CENSUS TREATS AS ONE DRAWING (ruling D, inc53), decided and
-#: listed rather than left to judgement. Each is one shape at two DIAMETERS,
-#: adjacent in size, drawn by at least one kit in this corpus:
+#: THE FAMILIES A CELL CAN BELONG TO — ruling D AMENDED (orchestrator,
+#: 2026-09-07, on the operator's delegation):
 #:
-#:   • ●   BULLET / BLACK CIRCLE           the solid disc
-#:   · ∙   MIDDLE DOT / BULLET OPERATOR    the small solid disc
-#:   ○ O   WHITE CIRCLE / LATIN O          the ring
-#:   o ◦   LATIN o / WHITE BULLET          the small ring
-#:   ▪ ■   SMALL / FULL BLACK SQUARE       the solid square
+#:     "the homoglyph list is derived, not enumerated: two cells are
+#:      homoglyphs when they are the same base shape at a different size or
+#:      fill (ring/disc, dot sizes, dash counts within a family), and the
+#:      named four join it now: naught `⊙`/`◉` and `○`/`◦`, ledger `†`/`‡`,
+#:      blueprint `╌ ┄ ┈`."
 #:
-#: THEY ARE PAIRS AND NOT FAMILIES, and that is the decision the ruling left
-#: open. Chaining `· ∙ • ●` into one transitive family would put a MIDDLE DOT
-#: and a BLACK CIRCLE in one drawing -- a tenfold size difference, which a
-#: reader separates at any cell height -- and it produced 20 rows against 6
-#: when it was measured. Adjacent sizes only.
+#: WHAT REPLACED WHAT. Until inc68 this was a FIXED LIST OF FIVE PAIRS, and
+#: `PROTOTYPE-inheritors-3.md` §0d is the objection in one line: the four
+#: TIGHTEST pairs in the corpus were not in it, so the instrument that
+#: enforces ruling D could only ever enforce it against the pairs somebody
+#: had already noticed. A ruling that binds only against the pairs somebody
+#: wrote down is not a ruling about SHAPE; it is a list of exceptions read
+#: backwards.
 #:
-#: `▪ ■` IS IN THE TABLE AND COSTS NOTHING TODAY (zero rows). It is listed on
-#: the same argument as `• ●` rather than left out because it happens to be
-#: quiet, and it is the pair that would catch a language moving a meaning
-#: onto one square while its chrome holds the other.
+#: EACH ROW IS ONE BASE SHAPE, written in its own order of size and fill, and
+#: a homoglyph is ANY TWO MEMBERS of one row. That is the amendment's own
+#: word ("a different size OR fill") and it reverses inc53's "adjacent sizes
+#: only", which was decided when this table was five hand-picked pairs. The
+#: cost is published rather than hidden: the roster goes from 1 row to 33 and
+#: `HOMOGLYPH_ROSTER` says what every one of them is.
 #:
-#: WHAT THIS IS FOR: a language that resolves a collision by moving to the
-#: same drawing at another size has moved nothing.
-#: `PROTOTYPE-inheritors-2.md` §0b counted five such moves in the six
-#: languages that had an increment. FOUR ARE ACCEPTED, each with the channel
-#: it spends, and are absent from this table by construction:
-#:
-#:   industrial  `▪ -> ▶`   DIRECTION (a square against a pointer)
-#:   solari      `▁ -> ▮`   SHAPE FAMILY (a ground against a slab)
-#:   darkside    `O -> ▊`   WEIGHT (a letterform ring against a stroke)
-#:   darkside    `◎ ◉` against `· o O`   COUNT (two strokes against one)
-#:
-#: The fifth, swiss `• -> ●`, is a homoglyph and inc53 moved it.
-HOMOGLYPHS = (("•", "●"), ("·", "∙"), ("○", "O"), ("o", "◦"), ("▪", "■"))
+#: TRIANGLES ARE NOT A FAMILY, and that is the ruling's other half. `▶ ▼ ▸`
+#: differ by DIRECTION, and the D-addendum (inc55) says direction is a
+#: channel wherever a language already spends it: *"Rotation counts as a
+#: channel when it is direction the language already spends (opener/closer,
+#: up/down), not otherwise."* industrial's `CUR ▶` against its `DISCLOSE ▼`
+#: is the case that settled it, and it stays settled.
+HOMOGLYPH_FAMILIES = (
+    "⋅·∙•●",       # the round FILLED mark: dot operator, middle dot,
+                        # bullet operator, bullet, black circle
+    "◦o○◎◉⊙⊛O",    # the round HOLLOW mark and what stands inside it:
+                        # white bullet, letter o, white circle, bullseye,
+                        # fisheye, circled dot, circled asterisk, letter O
+    "▫□▪■",          # the SQUARE, hollow and filled, small and full
+    "†‡",              # the reference mark and the same mark with a second bar
+    "╌┄┈",             # one BROKEN horizontal at two, three and four dashes
+)
+
+#: derived, so a family gains a member in ONE place. Both orders of each pair
+#: are read by `homoglyph_rows`, so the tuple order here carries no meaning
+#: beyond the family's own size/fill order.
+HOMOGLYPHS = tuple((a, b) for fam in HOMOGLYPH_FAMILIES
+                   for i, a in enumerate(fam) for b in fam[i + 1:])
 
 
 def _cells(glyph: str) -> list[tuple[str, str]]:
@@ -289,24 +301,52 @@ def homoglyph_rows(lang: str) -> list[tuple]:
     `HOMOGLYPHS` where ONE side carries a meaning and the OTHER carries a
     control's chrome.
 
-    ONE SIDE MEANING, ONE SIDE CHROME, and the asymmetry is the ruling's:
-    *"flags a meaning mark whose homoglyph is chrome"*. Two chrome cells that
-    are one drawing are an ALPHABET, exactly as B x B is; two MEANINGS that
-    are one drawing are a severity/obligation question this file already asks
-    of the cell itself and would answer twice here. Both directions of each
-    pair are read, so it does not matter which of the two the kit declared
-    first."""
+    MEANING x CHROME, AND SINCE inc68 MEANING x MEANING TOO. The old
+    asymmetry came from the ruling's phrasing ("flags a meaning mark whose
+    homoglyph is chrome") and it had a hole the amendment names by name.
+    This function said that two meanings which are one drawing were "a
+    severity/obligation question this file already asks of the cell itself";
+    that is TRUE OF ONE CELL AND FALSE OF TWO. `Ledger.REQUIRED` is `†` and
+    its INVALID mark is `‡` -- one drawing with a second bar, three cells
+    apart on row 6 of `ledger_S2`, which `PROTOTYPE-inheritors-3.md` §2.11
+    calls the tightest pair in the corpus -- and because BOTH sides are
+    meanings this file read ZERO for ledger through three rounds. Ruling D
+    amended names that pair as one that must join, so the clause is widened
+    rather than the pair being written into a list.
+
+    A LADDER IS NOT A ROW, by name and with its citation. The D-addendum
+    (inc55) rules: *"A ladder is one meaning at monotone intensities and is
+    one declaration: industrial's severity `▫▫ ▪▪ ■■` passes from hollow to
+    filled (weight) and grows (size) in the same direction, so it stands."*
+    So two cells that are BOTH rungs of this kit's own `LEVELS` are one
+    declaration seen twice and are skipped -- industrial's three squares and
+    darkside's `o`/`O`, four rows in all. Every other meaning x meaning pair
+    is a row.
+
+    CHROME x CHROME IS STILL NOT A ROW: two chrome cells that are one drawing
+    are an ALPHABET, exactly as B x B is. Both directions of each pair are
+    read, so it does not matter which of the two the kit declared first."""
     named, _ = role_map(lang)
+    rungs = {ch for g in LG.kit(lang).LEVELS.values() for ch in g
+             if ch not in BLANKS}
     out = []
     for a, b in HOMOGLYPHS:
-        for x, y in ((a, b), (b, a)):
-            fx, fy = named.get(x), named.get(y)
-            if not fx or not fy:
+        fa, fb = named.get(a), named.get(b)
+        if not fa or not fb:
+            continue
+        aa = sorted(f for f in fa if f in A_FAMILIES)
+        ab = sorted(f for f in fb if f in A_FAMILIES)
+        if aa and ab:
+            if {a, b} <= rungs:      # one ladder, one declaration (inc55)
                 continue
-            av = sorted(f for f in fx if f in A_FAMILIES)
-            bv = sorted(f for f in fy if f not in A_FAMILIES)
-            if av and bv:
-                out.append((x, av, y, bv))
+            out.append((a, aa, b, ab))
+            continue
+        for x, y, ax in ((a, b, aa), (b, a, ab)):
+            if not ax:
+                continue
+            bv = sorted(f for f in named[y] if f not in A_FAMILIES)
+            if bv:
+                out.append((x, ax, y, bv))
     return out
 
 
@@ -400,13 +440,18 @@ def report() -> list[str]:
     w("")
 
     w("=" * 78)
-    w("HOMOGLYPHS — one drawing at two diameters, meaning against chrome")
+    w("HOMOGLYPHS — one drawing at another size or fill (ruling D amended)")
     w("=" * 78)
     w("Ruling D (2026-09-06): a channel is COUNT, WEIGHT, POSITION or")
     w("DIRECTION. Diameter alone is none of them, so a language that tells a")
-    w("MEANING apart from its own CHROME by size alone has told them apart")
-    w("with nothing. The pairs read as one drawing are:")
-    w("    " + "   ".join(f"{a} {b}" for a, b in HOMOGLYPHS))
+    w("MEANING apart from its own CHROME -- or from another MEANING -- by")
+    w("size or fill alone has told them apart with nothing. Ruling D amended")
+    w("(2026-09-07): the pairs are DERIVED from these families, any two")
+    w("members of one row being one drawing. Triangles are NOT a family:")
+    w("they differ by DIRECTION, which the D-addendum rules a channel.")
+    for fam in HOMOGLYPH_FAMILIES:
+        w("    " + " ".join(fam))
+    w(f"    -> {len(HOMOGLYPHS)} pairs")
     w("These rows are NOT added to the counts above: a homoglyph row is a")
     w("question about two drawings, and the count is a question about one")
     w("cell.")
@@ -419,8 +464,10 @@ def report() -> list[str]:
             continue
         w(f"{lang.upper()}   {len(rows)} row(s)")
         for cell, av, twin, bv in rows:
+            kind = ("MEANING" if all(f in A_FAMILIES for f in bv)
+                    else "chrome")
             w(f"  {cell} is {' + '.join(av)}   and its homoglyph {twin} is "
-              f"{' + '.join(bv)} chrome")
+              f"{' + '.join(bv)} {kind}")
     w("")
     w(f"{'TOTAL homoglyph rows':<30}{total:>4}")
     w("")
@@ -462,41 +509,78 @@ FOUND_BY_HAND = (
 #: test suite's rosters make: a number is a record only while somebody has to
 #: edit it. A row here is NOT a defect; it is the question ruling D asks.
 #:
-#:   naught     1  WAS 2, went to 0 at inc61, and is 1 AGAIN AT inc67 — not
-#:                 a regression in the kit but the reader reaching a widget
-#:                 it had never read. `∙` (danger + the error rung) stands
-#:                 against `·` at `scrollbar.main`, the pager's SHAFT, which
-#:                 inc61 could not have moved because the scroll bar was
-#:                 outside set B. It is the same row inc61 closed, alive in
-#:                 the one seat that was invisible: the alphabet is one round
-#:                 pixel at six charges and the shaft is still spending the
-#:                 retired one. Left as a QUESTION for the K2 increment,
-#:                 which is where a homoglyph row belongs.
-#:              (was) WAS 2 and closed by inc61 (`rework-5c`, ruling A).
-#:                 `∙` (error+danger) stood against `·` at four controls,
-#:                 and `·` (the invalid rune) against `∙` at two — the
-#:                 alphabet was one round pixel at SIX charges and two of
-#:                 the six were `·` and `∙`. inc61 RETIRED `·`: it is the
-#:                 homoglyph of the lit dot, it is the one rung of the
-#:                 ramp that is East-Asian-Width AMBIGUOUS, and
-#:                 LANGUAGES.md §0's own pass-10 had already "measured and
-#:                 rejected" it. Five charges now: `⋅ ◦ ∙ ◉ ●`.
-#:   darkside   1  `o` is `LEVELS["warn"]` and `◦` is `radio.knob[default]`.
-#:                 inc53 moved the FIELD LEADER off `◦`; the radio's unchosen
-#:                 lamp still draws it, and the ruling covers the leader only.
-#:                 The leader is invisible to this census either way — it is
-#:                 drawn in `field_row`, outside `PART_GLYPHS` (inc49 §11).
-#:   ledger     0  WAS 1 and closed by inc61. `·` is the invalid rune and
-#:                 `∙` was the EDITED field's paper — one part telling two
-#:                 of its own STATES apart by size, which ruling D
-#:                 forbids whether the two drawings are a meaning and
-#:                 its chrome or two states of one seat. EDITED takes
-#:                 `◆`, this kit's own EDITED mark at the knob and the
-#:                 step.
-#:   swiss      0  closed by inc53: the radio's chosen mark left `●`.
-HOMOGLYPH_ROSTER = {"naught": 1, "corgi": 0, "instrument": 0, "swiss": 0,
-                    "industrial": 0, "nord": 0, "darkside": 1, "prism": 0,
-                    "ledger": 0, "solari": 0, "blueprint": 0}
+#: inc68 REWROTE EVERY NUMBER IN IT, from 1 row to 30, and NOT ONE KIT GOT
+#: WORSE. The table above stopped being five hand-picked pairs and became a
+#: derivation over five families (ruling D amended), and `homoglyph_rows`
+#: stopped skipping MEANING x MEANING. Both changes are the instrument
+#: learning to see, which is the third time in this programme that a roster
+#: has jumped because a reader was widened (inc49's knobs, inc67's quantity
+#: widgets, this).
+#:
+#: THE THIRTY, GROUPED BY WHAT CAUSES THEM, because thirty rows read one at a
+#: time are thirty taste arguments and grouped they are six facts:
+#:
+#:   6  THE INVALID RUNE, and this file already knows about it. `spec.md`
+#:      §15.5 and §16.4 record the discrepancy by name: the CENSUS counts a
+#:      field's paper rune as a rejection mark while the LAW does not
+#:      (`_invalid_marks` has excluded the rune since inc52, reading the two
+#:      WALLS and not the paper between them). Every one of these six is a
+#:      `·` or `⋅` that is a field's paper standing against a filled disc at
+#:      another size: corgi, ledger, solari, blueprint and naught (twice).
+#:      **The day the census adopts the law's exclusion, all six go at once**
+#:      — the same sentence §16.4 wrote about six COLLISION rows, now true of
+#:      six homoglyph rows as well.
+#:   5  NAUGHT'S GROUND. `◦` is `LEVELS["info"]` (`◦◦`, zero lit dots) and it
+#:      is also this language's BLANK — `THE_GROUND_IS_NOT_A_MARK`, one
+#:      language, one cell, granted by name in inc61 and priced at
+#:      `GROUND_EXEMPTION_IS_WORTH = (7, 2)`. The two SEAT laws subtract it;
+#:      this file does not, on the standing decision that a census asks
+#:      questions and a law gives verdicts. So five rows are the ground
+#:      standing against the rings drawn on it.
+#:   4  NAUGHT'S OBLIGATION MARK, and this one is the ruling contradicting
+#:      the round. `⊛` is a ring with an asterisk in it, and
+#:      `PROTOTYPE-inheritors-3.md` §2.8 calls it the best obligation mark in
+#:      the corpus BY NAME ("un asterisco dentro de un anillo no se parece a
+#:      nada más en la pantalla"). Ruling D amended puts every ring in one
+#:      family, so it is now a homoglyph of `○ ◎ ◉ ⊙`. Recorded exactly as it
+#:      is: an instrument and a reader disagreeing, with both positions
+#:      written down.
+#:   8  DARKSIDE'S RING ALPHABET. `LEVELS` is `· / o / O` and inc49 moved
+#:      every control to `◎ ◉` citing COUNT ("two concentric strokes against
+#:      one") — a move this file's own docstring listed as ACCEPTED. Under
+#:      the amendment a ring is a ring at any fill, so seven rows come back
+#:      plus `▪`/`▫` at `REQUIRED` against the radio. Closing them means
+#:      re-alphabeting darkside's controls off rings entirely, which is a
+#:      language-level increment and not a census edit.
+#:   4  ONE PAIR EACH, and each is a real reading:
+#:        swiss      `·` (`LEVELS["info"]`) against `•` (`REQUIRED`) — two
+#:                   MEANINGS, one filled disc at two sizes.
+#:        nord       `·` (`LEVELS["info"]`) against `●` at the radio's knob.
+#:        ledger     `†` (`REQUIRED`) against `‡` (INVALID) — **the tightest
+#:                   pair in the corpus** (§2.11), one drawing with a second
+#:                   bar, three cells apart on row 6 of `ledger_S2`, and
+#:                   INVISIBLE to this file until inc68 widened it to
+#:                   meaning x meaning. Ruling D amended names it.
+#:        naught     `∙` (danger + error) against `●` (`CUR`).
+#:   2  BLUEPRINT'S DASH LADDER. `╌` is `LEVELS["warn"]` and `┄`/`┈` are the
+#:      dead runs inc60 built. Formally a COUNT channel and formally allowed
+#:      by ruling D; the round's objection (§2.7) is that counting dashes in
+#:      a 12px cell is not a channel a reader has. E2 — no font metric — is
+#:      why it cannot be settled from the artefact.
+#:   1  SOLARI, AND IT IS THIS FILE'S OWN FALSE POSITIVE. `LEVELS` here is
+#:      three WORDS (`OK ` / `DLY` / `CNX`) and `_cells` splits a word into
+#:      letters, so the `O` of `OK` is read as a severity MARK and matches
+#:      the `◉` of a radio. A language whose ladder is words declares no
+#:      severity cell at all. Named rather than special-cased: the fix is a
+#:      reader change and it belongs to whoever rules on it.
+#:
+#: AND ONE ROW CLOSED, which is why naught reads 12 and not 15: `·` at
+#: `scrollbar.main`. See `Naught.PART_GLYPHS` for the whole of it — inc61
+#: retired that pixel and could not reach the one seat the census was told
+#: not to read.
+HOMOGLYPH_ROSTER = {"naught": 12, "corgi": 1, "instrument": 0, "swiss": 1,
+                    "industrial": 0, "nord": 1, "darkside": 8, "prism": 0,
+                    "ledger": 2, "solari": 2, "blueprint": 3}
 
 
 def _self_check() -> None:
