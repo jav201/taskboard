@@ -21,7 +21,7 @@
                               │             ▫ ok    ▫ Refresh     default              │                              
                               │             ▪ ok    ▪ Refresh     focused              │                              
                               │             ■ ok    ■ Refresh     active               │                              
-                              │               ok      Refresh     disabled             │                              
+                              │             ╎ ok    ╎ Refresh     disabled             │                              
                               │  textfield  task·caret 2                               │                              
                               │             │task          default                     │                              
                               │             ┃task          focused                     │                              

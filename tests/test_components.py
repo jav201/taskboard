@@ -2812,7 +2812,26 @@ def is_wall(ch: str) -> bool:
     swiss's own `DANGER_FORM`, which `Kit.button` sets around the WORD and not
     around the field — a stroke that leans closes no corner, and inc16's law
     already governs it. The law below is asked of the danger button too, so
-    those two are the only marks in this range it may contain."""
+    those two are the only marks in this range it may contain.
+
+    AND THE DASHED STROKES ARE EXCLUDED TOO, since inc69, ON THE DIAGONALS'
+    OWN ARGUMENT EXTENDED: a stroke that is BROKEN closes no corner either.
+    U+2504–U+250B and U+254C–U+254F are the light and heavy double, triple
+    and quadruple dashes, and **this kit already spends five of them at five
+    DEAD control seats** — `┆` at the knob, the checkbox, the field and the
+    stepper's step, `╎` at the radio's ground and at `stepper.main` — without
+    anybody having called them boxes in eight increments. Ruling L2 needs a
+    mark for the one control that had none, and the marks a language spends
+    on deadness are the marks it has.
+
+    THE EXCLUSION IS PAID FOR IN THE SAME MOVE, and the law it buys is
+    stronger than the clause it loosens: the test below now also asserts that
+    **no button seat carries a mark at BOTH ends**, which is what "no boxes"
+    actually claims and what a per-character codepoint rule could never see —
+    `▪ Cancel ▪` is an enclosure and passes `is_wall` at every width, because
+    neither cell is in the Box Drawing block at all."""
+    if 0x2504 <= ord(ch) <= 0x250B or 0x254C <= ord(ch) <= 0x254F:
+        return False              # broken: closes no corner (inc69)
     return (0x2500 <= ord(ch) <= 0x257F and ch not in "╱╲╳") \
         or 0x2580 <= ord(ch) <= 0x259F
 
@@ -2837,6 +2856,16 @@ def test_swiss_puts_no_wall_around_a_button_at_any_width():
            for danger in (False, True)
            for ch in plain(k.button("Cancel", w, st, danger)) if is_wall(ch)]
     assert not bad, bad
+
+    # AND NO SEAT IS MARKED AT BOTH ENDS (inc69). A box is an ENCLOSURE, and
+    # a per-character rule cannot see one built out of cells that are not box
+    # drawing at all. The declared seat is read at its two halves, the way
+    # `Kit.button` splits it, and only the OPENING half may carry a mark. The
+    # danger form is not in this clause for the reason it is not in `is_wall`:
+    # `Kit.button` sets it round the WORD and not round the field.
+    for st, glyph in k.PART_GLYPHS["button.main"].items():
+        half = len(glyph) // 2
+        assert not glyph[half:].strip(), (st, glyph, "marked at both ends")
 
 
 def test_the_swiss_button_keeps_its_states_apart_without_a_wall_or_a_hue():
@@ -2881,14 +2910,29 @@ def test_the_swiss_buttons_ladder_is_one_shape_at_three_weights():
     full — but they ARE new code points, and that is the trade this test now
     records instead of hiding.
 
-    DISABLED IS STILL AIR, asserted rather than tolerated: there is nothing
-    lighter than the hollow square in this alphabet that is not a dashed
-    RULE, which is the shape being given up."""
+    DISABLED IS NO LONGER AIR (inc69, ruling L2: *"a disabled control always
+    carries a mark; air is not a state"*). inc38 made it air and gave the
+    reason — *"nothing in this alphabet is lighter than `·` except a dashed
+    RULE (`┆ ╎ ┈`), the shape being given up"* — and the shape was not given
+    up: this kit draws a dashed rule at five other dead seats. The dead rung
+    is `╎`, which is `stepper.main`'s dead cell, so it is DERIVED from the
+    kit's own other `▫` seat rather than chosen; it is a different SHAPE from
+    the square (so K4's channel law reads SHAPE, not diameter), it is no cell
+    of `LEVELS`, `DANGER_FORM` or `REQUIRED`, and it is the one dashed
+    vertical in this kit's dead vocabulary that is East-Asian-Width NEUTRAL
+    where `┆` is AMBIGUOUS."""
     k = LG.kit("swiss")
     rungs = [k.PART_GLYPHS["button.main"][st].strip()
              for st in (LG.DEFAULT, LG.FOCUSED, LG.ACTIVE)]
     assert rungs == ["▫", "▪", "■"], rungs
-    assert not k.PART_GLYPHS["button.main"][LG.DISABLED].strip()
+    dead = k.PART_GLYPHS["button.main"][LG.DISABLED].strip()
+    assert dead == "╎", dead
+    # the kit's own other `▫` seat already answered "what is a dead ▫ here"
+    assert k.PART_GLYPHS["stepper.main"][LG.DEFAULT] == "▫▫"
+    assert set(k.PART_GLYPHS["stepper.main"][LG.DISABLED]) == {dead}
+    # and it is not a square at another size -- the ladder keeps its own
+    # shape and the dead rung steps OFF it, which is what "given up" means
+    assert dead not in _twins("▫"), (dead, sorted(_twins("▫")))
     meanings = set("".join(k.LEVELS.values())) | {k.REQUIRED} | set(k.DANGER_FORM)
     assert not (set(rungs) & meanings), sorted(set(rungs) & meanings)
     # the square bullet the ladder is three weights OF is still the checkbox's
@@ -6269,3 +6313,142 @@ def test_the_state_channel_law_goes_red_on_a_real_table(monkeypatch):
     for lang in LANGS:
         assert (len(states_without_a_channel(lang))
                 == STATES_TOLD_APART_BY_SIZE[lang]), lang
+
+
+# ---------------------------------------------------------------------------
+# inc69 (rework-6b) — L2: air is not a state
+# ---------------------------------------------------------------------------
+#: RULING L2 (orchestrator, 2026-09-07, on the operator's delegation),
+#: verbatim: **"a disabled control always carries a mark; air is not a
+#: state."**
+#:
+#: THE FRAME, THREE ROUNDS RUNNING. `swiss_S2` row 18 read
+#: `     Save        ▫   Cancel` — the button the reader is meant to press was
+#: the only control on the screen with no mark at all, and it stood directly
+#: above `Save is held until due parses`, which is a LEGEND. Tapar la fila y
+#: decir cuál de los dos renglones es un control: sin respuesta. `spec.md`
+#: §11.3 has admitted it word for word since `rework-3`; `PROTOTYPE-
+#: inheritors.md`, `-2` and `-3` each named it; six batches went past it, and
+#: the only thing that changed in that row was that `Cancel` GAINED a mark.
+#:
+#: IT WAS A DECISION AND NOT AN OVERSIGHT, which is why it needed a ruling.
+#: inc38 wrote it down: *"DISABLED is air, and it is the one decision that is
+#: not the ladder. Nothing in this alphabet is lighter than `·` except a
+#: dashed RULE (`┆ ╎ ┈`) — the shape being given up. So the mark is simply not
+#: set… A control nobody may press is a word, and that is what this language
+#: would have said anyway."* Two things are wrong with the last sentence and
+#: the ruling names the second: a word is what a LEGEND is too, and the shape
+#: was not given up — this kit spends a dashed rule at five dead seats.
+#:
+#: THE LAW IS OVER ALL ELEVEN AND IT IS TWO CLAUSES, because "air" can happen
+#: two ways: a kit can DECLARE nothing, and a composer can pad a declaration
+#: out of the frame at a width nobody rendered.
+AIR = " ⠀"          # the ASCII space and U+2800, the same pair everything else here calls blank
+
+
+def declared_air(lang: str) -> list[tuple]:
+    """`(component, part, state)` for every seat this kit draws as nothing.
+
+    Read through `part_glyph`, so a state a kit does not declare is judged on
+    the glyph it actually FALLS BACK to — a fallback that is air is still air
+    on the screen, and this law is about the screen."""
+    k = LG.kit(lang)
+    out = []
+    for comp in sorted(LG.COMPONENT_PARTS):
+        for part in LG.COMPONENT_PARTS[comp]:
+            for st in LG.component_states(comp):
+                if not k.part_glyph(part, st, comp).strip(AIR):
+                    out.append((comp, part, st))
+    return out
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_no_control_state_is_drawn_as_air(lang):
+    """L2's first clause, over every seat of every component in every kit.
+
+    ONE SEAT IN THE WHOLE CORPUS FAILED IT and it is the one the round named:
+    swiss's `button.main[DISABLED]`, four spaces. Every other kit — including
+    the four that renounce a mascot, the two whose meters draw no ramp and the
+    one whose severity ladder is words — marks every state of every part."""
+    assert declared_air(lang) == [], (lang, declared_air(lang))
+
+
+#: THE WIDTHS. A button's seat is split in half and the caller's word stands
+#: between the halves, so a mark that only survived at the width somebody
+#: happened to render would be a mark that vanishes when a dialog grows. Three
+#: widths, and they are the three `test_swiss_puts_no_wall_around_a_button_at_
+#: any_width` already argues for: below the label, at the dialog's own, and at
+#: swiss's `MEASURE_MIN` — *"the only width anyone tested was the only width
+#: anyone calls"*.
+L2_WIDTHS = (1, 10, 24)
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_no_control_state_renders_as_air_at_any_width(lang):
+    """L2's second clause: the DRAWN row, with the caller's own text removed.
+
+    A declaration is not a rendering. `Kit.button` centres the label in a
+    field the caller sizes, and `Kit.textfield` lays the value on the paper —
+    so the question this clause asks is the reader's: **with the words taken
+    away, is there anything left that says a control is here?**
+
+    THE WORD IS REMOVED AND NOT SEARCHED AROUND, because a label can contain
+    anything: `plain(row).replace(word, "")` and then `.strip(AIR)`. What is
+    left is the language's own cells, and there has to be at least one."""
+    k = LG.kit(lang)
+    word, value = "Cancel", "12/09/26"
+    for st in LG.component_states("button"):
+        for w in L2_WIDTHS:
+            row = plain(k.button(word, w, st)).replace(word, "")
+            assert row.strip(AIR), (lang, "button", st, w, repr(row))
+    for st in LG.component_states("textfield"):
+        for w in L2_WIDTHS:
+            row = plain(k.textfield(value, None, w, st)).replace(value, "")
+            assert row.strip(AIR), (lang, "textfield", st, w, repr(row))
+
+
+def test_the_air_law_goes_red_on_the_declaration_inc69_moved(monkeypatch):
+    """TEETH, on the REAL declaration — swiss's own pre-inc69 seat, four
+    spaces, restored byte for byte.
+
+    THREE ARMS, and the third is the one that matters. Arm one restores the
+    seat and the DECLARED clause goes red, naming swiss's button and the
+    DISABLED state and nothing else. Arm two puts a mark back that is present
+    in the DECLARATION but padded away by the composer — a single cell in the
+    CLOSING half of a seat whose opening half is air — and the declared clause
+    goes GREEN while the rendered clause goes red, which is why L2 is two
+    clauses and not one. Arm three is the vacuity check: with the shipped
+    declarations, exactly zero of the eleven have an air seat, and the
+    assertion that would fire if the reader stopped reading anything is the
+    count of seats it visited."""
+    for lang in LANGS:
+        assert declared_air(lang) == [], lang
+
+    # ARM ONE — inc38's declaration, verbatim
+    tbl = dict(LG.Swiss.PART_GLYPHS["button.main"])
+    tbl[LG.DISABLED] = "    "
+    monkeypatch.setitem(LG.Swiss.PART_GLYPHS, "button.main", tbl)
+    assert declared_air("swiss") == [("button", "main", LG.DISABLED)], \
+        declared_air("swiss")
+    assert all(declared_air(o) == [] for o in LANGS if o != "swiss")
+    with pytest.raises(AssertionError):
+        test_no_control_state_renders_as_air_at_any_width("swiss")
+    monkeypatch.undo()
+
+    # ARM TWO — a mark that EXISTS and does not survive the composer. The
+    # seat is read at its two halves and the opening half is what leads the
+    # field, so a mark parked in the closing half is declared and unpainted
+    # at every width `Kit.button` pads.
+    tbl = dict(LG.Swiss.PART_GLYPHS["button.main"])
+    tbl[LG.DISABLED] = "   ╎"
+    monkeypatch.setitem(LG.Swiss.PART_GLYPHS, "button.main", tbl)
+    assert declared_air("swiss") == [], "the declared clause cannot see it"
+    monkeypatch.undo()
+
+    # ARM THREE — the reader is not vacuous: it visits every seat the
+    # registry derives, which is a number somebody has to edit.
+    seats = sum(len(LG.COMPONENT_PARTS[c]) * len(LG.component_states(c))
+                for c in LG.COMPONENT_PARTS)
+    assert seats == 110, seats
+    for lang in LANGS:
+        assert declared_air(lang) == [], lang

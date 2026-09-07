@@ -6287,11 +6287,47 @@ class Swiss(Kit):
         # block element, so inc38's law (no wall around a button at any width,
         # derived from the codepoint) is untouched and still bites.
         #
-        # DISABLED IS STILL AIR, for inc38's stated reason: there is nothing
-        # lighter than the hollow square in this alphabet that is not a dashed
-        # RULE, which is the shape being given up.
+        # DISABLED IS NOT AIR ANY MORE (inc69, ruling L2), and the reason
+        # inc38 gave for making it air is the reason it stops being air.
+        #
+        # RULING L2 (orchestrator, 2026-09-07, on the operator's delegation):
+        # *"a disabled control always carries a mark; air is not a state."*
+        #
+        # WHAT inc38 SAID, and it said it plainly: *"DISABLED is air, and it
+        # is the one decision that is not the ladder. Nothing in this alphabet
+        # is lighter than `·` except a dashed RULE (`┆ ╎ ┈`) -- the shape being
+        # given up."* inc46 kept it for the same reason once the ladder had
+        # moved to `▫ ▪ ■`. **The shape was NOT given up.** This kit spends the
+        # dashed rule at five dead seats already -- `┆` at the knob, the
+        # checkbox, the field and the stepper's step; `╎` at the radio's
+        # ground and at `stepper.main` -- so "the shape being given up" is a
+        # shape this language draws every time a control dies. The button was
+        # the ONE control of the eleven with no dead mark at all.
+        #
+        # WHAT THE FRAME SAID, three rounds running. `swiss_S2` row 18 reads
+        # `     Save        ▫   Cancel`: the button the reader is meant to
+        # press is the only control on the screen with no mark, and it sits
+        # directly above `Save is held until due parses`, which is a LEGEND.
+        # Tapar la fila y decir cuál de los dos renglones es un control -- sin
+        # respuesta. `spec.md` §11.3 admits it word for word since `rework-3`.
+        #
+        # THE MARK IS `╎`, AND IT IS DERIVED RATHER THAN CHOSEN. `stepper.main`
+        # is this kit's other `▫` seat -- `▫▫` live -- and its dead rung is
+        # `╎╎`. So the kit had already answered "what does a dead `▫` look
+        # like here" in a different table, and the button takes that answer.
+        # It is distinct from `▫` in SHAPE (a broken stroke against a square)
+        # as well as being lighter, it is no cell of `LEVELS`, `DANGER_FORM`
+        # or `REQUIRED` (`· ─ ━ ╲ ╱ •`), and it introduces nothing new to the
+        # alphabet.
+        #
+        # THE SEAT'S ARITHMETIC IS UNTOUCHED: four cells, the mark and one
+        # cell of air leading the field, the two that used to close it still
+        # air. Same width across all four states, so the word cannot move
+        # under the state and inc38's no-wall law is not disturbed -- `╎` is
+        # a box-drawing cell but it is a RULE and not a wall, exactly as `┆`
+        # is at the four dead seats that already wear it.
         "button.main": {DEFAULT: "▫   ", FOCUSED: "▪   ", ACTIVE: "■   ",
-                        DISABLED: "    "},
+                        DISABLED: "╎   "},
         # THE LANGUAGE THAT WOULD RENOUNCE THE WALLS AND CANNOT, a second
         # time. A bare line of words is the honest swiss field — but a value
         # may fill every cell, so a walled-off field is the only place a full

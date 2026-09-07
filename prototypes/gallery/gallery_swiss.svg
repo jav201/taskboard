@@ -182,8 +182,8 @@
 <rect x="707.2" y="401.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="401.0" width="25.2" height="17.0" fill="#171717"/>
 <text x="262.0" y="414.3" fill="#e2231a">│</text>
-<text x="379.6" y="414.3" fill="#3d3d3d">  ok  </text>
-<text x="446.8" y="414.3" fill="#3d3d3d">  Refresh  </text>
+<text x="379.6" y="414.3" fill="#3d3d3d">╎ ok  </text>
+<text x="446.8" y="414.3" fill="#3d3d3d">╎ Refresh  </text>
 <text x="564.4" y="414.3" fill="#3d3d3d">disabled</text>
 <text x="740.8" y="414.3" fill="#e2231a">│</text>
 <rect x="262.0" y="418.0" width="445.2" height="17.0" fill="#171717"/>
