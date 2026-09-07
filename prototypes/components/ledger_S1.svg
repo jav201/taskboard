@@ -10,55 +10,55 @@
 <text x="211.6" y="23.3" fill="#8a8272"> │ </text>
 <text x="236.8" y="23.3" fill="#c4b99f">· log</text>
 <text x="10.0" y="40.3" fill="#1c1a15">BOARD ······································································</text>
-<text x="656.8" y="40.3" fill="#6a6458">16 tasks  ·  4 projects</text>
+<text x="656.8" y="40.3" fill="#635e52">16 tasks  ·  4 projects</text>
 <text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="74.3" fill="#1c1a15"> 1 BACKLOG ·····································</text>
-<text x="438.4" y="74.3" fill="#6a6458">5 entries</text>
+<text x="438.4" y="74.3" fill="#635e52">5 entries</text>
 <text x="514.0" y="74.3" fill="#8a8272">═══</text>
 <text x="539.2" y="74.3" fill="#1c1a15">DETAIL ···········</text>
-<text x="698.8" y="74.3" fill="#6a6458">Fix login redirect</text>
+<text x="698.8" y="74.3" fill="#635e52">Fix login redirect</text>
 <text x="26.8" y="91.3" fill="#8a8272">══════════════════════════════════════════════════════════</text>
 <text x="522.4" y="91.3" fill="#8a8272">│</text>
 <text x="539.2" y="91.3" fill="#8a8272">─────────────────────────────────────</text>
-<text x="43.6" y="108.3" fill="#6a6458"> 5 </text>
+<text x="43.6" y="108.3" fill="#635e52"> 5 </text>
 <text x="68.8" y="108.3" fill="#8a8272">│</text>
 <text x="77.2" y="108.3" fill="#1c1a15"> Audit the theme tokens ·········</text>
 <text x="354.4" y="108.3" fill="#8a8272">│</text>
-<text x="362.8" y="108.3" fill="#6a6458"> backlog  </text>
+<text x="362.8" y="108.3" fill="#635e52"> backlog  </text>
 <text x="446.8" y="108.3" fill="#8a8272">│</text>
-<text x="455.2" y="108.3" fill="#6a6458">   21d</text>
+<text x="455.2" y="108.3" fill="#635e52">   21d</text>
 <text x="505.6" y="108.3" fill="#8a8272">│</text>
 <text x="522.4" y="108.3" fill="#8a8272">│</text>
 <text x="539.2" y="108.3" fill="#1c1a15">PROJECT ·························</text>
 <text x="824.8" y="108.3" fill="#1c1a15">Web</text>
 <rect x="43.6" y="112.0" width="470.4" height="17.0" fill="#e0d7c2"/>
 <text x="68.8" y="125.3" fill="#8a8272">│</text>
-<text x="77.2" y="125.3" fill="#6a6458">   Docs ·························</text>
+<text x="77.2" y="125.3" fill="#635e52">   Docs ·························</text>
 <text x="354.4" y="125.3" fill="#8a8272">│</text>
 <text x="362.8" y="125.3" fill="#c4b99f"> low      </text>
 <text x="446.8" y="125.3" fill="#8a8272">│</text>
-<text x="455.2" y="125.3" fill="#6a6458">   due</text>
+<text x="455.2" y="125.3" fill="#635e52">   due</text>
 <text x="505.6" y="125.3" fill="#8a8272">│</text>
 <text x="522.4" y="125.3" fill="#8a8272">│</text>
 <text x="539.2" y="125.3" fill="#1c1a15">PHASE ·························</text>
 <text x="808.0" y="125.3" fill="#1c1a15">doing</text>
-<text x="43.6" y="142.3" fill="#6a6458"> 6 </text>
+<text x="43.6" y="142.3" fill="#635e52"> 6 </text>
 <text x="68.8" y="142.3" fill="#8a8272">│</text>
 <text x="77.2" y="142.3" fill="#1c1a15"> Drop the legacy shim ···········</text>
 <text x="354.4" y="142.3" fill="#8a8272">│</text>
-<text x="362.8" y="142.3" fill="#6a6458"> backlog  </text>
+<text x="362.8" y="142.3" fill="#635e52"> backlog  </text>
 <text x="446.8" y="142.3" fill="#8a8272">│</text>
-<text x="455.2" y="142.3" fill="#6a6458">   30d</text>
+<text x="455.2" y="142.3" fill="#635e52">   30d</text>
 <text x="505.6" y="142.3" fill="#8a8272">│</text>
 <text x="522.4" y="142.3" fill="#8a8272">│</text>
 <text x="539.2" y="142.3" fill="#1c1a15">DUE ······························</text>
 <text x="833.2" y="142.3" fill="#1c1a15">3d</text>
 <text x="68.8" y="159.3" fill="#8a8272">│</text>
-<text x="77.2" y="159.3" fill="#6a6458">   API ··························</text>
+<text x="77.2" y="159.3" fill="#635e52">   API ··························</text>
 <text x="354.4" y="159.3" fill="#8a8272">│</text>
 <text x="362.8" y="159.3" fill="#c4b99f"> normal   </text>
 <text x="446.8" y="159.3" fill="#8a8272">│</text>
-<text x="455.2" y="159.3" fill="#6a6458">   due</text>
+<text x="455.2" y="159.3" fill="#635e52">   due</text>
 <text x="505.6" y="159.3" fill="#8a8272">│</text>
 <text x="522.4" y="159.3" fill="#8a8272">│</text>
 <text x="539.2" y="159.3" fill="#1c1a15">PRIORITY ·······················</text>
@@ -68,7 +68,7 @@
 <text x="816.4" y="176.3" fill="#1c1a15">open</text>
 <text x="10.0" y="193.3" fill="#2b3a67">▶</text>
 <text x="26.8" y="193.3" fill="#1c1a15"> 2 DOING ·······································</text>
-<text x="438.4" y="193.3" fill="#6a6458">4 entries</text>
+<text x="438.4" y="193.3" fill="#635e52">4 entries</text>
 <text x="522.4" y="193.3" fill="#8a8272">│</text>
 <text x="539.2" y="193.3" fill="#1c1a15">OWNER ························</text>
 <text x="799.6" y="193.3" fill="#1c1a15">jav201</text>
@@ -76,11 +76,11 @@
 <text x="26.8" y="210.3" fill="#8a8272">══════════════════════════════════════════════════════════</text>
 <text x="522.4" y="210.3" fill="#8a8272">│</text>
 <text x="10.0" y="227.3" fill="#2b3a67">▶</text>
-<text x="43.6" y="227.3" fill="#6a6458"> 1 </text>
+<text x="43.6" y="227.3" fill="#635e52"> 1 </text>
 <text x="68.8" y="227.3" fill="#8a8272">│</text>
 <text x="77.2" y="227.3" fill="#1c1a15"> Fix login redirect ·············</text>
 <text x="354.4" y="227.3" fill="#8a8272">│</text>
-<text x="362.8" y="227.3" fill="#6a6458"> doing    </text>
+<text x="362.8" y="227.3" fill="#635e52"> doing    </text>
 <text x="446.8" y="227.3" fill="#8a8272">│</text>
 <text x="455.2" y="227.3" fill="#a8261f">    3d</text>
 <text x="505.6" y="227.3" fill="#8a8272">│</text>
@@ -90,26 +90,26 @@
 <text x="623.2" y="227.3" fill="#c4b99f">·</text>
 <text x="640.0" y="227.3" fill="#c4b99f">·····</text>
 <text x="690.4" y="227.3" fill="#c4b99f">·····</text>
-<text x="740.8" y="227.3" fill="#6a6458"> 44%</text>
+<text x="740.8" y="227.3" fill="#635e52"> 44%</text>
 <text x="68.8" y="244.3" fill="#8a8272">│</text>
-<text x="77.2" y="244.3" fill="#6a6458">   Web ··························</text>
+<text x="77.2" y="244.3" fill="#635e52">   Web ··························</text>
 <text x="354.4" y="244.3" fill="#8a8272">│</text>
 <text x="362.8" y="244.3" fill="#c4b99f"> high     </text>
 <text x="446.8" y="244.3" fill="#8a8272">│</text>
-<text x="455.2" y="244.3" fill="#6a6458">   due</text>
+<text x="455.2" y="244.3" fill="#635e52">   due</text>
 <text x="505.6" y="244.3" fill="#8a8272">│</text>
 <text x="522.4" y="244.3" fill="#8a8272">│</text>
-<text x="43.6" y="261.3" fill="#6a6458"> 2 </text>
+<text x="43.6" y="261.3" fill="#635e52"> 2 </text>
 <text x="68.8" y="261.3" fill="#8a8272">│</text>
 <text x="77.2" y="261.3" fill="#1c1a15"> Rate-limit the API ·············</text>
 <text x="354.4" y="261.3" fill="#8a8272">│</text>
-<text x="362.8" y="261.3" fill="#6a6458"> doing    </text>
+<text x="362.8" y="261.3" fill="#635e52"> doing    </text>
 <text x="446.8" y="261.3" fill="#8a8272">│</text>
 <text x="455.2" y="261.3" fill="#a8261f">   2d!</text>
 <text x="505.6" y="261.3" fill="#8a8272">│</text>
 <text x="522.4" y="261.3" fill="#8a8272">│</text>
 <text x="68.8" y="278.3" fill="#8a8272">│</text>
-<text x="77.2" y="278.3" fill="#6a6458">   API ··························</text>
+<text x="77.2" y="278.3" fill="#635e52">   API ··························</text>
 <text x="354.4" y="278.3" fill="#8a8272">│</text>
 <text x="362.8" y="278.3" fill="#c4b99f"> high     </text>
 <text x="446.8" y="278.3" fill="#8a8272">│</text>
@@ -117,38 +117,38 @@
 <text x="505.6" y="278.3" fill="#8a8272">│</text>
 <text x="522.4" y="278.3" fill="#8a8272">│</text>
 <rect x="43.6" y="282.0" width="470.4" height="17.0" fill="#e0d7c2"/>
-<text x="43.6" y="295.3" fill="#6a6458"> 3 </text>
+<text x="43.6" y="295.3" fill="#635e52"> 3 </text>
 <text x="68.8" y="295.3" fill="#8a8272">│</text>
 <text x="77.2" y="295.3" fill="#1c1a15"> Port the CSV importer ··········</text>
 <text x="354.4" y="295.3" fill="#8a8272">│</text>
-<text x="362.8" y="295.3" fill="#6a6458"> doing    </text>
+<text x="362.8" y="295.3" fill="#635e52"> doing    </text>
 <text x="446.8" y="295.3" fill="#8a8272">│</text>
-<text x="455.2" y="295.3" fill="#6a6458">    9d</text>
+<text x="455.2" y="295.3" fill="#635e52">    9d</text>
 <text x="505.6" y="295.3" fill="#8a8272">│</text>
 <text x="522.4" y="295.3" fill="#8a8272">│</text>
 <text x="68.8" y="312.3" fill="#8a8272">│</text>
-<text x="77.2" y="312.3" fill="#6a6458">   API ··························</text>
+<text x="77.2" y="312.3" fill="#635e52">   API ··························</text>
 <text x="354.4" y="312.3" fill="#8a8272">│</text>
 <text x="362.8" y="312.3" fill="#c4b99f"> normal   </text>
 <text x="446.8" y="312.3" fill="#8a8272">│</text>
-<text x="455.2" y="312.3" fill="#6a6458">   due</text>
+<text x="455.2" y="312.3" fill="#635e52">   due</text>
 <text x="505.6" y="312.3" fill="#8a8272">│</text>
 <text x="522.4" y="312.3" fill="#8a8272">│</text>
-<text x="43.6" y="329.3" fill="#6a6458"> 4 </text>
+<text x="43.6" y="329.3" fill="#635e52"> 4 </text>
 <text x="68.8" y="329.3" fill="#8a8272">│</text>
 <text x="77.2" y="329.3" fill="#1c1a15"> Rewrite the onboarding ·········</text>
 <text x="354.4" y="329.3" fill="#8a8272">│</text>
-<text x="362.8" y="329.3" fill="#6a6458"> doing    </text>
+<text x="362.8" y="329.3" fill="#635e52"> doing    </text>
 <text x="446.8" y="329.3" fill="#8a8272">│</text>
-<text x="455.2" y="329.3" fill="#6a6458">   14d</text>
+<text x="455.2" y="329.3" fill="#635e52">   14d</text>
 <text x="505.6" y="329.3" fill="#8a8272">│</text>
 <text x="522.4" y="329.3" fill="#8a8272">│</text>
 <text x="68.8" y="346.3" fill="#8a8272">│</text>
-<text x="77.2" y="346.3" fill="#6a6458">   Web ··························</text>
+<text x="77.2" y="346.3" fill="#635e52">   Web ··························</text>
 <text x="354.4" y="346.3" fill="#8a8272">│</text>
 <text x="362.8" y="346.3" fill="#c4b99f"> low      </text>
 <text x="446.8" y="346.3" fill="#8a8272">│</text>
-<text x="455.2" y="346.3" fill="#6a6458">   due</text>
+<text x="455.2" y="346.3" fill="#635e52">   due</text>
 <text x="505.6" y="346.3" fill="#8a8272">│</text>
 <text x="522.4" y="346.3" fill="#8a8272">│</text>
 <text x="522.4" y="363.3" fill="#8a8272">│</text>
@@ -161,7 +161,7 @@
 <text x="522.4" y="414.3" fill="#8a8272">│</text>
 <text x="522.4" y="431.3" fill="#8a8272">│</text>
 <text x="26.8" y="448.3" fill="#1c1a15"> 4 DONE ········································</text>
-<text x="438.4" y="448.3" fill="#6a6458">7 entries</text>
+<text x="438.4" y="448.3" fill="#635e52">7 entries</text>
 <text x="522.4" y="448.3" fill="#8a8272">│</text>
 <text x="26.8" y="465.3" fill="#8a8272">══════════════════════════════════════════════════════════</text>
 <text x="522.4" y="465.3" fill="#8a8272">│</text>
@@ -170,8 +170,8 @@
 <text x="522.4" y="516.3" fill="#8a8272">│</text>
 <text x="10.0" y="533.3" fill="#c4b99f">view</text>
 <text x="52.0" y="533.3" fill="#c4b99f">┊</text>
-<text x="60.4" y="533.3" fill="#6a6458">▬▬▬▬</text>
+<text x="60.4" y="533.3" fill="#635e52">▬▬▬▬</text>
 <text x="94.0" y="533.3" fill="#c4b99f">┊┊┊┊┊┊┊</text>
-<text x="161.2" y="533.3" fill="#6a6458">3-10 of 23</text>
+<text x="161.2" y="533.3" fill="#635e52">3-10 of 23</text>
 </g>
 </svg>

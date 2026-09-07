@@ -17,6 +17,7 @@ happen.
 """
 from __future__ import annotations
 
+import colorsys
 import pathlib
 import re
 
@@ -5230,6 +5231,419 @@ def test_the_declared_ground_law_bites_on_the_defect_it_was_written_for():
     assert seen == k.t["ground"], "clause one still passes -- that is the point"
     assert max(spread, key=spread.get) == _TEXTUAL_DEFAULT_GROUND, spread
 
+
+
+# ---------------------------------------------------------------------------
+# inc73 (rework-7a) — K6, K7's `alert` clause, the match tier, and the role
+# ruling. Every painted run in the 66 sheets, against the ground UNDER IT.
+# ---------------------------------------------------------------------------
+#: WHERE A CHARACTER'S BASELINE SITS RELATIVE TO ITS ROW'S BACKGROUND RECT.
+#: `svg_from_grid` writes a row's rects at `ry = PAD + y*LH` and its text at
+#: `ty = ry + 0.78*LH`, so a text run and the rect under it are one
+#: subtraction apart.
+#:
+#: DECLARED HERE AND CHECKED AGAINST THE EXPORTER'S SOURCE, rather than
+#: imported: `prototypes/capture_languages.py` pulls in Textual and this file
+#: reads the pictures as bytes on purpose (`FRAMES` is a path and not an
+#: import, for the same reason `render.py` is not imported either). The check
+#: below is what stops the two drifting.
+_CW, _LH, _PAD, _BASE_FRAC = 8.4, 17.0, 10.0, 0.78
+_BASE = _LH * _BASE_FRAC
+
+
+def test_this_files_picture_metrics_are_the_exporters():
+    """The reader below attributes a character to a rect by COORDINATE, so it
+    is wrong the moment the exporter's cell box changes. Read off the
+    exporter's source rather than trusted."""
+    src = (FRAMES.parent / "capture_languages.py").read_text(encoding="utf-8")
+    assert f"CW, LH, FS, PAD = {_CW}, {_LH}, 14.0, {_PAD}" in src, "metrics"
+    assert "ry = PAD + y * LH" in src, "row origin"
+    assert f"ty = ry + {_BASE_FRAC} * LH" in src, "baseline"
+
+_TEXT_RUN = re.compile(
+    r'<text x="([0-9.]+)" y="([0-9.]+)" fill="(#[0-9a-fA-F]{6})"'
+    r'([^>]*)>(.*?)</text>')
+_RECT_RUN = re.compile(
+    r'<rect x="([-0-9.]+)" y="([-0-9.]+)" width="([0-9.]+)" '
+    r'height="([0-9.]+)" fill="(#[0-9a-fA-F]{6})"/>')
+
+
+def _unescape(s: str) -> str:
+    for a, b in (("&lt;", "<"), ("&gt;", ">"), ("&quot;", '"'),
+                 ("&#39;", "'"), ("&amp;", "&")):
+        s = s.replace(a, b)
+    return s
+
+
+def painted_runs(svg: str):
+    """`(ink, ground, text, bold, underline)` for every painted stretch.
+
+    THE GROUND IS THE ONE UNDER THE RUN, not the canvas — which is K6 in one
+    sentence and the thing inc70's law could not ask. A `<text>` element is
+    split wherever the rect beneath it changes, so a run that starts on the
+    page and ends on a plate is returned as two runs with two grounds.
+    Attribution is by COORDINATE, cell by cell: the character's own centre
+    against the rect's span. Round four's §8.3 is why it is per character and
+    not per run — its first pass attributed whole runs to two-cell plates and
+    produced two contrasts of 1.00:1 and 1.03:1 that were the measurer's
+    artefacts and not the picture's.
+
+    Blank stretches are dropped: a run of spaces has an ink colour and no ink.
+    """
+    canvas = _CANVAS_RECT.search(svg).group(3)
+    rows: dict[int, list] = {}
+    for x, y, w, h, fill in _RECT_RUN.findall(svg):
+        r = round((float(y) - _PAD) / _LH)
+        rows.setdefault(r, []).append((float(x), float(x) + float(w), fill))
+    out = []
+    for x, y, fill, attrs, body in _TEXT_RUN.findall(svg):
+        r = round((float(y) - _BASE - _PAD) / _LH)
+        bold, und = "bold" in attrs, "underline" in attrs
+        cur, buf = None, ""
+        for i, ch in enumerate(_unescape(body)):
+            cx = float(x) + (i + 0.5) * _CW
+            bg = canvas
+            for x0, x1, rf in rows.get(r, ()):
+                if x0 - 0.01 <= cx <= x1 + 0.01:
+                    bg = rf
+                    break
+            if bg != cur:
+                if buf.strip():
+                    out.append((fill, cur, buf, bold, und))
+                cur, buf = bg, ""
+            buf += ch
+        if buf.strip():
+            out.append((fill, cur, buf, bold, und))
+    return out
+
+
+#: WHAT EACH TIER OWES THE GROUND IT IS PAINTED ON. `ink` and `mut` are text
+#: (WCAG 1.4.3); `alert` says "this is wrong" and is asked the same, because a
+#: warning nobody can read is not a warning; `focus` is a non-text component
+#: boundary (1.4.11).
+#:
+#: THE RULING (orchestrator, 2026-09-07, K6): *contrast is measured against
+#: the background actually under the run (the second grounds: selection bands,
+#: plates, match rects), not only the canvas. `ink` and `mut` >= 4.5:1 against
+#: every ground they are painted on; `focus` >= 3:1.*
+#: And K7's second half: *`alert` >= 4.5:1 against every ground it is painted
+#: on, all eleven.*
+#:
+#: `dim` IS NOT HERE. K7's first half asks it only where it CLASSIFIES, and
+#: that is a seat-by-seat table — inc74's, not this law's.
+TIER_FLOOR = {"ink": 4.5, "mut": 4.5, "alert": 4.5, "focus": 3.0}
+
+
+def runs_under_floor(lang: str) -> list[tuple]:
+    """Every painted run of a floored tier that misses its floor, over the six
+    sheets. `(screen, tier, ratio, ground, text)`."""
+    t = LG.THEMES[lang]
+    by_hex: dict[str, list[str]] = {}
+    for tier in TIER_FLOOR:
+        v = t.get(tier)
+        if isinstance(v, str) and v.startswith("#"):
+            by_hex.setdefault(v, []).append(tier)
+    bad = []
+    for screen in SCREENS:
+        svg = (FRAMES / f"{lang}_{screen}.svg").read_text(encoding="utf-8")
+        for ink, ground, text, _b, _u in painted_runs(svg):
+            for tier in by_hex.get(ink, ()):
+                c = contrast(ink, ground)
+                if c < TIER_FLOOR[tier]:
+                    bad.append((screen, tier, round(c, 2), ground,
+                                text.strip()[:24]))
+    return bad
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_every_painted_run_clears_its_tiers_floor_on_its_own_ground(lang):
+    """K6, over all 66 sheets, cell by cell.
+
+    inc70 asked `contrast(token, THEMES[lang]["ground"])` — one number per
+    kit, against the CANVAS. Five kits paint a second ground and round four
+    measured what that hid: ledger's `mut` at 4.10:1 on its band, industrial's
+    at 4.20:1 on its plate, industrial's `focus` at 1.28:1 and its `alert` at
+    4.06:1. A floor cleared by the smallest possible step against one ground
+    breaks against the first rect somebody paints under it, which is §7.2 of
+    that round, and this law is the answer to it.
+
+    THE EXEMPTION IS THE ONE ALREADY WRITTEN. solari's `mut` sits under the
+    floor against its own canvas by an impossibility proof
+    (`THE_BAND_IS_A_SECOND_GROUND`), so it cannot clear it against anything;
+    the exemption is asserted to be non-empty and real rather than assumed."""
+    bad = runs_under_floor(lang)
+    if lang in THE_BAND_IS_A_SECOND_GROUND:
+        assert THE_BAND_IS_A_SECOND_GROUND[lang].strip(), lang
+        assert bad and {b[1] for b in bad} == {"mut"}, (lang, bad[:4])
+        return
+    assert bad == [], (lang, bad[:6])
+
+
+def test_the_second_ground_law_bites_on_the_four_runs_round_four_measured(
+        monkeypatch):
+    """TEETH, on the REAL hexes, one kit at a time — and each arm names the
+    run round four found and the ground it found it on.
+
+    THE ARM THAT MATTERS MOST IS industrial's `mut`: `#8f8f8f` cleared 5.38:1
+    against the canvas and the OLD law was green on it for two batches. It is
+    the plate that catches it, which is the whole of K6."""
+    for lang in LANGS:
+        test_every_painted_run_clears_its_tiers_floor_on_its_own_ground(lang)
+
+    before = {
+        "industrial": [("mut", "#8f8f8f", "#2e2e2e", 4.20),
+                       ("alert", "#ff4b1f", "#2e2e2e", 4.06)],
+        "ledger": [("mut", "#6a6458", "#e0d7c2", 4.10)],
+        "nord": [("alert", "#bf616a", "#2e3440", 3.05)],
+        "corgi": [("alert", "#d92b1a", "#0d0d0d", 3.99)],
+        "naught": [("alert", "#d71921", "#000000", 4.05)],
+        "swiss": [("alert", "#e2231a", "#101010", 4.07)],
+    }
+    for lang, rows in before.items():
+        for tier, hexes, ground, ratio in rows:
+            # the arithmetic first, so a wrong constant fails here and not in
+            # a picture nobody re-rendered
+            assert round(contrast(hexes, ground), 2) == ratio, (lang, tier)
+            assert contrast(hexes, ground) < TIER_FLOOR[tier], (lang, tier)
+            assert LG.THEMES[lang][tier] != hexes, (lang, tier, "already old")
+            assert contrast(LG.THEMES[lang][tier], ground) >= TIER_FLOOR[tier]
+
+
+#: WHICH CHANNEL EACH KIT DECLARES ITS MATCH ON, derived from `MATCH_STYLE`
+#: rather than typed: the STYLE word gives `bold` / `underline` / `reverse`,
+#: and the TOKEN gives whether the mark is a hue of its own or the kit's own
+#: ink at another weight.
+#:
+#: THE RULING (orchestrator, 2026-09-07), and it REPLACES the "match ink >= 3:1
+#: against `mut` and against `ink`" clause, which is unsatisfiable. The
+#: arithmetic that retired it, because a clause withdrawn without its reason
+#: comes back:
+#:
+#:     contrast(ink, ground) == contrast(ink, mut) * contrast(mut, ground)
+#:
+#: exactly, for any three colours ordered by luminance (every term is a ratio
+#: of `L + 0.05`). A match ink 3:1 from BOTH `mut` and `ink` forces
+#: `contrast(ink, mut) >= 9`, and with K6's `mut >= 4.5` that forces
+#: `contrast(ink, ground) >= 40.5`. **The physical maximum is 21:1**, white on
+#: black. No kit could satisfy it at any token value; the corpus's best
+#: `ink/mut` headroom, with `mut` sitting exactly on the K6 floor, is
+#: darkside's 4.28.
+#:
+#: SO THE TWO THINGS A MATCH OWES ARE MEASURED ON DIFFERENT CHANNELS:
+#:   (a) LEGIBLE — the match ink >= 4.5:1 against the ground it is actually
+#:       painted on. For `reverse` that ground is the SWAPPED rect.
+#:   (b) DISTINCT — by the channel the kit declares:
+#:         weight / decoration   the svg run carries `font-weight` /
+#:                               `text-decoration`. A structural assertion and
+#:                               no luminance clause: 1.00:1 against `ink` is
+#:                               CORRECT for a kit whose match is its own ink
+#:                               made bold (operator ruling 9 — the emphasis
+#:                               may not add a cell).
+#:         reverse               a rect exists under exactly the match cells.
+#:         hue                   the accent's hue angle differs from `mut`'s
+#:                               and `ink`'s by >= 30 degrees in HLS; or, where
+#:                               the kit's body and ink are ACHROMATIC and hue
+#:                               distance is undefined, the accent differs from
+#:                               `mut` by >= 1.5:1 in luminance.
+#:
+#: THE BRANCHES, AS MEASURED (inc73):
+#:   weight      blueprint 10.60 · naught 19.26 · corgi 17.36
+#:   decoration  ledger 13.36
+#:   reverse     industrial 5.79 · darkside 4.56 · solari 16.81
+#:   hue         instrument 10.45 (38.7 / 37.5) · nord 5.99 (40.0 / 38.8) ·
+#:               prism 10.17 (37.5 / 35.2)
+#:   hue, achromatic comparands   swiss 4.52 (1.52:1 against `mut`)
+MATCH_LEGIBLE = 4.5
+MATCH_HUE_DEGREES = 30.0
+MATCH_ACHROMATIC_RATIO = 1.5
+#: HLS saturation below which a colour has no hue to be distant from.
+ACHROMATIC = 0.10
+
+
+def _hls(hexcolour: str):
+    h = hexcolour.lstrip("#")
+    r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    return colorsys.rgb_to_hls(r, g, b)
+
+
+def hue_gap(a: str, b: str) -> float:
+    """Degrees between two hue angles, the short way round."""
+    d = abs(_hls(a)[0] * 360 - _hls(b)[0] * 360) % 360
+    return min(d, 360 - d)
+
+
+def match_branch(lang: str) -> tuple[str, str, str]:
+    """`(branch, the match ink, the ground it is painted on)`."""
+    k, t = LG.kit(lang), LG.THEMES[lang]
+    style = k.MATCH_STYLE
+    word, token = style.split()[0], style.strip().split()[-1].strip("{}")
+    value = t.get(token, t["ink"])
+    if word == "reverse":
+        return "reverse", t["ground"], value
+    if token in ("accent", "alert") and value != t["ink"]:
+        return "hue", value, t["ground"]
+    return word, value, t["ground"]
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_match_run_is_legible_and_distinct_on_its_declared_channel(lang):
+    """THE MATCH TIER, on the two things a match owes and no others.
+
+    S6 is the screen with the colour taken away — six results and the word a
+    reader searched for inside them — so this is the one tier whose whole job
+    is to be found. See `MATCH_LEGIBLE` above for the arithmetic that retired
+    the clause this replaces."""
+    branch, ink, ground = match_branch(lang)
+    t = LG.THEMES[lang]
+
+    # (a) LEGIBLE, on the ground it is really painted on
+    assert contrast(ink, ground) >= MATCH_LEGIBLE, \
+        (lang, branch, ink, ground, round(contrast(ink, ground), 2))
+
+    # (b) DISTINCT, on the channel the kit declares
+    if branch in ("bold", "underline"):
+        attr = "font-weight" if branch == "bold" else "text-decoration"
+        svg = (FRAMES / f"{lang}_S6.svg").read_text(encoding="utf-8")
+        styled = [r for r in painted_runs(svg)
+                  if (r[3] if branch == "bold" else r[4])]
+        assert styled, (lang, branch, "no styled run in the sheet")
+        assert attr in svg, (lang, attr)
+        # and the styled runs are the MATCH ink, not some other emphasis
+        assert {r[0] for r in styled} == {ink}, (lang, {r[0] for r in styled})
+    elif branch == "reverse":
+        svg = (FRAMES / f"{lang}_S6.svg").read_text(encoding="utf-8")
+        rects = [f for _x, _y, _w, _h, f in _RECT_RUN.findall(svg)]
+        assert ground in rects, (lang, ground, sorted(set(rects)))
+        knocked = [r for r in painted_runs(svg) if r[1] == ground]
+        assert knocked, (lang, "a reverse match with no run on its own rect")
+        assert {r[0] for r in knocked} == {ink}, (lang, {r[0] for r in knocked})
+    else:
+        assert branch == "hue", (lang, branch)
+        pale = [k_ for k_ in ("mut", "ink") if _hls(t[k_])[2] < ACHROMATIC]
+        if len(pale) == 2:
+            # hue distance from a grey is not a quantity; the fallback clause
+            got = contrast(ink, t["mut"])
+            assert got >= MATCH_ACHROMATIC_RATIO, (lang, round(got, 2))
+        else:
+            assert not pale, (lang, "one of the two is grey and one is not "
+                                    "-- the ruling has no branch for that")
+            for other in ("mut", "ink"):
+                gap = hue_gap(ink, t[other])
+                assert gap >= MATCH_HUE_DEGREES, (lang, other, round(gap, 1))
+
+
+def test_the_match_tier_law_bites_on_the_two_declarations_inc73_moved(
+        monkeypatch):
+    """TEETH, and the two arms are the two branches that actually failed.
+
+    nord's accent was `#88c0d0`, hue 193.3 against a body at 218.7 — 25.4
+    degrees, under the ruling's 30, in the kit round three called *"the
+    baseline the other ten chose against"* and round four called the worst
+    regression of the corpus. swiss's `alert` was `#e2231a` at 4.07:1, so it
+    failed the LEGIBILITY clause, and its `mut` was `#8a8a8a`, so it also
+    failed the achromatic fallback at 1.36:1 — two clauses, two tokens, and
+    the arm restores them one at a time."""
+    for lang in LANGS:
+        test_the_match_run_is_legible_and_distinct_on_its_declared_channel(lang)
+
+    t = dict(LG.THEMES["nord"])
+    assert t["accent"] != "#88c0d0"
+    assert round(hue_gap("#88c0d0", t["mut"]), 1) == 25.4
+    t["accent"] = "#88c0d0"
+    monkeypatch.setitem(LG.THEMES, "nord", t)
+    with pytest.raises(AssertionError):
+        test_the_match_run_is_legible_and_distinct_on_its_declared_channel(
+            "nord")
+    monkeypatch.undo()
+
+    for token, hexes in (("alert", "#e2231a"), ("mut", "#8a8a8a")):
+        t = dict(LG.THEMES["swiss"])
+        assert t[token] != hexes, token
+        t[token] = hexes
+        monkeypatch.setitem(LG.THEMES, "swiss", t)
+        with pytest.raises(AssertionError):
+            test_the_match_run_is_legible_and_distinct_on_its_declared_channel(
+                "swiss")
+        monkeypatch.undo()
+
+    for lang in LANGS:
+        test_the_match_run_is_legible_and_distinct_on_its_declared_channel(lang)
+
+
+#: A TOKEN HAS EXACTLY ONE ROLE.
+#:
+#: THE RULING (orchestrator, 2026-09-07): *a token has exactly one role.
+#: Ground-role tokens (ground, band, plate, match rect) and ink-role tokens
+#: (ink, mut, dim, focus, alert, accent) are disjoint sets in `THEMES`,
+#: asserted by a test over all eleven.*
+#:
+#: WHAT IT WAS WRITTEN FOR. industrial declared `plate = "#2e2e2e"` and
+#: `focus = "#2e2e2e"`, and `Industrial.keyhint` painted the key plate's WALLS
+#: in `self.plate` — so one hex was a rect's fill in sixteen places and a
+#: glyph's colour in eight, and as a glyph it stood at **1.28:1**. No floor
+#: could have caught it: the value is CORRECT as a ground and wrong as ink,
+#: and a law that asks "does this token clear 3:1" cannot tell which it is.
+#:
+#: THE OTHER TEN WERE CHECKED AND ARE CLEAN — one clash in eleven kits, and it
+#: is the one the ruling names. solari's second ground already had a name
+#: (`flap`, and `band = "reverse"` is a style word rather than a colour);
+#: darkside's grey steps are `dim`/`rail` at one hex, both INK-role, which is
+#: an alias and not a double role.
+GROUND_ROLE = ("ground", "panel", "band", "plate", "flap")
+INK_ROLE = ("ink", "mut", "dim", "focus", "alert", "accent")
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_token_has_exactly_one_role(lang):
+    """The role ruling, over `THEMES`, all eleven.
+
+    ASKED OF THE VALUES AND NOT OF THE NAMES, because that is where the defect
+    lived: `plate` and `focus` were two names for one hex and only one of them
+    could be right about what the colour was for.
+
+    `reverse` IS NOT A SECOND GROUND TOKEN, said here so the exclusion is
+    deliberate. Three kits spell `MATCH_STYLE` as `reverse {token}`, which
+    SWAPS a run's declared pair at composition time (`cell_grid`, inc43) — the
+    rect is the run's own ink turned inside out for the length of a match, not
+    a colour the theme names twice. The match-tier law's `reverse` branch is
+    what asserts that rect exists.
+
+    AND THE INK SET IS THE ONE A KIT PAINTS WITH: `Kit.__init__` builds
+    `self.c` from exactly these six keys, so the two cannot drift."""
+    t = LG.THEMES[lang]
+    grounds = {k: t[k] for k in GROUND_ROLE
+               if isinstance(t.get(k), str) and t[k].startswith("#")}
+    inks = {k: t[k] for k in INK_ROLE
+            if isinstance(t.get(k), str) and t[k].startswith("#")}
+    assert grounds and inks, (lang, sorted(grounds), sorted(inks))
+    clash = [(g, i, v) for g, v in grounds.items()
+             for i, w in inks.items() if v == w]
+    assert clash == [], (lang, clash)
+    # the ink set and what the kit paints with are one list
+    assert set(LG.kit(lang).c) == set(INK_ROLE) | {"warn"}, \
+        (lang, sorted(LG.kit(lang).c))
+
+
+def test_the_role_law_bites_on_the_declaration_industrial_shipped(monkeypatch):
+    """TEETH, on the real hex, plus the reading that makes it matter: with the
+    old value restored, `focus` painted as ink stands at 1.28:1 on this kit's
+    ground — which no floor law caught for the life of the token, because
+    `#2e2e2e` was never asked whether it was ink."""
+    for lang in LANGS:
+        test_a_token_has_exactly_one_role(lang)
+    t = dict(LG.THEMES["industrial"])
+    assert t["focus"] != t["plate"] == "#2e2e2e"
+    assert round(contrast("#2e2e2e", t["ground"]), 2) == 1.28
+    t["focus"] = "#2e2e2e"
+    monkeypatch.setitem(LG.THEMES, "industrial", t)
+    with pytest.raises(AssertionError):
+        test_a_token_has_exactly_one_role("industrial")
+    for other in LANGS:
+        if other != "industrial":
+            test_a_token_has_exactly_one_role(other)
+    monkeypatch.undo()
+    for lang in LANGS:
+        test_a_token_has_exactly_one_role(lang)
 
 # ---------------------------------------------------------------------------
 # inc64 (rework-6a) — L8 and L9: more value is more ink, in one direction

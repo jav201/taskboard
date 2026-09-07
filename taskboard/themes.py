@@ -212,7 +212,9 @@ THEMES: dict[str, dict] = {
         label="Corgi Engineering", note="numbered params · 7-seg display · safety orange",
         ground="#0d0d0d", ink="#f2f2f2", mut="#9a9a9a", dim="#3a3a3a",
         accent="#ff6600",                      # identity: safety orange
-        warn="#ffb000", alert="#d92b1a",       # severity now EXISTS (TE record red)
+        # inc73 (K7): `#d92b1a` was 3.99:1 on this ground. One HLS lightness
+        # step, hue and saturation held, and the record red clears 4.50:1.
+        warn="#ffb000", alert="#e53524",       # severity now EXISTS (TE record red)
         screen="#6fe36f",                      # the OLED/LCD green
         alu="#9a9a9a",                         # aluminium: the RULE colour
         sel="solid",                           # square corners, never round
@@ -229,7 +231,10 @@ THEMES: dict[str, dict] = {
         layout="lattice",                      # the board IS the dot grid
         label="Naught", note="round-dot lattice · mono · red only for alarm",
         ground="#000000", ink="#f5f5f5", mut="#8a8a8a", dim="#242424",
-        accent="#d71921", warn="#d71921", alert="#d71921",
+        # inc73 (K7): `#d71921` -> `#e51b24`, 4.05:1 -> 4.51:1 on `#000000`.
+        # All three move together: this kit has ONE red and splitting it to
+        # satisfy a floor would have made the ration two colours.
+        accent="#e51b24", warn="#e51b24", alert="#e51b24",
         calm="#f5f5f5",   # CALM/NOTICE severity renders INK, not red — red is
                           # rationed to alarm states + the focus edge (the one
                           # element of interest), per the Nothing sheets
@@ -280,8 +285,17 @@ THEMES: dict[str, dict] = {
         hero="plain", frame="rule", meter="hairline", airy=True, pitch=2,
         layout="editorial", columns=3,         # the type grid, not the flow
         label="Swiss", note="airy · plain type · one rule · structure by alignment",
-        ground="#101010", ink="#f4f4f4", mut="#8a8a8a", dim="#3d3d3d",
-        accent="#e2231a", warn="#e2231a", alert="#e2231a",
+        # inc73 TWO MOVES, and the second is the match tier's. `mut`
+        # `#8a8a8a` -> `#9b9b9b`: this kit's `mut` and `ink` are ACHROMATIC
+        # (saturation 0.00), so the ruling's hue clause cannot apply and its
+        # fallback does -- the match ink must differ from body text by 1.5:1
+        # in luminance, and it was 1.36:1. Moving the RED to reach it would
+        # have cost the kit its one colour, so the GREY moved: 5.51:1 ->
+        # 6.85:1 against the ground, 1.52:1 against the match.
+        ground="#101010", ink="#f4f4f4", mut="#9b9b9b", dim="#3d3d3d",
+        # inc73 (K7): `#e2231a` was 4.07:1 on this ground -> `#e7372e`,
+        # 4.52:1. One HLS lightness step; the hue is Swiss red still.
+        accent="#e7372e", warn="#e7372e", alert="#e7372e",
         sel="solid",
         tempo=240, easing="in_out_cubic",  # motion: pace + curve
         panel="#171717", focus="#1f1f1f",
@@ -302,12 +316,24 @@ THEMES: dict[str, dict] = {
         hero="plain", frame="single", meter="boxed", numbered=True,
         layout="panel",                        # plates, not boxes
         label="Industrial", note="5 flat colours on grey · colour codes function",
-        ground="#1a1a1a", ink="#f2f2f2", mut="#8f8f8f", dim="#4a4a4a",
+        # inc73 (K6): `mut` `#8f8f8f` -> `#959595`. It cleared 5.38:1 against
+        # the CANVAS and 4.20:1 against the PLATE, which is the second ground
+        # this kit paints and the one 28 of its runs actually sit on.
+        ground="#1a1a1a", ink="#f2f2f2", mut="#959595", dim="#4a4a4a",
         plate="#2e2e2e",                       # the plate's ground, never accent
-        accent="#ff4b1f", warn="#ffd400", alert="#ff4b1f",
+        # inc73 (K7): 4.06:1 on the plate -> 4.52:1. `accent` moves with
+        # `alert` because they are one hex here by declaration (see above).
+        accent="#ff6039", warn="#ffd400", alert="#ff6039",
         sel="solid",
         tempo=60, easing="linear",  # motion: pace + curve
-        panel="#232323", focus="#2e2e2e",
+        # inc73, THE ROLE RULING: a token has exactly one role. `focus` was
+        # `#2e2e2e` -- the same hex as `plate` -- and `keyhint` painted the
+        # key plate's WALLS in it, so a GROUND-role value was drawn as INK
+        # at 1.28:1 on `#1a1a1a`, eight cells of `industrial_S6`. `plate`
+        # keeps the hex and its ground role; `focus` keeps its ink role and
+        # moves to the smallest grey clearing 3:1 on BOTH grounds it is
+        # painted on (3.03:1 on `#1a1a1a`, 3.03:1 on `#2e2e2e`).
+        panel="#232323", focus="#777777",
     ),
     # 4 — the terminal's own idiom, on purpose (base16 doctrine) — and the
     # board is a MASTER/DETAIL split (`layout="split"`). Measured reason, not
@@ -331,7 +357,14 @@ THEMES: dict[str, dict] = {
         hero_plot=("mut", 2),                   # ambient spark, 2 cells/week
         label="Nord (base16)", note="full scheme · inherits the terminal's world",
         ground="#2e3440", ink="#eceff4", mut="#919cb0", dim="#4c566a",
-        accent="#88c0d0", warn="#ebcb8b", alert="#bf616a",
+        # inc73, TWO MOVES. `alert` `#bf616a` -> `#cf888f` (K7: 3.05:1 ->
+        # 4.50:1). `accent` `#88c0d0` -> `#8fbcbb` (the match tier): this
+        # kit's body and ink are BLUE-GREY (hue 218.7 and 217.5), the old
+        # accent was hue 193.3, and 25.4 of separation is under the ruling's
+        # 30. `#8fbcbb` is Nord's own frost-0 -- hue 178.7, 40.0 from `mut`
+        # and 38.8 from `ink` -- so the scheme keeps its published palette
+        # and the match run gains the channel its luminance cannot carry.
+        accent="#8fbcbb", warn="#ebcb8b", alert="#cf888f",
         sel="round",
         tempo=140, easing="out_cubic",  # motion: pace + curve
         panel="#3b4252", focus="#434c5e",
@@ -416,7 +449,11 @@ THEMES: dict[str, dict] = {
         hero="dot", frame="ruled", meter="tally", layout="ruled",
         numbered=True, pitch=1,
         label="Ledger", note="paper ground · dot leaders · red = overdue only",
-        ground="#e9e1cf", ink="#1c1a15", mut="#6a6458", dim="#c4b99f",
+        # inc73 (K6): `mut` `#6a6458` -> `#635e52`. It cleared 4.51:1 against
+        # the PAGE and 4.10:1 against the BAND (`#e0d7c2`), which is the
+        # second ground this kit paints. Darker, because this is the one
+        # light-paper kit: page 4.96 / band 4.51 / panel 5.48.
+        ground="#e9e1cf", ink="#1c1a15", mut="#635e52", dim="#c4b99f",
         rule="#8a8272",                        # the ruling: grey ink
         band="#e0d7c2",                        # every 5th line of the page
         tally="▪",                             # the counted mark

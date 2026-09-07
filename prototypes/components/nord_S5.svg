@@ -8,15 +8,15 @@
 <text x="127.6" y="23.3" fill="#4c566a"> │ </text>
 <text x="152.8" y="23.3" fill="#919cb0"> cfg</text>
 <text x="186.4" y="23.3" fill="#4c566a"> │ </text>
-<text x="211.6" y="23.3" fill="#88c0d0">▸log</text>
-<text x="10.0" y="40.3" fill="#88c0d0">MONITOR</text>
+<text x="211.6" y="23.3" fill="#8fbcbb">▸log</text>
+<text x="10.0" y="40.3" fill="#8fbcbb">MONITOR</text>
 <text x="85.6" y="40.3" fill="#919cb0">8 events  ·  held</text>
 <text x="26.8" y="74.3" fill="#919cb0">EVENTS/S</text>
 <text x="127.6" y="74.3" fill="#919cb0">███████</text>
 <text x="186.4" y="74.3" fill="#4c566a">───────</text>
 <text x="253.6" y="74.3" fill="#919cb0">5</text>
 <text x="26.8" y="108.3" fill="#919cb0">rate    </text>
-<text x="94.0" y="108.3" fill="#88c0d0">▂▅▂▅▂▅█▅▂▂▅▅▅▂▅▅</text>
+<text x="94.0" y="108.3" fill="#8fbcbb">▂▅▂▅▂▅█▅▂▂▅▅▅▂▅▅</text>
 <text x="245.2" y="108.3" fill="#4c566a">ceiling 10</text>
 <text x="26.8" y="142.3" fill="#4c566a">───────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="159.3" fill="#4c566a">09:41:02</text>

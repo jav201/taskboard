@@ -10,16 +10,16 @@
 <text x="211.6" y="23.3" fill="#8a8272"> │ </text>
 <text x="236.8" y="23.3" fill="#c4b99f">· log</text>
 <text x="10.0" y="40.3" fill="#1c1a15">NEW TASK ····································································</text>
-<text x="665.2" y="40.3" fill="#6a6458">5 fields  ·  1 invalid</text>
+<text x="665.2" y="40.3" fill="#635e52">5 fields  ·  1 invalid</text>
 <text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
-<text x="26.8" y="74.3" fill="#6a6458">title</text>
+<text x="26.8" y="74.3" fill="#635e52">title</text>
 <text x="68.8" y="74.3" fill="#1c1a15">†</text>
 <text x="144.4" y="74.3" fill="#c4b99f">▶</text>
 <text x="152.8" y="74.3" fill="#1c1a15">Fix login</text>
 <text x="228.4" y="74.3" fill="#2b3a67">▏</text>
 <text x="236.8" y="74.3" fill="#1c1a15"> redirect</text>
 <text x="312.4" y="74.3" fill="#c4b99f">───────────────│</text>
-<text x="26.8" y="108.3" fill="#6a6458">due</text>
+<text x="26.8" y="108.3" fill="#635e52">due</text>
 <text x="52.0" y="108.3" fill="#1c1a15">†</text>
 <text x="144.4" y="108.3" fill="#c4b99f">‡</text>
 <text x="152.8" y="108.3" fill="#1c1a15">12/09/26</text>
@@ -27,24 +27,24 @@
 <text x="144.4" y="125.3" fill="#1c1a15">**</text>
 <text x="169.6" y="125.3" fill="#1c1a15">expected YYYY-MM-DD</text>
 <text x="337.6" y="125.3" fill="#c4b99f">···························································</text>
-<text x="26.8" y="159.3" fill="#6a6458">priority</text>
+<text x="26.8" y="159.3" fill="#635e52">priority</text>
 <text x="144.4" y="159.3" fill="#c4b99f">┊ ┊</text>
-<text x="178.0" y="159.3" fill="#6a6458">low</text>
+<text x="178.0" y="159.3" fill="#635e52">low</text>
 <text x="220.0" y="159.3" fill="#c4b99f">┊ ┊</text>
-<text x="253.6" y="159.3" fill="#6a6458">norm</text>
+<text x="253.6" y="159.3" fill="#635e52">norm</text>
 <text x="304.0" y="159.3" fill="#1c1a15">┊●┊</text>
 <text x="337.6" y="159.3" fill="#1c1a15">high</text>
-<text x="26.8" y="193.3" fill="#6a6458">tags</text>
+<text x="26.8" y="193.3" fill="#635e52">tags</text>
 <text x="144.4" y="193.3" fill="#c4b99f">│ │</text>
-<text x="178.0" y="193.3" fill="#6a6458">open  </text>
-<text x="236.8" y="193.3" fill="#6a6458">api</text>
+<text x="178.0" y="193.3" fill="#635e52">open  </text>
+<text x="236.8" y="193.3" fill="#635e52">api</text>
 <text x="278.8" y="193.3" fill="#1c1a15">│×│</text>
 <text x="312.4" y="193.3" fill="#1c1a15">posted</text>
-<text x="371.2" y="193.3" fill="#6a6458">ui</text>
+<text x="371.2" y="193.3" fill="#635e52">ui</text>
 <text x="404.8" y="193.3" fill="#1c1a15">│×│</text>
 <text x="438.4" y="193.3" fill="#1c1a15">posted</text>
-<text x="497.2" y="193.3" fill="#6a6458">urgent</text>
-<text x="26.8" y="227.3" fill="#6a6458">notes</text>
+<text x="497.2" y="193.3" fill="#635e52">urgent</text>
+<text x="26.8" y="227.3" fill="#635e52">notes</text>
 <text x="144.4" y="227.3" fill="#c4b99f">│</text>
 <text x="152.8" y="227.3" fill="#1c1a15">Redirect drops the ?next= param w</text>
 <text x="430.0" y="227.3" fill="#2b3a67">┊</text>
