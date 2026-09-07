@@ -80,10 +80,10 @@
 <rect x="262.0" y="265.0" width="453.6" height="17.0" fill="#0e2f4a"/>
 <rect x="715.6" y="265.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="732.4" y="265.0" width="16.8" height="17.0" fill="#0e2f4a"/>
-<text x="371.2" y="278.3" fill="#24486b">├╎┈</text>
-<text x="413.2" y="278.3" fill="#24486b">├┄╎</text>
+<text x="371.2" y="278.3" fill="#24486b">├╎╌</text>
+<text x="413.2" y="278.3" fill="#24486b">├╏╎</text>
 <text x="455.2" y="278.3" fill="#24486b">╎ ╎</text>
-<text x="497.2" y="278.3" fill="#24486b">╎┄╎</text>
+<text x="497.2" y="278.3" fill="#24486b">╎╏╎</text>
 <text x="547.6" y="278.3" fill="#24486b">disabled</text>
 <rect x="262.0" y="282.0" width="453.6" height="17.0" fill="#0e2f4a"/>
 <rect x="715.6" y="282.0" width="16.8" height="17.0" fill="#000000"/>
@@ -122,7 +122,7 @@
 <rect x="732.4" y="350.0" width="16.8" height="17.0" fill="#0e2f4a"/>
 <text x="371.2" y="363.3" fill="#24486b">╏ ╏</text>
 <text x="404.8" y="363.3" fill="#24486b">lo</text>
-<text x="438.4" y="363.3" fill="#24486b">╏┄╏</text>
+<text x="438.4" y="363.3" fill="#24486b">╏╎╏</text>
 <text x="472.0" y="363.3" fill="#24486b">mid</text>
 <text x="514.0" y="363.3" fill="#24486b">╏ ╏</text>
 <text x="547.6" y="363.3" fill="#24486b">hi</text>

@@ -546,25 +546,62 @@ def test_ledgers_confirm_is_posted_on_the_page_that_stays_legible():
     surface IN FRONT OF the page. The question is posted at the foot, under a
     rule, and the entries above it are kept AT FULL STRENGTH — the exact
     opposite of every other answer here. Dimming them would be the language
-    claiming those postings are less true while a question is open."""
+    claiming those postings are less true while a question is open.
+
+    AND THE POSTING IS RULED OFF AT ITS FOOT (inc72, C2). It opened on a rule
+    and closed on nothing, so the lower limit of the question was the EDGE OF
+    THE TERMINAL and the irreversible answer sat on the last row a reader can
+    see. The two clauses added here are the two halves of that: the block's
+    FIRST and LAST rows are the same rule, and the destructive answer is not
+    on the sheet's last row."""
     k = LG.kit("ledger")
     out = k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)
     assert out[0] == UNDER[0], out[0]
-    assert "Delete 3 tasks?" in plain(out[-3])
+    rows = [plain(r) for r in out]
+    # the block opens and closes on the SAME rule, at full measure
+    rule = plain(k.rule_line(DIALOG_W))
+    assert rows[-1] == rule, rows[-1]
+    head = [i for i, r in enumerate(rows) if r == rule]
+    assert len(head) == 2 and head[1] == len(rows) - 1, head
+    assert "Delete 3 tasks?" in rows[head[0] + 1], rows[head[0] + 1]
+    # and the answers -- the destructive one included -- are INSIDE the block
+    ans = [i for i, r in enumerate(rows) if "Delete" in r and "?" not in r]
+    assert ans and max(ans) < len(rows) - 1, (ans, rows[-3:])
 
 
 def test_naughts_separation_is_charge_and_not_a_frame():
     """Operator ruling 4. The page keeps every dot it had and loses its
-    CHARGE; the question is the only region left lit, bounded by the lattice
-    at full charge. No box, no scrim, no mark laid in front of anything."""
+    CHARGE; the question is the only region left lit, bounded by the lattice.
+    No box, no scrim, no mark laid in front of anything.
+
+    inc72: AND THE BOUND IS THE GROUND, NOT THE DANGER FORM. The two rules
+    were the LIT dot — `DANGER_FORM`, `LEVELS["error"]` and `LEVELS["warn"]`'s
+    first cell — two hundred cells of it on the one screen where a reader has
+    to find the mark that means "this destroys data". They are the UNLIT
+    lattice now, which `THE_GROUND_IS_NOT_A_MARK` rules a ground and not a
+    mark, drawn at the band's own charge. The separation is still CHARGE and
+    is now literally the lattice: the last clause counts the lit `DANGER_FORM`
+    cells inside the band and there are exactly the two the answer spends."""
     from taskboard import naught as NA
     k = LG.kit("naught")
     out = k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)
-    lit = [r for r in out if plain(r) and plain(r).strip(NA.ON) == ""]
-    assert len(lit) == 2, [plain(r) for r in out]
-    assert all(k.c["ink"] in r for r in lit)
+    bounds = [r for r in out if plain(r) and plain(r).strip(NA.OFF) == ""
+              and len(plain(r)) == DIALOG_W]
+    assert len(bounds) == 2, [plain(r) for r in out]
+    assert all(k.c["ink"] in r for r in bounds)
     backdrop = [r for r in out if "row 0 of the board" in plain(r)]
     assert backdrop and k.c["dim"] in backdrop[0]
+    # THE COUNT THAT IS THE POINT: the band adds no LIT dot of its own. It
+    # used to add two hundred -- two rules of `NA.ON`, which is the
+    # `DANGER_FORM` and two severity rungs -- on the one screen where a
+    # reader has to find the cells that mean "this destroys data". Whatever
+    # the question itself spends is all there is inside it now.
+    lo, hi = out.index(bounds[0]), out.index(bounds[1])
+    band = "".join(plain(r) for r in out[lo:hi + 1])
+    asked = "".join(plain(r) for r in dialog(k))
+    assert band.count(NA.ON) == asked.count(NA.ON), (band.count(NA.ON),
+                                                     asked.count(NA.ON))
+    assert all(NA.ON not in plain(r) for r in bounds)
 
 
 @pytest.mark.parametrize("lang", LANGS)
@@ -3465,6 +3502,70 @@ def test_swisss_chosen_option_is_not_the_obligation_mark_at_another_size():
         assert box[st][1:] == radio[st][1:], (st, box[st], radio[st])
 
 
+def test_naughts_two_option_controls_do_not_rest_on_one_drawing():
+    """L10, and it is the objection three rounds put to `naught_S2`.
+
+    Nine languages separate a radio from a checkbox by SHAPE FAMILY — round
+    well, square box — and this one cannot: everything here is round, and the
+    kit says so in its own table. What it CAN do is not spend both controls'
+    RESTING cells out of one homoglyph family, and until inc72 it did:
+    `HOMOGLYPH_FAMILIES` reads `◦ ○ ◎ ◉ ⊙ ⊛` as one drawing at six diameters
+    and fills, and rows 9 and 11 of `naught_S2` were drawn from four of them,
+    two rows apart. The round's criterion — *"cover the label column and say
+    which row is a single choice and which are independent boxes"* — had no
+    answer.
+
+    THE LAW IS ABOUT THE RESTING PAIR AND NOT ABOUT THE NEW CELLS, so it
+    still bites if somebody picks different answers later: neither cell a
+    radio rests on may be a checkbox's resting cell, nor that cell's
+    homoglyph. It is deliberately NOT asked of every state — closing the
+    whole table is `STATES_TOLD_APART_BY_SIZE`'s eight rows and that roster
+    says in its own note that it needs a second channel for this alphabet.
+    What a form DRAWS is the unticked box and the unchosen well, and those
+    are what this asks about.
+
+    AND IT IS READ OFF THE SHIPPED FRAME TOO, because a kit table can be
+    right while the sheet a reader holds is not: the two option rows of
+    `naught_S2` may share no cell at all."""
+    k = LG.kit("naught")
+    box = (k.PART_GLYPHS["checkbox.main"][LG.DEFAULT],
+           k.PART_GLYPHS["checkbox.knob"][LG.DEFAULT])
+    well = (k.PART_GLYPHS["radio.main"][LG.DEFAULT],
+            k.PART_GLYPHS["radio.knob"][LG.DEFAULT])
+    for a in well:
+        for b in box:
+            assert a != b, (a, b)
+            assert b not in _twins(a), (a, b, sorted(_twins(a)))
+
+    rows = (FRAMES / "naught_S2.txt").read_text(
+        encoding="utf-8").splitlines()
+    opts = [r for r in rows if " low " in r or " api " in r]
+    assert len(opts) == 2, opts
+    marks = [set(r) - set(" abcdefghijklmnopqrstuvwxyz") for r in opts]
+    assert marks[0] and marks[1], marks
+    assert not (marks[0] & marks[1]), sorted(marks[0] & marks[1])
+
+
+def test_the_option_control_law_bites_on_the_declaration_naught_shipped(
+        monkeypatch):
+    """TEETH, on the exact table this kit carried for six batches.
+
+    Both arms are asserted, because the two halves of the defect are
+    different: the WELL's ring was the box's ring at another diameter
+    (`○` against `◦`) and the CHOSEN mark was the ticked mark at another
+    diameter (`⊙` against `◉`). Restoring either one alone must be enough to
+    go red, or the law would be passing on the pair rather than on the
+    cells."""
+    k = LG.kit("naught")
+    for part, cell in (("radio.main", "○"), ("radio.knob", "⊙")):
+        monkeypatch.setitem(k.PART_GLYPHS[part], LG.DEFAULT, cell)
+        with pytest.raises(AssertionError):
+            test_naughts_two_option_controls_do_not_rest_on_one_drawing()
+        monkeypatch.undo()
+    assert k.PART_GLYPHS["radio.main"][LG.DEFAULT] == "◌"
+    assert k.PART_GLYPHS["radio.knob"][LG.DEFAULT] == "⊚"
+
+
 def test_darksides_field_leader_is_not_a_severity_rung_at_another_size():
     """The seat under every figure in darkside's detail pane was `◦`, and
     `LEVELS["warn"]` is `o ` — one ring at two diameters.
@@ -4405,16 +4506,31 @@ def test_prism_draws_no_control_on_the_embers_own_rungs():
 #: back on `├` is worth the six openers and the four knobs. `LEVELS["info"]`
 #: back on `··` is worth the stepper's ground, five states of it, and nothing
 #: on the named-seat roster.
-BLUEPRINT_TABLES_WORTH = (1, 8)
+#: inc72 TOOK IT TO `(0, 0)`, AND THAT IS THE MEASUREMENT OF THE INCREMENT.
+#: The dead runs went back to `╌` — byte for byte the pre-inc60 spelling at
+#: `main` and at `stepper.main` — and restoring the whole pre-inc60 table set
+#: now lights NOTHING, where it lit `(1, 8)` before. The reason is the one
+#: this comment already argued in the other direction: those seats scored
+#: because `╌` was `LEVELS["warn"]`, and inc72 moved the warn rung to `" ━"`
+#: instead of moving the chrome. **The same cells at the same seats are worth
+#: eight rows or none depending on where one meaning sits**, which is the
+#: whole of inc60's ruling (ii) stated as arithmetic.
+BLUEPRINT_TABLES_WORTH = (0, 0)
 #: inc67 MOVED THE FIRST OF THESE BY ONE, and the extra row is the point of
 #: the increment rather than noise: restoring `REQUIRED = "├"` now also lights
 #: `meter.open`, because blueprint's `dimension` mechanism opens its span with
 #: the very terminator inc60 took obligation off — a seat no law in this file
 #: could reach until the quantity widgets were declared. 7 → 8.
 BLUEPRINT_SHEET_BEFORE = (
-    ("REQUIRED", "├", (8, 12)),
-    # inc67: 12 → 13 for the same reason as the row above — the arms are
-    # CUMULATIVE, so `meter.open` is still lit from the restored `REQUIRED`.
+    # inc72: `(8, 12)` → `(7, 4)`. Both halves fell because the dead runs are
+    # back on `╌` while the warn rung is not: the opener roster loses the seat
+    # `╌` used to light on its own, and the named-seat roster loses the eight
+    # rows `BLUEPRINT_TABLES_WORTH` above just recorded going to zero.
+    ("REQUIRED", "├", (7, 4)),
+    # inc67: the arms are CUMULATIVE, so `meter.open` is still lit from the
+    # restored `REQUIRED`. The end point is UNCHANGED at `(13, 12)`: with both
+    # meanings put back the sheet is exactly as bad as it was before inc60,
+    # which is what an end point is for.
     ("LEVELS", {"info": "··", "warn": "╌╌", "error": "━━"}, (13, 12)),
 )
 BLUEPRINT_TABLES_BEFORE = (
@@ -4441,8 +4557,13 @@ def test_both_seat_laws_go_red_on_the_two_meanings_inc60_moved(monkeypatch):
     nothing, because `├` is no longer the obligation mark — true — and
     because `╌` is no longer a severity rung — FALSE. inc60 left
     `LEVELS["warn"]` exactly where it was and moved the DEAD RUNS off it, so
-    putting the dead datums back scores (1, 8) with no meaning restored at
-    all. The measurement is the record."""
+    putting the dead datums back scored (1, 8) with no meaning restored at
+    all. The measurement is the record.
+
+    AND inc72 MADE THE FIRST DRAFT TRUE, by the move inc60 declined: the warn
+    rung left `╌` and the dead runs came back to it, so the same restoration
+    is worth `(0, 0)` again. The constant carries both readings and the reason
+    each was right when it was taken."""
     def counts():
         return (len(meaning_marks_at_an_opener("blueprint")),
                 len(meaning_marks_at_named_seats("blueprint")))
@@ -4450,8 +4571,15 @@ def test_both_seat_laws_go_red_on_the_two_meanings_inc60_moved(monkeypatch):
     assert counts() == (0, 0)
 
     glyphs = dict(LG.Blueprint.PART_GLYPHS)
+    # inc72: TWO OF THE FIVE ARE NOW BYTE-IDENTICAL TO THE PRE-inc60 TABLE and
+    # that is the finding, not a slip — the dead ground went back to `╌` once
+    # the warn rung left it. The guard is kept and moved to the set: some of
+    # these tables must still differ, or the arm below would be restoring
+    # nothing at all.
+    same = [key for key, table in BLUEPRINT_TABLES_BEFORE
+            if glyphs[key] == table]
+    assert same == ["main", "stepper.main"], same
     for key, table in BLUEPRINT_TABLES_BEFORE:
-        assert glyphs[key] != table, (key, "already the pre-inc60 table")
         glyphs[key] = table
     monkeypatch.setattr(LG.Blueprint, "PART_GLYPHS", glyphs)
     assert counts() == BLUEPRINT_TABLES_WORTH, (
@@ -5730,7 +5858,13 @@ def test_every_confirm_says_where_it_ends():
         ends[lang] = rows[last].strip()
         assert ends[lang], (lang, first, last, "the band ends on a blank row")
     assert len(ends) == len(LANGS) - len(MODAL_KEEPS_ONLY_THE_HEAD), ends
-    assert "Cancel" in ends["ledger"], ends["ledger"]
+    # inc72 (C2): ledger's confirm CLOSES ON ITS OWN RULE now. It used to end
+    # on the answers row, because it opened on a rule and closed on nothing --
+    # so the posting's lower limit was the edge of the terminal and `(Delete)`
+    # was the last row a reader can see. Both halves are asserted: the band
+    # ends on the sub rule, and the answers are no longer the last thing on
+    # the sheet.
+    assert set(ends["ledger"]) == {"─"}, ends["ledger"]
     assert set(ends["swiss"]) == {"─"}, ends["swiss"]
 
 
@@ -6266,30 +6400,117 @@ def test_prisms_control_ladder_climbs_in_its_declared_order():
 
 
 #: BLUEPRINT'S THREE, from inc60: "a meaning is a LINE TYPE", and the three
-#: horizontals this kit tells apart are told apart by DASH COUNT. `╌` is
-#: `LEVELS["warn"]`, `┄` is every dead INDICATOR and `┈` is every dead GROUND,
-#: and the doctrine orders them: the calmer the run, the more broken it is.
-#: `blueprint_S3` is the frame — `├─┤` on, `├┤·` off, `├╎┈` dead — and the
-#: round's objection (§2.7) is that counting dashes in a 12px cell is not a
-#: channel a reader has. **This law does not settle that**; it asserts the
-#: ladder is MONOTONE, so that if a reader can count at all, counting gives
-#: the right answer. E2 is why the rest cannot be settled from the artefact.
-BLUEPRINT_DASHES = {"╌": 2, "┄": 3, "┈": 4}
+#: horizontals this kit told apart were told apart by DASH COUNT — `╌` (two)
+#: `LEVELS["warn"]`, `┄` (three) every dead INDICATOR, `┈` (four) every dead
+#: GROUND. `blueprint_S3` was the frame — `├─┤` on, `├┤·` off, `├╎┈` dead —
+#: and three rounds' objection (§2.7) is that counting dashes in a 12px cell
+#: is not a channel a reader has. The law that stood here asserted only that
+#: the ladder was MONOTONE ("if a reader can count at all, counting gives the
+#: right answer"), which round four answered by measuring the three runs at
+#: 1.24:1 in `dim`: a count you cannot resolve is not a channel however well
+#: it is ordered.
+#:
+#: inc72 RETIRES THE COUNT, and it took TWO moves because the sheet has only
+#: one dashed horizontal to give:
+#:
+#:   1. `┄` and `┈` leave the kit. The dead GROUND takes `╌`, the broken rule
+#:      this sheet already flies as its CLIP flag, and the dead EXTENT takes
+#:      `╏`, the dashed VERTICAL it already spends on dead terminators. What
+#:      separates the two is DIRECTION — ruling D's fourth channel, and the
+#:      one this sheet already spends on `╱` HELD against `╲` REFUSED.
+#:   2. `LEVELS["warn"]` leaves `╌`. inc60 moved the dead runs off that cell
+#:      BECAUSE it was the warn rung ("a dead thing is not a meaning", ruling
+#:      (ii)); the only way to give it back to the dead runs was to move the
+#:      meaning instead. The ladder counts CELLS DRAWN now — nothing / half /
+#:      whole, `"  "` / `" ━"` / `"━━"` — which is COUNT, the channel
+#:      `state_channel` reads first, and no cell gains a family.
+#:
+#: THE ROSTER IS THE HORIZONTALS THE KIT MAY STILL DRAW, so a fourth dash
+#: count cannot come back in by the side door.
+BLUEPRINT_DASHED_HORIZONTALS = {"╌"}
+BLUEPRINT_DEAD_RUNS = {"main": "╌", "indicator": "╏"}
 
 
-def test_blueprints_dash_ladder_is_monotone_in_its_count():
-    """K4's ordering clause, on the kit whose ladder is a dash count."""
+def test_blueprints_dead_runs_turn_instead_of_counting_dashes():
+    """K4 in the frame, on the kit whose ladder was a dash count.
+
+    FOUR CLAUSES, and each is one of the sentences above made checkable:
+
+      1. the kit draws exactly ONE dashed horizontal, so there is no count
+         left to make — `┄` and `┈` appear nowhere in any declared table;
+      2. each dead run is the dashed VERTICAL the roster names, and the two
+         are told apart by WEIGHT with the ground lighter than the extent;
+      3. no dead run is the warn rung or its homoglyph, which is the whole of
+         inc60's ruling (ii) and the reason those cells moved in the first
+         place;
+      4. and at the two seats that have terminators of their own, the dead
+         datum is NOT the cell its own walls wear — a mark that equals its
+         box is not a mark, and this is the failure the first draft made.
+
+    THE LIVE RUNS ARE ASSERTED TOO, because the point of a direction channel
+    is that both sides of it are horizontal-or-not on purpose: `─` is the live
+    extent and `·` the live ground, and neither is a vertical."""
     k = LG.kit("blueprint")
+    declared = "".join("".join(t.values()) for t in k.PART_GLYPHS.values())
+    declared += "".join(k.LEVELS.values()) + "".join(k.DANGER_FORM)
+
+    # 1 -- the dash COUNT is gone from the kit
+    assert set("┄┈").isdisjoint(declared), sorted(set("┄┈") & set(declared))
+    assert set("╌") <= BLUEPRINT_DASHED_HORIZONTALS
+    assert {c for c in declared if c in "╌┄┈"} == BLUEPRINT_DASHED_HORIZONTALS
+
+    # 2 -- the dead runs are the two the roster names, they differ, and the
+    # knob a reader grips is a third cell again (this is what went red when
+    # the first draft gave the track and the grip one mark)
+    for part, cell in BLUEPRINT_DEAD_RUNS.items():
+        assert k.PART_GLYPHS[part][LG.DISABLED] == cell, (part, cell)
+    dead = [k.PART_GLYPHS[p][LG.DISABLED]
+            for p in ("main", "indicator", "knob")]
+    assert len(set(dead)) == 3, dead
+    assert state_channel(BLUEPRINT_DEAD_RUNS["main"],
+                         BLUEPRINT_DEAD_RUNS["indicator"]) is not None
+
+    # 3 -- and no dead run is the warn rung, nor a cell of its family, which
+    # is inc60's ruling (ii) unchanged: a dead thing is not a meaning
     warn = k.LEVELS["warn"].strip()[0]
-    dead_ind = k.PART_GLYPHS["indicator"][LG.DISABLED]
-    dead_main = k.PART_GLYPHS["main"][LG.DISABLED]
-    rungs = [warn, dead_ind, dead_main]
-    assert set(rungs) <= set(BLUEPRINT_DASHES), rungs
-    counts = [BLUEPRINT_DASHES[r] for r in rungs]
-    assert counts == sorted(counts) and len(set(counts)) == 3, (rungs, counts)
-    # and the LIVE indicator is not on this ladder at all -- it is a solid
-    # rule, which is the one thing a reader never has to count
-    assert k.PART_GLYPHS["indicator"][LG.DEFAULT] not in BLUEPRINT_DASHES
+    for cell in BLUEPRINT_DEAD_RUNS.values():
+        assert cell != warn and cell not in _twins(warn), (cell, warn)
+    # and the severity ladder counts CELLS: nothing, half the run, all of it
+    rungs = [k.LEVELS[r] for r in ("info", "warn", "error")]
+    assert len({len(r) for r in rungs}) == 1, rungs
+    drawn = [len(r.strip()) for r in rungs]
+    assert drawn == [0, 1, 2], (rungs, drawn)
+
+    # 4 -- a dead datum is not its own walls
+    for seat in ("checkbox.knob", "radio.knob", "textfield.main"):
+        dead = k.PART_GLYPHS[seat][LG.DISABLED]
+        assert len(dead) == 3 and dead[0] == dead[2], (seat, dead)
+        assert dead[1] != dead[0], (seat, dead)
+
+    # and the LIVE runs stayed horizontal, which is what makes the turn read
+    assert k.PART_GLYPHS["indicator"][LG.DEFAULT] == "─"
+    assert k.PART_GLYPHS["main"][LG.DEFAULT] == "·"
+
+
+def test_the_dead_run_law_bites_on_the_declaration_blueprint_shipped(
+        monkeypatch):
+    """TEETH. Put inc60's dash-count ladder back on the real kit and the law
+    goes red on clause 1 — and the OLD law's own assertion (the ladder is
+    monotone in its count) is still true of it, which is the point: an
+    ordering law could never have caught this."""
+    k = LG.kit("blueprint")
+    before = dict(k.PART_GLYPHS["main"]), dict(k.PART_GLYPHS["indicator"])
+    monkeypatch.setitem(k.PART_GLYPHS["main"], LG.DISABLED, "┈")
+    monkeypatch.setitem(k.PART_GLYPHS["indicator"], LG.DISABLED, "┄")
+    monkeypatch.setitem(k.LEVELS, "warn", "╌╌")
+    counts = {"╌": 2, "┄": 3, "┈": 4}
+    rungs = ["╌", "┄", "┈"]
+    assert [counts[r] for r in rungs] == sorted(counts.values())
+    with pytest.raises(AssertionError):
+        test_blueprints_dead_runs_turn_instead_of_counting_dashes()
+    monkeypatch.undo()
+    assert (dict(k.PART_GLYPHS["main"]),
+            dict(k.PART_GLYPHS["indicator"])) == before
 
 
 def test_the_state_channel_law_goes_red_on_a_real_table(monkeypatch):

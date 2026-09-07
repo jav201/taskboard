@@ -4280,10 +4280,23 @@ class Naught(Kit):
 
         So the separation is not a mark added in front of the page. It is the
         same lattice, at two charges, and the question is where the current
-        is."""
+        is.
+
+        AND THE BOUND IS THE GROUND, NOT THE DANGER FORM (inc72). The two
+        rules were `NA.ON * w` -- two hundred cells of the LIT dot, which is
+        `DANGER_FORM`, `LEVELS["error"]` and `LEVELS["warn"]`'s first cell --
+        so on the one screen where a reader has to find the mark that means
+        "this destroys data", the two hundred largest and most contiguous
+        candidates on it were the frame of the question. The bound is the
+        UNLIT lattice now (`NA.OFF`, ruled a GROUND and not a mark by
+        `THE_GROUND_IS_NOT_A_MARK`: "the unlit grid is visible ... that faint
+        lattice IS the signature"), drawn at the band's own charge. The
+        argument is unchanged and is now literal: the separation IS the
+        lattice, and what the band does to it is CHARGE it. `∙` falls from
+        202 lit cells inside the band to the two the answer spends."""
         c = self.c
-        band = ([f"[{c['ink']}]{NA.ON * w}[/]"] + list(rows)
-                + [f"[{c['ink']}]{NA.ON * w}[/]"])
+        band = ([f"[{c['ink']}]{NA.OFF * w}[/]"] + list(rows)
+                + [f"[{c['ink']}]{NA.OFF * w}[/]"])
         y = max(0, (h - len(band)) // 2)
         out = []
         for i in range(h):
@@ -4424,13 +4437,38 @@ class Naught(Kit):
         # radio from a checkbox by SHAPE FAMILY — round well, square box.
         # naught's entire vocabulary is the lattice dot: both are round
         # because everything here is round, so the distinction it can afford
-        # is WITHIN the family — the checkbox is a dot filled, the radio is a
-        # ring with a centre. The per-state pair still differs from the
-        # checkbox's in every state, which is the law; the family does not,
-        # which is the honest reading.
-        "radio.main": {DEFAULT: "○", FOCUSED: "◌", ACTIVE: "◦",
+        # is WITHIN the family.
+        #
+        # inc72 (L10): AND "WITHIN THE FAMILY" WAS THE WRONG HALF OF THE
+        # ARGUMENT. `HOMOGLYPH_FAMILIES` reads `◦ ○ ◎ ◉ ⊙ ⊛` as ONE drawing
+        # at six diameters and fills, and until this increment the form's two
+        # option rows were drawn from four of them — `naught_S2` row 9
+        # `○ low  ○ norm  ⊙ high` against row 11 `◦ api  ◉ ui  ◉ urgent`,
+        # two rows apart, four members of one family. Round three's criterion
+        # ("cover the label column and say which row is a single choice and
+        # which are independent boxes") had no answer for three rounds.
+        #
+        # THE RING THAT IS BROKEN IS THE EXCLUSIVE ONE. The radio's resting
+        # cells step OUT of that family and onto the two cells this kit
+        # already keeps beside it: `◌`, the dotted ring, and `⊚`, the ring
+        # inside a ring — neither is a member of any homoglyph family, so the
+        # channel against the checkbox's `◦`/`◉` is SHAPE and not diameter.
+        # Nothing new enters the alphabet: `◌` and `⊚` were this part's own
+        # FOCUSED cells and the two states TRADE PLACES, so the radio's
+        # ladder is the same six cells it always was.
+        #
+        # AND THE STATE ROSTER DOES NOT MOVE, which is worth writing down
+        # because the first draft of this comment claimed it did.
+        # `STATES_TOLD_APART_BY_SIZE["naught"]` is still 8: the `○`/`◦` pair
+        # at `radio.main` is still there, at FOCUSED against ACTIVE instead
+        # of DEFAULT against ACTIVE. What moved is the pair of cells the FORM
+        # actually draws, which is what L10 was raised about and what
+        # `naught_S2` is judged on; the roster is about the DECLARED table
+        # and closing it is still "a second channel for this alphabet, which
+        # is a language-level increment" (see that roster's own note).
+        "radio.main": {DEFAULT: "◌", FOCUSED: "○", ACTIVE: "◦",
                        DISABLED: "⋅"},
-        "radio.knob": {DEFAULT: "⊙", FOCUSED: "⊚", ACTIVE: "●",
+        "radio.knob": {DEFAULT: "⊚", FOCUSED: "⊙", ACTIVE: "●",
                        DISABLED: "⊗"},
         # the key is a LATTICE seat: unlit dots hold the word, and lighting
         # them is the whole language's mechanism. The press fills all four —
@@ -8420,11 +8458,23 @@ class Ledger(Kit):
 
         THE BACKDROP IS KEPT AT FULL STRENGTH, which is the exact opposite of
         every other answer here, and it is the refusal: there is no in front
-        of."""
-        keep = max(0, h - len(rows) - 1)
+        of.
+
+        BOTH RULES, SINCE inc72 (C2). It opened on a rule and closed on
+        nothing, so the posting's lower limit was the EDGE OF THE TERMINAL
+        and the irreversible answer was the last row a reader can see. inc66
+        gave `Swiss.overlay_instead` its closing rule and left this one
+        alone, and round four measured that the two frames carried the SAME
+        objection and that this was the graver of the two (`(Delete)` had
+        nothing at all under it). A posting is ruled off at its foot the way
+        it is ruled on at its head -- that is what a ledger's rules are --
+        and closing it also moves the destructive answer up one row, so the
+        thing that cannot be undone is no longer the sheet's last line."""
+        rule = self.rule_line(w) or ""
+        block = [rule] + list(rows) + [rule]
+        keep = max(0, h - len(block))
         out = [under[i] if i < len(under) else "" for i in range(keep)]
-        out.append(self.rule_line(w) or "")
-        out += list(rows)
+        out += block
         return out[:h] + [""] * max(0, h - len(out))
 
     def pane_split_rule(self, h, w=3):
@@ -10346,7 +10396,29 @@ class Blueprint(Kit):
     # ZERO ALERT." A drawing office does not draw a line to say there is
     # nothing to note. `Ledger.LEVELS` is the precedent in this corpus and
     # has carried a blank info rung since inc45.
-    LEVELS = {"info": "  ", "warn": "╌╌", "error": "━━"}
+    # inc72 (K4): AND THE WARN RUNG LEFT THE DASH TOO. `╌╌` was the middle
+    # rung, and `╌` is the only dashed horizontal this sheet may still draw
+    # once `┄` and `┈` are retired -- so the dead runs, which have to be
+    # SOMETHING (L2, inc69: air is not a state), could not have it while a
+    # meaning did. inc60's ruling (ii) is the reason and it is unchanged --
+    # "a dead thing is not a meaning" -- so the MEANING moves and the dead
+    # runs take the cell.
+    #
+    # THE LADDER NOW COUNTS THE CELLS IT DRAWS, which is this sheet's own
+    # doctrine carried one step further. `LEVELS["info"]` is air because "a
+    # drawing office does not rule a line to say there is nothing to note";
+    # so a note is HALF the run ruled and a fault is the WHOLE run ruled, in
+    # the one weight this sheet spends on faults. Nothing / half / whole is
+    # COUNT -- ruling D's first channel, and `state_channel` reads it first
+    # as "the coarsest thing an eye resolves in a run". No cell changes
+    # meaning and no cell gains a family: `━` was already `LEVELS["error"]`
+    # and the `DANGER_FORM`.
+    #
+    # THE RUN GROWS TO THE RIGHT, which is how a rule is extended and also
+    # what the other ten do (`* ` / `**`, `! ` / `!!`, `o ` / `O `): the rung
+    # starts in the same column at every severity, so the log's severity
+    # gutter is one column wide and what varies is how far the rule reaches.
+    LEVELS = {"info": "  ", "warn": "━ ", "error": "━━"}
 
     MATCH_STYLE = "bold {ink}"             # the heavy weight, in type
 
@@ -10360,28 +10432,49 @@ class Blueprint(Kit):
                           for k, v in pairs)
 
     PART_GLYPHS = {
-        # THE DEAD RUNS, AND THERE ARE TWO OF THEM (inc60).
+        # THE DEAD RUNS, AND THERE ARE TWO OF THEM (inc60, rewritten inc72).
         #
         # Every dead seat on this sheet read `╌`, and `╌` is
         # `LEVELS["warn"]` as well as the CLIP flag -- so a switch nobody may
         # throw, a checkbox nobody may tick and a field nobody may type in
-        # all said "warning". A dead run is now the DASH AT A FINER COUNT,
-        # which is ruling D's first channel and already this kit's own answer
-        # at `indicator[DISABLED]`: `╌` TWO dashes (the clip flag, the warn
-        # rung), `┄` THREE, `┈` FOUR.
+        # all said "warning". inc60 moved them to the DASH AT A FINER COUNT:
+        # `╌` TWO dashes (the clip flag, the warn rung), `┄` THREE, `┈` FOUR.
         #
-        # AND THE SPLIT INTO TWO IS `verify_language`'S, NOT A PREFERENCE.
-        # The first answer sent every dead run to `┄` and went RED three
-        # times over -- "the disabled indicator differs in SHAPE from the
-        # track ... an extent separated from its range by hue alone is the
-        # colour-only defect one cell in" -- because the switch's dead TRACK
-        # and its dead INDICATOR had collapsed onto one mark. So the two dead
-        # runs follow the two LIVE ones they replace: a dead LEADER (`·`, the
-        # mark this drawing rules every gap with) is `┈`, a dead EXTENT (`─`,
-        # the span itself) is `┄`, and the ground fades one count further
-        # than the thing lying on it.
-        "main": {DEFAULT: LEAD, DISABLED: "┈"},
-        "indicator": {DEFAULT: EXT, DISABLED: "┄"},
+        # inc72 (K4 IN THE FRAME): A DASH COUNT IS NOT A CHANNEL A READER
+        # HAS. Three rounds asked of `blueprint_S3` "cover the labels and say
+        # which switches are on and which is dead" and the answer turned on
+        # counting two dashes against three against four inside a 12px cell.
+        # inc68 built the instrument (`state_channel`, the census's two
+        # blueprint homoglyph rows) and the frame did not move; round four
+        # measured the three runs at 1.24:1 in `dim` and wrote "counting
+        # dashes you cannot see is not a channel".
+        #
+        # A DEAD RUN IS THE BROKEN RULE OR THE BROKEN TICK, and there is one
+        # of each. `┄` and `┈` LEAVE the kit: the three horizontals told
+        # apart by dash count become ONE (`╌`, the broken rule this sheet
+        # already flies as its CLIP flag), and the second dead run is the
+        # dashed VERTICAL `╏` this sheet already spends on dead terminators.
+        # The channel between them is DIRECTION -- ruling D's fourth, and the
+        # one this sheet already spends on `╱` HELD against `╲` REFUSED -- so
+        # nothing new enters the alphabet and nothing has to be counted.
+        #
+        # `╌` IS FREE TO BE CHROME BECAUSE THE WARN RUNG LEFT IT (see LEVELS
+        # above). inc60 moved the dead runs off `╌` precisely BECAUSE it was
+        # `LEVELS["warn"]`; this time the meaning moved instead, so the
+        # sentence that forced the dash count no longer holds.
+        #
+        # THE SPLIT INTO TWO IS STILL `verify_language`'S, NOT A PREFERENCE.
+        # Sending every dead run to one mark went RED three times over --
+        # "the disabled indicator differs in SHAPE from the track ... an
+        # extent separated from its range by hue alone is the colour-only
+        # defect one cell in" -- because the switch's dead TRACK and its dead
+        # INDICATOR collapse onto one mark. So the two dead runs follow the
+        # two LIVE ones they replace: a dead LEADER (`·`, the mark this
+        # drawing rules every gap with) is the LIGHT dashed vertical and a
+        # dead EXTENT (`─`, the span itself) is the HEAVY one, and the ground
+        # stays one step lighter than the thing lying on it.
+        "main": {DEFAULT: LEAD, DISABLED: "╌"},
+        "indicator": {DEFAULT: EXT, DISABLED: "╏"},
         # THE SHEET'S TENTH GLYPH, AND THE ONLY ONE THAT IS NEITHER A
         # DIMENSION NOR A REGISTRATION MARK (inc52). INVALID read `├`, which
         # is this sheet's `REQUIRED` -- the terminator that says an extent
@@ -10417,9 +10510,12 @@ class Blueprint(Kit):
                           DISABLED: "╎ ╎"},
         # inc60: the dead datum read `╎╌╎`, and `╌` is `LEVELS["warn"]`, so
         # a checkbox nobody may tick carried a warning at its own knob. It
-        # takes the dead EXTENT, `┄` -- see the two dead runs above.
+        # takes the dead EXTENT -- see the two dead runs above. inc72: the
+        # dead extent is the dashed VERTICAL now, which at this seat is also
+        # the weight the terminators do not wear, so the dead datum is still
+        # a mark and not a third copy of its own walls.
         "checkbox.knob": {DEFAULT: "├╪┤", FOCUSED: "╞╪╡", ACTIVE: "┣╪┫",
-                          DISABLED: "╎┄╎"},
+                          DISABLED: "╎╏╎"},
         # THE DATUM TURNED INWARD. The checkbox's terminators point out (a
         # dimension measured across a gap); the radio's point IN, which on a
         # drawing is a callout selecting one item from a schedule. Nothing is
@@ -10427,8 +10523,12 @@ class Blueprint(Kit):
         # new component, which is what a language law is for.
         "radio.main": {DEFAULT: "┤ ├", FOCUSED: "╡ ╞", ACTIVE: "┫ ┣",
                        DISABLED: "╏ ╏"},
+        # inc72: this seat's terminators are the HEAVY dashed vertical, so
+        # its dead datum takes the LIGHT one -- the weight inverts because
+        # the SEAT's weight inverts, which is the sheet's own ramp doing the
+        # work, and the datum is never its own walls.
         "radio.knob": {DEFAULT: "┤○├", FOCUSED: "╡◉╞", ACTIVE: "┫●┣",
-                       DISABLED: "╏┄╏"},          # inc60: the dead run
+                       DISABLED: "╏╎╏"},          # inc60: the dead run
         # A TITLE-BLOCK CELL: two extension lines with the callout between
         # them, which is how this language bounds anything at all — nothing
         # is BOXED here, and two verticals are a dimension, not a box. The
@@ -10456,7 +10556,11 @@ class Blueprint(Kit):
         # severity anywhere.
         "textfield.main": {DEFAULT: "├·┤", FOCUSED: "╞·╡", EDITED: "╞─╡",
                            ACTIVE: "┣·┫", INVALID: "╲·╲",
-                           DISABLED: "╎┈╎"},
+                           # inc72: the dead paper is the dead GROUND, the
+                           # broken rule -- and it is a horizontal against
+                           # two vertical terminators, so the paper can never
+                           # be read as a third wall.
+                           DISABLED: "╎╌╎"},
         "textfield.caret": {DEFAULT: "╪"},
         # A DIMENSION ON A LONG SHEET, and NOTHING IS FILLED — this sheet's
         # law survives the new component, which is what a language law is
@@ -10474,9 +10578,11 @@ class Blueprint(Kit):
         # with.
         # inc60: the dead schedule read `╌╌`, `LEVELS["warn"]` twice over,
         # at the one seat the named-seat law watches hardest. Its LIVE
-        # ground is the LEADER, so its dead one is the dead leader `┈┈` --
-        # and `··` stopped being a severity rung when info went to air.
-        "stepper.main": {DEFAULT: LEAD + LEAD, DISABLED: "┈┈"},
+        # ground is the LEADER, so its dead one is the dead leader -- and
+        # `··` stopped being a severity rung when info went to air. inc72:
+        # the dead leader is the light dashed vertical; this seat has no
+        # terminators of its own to clash with.
+        "stepper.main": {DEFAULT: LEAD + LEAD, DISABLED: "╌╌"},
         "stepper.step": {DEFAULT: "┤├", FOCUSED: "╡╞", EDITED: "╪╪",
                          # inc51: this read `├┤`, DEFAULT `┤├` with the
                          # terminators exchanged -- and `├` is also this

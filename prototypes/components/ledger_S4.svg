@@ -159,14 +159,14 @@
 <text x="522.4" y="397.3" fill="#8a8272">│</text>
 <text x="43.6" y="414.3" fill="#c4b99f"> nil balance</text>
 <text x="522.4" y="414.3" fill="#8a8272">│</text>
-<text x="522.4" y="431.3" fill="#8a8272">│</text>
-<text x="10.0" y="448.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
-<text x="10.0" y="465.3" fill="#1c1a15">Delete 3 tasks?</text>
-<text x="10.0" y="499.3" fill="#6a6458">3 tasks will be removed from BACKLOG.</text>
-<text x="10.0" y="516.3" fill="#6a6458">This cannot be undone.</text>
-<text x="10.0" y="550.3" fill="#2b3a67">▶ </text>
-<text x="26.8" y="550.3" fill="#1c1a15"> (Delete) </text>
-<text x="110.8" y="550.3" fill="#2b3a67"> ◀</text>
-<text x="152.8" y="550.3" fill="#1c1a15">│   Cancel   │</text>
+<text x="10.0" y="431.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="10.0" y="448.3" fill="#1c1a15">Delete 3 tasks?</text>
+<text x="10.0" y="482.3" fill="#6a6458">3 tasks will be removed from BACKLOG.</text>
+<text x="10.0" y="499.3" fill="#6a6458">This cannot be undone.</text>
+<text x="10.0" y="533.3" fill="#2b3a67">▶ </text>
+<text x="26.8" y="533.3" fill="#1c1a15"> (Delete) </text>
+<text x="110.8" y="533.3" fill="#2b3a67"> ◀</text>
+<text x="152.8" y="533.3" fill="#1c1a15">│   Cancel   │</text>
+<text x="10.0" y="550.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
 </g>
 </svg>

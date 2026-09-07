@@ -18,7 +18,7 @@
 <text x="26.8" y="159.3" fill="#24486b">09:41:07</text>
 <text x="127.6" y="159.3" fill="#7fa8c4">sync started  remote=origin</text>
 <text x="26.8" y="176.3" fill="#24486b">09:41:09</text>
-<text x="102.4" y="176.3" fill="#7fa8c4">╌╌</text>
+<text x="102.4" y="176.3" fill="#7fa8c4">━ </text>
 <text x="127.6" y="176.3" fill="#eef4f8">3 tasks overdue in BACKLOG</text>
 <text x="26.8" y="193.3" fill="#24486b">09:41:12</text>
 <text x="127.6" y="193.3" fill="#7fa8c4">sync ok  216 ms  0 conflicts</text>

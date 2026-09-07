@@ -27,11 +27,11 @@
 <text x="169.6" y="125.3" fill="#f5f5f5">expected YYYY-MM-DD</text>
 <text x="337.6" y="125.3" fill="#242424">◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦</text>
 <text x="26.8" y="159.3" fill="#8a8a8a">priority</text>
-<text x="144.4" y="159.3" fill="#242424">○</text>
+<text x="144.4" y="159.3" fill="#242424">◌</text>
 <text x="161.2" y="159.3" fill="#8a8a8a">low</text>
-<text x="203.2" y="159.3" fill="#242424">○</text>
+<text x="203.2" y="159.3" fill="#242424">◌</text>
 <text x="220.0" y="159.3" fill="#8a8a8a">norm</text>
-<text x="270.4" y="159.3" fill="#f5f5f5">⊙</text>
+<text x="270.4" y="159.3" fill="#f5f5f5">⊚</text>
 <text x="287.2" y="159.3" fill="#f5f5f5">high</text>
 <text x="26.8" y="193.3" fill="#8a8a8a">tags</text>
 <text x="144.4" y="193.3" fill="#242424">◦</text>
