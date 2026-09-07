@@ -1560,10 +1560,12 @@ cell against their sources at the close of the batch and every one is identical:
 
 None of the seven frames this batch moved is a source for any of them. **`49_darkside-modal-rounded-lid`,
 stale since `rework-5a` (§13.6) and named as open for four batches (G1), is identical again.** This
-batch did not install it and `export_to_skill.py` still does not touch that directory, so it was
-re-installed outside this worktree at some point since §13.6 was written — WHO did it is not
-something this batch can say. Recorded because a G1 that quietly closed is as worth writing down
-as one that did not, and because the next round will otherwise re-report it.
+batch did not install it and `export_to_skill.py` still does not touch that directory. **G1 is closed,
+and the skill repo's own log says by whom:** its last commit is `0a241c4 tui-design gallery: twelve
+entries re-installed after rework-3..5c; languages re-exported`. Recorded because a G1 that quietly
+closed is as worth writing down as one that did not, and because the next round will otherwise
+re-report it. **G2 is NOT closed:** the skill repo is dirty again after this batch's export (six files
+under `tui-design/assets/languages/`) and was not committed, per the batch's constraint.
 
 **And the skill's own `render_svg.py` already read the declared ground** —
 `assets/gallery/svg/30_ledger-settings-danger.svg` grounds its page in a light paper. The skill was
