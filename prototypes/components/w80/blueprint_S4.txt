@@ -4,14 +4,14 @@ BOARD  ·── 16 TASKS  ·  4 PROJECTS
     AUDIT THE THEME TOKENS                  ├╌─── 21D ─────┤                    
     ·── DOCS ── BACKLOG ── LOW                                 PROJECT ·──── Web
     DROP THE LEGACY SHIM                    ├╌─── 30D ─────┤   PHASE ·──── doing
-                 ┌                                           ┐                  
+                 ┼                                           ┼                  
                  DELETE 3 TASKS?                                                
                                                                                 
                  ·── 3 TASKS WILL BE REMOVED FROM BACKLOG.                      
                  ·── THIS CANNOT BE UNDONE.                                     
                                                                                 
                  ╞ ━DELETE━ ╡   ├  CANCEL  ┤                                    
-                 └                                           ┘                  
+                 ┼                                           ┼                  
     ·── API ── DOING ── NORM                                                    
     REWRITE THE ONBOARDING                  ├──── 14D ─────┤                    
     ·── WEB ── DOING ── LOW                                                     

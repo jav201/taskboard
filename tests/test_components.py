@@ -2101,6 +2101,24 @@ def gate_blocks(rows):
     return out
 
 
+#: WHERE THE BAND STOPS BEING A BAND, by `(page height, gate)` -- ruling F
+#: at 24 rows (orchestrator, 2026-09-07): *if neither position fits, the band
+#: is the whole page (a full-screen confirm)*.
+#:
+#: ONE ENTRY, AND IT IS THE RED inc78 FOUND. At 24 rows a confirm about
+#: `DOING` has nowhere to go: below `DOING`'s block there is not room for six
+#: rows before the page ends, and above it the only position that fits starts
+#: on `GATE BACKLOG 05`'s own header, which F amended forbids for ANY gate.
+#: inc55's rule fell through to `schedule_foot` and landed at rows 17-22 --
+#: inside `DOING`, eating the departures of the gate the confirm is about.
+#:
+#: THE ROSTER IS SMALL ON PURPOSE AND IT IS ASSERTED IN BOTH DIRECTIONS: a
+#: page that starts taking the whole screen where it used to place a band is
+#: a design regression, and a page that stops is a fix. Either shows up here
+#: as a diff. At 32 rows every gate on the shipped page has a position.
+SOLARI_TAKES_THE_PAGE = {(24, "DOING")}
+
+
 def test_a_solari_confirm_never_covers_the_gate_it_names():
     """RULING F (orchestrator, 2026-09-06, on the operator's delegation):
     *a confirm never covers the gate it names.*
@@ -2142,8 +2160,28 @@ def test_a_solari_confirm_never_covers_the_gate_it_names():
     k = LG.kit("solari")
     under, w, h = page_markup("solari"), len(s1[0]), len(s1)
     rows = solari_s4_rows(k)
+    depth = len([r for r in rows if LG.visible(r).strip()]) + 2
     for gate, block in blocks.items():
         out = [plain(r) for r in k.overlay(rows, w, h, under, about=gate)]
+        if k.band_head(under, depth, gate) is None:
+            # THE PAGE RAN OUT (F at 24 rows, inc83). There is a gate this
+            # confirm does not name and no position on the page can hold the
+            # band without covering the gate it DOES name -- so the band
+            # takes the whole page and there is no schedule left to misfile
+            # a departure into. Ruling F is not waived here, it is satisfied
+            # the only way a page this short allows: the confirm hides
+            # EVERYTHING, so it hides nothing selectively.
+            assert (h, gate) in SOLARI_TAKES_THE_PAGE, (h, gate)
+            # NOTHING OF THE SCHEDULE IS LEFT, which is what makes the
+            # branch honest rather than a waiver: not one gate header
+            # survives, so no departure can be read under a gate it is not
+            # in, and the question the confirm asks is the only thing said.
+            assert not [r for r in out if _GATE_HEAD.search(r)], (gate, out)
+            assert out[-1].rstrip() == plain(k.seam(w)).rstrip(), gate
+            assert any(plain(r).strip() and plain(r).strip() in
+                       " ".join(out) for r in rows), gate
+            continue
+        assert (h, gate) not in SOLARI_TAKES_THE_PAGE, (h, gate)
         for i in block:
             assert out[i].rstrip() == s1[i].rstrip(), (gate, i, out[i])
 
@@ -8482,34 +8520,36 @@ SECOND_WIDTH_LAWS = (
     ("test_a_solari_confirm_never_covers_the_gate_it_names", None),
 )
 
-#: WHAT GOES RED AT 80x24, and it is one arm out of 79.  Recorded so the
-#: round has a table to argue with and so a fix shows up as a diff.
+#: WHAT GOES RED AT 80x24 -- **NOTHING, SINCE inc83**, and the set is kept
+#: rather than deleted because an empty recorded set is the only kind that
+#: can go red by GROWING.
 #:
-#: 1. **Ruling F fails for solari.** *A confirm never covers the gate it
-#:    names* — and at 24 rows it covers one it does NOT name, by two rows.
-#:    The law's first arm (the shipped frame, about BACKLOG) is green at both
-#:    sizes; the arm that goes red is the one inc55 added, which asks the
-#:    MECHANISM the same question once per gate. At 100x32 a confirm about
-#:    DOING puts its band at rows 24-28, clear below DOING's block (9-18). At
-#:    80x24 there is no room below, the band lands at 17-22, and rows 17 and
-#:    18 are DOING's own departures. **This is a HEIGHT finding wearing a
-#:    width's clothes** and it is the strongest argument in this batch for
+#: 1. **Ruling F failed for solari and is FIXED (inc83).** *A confirm never
+#:    covers the gate it names* -- and at 24 rows it covered one it does NOT
+#:    name, by two rows. The law's first arm (the shipped frame, about
+#:    BACKLOG) was green at both sizes; the arm that went red was the one
+#:    inc55 added, which asks the MECHANISM the same question once per gate.
+#:    At 100x32 a confirm about DOING puts its band at rows 23-28, clear
+#:    below DOING's block (9-18). At 80x24 there is no room below and the
+#:    only position above starts on another gate's header, so inc55's rule
+#:    fell through to `schedule_foot` and landed at 17-22, eating rows 17 and
+#:    18 -- DOING's own departures. **This was a HEIGHT finding wearing a
+#:    width's clothes** and it was the strongest argument in `rework-7b` for
 #:    rendering at a second size at all: the placement rule was written, and
-#:    tested, on a page that always had somewhere to go. **Not fixed here —
-#:    a solari design decision, for the round.**
+#:    tested, on a page that always had somewhere to go. `band_head` now
+#:    scans POSITIONS rather than walking a list of gates, below the named
+#:    block first and above it second, and takes the WHOLE PAGE when neither
+#:    fits -- `SOLARI_TAKES_THE_PAGE` records the one case that does.
 #:
 #: 2. **FIXED (inc80).** solari's arm of
 #:    `test_a_confirm_opens_and_closes_on_marks_of_its_own` used to assert the
 #:    band plate is at full measure by `any(w > 800)` over the svg's rects.
-#:    800 is 100 cells x 8.4 units minus a margin — it meant "full measure"
+#:    800 is 100 cells x 8.4 units minus a margin -- it meant "full measure"
 #:    only at 100 columns, and at 80 the plate is 672 units wide and WAS at
 #:    full measure, so the law read RED with a correct frame. The predicate
 #:    now reads the page's own width off its canvas rect (`page_w`), so it
-#:    asks the same question at every width; this arm is GREEN at 80x24 and
-#:    stays green at 100x32 (control arm, below).
-SECOND_WIDTH_RED = {
-    ("test_a_solari_confirm_never_covers_the_gate_it_names", None),
-}
+#:    asks the same question at every width.
+SECOND_WIDTH_RED: set = set()
 
 
 def test_the_second_width_corpus_is_the_rectangle_it_claims():
@@ -8543,12 +8583,13 @@ def test_the_frame_laws_at_eighty_by_twenty_four_are_the_ones_recorded(
     the corpus must do, and the objection round four raised is that the
     commitments say *"at any width"* and were only ever asked at one.
 
-    The verdict is a RECORDED SET and not a gate. The brief is explicit: *"Do
-    not fix languages here; the round judges."* So this test is green while
-    one arm is red at 80x24 (inc80 fixed the other: a width-bound law, not a
-    solari defect), and it goes red the day that set changes in
-    either direction — a language fixed, or a new law that does not survive
-    the narrower page.
+    The verdict is a RECORDED SET and not a gate. `rework-7b`'s brief was
+    explicit — *"Do not fix languages here; the round judges"* — so inc78
+    recorded two reds and fixed neither. inc80 fixed the width-bound law and
+    **inc83 fixed the solari defect the round ruled on**, so the set is now
+    EMPTY and this law's whole job is to keep it that way: it goes red the
+    day the set changes in either direction — a language broken, or a new law
+    that does not survive the narrower page.
     """
     def run():
         out, n = set(), 0
@@ -8576,15 +8617,29 @@ def test_the_frame_laws_at_eighty_by_twenty_four_are_the_ones_recorded(
     assert red == SECOND_WIDTH_RED, red
 
 
-def test_ruling_F_fails_at_eighty_by_twenty_four_because_the_page_ran_out(
+def test_ruling_F_holds_at_both_heights_and_says_where_the_page_ran_out(
         monkeypatch):
-    """THE FINDING, in arithmetic rather than in a test id.
+    """THE FIX, in arithmetic rather than in a test id — and the defect it
+    replaced, still stated as arithmetic so nobody has to take the fix on
+    trust.
 
     Ruling F (2026-09-06): *a confirm never covers the gate it names.* The
-    mechanism satisfies it at 100x32 by moving the band BELOW the gate the
-    confirm is about — and at 80x24 there is no below. Both sizes are asked
-    here, from their own shipped frames, so the difference is the page's
-    height and not two different pages.
+    mechanism satisfied it at 100x32 by moving the band BELOW the gate the
+    confirm is about — and at 80x24 there is no below. inc78 measured what
+    inc55's rule then did: it fell through to `schedule_foot` and put the
+    band at rows 17-22, eating rows 17 and 18, which are `DOING`'s own
+    departures.
+
+    F AT 24 ROWS (2026-09-07) is what this asserts now, in three clauses:
+
+      (a) at BOTH heights, for EVERY gate on the page, the band either
+          leaves the named gate's block untouched or takes the whole page;
+      (b) the whole-page branch is reached exactly where
+          `SOLARI_TAKES_THE_PAGE` says and nowhere else;
+      (c) inc55's rule is re-installed and watched producing the OLD
+          arithmetic — rows 17 and 18 at 80x24 and nothing at 100x32 — so the
+          fix is shown against the defect and not against a description of
+          it.
     """
     k = LG.kit("solari")
 
@@ -8592,20 +8647,169 @@ def test_ruling_F_fails_at_eighty_by_twenty_four_because_the_page_ran_out(
         monkeypatch.setitem(globals(), "FRAMES", where)
         s1 = page_rows("solari")
         under, rows = page_markup("solari"), solari_s4_rows(k)
-        blocks = gate_blocks(s1)
+        depth = len([r for r in rows if LG.visible(r).strip()]) + 2
         out = {}
-        for gate, block in blocks.items():
+        for gate, block in gate_blocks(s1).items():
             got = [plain(r) for r in
                    k.overlay(rows, len(s1[0]), len(s1), under, about=gate)]
-            out[gate] = [i for i in block
-                         if got[i].rstrip() != s1[i].rstrip()]
+            full = k.band_head(under, depth, gate) is None
+            out[gate] = (len(s1), full,
+                         [i for i in block
+                          if got[i].rstrip() != s1[i].rstrip()])
         return out
 
-    wide = eaten(FRAMES)
-    assert all(not v for v in wide.values()), wide      # 100x32: ruling F holds
-    narrow = eaten(W80)
-    assert narrow["DOING"] == [17, 18], narrow
+    for where in (FRAMES, W80):
+        for gate, (h, full, eats) in eaten(where).items():
+            if full:
+                assert (h, gate) in SOLARI_TAKES_THE_PAGE, (h, gate)
+                assert eats, (h, gate, "a full-page band that changed nothing")
+            else:
+                assert (h, gate) not in SOLARI_TAKES_THE_PAGE, (h, gate)
+                assert not eats, (h, gate, eats)
+        monkeypatch.undo()
+
+    # (c) THE DEFECT, re-derived. inc55's body walks the gates in page order
+    # and takes the first unnamed one with room, falling through to the foot.
+    def inc55(self, under, depth, about=None):
+        if about is None:
+            return self.schedule_head(under)
+        named = str(about).upper()
+        heads = [(i, g) for i, r in enumerate(under) if (g := self.gate_of(r))]
+        if not heads:
+            return self.schedule_head(under)
+        for n, (i, gate) in enumerate(heads):
+            if gate == named:
+                continue
+            nxt = heads[n + 1][0] if n + 1 < len(heads) else len(under)
+            if i + 1 + depth <= nxt:
+                return i + 1
+        return self.schedule_foot(under, depth)
+
+    monkeypatch.setattr(LG.Solari, "band_head", inc55)
+    wide = {g: e for g, (_h, _f, e) in eaten(FRAMES).items()}
+    monkeypatch.undo()
+    monkeypatch.setattr(LG.Solari, "band_head", inc55)
+    narrow = {g: e for g, (_h, _f, e) in eaten(W80).items()}
+    assert all(not v for v in wide.values()), wide      # 100x32: it held
+    assert narrow["DOING"] == [17, 18], narrow          # 80x24: it did not
     assert not narrow["BACKLOG"] and not narrow["BLOCKED"], narrow
+
+
+# ---------------------------------------------------------------------------
+# inc83 — K10: a pair of corners is a promise, and the distance is not in the
+# glyph.
+#
+# Round five turned this one from a limit of METHOD into a defect of DESIGN
+# by looking at it: `blueprint_S4` delimits its modal with four loose corners
+# `┌ ┐ └ ┘` **44 cells (396 px) apart**, and at 16 px the eye does not close
+# that gap — the frame says "here is a rectangle" and shows four marks. On
+# the SAME sheet the mode strip draws `┌ ┐` / `└ ┘` at TWO cells and reads as
+# a box cleanly. **The law that was missing is about distance, not about
+# glyphs**, and no ratio, no census and no svg attribute could have raised
+# it.
+#
+# THE FORM THE FIX TAKES is the one blueprint's own doctrine dictates
+# (`LANGUAGES.md` §11, and `overlay_instead`'s first line since it was
+# written): "not one element on this sheet is boxed, at any width", and the
+# ten marks contain no vertical stroke, so the walls CANNOT exist. A corner
+# glyph is a stub of two walls; a crosshair is a point. The marks become `┼`
+# and stop promising a rectangle the alphabet has no way to draw.
+# ---------------------------------------------------------------------------
+
+def modal_box_cells(lang: str) -> set:
+    """THE CELLS THAT PROMISE A BOX — the kit's own `MODAL_BOX`, which is
+    where this repo has always written down what a dialog's border is made
+    of (`"┌┐└┘──││"`: four corners, then the two strokes). A language in
+    `MODAL_BORDER_REFUSED` says it draws no such border; the law below is
+    what makes that sentence cost something.
+
+    THE CORNERS AND NOT THE STROKES, and the distinction is the finding. A
+    corner is a STUB OF TWO WALLS: it points along both of them and promises
+    a rectangle the next cell over. A rule is ONE stroke and promises nothing
+    about a second dimension — swiss and ledger open and close their bands
+    with `─` and neither is claiming a box. Round five's objection is about
+    the promise, not about the family."""
+    return {c for c in LG.kit(lang).MODAL_BOX[:4] if c.strip()}
+
+
+@pytest.mark.parametrize("lang", sorted(LG.MODAL_BORDER_REFUSED))
+def test_a_language_that_refuses_the_box_spends_no_cell_of_one(lang):
+    """K10, and it is a law about a PROMISE rather than about a distance.
+
+    A distance threshold was the obvious shape and it is the wrong one: the
+    number would have to be invented inside this increment, it would differ
+    per glyph and per face, and round five's own §7 warns against exactly
+    that kind of invented constant. What is checkable without inventing
+    anything is the promise itself — a kit that declares it draws no modal
+    border may not spend the cells its own `MODAL_BOX` is made of on the
+    thing it draws instead.
+
+    THE CORNERS ARE THE CASE. `┌ ┐ └ ┘` are four of the eight cells of the
+    base `MODAL_BOX`, and at two cells apart they keep the promise and at 44
+    they cannot. Removing the promise removes the distance question with it,
+    which is why this law needs no threshold.
+
+    THE MODE STRIP IS UNTOUCHED, deliberately: the same sheet draws `┌ ┐` at
+    two cells in its mode strip and the raster says that reads as a box. This
+    law asks about the OVERLAY — the element that claimed to be a dialog —
+    and nowhere else."""
+    k = LG.kit(lang)
+    s1 = page_rows("solari")
+    under = [LG.mark(r) for r in s1]
+    rows = solari_s4_rows(k)
+    w, h = len(s1[0]), len(s1)
+    out = "".join(plain(r) for r in k.overlay(rows, w, h, under))
+    spent = modal_box_cells(lang) & set(out)
+    assert not spent, (lang, sorted(spent),
+                       "a refused border, drawn out of the border's own cells")
+
+
+def test_blueprints_registration_marks_are_points_and_not_corners():
+    """The fix, on the shipped frame and on the kit at once.
+
+    Four clauses, and the third is the one round five could only get from a
+    raster: the marks are `┼`, there are four, they stand at the corners of
+    ONE extent — and the cell they replaced is back to being only what it
+    always also was, this kit's `CUR`."""
+    k = LG.kit("blueprint")
+    assert k.REGISTER == "┼", k.REGISTER
+    assert k.CUR == "┌", k.CUR
+    s4 = (FRAMES / "blueprint_S4.txt").read_text(
+        encoding="utf-8").rstrip("\n").split("\n")
+    marked = [(y, r.index(k.REGISTER), r.count(k.REGISTER))
+              for y, r in enumerate(s4) if k.REGISTER in r]
+    assert len(marked) == 2, marked                    # two rows, two each
+    assert all(n == 2 for _y, _x, n in marked), marked
+    assert marked[0][1] == marked[1][1], marked        # one extent, squared
+    # AND NO CORNER IS SPENT BETWEEN THEM, which is the clause the raster
+    # asked for: the rows the registration marks bracket ARE the modal, and
+    # no cell that promises a box stands anywhere in them.
+    inside = "".join(s4[marked[0][0]:marked[1][0] + 1])
+    assert not (modal_box_cells("blueprint") & set(inside)), \
+        sorted(modal_box_cells("blueprint") & set(inside))
+    # the mode strip on the OTHER sheets still spends its corners, at two
+    # cells, which the raster says reads as a box — the fix is not a purge
+    s1 = (FRAMES / "blueprint_S1.txt").read_text(encoding="utf-8")
+    assert "┌" in s1 and "┐" in s1, "the mode strip lost its box"
+
+
+def test_the_refused_box_law_bites_on_the_corners_blueprint_shipped(
+        monkeypatch):
+    """TEETH — the four corners put back, which is the declaration round five
+    photographed, and the law watched going red on blueprint alone."""
+    for lang in sorted(LG.MODAL_BORDER_REFUSED):
+        test_a_language_that_refuses_the_box_spends_no_cell_of_one(lang)
+
+    monkeypatch.setattr(LG.Blueprint, "REGISTER", "┌")
+    with pytest.raises(AssertionError):
+        test_a_language_that_refuses_the_box_spends_no_cell_of_one("blueprint")
+    for lang in sorted(LG.MODAL_BORDER_REFUSED):
+        if lang != "blueprint":
+            test_a_language_that_refuses_the_box_spends_no_cell_of_one(lang)
+    monkeypatch.undo()
+
+    for lang in sorted(LG.MODAL_BORDER_REFUSED):
+        test_a_language_that_refuses_the_box_spends_no_cell_of_one(lang)
 
 
 # ---------------------------------------------------------------------------

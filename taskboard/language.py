@@ -9111,20 +9111,78 @@ class Solari(Kit):
         A CALLER THAT DOES NOT SAY GETS inc40's ANSWER. `about=None` falls
         back to `schedule_head`, so every existing call site — and every one
         of the other ten languages, which ignore the argument entirely —
-        renders byte for byte what it rendered before."""
+        renders byte for byte what it rendered before.
+
+        F AT 24 ROWS (orchestrator, 2026-09-07, on round five's §8): *the
+        band takes the nearest full-measure position that cuts no gate block,
+        below first then above; if neither fits, the band is the whole page
+        (a full-screen confirm). `LANGUAGES.md` gets no minimum height.*
+
+        WHY THE ANCHOR HAD TO STOP BEING A LIST OF HEADERS. inc55's rule
+        walked the gates in page order and took the first unnamed one with
+        room, and inc78 found what that costs at 80x24: a confirm about
+        `DOING` finds no unnamed gate with room, falls to
+        `schedule_foot`, and the foot lands at rows 17-22 — INSIDE `DOING`,
+        eating rows 17 and 18, which are the departures of the gate the
+        confirm is about. **The placement rule was written, and tested, on a
+        page that always had somewhere to go.** At 100x32 it does; at 24
+        rows it does not, and the rule had no way to notice.
+
+        WHAT REPLACES IT is not a list of gates but a scan of POSITIONS. A
+        position is legal when the band lies inside the page, starts at or
+        below the masthead, covers no gate HEADER (F amended, unchanged) and
+        touches no row of the NAMED gate's block (F itself). The scan runs
+        BELOW the named block first, nearest outward, then ABOVE it, nearest
+        outward — which is the ruling's own order, and which reproduces every
+        anchor inc55 and inc65 shipped at 100x32 without being told to.
+
+        THE TWO FALLBACKS ARE DIFFERENT AND BOTH ARE KEPT.
+
+          * NO UNNAMED GATE EXISTS (every gate named, or a one-gate page):
+            the band goes to the foot, `schedule_foot`. This is inc55's
+            second sentence and it is untouched — the foot may sit inside
+            the named gate because on such a page there is nowhere that
+            does not, and the confirm's own words are the only thing left to
+            say which gate it is about.
+          * AN UNNAMED GATE EXISTS AND NO POSITION IS LEGAL: **the page has
+            run out**, and the band takes the WHOLE PAGE. `None` is returned
+            and `overlay_instead` draws a full-screen confirm. It is the
+            honest answer at 24 rows and it is what corgi does by doctrine:
+            a band that cannot avoid the gate it names must stop pretending
+            to be a band.
+
+        The two are not interchangeable. Sliding the second into the first
+        would put a band on the gate it names and call it a fallback."""
         if about is None:
             return self.schedule_head(under)
         named = str(about).upper()
         heads = [(i, g) for i, r in enumerate(under) if (g := self.gate_of(r))]
         if not heads:
             return self.schedule_head(under)
+        top, last = self.schedule_head(under), len(under) - depth
+        head_rows = {i for i, _g in heads}
+        spans = {}
         for n, (i, gate) in enumerate(heads):
-            if gate == named:
-                continue
             nxt = heads[n + 1][0] if n + 1 < len(heads) else len(under)
-            if i + 1 + depth <= nxt:
-                return i + 1
-        return self.schedule_foot(under, depth)
+            spans.setdefault(gate, set()).update(range(i, nxt))
+        block = spans.get(named, set())
+
+        def legal(y: int) -> bool:
+            span = set(range(y, y + depth))
+            return (top <= y <= last and not (span & head_rows)
+                    and not (span & block))
+
+        if block:
+            order = list(range(max(block) + 1, last + 1))
+            order += list(range(min(block) - depth, top - 1, -1))
+        else:
+            order = list(range(top, last + 1))
+        for y in order:
+            if legal(y):
+                return y
+        if all(g == named for _i, g in heads):
+            return self.schedule_foot(under, depth)
+        return None
 
     def overlay_instead(self, rows, w, h, under, about=None):
         """A BOARD HAS NO SURFACE IN FRONT OF IT. "One shape, the row" is the
@@ -9184,13 +9242,34 @@ class Solari(Kit):
         header stands; the band's foot still lands inside that gate, so the
         row under it is a departure's seam, and inc50's clause "the schedule
         under the band opens on a gate header" is still the price of the
-        ruling."""
+        ruling.
+
+        AND AT 24 ROWS IT STOPS BEING A BAND (inc83, F at 24 rows). When
+        `band_head` returns `None` the page has run out: there is a gate the
+        confirm does not name, and no position on the page can hold the band
+        without covering the gate it DOES name. The announcement then takes
+        the whole screen — the opener bar, the question, air, and the seam on
+        the last row — which is the same answer corgi gives by doctrine. A
+        board with no room for an announcement beside the schedule shows the
+        announcement and not a lie about the schedule.
+
+        THE OPENER STAYS, AND IT IS NOW COUNTED (K8/inc81). The band's first
+        row is `w` blank cells on `accent`: a hundred of them at 100 columns,
+        the brightest run this kit draws, and until inc81 no instrument in
+        this programme could see it because it carries no glyph. Ruling K8
+        counts it as ink and Q2 classifies it as STRUCTURE — a run of eight
+        cells or more, which owes exactly one thing, not to equal the ground
+        it stands on. `#f5a300` against `#0b0b0c` is 9.48:1. **It stays.**"""
         c = self.c
         bar = (f"[{self.t.get('ground', '#000000')} on {c['accent']}]"
                f"{mark(' ' * w)}[/]")
         said = [r for r in rows if visible(r).strip()]
         block = [bar] + said + [self.seam(w)]
         y = self.band_head(under, len(block), about)
+        if y is None:                       # the page ran out: take all of it
+            full = ([bar] + said)[:max(0, h - 1)]
+            full += [self.recede("")] * max(0, h - 1 - len(full))
+            return (full + [self.seam(w)])[:h]
         out = []
         for i in range(h):
             if y <= i < y + len(block):
@@ -10446,15 +10525,49 @@ class Blueprint(Kit):
     # terminator is the knob, and the unmeasured remainder is leader dots.
     # Nothing is filled and nothing is boxed, which is this sheet's law.
     COMP_CHROME = (OPEN, "")
+    #: THE REGISTRATION MARK, and it is a CROSSHAIR and not a corner (inc83).
+    #:
+    #: `┼` appears nowhere else in this kit: it is not declared at any seat,
+    #: it is drawn at none of the 66 frames before this change, and it is the
+    #: only cell of the light box-drawing family this sheet had not spent.
+    REGISTER = "┼"
+
     def overlay_instead(self, rows, w, h, under, about=None):
-        """REGISTRATION MARKS, and the four corners NEVER JOIN.
+        """REGISTRATION MARKS, and they no longer PROMISE a box.
 
         "Not one element on this sheet is boxed, at any width", and the ten
         marks contain no vertical stroke -- so a dialog box is unconstructable
         twice over. What marks a region on a drawing is the REGISTRATION
-        PAIR: `┌   ┐` above and `└   ┘` below, with AIR where a stroke would
-        be. Running a rule between them makes a lid however it is spelled,
-        which is the correction this language's own prototype needed.
+        PAIR, four marks at the corners of an extent with AIR where a stroke
+        would be. Running a rule between them makes a lid however it is
+        spelled, which is the correction this language's own prototype
+        needed, and that has been the doctrine since.
+
+        WHAT INC83 CHANGED, AND THE ARGUMENT IS ABOUT DISTANCE (K10, round
+        five §2.7 and §4). The four marks used to be `┌ ┐ └ ┘`, and those are
+        the CORNERS OF A BOX: each one is a stub of two walls, so each one
+        promises a rectangle the next cell over. At two cells apart that
+        promise is kept by the eye -- the mode strip on this very sheet draws
+        `┌ ┐` / `└ ┘` at two cells and reads as a box in the raster. At the
+        modal's width it is **44 cells, 396 px**, and the eye does not close
+        it: the frame says "here is a rectangle" and shows four marks. Round
+        five's criterion -- *point at the modal's border* -- has no answer,
+        and it is the only frame of the 66 that a raster turned from a limit
+        of method into a defect of design.
+        `LANGUAGES.md` §11 is the clause this obeys: a drawing sheet states
+        an EXTENT and then stops.
+
+        SO THE MARKS STOP PROMISING WHAT THE ALPHABET CANNOT DELIVER. `┼` is
+        a crosshair: a POINT, symmetric, with no handedness and no stub of a
+        wall running out of it in any direction. Four of them at the corners
+        of an extent is what a drawing office actually registers a region
+        with, and no reader can be owed a rectangle by a cross. The distance
+        stops mattering because nothing is being joined -- which is the same
+        sentence `pane_split_instead` writes about `┤` and `├` one method
+        down, and the same one this docstring has always opened with.
+
+        AND `┌` GOES BACK TO BEING THE CURSOR. It is this kit's `CUR`, and it
+        was the modal's top-left corner at the same time.
 
         The sheet behind stays visible and recedes, because a revision note
         does not hide the view it annotates."""
@@ -10465,7 +10578,8 @@ class Blueprint(Kit):
         corners = lambda a, b: (f"[{c['ink']}]{mark(a)}[/]"
                                 + " " * (dw - 2)
                                 + f"[{c['ink']}]{mark(b)}[/]")
-        block = [corners("┌", "┐")] + list(rows) + [corners("└", "┘")]
+        reg = self.REGISTER
+        block = [corners(reg, reg)] + list(rows) + [corners(reg, reg)]
         y = max(0, (h - len(block)) // 2)
         out = []
         for i in range(h):

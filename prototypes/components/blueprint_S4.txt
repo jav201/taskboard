@@ -8,14 +8,14 @@ BOARD  ·── 16 TASKS  ·  4 PROJECTS
                                                                PRIORITY ·────────────────────── high
 ┌ DOING                                     ├ 04 ─┤            STATUS ·──────────────────────── open
 ┌   FIX LOGIN REDIRECT                      ├───┤ 03D          OWNER ·─────────────────────── jav201
-                           ┌                                           ┐                            
+                           ┼                                           ┼                            
                            DELETE 3 TASKS?                                                          
                                                                                                     
                            ·── 3 TASKS WILL BE REMOVED FROM BACKLOG.                                
                            ·── THIS CANNOT BE UNDONE.                                               
                                                                                                     
                            ╞ ━DELETE━ ╡   ├  CANCEL  ┤                                              
-                           └                                           ┘                            
+                           ┼                                           ┼                            
   BLOCKED                                   ├┤ 00                                                   
       ▌▄▄▐        ▌▄▄▐                                                                              
       ▌▄▄▐        ▌▄▄▐                                                                              
