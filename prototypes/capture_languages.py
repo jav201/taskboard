@@ -519,13 +519,25 @@ MONO = ("ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',"
 Cell = tuple[str, str, str, bool, bool]
 
 
-def cell_grid(app) -> tuple[list[list[Cell]], str]:
+def cell_grid(app, ground: str) -> tuple[list[list[Cell]], str]:
     """Read the composited frame as (char, fg, bg, bold, underline) per CELL.
 
     Segment styles are read off the compositor, not off any widget's internal
     state: a widget can hold its text and still not have been flushed, and it
-    is the flush a capture reads.  Returns the screen's own background too, so
-    the picture's ground is the app's ground rather than a guess.
+    is the flush a capture reads.
+
+    THE GROUND IS DECLARED, NOT MEASURED (inc63, ruling E4).  Until this
+    increment `ground` was "the most common background in the frame", and that
+    guess was wrong on all 66 component sheets at once: `render.py` set the
+    screen background AFTER the first paint, so every composited cell carried
+    Textual's own `#121212` and the exporter dutifully called it the ground.
+    ledger is the corpus's only light-paper language, so its six sheets
+    shipped `#1c1a15` ink on a `#121212` canvas -- 1.08:1, black on black,
+    with the dot leaders (9.62:1) the only legible thing on the page.  A
+    frequency count cannot tell a ground from a full-bleed mistake.  The
+    caller passes `THEMES[lang]["ground"]` -- the same token the census and
+    the skill's `render_svg.py` read -- and both the canvas and the "this
+    cell needs no rect" test come from it.
 
     THE STYLE TIER, AND WHY `reverse` IS RESOLVED HERE RATHER THAN IN THE
     EXPORTER.  `Kit.match` is the one contract seat whose emphasis may not add
@@ -547,7 +559,6 @@ def cell_grid(app) -> tuple[list[list[Cell]], str]:
     then paints it with no new branch and no second notion of what a ground is.
     """
     grid: list[list[Cell]] = []
-    ground = "#000000"
     for strip in app.screen._compositor.render_strips():
         row: list[Cell] = []
         for seg in strip:
@@ -562,14 +573,6 @@ def cell_grid(app) -> tuple[list[list[Cell]], str]:
             for ch in seg.text:
                 row.append((ch, fg, bg, bold, under))
         grid.append(row)
-    # the ground is the most common background in the frame -- measured, not
-    # assumed, because several languages paint a full-bleed panel over it
-    counts: dict[str, int] = {}
-    for row in grid:
-        for cell in row:
-            counts[cell[2]] = counts.get(cell[2], 0) + 1
-    if counts:
-        ground = max(counts, key=counts.get)
     return grid, ground
 
 
@@ -668,7 +671,7 @@ def ink(rows: list[str]) -> float:
 
 
 def write(name: str, rows: list[str], app=None,
-          title: str = "") -> tuple[int, int, float]:
+          title: str = "", ground: str = "") -> tuple[int, int, float]:
     """Write a rectangle -- every row padded to the widest, never clipped.
 
     The rectangle law: the grid is what the verifiers measure, and a row that
@@ -677,13 +680,17 @@ def write(name: str, rows: list[str], app=None,
 
     When `app` is given, the same frame is also exported to SVG in colour by
     Textual itself.  Not re-rendered here and not re-coloured: whatever the
-    terminal would show is what the file holds.
+    terminal would show is what the file holds.  `ground` is then REQUIRED and
+    is the language's declared `THEMES[lang]["ground"]` -- inc63, ruling E4:
+    the exporter never infers a ground from frequency.
     """
     w = max(len(r) for r in rows)
     rect = [r.ljust(w) for r in rows]
     (OUT / f"{name}.txt").write_text("\n".join(rect) + "\n", encoding="utf-8")
     if app is not None:
-        grid, ground = cell_grid(app)
+        if not ground:
+            raise ValueError(f"{name}: an SVG needs the kit's declared ground")
+        grid, ground = cell_grid(app, ground)
         (OUT / f"{name}.svg").write_text(
             svg_from_grid(grid, ground, title), encoding="utf-8")
     return w, len(rect), ink(rect)
@@ -725,13 +732,15 @@ async def sweep() -> list[dict]:
             app.set_theme(lang)
             rows = await settle(pilot, app, f"board {lang}")
             w, h, i = write(f"board_{lang}", rows, app,
-                            f"taskboard · {lang} · board")
+                            f"taskboard · {lang} · board",
+                            TH.THEMES[lang]["ground"])
             entry = dict(lang=lang, board=(w, h, i))
 
             await pilot.press("g")
             grows = await settle(pilot, app, f"gallery {lang}")
             gw, gh, gi = write(f"gallery_{lang}", grows, app,
-                               f"taskboard · {lang} · components")
+                               f"taskboard · {lang} · components",
+                               TH.THEMES[lang]["ground"])
             entry["gallery"] = (gw, gh, gi)
 
         report.append(entry)
@@ -822,8 +831,14 @@ async def sweep_surfaces() -> list[dict]:
     for lang in _TH.ORDER:
         body, res = surface_sheet(lang, img)
 
+        # the ground goes in the CSS, not on `styles.background` after the
+        # first pause: a background assigned once the sheet has been painted
+        # does not reach the strips the compositor has already cached, so
+        # every cell would arrive on Textual's `#121212` (inc63, E4).
+        ground = _TH.THEMES[lang]["ground"]
+
         class Sheet(App):
-            CSS = ("Screen { layout: vertical; }\n"
+            CSS = (f"Screen {{ layout: vertical; background: {ground}; }}\n"
                    "#surface { padding: 0 1; width: 1fr; height: 1fr; }")
 
             def compose(self) -> ComposeResult:
@@ -832,10 +847,10 @@ async def sweep_surfaces() -> list[dict]:
         app = Sheet()
         async with app.run_test(size=SIZE) as pilot:
             await pilot.pause()
-            app.screen.styles.background = _TH.THEMES[lang]["ground"]
             rows = await settle(pilot, app, f"surface {lang}")
             w, h, i = write(f"surface_{lang}", rows, app,
-                            f"taskboard - {lang} - surface ({res.posture})")
+                            f"taskboard - {lang} - surface ({res.posture})",
+                            ground)
         report.append(dict(lang=lang, posture=res.posture, ink=i,
                            pixels=None if res.pixels is None
                            else res.pixels.size))
