@@ -13,12 +13,12 @@
                                            ├┤·  ├─┤  ├ ┤  ├╪┤   default                                               
                                            ├╡·  ├─╡  ╞ ╡  ╞╪╡   focused                                               
                                            ├┫·  ├─┫  ┣ ┫  ┣╪┫   active                                                
-                                           ├╎╌  ├┄╎  ╎ ╎  ╎╌╎   disabled                                              
+                                           ├╎┈  ├┄╎  ╎ ╎  ╎┄╎   disabled                                              
                                 radio      lo·mid·hi  set=mid cursor=hi                                               
                                            ┤ ├ lo  ┤○├ mid  ┤ ├ hi   default                                          
                                            ┤ ├ lo  ┤○├ mid  ╡ ╞ hi   focused                                          
                                            ┤ ├ lo  ┤○├ mid  ┫ ┣ hi   active                                           
-                                           ╏ ╏ lo  ╏╌╏ mid  ╏ ╏ hi   disabled                                         
+                                           ╏ ╏ lo  ╏┄╏ mid  ╏ ╏ hi   disabled                                         
                                 button     ok·Refresh  label INSIDE                                                   
                                            ├ ok ┤  ├ Refresh ┤   default                                              
                                            ╞ ok ╡  ╞ Refresh ╡   focused                                              
@@ -27,7 +27,7 @@
                                 textfield  task·caret 2                                                               
                                            ├task······┤   default                                                     
                                            ╞task······╡   focused                                                     
-                                           ╞ta╪sk╌╌╌╌╌╡   edited                                                      
+                                           ╞ta╪sk─────╡   edited                                                      
                                                                                                                       
                                                                                                                       
                                                                                                                       

@@ -3124,23 +3124,33 @@ def test_the_one_mark_one_meaning_law_goes_red_on_the_six_it_was_written_for(
 #: and that is the ruling: `Ø` was declared as this kit's rejection mark and
 #: the danger form took it afterwards ("its own INVALID wall, the struck
 #: mark"), so the mark that arrived second is the one that moved.
+#: THE FIFTH FIELD IS inc60'S, and it exists because an arm can be killed by
+#: a LATER cure rather than by a regression. blueprint's knob arm restores
+#: `├` and asks for `("required", "invalid")` — and inc60 moved `REQUIRED`
+#: off `├` onto `═`, so restoring the pre-inc52 byte string on its own now
+#: collides with NOTHING and the arm went green for the wrong reason. The
+#: fix is to restore the whole pre-inc52 state, obligation included, rather
+#: than to weaken what the arm asserts: `(attribute, value)` is set on the
+#: kit for the duration of the arm, `None` where the language's meanings have
+#: not moved since inc52.
 INVALID_CHANNEL_BEFORE = (
-    ("swiss", "knob", "╲", ("danger", "invalid")),
-    ("swiss", "textfield.main", "╲  ", ("danger", "invalid")),
-    ("swiss", "stepper.step", "╲╲", ("danger", "invalid")),
-    ("blueprint", "knob", "├", ("required", "invalid")),
-    ("blueprint", "textfield.main", "━·━", ("danger", "invalid")),
-    ("blueprint", "stepper.step", "━━", ("danger", "invalid")),
-    ("corgi", "knob", "▀▄", ("required", "invalid")),
-    ("corgi", "textfield.main", "▄▀·▀▄", ("required", "invalid")),
-    ("corgi", "stepper.step", "▀▄▄▀", ("required", "invalid")),
-    ("instrument", "textfield.main", "⠸⠶⠇", ("ladder", "invalid")),
+    ("swiss", "knob", "╲", ("danger", "invalid"), None),
+    ("swiss", "textfield.main", "╲  ", ("danger", "invalid"), None),
+    ("swiss", "stepper.step", "╲╲", ("danger", "invalid"), None),
+    ("blueprint", "knob", "├", ("required", "invalid"), ("REQUIRED", "├")),
+    ("blueprint", "textfield.main", "━·━", ("danger", "invalid"), None),
+    ("blueprint", "stepper.step", "━━", ("danger", "invalid"), None),
+    ("corgi", "knob", "▀▄", ("required", "invalid"), None),
+    ("corgi", "textfield.main", "▄▀·▀▄", ("required", "invalid"), None),
+    ("corgi", "stepper.step", "▀▄▄▀", ("required", "invalid"), None),
+    ("instrument", "textfield.main", "⠸⠶⠇", ("ladder", "invalid"), None),
 )
 
 
-@pytest.mark.parametrize("lang,key,before,want", INVALID_CHANNEL_BEFORE)
+@pytest.mark.parametrize("lang,key,before,want,restore",
+                         INVALID_CHANNEL_BEFORE)
 def test_the_invalid_channel_law_goes_red_on_the_declarations_inc52_moved(
-        monkeypatch, lang, key, before, want):
+        monkeypatch, lang, key, before, want, restore):
     """TEETH — and they have to name the LANGUAGE and the TWO ROLES.
 
     The ruling this increment carries out is stated as a NEGATIVE: the
@@ -3166,6 +3176,11 @@ def test_the_invalid_channel_law_goes_red_on_the_declarations_inc52_moved(
     tbl = dict(kit.PART_GLYPHS[key])
     tbl[LG.INVALID] = before
     monkeypatch.setitem(kit.PART_GLYPHS, key, tbl)
+    if restore is not None:
+        # the pre-inc52 MEANING, where a later increment moved it (inc60).
+        attr, value = restore
+        assert getattr(type(kit), attr) != value, (lang, attr, value)
+        monkeypatch.setattr(type(kit), attr, value)
 
     assert frozenset(want) in roles(lang), (lang, key, shared_cell_pairs(lang))
     with pytest.raises(AssertionError):
@@ -3202,19 +3217,41 @@ def test_the_invalid_channel_law_goes_red_on_darksides_restored_danger_form(
 def test_the_rune_is_excluded_from_the_invalid_channel_by_name(monkeypatch):
     """THE EXCLUSION'S OWN TEETH — an exclusion nobody can watch is a hole.
 
-    `_invalid_marks` reads the field's two WALLS and not its RUNE, and four
-    languages would go red on the rune alone if it were counted (blueprint's
-    `·` is `LEVELS["info"]`, ledger's and solari's and naught's runes are
-    their fields' paper in every state). This asserts the boundary in both
-    directions: a rune that is a meaning is NOT a hit, and the SAME cell put
-    on a wall IS one."""
+    `_invalid_marks` reads the field's two WALLS and not its RUNE. This
+    asserts the boundary in both directions: a rune that IS a meaning is not
+    a hit, and the SAME cell put on a WALL is one.
+
+    inc60 HAD TO REBUILD THIS TEST AND THE REASON IS WORTH MORE THAN THE
+    TEST. It used to ride on a live defect: blueprint's rune was `·` and
+    `LEVELS["info"]` was `··`, so the exclusion could be watched without
+    patching anything. inc60 sent blueprint's info rung to AIR, and with that
+    the corpus has NO language left whose rune is a meaning — measured, all
+    eleven. **An exclusion whose teeth depend on a defect being present dies
+    the day the defect is cured**, and it dies GREEN, which is the worst way.
+    So the meaning is patched in: `LEVELS["info"]` is set to the rune's own
+    cell for the duration, and the two directions are asked of that."""
     k = LG.kit("blueprint")
-    assert k.PART_GLYPHS["textfield.main"][LG.INVALID][1] == "·"
-    assert "·" in k.LEVELS["info"]
+    rune = k.PART_GLYPHS["textfield.main"][LG.INVALID][1]
+    assert rune == "·", rune
+
+    # ... and the corpus really has none left, which is what makes the patch
+    # necessary rather than convenient.
+    for lang in LANGS:
+        kk = LG.kit(lang)
+        g = kk.PART_GLYPHS.get("textfield.main", {}).get(LG.INVALID)
+        if not g:
+            continue
+        r = g[len(g) // 2]
+        live = {f: v for f, v in _meaning_marks(kk).items() if f != "invalid"}
+        assert not any(r in _cells(v) for v in live.values()), (lang, r)
+
+    monkeypatch.setattr(LG.Blueprint, "LEVELS",
+                        {"info": rune * 2, "warn": "╌╌", "error": "━━"})
+    assert rune in LG.kit("blueprint").LEVELS["info"]
     assert not shared_cell_pairs("blueprint")          # the rune is not read
 
     tbl = dict(k.PART_GLYPHS["textfield.main"])
-    tbl[LG.INVALID] = "·╱·"                            # rune and walls SWAPPED
+    tbl[LG.INVALID] = f"{rune}╲{rune}"                 # rune and walls SWAPPED
     monkeypatch.setitem(k.PART_GLYPHS, "textfield.main", tbl)
     assert frozenset(("ladder", "invalid")) in {
         frozenset(r[:2]) for r in shared_cell_pairs("blueprint")}
@@ -3368,10 +3405,15 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                 CELL `⢸`, which is this kit's own sentence about the part
 #:                 it is: "the knob is a HALF-CELL mark ... the only
 #:                 vocabulary here whose grip can sit inside a cell".
-#:   blueprint 12  8 + 4. `╌` is `LEVELS["warn"]` and this language's whole
-#:                 DISABLED vocabulary — five parts wear it — and inc49 adds
-#:                 `├`, `REQUIRED`, at the checkbox's and the radio's knob.
-#:                 blueprint has never had an increment. Open.
+#:   blueprint  0  WAS 12 (8 + 4) and is ZERO since inc60 (`rework-5c`,
+#:                 ruling A). `╌` was `LEVELS["warn"]` AND this language's
+#:                 whole DISABLED vocabulary — five parts wore it — and `├`,
+#:                 `REQUIRED`, stood at the checkbox's and the radio's knob.
+#:                 inc60's ruling: THE TERMINATORS ARE CHROME AND NOTHING
+#:                 ELSE, AND A MEANING IS A LINE TYPE. Obligation left the
+#:                 terminator for a doubled RUN (`═`); every DEAD run took
+#:                 `┄`, the light TRIPLE dash this kit already drew at its
+#:                 dead indicator, told from `╌`'s double dash by COUNT.
 #:
 #: THE FOUR WERE NOT NEW FAILURES WHEN inc49 WIDENED THE CLAUSE, and they are
 #: the four languages `PROTOTYPE-inheritors-2.md` §6 decision **A** puts to
@@ -3386,12 +3428,12 @@ RULED_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #: SOLARI WAS 6 AND IS 0 (inc47): `▁` was `REQUIRED` and the switch's
 #: indicator and eighteen more chrome seats; obligation moved to `▮` and the
 #: seam went back to being alphabet. instrument and swiss went to zero in
-#: inc46, darkside in inc49, corgi in inc58 and prism in inc59. NINE of the
-#: eleven are clean.
+#: inc46, darkside in inc49, corgi in inc58, prism in inc59 and blueprint in
+#: inc60. TEN of the eleven are clean.
 MEANING_AT_A_NAMED_SEAT = {"naught": 12, "corgi": 0, "instrument": 0,
                            "swiss": 0, "industrial": 0, "nord": 0,
                            "darkside": 0, "prism": 0, "ledger": 0,
-                           "solari": 0, "blueprint": 12}
+                           "solari": 0, "blueprint": 0}
 
 
 #: THE KNOB SEATS THE REGISTRY REACHES. `COMPONENT_PARTS` gives the switch,
@@ -3598,21 +3640,28 @@ OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                  them. The ember fills the cell from the bottom; a control
 #:                  is the same dot-rows read from the TOP and stops one row
 #:                  short of `⣿` by construction.
-#:   blueprint  12  6 + 6. `├` is `REQUIRED` and the dimension's opening
-#:                  terminator — §9.4's `blueprint_S2` — and inc51 adds the
-#:                  ground, `··` at five states (`LEVELS["info"]` is `··`)
-#:                  and `╌╌` at the dead one (`LEVELS["warn"]`). Never had an
-#:                  increment.
+#:   blueprint   0  WAS 12 (6 + 6) and is ZERO since inc60 (`rework-5c`,
+#:                  ruling A). `├` was `REQUIRED` and the dimension's opening
+#:                  terminator — §9.4's `blueprint_S2`, the oldest finding
+#:                  still open in this worktree, and the frame shows it
+#:                  twice: `title├` and `due├` eleven rows above `├ ┤ api`
+#:                  and `├   Cancel   ┤`. inc51's ground (`··` at five
+#:                  states, `LEVELS["info"]`) and its dead one (`╌╌`,
+#:                  `LEVELS["warn"]`) went with it — the ground stopped
+#:                  being a rung when INFO WENT TO AIR, which is this
+#:                  sheet's own commitment ("a calm sheet carries zero
+#:                  alert") and `Ledger.LEVELS`'s precedent since inc45.
 #:
-#: NINE ARE ZERO: instrument (inc46), swiss (inc46 and inc51), industrial
+#: TEN ARE ZERO: instrument (inc46), swiss (inc46 and inc51), industrial
 #: (inc48), darkside (inc48), nord (inc51), ledger and solari (inc47),
-#: corgi (inc58) and prism (inc59). **swiss and nord stayed at zero through the stepper's
+#: corgi (inc58), prism (inc59) and blueprint (inc60). **naught is the last
+#: one, and inc61 is its increment.** **swiss and nord stayed at zero through the stepper's
 #: arrival because inc51 paid their two `stepper.main` declarations rather
 #: than exempting them** — see `OPENING_CONTROLS` above for the bill and who
 #: paid it.
 MEANING_AT_AN_OPENER = {"naught": 3, "corgi": 0, "instrument": 0, "swiss": 0,
                         "industrial": 0, "nord": 0, "darkside": 0, "prism": 0,
-                        "ledger": 0, "solari": 0, "blueprint": 12}
+                        "ledger": 0, "solari": 0, "blueprint": 0}
 
 
 def meaning_marks_at_an_opener(lang: str) -> list[tuple]:
@@ -4019,6 +4068,165 @@ def test_prism_draws_no_control_on_the_embers_own_rungs():
              for st in (LG.DEFAULT, LG.FOCUSED, LG.ACTIVE)]
     assert dots(walls[0]) < dots(walls[1]), (walls, [dots(w) for w in walls])
     assert dots(walls[0]) < dots(walls[2]), (walls, [dots(w) for w in walls])
+
+
+# ===========================================================================
+# inc60 (rework-5c) — blueprint's terminators are chrome and nothing else
+# ===========================================================================
+#: THE TWO MEANINGS inc60 MOVED, and the five glyph tables that moved with
+#: them. blueprint's defect was not one language reaching for chrome: it was
+#: obligation standing ON the chrome and severity standing UNDER it, so the
+#: fix had to move in both directions and the teeth have to show which half
+#: did the work.
+#:
+#: THE RULING (orchestrator, 2026-09-06, decision **A**):
+#:   (i)   THE TERMINATORS ARE CHROME AND NOTHING ELSE. `├ ┤` and their
+#:         weight ramp fix where a run BEGINS and ENDS, and every control on
+#:         the sheet is built from them, so no MEANING may be one. `REQUIRED`
+#:         leaves `├` for a doubled RUN, `═`.
+#:   (ii)  A MEANING IS A LINE TYPE, AND A DEAD THING IS NOT A MEANING.
+#:         Severity is nothing / `╌╌` / `━━`; the dead runs are `┈` (a dead
+#:         LEADER) and `┄` (a dead EXTENT), told from `╌` by dash COUNT.
+#:   (iii) THE HATCH IS ONE MARK AT TWO DIRECTIONS. `╱` is HELD (LANGUAGES.md
+#:         §11: "held work is HATCHED, never coloured"), `╲` is REFUSED —
+#:         the drawing office's own opposite-direction convention for
+#:         adjacent parts, and DIRECTION is one of ruling D's four.
+#:
+#: `LEVELS["info"]` IS THE ONE THAT DROPPED A MARK RATHER THAN MOVING IT, and
+#: the brief asked for exactly that decision by name. `··` was the info rung
+#: AND `LEAD`, the leader-origin dot this drawing rules every gap with — the
+#: sheet's most-spent chrome cell, at the stepper's ground, the field's paper
+#: and the switch's track. The sheet's own commitment decides which gives
+#: way: **"alert is spent on OVERDUE and nothing else. A CALM SHEET CARRIES
+#: ZERO ALERT."** A drawing office does not rule a line to say there is
+#: nothing to note.
+#: THE THREE HALVES AND WHAT EACH IS WORTH, measured rather than guessed —
+#: `(opener, named)` AFTER each is restored, cumulative, and the first draft
+#: of this constant had the first row as `(0, 0)` and was wrong. The five
+#: tables alone are worth (1, 8): `╌` is STILL `LEVELS["warn"]` — inc60 moved
+#: the DEAD RUNS off it, not the rung — so putting the dead datums back
+#: lights the named-seat law without any meaning moving at all. `REQUIRED`
+#: back on `├` is worth the six openers and the four knobs. `LEVELS["info"]`
+#: back on `··` is worth the stepper's ground, five states of it, and nothing
+#: on the named-seat roster.
+BLUEPRINT_TABLES_WORTH = (1, 8)
+BLUEPRINT_SHEET_BEFORE = (
+    ("REQUIRED", "├", (7, 12)),
+    ("LEVELS", {"info": "··", "warn": "╌╌", "error": "━━"}, (12, 12)),
+)
+BLUEPRINT_TABLES_BEFORE = (
+    ("main", {LG.DEFAULT: "·", LG.DISABLED: "╌"}),
+    ("checkbox.knob", {LG.DEFAULT: "├╪┤", LG.FOCUSED: "╞╪╡",
+                       LG.ACTIVE: "┣╪┫", LG.DISABLED: "╎╌╎"}),
+    ("radio.knob", {LG.DEFAULT: "┤○├", LG.FOCUSED: "╡◉╞", LG.ACTIVE: "┫●┣",
+                    LG.DISABLED: "╏╌╏"}),
+    ("textfield.main", {LG.DEFAULT: "├·┤", LG.FOCUSED: "╞·╡",
+                        LG.EDITED: "╞╌╡", LG.ACTIVE: "┣·┫",
+                        LG.INVALID: "╱·╱", LG.DISABLED: "╎╌╎"}),
+    ("stepper.main", {LG.DEFAULT: "··", LG.DISABLED: "╌╌"}),
+)
+
+
+def test_both_seat_laws_go_red_on_the_two_meanings_inc60_moved(monkeypatch):
+    """TEETH — and blueprint's are not the shape corgi's and prism's are,
+    because blueprint's defect was in its MEANINGS as well as in its tables
+    and the arms have to say which half did what.
+
+    THE FIRST DRAFT OF `BLUEPRINT_TABLES_WORTH` WAS `(0, 0)` AND IT WAS
+    WRONG, which is why the number is a constant here instead of a claim in a
+    packet. The guess was that restoring the chrome alone would light
+    nothing, because `├` is no longer the obligation mark — true — and
+    because `╌` is no longer a severity rung — FALSE. inc60 left
+    `LEVELS["warn"]` exactly where it was and moved the DEAD RUNS off it, so
+    putting the dead datums back scores (1, 8) with no meaning restored at
+    all. The measurement is the record."""
+    def counts():
+        return (len(meaning_marks_at_an_opener("blueprint")),
+                len(meaning_marks_at_named_seats("blueprint")))
+
+    assert counts() == (0, 0)
+
+    glyphs = dict(LG.Blueprint.PART_GLYPHS)
+    for key, table in BLUEPRINT_TABLES_BEFORE:
+        assert glyphs[key] != table, (key, "already the pre-inc60 table")
+        glyphs[key] = table
+    monkeypatch.setattr(LG.Blueprint, "PART_GLYPHS", glyphs)
+    assert counts() == BLUEPRINT_TABLES_WORTH, (
+        "the dead runs alone, with both meanings still moved", counts())
+
+    for attr, value, want in BLUEPRINT_SHEET_BEFORE:
+        assert getattr(LG.Blueprint, attr) != value, attr
+        monkeypatch.setattr(LG.Blueprint, attr, value)
+        assert counts() == want, (attr, counts(), want)
+        for other in LANGS:
+            if other == "blueprint":
+                continue
+            assert (len(meaning_marks_at_an_opener(other))
+                    == MEANING_AT_AN_OPENER[other]), (attr, other)
+            assert (len(meaning_marks_at_named_seats(other))
+                    == MEANING_AT_A_NAMED_SEAT[other]), (attr, other)
+
+    assert counts() == (12, 12), counts()
+    with pytest.raises(AssertionError):
+        test_no_control_opens_with_a_mark_that_means_something("blueprint")
+    with pytest.raises(AssertionError):
+        test_a_meaning_never_stands_at_a_disabled_or_indicator_seat(
+            "blueprint")
+    monkeypatch.undo()
+    assert counts() == (0, 0)
+
+
+def test_blueprints_refusal_is_the_held_hatch_turned_the_other_way():
+    """RULING (iii), asserted at both ends.
+
+    `Blueprint.icon` draws HELD as the hatch — "HELD is the HATCH itself, the
+    one icon in this vocabulary that is a texture rather than a code" — and
+    LANGUAGES.md §11 says the same ("held work is HATCHED, never coloured,
+    `hatch='╱'`"). inc52 gave the SAME cell to the refused value, on the
+    argument that it was "the one of the ten that states neither an extent
+    nor a datum" — true, and it had missed that the icon was already there.
+
+    BLOCKED AND REFUSED ARE TWO CLAIMS. The hatch stays one mark of the
+    alphabet and spends the channel a drawing office already spends on it:
+    adjacent hatched parts run in OPPOSITE DIRECTIONS. So `╱` is held and
+    `╲` is refused, and all three declared invalid slots carry the turn.
+
+    THE HELD MARK IS READ OFF THE KIT, not off a literal here, so a kit that
+    moved its hatch and left the invalid channel behind goes red."""
+    k = LG.kit("blueprint")
+    held = "".join(k.icon(kind) for kind in ("blocked", "held"))
+    assert "╱" in held and "╲" not in held, held
+
+    inv = _invalid_marks(k)
+    assert inv and set(inv) == {"╲"}, inv
+    for key in ("knob", "textfield.main", "stepper.step"):
+        assert "╱" not in k.PART_GLYPHS[key][LG.INVALID], key
+
+
+def test_blueprint_says_nothing_when_there_is_nothing_to_note():
+    """RULING (ii)'s DROPPED MARK, by name — the brief asked which meaning is
+    dropped and why, so the answer is a law rather than a sentence in a
+    packet.
+
+    blueprint's info rung is AIR. Its own commitment is "alert is spent on
+    OVERDUE and nothing else. A calm sheet carries zero alert", and `··` was
+    also `LEAD`, the leader-origin dot that rules every gap on the sheet.
+    One of the two had to give way and the cheaper one is the rung nobody
+    needs to see.
+
+    LEDGER IS THE PRECEDENT AND IT IS ASSERTED, not cited: a blank info rung
+    already exists in this corpus and has since inc45, so the shape of the
+    answer was available rather than invented. The other two rungs are still
+    there, so the ladder did not collapse — it starts at nothing."""
+    k = LG.kit("blueprint")
+    assert k.LEVELS["info"].strip() == "", k.LEVELS
+    assert k.LEVELS["warn"].strip() and k.LEVELS["error"].strip(), k.LEVELS
+    assert LG.kit("ledger").LEVELS["info"].strip() == "", "the precedent"
+    # ... and the cell it gave up is the one the sheet could not do without.
+    assert k.LEAD == "·" and k.PART_GLYPHS["stepper.main"][LG.DEFAULT] == "··"
+    assert "·" not in "".join(k.LEVELS.values())
+    # ... and obligation is a RUN now, not a terminator.
+    assert k.REQUIRED == "═" and k.REQUIRED not in (k.OPEN, k.CLOSE)
 
 
 # ===========================================================================
