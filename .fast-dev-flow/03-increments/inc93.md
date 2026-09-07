@@ -180,7 +180,7 @@ and the four causes live in `themes.tcss()`, in `HelpScreen` and in Textual. A r
 eleven languages found that **four of its six columns are not about the languages**.
 
 The page: `C:\Users\jjgh8\.claude\jobs\85046efb\tmp\gal\ronda-teclas.html`, built by
-`build_ronda_teclas.py` from the round document and the 66 PNGs. **4 165 015 bytes = 3.97 MB**, under
+`build_ronda_teclas.py` from the round document and the 66 PNGs. **4 167 157 bytes = 3.97 MB**, under
 the 10 MB budget. Verified in the browser and not in the file (patchright headless, `file://`): **66
 `<img>`, all 900×608 natural and painted at 900** (1:1, no CSS scaling), 264 radios in 66 independent
 groups, 66 note fields, **zero console errors, zero failed requests, zero external URLs, zero
