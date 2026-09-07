@@ -11,7 +11,7 @@ docstring of prototypes/collision_census.py for the argument.
 NAUGHT   5 colliding cells   (LEVELS ◦◦/∙◦/∙∙  DANGER ∙∙  REQUIRED ◉  CUR ●)
 ------------------------------------------------------------------------------
   ●   [7 families]  CUR  ·  button.main close (active)  ·  button.main mid (active)  ·  button.main open (active)  ·  checkbox.knob mark (checked+focused,focused)  ·  radio.knob mark (active,checked+active)  ·  stepper.step close (default)  ·  stepper.step open (default)  ·  switch.knob mark (active,checked+active)  ·  textfield.main close (active)  ·  textfield.main open (active)
-  ◦   [6 families]  LEVELS[info] + LEVELS[warn]  ·  button.main close (default)  ·  button.main open (default)  ·  checkbox.main mark (checked,default)  ·  radio.main mark (active,checked+active)  ·  switch.indicator mark (checked+disabled,disabled)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (default)  ·  textfield.main open (default)
+  ◦   [7 families]  LEVELS[info] + LEVELS[warn]  ·  button.main close (default)  ·  button.main open (default)  ·  checkbox.main mark (checked,default)  ·  field.leader mark (declared)  ·  radio.main mark (active,checked+active)  ·  switch.indicator mark (checked+disabled,disabled)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (default)  ·  textfield.main open (default)
   ·   [5 families]  INVALID textfield.main mid  ·  checkbox.main mark (checked+disabled,disabled)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (checked+disabled,disabled)  ·  textfield.main mid (active,default,focused)
   ◉   [5 families]  REQUIRED  ·  checkbox.knob mark (checked,default)  ·  stepper.step close (active)  ·  stepper.step open (active)  ·  switch.knob mark (checked,default)  ·  textfield.caret mark (active,default,disabled,edited,focused)
   ∙   [4 families]  LEVELS[error] + LEVELS[warn]  ·  DANGER_FORM close + DANGER_FORM open  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (edited)
@@ -66,7 +66,7 @@ NORD   1 colliding cells   (LEVELS · /! /!!  DANGER ##  REQUIRED *  CUR ▸)
 DARKSIDE   1 colliding cells   (LEVELS · /o /O   DANGER ▚▞  REQUIRED ▪  CUR ▊)
 ------------------------------------------------------------------------------
   ·   [2 families]  LEVELS[info]  ·  textfield.main mid (edited)
-  ... 12 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 14 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ PRISM   4 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRE
   ⣀   [7 families]  LEVELS[info]  ·  button.main mid (default)  ·  checkbox.main mid (active,checked,checked+active,checked+focused,default,focused)  ·  radio.knob close (checked,default)  ·  radio.knob open (checked,default)  ·  radio.main close (checked,default)  ·  radio.main mid (checked,default)  ·  radio.main open (checked,default)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (focused)
   ⣿   [7 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open  ·  button.main close (active,default,focused)  ·  button.main mid (active)  ·  button.main open (active,default,focused)  ·  checkbox.knob close (checked,default)  ·  checkbox.knob open (checked,default)  ·  checkbox.main close (checked,default)  ·  checkbox.main open (checked,default)  ·  radio.knob mid (active,checked,checked+active,checked+focused,default,focused)  ·  switch.indicator mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main close (active,default,edited,focused)  ·  textfield.main open (active,default,edited,focused)
   ⣤   [5 families]  LEVELS[warn]  ·  button.main mid (focused)  ·  radio.knob close (checked+focused,focused)  ·  radio.knob open (checked+focused,focused)  ·  radio.main close (checked+focused,focused)  ·  radio.main mid (checked+focused,focused)  ·  radio.main open (checked+focused,focused)  ·  switch.indicator mark (checked+disabled,disabled)  ·  textfield.main mid (edited)
-  ⡀   [2 families]  REQUIRED  ·  stepper.step open (default)
+  ⡀   [3 families]  REQUIRED  ·  field.leader open (declared)  ·  stepper.step open (default)
   ... 6 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
@@ -83,7 +83,7 @@ PRISM   4 colliding cells   (LEVELS ⣀⣀/⣤⣤/⣿⣿  DANGER ⣿⣿  REQUIRE
 LEDGER   2 colliding cells   (LEVELS   /* /**  DANGER ()  REQUIRED †  CUR ▶)
 ------------------------------------------------------------------------------
   ▶   [7 families]  CUR  ·  button.main open (active,focused)  ·  checkbox.knob open (active,checked+active,checked+focused,focused)  ·  checkbox.main open (active,checked+active,checked+focused,focused)  ·  radio.knob open (active,checked+active,checked+focused,focused)  ·  radio.main open (active,checked+active,checked+focused,focused)  ·  stepper.step close (focused)  ·  switch.knob mark (checked+focused,focused)  ·  textfield.main open (active,edited,focused)
-  ·   [5 families]  INVALID textfield.main mid  ·  checkbox.main mid (active,checked+active)  ·  radio.main mid (active,checked+active)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
+  ·   [6 families]  INVALID textfield.main mid  ·  checkbox.main mid (active,checked+active)  ·  field.leader mark (declared)  ·  radio.main mid (active,checked+active)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
   ... 7 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
@@ -99,11 +99,11 @@ SOLARI   3 colliding cells   (LEVELS OK /DLY/CNX  DANGER ▀▄  REQUIRED ▮  C
 ------------------------------------------------------------------------------
 BLUEPRINT   4 colliding cells   (LEVELS ··/╌╌/━━  DANGER ━━  REQUIRED ├  CUR ┌)
 ------------------------------------------------------------------------------
+  ·   [6 families]  LEVELS[info]  ·  INVALID textfield.main mid  ·  field.leader open (declared)  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
   ├   [6 families]  REQUIRED  ·  button.main open (default)  ·  checkbox.knob open (checked,default)  ·  checkbox.main open (checked,default)  ·  radio.knob close (checked,default)  ·  radio.main close (checked,default)  ·  stepper.step close (default)  ·  textfield.main open (default)
   ╌   [6 families]  LEVELS[warn]  ·  checkbox.knob mid (checked+disabled,disabled)  ·  radio.knob mid (checked+disabled,disabled)  ·  stepper.main close (disabled)  ·  stepper.main open (disabled)  ·  switch.main mark (checked+disabled,disabled)  ·  textfield.main mid (disabled,edited)
-  ·   [5 families]  LEVELS[info]  ·  INVALID textfield.main mid  ·  stepper.main close (active,default,edited,focused)  ·  stepper.main open (active,default,edited,focused)  ·  switch.main mark (active,checked,checked+active,checked+focused,default,focused)  ·  textfield.main mid (active,default,focused)
   ━   [2 families]  LEVELS[error]  ·  DANGER_FORM close + DANGER_FORM open
-  ... 8 further cells are shared between two CONTROLS only (alphabet, not counted)
+  ... 9 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... 0 further cells would collide if slider/bar/scrollbar were in the B set
 
 ==============================================================================

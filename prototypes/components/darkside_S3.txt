@@ -1,4 +1,4 @@
-( )board  ( )form  (O)cfg  ( )log                                                                   
+( )board  ( )form  (●)cfg  ( )log                                                                   
 settings  5 switches  ·  2 selects  ·  1 slider                                                     
                                                                                                     
   notify on overdue         ▬▬◎                                                                     

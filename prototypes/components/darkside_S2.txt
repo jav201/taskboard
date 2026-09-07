@@ -1,4 +1,4 @@
-( )board  (O)form  ( )cfg  ( )log                                                                   
+( )board  (●)form  ( )cfg  ( )log                                                                   
 new task  5 fields  ·  1 invalid                                                                    
                                                                                                     
   title▪        ▮Fix login◆ redirect···············▮                                                

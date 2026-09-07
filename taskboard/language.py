@@ -1619,6 +1619,33 @@ class Kit:
     # margin, the figure flushed RIGHT, and AIR between them. No leader --
     # the terminal's convention is a COLUMN, and a column is found by
     # ALIGNMENT rather than followed by a line.
+    #
+    # AND THE LEADER IS A DECLARATION NOW (inc57). Every one of the eleven
+    # `field_row` bodies drew its gap from a literal or from a constant meant
+    # for something else, so `collision_census.py` -- which reads
+    # `PART_GLYPHS` and the five meaning families and nothing else -- could
+    # reach NONE of the eleven field leaders. `spec.md` §13.8 published that
+    # limit in writing ("only darkside's was named by a ruling; ten others are
+    # unmeasured by any instrument here"), and §10.4 published the same limit
+    # for darkside's `▬` two batches earlier. `FIELD_LEAD` is the cells this
+    # language's field row leads with, declared where an instrument can see
+    # them; the census reads it as a control family, and
+    # `test_every_field_leader_is_declared` asserts the row DRAWS exactly
+    # these cells, so the declaration cannot drift away from the drawing.
+    #
+    # EMPTY IS A REAL ANSWER and four languages give it: the base (and nord
+    # through it), corgi, swiss and industrial lead with AIR, which is a
+    # commitment -- "a column is found by ALIGNMENT rather than followed by a
+    # line", two paragraphs up -- and not a gap in the table.
+    FIELD_LEAD = ""
+
+    # MARKS A LANGUAGE'S IDENTITY DRAWS, declared for the same reason and read
+    # by the same census pass. Empty for ten of the eleven: a wordmark built
+    # from the pixel bases (`bases.py`) draws no marks of its own, and a
+    # `tabs()` that spells its active tab in CASE or in tone declares nothing
+    # either. Darkside is the one language whose identity is a GLYPH.
+    IDENT_GLYPHS: tuple[str, ...] = ()
+
     def field_row(self, caption: str, value: str, w: int) -> str:
         c = self.c
         cap, val = str(caption), str(value)
@@ -3961,6 +3988,12 @@ class Naught(Kit):
         return (f"[{tone}]{NA.ON}[/] [{tone}]{val}[/] "
                 f"[{c['mut']}]{label[: max(0, w - len(val) - 4)]}[/]")
 
+    #: THE UNLIT PIXEL, run out to the right of the figure. Declared in inc57
+    #: so the census can reach it; it is `NA.OFF` and not a second cell,
+    #: because this language's lattice is one alphabet and the row is the
+    #: lattice.
+    FIELD_LEAD = NA.OFF
+
     def field_row(self, caption, value, w):
         """THE LATTICE IS THE GROUND, so the row's remainder is DRAWN.
 
@@ -3980,7 +4013,7 @@ class Naught(Kit):
         cap, val = str(caption), str(value)
         room = max(0, w - len(cap) - len(val) - 2)
         return (f"[{c['dim']}]{mark(cap)}[/] [{c['ink']}]{mark(val)}[/] "
-                f"[{c['dim']}]{NA.OFF * room}[/]")
+                f"[{c['dim']}]{self.FIELD_LEAD * room}[/]")
 
     def sect(self, title, note, w, h=0):
         c = self.c
@@ -4528,6 +4561,11 @@ class Corgi(Kit):
         return (f"[{self.screen}]{val}[/] [{self.alu}]│[/]"
                 f"[{c['mut']}]{label.upper()[:room]}[/]")
 
+    #: AIR (inc57), and this method's own first line says it: "no leader, no
+    #: right column". The frontier is the two REGISTERS -- engraved aluminium
+    #: against driven glass -- and a leader would be a third.
+    FIELD_LEAD = ""
+
     def field_row(self, caption, value, w):
         """THE SILKSCREEN BESIDE THE READOUT -- no leader, no right column.
 
@@ -4878,6 +4916,11 @@ class Instrument(Kit):
     LEVELS = {"info": "⠂⠂", "warn": "⠆⠆", "error": "⠇⠇"}
     MATCH_STYLE = "underline {accent}"     # a scope marks a span with a cursor
 
+    #: THE LATTICE TICK (inc57). `LATT` is the graticule this language
+    #: rules everything on, and a definition row is one more ruled span --
+    #: declared here so the census can see which cell the row spends.
+    FIELD_LEAD = "⠒"                        # = LATT
+
     def field_row(self, caption, value, w):
         """THE GRATICULE RUNS TO THE FIGURE, and the figure stands at the
         right-hand graticule line.
@@ -4893,7 +4936,8 @@ class Instrument(Kit):
         cap, val = str(caption), str(value)
         gap = max(1, w - len(cap) - len(val) - 1)
         return (f"[{c['mut']}]{mark(cap)}[/] "
-                + f"[{self.t.get('tick', c['dim'])}]{mark(self.LATT * gap)}[/]"
+                + f"[{self.t.get('tick', c['dim'])}]"
+                + f"{mark(self.FIELD_LEAD * gap)}[/]"
                 + f"[{c['ink']}]{mark(val)}[/]")
 
     def keyhint(self, pairs, w=0):
@@ -5444,6 +5488,11 @@ class Swiss(Kit):
     LEVELS = {"info": "·", "warn": "─", "error": "━"}
     MATCH_STYLE = "bold {alert}"           # the classic red, and never alone
 
+    #: AIR (inc57). This language sets the figure on the SECOND COLUMN of
+    #: its own measure -- position, not a line -- which is the Swiss grid
+    #: argument and the reason a leader would be a fourth channel.
+    FIELD_LEAD = ""
+
     def field_row(self, caption, value, w):
         """FLUSH LEFT, BOTH OF THEM, on the grid.
 
@@ -5462,6 +5511,7 @@ class Swiss(Kit):
         cap, val = str(caption), str(value)
         col = self.MEASURE_MIN // 2 + self.GUTTER
         gap = max(self.GUTTER, col - len(cap))
+        # FIELD_LEAD is "" here: the second column IS the answer (inc57)
         return (f"[{c['mut']}]{mark(cap)}[/]" + " " * gap
                 + f"[{c['ink']}]{mark(val)}[/]"
                 + " " * max(0, w - len(cap) - gap - len(val)))
@@ -6012,6 +6062,11 @@ class Industrial(Kit):
     # plate chrome `DISPLAY_BOX` already stamps, so the dialog is a plate like
     # everything else here rather than a terminal's hairline lid.
 
+    #: AIR (inc57). The register flushes its figure and the plate does the
+    #: separating; inc48 took the plate OFF this row precisely so a caption
+    #: would stop reading as a control, and a leader would put it back.
+    FIELD_LEAD = ""
+
     def field_row(self, caption, value, w):
         """THE CAPTION IS LABELLED; THE FIGURE IS NOT PLATED (inc48).
 
@@ -6548,7 +6603,34 @@ class Darkside(Kit):
     background grey-step, never a border. Lowercase register; identity is a
     date-driven moon doodle on a deliberately recessive wordmark."""
 
-    PHASES = ("( )", "(.)", "(o)", "(O)", "(o)", "(.)")
+    # THE IDENTITY ALPHABET, AND IT IS DECLARED NOW (inc57).
+    #
+    # `PHASES` and `tabs()` used to spell the moon and the active tab as
+    # `(.)` / `(o)` / `(O)` -- written inline, outside `PART_GLYPHS`, where
+    # neither the census nor any of the four laws could reach them. That is
+    # the limit `spec.md` §10.4 published for `▬` and §13.8 for the eleven
+    # field leaders, and here it was hiding a real collision: `·` is this
+    # kit's `LEVELS["info"]`, `o` its `warn` and `O` its `error`, so the
+    # ACTIVE TAB was marked with the ERROR RUNG and the moon waxed through
+    # three severities. `spec.md` §12.7 found it by looking two batches ago.
+    #
+    # THE RAMP IS THIS KIT'S OWN GRIP, already declared at
+    # `PART_GLYPHS["knob"]` -- `◎` a ring, `◉` a ring with a filled centre,
+    # `●` a disc. One drawing gaining a stroke and then filling, which is
+    # COUNT and then WEIGHT and never diameter (ruling D), and a LADDER at
+    # monotone intensities, which ruling D's addendum says is ONE declaration
+    # rather than two meanings sharing a shape.
+    #
+    # AND THE TAB WEARING THE GRIP IS THIS CLASS'S OWN SENTENCE rather than a
+    # new idea: the docstring above says the accent is spent "EXCLUSIVELY on
+    # interactive affordances -- the knob, the switch state, THE ACTIVE TAB".
+    # Three things, one alphabet.
+    PHASES = ("( )", "(◎)", "(◉)", "(●)", "(◉)", "(◎)")
+    TAB_ON, TAB_OFF = "(●)", "( )"
+    #: what the census reads (`Kit.IDENT_GLYPHS`): the doodle's six phases and
+    #: the two tab marks, as GLYPHS, so a cell that also MEANS something shows
+    #: up as a row instead of staying invisible.
+    IDENT_GLYPHS = PHASES + (TAB_ON, TAB_OFF)
 
     RAIL = "▏"
     RAIL_W = 3                             # the stroke plus two cells of air
@@ -6627,10 +6709,15 @@ class Darkside(Kit):
     # label rather than one mark used twice. Neither encloses anything and
     # neither is drawn anywhere else in this kit.
     DANGER_FORM = ("▚", "▞")
-    # A DIMMING LADDER MADE OF ITS OWN CURSOR. `CUR` is `O`; the ladder is
-    # that mark losing and gaining weight, which is this language's stated
-    # hierarchy device ("weight and dimming, not size") turned into three
-    # shapes so the level still sorts with the colour taken away.
+    # A DIMMING LADDER, AND IT NO LONGER SHARES A CELL WITH THE CURSOR. This
+    # comment read "a dimming ladder made of its own cursor. `CUR` is `O`",
+    # and that has been FALSE SINCE inc45, which moved `CUR` to `▊` precisely
+    # because the error rung and the cursor were one mark. The ladder is the
+    # same three shapes -- one letterform losing and gaining weight, which is
+    # this language's stated hierarchy device ("weight and dimming, not
+    # size") -- and the cursor is now a stroke, a different family. Corrected
+    # in inc57; a comment that cites a declaration two batches out of date is
+    # how the next reader learns the wrong rule.
     LEVELS = {"info": "· ", "warn": "o ", "error": "O "}
     # THE ACCENT IS RESERVED FOR WHAT IS ACTIONABLE and a search hit is not:
     # it is a place in the text, not a thing to press.
@@ -6652,6 +6739,11 @@ class Darkside(Kit):
     # configuration `bold` does not.
     MATCH_STYLE = "reverse {mut}"
     MODAL_BOX = "╭╮╰╯──││"     # rounded: the "clinical-WARM" half
+
+    #: THE RAIL LAID FLAT (inc57 declares what inc53 chose). One cell, the
+    #: lightest weight the block family has; the docstring below argues it
+    #: at length and this is where an instrument can read it.
+    FIELD_LEAD = "▔"
 
     def field_row(self, caption, value, w):
         """QUIET LOWERCASE, AIR, AND THE FIGURE'S OWN SEAT.
@@ -6719,7 +6811,7 @@ class Darkside(Kit):
         cap, val = str(caption).lower(), str(value)
         gap = max(1, w - len(cap) - len(val) - 2)
         return (f"[{c['dim']}]{mark(cap)}[/]" + " " * gap
-                + f"[{c['dim']}]{mark('▔')}[/] "
+                + f"[{c['dim']}]{mark(self.FIELD_LEAD)}[/] "
                 + f"[{c['ink']}]{mark(val)}[/]")
 
     def keyhint(self, pairs, w=0):
@@ -6945,10 +7037,17 @@ class Darkside(Kit):
         return super().part_tone(part, state, name)
 
     def tabs(self, options, active):
+        """THE ACTIVE TAB IS THE GRIP, FILLED (inc57).
+
+        This read `(O)` against `( )`, and `O` is `LEVELS["error"]`: the mark
+        that says "this went wrong" was also the mark that says "you are
+        here". Both marks come from `IDENT_GLYPHS` now, so the census reads
+        them and a future move onto a meaning cannot be silent."""
         c = self.c
         return "  ".join(
-            f"[{c['accent']}](O)[/][{c['ink']}]{o.lower()}[/]" if o == active
-            else f"[{c['dim']}]( )[/][{c['mut']}]{o.lower()}[/]"
+            f"[{c['accent']}]{self.TAB_ON}[/][{c['ink']}]{o.lower()}[/]"
+            if o == active
+            else f"[{c['dim']}]{self.TAB_OFF}[/][{c['mut']}]{o.lower()}[/]"
             for o in options)
 
     def surface(self):
@@ -7317,6 +7416,11 @@ class Prism(Kit):
         return (f"[{tone}]{val}[/] [{c['mut']}]"
                 f"{label[: max(0, w - len(val) - 2)]}[/]")
 
+    #: THE EMBER FRONTIER (inc57). Three cells of the same braille ramp the
+    #: controls spend, burning down toward the figure -- ordered, so the
+    #: census reads them with handedness (open / mid / close).
+    FIELD_LEAD = "⡀⡤⣶"
+
     def field_row(self, caption, value, w):
         """THE EMBER FRONTIER -- this language's second commitment applied to
         a row instead of to a quantity.
@@ -7332,7 +7436,7 @@ class Prism(Kit):
         LINE, and this language separates by tone and by consumption."""
         c = self.c
         cap, val = str(caption), str(value)
-        ramp = "⡀⡤⣶"
+        ramp = self.FIELD_LEAD
         room = w - len(cap) - len(val) - len(ramp) - 1
         if room < 1:                       # too tight for a frontier: air
             room = max(1, w - len(cap) - len(val))
@@ -7621,6 +7725,11 @@ class Ledger(Kit):
         room = max(1, w - len(val) - self.ICON_W - 2)
         return (f"[{tone}]{val}[/] "
                 f"[{c['mut']}]{self._leadered(label.upper(), room)}[/]")
+
+    #: THE DOT LEADER (inc57). `_leadered` is "the one function this
+    #: language's whole typographic argument lives in" and it fills with
+    #: `LEAD`; this names the same cell where the census can reach it.
+    FIELD_LEAD = "·"                        # = LEAD
 
     def field_row(self, caption, value, w):
         """DOT LEADERS -- and here they are the language's OWN, not a shape
@@ -8014,6 +8123,11 @@ class Solari(Kit):
     # and a form field that will not parse is the same event.
     LEVELS = {"info": "OK ", "warn": "DLY", "error": "CNX"}
     MATCH_STYLE = "reverse {ink}"          # a band, which is this board's mark
+
+    #: THE SEAM (inc57). A board rules everything with one cell and the
+    #: definition row is no exception; named here so the census can see it
+    #: is the SAME cell the schedule is ruled with.
+    FIELD_LEAD = "▁"                        # = SEAM
 
     def field_row(self, caption, value, w):
         """THE SEAM CLOSES THE GAP, because the seam is the only divider this
@@ -9194,6 +9308,11 @@ class Blueprint(Kit):
         c = self.c
         return (f"[{c['mut']}]{min(i + 1, 99):02d}[/]" if self.numbered
                 else f"[{c['mut']}]{self.LEAD}{self.EXT}[/]")
+
+    #: THE LEADER, ORIGIN DOT AND EXTENSION (inc57). A dimension starts at
+    #: its origin and runs to what it measures, so the row spends two
+    #: cells and not one -- both declared, both reachable by the census.
+    FIELD_LEAD = "·─"                       # = LEAD + EXT
 
     def field_row(self, caption, value, w):
         """A DIMENSION: the name stands at its datum, the extension line runs

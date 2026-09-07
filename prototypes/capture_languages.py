@@ -14,10 +14,34 @@ rather than a scrapbook.
 WHAT IT CAPTURES, per language:
 
   board_<lang>.txt     the board surface -- cards, column heads, meter, rails
-  gallery_<lang>.txt   the COMPONENT SHEET (the app's `g` screen): slider, bar,
-                       switch, checkbox, radio, button, text field, scroll bar
-                       and stepper, each in the states the registry derives
+  gallery_<lang>.txt   the COMPONENT SHEET (the app's `g` screen) AS IT FITS AT
+                       118x34: the wordmark, the language label, the mascot and
+                       the CHECKABLE block -- switch and checkbox, every state
+                       the registry derives
   *.svg                the same frame IN COLOUR, rendered here -- see below
+
+WHAT THE COMPONENT SHEET DOES NOT SHOW, AND THIS LINE USED TO SAY OTHERWISE
+(inc57).  The three lines above read "slider, bar, switch, checkbox, radio,
+button, text field, scroll bar and stepper, each in the states the registry
+derives", and `spec.md` §12.5 found the consequence by looking: **the one
+component all eleven languages declare is the one component nobody has ever seen
+rendered.**  Everything `GalleryScreen.rerender` composes after the checkable
+block -- radio, button, text field, scroll bar, STEPPER, slider, bar, spinner,
+tabs, meter, span, calendar -- is below the fold of `#gallery-box`, a
+`VerticalScroll` at 90 % of the screen, and a capture photographs a VIEWPORT
+rather than a document.
+
+WHY THE DOCSTRING WAS CORRECTED AND NOT THE SHEET, with the arithmetic that
+decided it.  `rerender` composes 49 rows before the stepper's block begins
+(wordmark 8, label 1, rule 1, mascot 9, checkable 5, radio 5, button 5, text
+field 9, scroll bar 6) and the stepper is 12 more, ending at row 61; the box
+shows about 25.  Making the stepper visible at this size is not "a stepper row"
+-- it is dropping the identity block and four components, which is a redesign of
+the app's `g` screen rather than a change to this sweep, and it would re-bake all
+22 gallery artefacts for a frame nobody asked to move.  **The claim was the
+defect.**  The stepper's law (inc51) consequently still stands on its property
+test alone, which that increment said out loud; a taller component sheet is the
+named follow-up.
 
 THE `.txt` IS THE ART; THE `.svg` IS A PICTURE OF IT.  Same rule the skill's
 gallery keeps: the two laws that matter are laws about CELLS, and the cell grid

@@ -2,7 +2,7 @@
 <title>taskboard · darkside · S4 modal dialog</title>
 <rect width="860.0" height="564.0" fill="#121212"/>
 <g font-family="ui-monospace,SFMono-Regular,'DejaVu Sans Mono','Cascadia Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14.0" xml:space="preserve" style="white-space:pre;font-variant-ligatures:none">
-<text x="10.0" y="23.3" fill="#262626">(O)board  ( )form  ( )cfg  ( )log</text>
+<text x="10.0" y="23.3" fill="#262626">(●)board  ( )form  ( )cfg  ( )log</text>
 <text x="10.0" y="40.3" fill="#262626">board  16 tasks  ·  4 projects</text>
 <text x="10.0" y="74.3" fill="#262626">  ▏  backlog 5                                                 detail  fix login redirect</text>
 <text x="10.0" y="91.3" fill="#262626">    ▏  audit the theme tokens                           21d    </text>

@@ -1,4 +1,4 @@
-( )board  ( )form  ( )cfg  (O)log                                                                   
+( )board  ( )form  ( )cfg  (●)log                                                                   
 monitor  8 events  ·  held                                                                          
                                                                                                     
   EVENTS/S    ▬▬▬▬▬▬▬─────── 5                                                                      

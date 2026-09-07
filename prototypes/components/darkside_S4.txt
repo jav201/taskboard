@@ -1,4 +1,4 @@
-(O)board  ( )form  ( )cfg  ( )log                                                                   
+(●)board  ( )form  ( )cfg  ( )log                                                                   
 board  16 tasks  ·  4 projects                                                                      
                                                                                                     
   ▏  backlog 5                                                 detail  fix login redirect           
