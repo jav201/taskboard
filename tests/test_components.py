@@ -2488,6 +2488,33 @@ def test_no_language_that_refuses_the_pane_rule_draws_it_round_its_button(lang):
 # ===========================================================================
 # inc45 (rework-3) — one mark, one meaning
 # ===========================================================================
+#: WHAT A CHANNEL IS — ruling D (orchestrator, 2026-09-06, on the operator's
+#: delegation), written here because every law in this section that says "the
+#: two are distinct on a channel that language declares" needs the word to
+#: mean something fixed.
+#:
+#:   COUNT      how many marks. `◎ ◉` against `· o O` — two concentric
+#:              strokes against one (inc49).
+#:   WEIGHT     how much ink one mark spends. `O` against `▊` (inc45).
+#:   POSITION   where the mark stands. A caret inside a value against chrome
+#:              at an opener (inc48, inc49).
+#:   DIRECTION  which way it points. `▪` against `▶` (inc45).
+#:
+#: DIAMETER ALONE IS NOT A CHANNEL. Two drawings that differ only in HOW BIG
+#: they are read as one mark, so `• / ●` is one bullet and `o / ◦` is one
+#: ring. A language may not tell a MEANING apart from its own CHROME that
+#: way, and `PROTOTYPE-inheritors-2.md` §0b is why the ruling was needed: five
+#: of the six languages that had an increment resolved a collision by moving
+#: to a neighbouring drawing. Four of the five spend a real channel and are
+#: ACCEPTED, with the channel named — industrial `▪ → ▶` (direction), solari
+#: `▁ → ▮` (shape family), darkside `O → ▊` (weight), darkside's knobs `◎ ◉`
+#: against `· o O` (count). The fifth, swiss `• → ●`, is a homoglyph and
+#: inc53 moved it.
+#:
+#: THE INSTRUMENT IS `prototypes/collision_census.py`, whose `HOMOGLYPHS`
+#: table lists the pairs and whose `HOMOGLYPH_ROSTER` counts the rows per
+#: language. The two cells THIS ruling covers have their teeth here, because
+#: one of them is drawn outside `PART_GLYPHS` where no census can reach it.
 #: THE THREE SLOTS A LANGUAGE DECLARES A REJECTED VALUE WITH — the grip
 #: (`knob[INVALID]`), the two WALLS of the field (`textfield.main[INVALID]`)
 #: and the two steps (`stepper.step[INVALID]`). This is inc51's clause 2 read
@@ -2798,6 +2825,92 @@ def test_the_rune_is_excluded_from_the_invalid_channel_by_name(monkeypatch):
     monkeypatch.setitem(k.PART_GLYPHS, "textfield.main", tbl)
     assert frozenset(("ladder", "invalid")) in {
         frozenset(r[:2]) for r in shared_cell_pairs("blueprint")}
+
+
+# ===========================================================================
+# inc53 (rework-5a) — diameter alone is not a channel
+# ===========================================================================
+#: ONE DRAWING AT TWO DIAMETERS, the pairs the census reads as the same mark.
+#: Kept in step with `collision_census.HOMOGLYPHS` by
+#: `test_the_homoglyph_table_is_one_table_in_two_files`.
+HOMOGLYPHS = (("•", "●"), ("·", "∙"), ("○", "O"), ("o", "◦"), ("▪", "■"))
+
+
+def _twin(ch: str) -> str | None:
+    for a, b in HOMOGLYPHS:
+        if ch == a:
+            return b
+        if ch == b:
+            return a
+    return None
+
+
+def test_swisss_chosen_option_is_not_the_obligation_mark_at_another_size():
+    """`REQUIRED` is `•` and the radio's chosen mark was `●` — one solid disc
+    at two diameters, which ruling D says is no channel at all.
+
+    THE ASSERTION IS ABOUT THE PAIR AND NOT ABOUT THE NEW CELL, so it still
+    bites if somebody picks a different answer later: no cell of any
+    `radio.knob` state may be `REQUIRED`, and none may be `REQUIRED`'s
+    HOMOGLYPH. The second clause is the one inc46 walked past.
+
+    AND THE DISTINCTION THE BULLET USED TO CARRY IS ASSERTED WHERE IT MOVED:
+    a checkbox leads with a full-height rule and a radio with a half-height
+    tick, in every state, so the two controls are still told apart without
+    the shape of their bullet."""
+    k = LG.kit("swiss")
+    req = k.REQUIRED
+    for st, glyph in k.PART_GLYPHS["radio.knob"].items():
+        assert req not in glyph, (st, glyph, req)
+        assert _twin(req) not in glyph, (st, glyph, _twin(req))
+    box = k.PART_GLYPHS["checkbox.knob"]
+    radio = k.PART_GLYPHS["radio.knob"]
+    assert set(box) == set(radio), (sorted(box), sorted(radio))
+    for st in box:
+        assert box[st][0] != radio[st][0], (st, box[st], radio[st])
+        assert box[st][1:] == radio[st][1:], (st, box[st], radio[st])
+
+
+def test_darksides_field_leader_is_not_a_severity_rung_at_another_size():
+    """The seat under every figure in darkside's detail pane was `◦`, and
+    `LEVELS["warn"]` is `o ` — one ring at two diameters.
+
+    THIS TEST EXISTS BECAUSE NO CENSUS CAN SEE IT. `field_row` draws the mark
+    itself, outside `PART_GLYPHS`, which is the limit inc49 §11 published for
+    `Darkside.tabs()` and spec §10.4 for `▬`. So the law is read off the
+    RENDERED ROW.
+
+    IT ALSO ASSERTS THE SECOND REASON, which is a different law's: `◦` is
+    `LG.NA.OFF`, naught's own unlit pixel, and `verify_language` holds
+    "naught's pixel pair is exclusive to naught on the board". That law is
+    scoped to the meter, so this row sat just outside it."""
+    k = LG.kit("darkside")
+    cap, val = "status", "open"
+    row = plain(k.field_row(cap, val, 40))
+    # THE LEADER IS ISOLATED RATHER THAN SEARCHED FOR, so the assertion cannot
+    # be satisfied by a letter of the caption or of the figure: everything
+    # between the end of one and the start of the other, stripped.
+    assert row.startswith(cap) and row.endswith(val), row
+    leader = row[len(cap):len(row) - len(val)].strip()
+    assert len(leader) == 1, (leader, row)
+
+    rungs = set("".join(k.LEVELS.values())) - set(" ")
+    assert leader not in rungs, (leader, sorted(rungs))
+    assert _twin(leader) not in rungs, (leader, _twin(leader), sorted(rungs))
+    assert leader != "◦" and LG.NA.OFF == "◦", (leader, LG.NA.OFF)
+    assert leader == "▔", leader
+
+
+def test_the_homoglyph_table_is_one_table_in_two_files():
+    """Two copies of a list is two lists. The census owns the table and this
+    suite reads it, so a pair added in one file and not the other goes red
+    here rather than making the two instruments disagree in silence."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_census", FRAMES.parent / "collision_census.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert tuple(mod.HOMOGLYPHS) == HOMOGLYPHS, (mod.HOMOGLYPHS, HOMOGLYPHS)
 
 
 # ===========================================================================

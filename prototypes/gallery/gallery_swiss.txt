@@ -13,10 +13,10 @@
                               │             █──  ▀▀█  █    █▪    active                │                              
                               │             ┆┈┈  ┅┅┆  ┆    ┆▪    disabled              │                              
                               │  radio      lo·mid·hi  set=mid cursor=hi               │                              
-                              │             ╵   lo  ╵●  mid  ╵   hi   default          │                              
-                              │             ╵   lo  ╵●  mid  ╹   hi   focused          │                              
-                              │             ╵   lo  ╵●  mid  ▀   hi   active           │                              
-                              │             ╎   lo  ╎●  mid  ╎   hi   disabled         │                              
+                              │             ╵   lo  ╵▪  mid  ╵   hi   default          │                              
+                              │             ╵   lo  ╵▪  mid  ╹   hi   focused          │                              
+                              │             ╵   lo  ╵▪  mid  ▀   hi   active           │                              
+                              │             ╎   lo  ╎▪  mid  ╎   hi   disabled         │                              
                               │  button     ok·Refresh  label INSIDE                   │                              
                               │             ▫ ok    ▫ Refresh     default              │                              
                               │             ▪ ok    ▪ Refresh     focused              │                              

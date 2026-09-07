@@ -7,7 +7,7 @@ N E W   T A S K   5 fields  ·  1 invalid
   due•          ║12/09/26                                                                           
                 ━ expected YYYY-MM-DD                                                               
                                                                                                     
-  priority      ╵   low  ╵   norm  ╵●  high                                                         
+  priority      ╵   low  ╵   norm  ╵▪  high                                                         
                                                                                                     
   tags          │   api  │▪  ui  │▪  urgent                                                         
                                                                                                     

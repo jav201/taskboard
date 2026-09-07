@@ -126,5 +126,27 @@ TOTAL                       33
 
 zero collisions: NONE -- all eleven overload at least one cell
 
+==============================================================================
+HOMOGLYPHS — one drawing at two diameters, meaning against chrome
+==============================================================================
+Ruling D (2026-09-06): a channel is COUNT, WEIGHT, POSITION or
+DIRECTION. Diameter alone is none of them, so a language that tells a
+MEANING apart from its own CHROME by size alone has told them apart
+with nothing. The pairs read as one drawing are:
+    • ●   · ∙   ○ O   o ◦   ▪ ■
+These rows are NOT added to the counts above: a homoglyph row is a
+question about two drawings, and the count is a question about one
+cell.
+
+NAUGHT   2 row(s)
+  · is invalid   and its homoglyph ∙ is switch + textfield chrome
+  ∙ is danger + severity   and its homoglyph · is checkbox + stepper + switch + textfield chrome
+DARKSIDE   1 row(s)
+  o is severity   and its homoglyph ◦ is radio chrome
+LEDGER   1 row(s)
+  · is invalid   and its homoglyph ∙ is textfield chrome
+
+TOTAL homoglyph rows             4
+
 This is the input to the language-level rework, not a verdict. A cell
 here is the question 'did you mean these two to be the same mark?'.
