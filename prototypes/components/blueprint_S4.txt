@@ -14,7 +14,7 @@ BOARD  ·── 16 TASKS  ·  4 PROJECTS
                            ·── 3 TASKS WILL BE REMOVED FROM BACKLOG.                                
                            ·── THIS CANNOT BE UNDONE.                                               
                                                                                                     
-                            DELETE    ├  CANCEL  ┤                                                  
+                           ╞ ━DELETE━ ╡   ├  CANCEL  ┤                                              
                            └                                           ┘                            
   BLOCKED                                   ├┤ 00                                                   
       ▌▄▄▐        ▌▄▄▐                                                                              
