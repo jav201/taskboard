@@ -60,7 +60,7 @@
 <rect x="707.2" y="214.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="214.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="227.3" fill="#88c0d0">│</text>
-<text x="287.2" y="227.3" fill="#7b88a1">Nord (base16)</text>
+<text x="287.2" y="227.3" fill="#919cb0">Nord (base16)</text>
 <text x="740.8" y="227.3" fill="#88c0d0">│</text>
 <rect x="262.0" y="231.0" width="445.2" height="17.0" fill="#3b4252"/>
 <rect x="707.2" y="231.0" width="16.8" height="17.0" fill="#000000"/>
@@ -131,7 +131,7 @@
 <rect x="707.2" y="418.0" width="16.8" height="17.0" fill="#000000"/>
 <rect x="724.0" y="418.0" width="25.2" height="17.0" fill="#3b4252"/>
 <text x="262.0" y="431.3" fill="#88c0d0">│</text>
-<text x="287.2" y="431.3" fill="#7b88a1">checkable  </text>
+<text x="287.2" y="431.3" fill="#919cb0">checkable  </text>
 <text x="379.6" y="431.3" fill="#4c566a">switch    checkbox</text>
 <text x="547.6" y="431.3" fill="#4c566a">off·on</text>
 <text x="740.8" y="431.3" fill="#88c0d0">│</text>
@@ -141,7 +141,7 @@
 <text x="262.0" y="448.3" fill="#88c0d0">│</text>
 <text x="379.6" y="448.3" fill="#eceff4">▌</text>
 <text x="388.0" y="448.3" fill="#4c566a">──</text>
-<text x="421.6" y="448.3" fill="#7b88a1">██</text>
+<text x="421.6" y="448.3" fill="#919cb0">██</text>
 <text x="438.4" y="448.3" fill="#eceff4">▌  </text>
 <text x="463.6" y="448.3" fill="#4c566a">[ ]</text>
 <text x="488.8" y="448.3" fill="#eceff4">  [x]   </text>
@@ -153,7 +153,7 @@
 <text x="262.0" y="465.3" fill="#88c0d0">│</text>
 <text x="379.6" y="465.3" fill="#88c0d0">▐</text>
 <text x="388.0" y="465.3" fill="#4c566a">──</text>
-<text x="421.6" y="465.3" fill="#7b88a1">██</text>
+<text x="421.6" y="465.3" fill="#919cb0">██</text>
 <text x="438.4" y="465.3" fill="#88c0d0">▐</text>
 <text x="463.6" y="465.3" fill="#4c566a">▐ ▌</text>
 <text x="505.6" y="465.3" fill="#88c0d0">▐x▌</text>
@@ -165,7 +165,7 @@
 <text x="262.0" y="482.3" fill="#88c0d0">│</text>
 <text x="379.6" y="482.3" fill="#88c0d0">▓</text>
 <text x="388.0" y="482.3" fill="#4c566a">──</text>
-<text x="421.6" y="482.3" fill="#7b88a1">██</text>
+<text x="421.6" y="482.3" fill="#919cb0">██</text>
 <text x="438.4" y="482.3" fill="#88c0d0">▓</text>
 <text x="463.6" y="482.3" fill="#4c566a">▓ ▓</text>
 <text x="505.6" y="482.3" fill="#88c0d0">▓x▓</text>
