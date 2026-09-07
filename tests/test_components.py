@@ -5907,6 +5907,239 @@ def test_the_info_rung_is_air_by_doctrine_or_legible_by_tier(lang):
     if lang not in THE_BAND_IS_A_SECOND_GROUND:
         assert contrast(t["mut"], t["ground"]) >= MUT_FLOOR, lang
 
+
+# ---------------------------------------------------------------------------
+# inc75 (rework-7a) — C8's second half, and a paper no value can contain.
+# ---------------------------------------------------------------------------
+#: WHERE A CONFIRM MAY REFUSE TO DRAW AN EDGE, and the citation for each.
+#:
+#: THE RULING (orchestrator, 2026-09-07, C8's second half): *corgi's confirm
+#: gets walls from its display frame (`▓`, inc67's register ruling) with the
+#: board still gone; thirty blank rows with no opener or closer is not a
+#: modal.*
+#:
+#: C2 IS THE OLDER HALF OF THE SAME QUESTION and it took four batches to
+#: close: inc66 gave swiss its second rule, inc72 gave ledger one and moved
+#: naught's band off the `DANGER_FORM`, and this increment gives corgi an edge
+#: at all. What is asserted now is the SHAPE of the answer rather than one
+#: kit's spelling of it: a confirm's first and last DRAWN row each carry a
+#: mark of the language's own.
+#:
+#: "DRAWN" AND NOT "CHANGED", and the difference is the whole of corgi. A
+#: confirm that erases the page changes every row it erases, so its first
+#: changed row is a row that went BLANK — which is a fact about the erasure
+#: and not about the question. `confirm_span` is right for contiguity and
+#: wrong for this reading, so this law walks in from both ends of the span to
+#: the first row that says something.
+#:
+#: ONE REFUSAL, AND IT IS A GROUND RATHER THAN A HOLE. solari's band is
+#: `band="reverse"` — a token this kit declares — so its edge is not a mark
+#: at all: the question is a REVERSED PLATE across the full measure, and what
+#: says where it begins and ends is the rect's own boundary. Asking it for a
+#: glyph would be asking a departure board to draw a line around its
+#: announcement row. The arm below asserts the plate is really there, in the
+#: shipped `.svg`, so the exemption cannot be claimed by a kit that simply
+#: forgot to draw an edge.
+CONFIRM_EDGE_REFUSED = {
+    "solari": "`band=\"reverse\"` — the announcement is a plate, not a "
+              "framed block, and a plate's edge is its own rect. Asserted "
+              "against `solari_S4.svg`: the band's colour is painted as a "
+              "background run at full measure.",
+}
+
+
+def confirm_edges(lang: str) -> tuple[str, str]:
+    """`(first drawn row, last drawn row)` of a kit's confirm, off the shipped
+    frame: the outermost rows of the band that are not blank."""
+    first, last = confirm_span(lang)
+    rows = (FRAMES / f"{lang}_S4.txt").read_text(
+        encoding="utf-8").splitlines()
+    drawn = [rows[i].strip() for i in range(first, last + 1)
+             if rows[i].strip()]
+    return (drawn[0], drawn[-1]) if drawn else ("", "")
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_confirm_opens_and_closes_on_marks_of_its_own(lang):
+    """C8's second half and C2's shape, over the eleven.
+
+    `test_every_confirm_says_where_it_ends` (inc66) asked only that the LAST
+    changed row say something, and it was written deliberately weak because
+    eleven languages close a question eleven ways. It could not see
+    `corgi_S4`, which was exempt by a citation — and a citation is not a
+    scope check: the sentence corgi cited was about the BOARD, and thirty
+    blank rows are not a board.
+
+    BOTH ENDS NOW, AND STILL NOT A BOX: what is asked is that each end carry
+    a mark from the kit's own alphabet, never that it be a rule, a lid or a
+    corner. naught's band is two runs of its unlit lattice at full charge
+    (inc72), swiss's two hairlines, ledger's two rules (inc72), corgi's two
+    bars of its display frame (this increment), industrial's and nord's the
+    top and bottom of a real box — six spellings of one shape.
+
+    THE EXEMPTION TABLE IS EMPTY AND IS ASSERTED EMPTY. It exists because
+    `MODAL_KEEPS_NOTHING` taught this file that an exemption written before
+    anybody could satisfy the law outlives its reason; if a twelfth language
+    ever cannot draw an edge, its name and its argument go here."""
+    assert set(CONFIRM_EDGE_REFUSED) == {"solari"}, sorted(CONFIRM_EDGE_REFUSED)
+    top, bottom = confirm_edges(lang)
+    assert top, (lang, "the confirm's first drawn row is blank")
+    assert bottom, (lang, "the confirm's last drawn row is blank")
+    if lang in CONFIRM_EDGE_REFUSED:
+        # THE REFUSAL IS CHECKED, NOT TAKEN ON ITS WORD: the plate has to be
+        # in the picture, at full measure, or this is a kit with no edge and
+        # a sentence about one.
+        assert CONFIRM_EDGE_REFUSED[lang].strip(), lang
+        assert LG.THEMES[lang].get("band") == "reverse", lang
+        svg = (FRAMES / f"{lang}_S4.svg").read_text(encoding="utf-8")
+        runs = [(float(w), f) for _x, _y, w, _h, f in _RECT_RUN.findall(svg)]
+        assert any(w > 800 for w, _f in runs), (lang, runs[:3])
+        return
+    # and the edge is a MARK, not the question's own words: the outermost
+    # rows of every other band in this corpus are chrome, never prose
+    assert not any(w in top for w in ("Delete", "tasks", "undone")), (lang, top)
+
+
+def test_corgis_confirm_has_an_edge_and_still_has_no_board():
+    """C8, BOTH HALVES IN ONE PLACE — because the two are in tension and the
+    increment that took only one of them is why this test exists.
+
+    (a) THE EDGE: the first and last drawn rows of `corgi_S4` are full-measure
+        runs of this kit's own `PANE_RULE`, the bar inc67 milled precisely so
+        that a partition carries no rung of anything (K5).
+    (b) THE BOARD IS STILL GONE: no row of the page behind survives except the
+        mode strip, which is `MODAL_KEEPS_ONLY_THE_HEAD`'s whole scope.
+    (c) AND THE BARS ARE NOT THE `DANGER_FORM` — the trap naught sat in for
+        six batches and inc72 dug it out of. `█` is corgi's error rung and its
+        danger form; the edge may not be it."""
+    k = LG.kit("corgi")
+    top, bottom = confirm_edges("corgi")
+    assert set(top) == set(bottom) == {k.PANE_RULE}, (top[:8], bottom[:8])
+    assert len(top) == len(bottom) == 100, (len(top), len(bottom))
+    assert k.PANE_RULE not in "".join(k.DANGER_FORM), k.PANE_RULE
+    assert k.PANE_RULE not in "".join(k.LEVELS.values()), k.PANE_RULE
+
+    out = [plain(r) for r in k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)]
+    assert out[0].rstrip() == plain(UNDER[0]).rstrip(), out[0]
+    rest = [plain(r) for r in UNDER[1:]]
+    assert not any(r.strip() and r.strip() in o for r in rest for o in out), out
+    assert "corgi" in MODAL_KEEPS_ONLY_THE_HEAD
+    assert "the board is gone" in LG.MODAL_BORDER_REFUSED["corgi"]
+
+
+def test_the_confirm_edge_law_bites_on_the_composition_corgi_shipped(
+        monkeypatch):
+    """TEETH. Restore inc65's block — the mode strip and thirty-one blank rows
+    — and assert the reading that made it a `rework`: the band's outermost
+    DRAWN row becomes the question itself, so there is nothing between the
+    reader and the words that says a question has begun."""
+    k = LG.kit("corgi")
+    top, _ = confirm_edges("corgi")
+    assert set(top) == {k.PANE_RULE}
+
+    def edgeless(self, rows, w, h, under, about=None):
+        head = under[0] if under else ""
+        y = max(1, (h - len(rows)) // 2)
+        return ([head] + [""] * (y - 1) + list(rows) + [""] * h)[:h]
+
+    monkeypatch.setattr(LG.Corgi, "overlay_instead", edgeless)
+    out = [plain(r) for r in k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)]
+    drawn = [r.strip() for r in out[1:] if r.strip()]
+    assert drawn and drawn[0] == "Delete 3 tasks?", drawn[:2]
+    assert k.PANE_RULE not in "".join(drawn), "the edge is gone"
+    monkeypatch.undo()
+
+    out = [plain(r) for r in k.overlay(dialog(k), DIALOG_W, DIALOG_H, UNDER)]
+    drawn = [r.strip() for r in out[1:] if r.strip()]
+    assert set(drawn[0]) == {k.PANE_RULE}, drawn[0][:8]
+
+
+#: THE ONE SEAT WHERE PAPER AND VALUE MEET.
+#:
+#: THE RULING (orchestrator, 2026-09-07): *the value's separators and the
+#: field paper may not be one glyph: the paper becomes a cell that no value
+#: can contain (cite industrial's alphabet), the invalid marks at
+#: slider.knob/stepper.step stay.*
+#:
+#: inc71 SPLIT `/`'s ROLE IN THE CENSUS AND THE CORPUS COULD NOT CONFIRM IT.
+#: Round four §7.6: the second role lives at `slider.knob[INVALID]` and
+#: `stepper.step[INVALID]`, and **no frame of the sixty-six draws either** —
+#: so the row was real in the declaration and untestable in the artefact,
+#: while the collision a reader CAN see was a different one: `▐12/09/26//////
+#: …▌`, twenty-six paper slashes and two of the value's own, with no frontier
+#: between them.
+#:
+#: THE LAW IS THE READING AND NOT THE TOKEN: the rejected field's PAPER never
+#: appears inside any value this repo's fixture renders. Checkable in eleven
+#: languages, red in exactly one.
+#:
+#: TWO KITS PAPER THE FIELD IN AIR and are outside this law rather than
+#: exempt by it: nord declares `"? ?"` and darkside `"Ø Ø"`, so their rune is
+#: a space and there is no paper for a value to be confused with. That is an
+#: L2-shaped reading ("air is not a state", inc69) at a seat L2 did not reach,
+#: and no ruling covers it — recorded in `inc75.md` §11 rather than decided
+#: here.
+def invalid_paper(lang: str) -> str:
+    """The RUNE of a kit's rejected field — its paper — through the one
+    splitter both instruments share (`split_field_glyph`, inc71)."""
+    g = LG.kit(lang).PART_GLYPHS["textfield.main"][LG.INVALID]
+    return LG.split_field_glyph(g)[1]
+
+
+def fixture_values() -> set[str]:
+    """Every string this repo's fixture puts on a screen, read from
+    `fixture.py` BY PATH — so the law measures the corpus that is actually
+    rendered rather than a list somebody kept up to date."""
+    fx = solari_fixture()
+    out = {str(f) for t in fx.TASKS for f in t if f is not None}
+    for row in getattr(fx, "DETAIL", ()):
+        out.update(str(x) for x in row)
+    # AND THE VALUE THE FORM ITSELF SETS, which is the row the objection is
+    # about: `industrial_S2` puts a DATE into the rejected field.
+    out |= {"12/09/26", "2026-09-12"}
+    return {v for v in out if v}
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_rejected_fields_paper_is_a_cell_no_value_can_contain(lang):
+    """The `/` ruling, over the eleven, against the fixture's own values."""
+    paper = invalid_paper(lang)
+    values = fixture_values()
+    assert len(values) > 10, "the fixture reader came back empty"
+    if not paper.strip():
+        # air: no paper, so nothing for a value to be confused with. Named in
+        # the comment above and NOT silently skipped -- the two kits are
+        # asserted by name so a third cannot join them unnoticed.
+        assert lang in ("nord", "darkside"), (lang, repr(paper))
+        return
+    hit = sorted(v for v in values if paper in v)
+    assert not hit, (lang, paper, hit[:4])
+
+
+def test_the_paper_law_bites_on_the_declaration_industrial_shipped(
+        monkeypatch):
+    """TEETH, on the real cell and the real value — and on what the ruling
+    PRESERVED, because a fix that swept the glyph would have been a different
+    decision from the one taken: `/` stays the invalid mark at the knob and at
+    the stepper's step, which is where inc71 put it."""
+    k = LG.kit("industrial")
+    assert invalid_paper("industrial") == "░"
+    assert k.PART_GLYPHS["knob"][LG.INVALID] == "/"
+    assert k.PART_GLYPHS["stepper.step"][LG.INVALID] == "//"
+    # and the new paper is the kit's own shade ramp, not a new cell
+    assert k.PART_GLYPHS["indicator"][LG.DISABLED] == "░"
+
+    monkeypatch.setitem(k.PART_GLYPHS["textfield.main"], LG.INVALID, "▐/▌")
+    assert invalid_paper("industrial") == "/"
+    with pytest.raises(AssertionError):
+        test_a_rejected_fields_paper_is_a_cell_no_value_can_contain(
+            "industrial")
+    for other in LANGS:
+        if other != "industrial":
+            test_a_rejected_fields_paper_is_a_cell_no_value_can_contain(other)
+    monkeypatch.undo()
+    assert invalid_paper("industrial") == "░"
+
 # ---------------------------------------------------------------------------
 # inc64 (rework-6a) — L8 and L9: more value is more ink, in one direction
 # ---------------------------------------------------------------------------

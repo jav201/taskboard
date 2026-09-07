@@ -47,11 +47,10 @@ SWISS   4 colliding cells   (LEVELS ·/─/━  DANGER ╲╱  REQUIRED •  CUR
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
 ------------------------------------------------------------------------------
-INDUSTRIAL   3 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED !  CUR ▶)
+INDUSTRIAL   2 colliding cells   (LEVELS ▫▫/▪▪/■■  DANGER ╱╱╱╱  REQUIRED !  CUR ▶)
 ------------------------------------------------------------------------------
   ▌   [3 families]  INVALID textfield.main mark  ·  button.main close (active,default,focused)  ·  textfield.main close (active,default,edited,focused)
   ▐   [3 families]  INVALID textfield.main mark  ·  button.main open (active,default,focused)  ·  textfield.main open (active,default,edited,focused)
-  /   [2 families]  INVALID slider.knob mark + INVALID stepper.step close + INVALID stepper.step open  ·  textfield.main mark (invalid)
   ... 17 further cells are shared between two CONTROLS only (alphabet, not counted)
   ... slider, bar, scrollbar, meter, spark and mascot are IN the B set (inc67, ruling A amended)
 
@@ -110,7 +109,7 @@ naught                       3
 corgi                        4
 instrument                   4
 swiss                        4
-industrial                   3
+industrial                   2
 nord                         1
 darkside                     1
 prism                        4
@@ -118,7 +117,7 @@ ledger                       1
 solari                       3
 blueprint                    1
 ------------------------------
-TOTAL                       29
+TOTAL                       28
 
 zero collisions: NONE -- all eleven overload at least one cell
 
