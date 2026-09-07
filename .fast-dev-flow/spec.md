@@ -1406,3 +1406,231 @@ skill repo was not committed.**
 | Phase C (close) | inc62, this section |
 | Gates | `pytest -q` **1099 → 1101 → 1103 → 1106 → 1111 passed** (+2, +2, +3, +5), the clipboard test red in every run and named in every packet. `verify_language.py` **ALL PASSED exit 0 after every increment — and RED FIRST in inc59 (twice) and inc60 (four checks at once)**, reported rather than skipped, fixed in the kit and never by narrowing the law. `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66, refusals `[]` for all eleven. `capture_languages.py plain` after every increment, 22 grids identical across two processes each time; **12 gallery artefacts moved in total.** `collision_census.py` both self-checks green after every increment — **and the homoglyph self-check went RED first in inc61**, on the roster it exists to protect. **TOTAL 33 → 25**, homoglyph rows **4 → 1**. `export_to_skill.py` at the close: `12 written, 54 already identical`, re-run `0 written, 66 already identical`. **The skill repo was not committed.** |
 | Notes | **3 source files across 5 increments, one agent** (`taskboard/language.py`, `tests/test_components.py`, `prototypes/collision_census.py`) — never more than 3 in one increment — plus 24 regenerated component artefacts over 17 distinct frames, 12 gallery artefacts, the census table, the round's decisions section, five packets and this section. **Every increment's law was watched failing BY HAND on the real declaration, one at a time, with the per-declaration counts quoted verbatim in its packet**, in addition to its monkeypatched teeth. |
+
+---
+
+## 16. Batch `rework-6a` — the first four items of `PROTOTYPE-inheritors-3.md`
+
+`PROTOTYPE-inheritors-3.md` (2026-09-07, at `abd5193`) judged **all 66 frames for the first time** and
+returned **keep 15 · note 40 · rework 11**, with eight new objections (K5, L7–L10, C8–C10, E4) and six
+disagreements with standing rulings. **The operator delegated the decisions to the orchestrator, and
+this batch is four of them: E4, F amended, C8 and C2 with ruling C's follow-through. Four increments,
+one agent. The rulings are quoted verbatim in each packet's §0 and are reproduced here, because a ruling
+that lives only in a chat is a ruling nobody can argue with later.**
+
+### 16.1 The rulings, as given
+
+> **E4:** the exporter reads the kit's declared `ground` and `ink`; it never infers them from frequency.
+
+> **F, amended:** the band never covers a gate HEADER row, of any gate; it covers task rows of the first
+> gate the confirm does not name, below that gate's header, and goes to the foot of the schedule when no
+> such rows exist. A frame must never show a task under a gate it does not belong to.
+
+> **G vs ruling 10:** on S4 the fixture mood is calm; G applies to S2 only. Recorded, no code.
+
+> **inc60 info to air:** doctrine for blueprint and ledger (a line-type ladder where absence is the calm
+> state, LANGUAGES.md §11 and #9). Recorded, no code.
+
+> **C, follow-through:** the channel C freed on swiss gets filled: the invalid text field has a wall,
+> paper and a closer from swiss's own alphabet.
+
+**Two of the five are RECORDED AND NOT IMPLEMENTED, on purpose.** *G vs ruling 10* settles §7.4 of the
+round — the two rulings cannot both bind on S4, and the answer is that the fixture's S4 mood is calm so
+G binds on S2 alone; nothing in the code had to move for that to be true, and `screens.s4` was measured
+to confirm it. *inc60 info to air* settles §7.5 — `LEVELS["info"]` being air in blueprint and ledger is
+doctrine (a line-type ladder in which ABSENCE is the calm state), not a defect inherited from an unjudged
+frame. Both are here so that the next round argues with a written ruling instead of re-opening them.
+
+### 16.2 What each increment did
+
+| inc | ruling | what moved | frames |
+| --- | --- | --- | --- |
+| 63 | **E4** | `cell_grid(app, ground)` takes the kit's declared `THEMES[lang]["ground"]`; the frequency count is deleted and `write()` raises rather than guess. `render.py` and `sweep_surfaces()` declare the ground in the Screen CSS, BEFORE compose — a background assigned after the first paint never reaches the strips the compositor has cached. | **all 66 `.svg`**, 0 `.txt`, 0 gallery |
+| 64 | **L8, L9** | prism's `checkbox.main` / `checkbox.knob` centres swapped (ticking a box added ink for the first time in this kit); `_meter_ember`'s bitmap loop flipped so the DONE side is the fire. | `prism_S1` `prism_S2` · gallery `board_prism` `gallery_prism` |
+| 65 | **F amended, C8** | `Solari.band_head` anchors one row BELOW the first unnamed gate's header and checks the next header's index before taking a gate; `Corgi.overlay_instead` keeps `under[0]`. inc40's head law loses its exemption and is asked of all eleven. | `solari_S4` `corgi_S4` · 0 gallery |
+| 66 | **C2, C follow-through** | ledger's `button.main` FOCUSED `▶  │` → `▶  ◀` and ACTIVE `▶  ◀` → `▶──◀`; `Swiss.overlay_instead` closes its band on a second rule; swiss's `textfield.main[INVALID]` `"║  "` → `"║┆║"`. | `ledger_S4` `swiss_S2` `swiss_S4` · gallery `gallery_ledger` |
+
+### 16.3 The laws this batch added and the ones it repaired
+
+**Added — six laws and six teeth, all over all eleven:**
+
+- **inc63 — the canvas is the kit's declared ground.** Three clauses over the 66 `.svg`: the canvas rect
+  equals `THEMES[lang]["ground"]`; `contrast(ink, ground) >= 4.5` (WCAG 1.4.3, computed in the test from
+  the two hexes); and **once every background run is subtracted, no colour has more area left than the
+  declared ground** — the clause that stops the first one being satisfied by a full-bleed repaint. Teeth
+  on the real bytes of `ledger_S6.svg`, both failure shapes.
+- **inc64 — a ticked box is never lighter than an empty one** (L8), measured on the BOX and not the
+  control (three kits spend a word at `check_label` and counting it makes the law measure how long the
+  English is), and only on the cells that move (the walls are identical between the two tables in every
+  language). `>=`, because naught ticks by SHAPE at equal weight.
+- **inc64 — a language's fill direction is one declaration** (L9), at the meter, the slider and the
+  readbar, each rendered at its floor and its ceiling. Two skips, written down as
+  `RAMPLESS_METERS`: solari (`odometer` — quantity is digits) and blueprint (`dimension`), and the law
+  **asserts they are still unweighable** so a third arrival goes red.
+- **inc65 — no departure is filed under a gate it is not in** (F amended), over `solari_S4` and over
+  `solari_S1` as the control. Membership from `fixture.py` loaded by path, position from the frame,
+  neither side typed into the test.
+- **inc65 — no gate header stands inside solari's band**, the amendment's absolute half.
+- **inc66 — both answers open and close with their declared pair, at three widths**, where a pair is
+  the same mark or that mark's declared mirror (`WALL_MIRRORS`, derived once from the eleven).
+- **inc66 — every confirm says where it ends**: the last row a confirm changes must say something.
+  Deliberately weak, because eleven languages close a question eleven ways.
+- **inc66 — swiss's rejected field spends a wall, a paper and a closer**, all from weights the kit
+  already owns at that part, and none of them the `DANGER_FORM`.
+
+**Repaired — three existing laws, and every repair is written into the test:**
+
+- **inc63 — the reverse-kit style law was RESTING ON THE DEFECT.** It read *"no text run anywhere in
+  this sheet is painted in the ground colour except the six match runs"*, and that held only because the
+  canvas was `#121212`, a colour no kit declares, so every legitimate knockout fell outside the query by
+  accident. With the declared ground in place solari's masthead plates paint ink in `#0b0b0c` too. It is
+  repaired by PAIRING ON COORDINATE — a text baseline sits 0.78 of a line below its row's background
+  rect — which is stronger than what it replaced. Measured: industrial 6 hue rects, darkside 6,
+  **solari 8**, the two extra being the plates that broke the old assertion.
+- **inc65 — inc40's head law lost its exemption.** `MODAL_KEEPS_NOTHING` became
+  `MODAL_KEEPS_ONLY_THE_HEAD` and the refusal's citation moved to the test that asserts corgi's board is
+  still gone. **A citation check is not a scope check**: the exemption was written correctly, cited
+  correctly and asserted word for word for five batches, and nobody asked whether the sentence it cited
+  ("the board is gone") covered the thing it was exempting (the mode strip).
+- **inc66 — the contiguity law is strengthened.** `modal_band` reads the rows that DIFFER, and swiss's
+  band gained air that landed on the page's own air, so the run came back with two holes in it. The run
+  is now measured END TO END and every row inside it that did not change must be blank on BOTH sides.
+
+### 16.4 The census, and the one row that moved
+
+```
+language      abd5193   inc63   inc64   inc65   inc66
+swiss              2       2       2       2       3
+ledger             2       2       2       2       2
+the other nine     unchanged
+--------------------------------------------------------
+TOTAL             25      25      25      25      26
+homoglyph rows     1       1       1       1       1
+```
+
+**The +1 is swiss's new invalid PAPER, and it is unavoidable for any paper at all.** `┆` was spent at
+six of swiss's control seats and carried no A-family, so it sat in the "shared between two CONTROLS only
+(alphabet, not counted)" bucket; giving the rejected field a paper adds the `invalid` A-family to it and
+the census counts a cell as colliding the moment it carries an A-family plus anything else. Every
+candidate cell in swiss's declared alphabet is already spent somewhere, so the only zero-cost option was
+to paper the field in `║` itself — not a third weight, and not what the ruling asked for.
+
+**And the row exists because the CENSUS counts the invalid RUNE as a meaning while the LAW does not.**
+`_invalid_marks` has excluded the rune by name since inc52; §15.5 already records this discrepancy as
+*"the one row five languages have left"*. swiss is the sixth. **The law's own number is unchanged: live
+meaning × meaning pairs are still 0**, four exempt. The day the census adopts the law's exclusion, all
+six rows go at once.
+
+**One near-miss is recorded because it was measured rather than guessed:** ledger's button ACTIVE was
+first drafted `▶··◀`, which would have taken the `·` row from six families to seven for nothing. `─`
+carries none — the kit's own words: *"the same stroke the bar's fill draws, and it carries no meaning
+anywhere"* — and ledger's count is unmoved at 2.
+
+### 16.5 Frames, and what the skill holds
+
+**Seven distinct component frames moved in the `.txt`:**
+
+```
+inc64   prism_S1  prism_S2
+inc65   solari_S4  corgi_S4
+inc66   ledger_S4  swiss_S2  swiss_S4
+```
+
+**And all 66 moved in the `.svg`, once, in inc63** — every language's canvas went from Textual's
+`#121212` to the kit's declared ground. Ten dark languages had survived that by luck; ledger, the only
+light-paper kit, had been shipping `#1c1a15` on `#121212` at **1.08:1** for the whole programme, with the
+dot leaders (9.62:1) the only legible thing on the page.
+
+**Gallery: 3 of the 22 artefacts** — `board_prism` (the ember meter), `gallery_prism` (the component
+sheet's four checkbox rows) and `gallery_ledger` (its button row). `gallery_swiss` did not move and that
+is checkable: the sheet is cut at 118×34 before its invalid-field row, the same cut §12.5 records for the
+stepper. **The 22 gallery `.svg` came back byte-identical after inc63** — those captures already carried
+the declared ground because `set_theme` runs before the app's first paint — which is the closest thing
+this batch had to a control arm for the exporter fix.
+
+**The skill's installed gallery frames 30–51: NONE changed byte-wise.** All 22 were compared cell for
+cell against their sources at the close of the batch and every one is identical:
+
+```
+30 ledger_S3 · 31 corgi_S3 · 32 prism_S3 · 33 naught_S5 · 34 blueprint_S5 · 35 corgi_S6
+36 ledger_S6 · 37 corgi_S1 · 38 ledger_S1 · 39 naught_S2 · 40 ledger_S2 · 41 blueprint_S2
+42 naught_S4 · 43 prism_S4 · 44 instrument_S1 · 45 industrial_S1 · 46 swiss_S1 · 47 solari_S1
+48 industrial_S4 · 49 darkside_S4 · 50 solari_S2 · 51 instrument_S5
+```
+
+None of the seven frames this batch moved is a source for any of them. **`49_darkside-modal-rounded-lid`,
+stale since `rework-5a` (§13.6) and named as open for four batches (G1), is identical again.** This
+batch did not install it and `export_to_skill.py` still does not touch that directory, so it was
+re-installed outside this worktree at some point since §13.6 was written — WHO did it is not
+something this batch can say. Recorded because a G1 that quietly closed is as worth writing down
+as one that did not, and because the next round will otherwise re-report it.
+
+**And the skill's own `render_svg.py` already read the declared ground** —
+`assets/gallery/svg/30_ledger-settings-danger.svg` grounds its page in a light paper. The skill was
+right about ledger and the prototype's exporter was not, for the whole programme, and nobody had put the
+two side by side until E4.
+
+### 16.6 What was NOT touched, by name
+
+| | the objection | this batch's contact with it |
+| --- | --- | --- |
+| **K5** | no law and no instrument reads a QUANTITY widget | **the largest thing left open.** inc64 fixed prism's bar by hand and added the first law that reaches a meter, a slider and a bar at all — but only for DIRECTION. `prism_S3`'s slider still draws nine `⣿` four rows above `⣿Delete all⣿`, and the slider/bar/scrollbar are still outside set B by the operator's own request |
+| **K2** | the laws compare code points; `HOMOGLYPHS` is five fixed pairs | untouched, third round |
+| **K4** | no law compares two states of one part | **cracked, not closed.** inc64's box law is the first law here to compare two states of one part; blueprint's three-state ladder (`├─┤` / `├┤·` / `├╎┈`) is a different shape and is untouched |
+| **L2** | swiss's `Save` is air next to a `Cancel` with a mark | **untouched, and this batch worked two seats away from it.** inc66 filled the FIELD's freed channel; the disabled button is a different seat, three rounds and six batches old |
+| **L6, L7, L10** | sparkline on the top rungs · `info` is air · naught's radio vs checkbox | untouched; L7 is **RULED as doctrine** (§16.1) rather than fixed |
+| **C5, C6, C7** | nord's sparkline mullion · the search's empty state · instrument's three identical rules | untouched |
+| **C9** | the destructive caption is drawn as a field row | untouched, three languages |
+| **C10** | the fixture renders two different facts about the same board | **RULED (G vs ruling 10)**, no code |
+| **E2** | the `.svg` carries no font metric | untouched, and it is why `CELL_INK`'s eight declared weights are ordinal rather than measured |
+| **E3** | `gallery_darkside` is calendar-dependent | untouched; did not fire this batch |
+| **G2** | the skill repo is dirty and uncommitted | **still true.** `export_to_skill.py` ran; the skill repo was not committed, per the batch's constraint |
+
+### 16.7 Found by looking
+
+- **The exporter was wrong on ALL ELEVEN languages, not on ledger.** The round reported ledger because
+  ledger is the only kit whose ground is far enough from `#121212` for the eye to catch it. Every one of
+  the 66 canvases was wrong, and the gallery's 22 were right — a frequency count that returns the right
+  answer on one pipeline and the wrong one on another is not measuring a ground, it is measuring which
+  pipeline set its background before the first paint.
+- **The frequency count was SELF-CONFIRMING.** `svg_from_grid` suppresses a background rect whenever
+  `bg == ground`, so the more completely a mistake covered the frame, the more certainly the exporter
+  agreed with it and the fewer rects it wrote to leave a trace. The old `ledger_S6.svg` contains **zero**
+  background rects.
+- **Ruling E is now audited and it holds.** §7.3 of the round objected that promoting the `.svg` to
+  darkside's artefact of record presupposed a faithful exporter and that darkside's survival was luck.
+  It was luck — darkside declares `#000000` and shipped `#121212`. It is measured now.
+- **`mut` against the declared ground is below 4.5:1 in FIVE of the eleven** — nord 3.50, solari 3.65,
+  instrument 4.26, darkside 4.43, ledger 4.45 — and most body text in these sheets is `mut`, not `ink`.
+  The ruling names `ground` and `ink`, so the law asks about `ground` and `ink`. Measured while writing
+  it, not fixed, and not asserted: moving a `mut` is a design change in five kits at once.
+- **A law's first draft was measured wrong and prism is why.** inc66's pair clause was first written as
+  *"the dangerous answer's closer is not the safe answer's opener"* and went red on prism, which closes
+  on `⠿` and opens on `⠿` and is perfectly readable because each seat is symmetric about its own word.
+  **Symmetry closes a seat; difference from a neighbour does not.** The clause became "same mark or its
+  declared mirror" and the wrong draft is in the test's docstring.
+- **`solari_S4` was not silent, it was WRONG, and that is a different class of defect.** inc55 declared
+  one cost in writing (the orphan seam) and shipped a second it did not name: a departure filed under a
+  gate it is not in. Asked "which gate is `REWRITE THE ONBOARDING` in?", the frame answered `BACKLOG`.
+  **A frame that asserts something false is worse than one that says nothing**, and no law in the corpus
+  could see it because membership had never been compared against the fixture.
+- **An exemption outlived its scope for five batches while being cited correctly every time.** corgi's
+  head-law exemption quoted *"the board is gone"* word for word and asserted the quotation. Nobody asked
+  whether the sentence covered a mode strip. `corgi_S4.svg` held **seven text runs**.
+- **inc59 moved two tables in one increment and preserved an inversion between them.** prism's checkbox
+  had been backwards since before inc59 and inc59 rewrote both halves without noticing, because nothing
+  in this repo compares two states of one part. The frame said it plainly — the fixture's two ticked tags
+  drawn as empty boxes — and eleven months of property tests could not.
+- **`test_win_clipboard_roundtrip` was RED in every gate run of all four increments**, including the
+  baseline at `abd5193`. It drives the real Windows clipboard through PowerShell (§10.6). **Reported,
+  not counted, not touched — and `1165 passed` is not a claim about it either way.**
+
+### 16.8 Batch status
+
+| | |
+| --- | --- |
+| Phase A (spec) | **deviation** — the operator's delegated brief was the spec; this section is the record |
+| Phase B (implement) | **done** — inc63 · inc64 · inc65 · inc66 |
+| Phase C (close) | this section |
+| Gates | `pytest -q` **1111 → 1123 → 1147 → 1151 → 1165 passed** (+12, +24, +4, +14), the clipboard test red in every run and named in every packet. `verify_language.py` **ALL PASSED exit 0 after every increment.** `render.py` 66 frames / 330 pairs / 0 hand-drawn after every increment. `matrix.py` 66 of 66, refusals `[]` for all eleven. `capture_languages.py plain` after every increment, 22 grids identical across two processes each time; **6 gallery artefacts moved in total** (3 frames), and **0 moved in inc63**, which is the exporter fix's control arm. `collision_census.py` both self-checks green after every increment. **TOTAL 25 → 26**, accounted for in §16.4; homoglyph rows **1**, unchanged. `export_to_skill.py` at the close: `6 written, 60 already identical`, re-run `0 written, 66 already identical`. **The skill repo was not committed.** Gallery 30–51: **0 of 22 changed byte-wise.** |
+| Notes | **5 source files across 4 increments, one agent** (`prototypes/capture_languages.py`, `prototypes/components/render.py`, `prototypes/race_probe.py`, `taskboard/language.py`, `tests/test_components.py`) — never more than 4 in one increment — plus **66 regenerated `.svg` and 14 regenerated component artefacts over 7 distinct frames**, 6 gallery artefacts, the census table, four packets and this section. **Every increment's law was watched failing on the REAL declaration or the REAL bytes** — inc63 on `ledger_S6.svg` and on four frames restored from `abd5193`, inc64 on inc59's two tables and on the pre-inc64 `_meter_ember` re-installed into `LG.METERS`, inc65 on inc55's `band_head` body verbatim, inc66 on ledger's shipped `▶  │` — in addition to the monkeypatched teeth. |
