@@ -10840,6 +10840,249 @@ def test_the_naught_refusal_bites_by_running_the_raid_it_refuses(monkeypatch):
     test_a_languages_meaning_marks_do_not_share_a_cell("naught")
 
 
+# ===========================================================================
+# inc90 (rework-9) -- L10, enumerated
+#
+# THE RULING (orchestrator, 2026-09-07, on the operator's delegation):
+#
+#   naught_S2 L10: the 12 homoglyph rows and 8 state rows on naught's form
+#   are fixed by SHAPE and COUNT (the lattice counts, the pixel charges:
+#   inc61), so the form's marks stop resting on one drawing.
+#
+# THE RULING NAMES TWO CHANNELS AND THIS LANGUAGE CAN SPEND NEITHER, and
+# saying that with numbers instead of with a sentence is what this section
+# is.  Round five's verdict on `naught_S2` is `rework`; what it gets here is
+# a ROSTER, not a redrawing, and the reason is written into the roster.
+# ===========================================================================
+
+
+@functools.lru_cache(maxsize=None)
+def _cov_any(ch: str) -> tuple:
+    """`_cov`, extended to the four cells the primary face does not carry.
+
+    The sidecar declares the fallback face AND its per-cell size -- the same
+    numbers `raster.py` uses and inc76's declaration law already pins -- so
+    reading them here inherits that check rather than adding a second one.
+    `_cov` deliberately draws through the primary face only and says so; this
+    is the one section that has to measure `⊛` and `⋅`, because they are two
+    of the nine drawings the whole of L10 rests on."""
+    from PIL import Image, ImageDraw, ImageFont
+    side = _raster_json("instrument_S1")
+    if ch not in side["fallback"]["cells"]:
+        return _cov(ch)
+    f = ImageFont.truetype(side["fallback"]["path"],
+                           side["fallback"]["px"][ch])
+    box = (side["cell"]["w"], side["cell"]["h"])
+    im = Image.new("RGB", box, "#000000")
+    ImageDraw.Draw(im).text((0, f.getmetrics()[0]), ch, font=f,
+                            fill="#ffffff", anchor="ls")
+    b = im.tobytes()
+    return tuple(b[i] / 255 for i in range(0, len(b), 3))
+
+
+def _xor_any(a: str, b: str) -> float:
+    ca, cb = _cov_any(a), _cov_any(b)
+    return sum(abs(x - y) for x, y in zip(ca, cb)) / len(ca) * 100
+
+
+#: THE THREE CHANNELS A ROW COULD LEAVE ON, and why this language cannot
+#: spend any of them.  Every row of L10 names one of these three and nothing
+#: else, which is the whole finding: twenty rows, three reasons.
+L10_CHANNELS = {
+    "count": (
+        "THE LATTICE COUNTS -- how many dots are lit -- and inc61 reserved "
+        "it: `NA.ON`, the lit lattice dot, belongs to the count and to "
+        "nothing else, and NO CONTROL SEAT DRAWS IT. That rule exists "
+        "because the lit dot IS `DANGER_FORM` and two severity rungs, and "
+        "inc61 found `naught_S3` rendering every live switch as `∙∙◉` twelve "
+        "rows above `◦ ∙Delete all∙ ◦`. A control that counted would be "
+        "spelling the error rung."),
+    "charge": (
+        "THE PIXEL CHARGES -- how much of one dot is filled -- and this is "
+        "the channel every one of these cells is ALREADY on. `⋅ ◦ ∙ ◉ ●` "
+        "and the ring family `◌ ○ ◑ ◍ ◎` are one ramp read at nine "
+        "settings, so a pair told apart by charge is told apart by "
+        "DIAMETER AND FILL, which is the pair of channels ruling D refuses "
+        "as a sole answer. Moving along it is what produced these rows."),
+    "interior": (
+        "THE CIRCLED OPERATOR'S INNER MARK -- a bar, a dot, a ring, a cross, "
+        "a burst inside the same outline (`⊖ ⊙ ⊚ ⊗ ⊛`) -- and it is the one "
+        "real second channel this alphabet has. THREE OF ITS FIVE MEMBERS "
+        "ARE NOT IN THE MEASURED FACE: `⊖`, `⊚` and `⊛` are three of the "
+        "four cells `raster.py` routes through Segoe UI Symbol by name. "
+        "Widening it means adding codepoints to `FALLBACK_CELLS`, which is a "
+        "new alphabet for a language and needs a round, not an increment."),
+}
+
+#: EVERY PAIR THE TWENTY ROWS REST ON, with the distance between the two
+#: drawings as a PERCENTAGE of the cell and the channel that would separate
+#: them.  `(a, b) -> (xor %, channel, where it is drawn)`.
+#:
+#: NINE DRAWINGS CARRY ALL TWENTY ROWS, and that is L10 stated once: three
+#: solid dots at three sizes (`⋅ ∙ ●`) and six ringed things at six diameters
+#: and fills (`◦ ○ ◎ ◉ ⊙ ⊛`).  It is not a slip in a table -- it is this
+#: language's founding rule ("the pixel is ROUND ... everything here is
+#: round") measured at 9x19 px.
+#:
+#: THE TIGHTEST IS `○` AGAINST `◉` AT 5.82 %, which is `stepper.step`
+#: FOCUSED against ACTIVE, and it is within a point of the tightest pair in
+#: the whole corpus (`ledger † ‡`, 4.87 %) -- a pair three rounds argued
+#: about and inc76 built a raster to settle.
+L10_RESTS_ON_ONE_DRAWING = {
+    ("○", "◉"): (5.82, "charge", "stepper.step focused / active"),
+    ("◦", "⊛"): (10.85, "interior", "the severity rung / the obligation"),
+    ("∙", "⋅"): (11.45, "charge", "the lit dot / the lattice's faintest"),
+    ("⊛", "○"): (15.62, "interior", "the obligation / the unchosen well"),
+    ("⊛", "◉"): (15.63, "interior", "the obligation / the ticked box"),
+    ("◦", "◎"): (17.61, "charge", "the severity rung / the edited grip"),
+    ("◉", "◎"): (21.42, "charge", "knob default / edited; checkbox knob "
+                                  "default / disabled"),
+    ("◦", "◉"): (21.58, "charge", "the severity rung / the ticked box"),
+    ("∙", "●"): (21.64, "charge", "the lit dot / the cursor"),
+    ("◦", "○"): (22.81, "charge", "the button, the checkbox, the field's "
+                                  "paper and the radio's ground"),
+    ("⊛", "◎"): (23.45, "interior", "the obligation / the edited grip"),
+    ("⊛", "⊙"): (27.99, "interior", "the obligation / the chosen well"),
+    ("●", "⋅"): (31.90, "charge", "textfield active / disabled"),
+    ("◦", "⊙"): (33.32, "charge", "the severity rung / the chosen well"),
+}
+
+#: WHAT THE ROSTER IS COUNTED AGAINST, both read live: the census's own
+#: homoglyph rows for this kit and the state roster's own number.
+L10_ROWS = (12, 8)
+
+
+def test_l10_is_twenty_rows_on_nine_drawings_and_names_why_each_stands():
+    """L10, ENUMERATED -- the refusal turned into a table a reader can argue
+    with, and a table that goes red the day the corpus stops making it true.
+
+    FIVE CLAUSES:
+
+      (a) the two counts the ruling names are still the counts the corpus
+          reports -- 12 homoglyph rows from `collision_census` and 8 state
+          rows from `states_without_a_channel`, both read live and neither
+          copied;
+      (b) every pair in the roster still measures the distance recorded, to
+          two places, through the face the corpus is rastered on (the
+          fallback included -- two of the nine drawings are only there);
+      (c) the roster COVERS both rosters: every cell pair the census reports
+          and every cell pair the state rows rest on is here, and nothing
+          else is;
+      (d) every row names a channel this alphabet SPENDS, and both of those
+          are used -- a table where everything was "charge" would be a
+          filter -- while the third, `count`, appears in no row at all,
+          because it is reserved and no row can move onto it;
+      (e) NINE DRAWINGS carry all twenty rows, which is the sentence this
+          whole section exists to make checkable.
+    """
+    rows = _census().homoglyph_rows("naught")
+    assert (len(rows), len(states_without_a_channel("naught"))) == L10_ROWS, \
+        (len(rows), len(states_without_a_channel("naught")))
+
+    for (a, b), (dist, channel, where) in L10_RESTS_ON_ONE_DRAWING.items():
+        assert round(_xor_any(a, b), 2) == dist, \
+            (a, b, round(_xor_any(a, b), 2))
+        assert channel in L10_CHANNELS, (a, b, channel)
+        assert len(where.split()) >= 3, (a, b, where)
+
+    want = {frozenset(k) for k in L10_RESTS_ON_ONE_DRAWING}
+    got = {frozenset((a, b)) for a, _fa, b, _fb in rows}
+    for _part, _s1, ga, _s2, gb in states_without_a_channel("naught"):
+        got |= {frozenset((x, y)) for x, y in zip(ga, gb) if x != y}
+    assert got == want, sorted(
+        "".join(sorted(f)) for f in got ^ want)
+
+    used = {c for _d, c, _w in L10_RESTS_ON_ONE_DRAWING.values()}
+    assert used == {"charge", "interior"}, sorted(used)
+    assert used < set(L10_CHANNELS), sorted(used)
+    for name, why in L10_CHANNELS.items():
+        assert len(why.split()) >= 30, (name, "a channel with no argument")
+
+    cells = {c for k in L10_RESTS_ON_ONE_DRAWING for c in k}
+    assert len(cells) == 9, sorted(cells)
+
+
+def test_the_two_channels_the_l10_ruling_names_are_both_blocked():
+    """THE REFUSAL'S OWN ARITHMETIC, and neither half is an opinion.
+
+    THE COUNT IS RESERVED: inc61's rule is that `NA.ON` -- the lit lattice
+    dot -- belongs to the count and to nothing else, and this walks every
+    glyph table this kit declares to show no control seat draws it. A
+    checkbox told from a radio by how many dots are lit would be spelling
+    `DANGER_FORM`.
+
+    THE CHARGE IS SPENT: every cell of the ramp that clears Q1's coverage
+    clause is already carrying a control, which `ALPHABET_EXHAUSTED` measured
+    in inc89 and this re-derives from the other end -- the nine drawings L10
+    rests on are drawn at 24 declared seats between them, so there is no
+    setting of the ramp left that is not already saying something.
+    """
+    from taskboard import naught as NA
+    k = LG.kit("naught")
+    # THE QUANTITY WIDGETS ARE THE EXCEPTION AND INC61 NAMES THEM: the
+    # slider's and the bar's fill IS the count ("quantity is a row of
+    # discrete LIT DOTS"), so they draw the lit dot on purpose. What the
+    # rule forbids is a CONTROL STATE spelling it, and those are the six
+    # components a form actually operates.
+    OPERATED = ("button", "checkbox", "radio", "switch", "textfield",
+                "stepper")
+    seats = [(comp, part, st, k.part_glyph(part, st, comp))
+             for comp in OPERATED
+             for part in LG.COMPONENT_PARTS[comp]
+             for st in LG.component_states(comp)]
+    assert len(seats) >= 40, len(seats)
+    for comp, part, st, g in seats:
+        assert NA.ON not in g, (comp, part, st, g,
+                                "a control seat draws the lit dot")
+
+    drawn_at = {}
+    for _c, key, st, g in seats:
+        for ch in g:
+            if ch in {c for pair in L10_RESTS_ON_ONE_DRAWING for c in pair}:
+                drawn_at.setdefault(ch, []).append(f"{key}[{st}]")
+    assert sum(len(v) for v in drawn_at.values()) >= 24, drawn_at
+    assert len(drawn_at) >= 6, sorted(drawn_at)
+
+
+def test_the_l10_roster_bites_in_both_directions(monkeypatch):
+    """TEETH -- and they are the shape `BELOW_THE_FLOOR`'s already have,
+    because this roster makes the same kind of claim: it is a RECORD of what
+    the corpus does, and a record that cannot go stale is a comment.
+
+    THREE ARMS. Drop a pair and the coverage clause fires; add a pair the
+    corpus does not draw and it fires the other way; and let ONE control seat
+    draw the lit lattice dot and the count clause fires -- which is inc61's
+    rule executed rather than quoted.
+    """
+    test_l10_is_twenty_rows_on_nine_drawings_and_names_why_each_stands()
+    test_the_two_channels_the_l10_ruling_names_are_both_blocked()
+
+    thinner = {k: v for k, v in L10_RESTS_ON_ONE_DRAWING.items()
+               if k != ("○", "◉")}
+    monkeypatch.setitem(globals(), "L10_RESTS_ON_ONE_DRAWING", thinner)
+    with pytest.raises(AssertionError):
+        test_l10_is_twenty_rows_on_nine_drawings_and_names_why_each_stands()
+    monkeypatch.undo()
+
+    fat = dict(L10_RESTS_ON_ONE_DRAWING)
+    fat[("◑", "◍")] = (0.0, "charge", "a pair this form does not draw")
+    monkeypatch.setitem(globals(), "L10_RESTS_ON_ONE_DRAWING", fat)
+    with pytest.raises(AssertionError):
+        test_l10_is_twenty_rows_on_nine_drawings_and_names_why_each_stands()
+    monkeypatch.undo()
+
+    from taskboard import naught as NA
+    tbl = dict(LG.Naught.PART_GLYPHS["checkbox.main"])
+    tbl[LG.DEFAULT] = NA.ON
+    monkeypatch.setitem(LG.Naught.PART_GLYPHS, "checkbox.main", tbl)
+    with pytest.raises(AssertionError):
+        test_the_two_channels_the_l10_ruling_names_are_both_blocked()
+    monkeypatch.undo()
+
+    test_l10_is_twenty_rows_on_nine_drawings_and_names_why_each_stands()
+    test_the_two_channels_the_l10_ruling_names_are_both_blocked()
+
+
 # ---- K8 / E6: the run with no glyph ---------------------------------------
 
 #: THE EIGHTEEN, and they are the whole of what eleven batches of instruments
