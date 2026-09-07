@@ -1,0 +1,823 @@
+{
+ "lang": "industrial",
+ "screen": "S4",
+ "ground": "#1a1a1a",
+ "cols": 100,
+ "rows": 32,
+ "image": {
+  "w": 900,
+  "h": 608
+ },
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    "[1]BOARD [2]form [3]cfg [4]log",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    30,
+    "                                                                      ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "[BOARD]  16 tasks  ·  4 projects",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    32,
+    "                                                                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "───────────────────────────────────────────────────────────────────────────────────────────────────",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ▐▌ [1]BACKLOG                                         [ 5]▌ ▐[DETAIL]  Fix login redirect",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    91,
+    "         ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ▐ 05 ▌ Audit the theme tokens                      [21d]▌ ▐────────────────────────────────────",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    99,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "           [PH:BACK][DUE:21D][PR:L]                         ▌ ▐PROJECT                           Web",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ▐ 06 ▌ Drop the legacy shim                        [30d]▌ ▐PHASE                           doing",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "           [PH:BACK][DUE:30D][PR:N]                         ▌ ▐DUE                                3d",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                            ▌ ▐PRIORITY                         high",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▶ ▐▌ [2]DOING                                           [ 4]▌ ▐STATUS                           open",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▶   ▐ 01 ▌ Fix login redirect                           [3d]▌ ▐OWNER                          jav201",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "           [PH:DOIN][DUE:3D][PR:H]                          ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    29,
+    "▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    29,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    31,
+    "Delete 3 tasks?",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    46,
+    "                       ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    69,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    29,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    30,
+    "                                       ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    69,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    29,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    31,
+    "3 tasks will be removed from BACKLOG.",
+    "#959595",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    68,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    69,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    29,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    31,
+    "This cannot be undone.",
+    "#959595",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    53,
+    "                ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    69,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    29,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    30,
+    "                                       ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    69,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    29,
+    "▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    31,
+    "▐_",
+    "#ff6039",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    33,
+    "╱╱Delete╱╱",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    43,
+    "_▌",
+    "#ff6039",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    45,
+    "   ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    48,
+    "▐   Cancel   ▌",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    62,
+    "       ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    69,
+    "▐",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    29,
+    "▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟",
+    "#f2f2f2",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     ██    ██                                               ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     ██    ██                                               ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                            ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    █        █                                              ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     █      █                                               ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "      ██████                                                ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     empty                                                  ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                            ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ▐▌ [4]DONE                                            [ 7]▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                            ▌ ▐",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "view [-###------] 3-10 of 23                                ",
+    "#4a4a4a",
+    "#1a1a1a",
+    false,
+    false
+   ],
+   [
+    60,
+    "                                        ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#1a1a1a",
+    false,
+    false
+   ]
+  ]
+ ]
+}

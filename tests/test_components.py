@@ -7811,3 +7811,306 @@ def test_the_tone_ladder_law_goes_red_on_the_five_declarations_inc70_moved(
     monkeypatch.undo()
     for lang in LANGS:
         test_the_tone_ladder_is_legible_and_ordered(lang)
+
+
+# ---------------------------------------------------------------------------
+# inc76 — THE RASTER.  E2, which three rounds asked for and none got.
+#
+# `PROTOTYPE-inheritors-4.md` §8.2: *"un ratio de contraste no es una prueba de
+# legibilidad, y esta ronda no tiene mas que ratios ... el `.svg` no dice a que
+# tamanio de celda ni con que fuente se va a renderizar"*.  The laws below are
+# about the INSTRUMENT and about no kit: they exist so that when inc77 says a
+# homoglyph pair differs by 3% of a cell, the cell is a real cell.
+#
+# READ AS BYTES, NOT IMPORTED, for the reason the metrics law above already
+# gives: `prototypes/components/raster.py` reaches Textual through
+# `render.py`, and this file reads the pictures off disk on purpose.  The
+# declarations are read out of the raster's SOURCE and the pixels out of its
+# PNGs, so the two can only drift by someone editing both.
+# ---------------------------------------------------------------------------
+
+RASTER = FRAMES / "png"
+
+#: THE DECLARED BOX, restated here and checked against `raster.py`'s source —
+#: the same bargain `test_this_files_picture_metrics_are_the_exporters` makes.
+#: If the face or the size moves, every number inc77 published was measured at
+#: a size that no longer exists, and this is where that gets said out loud.
+_R_FACE, _R_PX, _R_CELL = "Cascadia Mono", 16, (9, 19)
+_R_FALLBACK, _R_FALLBACK_CELLS = "Segoe UI Symbol", "⊖⊚⊛⋅"
+
+
+def _raster_json(name: str) -> dict:
+    import json
+    return json.loads((RASTER / f"{name}.json").read_text(encoding="utf-8"))
+
+
+def _png_size(name: str) -> tuple[int, int]:
+    """Width and height out of the PNG's IHDR, without decoding the image.
+
+    Sixteen bytes in, big-endian, and it is read by hand so the size law
+    cannot be satisfied by whatever Pillow decides a truncated file is.
+    """
+    b = (RASTER / f"{name}.png").read_bytes()
+    assert b[:8] == b"\x89PNG\r\n\x1a\n", (name, "not a PNG")
+    return (int.from_bytes(b[16:20], "big"), int.from_bytes(b[20:24], "big"))
+
+
+def _cells_of(side: dict):
+    """`(x, y, glyph, fg, bg, bold, underline)` from the sidecar's runs."""
+    for y, runs in enumerate(side["grid"]):
+        for x0, text, fg, bg, bold, und in runs:
+            for i, ch in enumerate(text):
+                yield x0 + i, y, ch, fg, bg, bold, und
+
+
+def _cell_pixels(im, side: dict, x: int, y: int) -> set:
+    w, h = side["cell"]["w"], side["cell"]["h"]
+    return {im.getpixel((x * w + dx, y * h + dy))
+            for dx in range(w) for dy in range(h)}
+
+
+def _rgb(hexed: str) -> tuple:
+    return tuple(bytes.fromhex(hexed[1:]))
+
+
+def test_the_rasters_declarations_are_the_ones_this_file_measures_against():
+    """The face, the size, the cell and the fallback, read off the source."""
+    src = (FRAMES / "raster.py").read_text(encoding="utf-8")
+    assert f'FONT_NAME = "{_R_FACE}"' in src, "face"
+    assert f"FONT_PX = {_R_PX}" in src, "size"
+    assert f'FALLBACK_NAME = "{_R_FALLBACK}"' in src, "fallback face"
+    assert f'FALLBACK_CELLS = "{_R_FALLBACK_CELLS}"' in src, "fallback cells"
+    # THE BOX IS NOT IN THE SOURCE AT ALL — it is MEASURED off the font on
+    # every run, which is the point of a raster and the thing the `.svg` never
+    # had.  So it is checked against the sidecars instead, all 66 of them.
+    for lang in LANGS:
+        for screen in SCREENS:
+            side = _raster_json(f"{lang}_{screen}")
+            assert side["font"]["name"] == _R_FACE, (lang, screen)
+            assert side["font"]["px"] == _R_PX, (lang, screen)
+            assert (side["cell"]["w"], side["cell"]["h"]) == _R_CELL, \
+                (lang, screen, side["cell"])
+            assert side["cell"]["advance"] == float(_R_CELL[0]), \
+                (lang, screen, "a fractional advance drifts the grid")
+            assert side["fallback"]["name"] == _R_FALLBACK, (lang, screen)
+            assert "".join(side["fallback"]["cells"]) == _R_FALLBACK_CELLS, \
+                (lang, screen)
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_raster_has_one_cell_per_character_of_the_txt(lang):
+    """THE RASTER'S FIRST LAW: cells x box = pixels, on both axes.
+
+    The `.txt` is the artefact three rounds judged this corpus on and the PNG
+    is the artefact the fifth will, so the two have to be the same picture.  A
+    raster that drew 99 columns would still look like a taskboard, and every
+    per-cell number inc77 reports would be attributed one column off from the
+    middle of the sheet onwards.
+    """
+    for screen in SCREENS:
+        name = f"{lang}_{screen}"
+        rows = (FRAMES / f"{name}.txt").read_text(
+            encoding="utf-8").rstrip("\n").split("\n")
+        cols = {len(r) for r in rows}
+        assert len(cols) == 1, (name, "the txt is not a rectangle", cols)
+        side = _raster_json(name)
+        assert (side["txt"]["cols"], side["txt"]["rows"]) == \
+            (cols.pop(), len(rows)), (name, "sidecar disagrees with the txt")
+        assert (side["cols"], side["rows"]) == \
+            (side["txt"]["cols"], side["txt"]["rows"]), \
+            (name, "the cell grid disagrees with the txt")
+        assert _png_size(name) == (side["cols"] * side["cell"]["w"],
+                                   side["rows"] * side["cell"]["h"]), name
+
+
+def _tiles_of(lang: str) -> dict:
+    """`{(glyph, ink, ground, bold, underline): pixel block}` for six sheets.
+
+    THE RASTER COMPOSES ONE CELL AT A TIME, into a box of its own, and pastes
+    it — so two cells with the same tuple must be the same pixels, and reading
+    only the distinct tuples reads every cell.  That identity is asserted
+    here rather than assumed, and it is the clause that says NO GLYPH BLEEDS:
+    Cascadia's `█` measures 10x20 against a 9x19 box, so a raster that drew
+    the frame as text instead of as cells would give a full block's right-hand
+    neighbour a column of ink it never declared, and the two cells with the
+    same tuple would then differ by what happens to sit beside them.
+    """
+    from PIL import Image
+    tiles: dict = {}
+    for screen in SCREENS:
+        name = f"{lang}_{screen}"
+        side = _raster_json(name)
+        w, h = side["cell"]["w"], side["cell"]["h"]
+        with Image.open(RASTER / f"{name}.png") as raw:
+            im = raw.convert("RGB")
+        for x, y, ch, fg, bg, bold, und in _cells_of(side):
+            key = (ch, fg, bg, bold, und)
+            blk = im.crop((x * w, y * h, x * w + w, y * h + h)).tobytes()
+            if key in tiles:
+                assert tiles[key] == blk, \
+                    (name, x, y, key, "the same cell drawn two ways — a "
+                                      "glyph is bleeding out of its box")
+            else:
+                tiles[key] = blk
+    return tiles
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_a_probe_cells_pixels_are_the_declared_colours(lang):
+    """THE RASTER'S SECOND LAW: every pixel is a mix of the two declared
+    colours of the cell it is in, and of nothing else.
+
+    The brief asked for "a probe cell's pixel colour equals the declared
+    fg/bg", and that is exactly true only at the two ENDS: antialiasing puts
+    most of a glyph's pixels somewhere between.  So the law is the segment.
+    For every distinct cell in six sheets, every pixel `p` satisfies
+    `p == ground + t*(ink - ground)` for some `t` in `[0, 1]`, within one unit
+    per channel — measured over the whole corpus while this was written:
+    **7081 distinct cells, worst channel error 1**.
+
+    That is a stronger statement than the two-colour version and it is the one
+    that catches what a raster gets wrong:
+
+    * a cell painted on the wrong GROUND fails at `t = 0` — inc63's defect one
+      artefact over, where 3200 of 3200 cells shipped on Textual's `#121212`;
+    * a cell painted in the wrong INK fails at `t = 1`;
+    * the pair SWAPPED fails everywhere the glyph is not symmetric in
+      coverage, which is every glyph that is not blank or full — and
+      `cell_grid` already swaps `reverse`, so a second swap here would be
+      invisible in a law that only looked at two colours;
+    * a glyph BLEEDING from the neighbouring cell fails because the intruder
+      carries a third colour.
+
+    NOT VACUOUS AT EITHER END, asserted: the blank cells really are the
+    ground, and the ink end is really reached.
+    """
+    tiles = _tiles_of(lang)
+    ends, blanks = 0, 0
+    for (ch, fg, bg, bold, und), blk in tiles.items():
+        F, B = _rgb(fg), _rgb(bg)
+        span = [abs(F[c] - B[c]) for c in range(3)]
+        c = span.index(max(span))
+        for i in range(0, len(blk), 3):
+            q = tuple(blk[i:i + 3])
+            t = 0.0 if span[c] == 0 else (q[c] - B[c]) / (F[c] - B[c])
+            t = max(0.0, min(1.0, t))
+            pred = tuple(round(B[k] + t * (F[k] - B[k])) for k in range(3))
+            assert max(abs(pred[k] - q[k]) for k in range(3)) <= 1, \
+                (lang, ch, fg, bg, q, pred, "a colour the cell never declared")
+            if t >= 0.999 and span[c]:
+                ends += 1
+        if ch == " " and not und:
+            assert blk == bytes(B) * (len(blk) // 3), \
+                (lang, "a blank cell is not its ground", bg)
+            blanks += 1
+    assert blanks, (lang, "no blank cell — the ground end is untested")
+    assert ends, (lang, "no pixel reaches full ink — the ink end is untested")
+
+
+#: WHAT THE FACE DOES TO A FULL BLOCK, found by looking and asserted so it
+#: cannot change quietly.  `█` in Cascadia Mono at 16 px measures 10x20 for a
+#: 9x19 cell and its outline does not land on the cell's bottom edge: the last
+#: pixel row comes out at **75% coverage**, 162 of the cell's 171 pixels at
+#: full ink and 9 at three quarters.  A full block therefore leaves a seam,
+#: which is why Windows Terminal ships its own box-drawing glyphs and does not
+#: use the font's.  It is recorded because inc77 reports COVERAGE, and 94.7%
+#: is the ceiling this face gives that measure — no glyph in this corpus can
+#: score 100.
+FULL_BLOCK_COVERAGE = (162, 171)
+BLOCK_KITS = {"corgi": 11, "industrial": 84, "nord": 88, "darkside": 21,
+              "prism": 1}
+
+
+def test_the_faces_full_block_leaves_a_seam_and_that_is_the_coverage_ceiling():
+    seen = {}
+    for lang in LANGS:
+        n = sum((FRAMES / f"{lang}_{s}.txt").read_text(
+            encoding="utf-8").count("█") for s in SCREENS)
+        if n:
+            seen[lang] = n
+    assert seen == BLOCK_KITS, seen
+    side = _raster_json("industrial_S1")
+    (_, fg, *_), blk = next((k, b) for k, b in _tiles_of("industrial").items()
+                            if k[0] == "█")
+    px = [tuple(blk[i:i + 3]) for i in range(0, len(blk), 3)]
+    full, total = px.count(_rgb(fg)), side["cell"]["w"] * side["cell"]["h"]
+    assert (full, total) == FULL_BLOCK_COVERAGE, (full, total)
+    assert _rgb(side["ground"]) not in px, "the seam is not bare ground"
+
+
+def test_the_raster_laws_bite_on_the_three_defects_they_were_written_for(
+        tmp_path, monkeypatch):
+    """TEETH — the three mistakes a raster makes, on the corpus's own bytes.
+
+    (a) THE GRID SLIPS.  A raster that drops a column draws a picture that
+        looks entirely correct and attributes every cell after the cut to its
+        neighbour.  That is the defect that turns a homoglyph distance into a
+        confident number about the wrong pair.
+    (b) THE GROUND IS NOT THE KIT'S — **inc63's defect, reproduced in the new
+        artefact.**  Every pixel of the declared ground is repainted Textual's
+        own `#121212`, which is the colour all 66 sheets really did ship until
+        inc63; the picture still looks like a taskboard and every cell is
+        still internally consistent, and the segment clause reads a colour no
+        kit declares.
+    (c) THE SIDECAR CLAIMS A BOX THE PICTURE DOES NOT HAVE.  Both the size law
+        and the declaration law have to catch it, because between them they
+        are the sentence "the cell inc77 measured is the cell that was drawn".
+
+    Nothing is built here: `instrument`'s six shipped PNGs are copied, edited,
+    and the REAL laws are run with `RASTER` pointed at the copy — so what is
+    watched failing is the law and not a restatement of it.  After every arm
+    the file is restored and the law is run again, so a red is the mutation
+    and never the copying.
+    """
+    import json
+    import shutil
+    from PIL import Image
+    lang, shipped = "instrument", RASTER
+    work = tmp_path / "png"
+    shutil.copytree(shipped, work)
+    monkeypatch.setitem(globals(), "RASTER", work)
+
+    # THE CONTROL ARM, before anything is touched.
+    test_the_raster_has_one_cell_per_character_of_the_txt(lang)
+    test_a_probe_cells_pixels_are_the_declared_colours(lang)
+
+    name = f"{lang}_S1"
+    side = _raster_json(name)
+    w, h = side["cell"]["w"], side["cell"]["h"]
+
+    # (a) one column short — 99 cells of picture claiming 100 cells of text
+    with Image.open(work / f"{name}.png") as raw:
+        im = raw.convert("RGB")
+    im.crop((0, 0, im.width - w, im.height)).save(work / f"{name}.png")
+    assert _png_size(name)[0] == (side["cols"] - 1) * w
+    with pytest.raises(AssertionError):
+        test_the_raster_has_one_cell_per_character_of_the_txt(lang)
+    shutil.copy(shipped / f"{name}.png", work)
+    test_the_raster_has_one_cell_per_character_of_the_txt(lang)
+
+    # (b) the kit's ground repainted Textual's default, everywhere it appears
+    ground, textual = _rgb(side["ground"]), _rgb(_TEXTUAL_DEFAULT_GROUND)
+    assert ground != textual, "instrument's ground is not Textual's"
+    with Image.open(work / f"{name}.png") as raw:
+        im = raw.convert("RGB")
+    raw, g, x = bytearray(im.tobytes()), bytes(ground), bytes(textual)
+    for i in range(0, len(raw), 3):  # aligned, so no match straddles a pixel
+        if raw[i:i + 3] == g:
+            raw[i:i + 3] = x
+    Image.frombytes("RGB", im.size, bytes(raw)).save(work / f"{name}.png")
+    with pytest.raises(AssertionError):
+        test_a_probe_cells_pixels_are_the_declared_colours(lang)
+    shutil.copy(shipped / f"{name}.png", work)
+    test_a_probe_cells_pixels_are_the_declared_colours(lang)
+
+    # (c) an 8 px cell claimed over a 9 px picture
+    narrow = json.loads(json.dumps(side))
+    narrow["cell"]["w"] = 8
+    (work / f"{name}.json").write_text(json.dumps(narrow), encoding="utf-8")
+    with pytest.raises(AssertionError):
+        test_the_raster_has_one_cell_per_character_of_the_txt(lang)
+    with pytest.raises(AssertionError):
+        test_the_rasters_declarations_are_the_ones_this_file_measures_against()
+    shutil.copy(shipped / f"{name}.json", work)
+    test_the_raster_has_one_cell_per_character_of_the_txt(lang)
+    test_the_rasters_declarations_are_the_ones_this_file_measures_against()

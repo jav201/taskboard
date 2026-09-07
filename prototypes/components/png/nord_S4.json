@@ -1,0 +1,815 @@
+{
+ "lang": "nord",
+ "screen": "S4",
+ "ground": "#2e3440",
+ "cols": 100,
+ "rows": 32,
+ "image": {
+  "w": 900,
+  "h": 608
+ },
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    "▸board │  form │  cfg │  log",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    28,
+    "                                                                        ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "BOARD  16 tasks  ·  4 projects",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    "                                                                      ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  BACKLOG 5▂                                                 │ DETAIL  Fix login redirect",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    89,
+    "           ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ─────────────────────────────────────────────────────────  │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    Audit the theme tokens                              21d  │ project                           Web",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "      Docs · backlog                                         │ phase                           doing",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    Drop the legacy shim                                30d  │ due                                3d",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "      API · backlog                                          │ priority                         high",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                             │ status                           open",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▸ DOING 4▂                                                   │ owner                          jav201",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "▸ ─────────────────────────────────────────────────────────  │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "┌───────────────────────────────────────┐",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "Delete 3 tasks?",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    46,
+    "                       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    69,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    "                                       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    69,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "3 tasks will be removed from BACKLOG.",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    68,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    69,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "This cannot be undone.",
+    "#919cb0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    53,
+    "                ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    69,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    "                                       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    69,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    30,
+    " ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    31,
+    "▐ ",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    33,
+    " #Delete# ",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    43,
+    " ▌",
+    "#8fbcbb",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    45,
+    "   ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    48,
+    "[   Cancel   ]",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    62,
+    "       ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    69,
+    "│",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                             ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    29,
+    "└───────────────────────────────────────┘",
+    "#eceff4",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    70,
+    "                              ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                             │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  BLOCKED 0                                                  │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ─────────────────────────────────────────────────────────  │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     ▐██▌     ▐██▌                                           │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     ▐██▌     ▐██▌                                           │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     ▐██▌     ▐██▌                                           │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                             │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ▄▖           ▗▄                                          │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    █▌           ▐█                                          │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "     ▐█         █▌                                           │ ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    63,
+    "                                     ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "view ░████░░░░░░░ 3-10 of 23                                ",
+    "#4c566a",
+    "#2e3440",
+    false,
+    false
+   ],
+   [
+    60,
+    "                                        ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#2e3440",
+    false,
+    false
+   ]
+  ]
+ ]
+}

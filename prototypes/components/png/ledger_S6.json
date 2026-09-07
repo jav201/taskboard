@@ -1,0 +1,927 @@
+{
+ "lang": "ledger",
+ "screen": "S6",
+ "ground": "#e9e1cf",
+ "cols": 100,
+ "rows": 32,
+ "image": {
+  "w": 900,
+  "h": 608
+ },
+ "txt": {
+  "cols": 100,
+  "rows": 32
+ },
+ "font": {
+  "name": "Cascadia Mono",
+  "path": "C:\\WINDOWS\\Fonts\\CascadiaMono.ttf",
+  "px": 16,
+  "bold_instance": "Bold"
+ },
+ "fallback": {
+  "name": "Segoe UI Symbol",
+  "path": "C:\\WINDOWS\\Fonts\\seguisym.ttf",
+  "cells": [
+   "⊖",
+   "⊚",
+   "⊛",
+   "⋅"
+  ],
+  "px": {
+   "⊖": 11,
+   "⊚": 11,
+   "⊛": 11,
+   "⋅": 16
+  }
+ },
+ "cell": {
+  "w": 9,
+  "h": 19,
+  "advance": 9.0,
+  "ascent": 15,
+  "descent": 4,
+  "underline_y": 17
+ },
+ "grid": [
+  [
+   [
+    0,
+    "▪ BOARD",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    7,
+    " │ ",
+    "#8a8272",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    10,
+    "·",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    11,
+    " form",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    16,
+    " │ ",
+    "#8a8272",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    19,
+    "·",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    20,
+    " cfg",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    24,
+    " │ ",
+    "#8a8272",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    27,
+    "·",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    28,
+    " log",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    32,
+    "                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "COMMAND ···································································",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    75,
+    " ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    76,
+    "query 're'  ·  6 results",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "────────────────────────────────────────────────────────────────────────────────────────────────────",
+    "#8a8272",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    2,
+    "> ",
+    "#2b3a67",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    "▶",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    5,
+    "re",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    7,
+    "▏",
+    "#2b3a67",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    8,
+    "─────────────────────────────────────│",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    46,
+    "                                                      ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    2,
+    "▶",
+    "#2b3a67",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    3,
+    " ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    "re",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    true
+   ],
+   [
+    6,
+    "direct to task",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    20,
+    "                            ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    48,
+    "enter",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    53,
+    "                                               ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    "re",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    true
+   ],
+   [
+    6,
+    "name project",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    18,
+    "                                                                                  ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    "re",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    true
+   ],
+   [
+    6,
+    "fresh board",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    17,
+    "                               ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    48,
+    "r",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    49,
+    "                                                   ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    "archive ",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    12,
+    "re",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    true
+   ],
+   [
+    14,
+    "leased",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    20,
+    "                                                                                ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    "re",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    true
+   ],
+   [
+    6,
+    "store from backup",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    23,
+    "                                                                             ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    "set ",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    8,
+    "re",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    true
+   ],
+   [
+    10,
+    "minder",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    16,
+    "                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    2,
+    "────────────────────────────────────────────────────────────────────────────────────────────────",
+    "#8a8272",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    98,
+    "  ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    2,
+    "> ",
+    "#2b3a67",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    "▶",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    5,
+    "zzq",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    8,
+    "▏",
+    "#2b3a67",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    9,
+    "────────────────────────────────────│",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    46,
+    "                                                      ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    4,
+    " nil balance",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    16,
+    "                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "  ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    2,
+    "enter",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    7,
+    "··",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    9,
+    "RUN",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    12,
+    "   ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    15,
+    "esc",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    18,
+    "··",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    20,
+    "CLOSE",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    25,
+    "   ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    28,
+    "^p",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    30,
+    "··",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    32,
+    "PREV",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    36,
+    "   ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    39,
+    "^n",
+    "#1c1a15",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    41,
+    "··",
+    "#c4b99f",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    43,
+    "NEXT",
+    "#635e52",
+    "#e9e1cf",
+    false,
+    false
+   ],
+   [
+    47,
+    "                                                     ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ],
+  [
+   [
+    0,
+    "                                                                                                    ",
+    "#e0e0e0",
+    "#e9e1cf",
+    false,
+    false
+   ]
+  ]
+ ]
+}
