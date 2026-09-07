@@ -6452,3 +6452,193 @@ def test_the_air_law_goes_red_on_the_declaration_inc69_moved(monkeypatch):
     assert seats == 110, seats
     for lang in LANGS:
         assert declared_air(lang) == [], lang
+
+
+# ---------------------------------------------------------------------------
+# inc70 (rework-6b) — `mut` is body text
+# ---------------------------------------------------------------------------
+#: THE RULING (orchestrator, 2026-09-07, on the operator's delegation):
+#: **"`mut` is body text and must reach 4.5:1 against the declared ground in
+#: every kit, with the ladder `ink > mut > dim` kept ordered."**
+#:
+#: WHERE IT CAME FROM. inc63 taught the exporter to read the kit's DECLARED
+#: ground instead of counting pixels (ruling E4), and its own law asserts
+#: `contrast(ink, ground) >= 4.5` for all eleven. Writing that law is what
+#: turned up the next one: §16.7 measured `mut` against the same grounds and
+#: found five kits under the floor — *"and most body text in these sheets is
+#: `mut`, not `ink`"* — then declined to fix it, in writing: *"The ruling names
+#: `ground` and `ink`, so the law asks about `ground` and `ink`. Measured while
+#: writing it, not fixed, and not asserted: moving a `mut` is a design change
+#: in five kits at once."* This increment is that ruling and that change.
+#:
+#: THE ORDER CLAUSE IS NOT DECORATION. A kit could clear 4.5 by lightening
+#: `mut` past `ink`, which would satisfy the floor and destroy the hierarchy
+#: the three tokens exist to carry. Strict, so a tie is a failure too.
+MUT_FLOOR = 4.5
+INK_FLOOR = 4.5
+
+#: THE ONE EXEMPTION, BY NAME, AND IT IS AN IMPOSSIBILITY PROOF rather than a
+#: preference — the shape `DANGER_IS_THE_TOP_RUNG` and
+#: `THE_GROUND_IS_NOT_A_MARK` already have in this file, with the measurement
+#: that forced it.
+#:
+#: SOLARI PAINTS A SECOND GROUND. Its selected departure inverts to amber
+#: (`#f5a300`) and `verify_language.py` holds every glyph on that row to 2.5:1
+#: against the ground it actually sits on — a guard that exists because an
+#: earlier draft of this kit printed `#f5a300` on `#f5a300`, 1:1, and its calm
+#: fields came out at 1.8:1. **Lightening `mut` to clear 4.5:1 against
+#: `#0b0b0c` takes it to 2.10:1 against the band, and the gate caught it.**
+#:
+#: NO GREY CAN DO BOTH, and the arithmetic says so rather than the eye:
+#:
+#:     4.5:1 against #0b0b0c  ->  L(mut) >= 4.5 * (0.00338 + 0.05) - 0.05
+#:                            ->  L(mut) >= 0.19021
+#:     2.5:1 against #f5a300  ->  L(mut) <= (0.44900 + 0.05) / 2.5 - 0.05
+#:                            ->  L(mut) <= 0.14960
+#:
+#: and a `mut` LIGHTER than the amber would need L >= 1.1475, off the top of
+#: the scale. The two floors do not overlap.
+#:
+#: WHAT SATISFYING THE RULING HERE WOULD ACTUALLY TAKE: a per-row ink for the
+#: banded row. `_sched_row` cannot see that a row is selected — the band is
+#: painted by the app's own CSS and the row is composed with a foreground
+#: only — so the tagged fields (`stat`, `proj`, `pri`) sit on whatever ground
+#: is behind them while the `due` field, which carries its own face through
+#: `Kit.cell`, is immune. That is a design decision about solari's selection
+#: mechanism and no ruling has taken it. **The exemption is a request for one,
+#: not a verdict**, and it is asserted below so it cannot quietly widen.
+THE_BAND_IS_A_SECOND_GROUND = {
+    "solari": "`#6e6a60` at 3.65:1 — the selected row inverts to `#f5a300` "
+              "and `verify_language.py` holds every glyph on it to 2.5:1. "
+              "The two floors do not overlap (see the proof above); "
+              "satisfying one breaks the other, and the resolution is a "
+              "per-row ink for the band, which is not a token change.",
+}
+
+
+#: `dim` IS NOT ASKED FOR 4.5 AND IT IS NOT ASKED FOR 3.0 EITHER — it is
+#: MEASURED, per kit, and the number is the record.
+#:
+#: The brief that carried the ruling proposed a third clause, `dim >= 3.0:1`
+#: (WCAG 1.4.11, the non-text floor). **Measured first, as this batch measures
+#: everything: TEN OF THE ELEVEN are under it, most of them far under.** It is
+#: not a defect that ten kits failed to notice — `dim` is not text and it is
+#: not a UI component boundary either:
+#:
+#:   naught     1.35   the UNLIT LATTICE. LANGUAGES.md §0, quoted at
+#:                     `THE_GROUND_IS_NOT_A_MARK`: "the unlit grid is visible
+#:                     ... that faint lattice IS the signature". A ground at
+#:                     3:1 is not a ground.
+#:   solari     1.20   the SEAM, "the ONLY divider" — one step off the flap
+#:                     face by construction.
+#:   blueprint  1.24   the paper's own grid.
+#:   ledger     1.50   the dot leaders, which `PROTOTYPE-inheritors-3.md` §0a
+#:                     names as the thing that was WRONGLY the most legible
+#:                     element on the page when the exporter was broken.
+#:   darkside   1.39 · nord 1.69 · corgi 1.71 · instrument 1.74 ·
+#:   swiss      1.75 · industrial 1.96
+#:   prism      3.25   the only one over, and not by design.
+#:
+#: SO THE CLAUSE IS A ROSTER AND NOT A FLOOR. Raising `dim` to 3.0 in ten kits
+#: is a design change an order of magnitude larger than this increment's, in
+#: the token every language spends its GROUND on, and no ruling has asked for
+#: one. What is asserted is that the numbers do not move without somebody
+#: editing them, and that `dim` stays BELOW `mut` in every kit — which is the
+#: ladder clause doing the work the floor would have done badly.
+DIM_AGAINST_GROUND = {
+    "corgi": 1.71, "naught": 1.35, "instrument": 1.74, "swiss": 1.75,
+    "industrial": 1.96, "nord": 1.69, "darkside": 1.39, "prism": 3.25,
+    "ledger": 1.50, "solari": 1.20, "blueprint": 1.24,
+}
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_the_tone_ladder_is_legible_and_ordered(lang):
+    """`ink` and `mut` clear WCAG 1.4.3 against the ground the kit DECLARES,
+    and the three tones stay in order.
+
+    THE GROUND IS THE KIT'S, not the terminal's and not the frame's most
+    common colour — which is the whole of ruling E4 and is why this law could
+    not have been written before inc63. `contrast()` here is the same WCAG
+    relative-luminance function inc63's canvas law uses, on the same two
+    hexes, so the two laws cannot disagree about what a ratio is."""
+    t = LG.THEMES[lang]
+    g = t["ground"]
+    ink, mut, dim = (contrast(t[k], g) for k in ("ink", "mut", "dim"))
+    assert ink >= INK_FLOOR, (lang, "ink", t["ink"], g, round(ink, 2))
+    if lang in THE_BAND_IS_A_SECOND_GROUND:
+        assert THE_BAND_IS_A_SECOND_GROUND[lang].strip(), lang
+        assert mut < MUT_FLOOR, (lang, "the exemption is stale -- delete it")
+    else:
+        assert mut >= MUT_FLOOR, (lang, "mut", t["mut"], g, round(mut, 2))
+    # THE LADDER IS ASKED OF ALL ELEVEN, exemption or not: a floor may be
+    # unreachable, an ORDER never is.
+    assert ink > mut > dim, (lang, round(ink, 2), round(mut, 2), round(dim, 2))
+
+
+@pytest.mark.parametrize("lang", LANGS)
+def test_dim_against_its_ground_is_measured_and_recorded(lang):
+    """THE THIRD CLAUSE, AS A MEASUREMENT. See `DIM_AGAINST_GROUND` for why it
+    is a roster and not a floor: ten of the eleven are under the non-text 3:1,
+    and `dim` is a ground rather than a mark in most of them.
+
+    Two decimals, because that is the precision the roster is written at and
+    a law that pinned more would go red on a rounding."""
+    t = LG.THEMES[lang]
+    got = round(contrast(t["dim"], t["ground"]), 2)
+    assert got == DIM_AGAINST_GROUND[lang], (lang, got)
+
+
+def test_the_tone_ladder_law_goes_red_on_the_five_declarations_inc70_moved(
+        monkeypatch):
+    """TEETH, on the REAL hexes — the five `mut` values this increment moved,
+    restored one at a time, each with the ratio it shipped at.
+
+    AND THE ORDER CLAUSE HAS ITS OWN ARM, because it is the half a floor
+    cannot catch: a `mut` lightened past `ink` clears 4.5:1 and inverts the
+    hierarchy the three tokens exist to carry."""
+    for lang in LANGS:
+        test_the_tone_ladder_is_legible_and_ordered(lang)
+
+    before = {"nord": ("#7b88a1", 3.50),
+              "instrument": ("#6b7785", 4.26), "darkside": ("#737373", 4.43),
+              "ledger": ("#6b6558", 4.45)}
+    for lang, (hexes, ratio) in before.items():
+        t = dict(LG.THEMES[lang])
+        assert t["mut"] != hexes, (lang, "already the pre-inc70 value")
+        t["mut"] = hexes
+        monkeypatch.setitem(LG.THEMES, lang, t)
+        assert round(contrast(hexes, t["ground"]), 2) == ratio, lang
+        with pytest.raises(AssertionError):
+            test_the_tone_ladder_is_legible_and_ordered(lang)
+        for other in LANGS:
+            if other != lang:
+                test_the_tone_ladder_is_legible_and_ordered(other)
+        monkeypatch.undo()
+
+    # THE ORDER ARM — a `mut` that clears the floor and outranks `ink`
+    t = dict(LG.THEMES["nord"])
+    t["mut"] = t["ink"]
+    monkeypatch.setitem(LG.THEMES, "nord", t)
+    assert contrast(t["mut"], t["ground"]) > MUT_FLOOR, "the floor passes"
+    with pytest.raises(AssertionError):
+        test_the_tone_ladder_is_legible_and_ordered("nord")
+    monkeypatch.undo()
+
+    for lang in LANGS:
+        test_the_tone_ladder_is_legible_and_ordered(lang)
+
+    # AND THE EXEMPTION IS NOT VACUOUS EITHER WAY: it names exactly one kit,
+    # that kit is really under the floor, and the law goes red the moment the
+    # exemption is emptied — so nobody can leave a fixed kit sitting under a
+    # by-name exemption, and nobody can widen the exemption in silence.
+    assert set(THE_BAND_IS_A_SECOND_GROUND) == {"solari"}
+    monkeypatch.setitem(globals(), "THE_BAND_IS_A_SECOND_GROUND", {})
+    with pytest.raises(AssertionError):
+        test_the_tone_ladder_is_legible_and_ordered("solari")
+    for other in LANGS:
+        if other != "solari":
+            test_the_tone_ladder_is_legible_and_ordered(other)
+    monkeypatch.undo()
+    for lang in LANGS:
+        test_the_tone_ladder_is_legible_and_ordered(lang)

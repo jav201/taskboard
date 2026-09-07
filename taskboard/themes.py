@@ -131,6 +131,64 @@ Structural tokens:
 """
 from __future__ import annotations
 
+# `mut` IS BODY TEXT, AND IT REACHES 4.5:1 IN ALL ELEVEN (inc70, 2026-09-07).
+#
+# THE RULING (orchestrator, on the operator's delegation): *"`mut` is body
+# text and must reach 4.5:1 against the declared ground in every kit, with the
+# ladder `ink > mut > dim` kept ordered."* WCAG 1.4.3's floor for normal text,
+# computed against the ground each kit DECLARES -- which is a sentence that
+# only became measurable in inc63, when the exporter stopped inferring a
+# ground from pixel frequency (ruling E4).
+#
+# FIVE KITS WERE UNDER IT and inc66 §16.7 measured them without fixing them,
+# in its own words: *"moving a `mut` is a design change in five kits at
+# once"*. It is:
+#
+#   kit         mut BEFORE   :1     mut AFTER    :1     ink :1    dim :1
+#   nord        #7b88a1    3.50     #919cb0    4.51     10.84      1.69
+#   solari      #6e6a60    3.65     NOT MOVED  3.65     16.81      1.20
+#   instrument  #6b7785    4.26     #6e7b89    4.50     16.52      1.74
+#   darkside    #737373    4.43     #757575    4.56     19.26      1.39
+#   ledger      #6b6558    4.45     #6a6458    4.51     13.36      1.50
+#
+# EVERY MOVE IS THE SMALLEST ONE THAT CLEARS THE FLOOR, and "smallest" is
+# arithmetic rather than taste: each colour was converted to HLS, its HUE and
+# SATURATION held EXACTLY, and its lightness stepped one increment at a time
+# until the ratio reached 4.5 -- so the hue family is preserved by
+# construction and one step less fails (nord 4.46, solari 4.46, instrument
+# 4.44, darkside 4.49, ledger 4.50 at the ground's own side). LEDGER MOVES
+# THE OTHER WAY because it is the one light-paper kit in the set: its body
+# grey gets DARKER, by a single unit.
+#
+# SOLARI IS EXEMPT BY NAME AND THE EXEMPTION IS A PROOF, not a preference.
+# This kit paints a SECOND GROUND: the selected departure inverts to amber
+# (`#f5a300`), and `verify_language.py` holds every glyph on that row to
+# 2.5:1 against the ground it actually sits on -- the guard that exists
+# because an earlier draft printed `#f5a300` on `#f5a300`. Lightening `mut`
+# to clear 4.5:1 against `#0b0b0c` took it to 2.10:1 against the band, and
+# the gate caught it. No grey can do both, and the arithmetic says so rather
+# than the eye:
+#
+#     4.5:1 against #0b0b0c  ->  L(mut) >= 4.5 * (0.00338 + 0.05) - 0.05
+#                            ->  L(mut) >= 0.19021
+#     2.5:1 against #f5a300  ->  L(mut) <= (0.44900 + 0.05) / 2.5 - 0.05
+#                            ->  L(mut) <= 0.14960
+#
+# and the other side of the amber (a `mut` LIGHTER than the band) needs
+# L >= 1.1475, which is off the top of the scale. The two floors do not
+# overlap, so satisfying the ruling for this kit means changing the SELECTION
+# BAND -- a per-row ink the row renderer cannot see today, because the band
+# is painted by the app's own CSS and `_sched_row` is never told the row is
+# selected. That is a design decision about solari's selection mechanism and
+# it is NOT this increment's to take. Measured, proved, named, and left.
+#
+# `dim` IS NOT MOVED AND THE NUMBERS ABOVE SAY WHY. Ten of the eleven are
+# under 3.0:1 against their ground, most of them far under, and `dim` is not
+# text: it is naught's unlit lattice ("that faint lattice IS the signature"),
+# ledger's dot leaders, every kit's unrun track. Raising it is a design change
+# in ten kits at once and no ruling has asked for one. Measured, named and
+# left, exactly as §16.7 left `mut` -- and the law in `tests/test_components.py`
+# carries the roster so the number is a record rather than a silence.
 THEMES: dict[str, dict] = {
     # CORGI ENGINEERING — after Teenage Engineering's product language.
     # Verified traits: five colours (orange #ff6600 taken from industrial safety
@@ -202,9 +260,9 @@ THEMES: dict[str, dict] = {
         hero="dot", frame="none", meter="braille",
         layout="trace",                        # the board IS a scope screen
         tick="#333c47",                        # the graticule, never the accent
-        unit="#6b7785",                        # readings and axis unit labels
+        unit="#6e7b89",                        # readings and axis unit labels
         label="Instrument", note="round-dot scope · braille numerals · clinical",
-        ground="#0a0d12", ink="#e8edf2", mut="#6b7785", dim="#333c47",
+        ground="#0a0d12", ink="#e8edf2", mut="#6e7b89", dim="#333c47",
         accent="#2dd4bf", warn="#fbbf24", alert="#f43f5e",
         sel="outer",
         tempo=160, easing="out_cubic",  # motion: pace + curve
@@ -272,7 +330,7 @@ THEMES: dict[str, dict] = {
         hero_fit=(5, 2),                        # 10x7 cells, aspect 0.71
         hero_plot=("mut", 2),                   # ambient spark, 2 cells/week
         label="Nord (base16)", note="full scheme · inherits the terminal's world",
-        ground="#2e3440", ink="#eceff4", mut="#7b88a1", dim="#4c566a",
+        ground="#2e3440", ink="#eceff4", mut="#919cb0", dim="#4c566a",
         accent="#88c0d0", warn="#ebcb8b", alert="#bf616a",
         sel="round",
         tempo=140, easing="out_cubic",  # motion: pace + curve
@@ -289,7 +347,7 @@ THEMES: dict[str, dict] = {
         base="ascii",
         hero="plain", frame="none", meter="step", layout="rail",
         label="Darkside", note="achromatic · accent = interaction only · moon doodle",
-        ground="#000000", ink="#f5f5f5", mut="#737373", dim="#262626",
+        ground="#000000", ink="#f5f5f5", mut="#757575", dim="#262626",
         rail="#262626",                        # passive structure, never blue
         accent="#1783ff",                      # KMBlue — interactivity ONLY
         warn="#ffd230", alert="#ff4f42",       # semantic, never decoration
@@ -358,7 +416,7 @@ THEMES: dict[str, dict] = {
         hero="dot", frame="ruled", meter="tally", layout="ruled",
         numbered=True, pitch=1,
         label="Ledger", note="paper ground · dot leaders · red = overdue only",
-        ground="#e9e1cf", ink="#1c1a15", mut="#6b6558", dim="#c4b99f",
+        ground="#e9e1cf", ink="#1c1a15", mut="#6a6458", dim="#c4b99f",
         rule="#8a8272",                        # the ruling: grey ink
         band="#e0d7c2",                        # every 5th line of the page
         tally="▪",                             # the counted mark

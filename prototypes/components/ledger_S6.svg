@@ -10,7 +10,7 @@
 <text x="211.6" y="23.3" fill="#8a8272"> │ </text>
 <text x="236.8" y="23.3" fill="#c4b99f">· log</text>
 <text x="10.0" y="40.3" fill="#1c1a15">COMMAND ···································································</text>
-<text x="648.4" y="40.3" fill="#6b6558">query &#x27;re&#x27;  ·  6 results</text>
+<text x="648.4" y="40.3" fill="#6a6458">query &#x27;re&#x27;  ·  6 results</text>
 <text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="74.3" fill="#2b3a67">&gt; </text>
 <text x="43.6" y="74.3" fill="#c4b99f">▶</text>
@@ -19,21 +19,21 @@
 <text x="77.2" y="74.3" fill="#c4b99f">─────────────────────────────────────│</text>
 <text x="26.8" y="108.3" fill="#2b3a67">▶</text>
 <text x="43.6" y="108.3" fill="#1c1a15" text-decoration="underline">re</text>
-<text x="60.4" y="108.3" fill="#6b6558">direct to task</text>
+<text x="60.4" y="108.3" fill="#6a6458">direct to task</text>
 <text x="413.2" y="108.3" fill="#c4b99f">enter</text>
 <text x="43.6" y="125.3" fill="#1c1a15" text-decoration="underline">re</text>
-<text x="60.4" y="125.3" fill="#6b6558">name project</text>
+<text x="60.4" y="125.3" fill="#6a6458">name project</text>
 <text x="43.6" y="142.3" fill="#1c1a15" text-decoration="underline">re</text>
-<text x="60.4" y="142.3" fill="#6b6558">fresh board</text>
+<text x="60.4" y="142.3" fill="#6a6458">fresh board</text>
 <text x="413.2" y="142.3" fill="#c4b99f">r</text>
-<text x="43.6" y="159.3" fill="#6b6558">archive </text>
+<text x="43.6" y="159.3" fill="#6a6458">archive </text>
 <text x="110.8" y="159.3" fill="#1c1a15" text-decoration="underline">re</text>
-<text x="127.6" y="159.3" fill="#6b6558">leased</text>
+<text x="127.6" y="159.3" fill="#6a6458">leased</text>
 <text x="43.6" y="176.3" fill="#1c1a15" text-decoration="underline">re</text>
-<text x="60.4" y="176.3" fill="#6b6558">store from backup</text>
-<text x="43.6" y="193.3" fill="#6b6558">set </text>
+<text x="60.4" y="176.3" fill="#6a6458">store from backup</text>
+<text x="43.6" y="193.3" fill="#6a6458">set </text>
 <text x="77.2" y="193.3" fill="#1c1a15" text-decoration="underline">re</text>
-<text x="94.0" y="193.3" fill="#6b6558">minder</text>
+<text x="94.0" y="193.3" fill="#6a6458">minder</text>
 <text x="26.8" y="227.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="244.3" fill="#2b3a67">&gt; </text>
 <text x="43.6" y="244.3" fill="#c4b99f">▶</text>
@@ -43,15 +43,15 @@
 <text x="43.6" y="278.3" fill="#c4b99f"> nil balance</text>
 <text x="26.8" y="312.3" fill="#1c1a15">enter</text>
 <text x="68.8" y="312.3" fill="#c4b99f">··</text>
-<text x="85.6" y="312.3" fill="#6b6558">RUN</text>
+<text x="85.6" y="312.3" fill="#6a6458">RUN</text>
 <text x="136.0" y="312.3" fill="#1c1a15">esc</text>
 <text x="161.2" y="312.3" fill="#c4b99f">··</text>
-<text x="178.0" y="312.3" fill="#6b6558">CLOSE</text>
+<text x="178.0" y="312.3" fill="#6a6458">CLOSE</text>
 <text x="245.2" y="312.3" fill="#1c1a15">^p</text>
 <text x="262.0" y="312.3" fill="#c4b99f">··</text>
-<text x="278.8" y="312.3" fill="#6b6558">PREV</text>
+<text x="278.8" y="312.3" fill="#6a6458">PREV</text>
 <text x="337.6" y="312.3" fill="#1c1a15">^n</text>
 <text x="354.4" y="312.3" fill="#c4b99f">··</text>
-<text x="371.2" y="312.3" fill="#6b6558">NEXT</text>
+<text x="371.2" y="312.3" fill="#6a6458">NEXT</text>
 </g>
 </svg>

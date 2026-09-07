@@ -10,45 +10,45 @@
 <text x="211.6" y="23.3" fill="#8a8272"> │ </text>
 <text x="236.8" y="23.3" fill="#c4b99f">· log</text>
 <text x="10.0" y="40.3" fill="#1c1a15">SETTINGS ·····················································</text>
-<text x="539.2" y="40.3" fill="#6b6558">5 switches  ·  2 selects  ·  1 slider</text>
+<text x="539.2" y="40.3" fill="#6a6458">5 switches  ·  2 selects  ·  1 slider</text>
 <text x="10.0" y="57.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────────</text>
-<text x="26.8" y="74.3" fill="#6b6558">notify on overdue</text>
-<text x="245.2" y="74.3" fill="#6b6558">──</text>
+<text x="26.8" y="74.3" fill="#6a6458">notify on overdue</text>
+<text x="245.2" y="74.3" fill="#6a6458">──</text>
 <text x="262.0" y="74.3" fill="#1c1a15">▪</text>
 <text x="278.8" y="74.3" fill="#1c1a15">posted</text>
-<text x="26.8" y="91.3" fill="#6b6558">daily digest</text>
-<text x="245.2" y="91.3" fill="#6b6558">──</text>
+<text x="26.8" y="91.3" fill="#6a6458">daily digest</text>
+<text x="245.2" y="91.3" fill="#6a6458">──</text>
 <text x="262.0" y="91.3" fill="#1c1a15">▪</text>
 <text x="278.8" y="91.3" fill="#1c1a15">posted</text>
-<text x="26.8" y="108.3" fill="#6b6558">sound</text>
+<text x="26.8" y="108.3" fill="#6a6458">sound</text>
 <text x="245.2" y="108.3" fill="#1c1a15">▪</text>
 <text x="253.6" y="108.3" fill="#c4b99f">··</text>
-<text x="278.8" y="108.3" fill="#6b6558">open  </text>
+<text x="278.8" y="108.3" fill="#6a6458">open  </text>
 <text x="26.8" y="125.3" fill="#c4b99f">sync to remote</text>
 <text x="245.2" y="125.3" fill="#c4b99f">▫╌╌</text>
 <text x="278.8" y="125.3" fill="#c4b99f">open  </text>
 <text x="354.4" y="125.3" fill="#c4b99f">(no remote configured)</text>
-<text x="26.8" y="142.3" fill="#6b6558">compact rows</text>
-<text x="245.2" y="142.3" fill="#6b6558">──</text>
+<text x="26.8" y="142.3" fill="#6a6458">compact rows</text>
+<text x="245.2" y="142.3" fill="#6a6458">──</text>
 <text x="262.0" y="142.3" fill="#1c1a15">▪</text>
 <text x="278.8" y="142.3" fill="#1c1a15">posted</text>
-<text x="26.8" y="176.3" fill="#6b6558">start of week</text>
+<text x="26.8" y="176.3" fill="#6a6458">start of week</text>
 <text x="245.2" y="176.3" fill="#c4b99f">│</text>
 <text x="253.6" y="176.3" fill="#1c1a15">mon    </text>
 <text x="312.4" y="176.3" fill="#c4b99f">┊│</text>
-<text x="26.8" y="193.3" fill="#6b6558">theme</text>
+<text x="26.8" y="193.3" fill="#6a6458">theme</text>
 <text x="245.2" y="193.3" fill="#c4b99f">│</text>
 <text x="253.6" y="193.3" fill="#1c1a15">dark   </text>
 <text x="312.4" y="193.3" fill="#c4b99f">┊│</text>
-<text x="278.8" y="210.3" fill="#6b6558">auto   </text>
-<text x="278.8" y="227.3" fill="#6b6558">light  </text>
+<text x="278.8" y="210.3" fill="#6a6458">auto   </text>
+<text x="278.8" y="227.3" fill="#6a6458">light  </text>
 <text x="262.0" y="244.3" fill="#2b3a67">▶</text>
 <text x="278.8" y="244.3" fill="#1c1a15">dark   </text>
-<text x="26.8" y="278.3" fill="#6b6558">row density</text>
-<text x="245.2" y="278.3" fill="#6b6558">─────────</text>
+<text x="26.8" y="278.3" fill="#6a6458">row density</text>
+<text x="245.2" y="278.3" fill="#6a6458">─────────</text>
 <text x="320.8" y="278.3" fill="#1c1a15">▪</text>
 <text x="329.2" y="278.3" fill="#c4b99f">····</text>
-<text x="371.2" y="278.3" fill="#6b6558">70</text>
+<text x="371.2" y="278.3" fill="#6a6458">70</text>
 <text x="26.8" y="312.3" fill="#8a8272">────────────────────────────────────────────────────────────────────────────────────────────────</text>
 <text x="26.8" y="329.3" fill="#1c1a15">DANGER ZONE ························································</text>
 <text x="606.4" y="329.3" fill="#1c1a15">delete every completed task</text>
