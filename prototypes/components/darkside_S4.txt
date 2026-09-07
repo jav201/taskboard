@@ -16,7 +16,7 @@ board  16 tasks  ·  4 projects
                              │ 3 tasks will be removed from BACKLOG. │                              
                              │ This cannot be undone.                │                              
                              │                                       │                              
-                             │ ▮  ØDeleteØ  ▮   ▬   Cancel   ▬       │                              
+                             │ ▮  ▚Delete▞  ▮   ▬   Cancel   ▬       │                              
                              ╰───────────────────────────────────────╯                              
      nothing here                                                                                   
                                                                                                     

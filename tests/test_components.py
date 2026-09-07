@@ -2488,18 +2488,56 @@ def test_no_language_that_refuses_the_pane_rule_draws_it_round_its_button(lang):
 # ===========================================================================
 # inc45 (rework-3) — one mark, one meaning
 # ===========================================================================
-#: THE FOUR LANGUAGE-LEVEL DECLARATIONS THAT MEAN SOMETHING ABOUT THE WORK,
+#: THE THREE SLOTS A LANGUAGE DECLARES A REJECTED VALUE WITH — the grip
+#: (`knob[INVALID]`), the two WALLS of the field (`textfield.main[INVALID]`)
+#: and the two steps (`stepper.step[INVALID]`). This is inc51's clause 2 read
+#: as a set instead of as a source: "what that kit already spends on a
+#: rejected VALUE", the DECLARED invalid channel.
+#:
+#: THE RUNE IS NOT IN IT, and the exclusion is named rather than silent. A
+#: field's glyph is "wall, RUNE, wall" (`Kit.field_form`) and the rune is the
+#: PAPER the value's own cells are laid on — blueprint's `·` is the paper of
+#: DEFAULT, ACTIVE and FOCUSED too, naught's and ledger's likewise. A paper
+#: shared with every other state is not a rejection mark, and counting it
+#: would have made "your value is wrong" out of "this is what a field is made
+#: of here".
+#:
+#: A FALLBACK IS NOT A DECLARATION, the same line `collision_census.py` draws:
+#: only a table that has the key at all is read.
+def _invalid_marks(k) -> str:
+    out = []
+    for key in ("knob", "textfield.main", "stepper.step"):
+        g = k.PART_GLYPHS[key].get(LG.INVALID)
+        if not g:
+            continue
+        if key == "textfield.main":
+            h = len(g) // 2
+            out += [g[:h], g[h + 1:]]          # the two WALLS, not the rune
+        else:
+            out.append(g)
+    return "".join(out)
+
+
+#: THE FIVE LANGUAGE-LEVEL DECLARATIONS THAT MEAN SOMETHING ABOUT THE WORK,
 #: read straight off the kit: how bad it is (the severity LADDER, all three
 #: rungs as ONE declaration), whether the control destroys (`DANGER_FORM`),
-#: whether the field is compulsory (`REQUIRED`), and where the reader is
-#: (`CUR`). Three rungs count as one because the census counts them as one:
-#: "two severity rungs sharing a cell is a severity problem, not a collision"
+#: whether the field is compulsory (`REQUIRED`), where the reader is (`CUR`),
+#: and whether the value was REFUSED (the declared invalid channel). Three
+#: rungs count as one because the census counts them as one: "two severity
+#: rungs sharing a cell is a severity problem, not a collision"
 #: (`prototypes/collision_census.py`).
+#:
+#: `invalid` JOINED THE SET IN inc52. It was excluded by name until then,
+#: under inc39's ruling that a field whose un-flipped walls would collide with
+#: DEFAULT takes that language's `DANGER_FORM` (spec §9.2). That ruling is
+#: REVOKED: "does not parse" and "destroys data" are two meanings, and a
+#: language that says both with one cell has said one of them.
 def _meaning_marks(k) -> dict[str, str]:
     return {"ladder": "".join(k.LEVELS[x] for x in ("info", "warn", "error")),
             "danger": "".join(k.DANGER_FORM),
             "required": k.REQUIRED,
-            "cursor": k.CUR}
+            "cursor": k.CUR,
+            "invalid": _invalid_marks(k)}
 
 
 #: not a cell — the ASCII space and U+2800 BRAILLE PATTERN BLANK, the same
@@ -2514,6 +2552,13 @@ BLANKS = " ⠀"
 #: label INSIDE the walls ... the form is therefore the WHOLE channel"). It is
 #: the TOP rung or nothing: nord's `!` (warn) and corgi's `▄▄` (warn) were
 #: both this exemption spent one rung too low, and inc45 moved both.
+#:
+#: IT IS THE ONLY EXEMPTION, AND IT DOES NOT REACH `invalid` (inc52). TIER is
+#: a channel a language declares — a rung set as a FORM around a label is the
+#: same claim in another grammar. A REJECTED VALUE is not that claim at all,
+#: so `DANGER_FORM` against the declared invalid channel has no exemption by
+#: name and none by silence: swiss, darkside and blueprint each said both
+#: with one cell and each moved one of the two.
 DANGER_IS_THE_TOP_RUNG = {
     "naught": "`∙∙` — LEVELS[error]; two lit dots, and not the one red",
     "corgi": "`██` — LEVELS[error]; the segment driven to full height",
@@ -2578,16 +2623,19 @@ def test_a_languages_meaning_marks_do_not_share_a_cell(lang):
     cells — that is what a ladder is, and the census makes the same choice for
     the same reason.
 
-    INVALID IS NOT IN THIS SET, and the exclusion is named rather than
-    silent (VERIFY.md, "assert distinctness on the channel that is left"):
-    inc39 ruled that where un-flipping a field's walls would collide with
-    DEFAULT byte for byte, the walls take that language's own `DANGER_FORM`
-    (spec §9.2). Five languages spell rejection with their danger form ON
-    PURPOSE, so a law over `INVALID` would be a law over that ruling. inc39's
-    own law governs those slots.
+    INVALID IS IN THIS SET SINCE inc52, and the ruling it reverses is named
+    rather than left silent. inc39 ruled that where un-flipping a field's
+    walls would collide with DEFAULT byte for byte, the walls take that
+    language's own `DANGER_FORM` (spec §9.2), and inc51 applied it twice
+    more. THAT RULING IS REVOKED (rework-5a): "does not parse" and "destroys
+    data" are two meanings and one cell cannot carry both, so the declared
+    invalid channel — the grip, the field's two WALLS, the two steps — is a
+    fifth meaning here and may not share a cell with any of the other four.
 
     THE ONE EXEMPTION is `DANGER_IS_THE_TOP_RUNG`, by name and with the
-    citation each kit carries."""
+    citation each kit carries, and it covers `danger` against `ladder` ONLY:
+    a rung set as a form is a TIER of one declared channel. Nothing exempts a
+    rejection from being told apart from a destruction."""
     k = LG.kit(lang)
     if lang in DANGER_IS_THE_TOP_RUNG:
         assert "".join(k.DANGER_FORM) == k.LEVELS["error"], (
@@ -2640,6 +2688,116 @@ def test_the_one_mark_one_meaning_law_goes_red_on_the_six_it_was_written_for(
     assert frozenset(("danger", "ladder")) in roles("corgi")
     with pytest.raises(AssertionError):
         test_a_languages_meaning_marks_do_not_share_a_cell("corgi")
+
+
+# ===========================================================================
+# inc52 (rework-5a) — the invalid channel joins the meaning set
+# ===========================================================================
+#: THE FIVE DECLARATIONS inc52 MOVED, as
+#: `(language, kit, glyph-table key, the byte string HEAD carried, the two
+#: roles the law must name)`. One arm each, restored one at a time, because
+#: five languages moving in one increment is five independent declarations
+#: and a teeth test that patched them together would prove one thing about
+#: five kits.
+#:
+#: `darkside` IS THE ONE THAT PATCHES A MEANING RATHER THAN A GLYPH TABLE,
+#: and that is the ruling: `Ø` was declared as this kit's rejection mark and
+#: the danger form took it afterwards ("its own INVALID wall, the struck
+#: mark"), so the mark that arrived second is the one that moved.
+INVALID_CHANNEL_BEFORE = (
+    ("swiss", "knob", "╲", ("danger", "invalid")),
+    ("swiss", "textfield.main", "╲  ", ("danger", "invalid")),
+    ("swiss", "stepper.step", "╲╲", ("danger", "invalid")),
+    ("blueprint", "knob", "├", ("required", "invalid")),
+    ("blueprint", "textfield.main", "━·━", ("danger", "invalid")),
+    ("blueprint", "stepper.step", "━━", ("danger", "invalid")),
+    ("corgi", "knob", "▀▄", ("required", "invalid")),
+    ("corgi", "textfield.main", "▄▀·▀▄", ("required", "invalid")),
+    ("corgi", "stepper.step", "▀▄▄▀", ("required", "invalid")),
+    ("instrument", "textfield.main", "⠸⠶⠇", ("ladder", "invalid")),
+)
+
+
+@pytest.mark.parametrize("lang,key,before,want", INVALID_CHANNEL_BEFORE)
+def test_the_invalid_channel_law_goes_red_on_the_declarations_inc52_moved(
+        monkeypatch, lang, key, before, want):
+    """TEETH — and they have to name the LANGUAGE and the TWO ROLES.
+
+    The ruling this increment carries out is stated as a NEGATIVE: the
+    declared invalid channel may not draw a cell from `DANGER_FORM`, `LEVELS`
+    or `REQUIRED`. So the teeth restore one pre-inc52 declaration at a time
+    and assert that the pair the ruling named is the pair reported — not that
+    something, somewhere, went red.
+
+    AND EACH ARM HOLDS THE OTHER TEN STILL, which is what says these are ten
+    declarations in four kits rather than one shared defect: swiss's three
+    slots each carry the collision alone, and so do blueprint's and corgi's.
+    `instrument`'s single arm is the one that is NOT a danger collision — its
+    closing rail `⠇` is `LEVELS["error"]` — and it is in the table to prove
+    the law reaches the ladder and the obligation mark too, not only the
+    danger form the ruling's teeth clause names."""
+    def roles(x):
+        return {frozenset(row[:2]) for row in shared_cell_pairs(x)}
+
+    for x in LANGS:
+        assert not roles(x), (x, shared_cell_pairs(x))
+
+    kit = LG.kit(lang)
+    tbl = dict(kit.PART_GLYPHS[key])
+    tbl[LG.INVALID] = before
+    monkeypatch.setitem(kit.PART_GLYPHS, key, tbl)
+
+    assert frozenset(want) in roles(lang), (lang, key, shared_cell_pairs(lang))
+    with pytest.raises(AssertionError):
+        test_a_languages_meaning_marks_do_not_share_a_cell(lang)
+    for x in LANGS:
+        if x != lang:
+            assert not roles(x), (x, shared_cell_pairs(x))
+
+
+def test_the_invalid_channel_law_goes_red_on_darksides_restored_danger_form(
+        monkeypatch):
+    """THE ELEVENTH ARM, and the only one that moves a MEANING.
+
+    darkside's `Ø` is the invalid mark at the knob, the field and the
+    stepper, and `DANGER_FORM = ("Ø", "Ø")` carried the comment naming where
+    it came from: *"its own INVALID wall, the struck mark"*. So the danger
+    form is what inc52 moved and the invalid channel is what stayed, which is
+    the opposite direction from swiss and blueprint — and the arm asserts the
+    same two roles either way, because the law is about the CELL and not
+    about which declaration is at fault."""
+    def roles(x):
+        return {frozenset(row[:2]) for row in shared_cell_pairs(x)}
+
+    monkeypatch.setattr(LG.Darkside, "DANGER_FORM", ("Ø", "Ø"))
+    assert frozenset(("danger", "invalid")) in roles("darkside"), \
+        shared_cell_pairs("darkside")
+    with pytest.raises(AssertionError):
+        test_a_languages_meaning_marks_do_not_share_a_cell("darkside")
+    for x in LANGS:
+        if x != "darkside":
+            assert not roles(x), (x, shared_cell_pairs(x))
+
+
+def test_the_rune_is_excluded_from_the_invalid_channel_by_name(monkeypatch):
+    """THE EXCLUSION'S OWN TEETH — an exclusion nobody can watch is a hole.
+
+    `_invalid_marks` reads the field's two WALLS and not its RUNE, and four
+    languages would go red on the rune alone if it were counted (blueprint's
+    `·` is `LEVELS["info"]`, ledger's and solari's and naught's runes are
+    their fields' paper in every state). This asserts the boundary in both
+    directions: a rune that is a meaning is NOT a hit, and the SAME cell put
+    on a wall IS one."""
+    k = LG.kit("blueprint")
+    assert k.PART_GLYPHS["textfield.main"][LG.INVALID][1] == "·"
+    assert "·" in k.LEVELS["info"]
+    assert not shared_cell_pairs("blueprint")          # the rune is not read
+
+    tbl = dict(k.PART_GLYPHS["textfield.main"])
+    tbl[LG.INVALID] = "·╱·"                            # rune and walls SWAPPED
+    monkeypatch.setitem(k.PART_GLYPHS, "textfield.main", tbl)
+    assert frozenset(("ladder", "invalid")) in {
+        frozenset(r[:2]) for r in shared_cell_pairs("blueprint")}
 
 
 # ===========================================================================
@@ -2891,11 +3049,14 @@ OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #:                  "an empty seat" may be one meaning rather than two. The
 #:                  argument is written here and NOT granted: an exemption is
 #:                  the operator's, and silence is not one.
-#:   corgi      40  31 + 9. The segment bank is `LEVELS` and the chrome
+#:   corgi      38  31 + 9 - 2. The segment bank is `LEVELS` and the chrome
 #:                  ladder at once (`▁▁ ▄▄ ██` against `▁▁ ▔▔ ▂▂ ··`), and
-#:                  inc51 adds the whole stepper: `▁▁▁▁` at five states of
-#:                  the ground plus four of the step. Never had an
-#:                  increment; the widest roster entry in the corpus.
+#:                  inc51 added the whole stepper: `▁▁▁▁` at five states of
+#:                  the ground plus four of the step. inc52 takes TWO back —
+#:                  the invalid field (`▄▀·▀▄`, opening on the warn rung) and
+#:                  the invalid step (`▀▄▄▀`, opening on `REQUIRED`) now open
+#:                  on the ghost. Never had an increment; still the widest
+#:                  roster entry in the corpus.
 #:   prism      25  19 + 6. `⣿` is `LEVELS["error"]`, the `DANGER_FORM` and
 #:                  the opening cell of the button, the checkbox and the
 #:                  field; inc51 adds `⣀⣀` (the ground, five states) and
@@ -2912,7 +3073,7 @@ OPENING_CONTROLS = ("button", "checkbox", "radio", "switch", "textfield",
 #: **swiss and nord stayed at zero through the stepper's arrival because
 #: inc51 paid their two `stepper.main` declarations rather than exempting
 #: them** — see `OPENING_CONTROLS` above for the bill and who paid it.
-MEANING_AT_AN_OPENER = {"naught": 3, "corgi": 40, "instrument": 0, "swiss": 0,
+MEANING_AT_AN_OPENER = {"naught": 3, "corgi": 38, "instrument": 0, "swiss": 0,
                         "industrial": 0, "nord": 0, "darkside": 0, "prism": 25,
                         "ledger": 0, "solari": 0, "blueprint": 12}
 
@@ -2921,27 +3082,25 @@ def meaning_marks_at_an_opener(lang: str) -> list[tuple]:
     """Every control glyph whose FIRST cell is a mark this language spends on
     severity, danger or obligation.
 
-    ONE EXEMPTION, BY NAME AND WITH ITS RULING: a field whose INVALID walls
-    are that language's own `DANGER_FORM`. inc39 ruled that where un-flipping
-    a field's walls would collide with DEFAULT byte for byte, the walls take
-    the danger form (spec §9.2) — swiss `╲ ╱`, darkside `Ø Ø`, blueprint
-    `━ ━`, corgi, ledger. There the opening cell IS the rejection, said in the
-    language's loudest form, which is the opposite of a reader mistaking it
-    for one. Everything else counts."""
+    NO EXEMPTIONS (inc52). This carried one until rework-5a: a field whose
+    INVALID walls are that language's own `DANGER_FORM`, on inc39's ruling
+    that where un-flipping the walls would collide with DEFAULT byte for byte
+    the walls take the danger form (spec §9.2). THAT RULING IS REVOKED —
+    "does not parse" and "destroys data" are two meanings — so the exemption
+    has no ruling to stand on and it is deleted rather than left as an
+    exemption nothing sits under. Measured before the deletion, it fired ZERO
+    times across all eleven: swiss, darkside, blueprint and corgi had already
+    moved off it in the same increment, so the rosters below are unchanged by
+    the deletion itself and corgi's -2 is the DECLARATIONS moving."""
     k = LG.kit(lang)
     meanings = (set("".join(k.LEVELS.values())) | {k.REQUIRED}
                 | set("".join(k.DANGER_FORM))) - set(" ⠀")
-    danger = set(k.DANGER_FORM)
     out = []
     for comp in OPENING_CONTROLS:
         for part in LG.COMPONENT_PARTS[comp]:
-            table = k.PART_GLYPHS[k.part_key(comp, part)]
             for st in LG.component_states(comp):
                 glyph = k.part_glyph(part, st, comp)
                 if len(glyph) < 2 or glyph[0] not in meanings:
-                    continue
-                if (LG.control_of(st) == LG.INVALID and LG.INVALID in table
-                        and glyph[0] in danger):
                     continue
                 out.append((f"{comp}.{part}", st, glyph, glyph[0]))
     return out
