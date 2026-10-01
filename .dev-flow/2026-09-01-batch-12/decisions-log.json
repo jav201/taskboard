@@ -1,0 +1,242 @@
+[
+ {
+  "phase": 0,
+  "date": "2026-08-19",
+  "decision": "batch opened",
+  "notes": "Operator directed implementation from handoff-lanes-grid.md using /dev-flow. Variant chosen: G2 grid 2×3."
+ },
+ {
+  "phase": 0,
+  "date": "2026-08-19",
+  "decision": "lanes_presentation is session-level and never persisted",
+  "notes": "View state, not board data; default is grid, waves is the Tab alternative."
+ },
+ {
+  "phase": 0,
+  "date": "2026-08-19",
+  "decision": "start_in lives in LaneFacts only",
+  "notes": "lane_facts receives Project.start_date keyword-only; models.py unchanged."
+ },
+ {
+  "phase": 0,
+  "date": "2026-08-19",
+  "decision": "Entrance animation deferred",
+  "notes": "Grid ships static with sweep=1.0; the 4-frame out-cubic sweep from the handoff is a future optional increment."
+ },
+ {
+  "phase": 6,
+  "date": "2026-08-19",
+  "decision": "batch implementation complete",
+  "notes": "Full suite green: 877 passed (860 baseline + 17 new tests). README keybinding table updated. No commit/push performed pending operator order."
+ },
+ {
+  "phase": 0,
+  "date": "2026-08-24",
+  "decision": "batch-10 opened: US-A transitions log + US-B flow view + US-D dependency intelligence; US-C (desk loop) deferred (cross-repo). RC-1 PASS at b56d9d5. Log lives in ~/.taskboard/history.jsonl sidecar. Autonomous + commits authorized, push on order.",
+  "notes": "Block-becomes-task flow in US-D is the operator's own extension."
+ },
+ {
+  "phase": 1,
+  "date": "2026-08-24",
+  "decision": "Phase 1 requirements derived: HLR/AT per story, draft-time verified symbols (set_phase/add_task/key7 free). unblock sort: blocked tasks SINK (decision). Critical chain = accent house.",
+  "notes": "Writers census executed; delete_phase unstamped reassignment recorded as pre-existing observation, out of scope."
+ },
+ {
+  "phase": 2,
+  "date": "2026-08-24",
+  "decision": "Phase 2 review (2 agents parallel): 7 blockers folded — set_task_phase symbol, census, undo depends_on copy + commit-time snapshot, unblock explicit in both sort seats, b-modal breaks 2 pinned tests (declared rewrite), dirty-DAG law, English prompt copy. Notices folded: hook in models.py, injectable clock, shed order [.. +Nd ⛓N ▣] supersedes countdown comment, flow legend state-aware.",
+  "notes": "clipboard flake corrected: passed at Phase-2 baseline; intermittent environmental."
+ },
+ {
+  "phase": 2,
+  "date": "2026-08-24",
+  "decision": "Autonomous run paused by operator before Phase 3 inc-1 (delegated implementation interrupted with no tree changes). Continuation packaged as handoff-batch-10.md: 4 increments fully specced, verification law, close protocol.",
+  "notes": "state.json current_phase=2 complete; resume at Phase 3 increment 1."
+ },
+ {
+  "phase": 3,
+  "date": "2026-08-29",
+  "decision": "Increment 1 complete: history.py transitions log hooked into set_task_phase/add_task with app warning surface.",
+  "notes": "6 new tests in tests/test_history.py; full suite 886 passed; RED-arm mutation evidence recorded in PLAN.md."
+ },
+ {
+  "phase": 3,
+  "date": "2026-08-29",
+  "decision": "Increment 2 complete: flow view (key 7) with cycle time, phase×week heatmap, weekly throughput.",
+  "notes": "6 new tests in tests/test_flow_view.py; full suite 1011 passed; RED-arm mutation evidence recorded in PLAN.md. README keybinding table and VIEW_ORDER/VIEW_KEYS updated."
+ },
+ {
+  "phase": 3,
+  "date": "2026-08-29",
+  "decision": "Increment 3 complete: block-becomes-task flow + ⛓N token + unblock sort.",
+  "notes": "8 new tests in tests/test_dependencies.py; full suite 1019 passed; RED-arm mutation evidence recorded in PLAN.md. Existing kanban sort-cycle oracle and undo snapshot test updated."
+ },
+ {
+  "phase": 3,
+  "date": "2026-08-29",
+  "decision": "Increment 4 complete: gantt critical chain.",
+  "notes": "critical_chain helper in models.py; render_gantt highlights the longest open dependency chain via the existing └─► seat (accent) and a header suffix; 5 new tests in tests/test_dependencies.py; full suite 1024 passed; RED-arm mutation evidence recorded in PLAN.md."
+ },
+ {
+  "phase": 4,
+  "date": "2026-08-29",
+  "decision": "Phase 4 validation complete.",
+  "notes": "Full suite 1024 passed; per-AT verification table recorded in PLAN.md; win-clipboard flake convention stands."
+ },
+ {
+  "phase": 5,
+  "date": "2026-08-29",
+  "decision": "Phase 5 postmortem complete.",
+  "notes": "Working-file reconciliation: all batch-10 files committed; untracked prototypes/* belong to parallel batch-11 work. Lessons: deterministic ids for tie-break tests, cycle guard load-bearing, guarded render paths preserve byte-identical contracts."
+ },
+ {
+  "phase": 6,
+  "date": "2026-08-29",
+  "decision": "Phase 6 docs complete; batch-10 pushed to origin/main.",
+  "notes": "BACKLOG.md refreshed to base ref 0cf0e72 with shipped summary and US-C deferral. README already updated in inc-2. Push executed at operator order: main b56d9d5..e831250."
+ },
+ {
+  "phase": 0,
+  "date": "2026-09-01",
+  "decision": "batch-11 opened: team sync spine (US-T1 + US-T2); V4/V5/V6/V7 deferred.",
+  "notes": "Design prototyped in prototypes/team_sync/. Intake decisions locked: one file per person, only team projects sync, team.json authoritative, roster assignees. Standing authorization confirmed by operator."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 1 complete: team_sync module.",
+  "notes": "TeamState with load_config/push/pull/sync/foreign_tasks/sync_age/apply_config_to_board; never-raises on missing/malformed files; personal tasks filtered from push; 12 new tests in tests/test_team_sync.py; full suite 1036 passed; RED-arm mutation evidence recorded in PLAN.md."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 2 complete: daemon timer + first-run identity + staleness helpers.",
+  "notes": "TaskboardApp integrates TeamState; first-run team mode prompts TeamIdentityPicker; team_sync_interval constructor keyword for tests; _team_sync_tick catches exceptions and surfaces warning notifications; sync_tone staleness helper; 4 new tests in tests/test_team_sync.py; full suite 1040 passed; RED-arm mutation evidence recorded in PLAN.md."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 3 complete: V3 standup view + key 8 + classification filter.",
+  "notes": "render_standup in views.py draws one row per roster member with load bar, top task + phase, sync age, accent spine for operator, over tone for stale rows; render_team_filter_chrome helper; team_filter session state and action_team_filter_cycle in app.py; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 8; README table updated; tests/test_team_views.py added (127 tests including width sweep); full suite 1167 passed; RED-arm mutation evidence recorded in PLAN.md."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 4 complete: V2 people lanes + key 9 + filter parity.",
+  "notes": "render_people in views.py draws one lane per roster member with header (name + sync age + accent spine for operator) and card_cell cards; foreign cards carry read-only ◦ mark via new card_cell readonly parameter; nav_model returns selectable rows; legend_entries documents people marks; VIEW_ORDER/VIEW_KEYS/keymap/aperture extended with key 9; README table updated; tests/test_team_views.py extended with 5 new tests (251 total); full suite 1290 passed plus 1 environmental clipboard flake; RED-arm mutation evidence recorded in PLAN.md."
+ },
+ {
+  "phase": 4,
+  "date": "2026-09-01",
+  "decision": "Phase 4 validation complete.",
+  "notes": "Full suite 1290 passed plus 1 environmental test_win_clipboard_roundtrip flake (re-run alone still failed; convention excludes it); per-AT verification table recorded in PLAN.md."
+ },
+ {
+  "phase": 5,
+  "date": "2026-09-01",
+  "decision": "Phase 5 postmortem complete.",
+  "notes": "Working-file reconciliation: all batch-11 files committed; untracked prototypes/* remain parallel exploratory work. Lessons: prototypes validate state machine but product needs file I/O/validation; view parity requires explicit branches in every seat; re-use card_cell for width contract."
+ },
+ {
+  "phase": 6,
+  "date": "2026-09-01",
+  "decision": "Phase 6 docs complete; batch-11 pushed to origin/main.",
+  "notes": "README keybinding table updated for keys 8/9; BACKLOG.md refreshed to base ref 2eda873 with shipped summary and V4/V5/V6/V7 deferral. Push executed at operator order: main e831250..6aec6bf."
+ },
+ {
+  "phase": 0,
+  "date": "2026-09-01",
+  "decision": "cleanup-aperture opened",
+  "notes": "Operator directed removal of aperture/widget and freeing of key 6."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 1 complete: aperture/widget removed and key 6 freed.",
+  "notes": "Deleted taskboard/aperture.py, prototypes/widget_slice/, and dead modules hero.py/language.py/engine.py/themes.py/motion.py/naught.py/bases.py; removed action_aperture and aperture checks from app.py; removed 6 binding from keymap.py; updated README.md and tests; full suite 1284 passed."
+ },
+ {
+  "phase": 4,
+  "date": "2026-09-01",
+  "decision": "Phase 4 validation complete.",
+  "notes": "Full suite 1284 passed; RED-arm mutation evidence recorded in PLAN.md."
+ },
+ {
+  "phase": 6,
+  "date": "2026-09-01",
+  "decision": "Cleanup pushed to origin/main.",
+  "notes": "git add -A && git commit performed; push executed at operator order: main b7f3516..b3d990f."
+ },
+ {
+  "phase": 0,
+  "date": "2026-09-01",
+  "decision": "batch-12 opened: in-app Setup + per-view help family + keybar per-view law + initial-sync fix",
+  "notes": "Operator directed implementation from handoff-batch-12-setup-help.md using /dev-flow. Standing authorization confirmed."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 1 complete: initial team sync on mount for configured identity.",
+  "notes": "Added _run_team_sync() before _start_team_daemon() in _init_team_mode; 1 new test in tests/test_setup_help.py; full suite 1285 passed."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 2 complete: Setup view scaffold (key 0, render_setup, staging, esc returns).",
+  "notes": "Added setup view to VIEW_ORDER/VIEW_KEYS; render_setup in views.py; keymap key 0 + space/ctrl+s + escape scoped to setup; README updated; tests/test_app.py updated; full suite 1288 passed."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 3 complete: Setup health checks + staged editing (save/esc/mutations).",
+  "notes": "Added probe_setup_health; setup mutations via TextPrompt; action_setup_save writes team.json version bump + board.settings; render_setup shows cursor and checks; full suite 1292 passed."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 4 complete: per-view help family (LegendModal -> HelpModal).",
+  "notes": "HelpModal shows usage (left), legend/example/keys (right); `m` opens HelpScreen, `?` opens CommandPalette; help_usage/help_example cover 9 modes; tests/test_legend.py updated; full suite 1298 passed."
+ },
+ {
+  "phase": 3,
+  "date": "2026-09-01",
+  "decision": "Increment 5 complete: keybar per-view law (bar flag + palette-only globals).",
+  "notes": "Key gets `bar` flag; global commands (o,i,p,P,f,c,R,S) are palette-only; bar_keys filters bar=True while palette_commands lists all live keys; README notes per-view footer; full suite 1298 passed."
+ },
+ {
+  "phase": 4,
+  "date": "2026-09-01",
+  "decision": "Phase 4 validation complete.",
+  "notes": "Full suite 1298 passed; test_prism_laws.py oracle updated for law_keybar; test_report.py oracle updated for palette-only report key; no environmental failures."
+ },
+ {
+  "phase": 5,
+  "date": "2026-09-01",
+  "decision": "Phase 5 close complete.",
+  "notes": "Working files reconciled; prototypes/* remain untracked exploratory work. PLAN.md, state.json and BACKLOG.md updated."
+ },
+ {
+  "phase": 6,
+  "date": "2026-09-01",
+  "decision": "Batch-12 pushed to origin/main.",
+  "notes": "Pushed at operator order: main ff4bb7e..33eb4bf (includes post-close hotfix 33eb4bf)."
+ },
+ {
+  "phase": 6,
+  "date": "2026-09-01",
+  "decision": "Post-close hotfix: Setup TextPrompt bug and missing executable-command ATs.",
+  "notes": "Fixed action_setup_edit to use TextPrompt(initial=...) instead of value=...; added 5 tests for Enter/Space/a/x in setup view; updated PLAN.md US-S2 ATs and close note. Full suite 1303 passed."
+ },
+ {
+  "phase": 6,
+  "date": "2026-09-05",
+  "decision": "Post-close hotfix: people nav model crashed when team mode is off.",
+  "notes": "Key 9 is ungated so people-without-a-team is reachable; render_people, render_standup, legend_entries and probe_setup_health all handled team_state=None but nav_model did not, so the first cursor key raised AttributeError: 'NoneType' object has no attribute 'roster' (app.py:582 action_cursor -> app.py:531 _nav_columns -> views.py:4668). Root cause is a missing REGIME, not a missing wire: the operator's board has no team_shared_dir, and view_mode is not persisted (app.py:185 boots swimlanes). Fixed at the seam the renderer already uses: nav_model returns [] with no team, matching flow/standup/setup. All other team_state consumers audited and already guarded. 2 new tests in tests/test_team_views.py; full suite 1306 passed (baseline 1303 + 1 environmental clipboard flake); ruff unchanged; 202x39 headless smoke on a read-only COPY of the live board survives four cursor moves. Commit f0b64d5 on branch fix-people-nav-none; not pushed (operator integrates). Packet in .dev-flow/2026-09-01-batch-11/PLAN.md."
+ },
+ {
+  "phase": 6,
+  "date": "2026-09-05",
+  "decision": "Post-close hardening: view-survival law, the parametrized regression test the people-nav hotfix named but did not build.",
+  "notes": "New tests/test_view_survival.py: for every view in VIEW_ORDER (9) x three degraded regimes (no_team_small_board / empty_board / archived_only) = 27 cells, boot TaskboardApp, enter the view by its key, drive down/up/right/left/enter, assert no exception and the board still renders (width-exact for the 8 views with that established contract per test_prism_laws.py's MANIFEST, overflow-only for setup, whose render_setup is a documented free-form editor layout with no such contract anywhere in the repo). All 27 cells green on the first structurally-correct run; no product code changed (git diff --stat taskboard/views.py empty). Non-vacuousness proven by a RED arm: temporarily deleting nav_model's 'people' team_state-None guard reproduced the operator's exact original AttributeError on all 3 people cells, then the guard was restored byte-identical. Full suite 1333 passed (1306 baseline + 27 new), 0 failed. ruff: 0 findings in the new file; 3 pre-existing findings in views.py untouched. Branch view-survival-law from main (068ff59); not pushed (operator integrates). Packet appended to .dev-flow/2026-09-01-batch-11/PLAN.md."
+ }
+]

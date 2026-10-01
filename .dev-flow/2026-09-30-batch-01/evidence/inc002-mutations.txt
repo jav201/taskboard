@@ -1,0 +1,20 @@
+K1 band takes done highs: KILLED · -k 'test_seat_band_skips_done' · restore sha256 0e137914826a11de ok=True
+    1 failed, 132 deselected in 0.53s
+K2 nav forgets the band: KILLED · -k 'test_band_is_drawn_and_nav_walks_the_draw_order or test_the_cursor_walks' · restore sha256 0e137914826a11de ok=True
+    29 failed, 32 passed, 72 deselected in 1.71s
+K3 band also under group=priority: KILLED · -k 'test_seat_band_skips_done' · restore sha256 0e137914826a11de ok=True
+    1 failed, 132 deselected in 0.60s
+K4 badge on finished work: KILLED · -k 'test_card_badge_per_priority_and_none_when_finished' · restore sha256 0e137914826a11de ok=True
+    1 failed, 132 deselected in 0.55s
+K5 badge never shed: KILLED · -k 'test_badged_cards_are_exactly_their_width' · restore sha256 0e137914826a11de ok=True
+    3 failed, 38 passed, 92 deselected in 0.68s
+K6 legend ignores what is on the board: KILLED · -k 'test_legend_lists_the_badges' · restore sha256 0e137914826a11de ok=True
+    1 failed, 132 deselected in 0.47s
+K7 divider unlabelled: KILLED · -k 'test_band_is_drawn_and_nav_walks_the_draw_order' · restore sha256 0e137914826a11de ok=True
+    40 failed, 20 passed, 73 deselected in 1.04s
+K8 lanes cards unbadged: KILLED · -k 'test_the_app_paints_a_badge_on_every_open_card' · restore sha256 0e137914826a11de ok=True
+    1 failed, 1 passed, 131 deselected in 0.83s
+K9 band before the focus filter: KILLED · -k 'test_seat_band_respects_the_project_focus' · restore sha256 0e137914826a11de ok=True
+    1 failed, 132 deselected in 0.51s
+K10 seat defaults the band on: KILLED · -k 'test_seat_without_band_is_unchanged or test_lanes_and_matrix_draw_no_band' · restore sha256 0e137914826a11de ok=True
+    11 failed, 6 passed, 116 deselected in 0.65s

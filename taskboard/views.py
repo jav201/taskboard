@@ -306,13 +306,26 @@ def _fit_indicators(tokens: list[tuple[str, str]], budget: int) -> tuple[str, in
     return markup, cost
 
 
+# The kanban priority badge (owner verdict 2026-09-30, "el uso de insignias,
+# reusando !!, == y ++ para 3 colores"): the notes highlight vocabulary, worn in
+# reverse video by every OPEN kanban card. Same tokens and tones as
+# `_highlight_markup`, so the board speaks one colour language.
+PRIORITY_BADGE = {"high": ("!!", "over"), "normal": ("==", "soon"),
+                  "low": ("++", "green")}
+
+
 def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
               prefix: str = "", prefix_color: str = "mut",
               allow_priority: bool = True, today: date | None = None,
               unblocks: dict[str, int] | None = None,
-              readonly: bool = False) -> str:
-    """A width-exact card: `prefix` + truncated title + right indicators
-    (↗ ! ▤ ·Nd +Nd ⛓N ▣).
+              readonly: bool = False, badge: bool = False) -> str:
+    """A width-exact card: `prefix` + [badge] + truncated title + right
+    indicators (↗ ! ▤ ·Nd +Nd ⛓N ▣).
+
+    `badge=True` (the kanban) puts the PRIORITY_BADGE of an open card between
+    the prefix and the title and drops the `!` token, which the badge replaces;
+    a done or archived card wears neither. The badge costs 3 cells and is shed
+    when the cell cannot hold it.
 
     Title is truncated with … so it can NEVER share a cell with the trailing
     indicators, at any width down to 0. Always returns exactly `wc` cells.
@@ -336,12 +349,28 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
         # Foreign team cards are merged read-only; the mark sits in the quiet
         # mut house so it never competes with urgency or project colour.
         tokens.append(("◦", "mut"))
-    if allow_priority and task.priority == "high" and not board.is_done(task):
-        # THE GLYPH HOUSE. High priority used to be a ◉ in `amber` — the exact hex
-        # (#fbbf24) the app uses for "due today". Two meanings, one colour, so the
-        # mark could not be read. Severity keeps that seat (it is worn by dates:
-        # date_chip / reldue_token); priority is carried by the SHAPE `!` in the
-        # neutral ink tone, which claims neither the identity nor the judging house.
+    # THE GLYPH HOUSE. High priority used to be a ◉ in `amber` — the exact hex
+    # (#fbbf24) the app uses for "due today". Two meanings, one colour, so the
+    # mark could not be read; priority moved to the SHAPE `!` in the neutral ink
+    # tone, which claims neither the identity nor the judging house. That is
+    # still the mark wherever `badge` is off (the Focus rail, People).
+    #
+    # 2026-09-30, the owner's choice after the kanban priority round: on kanban
+    # cards priority is the reverse-video PRIORITY_BADGE, REUSING the notes
+    # highlight colours on purpose — one vocabulary for "this matters" across
+    # notes and cards. Known conflicts, ALL accepted by the owner on 2026-09-30:
+    # `==` wears `soon`, the due-today amber family; `!!` wears `over`, the hue
+    # of the overdue `-Nd` chip (and of the blocked `▲` beside it); `++` wears
+    # `green`, which is also an offered PROJECT hue, so on a green project the
+    # stripe and the low badge share a colour. The tokens differ, so no meaning
+    # rests on colour alone.
+    badge_markup, badge_w = "", 0
+    if (badge and not board.is_done(task) and not task.archived
+            and wc - len(prefix) >= 3):
+        token, tone = PRIORITY_BADGE.get(task.priority, PRIORITY_BADGE["normal"])
+        badge_markup, badge_w = f"[b reverse {HEX[tone]}]{token}[/] ", 3
+    if (allow_priority and not badge and task.priority == "high"
+            and not board.is_done(task)):
         tokens.append(("!", "ink"))
     if task.images:
         # `mut`, not `sky`: an attachment is an ATTRIBUTE of one task, and `sky`
@@ -377,10 +406,11 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
         # LAST in the list so it is the last thing shed under width pressure —
         # it is the only token here that says the row is not live work.
         tokens.append((ARCHIVED_MARK, "ash"))
-    ind_markup, used = _fit_indicators(tokens, wc - len(prefix))
-    title_w = max(0, wc - len(prefix) - used)
+    ind_markup, used = _fit_indicators(tokens, wc - len(prefix) - badge_w)
+    title_w = max(0, wc - len(prefix) - badge_w - used)
     pre = c(prefix, prefix_color) if prefix else ""
-    return pre + title_markup(task, title_w, selected, arrow=False) + ind_markup
+    return (pre + badge_markup + title_markup(task, title_w, selected, arrow=False)
+            + ind_markup)
 
 
 # ---------------------------------------------------------------------------
@@ -3958,9 +3988,15 @@ def _recent_first(tasks: list[Task]) -> list[Task]:
     return sorted(tasks, key=lambda t: t.phase_changed or "", reverse=True)
 
 
+# The name of the band group `kanban_order(band=True)` puts first. NUL-led so
+# no user-typed project name can equal it; only the grouped renderer reads it,
+# and it draws the band's own divider instead of a group header.
+KANBAN_BAND = "\x00high-band"
+
+
 def kanban_order(board, tasks, show_archived, *, group="project",
                  sort="project", collapsed=False, focus=None,
-                 today=None) -> list[tuple[str, str, list[Task]]]:
+                 today=None, band=False) -> list[tuple[str, str, list[Task]]]:
     """The ordered `(name, color, tasks)` groups for ONE kanban column, under
     the active group/sort modes. Pure: no I/O, no mutation of `board`/`tasks`.
 
@@ -3974,11 +4010,24 @@ def kanban_order(board, tasks, show_archived, *, group="project",
     No date by `urgency()`, plus a trailing `Done` group — dim tone, its OWN
     pinned `phase_changed`-desc order regardless of the sort mode (§6.5
     AMD-04/D-11: `urgency()` reports done before reading any date). Empty
-    groups are omitted — an empty group header is a ghost mark."""
+    groups are omitted — an empty group header is a ghost mark.
+
+    `band=True` (K4, owner verdict 2026-09-30) lifts the column's OPEN high
+    cards — not done, not archived, blocked included — out of their groups into
+    a first group named KANBAN_BAND, after the focus filter and sorted like any
+    group. Only the grouped presentation asks for it (renderer AND navigator,
+    so the cursor walks what is drawn); with group=priority the High group
+    already is the band, so none is added."""
     if collapsed:            # a collapsed column contributes NOTHING (R-07)
         return []
     if focus is not None:    # a project focus hides every other project (R-08)
         tasks = [t for t in tasks if t.project_id == focus]
+    band_items: list[Task] = []
+    if band and group != "priority":
+        band_items = [t for t in tasks if t.priority == "high"
+                      and not board.is_done(t) and not t.archived]
+        lifted = {id(t) for t in band_items}
+        tasks = [t for t in tasks if id(t) not in lifted]
     pinned: str | None = None
     if group == "priority":
         groups = [(label, color, [t for t in tasks if t.priority == value])
@@ -4004,6 +4053,8 @@ def kanban_order(board, tasks, show_archived, *, group="project",
             groups.append(("Done", "dim", _recent_first(buckets["done"])))
     else:                    # "project" — today's grouping, Inbox last
         groups = _kanban_groups(board, tasks, show_archived)
+    if band_items:
+        groups.insert(0, (KANBAN_BAND, "ink", band_items))
     if sort == "project":
         return groups
     if sort == "recent":
@@ -4050,16 +4101,25 @@ def _kanban_column_rows(board, tasks, wc, selected_id,
     for name, color, items in kanban_order(board, tasks, show_archived,
                                            group=group, sort=sort,
                                            collapsed=collapsed, focus=focus,
-                                           today=today):
-        rows.append((c("▐ ", color) + c(escape(fit(name, max(0, wc - 2))), color, bold=True),
-                     None))
+                                           today=today, band=True):
+        if name == KANBAN_BAND:
+            # K4: a labelled divider opens the band and a rule closes it; both
+            # are non-selectable rows, like a group header.
+            rows.append((c("──", "dim") + c(" high ", "ink", bold=True)
+                         + c("─" * (wc - 8), "dim") if wc >= 8
+                         else c(fit("── high", wc), "dim"), None))
+        else:
+            rows.append((c("▐ ", color) + c(escape(fit(name, max(0, wc - 2))), color,
+                                            bold=True), None))
         for t in items:
             rows.append((card_cell(t, board, wc, t.id == selected_id,
                                    prefix="▲ " if t.blocked else "▊ ",
                                    prefix_color="over" if t.blocked
                                    else project_color(board, t),
                                    today=today,
-                                   unblocks=unblocks), t.id))
+                                   unblocks=unblocks, badge=True), t.id))
+        if name == KANBAN_BAND:
+            rows.append((c("─" * wc, "dim"), None))
     if collapsed:
         # `✓` is the done mark and the done house is its only honest home —
         # and on the terminal phase every visible task IS done, so the mark
@@ -4295,7 +4355,7 @@ def _kanban_lanes(board, show_archived, selected_id, today, w, height, line_map,
                            prefix="▊ ",
                            prefix_color=project_color(board, t),
                            today=today,
-                           unblocks=unblocks), t.id)
+                           unblocks=unblocks, badge=True), t.id)
                 for t in shown]
             if len(bucket) > cap:
                 rows.append((c(fit(f"+{len(bucket) - cap + 1} more", wc), "dim"), None))
@@ -4372,6 +4432,10 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                 setup_state: dict | None = None) -> Text:
     query = (search_query or "").strip()
     w = _clamp_width(width)
+    # The `/` bar is INSERTED under the view's header, so a filtered view is
+    # drawn two rows shorter: drawn at full height, its last two rows — the
+    # gantt's time scale and the close — fell under the panel's fold.
+    bar_h = max(1, height - 2) if height else height
     if mode == "focus":
         return render_focus(board, show_archived, selected_id, today, width, height,
                             line_map, presentation=focus_presentation)
@@ -4380,7 +4444,7 @@ def render_view(mode, board, show_archived, selected_id, today=None,
             fb = filtered_board(board, query, show_archived)
             total = len(board.visible_tasks(show_archived))
             hits = len(fb.visible_tasks(show_archived))
-            text = render_kanban(fb, show_archived, selected_id, today, width, height,
+            text = render_kanban(fb, show_archived, selected_id, today, width, bar_h,
                                  line_map, presentation, sort=kanban_sort,
                                  group=kanban_group, collapsed=kanban_collapsed,
                                  focus=kanban_focus)
@@ -4397,7 +4461,7 @@ def render_view(mode, board, show_archived, selected_id, today=None,
             fb = filtered_board(board, query, show_archived)
             total = len(board.visible_tasks(show_archived))
             hits = len(fb.visible_tasks(show_archived))
-            text = render_gantt(fb, show_archived, selected_id, today, width, height,
+            text = render_gantt(fb, show_archived, selected_id, today, width, bar_h,
                                 line_map, tick=tick, focus=gantt_focus)
             if line_map is not None:
                 for tid in list(line_map.keys()):
@@ -4727,10 +4791,12 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
         last = len(board.phases) - 1
         for i, bucket in enumerate(phase_buckets(board, tasks)):
             is_collapsed = kanban_collapsed and i == last
+            # the band is the grouped renderer's (K4); asked for here exactly
+            # when the renderer asks, so nav order stays draw order (F-3)
             groups = kanban_order(board, bucket, show_archived,
                                   group=kanban_group, sort=kanban_sort,
                                   collapsed=is_collapsed, focus=kanban_focus,
-                                  today=today)
+                                  today=today, band=presentation == "grouped")
             if is_collapsed:
                 continue
             cols.append([t.id for _name, _color, items in groups
@@ -4796,6 +4862,8 @@ def _legend_board_facts(board: Board, today: date) -> dict:
         "statuses": {p.status for p in projects},
         "phases": {min(3, board.phase_index(t)) for t in open_},
         "high": any(t.priority == "high" for t in open_),
+        "open_priorities": {t.priority if t.priority in PRIORITY_BADGE else "normal"
+                            for t in open_},
         "done": any(board.is_done(t) for t in tasks),
         "overdue": any(d and d < today and not board.is_done(t) for d, t in dues),
         "today": any(d == today and not board.is_done(t) for d, t in dues),
@@ -4827,6 +4895,9 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
             ("los números de la tarjeta", ["·Nd = días EN la fase (envejecimiento)",
                                            "+Nd = días HASTA el deadline (countdown)",
                                            "⛓N = N tareas dependen de ésta"]),
+            ("la prioridad", ["!! alta · == normal · ++ baja (solo tareas abiertas)",
+                              "la banda ── high ── sube las altas abiertas al",
+                              "tope de cada columna (solo en la vista grouped)."]),
         ]
     if mode == "swimlanes":
         return [
@@ -4913,8 +4984,9 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
 def help_example(mode: str) -> tuple[str, str]:
     """(annotated example line, what it means) for the active view."""
     if mode == "kanban":
-        return ("▊ sync daemon ↗ ! ·3d +4d ⛓2",
-                "↗ url · ! alta · 3d en fase · vence en 4d · desbloquea 2")
+        return ("▊ !! sync daemon ↗ ·3d +4d ⛓2",
+                "!! alta (== normal, ++ baja) · ↗ url · 3d en fase · "
+                "vence en 4d · desbloquea 2")
     if mode == "swimlanes":
         return ("▎ platform ████▒░◆ 12d",
                 "la curva es la carga; el aire antes del ◆ es lo que no cabe")
@@ -5083,8 +5155,15 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
             out.append((_meter_swatch(None, done=True), "finished, and no longer counting down"))
         if f["undated"]:
             out.append((_meter_swatch(None), "no date to count down to"))
-    if mode == "kanban" and f["high"]:
-        out.append((c("!", "ink"), "high-priority task"))
+    if mode == "kanban":
+        # the badges an open card wears (PRIORITY_BADGE) — each explained only
+        # while some visible open card wears it
+        for prio, meaning in (("high", "high priority, open"),
+                              ("normal", "normal priority, open"),
+                              ("low", "low priority, open")):
+            if prio in f["open_priorities"]:
+                token, tone = PRIORITY_BADGE[prio]
+                out.append((f"[b reverse {HEX[tone]}]{token}[/]", meaning))
     # THE NO-GHOST LAW, and archived is its clearest case: the mark exists on
     # screen only while `v` is on AND something is actually archived. Explaining
     # a mark the reader cannot see is the same fault as hiding one they can.

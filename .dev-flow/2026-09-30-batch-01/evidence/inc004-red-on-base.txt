@@ -1,0 +1,60 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FF                                                                       [100%]
+================================== FAILURES ===================================
+__________ test_filtered_gantt_keeps_its_time_scale_inside_the_panel __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12294/test_filtered_gantt_keeps_its_0')
+
+    def test_filtered_gantt_keeps_its_time_scale_inside_the_panel(tmp_path):
+        """Field report (2026-09-30): with a `/` filter on, the gantt's time scale
+        (the month/day axis every bar is read against) vanished. The view was drawn
+        at the panel's full height and the filter bar was then INSERTED above it,
+        so the view came out two rows taller than the panel and its last two rows —
+        the scale and the close — fell under the fold. A filtered gantt with no
+        axis is a set of stripes nobody can date.
+    
+        The law: whatever the filter does, the view is exactly the panel's height
+        and its scale row is the same one the unfiltered view draws. RED: render
+        the filtered view at `height` instead of `height - 2` -> 22 rows, and the
+        scale is not among the first 20."""
+        from taskboard.views import render_view
+        b, _p = fixture(tmp_path)
+        h = 20
+        plain = str(render_view("gantt", b, False, None, TODAY, width=96,
+                                height=h)).split("\n")
+        scale = next(l for l in reversed(plain) if l.strip())
+        assert re.search(r"(JUL|AUG|SEP|OCT)", scale), f"{scale!r} is not the scale"
+    
+        out = str(render_view("gantt", b, False, None, TODAY, width=96, height=h,
+                              search_query="checkout")).split("\n")
+>       assert len(out) == h, f"filtered gantt is {len(out)} rows in a {h}-row panel"
+E       AssertionError: filtered gantt is 22 rows in a 20-row panel
+E       assert 22 == 20
+E        +  where 22 = len(['◆ GANTT                                                                             ▲1 past due ', '/ checkout▌     ... 24 → Jul 28', '                    · 1 project · 1 open · 1 late · nothing due this week ·                     ', ...])
+
+tests\test_gantt.py:653: AssertionError
+___________________ test_filtered_kanban_fits_the_panel_too ___________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12294/test_filtered_kanban_fits_the_0')
+
+    def test_filtered_kanban_fits_the_panel_too(tmp_path):
+        """The same overlay seats kanban, so the same two-row overflow applied
+        there: the filtered board must also be exactly the panel's height."""
+        from taskboard.views import render_view
+        b, _p = fixture(tmp_path)
+        h = 20
+        out = str(render_view("kanban", b, False, None, TODAY, width=96, height=h,
+                              search_query="checkout")).split("\n")
+>       assert len(out) == h, f"filtered kanban is {len(out)} rows in a {h}-row panel"
+E       AssertionError: filtered kanban is 22 rows in a 20-row panel
+E       assert 22 == 20
+E        +  where 22 = len(['KANBAN · grouped                                                                        1 tasks ', '/ checkout▌     ...────────────', '                                │── high ───────────────────────│                               ', ...])
+
+tests\test_gantt.py:666: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt.py::test_filtered_gantt_keeps_its_time_scale_inside_the_panel
+FAILED tests/test_gantt.py::test_filtered_kanban_fits_the_panel_too - Asserti...
+2 failed, 27 deselected in 0.43s

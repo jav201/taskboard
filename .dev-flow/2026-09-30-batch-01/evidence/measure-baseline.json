@@ -1,0 +1,198 @@
+{
+ "edit": {
+  "120x36": {
+   "notes_rows_visible": 3,
+   "notes_cols": 50,
+   "title_fully_visible": false,
+   "save_fully_visible": false,
+   "controls_fully_visible": {
+    "f-project": false,
+    "f-phase": false,
+    "f-priority": true,
+    "f-start": true,
+    "cal-f-start": true,
+    "f-due": true,
+    "cal-f-due": true,
+    "f-blocked": false,
+    "f-archived": false,
+    "f-pinned": true,
+    "f-urls": true,
+    "f-images": false,
+    "paste-img": false,
+    "cancel": false
+   }
+  },
+  "80x24": {
+   "notes_rows_visible": 3,
+   "notes_cols": 50,
+   "title_fully_visible": false,
+   "save_fully_visible": false,
+   "controls_fully_visible": {
+    "f-project": false,
+    "f-phase": false,
+    "f-priority": true,
+    "f-start": true,
+    "cal-f-start": true,
+    "f-due": true,
+    "cal-f-due": true,
+    "f-blocked": false,
+    "f-archived": false,
+    "f-pinned": false,
+    "f-urls": false,
+    "f-images": false,
+    "paste-img": false,
+    "cancel": false
+   }
+  }
+ },
+ "kanban": {
+  "120x36": {
+   "board_rows": 16,
+   "open_cards": {
+    "f0e1d2c3": {
+     "priority": "high",
+     "title_chars": 12
+    },
+    "t02": {
+     "priority": "normal",
+     "title_chars": 18
+    },
+    "t03": {
+     "priority": "low",
+     "title_chars": 18
+    },
+    "t04": {
+     "priority": "high",
+     "title_chars": 14
+    },
+    "t05": {
+     "priority": "normal",
+     "title_chars": 16
+    },
+    "t06": {
+     "priority": "high",
+     "title_chars": 16
+    },
+    "t07": {
+     "priority": "normal",
+     "title_chars": 17
+    },
+    "t08": {
+     "priority": "normal",
+     "title_chars": 18
+    },
+    "t10": {
+     "priority": "low",
+     "title_chars": 18
+    },
+    "t11": {
+     "priority": "normal",
+     "title_chars": 18
+    },
+    "t12": {
+     "priority": "high",
+     "title_chars": 17
+    },
+    "t13": {
+     "priority": "normal",
+     "title_chars": 18
+    },
+    "t15": {
+     "priority": "normal",
+     "title_chars": 18
+    },
+    "t16": {
+     "priority": "normal",
+     "title_chars": 18
+    },
+    "t17": {
+     "priority": "high",
+     "title_chars": 17
+    },
+    "t18": {
+     "priority": "low",
+     "title_chars": 11
+    },
+    "t21": {
+     "priority": "normal",
+     "title_chars": 18
+    }
+   },
+   "ids_in_line_map": 21
+  },
+  "80x24": {
+   "board_rows": 16,
+   "open_cards": {
+    "f0e1d2c3": {
+     "priority": "high",
+     "title_chars": 2
+    },
+    "t02": {
+     "priority": "normal",
+     "title_chars": 8
+    },
+    "t03": {
+     "priority": "low",
+     "title_chars": 8
+    },
+    "t04": {
+     "priority": "high",
+     "title_chars": 4
+    },
+    "t05": {
+     "priority": "normal",
+     "title_chars": 13
+    },
+    "t06": {
+     "priority": "high",
+     "title_chars": 6
+    },
+    "t07": {
+     "priority": "normal",
+     "title_chars": 7
+    },
+    "t08": {
+     "priority": "normal",
+     "title_chars": 8
+    },
+    "t10": {
+     "priority": "low",
+     "title_chars": 12
+    },
+    "t11": {
+     "priority": "normal",
+     "title_chars": 8
+    },
+    "t12": {
+     "priority": "high",
+     "title_chars": 7
+    },
+    "t13": {
+     "priority": "normal",
+     "title_chars": 8
+    },
+    "t15": {
+     "priority": "normal",
+     "title_chars": 8
+    },
+    "t16": {
+     "priority": "normal",
+     "title_chars": 8
+    },
+    "t17": {
+     "priority": "high",
+     "title_chars": 7
+    },
+    "t18": {
+     "priority": "low",
+     "title_chars": 7
+    },
+    "t21": {
+     "priority": "normal",
+     "title_chars": 8
+    }
+   },
+   "ids_in_line_map": 21
+  }
+ }
+}

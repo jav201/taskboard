@@ -1,0 +1,175 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFF.                                                                     [100%]
+================================== FAILURES ===================================
+_ test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[LINK=http://e]x] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12237/test_a_bracket_textual_would_p0')
+note = '[LINK=http://e]x'
+
+    @pytest.mark.parametrize("note", ["[LINK=http://e]x", "[B]bold?", "[ red]x", "a[b"])
+    async def test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes(tmp_path, note):
+        """Security review S1 (2026-09-30): `rich.markup.escape` only escapes a `[`
+        that RICH would read as a tag; Textual's own markup parser also reads
+        uppercase and space-led brackets. Fed through `Static.update(str)`, a note
+        holding `[LINK=…` raised MarkupError (the app died, unsaved edits lost —
+        and notes also arrive by team sync), and `[B]x` silently vanished. The
+        preview is built as a Rich `Text`, so Textual never parses the note. RED:
+        hand the markup string to the Static -> MarkupError / text missing."""
+        app = _app(tmp_path)
+>       async with app.run_test(size=(120, 36)) as pilot:
+
+tests\test_edit_window.py:338: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\anaconda3\Lib\contextlib.py:231: in __aexit__
+    await self.gen.athrow(value)
+..\..\anaconda3\Lib\site-packages\textual\app.py:2218: in run_test
+    raise self._exception
+..\..\anaconda3\Lib\site-packages\textual\message_pump.py:663: in _process_messages_loop
+    await self._dispatch_message(message)
+..\..\anaconda3\Lib\site-packages\textual\message_pump.py:739: in _dispatch_message
+    await self._on_message(message)
+..\..\anaconda3\Lib\site-packages\textual\message_pump.py:829: in _on_message
+    await invoke(method, message)
+..\..\anaconda3\Lib\site-packages\textual\_callback.py:96: in invoke
+    return await _invoke(callback, *params)
+..\..\anaconda3\Lib\site-packages\textual\_callback.py:56: in _invoke
+    result = callback(*params[:parameter_count])
+    self.query_one("#task-preview", Static).update(
+..\..\anaconda3\Lib\site-packages\textual\widgets\_static.py:94: in update
+    self.__visual = visualize(self, content, markup=self._render_markup)
+..\..\anaconda3\Lib\site-packages\textual\visual.py:103: in visualize
+    return Content.from_markup(obj) if markup else Content(obj)
+..\..\anaconda3\Lib\site-packages\textual\content.py:299: in from_markup
+    content = to_content(markup, template_variables=variables or None)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+markup = '[#8b98a5][LINK=http://e]x[/]', style = '', template_variables = None
+
+    def to_content(
+        markup: str,
+        style: str | Style = "",
+        template_variables: Mapping[str, object] | None = None,
+    ) -> Content:
+        """Convert markup to Content.
+    
+        Args:
+            markup: String containing markup.
+            style: Optional base style.
+            template_variables: Mapping of string.Template variables
+    
+        Raises:
+            MarkupError: If the markup is invalid.
+    
+        Returns:
+            Content that renders the markup.
+        """
+        _rich_traceback_omit = True
+        try:
+            return _to_content(markup, style, template_variables)
+        except UnexpectedEnd:
+            raise MarkupError(
+                "Unexpected end of markup; are you missing a closing square bracket?"
+            ) from None
+        except Exception as error:
+            # Ensure all errors are wrapped in a MarkupError
+>           raise MarkupError(str(error)) from None
+E           textual.markup.MarkupError: Expected markup value (found '://e]x[/]').
+
+..\..\anaconda3\Lib\site-packages\textual\markup.py:320: MarkupError
+---------------------------- Captured stderr call -----------------------------
+[31m╭─[0m[31m────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────[0m[31m─[0m
+[31m│[0m C:\Users\jjgh8\Github\taskboard\taskboard\modals.py:441 in                   
+[31m│[0m on_text_area_changed                                                         
+[31m│[0m                                                                              
+[31m│[0m   [2m 438 [0m[2m│   [0m                                                                  
+[31m│[0m   [2m 439 [0m[2m│   [0m[94mdef[0m[90m [0m[92mon_text_area_changed[0m([96mself[0m, event: TextArea.Changed) -> [94mNone[0m:  
+[31m│[0m   [2m 440 [0m[2m│   │   [0m[94mif[0m event.text_area.id == [33m"[0m[33mf-notes[0m[33m"[0m:                           
+[31m│[0m [31m❱ [0m 441 [2m│   │   │   [0m[1;4;96mself[0m[1;4m.query_one([0m[1;4;33m"[0m[1;4;33m#task-preview[0m[1;4;33m"[0m[1;4m, Static).update([0m           
+[31m│[0m   [2m 442 [0m[2m│   │   │   │   [0m[1;4mnotes_preview_markup(event.text_area.text))[0m           
+[31m│[0m   [2m 443 [0m[2m│   │   │   [0m[96mself[0m.call_after_refresh([96mself[0m._follow_cursor)              
+[31m│[0m   [2m 444 [0m                                                                      
+[31m│[0m                                                                              
+[31m│[0m [34m╭─[0m[34m─────[0m[34m locals [0m[34m──────[0m[34m─╮[0m                                                      
+[31m│[0m [34m│[0m [3;33mevent[0m[31m =[0m [1;35mChanged[0m[1m([0m[1m)[0m   [34m│[0m                                                      
+[31m│[0m [34m│[0m  [3;33mself[0m[31m =[0m [1;35mTaskModal[0m[1m([0m[1m)[0m [34m│[0m                                                      
+[31m│[0m [34m╰─────────────────────╯[0m                                                      
+[31m│[0m                                                                              
+[31m│[0m C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widgets\_static.py:94 in  
+[31m│[0m update                                                                       
+[31m│[0m                                                                              
+[31m│[0m   [2m91 [0m[2;33m│   │   [0m[33m"""[0m                                                             
+[31m│[0m   [2m92 [0m[2m│   │   [0m                                                                
+[31m│[0m   [2m93 [0m[2m│   │   [0m[96mself[0m.__content = content                                        
+[31m│[0m [31m❱ [0m94 [2m│   │   [0m[96mself[0m.__visual = [1;4mvisualize([0m[1;4;96mself[0m[1;4m, content, markup=[0m[1;4;96mself[0m[1;4m._render_ma[0m 
+[31m│[0m   [2m95 [0m[2m│   │   [0m[96mself[0m.refresh(layout=layout)                                     
+[31m│[0m   [2m96 [0m                                                                        
+[31m│[0m                                                                              
+[31m│[0m [34m╭─[0m[34m────────────────[0m[34m locals [0m[34m────────────────[0m[34m─╮[0m                                 
+[31m│[0m [34m│[0m [3;33mcontent[0m[31m =[0m [32m'[0m[32m[[0m[32m#8b98a5[0m[32m][0m[32m[[0m[32mLINK[0m[32m=[0m[32mhttp[0m[32m://e[0m[32m][0m[32mx[0m[32m[[0m[32m/[0m[32m][0m[32m'[0m [34m│[0m                                 
+[31m│[0m [34m│[0m  [3;33mlayout[0m[31m =[0m [3;92mTrue[0m                           [34m│[0m                                 
+[31m│[0m [34m│[0m    [3;33mself[0m[31m =[0m [1;35mStatic[0m[1m([0m[33mid[0m=[32m'task-preview'[0m[1m)[0m      [34m│[0m                                 
+[31m│[0m [34m╰──────────────────────────────────────────╯[0m                                 
+[31m╰──────────────────────────────────────────────────────────────────────────────[0m
+[1;91mMarkupError: [0mExpected markup value [1m([0mfound [32m'://e[0m[32m][0m[32mx[0m[32m[[0m[32m/[0m[32m][0m[32m'[0m[1m)[0m.
+__ test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[B]bold?] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12237/test_a_bracket_textual_would_p1')
+note = '[B]bold?'
+
+    @pytest.mark.parametrize("note", ["[LINK=http://e]x", "[B]bold?", "[ red]x", "a[b"])
+    async def test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes(tmp_path, note):
+        """Security review S1 (2026-09-30): `rich.markup.escape` only escapes a `[`
+        that RICH would read as a tag; Textual's own markup parser also reads
+        uppercase and space-led brackets. Fed through `Static.update(str)`, a note
+        holding `[LINK=…` raised MarkupError (the app died, unsaved edits lost —
+        and notes also arrive by team sync), and `[B]x` silently vanished. The
+        preview is built as a Rich `Text`, so Textual never parses the note. RED:
+        hand the markup string to the Static -> MarkupError / text missing."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(120, 36)) as pilot:
+            scr = await _open_editor(app, pilot)
+            scr.query_one("#f-notes", TextArea).text = note
+            for _ in range(3):
+                await pilot.pause()
+            assert isinstance(app.screen, TaskModal), "the editor died"
+            text = "".join(t for t, _c in _preview_segments(app))
+>           assert note in text, f"{note!r} not shown literally: {text!r}"
+E           AssertionError: '[B]bold?' not shown literally: 'bold?'
+E           assert '[B]bold?' in 'bold?'
+
+tests\test_edit_window.py:345: AssertionError
+__ test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[ red]x] ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12237/test_a_bracket_textual_would_p2')
+note = '[ red]x'
+
+    @pytest.mark.parametrize("note", ["[LINK=http://e]x", "[B]bold?", "[ red]x", "a[b"])
+    async def test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes(tmp_path, note):
+        """Security review S1 (2026-09-30): `rich.markup.escape` only escapes a `[`
+        that RICH would read as a tag; Textual's own markup parser also reads
+        uppercase and space-led brackets. Fed through `Static.update(str)`, a note
+        holding `[LINK=…` raised MarkupError (the app died, unsaved edits lost —
+        and notes also arrive by team sync), and `[B]x` silently vanished. The
+        preview is built as a Rich `Text`, so Textual never parses the note. RED:
+        hand the markup string to the Static -> MarkupError / text missing."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(120, 36)) as pilot:
+            scr = await _open_editor(app, pilot)
+            scr.query_one("#f-notes", TextArea).text = note
+            for _ in range(3):
+                await pilot.pause()
+            assert isinstance(app.screen, TaskModal), "the editor died"
+            text = "".join(t for t, _c in _preview_segments(app))
+>           assert note in text, f"{note!r} not shown literally: {text!r}"
+E           AssertionError: '[ red]x' not shown literally: 'x'
+E           assert '[ red]x' in 'x'
+
+tests\test_edit_window.py:345: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[LINK=http://e]x]
+FAILED tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[B]bold?]
+FAILED tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[ red]x]
+3 failed, 1 passed, 33 deselected in 4.32s

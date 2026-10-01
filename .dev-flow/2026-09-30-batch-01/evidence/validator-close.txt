@@ -1,0 +1,54 @@
+devflow-validate · C:\Users\jjgh8\Github\taskboard
+  git · 2.49.0, at or above the 2.28.0 floor
+  stdout · encoding `utf-8`, errors `backslashreplace` -- every finding is emitted verbatim
+  filesystem · FOLDS CASE -- probed at C:\Users\jjgh8\AppData\Local\Temp, on the same volume as the tree under check
+
+33 block · 14 notice · 61 not applicable
+  [x] V7   FLOW-VERSION.md: local flow is not the declared revision (6d4a1aa5b1b8d8aa != 2161aac6a6362ead) — either you have unpushed local edits, or you are behind
+  [!] V9   increment-001.md: packet declares no SOURCE count
+  [!] V9   increment-002.md: packet declares no SOURCE count
+  [!] V9   increment-003.md: packet declares no SOURCE count
+  [!] V9   increment-006.md: packet declares no SOURCE count
+  [!] V9   increment-007.md: packet declares no SOURCE count
+  [!] V9   increment-008.md: packet declares no SOURCE count
+  [!] V9   increment-009.md: packet declares no SOURCE count
+  [!] V9   increment-010.md: packet declares no SOURCE count
+  [x] V15  dev-flow/FLOW-VERSION.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/commands/dev-flow-init.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/commands/dev-flow-sync.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/commands/dev-flow.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/scripts/devflow-mutants.json: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/scripts/devflow-validate.py: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/architecture-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/close-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/design-proposal-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/design-review-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/docs/close-template.md: declared in the manifest table but ABSENT from the bundle — consumers never receive it
+  [x] V15  dev-flow/templates/docs/conventions.md: declared in the manifest table but ABSENT from the bundle — consumers never receive it
+  [x] V15  dev-flow/templates/docs/increment-template.md: declared in the manifest table but ABSENT from the bundle — consumers never receive it
+  [x] V15  dev-flow/templates/docs/phase-checklists.md: declared in the manifest table but ABSENT from the bundle — consumers never receive it
+  [x] V15  dev-flow/templates/docs/plan-template.md: declared in the manifest table but ABSENT from the bundle — consumers never receive it
+  [x] V15  dev-flow/templates/docs/req-template.md: declared in the manifest table but ABSENT from the bundle — consumers never receive it
+  [x] V15  dev-flow/templates/docs/review-template.md: declared in the manifest table but ABSENT from the bundle — consumers never receive it
+  [x] V15  dev-flow/templates/docs/validation-template.md: declared in the manifest table but ABSENT from the bundle — consumers never receive it
+  [x] V15  dev-flow/templates/executive-summary-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/functionality-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/ifc-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/increment-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/phase-checklists.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/plan-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/postmortem-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/req-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/review-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/traceability-matrix.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/templates/validation-template.md: bundle copy differs from the canon file — agent-skills would ship a different flow than Claude Code runs
+  [x] V15  dev-flow/scripts/__pycache__/devflow-validate.cpython-312.pyc: in the bundle but in neither the manifest table nor the declared exclusions — undeclared content ships to consumers
+  [x] V16  ~/.claude: uncommitted changes — the flow being run is not the flow that was shipped
+  [x] V16  ~/.claude/skills: 2 commit(s) ahead of origin/rev98-wip — committed locally but never pushed, which is exactly the state C-44 exists for
+  [!] V16  ~/kimi/agent-skills: level with origin/main, but that reference was last refreshed 5.9 day(s) ago — the comparison is against a LOCAL ref, so this is an identity check, not a currency one; run `git -C ~/kimi/agent-skills fetch`
+  [!] V22  REQUIREMENTS.md: 5 of 5 ids DECLARED AS HEADINGS in the .dev-flow/**/01-requirements.md corpus are not reflected in the living canon (US 5; e.g. US-01) — the seeding backlog, retired one tranche at a time. ATLAS-ORPHANS.md's heading census AGREES at this figure; its mention census is larger — a different question, not a disagreement
+  [!] V23  .dev-flow/03-increments/increment-006.md:140: design-review citation `PDR-confirmed` does not match the declared grammar (PDR|DDR)-<batch-dir>[-v<n>][#D<n>|.md] — an unresolvable id links traceability to nothing
+  [!] V28  .dev-flow/2026-09-01-batch-12/: `2026-09-01-batch-12` was SUPERSEDED by `2026-09-30-batch-01` while holding no 04-validation.md and no `05-close.md` or `05-postmortem.md`. A batch that rolls over unclosed has no path back -- `state.json` is single-slot, so once `batch_id` moves the sync can no longer see it -- and this is the state batch-88 was left in on 2026-08-28
+  [!] V53  .dev-flow/**/*.md: CENSUS over the closed record — 106 anchor(s) scored, 105 resolved, 1 name a symbol their own file does not bind, 0 name no file at all, 0 unresolvable by basename, 1 abbreviated and never scored wrong. A count and never a block: those batches are sealed, and re-anchoring a closed record to satisfy a rule written afterwards is editing the past. ⚠ The brief that commissioned this reader measured 1268 / 589 / 41; this census is larger on all three and the delta is stated rather than reconciled — a BARE BASENAME resolves here when exactly one file in the tree carries it (the majority form the record writes, which that brief scored unresolvable), and the binder is stricter than the substring test it replaced, so a truncated citation inside a longer name is WRONG here and resolved there
+  [!] V57  .dev-flow/2026-09-30-batch-01/05-close.md: the working tree is dirty against `HEAD` (19 files below), while the gate recorded `a9bbd1c0b36b`: `.dev-flow/BACKLOG.md`, `.dev-flow/state.json`, `taskboard/app.py`, `taskboard/modals.py`, `taskboard/taskboard.tcss`, `taskboard/views.py`, `tests/test_app.py`, `tests/test_focus.py` and 11 more. The verdict recorded at the close was taken over different bytes
+n/a: 61 rule(s) with no subject on this tree (mode core) — run without --brief to list them

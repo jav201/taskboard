@@ -1,0 +1,98 @@
+{
+  "0-120": {
+    "notes_rows_visible": 3,
+    "notes_cols": 50,
+    "notes_wrapped_rows_total": 43,
+    "notes_logical_lines": 23,
+    "title_visible": false,
+    "save_visible": false
+  },
+  "0-80": {
+    "notes_rows_visible": 3,
+    "notes_cols": 50,
+    "notes_wrapped_rows_total": 43,
+    "notes_logical_lines": 23,
+    "title_visible": false,
+    "save_visible": false
+  },
+  "A-120": {
+    "notes_rows_visible": 20,
+    "notes_cols": 67,
+    "notes_wrapped_rows_total": 30,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  },
+  "A-80": {
+    "notes_rows_visible": 9,
+    "notes_cols": 30,
+    "notes_wrapped_rows_total": 59,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  },
+  "B-120": {
+    "notes_rows_visible": 18,
+    "notes_cols": 102,
+    "notes_wrapped_rows_total": 26,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  },
+  "B-80": {
+    "notes_rows_visible": 7,
+    "notes_cols": 65,
+    "notes_wrapped_rows_total": 30,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  },
+  "C-120": {
+    "notes_rows_visible": 23,
+    "notes_cols": 55,
+    "notes_wrapped_rows_total": 38,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  },
+  "C-80": {
+    "notes_rows_visible": 11,
+    "notes_cols": 35,
+    "notes_wrapped_rows_total": 50,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  },
+  "D-120": {
+    "notes_rows_visible": 9,
+    "notes_cols": 92,
+    "notes_wrapped_rows_total": 26,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  },
+  "D-80": {
+    "notes_rows_visible": 6,
+    "notes_cols": 66,
+    "notes_wrapped_rows_total": 30,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": false
+  },
+  "B-120-vb-details": {
+    "notes_rows_visible": 0,
+    "notes_cols": 0,
+    "notes_wrapped_rows_total": 26,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  },
+  "B-80-vb-details": {
+    "notes_rows_visible": 0,
+    "notes_cols": 0,
+    "notes_wrapped_rows_total": 30,
+    "notes_logical_lines": 23,
+    "title_visible": true,
+    "save_visible": true
+  }
+}

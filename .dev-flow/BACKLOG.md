@@ -11,6 +11,31 @@ Setup `TextPrompt` bug and missing executable-command ATs. V4 report, V5 templat
 V6 batch-email and V7 chains deferred. `test_win_clipboard_roundtrip` remains an
 intermittent environmental flake.
 
+## Open — after `2026-09-30-batch-01` (edit window C + kanban K4/badges)
+
+- **Legend ghosts under matrix and project focus.** `legend_entries` takes no
+  presentation/focus, so in matrix (no cards drawn) and under a project focus it
+  can list a `!!`/`==`/`++` badge no card draws. Inherited from the old `!`
+  entry. Fix needs `presentation`/`focus` threaded from `app.py` through
+  `HelpModal` into `legend_entries`.
+- **Owner question: badges outside the kanban.** The Focus review rail and the
+  People view still mark high priority with `!` in ink (`card_cell` without
+  `badge`).
+- **ProjectModal is still the old crowded modal** (out of scope by commission).
+- **Security S1, the remaining sites (MEDIUM).** Fixed in the editor preview,
+  `TaskDetails`, `image_block` and the `ImageViewer` title (batch
+  2026-09-30-batch-01, increments 001/003). About 13 other sites in
+  `modals.py` still hand `escape()`d user text to Textual as a str (Select /
+  Option labels, confirm/prompt titles, `notify`, standup title/phase) — wrap
+  them with `_rich` and extend `tests/test_details_markup.py`.
+- **`TaskDetails` info grid paints blank (pre-existing).** Project / phase /
+  priority / start / due labels in the `.modal-grid` render no cells (seen on
+  the base tree too, textual 8.2.8).
+- **Security S2 (LOW).** ESC / C1 bytes in notes survive `_highlight_markup`;
+  strip C0/C1 (keep `\n`, `\t`) once at load/sync.
+- **80-column kanban titles are 1–10 characters** after the badge (−3 per
+  normal/low card, −1 per high). Watch for a request to shed the badge first.
+
 ## Open — after `2026-08-07-fastflow-07`
 
 - **`chrome` is 3.1 %, not 0.0, and 3.1 % of it is a LIE.** `_census`'s frame

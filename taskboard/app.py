@@ -25,7 +25,8 @@ from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
 from .team_sync import TeamState, probe_setup_health
-from .views import clip, escape, filtered_board, nav_model, render_view, valid_url
+from .views import (clip, escape, filtered_board, focus_tasks, nav_model,
+                    render_view, valid_url)
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
 # the ambient's cycle length is this times the number of phases it rotates
@@ -550,7 +551,16 @@ class TaskboardApp(App):
         swimlane task) — navigation snaps to nav order on the next key."""
         board = self._view_board()
         tasks = board.visible_tasks(self.show_archived)
-        if self.focused_project_id is not None and self.view_mode in ("kanban", "gantt"):
+        if self.view_mode == "focus":
+            # The Focus Board draws ONLY pinned tasks and the tasks of pinned
+            # projects; the selection may not rest on a card the view does
+            # not draw — the F-3 law, same as the project-focus filter below.
+            # Without this, `t` on the selected card removed it from the view
+            # but left the cursor on it, and the next `t` toggled THAT hidden
+            # card back instead of the one the user was looking at.
+            tasks = focus_tasks(board, self.show_archived)
+        elif (self.focused_project_id is not None
+                and self.view_mode in ("kanban", "gantt")):
             # A focused board draws ONE project's cards; the selection may not
             # rest on a task the filter hides (hidden-but-navigable is the
             # F-3 trap in a new costume, HLR-008). The same holds in gantt.

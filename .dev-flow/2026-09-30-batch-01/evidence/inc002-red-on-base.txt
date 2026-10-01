@@ -1,0 +1,3258 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFFFFFFFFFFFFFFFFF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF. [ 54%]
+FF.FF.FF.F..FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF            [100%]
+================================== FAILURES ===================================
+_______ test_seat_band_holds_the_open_highs_in_the_sorts_order[project] _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_band_holds_the_open_0')
+sort = 'project'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_band_holds_the_open_highs_in_the_sorts_order(tmp_path, sort):
+        """The band is a group like any other: the column's open high cards, in
+        the order the active sort gives a group. Oracle from a DIFFERENT path
+        through the seat: the `High` group of group=priority under the same sort,
+        minus done/archived. RED: a band assembled by walking the project groups
+        orders `Bravo urgent` after `Alpha urgent` under sort=project."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        for show_archived in (False, True):
+            col = [t for t in doing if show_archived or not t.archived]
+>           groups = kanban_order(b, col, show_archived, sort=sort, band=True)
+E           TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:90: TypeError
+______ test_seat_band_holds_the_open_highs_in_the_sorts_order[priority] _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_band_holds_the_open_1')
+sort = 'priority'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_band_holds_the_open_highs_in_the_sorts_order(tmp_path, sort):
+        """The band is a group like any other: the column's open high cards, in
+        the order the active sort gives a group. Oracle from a DIFFERENT path
+        through the seat: the `High` group of group=priority under the same sort,
+        minus done/archived. RED: a band assembled by walking the project groups
+        orders `Bravo urgent` after `Alpha urgent` under sort=project."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        for show_archived in (False, True):
+            col = [t for t in doing if show_archived or not t.archived]
+>           groups = kanban_order(b, col, show_archived, sort=sort, band=True)
+E           TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:90: TypeError
+_________ test_seat_band_holds_the_open_highs_in_the_sorts_order[due] _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_band_holds_the_open_2')
+sort = 'due'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_band_holds_the_open_highs_in_the_sorts_order(tmp_path, sort):
+        """The band is a group like any other: the column's open high cards, in
+        the order the active sort gives a group. Oracle from a DIFFERENT path
+        through the seat: the `High` group of group=priority under the same sort,
+        minus done/archived. RED: a band assembled by walking the project groups
+        orders `Bravo urgent` after `Alpha urgent` under sort=project."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        for show_archived in (False, True):
+            col = [t for t in doing if show_archived or not t.archived]
+>           groups = kanban_order(b, col, show_archived, sort=sort, band=True)
+E           TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:90: TypeError
+_______ test_seat_band_holds_the_open_highs_in_the_sorts_order[recent] ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_band_holds_the_open_3')
+sort = 'recent'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_band_holds_the_open_highs_in_the_sorts_order(tmp_path, sort):
+        """The band is a group like any other: the column's open high cards, in
+        the order the active sort gives a group. Oracle from a DIFFERENT path
+        through the seat: the `High` group of group=priority under the same sort,
+        minus done/archived. RED: a band assembled by walking the project groups
+        orders `Bravo urgent` after `Alpha urgent` under sort=project."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        for show_archived in (False, True):
+            col = [t for t in doing if show_archived or not t.archived]
+>           groups = kanban_order(b, col, show_archived, sort=sort, band=True)
+E           TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:90: TypeError
+_______ test_seat_band_holds_the_open_highs_in_the_sorts_order[unblock] _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_band_holds_the_open_4')
+sort = 'unblock'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_band_holds_the_open_highs_in_the_sorts_order(tmp_path, sort):
+        """The band is a group like any other: the column's open high cards, in
+        the order the active sort gives a group. Oracle from a DIFFERENT path
+        through the seat: the `High` group of group=priority under the same sort,
+        minus done/archived. RED: a band assembled by walking the project groups
+        orders `Bravo urgent` after `Alpha urgent` under sort=project."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        for show_archived in (False, True):
+            col = [t for t in doing if show_archived or not t.archived]
+>           groups = kanban_order(b, col, show_archived, sort=sort, band=True)
+E           TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:90: TypeError
+________ test_seat_band_skips_done_archived_and_the_priority_grouping _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_band_skips_done_arch0')
+
+    def test_seat_band_skips_done_archived_and_the_priority_grouping(tmp_path):
+        """Finished or put-away work does not shout; with group=priority the
+        `High` group already IS the band, so a second one would draw every high
+        card twice; a collapsed column contributes nothing; no open high, no
+        band. RED: build the band from `priority == "high"` alone -> `hd` and
+        `har` land in it."""
+        b = _board(tmp_path / "b.json")
+        done = [t for t in b.tasks if t.phase == "Done"]
+>       assert kanban_order(b, done, True, band=True)[0][0] != KANBAN_BAND
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:110: TypeError
+__________________ test_seat_band_respects_the_project_focus __________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_band_respects_the_pr0')
+
+    def test_seat_band_respects_the_project_focus(tmp_path):
+        """The focus filter runs FIRST: a focused board's band holds only the
+        focused project's highs. RED: band taken before the focus filter ->
+        `Bravo urgent` floats into Alpha's focused board."""
+        b = _board(tmp_path / "b.json")
+        alpha = b.projects[0].id
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+>       band = kanban_order(b, doing, False, band=True, focus=alpha)[0][2]
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:129: TypeError
+____________ test_seat_without_band_is_unchanged[project-project] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch0')
+group = 'project', sort = 'project'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+____________ test_seat_without_band_is_unchanged[project-priority] ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch1')
+group = 'priority', sort = 'project'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+____________ test_seat_without_band_is_unchanged[project-horizon] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch2')
+group = 'horizon', sort = 'project'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+____________ test_seat_without_band_is_unchanged[priority-project] ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch3')
+group = 'project', sort = 'priority'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+___________ test_seat_without_band_is_unchanged[priority-priority] ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch4')
+group = 'priority', sort = 'priority'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+____________ test_seat_without_band_is_unchanged[priority-horizon] ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch5')
+group = 'horizon', sort = 'priority'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+______________ test_seat_without_band_is_unchanged[due-project] _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch6')
+group = 'project', sort = 'due'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+______________ test_seat_without_band_is_unchanged[due-priority] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch7')
+group = 'priority', sort = 'due'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+______________ test_seat_without_band_is_unchanged[due-horizon] _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch8')
+group = 'horizon', sort = 'due'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+_____________ test_seat_without_band_is_unchanged[recent-project] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch9')
+group = 'project', sort = 'recent'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+____________ test_seat_without_band_is_unchanged[recent-priority] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch10')
+group = 'priority', sort = 'recent'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+_____________ test_seat_without_band_is_unchanged[recent-horizon] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch11')
+group = 'horizon', sort = 'recent'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+____________ test_seat_without_band_is_unchanged[unblock-project] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch12')
+group = 'project', sort = 'unblock'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+____________ test_seat_without_band_is_unchanged[unblock-priority] ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch13')
+group = 'priority', sort = 'unblock'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+____________ test_seat_without_band_is_unchanged[unblock-horizon] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_seat_without_band_is_unch14')
+group = 'horizon', sort = 'unblock'
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_seat_without_band_is_unchanged(tmp_path, group, sort):
+        """Preservation: `band` defaults to False and every caller that does not
+        ask for it (lanes, matrix) gets exactly the groups it got before. GREEN on
+        base by design; RED under the mutation "default band=True"."""
+        b = _board(tmp_path / "b.json")
+        doing = [t for t in b.tasks if t.phase == "Doing"]
+        assert kanban_order(b, doing, False, group=group, sort=sort, today=TODAY) == \
+>           kanban_order(b, doing, False, group=group, sort=sort, today=TODAY, band=False)
+E       TypeError: kanban_order() got an unexpected keyword argument 'band'
+
+tests\test_kanban_priority.py:142: TypeError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-project-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal0')
+group = 'project', sort = 'project', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-project-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal2')
+group = 'horizon', sort = 'project', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-priority-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal3')
+group = 'project', sort = 'priority', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-priority-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal5')
+group = 'horizon', sort = 'priority', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+__ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-due-project] ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal6')
+group = 'project', sort = 'due', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+__ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-due-horizon] ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal8')
+group = 'horizon', sort = 'due', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-recent-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal9')
+group = 'project', sort = 'recent', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-recent-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal11')
+group = 'horizon', sort = 'recent', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-unblock-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal12')
+group = 'project', sort = 'unblock', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-unblock-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal14')
+group = 'horizon', sort = 'unblock', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-project-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal15')
+group = 'project', sort = 'project', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+E       assert '── high' in '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+
+tests\test_kanban_priority.py:192: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-project-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal17')
+group = 'horizon', sort = 'project', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ This week                       │                                  │▐ Done                            '
+E       assert '── high' in '                                   │▐ This week                       │                                  │▐ Done                            '
+
+tests\test_kanban_priority.py:192: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-priority-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal18')
+group = 'project', sort = 'priority', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+E       assert '── high' in '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+
+tests\test_kanban_priority.py:192: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-priority-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal20')
+group = 'horizon', sort = 'priority', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ This week                       │                                  │▐ Done                            '
+E       assert '── high' in '                                   │▐ This week                       │                                  │▐ Done                            '
+
+tests\test_kanban_priority.py:192: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-due-project] ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal21')
+group = 'project', sort = 'due', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+E       assert '── high' in '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+
+tests\test_kanban_priority.py:192: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-due-horizon] ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal23')
+group = 'horizon', sort = 'due', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ This week                       │                                  │▐ Done                            '
+E       assert '── high' in '                                   │▐ This week                       │                                  │▐ Done                            '
+
+tests\test_kanban_priority.py:192: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-recent-project] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal24')
+group = 'project', sort = 'recent', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'na'} == {'ha', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-recent-horizon] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal26')
+group = 'horizon', sort = 'recent', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'na'} == {'ha', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-unblock-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal27')
+group = 'project', sort = 'unblock', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'na'} == {'ha', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-unblock-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal29')
+group = 'horizon', sort = 'unblock', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'na'} == {'ha', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-project-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal30')
+group = 'project', sort = 'project', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'har', 'hx'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'har'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-project-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal32')
+group = 'horizon', sort = 'project', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-priority-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal33')
+group = 'project', sort = 'priority', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'har', 'hx'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'har'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-priority-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal35')
+group = 'horizon', sort = 'priority', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-due-project] ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal36')
+group = 'project', sort = 'due', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-due-horizon] ___
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal38')
+group = 'horizon', sort = 'due', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-recent-project] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal39')
+group = 'project', sort = 'recent', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-recent-horizon] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal41')
+group = 'horizon', sort = 'recent', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-unblock-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal42')
+group = 'project', sort = 'unblock', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'har', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'har'
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-unblock-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal44')
+group = 'horizon', sort = 'unblock', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'hx', 'na'} == {'ha', 'hb', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hb'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-project-project] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal45')
+group = 'project', sort = 'project', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+E       assert '── high' in '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+
+tests\test_kanban_priority.py:192: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-project-horizon] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal47')
+group = 'horizon', sort = 'project', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ This week                       │                                  │▐ Done                            '
+E       assert '── high' in '                                   │▐ This week                       │                                  │▐ Done                            '
+
+tests\test_kanban_priority.py:192: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-priority-project] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal48')
+group = 'project', sort = 'priority', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+E       assert '── high' in '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+
+tests\test_kanban_priority.py:192: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-priority-horizon] _
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal50')
+group = 'horizon', sort = 'priority', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ This week                       │                                  │▐ Done                            '
+E       assert '── high' in '                                   │▐ This week                       │                                  │▐ Done                            '
+
+tests\test_kanban_priority.py:192: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-due-project] ____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal51')
+group = 'project', sort = 'due', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+E       assert '── high' in '                                   │▐ Alpha                           │                                  │▐ Alpha                           '
+
+tests\test_kanban_priority.py:192: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-due-horizon] ____
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal53')
+group = 'horizon', sort = 'due', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        first = lm[doing_col[0]]
+>       assert "── high" in lines[first - 1], f"no divider above the band: {lines[first - 1]!r}"
+E       AssertionError: no divider above the band: '                                   │▐ This week                       │                                  │▐ Done                            '
+E       assert '── high' in '                                   │▐ This week                       │                                  │▐ Done                            '
+
+tests\test_kanban_priority.py:192: AssertionError
+__ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-recent-project] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal54')
+group = 'project', sort = 'recent', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'na'} == {'ha', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+__ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-recent-horizon] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal56')
+group = 'horizon', sort = 'recent', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'na'} == {'ha', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-unblock-project] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal57')
+group = 'project', sort = 'unblock', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'har'} == {'ha', 'hx'}
+E         
+E         Extra items in the left set:
+E         'har'
+E         Extra items in the right set:
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-unblock-horizon] __
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_band_is_drawn_and_nav_wal59')
+group = 'horizon', sort = 'unblock', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+>       assert set(doing_col[:len(want)]) == {t.id for t in want}
+E       AssertionError: assert {'ha', 'na'} == {'ha', 'hx'}
+E         
+E         Extra items in the left set:
+E         'na'
+E         Extra items in the right set:
+E         'hx'
+E         Use -v to get more diff
+
+tests\test_kanban_priority.py:190: AssertionError
+_______________ test_the_cursor_walks_the_band_first_in_the_app _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_the_cursor_walks_the_band0')
+
+    async def test_the_cursor_walks_the_band_first_in_the_app(tmp_path):
+        """AT-003 through the keys (Q-6): in the running app, from the top of the
+        Doing column, `down` visits the open highs first — in the band's order —
+        then the rest; it never lands on the archived high it does not draw."""
+        b = _board(tmp_path / "b.json")
+        b.save()
+        app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+        async with app.run_test(size=(140, 40)) as pilot:
+            await pilot.pause()
+            app.view_mode = "kanban"
+            app.selected_task_id = "hb"
+            app.refresh_view()
+            await pilot.pause()
+            for _ in range(4):
+                await pilot.press("up")
+            seen = [app.selected_task_id]
+            for _ in range(4):
+                await pilot.press("down")
+                await pilot.pause()
+                seen.append(app.selected_task_id)
+>           assert seen[:3] == ["hb", "ha", "hx"], seen
+E           AssertionError: ['ha', 'hx', 'na', 'hb', 'lb']
+E           assert ['ha', 'hx', 'na'] == ['hb', 'ha', 'hx']
+E             
+E             At index 0 diff: 'ha' != 'hb'
+E             Use -v to get more diff
+
+tests\test_kanban_priority.py:229: AssertionError
+_______ test_a_card_raised_to_high_joins_the_band_and_keeps_the_cursor ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_a_card_raised_to_high_joi0')
+
+    async def test_a_card_raised_to_high_joins_the_band_and_keeps_the_cursor(tmp_path):
+        """AT-006 (HLR-003, UX-5): raising the selected card to high with the
+        priority key moves it INTO the band and the cursor goes with it; cycling
+        on to low moves it OUT again, cursor still on it."""
+        from taskboard.keymap import KEYMAP
+        key = next(k for k in KEYMAP if k.action == "prio_cycle").keys.split(",")[0]
+        b = _board(tmp_path / "b.json")
+        b.save()
+        app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+        async with app.run_test(size=(140, 40)) as pilot:
+            await pilot.pause()
+            app.view_mode = "kanban"
+            app.selected_task_id = "na"
+            app.refresh_view()
+            await pilot.pause()
+            await pilot.press(key)                       # normal -> high
+            await pilot.pause()
+            assert app.selected_task_id == "na"
+            lines, lm = _render(app.board, presentation="grouped")
+            band_rows = sorted(lm[t] for t in ("hb", "ha", "hx", "na"))
+>           assert band_rows == list(range(band_rows[0], band_rows[0] + 4)), \
+                "the raised card is not inside the band"
+E           AssertionError: the raised card is not inside the band
+E           assert [4, 5, 6, 8] == [4, 5, 6, 7]
+E             
+E             At index 3 diff: 8 != 7
+E             Use -v to get more diff
+
+tests\test_kanban_priority.py:253: AssertionError
+_____________ test_card_badge_per_priority_and_none_when_finished _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_card_badge_per_priority_a0')
+
+    def test_card_badge_per_priority_and_none_when_finished(tmp_path):
+        """LLR-004.1. One vocabulary with the notes: `!!` over, `==` soon, `++`
+        green, in reverse video, before the title; the old `!` ink token is gone
+        from a badged card; done and archived cards wear nothing. RED: badge a
+        done card -> `Shipped thing` shouts."""
+        b = _board(tmp_path / "b.json")
+        by = {t.id: t for t in b.tasks}
+        for tid, prio in (("ha", "high"), ("na", "normal"), ("lb", "low")):
+            token, tone = BADGE[prio]
+>           m = card_cell(by[tid], b, 40, False, prefix="▊ ", today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:274: TypeError
+________________ test_badged_cards_are_exactly_their_width[0] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_0')
+wc = 0
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[1] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_1')
+wc = 1
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[2] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_2')
+wc = 2
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[3] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_3')
+wc = 3
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[4] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_4')
+wc = 4
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[5] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_5')
+wc = 5
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[6] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_6')
+wc = 6
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[7] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_7')
+wc = 7
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[8] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_8')
+wc = 8
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[9] _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_9')
+wc = 9
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[10] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_10')
+wc = 10
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[11] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_11')
+wc = 11
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[12] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_12')
+wc = 12
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[13] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_13')
+wc = 13
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[14] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_14')
+wc = 14
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[15] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_15')
+wc = 15
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[16] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_16')
+wc = 16
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[17] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_17')
+wc = 17
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[18] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_18')
+wc = 18
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[19] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_19')
+wc = 19
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[20] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_20')
+wc = 20
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[21] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_21')
+wc = 21
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[22] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_22')
+wc = 22
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[23] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_23')
+wc = 23
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[24] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_24')
+wc = 24
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[25] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_25')
+wc = 25
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[26] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_26')
+wc = 26
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[27] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_27')
+wc = 27
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[28] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_28')
+wc = 28
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[29] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_29')
+wc = 29
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[30] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_30')
+wc = 30
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[31] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_31')
+wc = 31
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[32] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_32')
+wc = 32
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[33] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_33')
+wc = 33
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[34] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_34')
+wc = 34
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[35] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_35')
+wc = 35
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[36] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_36')
+wc = 36
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[37] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_37')
+wc = 37
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[38] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_38')
+wc = 38
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[39] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_39')
+wc = 39
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_badged_cards_are_exactly_their_width[40] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_badged_cards_are_exactly_40')
+wc = 40
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_badged_cards_are_exactly_their_width(tmp_path, wc):
+        """The width law every card obeys: a badge never pushes a row past its
+        column, at any width down to 0 (the badge sheds before the cell lies)."""
+        b = _board(tmp_path / "b.json")
+        for t in b.tasks:
+>           m = card_cell(t, b, wc, wc % 3 == 0, prefix="▲ " if t.blocked else "▊ ",
+                          today=TODAY, badge=True)
+E           TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:290: TypeError
+________________ test_unknown_priority_wears_the_normal_badge _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_unknown_priority_wears_th0')
+
+    def test_unknown_priority_wears_the_normal_badge(tmp_path):
+        """The seat ranks an unknown priority as normal (`_PRIO_RANK.get(.., 1)`);
+        the badge agrees instead of inventing a fourth mark."""
+        b = _board(tmp_path / "b.json")
+        t = Task("Odd", None, "Doing", "urgent")
+        b.tasks.append(t)
+>       assert "==" in _strip(card_cell(t, b, 30, False, prefix="▊ ", badge=True))
+E       TypeError: card_cell() got an unexpected keyword argument 'badge'
+
+tests\test_kanban_priority.py:301: TypeError
+___________ test_the_app_paints_a_badge_on_every_open_card[grouped] ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_the_app_paints_a_badge_on0')
+presentation = 'grouped'
+
+    @pytest.mark.parametrize("presentation", ["grouped", "lanes"])
+    async def test_the_app_paints_a_badge_on_every_open_card(tmp_path, presentation):
+        """AT-004 (HLR-004) through the running app, in both presentations that
+        draw cards: one reverse badge per open card in the right tone, none for
+        done or archived work. The fixture's visible open cards: 4 high (hb, ha,
+        hx, hi), 2 normal (na, ni), 1 low (lb). RED on base: `!` ink and no
+        `==`/`++` at all."""
+        b = _board(tmp_path / "b.json")
+        b.save()
+        app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+        async with app.run_test(size=(160, 40)) as pilot:
+            await pilot.pause()
+            app.view_mode = "kanban"
+            app.kanban_presentation = presentation
+            app.refresh_view()
+            await pilot.pause()
+            badges = _painted_badges(app)
+            counts = {tok: sum(1 for t, _h, _r in badges if t == tok) for tok in ("!!", "==", "++")}
+>           assert counts == {"!!": 4, "==": 2, "++": 1}, (presentation, badges)
+E           AssertionError: ('grouped', [])
+E           assert {'!!': 0, '++': 0, '==': 0} == {'!!': 4, '++': 1, '==': 2}
+E             
+E             Differing items:
+E             {'++': 0} != {'++': 1}
+E             {'==': 0} != {'==': 2}
+E             {'!!': 0} != {'!!': 4}
+E             Use -v to get more diff
+
+tests\test_kanban_priority.py:335: AssertionError
+____________ test_the_app_paints_a_badge_on_every_open_card[lanes] ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_the_app_paints_a_badge_on1')
+presentation = 'lanes'
+
+    @pytest.mark.parametrize("presentation", ["grouped", "lanes"])
+    async def test_the_app_paints_a_badge_on_every_open_card(tmp_path, presentation):
+        """AT-004 (HLR-004) through the running app, in both presentations that
+        draw cards: one reverse badge per open card in the right tone, none for
+        done or archived work. The fixture's visible open cards: 4 high (hb, ha,
+        hx, hi), 2 normal (na, ni), 1 low (lb). RED on base: `!` ink and no
+        `==`/`++` at all."""
+        b = _board(tmp_path / "b.json")
+        b.save()
+        app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+        async with app.run_test(size=(160, 40)) as pilot:
+            await pilot.pause()
+            app.view_mode = "kanban"
+            app.kanban_presentation = presentation
+            app.refresh_view()
+            await pilot.pause()
+            badges = _painted_badges(app)
+            counts = {tok: sum(1 for t, _h, _r in badges if t == tok) for tok in ("!!", "==", "++")}
+>           assert counts == {"!!": 4, "==": 2, "++": 1}, (presentation, badges)
+E           AssertionError: ('lanes', [])
+E           assert {'!!': 0, '++': 0, '==': 0} == {'!!': 4, '++': 1, '==': 2}
+E             
+E             Differing items:
+E             {'++': 0} != {'++': 1}
+E             {'==': 0} != {'==': 2}
+E             {'!!': 0} != {'!!': 4}
+E             Use -v to get more diff
+
+tests\test_kanban_priority.py:335: AssertionError
+_____________ test_legend_lists_the_badges_that_are_on_the_board ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12163/test_legend_lists_the_badges_t0')
+
+    def test_legend_lists_the_badges_that_are_on_the_board(tmp_path):
+        """The no-ghost law, on the new marks: each badge is explained only when
+        a visible open card of that priority exists, and the retired `!` entry is
+        gone. RED: keep the `!` entry -> it explains a mark no kanban card draws."""
+        b = _board(tmp_path / "b.json")
+        swatches = [_strip(s) for s, _m in legend_entries("kanban", b, TODAY, 140, 40)]
+>       assert {"!!", "==", "++"} <= set(swatches)
+E       AssertionError: assert {'!!', '++', '=='} <= {'!', '▊', '▐'}
+E         
+E         Extra items in the left set:
+E         '++'
+E         '=='
+E         '!!'
+
+tests\test_kanban_priority.py:350: AssertionError
+______ test_help_example_shows_a_badge_and_says_the_band_is_grouped_only ______
+
+    def test_help_example_shows_a_badge_and_says_the_band_is_grouped_only():
+        from taskboard.views import help_usage
+        line, meaning = help_example("kanban")
+>       assert line.startswith("▊ !!") and " ! " not in line, line
+E       AssertionError: ▊ sync daemon ↗ ! ·3d +4d ⛓2
+E       assert (False)
+E        +  where False = <built-in method startswith of str object at 0x000001526590AC30>('▊ !!')
+E        +    where <built-in method startswith of str object at 0x000001526590AC30> = '▊ sync daemon ↗ ! ·3d +4d ⛓2'.startswith
+
+tests\test_kanban_priority.py:360: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_kanban_priority.py::test_seat_band_holds_the_open_highs_in_the_sorts_order[project]
+FAILED tests/test_kanban_priority.py::test_seat_band_holds_the_open_highs_in_the_sorts_order[priority]
+FAILED tests/test_kanban_priority.py::test_seat_band_holds_the_open_highs_in_the_sorts_order[due]
+FAILED tests/test_kanban_priority.py::test_seat_band_holds_the_open_highs_in_the_sorts_order[recent]
+FAILED tests/test_kanban_priority.py::test_seat_band_holds_the_open_highs_in_the_sorts_order[unblock]
+FAILED tests/test_kanban_priority.py::test_seat_band_skips_done_archived_and_the_priority_grouping
+FAILED tests/test_kanban_priority.py::test_seat_band_respects_the_project_focus
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[project-project]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[project-priority]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[project-horizon]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[priority-project]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[priority-priority]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[priority-horizon]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[due-project]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[due-priority]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[due-horizon]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[recent-project]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[recent-priority]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[recent-horizon]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[unblock-project]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[unblock-priority]
+FAILED tests/test_kanban_priority.py::test_seat_without_band_is_unchanged[unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-project-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-project-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-priority-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-priority-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-due-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-due-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-recent-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-recent-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-unblock-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-project-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-project-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-priority-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-priority-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-due-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-due-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-recent-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-recent-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-unblock-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-project-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-project-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-priority-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-priority-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-due-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-due-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-recent-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-recent-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-unblock-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-project-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-project-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-priority-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-priority-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-due-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-due-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-recent-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-recent-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-unblock-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_the_cursor_walks_the_band_first_in_the_app
+FAILED tests/test_kanban_priority.py::test_a_card_raised_to_high_joins_the_band_and_keeps_the_cursor
+FAILED tests/test_kanban_priority.py::test_card_badge_per_priority_and_none_when_finished
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[0]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[1]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[2]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[3]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[4]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[5]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[6]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[7]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[8]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[9]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[10]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[11]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[12]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[13]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[14]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[15]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[16]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[17]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[18]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[19]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[20]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[21]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[22]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[23]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[24]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[25]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[26]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[27]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[28]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[29]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[30]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[31]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[32]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[33]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[34]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[35]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[36]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[37]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[38]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[39]
+FAILED tests/test_kanban_priority.py::test_badged_cards_are_exactly_their_width[40]
+FAILED tests/test_kanban_priority.py::test_unknown_priority_wears_the_normal_badge
+FAILED tests/test_kanban_priority.py::test_the_app_paints_a_badge_on_every_open_card[grouped]
+FAILED tests/test_kanban_priority.py::test_the_app_paints_a_badge_on_every_open_card[lanes]
+FAILED tests/test_kanban_priority.py::test_legend_lists_the_badges_that_are_on_the_board
+FAILED tests/test_kanban_priority.py::test_help_example_shows_a_badge_and_says_the_band_is_grouped_only
+111 failed, 22 passed in 3.85s

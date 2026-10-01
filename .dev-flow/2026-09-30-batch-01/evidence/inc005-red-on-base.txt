@@ -1,0 +1,49 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_unpinning_the_selected_task_moves_the_cursor_within_focus ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12293/test_unpinning_the_selected_ta0')
+
+    async def test_unpinning_the_selected_task_moves_the_cursor_within_focus(tmp_path):
+        """Field report (2026-09): in the Focus Board, `t` on the selected task
+        removes the card from the view but left the SELECTION on it — an unpinned
+        task is still a visible board task, so `_select_first` kept it. The next
+        `t` toggled THAT hidden card, and the previously removed task came back
+        instead of the board emptying. The selection may not rest on a task the
+        view does not draw (the F-3 law the kanban/gantt focus filter already
+        honors). RED: revert the `focus` branch of `_select_first` -> after the
+        first `t` the cursor is still on the removed card and the second `t`
+        re-pins it."""
+        app = _make_app(tmp_path)
+        async with app.run_test(size=(120, 40)) as pilot:
+            a = next(t for t in app.board.tasks if t.title == "Audit dependencies")
+            b = next(t for t in app.board.tasks if t.title == "Fix checkout 500 error")
+            a.pinned = b.pinned = True
+            app.board.save()
+            app.selected_task_id = a.id
+            await pilot.press("5")
+            await pilot.pause()
+            assert app.view_mode == "focus"
+            assert app.selected_task_id == a.id
+    
+            await pilot.press("t")                       # unpin the selected card
+            await pilot.pause()
+            assert not a.pinned
+            drawn = {t.id for t in focus_tasks(app.board, False)}
+            assert drawn == {b.id}
+>           assert app.selected_task_id == b.id, \
+                "the cursor stayed on the card the view no longer draws"
+E           AssertionError: the cursor stayed on the card the view no longer draws
+E           assert 'a7ccbcea' == '665479f4'
+E             
+E             - 665479f4
+E             + a7ccbcea
+
+tests\test_focus.py:119: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_focus.py::test_unpinning_the_selected_task_moves_the_cursor_within_focus
+1 failed, 11 deselected in 1.00s

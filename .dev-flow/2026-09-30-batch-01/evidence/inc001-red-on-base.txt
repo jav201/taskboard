@@ -1,0 +1,810 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFFFFFFFFFFFFFFFFFFFFF.FF..                                         [100%]
+================================== FAILURES ===================================
+_____________ test_the_notes_own_the_screen_while_writing[120x36] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_the_notes_own_the_screen_0')
+size = (120, 36)
+
+    @pytest.mark.parametrize("size", SIZES, ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_the_notes_own_the_screen_while_writing(tmp_path, size):
+        """AT-001 (HLR-001). With the 23-line note open and the cursor at its end,
+        the editor shows >= 20 note rows at 120x36 and >= 10 at 80x24, a preview
+        at least 20 columns wide holding about as many rows, and the title, Save
+        and every other control wholly on screen.
+    
+        Why each limb: the rows are the complaint; the title and Save are what the
+        old modal scrolled away the moment you typed (you could not see WHICH task
+        you were writing in, nor reach Save without scrolling back); the full id
+        list is the contract the rest of the app talks to. RED on the base tree:
+        3 rows at both sizes, title and Save off-screen."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            scr = await _open_editor_writing(app, pilot)
+            rows = _note_rows(scr)
+>           assert rows >= MIN_NOTE_ROWS[size], f"{size}: only {rows} note rows visible"
+E           AssertionError: (120, 36): only 3 note rows visible
+E           assert 3 >= 20
+
+tests\test_edit_window.py:151: AssertionError
+_____________ test_the_notes_own_the_screen_while_writing[80x24] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_the_notes_own_the_screen_1')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", SIZES, ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_the_notes_own_the_screen_while_writing(tmp_path, size):
+        """AT-001 (HLR-001). With the 23-line note open and the cursor at its end,
+        the editor shows >= 20 note rows at 120x36 and >= 10 at 80x24, a preview
+        at least 20 columns wide holding about as many rows, and the title, Save
+        and every other control wholly on screen.
+    
+        Why each limb: the rows are the complaint; the title and Save are what the
+        old modal scrolled away the moment you typed (you could not see WHICH task
+        you were writing in, nor reach Save without scrolling back); the full id
+        list is the contract the rest of the app talks to. RED on the base tree:
+        3 rows at both sizes, title and Save off-screen."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            scr = await _open_editor_writing(app, pilot)
+            rows = _note_rows(scr)
+>           assert rows >= MIN_NOTE_ROWS[size], f"{size}: only {rows} note rows visible"
+E           AssertionError: (80, 24): only 3 note rows visible
+E           assert 3 >= 10
+
+tests\test_edit_window.py:151: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    asyncio:base_events.py:1820 Task was destroyed but it is pending!
+ERROR    asyncio:base_events.py:1820 Task was destroyed but it is pending!
+_____________________ test_a_new_task_gets_the_same_room ______________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_a_new_task_gets_the_same_0')
+
+    async def test_a_new_task_gets_the_same_room(tmp_path):
+        """The empty boundary: `a` opens the same editor with no notes at all; the
+        layout must not depend on content to hold its controls on screen."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            await pilot.press("a")
+            await pilot.pause()
+            scr = app.screen
+            assert isinstance(scr, TaskModal)
+>           assert _note_rows(scr) >= MIN_NOTE_ROWS[(80, 24)]
+E           assert 0 >= 10
+E            +  where 0 = _note_rows(TaskModal())
+
+tests\test_edit_window.py:171: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    asyncio:base_events.py:1820 Task was destroyed but it is pending!
+ERROR    asyncio:base_events.py:1820 Task was destroyed but it is pending!
+_____________ test_every_chip_stays_reachable_at_every_width[80] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl0')
+width = 80
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[84] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl1')
+width = 84
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[88] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl2')
+width = 88
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[92] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl3')
+width = 92
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[96] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl4')
+width = 96
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[100] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl5')
+width = 100
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[104] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl6')
+width = 104
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[108] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl7')
+width = 108
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[112] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl8')
+width = 112
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[116] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl9')
+width = 116
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[120] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl10')
+width = 120
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[124] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl11')
+width = 124
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[128] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl12')
+width = 128
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[132] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl13')
+width = 132
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[136] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl14')
+width = 136
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_____________ test_every_chip_stays_reachable_at_every_width[140] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl15')
+width = 140
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_________ test_every_chip_stays_reachable_at_every_width[threshold-1] _________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl16')
+width = 'threshold-1'
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+__________ test_every_chip_stays_reachable_at_every_width[threshold] __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_every_chip_stays_reachabl17')
+width = 'threshold'
+
+    @pytest.mark.parametrize("width", list(range(80, 141, 4)) + ["threshold-1", "threshold"])
+    async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
+        """The limit the round measured: at 80 columns variant C's one-row chip
+        row was clipped and the flags fell off the right edge — a control you
+        cannot see is a control you cannot tab to with confidence. The row wraps
+        to two rows below the width where it fits. The swept set of chips is READ
+        FROM THE CHIP ROW ITSELF (every focusable widget in it) and guarded, so a
+        chip added later is swept too (C-31); the threshold and the column below
+        it are always in the sweep. RED: force the one-row layout at 80 ->
+        `f-pinned` (and its neighbours) clipped."""
+>       from taskboard.modals import TASK_CHIPS_ONE_ROW
+E       ImportError: cannot import name 'TASK_CHIPS_ONE_ROW' from 'taskboard.modals' (C:\Users\jjgh8\Github\taskboard\taskboard\modals.py)
+
+tests\test_edit_window.py:190: ImportError
+_______________ test_focus_mark_shows_on_every_one_row_control ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_focus_mark_shows_on_every0')
+
+    async def test_focus_mark_shows_on_every_one_row_control(tmp_path):
+        """LLR-001.2 (UX-6). The one-row fields gave up the tall focus border that
+        used to say where the cursor was; on a keyboard-first editor that border
+        IS the navigation model. Its replacement is an accent bar on the left edge
+        of whatever holds focus, on nothing else — read back from the style AND
+        found painted on the focused control's row. (The notes / URLs / images
+        TextAreas are multi-row and keep their tall focus border.) RED: drop the
+        `:focus` rule -> no accent bar on the focused control."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(120, 36)) as pilot:
+            scr = await _open_editor_writing(app, pilot)
+            for wid in FOCUS_MARKED:
+                w = scr.query_one(f"#{wid}")
+                w.focus()
+                await pilot.pause()
+                assert app.focused is w, f"{wid} did not take focus"
+                assert _wears_bar(w), f"{wid}: focused but no accent bar"
+                row = _painted(app)[w.region.y]
+                x, bar = 0, False
+                for seg in row:
+                    if x == w.region.x and seg.text.strip() and _hex(seg) == ACCENT:
+                        bar = True
+                    x += len(seg.text)
+>               assert bar, f"{wid}: no accent mark painted at its left edge"
+E               AssertionError: f-title: no accent mark painted at its left edge
+E               assert False
+
+tests\test_edit_window.py:241: AssertionError
+__________________ test_the_preview_paints_the_note_on_open ___________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_the_preview_paints_the_no0')
+
+    async def test_the_preview_paints_the_note_on_open(tmp_path):
+        """AT-002, first limb (HLR-002, Q-3). US-001 says SEE what is already
+        written: the preview must carry the note, highlighted, the moment the
+        editor opens — not only after the first keystroke. The fixture's first
+        `==portal de proveedores==` must be painted in the yellow (`soon`) the
+        board uses, with the markers gone. RED: no initial render -> the preview
+        is empty on open."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(120, 36)) as pilot:
+            await _open_editor(app, pilot)
+>           segs = _preview_segments(app)
+
+tests\test_edit_window.py:277: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_edit_window.py:254: in _preview_segments
+    r = app.screen.query_one("#task-preview-scroll").region
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = TaskModal(), selector = '#task-preview-scroll', expect_type = None
+
+    def query_one(
+        self,
+        selector: str | type[QueryType],
+        expect_type: type[QueryType] | None = None,
+    ) -> QueryType | Widget:
+        """Get a widget from this widget's children that matches a selector or widget type.
+    
+        Args:
+            selector: A selector or widget type.
+            expect_type: Require the object be of the supplied type, or None for any type.
+    
+        Raises:
+            WrongType: If the wrong type was found.
+            NoMatches: If no node matches the query.
+    
+        Returns:
+            A widget matching the selector.
+        """
+        _rich_traceback_omit = True
+    
+        base_node = self._get_dom_base()
+    
+        if isinstance(selector, str):
+            query_selector = selector
+        else:
+            query_selector = selector.__name__
+    
+        if is_id_selector(query_selector):
+            cache_key = (base_node._nodes._updates, query_selector, expect_type)
+            cached_result = base_node._query_one_cache.get(cache_key)
+            if cached_result is not None:
+                return cached_result
+            if (
+                node := walk_breadth_search_id(
+                    base_node, query_selector[1:], with_root=False
+                )
+            ) is not None:
+                if expect_type is not None and not isinstance(node, expect_type):
+                    raise WrongType(
+                        f"Node matching {query_selector!r} is the wrong type; expected type {expect_type.__name__!r}, found {node}"
+                    )
+                base_node._query_one_cache[cache_key] = node
+                return node
+>           raise NoMatches(f"No nodes match {query_selector!r} on {base_node!r}")
+E           textual.css.query.NoMatches: No nodes match '#task-preview-scroll' on TaskModal()
+
+..\..\anaconda3\Lib\site-packages\textual\dom.py:1505: NoMatches
+------------------------------ Captured log call ------------------------------
+ERROR    asyncio:base_events.py:1820 Task was destroyed but it is pending!
+ERROR    asyncio:base_events.py:1820 Task was destroyed but it is pending!
+____________ test_the_preview_follows_the_typing_to_the_last_line _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_the_preview_follows_the_t0')
+
+    async def test_the_preview_follows_the_typing_to_the_last_line(tmp_path):
+        """AT-002, second limb (HLR-002, UX-4). Typing on the LAST line of a note
+        longer than the preview: the new `!!…!!` span must appear in the preview,
+        in the app's red (`over`), INSIDE the preview's visible rows — a preview
+        parked at the top would show nothing of what you are writing at 80x24.
+        RED: no change handler -> the typed text never reaches it; no scroll
+        follow -> it is below the fold."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(80, 24)) as pilot:
+            await _open_editor_writing(app, pilot)
+            await pilot.press("enter")
+            for ch in "!!ship it now!!":
+                await pilot.press(ch)
+            for _ in range(3):
+                await pilot.pause()
+>           hit = [(t, c) for t, c in _preview_segments(app) if "ship it now" in t]
+
+tests\test_edit_window.py:298: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_edit_window.py:254: in _preview_segments
+    r = app.screen.query_one("#task-preview-scroll").region
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = TaskModal(), selector = '#task-preview-scroll', expect_type = None
+
+    def query_one(
+        self,
+        selector: str | type[QueryType],
+        expect_type: type[QueryType] | None = None,
+    ) -> QueryType | Widget:
+        """Get a widget from this widget's children that matches a selector or widget type.
+    
+        Args:
+            selector: A selector or widget type.
+            expect_type: Require the object be of the supplied type, or None for any type.
+    
+        Raises:
+            WrongType: If the wrong type was found.
+            NoMatches: If no node matches the query.
+    
+        Returns:
+            A widget matching the selector.
+        """
+        _rich_traceback_omit = True
+    
+        base_node = self._get_dom_base()
+    
+        if isinstance(selector, str):
+            query_selector = selector
+        else:
+            query_selector = selector.__name__
+    
+        if is_id_selector(query_selector):
+            cache_key = (base_node._nodes._updates, query_selector, expect_type)
+            cached_result = base_node._query_one_cache.get(cache_key)
+            if cached_result is not None:
+                return cached_result
+            if (
+                node := walk_breadth_search_id(
+                    base_node, query_selector[1:], with_root=False
+                )
+            ) is not None:
+                if expect_type is not None and not isinstance(node, expect_type):
+                    raise WrongType(
+                        f"Node matching {query_selector!r} is the wrong type; expected type {expect_type.__name__!r}, found {node}"
+                    )
+                base_node._query_one_cache[cache_key] = node
+                return node
+>           raise NoMatches(f"No nodes match {query_selector!r} on {base_node!r}")
+E           textual.css.query.NoMatches: No nodes match '#task-preview-scroll' on TaskModal()
+
+..\..\anaconda3\Lib\site-packages\textual\dom.py:1505: NoMatches
+___________________ test_an_empty_note_previews_as_nothing ____________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_an_empty_note_previews_as0')
+
+    async def test_an_empty_note_previews_as_nothing(tmp_path):
+        """Empty boundary: no notes -> an empty preview, not a placeholder that
+        looks like content."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(120, 36)) as pilot:
+            await pilot.pause()
+            await pilot.press("a")
+            for _ in range(3):
+                await pilot.pause()
+>           assert _preview_segments(app) == []
+
+tests\test_edit_window.py:312: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_edit_window.py:254: in _preview_segments
+    r = app.screen.query_one("#task-preview-scroll").region
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = TaskModal(), selector = '#task-preview-scroll', expect_type = None
+
+    def query_one(
+        self,
+        selector: str | type[QueryType],
+        expect_type: type[QueryType] | None = None,
+    ) -> QueryType | Widget:
+        """Get a widget from this widget's children that matches a selector or widget type.
+    
+        Args:
+            selector: A selector or widget type.
+            expect_type: Require the object be of the supplied type, or None for any type.
+    
+        Raises:
+            WrongType: If the wrong type was found.
+            NoMatches: If no node matches the query.
+    
+        Returns:
+            A widget matching the selector.
+        """
+        _rich_traceback_omit = True
+    
+        base_node = self._get_dom_base()
+    
+        if isinstance(selector, str):
+            query_selector = selector
+        else:
+            query_selector = selector.__name__
+    
+        if is_id_selector(query_selector):
+            cache_key = (base_node._nodes._updates, query_selector, expect_type)
+            cached_result = base_node._query_one_cache.get(cache_key)
+            if cached_result is not None:
+                return cached_result
+            if (
+                node := walk_breadth_search_id(
+                    base_node, query_selector[1:], with_root=False
+                )
+            ) is not None:
+                if expect_type is not None and not isinstance(node, expect_type):
+                    raise WrongType(
+                        f"Node matching {query_selector!r} is the wrong type; expected type {expect_type.__name__!r}, found {node}"
+                    )
+                base_node._query_one_cache[cache_key] = node
+                return node
+>           raise NoMatches(f"No nodes match {query_selector!r} on {base_node!r}")
+E           textual.css.query.NoMatches: No nodes match '#task-preview-scroll' on TaskModal()
+
+..\..\anaconda3\Lib\site-packages\textual\dom.py:1505: NoMatches
+_______ test_tab_walks_the_editor_and_save_works_from_the_keys[120x36] ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_tab_walks_the_editor_and_0')
+size = (120, 36)
+
+    @pytest.mark.parametrize("size", SIZES, ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_tab_walks_the_editor_and_save_works_from_the_keys(tmp_path, size):
+        """AT-005 (HLR-001, UX-1/UX-2). Focus is this app's navigation model, so
+        the order tab visits things is part of the design: title, the chips left
+        to right (row by row when wrapped), the notes, the footer, Save, Cancel —
+        and never the preview, which is read-only. Visible is not operable: the
+        walk then lands on Save and ENTER saves. RED: a focusable preview (a
+        VerticalScroll focuses by default) inserts a stop after the notes."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            scr = await _open_editor_writing(app, pilot)
+            scr.query_one("#f-title").focus()
+            await pilot.pause()
+            seen = [app.focused.id]
+            for _ in range(len(TAB_ORDER) - 1):
+                await pilot.press("tab")
+                await pilot.pause()
+                seen.append(app.focused.id)
+>           assert seen == TAB_ORDER
+E           AssertionError: assert ['f-title', '...-pinned', ...] == ['f-title', '...f-start', ...]
+E             
+E             At index 3 diff: 'f-blocked' != 'f-priority'
+E             Use -v to get more diff
+
+tests\test_edit_window.py:342: AssertionError
+________ test_tab_walks_the_editor_and_save_works_from_the_keys[80x24] ________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_tab_walks_the_editor_and_1')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", SIZES, ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_tab_walks_the_editor_and_save_works_from_the_keys(tmp_path, size):
+        """AT-005 (HLR-001, UX-1/UX-2). Focus is this app's navigation model, so
+        the order tab visits things is part of the design: title, the chips left
+        to right (row by row when wrapped), the notes, the footer, Save, Cancel —
+        and never the preview, which is read-only. Visible is not operable: the
+        walk then lands on Save and ENTER saves. RED: a focusable preview (a
+        VerticalScroll focuses by default) inserts a stop after the notes."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            scr = await _open_editor_writing(app, pilot)
+            scr.query_one("#f-title").focus()
+            await pilot.pause()
+            seen = [app.focused.id]
+            for _ in range(len(TAB_ORDER) - 1):
+                await pilot.press("tab")
+                await pilot.pause()
+                seen.append(app.focused.id)
+>           assert seen == TAB_ORDER
+E           AssertionError: assert ['f-title', '...-pinned', ...] == ['f-title', '...f-start', ...]
+E             
+E             At index 3 diff: 'f-blocked' != 'f-priority'
+E             Use -v to get more diff
+
+tests\test_edit_window.py:342: AssertionError
+_______________ test_the_editor_paints_its_keys_in_full[120x36] _______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_the_editor_paints_its_key0')
+size = (120, 36)
+
+    @pytest.mark.parametrize("size", SIZES, ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_the_editor_paints_its_keys_in_full(tmp_path, size):
+        """UX-3: this app does not ship keys off-screen. ctrl+e (emoji), ctrl+v
+        (paste) and esc must be PAINTED, whole, at both sizes — and the
+        `.modal-title` still names ctrl+e (the emoji tests read it there)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            scr = await _open_editor_writing(app, pilot)
+            assert "ctrl+e" in str(scr.query_one(".modal-title").content)
+            painted = "\n".join(s.text for s in _painted(app))
+            for key in ("ctrl+e emoji", "ctrl+v paste", "esc cancel"):
+>               assert key in painted, f"{size}: {key!r} is not painted"
+E               AssertionError: (120, 36): 'ctrl+e emoji' is not painted
+E               assert 'ctrl+e emoji' in '◆ TASKBOARD · grid 2×1                                                                                   1 open · 0 d... Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8 Standup  9  0  ↵  a  e  d  ⇥  ↓  ↑     '
+
+tests\test_edit_window.py:376: AssertionError
+_______________ test_the_editor_paints_its_keys_in_full[80x24] ________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-12066/test_the_editor_paints_its_key1')
+size = (80, 24)
+
+    @pytest.mark.parametrize("size", SIZES, ids=lambda s: f"{s[0]}x{s[1]}")
+    async def test_the_editor_paints_its_keys_in_full(tmp_path, size):
+        """UX-3: this app does not ship keys off-screen. ctrl+e (emoji), ctrl+v
+        (paste) and esc must be PAINTED, whole, at both sizes — and the
+        `.modal-title` still names ctrl+e (the emoji tests read it there)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            scr = await _open_editor_writing(app, pilot)
+            assert "ctrl+e" in str(scr.query_one(".modal-title").content)
+            painted = "\n".join(s.text for s in _painted(app))
+            for key in ("ctrl+e emoji", "ctrl+v paste", "esc cancel"):
+>               assert key in painted, f"{size}: {key!r} is not painted"
+E               AssertionError: (80, 24): 'ctrl+e emoji' is not painted
+E               assert 'ctrl+e emoji' in '◆ TASKBOARD · grid 2×1                                           1 open · 0 due \n   ▐ Port╭─────────────────────────...City 21:32 · New York 23:32         \n ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  ⇥  ↓  ↑    '
+
+tests\test_edit_window.py:376: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_edit_window.py::test_the_notes_own_the_screen_while_writing[120x36]
+FAILED tests/test_edit_window.py::test_the_notes_own_the_screen_while_writing[80x24]
+FAILED tests/test_edit_window.py::test_a_new_task_gets_the_same_room - assert...
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[80]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[84]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[88]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[92]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[96]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[100]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[104]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[108]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[112]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[116]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[120]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[124]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[128]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[132]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[136]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[140]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[threshold-1]
+FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[threshold]
+FAILED tests/test_edit_window.py::test_focus_mark_shows_on_every_one_row_control
+FAILED tests/test_edit_window.py::test_the_preview_paints_the_note_on_open - ...
+FAILED tests/test_edit_window.py::test_the_preview_follows_the_typing_to_the_last_line
+FAILED tests/test_edit_window.py::test_an_empty_note_previews_as_nothing - te...
+FAILED tests/test_edit_window.py::test_tab_walks_the_editor_and_save_works_from_the_keys[120x36]
+FAILED tests/test_edit_window.py::test_tab_walks_the_editor_and_save_works_from_the_keys[80x24]
+FAILED tests/test_edit_window.py::test_the_editor_paints_its_keys_in_full[120x36]
+FAILED tests/test_edit_window.py::test_the_editor_paints_its_keys_in_full[80x24]
+29 failed, 3 passed in 17.28s

@@ -89,6 +89,43 @@ async def test_focus_tab_cycles_presentations(tmp_path):
         assert "stale first" in text5
 
 
+async def test_unpinning_the_selected_task_moves_the_cursor_within_focus(tmp_path):
+    """AT-009 (HLR-007, batch 2026-09-30-batch-01). Field report (2026-09):
+    in the Focus Board, `t` on the selected task
+    removes the card from the view but left the SELECTION on it — an unpinned
+    task is still a visible board task, so `_select_first` kept it. The next
+    `t` toggled THAT hidden card, and the previously removed task came back
+    instead of the board emptying. The selection may not rest on a task the
+    view does not draw (the F-3 law the kanban/gantt focus filter already
+    honors). RED: revert the `focus` branch of `_select_first` -> after the
+    first `t` the cursor is still on the removed card and the second `t`
+    re-pins it."""
+    app = _make_app(tmp_path)
+    async with app.run_test(size=(120, 40)) as pilot:
+        a = next(t for t in app.board.tasks if t.title == "Audit dependencies")
+        b = next(t for t in app.board.tasks if t.title == "Fix checkout 500 error")
+        a.pinned = b.pinned = True
+        app.board.save()
+        app.selected_task_id = a.id
+        await pilot.press("5")
+        await pilot.pause()
+        assert app.view_mode == "focus"
+        assert app.selected_task_id == a.id
+
+        await pilot.press("t")                       # unpin the selected card
+        await pilot.pause()
+        assert not a.pinned
+        drawn = {t.id for t in focus_tasks(app.board, False)}
+        assert drawn == {b.id}
+        assert app.selected_task_id == b.id, \
+            "the cursor stayed on the card the view no longer draws"
+
+        await pilot.press("t")                       # unpin the last card
+        await pilot.pause()
+        assert focus_tasks(app.board, False) == [], "the board should be empty"
+        assert not a.pinned and not b.pinned, "the removed card came back"
+
+
 async def test_focus_respects_archived_toggle(tmp_path):
     app = _make_app(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
