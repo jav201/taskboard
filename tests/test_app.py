@@ -987,11 +987,16 @@ async def test_details_escapes_notes_markup(tmp_path):
 
 def test_image_block_link_and_missing_fallbacks(tmp_path):
     """AC5: the shared image_block helper links remote URLs and flags missing
-    local files, and never raises on either."""
+    local files, and never raises on either.
+
+    Changed 2026-09-30 (batch 2026-09-30-batch-01, security S1): the labels now
+    hold a Rich `Text` (so Textual never parses the reference as markup), and a
+    `Text` label renders only inside a running app — the assertion reads the
+    label's public `content` instead of calling `render()` outside one."""
     remote = list(image_block("https://example.com/a.png"))
-    assert remote and "link" in str(remote[0].render())
+    assert remote and "link" in str(remote[0].content)
     missing = list(image_block(str(tmp_path / "nope.png")))
-    assert missing and "missing" in str(missing[0].render())
+    assert missing and "missing" in str(missing[0].content)
 
 
 # --------------------------------------------------------------------------- #
@@ -2617,11 +2622,24 @@ async def test_kanban_sort_cycles_and_names_the_mode(tmp_path):
     expected orders) runs FIRST — a palindrome fixture would be green on a
     mode-skipping mutant. RED counterfactuals: renderer not wired to the mode
     (order assertion red); sort mutating the model (the model-order companion
-    red); cycle skipping a mode (a press lands on the wrong rule's order)."""
+    red); cycle skipping a mode (a press lands on the wrong rule's order).
+
+    Changed 2026-09-30 (batch 2026-09-30-batch-01, K4): the grouped kanban
+    floats the column's open high cards into a band ABOVE the groups, sorted
+    by the same mode. The oracle restates that (band first, then the groups
+    without them), and — because the band folds two of the old distinctions
+    into one — the fixture gains one Doing card here (`k10`, low, due
+    tomorrow, unstamped) so the five orders are pairwise distinct again."""
+    from datetime import timedelta
     board = _mode_board(tmp_path)
+    board.tasks.append(Task("k10", board.projects[0].id, "Doing", "low",
+                            due_date=(date.today() + timedelta(days=1)).isoformat(),
+                            phase_changed=None))
+    board.save()
     doing = [t for t in board.tasks if t.phase == "Doing"]
-    groups = [[t for t in doing if t.project_id == p.id]
-              for p in board.visible_projects(False)]
+    band = [t for t in doing if t.priority == "high"]   # Doing: open, none archived
+    groups = [band] + [[t for t in doing if t.project_id == p.id and t not in band]
+                       for p in board.visible_projects(False)]
 
     def expected(sort):                     # the stated rule, restated plainly
         if sort == "priority":
@@ -2762,13 +2780,23 @@ async def test_kanban_group_cycles_headers_and_membership(tmp_path):
                 tasks = [t for t in board.tasks
                          if t.phase == names[ci] and t.title in
                          {w for kind, w in col if kind == "t"}]
+                # K4 (2026-09-30): outside group=priority, a column's OPEN high
+                # cards float into the band above every header — they sit
+                # under no group header, and only they may
+                band = set() if mode == "priority" else {
+                    t.title for t in tasks
+                    if t.priority == "high" and not board.is_done(t)
+                    and not t.archived}
                 headers = [w for kind, w in col if kind == "h"]
-                want = [h for h in canon if any(rule(t) == h for t in tasks)]
+                want = [h for h in canon
+                        if any(rule(t) == h for t in tasks if t.title not in band)]
                 assert headers == want, f"column {names[ci]}: {headers} != {want}"
                 above = None                        # membership: nearest header
                 for kind, w in col:
                     if kind == "h":
                         above = w
+                    elif above is None:
+                        assert w in band, f"{w} sits above every header, not in the band"
                     else:
                         t = next(t for t in tasks if t.title == w)
                         assert rule(t) == above, \

@@ -623,3 +623,50 @@ def test_gantt_focus_hides_other_projects_and_inbox(tmp_path):
     assert "Beta task" not in text
     assert "Loose task" not in text
     assert "focused" in text.lower()
+
+
+# --------------------------------------------------------------------------- #
+# the time scale survives the `/` filter
+# --------------------------------------------------------------------------- #
+def test_filtered_gantt_keeps_its_time_scale_inside_the_panel(tmp_path):
+    """AT-008 (HLR-006, batch 2026-09-30-batch-01). Field report (2026-09-30):
+    with a `/` filter on, the gantt's time scale
+    (the month/day axis every bar is read against) vanished. The view was drawn
+    at the panel's full height and the filter bar was then INSERTED above it,
+    so the view came out two rows taller than the panel and its last two rows —
+    the scale and the close — fell under the fold. A filtered gantt with no
+    axis is a set of stripes nobody can date.
+
+    The law: whatever the filter does, the view is exactly the panel's height
+    and its scale row is the same one the unfiltered view draws. RED: render
+    the filtered view at `height` instead of `height - 2` -> 22 rows, and the
+    scale is not among the first 20."""
+    from taskboard.views import render_view
+    b, _p = fixture(tmp_path)
+    h = 20
+    plain = str(render_view("gantt", b, False, None, TODAY, width=96,
+                            height=h)).split("\n")
+    scale = next(l for l in reversed(plain) if l.strip())
+    assert re.search(r"(JUL|AUG|SEP|OCT)", scale), f"{scale!r} is not the scale"
+
+    out = str(render_view("gantt", b, False, None, TODAY, width=96, height=h,
+                          search_query="checkout")).split("\n")
+    assert len(out) == h, f"filtered gantt is {len(out)} rows in a {h}-row panel"
+    assert scale in out, "the time scale fell out of the panel under a filter"
+    assert any("checkout" in l.lower() for l in out[:3]), "the filter bar is missing"
+
+
+def test_filtered_kanban_fits_the_panel_too(tmp_path):
+    """AT-008 (HLR-006). The same overlay seats kanban, so the same two-row overflow applied
+    there: the filtered board must also be exactly the panel's height."""
+    from taskboard.views import render_view
+    b, _p = fixture(tmp_path)
+    h = 20
+    out = str(render_view("kanban", b, False, None, TODAY, width=96, height=h,
+                          search_query="checkout")).split("\n")
+    assert len(out) == h, f"filtered kanban is {len(out)} rows in a {h}-row panel"
+    # and the rows it kept are the right ones (review F2, batch
+    # 2026-09-30-batch-01): the filter bar under the header, the matching card
+    # below it — a renderer that merely dropped rows would lose one of them
+    assert any("checkout" in l.lower() for l in out[:3]), "the filter bar is missing"
+    assert any("checkout" in l.lower() for l in out[3:]), "the matching card is missing"

@@ -1,0 +1,41 @@
+M1 no change handler: KILLED · node test_the_preview_follows_the_typing_to_the_last_line · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_the_preview_follows_the_typing_to_the_last_line
+    1 failed, 36 deselected in 2.33s
+M2 no initial render: KILLED · node test_the_preview_paints_the_note_on_open · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_the_preview_paints_the_note_on_open - ...
+    1 failed, 36 deselected in 1.22s
+M3 preview focusable: KILLED · node test_tab_walks_the_editor_and_save_works_from_the_keys · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_tab_walks_the_editor_and_save_works_from_the_keys[120x36]
+    FAILED tests/test_edit_window.py::test_tab_walks_the_editor_and_save_works_from_the_keys[80x24]
+    2 failed, 35 deselected in 5.88s
+M4 no focus bar: KILLED · node test_focus_mark_shows_on_every_one_row_control · restore sha256 3915cad51cddf53a ok=True
+    FAILED tests/test_edit_window.py::test_focus_mark_shows_on_every_one_row_control
+    1 failed, 36 deselected in 1.50s
+M5 threshold one too low: KILLED · node test_every_chip_stays_reachable_at_every_width · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[threshold]
+    1 failed, 17 passed, 19 deselected in 16.92s
+M6 payload drops pinned: KILLED · node test_save_payload_round_trips_every_field · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_save_payload_round_trips_every_field
+    1 failed, 36 deselected in 1.49s
+M7 rules leak to #modal-box: KILLED · node test_project_modal_keeps_its_box · restore sha256 3915cad51cddf53a ok=True
+    FAILED tests/test_edit_window.py::test_project_modal_keeps_its_box - Assertio...
+    1 failed, 36 deselected in 1.10s
+M8 preview does not follow the cursor: KILLED · node test_the_preview_follows_the_typing_to_the_last_line · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_the_preview_follows_the_typing_to_the_last_line
+    1 failed, 36 deselected in 2.77s
+M9 ctrl+v hint gone: KILLED · node test_the_editor_paints_its_keys_in_full · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_the_editor_paints_its_keys_in_full[120x36]
+    FAILED tests/test_edit_window.py::test_the_editor_paints_its_keys_in_full[80x24]
+    2 failed, 35 deselected in 1.96s
+M10 notes back to 5 rows: KILLED · node test_the_notes_own_the_screen_while_writing · restore sha256 3915cad51cddf53a ok=True
+    FAILED tests/test_edit_window.py::test_the_notes_own_the_screen_while_writing[120x36]
+    FAILED tests/test_edit_window.py::test_the_notes_own_the_screen_while_writing[80x24]
+    2 failed, 35 deselected in 2.14s
+M11 preview renders raw notes as markup: KILLED · node test_the_preview_paints_markup_typed_in_a_note_as_text · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_the_preview_paints_markup_typed_in_a_note_as_text
+    1 failed, 36 deselected in 1.30s
+M12 Static parses the markup string (security S1): KILLED · node test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes · restore sha256 c5e60e8b445e0675 ok=True
+    FAILED tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[LINK=http://e]x]
+    FAILED tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[B]bold?]
+    FAILED tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[ red]x]
+    3 failed, 1 passed, 33 deselected in 4.36s

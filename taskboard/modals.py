@@ -21,10 +21,12 @@ from unicodedata import east_asian_width
 from rich._emoji_codes import EMOJI as _RICH_EMOJI
 from rich.cells import cell_len
 from rich.markup import escape
+from rich.text import Text
 
+from textual import events
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import Grid, Horizontal, VerticalScroll
+from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.keys import format_key
 from textual.screen import ModalScreen
 from textual.suggester import SuggestFromList
@@ -322,6 +324,33 @@ class DatePickerMixin:
             self.query_one(f"#{field_id}", Input).value = result
 
 
+# The narrowest screen on which the editor's chip row fits on ONE row; below
+# it the row folds in two. Measured, not derived: the sweep in
+# tests/test_edit_window.py walks 80..140 columns and both sides of this value.
+# Folded, the row needs 80 columns; below 80 the flags clip (80x24 is the
+# smallest size this editor supports).
+TASK_CHIPS_ONE_ROW = 122
+
+
+def _rich(markup: str) -> Text:
+    """App-built markup holding `escape()`d task text, parsed HERE by Rich.
+    `escape` follows Rich's tag rules; handed to a Textual widget as a str,
+    Textual's own parser reads `[B]` / `[LINK=…` too (security review S1)."""
+    return Text.from_markup(markup)
+
+
+def notes_preview(text: str) -> Text:
+    """The notes as the board paints them: each line through the app's one
+    highlight renderer (a highlight never crosses a line there either).
+
+    Parsed HERE, by Rich, into a Text — never handed to a Static as a markup
+    string: `_highlight_markup` escapes for Rich's tag rules, and Textual's
+    parser also reads `[B]` or `[LINK=…` as tags (a note holding one crashed
+    the editor and could arrive by team sync — security review S1)."""
+    return Text.from_markup("\n".join(_highlight_markup(ln) if ln.strip() else ""
+                                      for ln in text.split("\n")))
+
+
 class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                 ModalScreen[dict | None]):
     """Returns a dict of task fields on save, or None on cancel."""
@@ -339,69 +368,106 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
         self._img_key = task.id if task else _new_id()
 
     def compose(self) -> ComposeResult:
+        # Full screen (owner verdict 2026-09-30, variant C of the edit round):
+        # the notes are the work, so they get the screen; every other control
+        # sits on one-row strips around them, and nothing scrolls — the old
+        # auto-height modal scrolled the title and Save away the moment you
+        # typed in the notes. The `#task-*` rules live in taskboard.tcss.
         t = self._edit_task
         proj_options = [("(none · Inbox)", NONE_VALUE)] + [
             (escape(p.name), p.id) for p in self.board.projects
         ]
         proj_value = t.project_id if (t and t.project_id) else NONE_VALUE
-        with VerticalScroll(id="modal-box", classes="modal"):
-            # the key is SAID: a picker nobody can find is a picker that does
-            # not exist, and this app does not ship keys off-screen.
-            yield Label(("[b]Edit task[/b]" if t else "[b]New task[/b]")
-                        + "  [dim]· ctrl+e emoji[/dim]", classes="modal-title")
-            yield Label("Title")
-            yield Input(value=(t.title if t else ""), placeholder="what needs doing",
-                        id="f-title")
-            with Grid(classes="modal-grid"):
-                yield Label("Project")
-                yield Select(proj_options, value=proj_value, allow_blank=False, id="f-project")
-                yield Label("Phase")
-                phases = self.board.phases
-                yield Select([(escape(p), p) for p in phases],
-                             value=(t.phase if (t and t.phase in phases) else phases[0]),
-                             allow_blank=False, id="f-phase")
-                yield Label("Blocked")
-                yield Checkbox("blocked", value=bool(t.blocked) if t else False,
-                               id="f-blocked")
-                yield Label("Archived")
-                # the same flag `x` toggles — offered here because this is where
-                # a reader looks for it when the task is already open
-                yield Checkbox("archived", value=bool(t.archived) if t else False,
-                               id="f-archived")
-                yield Label("Pinned")
-                yield Checkbox("pinned", value=bool(t.pinned) if t else False,
-                               id="f-pinned")
-                yield Label("Priority")
-                yield Select([(p, p) for p in TASK_PRIORITIES],
-                             value=(t.priority if t else "normal"),
-                             allow_blank=False, id="f-priority")
-                yield Label("Start (YYYY-MM-DD)")
-                with Horizontal(classes="date-row"):
-                    yield Input(value=(t.start_date or "" if t else ""), placeholder="optional",
-                                id="f-start", classes="date-input")
+        phases = self.board.phases
+        with Vertical(id="task-box"):
+            with Horizontal(id="task-head"):
+                # the key is SAID: a picker nobody can find is a picker that
+                # does not exist, and this app does not ship keys off-screen.
+                yield Label(("[b]Edit task[/b]" if t else "[b]New task[/b]")
+                            + "  [dim]· ctrl+e emoji[/dim]", classes="modal-title")
+                yield Input(value=(t.title if t else ""), placeholder="what needs doing",
+                            id="f-title")
+            # two halves so the row can fold in two below TASK_CHIPS_ONE_ROW
+            # (on_resize) instead of clipping the flags off the right edge
+            with Horizontal(id="task-chips"):
+                with Horizontal(id="task-chips-what"):
+                    yield Select(proj_options, value=proj_value, allow_blank=False,
+                                 id="f-project")
+                    yield Select([(escape(p), p) for p in phases],
+                                 value=(t.phase if (t and t.phase in phases) else phases[0]),
+                                 allow_blank=False, id="f-phase")
+                    yield Select([(p, p) for p in TASK_PRIORITIES],
+                                 value=(t.priority if t else "normal"),
+                                 allow_blank=False, id="f-priority")
+                with Horizontal(id="task-chips-when"):
+                    yield Input(value=(t.start_date or "" if t else ""),
+                                placeholder="start", id="f-start", classes="date-input")
                     yield Button("📅", id="cal-f-start", classes="cal-btn")
-                yield Label("Due (YYYY-MM-DD)")
-                with Horizontal(classes="date-row"):
-                    yield Input(value=(t.due_date or "" if t else ""), placeholder="optional",
-                                id="f-due", classes="date-input")
+                    yield Label("→", classes="task-arrow")
+                    yield Input(value=(t.due_date or "" if t else ""),
+                                placeholder="due", id="f-due", classes="date-input")
                     yield Button("📅", id="cal-f-due", classes="cal-btn")
-            yield Label("Notes  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
-            notes_area = TextArea(t.notes if t else "", id="f-notes")
-            notes_area.styles.height = 5   # 1fr TextArea would collapse in the auto modal
-            yield notes_area
-            yield Label("URLs (one per line)")
-            urls_area = TextArea("\n".join(t.urls) if t else "", id="f-urls")
-            urls_area.styles.height = 4   # 1fr TextArea would collapse in the auto modal
-            yield urls_area
-            yield Label("Images (path or URL, one per line)")
-            images_area = TextArea("\n".join(t.images) if t else "", id="f-images")
-            images_area.styles.height = 4
-            yield images_area
-            yield Button("Paste image from clipboard", variant="primary",
-                         id="paste-img")
-            with Horizontal(classes="modal-buttons"):
-                yield Button("Save", variant="success", id="save")
-                yield Button("Cancel", variant="default", id="cancel")
+                    yield Checkbox("blocked", value=bool(t.blocked) if t else False,
+                                   id="f-blocked")
+                    # the same flag `x` toggles — offered here because this is
+                    # where a reader looks for it when the task is already open
+                    yield Checkbox("archived", value=bool(t.archived) if t else False,
+                                   id="f-archived")
+                    yield Checkbox("pinned", value=bool(t.pinned) if t else False,
+                                   id="f-pinned")
+            with Horizontal(id="task-split"):
+                with Vertical(id="task-edit"):
+                    yield Label("Notes  [dim]==…== yellow · !!…!! red · ++…++ green[/dim]",
+                                classes="task-sec")
+                    yield TextArea(t.notes if t else "", id="f-notes")
+                with Vertical(id="task-prev"):
+                    yield Label("Preview  [dim]ctrl+v paste · esc cancel[/dim]",
+                                classes="task-sec")
+                    preview = VerticalScroll(id="task-preview-scroll")
+                    preview.can_focus = False      # read-only: never a tab stop
+                    with preview:
+                        yield Static(notes_preview(t.notes if t else ""),
+                                     id="task-preview")
+            with Horizontal(id="task-foot"):
+                with Vertical(classes="task-foot-col"):
+                    yield Label("URLs  [dim]one per line[/dim]", classes="task-sec")
+                    yield TextArea("\n".join(t.urls) if t else "", id="f-urls")
+                with Vertical(classes="task-foot-col"):
+                    yield Label("Images  [dim]path or URL[/dim]", classes="task-sec")
+                    yield TextArea("\n".join(t.images) if t else "", id="f-images")
+                with Vertical(id="task-actions"):
+                    yield Button("Paste image", variant="primary", id="paste-img")
+                    yield Button("Save", variant="success", id="save")
+                    yield Button("Cancel", variant="default", id="cancel")
+
+    def on_mount(self) -> None:
+        self._fold_chips(self.app.size.width)
+
+    def on_resize(self, event: events.Resize) -> None:
+        self._fold_chips(event.size.width)
+
+    def _fold_chips(self, width: int) -> None:
+        self.query_one("#task-chips").set_class(width < TASK_CHIPS_ONE_ROW, "-folded")
+
+    def on_text_area_changed(self, event: TextArea.Changed) -> None:
+        if event.text_area.id == "f-notes":
+            self.query_one("#task-preview", Static).update(
+                notes_preview(event.text_area.text))
+            self.call_after_refresh(self._follow_cursor)
+
+    def on_text_area_selection_changed(self, event: TextArea.SelectionChanged) -> None:
+        if event.text_area.id == "f-notes":
+            self._follow_cursor()
+
+    def _follow_cursor(self) -> None:
+        """Keep the preview on the part of the note being written. The preview
+        wraps at its own width, so the line maps by proportion, not by row:
+        the first line shows the top, the last line shows the bottom."""
+        notes = self.query_one("#f-notes", TextArea)
+        scroll = self.query_one("#task-preview-scroll", VerticalScroll)
+        last = max(1, notes.document.line_count - 1)
+        scroll.scroll_to(y=scroll.max_scroll_y * notes.cursor_location[0] / last,
+                         animate=False)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         bid = event.button.id or ""
@@ -1034,22 +1100,22 @@ def image_block(ref: str):
     missing / unrenderable local file yields a dim notice. A generator of
     widgets, shared by ImageViewer and TaskDetails. Never raises."""
     if valid_url(ref):                       # remote: can't inline; link it
-        yield Label(f"link · {escape(ref)}")
+        yield Label(_rich(f"link · {escape(ref)}"))
         return
     path = Path(ref)
     if path.suffix.lower() not in IMAGE_EXTS or not path.is_file():
-        yield Label(f"[dim]missing:[/dim] {escape(ref)}")
+        yield Label(_rich(f"[dim]missing:[/dim] {escape(ref)}"))
         return
     if AutoImage is None:
-        yield Label(f"[dim](install textual-image to preview)[/dim] {escape(ref)}")
+        yield Label(_rich(f"[dim](install textual-image to preview)[/dim] {escape(ref)}"))
         return
     try:
         img = AutoImage(str(path))           # size comes from the Image TCSS rule
     except Exception:                        # never blank the modal on one bad file
-        yield Label(f"[dim]could not render:[/dim] {escape(ref)}")
+        yield Label(_rich(f"[dim]could not render:[/dim] {escape(ref)}"))
         return
     yield img
-    yield Label(f"[dim]{escape(path.name)}[/dim]")
+    yield Label(_rich(f"[dim]{escape(path.name)}[/dim]"))
 
 
 class ImageViewer(ModalScreen[None]):
@@ -1069,7 +1135,7 @@ class ImageViewer(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="viewer-box", classes="modal"):
             yield Label(
-                f"[b]{escape(self._view_task.title)}[/b]  —  o open raw · esc close",
+                _rich(f"[b]{escape(self._view_task.title)}[/b]  —  o open raw · esc close"),
                 classes="modal-title")
             if not self._view_task.images:
                 yield Label("[dim]No images on this task.[/dim]")
@@ -1102,28 +1168,28 @@ class TaskDetails(ModalScreen[None]):
         proj = self._board.project_by_id(t.project_id)
         proj_name = escape(proj.name) if proj else "Inbox"
         with VerticalScroll(id="details-box", classes="modal"):
-            yield Label(f"[b]{escape(t.title)}[/b]  —  o open raw · esc close",
+            yield Label(_rich(f"[b]{escape(t.title)}[/b]  —  o open raw · esc close"),
                         classes="modal-title")
             with Grid(classes="modal-grid"):
                 yield Label("Project")
-                yield Label(proj_name)
+                yield Label(_rich(proj_name))
                 yield Label("Phase")
-                yield Label(escape(t.phase) + (" · blocked" if t.blocked else ""))
+                yield Label(_rich(escape(t.phase) + (" · blocked" if t.blocked else "")))
                 yield Label("Priority")
-                yield Label(escape(t.priority))
+                yield Label(_rich(escape(t.priority)))
                 yield Label("Start")
-                yield Label(escape(t.start_date or "—"))
+                yield Label(_rich(escape(t.start_date or "—")))
                 yield Label("Due")
-                yield Label(escape(t.due_date or "—"))
+                yield Label(_rich(escape(t.due_date or "—")))
             yield Label("[b]Notes[/b]  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
             if t.notes:
-                yield Static(_highlight_markup(t.notes))
+                yield Static(notes_preview(t.notes))
             else:
                 yield Static("[dim]—[/dim]")
             yield Label("[b]URLs[/b]")
             if t.urls:
                 for u in t.urls:
-                    yield Label(f"link · {escape(u)}")
+                    yield Label(_rich(f"link · {escape(u)}"))
             else:
                 yield Label("[dim]—[/dim]")
             yield Label("[b]Images[/b]")

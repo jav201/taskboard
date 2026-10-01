@@ -1,0 +1,16 @@
+N1 notes handed to Textual as a markup str: KILLED · -k 'notes' · restore sha256 c5e60e8b445e0675 ok=True
+    3 failed, 2 passed, 24 deselected in 7.83s
+N2 title label as a markup str: KILLED · -k 'title' · restore sha256 c5e60e8b445e0675 ok=True
+    3 failed, 5 passed, 21 deselected in 7.98s
+N3 project label as a markup str: KILLED · -k 'project' · restore sha256 c5e60e8b445e0675 ok=True
+    3 failed, 1 passed, 25 deselected in 8.66s
+N4 url label as a markup str: KILLED · -k 'url' · restore sha256 c5e60e8b445e0675 ok=True
+    3 failed, 1 passed, 25 deselected in 7.35s
+N5 image fallback label as a markup str: KILLED · -k 'image' · restore sha256 c5e60e8b445e0675 ok=True
+    3 failed, 1 passed, 25 deselected in 7.10s
+N6 notes flattened to plain text (highlight lost): KILLED · -k 'still_highlight' · restore sha256 c5e60e8b445e0675 ok=True
+    1 failed, 28 deselected in 1.23s
+N7 image viewer title as a markup str (review F1): KILLED · -k 'viewer' · restore sha256 c5e60e8b445e0675 ok=True
+    3 failed, 1 passed, 25 deselected in 6.48s
+N8 phase label as a markup str (review F2): KILLED · -k 'phase' · restore sha256 c5e60e8b445e0675 ok=True
+    3 failed, 1 passed, 25 deselected in 8.22s

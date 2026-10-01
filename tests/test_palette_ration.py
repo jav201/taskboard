@@ -236,7 +236,13 @@ def test_a_judging_hue_is_never_worn_by_a_name_or_a_priority_mark(tmp_path):
     and `over` may be worn by facts about time (a chip, a count, a heat glyph),
     never by something that says WHICH project or HOW important. This is the
     check that catches a regression a hex census cannot — `amber` the identity
-    and `soon` the judgment are the same six characters."""
+    and `soon` the judgment are the same six characters.
+
+    ONE owner-ruled exception (2026-09-30, batch 2026-09-30-batch-01 LED .1):
+    the kanban priority BADGE reuses the notes highlight tones on purpose —
+    `!!` in `over`, `==` in `soon`, in reverse video. It is exempted by its
+    exact shape (token + reverse + kanban), so any OTHER priority mark in a
+    judging hue, in any view, still fails here."""
     b = _crowded(tmp_path)
     names = {pr.name for pr in b.projects}
     judged = 0
@@ -247,6 +253,8 @@ def test_a_judging_hue_is_never_worn_by_a_name_or_a_priority_mark(tmp_path):
                 continue
             judged += 1
             assert txt.strip() not in names, f"{mode}: {txt!r} names a project in {style}"
+            if mode == "kanban" and txt in ("!!", "==") and "reverse" in style:
+                continue                       # the owner-ruled kanban badge
             assert "!" not in txt, f"{mode}: the priority mark wears {style}"
     assert judged, "vacuous: no judging hue was painted at all"
 
@@ -259,7 +267,12 @@ def test_every_view_that_marks_priority_marks_it_with_the_glyph(tmp_path):
     so nobody is silently given one. (Was: `!` in both, before the lanes row
     replaced the per-phase cards. The lanes board needs TWO projects, because
     the one under most pressure is drawn as the leader's band, whose head row
-    carries an open count instead of the lane figures.)"""
+    carries an open count instead of the lane figures.)
+
+    Changed 2026-09-30 (owner verdict, batch 2026-09-30-batch-01 LED .1): the
+    kanban card's mark is now the reverse-video `!!` badge in the highlight red
+    (`over`), not the ink `!` — the owner chose to reuse the notes colours. The
+    lanes count and the no-mark views are unchanged."""
     b, p = _board(tmp_path)
     lead = Project("Leader", "sky")
     b.projects.append(lead)
@@ -274,7 +287,7 @@ def test_every_view_that_marks_priority_marks_it_with_the_glyph(tmp_path):
                        if txt.strip().startswith("!")]
     # in lanes the count now rides the LEADER's band, not the lane row
     assert marks["swimlanes"] == [(HEX["ink"], "!1")]
-    assert marks["kanban"] == [(HEX["ink"], "!")]
+    assert marks["kanban"] == [(f"bold reverse {HEX['over']}", "!!")]
     assert marks["agenda"] == marks["gantt"] == []
 
 

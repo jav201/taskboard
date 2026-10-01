@@ -1,0 +1,122 @@
+{
+  "0-120": {
+    "board_rows": 16,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 12,
+      "t04": 14,
+      "t06": 16,
+      "t12": 17,
+      "t17": 17
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "0-80": {
+    "board_rows": 16,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 2,
+      "t04": 4,
+      "t06": 6,
+      "t12": 7,
+      "t17": 7
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "K1-120": {
+    "board_rows": 16,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 14,
+      "t04": 16,
+      "t06": 19,
+      "t12": 19,
+      "t17": 19
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "K1-80": {
+    "board_rows": 16,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 4,
+      "t04": 6,
+      "t06": 8,
+      "t12": 9,
+      "t17": 9
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "K2-120": {
+    "board_rows": 18,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 12,
+      "t04": 14,
+      "t06": 16,
+      "t12": 17,
+      "t17": 17
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "K2-80": {
+    "board_rows": 18,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 2,
+      "t04": 4,
+      "t06": 6,
+      "t12": 7,
+      "t17": 7
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "K3-120": {
+    "board_rows": 16,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 11,
+      "t04": 13,
+      "t06": 15,
+      "t12": 16,
+      "t17": 16
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "K3-80": {
+    "board_rows": 16,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 1,
+      "t04": 3,
+      "t06": 5,
+      "t12": 6,
+      "t17": 6
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "K4-120": {
+    "board_rows": 17,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 12,
+      "t04": 14,
+      "t06": 16,
+      "t12": 17,
+      "t17": 17
+    },
+    "nav_ids_in_line_map": 21
+  },
+  "K4-80": {
+    "board_rows": 17,
+    "high_open": 5,
+    "high_title_chars": {
+      "f0e1d2c3": 2,
+      "t04": 4,
+      "t06": 6,
+      "t12": 7,
+      "t17": 7
+    },
+    "nav_ids_in_line_map": 21
+  }
+}
