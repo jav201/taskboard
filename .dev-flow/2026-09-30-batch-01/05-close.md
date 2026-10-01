@@ -8,7 +8,7 @@
 | Field | Value |
 |---|---|
 | Gate record | rev97 canon export: `cd C:\Users\jjgh8\.claude\jobs\381ba33e\tmp\flow-rev97 && PYTHONUTF8=1 python docs/tools/devflow-validate.py --brief C:\Users\jjgh8\Github\taskboard` · exit 1 · 33 block / 14 notice · 2026-09-30 · `evidence/validator-close.txt`. **0 project-side BLOCKs.** The 33 are environment-only flow-identity findings about `~/.claude` (mid-rev98, not this batch's to touch): 1× V7, 30× V15, 2× V16. V57 (dirty tree) clears only after the coordinator's commit; the coordinator re-runs the gate and records the HEAD in `Gated tree`. |
-| Gated tree | `a9bbd1c0b36b4da47b1b61eea69b7ac35ac00b72` · dirty — the full staging list of this batch (hand-off report); to be replaced by the commit's 40-hex HEAD at the coordinator's post-commit gate run |
+| Gated tree | `af0f005b7f937706780be55123f5770fa2aa0b75` · clean — commit `af0f005` (feature: full-screen task editor …); gate re-run on it 2026-09-30 with the rev97 canon export: 0 project-side BLOCKs, the same 33 environment-only V7/V15/V16 |
 | Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`), folded with `devflow-init.py --fold-canon` |
 
 ## 1 · What changed
