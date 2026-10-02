@@ -1,0 +1,19 @@
+SETUP · team · projects · roster
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  team
+  team mode               on   off                      !    team.json missing or invalid
+> shared folder          ▌D:/team                       !    does not exist
+    reach                                               !    no folder
+  sync every              - 30 + min                    !    no sync yet
+  my identity             jav                           !    identity not in the roster
+
+  team projects
+  ▐ Website Redesign      shared    hue ██                   
+
+  roster
+  ██ jav                 Javier     hue ██              !    0 member(s)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+tab section   ↵ edit   space toggle   a add   x remove   ctrl+s save   esc cancel

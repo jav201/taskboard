@@ -1,0 +1,112 @@
+[
+ {
+  "id": "S1",
+  "file": "taskboard/views.py",
+  "old": "        return (previous is None or group_key(raw[i][0]) != previous,\r\n",
+  "new": "        return (True,\r\n",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the previous group ignored by the plan"
+ },
+ {
+  "id": "S2",
+  "file": "taskboard/app.py",
+  "old": "            if self._gantt_group is not None:\r\n                self._gantt_previous = self._gantt_group\r\n",
+  "new": "",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the app never remembers the previous group"
+ },
+ {
+  "id": "S3",
+  "file": "taskboard/app.py",
+  "old": "        if group != self._gantt_group:\r\n",
+  "new": "        if True:\r\n",
+  "nodes": [
+   "tests/test_gantt_polish.py::test_TC_210_only_the_group_just_left_is_remembered"
+  ],
+  "why": "re-selecting the same group overwrites the previous one"
+ },
+ {
+  "id": "S4",
+  "file": "taskboard/modals.py",
+  "old": "                                 gantt_previous=self._gantt_previous)",
+  "new": "                                 gantt_previous=None)",
+  "nodes": [
+   "tests/test_gantt_polish.py::test_TC_210_the_legend_asks_the_same_frame"
+  ],
+  "why": "the legend asks another frame than the screen"
+ },
+ {
+  "id": "S5",
+  "file": "taskboard/views.py",
+  "old": "INBOX_GROUP = \"\"",
+  "new": "INBOX_GROUP = None",
+  "nodes": [
+   "tests/test_gantt_polish.py::test_TC_209_the_inbox_can_be_the_previous_group"
+  ],
+  "why": "the Inbox key collides with 'no previous group'"
+ },
+ {
+  "id": "T1",
+  "file": "taskboard/app.py",
+  "old": "            if self.view_mode == \"gantt\" and self.board.is_done(task):\r\n",
+  "new": "            if self.view_mode == \"gantt\":\r\n",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "every move notifies"
+ },
+ {
+  "id": "T2",
+  "file": "taskboard/app.py",
+  "old": "            if self.view_mode == \"gantt\" and self.board.is_done(task):\r\n",
+  "new": "            if self.board.is_done(task):\r\n",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the kanban notifies too"
+ },
+ {
+  "id": "T3",
+  "file": "taskboard/app.py",
+  "old": "u undo\", markup=False)",
+  "new": "u undo\")",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "markup on: a title is parsed (C-17)"
+ },
+ {
+  "id": "T4",
+  "file": "taskboard/app.py",
+  "old": "        self.notify(f\"{task.title} done",
+  "new": "        self.notify(f\"{escape(task.title)} done",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "escaped AND markup off shows the escapes (security S-1)"
+ },
+ {
+  "id": "T5",
+  "file": "taskboard/app.py",
+  "old": "        rest = next((len(g.rest) for g in",
+  "new": "        rest = next((len(g.rest) - 1 for g in",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the folded count off by one"
+ },
+ {
+  "id": "S6",
+  "file": "taskboard/views.py",
+  "old": "                                                   gantt_focus, gantt_previous)",
+  "new": "                                                   gantt_focus, None)",
+  "nodes": [
+   "tests/test_gantt_polish.py::test_TC_210_the_legend_asks_the_same_frame"
+  ],
+  "why": "legend_entries drops the previous group when it asks the frame"
+ }
+]

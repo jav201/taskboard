@@ -1,0 +1,6 @@
+[
+ {"id": "X1", "file": "taskboard/team_sync.py", "old": "        checks[\"alcance\"] = (False, \"no folder\")", "new": "        checks[\"alcance\"] = (False, \"ninguna ruta\")", "nodes": ["tests/test_english.py"], "why": "code review F1: a painted note in Spanish outside the old 55 words"},
+ {"id": "X2", "file": "taskboard/team_sync.py", "old": "        checks[\"identidad\"] = (True, f\"writes only board.{user_id}.json\")", "new": "        checks[\"identidad\"] = (True, f\"escribe solo board.{user_id}.json\")", "nodes": ["tests/test_english.py"], "why": "code review F1: escribe solo"},
+ {"id": "X3", "file": "taskboard/views.py", "old": "                           \"ash = projects at rest\"]),", "new": "                           \"ceniza = reposo\"]),", "nodes": ["tests/test_english.py"], "why": "code review F1: ceniza = reposo"},
+ {"id": "X4", "file": "taskboard/views.py", "old": "TEAM_FILTER_LABELS = {\"todo\": \"all\", \"equipo\": \"team\", \"personal\": \"personal\"}", "new": "TEAM_FILTER_LABELS = {\"todo\": \"all\", \"equipo\": \"equipo\", \"personal\": \"personal\"}", "nodes": ["tests/test_english.py"], "why": "a stored value painted again (PAINT_TOO)"}
+]

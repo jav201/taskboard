@@ -1,0 +1,66 @@
+{
+  "batch": "2026-10-02-batch-01",
+  "exported": "2026-10-02T15:53:16.383Z",
+  "answers": {
+    "D4": {
+      "choice": "keep",
+      "label": "Sí: hoy en turquesa, selección en inverso",
+      "note": ""
+    },
+    "D10": {
+      "choice": "soon",
+      "label": "Hacer el pase global pronto",
+      "note": ""
+    },
+    "D12": {
+      "choice": "en",
+      "label": "Todo en inglés",
+      "note": ""
+    },
+    "D13": {
+      "choice": "keep",
+      "label": "Dejarlo",
+      "note": ""
+    },
+    "D9": {
+      "choice": "hint",
+      "label": "Sí: «▲ 3 above / ▼ 2 below»",
+      "note": ""
+    },
+    "D14": {
+      "choice": "toast",
+      "label": "Sí, un aviso corto",
+      "note": ""
+    },
+    "D5": {
+      "choice": "ship",
+      "label": "Agregarlo",
+      "note": ""
+    },
+    "UXV-2": {
+      "choice": "sticky",
+      "label": "Mantener abiertos los que ya visité",
+      "note": ""
+    },
+    "UXV-3": {
+      "choice": "yes",
+      "label": "Sí: lo que vence hoy o está atrasado se pliega al final",
+      "note": ""
+    },
+    "PKT": {
+      "choice": "dim",
+      "label": "Atenuarlo",
+      "note": ""
+    },
+    "SOON": {
+      "choice": "amber",
+      "label": "Volver a marcarlos con ámbar «pronto»",
+      "note": ""
+    },
+    "HELP": {
+      "choice": "bright",
+      "label": "Pasarlos a blanco brillante",
+      "note": ""
+    }
+  }
+}

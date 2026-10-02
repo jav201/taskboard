@@ -287,12 +287,14 @@ def test_the_rendered_markup_carries_every_key_the_fit_chose():
 def test_keys_and_words_wear_different_tones_and_neither_judges():
     """The bar names capabilities; it judges nothing, so no severity hue.
 
-    Primary layer uses one attention hue for keys and one quiet hue for words.
-    The more layer tints each group, but words still stay quiet. Severity hues
-    (over, rose) never appear."""
+    Both layers draw keys bold bright and words in the quiet house (the colour
+    budget, batch 2026-10-02-batch-02, HLR-202: the accent marks focus, and the
+    more layer's eight group hues are gone). Severity hues (over, rose) never
+    appear."""
     from taskboard.views import HEX
     primary = render_key_bar(140, "swimlanes", "primary")
-    assert HEX["accent"] in primary and HEX["mut"] in primary
+    assert f"b {HEX['bright']}" in primary and HEX["mut"] in primary
+    assert HEX["accent"] not in primary
     more = render_key_bar(400, "swimlanes", "more")
     assert HEX["mut"] in more          # labels stay quiet
     assert HEX["over"] not in more and HEX["rose"] not in more
@@ -319,8 +321,12 @@ async def test_the_app_paints_its_keys_instead_of_a_blank_row(tmp_path):
         # toggling to the more layer reveals more keys than the primary layer.
         await pilot.press("semicolon")
         await pilot.pause()
+        # the layer really changed (the toggle read Textual's CSS `layer` and
+        # never left primary — batch 2026-10-02-batch-02, code review F3)
+        assert bar.bar_layer == "more"
         strips = app.screen._compositor.render_strips(app.screen.size)
         painted_more = "".join(s.text for s in strips[bar.region.y:bar.region.y + 1])
+        assert painted_more != painted, "the more layer painted the primary bar"
         primary_count = sum(1 for k in KEYMAP if k.views is None and k.primary and k.show in painted)
         more_count = sum(1 for k in KEYMAP if k.views is None and k.show in painted_more)
         assert more_count > primary_count, "more layer did not reveal extra keys"

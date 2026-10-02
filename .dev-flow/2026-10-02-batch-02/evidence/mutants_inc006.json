@@ -1,0 +1,12 @@
+[
+ {
+  "id": "W1",
+  "file": "taskboard/views.py",
+  "old": "        return (previous is None or group_key(raw[i][0]) != previous,\r\n",
+  "new": "        return (True,\r\n",
+  "nodes": [
+   "tests/test_gantt_polish.py::test_AT_207_the_project_just_left_stays_open"
+  ],
+  "why": "the previous group ignored: both arms of the one AT-207 node go RED (their fold checks); the 118x30 up-move bound alone is a pin"
+ }
+]

@@ -264,8 +264,8 @@ def test_card_cell_shows_the_deadline_countdown_on_every_dated_card():
     token it had (`·Nd`, days IN phase) is suppressed on the terminal phase
     by the done-rests law, so a card in the last phase went bare. The
     countdown rides EVERY dated card now, the last phase included: live work
-    wears the urgency houses (reldue_token's seats: over / soon / mut within
-    the week / dim past it); done work keeps the FACT but never the JUDGEMENT — the
+    wears the urgency houses (reldue_token's seats: over / soon today and
+    within the week / dim past it); done work keeps the FACT but never the JUDGEMENT — the
     same text in the quiet dim house. Undated and archived cards paint
     nothing: no date is no countdown, and put-away work has no live deadline.
     RED counterfactuals: the done card suppressed → the `+3d` limb red; the
@@ -285,9 +285,9 @@ def test_card_cell_shows_the_deadline_countdown_on_every_dated_card():
 
     live_soon = _dated("live soon", "Doing", p, 4)
     cell = card_cell(live_soon, b, 40, False, today=today)
-    # within the week: `mut`, no longer the accent (batch 2026-10-02-batch-01,
-    # colour budget: the accent marks focus; LLR-103.3)
-    assert "+4d" in plain(cell) and HEX["mut"] in cell and HEX["accent"] not in cell
+    # within the week: amber `soon`, never the accent (batch 2026-10-02-batch-02,
+    # HLR-203: the operator's SOON answer; the accent marks focus)
+    assert "+4d" in plain(cell) and HEX["soon"] in cell and HEX["accent"] not in cell
 
     live_late = _dated("live late", "Doing", p, -2)
     cell = card_cell(live_late, b, 40, False, today=today)

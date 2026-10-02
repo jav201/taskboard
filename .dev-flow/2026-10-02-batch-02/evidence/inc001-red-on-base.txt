@@ -1,0 +1,15 @@
+$ (scratch: git archive HEAD + the new tests/test_colour_budget_app.py and tests/kg_board.py) python -m pytest -q -p no:cacheprovider tests/test_colour_budget_app.py -rA   # increment 001 RED on base a0e7d9a
+PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+FAILED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+FAILED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+FAILED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+FAILED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+FAILED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+FAILED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+FAILED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+FAILED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+FAILED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+FAILED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet - Ass...
+FAILED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+FAILED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+12 failed, 1 passed in 0.98s

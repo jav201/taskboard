@@ -1,0 +1,133 @@
+[
+ {
+  "id": "G1",
+  "file": "taskboard/views.py",
+  "old": "                        size = room - 1 if room >= 2 else room",
+  "new": "                        size = room",
+  "nodes": [
+   "tests/test_gantt_polish.py",
+   "tests/test_gantt_board.py::test_TC_106_a_tall_group_pages_and_keeps_its_count"
+  ],
+  "why": "pages of the whole room, the hint row overflows"
+ },
+ {
+  "id": "G2",
+  "file": "taskboard/views.py",
+  "old": "if room >= 2:\r\n",
+  "new": "if room >= 99:\r\n",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "no hint row drawn"
+ },
+ {
+  "id": "G3",
+  "file": "taskboard/views.py",
+  "old": "                rows.append((_pad(c(escape(fit(\"  \" + hint, w)), \"dim\"), w), None))",
+  "new": "                rows.append((_pad(c(escape(fit(\"  \" + hint, w)), \"mut\"), w), None))",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the hint not dim"
+ },
+ {
+  "id": "G4",
+  "file": "taskboard/views.py",
+  "old": "        return (-urgent, -due_today, min(dues or [date.max]))",
+  "new": "        return (-sum(1 for d in dues if d < today), 0, min(dues or [date.max]))",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "urgency counts late only (base rule)"
+ },
+ {
+  "id": "G5",
+  "file": "taskboard/views.py",
+  "old": "        return (-urgent, -due_today, min(dues or [date.max]))",
+  "new": "        return (-urgent, 0, min(dues or [date.max]))",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the due-today tie-break dropped"
+ },
+ {
+  "id": "G6",
+  "file": "taskboard/views.py",
+  "old": "        if self.k > 1:\r\n            return frozenset()",
+  "new": "        if self.k >= 1:\r\n            return frozenset()",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "k <= 1 written k < 1: no shading at a day per cell"
+ },
+ {
+  "id": "G7",
+  "file": "taskboard/views.py",
+  "old": "        out.append(_on_weekend(m) if x in weekends else m)\r\n    return \"\".join(out)",
+  "new": "        out.append(m)\r\n    return \"\".join(out)",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "body rows not shaded (day row still is)"
+ },
+ {
+  "id": "G8",
+  "file": "taskboard/views.py",
+  "old": "        out.append(_on_weekend(m) if x in weekends else m)\r\n    return out, meta",
+  "new": "        out.append(m)\r\n    return out, meta",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the day row not shaded (body still is)"
+ },
+ {
+  "id": "G9",
+  "file": "taskboard/views.py",
+  "old": "    \"weekend\": \"#1a1d22\",",
+  "new": "    \"weekend\": \"#161d27\",",
+  "nodes": [
+   "tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours"
+  ],
+  "why": "the prototype hex, which quantises onto the field"
+ },
+ {
+  "id": "G10",
+  "file": "taskboard/views.py",
+  "old": "        cells[a] = OFF_LEFT if ax.cell(s) < 0 else ECHO_OPEN",
+  "new": "        cells[a] = OFF_LEFT if ax.cell(s) <= 0 else ECHO_OPEN",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "< 0 written <= 0: a start on the first day loses its bracket"
+ },
+ {
+  "id": "G11",
+  "file": "taskboard/views.py",
+  "old": "        cells[a] = OFF_LEFT if ax.cell(s) < 0 else ECHO_OPEN",
+  "new": "        cells[a] = ECHO_OPEN",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the left clip arrow removed (base)"
+ },
+ {
+  "id": "G12",
+  "file": "taskboard/views.py",
+  "old": "        cells[b] = OFF_RIGHT if ax.end_cell(e) >= w else ECHO_CLOSE",
+  "new": "        cells[b] = ECHO_CLOSE",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "the right clip arrow removed (base)"
+ },
+ {
+  "id": "G13",
+  "file": "taskboard/views.py",
+  "old": "    return f\"{cell[:close]} on {WEEKEND_BG}{cell[close:]}\"",
+  "new": "    return f\"[on {WEEKEND_BG}]{cell}[/]\"",
+  "nodes": [
+   "tests/test_span_economy.py::test_collapse_removes_the_redundant_runs"
+  ],
+  "why": "a second wrapping tag per cell (the span-economy law)"
+ }
+]

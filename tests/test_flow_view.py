@@ -74,14 +74,14 @@ def test_flow_empty_history_shows_sentence_and_no_ramp(tmp_path):
 
     text = str(render_flow(board, False, None, today=date(2026, 8, 15),
                            width=80, height=0))
-    assert "sin historia aún — se construye desde hoy" in text
+    assert "no history yet — it builds from today" in text  # English since batch 2026-10-02-batch-02 (HLR-204)
     assert not any(ch in text for ch in "░▒▓█")
     assert "CYCLE" not in text
     assert "HEATMAP" not in text
     assert "THROUGHPUT" not in text
 
 
-# AT-B3: single transition -> renders without error and "en curso n=1".
+# AT-B3: single transition -> renders without error and "open n=1".
 def test_flow_single_transition_renders_and_shows_open(tmp_path):
     board_path = tmp_path / "board.json"
     t = Task("Only", phase="Doing")
@@ -95,7 +95,7 @@ def test_flow_single_transition_renders_and_shows_open(tmp_path):
     text = str(render_flow(board, False, None, today=date(2026, 8, 15),
                            width=80, height=0))
     assert "FLOW" in text
-    assert "en curso n=1" in text
+    assert "open n=1" in text  # English since batch 2026-10-02-batch-02 (HLR-204)
 
 
 # AT-B4: width sweep cell-exact (1..120) + keymap contains key 7 -> view('flow').

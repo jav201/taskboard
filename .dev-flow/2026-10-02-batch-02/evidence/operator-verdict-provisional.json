@@ -1,0 +1,46 @@
+{
+  "batch": "2026-10-02-batch-02",
+  "exported": "2026-10-02T21:20:34.559Z",
+  "answers": {
+    "D-203": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "D-204": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "D-205": {
+      "choice": "accept",
+      "label": "Aceptar el gris neutro",
+      "note": ""
+    },
+    "D-208": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "D-211": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "D-213": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "D-214": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "D-217": {
+      "choice": "accept",
+      "label": "Aceptar (sin filas en blanco)",
+      "note": ""
+    }
+  }
+}

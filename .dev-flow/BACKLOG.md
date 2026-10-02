@@ -3,11 +3,48 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `57a6075` (local HEAD == `origin/main`; batch 2026-10-02-batch-01 started here)
+**Base ref:** `a0e7d9a` (local HEAD == `origin/main`; batch 2026-10-02-batch-02 started here)
 · **Last refresh:** 2026-10-02
-**Status:** **1611 tests green** (batch `2026-10-02-batch-01`: the whole-board gantt G-A + AX-2
-ruler, the colour budget on kanban and gantt, the README/RUN.md rewrite).
+**Status:** **1677 tests green** (batch `2026-10-02-batch-02`, Batch P: the operator's 12 answers —
+the app-wide colour budget, English everywhere, the gantt's page hint / finish toast / previous
+project sticky / urgency order / weekend shading / echo clip arrows; flow pinned to rev98).
 `test_win_clipboard_roundtrip` remains an intermittent environmental flake.
+
+## Open — after `2026-10-02-batch-02` (Batch P: polish)
+
+- ~~**Operator verdicts owed on the provisional visual decisions**~~ **DONE 2026-10-02** — the
+  operator accepted all eight (D-203, D-204, D-205, D-208, D-211, D-213, D-214, D-217) on the
+  before/after captures, before the push: `2026-10-02-batch-02/evidence/operator-verdict-provisional.json`.
+  The residuals they named (UXV2-3/4/5/6/7) stay as known behaviour, not defects.
+- **The key bar's `more` layer has no group boundaries** since the group hues left (UXV2-2, D-211):
+  a dim ` · ` group separator costs ~7 cells (~3 keys dropped at 80). `;` reaches it again since
+  D-218 (the toggle had read Textual's CSS `layer` since 8b73920).
+- **Soon-due amber outside `reldue_token`** (UXV2-1, HLR-203 amended, LED .19): the Focus view's
+  `date_chip` seats — tiles, cards, image and compact cards, the detail pane, the review layout's
+  selected-task line — still paint +1..+7d in `later` slate (`_URG_COLOR["week"]`). Operator: extend
+  the amber to them?
+- **The word `today` has three tones** (D-209, UXV2-8): accent on the lanes meter and the agenda
+  ruler, amber in `reldue_token` and the gantt chip — and kanban `today` is the same amber as
+  `+1d..+7d`. Unify?
+- **The remembered previous gantt group can be stale** (increment-005 code review F4): after a
+  detour through another view it is the gantt's last group, and finishing a group's last task makes
+  that empty group the previous one. Option: clear it when leaving the gantt.
+- **An echo clipped on the opposite side still draws an edge bracket** (increment-004 code review
+  F3): a due before the window draws `⟧`, a start past it `⟦`; for rest work `drawn` lacks
+  "beyond". Unreachable through the app (the selection moves onto open work).
+- **Titles carry terminal escape sequences** (security L1, pre-existing): ESC in a board-file title
+  reaches the terminal (only BEL/BS/VT/FF/CR are stripped); in team mode a teammate's file could
+  inject sequences. Apply `_clean_clipboard_text`'s character rule when a board loads.
+- **`app.py` notifies prompt-typed ids and exceptions with markup on** (security S-5 of P2,
+  pre-existing): `app.py` the setup id prompts and the team-sync failure — `[/]` raises
+  `MarkupError`. Pass `markup=False`.
+- **Cleanup:** `app._select_first`'s `group_of` is a fourth spelling of the gantt group key, `None`
+  for the Inbox (increment-005 code review F3) → use `views.group_key`; the dead `HEAT` table
+  (`views.py`, its `week ▒ accent`); the Setup colour guard's expression readability (increment-005
+  F6); the AT-207 param ids `[size0-2]` (increment-006 F5); the lattice help bullet drops "not data"
+  (increment-003 note).
+- **Setup at 80×24 wraps its check notes onto the next line** (pre-existing, P4 walkthrough).
+- **`team_filter_cycle` still has no key** (README audit #10) — the help names none now (D-219).
 
 ## Open — after `2026-10-02-batch-01` (gantt G-A + AX-2, colour budget on kanban/gantt, README)
 
@@ -16,17 +53,17 @@ ruler, the colour budget on kanban and gantt, the README/RUN.md rewrite).
   with "+N more" (cap rule to be set at its P1). Split out of Batch A at P0 under the
   pre-authorized A1/A2 split (`2026-10-02-batch-01` US-105). Seed:
   `prototypes/kg_mejoras/variants_kanban.k_a(sep_mode="rule")`, `variants_reconcile` R-1b.
-- **Colour budget, app-wide.** Kanban and gantt panels are done; still accent: the other seven
+- ✓ done in `2026-10-02-batch-02` (HLR-201/202, D-201/202) — **Colour budget, app-wide.** Kanban and gantt panels are done; still accent: the other seven
   views' titles, the keybar key hints (`keymap.py` group hues), the ribbon clock, the setup
   hints. Operator questions carried with it (`2026-10-02-batch-01` §6.2): D4 today in accent
   vs the selection in accent (UX-7) · D10 a title colour that differs per view until this pass
   (UX-6) · D12 the gantt header's English beside Spanish help prose · D13 `━` shared by the
   critical chain and the selection echo.
-- **Operator questions, gantt.** D9 an above/below hint for a paged project (none drawn) · D14
+- ✓ done in `2026-10-02-batch-02` (HLR-205/206) — **Operator questions, gantt.** D9 an above/below hint for a paged project (none drawn) · D14
   a cue (toast) when `]` finishes a task and it leaves the gantt.
-- **Weekend shading on the gantt ruler** (round-5 frames) — not shipped: off-palette background
+- ✓ done in `2026-10-02-batch-02` (HLR-209) — **Weekend shading on the gantt ruler** (round-5 frames) — not shipped: off-palette background
   `#161d27`, not in the AX-2 commission (D5).
-- **Operator questions from the P4 walkthrough** (`2026-10-02-batch-01` `04-validation.md`): the
+- ✓ answered and done in `2026-10-02-batch-02` (D5, UXV-2, UXV-3, PKT, SOON, HELP) — **Operator questions from the P4 walkthrough** (`2026-10-02-batch-01` `04-validation.md`): the
   approved AX-2 frame DOES shade weekends — ship it? (D5) · folding is accordion-style: moving
   the cursor or finishing a task can open/close projects above the cursor, so the highlight can
   move up on `down` (UXV-2) — keep, or keep a visited project open? · at a real 80×24 terminal
@@ -40,9 +77,9 @@ ruler, the colour budget on kanban and gantt, the README/RUN.md rewrite).
   `2026-10-02-batch-01`; byte-identical in `57a6075`): `.dev-flow/state.json` `owner` holds the
   absolute project path with the home folder (the flow writes it), and this file's git-identity note below carries personal
   e-mail addresses and the username on three lines. Operator decides whether to scrub.
-- **The ruler's echo for a task starting before the window** draws `⟦` at the window edge with
+- ✓ done in `2026-10-02-batch-02` (HLR-210) — **The ruler's echo for a task starting before the window** draws `⟦` at the window edge with
   no `◂` (UXV-7); the printed dates are right.
-- **Accent outside the panels, undeclared until now** (UXV-9): the help modal's headings and the
+- ✓ done in `2026-10-02-batch-02` (HLR-202; the input border kept as the edited-field focus role, D-207) — **Accent outside the panels, undeclared until now** (UXV-9): the help modal's headings and the
   filter modal's input border — join the app-wide colour-budget pass.
 - **`_strip` treats an escaped `\[` as a tag** (code review F5, pre-existing): a task or project
   name with brackets makes a gantt / lanes row — and a header row with a bracketed focus name —

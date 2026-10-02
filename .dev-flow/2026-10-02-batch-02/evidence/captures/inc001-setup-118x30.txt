@@ -1,0 +1,19 @@
+SETUP · equipo · proyectos · roster
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  equipo
+  modo equipo             on   off                      !    team.json falta o es inválido
+> carpeta compartida     ▌D:/team                       !    no existe
+    alcance                                             !    sin carpeta
+  sync cada               - 30 + min                    !    sin sync aún
+  mi identidad            jav                           !    identidad no está en roster
+
+  proyectos del equipo
+  ▐ Website Redesign      compartido    hue ██               
+
+  roster
+  ██ jav                 Javier     hue ██              !    0 miembro(s)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+tab sección   ↵ edita   espacio alterna   a agrega   x quita   ctrl+s guarda   esc cancela

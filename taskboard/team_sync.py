@@ -308,28 +308,28 @@ def probe_setup_health(staged: dict, team_state: TeamState | None) -> dict[str, 
     )
     checks["modo"] = (
         team_json_ok,
-        f"team.json válido, v{team_data.get('version', '?')}" if team_json_ok
-        else "team.json falta o es inválido",
+        f"team.json valid, v{team_data.get('version', '?')}" if team_json_ok
+        else "team.json missing or invalid",
     )
 
-    # carpeta compartida
+    # shared folder
     if shared_dir is None or not shared_dir_str:
-        checks["carpeta"] = (False, "sin configurar")
+        checks["carpeta"] = (False, "not set")
     elif not shared_dir.exists():
-        checks["carpeta"] = (False, "no existe")
+        checks["carpeta"] = (False, "does not exist")
     elif not shared_dir.is_dir():
-        checks["carpeta"] = (False, "no es un directorio")
+        checks["carpeta"] = (False, "not a directory")
     else:
         try:
             from uuid import uuid4
             probe = shared_dir / f".taskboard_probe_{uuid4().hex}"
             probe.write_text("ok", encoding="utf-8")
             probe.unlink()
-            checks["carpeta"] = (True, "existe y es escribible")
+            checks["carpeta"] = (True, "exists and is writable")
         except OSError as exc:
-            checks["carpeta"] = (False, f"no es escribible: {exc}")
+            checks["carpeta"] = (False, f"not writable: {exc}")
 
-    # alcance / lag
+    # reach / lag
     if shared_dir is not None and shared_dir.exists() and shared_dir.is_dir():
         import time
         start = time.monotonic()
@@ -337,15 +337,15 @@ def probe_setup_health(staged: dict, team_state: TeamState | None) -> dict[str, 
             list(shared_dir.iterdir())
             elapsed = time.monotonic() - start
             if elapsed > 5.0:
-                checks["alcance"] = (False, f"el remote tarda {elapsed:.1f}s")
+                checks["alcance"] = (False, f"the remote takes {elapsed:.1f}s")
             else:
-                checks["alcance"] = (True, f"alcance OK ({elapsed:.1f}s)")
+                checks["alcance"] = (True, f"reach OK ({elapsed:.1f}s)")
         except OSError as exc:
-            checks["alcance"] = (False, f"no alcanzable: {exc}")
+            checks["alcance"] = (False, f"unreachable: {exc}")
     else:
-        checks["alcance"] = (False, "sin carpeta")
+        checks["alcance"] = (False, "no folder")
 
-    # sync cada / last sync
+    # sync every / last sync
     tolerance = 45
     if isinstance(team_data, dict):
         cfg_tol = team_data.get("sync_tolerance_minutes")
@@ -354,23 +354,23 @@ def probe_setup_health(staged: dict, team_state: TeamState | None) -> dict[str, 
     if team_state is not None and team_state.user_id and team_state.last_push_at:
         age = team_state.sync_age(team_state.user_id)
         if age is None:
-            checks["sync"] = (False, "sin timestamp de sync")
+            checks["sync"] = (False, "no sync timestamp")
         elif age > tolerance:
-            checks["sync"] = (False, f"último sync hace {age} min (tolerancia {tolerance})")
+            checks["sync"] = (False, f"last sync {age} min ago (tolerance {tolerance})")
         else:
-            checks["sync"] = (True, f"último sync hace {age} min")
+            checks["sync"] = (True, f"last sync {age} min ago")
     else:
-        checks["sync"] = (False, "sin sync aún")
+        checks["sync"] = (False, "no sync yet")
 
-    # mi identidad
+    # my identity
     if not user_id:
-        checks["identidad"] = (False, "sin identidad")
+        checks["identidad"] = (False, "no identity")
     elif roster and any(r.get("id") == user_id for r in roster):
-        checks["identidad"] = (True, f"escribe solo board.{user_id}.json")
+        checks["identidad"] = (True, f"writes only board.{user_id}.json")
     else:
-        checks["identidad"] = (False, "identidad no está en roster")
+        checks["identidad"] = (False, "identity not in the roster")
 
     # roster
-    checks["roster"] = (bool(roster), f"{len(roster)} miembro(s)")
+    checks["roster"] = (bool(roster), f"{len(roster)} member(s)")
 
     return checks

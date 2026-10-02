@@ -115,8 +115,8 @@ async def test_setup_renders_grid_with_sections(tmp_path):
         await pilot.press("0")
         await pilot.pause()
         text = str(app.query_one("#board").render())
-        assert "equipo" in text
-        assert "proyectos del equipo" in text
+        assert "\n  team\n" in text  # the section line; English since batch 2026-10-02-batch-02 (HLR-204)
+        assert "team projects" in text
         assert "roster" in text
         assert "Javier" in text
 
@@ -254,12 +254,12 @@ async def test_help_modal_shows_usage_legend_example_and_keys(tmp_path):
         await pilot.pause()
         assert isinstance(app.screen, HelpModal)
         texts = _label_texts(app.screen)
-        assert any("Uso" in t for t in texts)
-        assert any("Leyenda" in t for t in texts)
-        assert any("Ejemplo" in t for t in texts)
-        assert any("Teclas" in t for t in texts)
+        assert any("Usage" in t for t in texts)  # English since batch 2026-10-02-batch-02 (HLR-204)
+        assert any("Legend" in t for t in texts)
+        assert any("Example" in t for t in texts)
+        assert any("Keys" in t for t in texts)
         # the usage copy comes from the per-view register
-        assert any("para qué es" in t for t in texts)
+        assert any("what it is for" in t for t in texts)
 
 
 async def test_help_modal_m_opens_full_keymap(tmp_path):

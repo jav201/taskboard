@@ -25,7 +25,8 @@ from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
 from .team_sync import TeamState, probe_setup_health
-from .views import (clip, escape, filtered_board, focus_tasks, nav_model, sort_by_due,
+from .views import (clip, escape, filtered_board, focus_tasks, gantt_group_key, group_key,
+                    gantt_plan, nav_model, sort_by_due,
                     render_view, valid_url)
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
@@ -115,7 +116,7 @@ class HelpScreen(ModalScreen[None]):
                 continue
             cells.append((title, f"[#8b98a5]{title}[/]", ""))
             cells += [(f"{k:<{kw}} {d}",
-                       f"[#2dd4bf]{k:<{kw}}[/] [#c8d3de]{d}[/]", title)
+                       f"[b #e6edf7]{k:<{kw}}[/] [#c8d3de]{d}[/]", title)
                       for k, d in sec]
             cells.append(("", "", ""))
         # TWO COLUMNS, balanced by LINES: one column of the full map is ~36
@@ -143,7 +144,7 @@ class HelpScreen(ModalScreen[None]):
         hint = " · ".join(f"{d} {t.lower()}"
                           for d, t, _ in binding_map(self, shown=True))
         plain = [f"KEYS   {hint}", ""]
-        rows = [f"[#2dd4bf]KEYS[/]   [#8b98a5]{hint}[/]", ""]
+        rows = [f"[b #e6edf7]KEYS[/]   [#8b98a5]{hint}[/]", ""]
         for (lp, lm, _), (rp, rm, _) in zip(left, right):
             plain.append(f"{lp:<{w}}   {rp}".rstrip())
             rows.append(f"{lm}{' ' * (w - len(lp))}   {rm}".rstrip())
@@ -202,6 +203,10 @@ class TaskboardApp(App):
         self.show_archived = False
         self.search_query: str | None = None   # session-level filter (LLR-003.2)
         self.selected_task_id: str | None = None
+        # the gantt group the selection is in, and the one before it: the
+        # previous group stays open while it fits (answer UXV-2, HLR-207)
+        self._gantt_group: str | None = None
+        self._gantt_previous: str | None = None
         self._tick_n = 0                 # drives the gantt flow packet
         self._last_history_error: str | None = None  # suppress duplicate warnings
         self.team_sync_interval = team_sync_interval
@@ -447,6 +452,7 @@ class TaskboardApp(App):
                               kanban_collapsed=self.kanban_collapsed,
                               kanban_focus=self.focused_project_id,
                               gantt_focus=self.focused_project_id,
+                              gantt_previous=self._gantt_previous,
                               lanes_presentation=self.lanes_presentation,
                               focus_presentation=self.focus_presentation,
                               search_query=self.search_query,
@@ -484,7 +490,8 @@ class TaskboardApp(App):
                                    team_state=self.team_state,
                                    team_filter=self.team_filter,
                                    selected_id=self.selected_task_id,
-                                   gantt_focus=self.focused_project_id))
+                                   gantt_focus=self.focused_project_id,
+                                   gantt_previous=self._gantt_previous))
 
     async def _on_palette_run(self, action: str | None) -> None:
         """Execute the action selected from the palette, if any."""
@@ -497,7 +504,10 @@ class TaskboardApp(App):
         grouped more-layer. The state lives on the KeyBar so it survives view
         switches and resizes."""
         keybar = self.query_one("#keybar", KeyBar)
-        keybar.set_layer("more" if keybar.layer == "primary" else "primary")
+        # `bar_layer`, not `layer`: Textual's own `layer` is the CSS layer
+        # ("default"), so reading it kept the bar on primary for good
+        # (code review F3, batch 2026-10-02-batch-02)
+        keybar.set_layer("more" if keybar.bar_layer == "primary" else "primary")
 
     def action_report(self) -> None:
         """`R` — write an HTML report of the board beside the board file.
@@ -684,6 +694,21 @@ class TaskboardApp(App):
             self.board.save()              # executed, nothing recorded
             self._warn_history_error()
             self.refresh_view()
+            if self.view_mode == "gantt" and self.board.is_done(task):
+                self._notify_folded(task)
+
+    def _notify_folded(self, task: Task) -> None:
+        """A task `]` finished has left the gantt — it folded into its group's
+        `✓n`. Say so, once, with the way back (answer D14, HLR-206). The title is
+        board text: shown raw with markup OFF, never escaped (security S-1)."""
+        group = gantt_group_key(self.board, task)
+        board = self._view_board()
+        rest = next((len(g.rest) for g in gantt_plan(board, self.show_archived, None,
+                                                     date.today(), 10 ** 6,
+                                                     self.focused_project_id)
+                     if group_key(g.project) == group),
+                    0)
+        self.notify(f"{task.title} done · folded into ✓{rest} · u undo", markup=False)
 
     def action_prio_cycle(self) -> None:
         """`!` — cycle the selected task's priority low→normal→high→low."""
@@ -849,6 +874,7 @@ class TaskboardApp(App):
     def refresh_view(self) -> None:
         self._validate_focus()
         self._select_first()
+        self._track_gantt_group()
         boards = self.query("#board")
         if not boards:
             return
@@ -866,6 +892,7 @@ class TaskboardApp(App):
                               kanban_collapsed=self.kanban_collapsed,
                               kanban_focus=self.focused_project_id,
                               gantt_focus=self.focused_project_id,
+                              gantt_previous=self._gantt_previous,
                               lanes_presentation=self.lanes_presentation,
                               focus_presentation=self.focus_presentation,
                               search_query=self.search_query,
@@ -874,6 +901,18 @@ class TaskboardApp(App):
                               setup_state=self._setup_state)
         board_widget.update(content)
         self._scroll_selected_into_view()
+
+    def _track_gantt_group(self) -> None:
+        """In the gantt, remember the selection's group and the one it was in
+        before, so the plan can keep the group just left open (LLR-207.2)."""
+        task = self.selected_task
+        if self.view_mode != "gantt" or task is None:
+            return
+        group = gantt_group_key(self.board, task)
+        if group != self._gantt_group:
+            if self._gantt_group is not None:
+                self._gantt_previous = self._gantt_group
+            self._gantt_group = group
 
     def _scroll_selected_into_view(self) -> None:
         idx = getattr(self, "_line_map", {}).get(self.selected_task_id)

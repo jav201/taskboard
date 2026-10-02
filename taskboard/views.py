@@ -59,6 +59,7 @@ HEX = {
     "soon": "#fbbf24",
     "later": "#64748b",
     "done": "#3f9c6d",
+    "weekend": "#1a1d22",  # a background only: weekends on the gantt field (HLR-209)
 }
 
 MIN_WIDTH = 24   # below this we render at MIN_WIDTH and let the terminal clip
@@ -238,7 +239,7 @@ def status_glyph(board: Board, task: Task) -> tuple[str, str]:
         return ("▲", "over")
     if board.phase_index(task) == 0:
         return ("○", "dim")
-    return ("◐", "accent")
+    return ("◐", "hd")
 
 
 def project_color(board: Board, task: Task) -> str:
@@ -467,7 +468,7 @@ def reldue_token(task: Task, today: date, board: Board, *,
     if delta == 0:
         return "today", ("dim" if resting else "soon")
     if delta <= 7:
-        return f"+{delta}d", ("dim" if resting else "mut")   # near, not focus (budget)
+        return f"+{delta}d", ("dim" if resting else "soon")  # soon: amber, not focus
     return f"+{delta}d", "dim"
 
 
@@ -548,7 +549,7 @@ def _strip(markup: str) -> str:
     return re.sub(r"\[/?[^\]]*\]", "", markup)
 
 
-def header(title: str, right: str, w: int, tone: str = "accent") -> str:
+def header(title: str, right: str, w: int, tone: str = "bright") -> str:
     """THE HEAD ROW. No box: this design commits with RULES, not boxes — the
     prototype's closure law, which the frame was the last thing failing.
 
@@ -559,8 +560,8 @@ def header(title: str, right: str, w: int, tone: str = "accent") -> str:
     if tvis + rvis + 3 > w:               # too tight -> the right content goes
         right, rvis = "", 0
     if tvis + 2 > w:                      # still tight -> truncate the title
-        # in the title's own tone: the kanban and the gantt pass `bright` (the
-        # colour budget, batch 2026-10-02-batch-01); the other views keep accent
+        # in the title's own tone: every title is bold `bright` (the colour
+        # budget, batches 2026-10-02-batch-01 and -02)
         return c(fit(_strip(title), w), tone, bold=True)
     gap = max(1, w - tvis - rvis - 1)
     return title + " " * gap + right + " "
@@ -962,7 +963,7 @@ def _grid_task_row(t: Task, board: Board, lane: LaneFacts, wc: int,
     if t.images:
         right.append(("▤", "mut"))
     if t.urls:
-        right.append(("↗", "accent"))
+        right.append(("↗", "mut"))
     right.append(_grid_chip(t, today))
     rw = sum(vis(x) for x, _ in right) + len(right)
     title_w = max(0, wc - len(prefix) - rw - 1)
@@ -1081,7 +1082,7 @@ def _grid_render(board: Board, show_archived: bool,
     right = c(f"{open_n} open · ", "mut") + c(f"{due_n} due", "over", bold=True)
     if hidden:
         right = c(f"+{len(hidden)} lanes ", "dim") + right
-    lines = [header(c("◆ TASKBOARD", "accent", bold=True)
+    lines = [header(c("◆ TASKBOARD", "bright", bold=True)
                     + c(f" · grid {n_cols}×{layers_n}", "mut"), right, w)]
 
     body = h - 1
@@ -1736,7 +1737,7 @@ def render_swimlanes(board, show_archived, selected_id, today=None,
     open_n = sum(1 for t in live if not board.is_done(t))
     due_n = sum(1 for t in live if urgency(t, today, board) in ("overdue", "today"))
     right = c(f"{open_n} open · ", "mut") + c(f"{due_n} due", "over", bold=True)
-    lines = [header(c("◆ TASKBOARD", "accent", bold=True), right, w)]
+    lines = [header(c("◆ TASKBOARD", "bright", bold=True), right, w)]
 
     if not lanes:
         lines.append(line(c(fit("  (no projects — press 'p' to add one)", inner), "dim")))
@@ -1839,7 +1840,7 @@ def render_agenda(board, show_archived, selected_id, today=None,
     today_n = sum(1 for t in judged if agenda_bucket(t, today) == "today")
     right = (c(f"▲ {overdue_n} overdue", "over", bold=True) + c(" · ", "mut")
              + c(f"{today_n} today", "soon"))
-    lines = [header(c("AGENDA", "accent", bold=True), right, w)]
+    lines = [header(c("AGENDA", "bright", bold=True), right, w)]
 
     dated = sort_by_due([t for t in tasks if parse_iso(t.due_date) is not None])
     undated = [t for t in tasks if parse_iso(t.due_date) is None]
@@ -2121,6 +2122,11 @@ GANTT_SCALES = (0.5, 1, 2, 3, 7)        # days per cell; the smallest that fits 
 GANTT_MARGIN = 2                         # days of air either side of the open work
 GANTT_RULER_ROWS = 2                     # month row + day row, pinned under the header
 CRITICAL_REACH = "━"                     # the critical chain: structure, not hue
+# Weekends, shaded at a day per cell or finer (answer D5; the round-5 frames).
+# The prototype's #161d27 quantises to the field's own 256-colour index (16), so
+# it vanished on a 256-colour terminal; #1a1d22 keeps its luminance and lands on
+# index 234 (measured, batch 2026-10-02-batch-02 P-4 / D-205).
+WEEKEND_BG = HEX["weekend"]
 ECHO_OPEN, ECHO_FILL, ECHO_CLOSE = "⟦", "━", "⟧"
 
 
@@ -2157,6 +2163,15 @@ class GanttAxis:
                 out.append(d)
             d += timedelta(days=1)
         return out
+
+    def weekends(self) -> frozenset[int]:
+        """The field cells whose days are all Saturday or Sunday, while a cell
+        is at most a day (k <= 1); none at coarser scales, where a cell mixes
+        weekdays and weekend."""
+        if self.k > 1:
+            return frozenset()
+        return frozenset(x for x in range(self.w)
+                         if all(d.weekday() >= 5 for d in self.days_in(x)))
 
     def guides(self) -> frozenset[int]:
         """The calendar ruled through the ground: Mondays while a week is at
@@ -2214,21 +2229,41 @@ class GanttGroup(NamedTuple):
     unfolded: bool
 
 
+# The Inbox's key as a gantt group, beside the project ids (None means "no
+# previous group"): the two must never collide (batch 2026-10-02-batch-02, qa N-1).
+INBOX_GROUP = ""
+
+
+def group_key(project) -> str:
+    """A gantt group's key: its project's id, or the Inbox's."""
+    return project.id if project is not None else INBOX_GROUP
+
+
+def gantt_group_key(board: Board, t: Task) -> str:
+    """The gantt group a task is drawn in: its project's id, or the Inbox."""
+    return group_key(board.project_by_id(t.project_id))
+
+
 def _gantt_open(board: Board, t: Task) -> bool:
     return not board.is_done(t) and not t.archived
 
 
 def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
                today: date, body_rows: int,
-               focus: str | None = None) -> list[GanttGroup]:
+               focus: str | None = None, previous: str | None = None) -> list[GanttGroup]:
     """THE ONE SEAT for what the gantt draws and in what order — the renderer
     and `nav_model` both read it, so the cursor cannot walk an order the screen
     does not show (F-3).
 
     Every group gets its span row. The selected task's group unfolds first;
-    the others unfold most-late first (then earliest open due) while ALL of a
-    group's open rows still fit. Rest work (done or archived) never draws a
-    row: it is the `✓n` on its span row (G-A: "done folds to ✓n")."""
+    the others unfold most-URGENT first — open tasks due today or earlier, then
+    the most due today, then the earliest open due (batch 2026-10-02-batch-02,
+    HLR-208: due today counts) — while ALL of a group's open rows still fit.
+    `previous` is the group the selection was in before its current one: it is
+    offered rows right after the selected group, so walking into the next
+    project does not fold the one just left (answer UXV-2, HLR-207).
+    Rest work (done or archived) never draws a row: it is the `✓n` on its span
+    row (G-A: "done folds to ✓n")."""
     tasks = board.visible_tasks(show_archived)
     raw: list[tuple[object | None, list[Task], list[Task]]] = []
     for p in board.visible_projects(show_archived):
@@ -2256,8 +2291,11 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
 
     def pressure(i):
         ts = raw[i][1]
-        first = min([d for t in ts if (d := parse_iso(t.due_date))] or [date.max])
-        return (-late_n(ts), first)
+        dues = [d for t in ts if (d := parse_iso(t.due_date))]
+        urgent = sum(1 for d in dues if d <= today)
+        due_today = sum(1 for d in dues if d == today)
+        return (previous is None or group_key(raw[i][0]) != previous,
+                -urgent, -due_today, min(dues or [date.max]))
 
     for i in sorted((i for i in range(len(raw)) if i != sel_i), key=pressure):
         n = len(raw[i][1])
@@ -2381,25 +2419,34 @@ def _gantt_bar(task: Task, board: Board, ax: GanttAxis, chain: set[str],
         cells[-1] = (OFF_RIGHT, "mut")
     lo, hi = max(0, a) + (1 if a < 0 else 0), min(ax.w - 1, b)   # clear of `◂`
     if hi > lo and _flowing(board, task):
-        cells[lo + tick % (hi - lo)] = ("▬", "bright")
+        cells[lo + tick % (hi - lo)] = ("▬", "mut")
     return cells
 
 
+def _on_weekend(cell: str) -> str:
+    """One field cell's markup (`[style]g[/]`) with the weekend background in
+    the SAME tag — `[style on #bg]g[/]` — so neighbouring cells of one style
+    still collapse into a single run (the span-economy law); a second wrapping
+    tag per cell would not."""
+    close = cell.index("]")
+    return f"{cell[:close]} on {WEEKEND_BG}{cell[close:]}"
+
+
 def _gantt_field(cells: list[tuple[str, str]], ax: GanttAxis,
-                 guides: frozenset[int]) -> str:
+                 guides: frozenset[int], weekends: frozenset[int] = frozenset()) -> str:
     """Cells to markup over the field's own ground: lattice `·` (ash behind
     today, dim ahead), the calendar guide `┆`, and the today rule `╎` in any
-    cell nothing else took."""
+    cell nothing else took; a weekend cell carries the weekend background
+    under whatever it holds (every cell here is a constant glyph)."""
     out = []
     for x, (glyph, tone) in enumerate(cells):
         if glyph != " ":
-            out.append(c(glyph, "bright", bold=True) if tone == "crit"
-                       else c(glyph, tone))
+            m = (c(glyph, "bright", bold=True) if tone == "crit" else c(glyph, tone))
         elif x == ax.tc:
-            out.append(c(RULE, "accent"))
+            m = c(RULE, "accent")
         else:
-            out.append(c(FIELD_WEEK if x in guides else LATTICE,
-                         "ash" if x < ax.tc else "dim"))
+            m = c(FIELD_WEEK if x in guides else LATTICE, "ash" if x < ax.tc else "dim")
+        out.append(_on_weekend(m) if x in weekends else m)
     return "".join(out)
 
 
@@ -2456,7 +2503,10 @@ def gantt_echo(task: Task, board: Board, ax: GanttAxis, today: date):
         if b <= a:
             b = min(w - 1, a + 1)
         cells = {x: ECHO_FILL for x in range(a + 1, b)}
-        cells[a], cells[b] = ECHO_OPEN, ECHO_CLOSE
+        # a clipped end says so, as the bars do (UXV-7): the bracket would claim
+        # the task starts (or ends) on the window's edge
+        cells[a] = OFF_LEFT if ax.cell(s) < 0 else ECHO_OPEN
+        cells[b] = OFF_RIGHT if ax.end_cell(e) >= w else ECHO_CLOSE
         L, R = _md(s), _md(e)
         both = f"{L}–{e.day}" if (s.year, s.month) == (e.year, e.month) else f"{L}–{R}"
         return (cells, tone,
@@ -2467,10 +2517,12 @@ def gantt_echo(task: Task, board: Board, ax: GanttAxis, today: date):
     if e is not None:
         b = min(max(ax.end_cell(e), 0), w - 1)
         txt = f"no start · due {_md(e)}"
-        return ({b: ECHO_CLOSE}, tone, [[(b + 2, txt)], [(b - 1 - len(txt), txt)]], txt)
+        close = OFF_RIGHT if ax.end_cell(e) >= w else ECHO_CLOSE
+        return ({b: close}, tone, [[(b + 2, txt)], [(b - 1 - len(txt), txt)]], txt)
     a = min(max(ax.cell(s), 0), w - 1)
     txt = f"starts {_md(s)} · no due"
-    return ({a: ECHO_OPEN}, tone, [[(a + 2, txt)], [(a - 1 - len(txt), txt)]], txt)
+    opening = OFF_LEFT if ax.cell(s) < 0 else ECHO_OPEN
+    return ({a: opening}, tone, [[(a + 2, txt)], [(a - 1 - len(txt), txt)]], txt)
 
 
 def _ruler_cell(ch: str, key: str, bold: bool = False, reverse: bool = False) -> str:
@@ -2530,15 +2582,16 @@ def gantt_day_row(ax: GanttAxis, today: date, echo) -> tuple[list[str], dict]:
             for d, _x, p in meta["ticks"]:
                 if p is not None and p <= tc < p + len(str(d.day)):
                     write(p, str(d.day), "accent", "tick", True)
-    guides = ax.guides()
+    guides, weekends = ax.guides(), ax.weekends()
     out = []
     for x in range(w):
         if glyph[x] is None:
             near = any(owner[i] != "" for i in (x - 1, x + 1) if 0 <= i < w)
-            out.append(c(FIELD_WEEK if x in guides and not near else " ", "frame"))
+            m = c(FIELD_WEEK if x in guides and not near else " ", "frame")
         else:
             ch, key, bold = glyph[x]
-            out.append(_ruler_cell(ch, key, bold))
+            m = _ruler_cell(ch, key, bold)
+        out.append(_on_weekend(m) if x in weekends else m)
     return out, meta
 
 
@@ -2655,11 +2708,12 @@ def _gantt_legend(width: int, drawn: set[str]) -> str:
 
 def render_gantt(board, show_archived, selected_id, today=None,
                  width=68, height=0, line_map=None, tick=0,
-                 focus: str | None = None) -> Text:
+                 focus: str | None = None, previous: str | None = None) -> Text:
     """The gantt as the app paints it: `_gantt_frame`'s rows, closed by the
     one-line legend when a row is spare (LLR-101.10)."""
     lines, drawn, _groups, _ax = _gantt_frame(board, show_archived, selected_id, today,
-                                              width, height, line_map, tick, focus)
+                                              width, height, line_map, tick, focus,
+                                              previous)
     w = _clamp_width(width)
     pinned = 0
     if len(lines) < (height or 24):
@@ -2671,14 +2725,15 @@ def render_gantt(board, show_archived, selected_id, today=None,
 
 
 def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height=0,
-                 line_map=None, tick=0, focus: str | None = None):
+                 line_map=None, tick=0, focus: str | None = None,
+                 previous: str | None = None):
     """THE WHOLE BOARD, FITTED (G-A), WITH A RULER THAT ANSWERS (AX-2).
 
     The shipped gantt laid every board on two days per cell with today at 30 %
     of the field and drew rows until the height ran out — "+9 not shown" on the
     board the operator judged it on, a whole project invisible. Now the window
     is fitted to the open work, projects fold to one span row when rows run
-    out (the selected task's first, then the most late), finished work folds to
+    out (the selected task's first, then the most urgent), finished work folds to
     `✓n`, and the dates sit on a two-row ruler at the top instead of an axis
     that dropped the month you were in.
 
@@ -2691,9 +2746,10 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
     h = height or 24
     label_w, chip_w, field_w = gantt_columns(w)
     body_rows = max(0, h - 1 - GANTT_RULER_ROWS) if height else 10 ** 6
-    groups = gantt_plan(board, show_archived, selected_id, today, body_rows, focus)
+    groups = gantt_plan(board, show_archived, selected_id, today, body_rows, focus,
+                        previous)
     ax = gantt_axis(field_w, today, *gantt_window(groups, today))
-    guides = ax.guides()
+    guides, weekends = ax.guides(), ax.weekends()
     chain = set(critical_chain(board))
     sel = board.task_by_id(selected_id) if selected_id else None
     drawn: set[str] = set()
@@ -2701,7 +2757,7 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
     def row(label: str, gut: str, cells: list[tuple[str, str]], chip: str) -> str:
         if any(g in (OFF_LEFT, OFF_RIGHT) for g, _ in cells):
             drawn.add("beyond")
-        out = _pad(label, label_w) + gut + _gantt_field(cells, ax, guides)
+        out = _pad(label, label_w) + gut + _gantt_field(cells, ax, guides, weekends)
         if chip_w:
             out += " " + chip
         return _pad(out, w)
@@ -2799,7 +2855,7 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
                          None))
     else:
         for g in groups:
-            shown, paged = (g.open if g.unfolded else []), False
+            shown, paged, hint = (g.open if g.unfolded else []), False, ""
             if g.unfolded:
                 room = body_rows - len(groups) - sum(len(x.open) for x in groups
                                                      if x.unfolded and x is not g)
@@ -2807,10 +2863,20 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
                     if room < 1:          # only when groups == body and the
                         shown, paged = [], True   # selection is rest work: no row owed
                     else:
+                        # pages of the rows left, less one for the hint row
+                        # under the page (answer D9) when there are two or more
+                        size = room - 1 if room >= 2 else room
                         i = next((j for j, t in enumerate(shown) if t.id == selected_id), 0)
-                        shown, paged = shown[(i // room) * room:(i // room) * room + room], True
+                        first = (i // size) * size
+                        above, below = first, max(0, len(shown) - first - size)
+                        shown, paged = shown[first:first + size], True
+                        if room >= 2:
+                            hint = " / ".join(p for p in (above and f"▲ {above} above",
+                                                          below and f"▼ {below} below") if p)
             rows.append((span_row(g, paged), None))
             rows.extend((task_row(t), t.id) for t in shown)
+            if hint:
+                rows.append((_pad(c(escape(fit("  " + hint, w)), "dim"), w), None))
 
     if not groups:
         lines.append(_pad(c("  (nothing scheduled — press 'a' to add a task)", "dim"), w))
@@ -2873,7 +2939,7 @@ def _focus_attachments(task: Task, width: int) -> str:
                        "mut"))
     if task.urls:
         parts.append(c(f"↗ {len(task.urls)} url{'s' if len(task.urls) != 1 else ''}",
-                       "accent"))
+                       "mut"))
     if not parts:
         return ""
     body = "  ".join(parts)
@@ -2913,7 +2979,7 @@ def _focus_detail_lines(board: Board, task: Task, today: date, width: int) -> li
     if task.urls:
         out.append(c(escape(fit("URLs", width)), "hd", bold=True))
         for u in task.urls[:5]:
-            out.append(c(escape(fit(clip(u, width), width)), "accent"))
+            out.append(c(escape(fit(clip(u, width), width)), "mut"))
 
     if task.images:
         out.append(c(escape(fit(f"Images ({len(task.images)})", width)), "hd", bold=True))
@@ -3117,7 +3183,7 @@ def _focus_tiles(board: Board, tasks: list[Task], selected_id: str | None,
                                                content_w - 1))
                 media_lines.append(spine + " "
                                    + pad_right(c(attach_lines[1],
-                                                  "accent" if t.urls else "mut"),
+                                                  "mut"),
                                                content_w - 1))
             else:
                 media_lines.append(spine + " "
@@ -3257,7 +3323,7 @@ def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
                                     today=today,
                                     unblocks=unblocks), q.id))
 
-    title = c("◆ FOCUS", "accent", bold=True) + c(" · review", "mut")
+    title = c("◆ FOCUS", "bright", bold=True) + c(" · review", "mut")
     right = c(f"{idx + 1}/{len(ordered)} · stale first", "mut")
     lines = [header(title, right, inner)]
     selected_line = 1
@@ -3286,7 +3352,7 @@ def _focus_stale(board: Board, tasks: list[Task], selected_id: str | None,
     overdue = [t for t in tasks if urgency(t, today, board) == "overdue"]
     stale = [t for t in tasks
              if (days_in_phase(t, today) or 0) >= 7 and not board.is_done(t)]
-    title = c("◆ FOCUS", "accent", bold=True) + c(" · stale first", "mut")
+    title = c("◆ FOCUS", "bright", bold=True) + c(" · stale first", "mut")
     right = c(f"{len(tasks)} pinned", "mut")
     lines = [header(title, right, inner)]
     lines.append(line(c(f"▲ {len(overdue)} overdue", "over")
@@ -3541,7 +3607,7 @@ def render_focus(board, show_archived, selected_id, today=None,
     tasks.sort(key=lambda t: _focus_sort_key(board, show_archived, t, today))
 
     right = c(f"{len(tasks)} pinned", "mut")
-    title = c("◆ FOCUS", "accent", bold=True) + c(f" · {presentation}", "mut")
+    title = c("◆ FOCUS", "bright", bold=True) + c(f" · {presentation}", "mut")
     lines = [header(title, right, w)]
 
     if presentation == "inspector":
@@ -3615,7 +3681,7 @@ def _flow_cycle_times(intervals: dict[str, list[tuple[str, datetime, datetime | 
 
     Returns ``{phase: (median_days, open_count)}``.  ``median_days`` is ``None``
     when the phase has no closed interval; ``open_count`` is then the number of
-    still-open intervals (so the view can say "en curso n=N")."""
+    still-open intervals (so the view can say "open n=N")."""
     closed: dict[str, list[int]] = {p: [] for p in phases}
     open_n: dict[str, int] = {p: 0 for p in phases}
     for task_intervals in intervals.values():
@@ -3716,11 +3782,11 @@ def render_flow(board, show_archived, selected_id, today=None,
     known = {t.id for t in board.visible_tasks(True)}
     records = [r for r in records if r.get("task") in known]
 
-    lines = [header(c("FLOW", "accent", bold=True), "", w)]
+    lines = [header(c("FLOW", "bright", bold=True), "", w)]
     lines.append(head_rule(w))
 
     if not records:
-        msg = "sin historia aún — se construye desde hoy"
+        msg = "no history yet — it builds from today"
         lines.append(line(c(fit(escape(msg), inner), "mut")))
         lines.append(bottom(None, w))
         return to_text(lines, height, w)
@@ -3740,14 +3806,14 @@ def render_flow(board, show_archived, selected_id, today=None,
 
     # ---- cycle time ---------------------------------------------------------
     lines.append(line(c(fit("CYCLE", inner), "hd", bold=True)))
-    cycle_label_w = max(8, inner - 17)  # leaves room for "en curso n=N"
+    cycle_label_w = max(8, inner - 17)  # leaves room for "open n=N"
     for phase in phases:
         median, open_n = cycle.get(phase, (None, 0))
         if median is not None:
             value = _flow_format_median(median)
             value_col = "ink"
         elif open_n:
-            value = f"en curso n={open_n}"
+            value = f"open n={open_n}"
             value_col = "mut"
         else:
             value = "—"
@@ -3826,7 +3892,7 @@ def render_flow(board, show_archived, selected_id, today=None,
                 bar_cells.append(" ")
                 pos += 1
         bar_row = " " * data_start + "".join(bar_cells)
-        lines.append(line(c(fit(bar_row, inner), "accent")))
+        lines.append(line(c(fit(bar_row, inner), "hd")))
     summary = f"total {total}"
     lines.append(line(c(fit(summary, inner, "right"), "mut")))
 
@@ -3838,13 +3904,17 @@ def render_flow(board, show_archived, selected_id, today=None,
 # team classification filter chrome (V2/V3)
 # ---------------------------------------------------------------------------
 TEAM_FILTER_MODES = ("todo", "equipo", "personal")
+# what each stored mode is CALLED on screen (batch 2026-10-02-batch-02, HLR-204):
+# the values are data and stay as they are; only the painted word is English
+TEAM_FILTER_LABELS = {"todo": "all", "equipo": "team", "personal": "personal"}
 
 
 def render_team_filter_chrome(active: str) -> str:
-    """The segmented control `todo · equipo · personal` as markup.
+    """The segmented control `all · team · personal` as markup.
 
-    The active segment wears the accent house; the others wear the quiet dim
-    house. The separator is neutral so the three segments read as one control.
+    The active segment is bold `bright`; the others wear the quiet dim
+    house (the colour budget: the accent marks focus, not a chosen value).
+    The separator is neutral so the three segments read as one control.
 
     Semantics of each mode when applied to a member's task list:
 
@@ -3856,8 +3926,8 @@ def render_team_filter_chrome(active: str) -> str:
     """
     out: list[str] = []
     for mode in TEAM_FILTER_MODES:
-        tone = "accent" if mode == active else "dim"
-        out.append(c(mode, tone))
+        label = TEAM_FILTER_LABELS[mode]
+        out.append(c(label, "bright", bold=True) if mode == active else c(label, "dim"))
     return " · ".join(out)
 
 
@@ -3916,7 +3986,7 @@ def render_standup(board, show_archived, selected_id, today=None,
 
     Each row shows the member name, a load bar (``▰▱``) of open team tasks
     against a sensible maximum, the member's top open task title + phase, and
-    the sync age. The operator's own row carries an accent spine. Stale rows
+    the sync age. The operator's own row carries a bright spine. Stale rows
     wear the ``over`` tone; fresh rows wear ``mut``.
 
     When team mode is off ``team_state`` is ``None`` and the body says so.
@@ -3926,7 +3996,7 @@ def render_standup(board, show_archived, selected_id, today=None,
     inner = w
 
     chrome = render_team_filter_chrome(team_filter)
-    lines = [header(c("STANDUP", "accent", bold=True) + c(" · ", "mut") + chrome,
+    lines = [header(c("STANDUP", "bright", bold=True) + c(" · ", "mut") + chrome,
                     "", w)]
     lines.append(head_rule(w))
 
@@ -3970,8 +4040,8 @@ def render_standup(board, show_archived, selected_id, today=None,
         age_text = _format_sync_age(age)
 
         tone = sync_tone(team_state, uid)
-        # the operator's own row is identifiable by an accent spine
-        prefix = c("▌", "accent") + " " if is_self else c("▎", hue) + " "
+        # the operator's own row is identifiable by a bright spine
+        prefix = c("▌", "bright") + " " if is_self else c("▎", hue) + " "
         prefix_w = 2
 
         # right side: sync age, with a little breathing room
@@ -4018,7 +4088,7 @@ def render_people(board, show_archived, selected_id, today=None,
     """The V2 people-lanes view: one lane per roster member.
 
     Each lane header names the member and shows their sync age; the operator's
-    own lane carries an accent spine and a bold label. Cards below the header
+    own lane carries a bright spine and a bold label. Cards below the header
     are drawn with ``card_cell``; foreign cards carry the read-only ``◦`` mark
     in the quiet mut house. The classification filter changes which tasks are
     visible in each lane without touching the merged model.
@@ -4028,7 +4098,7 @@ def render_people(board, show_archived, selected_id, today=None,
     inner = w
 
     chrome = render_team_filter_chrome(team_filter)
-    lines = [header(c("PEOPLE", "accent", bold=True) + c(" · ", "mut") + chrome,
+    lines = [header(c("PEOPLE", "bright", bold=True) + c(" · ", "mut") + chrome,
                     "", w)]
     lines.append(head_rule(w))
 
@@ -4066,7 +4136,7 @@ def render_people(board, show_archived, selected_id, today=None,
         tone = sync_tone(team_state, uid)
 
         # lane header: spine + name + sync age
-        prefix = c("▌", "accent") + " " if is_self else c("▎", hue) + " "
+        prefix = c("▌", "bright") + " " if is_self else c("▎", hue) + " "
         right = c(age_text, "over" if tone == "over" else "dim")
         right_w = vis(age_text)
         name_w = max(0, inner - prefix_w - 1 - right_w)
@@ -4615,7 +4685,7 @@ def render_view(mode, board, show_archived, selected_id, today=None,
                 width=68, height=0, line_map=None, presentation="grouped", tick=0,
                 kanban_sort="project", kanban_group="project",
                 kanban_collapsed=False, kanban_focus=None,
-                gantt_focus=None, lanes_presentation="waves",
+                gantt_focus=None, gantt_previous=None, lanes_presentation="waves",
                 focus_presentation="cards",
                 search_query: str | None = None,
                 team_state: TeamState | None = None,
@@ -4653,13 +4723,15 @@ def render_view(mode, board, show_archived, selected_id, today=None,
             total = len(board.visible_tasks(show_archived))
             hits = len(fb.visible_tasks(show_archived))
             text = render_gantt(fb, show_archived, selected_id, today, width, bar_h,
-                                line_map, tick=tick, focus=gantt_focus)
+                                line_map, tick=tick, focus=gantt_focus,
+                                previous=gantt_previous)
             if line_map is not None:
                 for tid in list(line_map.keys()):
                     line_map[tid] += 2
             return _apply_search_overlay(text, query, hits, total, w)
         return render_gantt(board, show_archived, selected_id, today, width, height,
-                            line_map, tick=tick, focus=gantt_focus)
+                            line_map, tick=tick, focus=gantt_focus,
+                            previous=gantt_previous)
     if mode == "swimlanes":
         return render_swimlanes(board, show_archived, selected_id, today, width,
                                 height, line_map, tick=tick,
@@ -4768,6 +4840,17 @@ def grid_nav(board, show_archived, today: date, width: int,
     return cols
 
 
+def _fit_text(t: Text, width: int) -> Text:
+    """`fit` for a styled Text: the same cut (`…` in the last cell) and padding,
+    with the styles kept."""
+    out = t.copy()
+    if out.cell_len > width:
+        out.truncate(max(0, width - 1))
+        out.append("…")
+    out.pad_right(max(0, width - out.cell_len))
+    return out
+
+
 def render_setup(setup_state: dict | None, board, width: int = 68,
                  height: int = 0, *, team_state: TeamState | None = None) -> Text:
     """The in-app team setup screen.  It edits a staged copy of the team
@@ -4788,21 +4871,21 @@ def render_setup(setup_state: dict | None, board, width: int = 68,
 
     # Header
     lines: list[Text] = []
-    lines.append(Text.assemble(("SETUP", f"bold {HEX['ink']}"),
-                               (" · equipo · proyectos · roster", HEX["mut"])))
+    lines.append(Text.assemble(("SETUP", f"bold {HEX['bright']}"),
+                               (" · team · projects · roster", HEX["mut"])))
     lines.append(Text("─" * w, style=HEX["dim"]))
     lines.append(Text())
 
     def section(name: str) -> None:
         lines.append(Text())
-        lines.append(Text(f"  {name}", style=f"bold {HEX['accent']}"))
+        lines.append(Text(f"  {name}", style=f"bold {HEX['bright']}"))
 
     def fmt_check(key: str) -> tuple[str, str] | None:
         if key not in checks:
             return None
         ok, note = checks[key]
         glyph = "✓" if ok else "!"
-        tone = "accent" if ok else "soon"
+        tone = "done" if ok else "soon"
         return (glyph, tone), note
 
     def row(label: str, control: Text, check_key: str | None,
@@ -4816,55 +4899,55 @@ def render_setup(setup_state: dict | None, board, width: int = 68,
         label_text = Text.assemble((prefix, HEX["accent"] if selected else ""),
                                    (label, f"bold {HEX['ink']}" if selected else HEX["mut"]))
         check_text = Text(glyph, style=HEX.get(tone, tone))
-        # pad to columns: label ~24, control ~30, check ~4
+        # pad to columns: label 24, control 30, check 4 — fitted as styled Text:
+        # `str()` of a styled Text keeps its words and drops its styles, which
+        # painted the cursor, the chosen chip and the checks plain (P2 UX-1)
         line = Text.assemble(
-            (fit(str(label_text), 24), ""),
-            (" ", ""),
-            (fit(str(control), 30), ""),
-            (" ", ""),
-            (fit(str(check_text), 4), ""),
-            (" ", ""),
-            (note, HEX["dim"]),
-        )
+            _fit_text(label_text, 24), " ", _fit_text(control, 30), " ",
+            _fit_text(check_text, 4), " ", (note, HEX["dim"]))
         lines.append(line)
 
     equipo_rows = [
-        ("modo equipo",
+        ("team mode",
          Text.assemble(
-             (" on ", f"bold #0b0f14 on {HEX['accent']}" if enabled else HEX["mut"]),
-             ("  off", HEX["mut"] if enabled else f"bold #0b0f14 on {HEX['accent']}")),
+             (" on ", f"bold {HEX['bright']}" if enabled else HEX["mut"]),
+             ("  off", HEX["mut"] if enabled else f"bold {HEX['bright']}")),
          "modo"),
-        ("carpeta compartida",
-         Text.assemble(("▌", HEX["accent"]), (shared_dir or "—", HEX["ink"])),
+        ("shared folder",
+         Text.assemble(("▌", HEX["mut"]), (shared_dir or "—", HEX["ink"])),
          "carpeta"),
-        ("  alcance",
+        ("  reach",
          Text(""),
          "alcance"),
-        ("sync cada",
-         Text.assemble((" - ", HEX["accent"]),
+        ("sync every",
+         Text.assemble((" - ", HEX["mut"]),
                        (str(interval), HEX["ink"]),
-                       (" + ", HEX["accent"]),
+                       (" + ", HEX["mut"]),
                        ("min", HEX["mut"])),
          "sync"),
-        ("mi identidad",
+        ("my identity",
          (Text.assemble((f" {user_id} ", f"bold #0b0f14 on {HEX.get(next((r.get('hue', 'mut') for r in roster if r.get('id') == user_id), 'mut'), HEX['mut'])}"))
           if user_id and roster else Text("—", style=HEX["mut"])),
          "identidad"),
     ]
 
-    section("equipo")
+    section("team")
     for i, (label, control, check_key) in enumerate(equipo_rows):
         row(label, control, check_key,
             selected=(cursor_section == 0 and cursor_row == i))
 
-    section("proyectos del equipo")
+    section("team projects")
     for i, proj in enumerate(projects):
         shared = bool(proj.get("shared"))
         name = proj.get("name", proj.get("id", "?"))
         color = proj.get("color", "mut")
-        color_hex = HEX.get(color, color)
+        # styles reach the screen now (LLR-201.3), so a colour team.json
+        # spells wrong must not reach rich as a style (code review F9)
+        color_hex = ((HEX.get(color) or (color if re.fullmatch(r"#[0-9a-fA-F]{6}", color)
+                                         else None)) if isinstance(color, str) else None
+                     ) or HEX["mut"]
         control = Text.assemble(
-            (" compartido ", f"bold #0b0f14 on {HEX['accent']}" if shared else HEX["mut"]),
+            (" shared ", f"bold {HEX['bright']}" if shared else HEX["mut"]),
             ("   hue ", HEX["mut"]),
             ("██", color_hex),
         )
@@ -4884,14 +4967,15 @@ def render_setup(setup_state: dict | None, board, width: int = 68,
 
     lines.append(Text())
     lines.append(Text("─" * w, style=HEX["dim"]))
+    KEY = f"bold {HEX['bright']}"
     lines.append(Text.assemble(
-        ("tab", HEX["accent"]), (" sección   ", HEX["mut"]),
-        ("↵", HEX["accent"]), (" edita   ", HEX["mut"]),
-        ("espacio", HEX["accent"]), (" alterna   ", HEX["mut"]),
-        ("a", HEX["accent"]), (" agrega   ", HEX["mut"]),
-        ("x", HEX["accent"]), (" quita   ", HEX["mut"]),
-        ("ctrl+s", HEX["accent"]), (" guarda   ", HEX["mut"]),
-        ("esc", HEX["accent"]), (" cancela", HEX["mut"]),
+        ("tab", KEY), (" section   ", HEX["mut"]),
+        ("↵", KEY), (" edit   ", HEX["mut"]),
+        ("space", KEY), (" toggle   ", HEX["mut"]),
+        ("a", KEY), (" add   ", HEX["mut"]),
+        ("x", KEY), (" remove   ", HEX["mut"]),
+        ("ctrl+s", KEY), (" save   ", HEX["mut"]),
+        ("esc", KEY), (" cancel", HEX["mut"]),
     ))
 
     return Text("\n").join(lines)
@@ -5067,98 +5151,100 @@ def _meter_swatch(days, done=False) -> str:
 # the runtime mirror used by HelpModal.
 # ---------------------------------------------------------------------------
 def help_usage(mode: str) -> list[tuple[str, list[str]]]:
-    """(section heading, bullet lines) for the active view's help."""
+    """(section heading, bullet lines) for the active view's help. English, like
+    every string the app paints (batch 2026-10-02-batch-02, HLR-204); each
+    bullet fits the help column's 44 cells."""
     if mode == "kanban":
         return [
-            ("para qué es", ["operar el trabajo: mover tareas entre fases,",
-                             "agrupar por proyecto, prioridad u horizonte."]),
-            ("lo primero que haces", ["j/k baja y sube · ↵ abre la tarjeta.",
-                                      "luego: s orden · g grupo · z pliega."]),
-            ("los números de la tarjeta", ["·Nd = días EN la fase (envejecimiento)",
-                                           "+Nd = días HASTA el deadline (countdown)",
-                                           "⛓N = N tareas dependen de ésta"]),
-            ("la prioridad", ["!! alta · == normal · ++ baja (solo tareas abiertas)",
-                              "la banda ── high ── sube las altas abiertas al",
-                              "tope de cada columna (solo en la vista grouped)."]),
+            ("what it is for", ["run the work: move tasks between phases,",
+                                "group by project, priority or horizon."]),
+            ("first thing to do", ["j/k down and up · ↵ opens the card.",
+                                   "then: s sort · g group · z collapse."]),
+            ("the card's numbers", ["·Nd = days IN the phase (ageing)",
+                                    "+Nd = days UNTIL the deadline (countdown)",
+                                    "⛓N = N tasks depend on this one"]),
+            ("priority", ["!! high · == normal · ++ low (open only)",
+                          "the ── high ── band lifts open high tasks to",
+                          "the top of each column (grouped view only)."]),
         ]
     if mode == "swimlanes":
         return [
-            ("para qué es", ["mirar el board de un vistazo: el proyecto con más",
-                             "presión primero, con su campo de carga dibujado."]),
-            ("lo primero que haces", ["leer el campo del líder — la curva termina",
-                                      "en ◆ (su due date). luego: tab layout."]),
-            ("las marcas", ["◆ = due date del proyecto en la curva",
-                            "· lattice = campo sin trabajo (ground, no dato)",
-                            "ceniza = proyectos en reposo"]),
+            ("what it is for", ["see the board at a glance: the project under",
+                                "most pressure first, its load field drawn."]),
+            ("first thing to do", ["read the leader's field — the curve ends",
+                                   "at ◆ (its due date). then: tab layout."]),
+            ("the marks", ["◆ = the project's due date on the curve",
+                           "· lattice = field with no work (ground)",
+                           "ash = projects at rest"]),
         ]
     if mode == "agenda":
         return [
-            ("para qué es", ["escanear qué vence: cada tarea fechada es un ●",
-                             "sobre UN eje de días compartido."]),
-            ("lo primero que haces", ["leer la distancia de cada ● a la regla",
-                                      "de hoy ╎ — el orden ya dice la urgencia."]),
-            ("las marcas", ["● = una tarea en su día",
-                            "╎ = hoy (respira lento, siempre la misma columna)",
-                            "sin medidor a propósito: la fila ya lo dice dos veces"]),
+            ("what it is for", ["scan what is due: each dated task is a ●",
+                                "on ONE shared axis of days."]),
+            ("first thing to do", ["read each ●'s distance to today's rule",
+                                   "╎ — the order already says the urgency."]),
+            ("the marks", ["● = a task on its day",
+                           "╎ = today (breathes slowly, same column)",
+                           "no meter on purpose: the row says it twice"]),
         ]
     if mode == "gantt":
         return [
-            ("para qué es", ["todo el board, ajustado al trabajo abierto.",
-                             "▾ abierto · ▸ plegado si no cabe."]),
-            ("lo primero que haces", ["lee la regla de arriba: meses y días;",
-                                      "⟦━⟧ marca las fechas exactas de la tarea."]),
-            ("las marcas", ["─ span · ● progreso · ◆ entrega",
-                            "╌ tarea, tip ○◔◑◕ = fase · ━ cadena crítica",
-                            "↳ espera a otra · ✓n hechas · ▲n tarde"]),
+            ("what it is for", ["the whole board, fitted to the open work.",
+                                "▾ open · ▸ folded when it does not fit."]),
+            ("first thing to do", ["read the ruler on top: months and days;",
+                                   "⟦━⟧ marks the task's exact dates."]),
+            ("the marks", ["─ span · ● progress · ◆ due",
+                           "╌ task, tip ○◔◑◕ = phase · ━ critical chain",
+                           "↳ waits on another · ✓n done · ▲n late"]),
         ]
     if mode == "focus":
         return [
-            ("para qué es", ["leer y anotar: lo que TÚ pineaste, sin el ruido",
-                             "del resto del board."]),
-            ("lo primero que haces", ["tab cambia de presentación (tiles, inspector,",
-                                      "imágenes, review, stale). p pinea lo seleccionado."]),
-            ("las presentaciones", ["tiles = tarjetas · inspector = master/detail",
-                                    "stale = lo que lleva quieto demasiado"]),
+            ("what it is for", ["read and annotate the PINNED work, without",
+                                "the noise of the rest of the board."]),
+            ("first thing to do", ["tab changes the layout (tiles, inspector,",
+                                   "images, review, stale). t pins the task."]),
+            ("the layouts", ["tiles = cards · inspector = master/detail",
+                             "stale = what has sat still too long"]),
         ]
     if mode == "flow":
         return [
-            ("para qué es", ["cuantificar el MOVIMIENTO: cuánto tarda el trabajo",
-                             "por fase, dónde envejece, cuánto se completa."]),
-            ("lo primero que haces", ["la heatmap: la celda más cargada es donde",
-                                      "el trabajo se atora. sin historia: 'se construye hoy'."]),
-            ("los números", ["ciclo = mediana de días por fase (intervalos cerrados)",
-                             "en curso n=N = intervalos abiertos, nunca un número",
-                             "throughput = completadas por semana"]),
+            ("what it is for", ["measure MOVEMENT: how long work takes per",
+                                "phase, where it ages, how much finishes."]),
+            ("first thing to do", ["the heatmap: the busiest cell is where",
+                                   "work gets stuck. empty: 'no history yet'."]),
+            ("the numbers", ["cycle = median days per phase (closed)",
+                             "open n=N = open intervals, never a number",
+                             "throughput = finished per week"]),
         ]
     if mode == "standup":
         return [
-            ("para qué es", ["la vista de equipo que se MIRA: carga, frente",
-                             "actual y frescura del dato por persona."]),
-            ("lo primero que haces", ["una fila por persona; lo stale se juzga,",
-                                      "no se esconde. ↵ abre su tablero (read-only)."]),
-            ("las marcas", ["▰▱ = carga (tareas en Doing)",
-                            "la edad del sync siempre visible a la derecha",
-                            "rojo = pasó la tolerancia (45 min)"]),
+            ("what it is for", ["the team view to READ: load, current front",
+                                "and how fresh each person's data is."]),
+            ("first thing to do", ["one row per person; stale is judged, not",
+                                   "hidden. ↵ opens their board (read-only)."]),
+            ("the marks", ["▰▱ = load (tasks in Doing)",
+                           "the sync age always on the right",
+                           "red = past the tolerance (45 min)"]),
         ]
     if mode == "people":
         return [
-            ("para qué es", ["operar la visibilidad conjunta: el eje de las",
-                              "lanes es QUIÉN, no el proyecto."]),
-            ("lo primero que haces", ["tu fila arriba, editable; las demás con ◦",
-                                      "read-only. f cicla todo·equipo·personal."]),
-            ("las marcas", ["◦ = read-only (de un compañero)",
-                            "la edad del sync viaja en el rótulo de la persona",
-                            "el countdown +Nd funciona igual que en kanban"]),
+            ("what it is for", ["work with shared visibility: the lanes'",
+                                "axis is WHO, not the project."]),
+            ("first thing to do", ["the operator's row on top, editable; others",
+                                   "◦ read-only · filter: all · team · personal"]),
+            ("the marks", ["◦ = read-only (a teammate's)",
+                           "the sync age rides on the person's label",
+                           "the +Nd countdown works as in the kanban"]),
         ]
     if mode == "setup":
         return [
-            ("para qué es", ["configurar el equipo dentro de la app: shared dir,",
-                             "intervalo, identidad, proyectos compartidos y roster."]),
-            ("lo primero que haces", ["navega con tab/j/k; ↵ edita; espacio alterna;",
-                                      "a agrega · x quita. ctrl+s guarda · esc cancela."]),
-            ("los checks", ["✓ = verificado · ! = necesita atención",
-                            "son asesorios: nunca bloquean la edición",
-                            "se re-computan al abrir y tras ctrl+s"]),
+            ("what it is for", ["set up the team inside the app: shared dir,",
+                                "interval, identity, shared projects, roster."]),
+            ("first thing to do", ["move with tab/j/k; ↵ edits; space toggles;",
+                                   "a add · x remove · ctrl+s save · esc cancel"]),
+            ("the checks", ["✓ = verified · ! = needs attention",
+                            "advisory: they never block editing",
+                            "recomputed on open and after ctrl+s"]),
         ]
     return []
 
@@ -5167,32 +5253,32 @@ def help_example(mode: str) -> tuple[str, str]:
     """(annotated example line, what it means) for the active view."""
     if mode == "kanban":
         return ("▊ !! sync daemon ↗ ·3d +4d ⛓2",
-                "!! alta (== normal, ++ baja) · ↗ url · 3d en fase · "
-                "vence en 4d · desbloquea 2")
+                "!! high (== normal, ++ low) · ↗ url · 3d in phase · "
+                "due in 4d · unblocks 2")
     if mode == "swimlanes":
         return ("▎ platform ████▒░◆ 12d",
-                "la curva es la carga; el aire antes del ◆ es lo que no cabe")
+                "the curve is the load; the air before ◆ is what does not fit")
     if mode == "agenda":
         return ("────●──╎──●────●──",
-                "la distancia al ╎ ES la urgencia; nada más hace falta")
+                "the distance to ╎ IS the urgency; nothing else is needed")
     if mode == "gantt":
         return ("▸ Ops     4 open  ◂───╎──●────◆··",
-                "plegado: su fila dice cuánto queda abierto; ▾ lo abre")
+                "folded: its row says how much is still open; ▾ opens it")
     if mode == "focus":
-        return ("▊ escribir el ADR ◔ ·12d",
-                "pineada hace 12 días sin tocar — el stale la está nombrando")
+        return ("▊ write the ADR ◔ ·12d",
+                "pinned 12 days ago, untouched — stale is naming it")
     if mode == "flow":
         return ("Doing ░▒▓█▓▒░░",
-                "la semana 4 en Doing cargó todo — ahí se atoró el board")
+                "week 4 in Doing carried everything — that is where it stuck")
     if mode == "standup":
-        return ("▐ ana ▰▰▱▱▱ 2 doing · landing hero · hace 3 h",
-                "su dato tiene 3 horas — léelo con esa antigüedad en mente")
+        return ("▐ ana ▰▰▱▱▱ 2 doing · landing hero · 3 h ago",
+                "her data is 3 hours old — read it with that age in mind")
     if mode == "people":
-        return ("▐ ANA hace 12 min · landing hero ◦ -3d",
-                "de ella, read-only, vence en 3 días, dato de hace 12 min")
+        return ("▐ ANA 12 min ago · landing hero ◦ -3d",
+                "hers, read-only, due in 3 days, data from 12 min ago")
     if mode == "setup":
-        return ("▌ D:/equipo/taskboard  ✓  existe y es escribible",
-                "cada fila muestra su check y su nota")
+        return ("▌ D:/team/taskboard  ✓  exists and is writable",
+                "each row shows its check and its note")
     return ("", "")
 
 
@@ -5202,7 +5288,8 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
                    team_state: TeamState | None = None,
                    team_filter: str = "equipo",
                    selected_id: str | None = None,
-                   gantt_focus: str | None = None) -> list[tuple[str, str]]:
+                   gantt_focus: str | None = None,
+                   gantt_previous: str | None = None) -> list[tuple[str, str]]:
     """(swatch, what it means) for the marks THIS view is currently drawing.
 
     The size is part of the question: the lanes allocator decides how many tasks
@@ -5254,7 +5341,7 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         # cannot be missing (code review F3, batch 2026-10-02-batch-01).
         g_lines, drawn, groups, gax = _gantt_frame(board, show_archived, selected_id,
                                                    today, width, height, None, 0,
-                                                   gantt_focus)
+                                                   gantt_focus, gantt_previous)
         body = "\n".join(g_lines[1 + GANTT_RULER_ROWS:])
         g_label = gantt_columns(_clamp_width(width))[0]
         if any(g.project is not None for g in groups):
@@ -5297,18 +5384,18 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         records, _ = history.read(board.path)
         if records:
             out.append((c("3.5d", "ink"), "median days in phase (closed intervals)"))
-            out.append((c("en curso n=1", "mut"), "open intervals: not a cycle yet"))
+            out.append((c("open n=1", "mut"), "open intervals: not a cycle yet"))
             out.append((c("░▒▓█", "mut"), "heatmap: task-days per phase × week"))
-            out.append((c("█", "accent"), "throughput: tasks reaching the terminal phase"))
+            out.append((c("█", "hd"), "throughput: tasks reaching the terminal phase"))
     if mode == "standup":
-        out.append((c("▌", "accent"), "operator row"))
+        out.append((c("▌", "bright"), "operator row"))
         out.append((c("▎", "mut"), "teammate row"))
         out.append((c("▰▱", "mut"), "open task load"))
         if team_state is not None:
             out.append((render_team_filter_chrome(team_filter),
                         "classification filter"))
     if mode == "people":
-        out.append((c("▌", "accent"), "operator lane"))
+        out.append((c("▌", "bright"), "operator lane"))
         out.append((c("▎", "mut"), "teammate lane"))
         out.append((c("◦", "mut"), "foreign card: read-only"))
         if team_state is not None:

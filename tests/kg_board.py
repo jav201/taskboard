@@ -10,6 +10,7 @@ In memory only: `path` names a scratch file and nothing here calls `save()`.
 """
 from __future__ import annotations
 
+import copy
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -63,6 +64,50 @@ TASKS = [
     ("o4", "ops", "Update onboarding copy", "Backlog", "normal", None, None, 33, False, []),
     ("o5", "ops", "Pen-test findings", "Backlog", "high", 3, 20, 9, False, []),
 ]
+
+
+TEAM = {"version": 3, "phases": PHASES,
+        "projects": [{"id": "pweb", "name": "Website Redesign", "color": "violet",
+                      "status": "on_track"}],
+        "roster": [{"id": "jav", "name": "Javier", "hue": "sky"},
+                   {"id": "ana", "name": "Ana", "hue": "amber"}]}
+
+# A Setup state for the census: team on, the cursor on the folder row. Its folder
+# is a path that does not exist, so a failing check's note never prints a real
+# directory (batch 2026-10-02-batch-02, security S-4).
+SETUP = {"enabled": True, "shared_dir": "D:/team-never-there", "interval_minutes": 30,
+         "user_id": "jav", "projects": [{"id": "pweb", "name": "Website Redesign",
+                                         "shared": True, "color": "violet"}],
+         "roster": [{"id": "jav", "name": "Javier", "hue": "sky"}],
+         "cursor_section": 0, "cursor_row": 1}
+
+
+def census(tmp: Path):
+    """(board, team state, setup state) for the app-wide colour and language
+    censuses (batch 2026-10-02-batch-02): the oracle board plus two URL cards
+    (`tw6`, and the selection `tw3`), three pinned tasks (the Focus Board draws
+    only pinned work), three history records (the flow view), a team directory
+    and a Setup state. All under `tmp`."""
+    import json
+    from datetime import datetime
+
+    from taskboard import history
+    from taskboard.team_sync import TEAM_FILENAME, TeamState
+    b = build(tmp / "board.json")
+    for tid in ("tw6", "tw3"):
+        b.task_by_id(tid).urls = ["https://example.org/redirects"]
+    for tid in ("tw3", "ta4", "tw6"):
+        b.task_by_id(tid).pinned = True
+    for i, (tid, frm, to) in enumerate([("tw3", "Next", "Doing"), ("tw2", "Doing", "Review"),
+                                        ("tw1", "Review", "Done")]):
+        history.append(b.path, {"task": tid, "from": frm, "to": to},
+                       at=datetime(2026, 9, 20 + i, 10))
+    team_dir = tmp / "team"
+    team_dir.mkdir(exist_ok=True)
+    (team_dir / TEAM_FILENAME).write_text(json.dumps(TEAM), encoding="utf-8")
+    st = TeamState(team_dir, user_id="jav")
+    st.load_config()
+    return b, st, copy.deepcopy(SETUP)       # tests mutate it; never the shared one
 
 
 def build(path: Path | str = "kg-board-never-saved.json") -> Board:

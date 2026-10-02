@@ -1,0 +1,70 @@
+P4 ux walkthrough — batch 2026-10-02-batch-02 — executed by ux-reviewer (spawned sub-agent with
+agents/ux-reviewer.md, rev98 snapshot), 2026-10-02. Relayed verbatim in substance by the
+orchestrator from the reviewer's final message; the reviewer's scripts, logs and screenshots are in
+its scratch directory (<home>\AppData\Local\Temp\claude\ux-p4\, shots\). Driven with App.run_test
+at 80x24 and 118x30, date frozen to kg_board.TODAY (Wed 2026-09-30) plus a Saturday run
+(2026-10-03); board kg_board.census, team mode on; painted cells read from the compositor
+(render_strips: char, fg, bg, bold, reverse).
+
+VERDICT: PASS-WITH-NOTES
+
+WALKTHROUGH (item · keys · observed · state)
+ 1 previous group stays open while walking · 3, up x60, down x40, both sizes · the previous group
+   stays open at every group change; the highlight moves up on entering a new group 2x at 80x24
+   (ta1 14->11, td2 16->13), 1x at 118x30; no wrap at the end · executed
+ 2 Ops & Security open on entry at 80x24 · 3 · "▾ Ops & Security ▲1" open; API Platform folds
+   ("6 ▲2") (D-204) · executed
+ 3 30-task project, down x30 · 3, down x31 · exactly one dim hint row every step ("▼ 13 below",
+   then "▲ 17 above"), never reversed, never selected; page flip tb16->tb17 jumps the highlight
+   from screen row 20 to row 4 · executed
+ 4 toast at 80x24 after ] on tw2, then u · 3, ], u, wait 6 s · "Build component library done ·
+   folded into ✓2 · u undo" at rows 19-22 from column 39 — does NOT cover the selection (row 4);
+   u restores tw2 to Review but the toast still says "done" until its 5 s timeout; finishing a
+   bottom-group task puts the selection on a row whose bar and due are under the toast · executed
+ 5 weekend bands at 118x30, today on a weekend, selected row · 3, select ta3; Wed and Sat runs ·
+   two #1a1d22 columns every 7 days from the day row through every body row incl. the selected
+   row; on Saturday the today rule is accent over the shading; 256-colour 234 vs 16 · executed
+ 6 Setup each section with the cursor; on/off · 0, tab, down, space · ">" walks team / projects /
+   roster; "on" bold bright vs "off" muted; the "shared" chip is the same word on and off, only
+   the tone changes · executed
+ 7 accent census keys 1-5, 7-9, 0, tab, ?, m, / · every accent cell is a focus role (today
+   rules/dates, lanes today stud/rail, agenda today/┃, Setup ">", review rail "▸", the "/" field
+   border, the help example's today rule); kanban, focus (4 of 5), flow, standup, people and the m
+   keymap carry 0 accent cells · executed
+ 8 key bar "more" layer at 80 cells · ; · every key bold bright, same two-space gap, no words fit;
+   nothing marks where one group ends and the next begins · FAILED (operator question, D-211)
+ 9 ribbon local clock stands apart · — · local time bold #e6edf7; city names muted, city times
+   #c9d4e0; the date beside the clock is #e6edf3 (bold is the only difference) · executed
+10 the word "today" keeps each view's tone; kanban today next to +3d · 1-5, 8, 9 · agenda ruler
+   today accent; gantt and kanban today amber; kanban today and +3d the same amber; Focus tiles and
+   stale cards draw "Oct 4 +4d" in later #64748b while the review rail draws +4d amber · executed
+11 80x24 tm6 and ta1 · walk · tm6: ▾▾▸▾▸ (Ops folded "5 ▲1", Data open); ta1: Website, Data, Ops
+   fold, two blank rows above the legend · executed
+12 Setup chips + ">" cursor in accent · 0, tab, space · ">" accent in all three sections; shared
+   toggles muted <-> bold bright · executed
+13 ribbon at 80 and 118 · — · the same 75-character content fits both · executed
+
+FINDINGS
+ UXV2-1 minor (defect against US-201's wording; outside HLR-203's named seat): date_chip
+   (_URG_COLOR["week"] = "later") paints a 1-7 day due slate in the Focus tiles/cards/stale
+   layouts; the review rail and the other views paint +4d amber. D-209's "focus rail" claim holds
+   only for the rail.
+ UXV2-2 major for readability (operator question, D-211): without group hues the "more" layer is
+   one undivided run of bare keys at 80 cells (and 118). Option: a dim " · " group separator.
+ UXV2-3 minor (operator question, D-214): after u the toast keeps saying "done · folded" for up to
+   5 s.
+ UXV2-4 minor (operator question): at 80x24 the toast hides columns 39-79 of the bottom four rows
+   for 5 s.
+ UXV2-5 minor (operator question, D-208): the "shared" chip reads the same word on and off.
+ UXV2-6 (operator question, D-217): mid-walk at 80x24 the urgent Ops group folds while the quiet
+   Data Warehouse stays open; ▲1 stays on its folded row.
+ UXV2-7 (operator question, D-203/D-213): the highlight jumps up 3 rows on 2 group entries at
+   80x24 (1 at 118x30) and 16 rows on a page flip.
+ UXV2-8 (operator question, D-209): kanban "today" is the same amber as +1d..+7d.
+ pre-existing, not blocking: Setup at 80x24 wraps its status notes onto column 0 of the next line
+   (same in the base capture).
+
+LIMITS (declared): a reviewer agent is not the user; no physical terminal (truecolor and
+256-colour judged by computed hex/index, not by eye); a Textual screenshot is not a Windows
+Terminal frame; only the default city clocks; upward walking (k) not exercised; the ribbon shows
+the real date while the board's date was frozen (a test artefact).

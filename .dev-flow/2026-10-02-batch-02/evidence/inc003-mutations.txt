@@ -1,0 +1,127 @@
+$ python .dev-flow/2026-10-02-batch-02/evidence/mutate_bytes.py <scratch export of the increment-003 round-1 tree> mutants_inc003.json ; ... mutants_inc003_r1.json
+E1 KILLED — a help heading back to Spanish
+   arms resolved 9, red 3; restore sha256 84f73583edfd8a11… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[flow]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[setup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[standup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[people]
+    FAILED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    FAILED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits - Ass...
+    FAILED tests/test_english.py::test_AT_204_no_spanish_is_painted - AssertionEr...
+E2 KILLED — a help bullet wider than its 44-cell column
+   arms resolved 1, red 1; restore sha256 84f73583edfd8a11… OK
+    FAILED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits - Ass...
+E3 KILLED — the flow message back to Spanish
+   arms resolved 9, red 2; restore sha256 84f73583edfd8a11… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[setup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[standup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[people]
+    PASSED tests/test_english.py::test_AT_204_no_spanish_is_painted
+    FAILED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[flow] - Ass...
+E4 KILLED — a Setup label back to Spanish
+   arms resolved 9, red 2; restore sha256 84f73583edfd8a11… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    PASSED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[flow]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[standup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[people]
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[setup] - As...
+    FAILED tests/test_english.py::test_AT_204_no_spanish_is_painted - AssertionEr...
+E5 KILLED — a Setup check note back to Spanish
+   arms resolved 9, red 2; restore sha256 79884136ab759383… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[flow]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[standup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[people]
+    PASSED tests/test_english.py::test_AT_204_no_spanish_is_painted
+    FAILED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[setup] - As...
+E6 KILLED — a help modal heading back to Spanish (AT-204 alone)
+   arms resolved 1, red 1; restore sha256 be54e0dfd8dd4e53… OK
+    FAILED tests/test_english.py::test_AT_204_no_spanish_is_painted - AssertionEr...
+E7 KILLED — the filter paints its stored values again
+   arms resolved 9, red 3; restore sha256 84f73583edfd8a11… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    PASSED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[flow]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[setup]
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[standup] - ...
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[people] - A...
+    FAILED tests/test_english.py::test_AT_204_no_spanish_is_painted - AssertionEr...
+E8 KILLED — C-31: the frozen vocabulary loses a word (mutating the input SET) — 'Teclas' goes blind
+   arms resolved 1, red 1; restore sha256 4205a401841344e8… OK
+    FAILED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+E9 KILLED — the copy addresses the reader again
+   arms resolved 11, red 1; restore sha256 84f73583edfd8a11… OK
+    PASSED tests/test_prism_laws.py::test_every_prototype_law_has_a_home_or_a_recorded_reason
+    PASSED tests/test_prism_laws.py::test_the_manifest_covers_every_law_function_in_the_prototype
+    PASSED tests/test_prism_laws.py::test_every_lit_field_cell_carries_a_declared_hue
+    PASSED tests/test_prism_laws.py::test_no_row_mixes_two_identity_hues_in_its_field
+    PASSED tests/test_prism_laws.py::test_no_view_speaks_in_the_second_person
+    PASSED tests/test_prism_laws.py::test_the_closure_law_is_met_the_design_commits_with_rules
+    PASSED tests/test_prism_laws.py::test_the_head_row_still_carries_what_the_frame_title_did
+    PASSED tests/test_prism_laws.py::test_the_overflow_counts_survived_the_frame
+    PASSED tests/test_prism_laws.py::test_no_view_is_narrower_than_the_width_it_was_given
+    PASSED tests/test_prism_laws.py::test_the_rule_crosses_exactly_where_the_columns_divide
+    FAILED tests/test_prism_laws.py::test_no_literal_in_the_source_can_emit_the_second_person
+E10 KILLED — the help names an unbound key
+   arms resolved 1, red 1; restore sha256 84f73583edfd8a11… OK
+    FAILED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys - ...
+10 of 10 KILLED
+X1 KILLED — code review F1: a painted note in Spanish outside the old 55 words
+   arms resolved 9, red 1; restore sha256 79884136ab759383… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    PASSED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[flow]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[standup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[people]
+    PASSED tests/test_english.py::test_AT_204_no_spanish_is_painted
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[setup] - As...
+X2 KILLED — code review F1: escribe solo
+   arms resolved 9, red 3; restore sha256 79884136ab759383… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[flow]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[standup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[people]
+    FAILED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[setup] - As...
+    FAILED tests/test_english.py::test_AT_204_no_spanish_is_painted - AssertionEr...
+X3 KILLED — code review F1: ceniza = reposo
+   arms resolved 9, red 3; restore sha256 84f73583edfd8a11… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[flow]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[setup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[standup]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[people]
+    FAILED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    FAILED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits - Ass...
+    FAILED tests/test_english.py::test_AT_204_no_spanish_is_painted - AssertionEr...
+X4 KILLED — a stored value painted again (PAINT_TOO)
+   arms resolved 9, red 3; restore sha256 84f73583edfd8a11… OK
+    PASSED tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface
+    PASSED tests/test_english.py::test_TC_206_no_literal_in_the_source_carries_the_old_copy
+    PASSED tests/test_english.py::test_TC_206_help_copy_is_english_and_fits
+    PASSED tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[flow]
+    PASSED tests/test_english.py::test_TC_206_the_views_paint_english[setup]
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[standup] - ...
+    FAILED tests/test_english.py::test_TC_206_the_views_paint_english[people] - A...
+    FAILED tests/test_english.py::test_AT_204_no_spanish_is_painted - AssertionEr...
+4 of 4 KILLED

@@ -1,0 +1,22 @@
+[
+ {
+  "id": "M1",
+  "file": "taskboard/views.py",
+  "old": "        close = OFF_RIGHT if ax.end_cell(e) >= w else ECHO_CLOSE",
+  "new": "        close = ECHO_CLOSE",
+  "nodes": [
+   "tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too"
+  ],
+  "why": "code review F1: the due-only form loses its clip arrow"
+ },
+ {
+  "id": "M2",
+  "file": "taskboard/views.py",
+  "old": "    opening = OFF_LEFT if ax.cell(s) < 0 else ECHO_OPEN",
+  "new": "    opening = ECHO_OPEN",
+  "nodes": [
+   "tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too"
+  ],
+  "why": "code review F1: the start-only form loses its clip arrow"
+ }
+]

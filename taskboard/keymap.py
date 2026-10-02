@@ -28,18 +28,11 @@ from .views import HEX
 
 VIEWS = ("swimlanes", "agenda", "gantt", "kanban", "focus")
 
-# Category hues for the layered "more" bar. Each group is drawn with its own
-# attention colour so the reader can parse the dense row at a glance.
-GROUP_HUE = {
-    "system": "amber",
-    "views": "violet",
-    "nav": "mut",
-    "task": "accent",
-    "phase": "sky",
-    "kanban": "cyan",
-    "date": "orange",
-    "misc": "green",
-}
+# THE COLOUR BUDGET (round 7, `variants_polish.BUDGET` "key"): every key is
+# bold bright and its word muted, in both layers. The eight per-group hues the
+# more layer wore spent the accent and seven identity/severity hues on chrome
+# (batch 2026-10-02-batch-02, HLR-202).
+KEY_STYLE = f"b {HEX['bright']}"
 
 
 class Key(NamedTuple):
@@ -240,26 +233,10 @@ def _mshow(text: str) -> str:
 
 
 def render_key_bar(width: int, view: str, layer: str = "more") -> str:
-    """The bar as markup: keys tinted by category, words in the quiet one."""
+    """The bar as markup: keys bold bright, words in the quiet house."""
     entries, dropped = fit_bar(width, view, layer)
-    if layer == "primary":
-        out = [f"[{HEX['accent']}]{_mshow(show)}[/]" + (f" [{HEX['mut']}]{_mshow(label)}[/]" if label else "")
-               for show, label in entries]
-        markup = SEP.join(out)
-        note = _note(entries, dropped, width)
-        return markup + (f"[{HEX['dim']}]{note}[/]" if note else "")
-
-    # more layer: colour each key by its group. We recover the Key from the
-    # show token (shows are unique) so the colour matches the source row.
-    show_to_key = {k.show: k for k in bar_keys(view, "more")}
-    out = []
-    for show, label in entries:
-        k = show_to_key.get(show)
-        hue = GROUP_HUE.get(k.group, "accent") if k else "accent"
-        part = f"[{HEX[hue]}]{_mshow(show)}[/]"
-        if label:
-            part += f" [{HEX['mut']}]{_mshow(label)}[/]"
-        out.append(part)
+    out = [f"[{KEY_STYLE}]{_mshow(show)}[/]" + (f" [{HEX['mut']}]{_mshow(label)}[/]" if label else "")
+           for show, label in entries]
     markup = SEP.join(out)
     note = _note(entries, dropped, width)
     return markup + (f"[{HEX['dim']}]{note}[/]" if note else "")

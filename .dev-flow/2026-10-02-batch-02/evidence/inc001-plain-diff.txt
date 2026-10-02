@@ -1,0 +1,2 @@
+$ python .dev-flow/2026-10-02-batch-02/evidence/plain_diff.py <base views.py from git show HEAD:taskboard/views.py>   # increment 001
+checked 189 renders, 0 plain-text difference(s)

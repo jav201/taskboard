@@ -109,11 +109,12 @@ def test_TC_119_the_census_can_see_the_accent():
 def test_TC_119_the_shared_card_tokens_left_the_accent_everywhere():
     """`card_cell` and `reldue_token` are shared: the Focus review rail, People
     and Agenda call them too (D10), so the two tokens leave the accent there as
-    well — a `+4d` due within the week and a card's `↗` read `mut`."""
+    well — a card's `↗` reads `mut`, and a `+4d` due within the week reads
+    amber `soon` (batch 2026-10-02-batch-02, HLR-203: the operator's SOON answer)."""
     b = oracle()
     t = b.task_by_id("tw6")
     t.due_date = "2026-10-04"
-    assert reldue_token(t, TODAY, b) == ("+4d", "mut")
+    assert reldue_token(t, TODAY, b) == ("+4d", "soon")
     cell = card_cell(t, b, 40, False, today=TODAY)
     assert "↗" in cell and ACCENT not in cell.lower() and HEX["mut"] in cell
     agenda = render_view("agenda", b, False, None, TODAY, 118, 30, {})

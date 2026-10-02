@@ -1,0 +1,24 @@
+PEOPLE · all · team · personal                                                  
+────────────────────────────────────────────────────────────────────────────────
+▌ Javier                                                                       —
+  Design homepage mockups                                                -20d ⛓1
+  Build component library                                             ·4d -3d ⛓2
+  Fix checkout 500 error                                               ! ·9d -2d
+  Optimize image assets                                              ·12d +6d ⛓1
+  Launch new homepage                                                ! ·30d +10d
+  SEO redirects map                                                  ↗ ·22d +14d
+▎ Ana                                                                          —
+  —                                                                             
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                

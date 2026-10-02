@@ -1,0 +1,6 @@
+$ python .dev-flow/2026-10-02-batch-02/evidence/mutate_bytes.py <scratch export of the increment-006 tree> mutants_inc006.json
+W1 KILLED — the previous group ignored: the 80x24 arm of the one AT-207 node must go RED (the 118x30 arm is a pin)
+   arms resolved 2, red 2; restore sha256 a4688ae7c1788b66… OK
+    FAILED tests/test_gantt_polish.py::test_AT_207_the_project_just_left_stays_open[size0-2]
+    FAILED tests/test_gantt_polish.py::test_AT_207_the_project_just_left_stays_open[size1-1]
+1 of 1 KILLED

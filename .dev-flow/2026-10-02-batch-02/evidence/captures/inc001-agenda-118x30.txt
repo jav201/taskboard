@@ -1,0 +1,31 @@
+AGENDA                                                                                          ▲ 8 overdue · 1 today 
+                                                                   -14d        today                       +29d       
+▊ Design homepage mockups                               Website… ✓ ◂─────────────┃                                done
+▊ Set up CI pipeline                                    Mobile … ✓   ●───────────┃                                done
+▊ Write API reference                                   API Pla… ◐          ●────┃                                 -5d
+▊ Migrate user table                                    Data Wa… ✓           ●───┃                                done
+▊ Build component library                               Website… ◐            ●──┃                                 -3d
+▊ Fix checkout 500 error                                Website… ◐             ●─┃                                 -2d
+▊ SDK regeneration                                      API Pla… ◐              ●┃                                 -1d
+▊ Renew TLS certificate                                 Ops & S… ◐              ●┃                                 -1d
+▊ Review pull requests                                  Ops & S… ◐               ●                               today
+▊ Crash reporting                                       Mobile … ◐               ┃●                                +1d
+▊ Audit dependencies                                    Mobile … ◐               ┃─●                               +2d
+▊ Partner notice emails                                 API Pla… ◐               ┃──●                              +3d
+▊ Rotate API keys                                       Ops & S… ◐               ┃──●                              +3d
+▊ Rate limiting                                         API Pla… ◐               ┃───●                             +4d
+▊ Optimize image assets                                 Website… ◐               ┃─────●                           +6d
+▊ Deprecate v1 endpoints                                API Pla… ▲               ┃──────●                          +7d
+▊ Compress database backups                             Data Wa… ◐               ┃────────●                        +9d
+▊ Launch new homepage                                   Website… ○               ┃─────────●                      +10d
+▊ Add push notifications                                Mobile … ◐               ┃───────────●                    +12d
+▊ SEO redirects map ↗                                   Website… ○               ┃─────────────●                  +14d
+▊ Daily revenue model                                   Data Wa… ◐               ┃─────────────────●              +18d
+▊ Pen-test findings                                     Ops & S… ○               ┃───────────────────●            +20d
+▊ Offline sync                                          Mobile … ○               ┃───────────────────────────●    +28d
+▊ Archive old logs                                      Data Wa… ○               ┃────────────────────────────▸   +30d
+▊ Beta release to testers                               Mobile … ○               ┃────────────────────────────▸   +35d
+▊ BI dashboard cut-over                                 Data Wa… ○               ┃────────────────────────────▸   +60d
+ no date ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+▊ Plan Q4 roadmap                                       API Pla… ○               ┃                                   —
+▊ Update onboarding copy                                Ops & S… ○               ┃                                   —

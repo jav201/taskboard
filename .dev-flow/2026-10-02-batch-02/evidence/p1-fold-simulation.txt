@@ -1,0 +1,13 @@
+$ python .dev-flow/2026-10-02-batch-02/evidence/p1_fold_simulation.py   # base a0e7d9a; C-39 pre-execution of HLR-207/208 thresholds (P2 iteration 2 adds iter2_prev1_today)
+base (80, 22) ups [('tm6', 8, 5), ('td2', 16, 13), ('to1', 16, 14)] | initial unfolded ['Website', 'API']
+base (118, 28) ups [('ta1', 14, 11)] | initial unfolded ['Website', 'API', 'Data', 'Ops']
+urgent_only (80, 22) ups [('tm6', 8, 5), ('td2', 16, 13), ('to1', 16, 14)] | initial unfolded ['Website', 'API']
+urgent_only (118, 28) ups [('ta1', 14, 11)] | initial unfolded ['Website', 'API', 'Data', 'Ops']
+visited_first (80, 22) ups [('ta1', 14, 11), ('td2', 16, 13)] | initial unfolded ['Website', 'API']
+visited_first (118, 28) ups [('to1', 26, 23)] | initial unfolded ['Website', 'API', 'Data', 'Ops']
+urgent_first (80, 22) ups [('ta1', 14, 11), ('td2', 16, 13), ('to1', 16, 14)] | initial unfolded ['Website', 'API']
+urgent_first (118, 28) ups [('ta1', 14, 11)] | initial unfolded ['Website', 'API', 'Data', 'Ops']
+llr_207_1 (80, 22) ups [('ta1', 14, 11), ('td2', 16, 13)] | initial unfolded ['Website', 'API']
+llr_207_1 (118, 28) ups [('to1', 26, 23)] | initial unfolded ['Website', 'API', 'Data', 'Ops']
+iter2_prev1_today (80, 22) ups [('ta1', 14, 11), ('td2', 16, 13)] | initial unfolded ['Website', 'Data', 'Ops']
+iter2_prev1_today (118, 28) ups [('ta1', 14, 11)] | initial unfolded ['Website', 'API', 'Data', 'Ops']

@@ -1,0 +1,122 @@
+$ python .dev-flow/2026-10-02-batch-02/evidence/p0_probes.py   # base a0e7d9a, 2026-10-02
+== P-1 accent census, 118x30, oracle board (+URL card, team, history, setup state)
+  swimlanes waves: 25 accent run(s)
+     row 0: '◆ TASKBOARD'
+     row 1: '╎'
+     row 2: '╎'
+     row 3: '╎'
+     row 4: '╎'
+     row 5: '╎'
+     row 8: '╎'
+     row 10: '╎'
+     row 11: '╎'
+     row 12: '╎'
+     row 13: '╎'
+     row 15: '╎'
+  swimlanes grid: 13 accent run(s)
+     row 0: '◆ TASKBOARD'
+     row 2: '╎'
+     row 2: '╎'
+     row 7: '╎'
+     row 8: '╎'
+     row 12: '╎'
+     row 12: '╎'
+     row 13: '▄'
+     row 15: '╎'
+     row 17: 'Sep 30'
+     row 18: '▪'
+     row 19: '╎'
+  agenda : 44 accent run(s)
+     row 0: 'AGENDA'
+     row 1: 'today'
+     row 2: '┃'
+     row 3: '┃'
+     row 4: '◐'
+     row 4: '┃'
+     row 5: '┃'
+     row 6: '◐'
+     row 6: '┃'
+     row 7: '◐'
+     row 7: '┃'
+     row 8: '◐'
+  focus : 1 accent run(s)
+     row 0: '◆ FOCUS'
+  flow : 2 accent run(s)
+     row 0: 'FLOW'
+     row 14: '                       █                                                                                              '
+  standup : 3 accent run(s)
+     row 0: 'STANDUP'
+     row 0: 'equipo'
+     row 2: '▌'
+  people : 3 accent run(s)
+     row 0: 'PEOPLE'
+     row 0: 'equipo'
+     row 2: '▌'
+  setup : 10 accent run(s)
+     row 4: '  equipo'
+     row 11: '  proyectos del equipo'
+     row 14: '  roster'
+     row 18: 'tab'
+     row 18: '↵'
+     row 18: 'espacio'
+     row 18: 'a'
+     row 18: 'x'
+     row 18: 'ctrl+s'
+     row 18: 'esc'
+  kanban : 0 accent run(s)
+  gantt : 18 accent run(s)
+     row 1: '30'
+     row 3: '╎'
+     row 4: '╎'
+     row 5: '╎'
+     row 7: '╎'
+     row 9: '╎'
+     row 12: '╎'
+     row 13: '╎'
+     row 14: '╎'
+     row 15: '╎'
+     row 16: '╎'
+     row 17: '╎'
+  legend swatches in accent, per view:
+     swimlanes: ['field: ash spent · dim still to spend · ╎ today', 'due today']
+     agenda: ['today']
+     gantt: ['today']
+     flow: ['throughput: tasks reaching the terminal phase']
+     standup: ['operator row', 'classification filter']
+     people: ['operator lane', 'classification filter']
+== P-2 chrome
+  keybar primary: accent tags 18; hues ['#2dd4bf', '#8b98a5']
+  keybar more: accent tags 10; hues ['#22d3ee', '#2dd4bf', '#38bdf8', '#8b98a5', '#a78bfa', '#fb923c', '#fbbf24']
+  GROUP_HUE: {'system': 'amber', 'views': 'violet', 'nav': 'mut', 'task': 'accent', 'phase': 'sky', 'kanban': 'cyan', 'date': 'orange', 'misc': 'green'}
+  ribbon: accent tags 3
+  taskboard.tcss .modal-title: .modal-title { color: #2dd4bf; text-style: bold; margin-bottom: 1;
+  app.py HelpScreen #2dd4bf literals: 2
+  modals.py #palette-input:focus border: ['#palette-input:focus { border: tall #2dd4bf; }']
+== P-3 Spanish UI strings (AST census of string literals, docstrings excluded)
+  app.py: 13 literal(s), lines [209, 988, 990, 1006, 1010, 1014, 1073, 1075, 1085, 1099, 1143, 1155]
+  keymap.py: 1 literal(s), lines [82]
+  modals.py: 6 literal(s), lines [1237, 1264, 1271, 1275, 1278, 1281]
+  team_sync.py: 31 literal(s), lines [309, 311, 312, 317, 319, 321, 328, 330, 340, 342, 344, 346, 357, 359, 361, 363, 367, 369, 371, 374]
+  views.py: 125 literal(s), lines [3723, 3750, 3840, 3877, 3879, 3914, 4017, 4622, 4792, 4832, 4836, 4837, 4839, 4840, 4842, 4843, 4849, 4852, 4855, 4860, 4867, 4888, 4889, 4890, 4891, 4892, 4893, 4894, 4907, 5073, 5075, 5077, 5078, 5079, 5080, 5081, 5082, 5086, 5087, 5088]
+  total: 176 (models.py excluded: proper city names)
+== P-4 weekend background under 256-colour quantisation
+  #0d1117: 256-colour index 16 (#000000)
+  #161d27: 256-colour index 16 (#000000)
+  #1a1d22: 256-colour index 234 (#1c1c1c)
+== P-5 gantt: a paged project group draws no above/below hint
+  80x24, tb15 selected: rows drawn 20 of 30; span label '▾ Big            30  ┆·╎····'; 'above' in frame: False; 'below' in frame: False
+== P-6 UXV-3 fold order at panel 80x22 (terminal 80x24)
+  Website Redesign  unfolded=True late=2 due_today=[]
+  Mobile App        unfolded=False late=0 due_today=[]
+  API Platform      unfolded=True late=2 due_today=[]
+  Data Warehouse    unfolded=False late=0 due_today=[]
+  Ops & Security    unfolded=False late=1 due_today=['to3']
+== P-7 UXV-2 the selection's row on each `down` at panel 80x22 (nav order)
+  25 steps; steps where the highlight moved UP: [('tm6', 8, 5), ('td2', 16, 13), ('to1', 16, 14)]
+== P-8 the flow packet and the <=7-day token tones
+  packet styles: ['#e6edf7'] (bright = #e6edf7)
+  reldue_token(+4d) = ('+4d', 'mut')
+== P-9 UXV-7 the echo of a task started before the window (tw2, 118x30)
+  day row field starts '⟦━━━━━━'; task start 2026-09-05
+== P-10 D14 `]` finishing a gantt task shows no notice
+  tw2 done: True; notifications added: 0; selection now tw3
