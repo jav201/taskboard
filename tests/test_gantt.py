@@ -1,4 +1,13 @@
-"""The gantt's right edge and its titles (REV5 #19).
+"""The gantt's right edge, its titles and its field.
+
+Rewritten 2026-10-02 (batch 2026-10-02-batch-01, G-A + AX-2): the gantt now fits its
+window to the open work, folds projects, ends every row in ONE due chip and keeps
+the dates on a two-row ruler at the top. Every law below that the verdict left
+standing is kept and retargeted to the live helpers (`gantt_columns`,
+`gantt_axis`, `_gantt_bar`, `_gantt_span`); the ones the verdict superseded say
+which requirement superseded them.
+
+(Original preamble, REV5 #19:)
 
 Two changes, one law between them: the row ends in the six-cell due meter, and
 because the meter now says WHEN, the bar goes back to saying only WHOSE. That is
@@ -14,7 +23,8 @@ import re
 from datetime import date, timedelta
 
 from taskboard.models import Board, Project, Task
-from taskboard.views import HEX, META_FULL_W, gantt_geometry, gantt_meta_geometry, render_gantt
+from taskboard.views import (HEX, GanttAxis, gantt_axis, gantt_columns, gantt_plan,
+                             gantt_window, render_gantt)
 
 TODAY = date(2026, 7, 30)
 
@@ -52,134 +62,130 @@ def rows(b, w=96, h=20, focus=None):
                             focus=focus)).split("\n")
 
 
-def geo(w):
-    inner = w - 2
-    glabel_w = max(18, min(30, inner // 3))
-    meta_w, _full = gantt_meta_geometry(inner, glabel_w, 6)
-    return inner, glabel_w, meta_w
+def body_rows(lines):
+    """The body of a gantt render: under the header and the two ruler rows,
+    minus a trailing legend row."""
+    out = lines[3:]
+    if out and out[-1].startswith(" ") and not out[-1].startswith("  "):
+        out = out[:-1]
+    return [l for l in out if l.strip()]
 
 
 # --------------------------------------------------------------------------- #
 # the right edge
 # --------------------------------------------------------------------------- #
 def test_every_row_ends_in_a_date_reading(tmp_path):
+    """HLR-103 (batch 2026-10-02-batch-01). Every row that carries open work ends
+    in ONE due chip — `▲Nd`, `today`, a date, or `no due`. The blank-edge trap
+    the old law caught still applies: an edge of pure ground says nothing."""
     b, _p = fixture(tmp_path)
-    out = rows(b, 96, 20)
-    geo = gantt_geometry(94, 20)
-    body = [l for l in out if l.startswith("▎ ") or l.startswith("▏ ")]
-    assert len(body) >= 5
+    _label, chip_w, _f = gantt_columns(96)
+    body = body_rows(rows(b, 96, 20))
+    assert len(body) >= 3
     for line in body:
-        edge = line[-geo.figs_w:]
-        # a READING now: absolute start/due date chips, or a dim em-dash for
-        # undated work. The blank-edge trap the old law caught still applies:
-        # an edge of pure ground says nothing and must not pass.
-        assert re.search(r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|—)", edge), (
-            f"{edge!r} is not a date reading")
-        assert edge.strip("· —→"), f"{edge!r} has no reading at all"
+        edge = line[-chip_w:]
+        assert re.search(r"(▲\d+d|today|no due|(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2})$",
+                         edge.strip()), f"{edge!r} is not a due reading"
 
 
-def test_finished_work_rests_in_ash_with_date_chip(tmp_path):
-    """Active at the top, finished at the tail, and the finished row RESTS: thin
-    spine, ash dates, no chip and no severity."""
+def test_finished_work_folds_into_its_projects_count(tmp_path):
+    """Superseded by D2 / HLR-102 (batch 2026-10-02-batch-01, G-A: "done folds
+    to ✓n"). Was: finished work rested at the tail in ash with its dates. Now it
+    draws no row at all and is counted on its project's span row — at a label of
+    at least 26 cells, which 118 columns give."""
     b, _p = fixture(tmp_path)
-    # the done task sits at the tail and its title is clipped by the narrow label,
-    # so match on a prefix that survives truncation
-    line = next(l for l in rows(b, 96, 30) if "Old finis" in l)
-    geo = gantt_geometry(94, 30)
-    edge = line[-geo.figs_w:]
-    # finished work: the edge shows its dates, in one quiet tone
-    assert "Jul 10" in edge, edge
-    assert line.startswith("▏ ")               # the thin spine
-    assert "▲" not in line
+    out = rows(b, 118, 30)
+    assert not any("Old finis" in l for l in out), "a finished task still draws a row"
+    atlas = next(l for l in out if "Atlas" in l)
+    assert "✓1" in atlas, atlas
 
 
-def test_the_project_row_carries_date_chips(tmp_path):
-    """The project row no longer keeps a progress percent; it keeps the project's
-    own start and due dates as absolute date chips."""
+def test_the_project_row_carries_its_due_chip(tmp_path):
+    """HLR-103. The project row ends in its committed due, as a chip, while it
+    holds open work."""
     b, _p = fixture(tmp_path)
+    _label, chip_w, _f = gantt_columns(130)
     line = next(l for l in rows(b, 130, 30) if "Atlas" in l)
-    geo = gantt_geometry(128, 30)
-    edge = line[-geo.figs_w:]
-    assert re.search(r"Jul 10|Aug 24", edge), edge
+    assert line[-chip_w:].strip() == "Aug 24", line[-chip_w:]
 
 
-def test_the_alert_is_the_meters_cap_and_nothing_else(tmp_path):
-    """`▲` is severity's one seat on this row, and overdue dates in the date
-    chip also wear `over` so the chip itself reports lateness. The task bar used
-    to turn red for overdue and amber for due-today; the meter says when now, so
-    the bar is free to say only whose."""
+def test_the_alert_lives_in_chips_and_counts_and_nothing_else(tmp_path):
+    """`▲` is severity's seat: the late chip `▲Nd`, a project's `▲n` count, the
+    header's `▲n past due`, and a dependency mark planned to start too early.
+    Nothing else on the gantt wears the severity hue (HLR-103)."""
     b, _p = fixture(tmp_path)
     text = render_gantt(b, False, None, TODAY, width=96, height=20)
     worn = [text.plain[s.start:s.end].strip() for s in text.spans
             if HEX["over"] in str(s.style)]
     assert worn, "vacuous: nothing wears the severity hue at all"
     for seg in worn:
-        assert re.fullmatch(r"▲|▲\d+ past due|\d+ past due|"
-                            r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}", seg), \
-            f"severity worn by {seg!r}"
+        assert re.fullmatch(r"▲\d+d|▲\d+|▲\d+ past due|↳", seg), f"severity worn by {seg!r}"
 
 
 def test_a_bar_never_wears_an_urgency_hue(tmp_path):
     """The span and the reaches may only ever wear an identity hue, the ash of
-    elapsed time, the flow packet's bright, or the batch-06 priority hues."""
+    elapsed time, the flow packet's bright, or the batch-06 priority hues.
+
+    Was vacuous since the field left braille (BACKLOG, gauge batch): it matched
+    `⣿⣤⡄⣀` segments the view no longer draws. It now matches the glyphs the
+    field draws today, and asserts it found some."""
     from taskboard.models import PROJECT_COLORS
+    from taskboard.views import CRITICAL_REACH, FIELD_PHASE_TIP, FIELD_REACH, FIELD_TASK
     b, _p = fixture(tmp_path)
     text = render_gantt(b, False, None, TODAY, width=96, height=20)
     lawful = ({HEX[c] for c in PROJECT_COLORS}
-              | {HEX["bright"], HEX["dim"], HEX["accent"], HEX["frame"],
-                 HEX["ash"], HEX["mut"], HEX["rose"], HEX["sky"]})
+              | {HEX["bright"], HEX["ash"], HEX["mut"], HEX["rose"], HEX["sky"]})
+    bar = {FIELD_REACH, FIELD_TASK, CRITICAL_REACH, *FIELD_PHASE_TIP}
+    seen = 0
     for s in text.spans:
         seg = text.plain[s.start:s.end]
-        if seg and set(seg) <= {"⣿", "⣤", "⡄", "⣀", " "} and seg.strip():
+        if seg.strip() and set(seg) <= bar:
+            seen += 1
             assert any(h in str(s.style) for h in lawful), f"bar wears {s.style}"
             assert HEX["over"] not in str(s.style)
             assert HEX["soon"] not in str(s.style)
+    assert seen >= 3, "vacuous: no bar segment found"
 
 
 # --------------------------------------------------------------------------- #
 # the titles
 # --------------------------------------------------------------------------- #
 def test_a_title_never_covers_its_own_reach(tmp_path):
-    """The safety property, stated where it actually lives: the title spends
-    ONLY the cells the reach leaves empty in front of itself. Checked against
-    the reach the engine builds, not against arithmetic on the rendered row —
-    a title that grew one cell too far would draw over the mark it names."""
-    from taskboard.views import _reach_start, _task_reach, gantt_geometry
-    b, p = fixture(tmp_path)
-    gg = gantt_geometry(94, 30)
+    """The safety property, now held by layout: the title owns the label
+    column, the gutter is its own column, and the field starts after it — so no
+    title can reach a bar cell (HLR-103, LLR-101.10). Checked on the rendered
+    rows: the label column holds no field glyph and the field no title text."""
+    from taskboard.views import FIELD_PHASE_TIP, FIELD_TASK
+    b, _p = fixture(tmp_path)
+    label_w, _c, _f = gantt_columns(96)
     checked = 0
     for t in b.tasks:
-        full = _task_reach(t, b, gg, TODAY, "lime")
-        over = min(_reach_start(t, gg, TODAY), gg.today_dc // 2)
-        assert all(g == " " for g, _ in full[:over]),             f"{t.title!r}: the title would cover {over} drawn cells"
-        assert any(g != " " for g, _ in full), f"{t.title!r}: no reach at all"
+        line = next((l for l in rows(b, 96, 30) if t.title[:12] in l), None)
+        if line is None:
+            continue                       # rest work folds (D2)
+        assert not set(line[:label_w]) & {FIELD_TASK, *FIELD_PHASE_TIP}, line
+        assert t.title[:12] not in line[label_w:], line
         checked += 1
-    assert checked >= 4
+    assert checked >= 3
 
 
-def test_a_task_whose_reach_starts_later_gets_a_wider_title(tmp_path):
-    """The title still runs over the field (REV5 #19's ruling, kept through the
-    field redesign): it spends the empty cells before its own reach, and stops
-    at the today rule so the one column every row shares survives.
-
-    THE INTENT is the inequality — later reach, wider title — and it is asserted
-    first and on its own, because it is the thing that must stay true. The exact
-    pair beneath it is a pin, and it moved again: the date-chip column now claims
-    cells that used to belong to the field, so both title widths shrank to make
-    room for absolute dates. The pin is re-measured, not deleted, so the next
-    change to the title's reach still has to look a human in the eye."""
+def test_a_long_title_is_clipped_inside_its_label(tmp_path):
+    """Superseded by HLR-103 (batch 2026-10-02-batch-01): the REV5 #19 ruling let
+    a title spend the empty field before its reach, so later reaches got wider
+    titles. G-A gives the title a fixed label column and the dependency mark its
+    own gutter (the prototype's frames), so every title is clipped the same way,
+    with an ellipsis, inside its label."""
     b, p = fixture(tmp_path)
     b.tasks.append(Task("A" * 60, p.id, "Backlog", "normal",
                         start_date=iso(9), due_date=iso(16)))
     b.tasks.append(Task("B" * 60, p.id, "Doing", "normal",
                         start_date=iso(-6), due_date=iso(-2)))
-    out = rows(b)
+    label_w, _c, _f = gantt_columns(96)
+    out = rows(b, 96, 30)
     near = next(l for l in out if "B" * 10 in l)
     far = next(l for l in out if "A" * 10 in l)
-    assert far.count("A") > near.count("B")
-    # measured: 19 for a task already under way, 24 for one starting later
-    # (3 cells reserved for the dependency indicator + the wider date-chip band)
-    assert (near.count("B") + 1, far.count("A") + 1) == (19, 24)
+    assert near[:label_w].count("B") == far[:label_w].count("A") == label_w - 4
+    assert near[label_w - 2] == "…" and far[label_w - 2] == "…"
 
 
 def test_the_header_counts_what_is_past_due(tmp_path):
@@ -260,38 +266,28 @@ def test_more_data_no_longer_produces_less_screen(tmp_path):
 
 
 def test_the_carrying_fraction_clears_what_rev3_measured(tmp_path):
-    """REV3 measured 71.1 % of cells carrying at typical load. Measured here:
-    66.2 % after the swimlane separators landed, then 62.5 % after the date-chip
-    column claimed another 9 cells for absolute dates: the field shrank, so the
-    fraction of cells carrying ink or field dots fell. The floor is set just
-    under the new measured value, with margin for honest variation."""
+    """REV3 measured 71.1 % of cells carrying at typical load; the 2-day axis
+    ended at 62.5 % (floor 61). G-A + AX-2 (batch 2026-10-02-batch-01) measured
+    59.8 %: the fixed 20-cell label column and the two ruler rows — mostly the
+    blanks between day numbers — are cells that carry nothing by design. The
+    floor is set just under the new measured value."""
     typical = _census(rows(_load(tmp_path, 5, 21, "t2.json"), 96, 30))
-    assert typical["marked"] >= 61.0, typical["marked"]
+    assert typical["marked"] >= 58.5, typical["marked"]
 
 
 def test_emptiness_is_bounded_where_the_content_could_actually_fill_the_screen(tmp_path):
-    """`dead <= 25` MEANT "this view does not waste screen", and it measured that
-    correctly for as long as every fixture overflowed its viewport.
+    """`dead <= 25` on the fixture whose content exceeds the screen (kept at its
+    original value; measured 24.6 % on G-A + AX-2, batch 2026-10-02-batch-01).
 
-    The 2026-08-07 redesign gave each project one field row instead of two, and
-    the typical fixture (5 projects / 21 tasks) stopped being able to fill 96x30
-    at all: its emptiness went 21.5 % -> 27.1 %, not because the view got
-    wasteful but because it RAN OUT OF CONTENT. On the extreme fixture — where
-    slack is impossible — the same code measures 20.0 %, BETTER than the 21.5 %
-    the old design managed.
-
-    So the threshold is kept, at its original value, and pointed at the fixture
-    where it still means what it says. Relaxing it to 28 would have been the
-    other option and it is the wrong one: a law loosened until the code passes
-    stops being a law. `test_nothing_is_hidden_when_the_content_fits` carries
-    what actually matters on the short board."""
-    extreme = _census(rows(_load(tmp_path, 8, 44, "dead_e.json"), 96, 30))
-    assert extreme["dead"] <= 25.0, extreme["dead"]
-    # and the fixture must really overflow, or this is the same vacuum by
-    # another route
-    out = rows(_load(tmp_path, 8, 44, "dead_e2.json"), 96, 30)
-    assert any("not shown" in line for line in out), (
-        "the extreme fixture no longer overflows; this law went vacuous")
+    The guard that keeps it from going vacuous changed with the design: the
+    extreme fixture used to OVERFLOW (`+N not shown`); with folding (HLR-102)
+    nothing is hidden, so the proof that the content exceeds the screen is now
+    that some project had to fold."""
+    out = rows(_load(tmp_path, 8, 44, "dead_e.json"), 96, 30)
+    assert _census(out)["dead"] <= 25.0, _census(out)["dead"]
+    assert any(l.startswith("▸") for l in out), (
+        "the extreme fixture no longer exceeds the screen; this law went vacuous")
+    assert not any("not shown" in l for l in out), "folding should have held it"
 
 
 def test_nothing_is_hidden_where_the_old_two_row_shape_hid_work(tmp_path):
@@ -315,15 +311,14 @@ def test_nothing_is_hidden_where_the_old_two_row_shape_hid_work(tmp_path):
         "the gantt is hiding rows at a size where its content fits")
 
 
-def test_swimlane_separators_are_present_and_chrome_is_acceptable(tmp_path):
-    """The gantt now draws swimlanes: a horizontal rule between project blocks
-    so the eye reads one lane at a time. The old `┈` divider is gone, replaced
-    by a full-width `─` rule. That structure raises chrome from the post-REV3
-    low to about 16 % on a five-project board — the price of the lane visual,
-    and still well below the pre-redesign 21.2 %."""
+def test_every_project_has_its_span_row_and_chrome_is_acceptable(tmp_path):
+    """Superseded by HLR-102 (batch 2026-10-02-batch-01): the full-width `─`
+    rule between project blocks is gone — in the G-A frames each project's own
+    span row opens its block. The chrome law is kept (< 18 %)."""
     out = rows(_load(tmp_path, 5, 21, "t3.json"), 96, 30)
-    assert not any(set(l) == {"┈"} for l in out)
-    assert sum(1 for l in out if set(l) == {"─"}) >= 4, "expected swimlane separators"
+    assert not any(set(l) == {"─"} for l in out), "a separator row is back"
+    for i in range(5):
+        assert any(l.startswith(("▾", "▸")) and f"Project {i}" in l for l in out), i
     assert _census(out)["chrome"] < 18.0, _census(out)["chrome"]
 
 
@@ -421,183 +416,146 @@ def test_a_truncated_title_never_touches_its_own_bar(tmp_path):
 
 
 def test_a_truncated_project_name_never_touches_the_field(tmp_path):
-    """AC-2. The project row has no borrowed field cells to give back — its
-    label is exactly `label_w` wide — so its gutter comes out of the name's own
-    clip. It read `▎ Data Warehou…◂████` before."""
-    from taskboard.views import gantt_geometry
+    """AC-2, kept: a clipped project name ends in its ellipsis and a blank, and
+    the gutter column after the label is blank too — two cells of air before the
+    field (LLR-101.10, LLR-101.11)."""
     for w, h in ((104, 30), (96, 30)):
+        label_w, _c, _f = gantt_columns(w)
         out = rows(gutter_board(tmp_path), w, h)
-        g = gantt_geometry(w, h)
-        row = next(l for l in out if l.startswith("▎ Machine"))
-        # everything from the name's last glyph to the field's first cell.
-        # literal 2 again — `" " * GUTTER` is the empty string when GUTTER is 0
-        # and `endswith("")` is true of every string alive
-        tail = row[:g.label_w]
-        assert tail.endswith("  "), (
-            f"{w}x{h}: project label {tail!r} has no 2-cell gutter")
+        row = next(l for l in out if l.startswith(("▾ Machine", "▸ Machine")))
+        assert row[label_w - 1:label_w + 1] == "  ", (
+            f"{w}x{h}: no 2-cell gutter after {row[:label_w + 1]!r}")
 
 
 def test_the_field_is_ruled_by_weeks(tmp_path):
-    """AC-3. The gauge the view never had. Every guide is a monday, it is drawn
-    on the body rows and not just once, and it never takes the today column —
-    two verticals in one cell would read as one thicker rule, a third meaning
-    nobody declared."""
-    from taskboard.views import FIELD_WEEK, LATTICE, gantt_gauge, gantt_geometry
-    # a guide that IS the lattice rules nothing, and every check below would
-    # still pass on the lattice's own dots
+    """AC-3, kept on the fitted axis: while a week spans a few cells (k <= 2)
+    every guide is a Monday's first cell; it is drawn on the body rows; and it
+    never takes the today column — two verticals in one cell would read as one
+    thicker rule."""
+    from taskboard.views import FIELD_WEEK, LATTICE
     assert FIELD_WEEK != LATTICE, "the guide is indistinguishable from the ground"
     b = gutter_board(tmp_path)
     for w, h in ((104, 30), (96, 30), (120, 40)):
-        g = gantt_geometry(w, h)
-        weeks, _ = gantt_gauge(g, TODAY)
-        assert weeks, f"{w}x{h}: no week guide at all"
-        # every guide cell really is a monday, by the view's own day axis
-        for cell in weeks:
-            days = {TODAY + timedelta(days=dc - g.today_dc)
-                    for dc in (cell * 2, cell * 2 + 1)}
-            assert any(d.weekday() == 0 for d in days), f"cell {cell} is no monday"
-        assert g.today_dc // 2 not in weeks, "a guide took the today column"
         out = rows(b, w, h)
-        ruled = [l for l in out if FIELD_WEEK in l]
+        ruled = [l for l in body_rows(out) if FIELD_WEEK in l]
         assert len(ruled) >= 4, f"{w}x{h}: only {len(ruled)} rows carry the guide"
+    for k in (0.5, 1, 2):
+        ax = GanttAxis(TODAY - timedelta(days=20), k, 60, TODAY)
+        g = ax.guides()
+        assert g, k
+        for x in g:
+            assert any(d.weekday() == 0 and ax.cell(d) == x for d in ax.days_in(x)), (k, x)
+    # THE GUARD, where it can fire: today on a Monday owns its own cell.
+    for anchor in (date(2026, 8, 3), date(2026, 8, 2)):
+        for k in (0.5, 1, 2):
+            ax = GanttAxis(anchor - timedelta(days=14), k, 60, anchor)
+            assert ax.tc not in ax.guides(), (anchor, k)
 
-    # THE GUARD, on a date where it can actually fire. `TODAY` is a Thursday, so
-    # the today cell (which spans today and tomorrow) can never hold a monday and
-    # the assertion above is vacuous on its own — deleting the guard leaves it
-    # green. These two anchors are the cases that make it bite.
-    for anchor in (date(2026, 8, 3),      # a MONDAY: today's own cell
-                   date(2026, 8, 2)):     # a SUNDAY: tomorrow's half of the cell
-        g = gantt_geometry(104, 30)
-        weeks, _ = gantt_gauge(g, anchor)
-        assert g.today_dc // 2 not in weeks, (
-            f"{anchor} ({anchor:%A}): the week guide took the today column")
 
-
-def test_the_axis_names_the_months(tmp_path):
-    """AC-4. The operator chose to put the months on the axis the day figures already
-    own, so this asserts BOTH scales survive on that one row: a month name that
-    could not stand clear was dropped whole, but at least one is drawn and the
-    day figures are untouched."""
-    from taskboard.views import gantt_gauge, gantt_geometry, _scale_cells
+def test_the_ruler_names_the_months(tmp_path):
+    """AC-4, moved to the top (HLR-105, batch 2026-10-02-batch-01): the month
+    row (row 1) names every month band wide enough to hold its three letters,
+    and the axis row that used to close the view is gone."""
     for w, h in ((104, 30), (96, 30), (120, 40)):
-        g = gantt_geometry(w, h)
-        _, months = gantt_gauge(g, TODAY)
-        body, cols = _scale_cells(g, months)
-        assert cols, f"{w}x{h}: no month name reached the axis"
-        drawn = "".join(body)
-        assert "today" in drawn, f"{w}x{h}: the day scale lost its anchor"
-        # whole names only — never a half-printed month, which is a wrong date
-        for at in sorted(months):
-            if at in cols:
-                assert drawn[at:at + 3] == months[at], (
-                    f"{w}x{h}: {months[at]} came out as {drawn[at:at + 3]!r}")
-        axis = rows(gutter_board(tmp_path), w, h)[-1]
-        assert any(months[at] in axis for at in sorted(months) if at in cols)
+        out = rows(gutter_board(tmp_path), w, h)
+        label_w, _c, field_w = gantt_columns(w)
+        groups = gantt_plan(gutter_board(tmp_path), False, None, TODAY, h - 3)
+        ax = gantt_axis(field_w, TODAY, *gantt_window(groups, TODAY))
+        months = out[1][label_w + 1:label_w + 1 + field_w]
+        starts = [0] + [x for x in range(1, ax.w) if ax.day(x).month != ax.day(x - 1).month]
+        for i, x0 in enumerate(starts):
+            x1 = (starts + [ax.w])[i + 1]
+            if x1 - x0 >= 4:
+                assert ax.day(x0).strftime("%b") in months[x0:x1], (w, h, months)
+        assert "today" not in out[-1], "the bottom axis is back"
 
 
 def test_the_project_reach_is_a_rule_not_a_slab(tmp_path):
-    """AC-5. `█` is what the operator saw as "bloques muy grandes": it buried
-    the guide under it and shouted over every task bar. The three weights still
-    rank reach > progress > task; the top one stopped shouting."""
+    """AC-5, kept: reach > progress > task as three distinct weights, and the
+    span drawn as a thin rule, never a slab."""
     from taskboard.views import FIELD_PROGRESS, FIELD_REACH, FIELD_TASK
     assert FIELD_REACH != "█", "the slab is back"
     assert len({FIELD_REACH, FIELD_PROGRESS, FIELD_TASK}) == 3, \
         "two weights collapsed into one, so the hierarchy is gone"
     out = rows(gutter_board(tmp_path), 104, 30)
-    span = next(l for l in out if l.startswith("▎ Machine"))
+    span = next(l for l in out if l.startswith(("▾ Machine", "▸ Machine")))
     assert FIELD_REACH in span and "█" not in span
 
 
 def test_the_circle_sits_at_the_progress_fraction_of_the_span(tmp_path):
-    """AC3. The dot is not merely SOMEWHERE before the diamond — it is a
-    reading, and where it lands is the whole claim.
-
-    Asserted through `_span_bands` rather than by hunting the rendered row,
-    because the row also carries the today rule, the week guides and the
-    lattice, and a law that has to find its subject among those tests the
-    search as much as the mechanism.
-
-    0.0 and 1.0 are the ends and they are what a clamp bug moves first: a dot
-    floating past `◆`, or one drifting left of a span that has not started,
-    would both read as a mark belonging to nothing."""
-    from taskboard.models import Board, Project
-    from taskboard.views import PROGRESS_DOT, gantt_geometry, _span_bands
-    b = Board.load(str(tmp_path / "frac.json"))
-    b.projects.clear(); b.tasks.clear()
+    """AC3, kept and retargeted to `_gantt_span` on the fitted axis: the dot is
+    a reading — on the start at 0.0, on the `◆` at 1.0, monotone between."""
+    from taskboard.models import Project
+    from taskboard.views import PROGRESS_DOT, _gantt_span
     p = Project("Span", "lime", "on_track",
                 start_date=(TODAY - timedelta(days=20)).isoformat(),
                 due_date=(TODAY + timedelta(days=20)).isoformat())
-    geo = gantt_geometry(96, 30)
+    ax = GanttAxis(TODAY - timedelta(days=25), 1, 60, TODAY)
     seen = {}
     for prog in (0.0, 0.25, 0.5, 0.75, 1.0):
-        span, _ = _span_bands(p, geo, TODAY, "lime", prog, 0)
+        span = _gantt_span(p, ax, prog, 0)
         cells = [i for i, (g, _t) in enumerate(span) if g == PROGRESS_DOT]
         assert len(cells) == 1, (prog, cells)
         seen[prog] = cells[0]
-    ends = [i for i, (g, _t) in enumerate(span) if g != " "]
-    c0, c1 = min(ends), max(ends)
-    assert seen[0.0] == c0, (seen, c0)          # at the start, on the start
-    assert seen[1.0] == c1, (seen, c1)          # at the end, on the `◆` cell
-    # and MONOTONE in between, which is what "it is a reading" means
+    assert seen[0.0] == ax.cell(TODAY - timedelta(days=20))
+    assert seen[1.0] == ax.cell(TODAY + timedelta(days=20))
     order = [seen[k] for k in (0.0, 0.25, 0.5, 0.75, 1.0)]
-    assert order == sorted(order), order
-    assert len(set(order)) > 2, f"the dot barely moves across the span: {order}"
+    assert order == sorted(order) and len(set(order)) > 2, order
 
 # --------------------------------------------------------------------------- #
 # batch-06: priority hue, milestone, dependency, focus (gantt semantics)
 # --------------------------------------------------------------------------- #
 def test_task_reach_wears_priority_hue(tmp_path):
-    """High priority draws rose, normal sky, low mut; done rests in ash."""
-    from taskboard.views import _task_reach, gantt_geometry
+    """High priority draws rose, normal sky, low mut — and a critical-chain task
+    is structure, heavy and bright (HLR-108). Rest work draws no bar at all
+    (D2), so the old `ash` arm moved to the fold count."""
+    from taskboard.views import CRITICAL_REACH, _gantt_bar
     b = board(tmp_path, "prio.json")
-    p = Project("P", "lime", "on_track",
-                start_date=iso(-10), due_date=iso(40))
+    p = Project("P", "lime", "on_track", start_date=iso(-10), due_date=iso(40))
     b.projects.append(p)
     b.tasks += [
         Task("High", p.id, "Doing", "high", start_date=iso(2), due_date=iso(8)),
         Task("Normal", p.id, "Doing", "normal", start_date=iso(2), due_date=iso(8)),
         Task("Low", p.id, "Doing", "low", start_date=iso(2), due_date=iso(8)),
-        Task("Done", p.id, "Done", "high", start_date=iso(2), due_date=iso(8)),
     ]
-    gg = gantt_geometry(96, 30)
+    ax = GanttAxis(TODAY - timedelta(days=5), 1, 60, TODAY)
     tones = {}
     for t in b.tasks:
-        cells = _task_reach(t, b, gg, TODAY, p.color)
-        drawn = [(g, tone) for g, tone in cells if g != " "]
+        drawn = [(g, tone) for g, tone in _gantt_bar(t, b, ax, set(), 0) if g != " "]
         assert drawn, t.title
-        tones[t.title] = drawn[0][1]
-    assert tones["High"] == "rose"
-    assert tones["Normal"] == "sky"
-    assert tones["Low"] == "mut"
-    assert tones["Done"] == "ash"
+        tones[t.title] = drawn[-1][1]
+    assert tones == {"High": "rose", "Normal": "sky", "Low": "mut"}
+    crit = [(g, tone) for g, tone in _gantt_bar(b.tasks[0], b, ax, {b.tasks[0].id}, 0)
+            if g not in (" ", "▬")]               # the flow packet rides on top
+    assert {tone for _g, tone in crit} == {"crit"}
+    assert CRITICAL_REACH in {g for g, _ in crit}
 
 
 def test_milestone_renders_as_a_single_diamond(tmp_path):
     """A task whose start equals due renders as one ◆ cell, not a span."""
-    from taskboard.views import _task_reach, gantt_geometry
+    from taskboard.views import _gantt_bar
     b = board(tmp_path, "milestone.json")
-    p = Project("P", "lime", "on_track",
-                start_date=iso(-10), due_date=iso(40))
+    p = Project("P", "lime", "on_track", start_date=iso(-10), due_date=iso(40))
     b.projects.append(p)
     b.tasks.append(Task("Milestone", p.id, "Doing", "normal",
                         start_date=iso(5), due_date=iso(5)))
-    gg = gantt_geometry(96, 30)
-    cells = _task_reach(b.tasks[0], b, gg, TODAY, p.color)
-    drawn = [(g, tone) for g, tone in cells if g != " "]
-    assert len(drawn) == 1
-    assert drawn[0][0] == "◆"
+    ax = GanttAxis(TODAY - timedelta(days=5), 1, 60, TODAY)
+    drawn = [(g, tone) for g, tone in _gantt_bar(b.tasks[0], b, ax, set(), 0) if g != " "]
+    assert drawn == [("◆", "sky")]
 
 
 def test_dependency_indicator_shows_when_task_has_depends_on(tmp_path):
-    """Tasks with depends_on append the └─► marker in the gantt row."""
+    """HLR-103 (batch 2026-10-02-batch-01): a task waiting on OPEN work wears
+    `↳` in the gutter column — between its label and the field, never over the
+    title; a task waiting on nothing open has a blank gutter."""
     b, p = fixture(tmp_path)
-    b.tasks[0].depends_on = ["other-task-id"]
+    b.tasks[1].depends_on = [b.tasks[2].id]          # waits on an open task
+    label_w, _c, _f = gantt_columns(96)
     out = rows(b, 96, 30)
-    title_prefix = b.tasks[0].title[:15]
-    line = next(l for l in out if title_prefix in l)
-    assert "└─►" in line, line
-    line_no_dep = next(l for l in out if b.tasks[1].title[:15] in l)
-    assert "└─►" not in line_no_dep, line_no_dep
+    line = next(l for l in out if b.tasks[1].title[:15] in l)
+    assert line[label_w] == "↳", line
+    other = next(l for l in out if b.tasks[2].title[:15] in l)
+    assert other[label_w] == " ", other
 
 
 def test_gantt_focus_hides_other_projects_and_inbox(tmp_path):
@@ -629,30 +587,22 @@ def test_gantt_focus_hides_other_projects_and_inbox(tmp_path):
 # the time scale survives the `/` filter
 # --------------------------------------------------------------------------- #
 def test_filtered_gantt_keeps_its_time_scale_inside_the_panel(tmp_path):
-    """AT-008 (HLR-006, batch 2026-09-30-batch-01). Field report (2026-09-30):
-    with a `/` filter on, the gantt's time scale
-    (the month/day axis every bar is read against) vanished. The view was drawn
-    at the panel's full height and the filter bar was then INSERTED above it,
-    so the view came out two rows taller than the panel and its last two rows —
-    the scale and the close — fell under the fold. A filtered gantt with no
-    axis is a set of stripes nobody can date.
-
-    The law: whatever the filter does, the view is exactly the panel's height
-    and its scale row is the same one the unfiltered view draws. RED: render
-    the filtered view at `height` instead of `height - 2` -> 22 rows, and the
-    scale is not among the first 20."""
+    """AT-008 (HLR-006, batch 2026-09-30-batch-01), restated for AX-2 (HLR-105,
+    batch 2026-10-02-batch-01): the time scale is the ruler now, pinned under the
+    header, and under a `/` filter it sits under the filter bar — panel rows
+    3–4 — while the view stays exactly the panel's height. RED: the filtered
+    view drawn at `height` instead of `height - 2` → 22 rows."""
     from taskboard.views import render_view
     b, _p = fixture(tmp_path)
     h = 20
     plain = str(render_view("gantt", b, False, None, TODAY, width=96,
                             height=h)).split("\n")
-    scale = next(l for l in reversed(plain) if l.strip())
-    assert re.search(r"(JUL|AUG|SEP|OCT)", scale), f"{scale!r} is not the scale"
-
+    ruler = plain[1:3]
+    assert re.search(r"(July|August|September|Jul|Aug|Sep)", ruler[0]), ruler[0]
     out = str(render_view("gantt", b, False, None, TODAY, width=96, height=h,
                           search_query="checkout")).split("\n")
     assert len(out) == h, f"filtered gantt is {len(out)} rows in a {h}-row panel"
-    assert scale in out, "the time scale fell out of the panel under a filter"
+    assert re.search(r"(July|August|September|Jul|Aug|Sep)", out[3]), out[3]
     assert any("checkout" in l.lower() for l in out[:3]), "the filter bar is missing"
 
 

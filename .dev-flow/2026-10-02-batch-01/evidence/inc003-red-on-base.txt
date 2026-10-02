@@ -1,0 +1,134 @@
+# inc003 RED on base — tree: git archive HEAD (57a6075) with the BASE README.md / RUN.md / docs, plus this increment's tests/test_readme.py (failure messages count paths, never print them)
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.FF.FFFFF...                                                             [100%]
+================================== FAILURES ===================================
+_________________ test_AT_107_the_readme_carries_no_home_path _________________
+
+    def test_AT_107_the_readme_carries_no_home_path():
+        """AT-107 (HLR-109, LLR-104.1). RED on the base README: the personal path
+        three times."""
+        hits = [m.group(0) for m in HOME_PATH.finditer(_read("README.md"))]
+>       assert not hits, f"{len(hits)} home path(s) in README.md"
+E       AssertionError: 6 home path(s) in README.md
+
+tests\test_readme.py:64: AssertionError
+_________ test_TC_121_run_md_carries_no_home_path_and_no_retired_flow _________
+
+    def test_TC_121_run_md_carries_no_home_path_and_no_retired_flow():
+        """TC-121 (LLR-104.2). RUN.md: no home path, no `6` view key, no retired
+        prototype worktree flow. RED on the base RUN.md: all three."""
+        text = _read("RUN.md")
+        hits = [m.group(0) for m in HOME_PATH.finditer(text)]
+>       assert not hits, f"{len(hits)} home path(s) in RUN.md"
+E       AssertionError: 2 home path(s) in RUN.md
+
+tests\test_readme.py:72: AssertionError
+_______________ test_TC_120_question_mark_is_documented_as_help _______________
+
+    def test_TC_120_question_mark_is_documented_as_help():
+        """TC-120 (audit #5). `?` opens the per-view help — the README says so and
+        no longer calls it the command palette."""
+        key = next(k for k in KEYMAP if k.keys == "?")
+        assert key.action == "legend"
+        row = next(l for l in _read("README.md").splitlines() if l.startswith("| `?` |"))
+>       assert "help" in row.lower() and "palette" not in row.lower(), row
+E       AssertionError: | `?` | **Command palette** — search every command by name and run it without memorising the key |
+E       assert ('help' in '| `?` | **command palette** — search every command by name and run it without memorising the key |')
+E        +  where '| `?` | **command palette** — search every command by name and run it without memorising the key |' = <built-in method lower of str object at 0x000001A47792B930>()
+E        +    where <built-in method lower of str object at 0x000001A47792B930> = '| `?` | **Command palette** — search every command by name and run it without memorising the key |'.lower
+
+tests\test_readme.py:99: AssertionError
+______ test_TC_120_the_readme_installs_from_a_clone_and_counts_no_tests _______
+
+    def test_TC_120_the_readme_installs_from_a_clone_and_counts_no_tests():
+        """TC-120 (audit #1, #11). Install starts from `git clone` of the public
+        repository; the README states no test count (it went stale twice)."""
+        text = _read("README.md")
+>       assert "git clone https://github.com/jav201/taskboard.git" in text
+E       assert 'git clone https://github.com/jav201/taskboard.git' in '# taskboard\n\n<p align="center">\n  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes vie...oject.toml       packaging + console entry point (`taskboard`)\n  requirements.txt     pinned deps\n  README.md\n```\n'
+
+tests\test_readme.py:106: AssertionError
+__________ test_TC_120_the_readme_states_the_view_count_from_the_app __________
+
+    def test_TC_120_the_readme_states_the_view_count_from_the_app():
+        """TC-120 (qa D-6). The README says how many views there are, in words,
+        derived from `VIEW_ORDER`. RED on the base README: "Four switchable views"."""
+        from taskboard.app import VIEW_ORDER
+        words = {9: "Nine", 10: "Ten", 8: "Eight"}
+>       assert words[len(VIEW_ORDER)].lower() + " views" in _read("README.md").lower()
+E       assert ('nine' + ' views') in '# taskboard\n\n<p align="center">\n  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes vie...oject.toml       packaging + console entry point (`taskboard`)\n  requirements.txt     pinned deps\n  readme.md\n```\n'
+E        +  where 'nine' = <built-in method lower of str object at 0x000001A477A45860>()
+E        +    where <built-in method lower of str object at 0x000001A477A45860> = 'Nine'.lower
+E        +  and   '# taskboard\n\n<p align="center">\n  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes vie...oject.toml       packaging + console entry point (`taskboard`)\n  requirements.txt     pinned deps\n  readme.md\n```\n' = <built-in method lower of str object at 0x000001A4769CDC30>()
+E        +    where <built-in method lower of str object at 0x000001A4769CDC30> = '# taskboard\n\n<p align="center">\n  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes vie...oject.toml       packaging + console entry point (`taskboard`)\n  requirements.txt     pinned deps\n  README.md\n```\n'.lower
+E        +      where '# taskboard\n\n<p align="center">\n  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes vie...oject.toml       packaging + console entry point (`taskboard`)\n  requirements.txt     pinned deps\n  README.md\n```\n' = _read('README.md')
+
+tests\test_readme.py:116: AssertionError
+_____________ test_TC_120_every_key_the_readme_documents_is_bound _____________
+
+    def test_TC_120_every_key_the_readme_documents_is_bound():
+        """TC-120 (qa D-5, HLR-109). The other direction of the key-table law in
+        `test_keymap.py`: every key the Keys table names is bound — in `KEYMAP` or
+        in a modal's `BINDINGS`, derived from the classes, never a hand list. RED:
+        a documented key nobody binds (a phantom row). The base README has no
+        `## Keys` section, so this node fails there on the missing section."""
+        import inspect
+        from textual.binding import Binding
+        import taskboard.modals as modals
+        bound = set()
+        for k in KEYMAP:
+            bound.update(k.keys.split(","))
+        for _n, cls in inspect.getmembers(modals, inspect.isclass):
+            for b in getattr(cls, "BINDINGS", None) or []:
+                bound.update((b.key if isinstance(b, Binding) else b[0]).split(","))
+        spelled = {"↑": "up", "↓": "down", "←": "left", "→": "right", "Enter": "enter",
+                   "Delete": "delete", "Tab": "tab", "esc": "escape"}
+>       rows = _keys_section()
+
+tests\test_readme.py:143: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def _keys_section() -> list[str]:
+        text = _read("README.md")
+>       assert "\n## Keys\n" in text, "the README has no `## Keys` section"
+E       AssertionError: the README has no `## Keys` section
+E       assert '\n## Keys\n' in '# taskboard\n\n<p align="center">\n  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes vie...oject.toml       packaging + console entry point (`taskboard`)\n  requirements.txt     pinned deps\n  README.md\n```\n'
+
+tests\test_readme.py:121: AssertionError
+___________ test_TC_120_the_facts_the_readme_states_match_the_code ____________
+
+    def test_TC_120_the_facts_the_readme_states_match_the_code():
+        """TC-120 (qa D-7). The numbers and names that go stale are compared with
+        their source, each derived at run time: the city count, the sweep days,
+        the WIP default, the Python floor, the version pins, the CLI flags, the
+        default clocks, the default phases and the project colours."""
+        import argparse
+        import tomllib
+        from unittest import mock
+        from taskboard import models
+        import taskboard.__main__ as entry
+        text = _read("README.md")
+        assert f"{len(models.CITY_ZONES)} cities" in text
+        assert f"{models.AUTO_ARCHIVE_DAYS} days" in text
+>       assert f"the default is {models.DEFAULT_WIP_LIMITS['Doing']} for `Doing`" in text
+E       assert 'the default is 3 for `Doing`' in '# taskboard\n\n<p align="center">\n  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes vie...oject.toml       packaging + console entry point (`taskboard`)\n  requirements.txt     pinned deps\n  README.md\n```\n'
+
+tests\test_readme.py:163: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_readme.py::test_the_home_path_pattern_sees_every_form_and_spares_placeholders
+PASSED tests/test_readme.py::test_TC_120_the_readme_names_every_view_with_its_key
+PASSED tests/test_keymap.py::test_every_image_the_readme_shows_exists
+PASSED tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat
+PASSED tests/test_keymap.py::test_the_readme_does_not_document_a_view_that_was_retired
+FAILED tests/test_readme.py::test_AT_107_the_readme_carries_no_home_path - As...
+FAILED tests/test_readme.py::test_TC_121_run_md_carries_no_home_path_and_no_retired_flow
+FAILED tests/test_readme.py::test_TC_120_question_mark_is_documented_as_help
+FAILED tests/test_readme.py::test_TC_120_the_readme_installs_from_a_clone_and_counts_no_tests
+FAILED tests/test_readme.py::test_TC_120_the_readme_states_the_view_count_from_the_app
+FAILED tests/test_readme.py::test_TC_120_every_key_the_readme_documents_is_bound
+FAILED tests/test_readme.py::test_TC_120_the_facts_the_readme_states_match_the_code
+7 failed, 5 passed in 0.34s
+exit=0

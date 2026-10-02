@@ -1,0 +1,89 @@
+# P0 probes — 2026-10-02 — tree 57a6075 (tests/kg_board.py added, untracked)
+$ python probe (render_gantt / nav_model on kg_board, selected tw3)
+118x30 rows=30 last-row:                -48d     SEP          today             NOV            DEC            JAN    +115d         +9 not shown
+  nav=28 drawn=21 nav-not-drawn=7 done-in-nav=['tw1', 'tm1', 'td1']
+80x24 rows=24 last-row:             -36d            today             NOV            DEC   +15 not shown
+  nav=28 drawn=17 nav-not-drawn=11 done-in-nav=['tw1', 'tm1', 'td1']
+critical_chain: ['tm2', 'tm3', 'tm4', 'tm5']
+$ grep -n OneDrive README.md RUN.md | cut -d: -f1,2   (content redacted: personal path)
+README.md:90
+README.md:108
+README.md:125
+RUN.md:4
+$ grep -n "\"?\"" taskboard/keymap.py
+63:    Key("?", "?", "legend", "Map", universal=True, primary=True, group="system"),
+$ python -c VIEW_ORDER
+9 ['swimlanes', 'agenda', 'gantt', 'kanban', 'focus', 'flow', 'standup', 'people', 'setup']
+
+# P-4 (re-taken at P1 iteration 2, Q-24): accent-painted runs in RENDERED kanban/gantt, base tree
+  ('gantt', 'grouped', 'project', '· cadena crítica 4') 1
+  ('gantt', 'grouped', 'project', '└─►') 3
+  ('gantt', 'grouped', 'project', '╎') 16
+  ('gantt', 'grouped', 'project', '◆ GANTT') 1
+  ('kanban', 'grouped', 'horizon', '+1d') 1
+  ('kanban', 'grouped', 'horizon', '+2d') 1
+  ('kanban', 'grouped', 'horizon', '+3d') 2
+  ('kanban', 'grouped', 'horizon', '+4d') 1
+  ('kanban', 'grouped', 'horizon', '+6d') 1
+  ('kanban', 'grouped', 'horizon', '+7d') 1
+  ('kanban', 'grouped', 'horizon', 'KANBAN') 1
+  ('kanban', 'grouped', 'horizon', 'This week') 3
+  ('kanban', 'grouped', 'horizon', '↗') 1
+  ('kanban', 'grouped', 'horizon', '▐') 3
+  ('kanban', 'grouped', 'priority', '+1d') 1
+  ('kanban', 'grouped', 'priority', '+2d') 1
+  ('kanban', 'grouped', 'priority', '+3d') 2
+  ('kanban', 'grouped', 'priority', '+4d') 1
+  ('kanban', 'grouped', 'priority', '+6d') 1
+  ('kanban', 'grouped', 'priority', '+7d') 1
+  ('kanban', 'grouped', 'priority', 'KANBAN') 1
+  ('kanban', 'grouped', 'priority', '↗') 1
+  ('kanban', 'grouped', 'project', '+1d') 1
+  ('kanban', 'grouped', 'project', '+2d') 1
+  ('kanban', 'grouped', 'project', '+3d') 2
+  ('kanban', 'grouped', 'project', '+4d') 1
+  ('kanban', 'grouped', 'project', '+6d') 1
+  ('kanban', 'grouped', 'project', '+7d') 1
+  ('kanban', 'grouped', 'project', 'KANBAN') 1
+  ('kanban', 'grouped', 'project', '↗') 1
+  ('kanban', 'lanes', 'horizon', '+1d') 1
+  ('kanban', 'lanes', 'horizon', '+2d') 1
+  ('kanban', 'lanes', 'horizon', '+3d') 2
+  ('kanban', 'lanes', 'horizon', '+4d') 1
+  ('kanban', 'lanes', 'horizon', '+6d') 1
+  ('kanban', 'lanes', 'horizon', '+7d') 1
+  ('kanban', 'lanes', 'horizon', 'KANBAN') 1
+  ('kanban', 'lanes', 'horizon', 'THIS WEEK') 1
+  ('kanban', 'lanes', 'horizon', '↗') 1
+  ('kanban', 'lanes', 'horizon', '▐') 1
+  ('kanban', 'lanes', 'priority', '+1d') 1
+  ('kanban', 'lanes', 'priority', '+2d') 1
+  ('kanban', 'lanes', 'priority', '+3d') 2
+  ('kanban', 'lanes', 'priority', '+4d') 1
+  ('kanban', 'lanes', 'priority', '+6d') 1
+  ('kanban', 'lanes', 'priority', '+7d') 1
+  ('kanban', 'lanes', 'priority', 'KANBAN') 1
+  ('kanban', 'lanes', 'priority', '↗') 1
+  ('kanban', 'lanes', 'project', '+1d') 1
+  ('kanban', 'lanes', 'project', '+2d') 1
+  ('kanban', 'lanes', 'project', '+3d') 2
+  ('kanban', 'lanes', 'project', '+4d') 1
+  ('kanban', 'lanes', 'project', '+6d') 1
+  ('kanban', 'lanes', 'project', '+7d') 1
+  ('kanban', 'lanes', 'project', 'KANBAN') 1
+  ('kanban', 'lanes', 'project', '↗') 1
+  ('kanban', 'matrix', 'horizon', '30%') 1
+  ('kanban', 'matrix', 'horizon', '33%') 1
+  ('kanban', 'matrix', 'horizon', '35%') 1
+  ('kanban', 'matrix', 'horizon', '42%') 2
+  ('kanban', 'matrix', 'horizon', 'KANBAN') 1
+  ('kanban', 'matrix', 'priority', '30%') 1
+  ('kanban', 'matrix', 'priority', '33%') 1
+  ('kanban', 'matrix', 'priority', '35%') 1
+  ('kanban', 'matrix', 'priority', '42%') 2
+  ('kanban', 'matrix', 'priority', 'KANBAN') 1
+  ('kanban', 'matrix', 'project', '30%') 1
+  ('kanban', 'matrix', 'project', '33%') 1
+  ('kanban', 'matrix', 'project', '35%') 1
+  ('kanban', 'matrix', 'project', '42%') 2
+  ('kanban', 'matrix', 'project', 'KANBAN') 1

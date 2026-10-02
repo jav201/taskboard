@@ -1,0 +1,185 @@
+# inc004 RED on the pre-004 tree (scratch copy taken at increment 002's round 2; the views.py of increments 002-003, sha256 prefix d61c192f57aea2f6) — the three nodes increment 004 adds
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+______________ test_TC_116_the_gantt_help_fits_its_column[size0] ______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13435/test_TC_116_the_gantt_help_fit0')
+frozen = None, size = (118, 34)
+
+    @pytest.mark.parametrize("size", [(118, 34), (80, 24)])
+    async def test_TC_116_the_gantt_help_fits_its_column(tmp_path, frozen, size):
+        """TC-116 (LLR-102.5, UXV-1). In the running app the gantt's help prints
+        every usage line whole: no label is wider than the help column it sits in
+        (the walkthrough found 7 of 11 lines cut mid-word). RED: the increment-003
+        wording, whose bullets ran to 51 cells in a 48-cell column."""
+        from textual.widgets import Label
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            await pilot.press("question_mark")
+            await pilot.pause()
+            left = app.screen.query_one("#help-left")
+            labels = list(left.query(Label))
+            assert len(labels) >= 8
+            for lab in labels:
+>               assert lab.size.width <= left.content_region.width, str(lab.render())
+E               AssertionError:   • todo el board en una ventana ajustada al trabajo
+E               assert 52 <= 48
+E                +  where 52 = Size(width=52, height=1).width
+E                +    where Size(width=52, height=1) = Label().size
+E                +  and   48 = Region(x=7, y=6, width=48, height=15).width
+E                +    where Region(x=7, y=6, width=48, height=15) = VerticalScroll(id='help-left').content_region
+
+tests\test_gantt_board.py:905: AssertionError
+______________ test_TC_116_the_gantt_help_fits_its_column[size1] ______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13435/test_TC_116_the_gantt_help_fit1')
+frozen = None, size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 34), (80, 24)])
+    async def test_TC_116_the_gantt_help_fits_its_column(tmp_path, frozen, size):
+        """TC-116 (LLR-102.5, UXV-1). In the running app the gantt's help prints
+        every usage line whole: no label is wider than the help column it sits in
+        (the walkthrough found 7 of 11 lines cut mid-word). RED: the increment-003
+        wording, whose bullets ran to 51 cells in a 48-cell column."""
+        from textual.widgets import Label
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            await pilot.press("question_mark")
+            await pilot.pause()
+            left = app.screen.query_one("#help-left")
+            labels = list(left.query(Label))
+            assert len(labels) >= 8
+            for lab in labels:
+>               assert lab.size.width <= left.content_region.width, str(lab.render())
+E               AssertionError:   • todo el board en una ventana ajustada al trabajo
+E               assert 52 <= 48
+E                +  where 52 = Size(width=52, height=1).width
+E                +    where Size(width=52, height=1) = Label().size
+E                +  and   48 = Region(x=5, y=5, width=48, height=15).width
+E                +    where Region(x=5, y=5, width=48, height=15) = VerticalScroll(id='help-left').content_region
+
+tests\test_gantt_board.py:905: AssertionError
+___________ test_TC_110_the_scale_label_fits_at_half_a_day_per_cell ___________
+
+    def test_TC_110_the_scale_label_fits_at_half_a_day_per_cell():
+        """TC-110 (LLR-101.10, UXV-6). At 80 columns a window of half a day per cell
+        names its scale whole — `Mondays · .5 d/cell` — not clipped with `…`."""
+        lines, _lm, _t = render(kg_board.build(), 80, 24, "tw3", focus="pweb")
+        _groups, ax = plan_axis(kg_board.build(), 80, 24, "tw3", focus="pweb")
+        assert ax.k == 0.5
+>       assert "Mondays · .5 d/cell" in lines[2] and "…" not in lines[2][:20], lines[2]
+E       AssertionError: Mondays · 0.5 d/ce…  21    ⟦━━━━━━━━⟧ Sep 24–28  5             12               
+E       assert ('Mondays · .5 d/cell' in 'Mondays · 0.5 d/ce…  21    ⟦━━━━━━━━⟧ Sep 24–28  5             12               ')
+
+tests\test_gantt_board.py:914: AssertionError
+___ test_TC_107_the_motions_ride_the_fitted_axis_and_clear_the_clip_marker ____
+
+    def test_TC_107_the_motions_ride_the_fitted_axis_and_clear_the_clip_marker():
+        """TC-107 (LLR-101.7; UXV-5). The flow packet moves one cell per tick along
+        an in-progress task's reach; on the critical chain its glyph differs from
+        the reach's `━`; and it never covers the `◂` that says the reach began
+        before the window. RED: a packet started at cell 0 of a clipped reach."""
+        from taskboard.views import CRITICAL_REACH, _gantt_bar
+        p = Project("P", "sky", "on_track", start_date=iso(-40), due_date=iso(20), id="pp")
+        t = Task("long", "pp", "Doing", start_date=iso(-30), due_date=iso(9), id="tl")
+        b = Board([p], [t], Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+        ax = GanttAxis(TODAY - timedelta(days=5), 1, 40, TODAY)
+        seen = set()
+        for tick in range(8):
+            cells = _gantt_bar(t, b, ax, {"tl"}, tick)
+>           assert cells[0][0] == "◂", (tick, cells[:3])
+E           AssertionError: (0, [('▬', 'bright'), ('━', 'crit'), ('━', 'crit')])
+E           assert '▬' == '◂'
+E             
+E             - ◂
+E             + ▬
+
+tests\test_gantt_board.py:930: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column[size0]
+FAILED tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column[size1]
+FAILED tests/test_gantt_board.py::test_TC_110_the_scale_label_fits_at_half_a_day_per_cell
+FAILED tests/test_gantt_board.py::test_TC_107_the_motions_ride_the_fitted_axis_and_clear_the_clip_marker
+4 failed, 49 deselected in 1.23s
+exit=1
+
+# round 2 (code review R1): the extended TC-116 against increment 004's ROUND-1 snapshot (views.py sha256 prefix d93b9a3f72db3b94)
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F.                                                                       [100%]
+================================== FAILURES ===================================
+______________ test_TC_116_the_gantt_help_fits_its_column[size0] ______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13440/test_TC_116_the_gantt_help_fit0')
+frozen = None, size = (118, 34)
+
+    @pytest.mark.parametrize("size", [(118, 34), (80, 24)])
+    async def test_TC_116_the_gantt_help_fits_its_column(tmp_path, frozen, size):
+        """TC-116 (LLR-102.5, UXV-1). In the running app the gantt's help prints
+        every usage line whole: no label is wider than the help column it sits in
+        (the walkthrough found 7 of 11 lines cut mid-word). RED: the increment-003
+        wording, whose bullets ran to 51 cells in a 48-cell column."""
+        from textual.widgets import Label
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            await pilot.press("question_mark")
+            await pilot.pause()
+            left = app.screen.query_one("#help-left")
+            labels = list(left.query(Label))
+            assert len(labels) >= 8
+            for lab in labels:
+                assert lab.size.width <= left.content_region.width, str(lab.render())
+            if size == (118, 34):     # the legend column (code review R1); at 80x24 the
+                right = app.screen.query_one("#help-right")   # modal's own layout leaves
+                for lab in right.query(Label):                # it 22 cells — BACKLOG
+>                   assert lab.size.width <= right.content_region.width, str(lab.render())
+E                   AssertionError: ·┆·  the calendar guide: mondays, or the 1st at coarse scales
+E                   assert 61 <= 56
+E                    +  where 61 = Size(width=61, height=1).width
+E                    +    where Size(width=61, height=1) = Label().size
+E                    +  and   56 = Region(x=55, y=6, width=56, height=56).width
+E                    +    where Region(x=55, y=6, width=56, height=56) = VerticalScroll(id='help-right').content_region
+
+tests\test_gantt_board.py:909: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column[size1]
+FAILED tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column[size0]
+1 failed, 1 passed, 51 deselected in 1.35s
+exit=1
+
+# round 3 (ux-reviewer UXV-12, D7): the new node against increment 004's round-2 snapshot (views.py sha256 prefix 4f64ab0fd61a1407)
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_TC_108_a_focus_the_filter_empties_still_says_focused __________
+
+    def test_TC_108_a_focus_the_filter_empties_still_says_focused():
+        """D7 (ux-reviewer UXV-12). With a project focus and a `/` filter that
+        leaves the focused project off the filtered board, the header still says
+        the view is focused — the base wording ` (focused)` — so an empty gantt
+        explains itself. RED: the increment-001 header dropped the fallback."""
+        from taskboard.views import render_view
+        head = render_view("gantt", kg_board.build(), False, "tw3", TODAY, 118, 30, {},
+                           gantt_focus="pweb", search_query="API").plain.split("\n")[0]
+>       assert "(focused)" in head, head
+E       AssertionError: ◆ GANTT                                                                                    nothing past due · chain 2 
+E       assert '(focused)' in '◆ GANTT                                                                                    nothing past due · chain 2 '
+
+tests\test_gantt_board.py:950: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_board.py::test_TC_108_a_focus_the_filter_empties_still_says_focused
+1 failed, 53 deselected in 0.44s
+exit=1

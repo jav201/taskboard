@@ -1,0 +1,172 @@
+# inc001 review folds — RED proof: the five nodes added for code-review F1/F2/F3/F4/F6 run against the FROZEN pre-review snapshot of the increment (scratch copy; views.py sha256 prefix 2d24652a0991a0a9)
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+____________ test_TC_106_every_selection_is_drawn_at_every_height _____________
+
+    def test_TC_106_every_selection_is_drawn_at_every_height():
+        """TC-106 (code review F1, F2). The oracle board at every panel height from
+        4 to 30, every open task selected in turn: it is drawn, and no row spills
+        past the panel. RED before the fix: at height 8 the five groups exactly
+        fill the body and the last group's selected task was cut; at heights 4
+        and 5 no selection was drawn."""
+        b = kg_board.build()
+        order = nav_model("gantt", b, False, TODAY, 80, 24)[0]
+        for h in range(4, 31):
+            for tid in order:
+                lines, lm, _t = render(b, 80, h, tid)
+>               assert tid in lm, (h, tid)
+E               AssertionError: (4, 'tw2')
+E               assert 'tw2' in {}
+
+tests\test_gantt_board.py:775: AssertionError
+_ test_TC_106_groups_exactly_filling_the_body_keep_every_span_and_the_selection _
+
+    def test_TC_106_groups_exactly_filling_the_body_keep_every_span_and_the_selection():
+        """TC-106 (code review F1). 21 projects in a 21-row body: with the
+        selection in the first or the last project the selected task is drawn and
+        the projects that do not fit are counted, never silently dropped; with no
+        selection all 21 span rows fit."""
+        ps = [Project(f"P{i:02d}", "sky", "on_track", start_date=iso(-5), due_date=iso(10),
+                      id=f"p{i}") for i in range(21)]
+        ts = [Task(f"task {i}", f"p{i}", "Doing", start_date=iso(-2), due_date=iso(4),
+                   id=f"t{i}") for i in range(21)]
+        b = Board(ps, ts, Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+        for sel in ("t0", "t20"):
+            lines, lm, _t = render(b, 80, 24, sel)
+            assert sel in lm, sel
+            drawn = sum(1 for ln in lines if ln.startswith(("▾", "▸")))
+            m = re.search(r"\+(\d+) not shown", "\n".join(lines))
+>           assert m and drawn + int(m.group(1)) == 21, (sel, drawn, m)
+E           AssertionError: ('t0', 20, None)
+E           assert (None)
+
+tests\test_gantt_board.py:794: AssertionError
+_______ test_TC_110_a_narrow_label_sheds_its_counts_before_it_overflows _______
+
+    def test_TC_110_a_narrow_label_sheds_its_counts_before_it_overflows():
+        """TC-110 (code review F4). Two-digit open and late counts in a narrow
+        label: the label sheds `✓n`, then `▲n`, then `N`, and every row stays
+        exactly the width."""
+        p = Project("Busy", "sky", "on_track", start_date=iso(-30), due_date=iso(20), id="pb")
+        ts = [Task(f"late {i}", "pb", "Doing", start_date=iso(-20), due_date=iso(-3), id=f"l{i}")
+              for i in range(12)]
+        other = Project("Other", "lime", "on_track", start_date=iso(-3), due_date=iso(9), id="po")
+        ts.append(Task("o", "po", "Doing", start_date=iso(-1), due_date=iso(4), id="o1"))
+        b = Board([p, other], ts, Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+        for w in (24, 30, 40, 60, 80):
+            for h in (6, 8, 12):
+                lines, _lm, _t = render(b, w, h, "o1")
+>               assert {cell_len(ln) for ln in lines} == {max(24, w)}, (w, h)
+E               AssertionError: (24, 6)
+E               assert {24, 25} == {24}
+E                 
+E                 Extra items in the left set:
+E                 25
+E                 Use -v to get more diff
+
+tests\test_gantt_board.py:812: AssertionError
+____________ test_TC_101_a_week_window_keeps_its_latest_due_inside ____________
+
+    def test_TC_101_a_week_window_keeps_its_latest_due_inside():
+        """TC-101 (code review F6). At seven days per cell the start moves back to
+        a Monday; when that shift would push the latest due past the right edge,
+        the past context gives the days back."""
+        lo = date(2026, 10, 1)                      # a Thursday
+        checked = 0
+        for w in range(10, 70, 7):
+            for need in range(7 * w - 12, 7 * w + 1):
+                hi = lo + timedelta(days=need - 1)
+                ax = gantt_axis(w, lo, lo, hi, lo - timedelta(days=60))
+                if ax.k == 7 and need + lo.weekday() <= 7 * w:
+>                   assert ax.cell(hi) < w, (w, need, ax.start)
+E                   AssertionError: (10, 58, datetime.date(2026, 9, 14))
+E                   assert 10 < 10
+E                    +  where 10 = cell(datetime.date(2026, 11, 27))
+E                    +    where cell = <taskboard.views.GanttAxis object at 0x000002B652FCBA10>.cell
+
+tests\test_gantt_board.py:826: AssertionError
+___________ test_TC_116_the_gantt_legend_reads_the_frame_on_screen ____________
+
+    def test_TC_116_the_gantt_legend_reads_the_frame_on_screen():
+        """TC-116 (code review F3). The legend is asked of the frame the screen
+        shows: with a selection it names the ruler's `⟦━⟧`; with work beyond the
+        window it names `◂▸`; with no selection there is no echo entry; under a
+        focus it describes the focused frame (nothing folded)."""
+        b = kg_board.build()
+>       with_sel = [t for _s, t in legend_entries("gantt", b, TODAY, 118, 30, selected_id="tw3")]
+E       TypeError: legend_entries() got an unexpected keyword argument 'selected_id'
+
+tests\test_gantt_board.py:838: TypeError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_board.py::test_TC_106_every_selection_is_drawn_at_every_height
+FAILED tests/test_gantt_board.py::test_TC_106_groups_exactly_filling_the_body_keep_every_span_and_the_selection
+FAILED tests/test_gantt_board.py::test_TC_110_a_narrow_label_sheds_its_counts_before_it_overflows
+FAILED tests/test_gantt_board.py::test_TC_101_a_week_window_keeps_its_latest_due_inside
+FAILED tests/test_gantt_board.py::test_TC_116_the_gantt_legend_reads_the_frame_on_screen
+5 failed, 42 deselected in 0.43s
+exit=1
+
+# round 3 (code review F6 residual, F12): the two changed/added nodes against the ROUND-2 snapshot (scratch; views.py sha256 prefix a4bfc0f0336737e4, app.py 63679e6091c2f99e)
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FF                                                                       [100%]
+================================== FAILURES ===================================
+____________ test_TC_101_a_week_window_keeps_its_latest_due_inside ____________
+
+    def test_TC_101_a_week_window_keeps_its_latest_due_inside():
+        """TC-101 (code review F6). At seven days per cell the start moves back to
+        a Monday; when that shift would push the latest due past the right edge,
+        the past context gives the days back."""
+        lo = date(2026, 10, 1)                      # a Thursday
+        checked = 0
+        for w in range(10, 70, 7):
+            for need in range(7 * w - 12, 7 * w + 1):
+                hi = lo + timedelta(days=need - 1)
+                ax = gantt_axis(w, lo, lo, hi, lo - timedelta(days=60))
+                if ax.k == 7:
+>                   assert ax.cell(hi) < w, (w, need, ax.start)
+E                   AssertionError: (10, 68, datetime.date(2026, 9, 28))
+E                   assert 10 < 10
+E                    +  where 10 = cell(datetime.date(2026, 12, 7))
+E                    +    where cell = <taskboard.views.GanttAxis object at 0x000001A213AC3E30>.cell
+
+tests\test_gantt_board.py:826: AssertionError
+_____ test_AT_109_the_legend_under_a_filter_describes_the_filtered_frame ______
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13411/test_AT_109_the_legend_under_a0')
+frozen = None
+
+    async def test_AT_109_the_legend_under_a_filter_describes_the_filtered_frame(tmp_path, frozen):
+        """AT-109 / LLR-102.5 (code review F12). With a `/` filter on, the help's
+        legend is asked of the frame the screen shows — two rows shorter than the
+        panel — so it names exactly what that frame draws. RED: the legend asked of
+        the full panel height lists the marks of a taller frame."""
+        from taskboard.modals import HelpModal
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            app.search_query = "e"
+            app.refresh_view()
+            await pilot.pause()
+            await pilot.press("question_mark")
+            await pilot.pause()
+            modal = app.screen
+            assert isinstance(modal, HelpModal)
+            w, h = modal._dims
+            panel = app.query_one("#viewport").size.height
+>           assert h == panel - 2, (h, panel)
+E           AssertionError: (32, 32)
+E           assert 32 == (32 - 2)
+
+tests\test_gantt_board.py:869: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_board.py::test_TC_101_a_week_window_keeps_its_latest_due_inside
+FAILED tests/test_gantt_board.py::test_AT_109_the_legend_under_a_filter_describes_the_filtered_frame
+2 failed, 46 deselected in 0.91s
+exit=1

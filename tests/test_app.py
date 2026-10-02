@@ -16,7 +16,7 @@ from taskboard.models import Board, Project, Task
 from taskboard.modals import (CalendarModal, ConfirmModal, PhaseEditor, TaskDetails,
                               TaskModal, image_block)
 from taskboard.ribbon import Ribbon
-from taskboard.views import (META_FULL_INNER, META_FULL_W, METER_W,
+from taskboard.views import (METER_W,
                              render_agenda, render_gantt)
 
 
@@ -806,9 +806,11 @@ async def test_markup_injection_is_escaped(tmp_path):
 def test_gantt_handles_undated_tasks(tmp_path):
     """Was: undated tasks were listed under an UNSCHEDULED heading. The field
     has no separate section — an undated task draws its row like any other, with
-    an empty reach and a date chip that says there is NOTHING TO MEASURE rather
-    than implying a date. It is still on screen, which is what the law was for."""
-    from taskboard.views import gantt_geometry
+    an empty reach and a chip that says there is NOTHING TO MEASURE rather than
+    implying a date (HLR-103, batch 2026-10-02-batch-01: the `— → —` pair
+    became the one chip `no due`). It is still on screen, which is what the
+    law was for."""
+    from taskboard.views import gantt_columns
     board = Board.load(str(tmp_path / "b.json"))  # seeded
     board.add_task(Task("floating task", None, "Backlog", "normal"))
     out = str(render_gantt(board, False, None, today=date(2026, 7, 17),
@@ -816,9 +818,8 @@ def test_gantt_handles_undated_tasks(tmp_path):
     assert "GANTT" in out
     assert "floating task" in out
     row = next(l for l in out.splitlines() if "floating task" in l)
-    geo = gantt_geometry(118, 60)
-    # the edge SAYS there is nothing to measure: both start and due are unknown
-    assert "— → —" in row[-geo.figs_w:].strip("·"), row[-geo.figs_w:]
+    _label, chip_w, _field = gantt_columns(120)
+    assert row[-chip_w:].strip() == "no due", row[-chip_w:]
 
 
 def test_agenda_handles_undated_tasks(tmp_path):
@@ -1632,13 +1633,15 @@ def _project_row(board, name, width=96, height=30):
 #     the percent; its drop order is tested in test_gantt.py.
 # --------------------------------------------------------------------------- #
 def test_gantt_axis_includes_the_past(tmp_path):
-    """THE REV3 FINDING, and the reason this view was the one place where MORE
-    data produced LESS used screen: the old axis started on Monday of this week,
-    so a project already overdue drew as an empty row with a `◂`. The more
-    overdue work a board held, the emptier the view got."""
+    """THE REV3 FINDING, kept on the fitted axis (HLR-101, batch
+    2026-10-02-batch-01): an axis that starts at today draws overdue work as an
+    empty row. The fitted window starts two days before the earliest open due
+    and spends spare cells on past context, so open work that is already late
+    keeps its reach on screen."""
     b = _gantt_board(tmp_path)
-    scale = next(l for l in _gantt_rows(b) if "today" in l and re.search(r"-\d+d", l))
-    assert re.search(r"-\d+d", scale), scale        # the window reaches backwards
+    from taskboard.views import FIELD_PHASE_TIP, FIELD_TASK
+    row = next(l for l in _gantt_rows(b) if "a-one" in l)      # due Jul 20, past
+    assert set(row) & {FIELD_TASK, *FIELD_PHASE_TIP}, row
 
 
 def test_the_slip_is_the_gap_from_the_dot_to_the_diamond(tmp_path):
@@ -1689,36 +1692,34 @@ def test_a_project_with_no_progress_draws_no_progress_band(tmp_path):
 
 
 def test_the_today_rule_spans_every_row(tmp_path):
-    """Kept from the old design, deliberately: one column every row shares.
-
-    The date-chip column narrowed the field, so a task whose due date already
-    passed may end before the today column; in that cell the lattice ground
-    (not blank space) is the honest reading."""
+    """Kept from the old design, deliberately: one column every row shares — now
+    at the FITTED today column (`gantt_axis`, batch 2026-10-02-batch-01). A cell a
+    mark already took keeps its mark; every other row shows the rule."""
     b = _gantt_board(tmp_path)
-    from taskboard.views import (FIELD_HALF, FIELD_PHASE_TIP, FIELD_PROGRESS,
-                                 FIELD_REACH, FIELD_TASK, LATTICE, RULE,
-                                 gantt_geometry)
-    geo = gantt_geometry(94, 30)
-    col = geo.label_w + geo.today_dc // 2
-    body = [l for l in _gantt_rows(b) if l.startswith("▎ ") or l.startswith("▏ ")]
+    from taskboard.views import (FIELD_PHASE_TIP, FIELD_REACH, FIELD_TASK,
+                                 PROGRESS_DOT, RULE, gantt_axis, gantt_columns,
+                                 gantt_plan, gantt_window)
+    label_w, _chip, field_w = gantt_columns(96)
+    groups = gantt_plan(b, False, None, GANTT_MIDWEEK, 27)
+    ax = gantt_axis(field_w, GANTT_MIDWEEK, *gantt_window(groups, GANTT_MIDWEEK))
+    col = label_w + 1 + ax.tc
+    body = [l for l in _gantt_rows(b)[3:] if l.startswith(("▾", "▸", "  ")) and l.strip()]
     assert len(body) >= 4
+    drawn = {FIELD_REACH, FIELD_TASK, PROGRESS_DOT, "◆", "▬", *FIELD_PHASE_TIP}
+    on_rule = sum(1 for line in body if line[col] == RULE)
     for line in body:
-        drawn = {FIELD_REACH, FIELD_PROGRESS, FIELD_TASK, FIELD_HALF,
-                 *FIELD_PHASE_TIP}
-        assert (line[col] == RULE or line[col] == LATTICE or line[col] in drawn
-                or 0x2800 <= ord(line[col]) <= 0x28FF), line[col]
+        assert line[col] == RULE or line[col] in drawn, (line[col], line)
+    assert on_rule >= 2, on_rule
 
 
 def test_the_due_diamond_marks_the_projects_own_date(tmp_path):
-    """`◆` sits at the project's due date and wears the project's hue. It used
-    to turn red when past — that judgement moved to the meter, whose `▲` is the
-    row's one alert, so the diamond says WHICH project and WHEN it is due."""
+    """`◆` sits at the project's due date and wears the project's hue — on its
+    span row and, for the selected task's project, on the ruler's month row. The
+    judgement of lateness lives in the chip. The legend row names the mark in a
+    neutral tone and is not a due date, so it is skipped like the title."""
     from taskboard.views import HEX
     b = _gantt_board(tmp_path)
     text = render_gantt(b, False, None, today=GANTT_MIDWEEK, width=96, height=30)
-    # Locate the diamond by CHARACTER, not by span: a run may legitimately carry
-    # its neighbours (span economy merges same-hue cells), so "a span whose text
-    # is exactly ◆" describes the markup's shape rather than the drawing's.
     styles: list[str | None] = [None] * len(text.plain)
     for s in text.spans:
         for i in range(s.start, min(s.end, len(styles))):
@@ -1727,9 +1728,8 @@ def test_the_due_diamond_marks_the_projects_own_date(tmp_path):
     at = 0
     for row, line in enumerate(text.plain.split("\n")):
         for col, ch in enumerate(line):
-            # row 0 is the view's own title ('◆ GANTT'), which wears accent and
-            # is not a due date; the diamonds under test live in the field.
-            if ch == "◆" and row > 0:
+            legend = line.startswith(" ") and not line.startswith("  ")
+            if ch == "◆" and row > 0 and not legend:
                 worn.append(styles[at + col])
         at += len(line) + 1
     assert worn, "no diamond drawn at all"
@@ -1738,9 +1738,12 @@ def test_the_due_diamond_marks_the_projects_own_date(tmp_path):
         assert HEX["over"] not in style
 
 
-def test_a_reach_carries_identity_and_the_meter_carries_urgency(tmp_path):
+def test_a_reach_carries_identity_and_the_chip_carries_urgency(tmp_path):
+    """The reach says WHOSE and how long; urgency lives in the row's due chip
+    — `▲Nd` in the severity hue (HLR-103, batch 2026-10-02-batch-01; it was the
+    date pair, and before that the meter)."""
     from taskboard.models import Board, Project, Task
-    from taskboard.views import HEX, gantt_geometry
+    from taskboard.views import HEX, gantt_columns
     b = Board([], [], tmp_path / "g2.json", phases=["A", "B", "C"])
     p = Project("P", "sky", start_date="2026-07-06", due_date="2026-09-30")
     b.projects.append(p)
@@ -1757,12 +1760,10 @@ def test_a_reach_carries_identity_and_the_meter_carries_urgency(tmp_path):
     for style in reach_styles:
         assert HEX["over"] not in style and HEX["soon"] not in style
     overdue_row = next(l for l in str(text).split("\n") if "overduetask" in l)
-    geo = gantt_geometry(94, 30)
-    # urgency now lives in the overdue date chip, not in a ▲ cap
-    assert "Jul 13" in overdue_row[-geo.figs_w:], overdue_row[-geo.figs_w:]
-    # and that chip wears the severity hue
+    _label, chip_w, _field = gantt_columns(96)
+    assert overdue_row[-chip_w:].strip() == "▲10d", overdue_row[-chip_w:]
     chip_styles = [str(s.style) for s in text.spans
-                   if "Jul 13" in text.plain[s.start:s.end]]
+                   if "▲10d" in text.plain[s.start:s.end]]
     assert any(HEX["over"] in st for st in chip_styles), chip_styles
 
 
@@ -2088,14 +2089,13 @@ async def test_phase_editor_blank_name_is_rejected(tmp_path):
         assert app.screen.query_one("#phase-list", OptionList).option_count == 3
 
 
-def test_gantt_titles_are_readable_because_they_run_over_the_field():
-    """Was: "the label column is generous (18-30 cells)". The label column
-    shrank to the shared field geometry ON PURPOSE — the title runs over the
-    field now, which is where the reader reads, and gets more cells that way
-    than the old column ever gave it."""
-    from taskboard.views import gantt_geometry
-    geo = gantt_geometry(94, 30)
-    assert geo.label_w >= 12
+def test_gantt_titles_have_a_readable_label_column():
+    """The label column is fixed again (HLR-103, batch 2026-10-02-batch-01: the
+    REV5 #19 "titles run over the field" ruling gave way to G-A's label + gutter
+    columns): 20 cells below 100 columns, 30 from 100."""
+    from taskboard.views import gantt_columns
+    assert gantt_columns(94)[0] == 20
+    assert gantt_columns(118)[0] == 30
 
 def _agenda_board(tmp_path):
     """A board covering every axis branch: overdue, due-today, this-week, later,

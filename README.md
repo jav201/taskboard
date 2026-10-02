@@ -1,383 +1,279 @@
 # taskboard
 
+A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
+Run it in a borderless terminal window, pin it on top, and it works as a desktop widget: nine
+views over one JSON board, with optional team sync through a shared folder.
+
 <p align="center">
   <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes view, live"><br>
-  <sub>The <b>lanes</b> view. Every frame is the real app; the today rule breathes on a 4 s cycle.</sub>
+  <img src="docs/taskboard-gantt.svg" width="380" alt="gantt — the whole board on a window fitted to the open work">
+  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column"><br>
+  <img src="docs/taskboard-agenda.png" width="380" alt="agenda — every due date on one shared axis">
+  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one panel per project"><br>
+  <sub>Renders of the seeded demo board. The gantt is current; the other images predate this
+  release's colour changes.</sub>
 </p>
 
-<p align="center">
-  <img src="docs/taskboard-gantt.png" width="380" alt="gantt — two bands per project, and the gap is the slip">
-  <img src="docs/taskboard-agenda.png" width="380" alt="agenda — every due date on one shared axis"><br>
-  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column">
-  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one row per project, ranked by pressure"><br>
-  <sub><b>gantt · agenda · kanban · lanes</b> — real renders of the seeded demo board at 96×26.</sub>
-</p>
+## What it is
 
+- **A widget, not a window.** No borders: every view commits with rules, and it reflows to
+  whatever size the terminal gives it.
+- **Nine views** over the same tasks — lanes, agenda, gantt, kanban, focus, flow, standup,
+  people, setup — each one key away.
+- **One file.** Your board is a single JSON file in your home directory; nothing goes to a
+  server.
+- **Optional team mode.** Point it at a shared folder and each person's board syncs there;
+  teammates' cards show up read-only.
 
-A **frameless kanban desktop-widget task board** built in [Textual](https://textual.textualize.io/).
-Run it in a borderless terminal, pin it always-on-top, and it floats on your desktop as a live
-widget. Four switchable views over the same data; single dark theme tuned for a terminal.
+## Requirements
 
-Built and verified against **Textual 8.2.8 / rich 15.0.0** (Python 3.12).
+- Python **3.12 or newer** (`requires-python = ">=3.12"`).
+- **Windows first.** It is built and used on Windows; opening raw image files uses
+  `os.startfile`, which is Windows-only. The clipboard code has macOS and Linux branches, but
+  those platforms are not tested here.
+- Built and verified against **Textual 8.2.8 / rich 15.0.0** (pinned in `requirements.txt`).
+  The install pulls in every runtime dependency (`textual`, `tzdata`, `pillow`,
+  `textual-image`).
 
-```
-◆ TASKBOARD                                             13 open · 3 due
-▌ WEBSITE REDESIGN·········╎···················· unaged  !1  3 open  ▲2d
-            ···············⢀⣀⣀⣿⣿⣿⣿⡇◆··························
-            ··············⣰⢸⣿⣿⣿⣿⣿⣿⡇···························
-  Fix checkout 500 error···╎········································ ▲2d
-▎ Mobile…   ···············╎·····⣀⣀⣀⣶⣶⣶⣶⣶⣶⡆···················    ···30d
-▎  ⠤ Audit dependencies····╎····································· ···12d
-▎ API Pl… ‖ ···············╎·⢀⣀⣰⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶············    ···45d
-▎  ⣀ Write API reference···╎····································· ····5d
-▎ Inbox     ···············⢀⣰·································    ·····—
-▎  ⠤ Review pull requests··╎····································· ····1d
-▎ Data W… ✓ ··············⢀╎··································    ··done
-▎  ⠤ Compress database backups··································· ···▲1d
-▎ Legacy… ╳ ···············╎··································    ··done
-▎  ⣀ Shut down legacy servers···································· ····8d
-            -30d         today                            +69d
+## Install
+
+Clone the repository, then install it as a command.
+
+```powershell
+git clone https://github.com/jav201/taskboard.git
+cd taskboard
 ```
 
-Every row sits on **one shared axis of days** — `╎` is today, one cell is two days — so
-two projects' work is comparable by eye. The project under the most pressure leads with a
-drawn field ending in `◆`, its own due date; the rest get a row each; anything with
-nothing open **rests** at the bottom. The right edge of every row is a **six-cell due
-readout**: it says the number of days — `4d`, `today`, `▲3d` when overdue, `done` when
-finished, `—` when there is no date. `▲` is the only alert on the row.
-
-**There is no box.** The views commit with rules, not borders — every cell of the width
-carries content or field, and the counts that a title bar would have held ride the head
-row instead.
-
-## Views
-
-| Key | View | What it's for |
-|-----|------|---------------|
-| `1` | **Lanes** | One row per project on a shared day axis, **ranked by pressure**: a drawn field for the project that needs you now, a row for the rest, a resting row for anything with nothing open. Each row shows the project's status (`‖ ╳ ✓`) and ends in its due readout; the leader's band carries its open count, its high-priority count `!N`, and how long its work has sat in phase. |
-| `2` | **Agenda** | Every dated task on one shared day axis, ordered by urgency, each drawing its reach from today to its due date. No meter here on purpose — the row already says the same thing twice, as order and as length. |
-| `3` | **Gantt** | The same day axis, with a **past**: each project is two bands — its span (ash for elapsed, colour for what remains, ending at `◆`) over a progress band, so **the gap between them is the slip**, read as a length. Each task is a reach tipped by its phase glyph; finished work rests in ash at the tail. |
-| `4` | **Kanban** | Every task in its phase column, grouped by project. |
-| `5` | **Focus** | Pinned tasks and tasks of pinned projects: a reading-and-annotation surface with three layouts (card stream, inspector split, image-first). Press `t` to pin a task, `T` to pin its whole project. |
-| `7` | **Flow** | A read-only dashboard of work movement: median cycle time per phase, a phase×week heatmap, and weekly throughput. Driven entirely by the board's `history.jsonl` sidecar. |
-| `8` | **Standup** | The V3 team home (team mode): one row per roster member with a load bar, top task + phase, and sync age. Your own row carries an accent spine; stale rows wear the overdue tone. The classification filter `todo · equipo · personal` changes which task subset feeds the load/top-task calculation. |
-| `9` | **People** | The V2 people-lanes view (team mode): one lane per roster member, with that member's cards below their name. Foreign cards carry a `◦` read-only mark; your own lane has an accent spine. The classification filter changes which cards are visible in each lane. |
-| `0` | **Setup** | In-app team configuration: shared directory, sync interval, identity, shared projects, and roster — edited inside the app with live health checks. |
-
-> **Columns was retired** — kanban is the same phase grid and loses nothing, so the
-> views renumbered to 1-5. The app says so once, on the first launch after the change.
-
-### Setup controls (key `0`)
-
-| Key | Action |
-|-----|--------|
-| `tab` / `↵` / `space` | Cycle section · edit row · toggle control |
-| `a` / `x` | Add · remove roster member or project |
-| `ctrl+s` / `esc` | Save changes · cancel and return |
-
-## Install as a command
-
-You have never packaged a CLI before, so here is the simplest correct path first.
-
-### Recommended: pipx (isolated, gives you a global `taskboard` command)
-
-`pipx` installs the app into its own isolated environment and puts the `taskboard` command on your PATH — it won't collide with anything else.
+**With pipx (recommended).** pipx gives the app its own environment and puts `taskboard` on
+your PATH:
 
 ```powershell
 python -m pip install --user pipx
-python -m pipx ensurepath
-# >>> close and REOPEN your terminal here so PATH updates <<<
-pipx install "C:\Users\jjgh8\OneDrive\Documents\Github\taskboard"
+python -m pipx ensurepath        # then open a new terminal so PATH updates
+pipx install .
 ```
 
-Now, from any terminal:
+To update after pulling new code: `pipx reinstall taskboard`. This installs the newest
+Textual; the exact versions the app is verified against are pinned in `requirements.txt`
+(see [`RUN.md`](RUN.md)).
+
+**With pip.** `pip install --user .` installs the same `taskboard` command. If the shell says
+it is not recognized, your Python user-scripts folder is not on PATH; this prints it:
+
+```powershell
+python -c "import os, sysconfig; print(sysconfig.get_path('scripts', f'{os.name}_user'))"
+```
+
+**From source.** See [`RUN.md`](RUN.md): a virtual environment and `python -m taskboard`.
+
+## Quick start
 
 ```powershell
 taskboard
 ```
 
-To **update** after you edit the code:
+The first run creates your board and seeds it with demo data. Press `?` in any view for its
+help — what the view is for, what its marks mean, an example and its keys; inside help, `m`
+shows the full keymap and `?` opens the command palette. `q` quits.
 
-```powershell
-pipx reinstall taskboard
-```
+## Views
 
-### Alternative: pip (user install)
+| Key | View | One line |
+|-----|------|----------|
+| `1` | **Lanes** | One panel per project with its load and due work; `Tab` switches the grid (default) and the classic waves layout |
+| `2` | **Agenda** | Every dated task on one shared day axis, by urgency |
+| `3` | **Gantt** | The whole board on a window fitted to the open work, with a date ruler on top |
+| `4` | **Kanban** | Every task in its phase column; `Tab` cycles grouped, matrix and lanes layouts |
+| `5` | **Focus** | Pinned tasks and pinned projects, in five layouts (`Tab`) |
+| `7` | **Flow** | Read-only: time in phase, a phase × week heatmap, weekly throughput |
+| `8` | **Standup** | Team mode: one row per teammate — load, top task, sync age |
+| `9` | **People** | Team mode: one lane per teammate; their cards are read-only |
+| `0` | **Setup** | Team configuration, edited in the app with live health checks |
 
-```powershell
-cd "C:\Users\jjgh8\OneDrive\Documents\Github\taskboard"
-pip install --user .
-taskboard
-```
+**Gantt.** Every project has a row. The window fits the open work (from half a day to a week
+per cell, the smallest that holds it); when rows run out, projects fold to one span row
+(`▸ name  N open`) while the selected task's project stays open (`▾`). Finished work folds into
+a `✓n` count. Each row ends in one due chip (`▲3d` late, `today`, `Oct 6`, `no due`), and `↳`
+marks a task waiting on open work. The two rows on top are the ruler: months, day numbers,
+and the selected task's exact start and due (`⟦━⟧`).
 
-If `taskboard` is "not recognized", your Python **user scripts** dir isn't on PATH. Find it and add it:
+## Keys
 
-```powershell
-python -c "import site,os; print(os.path.join(site.getuserbase(), 'Scripts'))"
-# add that folder to your PATH (System Settings → Environment Variables), reopen terminal
-```
+The key bar at the bottom shows the keys that work in the current view; `;` switches it
+between the short and the full layer. Every key below is also in the command palette.
 
-To update after edits: `pip install --user . --force-reinstall`.
+| Key | Name | One line |
+|-----|------|----------|
+| `?` | Help | Per-view help (usage, legend, example, keys); `m` there for the full map |
+| `;` | More | Toggle the key bar's layer |
+| `q` | Quit | Quit |
+| `1`–`5`, `7`–`9`, `0` | Views | See [Views](#views) |
+| `↑` `↓` / `k` `j` | Move | Move the selection in the order the view draws |
+| `←` `→` / `h` `l` | Across | Move between columns (kanban) |
+| `Enter` | Details | Every field of the selected task, read-only |
+| `a` / `e` | Add / Edit | Add a task / edit the selected one in the full-screen editor |
+| `d` / `Delete` | Delete | Delete the selected task (asks first) |
+| `[` `]` | Phase | Move the selected task one phase back / forward |
+| `!` | Priority | Cycle low → normal → high |
+| `b` | Blocked | Block the task on another one, or unblock it |
+| `+` `=` / `-` | Due | Due date one day later / earlier |
+| `u` | Undo | Undo the last quick change |
+| `x` / `v` | Archive | Archive or unarchive / show archived tasks |
+| `X` | Purge done | Archive all finished work that has no completion date (asks first) |
+| `t` / `T` | Pin | Pin the task / its whole project (Focus view) |
+| `o` / `i` | Links / Images | Open the task's http(s) links / view its images |
+| `p` / `P` | Projects | Add a project / manage projects |
+| `f` | Phases | Add, rename, reorder or delete the board's phases |
+| `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
+| `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
+| `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
+| `R` / `S` | Report / Standup | Write an HTML report / show the week's standup |
+| `c` | Clocks | Choose the ribbon's two city clocks |
+| `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
 
-### Run from source (development)
+In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
 
-```powershell
-cd "C:\Users\jjgh8\OneDrive\Documents\Github\taskboard"
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python -m taskboard
-```
+## Working with tasks
 
-Both `python -m taskboard` and the installed `taskboard` command launch the same app.
+- **Phases.** A new board has `Backlog`, `Doing`, `Done`; `f` edits them. The last phase means
+  done.
+- **Undo.** `u` reverts the last phase move, priority, blocked flag, due change, pin, archive
+  or delete. Adding a task is not undoable.
+- **Finished work.** A task 20 days in its done phase is archived at startup (archived, never
+  deleted). `X` archives all finished work that has no completion date (asks first); `v` shows archived
+  tasks and `x` brings one back.
+- **Projects.** `p` adds one; `P` manages them (edit, archive, delete). Archiving a project
+  archives its open tasks too; deleting a project moves its tasks to the Inbox.
 
-## Where your data lives
+## Dependencies and blocking
 
-Tasks are stored as JSON at:
+`b` asks what blocks the selected task — pick an open task or create one — and records it as a
+dependency. A task that others wait on shows `⛓N` on its kanban card, the kanban `unblock` sort
+puts those first, and the gantt draws the critical chain (the longest chain of open
+dependencies) as a heavy `━` line. Unblocking keeps the recorded dependency.
 
-```
-C:\Users\<you>\.taskboard\board.json
-```
+## Kanban
 
-It is **not** inside the installed package (the package dir is read-only once pip/pipx-installed).
-The file is created and seeded with demo data on first run. If it ever gets corrupted, the app
-starts empty and leaves the file untouched so you can recover it by hand.
+- `s` cycles the sort: project → priority → due → recent → unblock.
+- `g` cycles the grouping: project → priority → horizon.
+- `z` collapses the last (done) phase to one count row.
+- Open high-priority cards float to a `high` band at the top of each column (grouped layout),
+  and every open card wears a priority badge: `!!` high, `==` normal, `++` low.
+- Phase headers show a WIP limit as `count/limit`, red when over; the default is 3 for `Doing`
+  (`wip_limits` in the board's settings).
 
-## Make it frameless
+## Notes, links and images
 
-**Textual cannot remove the window chrome itself** — that's the terminal's job, and
-**Windows Terminal / PowerShell cannot go borderless** (they always draw a title bar). Use
-**WezTerm** (or Alacritty), which can.
+- In notes, `==text==`, `!!text!!` and `++text++` are highlighted yellow, red and green.
+- A task with a URL shows `↗`; `o` opens its http(s) links in your browser.
+- In the editor, **Paste image** saves the clipboard image as a real file; `i` views a task's
+  images inline, and `o` inside the viewer opens them in your default app.
 
-A ready-made config ships in this repo: [`wezterm.lua`](wezterm.lua). It sets
-`window_decorations = "NONE"`, turns the tab bar off, uses `window_background_opacity = 0.9`, sizes
-the window, and launches `taskboard` via `default_prog`.
+## Team mode
 
-1. Install WezTerm: <https://wezterm.org>
-2. Use the config — either copy it to your home dir as `C:\Users\<you>\.wezterm.lua`, or point
-   WezTerm at it: `wezterm --config-file "…\taskboard\wezterm.lua"`.
-3. Pin the window **always-on-top** with [PowerToys](https://learn.microsoft.com/windows/powertoys/)
-   → *Always On Top* (default shortcut `Win+Ctrl+T`).
-
-The frame is gone and the board **fills the window** — resize it and the four views reflow to the
-new size. Textual paints the rest.
-
-### Toggle the window border at runtime
-
-The bundled `wezterm.lua` binds two keys (a WezTerm feature — an in-app button *cannot* remove the
-OS frame):
-
-| Key | Action |
-|-----|--------|
-| `Ctrl+Shift+B` | Flip the window frame on/off (`NONE` ↔ `TITLE \| RESIZE`) |
-| `F11` | Toggle borderless fullscreen |
-
-So you can start frameless, tap `Ctrl+Shift+B` to get the title bar back when you need to drag the
-window, then tap it again to go frameless.
-
-## Keybindings
-
-| Key | Action |
-|-----|--------|
-| `?` | **Command palette** — search every command by name and run it without memorising the key |
-| `;` | **More keys** — toggle the footer between the compact primary layer and the full grouped layer |
-| `1` `2` `3` `4` | Switch view (Lanes / Agenda / Gantt / Kanban) |
-| `↑` `↓` (or `k` `j`) | Move selection **in the current view's on-screen order**. In Kanban this moves *within* the phase column. |
-| `←` `→` (or `h` `l`) | Move between phase columns (Kanban) — jumps to the next column's first task. No-op in the single-column views. |
-| `a` | Add task |
-| `p` | Add project |
-| `P` | Manage projects (edit / archive / delete existing projects) |
-| `e` | Edit selected task |
-| `[` `]` | Move the selected task one phase back / forward — the move is **dated** (it restarts the card's in-phase clock). Already at the first / last phase? A silent no-op: no wrap, no re-dating. |
-| `!` | Cycle the selected task's priority low → normal → high → low (high shows the `!` marker on the card) |
-| `b` | Toggle the selected task's blocked flag (blocked cards wear the `▲` prefix instead of `▊`) |
-| `s` | Kanban only: cycle the column sort — project → priority → due → recent (the header names the active mode, e.g. `· sort: due`) |
-| `g` | Kanban only: cycle the column grouping — project → priority → horizon (group headers drawn inside each column, e.g. `Overdue`, `This week`, `No date`) |
-| `z` | Kanban only: collapse the terminal phase column to one `✓ N` summary row (N = how many tasks rest there — on the terminal phase, every one of them is done). Works from anywhere, needs no selection; press `z` again to restore the column. |
-| `F` | Kanban / Gantt: cycle a **project focus** — only that project's rows/cards render and the header names it (`· focus: Name`). Steps through the visible projects in order, then back to the full board. |
-| `esc` | Kanban / Gantt: leave the project focus (does nothing when no focus is active, so it never eats another screen's escape). When a search filter is active, `esc` clears the filter first. |
-| `/` | Kanban / Gantt: filter tasks live by title / project / notes. The bar shows `hits/total`; `esc` clears it. |
-| `+` / `=` | Due date one day **later** (an undated task starts from today) |
-| `-` | Due date one day **earlier** |
-| `u` | **Undo** the last quick mutation — phase move, priority, blocked, due-date bump, archive, or delete (a deleted task returns with its same id). Adding a task is deliberate and is not undoable; an empty history says so. |
-| `S` | **Weekly standup** — a read-only modal of what moved (`→`) and what closed (`✓`) in the last 7 days, grouped per project with a `closed/total` line each. Derived entirely from the move date the board already records; a quiet week says so in one honest line. Closes on `S`, `q`, or `esc`. |
-| `d` / `Delete` | Delete selected task (asks to confirm) |
-| `x` | Archive / unarchive selected task (an archived task hides, so press `v` first to bring one back) |
-| `X` | **Archive finished work the board has no completion date for** — a one-time purge for tasks that were already done before dates were recorded. Says how many and asks first. |
-| `v` | Toggle showing archived items (hidden by default) |
-| `t` | Pin / unpin the selected task (appears in the Focus Board) |
-| `T` | Pin / unpin the whole project of the selected task (all its tasks appear in the Focus Board; does nothing for Inbox tasks) |
-| `o` | Open the selected task's URLs in your browser (opens all of them) |
-| `i` | Open the inline image viewer for the selected task (rescaled thumbnails) |
-| `Enter` | Details of the selected task (read-only: every field, notes, URLs, images) |
-| `f` | Manage the board's phases (add / rename / reorder / delete) |
-| `Ctrl+E` | **Insert an emoji** — in the task or project editor, search by name and insert the glyph at the cursor. Only emoji whose width is unambiguous are offered, so a title can never lean its row. |
-| `Tab` | Kanban: cycle grouped → matrix → lanes layouts. Focus Board: cycle tile grid → inspector split → image-first → review queue → stale-first. Lanes: cycle grid 2×N ↔ classic waves. |
-| `R` | **Write a report** — a self-contained HTML document of the board, saved beside your board file. It says where it went and does not open it. |
-| `c` | Choose the two ribbon city clocks (type to find a city — accent-blind, so `Sao Paulo` finds `São Paulo`) |
-| `q` | Quit |
-
-**The footer is per-view.** It shows the keys that work in the current view plus the
-universal keys (`?`, `;`, `q`). Global commands such as `o`, `i`, `p`, `P`, `f`, `c`, `R`, and `S`
-remain bound and are always reachable through the `?` command palette, so nothing is
-hidden — only the bar's drawing is scoped to the view.
-
-Navigation follows what you **see**: Down in Kanban walks down the current phase
-column (not some unrelated task in data order); Right jumps to the next column. The
-selected task stays highlighted and is scrolled into view.
-
-Inside a modal: `Esc` cancels, `Tab` moves between fields, `Enter` on a button activates it.
-
-**Managing projects.** `p` only *adds* a project; press `P` to **manage the ones you already
-have**. It opens a list of every project (name · status · task count, archived ones flagged). With a
-project highlighted: `e` (or `Enter`) edits it — change its name, status
-(`on_track`/`paused`/`cancelled`/`completed`), color, and start/due dates; `x` archives or
-unarchives it. **Archiving a project archives its open tasks too**, so the whole stream stops
-drawing as active work; unarchiving restores both. `d` deletes it. **Deleting a project never
-deletes its tasks** — they are reassigned to Inbox (no-project). Every change saves immediately
-and the board re-renders behind the menu.
-
-Tasks with a URL show a small `↗` and render their title as an OSC-8 hyperlink (clickable in
-terminals that support it, e.g. WezTerm). The `o` key always works regardless of terminal.
-High-priority tasks are marked `!` — a glyph, deliberately not a colour (see below).
-
-**Finished work gets out of the way**, by two paths that never overlap.
-
-*Automatically, when the date is known.* A task that has been in its done phase for **20 days
-or more is archived at startup** — archived, never deleted. The app says when it has swept
-any. It only counts from the moment a task **changes phase**, because that is when the board
-learns the date.
-
-*Deliberately, for everything older.* Work finished **before dates were recorded has no
-completion date**, and the automatic sweep can never touch it — an undated task is not old,
-it is undated, and guessing a date would be a fabrication. So press **`X`** for a one-time
-purge: it tells you how many such tasks there are, asks, and only then archives them. It
-still **stamps nothing** — those tasks keep their unknown date, honestly.
-
-After that one purge, the 20-day rule handles everything from then on.
-
-Either way the work is **archived, not deleted**: `v` shows archived items, `x` brings one
-back, and you can also tick **Archived** inside the task editor (`e`).
-
-### Project colours: eight, and why not twelve
-
-Every hue in this app has exactly one job. A **project** hue says *which project*; the
-**red** `#f43f5e` says *overdue*; the **amber** `#fbbf24` says *due today*; the **teal**
-`#2dd4bf` marks *today / focus*. A colour that does two jobs cannot be read — and `amber`
-used to be a project colour at the *identical* hex as "due today", so a project's spine, name
-and bar were painted in the exact colour the app uses for urgency.
-
-Four project colours were therefore retired, on measured rgb distance to the hue they
-collided with: **amber** (0.0 from *due today*), **cyan** (48.3 from the teal), **orange**
-(51.0), **rose** (63.8 from *overdue*). Eight remain: lime, green, sky, blue, indigo, violet,
-fuchsia, pink.
-
-**Existing boards keep working.** A project saved with a retired colour is remapped the first
-time the board loads — `amber→lime`, `rose→pink`, `cyan→sky`, `orange→fuchsia` — and then never
-changes again. The remap is one-to-one, so two projects that had different colours still have
-different colours. To see in advance what your own board would change to:
-
-```powershell
-python -c "import json,pathlib;from taskboard.models import DROPPED_PROJECT_COLORS as M;d=json.loads(pathlib.Path.home().joinpath('.taskboard/board.json').read_text(encoding='utf-8'));print([(p['name'],p['color'],M[p['color']]) for p in d['projects'] if p.get('color') in M])"
-```
-
-For the same reason the high-priority marker is the glyph `!` rather than the amber `◉` it was
-before: importance is not urgency, so it does not get to wear the urgency colour.
-
-### Highlights in notes
-
-Inside task notes you can mark text with three simple delimiters. They render in colour in the Focus
-Board and in the task detail modal (`Enter`):
-
-- `==text==` → yellow
-- `!!text!!` → red
-- `++text++` → green
-
-The delimiters are stored as plain text; the colours are rendered on read, so the meaning is yours to
-assign.
-
-### Images
-
-In the task editor, click **Paste image from clipboard** to attach a screenshot straight from the
-clipboard. Pasted images are stored as **real files** under `~/.taskboard/images/<task-id>/`, so you
-can open them raw with any app. Press `i` on a selected task to view its images rescaled **inline**
-(crisp in graphics-capable terminals like WezTerm, half-block fallback elsewhere); inside the viewer
-press `o` to open them all raw in your OS default app / browser. You can also paste plain image paths
-or URLs directly into the Images field, one per line.
+Team mode syncs boards through any shared folder — a synced drive or a git checkout works the
+same. Turn it on in **Setup** (`0`): the shared folder, who you are, which projects are shared, the
+roster, and a time in minutes after which a teammate whose board has not synced is shown as
+stale. The app syncs every 30 minutes. The folder holds `team.json` (the roster and
+shared projects) and one `board.<user>.json` per person. Teammates' cards appear read-only in
+**Standup** (`8`) and **People** (`9`). Setup checks the folder as you edit and says what is
+wrong.
 
 ## Reports
 
-Press **`R`** in the app, or run it from the shell:
+`R` in the app, or from the shell:
 
 ```powershell
-taskboard --report                 # the whole board
-taskboard --report "Website Redesign"   # one project
+taskboard --report                       # the whole board
+taskboard --report "Website Redesign"    # one project
 ```
 
-Either way you get **one self-contained `.html` file** — CSS and figures inlined,
-no CDN, no network — written to `reports/` beside your board file (so
-`~/.taskboard/reports/`), and the path is printed. Nothing is opened for you.
+Each writes one self-contained HTML file to a `reports` folder beside your board file and
+prints the path. It shows counts and dates only — no forecasts — and never modifies an
+existing board (pointed at a board file that does not exist yet, it creates the demo board
+first, as the app does). An unknown project name exits with code 2 and lists the projects.
 
-It reports only what the board holds: open and done counts, the overdue pressure,
-the due horizon, each project's cumulative load curve (drawn from the same engine
-the board draws with), and how long work has sat in phase — **`unaged` where the
-board never recorded a date, never a guessed zero.** No forecasts and no velocity;
-the board stores no history to compute them from.
+## Clocks
 
-**Generating a report never modifies your board** — that is enforced by a test
-that compares the file's checksum before and after.
+The bottom ribbon shows the time, date, ISO week and two city clocks (default Mexico City and
+New York). `c` changes them: type a city and it autocompletes. 340 cities are available,
+daylight saving included (`zoneinfo`).
 
-## The two city clocks
+## Frameless window (WezTerm)
 
-The bottom ribbon shows local time, date, ISO week (e.g. `W29`), and **two city clocks** —
-e.g. `Mexico City 09:14 · Tokyo 23:14`.
+Windows Terminal always draws a title bar, so use [WezTerm](https://wezterm.org). This repo
+ships a config, [`wezterm.lua`](wezterm.lua): no window decorations, no tab bar, a dark
+background. Load it with `wezterm --config-file wezterm.lua`, or copy it to `~/.wezterm.lua`.
 
-Choose them **in-app**: press `c` to open the clock menu. Each clock is an Input you **type a
-city into** — start typing and it autocompletes (type `mad` → `Madrid`, accept with `→` or
-`Enter`). Save with the button (`Esc` cancels). An unknown or blank entry keeps the current city.
-The two cities are saved to `board.json` and survive restarts. Defaults: **Mexico City** and
-**New York**.
+- It opens your normal shell; uncomment `default_prog` in the file to boot straight into
+  `taskboard`.
+- `Ctrl+Shift+B` toggles the window frame and `F11` borderless fullscreen (WezTerm keys).
+- Keep it on top with PowerToys **Always On Top** (`Win+Ctrl+T`).
 
-Times are **real and DST-aware** (via Python's `zoneinfo`, so `tzdata` is a dependency on
-Windows). **340 cities** are available across LATAM, US/Canada, Europe, the Middle East, Africa,
-Asia and Oceania — and between them they cover **every UTC offset in current use**, including the
-awkward ones you cannot guess a big city for: India +5:30 (Mumbai), Nepal +5:45 (Kathmandu),
-Newfoundland −3:30 (St. John's), Chatham +12:45, Eucla +8:45, Kabul +4:30, Yangon +6:30,
-Marquesas −9:30. So when the city you want is missing, some city on the same clock is not.
+## Data files
 
-The search is **accent-blind on a fallback**: exact matching is unchanged, and only when nothing
-matches does `Sao Paulo` find `São Paulo`, `Bogota` find `Bogotá`, `Dusseldorf` find `Düsseldorf`.
-(Every zone is verified against your machine's own `tzdata` by the test suite, so a city that
-cannot tell the time cannot ship.)
+Everything lives under `~/.taskboard/` (or beside the file you pass with `--board`):
 
-Upgrading from an older build? Previously-saved fixed-offset clocks (`CST`, `EST`, …) are
-migrated automatically to a representative city (CST → Mexico City, EST → New York, PST → Los
-Angeles, JST → Tokyo, …), so your saved board keeps working.
+| File | What |
+|------|------|
+| `board.json` | Your board: projects, tasks, settings |
+| `board.json.corrupt` | A copy of an unreadable board, kept before the app starts empty |
+| `history.jsonl` | One line per phase move and per added task — the Flow view reads it |
+| `images/<task id>/` | Pasted images, as plain files |
+| `reports/` | HTML reports |
+
+Never commit a real board: the repo's pre-commit hook (`tools/precommit_privacy.py`) refuses
+files that carry your board's text.
+
+## Command line
+
+| Command | What |
+|---------|------|
+| `taskboard` | Run the app on `~/.taskboard/board.json` |
+| `taskboard --board PATH` | Run it on another board file |
+| `taskboard --report [PROJECT]` | Write a report and exit |
+
+`python -m taskboard` is the same command.
 
 ## Development
 
-```powershell
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-pytest            # 41 Pilot + render tests
-```
-
-## Project layout
+See [`RUN.md`](RUN.md) for the environment, the test suite and the privacy hook. CI runs the
+suite on pushes to `main` and on pull requests (`.github/workflows/ci.yml`).
 
 ```
 taskboard/
-  taskboard/
-    __init__.py        package + version
-    __main__.py        entry point: main() -> TaskboardApp().run()
-    app.py             the App: view switching, selection, modals, one clock interval
-    models.py          Project / Task dataclasses + Board (JSON persistence, seed)
-    views.py           the four view renderers (rich markup, escaped user text)
-    modals.py          add/edit task, add/edit project, project manager, confirm-delete modals
-    ribbon.py          bottom status bar (time/date/week + two custom clocks)
-    taskboard.tcss     palette + layout (single dark theme)
-  tests/
-    test_app.py        Pilot tests + pure-render tests
-  pyproject.toml       packaging + console entry point (`taskboard`)
-  requirements.txt     pinned deps
-  README.md
+  __main__.py     command line
+  app.py          the App: views, selection, keys, team sync timer
+  keymap.py       every key binding (the one source of the key bar and the palette)
+  views.py        the view renderers, nav order and per-view help
+  modals.py       editors, pickers, help and other modal screens
+  models.py       Project / Task / Board: JSON store, seeding, rescue
+  history.py      the log of phase moves and added tasks (history.jsonl)
+  team_sync.py    team mode: the shared folder's files, merge, health check
+  report.py       the HTML report
+  ribbon.py       the bottom clock ribbon
+  wave.py         the lanes waves engine
+  taskboard.tcss  styles
+tests/            pytest suite
+tools/            privacy sweep and pre-commit check
+docs/             screenshots and a sample report
+wezterm.lua       frameless WezTerm config
 ```
+
+## Colours
+
+Eight project colours (lime, green, sky, blue, indigo, violet, fuchsia, pink); red, amber and
+teal are kept for overdue, for due today, and for today and the filter field. Boards saved with a retired colour are remapped
+once on load.
+
+## History
+
+- **Columns was retired**: the kanban is the same phase grid and loses nothing, so the views
+  were renumbered.
+- Key `6` is free: it belonged to the aperture widget view, which was removed.
+
+## Limitations
+
+- Raw image opening is Windows-only; macOS and Linux are untested.
+- The Standup and People views need team mode.
+- A real board is never part of this repo; the screenshots use the seeded demo data.

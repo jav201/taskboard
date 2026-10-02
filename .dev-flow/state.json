@@ -1,166 +1,167 @@
 {
- "project": "taskboard",
- "language": "en",
- "batch_id": "2026-09-30-batch-01",
- "batch_objective": "Edit window variant C (full-screen editor + live preview) and kanban K4 high band + priority badges, per owner verdict 2026-09-30",
- "owner": "C:/Users/jjgh8/Github/taskboard",
- "mode": "core",
- "mode_history": [
-  {
-   "batch_id": "2026-08-19-batch-09",
-   "mode": "core",
-   "closed_at": "2026-08-19"
-  },
-  {
-   "batch_id": "2026-08-24-batch-10",
-   "mode": "core",
-   "closed_at": "2026-08-29"
-  },
-  {
-   "batch_id": "2026-09-01-batch-11",
-   "mode": "core",
-   "closed_at": "2026-09-01"
-  },
-  {
-   "batch_id": "2026-09-01-cleanup-aperture",
-   "mode": "core",
-   "closed_at": "2026-09-01"
-  },
-  {
-   "from": null,
-   "to": "core",
-   "date": "2026-09-30",
-   "reason": "initial mode, declared at /dev-flow-init"
-  }
- ],
- "guided": false,
- "current_station": "P5",
- "phase_status": "awaiting-gate",
- "stations_active": [
-  "P0",
-  "P1",
-  "P2",
-  "P3",
-  "P4",
-  "P5"
- ],
- "iterations_per_station": {
-  "P0": 1,
-  "P1": 1,
-  "P2": 1,
-  "P3": 5,
-  "P4": 1,
-  "P5": 1
- },
- "triggers": {
-  "evaluated_at": "2026-09-30",
-  "fired": [
-   "B1",
-   "B4",
-   "C",
-   "D",
-   "F"
+  "project": "taskboard",
+  "language": "en",
+  "batch_id": "2026-10-02-batch-01",
+  "batch_objective": "Batch A1 of the kg_mejoras plan: whole-board fitted gantt (G-A) with the AX-2 date ruler, the round-7 colour budget on kanban and gantt, and the README/RUN.md rewrite (K-A + R-1b split to Batch A2 at P0)",
+  "owner": "C:/Users/jjgh8/Github/taskboard",
+  "mode": "core",
+  "mode_history": [
+    {
+      "batch_id": "2026-08-19-batch-09",
+      "mode": "core",
+      "closed_at": "2026-08-19"
+    },
+    {
+      "batch_id": "2026-08-24-batch-10",
+      "mode": "core",
+      "closed_at": "2026-08-29"
+    },
+    {
+      "batch_id": "2026-09-01-batch-11",
+      "mode": "core",
+      "closed_at": "2026-09-01"
+    },
+    {
+      "batch_id": "2026-09-01-cleanup-aperture",
+      "mode": "core",
+      "closed_at": "2026-09-01"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-09-30",
+      "reason": "initial mode, declared at /dev-flow-init"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-02",
+      "reason": "batch 2026-10-02-batch-01 opened by rollover from 2026-09-30-batch-01; mode core declared by the commission"
+    }
   ],
-  "not_fired": [
-   "B2",
-   "B3",
-   "A",
-   "E"
+  "guided": false,
+  "current_station": "P5",
+  "phase_status": "closed",
+  "stations_active": [
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5"
   ],
-  "record": "B1: card_cell/kanban_order/TaskModal asserted by other batches' tests (grep -rl, see increment packets) -> reverse census. B4: TaskModal._save payload consumed by app._on_task_edited -> round-trip AT. C: devflow-scan-spec.py flags token/escape (C-17 markup over file-derived text: the notes preview) -> security-reviewer pass + markup-injection test. D: user-visible layout -> ux-reviewer lens at P2, captures. B2/B3: no file moved, no golden (grep). A: views.py/modals.py/tcss only, no new module or boundary (judged). E: 3 stories, 2 increments, not high risk (judged). F: flow hash mismatch V7 on SKILL.md is the operator's rev98-wip bundle, declared in PLAN.md (this is a NOTICE-level carry, the trigger reads it as fired for C-45 PULL: not pulled, bundle under edit)."
- },
- "artifact_homes": {
-  "requirements": "repo:.dev-flow/2026-09-30-batch-01/01-requirements.md",
-  "requirements_ledger": "repo:.dev-flow/2026-09-30-batch-01/01-requirements-ledger.md",
-  "traceability": "repo:.dev-flow/2026-09-30-batch-01/06-docs/traceability-matrix.md",
-  "tests": "repo:tests/",
-  "module_map": "repo:docs/ARCHITECTURE.md",
-  "increments": "repo:.dev-flow/2026-09-30-batch-01/03-increments/",
-  "evidence": "repo:.dev-flow/2026-09-30-batch-01/evidence/",
-  "backlog": "repo:.dev-flow/BACKLOG.md",
-  "design_pdr": "vault:taskboard/design/PDR-2026-09-30-batch-01.md",
-  "design_ddr": "vault:taskboard/design/DDR-2026-09-30-batch-01.md",
-  "postmortem": "vault:taskboard/dev-flow-batches/2026-09-30-batch-01/",
-  "metrics": "vault:taskboard/dev-flow-batches/2026-09-30-batch-01/README.md",
-  "requirements_canon": "repo:REQUIREMENTS.md"
- },
- "base_ref": "a9bbd1c0b36b4da47b1b61eea69b7ac35ac00b72",
- "artifacts": {
-  "P0": ".dev-flow/2026-09-30-batch-01/PLAN.md",
-  "P1": ".dev-flow/2026-09-30-batch-01/01-requirements.md",
-  "P2": ".dev-flow/2026-09-30-batch-01/02-review.md",
-  "P3": ".dev-flow/2026-09-30-batch-01/03-increments/",
-  "P4": ".dev-flow/2026-09-30-batch-01/04-validation.md",
-  "P5": ".dev-flow/2026-09-30-batch-01/05-close.md"
- },
- "decisions_log": [
-  {
-   "station": "P0",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "batch opened by rollover from 2026-09-01-batch-12 (decisions_log archived to its decisions-log.json); core mode; standing authorization = the commission; V7 BLOCK on the flow bundle's SKILL.md hash declared and proceeded (operator's rev98-wip bundle)."
+  "iterations_per_station": {
+    "P0": 1,
+    "P1": 2,
+    "P2": 2,
+    "P3": 1,
+    "P4": 2,
+    "P5": 0
   },
-  {
-   "station": "P1",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "requirements derived: US-001..003, HLR-001..004, 9 LLR, AT-001..006; design decisions D1-D4 recorded."
+  "triggers": {
+    "evaluated_at": "2026-10-02",
+    "fired": [
+      "B1",
+      "B4",
+      "C",
+      "D",
+      "E",
+      "F2"
+    ],
+    "not_fired": [
+      "B2",
+      "B3",
+      "A",
+      "F1"
+    ],
+    "record": ".dev-flow/2026-10-02-batch-01/PLAN.md#triggers"
   },
-  {
-   "station": "P2",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "two-lens review (qa-reviewer, ux-reviewer): 24 findings folded or declared via LED .1-.4; approved under the standing authorization; P3 is next."
+  "artifact_homes": {
+    "requirements": "repo:.dev-flow/2026-10-02-batch-01/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-02-batch-01/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-02-batch-01/06-docs/traceability-matrix.md",
+    "tests": "repo:tests/",
+    "module_map": "repo:docs/ARCHITECTURE.md",
+    "increments": "repo:.dev-flow/2026-10-02-batch-01/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-02-batch-01/evidence/",
+    "backlog": "repo:.dev-flow/BACKLOG.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-02-batch-01.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-02-batch-01.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-02-batch-01/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-02-batch-01/README.md",
+    "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  {
-   "station": "P3",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "increment 001 (editor variant C) approved under the standing authorization: code-reviewer PASS-WITH-NOTES 0 HIGH, findings folded, 11 mutations KILLED."
+  "base_ref": "57a60756fda953bdde5d26c64bcf0eec202f44c8",
+  "artifacts": {
+    "P0": ".dev-flow/2026-10-02-batch-01/PLAN.md",
+    "P1": ".dev-flow/2026-10-02-batch-01/01-requirements.md",
+    "P1_ledger": ".dev-flow/2026-10-02-batch-01/01-requirements-ledger.md",
+    "P2": ".dev-flow/2026-10-02-batch-01/02-review.md",
+    "P3": ".dev-flow/2026-10-02-batch-01/03-increments/"
   },
-  {
-   "station": "P3",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "increment 002 (kanban K4 band + badges) approved under the standing authorization: code-reviewer PASS-WITH-NOTES 0 HIGH, L2/L3 folded, L1 to BACKLOG, 10 mutations KILLED."
+  "decisions_log": [
+    {
+      "station": "P0",
+      "date": "2026-10-02",
+      "decision": "batch opened by rollover from 2026-09-30-batch-01 (decisions_log archived to its decisions-log.json); core; standing authorization = the operator's kickoff answers relayed in the commission; triggers B1 B4 C D E F2 fired; US-101..104 READY, US-105 (K-A + R-1b) OUT to Batch A2 under the pre-authorized split; approved under the standing authorization."
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-02",
+      "decision": "requirements derived: US-101..104, HLR-101..109, 18 LLR, AT-101..107, ledger LED .1-.9, IFC Part A+B; security scan security_required true (flags token/role/form answered §6.4); decisions D1-D12; approved under the standing authorization; P2 is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-02",
+      "decision": "iteration 1: qa-reviewer FAIL (Q-1, Q-2 blockers), ux-reviewer FAIL (UX-1 = Q-2), security-reviewer PASS-WITH-NOTES 0 HIGH -> iterate-to-refine to P1; all findings folded (LED .10-.18), reverse census measured (P-10, 31 nodes), 5 operator design questions routed with conservative defaults (D4, D9, D10, D12, D13); re-review dispatched."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-02",
+      "decision": "iteration 2: qa, ux, security all PASS-WITH-NOTES (0 blocker, 0 HIGH); new notes folded (LED .19-.21, IFC filtered offset, RUN.md pattern) or carried (qa N-5 to increment 001's gate); increment plan re-cut to 3 increments (C-21); approved under the standing authorization; P3 is next."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-02",
+      "decision": "increment 001 (gantt G-A + AX-2, gantt-side budget, selection repair) approved under the standing authorization: 3 SOURCE files; code-reviewer round 1 BLOCK-UNTIL F1/F3 (2 HIGH) folded with RED proof, rounds 2-3 OK to advance 0 HIGH; 18/18 mutations KILLED; suite 1588 passed; LLR-101.1/101.6/101.11/102.5 amended (LED .22-.25); F5, F11 to BACKLOG; P3 continues with increment 002."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-02",
+      "decision": "increment 002 (kanban colour budget, header tone) approved under the standing authorization: 1 SOURCE file; code-reviewer round 1 BLOCK-UNTIL F1 (1 HIGH, clipped titles fell back to accent) folded with RED proof, round 2 OK to advance 0 HIGH; 6/6 mutations KILLED; suite 1606 passed."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-02",
+      "decision": "increment 003 (README.md, RUN.md, gantt SVG) approved under the standing authorization: 0 SOURCE files; qa-reviewer fact-check round 1 FAIL folded, round 2 PASS-WITH-NOTES; security-reviewer privacy pass PASS-WITH-NOTES 0 HIGH (S-7 fixed, S-8 to BACKLOG); P3 closed, P4 is next."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-02",
+      "decision": "P4 iteration 1: ux walkthrough FAILED one criterion (UXV-1 gantt help cut mid-word) and qa-reviewer flagged C-18 (AT-108/AT-109 realised by several nodes); iterate-to-fix back to P3 as increment 004 (C-21 AT re-cut, LED .26-.31) under the standing authorization."
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-02",
+      "decision": "increment 004 (P4 walkthrough fixes: help fits its column, .5 d/cell, packet clears the clip marker, AT one-node re-cut, UXV-12 focused-header fallback) approved under the standing authorization: 1 SOURCE file; code-reviewer rounds 1-3 OK to advance, 0 HIGH; 5/5 mutations KILLED; gate re-run 1611 passed on the frozen tree."
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-02",
+      "decision": "P4 approved under the standing authorization: qa-reviewer 04-validation.md iteration 3 PASS-WITH-NOTES (30/30 requirements, 0 blocker, ledger 1535-4+80=1611 = gate 1611 passed); ux re-check UXV-1/5/6 pass, UXV-12 fixed in increment 004; notes G-003, G-005 (docs/taskboard-gantt.svg in the coordinator commit), G-007; UXV-2/3 routed to the operator. 0 HIGH."
+    },
+    {
+      "station": "P5",
+      "date": "2026-10-02",
+      "decision": "P5 close under the standing authorization: canon folded (30 rows), close privacy sweeps recorded (0 real-board strings; 2 inherited strings carried to BACKLOG), 05-close.md and 00-checklists.md filled; increments 001-004 shipped as working-tree changes, merge: false (no PR; coordinator commits+pushes to main)."
+    }
+  ],
+  "standing_authorization": {
+    "autonomous": true,
+    "merge": false,
+    "asked_on": "2026-10-02",
+    "operator_words": "Operator (Javier), asked at kickoff on 2026-10-02, answered: Gates: \"Autónomo, agente Opus\" — the batch runs end-to-end autonomously; the agent self-approves each station gate, recording every un-asked decision; a HIGH finding blocks regardless and returns to the operator. Git: \"Commit + push a main, sin PR\" — commit and push to origin/main authorized for the coordinator (the orchestrating session), NOT for the implementing agent, which leaves every change in the working tree. merge: false (no PR; coordinator commits+pushes to main). Language: \"Inglés\". Standing request 2026-09-30: \"en el siguiente commit, actualiza el README del repo, está muy desactualizado y tiene errores y problemas estéticos.\""
   },
-  {
-   "station": "P3",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "increment 003 (S1 in TaskDetails / ImageViewer / image_block) approved under the extended standing authorization: code-reviewer PASS-WITH-NOTES 0 HIGH, F1/F2 folded, 8 mutations KILLED."
-  },
-  {
-   "station": "P3",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "increment 004 (adopted gantt-filter fix) and increment 005 (adopted Focus Board fix) approved: RED re-captured, code-reviewer PASS-WITH-NOTES / PASS, 0 HIGH."
-  },
-  {
-   "station": "P1",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "owner verdict: green-vs-project colour accepted (LED .5); US-004..006, HLR-005..007 added."
-  },
-  {
-   "station": "P4",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "validation: full suite and layered AT/TC results recorded in 04-validation.md."
-  },
-  {
-   "station": "P5",
-   "guided": false,
-   "date": "2026-09-30",
-   "decision": "close record written; owner verdict reopened P3: increments 003-005 added; close ready for the coordinator's commit and push (this agent does not commit)."
-  }
- ],
- "standing_authorization": {
-  "autonomous": true,
-  "merge": false,
-  "asked_on": "2026-09-30",
-  "operator_words": "Commission (delegated sub-agent; runtime cannot prompt): 'Implement two design decisions ... following the dev-flow skill ... you implement exactly that, nothing more ... DO NOT commit, push, stash, reset or checkout anything. Leave everything as working-tree changes ... If scope creeps ... STOP and report.' Autonomy over the gates read from the commission; merge not granted; commit explicitly withheld. Extended 2026-09-30 by the owner's verdict (relayed): include the Focus Board and gantt-filter fixes, fix TaskDetails S1, colours approved incl. green; close with zero project-side blocks; the coordinator commits and pushes, not this agent."
- },
- "obsidian_synced": false,
- "created_at": "2026-09-30T21:21:23.234104"
+  "obsidian_synced": false,
+  "created_at": "2026-10-02T07:14:14.982381"
 }

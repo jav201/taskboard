@@ -1,0 +1,85 @@
+# inc002 code-review fold RED proof (F1 HIGH, F2, F3): the extended/added nodes against the ROUND-1 snapshot of increment 002 (scratch; views.py sha256 prefix 5cb4684cb606a37d)
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F......FF                                                                [100%]
+================================== FAILURES ===================================
+___________________ test_TC_119_the_kanban_paints_no_accent ___________________
+
+    def test_TC_119_the_kanban_paints_no_accent():
+        """TC-119 (LLR-103.1, LLR-103.3). Every presentation × group mode is
+        rendered — the reached pairs are asserted, not assumed — and none paints
+        the accent: not the title, the `+Nd` token, the `↗` link, the horizon
+        group's colour nor the matrix percent (P-4's sites)."""
+        b = oracle()
+        reached = set()
+        for pres in PRESENTATIONS:
+            for grp in GROUPS:
+                for sort in ("project", "due"):
+                    for focus in (None, "pweb"):
+                        for w, h in ((118, 30), (80, 24), (60, 20), (40, 14), (24, 10)):
+                            text = render_view("kanban", b, False, "tw3", TODAY, w, h, {},
+                                               presentation=pres, kanban_group=grp,
+                                               kanban_sort=sort, kanban_focus=focus)
+                            assert "KANBAN"[:3] in text.plain
+                            reached.add((pres, grp, sort, focus, w))
+                            runs = accent_runs(text)
+>                           assert not runs, (pres, grp, sort, focus, w, runs[:4])
+E                           AssertionError: ('grouped', 'project', 'project', 'pweb', 40, [(0, 'KANBAN · grouped · focus: Website Redes…')])
+E                           assert not [(0, 'KANBAN · grouped · focus: Website Redes…')]
+
+tests\test_colour_budget.py:93: AssertionError
+________ test_TC_119_the_gantt_paints_only_today_and_the_filter[24-10] ________
+
+w = 24, h = 10
+
+    @pytest.mark.parametrize("w,h", [(118, 30), (80, 24), (60, 20), (40, 14), (24, 10)])
+    def test_TC_119_the_gantt_paints_only_today_and_the_filter(w, h):
+        """TC-119 (code review F1, F2). The gantt at every width, with and without
+        a focus and a filter: every accent run is a today mark or the filter field
+        — including the clipped title of a narrow panel, which used to fall back to
+        the accent."""
+        b = oracle()
+        for focus in (None, "pweb"):
+            for query in (None, "e"):
+                text = render_view("gantt", b, False, "tw3", TODAY, w, h, {},
+                                   gantt_focus=focus, search_query=query)
+                for row, seg in accent_runs(text):
+                    if query and row in (1, 2):
+                        continue                      # the filter field
+>                   assert today_mark(row - (2 if query else 0), seg), (w, focus, query, row, seg)
+E                   AssertionError: (24, 'pweb', None, 0, '◆ GANTT (focused: Websi…')
+E                   assert False
+E                    +  where False = today_mark((0 - 0), '◆ GANTT (focused: Websi…')
+
+tests\test_colour_budget.py:219: AssertionError
+_____ test_TC_108_the_focused_header_paints_a_trailing_backslash_as_typed _____
+
+    def test_TC_108_the_focused_header_paints_a_trailing_backslash_as_typed():
+        """TC-108 (code review of increment 002, F3). A focused project named `x\\`
+        reads `(focused: x\\)` in the header — one backslash, as typed. RED: escaping
+        the name alone doubles a backslash that is followed by `)`, not a tag."""
+        p = Project("x\\", "sky", "on_track", id="px")
+        b = Board([p], [], Path("never.json"), {}, ["A", "B"])
+        head = render_gantt(b, False, None, TODAY, width=118, height=10, focus="px").plain
+>       assert head.split("\n")[0].startswith("◆ GANTT (focused: x\\)"), head.split("\n")[0]
+E       AssertionError: ◆ GANTT (focused: x\\)                                                                               nothing past due 
+E       assert False
+E        +  where False = <built-in method startswith of str object at 0x00000274A69204F0>('◆ GANTT (focused: x\\)')
+E        +    where <built-in method startswith of str object at 0x00000274A69204F0> = '◆ GANTT (focused: x\\\\)                                                                               nothing past due '.startswith
+
+tests\test_gantt_board.py:883: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_colour_budget.py::test_TC_119_the_census_can_see_the_accent
+PASSED tests/test_colour_budget.py::test_TC_119_the_shared_card_tokens_left_the_accent_everywhere
+PASSED tests/test_colour_budget.py::test_TC_119_the_gantt_paints_only_today_and_the_filter[118-30]
+PASSED tests/test_colour_budget.py::test_TC_119_the_gantt_paints_only_today_and_the_filter[80-24]
+PASSED tests/test_colour_budget.py::test_TC_119_the_gantt_paints_only_today_and_the_filter[60-20]
+PASSED tests/test_colour_budget.py::test_TC_119_the_gantt_paints_only_today_and_the_filter[40-14]
+FAILED tests/test_colour_budget.py::test_TC_119_the_kanban_paints_no_accent
+FAILED tests/test_colour_budget.py::test_TC_119_the_gantt_paints_only_today_and_the_filter[24-10]
+FAILED tests/test_gantt_board.py::test_TC_108_the_focused_header_paints_a_trailing_backslash_as_typed
+3 failed, 6 passed, 54 deselected in 0.54s
+exit=1

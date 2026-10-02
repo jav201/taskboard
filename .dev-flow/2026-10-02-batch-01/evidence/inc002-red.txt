@@ -1,0 +1,180 @@
+# inc002 RED on the increment-001 tree — scratch copy of the current tree with increment 002's five kanban colour edits reverted (byte-for-byte to their increment-001 form)
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_colour_budget.py tests/test_cells.py::test_card_cell_shows_the_deadline_countdown_on_every_dated_card
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F.FFFF..FF                                                               [100%]
+================================== FAILURES ===================================
+___________________ test_TC_119_the_kanban_paints_no_accent ___________________
+
+    def test_TC_119_the_kanban_paints_no_accent():
+        """TC-119 (LLR-103.1, LLR-103.3). Every presentation × group mode is
+        rendered — the reached pairs are asserted, not assumed — and none paints
+        the accent: not the title, the `+Nd` token, the `↗` link, the horizon
+        group's colour nor the matrix percent (P-4's sites)."""
+        b = oracle()
+        reached = set()
+        for pres in PRESENTATIONS:
+            for grp in GROUPS:
+                for w, h in ((118, 30), (80, 24)):
+                    text = render_view("kanban", b, False, "tw3", TODAY, w, h, {},
+                                       presentation=pres, kanban_group=grp)
+                    assert "KANBAN" in text.plain
+                    reached.add((pres, grp))
+                    runs = accent_runs(text)
+>                   assert not runs, (pres, grp, w, runs[:4])
+E                   AssertionError: ('grouped', 'project', 118, [(0, 'KANBAN'), (4, ' +3d'), (5, ' +3d'), (5, ' +4d')])
+E                   assert not [(0, 'KANBAN'), (4, ' +3d'), (5, ' +3d'), (5, ' +4d'), (6, ' +7d'), (6, ' +1d'), ...]
+
+tests\test_colour_budget.py:87: AssertionError
+________ test_TC_119_the_shared_card_tokens_left_the_accent_everywhere ________
+
+    def test_TC_119_the_shared_card_tokens_left_the_accent_everywhere():
+        """`card_cell` and `reldue_token` are shared: the Focus review rail, People
+        and Agenda call them too (D10), so the two tokens leave the accent there as
+        well — a `+4d` due within the week and a card's `↗` read `mut`."""
+        b = oracle()
+        t = b.task_by_id("tw6")
+        t.due_date = "2026-10-04"
+>       assert reldue_token(t, TODAY, b) == ("+4d", "mut")
+E       AssertionError: assert ('+4d', 'accent') == ('+4d', 'mut')
+E         
+E         At index 1 diff: 'accent' != 'mut'
+E         Use -v to get more diff
+
+tests\test_colour_budget.py:110: AssertionError
+____________ test_TC_117_the_title_is_bold_bright[kanban-grouped] _____________
+
+mode = 'kanban', pres = 'grouped'
+
+    @pytest.mark.parametrize("mode,pres", [("kanban", "grouped"), ("kanban", "lanes"),
+                                           ("kanban", "matrix"), ("gantt", "grouped")])
+    def test_TC_117_the_title_is_bold_bright(mode, pres):
+        """TC-117 (LLR-103.1). The view title is bold `bright`, not the accent."""
+        text = render_view(mode, oracle(), False, "tw3", TODAY, 118, 30, {}, presentation=pres)
+        word = "KANBAN" if mode == "kanban" else "GANTT"
+        at = text.plain.index(word)
+        styles = " ".join(str(s.style).lower() for s in text.spans if s.start <= at < s.end)
+>       assert HEX["bright"].lower() in styles and "bold" in styles, styles
+E       AssertionError: bold #2dd4bf
+E       assert ('#e6edf7' in 'bold #2dd4bf')
+E        +  where '#e6edf7' = <built-in method lower of str object at 0x0000024A9D85A700>()
+E        +    where <built-in method lower of str object at 0x0000024A9D85A700> = '#e6edf7'.lower
+
+tests\test_colour_budget.py:128: AssertionError
+_____________ test_TC_117_the_title_is_bold_bright[kanban-lanes] ______________
+
+mode = 'kanban', pres = 'lanes'
+
+    @pytest.mark.parametrize("mode,pres", [("kanban", "grouped"), ("kanban", "lanes"),
+                                           ("kanban", "matrix"), ("gantt", "grouped")])
+    def test_TC_117_the_title_is_bold_bright(mode, pres):
+        """TC-117 (LLR-103.1). The view title is bold `bright`, not the accent."""
+        text = render_view(mode, oracle(), False, "tw3", TODAY, 118, 30, {}, presentation=pres)
+        word = "KANBAN" if mode == "kanban" else "GANTT"
+        at = text.plain.index(word)
+        styles = " ".join(str(s.style).lower() for s in text.spans if s.start <= at < s.end)
+>       assert HEX["bright"].lower() in styles and "bold" in styles, styles
+E       AssertionError: bold #2dd4bf
+E       assert ('#e6edf7' in 'bold #2dd4bf')
+E        +  where '#e6edf7' = <built-in method lower of str object at 0x0000024A9D85A700>()
+E        +    where <built-in method lower of str object at 0x0000024A9D85A700> = '#e6edf7'.lower
+
+tests\test_colour_budget.py:128: AssertionError
+_____________ test_TC_117_the_title_is_bold_bright[kanban-matrix] _____________
+
+mode = 'kanban', pres = 'matrix'
+
+    @pytest.mark.parametrize("mode,pres", [("kanban", "grouped"), ("kanban", "lanes"),
+                                           ("kanban", "matrix"), ("gantt", "grouped")])
+    def test_TC_117_the_title_is_bold_bright(mode, pres):
+        """TC-117 (LLR-103.1). The view title is bold `bright`, not the accent."""
+        text = render_view(mode, oracle(), False, "tw3", TODAY, 118, 30, {}, presentation=pres)
+        word = "KANBAN" if mode == "kanban" else "GANTT"
+        at = text.plain.index(word)
+        styles = " ".join(str(s.style).lower() for s in text.spans if s.start <= at < s.end)
+>       assert HEX["bright"].lower() in styles and "bold" in styles, styles
+E       AssertionError: bold #2dd4bf
+E       assert ('#e6edf7' in 'bold #2dd4bf')
+E        +  where '#e6edf7' = <built-in method lower of str object at 0x0000024A9D85A700>()
+E        +    where <built-in method lower of str object at 0x0000024A9D85A700> = '#e6edf7'.lower
+
+tests\test_colour_budget.py:128: AssertionError
+____ test_AT_106_the_panels_paint_the_accent_only_for_today_and_the_filter ____
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13416/test_AT_106_the_panels_paint_t0')
+frozen = None
+
+    async def test_AT_106_the_panels_paint_the_accent_only_for_today_and_the_filter(
+            tmp_path, frozen):
+        """AT-106 (HLR-108). In the running app, the kanban panel (every layout)
+        and the gantt panel paint the accent only on today's marks; with a `/`
+        filter it also lights the filter field, and nothing else. RED on the base
+        tree: the kanban title, the `+Nd` tokens and the gantt's `└─►` are accent."""
+        b = oracle()
+        b.path = tmp_path / "board.json"
+        b.save()
+        app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await pilot.pause()
+            for key in ("4", "tab", "tab", "3"):
+                await pilot.press(key)
+                await pilot.pause()
+                text = app.query_one("#board").render()
+                for row, seg in accent_runs(text):
+>                   assert today_mark(row, seg), (app.view_mode, row, seg)
+E                   AssertionError: ('kanban', 0, 'KANBAN')
+E                   assert False
+E                    +  where False = today_mark(0, 'KANBAN')
+
+tests\test_colour_budget.py:185: AssertionError
+_______ test_card_cell_shows_the_deadline_countdown_on_every_dated_card _______
+
+    def test_card_cell_shows_the_deadline_countdown_on_every_dated_card():
+        """The kanban card never carried a deadline indicator — the only day
+        token it had (`·Nd`, days IN phase) is suppressed on the terminal phase
+        by the done-rests law, so a card in the last phase went bare. The
+        countdown rides EVERY dated card now, the last phase included: live work
+        wears the urgency houses (reldue_token's seats: over / soon / mut within
+        the week / dim past it); done work keeps the FACT but never the JUDGEMENT — the
+        same text in the quiet dim house. Undated and archived cards paint
+        nothing: no date is no countdown, and put-away work has no live deadline.
+        RED counterfactuals: the done card suppressed → the `+3d` limb red; the
+        done card judged → the over/soon/accent limb red; archived painted → the
+        archived limb red."""
+        import re
+    
+        from rich.text import Text
+    
+        from taskboard.views import HEX, card_cell
+        today = date.today()
+        b = _aging_cell_board()
+        p = b.projects[0]
+    
+        def plain(markup):
+            return Text.from_markup(markup).plain
+    
+        live_soon = _dated("live soon", "Doing", p, 4)
+        cell = card_cell(live_soon, b, 40, False, today=today)
+        # within the week: `mut`, no longer the accent (batch 2026-10-02-batch-01,
+        # colour budget: the accent marks focus; LLR-103.3)
+>       assert "+4d" in plain(cell) and HEX["mut"] in cell and HEX["accent"] not in cell
+E       AssertionError: assert ('+4d' in 'live soon                            +4d' and '#8b98a5' in 'live soon                           [#2dd4bf] +4d[/]')
+E        +  where 'live soon                            +4d' = <function test_card_cell_shows_the_deadline_countdown_on_every_dated_card.<locals>.plain at 0x0000024A9F10D580>('live soon                           [#2dd4bf] +4d[/]')
+
+tests\test_cells.py:290: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_colour_budget.py::test_TC_119_the_census_can_see_the_accent
+PASSED tests/test_colour_budget.py::test_TC_117_the_title_is_bold_bright[gantt-grouped]
+PASSED tests/test_colour_budget.py::test_TC_118_the_critical_chain_is_structure_not_hue
+FAILED tests/test_colour_budget.py::test_TC_119_the_kanban_paints_no_accent
+FAILED tests/test_colour_budget.py::test_TC_119_the_shared_card_tokens_left_the_accent_everywhere
+FAILED tests/test_colour_budget.py::test_TC_117_the_title_is_bold_bright[kanban-grouped]
+FAILED tests/test_colour_budget.py::test_TC_117_the_title_is_bold_bright[kanban-lanes]
+FAILED tests/test_colour_budget.py::test_TC_117_the_title_is_bold_bright[kanban-matrix]
+FAILED tests/test_colour_budget.py::test_AT_106_the_panels_paint_the_accent_only_for_today_and_the_filter
+FAILED tests/test_cells.py::test_card_cell_shows_the_deadline_countdown_on_every_dated_card
+7 failed, 3 passed in 0.60s
+exit=1

@@ -25,7 +25,7 @@ from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
 from .team_sync import TeamState, probe_setup_health
-from .views import (clip, escape, filtered_board, focus_tasks, nav_model,
+from .views import (clip, escape, filtered_board, focus_tasks, nav_model, sort_by_due,
                     render_view, valid_url)
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
@@ -467,11 +467,24 @@ class TaskboardApp(App):
         From the help modal: `m` opens the full keymap, `?` opens the command
         palette.
         """
-        self.push_screen(HelpModal(self.view_mode, self.board,
-                                   today=date.today(), size=self.size,
+        size, board = self.size, self.board
+        if self.view_mode == "gantt":
+            # the gantt's legend is asked of the frame on screen: the panel's
+            # size, the selection and the focus (code review F3)
+            boards, vps = self.query("#board"), self.query("#viewport")
+            if boards and vps:
+                size = (boards.first().size.width or size[0],
+                        vps.first().size.height or size[1])
+            if self.search_query:     # render_view draws a filtered view 2 rows
+                size = (size[0], max(1, size[1] - 2))   # shorter (its bar)
+            board = self._view_board()
+        self.push_screen(HelpModal(self.view_mode, board,
+                                   today=date.today(), size=size,
                                    show_archived=self.show_archived,
                                    team_state=self.team_state,
-                                   team_filter=self.team_filter))
+                                   team_filter=self.team_filter,
+                                   selected_id=self.selected_task_id,
+                                   gantt_focus=self.focused_project_id))
 
     async def _on_palette_run(self, action: str | None) -> None:
         """Execute the action selected from the palette, if any."""
@@ -560,11 +573,35 @@ class TaskboardApp(App):
             # card back instead of the one the user was looking at.
             tasks = focus_tasks(board, self.show_archived)
         elif (self.focused_project_id is not None
-                and self.view_mode in ("kanban", "gantt")):
+                and self.view_mode == "kanban"):
             # A focused board draws ONE project's cards; the selection may not
             # rest on a task the filter hides (hidden-but-navigable is the
-            # F-3 trap in a new costume, HLR-008). The same holds in gantt.
+            # F-3 trap in a new costume, HLR-008). The gantt's own seat
+            # (`gantt_plan`, below) applies the focus itself.
             tasks = [t for t in tasks if t.project_id == self.focused_project_id]
+        if self.view_mode == "gantt":
+            # The gantt draws OPEN work only (rest work is its group's `✓n`),
+            # so a done or archived selection would park the cursor on a row
+            # the view does not draw (F-3). Move to the neighbour it had in
+            # its group's draw order — one row away, so an extra `]` cannot
+            # land on a distant task — else to the first task drawn.
+            order = self._nav_flat()
+            if self.selected_task_id in order:
+                return
+            sel = board.task_by_id(self.selected_task_id)
+
+            def group_of(t):            # the plan's groups: a project, or the Inbox
+                return t.project_id if board.project_by_id(t.project_id) else None
+            group = [board.task_by_id(tid) for tid in order
+                     if sel is not None and group_of(board.task_by_id(tid)) == group_of(sel)]
+            if group:
+                ranked = sort_by_due(group + [sel])
+                i = ranked.index(sel)
+                pick = ranked[i + 1] if i + 1 < len(ranked) else ranked[i - 1]
+                self.selected_task_id = pick.id
+            else:
+                self.selected_task_id = order[0] if order else None
+            return
         ids = [t.id for t in tasks]
         if self.selected_task_id not in ids:
             self.selected_task_id = ids[0] if ids else None

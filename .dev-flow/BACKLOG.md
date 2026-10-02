@@ -3,13 +3,76 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `33eb4bf` (local HEAD == `origin/main`)
-· **Last refresh:** 2026-09-01
-**Status:** **1303 tests green** on `main`. Batch-12 (in-app Setup, per-view help,
-keybar per-view law, initial-sync fix) shipped, plus a post-close hotfix for the
-Setup `TextPrompt` bug and missing executable-command ATs. V4 report, V5 templates,
-V6 batch-email and V7 chains deferred. `test_win_clipboard_roundtrip` remains an
-intermittent environmental flake.
+**Base ref:** `57a6075` (local HEAD == `origin/main`; batch 2026-10-02-batch-01 started here)
+· **Last refresh:** 2026-10-02
+**Status:** **1611 tests green** (batch `2026-10-02-batch-01`: the whole-board gantt G-A + AX-2
+ruler, the colour budget on kanban and gantt, the README/RUN.md rewrite).
+`test_win_clipboard_roundtrip` remains an intermittent environmental flake.
+
+## Open — after `2026-10-02-batch-01` (gantt G-A + AX-2, colour budget on kanban/gantt, README)
+
+- **Batch A2 — readable kanban K-A + R-1b.** Two-row cards, one project band rule across
+  columns, `┈` separators, DONE rail, adaptive widths; one board-wide `high` band on top capped
+  with "+N more" (cap rule to be set at its P1). Split out of Batch A at P0 under the
+  pre-authorized A1/A2 split (`2026-10-02-batch-01` US-105). Seed:
+  `prototypes/kg_mejoras/variants_kanban.k_a(sep_mode="rule")`, `variants_reconcile` R-1b.
+- **Colour budget, app-wide.** Kanban and gantt panels are done; still accent: the other seven
+  views' titles, the keybar key hints (`keymap.py` group hues), the ribbon clock, the setup
+  hints. Operator questions carried with it (`2026-10-02-batch-01` §6.2): D4 today in accent
+  vs the selection in accent (UX-7) · D10 a title colour that differs per view until this pass
+  (UX-6) · D12 the gantt header's English beside Spanish help prose · D13 `━` shared by the
+  critical chain and the selection echo.
+- **Operator questions, gantt.** D9 an above/below hint for a paged project (none drawn) · D14
+  a cue (toast) when `]` finishes a task and it leaves the gantt.
+- **Weekend shading on the gantt ruler** (round-5 frames) — not shipped: off-palette background
+  `#161d27`, not in the AX-2 commission (D5).
+- **Operator questions from the P4 walkthrough** (`2026-10-02-batch-01` `04-validation.md`): the
+  approved AX-2 frame DOES shade weekends — ship it? (D5) · folding is accordion-style: moving
+  the cursor or finishing a task can open/close projects above the cursor, so the highlight can
+  move up on `down` (UXV-2) — keep, or keep a visited project open? · at a real 80×24 terminal
+  Ops & Security folds although it holds the only task due today (UXV-3) — should "due today"
+  weigh in fold order? · the flow packet `▬` shares the chain's bright tone · the kanban's
+  ≤7-day `+Nd` now differs from later dues by a grey step only · help headings in accent.
+- **The UXV-12 fix was not re-walked by the ux-reviewer** after `2026-10-02-batch-01`
+  increment 004 round 3 (proven by its node and mutant H5 only) — glance at a focused gantt under a
+  `/` filter that empties it at the next UX pass.
+- **Inherited personal strings in committed state** (P5 privacy sweep, not introduced by
+  `2026-10-02-batch-01`; byte-identical in `57a6075`): `.dev-flow/state.json` `owner` holds the
+  absolute project path with the home folder (the flow writes it), and this file's git-identity note below carries personal
+  e-mail addresses and the username on three lines. Operator decides whether to scrub.
+- **The ruler's echo for a task starting before the window** draws `⟦` at the window edge with
+  no `◂` (UXV-7); the printed dates are right.
+- **Accent outside the panels, undeclared until now** (UXV-9): the help modal's headings and the
+  filter modal's input border — join the app-wide colour-budget pass.
+- **`_strip` treats an escaped `\[` as a tag** (code review F5, pre-existing): a task or project
+  name with brackets makes a gantt / lanes row — and a header row with a bracketed focus name —
+  wider than the panel. Fix: measure plain text before markup, or skip escaped brackets in
+  `_strip`; add a bracket payload to the width laws.
+- **The help modal's right column (legend, example) cuts lines below ~118 columns, every
+  view** (code review R1 of increment 004): `HelpModal` fixes `#help-left` at 48 cells and gives
+  `#help-right` the rest of a 110-wide box — 56 cells at 118, 41 at 100, 22 at 80. Needs a modal
+  layout decision (stack the columns when narrow, or wrap the entries); the gantt's own legend
+  wording fits at 118 (TC-116).
+- **Gantt panels under 3 rows** (code review F11, accepted limit): header + ruler take 3 rows, so
+  a 1–2-row panel scrolls.
+- **Setup's sync interval does not drive the sync timer** (qa D-4): Setup saves it to
+  `team.json` `sync_tolerance_minutes` (staleness tone) while the timer stays at the
+  constructor's 1800 s (`app.py:183`, `:341`). The README says what happens today.
+- **README audit leftovers** (code / owner): #4 the in-app renumber notice text is stale
+  (`app.py` "1 lanes · 2 agenda · 3 gantt · 4 kanban"); #10 `team_filter_cycle` is bound to no
+  key — bind it or delete it.
+- **Screenshots predate this release's colours**: `docs/taskboard-kanban.png`, `-lanes.png`,
+  `-agenda.png`, `-ambient.gif` (README caption says so); `docs/taskboard-gantt.png` is no longer
+  referenced (the README shows `docs/taskboard-gantt.svg`) — delete or regenerate.
+- **Privacy tools do not decode HTML entities** (security S-8): `tools/privacy_sweep.py` and
+  `tools/precommit_privacy.py` should read `html.unescape(text).replace("\u00a0", " ")` before
+  matching; rich's SVG writes spaces as `&#160;`, so a multi-word board title in an SVG capture
+  could pass unseen. RED test: an `.svg` holding `Alpha&#160;Beta…`. Until it lands, every
+  batch close runs the entity-decoded sweep over `evidence/` and `docs/*.svg` by hand.
+- **The operator's username is in older tracked files** (security S-5, accepted risk — a local
+  account name, not a credential): `.dev-flow/state.json` `owner` and older batch evidence.
+  Options: a repo-relative `owner` if the flow allows it; a one-time redaction pass over
+  `.dev-flow/**`. History rewriting not recommended.
 
 ## Open — after `2026-09-30-batch-01` (edit window C + kanban K4/badges)
 
@@ -467,7 +530,7 @@ intermittent environmental flake.
 - **`calm` gantt is 67.8 % dead.** The two-band field needs data to fill; a
   near-empty board has little to draw. Same honest weakness the proposal records
   for calm lanes.
-- **The gantt sheds rows at short heights** and counts them (`+N not shown`),
+- ✓ done in `2026-10-02-batch-01` (projects fold; nothing hidden while folding holds it): **The gantt sheds rows at short heights** and counts them (`+N not shown`),
   which the old view did not do — it simply drew fewer. Consistent with lanes
   now, but it is a behaviour change worth knowing.
 
@@ -573,7 +636,7 @@ intermittent environmental flake.
   reads it as noise, the cheap levers are a guide every fortnight, or guides only
   at month boundaries. **Decide with the render in front of you, not from this
   line.**
-- **`AUG` is dropped from the axis whenever the month starts within ~3 cells of
+- ✓ done in `2026-10-02-batch-01` (the AX-2 ruler names every month band): **`AUG` is dropped from the axis whenever the month starts within ~3 cells of
   today.** The day figures are the anchors and a month that cannot stand clear is
   dropped whole (a half-printed month is a wrong date). At `TODAY = 2026-07-30`
   the axis reads `-48d  JUL  today  SEP  OCT  NOV +111d` — the month immediately

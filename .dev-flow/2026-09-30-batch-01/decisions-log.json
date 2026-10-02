@@ -1,0 +1,62 @@
+[
+ {
+  "station": "P0",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "batch opened by rollover from 2026-09-01-batch-12 (decisions_log archived to its decisions-log.json); core mode; standing authorization = the commission; V7 BLOCK on the flow bundle's SKILL.md hash declared and proceeded (operator's rev98-wip bundle)."
+ },
+ {
+  "station": "P1",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "requirements derived: US-001..003, HLR-001..004, 9 LLR, AT-001..006; design decisions D1-D4 recorded."
+ },
+ {
+  "station": "P2",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "two-lens review (qa-reviewer, ux-reviewer): 24 findings folded or declared via LED .1-.4; approved under the standing authorization; P3 is next."
+ },
+ {
+  "station": "P3",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "increment 001 (editor variant C) approved under the standing authorization: code-reviewer PASS-WITH-NOTES 0 HIGH, findings folded, 11 mutations KILLED."
+ },
+ {
+  "station": "P3",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "increment 002 (kanban K4 band + badges) approved under the standing authorization: code-reviewer PASS-WITH-NOTES 0 HIGH, L2/L3 folded, L1 to BACKLOG, 10 mutations KILLED."
+ },
+ {
+  "station": "P3",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "increment 003 (S1 in TaskDetails / ImageViewer / image_block) approved under the extended standing authorization: code-reviewer PASS-WITH-NOTES 0 HIGH, F1/F2 folded, 8 mutations KILLED."
+ },
+ {
+  "station": "P3",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "increment 004 (adopted gantt-filter fix) and increment 005 (adopted Focus Board fix) approved: RED re-captured, code-reviewer PASS-WITH-NOTES / PASS, 0 HIGH."
+ },
+ {
+  "station": "P1",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "owner verdict: green-vs-project colour accepted (LED .5); US-004..006, HLR-005..007 added."
+ },
+ {
+  "station": "P4",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "validation: full suite and layered AT/TC results recorded in 04-validation.md."
+ },
+ {
+  "station": "P5",
+  "guided": false,
+  "date": "2026-09-30",
+  "decision": "close record written; owner verdict reopened P3: increments 003-005 added; close ready for the coordinator's commit and push (this agent does not commit)."
+ }
+]

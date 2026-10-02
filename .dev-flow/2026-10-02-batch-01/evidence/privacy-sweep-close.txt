@@ -1,0 +1,19 @@
+# P5 close privacy sweeps (S-4, S-8), 2026-10-02 — entity-decoded; file names and counts only, never a board string. Scripts: scratchpad sweep.py / sweep_board.py (not shipped).
+$ python sweep.py .   # home-path, onedrive, runtime username over every changed/added file
+HIT username x1: .dev-flow/BACKLOG.md
+HIT home-path x1: .dev-flow/state.json
+HIT username x1: .dev-flow/state.json
+HIT home-path x2: README.md
+HIT home-path x2: RUN.md
+HIT onedrive x3: .dev-flow/2026-10-02-batch-01/01-requirements.md
+HIT onedrive x1: .dev-flow/2026-10-02-batch-01/03-increments/increment-003.md
+HIT onedrive x1: .dev-flow/2026-10-02-batch-01/evidence/p0-probes.txt
+HIT onedrive x1: .dev-flow/2026-10-02-batch-01/evidence/privacy-sweep-close.txt
+HIT home-path x11: tests/test_readme.py
+HIT onedrive x2: tests/test_readme.py
+swept 83 changed/added files (entity-decoded); 11 file-pattern hits
+$ python sweep_board.py .   # strings of the real board (~/.taskboard/board.json) over every changed/added file
+156 board strings (>=8 chars) vs 83 files: 0 files hit
+# Classification (orchestrator): README/RUN home-path = the generic ~/.taskboard/ data location (documented, not personal); tests/test_readme.py = the guard regexes themselves; onedrive = the premise/test wording, no path; .dev-flow/state.json owner (value-identical to HEAD 57a6075; the line is re-indented) and the e-mail/username strings on three lines of the git-identity note in .dev-flow/BACKLOG.md (byte-identical as a set with HEAD) = inherited, not introduced by this batch (operator item).
+# The privacy-sweep-close.txt hit is this file's own header (the word 'onedrive' in the command comment, written while the sweep ran).
+# security-reviewer close check (N3): 01-requirements.md:268 matches `Users/` inside the prose of the HOME_PATH regex itself, not a path; no username on that line.

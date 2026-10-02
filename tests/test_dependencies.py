@@ -268,6 +268,12 @@ def test_critical_chain_cycle_safe(tmp_path):
 
 
 def test_gantt_critical_chain_highlights_exactly_three_linked_tasks(tmp_path):
+    """AT-D4, restated for the colour budget and the gutter (HLR-103, HLR-108,
+    batch 2026-10-02-batch-01): the chain is STRUCTURE, not hue — its tasks'
+    reaches are the heavy `━` in bold bright and their `↳` marks bold bright;
+    a dependency off the chain keeps a muted `↳` and a light reach. The header
+    counts it as `chain 3` (the frames' words)."""
+    from taskboard.views import CRITICAL_REACH, FIELD_TASK, gantt_columns
     today = date(2026, 8, 15)
     p = Project("P", "sky",
                 start_date=(today - timedelta(days=5)).isoformat(),
@@ -290,38 +296,40 @@ def test_gantt_critical_chain_highlights_exactly_three_linked_tasks(tmp_path):
     board = Board([p], [a, b, c, d, e], tmp_path / "board.json")
     board.save()
     text = render_gantt(board, False, None, today, width=96, height=20)
-    assert "cadena crítica 3" in text.plain
+    assert "chain 3" in text.plain.split("\n")[0]
+    label_w, _c, _f = gantt_columns(96)
+    lines = text.plain.split("\n")
+    starts = [sum(len(x) + 1 for x in lines[:i]) for i in range(len(lines))]
 
-    accent = HEX["accent"]
-    mut = HEX["mut"]
+    def style_at(row, col):
+        at = starts[row] + col
+        return " ".join(str(s.style) for s in text.spans if s.start <= at < s.end)
 
-    def arrow_style(title):
-        idx = text.plain.find(title)
-        assert idx != -1, f"{title!r} not rendered"
-        arrow_idx = text.plain.find("└─►", idx)
-        assert arrow_idx != -1, f"{title!r} dependency arrow not rendered"
-        return [s for s in text.spans
-                if s.start <= arrow_idx < s.end
-                and (accent in str(s.style) or mut in str(s.style))]
+    def row_of(title):
+        return next(i for i, l in enumerate(lines) if title in l)
 
+    bright = HEX["bright"]
     for title in ("AChain", "BChain", "CChain"):
-        spans = arrow_style(title)
-        assert spans, f"{title!r} arrow has no expected tone"
-        assert all(accent in str(s.style) for s in spans), \
-            f"{title!r} arrow is not accent"
-
-    d_spans = arrow_style("DChain")
-    assert d_spans, "DChain arrow has no expected tone"
-    assert all(mut in str(s.style) for s in d_spans), \
-        "non-chain dependency arrow changed tone"
+        assert CRITICAL_REACH in lines[row_of(title)], title
+    for title in ("BChain", "CChain"):
+        r = row_of(title)
+        assert lines[r][label_w] == "↳", lines[r]
+        st = style_at(r, label_w)
+        assert bright in st and "bold" in st, (title, st)
+    r = row_of("DChain")
+    assert lines[r][label_w] == "↳" and HEX["mut"] in style_at(r, label_w)
+    assert CRITICAL_REACH not in lines[r] and FIELD_TASK in lines[r]
 
 
 def test_gantt_no_dependencies_has_no_chain_header_or_accent_arrow(tmp_path):
+    """No chain → no `chain` count, no heavy reach; a dependency that does not
+    resolve to open work draws no mark at all (LLR-101.5, batch
+    2026-10-02-batch-01), and nothing on the gantt wears the accent but today."""
+    from taskboard.views import CRITICAL_REACH, RULE, gantt_columns
     today = date(2026, 8, 15)
     p = Project("P", "sky",
                 start_date=(today - timedelta(days=5)).isoformat(),
                 due_date=(today + timedelta(days=15)).isoformat())
-    # dangling id keeps the arrow glyph on screen but does not form a chain
     a = Task("A", project_id=p.id, phase="Doing", depends_on=["missing"],
              start_date=today.isoformat(),
              due_date=(today + timedelta(days=2)).isoformat())
@@ -331,11 +339,14 @@ def test_gantt_no_dependencies_has_no_chain_header_or_accent_arrow(tmp_path):
     board = Board([p], [a, b], tmp_path / "board.json")
     board.save()
     text = render_gantt(board, False, None, today, width=96, height=20)
-    assert "cadena crítica" not in text.plain
-
-    arrow_idx = text.plain.find("└─►")
-    assert arrow_idx != -1
+    assert "chain" not in text.plain.split("\n")[0]
+    assert CRITICAL_REACH not in "\n".join(text.plain.split("\n")[3:])
+    label_w, _c, _f = gantt_columns(96)
+    row = next(l for l in text.plain.split("\n") if l.startswith("  A "))
+    assert row[label_w] == " ", row
     accent = HEX["accent"]
-    assert not any(accent in str(s.style) and s.start <= arrow_idx < s.end
-                   for s in text.spans), \
-        "arrow wore accent when no critical chain exists"
+    for s in text.spans:
+        if accent in str(s.style):
+            seg = text.plain[s.start:s.end]
+            # the today rule, today's number, the no-selection `today …` label
+            assert set(seg) <= {RULE, "1", "5"} or seg.strip() == "today Sat Aug 15", seg
