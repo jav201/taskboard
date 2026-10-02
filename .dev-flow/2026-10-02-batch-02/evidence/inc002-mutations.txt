@@ -1,0 +1,251 @@
+$ python .dev-flow/2026-10-02-batch-02/evidence/mutate.py <scratch export of the increment-002 round-1 tree> mutants_inc002.json ; ... mutants_inc002_r1.json
+K1 KILLED — key bar keys back to the accent
+   arms resolved 23, red 2; restore sha256 6f52b1d72c9dabc4… OK
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+    PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-1]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-4]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[1-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[2-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_long_value_is_cut_to_its_column_with_its_style
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_bad_project_colour_does_not_crash_setup
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet
+    PASSED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+    PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+    PASSED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+    FAILED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+K2 KILLED — keys lose their bold
+   arms resolved 1, red 1; restore sha256 6f52b1d72c9dabc4… OK
+    FAILED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+K3 KILLED — a hue back on the words
+   arms resolved 1, red 1; restore sha256 6f52b1d72c9dabc4… OK
+    FAILED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+R1 KILLED — the local clock back to the accent
+   arms resolved 23, red 2; restore sha256 a96ca0455a144d58… OK
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+    PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-1]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-4]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[1-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[2-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_long_value_is_cut_to_its_column_with_its_style
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_bad_project_colour_does_not_crash_setup
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet
+    PASSED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+    PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+    PASSED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+    PASSED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+    FAILED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+R2 KILLED — a city clock back to the accent
+   arms resolved 23, red 2; restore sha256 a96ca0455a144d58… OK
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+    PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-1]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-4]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[1-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[2-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_long_value_is_cut_to_its_column_with_its_style
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_bad_project_colour_does_not_crash_setup
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet
+    PASSED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+    PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+    PASSED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+    PASSED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+    FAILED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+A1 KILLED — the key map's keys back to the accent
+   arms resolved 23, red 2; restore sha256 8e34f69a8f0e3655… OK
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+    PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-1]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-4]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[1-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[2-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_long_value_is_cut_to_its_column_with_its_style
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_bad_project_colour_does_not_crash_setup
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet
+    PASSED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+    PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+    PASSED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+    PASSED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+    FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+A2 KILLED — the key map heading back to the accent
+   arms resolved 23, red 2; restore sha256 8e34f69a8f0e3655… OK
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+    PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-1]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-4]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[1-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[2-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_long_value_is_cut_to_its_column_with_its_style
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_bad_project_colour_does_not_crash_setup
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet
+    PASSED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+    PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+    PASSED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+    PASSED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+    FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+C1 KILLED — modal titles back to the accent
+   arms resolved 23, red 2; restore sha256 a5a35f8ce867e6ab… OK
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+    PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-1]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-4]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[1-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[2-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_long_value_is_cut_to_its_column_with_its_style
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_bad_project_colour_does_not_crash_setup
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet
+    PASSED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+    PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+    PASSED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+    PASSED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+    FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+C2 KILLED — the edited field loses its accent (a focus role removed)
+   arms resolved 23, red 2; restore sha256 a5a35f8ce867e6ab… OK
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+    PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-1]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-4]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[1-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[2-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_long_value_is_cut_to_its_column_with_its_style
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_bad_project_colour_does_not_crash_setup
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet
+    PASSED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+    PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+    PASSED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+    PASSED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+    FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+9 of 9 KILLED
+MG KILLED — code review MG: accent on the more layer only (AT-202 alone)
+   arms resolved 1, red 1; restore sha256 6f52b1d72c9dabc4… OK
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+F3 KILLED — code review F3: the layer toggle reads Textual's CSS layer again
+   arms resolved 25, red 2; restore sha256 8e34f69a8f0e3655… OK
+    PASSED tests/test_keymap.py::test_every_binding_the_app_has_comes_from_the_seat
+    PASSED tests/test_keymap.py::test_every_bar_key_reaches_the_widest_bar
+    PASSED tests/test_keymap.py::test_the_lanes_bar_shows_every_universal_key
+    PASSED tests/test_keymap.py::test_global_commands_are_palette_only_not_in_the_bar
+    PASSED tests/test_keymap.py::test_the_palette_includes_palette_only_globals
+    PASSED tests/test_keymap.py::test_every_shown_key_has_a_real_action_on_the_app
+    PASSED tests/test_keymap.py::test_a_view_specific_key_is_only_shown_where_it_works
+    PASSED tests/test_keymap.py::test_the_seat_has_no_duplicate_keys_or_labels
+    PASSED tests/test_keymap.py::test_every_key_alias_is_bound_not_just_the_shown_one
+    PASSED tests/test_keymap.py::test_the_bar_never_exceeds_its_width
+    PASSED tests/test_keymap.py::test_words_are_dropped_before_any_key_is
+    PASSED tests/test_keymap.py::test_the_universal_keys_are_first_and_last_to_go
+    PASSED tests/test_keymap.py::test_keys_that_cannot_fit_are_counted_never_swallowed
+    PASSED tests/test_keymap.py::test_at_a_normal_width_nothing_is_dropped_at_all
+    PASSED tests/test_keymap.py::test_the_widest_bars_keep_their_words
+    PASSED tests/test_keymap.py::test_the_rendered_markup_carries_every_key_the_fit_chose
+    PASSED tests/test_keymap.py::test_keys_and_words_wear_different_tones_and_neither_judges
+    PASSED tests/test_keymap.py::test_switching_views_restates_the_keys_for_that_view
+    PASSED tests/test_keymap.py::test_the_bar_is_ours_and_no_stock_footer_is_mounted
+    PASSED tests/test_keymap.py::test_no_two_shown_keys_share_an_action
+    PASSED tests/test_keymap.py::test_every_image_the_readme_shows_exists
+    PASSED tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat
+    PASSED tests/test_keymap.py::test_the_readme_does_not_document_a_view_that_was_retired
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+    FAILED tests/test_keymap.py::test_the_app_paints_its_keys_instead_of_a_blank_row
+MA KILLED — code review MA: the key map's keys lose their bold
+   arms resolved 1, red 1; restore sha256 8e34f69a8f0e3655… OK
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+MB KILLED — code review MB: the KEYS heading violet
+   arms resolved 1, red 1; restore sha256 8e34f69a8f0e3655… OK
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+MC KILLED — code review MC: the key map's keys pink
+   arms resolved 1, red 1; restore sha256 8e34f69a8f0e3655… OK
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+C3 KILLED — code review F5: the titles lose their bold (AT-202 alone)
+   arms resolved 1, red 1; restore sha256 a5a35f8ce867e6ab… OK
+    FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+P1 KILLED — code review F4: the palette's edited field loses its accent
+   arms resolved 23, red 1; restore sha256 340b690d4cbea400… OK
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
+    PASSED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]
+    PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[True]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_setup_rows_keep_their_styles[False]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-1]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[0-4]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[1-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section[2-0]
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_long_value_is_cut_to_its_column_with_its_style
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent
+    PASSED tests/test_colour_budget_app.py::test_TC_213_a_bad_project_colour_does_not_crash_setup
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_relative_due_token_is_amber_within_a_week
+    PASSED tests/test_colour_budget_app.py::test_TC_205_the_packet_is_quiet
+    PASSED tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus
+    PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+    PASSED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+    PASSED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+    PASSED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+    FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+7 of 7 KILLED

@@ -1,0 +1,11 @@
+$ (scratch: git archive HEAD + increment-001 views.py + the new tests) python -m pytest -q -p no:cacheprovider tests/test_colour_budget_app.py -k "203 or 204 or 202" -rA   # increment 002 RED on the increment-001 tree
+PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
+PASSED tests/test_colour_budget_app.py::test_TC_202_every_accent_run_is_a_focus_role
+PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_can_see_the_accent
+PASSED tests/test_colour_budget_app.py::test_TC_202_the_legend_swatches_follow_their_marks
+PASSED tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet
+FAILED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+FAILED tests/test_colour_budget_app.py::test_TC_204_the_ribbon_has_no_accent
+FAILED tests/test_colour_budget_app.py::test_TC_204_modal_titles_and_the_key_map_are_bright
+FAILED tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent
+4 failed, 5 passed, 14 deselected in 1.54s

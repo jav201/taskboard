@@ -55,12 +55,16 @@ def _make_state(tmp_path, user_id="jav") -> TeamState:
 # Filter chrome
 # --------------------------------------------------------------------------- #
 def test_team_filter_chrome_highlights_active_segment():
-    text = render_team_filter_chrome("equipo")
-    assert "todo" in text
-    assert "equipo" in text
+    text = render_team_filter_chrome("equipo")     # the STORED value is unchanged
+    # the painted labels are English (batch 2026-10-02-batch-02, HLR-204)
+    assert "all" in text
+    assert "team" in text
     assert "personal" in text
-    assert HEX["accent"] in text
-    assert text.count(HEX["accent"]) == 1
+    # the chosen segment is bold bright, never the accent (batch
+    # 2026-10-02-batch-02, HLR-201: the accent marks focus, not a chosen value)
+    assert HEX["accent"] not in text
+    assert text.count(f"b {HEX['bright']}") == 1
+    assert f"[b {HEX['bright']}]team[/]" in text     # and it is the active one (F4)
 
 
 # --------------------------------------------------------------------------- #

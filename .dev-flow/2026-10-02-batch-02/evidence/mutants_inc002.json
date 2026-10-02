@@ -1,0 +1,11 @@
+[
+ {"id": "K1", "file": "taskboard/keymap.py", "old": "KEY_STYLE = f\"b {HEX['bright']}\"", "new": "KEY_STYLE = f\"b {HEX['accent']}\"", "nodes": ["tests/test_colour_budget_app.py"], "why": "key bar keys back to the accent"},
+ {"id": "K2", "file": "taskboard/keymap.py", "old": "KEY_STYLE = f\"b {HEX['bright']}\"", "new": "KEY_STYLE = f\"{HEX['bright']}\"", "nodes": ["tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words"], "why": "keys lose their bold"},
+ {"id": "K3", "file": "taskboard/keymap.py", "old": "(f\" [{HEX['mut']}]{_mshow(label)}[/]\" if label else \"\")", "new": "(f\" [{HEX['violet']}]{_mshow(label)}[/]\" if label else \"\")", "nodes": ["tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words"], "why": "a hue back on the words"},
+ {"id": "R1", "file": "taskboard/ribbon.py", "old": "_c(now.strftime(\"%H:%M:%S\"), \"bright\", bold=True),", "new": "_c(now.strftime(\"%H:%M:%S\"), \"accent\", bold=True),", "nodes": ["tests/test_colour_budget_app.py"], "why": "the local clock back to the accent"},
+ {"id": "R2", "file": "taskboard/ribbon.py", "old": "_c(clock_hhmm(iana, utc_now), \"hd\")", "new": "_c(clock_hhmm(iana, utc_now), \"accent\")", "nodes": ["tests/test_colour_budget_app.py"], "why": "a city clock back to the accent"},
+ {"id": "A1", "file": "taskboard/app.py", "old": "f\"[b #e6edf7]{k:<{kw}}[/] [#c8d3de]{d}[/]\", title)", "new": "f\"[#2dd4bf]{k:<{kw}}[/] [#c8d3de]{d}[/]\", title)", "nodes": ["tests/test_colour_budget_app.py"], "why": "the key map's keys back to the accent"},
+ {"id": "A2", "file": "taskboard/app.py", "old": "rows = [f\"[b #e6edf7]KEYS[/]", "new": "rows = [f\"[#2dd4bf]KEYS[/]", "nodes": ["tests/test_colour_budget_app.py"], "why": "the key map heading back to the accent"},
+ {"id": "C1", "file": "taskboard/taskboard.tcss", "old": ".modal-title {\n    color: #e6edf7;", "new": ".modal-title {\n    color: #2dd4bf;", "nodes": ["tests/test_colour_budget_app.py"], "why": "modal titles back to the accent"},
+ {"id": "C2", "file": "taskboard/taskboard.tcss", "old": ".modal Input:focus {\n    border: tall #2dd4bf;", "new": ".modal Input:focus {\n    border: tall #e6edf7;", "nodes": ["tests/test_colour_budget_app.py"], "why": "the edited field loses its accent (a focus role removed)"}
+]

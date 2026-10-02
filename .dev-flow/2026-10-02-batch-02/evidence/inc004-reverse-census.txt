@@ -1,0 +1,80 @@
+$ python -m pytest -q -p no:cacheprovider   # increment 004 first full run (2 real laws RED, fixed in the code)
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 65%]
+...........................................F............................ [ 69%]
+........................................................................ [ 73%]
+....F................................................................... [ 78%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 91%]
+........................................................................ [ 95%]
+........................................................................ [ 99%]
+.....                                                                    [100%]
+================================== FAILURES ===================================
+______________ test_every_lit_field_cell_carries_a_declared_hue _______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13825/test_every_lit_field_cell_carr0')
+
+    def test_every_lit_field_cell_carries_a_declared_hue(tmp_path):
+        """Every drawn mark belongs to a declared house: an identity hue, the ash of
+        spent time, the quiet step, the attention teal, or severity's one seat. A
+        mark in some undeclared colour is a mark with no meaning.
+    
+        Checked over EVERY coloured span, not a list of glyphs � the first version
+        listed only braille and a lattice cell painted `#123456` sailed through it."""
+        b = board(tmp_path)
+        declared = set(HEX.values())
+        strays = []
+        for mode in VIEWS:
+            text = render_view(mode, b, False, None, TODAY, width=120, height=40)
+            for s in text.spans:
+                for hexv in re.findall(r"#[0-9a-fA-F]{6}", str(s.style)):
+                    if hexv.lower() not in {d.lower() for d in declared}:
+                        strays.append((mode, text.plain[s.start:s.end][:6], hexv))
+>       assert not strays, f"undeclared hues on drawn cells: {strays[:3]}"
+E       AssertionError: undeclared hues on drawn cells: [('gantt', '    ', '#1a1d22'), ('gantt', '    ', '#1a1d22'), ('gantt', '    ', '#1a1d22')]
+E       assert not [('gantt', '    ', '#1a1d22'), ('gantt', '    ', '#1a1d22'), ('gantt', '    ', '#1a1d22'), ('gantt', '    ', '#1a1d22'), ('gantt', '    ', '#1a1d22'), ('gantt', '    ', '#1a1d22'), ...]
+
+tests\test_prism_laws.py:144: AssertionError
+__________________ test_collapse_removes_the_redundant_runs ___________________
+
+    def test_collapse_removes_the_redundant_runs():
+        """Without this, `collapse_runs = lambda m: m` would pass every other test
+        in the file. The gantt is the worst offender, so it sets the bar."""
+        b = board_with_tasks()
+        sink: list[str] = []
+        _capture(sink, "gantt", b, False, None, 120, 40)
+        before = sink[0]
+        after = collapse_runs(before)
+        n_before = Text.from_markup(before).spans
+        n_after = Text.from_markup(after).spans
+>       assert len(n_after) < len(n_before) / 3, (
+            f"expected a large drop in runs, got {len(n_before)} -> {len(n_after)}")
+E       AssertionError: expected a large drop in runs, got 1702 -> 629
+E       assert 629 < (1702 / 3)
+E        +  where 629 = len([Span(0, 7, 'bold #e6edf7'), Span(108, 119, 'bold #f43f5e'), Span(121, 151, '#2dd4bf'), Span(152, 166, 'bold #c9d4e0'), Span(174, 175, '#334154'), Span(176, 177, 'bold reverse #2dd4bf'), ...])
+E        +  and   1702 = len([Span(0, 7, 'bold #e6edf7'), Span(108, 119, 'bold #f43f5e'), Span(121, 151, '#2dd4bf'), Span(152, 153, 'bold #c9d4e0'), Span(153, 154, 'bold #c9d4e0'), Span(154, 155, 'bold #c9d4e0'), ...])
+
+tests\test_span_economy.py:125: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_prism_laws.py::test_every_lit_field_cell_carries_a_declared_hue
+FAILED tests/test_span_economy.py::test_collapse_removes_the_redundant_runs
+2 failed, 1659 passed in 189.65s (0:03:09)
+EXIT 1

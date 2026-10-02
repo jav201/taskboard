@@ -1,0 +1,102 @@
+[
+ {
+  "id": "E1",
+  "file": "taskboard/views.py",
+  "old": "            (\"what it is for\", [\"the whole board, fitted to the open work.\",",
+  "new": "            (\"para qué es\", [\"the whole board, fitted to the open work.\",",
+  "nodes": [
+   "tests/test_english.py"
+  ],
+  "why": "a help heading back to Spanish"
+ },
+ {
+  "id": "E2",
+  "file": "taskboard/views.py",
+  "old": "                           \"ash = projects at rest\"]),",
+  "new": "                           \"ash = the projects resting, with no open work at all\"]),",
+  "nodes": [
+   "tests/test_english.py::test_TC_206_help_copy_is_english_and_fits"
+  ],
+  "why": "a help bullet wider than its 44-cell column"
+ },
+ {
+  "id": "E3",
+  "file": "taskboard/views.py",
+  "old": "        msg = \"no history yet — it builds from today\"",
+  "new": "        msg = \"sin historia aún — se construye desde hoy\"",
+  "nodes": [
+   "tests/test_english.py"
+  ],
+  "why": "the flow message back to Spanish"
+ },
+ {
+  "id": "E4",
+  "file": "taskboard/views.py",
+  "old": "        (\"team mode\",",
+  "new": "        (\"modo equipo\",",
+  "nodes": [
+   "tests/test_english.py"
+  ],
+  "why": "a Setup label back to Spanish"
+ },
+ {
+  "id": "E5",
+  "file": "taskboard/team_sync.py",
+  "old": "        checks[\"sync\"] = (False, \"no sync yet\")",
+  "new": "        checks[\"sync\"] = (False, \"sin sync aún\")",
+  "nodes": [
+   "tests/test_english.py"
+  ],
+  "why": "a Setup check note back to Spanish"
+ },
+ {
+  "id": "E6",
+  "file": "taskboard/modals.py",
+  "old": "                    yield Label(\"[b]Usage[/b]\", classes=\"modal-title\")",
+  "new": "                    yield Label(\"[b]Uso[/b]\", classes=\"modal-title\")",
+  "nodes": [
+   "tests/test_english.py::test_AT_204_no_spanish_is_painted"
+  ],
+  "why": "a help modal heading back to Spanish (AT-204 alone)"
+ },
+ {
+  "id": "E7",
+  "file": "taskboard/views.py",
+  "old": "        label = TEAM_FILTER_LABELS[mode]",
+  "new": "        label = mode",
+  "nodes": [
+   "tests/test_english.py"
+  ],
+  "why": "the filter paints its stored values again"
+ },
+ {
+  "id": "E8",
+  "file": "tests/test_english.py",
+  "old": "'teclas', ",
+  "new": "",
+  "nodes": [
+   "tests/test_english.py::test_TC_206_the_lexicon_sees_every_base_surface"
+  ],
+  "why": "C-31: the frozen vocabulary loses a word (mutating the input SET) — 'Teclas' goes blind"
+ },
+ {
+  "id": "E9",
+  "file": "taskboard/views.py",
+  "old": "\"read and annotate the PINNED work, without\"",
+  "new": "\"read and annotate what you pinned, without\"",
+  "nodes": [
+   "tests/test_prism_laws.py"
+  ],
+  "why": "the copy addresses the reader again"
+ },
+ {
+  "id": "E10",
+  "file": "taskboard/views.py",
+  "old": "images, review, stale). t pins the task.",
+  "new": "images, review, stale). p pins the task.",
+  "nodes": [
+   "tests/test_english.py::test_TC_206_the_help_names_only_shipped_keys"
+  ],
+  "why": "the help names an unbound key"
+ }
+]

@@ -1,0 +1,52 @@
+[
+ {
+  "id": "M1",
+  "file": "taskboard/app.py",
+  "old": "        board = self._view_board()\r\n        rest = next(",
+  "new": "        board = self.board\r\n        rest = next(",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "code review M1: the count ignores the filter"
+ },
+ {
+  "id": "M2",
+  "file": "taskboard/app.py",
+  "old": "        rest = next((len(g.rest) for g in gantt_plan(board, self.show_archived, None,",
+  "new": "        rest = next((len(g.rest) for g in gantt_plan(board, False, None,",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "code review M2: v ignored"
+ },
+ {
+  "id": "M4",
+  "file": "taskboard/app.py",
+  "old": "                     if group_key(g.project) == group),",
+  "new": "                     if True),",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "code review M4: always the first group"
+ },
+ {
+  "id": "M5",
+  "file": "taskboard/views.py",
+  "old": "                                line_map, tick=tick, focus=gantt_focus,\r\n                                previous=gantt_previous)",
+  "new": "                                line_map, tick=tick, focus=gantt_focus,\r\n                                previous=None)",
+  "nodes": [
+   "tests/test_gantt_polish.py"
+  ],
+  "why": "code review M5: the filtered branch drops previous"
+ },
+ {
+  "id": "L2",
+  "file": "taskboard/views.py",
+  "old": "if isinstance(color, str) else None",
+  "new": "if True else None",
+  "nodes": [
+   "tests/test_colour_budget_app.py"
+  ],
+  "why": "security L2: a non-string colour reaches the lookup"
+ }
+]

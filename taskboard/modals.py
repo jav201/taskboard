@@ -1235,11 +1235,13 @@ class HelpModal(ModalScreen[None]):
     def __init__(self, mode: str, board: Board, today=None, size=(96, 30),
                  show_archived: bool = False,
                  team_state=None, team_filter: str = "equipo",
-                 selected_id: str | None = None, gantt_focus: str | None = None):
+                 selected_id: str | None = None, gantt_focus: str | None = None,
+                 gantt_previous: str | None = None):
         super().__init__()
         self._mode = mode
         self._selected_id = selected_id      # the gantt's legend reads the frame
         self._gantt_focus = gantt_focus      # the screen shows (code review F3)
+        self._gantt_previous = gantt_previous
         self._board = board
         self._today = today
         self._show_archived = show_archived
@@ -1255,30 +1257,31 @@ class HelpModal(ModalScreen[None]):
                                  team_state=self._team_state,
                                  team_filter=self._team_filter,
                                  selected_id=self._selected_id,
-                                 gantt_focus=self._gantt_focus)
+                                 gantt_focus=self._gantt_focus,
+                                 gantt_previous=self._gantt_previous)
         example, example_meaning = help_example(self._mode)
         with VerticalScroll(id="help-modal-box"):
             yield Label(f"[b]Help · {self._mode}[/b]", classes="modal-title")
             with Horizontal():
                 with VerticalScroll(id="help-left"):
-                    yield Label("[b]Uso[/b]", classes="modal-title")
+                    yield Label("[b]Usage[/b]", classes="modal-title")
                     for heading, bullets in help_usage(self._mode):
                         yield Label(f"[u]{escape(heading)}[/u]")
                         for bullet in bullets:
                             yield Label(f"  • {escape(bullet)}")
                 with VerticalScroll(id="help-right"):
                     if entries:
-                        yield Label("[b]Leyenda[/b]", classes="modal-title")
+                        yield Label("[b]Legend[/b]", classes="modal-title")
                         for swatch, meaning in entries:
                             yield Label(f"{swatch}  {escape(meaning)}")
                     if example:
-                        yield Label("[b]Ejemplo[/b]", classes="modal-title")
+                        yield Label("[b]Example[/b]", classes="modal-title")
                         yield Label(example)
                         yield Label(f"[dim]{escape(example_meaning)}[/dim]")
-                    yield Label("[b]Teclas[/b]", classes="modal-title")
+                    yield Label("[b]Keys[/b]", classes="modal-title")
                     for k in bar_keys(self._mode):
                         yield Label(f"{k.show}  {escape(k.label)}")
-            yield Label("[dim]m mapa completo · ? paleta · esc/q cierra[/dim]",
+            yield Label("[dim]m full map · ? palette · esc/q closes[/dim]",
                         classes="modal-title")
 
     def action_palette(self) -> None:

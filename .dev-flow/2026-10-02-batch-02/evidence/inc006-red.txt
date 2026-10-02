@@ -1,0 +1,4 @@
+$ (scratch: the increment-004 tree + the increment-006 tests) python -m pytest -q -p no:cacheprovider tests/test_gantt_polish.py -k AT_207 -rA   # the merged AT-207 RED on the increment-004 tree
+FAILED tests/test_gantt_polish.py::test_AT_207_the_project_just_left_stays_open[size0-2]
+FAILED tests/test_gantt_polish.py::test_AT_207_the_project_just_left_stays_open[size1-1]
+2 failed, 31 deselected in 1.85s

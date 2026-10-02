@@ -1,0 +1,24 @@
+KANBAN · grouped                                                       28 tasks 
+BACKLOG       10│NEXT          5│DOING       6/4│REVIEW      4/3│DONE          3
+────────────────┼───────────────┼───────────────┼───────────────┼───────────────
+── high ────────│── high ───────│── high ───────│▐ Website Rede…│▐ Website Rede…
+▊ !! … ·30d +10d│▊ !! Pa… +3d ⛓1│▊ !! F… ·9d -2d│▊ == Bu… -3d ⛓2│▊ Design … -20d
+▊ !! Of… +28d ⛓1│▊ !! … ·14d +3d│▊ !! Ra… +4d ⛓1│▐ Mobile App   │▐ Mobile App   
+▲ !! D… ·26d +7d│───────────────│▊ !! R… ·5d -1d│▊ ++ C… ·2d +1d│▊ Set up … -12d
+▊ !! P… ·9d +20d│▐ Website Rede…│───────────────│▐ API Platform │▐ Data Warehou…
+────────────────│▊ ++ Op… +6d ⛓1│▐ Mobile App   │▊ == S… ·7d -1d│▊ Migrate … -4d
+▐ Website Redes…│▐ Mobile App   │▊ == Au… +2d ⛓1│▐ Ops & Securi…│               
+▊ == … ·22d +14d│▊ == A… +12d ⛓1│▐ API Platform │▊ ==  ·3d today│               
+▐ Mobile App    │▐ Data Warehou…│▊ == … ·21d -5d│               │               
+▊ == … ·15d +35d│▊ == … ·11d +9d│▐ Data Warehou…│               │               
+▐ API Platform  │               │▊ == D… +18d ⛓1│               │               
+▊ == Plan … ·40d│               │               │               │               
+▐ Data Warehouse│               │               │               │               
+▊ ++ … ·19d +30d│               │               │               │               
+▊ == B… ·5d +60d│               │               │               │               
+▐ Ops & Security│               │               │               │               
+▊ == Updat… ·33d│               │               │               │               
+                                                                                
+                                                                                
+                                                                                
+                                                                                

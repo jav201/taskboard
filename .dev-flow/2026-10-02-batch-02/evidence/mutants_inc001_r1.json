@@ -1,0 +1,62 @@
+[
+ {
+  "id": "X12",
+  "file": "taskboard/views.py",
+  "old": "        out.truncate(max(0, width - 1))\n        out.append(\"…\")",
+  "new": "        out.truncate(max(0, width - 1))\n        out.append(\" \")",
+  "nodes": [
+   "tests/test_colour_budget_app.py"
+  ],
+  "why": "code review X12: _fit_text drops the ellipsis"
+ },
+ {
+  "id": "X13",
+  "file": "taskboard/views.py",
+  "old": "        out.truncate(max(0, width - 1))\n        out.append(\"…\")",
+  "new": "        out.truncate(max(0, width))\n        out.append(\"…\")",
+  "nodes": [
+   "tests/test_colour_budget_app.py"
+  ],
+  "why": "code review X13: _fit_text cuts one cell too wide"
+ },
+ {
+  "id": "X17",
+  "file": "taskboard/views.py",
+  "old": "if mode == active else c(mode, \"dim\"))",
+  "new": "if mode == \"todo\" else c(mode, \"dim\"))",
+  "nodes": [
+   "tests/test_team_views.py::test_team_filter_chrome_highlights_active_segment"
+  ],
+  "why": "code review X17: the chrome always highlights todo"
+ },
+ {
+  "id": "F9",
+  "file": "taskboard/views.py",
+  "old": "        color_hex = HEX.get(color) or (color if re.fullmatch(r\"#[0-9a-fA-F]{6}\", str(color))\n                                       else HEX[\"mut\"])",
+  "new": "        color_hex = HEX.get(color, color)",
+  "nodes": [
+   "tests/test_colour_budget_app.py"
+  ],
+  "why": "code review F9: a bad team.json colour reaches Textual"
+ },
+ {
+  "id": "F2",
+  "file": "taskboard/views.py",
+  "old": "            _fit_text(label_text, 24), \" \", _fit_text(control, 30), \" \",\n            _fit_text(check_text, 4), \" \", (note, HEX[\"dim\"]))",
+  "new": "            (fit(str(label_text), 24), \"\"), \" \", (fit(str(control), 30), \"\"), \" \",\n            (fit(str(check_text), 4), \"\"), \" \", (note, HEX[\"dim\"]))",
+  "nodes": [
+   "tests/test_colour_budget_app.py::test_TC_213_the_cursor_is_painted_on_every_section"
+  ],
+  "why": "code review F2/F3: the styled-columns arm on every section, alone, against str() rows"
+ },
+ {
+  "id": "M9b",
+  "file": "taskboard/views.py",
+  "old": "        tone = \"done\" if ok else \"soon\"",
+  "new": "        tone = \"mut\" if ok else \"soon\"",
+  "nodes": [
+   "tests/test_colour_budget_app.py::test_TC_213_a_passing_check_is_done_not_accent"
+  ],
+  "why": "code review R2-F1: the passing check grey (only the restored node may kill it)"
+ }
+]

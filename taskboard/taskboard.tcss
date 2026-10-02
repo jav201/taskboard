@@ -60,8 +60,10 @@ KeyBar {
 #modal-box, #confirm-box {
     align: center middle;
 }
+/* titles are bold bright: the accent is kept for the field being edited
+   (the colour budget, batch 2026-10-02-batch-02, HLR-202) */
 .modal-title {
-    color: #2dd4bf;
+    color: #e6edf7;
     text-style: bold;
     margin-bottom: 1;
 }

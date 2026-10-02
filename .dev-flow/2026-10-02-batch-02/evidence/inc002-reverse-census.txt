@@ -1,0 +1,47 @@
+$ python -m pytest -q -p no:cacheprovider   # increment 002 before the reverse-census rewrite
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 57%]
+.......................................F................................ [ 61%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+..................................................                       [100%]
+================================== FAILURES ===================================
+_________ test_keys_and_words_wear_different_tones_and_neither_judges _________
+
+    def test_keys_and_words_wear_different_tones_and_neither_judges():
+        """The bar names capabilities; it judges nothing, so no severity hue.
+    
+        Primary layer uses one attention hue for keys and one quiet hue for words.
+        The more layer tints each group, but words still stay quiet. Severity hues
+        (over, rose) never appear."""
+        from taskboard.views import HEX
+        primary = render_key_bar(140, "swimlanes", "primary")
+>       assert HEX["accent"] in primary and HEX["mut"] in primary
+E       AssertionError: assert ('#2dd4bf' in '[b #e6edf7]?[/] [#8b98a5]Map[/]  [b #e6edf7];[/] [#8b98a5]More[/]  [b #e6edf7]q[/] [#8b98a5]Quit[/]  [b #e6edf7]1[/] ...  [b #e6edf7]a[/] [#8b98a5]Add[/]  [b #e6edf7]e[/]  [b #e6edf7]d[/]  [b #e6edf7]\u21e5[/]  [b #e6edf7]\u2193[/]  [b #e6edf7]\u2191[/]')
+
+tests\test_keymap.py:295: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_keymap.py::test_keys_and_words_wear_different_tones_and_neither_judges
+1 failed, 1633 passed in 201.41s (0:03:21)
+EXIT 1

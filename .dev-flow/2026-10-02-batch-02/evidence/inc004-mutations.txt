@@ -1,0 +1,247 @@
+$ python .dev-flow/2026-10-02-batch-02/evidence/mutate_bytes.py <scratch export of the increment-004 round-1 tree> mutants_inc004.json ; ... mutants_inc004_r1.json   # CRLF sites
+G1 KILLED — pages of the whole room, the hint row overflows
+   arms resolved 20, red 5; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    FAILED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    FAILED tests/test_gantt_board.py::test_TC_106_a_tall_group_pages_and_keeps_its_count
+G2 KILLED — no hint row drawn
+   arms resolved 19, red 5; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    FAILED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    FAILED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+G3 KILLED — the hint not dim
+   arms resolved 19, red 3; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    FAILED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+G4 KILLED — urgency counts late only (base rule)
+   arms resolved 19, red 3; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency - ...
+    FAILED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    FAILED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open - As...
+G5 KILLED — the due-today tie-break dropped
+   arms resolved 19, red 2; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    FAILED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open - As...
+G6 KILLED — k <= 1 written k < 1: no shading at a day per cell
+   arms resolved 19, red 2; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    FAILED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+G7 KILLED — body rows not shaded (day row still is)
+   arms resolved 19, red 2; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    FAILED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+G8 KILLED — the day row not shaded (body still is)
+   arms resolved 19, red 3; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    FAILED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    FAILED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+G9 KILLED — the prototype hex, which quantises onto the field
+   arms resolved 1, red 1; restore sha256 ca9202adea9aa4df… OK
+    FAILED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+G10 KILLED — < 0 written <= 0: a start on the first day loses its bracket
+   arms resolved 19, red 1; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+G11 KILLED — the left clip arrow removed (base)
+   arms resolved 19, red 2; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    FAILED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    FAILED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+G12 KILLED — the right clip arrow removed (base)
+   arms resolved 19, red 1; restore sha256 ca9202adea9aa4df… OK
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb15-0-18-\u25bc 11 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[30-tb25-19-29-\u25b2 19 above]
+    PASSED tests/test_gantt_polish.py::test_TC_207_a_paged_project_says_what_is_above_and_below[50-tb25-19-37-\u25b2 19 above / \u25bc 12 below]
+    PASSED tests/test_gantt_polish.py::test_TC_207_one_row_left_draws_no_hint_two_rows_draw_it
+    PASSED tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page
+    PASSED tests/test_gantt_polish.py::test_TC_209_due_today_counts_as_urgency
+    PASSED tests/test_gantt_polish.py::test_TC_209_a_tie_on_weight_goes_to_the_group_due_today
+    PASSED tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open
+    PASSED tests/test_gantt_polish.py::test_TC_211_weekend_columns_are_shaded_at_one_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_no_shading_above_a_day_per_cell
+    PASSED tests/test_gantt_polish.py::test_TC_211_half_a_day_per_cell_shades_both_cells
+    PASSED tests/test_gantt_polish.py::test_TC_211_today_on_a_saturday_keeps_the_accent_rule_on_the_background
+    PASSED tests/test_gantt_polish.py::test_TC_211_the_weekend_background_survives_256_colours
+    PASSED tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_before_the_window_draws_the_clip_arrow
+    PASSED tests/test_gantt_polish.py::test_TC_212_a_start_on_the_first_day_keeps_its_bracket
+    PASSED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too
+    PASSED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+    FAILED tests/test_gantt_polish.py::test_TC_212_a_due_past_the_window_draws_the_right_arrow
+G13 KILLED — a second wrapping tag per cell (the span-economy law)
+   arms resolved 1, red 1; restore sha256 ca9202adea9aa4df… OK
+    FAILED tests/test_span_economy.py::test_collapse_removes_the_redundant_runs
+13 of 13 KILLED
+M1 KILLED — code review F1: the due-only form loses its clip arrow
+   arms resolved 1, red 1; restore sha256 ca9202adea9aa4df… OK
+    FAILED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too - ...
+M2 KILLED — code review F1: the start-only form loses its clip arrow
+   arms resolved 1, red 1; restore sha256 ca9202adea9aa4df… OK
+    FAILED tests/test_gantt_polish.py::test_TC_212_the_one_date_forms_clip_too - ...
+2 of 2 KILLED

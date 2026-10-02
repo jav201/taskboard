@@ -597,7 +597,9 @@ def test_TC_106_nav_is_the_plans_open_work_and_every_selection_is_drawn():
 
 def test_TC_106_a_tall_group_pages_and_keeps_its_count():
     """TC-106 (UX-9). A 30-task project at panel 80x24: the rows move once per
-    page, the selection is always drawn, and the span row keeps `N open`."""
+    page, the selection is always drawn, and the span row keeps `N open`.
+    Pages are 19 rows since batch 2026-10-02-batch-02 (HLR-205): the 20th row
+    of the room is the `▲ above / ▼ below` hint under the page."""
     p = Project("Tall", "sky", "on_track", start_date=iso(-3), due_date=iso(40), id="pt")
     ts = [Task(f"task {i:02d}", "pt", "Doing", start_date=iso(-2), due_date=iso(i),
                id=f"u{i}") for i in range(30)]
@@ -608,7 +610,7 @@ def test_TC_106_a_tall_group_pages_and_keeps_its_count():
         assert f"u{i}" in lm
         tops.append(min(lm, key=lm.get))
         assert "30" in lines[3][:20], lines[3]
-    assert tops == ["u0"] * 20 + ["u20"] * 10
+    assert tops == ["u0"] * 19 + ["u19"] * 11
 
 
 def test_TC_106_span_overflow_draws_the_page_holding_the_selection():

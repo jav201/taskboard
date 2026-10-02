@@ -44,7 +44,9 @@ class Ribbon(Static):
         utc_now = datetime.now(timezone.utc)
         week = f"W{now.isocalendar().week:02d}"
         parts = [
-            _c(now.strftime("%H:%M:%S"), "accent", bold=True),
+            # the local time leads in bold bright; the city clocks follow in
+            # quieter tones (colour budget, batch 2026-10-02-batch-02, HLR-202)
+            _c(now.strftime("%H:%M:%S"), "bright", bold=True),
             _c(now.strftime("%a %d %b %Y"), "ink"),
             # `mut`, not `amber`: amber IS the due-today hue, hex for hex
             # (#fbbf24 == `soon`). An ISO week number judges nothing and names
@@ -54,7 +56,7 @@ class Ribbon(Static):
         ]
         for city in (self.clock1_key, self.clock2_key):
             iana = CITY_TO_ZONE.get(city, "UTC")
-            parts.append(_c(city, "mut") + " " + _c(clock_hhmm(iana, utc_now), "accent"))
+            parts.append(_c(city, "mut") + " " + _c(clock_hhmm(iana, utc_now), "hd"))
         sep = _c(" · ", "frame")
         markup = " " + sep.join(parts) + " "
         self.update(markup)

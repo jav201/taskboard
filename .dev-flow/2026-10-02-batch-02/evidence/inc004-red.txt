@@ -1,0 +1,4 @@
+$ (scratch: git archive HEAD + the increment-003 tree + the increment-004 tests) python -m pytest -q -p no:cacheprovider tests/test_gantt_polish.py   # the base tree cannot import WEEKEND_BG: a collection error, NOT the RED of record — the RED of record is the per-feature base-behaviour mutants G1 G2 G4 G6 G7 G8 G11 G12 in inc004-mutations.txt
+=================================== ERRORS ====================================
+_________________ ERROR collecting tests/test_gantt_polish.py _________________
+ImportError while importing test module '<home>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base4\tests\test_gantt_polish.py'.
