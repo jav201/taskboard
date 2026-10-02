@@ -1234,9 +1234,12 @@ class HelpModal(ModalScreen[None]):
 
     def __init__(self, mode: str, board: Board, today=None, size=(96, 30),
                  show_archived: bool = False,
-                 team_state=None, team_filter: str = "equipo"):
+                 team_state=None, team_filter: str = "equipo",
+                 selected_id: str | None = None, gantt_focus: str | None = None):
         super().__init__()
         self._mode = mode
+        self._selected_id = selected_id      # the gantt's legend reads the frame
+        self._gantt_focus = gantt_focus      # the screen shows (code review F3)
         self._board = board
         self._today = today
         self._show_archived = show_archived
@@ -1250,7 +1253,9 @@ class HelpModal(ModalScreen[None]):
         entries = legend_entries(self._mode, self._board, self._today,
                                  *self._dims, show_archived=self._show_archived,
                                  team_state=self._team_state,
-                                 team_filter=self._team_filter)
+                                 team_filter=self._team_filter,
+                                 selected_id=self._selected_id,
+                                 gantt_focus=self._gantt_focus)
         example, example_meaning = help_example(self._mode)
         with VerticalScroll(id="help-modal-box"):
             yield Label(f"[b]Help · {self._mode}[/b]", classes="modal-title")

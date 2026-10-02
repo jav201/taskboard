@@ -226,32 +226,46 @@ def test_within_each_group_the_soonest_due_comes_first(tmp_path):
 
 
 def test_the_rendered_gantt_shows_that_order(tmp_path):
+    """The open work in that order. Finished work no longer sinks to the tail
+    as rows: it folds into its project's `✓n` (D2 / HLR-102, batch
+    2026-10-02-batch-01, G-A: "done folds to ✓n")."""
     b, p = _mixed(tmp_path)
     out = str(render_gantt(b, False, None, TODAY, width=120, height=30)).split("\n")
     rows = {}
     for i, line in enumerate(out):
-        for title in ("Active soon", "Active late", "Done early", "Done later"):
+        for title in ("Active soon", "Active late", "Active undated",
+                      "Done early", "Done later"):
             if title in line:
                 rows[title] = i
-    assert rows["Active soon"] < rows["Active late"] < rows["Done early"] < rows["Done later"]
+    assert rows["Active soon"] < rows["Active late"] < rows["Active undated"]
+    assert "Done early" not in rows and "Done later" not in rows
+    assert "✓2" in next(l for l in out if "Alpha" in l)
 
 
 def test_navigation_walks_the_order_the_gantt_draws(tmp_path):
+    """Nav order == draw order (F-3), and the gantt draws open work only
+    (HLR-104, batch 2026-10-02-batch-01), undated open work included."""
     b, p = _mixed(tmp_path)
-    ids = nav_model("gantt", b, False, TODAY)[0]
-    drawn = [t.id for t in gantt_tasks(b, b.visible_tasks(False), p.id)
-             if t.start_date or t.due_date]
-    assert [i for i in ids if i in set(drawn)] == drawn
+    ids = nav_model("gantt", b, False, TODAY, 120, 30)[0]
+    open_ = [t.id for t in gantt_tasks(b, b.visible_tasks(False), p.id)
+             if not b.is_done(t)]
+    assert ids == open_
+    assert [b.task_by_id(i).title for i in ids] == ["Active soon", "Active late",
+                                                     "Active undated"]
 
 
-def test_the_gantt_never_lists_an_archived_task_by_default(tmp_path):
+def test_the_gantt_never_lists_an_archived_task(tmp_path):
+    """With `v` off the archived task is invisible; with `v` on it is counted,
+    never listed — rest work folds into `✓n` (D2, batch 2026-10-02-batch-01)."""
     b, p = _mixed(tmp_path)
     swept = b.tasks[0]
     swept.phase_changed = iso(-40)
     assert b.auto_archive_done(TODAY) == [swept]
-    out = str(render_gantt(b, False, None, TODAY, width=120, height=30))
-    assert "Done early" not in out
-    assert "Done early" in str(render_gantt(b, True, None, TODAY, width=120, height=30))
+    off = str(render_gantt(b, False, None, TODAY, width=120, height=30))
+    on = str(render_gantt(b, True, None, TODAY, width=120, height=30))
+    assert "Done early" not in off and "Done early" not in on
+    alpha = lambda out: next(l for l in out.split("\n") if "Alpha" in l)  # noqa: E731
+    assert "✓1" in alpha(off) and "✓2" in alpha(on)
 
 
 # --------------------------------------------------------------------------- #
@@ -563,7 +577,7 @@ async def test_the_notify_cannot_be_hijacked_by_a_hostile_title(tmp_path):
     assert "\\[bold red]" in said[-1], said[-1]
 
 
-@pytest.mark.parametrize("mode", ["swimlanes", "agenda", "gantt", "kanban"])
+@pytest.mark.parametrize("mode", ["swimlanes", "agenda", "kanban"])
 def test_every_view_marks_an_archived_row(tmp_path, mode):
     """AT REST. With `v` on, an archived row must be distinguishable from live
     work in EVERY view that can draw it — one mark, the same mark, everywhere.
@@ -682,8 +696,14 @@ def test_the_legend_stays_quiet_when_lanes_cannot_NAME_the_archived_work(tmp_pat
                                                   show_archived=True)]
     assert not any("archived" in t for t in entries), (
         "the legend explains a mark the lanes view never drew")
+    # the gantt draws no row for rest work (D2, batch 2026-10-02-batch-01), so
+    # it draws no mark and its legend must not explain one
+    assert ARCHIVED_MARK not in str(render_view("gantt", b, True, None, TODAY,
+                                                width=92, height=26))
+    assert not any("archived" in t for _sw, t in
+                   legend_entries("gantt", b, TODAY, 92, 26, show_archived=True))
     # and the views that DO draw it still get their entry
-    for mode in ("agenda", "gantt", "kanban"):
+    for mode in ("agenda", "kanban"):
         assert ARCHIVED_MARK in str(render_view(mode, b, True, None, TODAY,
                                                 width=92, height=26)), mode
         assert any("archived" in t for _sw, t in

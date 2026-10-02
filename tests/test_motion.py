@@ -221,7 +221,12 @@ def behind_and_on_time(tmp_path):
     b.projects += [late, ok]
     # `project_progress` is done-tasks / all-tasks, so the two are built to sit
     # on opposite sides of the elapsed line rather than asserted to be there.
-    b.tasks += [Task(f"late {k}", late.id, "Backlog", due_date=iso(5))
+    # The open tasks START with the project (batch 2026-10-02-batch-01): the gantt
+    # now fits its window to the open work (HLR-101) and spends spare cells on
+    # past context back to the earliest open start only, so without a start the
+    # behind project's dot sat left of the window and nothing could breathe.
+    b.tasks += [Task(f"late {k}", late.id, "Backlog", start_date=iso(-30),
+                     due_date=iso(5))
                 for k in range(4)]
     b.tasks += [Task(f"ok {k}", ok.id, "Done", due_date=iso(5)) for k in range(4)]
     return b

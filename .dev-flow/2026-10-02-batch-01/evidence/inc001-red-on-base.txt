@@ -1,0 +1,837 @@
+# inc001 RED on base — tree: git archive HEAD (57a6075) + this increment's tests/test_gantt_board.py and tests/kg_board.py; names that do not exist on base are bound to None in this scratch copy ONLY (the TCs over new seats fail as TypeError: the deliverable is absent)
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_gantt_board.py
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFFFFFFFFFFFFFFFFFFF..........FFFFFFF                               [100%]
+================================== FAILURES ===================================
+_______________ test_AT_101_the_whole_board_is_on_screen[size0] _______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_101_the_whole_board_is0')
+frozen = None, size = (118, 30)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_101_the_whole_board_is_on_screen(tmp_path, frozen, size):
+        """AT-101 (HLR-101, HLR-102). At the operator's two sizes every project is
+        painted in the board panel — its name on a `▾`/`▸` span row — and nothing
+        says `not shown`. RED on the base tree: `+9 not shown` (P-1)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            out = painted(app)
+            spans = [l for l in out if l.startswith(("▾", "▸"))]
+            for name in ("Website Re", "Mobile App", "API Platfo", "Data Wareh", "Ops & Secu"):
+>               assert any(name in l for l in spans), (name, spans)
+E               AssertionError: ('Website Re', [])
+E               assert False
+E                +  where False = any(<generator object test_AT_101_the_whole_board_is_on_screen.<locals>.<genexpr> at 0x000001E2AD9F8AD0>)
+
+tests\test_gantt_board.py:128: AssertionError
+_______________ test_AT_101_the_whole_board_is_on_screen[size1] _______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_101_the_whole_board_is1')
+frozen = None, size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_101_the_whole_board_is_on_screen(tmp_path, frozen, size):
+        """AT-101 (HLR-101, HLR-102). At the operator's two sizes every project is
+        painted in the board panel — its name on a `▾`/`▸` span row — and nothing
+        says `not shown`. RED on the base tree: `+9 not shown` (P-1)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            out = painted(app)
+            spans = [l for l in out if l.startswith(("▾", "▸"))]
+            for name in ("Website Re", "Mobile App", "API Platfo", "Data Wareh", "Ops & Secu"):
+>               assert any(name in l for l in spans), (name, spans)
+E               AssertionError: ('Website Re', [])
+E               assert False
+E                +  where False = any(<generator object test_AT_101_the_whole_board_is_on_screen.<locals>.<genexpr> at 0x000001E2AD9F8E10>)
+
+tests\test_gantt_board.py:128: AssertionError
+______________ test_AT_102_down_walks_the_drawn_open_work[size0] ______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_102_down_walks_the_dra0')
+frozen = None, size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(80, 24), (118, 30)])
+    async def test_AT_102_down_walks_the_drawn_open_work(tmp_path, frozen, size):
+        """AT-102 (HLR-104, C-12). From the first task row, `down` until the end:
+        after EVERY press the selected task is painted in reverse on a row the
+        viewport shows (the consumer of `line_map`) and the ruler is still rows 1–2;
+        the walk visits every open task exactly once and nothing else; one more
+        `down` at the end does nothing. RED on the base tree: the walk reaches done
+        tasks and rows the view does not draw."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            opened = {t.id for t in app.board.tasks if not app.board.is_done(t) and not t.archived}
+            await pilot.press("3")
+            await pilot.pause()
+            for _ in range(40):
+                await pilot.press("up")
+            await pilot.pause()
+            seen = [app.selected_task_id]
+            for _ in range(len(opened) - 1):
+                await pilot.press("down")
+                await pilot.pause()
+                sel = app.selected_task_id
+                seen.append(sel)
+                row = app._line_map[sel]
+                vp = viewport(app)
+                assert vp.scroll_offset.y <= row < vp.scroll_offset.y + vp.size.height, sel
+                text = app.query_one("#board").render()
+                line_start = sum(len(x) + 1 for x in text.plain.split("\n")[:row])
+>               at = text.plain.index(app.board.task_by_id(sel).title[:8], line_start)
+E               ValueError: substring not found
+
+tests\test_gantt_board.py:164: ValueError
+______________ test_AT_102_down_walks_the_drawn_open_work[size1] ______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_102_down_walks_the_dra1')
+frozen = None, size = (118, 30)
+
+    @pytest.mark.parametrize("size", [(80, 24), (118, 30)])
+    async def test_AT_102_down_walks_the_drawn_open_work(tmp_path, frozen, size):
+        """AT-102 (HLR-104, C-12). From the first task row, `down` until the end:
+        after EVERY press the selected task is painted in reverse on a row the
+        viewport shows (the consumer of `line_map`) and the ruler is still rows 1–2;
+        the walk visits every open task exactly once and nothing else; one more
+        `down` at the end does nothing. RED on the base tree: the walk reaches done
+        tasks and rows the view does not draw."""
+        app = _app(tmp_path)
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            opened = {t.id for t in app.board.tasks if not app.board.is_done(t) and not t.archived}
+            await pilot.press("3")
+            await pilot.pause()
+            for _ in range(40):
+                await pilot.press("up")
+            await pilot.pause()
+            seen = [app.selected_task_id]
+            for _ in range(len(opened) - 1):
+                await pilot.press("down")
+                await pilot.pause()
+                sel = app.selected_task_id
+                seen.append(sel)
+>               row = app._line_map[sel]
+E               KeyError: 'td4'
+
+tests\test_gantt_board.py:159: KeyError
+_________________ test_AT_103_chips_and_the_dependency_gutter _________________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_103_chips_and_the_depe0')
+frozen = None
+
+    async def test_AT_103_chips_and_the_dependency_gutter(tmp_path, frozen):
+        """AT-103 (HLR-103). Read off the painted rows: the late task ends `▲2d`,
+        the one due today `today`, the undated one `no due`, a future one `Oct 6`;
+        `↳` sits after the whole title, exactly on the drawn tasks waiting on open
+        work. RED on the base tree: a `start → due` pair and `└─►`."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            out = painted(app)
+    
+            def row(title):
+                return next(l for l in out if title in l)
+    
+>           assert row("Fix checkout 500 error").rstrip().endswith(" ▲2d")
+E           AssertionError: assert False
+E            +  where False = <built-in method endswith of str object at 0x000001E2ADD9A170>(' ▲2d')
+E            +    where <built-in method endswith of str object at 0x000001E2ADD9A170> = '▎  Fix checkout 500 error         ┆·▬╌◑╎·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Sep 24 → Sep 28'.endswith
+E            +      where '▎  Fix checkout 500 error         ┆·▬╌◑╎·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Sep 24 → Sep 28' = <built-in method rstrip of str object at 0x000001E2ADD9A170>()
+E            +        where <built-in method rstrip of str object at 0x000001E2ADD9A170> = '▎  Fix checkout 500 error         ┆·▬╌◑╎·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Sep 24 → Sep 28'.rstrip
+E            +          where '▎  Fix checkout 500 error         ┆·▬╌◑╎·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Sep 24 → Sep 28' = <function test_AT_103_chips_and_the_dependency_gutter.<locals>.row at 0x000001E2ADDE9080>('Fix checkout 500 error')
+
+tests\test_gantt_board.py:192: AssertionError
+_____________________ test_AT_104_the_ruler_is_at_the_top _____________________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_104_the_ruler_is_at_th0')
+frozen = None
+
+    async def test_AT_104_the_ruler_is_at_the_top(tmp_path, frozen):
+        """AT-104 (HLR-105, HLR-106). With nothing selected, painted rows 1–2 are
+        the month row (names, `┃` between months, today's `30`) and the day row
+        (its label naming the cadence and scale; Monday numbers seven days apart,
+        none touching); the last row is no axis. RED on the base tree: rows 1–2
+        are project and task rows."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await _open_gantt(pilot, app, None)
+            app.selected_task_id = None
+            app.refresh_view()
+            await pilot.pause()
+            out = painted(app)
+>           assert "September 2026" in out[1] and "October" in out[1] and "┃" in out[1]
+E           AssertionError: assert ('September 2026' in '▎ Website Re…  ··┆·──────────●─────────╎────◆┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Aug 21 → Oct 10')
+
+tests\test_gantt_board.py:225: AssertionError
+_____________ test_TC_113_no_drop_law_over_every_scale_and_width ______________
+
+    def test_TC_113_no_drop_law_over_every_scale_and_width():
+        """TC-113 (HLR-106, LLR-102.2). Panel widths 60..160 step 4, one board per
+        scale (sized from the field it lands in), with and without a selection:
+        the set of scales reached is all five, and each arm checks ≥ 1 tick."""
+        reached = set()
+        for w in range(60, 161, 4):
+>           _l, _c, fw = gantt_columns(w)
+E           TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:300: TypeError
+_______________ test_TC_113_a_tick_never_touches_the_echo_label _______________
+
+    def test_TC_113_a_tick_never_touches_the_echo_label():
+        """TC-113 (HLR-106, G10's arm). A selection due on a Monday at one cell per
+        day prints its due label `Oct 5` ending one cell before the next Monday's
+        tick: that tick must yield (it is inside the echo zone) rather than print
+        `Oct 512`. RED: the tick placement without its one-cell gap."""
+        p = Project("Mon", "sky", "on_track", start_date=iso(-20), due_date=iso(40), id="pm")
+        t = Task("mon", "pm", "Doing", start_date="2026-09-28", due_date="2026-10-05", id="tm")
+        b = Board([p], [t, Task("late", "pm", "Doing", due_date=iso(38), id="tl")],
+                  Path("never.json"), {}, ["A", "Doing", "B"])
+>       k, _n = assert_no_drop(b, 118, 30, "tm")
+
+tests\test_gantt_board.py:320: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_gantt_board.py:242: in assert_no_drop
+    groups, ax = plan_axis(b, w, h, sel)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+b = <taskboard.models.Board object at 0x000001E2AE256240>, w = 118, h = 30
+sel = 'tm', focus = None
+
+    def plan_axis(b, w, h, sel="tw3", focus=None):
+>       _l, _c, field_w = gantt_columns(w)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:67: TypeError
+_________________ test_AT_105_the_echo_follows_the_selection __________________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_105_the_echo_follows_t0')
+frozen = None
+
+    async def test_AT_105_the_echo_follows_the_selection(tmp_path, frozen):
+        """AT-105 (HLR-107, C-10: a non-default selection, then another). Walking
+        to `tw3` brackets Sep 24 → Sep 28 on the day row and marks Website
+        Redesign's due on the month row; walking on to `tm4` moves both. RED: an
+        echo that ignores the selection keeps `Sep 24 ⟦` on the day row."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await _open_gantt(pilot, app, "tw2")
+            while app.selected_task_id != "tw3":
+                await pilot.press("down")
+                await pilot.pause()
+            out = painted(app)
+>           assert re.search(r"Sep 24 ⟦━*⟧ Sep 28", out[2]), out[2]
+E           AssertionError: ▎  Build component l…└─►┆·▬╌╌╌╌╌╌╌╌╌╌◕┆╎·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··       Sep 5 → Sep 27
+E           assert None
+E            +  where None = <function search at 0x000001E2A86C8040>('Sep 24 ⟦━*⟧ Sep 28', '▎  Build component l…└─►┆·▬╌╌╌╌╌╌╌╌╌╌◕┆╎·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··       Sep 5 → Sep 27')
+E            +    where <function search at 0x000001E2A86C8040> = re.search
+
+tests\test_gantt_board.py:341: AssertionError
+___________ test_AT_108_entering_on_a_done_task_lands_on_drawn_work ___________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_108_entering_on_a_done0')
+frozen = None
+
+    async def test_AT_108_entering_on_a_done_task_lands_on_drawn_work(tmp_path, frozen):
+        """AT-108 (HLR-104, LLR-101.9). Enter the gantt with `tw1` (done) selected:
+        the selection lands on `tw2`, the open task after it in Website Redesign's
+        draw order, and `down` moves. RED on the base tree: `tw1` stays selected
+        and `down` does nothing (P-9)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await pilot.pause()
+            app.selected_task_id = "tw1"
+            await pilot.press("3")
+            await pilot.pause()
+>           assert app.selected_task_id == "tw2"
+E           AssertionError: assert 'tw1' == 'tw2'
+E             
+E             - tw2
+E             + tw1
+
+tests\test_gantt_board.py:366: AssertionError
+____ test_AT_108_finishing_a_task_moves_one_row_and_an_extra_key_is_local _____
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_108_finishing_a_task_m0')
+frozen = None
+
+    async def test_AT_108_finishing_a_task_moves_one_row_and_an_extra_key_is_local(
+            tmp_path, frozen):
+        """AT-108 (UX-15). `]` until `tw3` is done: it leaves the gantt (`✓2` on
+        its project) and the cursor moves to `tw4`, the open task that followed it
+        — one row away. One more `]` advances THAT task, and only that task: no
+        distant task changes phase."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            before = {t.id: t.phase for t in app.board.tasks}
+            while app.board.task_by_id("tw3").phase != "Done":
+                await pilot.press("]")
+                await pilot.pause()
+>           assert app.selected_task_id == "tw4"
+E           AssertionError: assert 'tw3' == 'tw4'
+E             
+E             - tw4
+E             + tw3
+
+tests\test_gantt_board.py:385: AssertionError
+_______________ test_AT_109_show_archived_grows_the_rest_count ________________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_109_show_archived_grow0')
+frozen = None
+
+    async def test_AT_109_show_archived_grows_the_rest_count(tmp_path, frozen):
+        """AT-109, `v`: an archived finished task in Website Redesign is counted —
+        `✓1` becomes `✓2` — and is never drawn as a row (D2)."""
+        b = kg_board.build(tmp_path / "board.json")
+        b.tasks.append(Task("Archived launch checklist", "pweb", "Done", start_date=iso(-30),
+                            due_date=iso(-25), archived=True, id="tw7"))
+        app = _app(tmp_path, b)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+            web = lambda: next(l for l in painted(app) if "Website Redesign" in l  # noqa: E731
+                               and l.startswith(("▾", "▸")))
+>           assert "✓1" in web()
+
+tests\test_gantt_board.py:412: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+>   web = lambda: next(l for l in painted(app) if "Website Redesign" in l  # noqa: E731
+                       and l.startswith(("▾", "▸")))
+E   StopIteration
+
+tests\test_gantt_board.py:410: StopIteration
+
+The above exception was the direct cause of the following exception:
+
+self = <Coroutine test_AT_109_show_archived_grows_the_rest_count>
+
+    def runtest(self) -> None:
+        self.obj = wrap_in_sync(
+            # https://github.com/pytest-dev/pytest-asyncio/issues/596
+            self.obj,  # type: ignore[has-type]
+        )
+>       super().runtest()
+
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:1026: in inner
+    _loop.run_until_complete(task)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ProactorEventLoop running=False closed=False debug=False>
+future = <Task finished name='Task-779' coro=<test_AT_109_show_archived_grows_the_rest_count() done, defined at <home>\...7-7aec72789cc7\scratchpad\base\tests\test_gantt_board.py:401> exception=RuntimeError('coroutine raised StopIteration')>
+
+    def run_until_complete(self, future):
+        """Run until the Future is done.
+    
+        If the argument is a coroutine, it is wrapped in a Task.
+    
+        WARNING: It would be disastrous to call run_until_complete()
+        with the same coroutine twice -- it would wrap it in two
+        different Tasks and that can't be good.
+    
+        Return the Future's result, or raise its exception.
+        """
+        self._check_closed()
+        self._check_running()
+    
+        new_task = not futures.isfuture(future)
+        future = tasks.ensure_future(future, loop=self)
+        if new_task:
+            # An exception is raised if the future didn't complete, so there
+            # is no need to log the "destroy pending task" message
+            future._log_destroy_pending = False
+    
+        future.add_done_callback(_run_until_complete_cb)
+        try:
+            self.run_forever()
+        except:
+            if new_task and future.done() and not future.cancelled():
+                # The coroutine raised a BaseException. Consume the exception
+                # to not log a warning, the caller doesn't have access to the
+                # local task.
+                future.exception()
+            raise
+        finally:
+            future.remove_done_callback(_run_until_complete_cb)
+        if not future.done():
+            raise RuntimeError('Event loop stopped before Future completed.')
+    
+>       return future.result()
+E       RuntimeError: coroutine raised StopIteration
+
+<home>\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError
+____________ test_AT_109_focus_narrows_to_one_group_and_its_window ____________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_109_focus_narrows_to_o0')
+frozen = None
+
+    async def test_AT_109_focus_narrows_to_one_group_and_its_window(tmp_path, frozen):
+        """AT-109, `F`: focusing Website Redesign draws only that group and the
+        header says so; the window fits it (Sep 25 to Oct 16), so the ruler no
+        longer reaches November, as the whole board's (to Dec 1) does."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await _open_gantt(pilot, app, "tw3")
+>           assert "November" in painted(app)[1]
+E           AssertionError: assert 'November' in '▎ Website Re…  ··┆·──────────●─────────╎────◆┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Aug 21 → Oct 10'
+
+tests\test_gantt_board.py:426: AssertionError
+____________ test_AT_109_a_filter_narrows_nav_and_keeps_the_ruler _____________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-13353/test_AT_109_a_filter_narrows_n0')
+frozen = None
+
+    async def test_AT_109_a_filter_narrows_nav_and_keeps_the_ruler(tmp_path, frozen):
+        """AT-109, `/`: filtering on `API` leaves only matching open work to walk
+        — API Platform's and `Rotate API keys` — and the ruler sits under the
+        two-row filter bar (rows 3–4)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await _open_gantt(pilot, app, "ta1")
+            await pilot.press("/")
+            await pilot.pause()
+            for ch in "API":
+                await pilot.press(ch)
+            await pilot.press("enter")
+            await pilot.pause()
+            for _ in range(20):
+                await pilot.press("up")
+            await pilot.pause()
+            seen = {app.selected_task_id}
+            for _ in range(20):
+                await pilot.press("down")
+                await pilot.pause()
+                seen.add(app.selected_task_id)
+            want = {t.id for t in app.board.tasks
+                    if not app.board.is_done(t) and ("API" in t.title or t.project_id == "papi")}
+            assert seen == want, (seen, want)
+            out = painted(app)
+>           assert "September 2026" in out[3] or "October" in out[3], out[3]
+E           AssertionError: ▎ API Platfo…  ··┆··┆···────────●──────╎─────────◆··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Aug 31 → Oct 21
+E           assert ('September 2026' in '▎ API Platfo…  ··┆··┆···────────●──────╎─────────◆··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Aug 31 → Oct 21' or 'October' in '▎ API Platfo…  ··┆··┆···────────●──────╎─────────◆··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··      Aug 31 → Oct 21')
+
+tests\test_gantt_board.py:461: AssertionError
+___________ test_TC_101_the_axis_takes_the_smallest_scale_that_fits ___________
+
+    def test_TC_101_the_axis_takes_the_smallest_scale_that_fits():
+        """TC-101 (LLR-101.1). Field 10 cells: a need of 1..5 days → 0.5, 6..10 →
+        1, 11..20 → 2, 21..30 → 3, more → 7 (Monday-aligned). Spare cells buy past
+        context back to `ctx` and no further. RED: the largest fitting scale."""
+        d = date(2026, 9, 30)                     # a Wednesday
+        for need, k in ((1, 0.5), (5, 0.5), (6, 1), (10, 1), (11, 2), (20, 2),
+                        (21, 3), (30, 3), (31, 7), (70, 7)):
+>           ax = gantt_axis(10, d, d, d + timedelta(days=need - 1), d)
+E           TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:474: TypeError
+______________ test_TC_102_the_window_is_fitted_to_the_open_work ______________
+
+    def test_TC_102_the_window_is_fitted_to_the_open_work():
+        """TC-102 (LLR-101.2). Oracle board: lo Sep 23 (earliest open due −2),
+        hi Dec 1 (Data Warehouse's due Nov 29 +2); start Sep 14 at 118 columns.
+        RED: without project dues `hi` stops at the latest task due."""
+        b = kg_board.build()
+>       groups, ax = plan_axis(b, 118, 30)
+
+tests\test_gantt_board.py:490: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+b = <taskboard.models.Board object at 0x000001E2AE2A74D0>, w = 118, h = 30
+sel = 'tw3', focus = None
+
+    def plan_axis(b, w, h, sel="tw3", focus=None):
+>       _l, _c, field_w = gantt_columns(w)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:67: TypeError
+____________ test_TC_103_the_fold_rule_matches_the_verdict_frames _____________
+
+    def test_TC_103_the_fold_rule_matches_the_verdict_frames():
+        """TC-103 (LLR-101.3, HLR-102). The frames' own strings at both sizes."""
+        b = kg_board.build()
+        big = _folds(b, 118, 30)
+>       assert [l[:31] for l in big if l.startswith("▸")] == ["▸ Data Warehouse    4 open ✓1  "]
+E       AssertionError: assert [] == ['▸ Data Ware... 4 open ✓1  ']
+E         
+E         Right contains one more item: '▸ Data Warehouse    4 open ✓1  '
+E         Use -v to get more diff
+
+tests\test_gantt_board.py:517: AssertionError
+________ test_TC_103_a_group_that_does_not_fit_is_skipped_not_the_end _________
+
+    def test_TC_103_a_group_that_does_not_fit_is_skipped_not_the_end():
+        """TC-103 (Q-5). Body 8: two groups leave 6 rows; the most-late group needs
+        10 and is skipped; the next needs 2 and unfolds. RED: stopping at the
+        first group that does not fit leaves the small one folded."""
+        ps = [Project("Big", "sky", id="pb"), Project("Small", "lime", id="ps")]
+        ts = [Task(f"b{i}", "pb", "Doing", due_date=iso(-1), id=f"b{i}") for i in range(10)]
+        ts += [Task("s0", "ps", "Doing", due_date=iso(-1), id="s0"),
+               Task("s1", "ps", "Doing", due_date=iso(5), id="s1")]
+        b = Board(ps, ts, Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+>       plan = {g.project.name: g.unfolded for g in gantt_plan(b, False, None, TODAY, 8)}
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:533: TypeError
+_ test_TC_103_a_late_tie_unfolds_the_earlier_due_first_and_height_0_unfolds_all _
+
+    def test_TC_103_a_late_tie_unfolds_the_earlier_due_first_and_height_0_unfolds_all():
+        """TC-103. Equal late counts → earliest open due first; `height = 0` is an
+        unbounded render: every group unfolds."""
+        ps = [Project("Later", "sky", id="pl"), Project("Sooner", "lime", id="pn")]
+        ts = [Task("l0", "pl", "Doing", due_date=iso(9), id="l0"),
+              Task("l1", "pl", "Doing", due_date=iso(9), id="l1"),
+              Task("n0", "pn", "Doing", due_date=iso(2), id="n0"),
+              Task("n1", "pn", "Doing", due_date=iso(2), id="n1")]
+        b = Board(ps, ts, Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+>       plan = {g.project.name: g.unfolded for g in gantt_plan(b, False, None, TODAY, 4)}
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:546: TypeError
+__________________________ test_TC_104_the_due_chip ___________________________
+
+    def test_TC_104_the_due_chip():
+        """TC-104 (LLR-101.4). Four forms, exact width, no zero-padding."""
+>       assert gantt_due_chip(iso(-3), TODAY, 7) == views.c("    ▲3d", "over")
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:554: TypeError
+_______________________ test_TC_105_the_dependency_mark _______________________
+
+    def test_TC_105_the_dependency_mark():
+        """TC-105 (LLR-101.5). over: starts before an open dependency is due; bold
+        bright: on the critical chain; mut: otherwise; blank: nothing open waited
+        on (done or missing); a task with no start is never `over`."""
+        p = Project("P", "sky", id="p")
+        dep = Task("dep", "p", "Doing", due_date=iso(5), id="dep")
+        done = Task("done", "p", "Done", due_date=iso(5), id="dn")
+        early = Task("early", "p", "Doing", start_date=iso(2), due_date=iso(9),
+                     depends_on=["dep"], id="e")
+        later = Task("later", "p", "Doing", start_date=iso(6), due_date=iso(9),
+                     depends_on=["dep"], id="l")
+        nostart = Task("nostart", "p", "Doing", due_date=iso(9), depends_on=["dep"], id="ns")
+        on_done = Task("on_done", "p", "Doing", start_date=iso(1), depends_on=["dn"], id="od")
+        missing = Task("missing", "p", "Doing", depends_on=["nope"], id="m")
+        same_day = Task("same", "p", "Doing", start_date=iso(5), depends_on=["dep"], id="sd")
+        b = Board([p], [dep, done, early, later, nostart, on_done, missing, same_day],
+                  Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+>       assert gantt_dep_mark(early, b, set()) == views.c("↳", "over")
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:581: TypeError
+_____ test_TC_106_nav_is_the_plans_open_work_and_every_selection_is_drawn _____
+
+    def test_TC_106_nav_is_the_plans_open_work_and_every_selection_is_drawn():
+        """TC-106 (LLR-101.6). Nav == the plan's open ids in order (25 on the oracle
+        board, no rest work); selecting each in turn at panel 80x24 draws it."""
+        b = kg_board.build()
+        nav = nav_model("gantt", b, False, TODAY, 80, 24)[0]
+>       groups = gantt_plan(b, False, None, TODAY, 21)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:595: TypeError
+_____________ test_TC_106_a_tall_group_pages_and_keeps_its_count ______________
+
+    def test_TC_106_a_tall_group_pages_and_keeps_its_count():
+        """TC-106 (UX-9). A 30-task project at panel 80x24: the rows move once per
+        page, the selection is always drawn, and the span row keeps `N open`."""
+        p = Project("Tall", "sky", "on_track", start_date=iso(-3), due_date=iso(40), id="pt")
+        ts = [Task(f"task {i:02d}", "pt", "Doing", start_date=iso(-2), due_date=iso(i),
+                   id=f"u{i}") for i in range(30)]
+        b = Board([p], ts, Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+        tops = []
+        for i in range(30):
+            lines, lm, _t = render(b, 80, 24, f"u{i}")
+            assert f"u{i}" in lm
+            tops.append(min(lm, key=lm.get))
+>           assert "30" in lines[3][:20], lines[3]
+E           AssertionError: ▎  task 01                 ··▬◔·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·  Oct 1
+E           assert '30' in '▎  task 01          '
+
+tests\test_gantt_board.py:615: AssertionError
+_______ test_TC_106_span_overflow_draws_the_page_holding_the_selection ________
+
+    def test_TC_106_span_overflow_draws_the_page_holding_the_selection():
+        """TC-106 (Q-7, N-4). 30 projects at panel 80x24 (body 21): the drawn
+        groups are the page of 19 (`index // 19`) holding the selected one — P19
+        to P29 — its task under it, and `+19 not shown` for the rest."""
+        ps = [Project(f"P{i:02d}", "sky", "on_track", start_date=iso(-5), due_date=iso(10),
+                      id=f"p{i}") for i in range(30)]
+        ts = [Task(f"task {i}", f"p{i}", "Doing", start_date=iso(-2), due_date=iso(4),
+                   id=f"t{i}") for i in range(30)]
+        b = Board(ps, ts, Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+        lines, lm, _t = render(b, 80, 24, "t29")
+>       assert "t29" in lm
+E       AssertionError: assert 't29' in {'t0': 2, 't1': 5, 't2': 8, 't3': 11, ...}
+
+tests\test_gantt_board.py:629: AssertionError
+______________ test_TC_108_board_text_is_never_parsed_as_markup _______________
+
+    def test_TC_108_board_text_is_never_parsed_as_markup():
+        """TC-108 (LLR-101.8, S-1, S-2). Hostile names as a project and a task,
+        selected and not, and the project focused (the header's seat). The render
+        succeeds and paints the payload — or, where a seat clips, its fitted
+        prefix and `…`. RED on the base tree: the focused header with `[/]` raises
+        `MarkupError`."""
+        payloads = ["[bold]x", "[/]", "a[b", "[link=http://e]y[/link]", "x\\",
+                    "y" * 26 + "[b]" + "z" * 11]
+        for pay in payloads:
+            p = Project(pay, "sky", "on_track", start_date=iso(-3), due_date=iso(9), id="ph")
+            t = Task(pay, "ph", "Doing", start_date=iso(-1), due_date=iso(4), id="th")
+            b = Board([p], [t], Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+            for sel in ("th", None):
+                for focus in (None, "ph"):
+                    try:
+>                       lines, _lm, _t = render(b, 118, 30, sel, focus=focus)
+
+tests\test_gantt_board.py:651: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_gantt_board.py:57: in render
+    text = render_gantt(b, False, sel, TODAY, width=w, height=h, line_map=lm, **kw)
+taskboard\views.py:2631: in render_gantt
+    return to_text(lines, height, w, pinned=1)
+taskboard\views.py:731: in to_text
+    return Text.from_markup(collapse_runs("\n".join(fill_height(lines, height, w, pinned))),
+<home>\anaconda3\Lib\site-packages\rich\text.py:287: in from_markup
+    rendered_text = render(text, style, emoji=emoji, emoji_variant=emoji_variant)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+markup = '[b #2dd4bf]◆ GANTT[/][#8b98a5] (focused: [/])[/]                                                                     ...5b6675]            [/][#8b98a5]DEC[/][#5b6675]            [/][#8b98a5]JAN[/][#5b6675]    +115d[/]                     '
+style = '', emoji = False, emoji_variant = None
+
+    def render(
+        markup: str,
+        style: Union[str, Style] = "",
+        emoji: bool = True,
+        emoji_variant: Optional[EmojiVariant] = None,
+    ) -> Text:
+        """Render console markup in to a Text instance.
+    
+        Args:
+            markup (str): A string containing console markup.
+            style: (Union[str, Style]): The style to use.
+            emoji (bool, optional): Also render emoji code. Defaults to True.
+            emoji_variant (str, optional): Optional emoji variant, either "text" or "emoji". Defaults to None.
+    
+    
+        Raises:
+            MarkupError: If there is a syntax error in the markup.
+    
+        Returns:
+            Text: A test instance.
+        """
+        emoji_replace = _emoji_replace
+        if "[" not in markup:
+            return Text(
+                emoji_replace(markup, default_variant=emoji_variant) if emoji else markup,
+                style=style,
+            )
+        text = Text(style=style)
+        append = text.append
+        normalize = Style.normalize
+    
+        style_stack: List[Tuple[int, Tag]] = []
+        pop = style_stack.pop
+    
+        spans: List[Span] = []
+        append_span = spans.append
+    
+        _Span = Span
+        _Tag = Tag
+    
+        def pop_style(style_name: str) -> Tuple[int, Tag]:
+            """Pop tag matching given style name."""
+            for index, (_, tag) in enumerate(reversed(style_stack), 1):
+                if tag.name == style_name:
+                    return pop(-index)
+            raise KeyError(style_name)
+    
+        for position, plain_text, tag in _parse(markup):
+            if plain_text is not None:
+                # Handle open brace escapes, where the brace is not part of a tag.
+                plain_text = plain_text.replace("\\[", "[")
+                append(emoji_replace(plain_text) if emoji else plain_text)
+            elif tag is not None:
+                if tag.name.startswith("/"):  # Closing tag
+                    style_name = tag.name[1:].strip()
+    
+                    if style_name:  # explicit close
+                        style_name = normalize(style_name)
+                        try:
+                            start, open_tag = pop_style(style_name)
+                        except KeyError:
+                            raise MarkupError(
+                                f"closing tag '{tag.markup}' at position {position} doesn't match any open tag"
+                            ) from None
+                    else:  # implicit close
+                        try:
+                            start, open_tag = pop()
+                        except IndexError:
+>                           raise MarkupError(
+                                f"closing tag '[/]' at position {position} has nothing to close"
+                            ) from None
+E                           rich.errors.MarkupError: closing tag '[/]' at position 45 has nothing to close
+
+<home>\anaconda3\Lib\site-packages\rich\markup.py:174: MarkupError
+
+During handling of the above exception, another exception occurred:
+
+    def test_TC_108_board_text_is_never_parsed_as_markup():
+        """TC-108 (LLR-101.8, S-1, S-2). Hostile names as a project and a task,
+        selected and not, and the project focused (the header's seat). The render
+        succeeds and paints the payload — or, where a seat clips, its fitted
+        prefix and `…`. RED on the base tree: the focused header with `[/]` raises
+        `MarkupError`."""
+        payloads = ["[bold]x", "[/]", "a[b", "[link=http://e]y[/link]", "x\\",
+                    "y" * 26 + "[b]" + "z" * 11]
+        for pay in payloads:
+            p = Project(pay, "sky", "on_track", start_date=iso(-3), due_date=iso(9), id="ph")
+            t = Task(pay, "ph", "Doing", start_date=iso(-1), due_date=iso(4), id="th")
+            b = Board([p], [t], Path("never.json"), {}, ["Backlog", "Doing", "Done"])
+            for sel in ("th", None):
+                for focus in (None, "ph"):
+                    try:
+                        lines, _lm, _t = render(b, 118, 30, sel, focus=focus)
+                    except MarkupError as exc:          # pragma: no cover - the RED
+>                       pytest.fail(f"{pay!r} sel={sel} focus={focus}: {exc}")
+E                       Failed: '[/]' sel=th focus=ph: closing tag '[/]' at position 45 has nothing to close
+
+tests\test_gantt_board.py:653: Failed
+_______________________ test_TC_110_the_vertical_split ________________________
+
+    def test_TC_110_the_vertical_split():
+        """TC-110 (LLR-101.10). 118x30: header, ruler, 26 body rows, legend.
+        80x24: header, ruler, 21 body rows, no legend."""
+        lines, _lm, _t = render(kg_board.build(), 118, 30)
+>       assert len(lines) == 30 and "↳ waits on open work" in lines[-1]
+E       AssertionError: assert (30 == 30 and '↳ waits on open work' in '               -48d     SEP          today             NOV            DEC            JAN    +115d         +9 not shown')
+E        +  where 30 = len(['◆ GANTT · cadena crítica 4                                                                                ▲5 past du...nch new homepage            └─►·┆╎·╌╌╌○┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆··       Oct 4 → Oct 10', ...])
+
+tests\test_gantt_board.py:675: AssertionError
+______________________ test_TC_111_the_group_label_forms ______________________
+
+    def test_TC_111_the_group_label_forms():
+        """TC-111 (LLR-101.11). Wide: `N open ▲n ✓n`; narrow (< 26): `N ▲n`."""
+        big = {l[:31] for l in _folds(kg_board.build(), 118, 30)}
+>       assert "▾ Website Redesign      ▲2 ✓1  " in big
+E       AssertionError: assert '▾ Website Redesign      ▲2 ✓1  ' in set()
+
+tests\test_gantt_board.py:685: AssertionError
+________________________ test_TC_112_the_cadence_rule _________________________
+
+    def test_TC_112_the_cadence_rule():
+        """TC-112 (LLR-102.1). 0.5 → Mondays (2 cells/day); 1 → Mondays; 2, 3 →
+        1st/15th; 7 → 1st; a synthetic 1/3 day per cell → daily."""
+        d = date(2026, 9, 1)
+>       got = {k: gantt_cadence(GanttAxis(d, k, 60, d))[0] for k in GANTT_SCALES}
+E       TypeError: 'NoneType' object is not iterable
+
+tests\test_gantt_board.py:698: TypeError
+__________________________ test_TC_114_the_month_row __________________________
+
+    def test_TC_114_the_month_row():
+        """TC-114 (LLR-102.3). `┃` on every 1st after the first band; names in
+        each band ≥ 4 cells; the project's `◆` never covered; today's number lit
+        within 2 cells of the today column; a year boundary names January 2027."""
+        b = kg_board.build()
+        lines, _lm, _t = render(b, 118, 30)
+>       groups, ax = plan_axis(b, 118, 30)
+
+tests\test_gantt_board.py:709: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+b = <taskboard.models.Board object at 0x000001E2AE0D3320>, w = 118, h = 30
+sel = 'tw3', focus = None
+
+    def plan_axis(b, w, h, sel="tw3", focus=None):
+>       _l, _c, field_w = gantt_columns(w)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:67: TypeError
+__________________ test_TC_115_the_echo_carries_exact_dates ___________________
+
+    def test_TC_115_the_echo_carries_exact_dates():
+        """TC-115 (LLR-102.4). Both dates, a single date, no start, no due; dates
+        are exact, never a cell's rounded date (k = 2)."""
+        b = kg_board.build()
+>       ax = GanttAxis(date(2026, 9, 5), 2, 52, TODAY)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_gantt_board.py:730: TypeError
+_______ test_TC_115_the_echo_falls_back_to_the_label_column_untruncated _______
+
+    def test_TC_115_the_echo_falls_back_to_the_label_column_untruncated():
+        """TC-115 (UX-4). When no slot beside the bracket is free the full text
+        replaces the day row's label, untruncated at a 20-cell label."""
+        p = Project("P", "sky", "on_track", start_date=iso(-60), due_date=iso(60), id="p")
+        t = Task("wide", "p", "Doing", start_date=iso(-58), due_date=iso(58), id="tw")
+        b = Board([p], [t], Path("never.json"), {}, ["A", "Doing", "B"])
+        lines, _lm, _t = render(b, 80, 24, "tw")
+>       assert "Aug 3 → Nov 27 ▸" in lines[2][:20], lines[2]
+E       AssertionError: ▎  wide     ▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◔┆···┆··┆···┆· Nov 27
+E       assert 'Aug 3 → Nov 27 ▸' in '▎  wide     ▬╌╌╌╌╌╌╌'
+
+tests\test_gantt_board.py:751: AssertionError
+______________ test_TC_116_the_legend_names_what_the_gantt_draws ______________
+
+    def test_TC_116_the_legend_names_what_the_gantt_draws():
+        """TC-116 (LLR-102.5). The ruler's month mark and the chain are named; the
+        old axis and the due meter are not."""
+        b = kg_board.build()
+        entries = [txt for _sw, txt in legend_entries("gantt", b, TODAY, 118, 30)]
+>       assert any("month starts" in t for t in entries)
+E       assert False
+E        +  where False = any(<generator object test_TC_116_the_legend_names_what_the_gantt_draws.<locals>.<genexpr> at 0x000001E2AE715E50>)
+
+tests\test_gantt_board.py:759: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[24]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[39]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[40]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[59]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[60]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[80]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[99]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[100]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[118]
+PASSED tests/test_gantt_board.py::test_TC_110_every_row_is_exactly_the_width[160]
+FAILED tests/test_gantt_board.py::test_AT_101_the_whole_board_is_on_screen[size0]
+FAILED tests/test_gantt_board.py::test_AT_101_the_whole_board_is_on_screen[size1]
+FAILED tests/test_gantt_board.py::test_AT_102_down_walks_the_drawn_open_work[size0]
+FAILED tests/test_gantt_board.py::test_AT_102_down_walks_the_drawn_open_work[size1]
+FAILED tests/test_gantt_board.py::test_AT_103_chips_and_the_dependency_gutter
+FAILED tests/test_gantt_board.py::test_AT_104_the_ruler_is_at_the_top - Asser...
+FAILED tests/test_gantt_board.py::test_TC_113_no_drop_law_over_every_scale_and_width
+FAILED tests/test_gantt_board.py::test_TC_113_a_tick_never_touches_the_echo_label
+FAILED tests/test_gantt_board.py::test_AT_105_the_echo_follows_the_selection
+FAILED tests/test_gantt_board.py::test_AT_108_entering_on_a_done_task_lands_on_drawn_work
+FAILED tests/test_gantt_board.py::test_AT_108_finishing_a_task_moves_one_row_and_an_extra_key_is_local
+FAILED tests/test_gantt_board.py::test_AT_109_show_archived_grows_the_rest_count
+FAILED tests/test_gantt_board.py::test_AT_109_focus_narrows_to_one_group_and_its_window
+FAILED tests/test_gantt_board.py::test_AT_109_a_filter_narrows_nav_and_keeps_the_ruler
+FAILED tests/test_gantt_board.py::test_TC_101_the_axis_takes_the_smallest_scale_that_fits
+FAILED tests/test_gantt_board.py::test_TC_102_the_window_is_fitted_to_the_open_work
+FAILED tests/test_gantt_board.py::test_TC_103_the_fold_rule_matches_the_verdict_frames
+FAILED tests/test_gantt_board.py::test_TC_103_a_group_that_does_not_fit_is_skipped_not_the_end
+FAILED tests/test_gantt_board.py::test_TC_103_a_late_tie_unfolds_the_earlier_due_first_and_height_0_unfolds_all
+FAILED tests/test_gantt_board.py::test_TC_104_the_due_chip - TypeError: 'None...
+FAILED tests/test_gantt_board.py::test_TC_105_the_dependency_mark - TypeError...
+FAILED tests/test_gantt_board.py::test_TC_106_nav_is_the_plans_open_work_and_every_selection_is_drawn
+FAILED tests/test_gantt_board.py::test_TC_106_a_tall_group_pages_and_keeps_its_count
+FAILED tests/test_gantt_board.py::test_TC_106_span_overflow_draws_the_page_holding_the_selection
+FAILED tests/test_gantt_board.py::test_TC_108_board_text_is_never_parsed_as_markup
+FAILED tests/test_gantt_board.py::test_TC_110_the_vertical_split - AssertionE...
+FAILED tests/test_gantt_board.py::test_TC_111_the_group_label_forms - Asserti...
+FAILED tests/test_gantt_board.py::test_TC_112_the_cadence_rule - TypeError: '...
+FAILED tests/test_gantt_board.py::test_TC_114_the_month_row - TypeError: 'Non...
+FAILED tests/test_gantt_board.py::test_TC_115_the_echo_carries_exact_dates - ...
+FAILED tests/test_gantt_board.py::test_TC_115_the_echo_falls_back_to_the_label_column_untruncated
+FAILED tests/test_gantt_board.py::test_TC_116_the_legend_names_what_the_gantt_draws
+32 failed, 10 passed in 15.76s
+exit=1

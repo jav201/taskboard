@@ -199,8 +199,19 @@ def test_ink_stays_monotone_at_extreme(tmp_path):
 
 
 def test_the_gantt_spends_its_cells_too(tmp_path):
-    b = load(tmp_path, 5, 21, "g.json")
-    assert census(rows(b, "gantt"))["dead"] <= 30.0
+    """`dead <= 30` on a board whose content exceeds the screen.
+
+    Re-pointed 2026-10-02 (batch 2026-10-02-batch-01, G-A + AX-2): the typical
+    board (5 projects / 21 tasks) no longer fills 96x30 at all — every project
+    unfolds, its open work fits, and the six empty rows under it are 20 of its
+    36.4 dead points. That is the board running out of content, not the view
+    wasting screen, which is the ruling `test_gantt.py` already made for the
+    same law. On the extreme board, where folding has to happen, it measures
+    24.8 %. The guard keeps the fixture honest: some project must have folded."""
+    out = rows(load(tmp_path, 8, 44, "g.json"), "gantt")
+    assert census(out)["dead"] <= 30.0, census(out)["dead"]
+    assert any(line.startswith("▸") for line in out), (
+        "the board fits the screen now; this law went vacuous")
 
 
 # --------------------------------------------------------------------------- #

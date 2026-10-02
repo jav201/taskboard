@@ -1,0 +1,21 @@
+# inc004 mutation battery (after the round-3 fold) — scratch copy of the increment tree; python .dev-flow/2026-10-02-batch-01/evidence/mutate_inc004.py (cwd = the copy)
+H1 a help line longer than the column: KILLED · -k 'help_fits' · arms 2 (red 2, green 0) · restore sha256 38373f7da6c96c01 ok=True
+    RED   test_TC_116_the_gantt_help_fits_its_column[size0]
+    RED   test_TC_116_the_gantt_help_fits_its_column[size1]
+    2 failed, 52 deselected in 1.36s
+H2 the narrow scale label keeps its leading zero: KILLED · -k 'half_a_day' · arms 1 (red 1, green 0) · restore sha256 38373f7da6c96c01 ok=True
+    RED   test_TC_110_the_scale_label_fits_at_half_a_day_per_cell
+    1 failed, 53 deselected in 0.37s
+H3 the packet may start on the clip marker: KILLED · -k 'TC_107' · arms 1 (red 1, green 0) · restore sha256 38373f7da6c96c01 ok=True
+    RED   test_TC_107_the_motions_ride_the_fitted_axis_and_clear_the_clip_marker
+    1 failed, 53 deselected in 0.36s
+H4 a legend line longer than the legend column: KILLED · -k 'help_fits' · arms 2 (red 1, green 1) · restore sha256 38373f7da6c96c01 ok=True
+    RED   test_TC_116_the_gantt_help_fits_its_column[size0]
+    green test_TC_116_the_gantt_help_fits_its_column[size1]
+    1 failed, 1 passed, 52 deselected in 1.13s
+H5 a focus the filter empties loses its header label: KILLED · -k 'empties_still' · arms 1 (red 1, green 0) · restore sha256 38373f7da6c96c01 ok=True
+    RED   test_TC_108_a_focus_the_filter_empties_still_says_focused
+    1 failed, 53 deselected in 0.40s
+
+5 of 5 mutations KILLED
+exit=0

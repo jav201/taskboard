@@ -49,6 +49,10 @@ def first_party() -> set[str]:
     names = {p.name for p in ROOT.iterdir()
              if p.is_dir() and (p / "__init__.py").exists()}
     names.add("tests")
+    # A helper MODULE beside the tests is first-party too: pytest puts `tests/`
+    # on the path, so `import kg_board` resolves there (batch 2026-10-02-batch-01
+    # added the first one, the oracle board). Discovered, like the packages.
+    names |= {p.stem for p in (ROOT / "tests").glob("*.py")}
     return names
 
 

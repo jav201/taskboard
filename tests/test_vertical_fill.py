@@ -80,7 +80,11 @@ def test_no_row_is_stranded_below_the_blank_pad(mode, pres, pinned, height, widt
         f"bottom, first is {below[0][:60]!r}")
 
 
-@pytest.mark.parametrize("mode", [m for m, p in PINNED.items() if p])
+# The gantt left this list on 2026-10-02 (batch 2026-10-02-batch-01, AX-2): its
+# dates moved to a ruler pinned at the TOP and it closes with no axis. Its one
+# legitimate trailing row is the in-view legend, drawn only when a row is spare
+# (LLR-101.10) — `test_the_gantt_legend_sits_on_the_last_row` below holds that.
+@pytest.mark.parametrize("mode", [m for m, p in PINNED.items() if p and m != "gantt"])
 @pytest.mark.parametrize("height", [30, 45, 60])
 def test_a_view_that_declares_an_axis_keeps_it_at_the_bottom(mode, height):
     """THE OTHER HALF, and the one that catches the lazy fix. Padding below
@@ -122,3 +126,20 @@ def test_the_view_still_spends_the_whole_viewport(mode, pres, pinned):
     text = render_view(mode, short_board(), False, None, width=100, height=40,
                        line_map={}, presentation=pres, tick=0)
     assert len(text.plain.split("\n")) == 40, f"{mode}/{pres} does not fill 40 rows"
+
+
+@pytest.mark.parametrize("height", [30, 45, 60])
+def test_the_gantt_legend_sits_on_the_last_row(height):
+    """AX-2 / LLR-101.10 (batch 2026-10-02-batch-01): when the gantt has a row to
+    spare it names its marks on ONE legend row, and that row is pinned to the
+    bottom with the pad above it — never floating mid-screen."""
+    b = short_board()
+    today = date.today()
+    b.projects[0].start_date = str(today - timedelta(days=6))
+    b.projects[0].due_date = str(today + timedelta(days=8))
+    lines = render_view("gantt", b, False, None, width=100, height=height,
+                        line_map={}, tick=0).plain.split("\n")
+    assert len(lines) == height
+    assert "progress" in lines[-1] and "due" in lines[-1], lines[-1]
+    below = rows_after_the_first_blank("gantt", "grouped", 100, height)
+    assert len(below) <= 1, below

@@ -1,0 +1,37 @@
+# inc002 mutation battery (after the code-review fold) — scratch copy of the increment tree; python .dev-flow/2026-10-02-batch-01/evidence/mutate_inc002.py (cwd = the copy)
+K1 the card's link token back in accent: KILLED · -k 'shared_card_tokens or kanban_paints_no_accent' · arms 2 (red 2, green 0) · restore sha256 d61c192f57aea2f6 ok=True
+    RED   test_TC_119_the_kanban_paints_no_accent
+    RED   test_TC_119_the_shared_card_tokens_left_the_accent_everywhere
+    2 failed, 12 deselected in 0.31s
+K2 the within-the-week due token back in accent: KILLED · -k 'shared_card_tokens or kanban_paints_no_accent or AT_106' · arms 3 (red 3, green 0) · restore sha256 d61c192f57aea2f6 ok=True
+    RED   test_TC_119_the_kanban_paints_no_accent
+    RED   test_TC_119_the_shared_card_tokens_left_the_accent_everywhere
+    RED   test_AT_106_the_panels_paint_the_accent_only_for_today_and_the_filter
+    3 failed, 11 deselected in 0.48s
+K3 the horizon group This week back in accent: KILLED · -k 'kanban_paints_no_accent' · arms 1 (red 1, green 0) · restore sha256 d61c192f57aea2f6 ok=True
+    RED   test_TC_119_the_kanban_paints_no_accent
+    1 failed, 13 deselected in 0.37s
+K4 the matrix percent back in accent: KILLED · -k 'kanban_paints_no_accent or AT_106' · arms 2 (red 2, green 0) · restore sha256 d61c192f57aea2f6 ok=True
+    RED   test_TC_119_the_kanban_paints_no_accent
+    RED   test_AT_106_the_panels_paint_the_accent_only_for_today_and_the_filter
+    2 failed, 12 deselected in 0.71s
+K5 the grouped kanban title back in accent: KILLED · -k 'title_is_bold_bright or kanban_paints_no_accent' · arms 5 (red 2, green 3) · restore sha256 d61c192f57aea2f6 ok=True
+    RED   test_TC_119_the_kanban_paints_no_accent
+    RED   test_TC_117_the_title_is_bold_bright[kanban-grouped]
+    green test_TC_117_the_title_is_bold_bright[kanban-lanes]
+    green test_TC_117_the_title_is_bold_bright[kanban-matrix]
+    green test_TC_117_the_title_is_bold_bright[gantt-grouped]
+    2 failed, 3 passed, 9 deselected in 0.32s
+K6 a clipped title falls back to the accent: KILLED · -k 'TC_119' · arms 8 (red 2, green 6) · restore sha256 d61c192f57aea2f6 ok=True
+    RED   test_TC_119_the_kanban_paints_no_accent
+    RED   test_TC_119_the_gantt_paints_only_today_and_the_filter[24-10]
+    green test_TC_119_the_census_can_see_the_accent
+    green test_TC_119_the_shared_card_tokens_left_the_accent_everywhere
+    green test_TC_119_the_gantt_paints_only_today_and_the_filter[118-30]
+    green test_TC_119_the_gantt_paints_only_today_and_the_filter[80-24]
+    green test_TC_119_the_gantt_paints_only_today_and_the_filter[60-20]
+    green test_TC_119_the_gantt_paints_only_today_and_the_filter[40-14]
+    2 failed, 6 passed, 6 deselected in 0.39s
+
+6 of 6 mutations KILLED
+exit=0
