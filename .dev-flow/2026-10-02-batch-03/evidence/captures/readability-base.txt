@@ -1,0 +1,3 @@
+base 118x30: avg/28 7.3 · full 0 · drawn 24
+base 80x24: avg/28 1.0 · full 0 · drawn 4
+base 80x22: avg/28 1.0 · full 0 · drawn 4

@@ -462,12 +462,13 @@ async def test_tiny_size_does_not_crash(tmp_path):
 
 
 async def test_right_moves_to_next_column_first_task(tmp_path):
-    from taskboard.views import nav_model
     app = make_app(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.pause()
         await pilot.press("4")
-        cols = nav_model("kanban", app.board, False)
+        await pilot.pause()
+        # the app's own nav (its width draws the rail's titles; 2026-10-02-batch-03)
+        cols = app._nav_columns()
         app.selected_task_id = cols[0][0]
         app.refresh_view()
         await pilot.press("right")
@@ -1484,7 +1485,11 @@ def _kanban_board(tmp_path):
 
 def test_kanban_shows_every_task_in_its_phase(tmp_path):
     """WHY: swimlanes only rendered the FIRST task of each project/phase cell and
-    summarised the rest as 'N more' — this view exists to show them ALL."""
+    summarised the rest as 'N more' — this view exists to show them ALL.
+
+    Scope since 2026-10-02 (batch 2026-10-02-batch-03): holds for the
+    unwindowed render (height 0); a windowed board caps the high band and folds bands,
+    counting what it hides (HLR-306, HLR-309; test_kanban_readable.py TC-309, AT-307)."""
     from taskboard.views import render_kanban
     b = _kanban_board(tmp_path)
     out = str(render_kanban(b, False, None, date(2026, 7, 17), width=160, height=0))
@@ -1493,38 +1498,43 @@ def test_kanban_shows_every_task_in_its_phase(tmp_path):
 
 
 def test_kanban_groups_by_project(tmp_path):
-    """Each phase column groups its tasks under a per-project header line."""
-    from taskboard.views import render_kanban, _phase_window, distribute
+    """Each project's tasks sit together under that project's name.
+
+    Changed 2026-10-02 (batch 2026-10-02-batch-03, HLR-303, P4 qa G-004): the
+    grouped board names a group ONCE, by a band rule across every column
+    (`▐ Alpha  4 open …`), not by a header in each column. The law kept: the
+    name sits ABOVE its tasks, with no other group's name between them, and
+    the project-less tasks group under `Inbox`."""
+    from taskboard.views import render_kanban
     b = _kanban_board(tmp_path)
-    w = 160
     lines = str(render_kanban(b, False, None, date(2026, 7, 17),
-                              width=w, height=0)).split("\n")
-    start, widths = _phase_window(b, w - 2, None)
-    assert start == 0 and len(widths) == len(b.phases)
-    col0 = [l[1:1 + widths[0]] for l in lines]          # the Backlog column only
-    assert any("Alpha" in cell for cell in col0)         # project header present
-    assert any("Inbox" in cell for cell in col0)         # project-less group
-    # …and the header sits ABOVE that project's three tasks in the same column
-    hdr = next(i for i, cell in enumerate(col0) if "Alpha" in cell)
-    tasks = [i for i, cell in enumerate(col0) if "KA one" in cell or "KA three" in cell]
-    assert tasks and all(i > hdr for i in tasks)
+                              width=160, height=0)).split("\n")
+    rules = [i for i, l in enumerate(lines) if l.startswith("▐ ") and " open" in l]
+    alpha = next(i for i in rules if lines[i].startswith("▐ Alpha  "))
+    assert any(lines[i].startswith("▐ Inbox  ") for i in rules)    # project-less group
+    tasks = [i for i, l in enumerate(lines) if "KA one" in l or "KA three" in l]
+    assert tasks and all(i > alpha for i in tasks)
+    assert not [i for i in rules if alpha < i < max(tasks)], "another group between"
 
 
 def test_kanban_marks_blocked_without_moving_it(tmp_path):
     """A blocked task keeps its own phase (blocked is a flag, not a column) and
-    carries the ▲ marker."""
-    from taskboard.views import render_kanban, _phase_window
+    carries the ▲ marker.
+
+    Changed 2026-10-02 (batch 2026-10-02-batch-03, P4 qa G-004): the columns
+    are sized by their titles (HLR-302), so their bounds are read off the
+    phase row's separators, not computed from equal widths."""
+    from taskboard.views import render_kanban
     b = _kanban_board(tmp_path)
-    w = 160
     lines = str(render_kanban(b, False, None, date(2026, 7, 17),
-                              width=w, height=0)).split("\n")
-    start, widths = _phase_window(b, w - 2, None)
-    doing = b.phases.index("Doing")
-    off = 1 + sum(widths[:doing]) + doing                # 1 border + prior cols + seps
-    cells = [l[off:off + widths[doing]] for l in lines]
-    row = next(cell for cell in cells if "KB blocked" in cell)
-    assert "▲" in row
-    assert not any("KB blocked" in l[1:1 + widths[0]] for l in lines)   # not moved
+                              width=160, height=0)).split("\n")
+    seps = [-1] + [x for x, ch in enumerate(lines[1]) if ch == "│"] + [len(lines[1])]
+    cols = [(seps[i] + 1, seps[i + 1]) for i in range(len(seps) - 1)]
+    doing = next(c for c in cols if "DOING" in lines[1][c[0]:c[1]])
+    backlog = next(c for c in cols if "BACKLOG" in lines[1][c[0]:c[1]])
+    row = next(l[doing[0]:doing[1]] for l in lines if "KB blocked" in l[doing[0]:doing[1]])
+    assert row.startswith("▲")
+    assert not any("KB blocked" in l[backlog[0]:backlog[1]] for l in lines)   # not moved
 
 
 def test_kanban_matrix_shows_progress_percent(tmp_path):
@@ -1580,7 +1590,11 @@ def test_kanban_windows_phases_when_they_dont_fit(tmp_path):
     assert len(widths) == 3 and all(wc >= 12 for wc in widths)
     assert start + len(widths) == 8                      # window followed the selection
     out = str(render_kanban(b, False, b.tasks[0].id, date(2026, 7, 17), width=40, height=0))
-    assert "PHASE7" in out and "PHASE0" not in out       # only the window is drawn
+    # the last phase is the DONE rail since 2026-10-02-batch-03 (HLR-304):
+    # the window spans the OPEN phases, and follows a done selection to the
+    # last of them
+    assert "PHASE6" in out and "PHASE0" not in out       # only the window is drawn
+    assert out.split("\n")[1].rstrip().endswith("✓1")   # the rail, as a count
     assert "◀ 5" in out                                  # 5 phases hidden to the left
     out0 = str(render_kanban(b, False, b.tasks[1].id, date(2026, 7, 17), width=40, height=0))
     assert "5 ▶" in out0                                 # …and to the right at the start
@@ -2514,28 +2528,43 @@ def _painted_kanban(app):
     separator positions; cards are located by title (unique by fixture).
 
     Returns (drawn phase names, per-column row lists) where each row is
-    ("h", group-header text) or ("t", task title)."""
+    ("h", group-header text) or ("t", task title).
+
+    Changed 2026-10-02 (batch 2026-10-02-batch-03, D-301): the grouped board
+    names each group ONCE, by a band rule across every column (`▐ name  N
+    open …`), not by a header in each column. The parser keeps the per-column
+    reading the laws below are written in: a column gets the band's header
+    when the first of its cards under that rule is painted — so a column with
+    no card in a group still shows no header for it, as before. The high
+    band's rule (`── high`) names no group: its cards sit under no header, as
+    the per-column `── high ──` band's did."""
     lines = board_text(app).split("\n")
-    hdr_i = next(i for i, l in enumerate(lines)
-                 if all(p.upper() in l for p in app.board.phases))
+    hdr_i = next(i for i, l in enumerate(lines)          # the rail may be a count
+                 if all(p.upper() in l for p in app.board.phases[:-1]))
     hdr = lines[hdr_i]
     seps = [x for x, ch in enumerate(hdr) if ch == "│"]
     bounds = ([(-1, seps[0])]
               + [(seps[i], seps[i + 1]) for i in range(len(seps) - 1)]
               + [(seps[-1], len(hdr))])
-    names = [next(p for p in app.board.phases if p.upper() in hdr[lo + 1:hi])
-             for lo, hi in bounds]
+    # the last cell is the DONE rail: `✓ DONE N`, or `✓N` when it is a count
+    names = [next((p for p in app.board.phases if p.upper() in hdr[lo + 1:hi]),
+                  app.board.phases[-1]) for lo, hi in bounds]
     cols: list[list[tuple[str, str]]] = [[] for _ in bounds]
     end = next((i for i in range(hdr_i + 1, len(lines)) if "┴" in lines[i]),
                len(lines))
+    band, named = None, set()
     for l in lines[hdr_i + 2:end]:              # skip the ┼ rule row
+        if l.startswith("▐ ") or l.startswith("── high"):
+            band = l[2:].split("  ")[0].strip() if l.startswith("▐ ") else None
+            named = set()
+            continue
         for ci, (lo, hi) in enumerate(bounds):
             seg = l[lo + 1:hi]
-            if seg.strip().startswith("▐"):
-                cols[ci].append(("h", seg.strip()[1:].strip()))
-                continue
             hit = [t.title for t in app.board.tasks if t.title in seg]
             assert len(hit) <= 1, f"ambiguous painted segment {seg!r}"
+            if hit and band is not None and ci not in named:
+                cols[ci].append(("h", band))
+                named.add(ci)
             cols[ci].extend(("t", w) for w in hit)
     return names, cols
 
@@ -2562,7 +2591,12 @@ async def _assert_kanban_parity(app, pilot):
             f"column {ci} ({names[ci]}): painted {p_col} != nav {n_col}"
     assert sum(1 for col in painted if col) >= 2, "vacuous: nothing painted"
     visible = {t.id for t in app.board.visible_tasks(app.show_archived)}
-    assert {i for col in painted for i in col} == visible
+    # every visible task is painted, except the done work the rail COUNTS
+    # (`+N more`, 2026-10-02-batch-03 D-313): those are done, and counted
+    hidden = visible - {i for col in painted for i in col}
+    assert all(app.board.is_done(app.board.task_by_id(i)) for i in hidden), hidden
+    more = sum(int(m) for m in re.findall(r"\+(\d+) more(?! ↓)", board_text(app)))  # the rail's, not the cap's
+    assert len(hidden) == more, (hidden, more)
     # arrow walk: down follows the PAINTED-next; right lands on the first
     # painted card of the next non-empty painted column
     first = next(ci for ci, col in enumerate(painted) if len(col) >= 2)
@@ -2803,7 +2837,9 @@ async def test_kanban_group_cycles_headers_and_membership(tmp_path):
                             f"{w} sits under {above}, belongs in {rule(t)}"
                 assert {t.title for t in tasks} == \
                     {w for kind, w in col if kind == "t"}   # completeness
-            assert "ProjA" not in text and "ProjB" not in text
+            # no project band rule; a high card's row 2 still names its project
+            # (the R-1b tag, 2026-10-02-batch-03 HLR-305)
+            assert not any(ln.startswith(("▐ ProjA", "▐ ProjB")) for ln in text.split("\n"))
 
 
 async def test_kanban_group_parity_arrow_walk(tmp_path):
@@ -3171,10 +3207,15 @@ async def test_kanban_aging_token_renders_only_for_dated_open_cards(tmp_path):
             """The one painted COLUMN SEGMENT holding this card — a line is
             the whole board (several columns), so a token search must be
             confined to the card's own cell or a neighbour's token leaks in."""
-            hits = [seg for l in text.split("\n") for seg in l.split("│")
-                    if title in seg]
+            lines = text.split("\n")
+            hits = [(k, i) for k, l in enumerate(lines)
+                    for i, seg in enumerate(l.split("│")) if title in seg]
             assert len(hits) == 1, f"{title}: expected one painted card: {hits}"
-            return hits[0]
+            k, i = hits[0]
+            # a card is two rows since 2026-10-02-batch-03 (HLR-301): the
+            # facts — the age among them — ride its second row, same column
+            row2 = lines[k + 1].split("│")
+            return lines[k].split("│")[i] + " " + (row2[i] if i < len(row2) else "")
 
         dated, undated, done = (by_title[w]
                                 for w in ("bravo", "charlie", "echo"))
@@ -3226,8 +3267,10 @@ async def test_kanban_collapse_toggles_the_terminal_phase_and_restores(tmp_path)
         text = board_text(app)
         n = len([t for t in board.visible_tasks(app.show_archived)
                  if board.is_done(t)])
-        summary = [l for l in text.split("\n") if f"✓ {n}" in l]
-        assert len(summary) == 1, f"expected one `✓ {n}` summary row: {summary}"
+        # the collapsed rail is a count (`✓N`, 2026-10-02-batch-03 HLR-304 —
+        # it supersedes the `✓ N` summary row): its head says N, recomputed
+        summary = [l for l in text.split("\n")[1:2] if l.rstrip().endswith(f"✓{n}")]
+        assert len(summary) == 1, f"expected the rail's `✓{n}` head: {summary}"
         for t in terminal:
             assert t.title not in text, f"{t.title} still painted under collapse"
         names, cols = _painted_kanban(app)
@@ -3270,12 +3313,13 @@ async def test_kanban_collapse_toggles_the_terminal_phase_and_restores(tmp_path)
         expected = next(t for t in board.tasks if t.phase == board.phases[-2])
         assert app.selected_task_id == expected.id, \
             "the selection did not relocate to the nearest visible task"
-        assert f"✓ {n}" in board_text(app), "the summary row did not render"
+        assert board_text(app).split("\n")[1].rstrip().endswith(f"✓{n}"), \
+            "the rail's count did not render"
 
 
 def test_kanban_collapsed_column_shape_and_nav_exclusion(tmp_path):
     """TC-010 (HLR-007/LLR-007.1), white-box: for the collapsed terminal
-    phase, `_kanban_column_rows` emits EXACTLY ONE `(markup, None)` row —
+    phase draws a count and nothing selectable (the rail since 2026-10-02-batch-03; it was ONE `(markup, None)` row) —
     `✓ N`, N the phase's visible count recomputed — and the kanban
     `nav_model` branch contributes NOTHING for it: the column is ABSENT, not
     empty — while a genuinely EMPTY phase (Review in this fixture) KEEPS its
@@ -3288,29 +3332,31 @@ def test_kanban_collapsed_column_shape_and_nav_exclusion(tmp_path):
     increment-008 §4); summary count hardcoded or counting archived → the
     recomputed-N limb red; the row given a task id → the None limb red (the
     row would be selectable)."""
-    from rich.text import Text
     from rich.cells import cell_len
 
-    from taskboard.views import _kanban_column_rows, kanban_order, nav_model
+    from taskboard.views import kanban_order, nav_model, render_kanban
     board = _mode_board(tmp_path)               # Review is EMPTY by design
     terminal = [t for t in board.visible_tasks(False) if board.is_done(t)]
     assert terminal, "vacuous fixture: the terminal phase is empty"
 
-    rows = _kanban_column_rows(board, terminal, 24, None, False,
-                               collapsed=True)
-    assert len(rows) == 1, f"a collapsed column emitted {len(rows)} rows"
-    markup, tid = rows[0]
-    assert tid is None, "the summary row must be non-selectable"
-    plain = Text.from_markup(markup).plain
-    assert plain.strip() == f"✓ {len(terminal)}"
-    assert cell_len(plain) == 24, "the summary row is not width-exact"
+    # Changed 2026-10-02 (batch 2026-10-02-batch-03, HLR-304 / D-313): the
+    # terminal phase is the DONE rail; collapsed it is a count — `✓N` at its
+    # head, no title painted, no row naming a task — and 7 cells wide
+    lm: dict = {}
+    text = render_kanban(board, False, None, width=120, height=0, line_map=lm,
+                         collapsed=True)
+    rows = text.plain.split("\n")
+    assert rows[1].rstrip().endswith(f"✓{len(terminal)}")
+    assert not {t.id for t in terminal} & set(lm), "a counted task is selectable"
+    assert all(t.title not in text.plain for t in terminal)
+    assert all(cell_len(r) == 120 for r in rows if r.strip())
 
     # the flag is an INPUT TO THE SEAT (LLR-007.1), on both paths
     assert kanban_order(board, terminal, False, collapsed=True) == []
     assert kanban_order(board, terminal, False) != []
 
-    full = nav_model("kanban", board, False)
-    collapsed = nav_model("kanban", board, False, kanban_collapsed=True)
+    full = nav_model("kanban", board, False, width=120)    # the rail's titles drawn
+    collapsed = nav_model("kanban", board, False, width=120, kanban_collapsed=True)
     assert len(full) == len(board.phases)
     review_i = board.phases.index("Review")
     assert full[review_i] == [], "fixture guard: Review must be empty"
@@ -3337,8 +3383,8 @@ def test_matrix_presentation_nav_ignores_the_modes_like_the_render(tmp_path):
     all_visible = {t.id for t in board.visible_tasks(False)}
     assert b_tasks and b_tasks < all_visible, "vacuous fixture guard"
 
-    grouped = nav_model("kanban", board, False, kanban_focus=proj_b.id,
-                        presentation="grouped")
+    grouped = nav_model("kanban", board, False, width=120, kanban_focus=proj_b.id,
+                        presentation="grouped")   # 120: the rail draws done titles
     assert {tid for col in grouped for tid in col} == b_tasks, \
         "grouped+focus must show ONLY the focused project's cards"
 

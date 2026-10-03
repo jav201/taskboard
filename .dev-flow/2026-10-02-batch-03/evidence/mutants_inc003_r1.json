@@ -1,0 +1,22 @@
+[
+ {
+  "id": "C3",
+  "file": "taskboard/views.py",
+  "old": "        start = min(-(-max(0, at + 2 - rows) // 3) * 3, at)",
+  "new": "        start = min(max(0, at + 2 - rows), at)",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection"
+  ],
+  "why": "the cut not on a card boundary (a half card on top)"
+ },
+ {
+  "id": "C5",
+  "file": "taskboard/views.py",
+  "old": "    if keep == list(range(len(bands))) and cut is None:",
+  "new": "    if keep == list(range(len(bands))):",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection"
+  ],
+  "why": "a cut with every band kept draws no fold row"
+ }
+]

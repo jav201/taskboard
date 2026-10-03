@@ -1,0 +1,20 @@
+== P-1 shipped grouped kanban, oracle board, panel sizes, first h rows
+118x30: rows=30 avg/28=7.3 full=0 drawn=24 cards_in_line_map=28 project_header_cells=18 high_dividers=3
+80x24: rows=24 avg/28=1.0 full=0 drawn=4 cards_in_line_map=28 project_header_cells=18 high_dividers=3
+== P-2 the seat's open-high set (band=True), per column
+  Backlog: ['tw5', 'tm4', 'ta2', 'to5']
+  Next: ['ta3', 'to2']
+  Doing: ['tw3', 'ta4', 'to1']
+  Review: []
+  Done: []
+  total open highs=9 projects=4
+== P-3 grouped nav: columns and the Done column
+  columns=5 sizes=[10, 5, 6, 4, 3] last=['tw1', 'tm1', 'td1']
+== P-4 the tab cycle in app.py
+  ('grouped', 'matrix', 'lanes')
+== P-5 is_done is the last phase
+   [('Backlog', False), ('Next', False), ('Doing', False), ('Review', False), ('Done', True)]
+== P-6 the R-1b prototype frame re-rendered over this tree, same metric
+118x30: avg/28=11.8 full=13 drawn=21 pinned_rows=12 hidden=['Data Warehouse (4 open)', 'Ops & Security (5 open)']
+80x24: avg/28=6.2 full=3 drawn=16 pinned_rows=12 hidden=['API Platform (6 open)', 'Data Warehouse (4 open)', 'Ops & Security (5 open)']
+  (body rows only: rows[3:h], the fold row dropped; a match must cover the first word)

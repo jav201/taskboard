@@ -1,0 +1,44 @@
+[
+ {
+  "id": "Q9",
+  "file": "taskboard/app.py",
+  "old": "        if (self.selected_task_id is not None and self.view_mode == \"kanban\"",
+  "new": "        if False and (self.selected_task_id is not None and self.view_mode == \"kanban\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally"
+  ],
+  "why": "no relocation off a counted done task (resize)"
+ },
+ {
+  "id": "Q10",
+  "file": "taskboard/views.py",
+  "old": "                           \"grouped board; +N more ↓ when it is full\",",
+  "new": "                           \"grouped board.\",",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board",
+   "tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn"
+  ],
+  "why": "the help forgets the cap"
+ },
+ {
+  "id": "Q11",
+  "file": "taskboard/views.py",
+  "old": "\"project band, by colour\"",
+  "new": "\"project header, by colour\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board",
+   "tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn"
+  ],
+  "why": "the legend keeps the old label"
+ },
+ {
+  "id": "Q12",
+  "file": "taskboard/views.py",
+  "old": "\"▊ !! sync daemon ↗ ·3d ⛓2 +4d\"",
+  "new": "\"▊ !! sync daemon ↗ ·3d +4d ⛓2\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board"
+  ],
+  "why": "the example's meta order"
+ }
+]

@@ -1,0 +1,30 @@
+KANBAN · grouped · group: priority                                                                           28 tasks 
+BACKLOG              10│NEXT                  5│DOING               6/4│REVIEW              4/3│DONE                 3
+───────────────────────┼───────────────────────┼───────────────────────┼───────────────────────┼──────────────────────
+▐ High                 │▐ High                 │▐ High                 │▐ Normal               │▐ Normal              
+▊ !! Launch … ·30d +10d│▊ !! Partne… ·8d +3d ⛓1│▊ !! Fix check… ·9d -2d│▊ == Build … ·4d -3d ⛓2│▊ Design homepag… -20d
+▊ !! Offl… ·15d +28d ⛓1│▊ !! Rotate A… ·14d +3d│▊ !! Rate … ·10d +4d ⛓1│▊ == SDK regen… ·7d -1d│▊ Set up CI pipe… -12d
+▲ !! Deprecat… ·26d +7d│▐ Normal               │▊ !! Renew TLS… ·5d -1d│▊ == Review … ·3d today│▐ Low                 
+▊ !! Pen-test… ·9d +20d│▊ == Add p… ·3d +12d ⛓1│▐ Normal               │▐ Low                  │▊ Migrate user ta… -4d
+▐ Normal               │▊ == Compress… ·11d +9d│▊ == Audit … ·6d +2d ⛓1│▊ ++ Crash rep… ·2d +1d│                      
+▊ == SEO red… ·22d +14d│▐ Low                  │▊ == Write AP… ·21d -5d│                       │                      
+▊ == Beta re… ·15d +35d│▊ ++ Optim… ·12d +6d ⛓1│▊ == Daily… ·2d +18d ⛓1│                       │                      
+▊ == Plan Q4 road… ·40d│                       │                       │                       │                      
+▊ == BI dashb… ·5d +60d│                       │                       │                       │                      
+▊ == Update onboa… ·33d│                       │                       │                       │                      
+▐ Low                  │                       │                       │                       │                      
+▊ ++ Archive… ·19d +30d│                       │                       │                       │                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      

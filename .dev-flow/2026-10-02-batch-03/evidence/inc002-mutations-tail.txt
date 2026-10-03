@@ -1,0 +1,15 @@
+Q9 KILLED — no relocation off a counted done task (resize)
+   arms resolved 1, red 1; restore sha256 7c1410e8fc1ed00d… OK
+    FAILED tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally
+Q10 KILLED — the help forgets the cap
+   arms resolved 2, red 2; restore sha256 39a81dbc9b6626c4… OK
+    FAILED tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board
+    FAILED tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn
+Q11 KILLED — the legend keeps the old label
+   arms resolved 2, red 2; restore sha256 39a81dbc9b6626c4… OK
+    FAILED tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board
+    FAILED tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn
+Q12 KILLED — the example's meta order
+   arms resolved 1, red 1; restore sha256 39a81dbc9b6626c4… OK
+    FAILED tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board
+4 of 4 KILLED

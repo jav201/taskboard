@@ -1,0 +1,1797 @@
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....... [ 51%]
+......................................................FFF.FFFFFFFFFFF    [100%]
+================================== FAILURES ===================================
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[0] ____________
+
+wc = 0
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[1] ____________
+
+wc = 1
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[2] ____________
+
+wc = 2
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[3] ____________
+
+wc = 3
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[4] ____________
+
+wc = 4
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[5] ____________
+
+wc = 5
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[6] ____________
+
+wc = 6
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[7] ____________
+
+wc = 7
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[8] ____________
+
+wc = 8
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[9] ____________
+
+wc = 9
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[10] ___________
+
+wc = 10
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[11] ___________
+
+wc = 11
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[12] ___________
+
+wc = 12
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[13] ___________
+
+wc = 13
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[14] ___________
+
+wc = 14
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[15] ___________
+
+wc = 15
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[16] ___________
+
+wc = 16
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[17] ___________
+
+wc = 17
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[18] ___________
+
+wc = 18
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[19] ___________
+
+wc = 19
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[20] ___________
+
+wc = 20
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[21] ___________
+
+wc = 21
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[22] ___________
+
+wc = 22
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[23] ___________
+
+wc = 23
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[24] ___________
+
+wc = 24
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[25] ___________
+
+wc = 25
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[26] ___________
+
+wc = 26
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[27] ___________
+
+wc = 27
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[28] ___________
+
+wc = 28
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[29] ___________
+
+wc = 29
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[30] ___________
+
+wc = 30
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[31] ___________
+
+wc = 31
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[32] ___________
+
+wc = 32
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[33] ___________
+
+wc = 33
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[34] ___________
+
+wc = 34
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[35] ___________
+
+wc = 35
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[36] ___________
+
+wc = 36
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[37] ___________
+
+wc = 37
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[38] ___________
+
+wc = 38
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[39] ___________
+
+wc = 39
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+___________ test_TC_302_a_card_is_two_rows_of_exactly_its_width[40] ___________
+
+wc = 40
+
+    @pytest.mark.parametrize("wc", range(0, 41))
+    def test_TC_302_a_card_is_two_rows_of_exactly_its_width(wc):
+        """TC-302 (LLR-301.2). The width law on BOTH rows, at every width down to 0,
+        for the oracle board plus hostile titles (P2 S-1/S-2: a lone `[`,
+        backslashes at a cut and at the end, an escaped tag, a closing tag that
+        lands on row 2, wide characters), each with and without a URL. A piece
+        escaped BEFORE it is cut opens a tag or leaves `[/link]` literal; rich then
+        raises or the row leans. RED: escape the title before the cut."""
+        b = _card_tasks()
+        for t in b.tasks:
+            for sel in (False, True):
+>               r1, r2 = kanban_card(t, b, wc, sel, today=TODAY)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:162: TypeError
+______ test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it _______
+
+    def test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it():
+        """TC-302. The approved frame's own card (`out/R-1b-118x30.txt` rows 20–21,
+        `tm5`: normal, 15 days in phase, due +35d, no dependant, no URL) at its
+        column width 24, and a first word wider than the cell cut with `…`."""
+        b = kg_board.build()
+>       r1, r2 = kanban_card(b.task_by_id("tm5"), b, 24, False, today=TODAY)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:175: TypeError
+______________ test_TC_303_the_due_token_is_the_last_fact_to_go _______________
+
+    def test_TC_303_the_due_token_is_the_last_fact_to_go():
+        """TC-303 (LLR-301.2). Under width pressure the meta strip sheds from the
+        left — age, then `⛓N`, then the due token LAST: at every width from 9 a
+        dated open card still shows its due. RED: `⛓N` after the due → at `wc` 14
+        `Fix checkout`'s `-2d` is shed before `⛓`."""
+        b = kg_board.build()
+        unb = {t.id: models.unblocks_count(b, t) for t in b.tasks}
+        for t in b.tasks:
+            due, _tone = views.reldue_token(t, TODAY, b, include_done=True)
+            if not due or t.archived:
+                continue
+            for wc in range(9, 41):
+>               _r1, r2 = kanban_card(t, b, wc, False, today=TODAY, unblocks=unb)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:195: TypeError
+________ test_TC_302_the_selected_title_is_reverse_and_the_badge_stays ________
+
+    def test_TC_302_the_selected_title_is_reverse_and_the_badge_stays():
+        b = kg_board.build()
+>       r1, r2 = kanban_card(b.task_by_id("tw3"), b, 23, True, today=TODAY)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:204: TypeError
+___ test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[24] ____
+
+w = 24
+
+    @pytest.mark.parametrize("w", [24, 40, 60, 80, 100, 118, 160])
+    def test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated(w):
+        """TC-304 (HLR-302). Every row is exactly the panel width; in each cell one
+        `┈` row sits between two cards and none after the last. The cells are read
+        off the plan (band × column), the rows off the render. RED: no separator →
+        the second card's row 1 sits right under the first card's row 2."""
+        b = kg_board.build()
+        text, rows, lm = render(b, w, 0)
+        assert all(cell_len(r) == w for r in rows if r.strip()), w
+>       plan = kanban_plan(b, False, "tw3", TODAY, w, 0)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:224: TypeError
+___ test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[40] ____
+
+w = 40
+
+    @pytest.mark.parametrize("w", [24, 40, 60, 80, 100, 118, 160])
+    def test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated(w):
+        """TC-304 (HLR-302). Every row is exactly the panel width; in each cell one
+        `┈` row sits between two cards and none after the last. The cells are read
+        off the plan (band × column), the rows off the render. RED: no separator →
+        the second card's row 1 sits right under the first card's row 2."""
+        b = kg_board.build()
+        text, rows, lm = render(b, w, 0)
+        assert all(cell_len(r) == w for r in rows if r.strip()), w
+>       plan = kanban_plan(b, False, "tw3", TODAY, w, 0)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:224: TypeError
+___ test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[60] ____
+
+w = 60
+
+    @pytest.mark.parametrize("w", [24, 40, 60, 80, 100, 118, 160])
+    def test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated(w):
+        """TC-304 (HLR-302). Every row is exactly the panel width; in each cell one
+        `┈` row sits between two cards and none after the last. The cells are read
+        off the plan (band × column), the rows off the render. RED: no separator →
+        the second card's row 1 sits right under the first card's row 2."""
+        b = kg_board.build()
+        text, rows, lm = render(b, w, 0)
+        assert all(cell_len(r) == w for r in rows if r.strip()), w
+>       plan = kanban_plan(b, False, "tw3", TODAY, w, 0)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:224: TypeError
+___ test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[80] ____
+
+w = 80
+
+    @pytest.mark.parametrize("w", [24, 40, 60, 80, 100, 118, 160])
+    def test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated(w):
+        """TC-304 (HLR-302). Every row is exactly the panel width; in each cell one
+        `┈` row sits between two cards and none after the last. The cells are read
+        off the plan (band × column), the rows off the render. RED: no separator →
+        the second card's row 1 sits right under the first card's row 2."""
+        b = kg_board.build()
+        text, rows, lm = render(b, w, 0)
+        assert all(cell_len(r) == w for r in rows if r.strip()), w
+>       plan = kanban_plan(b, False, "tw3", TODAY, w, 0)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:224: TypeError
+___ test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[100] ___
+
+w = 100
+
+    @pytest.mark.parametrize("w", [24, 40, 60, 80, 100, 118, 160])
+    def test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated(w):
+        """TC-304 (HLR-302). Every row is exactly the panel width; in each cell one
+        `┈` row sits between two cards and none after the last. The cells are read
+        off the plan (band × column), the rows off the render. RED: no separator →
+        the second card's row 1 sits right under the first card's row 2."""
+        b = kg_board.build()
+        text, rows, lm = render(b, w, 0)
+        assert all(cell_len(r) == w for r in rows if r.strip()), w
+>       plan = kanban_plan(b, False, "tw3", TODAY, w, 0)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:224: TypeError
+___ test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[118] ___
+
+w = 118
+
+    @pytest.mark.parametrize("w", [24, 40, 60, 80, 100, 118, 160])
+    def test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated(w):
+        """TC-304 (HLR-302). Every row is exactly the panel width; in each cell one
+        `┈` row sits between two cards and none after the last. The cells are read
+        off the plan (band × column), the rows off the render. RED: no separator →
+        the second card's row 1 sits right under the first card's row 2."""
+        b = kg_board.build()
+        text, rows, lm = render(b, w, 0)
+        assert all(cell_len(r) == w for r in rows if r.strip()), w
+>       plan = kanban_plan(b, False, "tw3", TODAY, w, 0)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:224: TypeError
+___ test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[160] ___
+
+w = 160
+
+    @pytest.mark.parametrize("w", [24, 40, 60, 80, 100, 118, 160])
+    def test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated(w):
+        """TC-304 (HLR-302). Every row is exactly the panel width; in each cell one
+        `┈` row sits between two cards and none after the last. The cells are read
+        off the plan (band × column), the rows off the render. RED: no separator →
+        the second card's row 1 sits right under the first card's row 2."""
+        b = kg_board.build()
+        text, rows, lm = render(b, w, 0)
+        assert all(cell_len(r) == w for r in rows if r.strip()), w
+>       plan = kanban_plan(b, False, "tw3", TODAY, w, 0)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:224: TypeError
+______________ test_TC_305_the_columns_are_sized_by_their_titles ______________
+
+    def test_TC_305_the_columns_are_sized_by_their_titles():
+        """TC-305 (LLR-302.1, LED .17). The split is proportional to each column's
+        longest title (+5 for the spine and badge), the frames' rule: at 118 the
+        oracle columns come out 24 / 27 / 23 / 24 — the frame's widths — and every
+        split sums to its room; when the rule would leave a column under MIN_COL it
+        falls back to MIN_COL first. RED: equal widths (`distribute`)."""
+        b = kg_board.build()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, 30)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:247: TypeError
+____________ test_TC_306_each_project_is_named_once_by_a_band_rule ____________
+
+    def test_TC_306_each_project_is_named_once_by_a_band_rule():
+        """TC-306 (HLR-303). Unwindowed (h 0) the oracle board draws one band rule
+        per project (5), each naming it once; no `▐` inside a card cell; the rules
+        carry the facts; `┼` falls under every separator past the text. RED on
+        base: 18 `▐ project` header cells."""
+        b = kg_board.build()
+        text, rows, lm = render(b, 118, 0)
+        rules = [r for r in rows if is_rule(r)]
+>       assert [r.split("  ")[0][2:] for r in rules] == [p.name for p in b.projects]
+E       AssertionError: assert [] == ['Website Red...s & Security']
+E         
+E         Right contains 5 more items, first extra item: 'Website Redesign'
+E         Use -v to get more diff
+
+tests\test_kanban_readable.py:268: AssertionError
+_____ test_TC_306_other_group_modes_draw_band_rules_too[priority-names0] ______
+
+group = 'priority', names = ['High', 'Normal', 'Low']
+
+    @pytest.mark.parametrize("group,names", [
+        ("priority", ["High", "Normal", "Low"]),
+        ("horizon", ["Overdue", "This week", "Later", "No date", "Done"])])
+    def test_TC_306_other_group_modes_draw_band_rules_too(group, names):
+        """D-309 (PV-7): under `priority` and `horizon` each non-empty group opens a
+        band rule; `priority` draws no high band (its High group IS the band).
+        RED on base: per-column `▐ High` headers, no rule with an open count."""
+        b = kg_board.build()
+        _t, rows, _lm = render(b, 118, 0, kanban_group=group)
+        rules = [r.split("  ")[0][2:] for r in rows if is_rule(r)]
+>       assert rules and set(rules) <= set(names)
+E       assert ([])
+
+tests\test_kanban_readable.py:295: AssertionError
+______ test_TC_306_other_group_modes_draw_band_rules_too[horizon-names1] ______
+
+group = 'horizon', names = ['Overdue', 'This week', 'Later', 'No date', 'Done']
+
+    @pytest.mark.parametrize("group,names", [
+        ("priority", ["High", "Normal", "Low"]),
+        ("horizon", ["Overdue", "This week", "Later", "No date", "Done"])])
+    def test_TC_306_other_group_modes_draw_band_rules_too(group, names):
+        """D-309 (PV-7): under `priority` and `horizon` each non-empty group opens a
+        band rule; `priority` draws no high band (its High group IS the band).
+        RED on base: per-column `▐ High` headers, no rule with an open count."""
+        b = kg_board.build()
+        _t, rows, _lm = render(b, 118, 0, kanban_group=group)
+        rules = [r.split("  ")[0][2:] for r in rows if is_rule(r)]
+>       assert rules and set(rules) <= set(names)
+E       assert ([])
+
+tests\test_kanban_readable.py:295: AssertionError
+_____________ test_TC_306_a_hostile_project_name_prints_literally _____________
+
+    def test_TC_306_a_hostile_project_name_prints_literally():
+        """C-17: the band rule and the fold row print the user's project name; the
+        rule stays the panel's width. A regression PIN (the shipped headers obeyed
+        it too); the rule's own literal is asserted on the band rule row."""
+        b = kg_board.build()
+        b.projects[0].name = "[b]Odd[/b] [link=http://e]x"
+        for w in (24, 60, 118, 160):
+            _t, rows, _lm = render(b, w, 0)
+            assert all(cell_len(r) == w for r in rows if r.strip())
+        _t, rows, _lm = render(b, 160, 0)
+>       assert any(is_rule(r) and "[b]Odd[/b] [link=http://e]x" in r for r in rows)
+E       assert False
+E        +  where False = any(<generator object test_TC_306_a_hostile_project_name_prints_literally.<locals>.<genexpr> at 0x000001F14894D7D0>)
+
+tests\test_kanban_readable.py:309: AssertionError
+______ test_TC_307_the_rail_is_titles_when_wide_and_a_count_when_narrow _______
+
+    def test_TC_307_the_rail_is_titles_when_wide_and_a_count_when_narrow():
+        """TC-307 (HLR-304). At 118 the rail head reads `✓ DONE 3` and Website's
+        cell `✓ Design homepa…` over `done 18d ago`; at 80 `✓3` and `✓1` over
+        `18d ago`; unwindowed nav's last column is the drawn done titles at 118 and
+        holds no done id at 80 or collapsed. Boundary 99 / 100. RED on base: a
+        full-width Done column."""
+        b = kg_board.build()
+        _t, rows, lm = render(b, 118, 0)
+>       assert rows[1].rstrip().endswith("✓ DONE 3")
+E       AssertionError: assert False
+E        +  where False = <built-in method endswith of str object at 0x000001F148B2F930>('✓ DONE 3')
+E        +    where <built-in method endswith of str object at 0x000001F148B2F930> = 'BACKLOG              10│NEXT                  5│DOING               6/4│REVIEW              4/3│DONE                 3'.endswith
+E        +      where 'BACKLOG              10│NEXT                  5│DOING               6/4│REVIEW              4/3│DONE                 3' = <built-in method rstrip of str object at 0x000001F148B2F930>()
+E        +        where <built-in method rstrip of str object at 0x000001F148B2F930> = 'BACKLOG              10│NEXT                  5│DOING               6/4│REVIEW              4/3│DONE                 3'.rstrip
+
+tests\test_kanban_readable.py:323: AssertionError
+_____________ test_TC_307_a_full_rail_counts_what_it_cannot_draw ______________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_TC_307_a_full_rail_counts0')
+
+    def test_TC_307_a_full_rail_counts_what_it_cannot_draw(tmp_path):
+        """A band with one card (2 rows, room 3) and three done tasks draws ONE
+        done title and `+2 more`; the newest first. A hostile done title prints
+        literally and the row keeps its 16 cells (P2 S-1)."""
+        p = Project("Solo", "sky")
+        d = lambda n: (TODAY + timedelta(days=n)).isoformat()   # noqa: E731
+        b = Board([p], [Task("only card", p.id, "Doing", id="o"),
+                        Task("[/b]x [link=http://e]y", p.id, "Done", phase_changed=d(-1), id="d1"),
+                        Task("older", p.id, "Done", phase_changed=d(-5), id="d2"),
+                        Task("oldest", p.id, "Done", phase_changed=d(-9), id="d3")],
+                  tmp_path / "b.json", phases=["Doing", "Done"])
+        _t, rows, lm = render(b, 118, 0, sel="d1")
+        rule = next(i for i, r in enumerate(rows) if r.startswith("▐ Solo"))
+>       assert rows[rule + 1].endswith("✓ [/b]x [link=h…") and "d1" in lm
+E       AssertionError: assert (False)
+E        +  where False = <built-in method endswith of str object at 0x000001F148B2CFA0>('✓ [/b]x [link=h…')
+E        +    where <built-in method endswith of str object at 0x000001F148B2CFA0> = '▊ == only card                                             │▊ [/b]x [link=http://e]y                                  '.endswith
+
+tests\test_kanban_readable.py:356: AssertionError
+_____ test_TC_308_the_high_band_is_first_and_holds_exactly_the_open_highs _____
+
+    def test_TC_308_the_high_band_is_first_and_holds_exactly_the_open_highs():
+        """TC-308 (HLR-305). The band opens the body, holds the 9 open highs (P-2)
+        above every project band, its rule counts what it draws; the tags drawn at
+        118 are the frame's (8 of 9: `to1`'s row 2 has no room), each in its
+        project's hue. RED on base: a `── high` divider in every column."""
+        b = kg_board.build()
+        text, rows, lm = render(b, 118, 0)
+>       assert rows[3].startswith("── high  9 open · 4 projects ")
+E       AssertionError: assert False
+E        +  where False = <built-in method startswith of str object at 0x000001F148B2D590>('── high  9 open · 4 projects ')
+E        +    where <built-in method startswith of str object at 0x000001F148B2D590> = '── high ───────────────│── high ───────────────│── high ───────────────│▐ Website Redesign     │▐ Website Redesign    '.startswith
+
+tests\test_kanban_readable.py:372: AssertionError
+_____________ test_TC_308_the_band_keeps_the_seats_order[project] _____________
+
+sort = 'project'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_TC_308_the_band_keeps_the_seats_order(sort):
+        """LLR-305.1. Per column, the band's cards are the seat's KANBAN_BAND group
+        in the active sort's order (an oracle through the shipped seat)."""
+        b = kg_board.build()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, 0, sort=sort)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:394: TypeError
+____________ test_TC_308_the_band_keeps_the_seats_order[priority] _____________
+
+sort = 'priority'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_TC_308_the_band_keeps_the_seats_order(sort):
+        """LLR-305.1. Per column, the band's cards are the seat's KANBAN_BAND group
+        in the active sort's order (an oracle through the shipped seat)."""
+        b = kg_board.build()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, 0, sort=sort)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:394: TypeError
+_______________ test_TC_308_the_band_keeps_the_seats_order[due] _______________
+
+sort = 'due'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_TC_308_the_band_keeps_the_seats_order(sort):
+        """LLR-305.1. Per column, the band's cards are the seat's KANBAN_BAND group
+        in the active sort's order (an oracle through the shipped seat)."""
+        b = kg_board.build()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, 0, sort=sort)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:394: TypeError
+_____________ test_TC_308_the_band_keeps_the_seats_order[recent] ______________
+
+sort = 'recent'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_TC_308_the_band_keeps_the_seats_order(sort):
+        """LLR-305.1. Per column, the band's cards are the seat's KANBAN_BAND group
+        in the active sort's order (an oracle through the shipped seat)."""
+        b = kg_board.build()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, 0, sort=sort)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:394: TypeError
+_____________ test_TC_308_the_band_keeps_the_seats_order[unblock] _____________
+
+sort = 'unblock'
+
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    def test_TC_308_the_band_keeps_the_seats_order(sort):
+        """LLR-305.1. Per column, the band's cards are the seat's KANBAN_BAND group
+        in the active sort's order (an oracle through the shipped seat)."""
+        b = kg_board.build()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, 0, sort=sort)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:394: TypeError
+__________ test_TC_308_tags_tell_projects_apart_and_print_literally ___________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_TC_308_tags_tell_projects0')
+
+    def test_TC_308_tags_tell_projects_apart_and_print_literally(tmp_path):
+        """D-307 (PV-5, P2 UX-8): the tag is the shortest run of leading WORDS no
+        other project's name starts with — `API Platform` / `API Gateway` — and a
+        bracket name prints literally."""
+        ps = [Project("API Platform", "lime"), Project("API Gateway", "sky"),
+              Project("[b]Odd[/b] Co", "pink"), Project("APIx", "violet")]
+        tasks = [Task(f"urgent {i}", p.id, "Doing", "high", id=f"u{i}") for i, p in enumerate(ps)]
+        b = Board(ps, tasks, tmp_path / "b.json", phases=["Doing", "Done"])
+>       tags = views._project_tags(b)
+E       AttributeError: module 'taskboard.views' has no attribute '_project_tags'. Did you mean: 'project_wave'?
+
+tests\test_kanban_readable.py:409: AttributeError
+____________ test_TC_301_a_window_of_phases_follows_the_selection _____________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_TC_301_a_window_of_phases0')
+
+    def test_TC_301_a_window_of_phases_follows_the_selection(tmp_path):
+        """The shipped phase window over the OPEN phases: 7 open phases at 80 do
+        not fit; nav keeps every open phase (one column each) plus nothing for the
+        count rail; the window drawn holds the selected task's phase."""
+        b = eight_phases(tmp_path / "e.json")
+        nav = nav_model("kanban", b, False, TODAY, 80, 24, selected_id="t5")
+>       assert len(nav) == 7
+E       AssertionError: assert 8 == 7
+E        +  where 8 = len([['t0'], ['t1'], ['t2'], ['t3'], ['t4'], ['t5'], ...])
+
+tests\test_kanban_readable.py:464: AssertionError
+_______ test_TC_313_the_chrome_names_the_modes_and_counts_hidden_phases _______
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_TC_313_the_chrome_names_t0')
+
+    def test_TC_313_the_chrome_names_the_modes_and_counts_hidden_phases(tmp_path):
+        """TC-313 (LLR-301.3). The head names a non-default sort, group and focus;
+        the WIP tag burns `over` when strictly over; the window markers count the
+        OPEN phases hidden (never the rail's); an empty board says so. RED: the
+        markers counting the rail's phase as hidden."""
+        b = kg_board.build()
+        text, rows, _lm = render(b, 118, 0, kanban_sort="due", kanban_group="horizon",
+                                 kanban_focus="pweb")
+        assert "sort: due" in rows[0] and "group: horizon" in rows[0]
+        assert "focus: Website Redesign" in rows[0]
+        text, rows, _lm = render(b, 118, 0)
+        assert "6/4" in rows[1]
+        e = eight_phases(tmp_path / "e.json")
+        _t, rows, _lm = render(e, 80, 24, sel="t0")
+>       plan = kanban_plan(e, False, "t0", TODAY, 80, 24)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:487: TypeError
+___________ test_TC_311_the_board_folds_whole_bands_and_names_them ____________
+
+    def test_TC_311_the_board_folds_whole_bands_and_names_them():
+        """TC-311 (HLR-309). At 118×30 with `tw3` the render is exactly 30 rows and
+        its last row is the approved frame's; with `to3` the Ops band is drawn and
+        the folded bands above are named; at h 0 nothing folds. RED: an unwindowed
+        render is taller than the panel and names nothing."""
+        b = kg_board.build()
+        _t, rows, lm = render(b, 118, 30)
+        assert len(rows) == 30
+>       assert rows[-1].rstrip() == "▼ 2 below: Data Warehouse (4 open), Ops & Security (5 open)"
+E       AssertionError: assert '' == '▼ 2 below: D...rity (5 open)'
+E         
+E         - ▼ 2 below: Data Warehouse (4 open), Ops & Security (5 open)
+
+tests\test_kanban_readable.py:506: AssertionError
+________ test_TC_311_every_selection_is_drawn_inside_the_panel[80-24] _________
+
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w,h", [(118, 30), (80, 24), (80, 22)])
+    def test_TC_311_every_selection_is_drawn_inside_the_panel(w, h):
+        """LLR-309.1 over EVERY task as the selection (the set is the board's, not
+        hand-listed): the selected card is drawn, both its rows inside the panel,
+        the render exactly `h` rows; at 80 with bands folded on both sides the fold
+        row prints both counts (P2 UX-15)."""
+        b = kg_board.build()
+        both = 0
+        for t in b.tasks:
+            _t, rows, lm = render(b, w, h, sel=t.id)
+            assert len(rows) == h, (t.id, len(rows))
+            if b.is_done(t) and w < 100:
+>               assert t.id not in lm
+E               AssertionError: assert 'tw1' not in {'ta1': 11, 'ta2': 6, 'ta3': 4, 'ta4': 5, ...}
+E                +  where 'tw1' = Task(title='Design homepage mockups', project_id='pweb', phase='Done', priority='normal', start_date='2026-08-23', due... images=[], archived=False, pinned=False, blocked=False, depends_on=[], phase_changed='2026-09-12', extra={}, id='tw1').id
+
+tests\test_kanban_readable.py:526: AssertionError
+________ test_TC_311_every_selection_is_drawn_inside_the_panel[80-22] _________
+
+w = 80, h = 22
+
+    @pytest.mark.parametrize("w,h", [(118, 30), (80, 24), (80, 22)])
+    def test_TC_311_every_selection_is_drawn_inside_the_panel(w, h):
+        """LLR-309.1 over EVERY task as the selection (the set is the board's, not
+        hand-listed): the selected card is drawn, both its rows inside the panel,
+        the render exactly `h` rows; at 80 with bands folded on both sides the fold
+        row prints both counts (P2 UX-15)."""
+        b = kg_board.build()
+        both = 0
+        for t in b.tasks:
+            _t, rows, lm = render(b, w, h, sel=t.id)
+            assert len(rows) == h, (t.id, len(rows))
+            if b.is_done(t) and w < 100:
+>               assert t.id not in lm
+E               AssertionError: assert 'tw1' not in {'ta1': 11, 'ta2': 6, 'ta3': 4, 'ta4': 5, ...}
+E                +  where 'tw1' = Task(title='Design homepage mockups', project_id='pweb', phase='Done', priority='normal', start_date='2026-08-23', due... images=[], archived=False, pinned=False, blocked=False, depends_on=[], phase_changed='2026-09-12', extra={}, id='tw1').id
+
+tests\test_kanban_readable.py:526: AssertionError
+_____________ test_TC_311_a_down_into_a_drawn_band_moves_nothing ______________
+
+    def test_TC_311_a_down_into_a_drawn_band_moves_nothing():
+        """P2 UX-14 (D-314): walking down column 0, a step into a band already
+        drawn leaves the drawn band set unchanged. RED: the prototype's
+        selection-first window."""
+        b = kg_board.build()
+        col = nav_model("kanban", b, False, TODAY, 118, 30, selected_id="tw5")[0]
+    
+        def drawn_rules(sel):
+            _t, rows, lm = render(b, 118, 30, sel=sel)
+            return [r.split("  ")[0] for r in rows if is_rule(r)], lm
+    
+>       assert drawn_rules(col[0])[0], "no band rule drawn: vacuous"
+E       AssertionError: no band rule drawn: vacuous
+E       assert []
+
+tests\test_kanban_readable.py:547: AssertionError
+___________ test_AT_301_cards_read_across_the_column[size0-11.0-12] ___________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_AT_301_cards_read_across_0')
+frozen_today = None, size = (118, 32), floor = 11.0, full = 12
+
+    @pytest.mark.parametrize("size,floor,full", [((118, 32), 11.0, 12), ((80, 26), 5.5, 0),
+                                                 ((80, 24), None, 0)])
+    async def test_AT_301_cards_read_across_the_column(tmp_path, frozen_today, size, floor, full):
+        """AT-301 (US-301). Key `4` in the running app: every painted card is two
+        rows — row 1 badge + title, row 2 the spine under it — stacked cards are
+        split by `┈`, the columns differ in width, and the measured title
+        readability clears the floor (base 7.3 / 1.0, P-1). RED on base: one-row
+        cards, no `┈`, equal columns, 7.3 chars."""
+        app = await _kanban_app(tmp_path, size)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "tw3"
+            app.refresh_view()
+            await pilot.pause()
+            rows = _painted(app)
+            h = _viewport_h(app)
+            seps = seps_of(rows)
+>           assert len({b - a for a, b in zip([-1] + seps, seps)}) > 1, "equal columns"
+E           AssertionError: equal columns
+E           assert 1 > 1
+E            +  where 1 = len({24})
+
+tests\test_kanban_readable.py:605: AssertionError
+____________ test_AT_301_cards_read_across_the_column[size1-5.5-0] ____________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_AT_301_cards_read_across_1')
+frozen_today = None, size = (80, 26), floor = 5.5, full = 0
+
+    @pytest.mark.parametrize("size,floor,full", [((118, 32), 11.0, 12), ((80, 26), 5.5, 0),
+                                                 ((80, 24), None, 0)])
+    async def test_AT_301_cards_read_across_the_column(tmp_path, frozen_today, size, floor, full):
+        """AT-301 (US-301). Key `4` in the running app: every painted card is two
+        rows — row 1 badge + title, row 2 the spine under it — stacked cards are
+        split by `┈`, the columns differ in width, and the measured title
+        readability clears the floor (base 7.3 / 1.0, P-1). RED on base: one-row
+        cards, no `┈`, equal columns, 7.3 chars."""
+        app = await _kanban_app(tmp_path, size)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "tw3"
+            app.refresh_view()
+            await pilot.pause()
+            rows = _painted(app)
+            h = _viewport_h(app)
+            seps = seps_of(rows)
+            assert len({b - a for a, b in zip([-1] + seps, seps)}) > 1, "equal columns"
+>           assert any(set(cell(r, seps, 0)) == {"┈"} for r in rows)
+E           assert False
+E            +  where False = any(<generator object test_AT_301_cards_read_across_the_column.<locals>.<genexpr> at 0x000001F14705F740>)
+
+tests\test_kanban_readable.py:606: AssertionError
+___________ test_AT_301_cards_read_across_the_column[size2-None-0] ____________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_AT_301_cards_read_across_2')
+frozen_today = None, size = (80, 24), floor = None, full = 0
+
+    @pytest.mark.parametrize("size,floor,full", [((118, 32), 11.0, 12), ((80, 26), 5.5, 0),
+                                                 ((80, 24), None, 0)])
+    async def test_AT_301_cards_read_across_the_column(tmp_path, frozen_today, size, floor, full):
+        """AT-301 (US-301). Key `4` in the running app: every painted card is two
+        rows — row 1 badge + title, row 2 the spine under it — stacked cards are
+        split by `┈`, the columns differ in width, and the measured title
+        readability clears the floor (base 7.3 / 1.0, P-1). RED on base: one-row
+        cards, no `┈`, equal columns, 7.3 chars."""
+        app = await _kanban_app(tmp_path, size)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "tw3"
+            app.refresh_view()
+            await pilot.pause()
+            rows = _painted(app)
+            h = _viewport_h(app)
+            seps = seps_of(rows)
+            assert len({b - a for a, b in zip([-1] + seps, seps)}) > 1, "equal columns"
+>           assert any(set(cell(r, seps, 0)) == {"┈"} for r in rows)
+E           assert False
+E            +  where False = any(<generator object test_AT_301_cards_read_across_the_column.<locals>.<genexpr> at 0x000001F1488DEE40>)
+
+tests\test_kanban_readable.py:606: AssertionError
+___________ test_AT_302_projects_are_named_once_and_done_is_a_rail ____________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_AT_302_projects_are_named0')
+frozen_today = None
+
+    async def test_AT_302_projects_are_named_once_and_done_is_a_rail(tmp_path, frozen_today):
+        """AT-302 (US-302). Key `4`: band rules name the projects drawn, no `▐` in a
+        card cell; the rail heads `✓ DONE 3`; `right` ×4 from Backlog lands on a
+        rail title; `z` collapses the rail to `✓3`; `g` ×2 draws the horizon's band
+        rules; `v` draws an archived card. At 80 the rail is a count."""
+        b = kg_board.build(tmp_path / "board.json")
+        b.tasks.append(Task("Archived chore", "pweb", "Backlog", "normal", archived=True, id="tar"))
+        app = await _kanban_app(tmp_path, (118, 32), board=b)
+        async with app.run_test(size=(118, 32)) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            rows = _painted(app)
+            rules = [r for r in rows if is_rule(r)]
+>           assert len(rules) >= 3 and sum(r.count("▐") for r in rows) == len(rules)
+E           assert (0 >= 3)
+E            +  where 0 = len([])
+
+tests\test_kanban_readable.py:635: AssertionError
+_________ test_AT_303_the_high_band_is_first_and_the_cursor_walks_it __________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_AT_303_the_high_band_is_f0')
+frozen_today = None
+
+    async def test_AT_303_the_high_band_is_first_and_the_cursor_walks_it(tmp_path, frozen_today):
+        """AT-303 (US-303). Key `4`: the first band is `── high`; from the top of
+        Backlog `down` visits its four highs in the band's order, then the project
+        bands; `!` raising `SEO redirects map` to high moves it into the band with
+        the cursor; `g` to priority draws no high band; `s` reorders the band as the
+        seat orders it."""
+        app = await _kanban_app(tmp_path, (118, 32))
+        async with app.run_test(size=(118, 32)) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            rows = _painted(app)
+>           assert rows[3].startswith("── high  9 open · 4 projects")
+E           AssertionError: assert False
+E            +  where False = <built-in method startswith of str object at 0x000001F148B06AF0>('── high  9 open · 4 projects')
+E            +    where <built-in method startswith of str object at 0x000001F148B06AF0> = '── high ───────────────│── high ───────────────│── high ───────────────│▐ Website Redesign     │▐ Website Redesign    '.startswith
+
+tests\test_kanban_readable.py:673: AssertionError
+___________________ test_AT_305_the_kanban_spends_no_accent ___________________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_AT_305_the_kanban_spends_0')
+frozen_today = None
+
+    async def test_AT_305_the_kanban_spends_no_accent(tmp_path, frozen_today):
+        """AT-305 (US-301..303). The painted board at terminals 118×32 and 80×26:
+        0 accent runs (a PIN — true on base); every `+1d`..`+7d`/`today` token
+        amber, every `-Nd` red; Ops & Security's `project due +5d` amber; every
+        `┈` in the frame tone (the gate arms); the selection reverse (PIN)."""
+        for size in ((118, 32), (80, 26)):
+            app = await _kanban_app(tmp_path, size, board=kg_board.build(tmp_path / "board.json"))
+            async with app.run_test(size=size) as pilot:
+                await pilot.press("4")
+                app.selected_task_id = "to3"
+                app.refresh_view()
+                await pilot.pause()
+                text = app.query_one("#board").render()
+                plain = text.plain
+                spans = [(plain[s.start:s.end], s.style) for s in text.spans]
+    
+                def colour(st):
+                    st = str(st).lower()
+                    return st, "reverse" in st
+                styled = [(t, colour(st)) for t, st in spans]
+                assert any(has(st, "frame") for _t, (st, _r) in styled), "no tone readable: vacuous"
+                assert not [t for t, (st, _r) in styled if has(st, "accent")]
+                soon = [t for t, _x in styled if t.strip() == "today"
+                        or (t.strip()[:1] == "+" and t.strip()[1:-1].isdigit()
+                            and int(t.strip()[1:-1]) <= 7)]
+                assert soon, "no soon token painted: vacuous"
+                for t, (st, _r) in styled:
+                    s_ = t.strip()
+                    if s_ == "today" or (s_[:1] == "+" and s_[1:-1].isdigit() and s_.endswith("d")
+                                         and int(s_[1:-1]) <= 7):
+                        assert has(st, "soon"), (t, st)
+                    if s_[:1] == "-" and s_[1:-1].isdigit() and s_.endswith("d"):
+>                       assert has(st, "over"), (t, st)
+E                       AssertionError: (' -20d', 'rgb(91,102,117)')
+E                       assert False
+E                        +  where False = has('rgb(91,102,117)', 'over')
+
+tests\test_kanban_readable.py:733: AssertionError
+_______ test_AT_307_the_selected_card_is_always_whole_on_screen[size0] ________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_AT_307_the_selected_card_0')
+frozen_today = None, size = (118, 30)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_307_the_selected_card_is_always_whole_on_screen(tmp_path, frozen_today, size):
+        """AT-307 (US-302, US-303). Walking `down` the whole Backlog column at the
+        operator's terminal sizes: after every step both rows of the selected card
+        and the band rule above it are inside the viewport, and a step into a band
+        already drawn moves no band (P2 UX-3, UX-14). RED on base at 80×24: the
+        panel scrolls and the band names scroll off."""
+        app = await _kanban_app(tmp_path, size)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            h = _viewport_h(app)
+            col = app._nav_columns()[0]
+            for _ in col[1:]:
+                before = [r for r in _painted(app) if is_rule(r)]
+                drawn_before = set(app._line_map)
+                await pilot.press("down")
+                await pilot.pause()
+                rows, idx = _painted(app), app._line_map[app.selected_task_id]
+                top = app.query_one("#viewport").scroll_offset.y
+                assert top <= idx and idx + 1 < top + h, (app.selected_task_id, idx, top, h)
+                t = app.board.task_by_id(app.selected_task_id)
+                p = app.board.project_by_id(t.project_id)
+                above = [rows[k] for k in range(top, idx) if is_rule(rows[k])
+                         or rows[k].startswith("── high")]
+                assert above, (app.selected_task_id, "no band rule above it on screen")
+                own = above[-1]
+>               assert own.startswith("── high  ") if idx < next(
+                    k for k, r in enumerate(rows) if is_rule(r)) else \
+                    own.startswith(f"▐ {p.name}  "), (app.selected_task_id, own)
+E               StopIteration
+
+tests\test_kanban_readable.py:773: StopIteration
+
+The above exception was the direct cause of the following exception:
+
+self = <Coroutine test_AT_307_the_selected_card_is_always_whole_on_screen[size0]>
+
+    def runtest(self) -> None:
+        self.obj = wrap_in_sync(
+            # https://github.com/pytest-dev/pytest-asyncio/issues/596
+            self.obj,  # type: ignore[has-type]
+        )
+>       super().runtest()
+
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:1026: in inner
+    _loop.run_until_complete(task)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ProactorEventLoop running=False closed=False debug=False>
+future = <Task finished name='Task-213' coro=<test_AT_307_the_selected_card_is_always_whole_on_screen() done, defined at C:\Use...ec72789cc7\scratchpad\base\tests\test_kanban_readable.py:744> exception=RuntimeError('coroutine raised StopIteration')>
+
+    def run_until_complete(self, future):
+        """Run until the Future is done.
+    
+        If the argument is a coroutine, it is wrapped in a Task.
+    
+        WARNING: It would be disastrous to call run_until_complete()
+        with the same coroutine twice -- it would wrap it in two
+        different Tasks and that can't be good.
+    
+        Return the Future's result, or raise its exception.
+        """
+        self._check_closed()
+        self._check_running()
+    
+        new_task = not futures.isfuture(future)
+        future = tasks.ensure_future(future, loop=self)
+        if new_task:
+            # An exception is raised if the future didn't complete, so there
+            # is no need to log the "destroy pending task" message
+            future._log_destroy_pending = False
+    
+        future.add_done_callback(_run_until_complete_cb)
+        try:
+            self.run_forever()
+        except:
+            if new_task and future.done() and not future.cancelled():
+                # The coroutine raised a BaseException. Consume the exception
+                # to not log a warning, the caller doesn't have access to the
+                # local task.
+                future.exception()
+            raise
+        finally:
+            future.remove_done_callback(_run_until_complete_cb)
+        if not future.done():
+            raise RuntimeError('Event loop stopped before Future completed.')
+    
+>       return future.result()
+E       RuntimeError: coroutine raised StopIteration
+
+<home>\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError
+_______ test_AT_307_the_selected_card_is_always_whole_on_screen[size1] ________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14174/test_AT_307_the_selected_card_1')
+frozen_today = None, size = (80, 24)
+
+    @pytest.mark.parametrize("size", [(118, 30), (80, 24)])
+    async def test_AT_307_the_selected_card_is_always_whole_on_screen(tmp_path, frozen_today, size):
+        """AT-307 (US-302, US-303). Walking `down` the whole Backlog column at the
+        operator's terminal sizes: after every step both rows of the selected card
+        and the band rule above it are inside the viewport, and a step into a band
+        already drawn moves no band (P2 UX-3, UX-14). RED on base at 80×24: the
+        panel scrolls and the band names scroll off."""
+        app = await _kanban_app(tmp_path, size)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            h = _viewport_h(app)
+            col = app._nav_columns()[0]
+            for _ in col[1:]:
+                before = [r for r in _painted(app) if is_rule(r)]
+                drawn_before = set(app._line_map)
+                await pilot.press("down")
+                await pilot.pause()
+                rows, idx = _painted(app), app._line_map[app.selected_task_id]
+                top = app.query_one("#viewport").scroll_offset.y
+                assert top <= idx and idx + 1 < top + h, (app.selected_task_id, idx, top, h)
+                t = app.board.task_by_id(app.selected_task_id)
+                p = app.board.project_by_id(t.project_id)
+                above = [rows[k] for k in range(top, idx) if is_rule(rows[k])
+                         or rows[k].startswith("── high")]
+                assert above, (app.selected_task_id, "no band rule above it on screen")
+                own = above[-1]
+>               assert own.startswith("── high  ") if idx < next(
+                    k for k, r in enumerate(rows) if is_rule(r)) else \
+                    own.startswith(f"▐ {p.name}  "), (app.selected_task_id, own)
+E               StopIteration
+
+tests\test_kanban_readable.py:773: StopIteration
+
+The above exception was the direct cause of the following exception:
+
+self = <Coroutine test_AT_307_the_selected_card_is_always_whole_on_screen[size1]>
+
+    def runtest(self) -> None:
+        self.obj = wrap_in_sync(
+            # https://github.com/pytest-dev/pytest-asyncio/issues/596
+            self.obj,  # type: ignore[has-type]
+        )
+>       super().runtest()
+
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:1026: in inner
+    _loop.run_until_complete(task)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ProactorEventLoop running=False closed=False debug=False>
+future = <Task finished name='Task-255' coro=<test_AT_307_the_selected_card_is_always_whole_on_screen() done, defined at C:\Use...ec72789cc7\scratchpad\base\tests\test_kanban_readable.py:744> exception=RuntimeError('coroutine raised StopIteration')>
+
+    def run_until_complete(self, future):
+        """Run until the Future is done.
+    
+        If the argument is a coroutine, it is wrapped in a Task.
+    
+        WARNING: It would be disastrous to call run_until_complete()
+        with the same coroutine twice -- it would wrap it in two
+        different Tasks and that can't be good.
+    
+        Return the Future's result, or raise its exception.
+        """
+        self._check_closed()
+        self._check_running()
+    
+        new_task = not futures.isfuture(future)
+        future = tasks.ensure_future(future, loop=self)
+        if new_task:
+            # An exception is raised if the future didn't complete, so there
+            # is no need to log the "destroy pending task" message
+            future._log_destroy_pending = False
+    
+        future.add_done_callback(_run_until_complete_cb)
+        try:
+            self.run_forever()
+        except:
+            if new_task and future.done() and not future.cancelled():
+                # The coroutine raised a BaseException. Consume the exception
+                # to not log a warning, the caller doesn't have access to the
+                # local task.
+                future.exception()
+            raise
+        finally:
+            future.remove_done_callback(_run_until_complete_cb)
+        if not future.done():
+            raise RuntimeError('Event loop stopped before Future completed.')
+    
+>       return future.result()
+E       RuntimeError: coroutine raised StopIteration
+
+<home>\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_kanban_readable.py::test_TC_301_the_arm_set_is_complete
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-False-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-False-True]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-True-False]
+PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-True-True]
+PASSED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[118-30]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[0]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[1]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[2]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[3]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[4]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[5]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[6]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[7]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[8]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[9]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[10]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[11]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[12]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[13]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[14]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[15]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[16]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[17]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[18]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[19]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[20]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[21]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[22]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[23]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[24]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[25]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[26]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[27]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[28]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[29]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[30]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[31]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[32]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[33]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[34]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[35]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[36]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[37]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[38]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[39]
+FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[40]
+FAILED tests/test_kanban_readable.py::test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it
+FAILED tests/test_kanban_readable.py::test_TC_303_the_due_token_is_the_last_fact_to_go
+FAILED tests/test_kanban_readable.py::test_TC_302_the_selected_title_is_reverse_and_the_badge_stays
+FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[24]
+FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[40]
+FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[60]
+FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[80]
+FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[100]
+FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[118]
+FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[160]
+FAILED tests/test_kanban_readable.py::test_TC_305_the_columns_are_sized_by_their_titles
+FAILED tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule
+FAILED tests/test_kanban_readable.py::test_TC_306_other_group_modes_draw_band_rules_too[priority-names0]
+FAILED tests/test_kanban_readable.py::test_TC_306_other_group_modes_draw_band_rules_too[horizon-names1]
+FAILED tests/test_kanban_readable.py::test_TC_306_a_hostile_project_name_prints_literally
+FAILED tests/test_kanban_readable.py::test_TC_307_the_rail_is_titles_when_wide_and_a_count_when_narrow
+FAILED tests/test_kanban_readable.py::test_TC_307_a_full_rail_counts_what_it_cannot_draw
+FAILED tests/test_kanban_readable.py::test_TC_308_the_high_band_is_first_and_holds_exactly_the_open_highs
+FAILED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[project]
+FAILED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[priority]
+FAILED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[due]
+FAILED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[recent]
+FAILED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[unblock]
+FAILED tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally
+FAILED tests/test_kanban_readable.py::test_TC_301_a_window_of_phases_follows_the_selection
+FAILED tests/test_kanban_readable.py::test_TC_313_the_chrome_names_the_modes_and_counts_hidden_phases
+FAILED tests/test_kanban_readable.py::test_TC_311_the_board_folds_whole_bands_and_names_them
+FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-24]
+FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-22]
+FAILED tests/test_kanban_readable.py::test_TC_311_a_down_into_a_drawn_band_moves_nothing
+FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size0-11.0-12]
+FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size1-5.5-0]
+FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size2-None-0]
+FAILED tests/test_kanban_readable.py::test_AT_302_projects_are_named_once_and_done_is_a_rail
+FAILED tests/test_kanban_readable.py::test_AT_303_the_high_band_is_first_and_the_cursor_walks_it
+FAILED tests/test_kanban_readable.py::test_AT_305_the_kanban_spends_no_accent
+FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0]
+FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1]
+79 failed, 62 passed in 3.41s

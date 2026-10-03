@@ -1,0 +1,33 @@
+C1 KILLED — no cut: the band scrolls (P4 UXV3-1)
+   arms resolved 6, red 4; restore sha256 021055046c927da1… OK
+    PASSED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0-oracle-0]
+    PASSED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1-oracle-0]
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size2-oracle-2]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size3-14high-0]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size4-14high-0]
+C2 KILLED — the cut ignores the selection
+   arms resolved 6, red 4; restore sha256 021055046c927da1… OK
+    PASSED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0-oracle-0]
+    PASSED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1-oracle-0]
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size2-oracle-2]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size3-14high-0]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size4-14high-0]
+C3 SURVIVED — the cut not on a card boundary (a half card on top)
+   arms resolved 1, red 0; restore sha256 021055046c927da1… OK
+    PASSED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+C4 KILLED — the cards cut above are not counted
+   arms resolved 1, red 1; restore sha256 021055046c927da1… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+C5 SURVIVED — a cut with every band kept draws no fold row
+   arms resolved 1, red 0; restore sha256 021055046c927da1… OK
+    PASSED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+C6 KILLED — the shared title seat back on `escape` (P4 qa G-003a)
+   arms resolved 5, red 5; restore sha256 021055046c927da1… OK
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[agenda-kw0]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[kanban-kw1]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[kanban-kw2]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[focus-kw3]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[focus-kw4]
+4 of 6 KILLED

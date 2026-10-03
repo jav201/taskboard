@@ -1,0 +1,26 @@
+KANBAN · grouped                                                       38 tasks 
+BACKLOG        20│NEXT              5│DOING        6/4│REVIEW        4/3│✓3     
+─────────────────┼───────────────────┼────────────────┼─────────────────┼───────
+── high  9 open · 4 projects ────────┼────────────────┼─────────────────┼───────
+▊ !! Launch new  │▊ !! Partner notice│▊ !! Fix        │                 │       
+▊    homepa… +10d│▊    emails ⛓1 +3d │▊    checko… -2d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │       
+▊ !! Offline sync│▊ !! Rotate API    │▊ !! Rate       │                 │       
+▊ Mobile ⛓1 +28d │▊    keys Ops +3d  │▊    limiti… +4d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │       
+▲ !! Deprecate v1│                   │▊ !! Renew TLS  │                 │       
+▊    endpoin… +7d│                   │▊    certif… -1d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │       
+▊ !! Pen-test    │                   │                │                 │       
+▊    findin… +20d│                   │                │                 │       
++10 more ↓       │                   │                │                 │       
+▐ Website Redesign  7 open · 2 high ↑ · project due +10d ───────────────┼───────
+▊ == SEO         │▊ ++ Optimize image│                │▊ == Build       │✓1     
+▊    redire… +14d│▊    assets ⛓1 +6d │                │▊    compone… -3d│18d ago
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │       
+▊ !! Urgent item │                   │                │                 │       
+▊    1 ·3d +5d   │                   │                │                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │       
+▊ !! Urgent item │                   │                │                 │       
+▊    6 ·3d +10d  │                   │                │                 │       
+▼ 4 below: Mobile App (7 open), API Platform (8 open), Data Warehouse (6 open),…

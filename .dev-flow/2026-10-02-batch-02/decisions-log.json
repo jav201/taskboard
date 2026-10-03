@@ -1,0 +1,72 @@
+[
+  {
+    "station": "P0",
+    "date": "2026-10-02",
+    "decision": "batch opened by rollover from 2026-10-02-batch-01 (decisions_log archived to its decisions-log.json); core; standing authorization = the operator's kickoff answers relayed in the commission; RC-1 origin/main == HEAD a0e7d9a; triggers B1 B4 C D E F2 fired, A judged not fired (D-215); US-201..205 READY, D13 recorded as a decision (keep); approved under the standing authorization."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-02",
+    "decision": "requirements derived: US-201..205, HLR-201..210, 12 LLR, AT-201..210, ledger LED .1-.10, IFC Part A+B; 12 premises measured TRUE (p0-probes.txt, p1-fold-simulation.txt); security scan security_required true (flags token, role answered in section 6.4); decisions D-201..D-215; approved under the standing authorization; P2 is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-02",
+    "decision": "iteration 1: qa-reviewer PASS-WITH-NOTES (13 major), ux-reviewer FAIL (UX-1 blocker: Setup rows painted plain; UX-2..5 major), security-reviewer PASS-WITH-NOTES 0 HIGH (S-2 MEDIUM evidence redaction fixed) -> iterate-to-refine to P1 under the standing authorization; all findings folded (LED .11-.14, LLR-201.3 new, previous-group stickiness, due-today tie-break, meter phantom deleted) or carried (Q-14 and Q-15 to P3, S-5 BACKLOG); qa and ux re-dispatched."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-02",
+    "decision": "iteration 2: qa-reviewer and ux-reviewer PASS-WITH-NOTES (0 blocker, 0 HIGH), new minors N-1..N-3, UX-11, UX-12 folded (LED .15, D-217); increment plan re-derived (C-21), every AT-201..210 owned; approved under the standing authorization; P3 is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 001 (colour budget on the seven views, Setup rows keep their styles, soon amber, packet mut) approved under the standing authorization: 1 SOURCE file; code-reviewer round 1 OK (0 HIGH, F1-F9 folded), round 2 BLOCK-UNTIL R2-F1 (HIGH: a fold deleted the passing-check node) folded with RED proof (M9b), round 3 OK to advance, nothing open; 21/21 mutations KILLED; suite 1630 passed; P3 continues."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "batch pinned to rev98 by operator ruling (asked 2026-10-02, verbatim: \"Fijar el batch a rev98\"): the validator runs from a read-only snapshot of skills commit 48154ab (flow rev98, the bundle regenerated over closefix 6) and the flow's rules are read there; reason: ~/.claude/skills/dev-flow is rev99-wip (commits d5e4065/15549c0/922cfcb, SKILL.md edited without a re-sync); the V7 block in evidence/validator-p3-inc001.txt was that wip bundle, not the project; pinned run: V7 clean, 8 blocks = the V2 reds of AT-202, AT-204..210 owned by the coming increments; P3 continues."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 002 (the chrome: key bar, ribbon, modal titles, help key map) approved under the standing authorization: 4 SOURCE files (at the cap, reason declared); code-reviewer round 1 BLOCK-UNTIL F1 (HIGH: AT-202 never reached the more layer) plus F3 (HIGH, pre-existing: the layer toggle never left primary) - F3 fixed in scope by decision D-218, all findings folded with RED proof; round 2 OK to advance, nothing open; 16/16 mutations KILLED; suite 1634 passed; P3 continues."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 003 (English: help, flow, Setup, check notes, filter labels; stored values unchanged) approved under the standing authorization: 3 SOURCE files; code-reviewer round 1 BLOCK-UNTIL F1 (HIGH: a 55-word hand-picked lexicon missed most Spanish) folded with a derived, frozen vocabulary, every-word guard and a source scan, RED proof via the reviewer's mutants; round 2 OK to advance, nothing open; 14/14 mutations KILLED; suite 1643 passed; P3 continues."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 004 (gantt field: paged hint, urgency order with the due-today tie-break, weekend shading, echo clip arrows) approved under the standing authorization: 1 SOURCE file; two existing laws RED on the first weekend shape fixed in the code (LED .18); code-reviewer round 1 OK to advance (F1 MEDIUM, F2-F5 LOW) folded, round 2 OK, nothing open; 15/15 mutations KILLED; suite 1662 passed; P3 continues."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 005 (previous group sticky, finish toast) approved under the standing authorization: 3 SOURCE files; code-reviewer round 1 OK to advance (F1, F2 MEDIUM test gaps; F3-F5 LOW) folded, round 2 OK, nothing open; security-reviewer PASS-WITH-NOTES 0 HIGH (S-1 verified, L2 folded, L1/L3 to BACKLOG); 16/16 mutations KILLED; suite 1677 passed; P3 closed, P4 is next."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-02",
+    "decision": "P4 iteration 1: gate run 1677 passed (orchestrator, C-25); ux-reviewer walkthrough PASS-WITH-NOTES (13 items, UXV2-1..8 operator questions; UXV2-1 ruled outside HLR-203); qa-reviewer FAIL - G-001 AT-207 realised by two nodes (C-18), G-002 a false kill claim in increment-005's packet, G-003 HLR-203 wording -> iterate-to-fix to P3 as increment 006 under the standing authorization."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 006 (AT-207 one parametrised node; increment-005 and increment-001 records corrected; HLR-203 amended, LED .19) approved under the standing authorization: 0 SOURCE files; code-reviewer PASS-WITH-NOTES no HIGH, F1-F4 record folds applied, F5 deferred; W1 KILLED both arms; suite 1677 passed; P4 re-validation is next."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-02",
+    "decision": "P4 approved under the standing authorization: gate re-run 1677 passed (orchestrator, C-25, evidence/p4-gate2.txt); qa-reviewer iteration 2 PASS-WITH-NOTES (23/23 requirements, 0 blocker, C-18 10 ATs = 10 nodes, ledger 1611 - 2 + 68 = 1677, checklist 11/11; G-001..G-004 closed by re-reading, G-009/G-010 discharged at close); ux walkthrough PASS-WITH-NOTES, UXV2-1..8 routed to the operator; 0 HIGH. P5 is next."
+  },
+  {
+    "station": "P5",
+    "date": "2026-10-02",
+    "decision": "P5 close under the standing authorization (flow pinned to rev98): canon folded (23 rows), BACKLOG reconciled (6 items done, 11 added), close privacy sweep 0 real-board strings (2 inherited home-path hits), 05-close.md and 00-checklists.md filled; increments 001-006 shipped as working-tree changes, merge: false (no PR; coordinator commits+pushes to main)."
+  }
+]

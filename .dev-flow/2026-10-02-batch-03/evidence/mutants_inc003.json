@@ -1,0 +1,64 @@
+[
+ {
+  "id": "C1",
+  "file": "taskboard/views.py",
+  "old": "    if room is not None and room >= 3 and len(keep) == 1 and len(drawn) > room:",
+  "new": "    if False:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection",
+   "tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen"
+  ],
+  "why": "no cut: the band scrolls (P4 UXV3-1)"
+ },
+ {
+  "id": "C2",
+  "file": "taskboard/views.py",
+  "old": "        start = min(-(-max(0, at + 2 - rows) // 3) * 3, at)",
+  "new": "        start = 0",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection",
+   "tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen"
+  ],
+  "why": "the cut ignores the selection"
+ },
+ {
+  "id": "C3",
+  "file": "taskboard/views.py",
+  "old": "        start = min(-(-max(0, at + 2 - rows) // 3) * 3, at)",
+  "new": "        start = min(max(0, at + 2 - rows), at)",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection"
+  ],
+  "why": "the cut not on a card boundary (a half card on top)"
+ },
+ {
+  "id": "C4",
+  "file": "taskboard/views.py",
+  "old": "        inside = [x for x in (f\"▲ {k} more in {name}\" if k else \"\",",
+  "new": "        inside = [x for x in (\"\",",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection"
+  ],
+  "why": "the cards cut above are not counted"
+ },
+ {
+  "id": "C5",
+  "file": "taskboard/views.py",
+  "old": "    if keep == list(range(len(bands))) and cut is None:",
+  "new": "    if keep == list(range(len(bands))):",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection"
+  ],
+  "why": "a cut with every band kept draws no fold row"
+ },
+ {
+  "id": "C6",
+  "file": "taskboard/views.py",
+  "old": "    body = _literal(text)\n",
+  "new": "    body = escape(text)\n",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket"
+  ],
+  "why": "the shared title seat back on `escape` (P4 qa G-003a)"
+ }
+]

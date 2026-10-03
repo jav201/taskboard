@@ -1,0 +1,42 @@
+[
+ {
+  "id": "M17",
+  "file": "taskboard/views.py",
+  "old": "                         if not any(o.split(\" \")[:k] == words[:k] for o in others)),",
+  "new": "                         if True),",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally"
+  ],
+  "why": "first word always (API / API)"
+ },
+ {
+  "id": "M18",
+  "file": "taskboard/views.py",
+  "old": "    if rest and keep < 2:",
+  "new": "    if False:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_303_the_due_token_is_the_last_fact_to_go"
+  ],
+  "why": "the rest kept with no room: the due sheds"
+ },
+ {
+  "id": "M19",
+  "file": "taskboard/views.py",
+  "old": "                                          n=n_open))",
+  "new": "                                          ))",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_313_the_chrome_names_the_modes_and_counts_hidden_phases"
+  ],
+  "why": "window markers count the rail's phase"
+ },
+ {
+  "id": "M20",
+  "file": "taskboard/views.py",
+  "old": "                                + n_high, n_high))",
+  "new": "                                + 0, n_high))",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule"
+  ],
+  "why": "the open count drops the lifted highs"
+ }
+]

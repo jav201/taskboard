@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             38 tasks 
+BACKLOG               20│NEXT                      5│DOING               6/4│REVIEW               4/3│✓ DONE 3        
+────────────────────────┼───────────────────────────┼───────────────────────┼────────────────────────┼────────────────
+── high  11 open · 4 projects ──────────────────────┼───────────────────────┼────────────────────────┼────────────────
+▊ !! Launch new homepage│▊ !! Partner notice emails │▊ !! Fix checkout 500  │                        │                
+▊ ·30d Website +10d     │▊ ·8d API ⛓1 +3d           │▊    error Website -2d │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │                
+▊ !! Offline sync       │▊ !! Rotate API keys       │▊ !! Rate limiting     │                        │                
+▊ ·15d Mobile ⛓1 +28d   │▊ ·14d Ops +3d             │▊ ·10d API ⛓1 +4d      │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │                
+▲ !! Deprecate v1       │                           │▊ !! Renew TLS         │                        │                
+▊    endpoints API +7d  │                           │▊    certificate -1d   │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │                
+▊ !! Pen-test findings  │                           │                       │                        │                
+▊ ·9d Ops +20d          │                           │                       │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │                
+▊ !! Urgent item 1      │                           │                       │                        │                
+▊ ·3d Website +5d       │                           │                       │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │                
+▊ !! Urgent item 2      │                           │                       │                        │                
+▊ ·3d Mobile +6d        │                           │                       │                        │                
++8 more ↓               │                           │                       │                        │                
+▐ Website Redesign  7 open · 3 high ↑ · project due +10d ───────────────────┼────────────────────────┼────────────────
+▊ == SEO redirects map  │▊ ++ Optimize image assets │                       │▊ == Build component    │✓ Design homepa…
+▊ ·22d +14d             │▊ ·12d ⛓1 +6d              │                       │▊    library ·4d ⛓2 -3d │  done 18d ago  
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │                
+▊ !! Urgent item 6      │                           │                       │                        │                
+▊ ·3d +10d              │                           │                       │                        │                
+                                                                                                                      
+▼ 4 below: Mobile App (7 open), API Platform (8 open), Data Warehouse (6 open), Ops & Security (7 open)               

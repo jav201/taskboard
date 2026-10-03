@@ -1,0 +1,30 @@
+KANBAN · grouped                                                       38 tasks 
+BACKLOG       20│NEXT          5│DOING       6/4│REVIEW      4/3│DONE          3
+────────────────┼───────────────┼───────────────┼───────────────┼───────────────
+── high ────────│── high ───────│── high ───────│▐ Website Rede…│▐ Website Rede…
+▊ !! … ·30d +10d│▊ !! Pa… +3d ⛓1│▊ !! F… ·9d -2d│▊ == Bu… -3d ⛓2│▊ Design … -20d
+▊ !! Of… +28d ⛓1│▊ !! … ·14d +3d│▊ !! Ra… +4d ⛓1│▐ Mobile App   │▐ Mobile App   
+▲ !! D… ·26d +7d│───────────────│▊ !! R… ·5d -1d│▊ ++ C… ·2d +1d│▊ Set up … -12d
+▊ !! P… ·9d +20d│▐ Website Rede…│───────────────│▐ API Platform │▐ Data Warehou…
+▊ !! Ur… ·3d +5d│▊ ++ Op… +6d ⛓1│▐ Mobile App   │▊ == S… ·7d -1d│▊ Migrate … -4d
+▊ !! Ur… ·3d +6d│▐ Mobile App   │▊ == Au… +2d ⛓1│▐ Ops & Securi…│               
+▊ !! Ur… ·3d +7d│▊ == A… +12d ⛓1│▐ API Platform │▊ ==  ·3d today│               
+▊ !! Ur… ·3d +8d│▐ Data Warehou…│▊ == … ·21d -5d│               │               
+▊ !! Ur… ·3d +9d│▊ == … ·11d +9d│▐ Data Warehou…│               │               
+▊ !! U… ·3d +10d│               │▊ == D… +18d ⛓1│               │               
+▊ !! U… ·3d +11d│               │               │               │               
+▊ !! U… ·3d +12d│               │               │               │               
+▊ !! U… ·3d +13d│               │               │               │               
+▊ !! U… ·3d +14d│               │               │               │               
+────────────────│               │               │               │               
+▐ Website Redes…│               │               │               │               
+▊ == … ·22d +14d│               │               │               │               
+▐ Mobile App    │               │               │               │               
+▊ == … ·15d +35d│               │               │               │               
+▐ API Platform  │               │               │               │               
+▊ == Plan … ·40d│               │               │               │               
+▐ Data Warehouse│               │               │               │               
+▊ ++ … ·19d +30d│               │               │               │               
+▊ == B… ·5d +60d│               │               │               │               
+▐ Ops & Security│               │               │               │               
+▊ == Updat… ·33d│               │               │               │               

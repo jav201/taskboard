@@ -1,0 +1,22 @@
+[
+ {
+  "id": "C4",
+  "file": "taskboard/views.py",
+  "old": "        inside = [x for x in (f\"▲ {k} more in {name}\" if k else \"\",",
+  "new": "        inside = [x for x in (\"\",",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection"
+  ],
+  "why": "the cards cut above are not counted"
+ },
+ {
+  "id": "C6",
+  "file": "taskboard/views.py",
+  "old": "    body = _literal(text)\n",
+  "new": "    body = escape(text)\n",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket"
+  ],
+  "why": "the shared title seat back on `escape` (P4 qa G-003a)"
+ }
+]

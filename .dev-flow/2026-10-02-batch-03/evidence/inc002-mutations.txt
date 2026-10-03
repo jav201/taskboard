@@ -1,0 +1,72 @@
+Q1 KILLED — no cap
+   arms resolved 11, red 10; restore sha256 39a81dbc9b6626c4… OK
+    PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[0-None]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[11-5]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[12-6]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[13-6]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[14-7]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[19-10]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[20-11]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[22-12]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[24-14]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[30-18]
+    FAILED tests/test_kanban_readable.py::test_AT_304_a_board_full_of_highs_keeps_its_projects
+Q2 KILLED — one high too many: the band passes R
+   arms resolved 10, red 9; restore sha256 39a81dbc9b6626c4… OK
+    PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[0-None]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[11-5]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[12-6]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[13-6]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[14-7]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[19-10]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[20-11]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[22-12]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[24-14]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[30-18]
+Q3 KILLED — the half-body cap (caps the approved 80x24 frame)
+   arms resolved 10, red 8; restore sha256 39a81dbc9b6626c4… OK
+    PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[0-None]
+    PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[11-5]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[12-6]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[13-6]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[14-7]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[19-10]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[20-11]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[22-12]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[24-14]
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[30-18]
+Q4 KILLED — no `+N more` row
+   arms resolved 2, red 2; restore sha256 39a81dbc9b6626c4… OK
+    FAILED tests/test_kanban_readable.py::test_TC_309_the_overflow_row_sits_right_under_the_band
+    FAILED tests/test_kanban_readable.py::test_AT_304_a_board_full_of_highs_keeps_its_projects
+Q5 KILLED — the nav asks the full height under a filter
+   arms resolved 4, red 4; restore sha256 7c1410e8fc1ed00d… OK
+    FAILED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size0]
+    FAILED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size1]
+    FAILED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size2]
+    FAILED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size3]
+Q6 KILLED — the cursor to the column's top
+   arms resolved 3, red 1; restore sha256 7c1410e8fc1ed00d… OK
+    PASSED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size1-tw2-tm6]
+    PASSED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size2-to3-None]
+    FAILED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size0-to3-ta6]
+Traceback (most recent call last):
+  File "<home>\Github\taskboard\.dev-flow\2026-10-02-batch-03\evidence\mutate.py", line 53, in <module>
+    main()
+  File "<home>\Github\taskboard\.dev-flow\2026-10-02-batch-03\evidence\mutate.py", line 29, in main
+    assert text.count(m["old"]) == 1, (m["id"], "mutation site not unique / absent")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('Q7', 'mutation site not unique / absent')
+Q13 KILLED — F1: the relocation skipped after a reset to the first visible task
+   arms resolved 2, red 2; restore sha256 7c1410e8fc1ed00d… OK
+    FAILED tests/test_kanban_readable.py::test_TC_312_a_reset_selection_never_lands_on_a_counted_card[filter]
+    FAILED tests/test_kanban_readable.py::test_TC_312_a_reset_selection_never_lands_on_a_counted_card[lost]
+Q14 KILLED — F2 (Z1): the `z` rule takes the leftmost column
+   arms resolved 1, red 1; restore sha256 7c1410e8fc1ed00d… OK
+    FAILED tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally
+Q15 KILLED — F3 (Z2): the column's last card instead of the one that took its place
+   arms resolved 3, red 1; restore sha256 7c1410e8fc1ed00d… OK
+    PASSED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size0-to3-ta6]
+    PASSED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size2-to3-None]
+    FAILED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size1-tw2-tm6]
+3 of 3 KILLED
