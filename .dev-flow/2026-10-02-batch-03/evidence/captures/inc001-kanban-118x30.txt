@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             28 tasks 
+BACKLOG               10│NEXT                      5│DOING               6/4│REVIEW               4/3│✓ DONE 3        
+────────────────────────┼───────────────────────────┼───────────────────────┼────────────────────────┼────────────────
+── high  9 open · 4 projects ───────────────────────┼───────────────────────┼────────────────────────┼────────────────
+▊ !! Launch new homepage│▊ !! Partner notice emails │▊ !! Fix checkout 500  │                        │                
+▊ ·30d Website +10d     │▊ ·8d API ⛓1 +3d           │▊    error Website -2d │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │                
+▊ !! Offline sync       │▊ !! Rotate API keys       │▊ !! Rate limiting     │                        │                
+▊ ·15d Mobile ⛓1 +28d   │▊ ·14d Ops +3d             │▊ ·10d API ⛓1 +4d      │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │                
+▲ !! Deprecate v1       │                           │▊ !! Renew TLS         │                        │                
+▊    endpoints API +7d  │                           │▊    certificate -1d   │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │                
+▊ !! Pen-test findings  │                           │                       │                        │                
+▊ ·9d Ops +20d          │                           │                       │                        │                
+▐ Website Redesign  5 open · 2 high ↑ · project due +10d ───────────────────┼────────────────────────┼────────────────
+▊ == SEO redirects map  │▊ ++ Optimize image assets │                       │▊ == Build component    │✓ Design homepa…
+▊ ·22d +14d             │▊ ·12d ⛓1 +6d              │                       │▊    library ·4d ⛓2 -3d │  done 18d ago  
+▐ Mobile App  5 open · 1 high ↑ · project due +35d ─┼───────────────────────┼────────────────────────┼────────────────
+▊ == Beta release to    │▊ == Add push notifications│▊ == Audit dependencies│▊ ++ Crash reporting    │✓ Set up CI pip…
+▊    testers ·15d +35d  │▊ ·3d ⛓1 +12d              │▊ ·6d ⛓1 +2d           │▊ ·2d +1d               │  done 12d ago  
+▐ API Platform  6 open · 3 high ↑ · at risk · project due +21d ─────────────┼────────────────────────┼────────────────
+▊ == Plan Q4 roadmap    │                           │▊ == Write API         │▊ == SDK regeneration   │                
+▊ ·40d                  │                           │▊    reference ·21d -5d│▊ ·7d -1d               │                
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+▼ 2 below: Data Warehouse (4 open), Ops & Security (5 open)                                                           

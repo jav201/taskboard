@@ -1,0 +1,7 @@
+C3 KILLED — the cut not on a card boundary (a half card on top)
+   arms resolved 1, red 1; restore sha256 021055046c927da1… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+C5 KILLED — a cut with every band kept draws no fold row
+   arms resolved 1, red 1; restore sha256 021055046c927da1… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+2 of 2 KILLED

@@ -1,0 +1,22 @@
+KANBAN · grouped · group: priority                                     28 tasks 
+BACKLOG       10│NEXT          5│DOING       6/4│REVIEW      4/3│DONE          3
+────────────────┼───────────────┼───────────────┼───────────────┼───────────────
+▐ High          │▐ High         │▐ High         │▐ Normal       │▐ Normal       
+▊ !! … ·30d +10d│▊ !! Pa… +3d ⛓1│▊ !! F… ·9d -2d│▊ == Bu… -3d ⛓2│▊ Design … -20d
+▊ !! Of… +28d ⛓1│▊ !! … ·14d +3d│▊ !! Ra… +4d ⛓1│▊ == S… ·7d -1d│▊ Set up … -12d
+▲ !! D… ·26d +7d│▐ Normal       │▊ !! R… ·5d -1d│▊ ==  ·3d today│▐ Low          
+▊ !! P… ·9d +20d│▊ == A… +12d ⛓1│▐ Normal       │▐ Low          │▊ Migrate … -4d
+▐ Normal        │▊ == … ·11d +9d│▊ == Au… +2d ⛓1│▊ ++ C… ·2d +1d│               
+▊ == … ·22d +14d│▐ Low          │▊ == … ·21d -5d│               │               
+▊ == … ·15d +35d│▊ ++ Op… +6d ⛓1│▊ == D… +18d ⛓1│               │               
+▊ == Plan … ·40d│               │               │               │               
+▊ == B… ·5d +60d│               │               │               │               
+▊ == Updat… ·33d│               │               │               │               
+▐ Low           │               │               │               │               
+▊ ++ … ·19d +30d│               │               │               │               
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                

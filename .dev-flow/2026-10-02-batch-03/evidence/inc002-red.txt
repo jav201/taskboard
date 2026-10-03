@@ -1,0 +1,274 @@
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+............FFF.FFFFF                                                    [100%]
+================================== FAILURES ===================================
+________________ test_TC_310_the_help_describes_the_new_board _________________
+
+    def test_TC_310_the_help_describes_the_new_board():
+        """TC-310 (LLR-308.1). The kanban help names the band rule, `┈`, the rail
+        and `+N more ↓` — each absent from the shipped copy — and no longer the
+        per-column band; every bullet fits the help's 44-cell column; the example
+        shows the meta order (`⛓N` before the due); the legend calls `▐` the
+        project's band. RED on base: "the top of each column"."""
+        usage = [line for _h, lines in views.help_usage("kanban") for line in lines]
+        text = " ".join(usage)
+        for word in ("band rule", "┈", "rail", "more ↓"):
+>           assert word in text, word
+E           AssertionError: band rule
+E           assert 'band rule' in 'run the work: move tasks between phases, group by project, priority or horizon. j/k down and up · ↵ opens the card. t...= normal · ++ low (open only) the ── high ── band lifts open high tasks to the top of each column (grouped view only).'
+
+tests\test_kanban_readable.py:948: AssertionError
+_________________ test_AT_306_the_help_explains_what_is_drawn _________________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14257/test_AT_306_the_help_explains_0')
+frozen_today = None
+
+    async def test_AT_306_the_help_explains_what_is_drawn(tmp_path, frozen_today):
+        """AT-306 (US-301..303). `?` in the kanban paints the new copy: the band
+        rule, `┈`, the rail, `+N more ↓` — and not the per-column band. RED on
+        base: "the top of each column"."""
+        app = await _kanban_app(tmp_path, (118, 32))
+        async with app.run_test(size=(118, 32)) as pilot:
+            await pilot.press("4")
+            await pilot.pause()
+            await pilot.press("question_mark")
+            await pilot.pause()
+            painted = "\n".join(w.render().plain for w in app.screen.query("Label"))
+            for word in ("band rule", "┈", "rail", "more ↓", "project band"):
+>               assert word in painted, word
+E               AssertionError: band rule
+E               assert 'band rule' in 'Help · kanban\nUsage\nwhat it is for\n  • run the work: move tasks between phases,\n  • group by project, priority or... Focus\nesc  Focus off\n/  Search\n⇥  Layout\n↓  Down\n↑  Up\n←  Left\n→  Right\nm full map · ? palette · esc/q closes'
+
+tests\test_kanban_readable.py:971: AssertionError
+___ test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size0-True] ____
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14257/test_AT_308_finishing_a_card_k0')
+frozen_today = None, size = (80, 24), moves = True
+
+    @pytest.mark.parametrize("size,moves", [((80, 24), True), ((118, 30), False)])
+    async def test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board(tmp_path, frozen_today,
+                                                                         size, moves):
+        """AT-308 (US-302). At terminal 80×24 the rail is a count: `]` on `to3`
+        (Review, the column's last card) moves the cursor to `ta6`, the card above
+        it, drawn, and one notification names the task literally; `u` brings it
+        back. At 118×30 the rail draws done titles: the cursor stays on `to3`,
+        now a rail title, and nothing is posted. RED on base: the cursor rests on
+        an undrawn task, nothing posted."""
+        b = kg_board.build(tmp_path / "board.json")
+        app = await _kanban_app(tmp_path, size, board=b)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "to3"
+            app.refresh_view()
+            await pilot.pause()
+            before = len(app._notifications)
+            await pilot.press("]")
+            await pilot.pause()
+            assert app.board.task_by_id("to3").phase == "Done"
+            notes = _posted(app, before)
+            if moves:
+>               assert app.selected_task_id == "ta6" and "ta6" in app._line_map
+E               AssertionError: assert ('to3' == 'ta6'
+E                 
+E                 - ta6
+E                 + to3)
+
+tests\test_kanban_readable.py:1002: AssertionError
+________ test_TC_312_the_notification_prints_a_bracket_title_literally ________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14257/test_TC_312_the_notification_p0')
+frozen_today = None
+
+    async def test_TC_312_the_notification_prints_a_bracket_title_literally(tmp_path,
+                                                                              frozen_today):
+        """TC-312 (LLR-310.1, C-17): the notification is markup-off — a title
+        `[b]x[/b]` reaches the painted toast as typed; and a resize to a count
+        rail moves a done selection by the `z` rule, with no notification."""
+        b = kg_board.build(tmp_path / "board.json")
+        b.task_by_id("to3").title = "[b]x[/b]"
+        app = await _kanban_app(tmp_path, (80, 24), board=b)
+        async with app.run_test(size=(80, 24), notifications=True) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "to3"
+            app.refresh_view()
+            await pilot.pause()
+            before = len(app._notifications)
+            await pilot.press("]")
+            await pilot.pause()
+>           assert _posted(app, before) == ["[b]x[/b] done · counted in the ✓ rail · u undo"]
+E           AssertionError: assert [] == ['[b]x[/b] do...ail · u undo']
+E             
+E             Right contains one more item: '[b]x[/b] done · counted in the ✓ rail · u undo'
+E             Use -v to get more diff
+
+tests\test_kanban_readable.py:1028: AssertionError
+___________ test_TC_309_a_filtered_board_walks_what_it_draws[size0] ___________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14257/test_TC_309_a_filtered_board_w0')
+frozen_today = None, size = (80, 14)
+
+    @pytest.mark.parametrize("size", [(80, 14), (80, 15), (80, 22), (80, 23)])
+    async def test_TC_309_a_filtered_board_walks_what_it_draws(tmp_path, frozen_today, size):
+        """D-312 (code review F2 of increment 001): under a `/` filter the board is
+        drawn two rows shorter, and the cap and the window read the height — so the
+        app asks the nav for that same height. At every selection of the filtered
+        board, the drawn part of each nav column is in draw order. RED: the nav
+        asked with the full height (panels 12, 13, 20, 21 disagree)."""
+        b = kg_board.build(tmp_path / "board.json")
+        for t in b.tasks:
+            t.title += " zz"
+        app = await _kanban_app(tmp_path, size, board=b)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.search_query = "zz"
+            app.refresh_view()
+            await pilot.pause()
+            for sel in [i for c in app._nav_columns() for i in c]:
+                app.selected_task_id = sel
+                app.refresh_view()
+                await pilot.pause()
+                lm = app._line_map
+                for col in app._nav_columns():
+                    drawn = [i for i in col if i in lm]
+>                   assert drawn == sorted(drawn, key=lambda i: lm[i]), (size, sel, col)
+E                   AssertionError: ((80, 14), 'ta2', ['tw3', 'ta4', 'tm2', 'ta1', 'td4', 'to1'])
+E                   assert ['tw3', 'ta4', 'ta1'] == ['tw3', 'ta1', 'ta4']
+E                     
+E                     At index 1 diff: 'ta4' != 'ta1'
+E                     Use -v to get more diff
+
+tests\test_kanban_readable.py:1071: AssertionError
+___________ test_TC_309_a_filtered_board_walks_what_it_draws[size1] ___________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14257/test_TC_309_a_filtered_board_w1')
+frozen_today = None, size = (80, 15)
+
+    @pytest.mark.parametrize("size", [(80, 14), (80, 15), (80, 22), (80, 23)])
+    async def test_TC_309_a_filtered_board_walks_what_it_draws(tmp_path, frozen_today, size):
+        """D-312 (code review F2 of increment 001): under a `/` filter the board is
+        drawn two rows shorter, and the cap and the window read the height — so the
+        app asks the nav for that same height. At every selection of the filtered
+        board, the drawn part of each nav column is in draw order. RED: the nav
+        asked with the full height (panels 12, 13, 20, 21 disagree)."""
+        b = kg_board.build(tmp_path / "board.json")
+        for t in b.tasks:
+            t.title += " zz"
+        app = await _kanban_app(tmp_path, size, board=b)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.search_query = "zz"
+            app.refresh_view()
+            await pilot.pause()
+            for sel in [i for c in app._nav_columns() for i in c]:
+                app.selected_task_id = sel
+                app.refresh_view()
+                await pilot.pause()
+                lm = app._line_map
+                for col in app._nav_columns():
+                    drawn = [i for i in col if i in lm]
+>                   assert drawn == sorted(drawn, key=lambda i: lm[i]), (size, sel, col)
+E                   AssertionError: ((80, 15), 'ta2', ['tw3', 'ta4', 'tm2', 'ta1', 'td4', 'to1'])
+E                   assert ['tw3', 'ta4', 'ta1'] == ['tw3', 'ta1', 'ta4']
+E                     
+E                     At index 1 diff: 'ta4' != 'ta1'
+E                     Use -v to get more diff
+
+tests\test_kanban_readable.py:1071: AssertionError
+___________ test_TC_309_a_filtered_board_walks_what_it_draws[size2] ___________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14257/test_TC_309_a_filtered_board_w2')
+frozen_today = None, size = (80, 22)
+
+    @pytest.mark.parametrize("size", [(80, 14), (80, 15), (80, 22), (80, 23)])
+    async def test_TC_309_a_filtered_board_walks_what_it_draws(tmp_path, frozen_today, size):
+        """D-312 (code review F2 of increment 001): under a `/` filter the board is
+        drawn two rows shorter, and the cap and the window read the height — so the
+        app asks the nav for that same height. At every selection of the filtered
+        board, the drawn part of each nav column is in draw order. RED: the nav
+        asked with the full height (panels 12, 13, 20, 21 disagree)."""
+        b = kg_board.build(tmp_path / "board.json")
+        for t in b.tasks:
+            t.title += " zz"
+        app = await _kanban_app(tmp_path, size, board=b)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.search_query = "zz"
+            app.refresh_view()
+            await pilot.pause()
+            for sel in [i for c in app._nav_columns() for i in c]:
+                app.selected_task_id = sel
+                app.refresh_view()
+                await pilot.pause()
+                lm = app._line_map
+                for col in app._nav_columns():
+                    drawn = [i for i in col if i in lm]
+>                   assert drawn == sorted(drawn, key=lambda i: lm[i]), (size, sel, col)
+E                   AssertionError: ((80, 22), 'to5', ['tw5', 'tm4', 'ta2', 'to5', 'tw6', 'tm5', ...])
+E                   assert ['tw5', 'tm4'... 'to5', 'to4'] == ['tw5', 'tm4'... 'to4', 'to5']
+E                     
+E                     At index 3 diff: 'to5' != 'to4'
+E                     Use -v to get more diff
+
+tests\test_kanban_readable.py:1071: AssertionError
+___________ test_TC_309_a_filtered_board_walks_what_it_draws[size3] ___________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14257/test_TC_309_a_filtered_board_w3')
+frozen_today = None, size = (80, 23)
+
+    @pytest.mark.parametrize("size", [(80, 14), (80, 15), (80, 22), (80, 23)])
+    async def test_TC_309_a_filtered_board_walks_what_it_draws(tmp_path, frozen_today, size):
+        """D-312 (code review F2 of increment 001): under a `/` filter the board is
+        drawn two rows shorter, and the cap and the window read the height — so the
+        app asks the nav for that same height. At every selection of the filtered
+        board, the drawn part of each nav column is in draw order. RED: the nav
+        asked with the full height (panels 12, 13, 20, 21 disagree)."""
+        b = kg_board.build(tmp_path / "board.json")
+        for t in b.tasks:
+            t.title += " zz"
+        app = await _kanban_app(tmp_path, size, board=b)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.search_query = "zz"
+            app.refresh_view()
+            await pilot.pause()
+            for sel in [i for c in app._nav_columns() for i in c]:
+                app.selected_task_id = sel
+                app.refresh_view()
+                await pilot.pause()
+                lm = app._line_map
+                for col in app._nav_columns():
+                    drawn = [i for i in col if i in lm]
+>                   assert drawn == sorted(drawn, key=lambda i: lm[i]), (size, sel, col)
+E                   AssertionError: ((80, 23), 'to5', ['tw5', 'tm4', 'ta2', 'to5', 'tw6', 'tm5', ...])
+E                   assert ['tw5', 'tm4'... 'to5', 'to4'] == ['tw5', 'tm4'... 'to4', 'to5']
+E                     
+E                     At index 3 diff: 'to5' != 'to4'
+E                     Use -v to get more diff
+
+tests\test_kanban_readable.py:1071: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[0-None]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[11-5]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[12-6]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[13-6]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[14-7]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[19-10]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[20-11]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[22-12]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[24-14]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[30-18]
+PASSED tests/test_kanban_readable.py::test_TC_309_the_overflow_row_sits_right_under_the_band
+PASSED tests/test_kanban_readable.py::test_AT_304_a_board_full_of_highs_keeps_its_projects
+PASSED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size1-False]
+FAILED tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board
+FAILED tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn
+FAILED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size0-True]
+FAILED tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally
+FAILED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size0]
+FAILED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size1]
+FAILED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size2]
+FAILED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size3]
+8 failed, 13 passed, 144 deselected in 8.31s

@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             28 tasks 
+BACKLOG               10│NEXT                      5│DOING               6/4│REVIEW               4/3│✓ DONE 3        
+────────────────────────┼───────────────────────────┼───────────────────────┼────────────────────────┼────────────────
+── high  9 open · 4 projects ───────────────────────┼───────────────────────┼────────────────────────┼────────────────
+▊ !! Launch new homepage│▊ !! Partner notice emails │▊ !! Fix checkout 500  │                        │                
+▊ ·30d Website +10d     │▊ ·8d API ⛓1 +3d           │▊    error Website -2d │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │                
+▊ !! Offline sync       │▊ !! Rotate API keys       │▊ !! Rate limiting     │                        │                
+▊ ·15d Mobile ⛓1 +28d   │▊ ·14d Ops +3d             │▊ ·10d API ⛓1 +4d      │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │                
+▲ !! Deprecate v1       │                           │▊ !! Renew TLS         │                        │                
+▊    endpoints API +7d  │                           │▊    certificate -1d   │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │                
+▊ !! Pen-test findings  │                           │                       │                        │                
+▊ ·9d Ops +20d          │                           │                       │                        │                
+▐ API Platform  6 open · 3 high ↑ · at risk · project due +21d ─────────────┼────────────────────────┼────────────────
+▊ == Plan Q4 roadmap    │                           │▊ == Write API         │▊ == SDK regeneration   │                
+▊ ·40d                  │                           │▊    reference ·21d -5d│▊ ·7d -1d               │                
+▐ Data Warehouse  4 open · project due +60d ────────┼───────────────────────┼────────────────────────┼────────────────
+▊ ++ Archive old logs   │▊ == Compress database     │▊ == Daily revenue     │                        │✓ Migrate user …
+▊ ·19d +30d             │▊    backups ·11d +9d      │▊    model ·2d ⛓1 +18d │                        │  done 6d ago   
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │                
+▊ == BI dashboard       │                           │                       │                        │                
+▊    cut-over ·5d +60d  │                           │                       │                        │                
+▐ Ops & Security  5 open · 3 high ↑ · project due +5d ──────────────────────┼────────────────────────┼────────────────
+▊ == Update onboarding  │                           │                       │▊ == Review pull        │                
+▊    copy ·33d          │                           │                       │▊    requests ·3d today │                
+                                                                                                                      
+                                                                                                                      
+▲ 2 above: Website Redesign (5 open), Mobile App (5 open)                                                             

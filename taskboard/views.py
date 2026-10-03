@@ -276,10 +276,41 @@ def title_markup(task: Task, width: int, selected: bool, arrow: bool = True) -> 
 
     `arrow=False` omits the inline ↗ (used where ↗ is drawn as a separate,
     space-reserved right indicator so it can never collide with the title)."""
+    suffix = " ↗" if (first_valid_url(task) and arrow) else ""
+    return _title_piece(task, fit(task.title + suffix, width), selected)
+
+
+def _literal(text: str) -> str:
+    """Markup that prints `text` exactly — a cut piece of a title or a name.
+
+    `escape` escapes only TAG-shaped brackets and assumes a tag follows, so a
+    cut piece prints wrong in two ways (P3, TC-302's hostile titles): rich
+    drops the backslash before ANY bracket (backslash-bracket-ellipsis prints
+    bracket-ellipsis), and a trailing backslash prints twice when spaces
+    follow. Rich's rule, measured on 15.0: before a tag-shaped `[` a run of k
+    backslashes prints k // 2, before any other `[` it prints k - 1. So each
+    `[` gets the run that prints the k it had, and a trailing run is doubled
+    and closed by a tag."""
+    out, i = [], 0
+    for m in re.finditer(r"(\\*)\[", text):
+        k = len(m.group(1))
+        tag = re.match(r"\[[a-z#/@][^[]*?]", text[m.end() - 1:]) is not None
+        out.append(text[i:m.start()] + "\\" * (2 * k + 1 if tag else k + 1) + "[")
+        i = m.end()
+    out.append(text[i:])
+    body = "".join(out)
+    tail = len(text) - len(text.rstrip("\\"))
+    if tail:
+        body = f"[none]{body}{chr(92) * tail}[/none]"
+    return body
+
+
+def _title_piece(task: Task, text: str, selected: bool) -> str:
+    """A piece of `task`'s title already cut to its cells: escaped AFTER the cut
+    (escaping first and cutting after can split an escape and open a tag), linked
+    to the task's first valid URL, reverse when selected."""
     url = first_valid_url(task)          # OSC-8 target = the FIRST valid URL (F6)
-    suffix = " ↗" if (url and arrow) else ""
-    text = fit(task.title + suffix, width)   # width math on PLAIN text
-    body = escape(text)                       # then escape for markup
+    body = _literal(text)
     if url:
         body = f"[link={url}]{body}[/link]"
     if selected:
@@ -304,7 +335,7 @@ def _fit_indicators(tokens: list[tuple[str, str]], budget: int) -> tuple[str, in
             cost += w
         else:
             break
-    markup = "".join(c(" " + g, col) for g, col in kept)
+    markup = "".join(c(" " + _literal(g), col) for g, col in kept)   # a tag is user text
     return markup, cost
 
 
@@ -591,7 +622,7 @@ def rule_row(junctions: dict[int, str], w: int) -> str:
     at 31·61·91, with two stray corner glyphs the other rows do not have.
 
     A rule is a body row like any other here — it spends the full width and it
-    owns no edges. `_col_junctions`/`_matrix_junctions` already return content
+    owns no edges. `_matrix_junctions` (and the kanban's own separators) return content
     coordinates, so they are used as-is."""
     chars = ["─"] * w
     for pos, ch in junctions.items():
@@ -4185,7 +4216,7 @@ def _phase_window(board: Board, grid: int, selected: Task | None,
 
 
 def _windowed_header(board: Board, start: int, widths: list[int],
-                     tasks: list[Task]) -> list[str]:
+                     tasks: list[Task], n: int | None = None) -> list[str]:
     """Phase-name header cells, with `◀ N` / `N ▶` counts for hidden phases.
 
     Every cell ends with the WIP tag (HLR-005, LLR-005.2): ` n/limit` when the
@@ -4195,7 +4226,8 @@ def _windowed_header(board: Board, start: int, widths: list[int],
     pressure (the tag-last layout of the approved proto). It burns in the
     `over` tone ONLY when strictly over the limit — exactly AT the limit is
     calm (the off-by-one is the cheapest mutation here)."""
-    n, end = len(board.phases), start + len(widths)
+    n = len(board.phases) if n is None else n   # the phases a window can hide
+    end = start + len(widths)
     buckets = phase_buckets(board, tasks)
     cells = []
     for i, wc in enumerate(widths):
@@ -4344,57 +4376,482 @@ def kanban_order(board, tasks, show_archived, *, group="project",
             for name, color, items in groups]
 
 
-def _kanban_column_rows(board, tasks, wc, selected_id,
-                        show_archived, *, group="project", sort="project",
-                        collapsed=False, focus=None,
-                        today=None, unblocks=None) -> list[tuple[str, str | None]]:
-    """(markup, task-id) rows for ONE phase column: a coloured group header
-    followed by EVERY one of that group's tasks in this phase, in THE shared
-    seat's order (`kanban_order` — never a second ordering). A COLLAPSED
-    column (LLR-007.1: only ever THE LAST phase, §6.5 AMD-02) emits exactly
-    one `(markup, None)` summary row — `✓ N`, N the phase's visible task
-    count — the existing non-selectable row convention, no new row kind.
-    The flag still goes THROUGH the seat: collapsed, `kanban_order` returns
-    no groups, so the loop below contributes zero rows and the summary is
-    the only one."""
+# --- the readable board (batch 2026-10-02-batch-03: K-A + R-1b) -------------
+# The grouped presentation draws BANDS across the columns: a band rule names a
+# group ONCE, the group's cards sit under it column by column, two rows each,
+# and the last phase is a narrow rail on the right. The open high cards ride ONE
+# band above every other, capped at two thirds of the body. Renderer and navigator both
+# read `kanban_plan` — one seat, so the cursor walks what is drawn (F-3).
+KANBAN_RAIL_WIDE = 16       # the rail drawing done titles, from KANBAN_WIDE cells
+KANBAN_RAIL_NARROW = 7      # the rail as a count (narrower, or collapsed)
+KANBAN_WIDE = 100
+KANBAN_HEAD_ROWS = 3        # the head row, the phase row, the rule
+
+
+class KanbanBand(NamedTuple):
+    name: str
+    color: str
+    project: object          # the band's Project, or None (Inbox, another group mode)
+    cols: list               # per open phase: the band's cards, in seat order
+    done: list               # every done task of the band, newest first
+    rail: list               # the done tasks the rail draws as titles
+    n_open: int              # the group's open cards, its highs in the high band included
+    n_high: int              # the group's cards drawn in the high band
+
+
+class KanbanPlan(NamedTuple):
+    tasks: list              # the visible tasks, after the focus
+    start: int               # the first open phase drawn
+    widths: list             # the drawn open columns' widths
+    rail_w: int
+    rail_titles: bool        # done tasks drawn as selectable titles
+    high: list               # per open phase: the high band's cards
+    overflow: list           # per open phase: open highs the cap left in their bands
+    bands: list
+
+
+def _cell_rows(n: int) -> int:
+    """The rows `n` stacked two-row cards take, a `┈` row between each two."""
+    return 3 * n - 1 if n else 0
+
+
+def _kanban_widths(room: int, desired: list[int]) -> list[int]:
+    """`room` cells over the columns by what their titles want (LLR-302.1): in
+    proportion to the wants (the approved frames' rule), the remainder to the
+    widest wants first; when that leaves a column under MIN_COL, every column
+    gets MIN_COL first and the rest goes by the want above it. Sums to `room`."""
+    k = len(desired)
+    if room < k * MIN_COL:
+        return distribute(room, k)
+
+    def split(total: int, weights: list[int]) -> list[int]:
+        if not sum(weights):
+            return distribute(total, k)
+        shares = [total * x // sum(weights) for x in weights]
+        for i in sorted(range(k), key=lambda i: (-desired[i], i))[:total - sum(shares)]:
+            shares[i] += 1
+        return shares
+
+    widths = split(room, desired)
+    if min(widths) >= MIN_COL:
+        return widths
+    return [MIN_COL + s for s in split(room - k * MIN_COL, [d - MIN_COL for d in desired])]
+
+
+def kanban_plan(board, show_archived, selected_id, today, width, height, *,
+                sort="project", group="project", collapsed=False,
+                focus=None) -> KanbanPlan:
+    """THE seat of the grouped kanban (LLR-301.1): which cards each band holds
+    per column, the high band and its cap, the rail and the column window —
+    all through `kanban_order`, never a second ordering."""
+    today = today or date.today()
+    w = _clamp_width(width)
+    tasks = board.visible_tasks(show_archived)
+    if focus is not None and board.project_by_id(focus) is not None:
+        tasks = [t for t in tasks if t.project_id == focus]
+    n_open = len(board.phases) - 1
+    buckets = phase_buckets(board, tasks)
+    seat = {"group": group, "sort": sort, "focus": focus, "today": today}
+    cap = max(5, 2 * (height - KANBAN_HEAD_ROWS) // 3) if height else None  # LLR-306.1
+    high, overflow, rest = [], [], []
+    for bucket in buckets[:n_open]:
+        groups = kanban_order(board, bucket, show_archived, band=True, **seat)
+        lifted = groups[0][2] if groups and groups[0][0] == KANBAN_BAND else []
+        shown = lifted
+        if cap is not None and _cell_rows(len(lifted)) > cap:
+            shown = lifted[:cap // 3]
+        high.append(shown)
+        overflow.append(len(lifted) - len(shown))
+        drawn = {id(t) for t in shown}
+        rest.append([t for t in bucket if id(t) not in drawn])
+
+    def keyed(items_by_group) -> dict:
+        """The seat's groups by identity — two projects may share a name."""
+        out: dict = {}
+        for name, color, items in items_by_group:
+            p = board.project_by_id(items[0].project_id) if group == "project" else None
+            out.setdefault((name, p.id if p else None), (color, p, []))[2].extend(items)
+        return out
+
+    cols = [keyed(kanban_order(board, r, show_archived, **seat)) for r in rest]
+    done = keyed(kanban_order(board, buckets[-1], show_archived, **seat)) if buckets else {}
+    in_high = keyed(kanban_order(board, [t for col in high for t in col],
+                                 show_archived, **seat))
+    rail_titles = w >= KANBAN_WIDE and not collapsed
+    bands = []
+    for key, (color, project, _all) in keyed(kanban_order(board, tasks, show_archived,
+                                                          **seat)).items():
+        band_cols = [c_.get(key, (None, None, []))[2] for c_ in cols]
+        band_done = _recent_first(done.get(key, (None, None, []))[2])
+        if not any(band_cols) and not band_done:
+            continue
+        rail = band_done if rail_titles else []
+        room = max([_cell_rows(len(c_)) for c_ in band_cols] + [3])
+        if 2 * len(rail) > room:
+            rail = rail[:(room - 1) // 2]
+        n_high = len(in_high.get(key, (None, None, []))[2])
+        bands.append(KanbanBand(key[0], color, project, band_cols, band_done, rail,
+                                sum(1 for c_ in band_cols for t in c_ if not t.archived)
+                                + n_high, n_high))
+    rail_w = KANBAN_RAIL_WIDE if rail_titles else KANBAN_RAIL_NARROW
+    if not n_open:                  # one phase: nothing is open, the rail is the board
+        rail_w = w
+    start, widths = 0, []
+    if n_open:
+        grid = w - rail_w - 1                  # the open columns and their `│`s
+        fits = max(1, min(n_open, (grid + 1) // (MIN_COL + 1)))
+        if fits < n_open:                      # the shipped window: follow the selection
+            sel = board.task_by_id(selected_id)
+            s = min(board.phase_index(sel), n_open - 1) if sel is not None else 0
+            start = max(0, min(n_open - fits, s - (fits - 1) // 2))
+        desired = [max([MIN_COL] + [vis(t.title) + 5 for t in buckets[i]])
+                   for i in range(start, start + fits)]
+        widths = _kanban_widths(grid - (fits - 1), desired)
+    return KanbanPlan(tasks, start, widths, rail_w, rail_titles, high, overflow, bands)
+
+
+def kanban_nav(plan: KanbanPlan) -> list[list[str]]:
+    """The arrow-key columns: one per open phase, then the rail when it draws
+    titles — every card the board draws when nothing is windowed, in draw order
+    (the window follows the selection, as the phase window always has)."""
+    cols = [[t.id for t in plan.high[i]] + [t.id for b in plan.bands for t in b.cols[i]]
+            for i in range(len(plan.high))]
+    if plan.rail_titles:
+        cols.append([t.id for b in plan.bands for t in b.rail])
+    return cols
+
+
+def _wrap_title(title: str, w: int) -> tuple[str, str]:
+    """(head, rest): the title cut on a word boundary at `w` cells. A first word
+    wider than `w` is cut with `…` and leaves no rest."""
+    if vis(title) <= w:
+        return title, ""
+    words, head = title.split(" "), ""
+    for i, word in enumerate(words):
+        cand = f"{head} {word}" if head else word
+        if vis(cand) > w:
+            break
+        head = cand
+    if not head:
+        return fit(title, w), ""
+    return head, " ".join(words[i:])
+
+
+def _card_meta(task, board, today, unblocks, tag) -> list[tuple[str, str]]:
+    """Row 2's tokens, the least needed first: `_fit_indicators` sheds from the
+    left, so the due token is the last to go (LLR-301.2)."""
+    toks: list[tuple[str, str]] = []
+    if has_url(task):
+        toks.append(("↗", "mut"))
+    if task.images:
+        toks.append(("▤", "mut"))
+    if not board.is_done(task):
+        age = days_in_phase(task, today)
+        if age is not None:
+            toks.append((f"·{age}d", "dim"))
+    if tag:
+        toks.append(tag)
+    n = unblocks.get(task.id) if unblocks is not None else unblocks_count(board, task)
+    if n:
+        toks.append((f"⛓{n}", "mut"))
+    if task.archived:
+        toks.append((ARCHIVED_MARK, "ash"))
+    else:
+        dtok, dcol = reldue_token(task, today, board, include_done=True)
+        if dtok:
+            toks.append((dtok, dcol))
+    return toks
+
+
+def kanban_card(task, board, wc, selected, *, today, unblocks=None,
+                tag=None) -> tuple[str, str]:
+    """A kanban card as two rows of exactly `wc` cells (LLR-301.2): the title
+    across the column on row 1 (after the shipped badge), its rest and the
+    meta strip on row 2. Widths are measured on PLAIN text; each title piece is
+    escaped after it is cut."""
+    if wc <= 0:
+        return "", ""
+    hue = project_color(board, task)
+    spine1 = c("▲", "over") if task.blocked else c("▊", hue)
+    if wc == 1:
+        return spine1, c("▊", hue)
+    badge, bw = "", 0
+    if not board.is_done(task) and not task.archived and wc >= 9:
+        token, tone = PRIORITY_BADGE.get(task.priority, PRIORITY_BADGE["normal"])
+        badge, bw = f"[b reverse {HEX[tone]}]{token}[/] ", 3
+    tw = wc - 2 - bw
+    head, rest = _wrap_title(task.title, tw)
+    tokens = _card_meta(task, board, today, unblocks, tag)
+    keep = tw - (1 + cell_len(tokens[-1][0]) if tokens else 0)
+    if rest and keep < 2:
+        # no room for the rest beside the last fact: row 1 says the title goes
+        # on (`…`) and row 2 keeps the due token (LLR-301.2)
+        head, rest = fit(task.title, tw), ""
+    row1 = spine1 + " " + badge + _title_piece(task, fit(head, tw), selected)
+    if rest:
+        if vis(rest) > keep:
+            rest = fit(rest, keep)
+        room = tw - vis(rest)
+        meta, used = _fit_indicators(tokens, room)
+        row2 = (c("▊", hue) + " " + " " * bw + _title_piece(task, rest, selected)
+                + meta + " " * (room - used))
+    else:
+        meta, used = _fit_indicators(tokens, wc - 1)
+        row2 = c("▊", hue) + meta + " " * (wc - 1 - used)
+    return row1, row2
+
+
+def _project_tags(board) -> dict:
+    """{project id: tag}: the shortest run of leading words of the name that no
+    other visible project's name starts with (D-307), the whole name if none."""
+    names = {p.id: p.name for p in board.visible_projects(True)}
+    out = {}
+    for pid, name in names.items():
+        words = name.split(" ")
+        others = [n for q, n in names.items() if q != pid]
+        out[pid] = next((" ".join(words[:k]) for k in range(1, len(words))
+                         if not any(o.split(" ")[:k] == words[:k] for o in others)),
+                        name)
+    return out
+
+
+def _kanban_cell(cards, board, wc, selected_id, today, unblocks,
+                 tags=None) -> list[tuple[str, str | None]]:
+    """One band's rows in one column: its cards, one `┈` row between each two."""
     rows: list[tuple[str, str | None]] = []
-    for name, color, items in kanban_order(board, tasks, show_archived,
-                                           group=group, sort=sort,
-                                           collapsed=collapsed, focus=focus,
-                                           today=today, band=True):
-        if name == KANBAN_BAND:
-            # K4: a labelled divider opens the band and a rule closes it; both
-            # are non-selectable rows, like a group header.
-            rows.append((c("──", "dim") + c(" high ", "ink", bold=True)
-                         + c("─" * (wc - 8), "dim") if wc >= 8
-                         else c(fit("── high", wc), "dim"), None))
-        else:
-            rows.append((c("▐ ", color) + c(escape(fit(name, max(0, wc - 2))), color,
-                                            bold=True), None))
-        for t in items:
-            rows.append((card_cell(t, board, wc, t.id == selected_id,
-                                   prefix="▲ " if t.blocked else "▊ ",
-                                   prefix_color="over" if t.blocked
-                                   else project_color(board, t),
-                                   today=today,
-                                   unblocks=unblocks, badge=True), t.id))
-        if name == KANBAN_BAND:
-            rows.append((c("─" * wc, "dim"), None))
-    if collapsed:
-        # `✓` is the done mark and the done house is its only honest home —
-        # and on the terminal phase every visible task IS done, so the mark
-        # never lies (HLR-007).
-        rows.append((c(fit(f"✓ {len(tasks)}", wc), "done"), None))
+    for k, t in enumerate(cards):
+        if k:
+            rows.append((c("┈" * wc, "frame"), None))
+        tag = None
+        if tags is not None:
+            p = board.project_by_id(t.project_id)
+            tag = (tags.get(p.id, p.name), p.color) if p else ("Inbox", "dim")
+        r1, r2 = kanban_card(t, board, wc, t.id == selected_id, today=today,
+                             unblocks=unblocks, tag=tag)
+        rows += [(r1, t.id), (r2, None)]
     return rows
 
 
-def _col_junctions(widths: list[int], mid: str) -> dict[int, str]:
-    j, pos = {}, 0
-    for wc in widths[:-1]:
-        pos += wc
-        j[pos] = mid
-        pos += 1
-    return j
+def _due_fact(d: date, today: date) -> tuple[str, str]:
+    n = (d - today).days
+    if n < 0:
+        return f"{-n}d late", "over"
+    if n == 0:
+        return "due today", "soon"
+    return f"due +{n}d", "soon" if n <= 7 else "dim"
+
+
+def _band_rule(facts: list[tuple], seps: list[int], w: int) -> str:
+    """A band rule (LLR-303.1): `(text, tone[, bold])` facts left to right,
+    clipped at `w`, then a `─` rule with `┼` under each column separator past
+    the text."""
+    out, used = [], 0
+    for text, tone, *bold in facts:
+        if used >= w:
+            break
+        text = fit(text, w - used) if vis(text) > w - used else text
+        out.append(c(_literal(text), tone, bool(bold) and bold[0]))
+        used += vis(text)
+    if used < w:
+        tail = ["─"] * (w - used - 1)
+        for x in seps:
+            if 0 <= x - used - 1 < len(tail):
+                tail[x - used - 1] = "┼"
+        out.append(" " + c("".join(tail), "frame"))
+    return "".join(out)
+
+
+def _band_facts(band: KanbanBand, today: date) -> list[tuple]:
+    facts = [("▐ ", band.color), (band.name, band.color, True),
+             (f"  {band.n_open} open", "mut")]
+    if band.n_high:
+        facts.append((f" · {band.n_high} high ↑", "mut"))
+    p = band.project
+    if p is not None:
+        if p.status == "at_risk":
+            facts.append((" · at risk", "over"))
+        due = parse_iso(p.due_date)
+        if due is not None:
+            text, tone = _due_fact(due, today)
+            facts.append((" · project " + text, tone))
+    return facts
+
+
+def _rail_cells(band: KanbanBand, plan: KanbanPlan, selected_id, today) -> list[str]:
+    """The band's rail cells (LLR-304.1): done titles over `done Nd ago`, the
+    rest counted; or the count over the newest one's age."""
+    rw, out = plan.rail_w, []
+    if not band.done:
+        return out
+    if not plan.rail_titles:
+        age = days_in_phase(band.done[0], today)
+        return [c(fit(f"✓{len(band.done)}", rw), "done"),
+                c(fit(f"{age}d ago" if age is not None else "", rw), "dim")]
+    for t in band.rail:
+        age = days_in_phase(t, today)
+        out += [c("✓", "done") + " "
+                + c(_title_piece(t, fit(t.title, rw - 2), t.id == selected_id), "mut"),
+                c(fit(f"  done {age}d ago" if age is not None else "", rw), "dim")]
+    if len(band.done) > len(band.rail):
+        out.append(c(fit(f"  +{len(band.done) - len(band.rail)} more", rw), "mut"))
+    return out
+
+
+def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_map,
+                    *, sort="project", group="project", collapsed=False,
+                    focus=None) -> tuple[list[str], int]:
+    """(rows, pinned): the readable board — the chrome, the high band, the
+    bands windowed around the selection, and the fold row (pinned) when bands
+    are folded."""
+    plan = kanban_plan(board, show_archived, selected_id, today, w, height, sort=sort,
+                       group=group, collapsed=collapsed, focus=focus)
+    focused = board.project_by_id(focus) if focus is not None else None
+    n_open = len(board.phases) - 1
+    all_open = [t for t in board.tasks if not board.is_done(t) and not t.archived]
+    unblocks = {t.id: unblocks_count(board, t) for t in all_open}
+    sep = c("│", "frame")
+    seps, x = [], 0
+    for wc in plan.widths:
+        x += wc
+        seps.append(x)
+        x += 1
+
+    right = c(f"{len(plan.tasks)} tasks", "mut")
+    mode = c(" · grouped", "mut")
+    if sort != "project":        # a non-default mode is NAMED (LLR-003.2) —
+        mode += c(f" · sort: {sort}", "mut")     # an unnamed mode is a lie
+    if group != "project":
+        mode += c(f" · group: {group}", "mut")
+    if focused is not None:      # the focus is a mode too: it is NAMED (R-08),
+        mode += (c(" · focus: ", "mut")          # with the user's own text
+                 + c(escape(focused.name), "mut"))  # escaped like everywhere
+    head = [header(c("KANBAN", "bright", bold=True) + mode, right, w, tone="bright")]
+    n_done = len(phase_buckets(board, plan.tasks)[-1]) if board.phases else 0
+    last = board.phases[-1].upper() if board.phases else ""
+    rail_head = c(fit(f"✓ {last} {n_done}" if plan.rail_titles else f"✓{n_done}",
+                      plan.rail_w), "done", bold=True)
+    head.append(sep.join(_windowed_header(board, plan.start, plan.widths, plan.tasks,
+                                          n=n_open))
+                + (sep if plan.widths else "") + rail_head)
+    head.append(rule_row({x: "┼" for x in seps}, w))
+    if not plan.tasks:
+        return head + [c(fit("  (no tasks — press 'a' to add one)", w), "dim")], 0
+
+    shown = range(plan.start, plan.start + len(plan.widths))
+
+    def block(cells: list[list], rail: list[str]) -> list[tuple[str, list]]:
+        """Rows across the drawn columns and the rail, with the ids each names."""
+        n = max([len(col) for col in cells] + [len(rail)])
+        rows = []
+        for r in range(n):
+            parts = [col[r][0] if r < len(col) else " " * wc
+                     for col, wc in zip(cells, plan.widths)]
+            ids = [col[r][1] for col in cells if r < len(col) and col[r][1]]
+            rail_cell = rail[r] if r < len(rail) else " " * plan.rail_w
+            rows.append((sep.join(parts) + (sep if parts else "") + rail_cell, ids))
+        return rows
+
+    pinned_rows: list[tuple[str, list]] = []
+    if any(plan.high):
+        tags = _project_tags(board)
+        cells = []
+        for i, wc in zip(shown, plan.widths):
+            col = _kanban_cell(plan.high[i], board, wc, selected_id, today, unblocks, tags)
+            if plan.overflow[i]:
+                col.append((c(fit(f"+{plan.overflow[i]} more ↓", wc), "mut"), None))
+            cells.append(col)
+        drawn = [t for col in plan.high for t in col]
+        n_proj = len({t.project_id for t in drawn})
+        facts = [("── ", "frame"), ("high", "ink", True),
+                 (f"  {len(drawn)} open · {n_proj} project{'s' if n_proj != 1 else ''}",
+                  "mut")]
+        pinned_rows = [(_band_rule(facts, seps, w), [])] + block(cells, [])
+    bands = []
+    for band in plan.bands:
+        cells = [_kanban_cell(band.cols[i], board, wc, selected_id, today, unblocks)
+                 for i, wc in zip(shown, plan.widths)]
+        rail = _rail_cells(band, plan, selected_id, today)
+        rows = [(_band_rule(_band_facts(band, today), seps, w), [])] + block(cells, rail)
+        rail_ids = [t.id for t in band.rail]
+        for k, tid in enumerate(rail_ids):        # a rail title names its row
+            rows[1 + 2 * k][1].append(tid)
+        bands.append(rows)
+
+    keep = list(range(len(bands)))
+    room = (height - len(head) - len(pinned_rows) - 1) if height else None
+    if room is not None and sum(len(b) for b in bands) > room + 1:
+        # LLR-309.1: the earliest start that still draws the selection's band,
+        # then the bands below it while they fit — a `down` into a band already
+        # on screen moves nothing (P2 UX-14)
+        ids = [{t for r in b for t in r[1]} for b in bands]
+        s = next((i for i, x in enumerate(ids) if selected_id in x), 0)
+        first = s
+        while first > 0 and sum(len(b) for b in bands[first - 1:s + 1]) <= room:
+            first -= 1
+        used, end = sum(len(b) for b in bands[first:s + 1]), s + 1
+        while end < len(bands) and used + len(bands[end]) <= room:
+            used += len(bands[end])
+            end += 1
+        keep = list(range(first, end))
+    drawn = [r for k in keep for r in bands[k]]
+    whole = keep == list(range(len(bands)))     # then the fold row's line is free
+    cut = None
+    if (room is not None and room >= 3 and len(keep) == 1
+            and len(drawn) > room + whole):
+        # LLR-309.2: a band taller than the room is cut to it — its rule, then
+        # whole cards around the selection (cards sit every 3 rows: the cut
+        # starts on a card's first row and ends on a card's second) — and the
+        # fold row counts the band's cards cut off (P4 UXV3-1: drawn whole it
+        # scrolled the head, the card's row 2 and the fold row out of the panel)
+        body = drawn[1:]
+        rows = (room - 1) - room % 3            # 3j + 2: j + 1 whole cards
+        at = next((i for i, r in enumerate(body) if selected_id in r[1]), 0)
+        start = -(-max(0, at + 2 - rows) // 3) * 3
+        start = min(start, at)                  # a rail title (every 2 rows) stays drawn
+        band = plan.bands[keep[0]]
+        cards = {t.id for col in band.cols for t in col}     # open cards, not rail titles
+        cut = (band.name,
+               len(cards & {t for r in body[:start] for t in r[1]}),
+               len(cards & {t for r in body[start + rows:] for t in r[1]}))
+        drawn = [drawn[0]] + body[start:start + rows]
+    lines = list(head)
+    for markup, ids in pinned_rows + drawn:
+        lines.append(markup)
+        if line_map is not None:
+            for tid in ids:
+                line_map[tid] = len(lines) - 1
+    if keep == list(range(len(bands))) and cut is None:
+        return lines, 0
+    return lines + [_fold_row(plan.bands, keep, w, cut)], 1
+
+
+def _fold_row(bands: list, keep: list[int], w: int, cut=None) -> str:
+    """`▲ N above: …   ▼ M below: …` (LLR-309.1), and for a band cut to the
+    room `▲ k more in NAME` / `▼ m more in NAME` between them (LLR-309.2). Every
+    count always prints: when the row does not fit, the `▲` names go first (P2
+    UX-15), then the cut band's name, and only then is the `▼` list clipped."""
+    names = [f"{b.name} ({b.n_open} open)" for b in bands]
+    above, below = names[:keep[0]], names[keep[-1] + 1:]
+    up = f"▲ {len(above)} above" if above else ""
+    down = f"▼ {len(below)} below" if below else ""
+    inside = []
+    if cut is not None:
+        name, k, m = cut
+        inside = [x for x in (f"▲ {k} more in {name}" if k else "",
+                              f"▼ {m} more in {name}" if m else "") if x]
+    tail = [down + (": " + ", ".join(below) if below else "")]
+    full = "   ".join(x for x in [up + (": " + ", ".join(above) if above else "")] + inside
+                      + tail if x)
+    if vis(full) > w and (up or inside) and (inside or down):
+        # the `▲` side keeps only its count; the `▼` side is clipped after its
+        # own, as the approved 80×24 frame shows it
+        full = "   ".join(x for x in [up] + inside + tail if x)
+    if inside and vis("   ".join(x for x in [up] + inside + [down] if x)) > w:
+        # even the bare counts overflow: the cut band's rule is on screen, so
+        # its counts drop its name
+        short = [x.split(" in ")[0] for x in inside]
+        full = "   ".join(x for x in [up] + short + tail if x)
+    return c(_literal(fit(full, w)), "mut")
 
 
 def _matrix_junctions(label_w: int, widths: list[int], mid: str) -> dict[int, str]:
@@ -4406,59 +4863,6 @@ def _matrix_junctions(label_w: int, widths: list[int], mid: str) -> dict[int, st
         j[pos] = mid
         pos += 1
     return j
-
-
-def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_map,
-                    *, sort="project", group="project", collapsed=False,
-                    focus=None) -> list[str]:
-    inner = w
-    tasks = board.visible_tasks(show_archived)
-    focused = board.project_by_id(focus) if focus is not None else None
-    if focused is not None:
-        # The cards are filtered by the seat (kanban_order); scoping the
-        # INPUT here keeps the header counts and the task tally describing
-        # what the board actually draws — a tally of hidden cards is a lie.
-        tasks = [t for t in tasks if t.project_id == focus]
-    start, widths = _phase_window(board, inner, board.task_by_id(selected_id))
-    buckets = phase_buckets(board, tasks)
-    # dependency counts are a board-wide fact: compute once, use everywhere.
-    all_open = [t for t in board.tasks
-                if not board.is_done(t) and not t.archived]
-    unblocks = {t.id: unblocks_count(board, t) for t in all_open}
-    sep = c("│", "frame")
-
-    right = c(f"{len(tasks)} tasks", "mut")
-    mode = c(" · grouped", "mut")
-    if sort != "project":        # a non-default mode is NAMED (LLR-003.2) —
-        mode += c(f" · sort: {sort}", "mut")     # an unnamed mode is a lie
-    if group != "project":
-        mode += c(f" · group: {group}", "mut")
-    if focused is not None:      # the focus is a mode too: it is NAMED (R-08),
-        mode += (c(" · focus: ", "mut")          # with the user's own text
-                 + c(escape(focused.name), "mut"))  # escaped like everywhere
-    lines = [header(c("KANBAN", "bright", bold=True) + mode, right, w, tone="bright")]
-    lines.append(line(sep.join(_windowed_header(board, start, widths, tasks))))
-    lines.append(rule_row(_col_junctions(widths, "┼"), w))
-
-    last = len(board.phases) - 1
-    cols = [_kanban_column_rows(board, buckets[start + i], wc, selected_id,
-                                show_archived, group=group, sort=sort,
-                                collapsed=collapsed and start + i == last,
-                                focus=focus, today=today,
-                                unblocks=unblocks)
-            for i, wc in enumerate(widths)]
-    max_rows = max((len(col) for col in cols), default=0)
-    if max_rows == 0:
-        lines.append(line(c(fit("  (no tasks — press 'a' to add one)", inner), "dim")))
-    for r in range(max_rows):
-        lines.append(line(sep.join(col[r][0] if r < len(col) else fit("", widths[i])
-                                   for i, col in enumerate(cols))))
-        if line_map is not None:
-            for col in cols:
-                if r < len(col) and col[r][1]:
-                    line_map[col[r][1]] = len(lines) - 1
-    lines.append(bottom(_col_junctions(widths, "┴"), w))
-    return lines
 
 
 def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map) -> list[str]:
@@ -4660,9 +5064,10 @@ def render_kanban(board, show_archived, selected_id, today=None,
                               height, line_map, sort=sort, group=group,
                               collapsed=collapsed, focus=focus)
     else:
-        lines = _kanban_grouped(board, show_archived, selected_id, today, w,
-                                height, line_map, sort=sort, group=group,
-                                collapsed=collapsed, focus=focus)
+        lines, pinned = _kanban_grouped(board, show_archived, selected_id, today, w,
+                                        height, line_map, sort=sort, group=group,
+                                        collapsed=collapsed, focus=focus)
+        return to_text(lines, height, w, pinned)
     return to_text(lines, height, w)
 
 
@@ -5062,16 +5467,21 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
                     cols[i].extend(t.id for t in bucket)
             return cols
 
-        cols = []
+        if presentation == "grouped":
+            # the readable board: THE seat its renderer reads (LLR-301.1, F-3)
+            return kanban_nav(kanban_plan(board, show_archived, selected_id, today,
+                                          width, height, sort=kanban_sort,
+                                          group=kanban_group,
+                                          collapsed=kanban_collapsed,
+                                          focus=kanban_focus))
+        cols = []                  # the matrix: every phase, in the seat's order
         last = len(board.phases) - 1
         for i, bucket in enumerate(phase_buckets(board, tasks)):
             is_collapsed = kanban_collapsed and i == last
-            # the band is the grouped renderer's (K4); asked for here exactly
-            # when the renderer asks, so nav order stays draw order (F-3)
             groups = kanban_order(board, bucket, show_archived,
                                   group=kanban_group, sort=kanban_sort,
                                   collapsed=is_collapsed, focus=kanban_focus,
-                                  today=today, band=presentation == "grouped")
+                                  today=today)
             if is_collapsed:
                 continue
             cols.append([t.id for _name, _color, items in groups
@@ -5163,9 +5573,12 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
             ("the card's numbers", ["·Nd = days IN the phase (ageing)",
                                     "+Nd = days UNTIL the deadline (countdown)",
                                     "⛓N = N tasks depend on this one"]),
-            ("priority", ["!! high · == normal · ++ low (open only)",
-                          "the ── high ── band lifts open high tasks to",
-                          "the top of each column (grouped view only)."]),
+            ("the board", ["!! high · == normal · ++ low (open only)",
+                           "open highs ride one band on top of the",
+                           "grouped board; +N more ↓ when it is full",
+                           "▐ band rule: a project once, across columns",
+                           "┈ splits cards · ✓ the done rail (✓N narrow)",
+                           "▲ above · ▼ below: bands folded off screen"]),
         ]
     if mode == "swimlanes":
         return [
@@ -5252,9 +5665,9 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
 def help_example(mode: str) -> tuple[str, str]:
     """(annotated example line, what it means) for the active view."""
     if mode == "kanban":
-        return ("▊ !! sync daemon ↗ ·3d +4d ⛓2",
+        return ("▊ !! sync daemon ↗ ·3d ⛓2 +4d",
                 "!! high (== normal, ++ low) · ↗ url · 3d in phase · "
-                "due in 4d · unblocks 2")
+                "unblocks 2 · due in 4d")
     if mode == "swimlanes":
         return ("▎ platform ████▒░◆ 12d",
                 "the curve is the load; the air before ◆ is what does not fit")
@@ -5308,7 +5721,7 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
     if mode == "kanban" and f["projects"]:
         # kanban draws the project header with ▐ and each card with ▊ — the
         # lanes spine ▎ is a different view's glyph and does not belong here
-        out.append((c("▐", hue), "project header, by colour"))
+        out.append((c("▐", hue), "project band, by colour"))
         if f["tasks"]:
             out.append((c("▊", hue), "a task card, in its project's colour"))
     if mode == "swimlanes":

@@ -1,0 +1,50 @@
+ux-reviewer — Phase 4 re-walk of UXV3-1, batch 2026-10-02-batch-03, iteration 2 (relayed verbatim in substance by the orchestrator;
+the reviewer drove TaskboardApp(...).run_test with real key presses (4, g, down, up, [, ], u) over tests/kg_board.py boards in a temp
+dir at the tests' frozen date, read the compositor strips, the viewport scroll offset and the reverse-video runs; the repo was not
+touched; probes under the session scratchpad ux-p4b/: walk.py, r1.py, r3.py, r4.py, r6.py, frames.py and their .out transcripts).
+
+Verdict: PASS-WITH-NOTES on UXV3-1 — the iteration-1 blocker is fixed. Every re-walked step: scroll 0, the head row on top, both rows
+of the selected card on screen, the fold row on the panel's last row. Evidence state for UXV3-1: executed, approved.
+
+Per-step check: scroll_offset.y == 0; render height <= viewport; both rows of the selected card inside the viewport; fold row on the
+last viewport row.
+
+Walk table
+1. Oracle board, g g (horizon), 80x24, Backlog down x9 then up x9: 19/19 OK. td3 fold row "▲ 3 more in Later   ▼ 1 more in Later";
+   td5 "▲ 5 more in Later" (LLR-309.2's numbers); drawn + cut counts = the band's 7 in-band cards. approved
+2. Oracle board + one Data Warehouse card (tdx), project mode, 80x24, every column down and up: 48/48 OK. tdx fold row
+   "▲ 3 above   ▲ 3 more in Data Warehouse   ▼ 1 below: Ops & Security (5 open)". approved
+3. 14-high board, 118x30, every column down and up through the overflow and Mobile/Data Warehouse: 71/71 OK; the cut moves one card
+   per down (tx3: "▲ 3 more … ▼ 1 more in Data Warehouse"). approved
+4. 14-high board, 80x24, same walk: 66/66 OK. Room 4: each project band shows one card at a time (UXV3-12); td3: 3 drawn + ▼ 3 =
+   the band's "6 open", the rail's ✓1 not counted. approved
+5. up back through a cut band: same frame per card as down (the cut depends only on the selection) — no re-flow inside a cut band;
+   118x30 and 80x24. approved
+6. [ on to2 into the capped Backlog; ] on overflow tx0 and tx9; [ on td2; each followed by down, up, u: 25/25 OK per size; the moved
+   card stays selected and whole; u restores it; [ on tx8 (already in Backlog) only "Nothing to undo." approved
+7. Extra: priority and horizon modes on all three boards at 118x30 and 80x24; project mode at 118x26, 118x24, 118x22, 80x23, 80x21;
+   oracle board at 80x20: 0 bad steps, including rail titles at 118 near the declared room 3-5 boundary. approved
+8. Approved frames at scroll 0: the 118x30, 120x32 and 80x24 app screens after 4 are byte-identical to iteration 1 (clock masked);
+   panel renders vs R-1b-118x30 / R-1b-80x24 differ only in the head row (UXV3-7 / PV-10) and the spine glyph (PV-4), both declared.
+   approved
+
+PV-9 (the cut) — recommended for acceptance: keeps the head row, the fold row and the whole selected card on screen; one card per key;
+same frame up as down; counts what it hides. Operator question: at 80x24 on a many-highs board the high-band cap (PV-2) leaves a
+project band ~4 rows (one card at a time) — should the cap shrink when a band has to be cut?
+
+New findings (notices; none blocks)
+- UXV3-12 (minor): at room 4 a cut band shows one card then 2 blank rows before the fold row; the blanks read as the band's end,
+  only "▼ m more in NAME" says otherwise. Declared room 3-5 boundary; still a usability cost.
+- UXV3-13 (notice): at 80 columns the in-band counts push the ▼ below names into the ellipsis earlier (td3 under horizon:
+  "▼ 2 below: No date (2 open)…" — "Done (0 open)" no longer visible). Every count still prints, as specified.
+- UXV3-14 (notice): the band rule's open count includes the band's highs drawn in the high band ("Later 10 open · 3 high ↑"); the fold
+  counts cover only the band's own cards (3 + 3 + 1 = 7). "3 high ↑" explains the gap only implicitly.
+- UXV3-15 (notice): a toast paints over the right end of the fold row (now carrying cut counts) until it expires; existing toast
+  behaviour, not a regression.
+
+Evidence checklist: context of use (carried) ✓; real mechanism (run_test keys) ✓; painted result (strips + scroll offset) ✓; sizes
+118x30, 120x32, 80x24 + row 7 ✓; boards oracle, oracle+DW, 14-high ✓; modes project/priority/horizon ✓; keys down/up both ways,
+[ ] u ✓; approved-frame regression ✓.
+Gaps: SVGs not rasterised; frozen date, clock masked; goto() uses real arrow keys; the count invariant spot-checked (td3, td5), not
+asserted every step — TC-311 covers it.
+Evaluation acts: automated walkthrough performed; expert inspection performed; evaluation with users not performed (one-person team).

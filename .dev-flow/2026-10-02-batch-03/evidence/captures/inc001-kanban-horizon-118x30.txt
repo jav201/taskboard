@@ -1,0 +1,30 @@
+KANBAN · grouped · group: horizon                                                                            28 tasks 
+BACKLOG               10│NEXT                      5│DOING               6/4│REVIEW               4/3│✓ DONE 3        
+────────────────────────┼───────────────────────────┼───────────────────────┼────────────────────────┼────────────────
+── high  9 open · 4 projects ───────────────────────┼───────────────────────┼────────────────────────┼────────────────
+▊ !! Launch new homepage│▊ !! Partner notice emails │▊ !! Fix checkout 500  │                        │                
+▊ ·30d Website +10d     │▊ ·8d API ⛓1 +3d           │▊    error Website -2d │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │                
+▊ !! Offline sync       │▊ !! Rotate API keys       │▊ !! Rate limiting     │                        │                
+▊ ·15d Mobile ⛓1 +28d   │▊ ·14d Ops +3d             │▊ ·10d API ⛓1 +4d      │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │                
+▲ !! Deprecate v1       │                           │▊ !! Renew TLS         │                        │                
+▊    endpoints API +7d  │                           │▊    certificate -1d   │                        │                
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │                
+▊ !! Pen-test findings  │                           │                       │                        │                
+▊ ·9d Ops +20d          │                           │                       │                        │                
+▐ Overdue  5 open · 2 high ↑ ───────────────────────┼───────────────────────┼────────────────────────┼────────────────
+                        │                           │▊ == Write API         │▊ == Build component    │                
+                        │                           │▊    reference ·21d -5d│▊    library ·4d ⛓2 -3d │                
+                        │                           │                       │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                
+                        │                           │                       │▊ == SDK regeneration   │                
+                        │                           │                       │▊ ·7d -1d               │                
+▐ This week  8 open · 4 high ↑ ─────────────────────┼───────────────────────┼────────────────────────┼────────────────
+                        │▊ ++ Optimize image assets │▊ == Audit dependencies│▊ ++ Crash reporting    │                
+                        │▊ ·12d ⛓1 +6d              │▊ ·6d ⛓1 +2d           │▊ ·2d +1d               │                
+                        │                           │                       │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                
+                        │                           │                       │▊ == Review pull        │                
+                        │                           │                       │▊    requests ·3d today │                
+                                                                                                                      
+                                                                                                                      
+▼ 3 below: Later (10 open), No date (2 open), Done (0 open)                                                           

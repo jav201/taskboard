@@ -546,6 +546,11 @@ class TaskboardApp(App):
         boards = self.query("#board")
         bw = boards.first(BoardView).size.width if boards else 0
         board = self._view_board()
+        if self.view_mode == "kanban" and h and (self.search_query or "").strip():
+            # `render_view` draws a filtered kanban two rows shorter (the `/`
+            # bar); the grouped board's cap and window read the height, so the
+            # nav asks the same question the renderer answered (D-312)
+            h = max(1, h - 2)
         if self.view_mode == "kanban":
             presentation = self.kanban_presentation
         elif self.view_mode == "swimlanes":
@@ -615,6 +620,19 @@ class TaskboardApp(App):
         ids = [t.id for t in tasks]
         if self.selected_task_id not in ids:
             self.selected_task_id = ids[0] if ids else None
+        if (self.selected_task_id is not None and self.view_mode == "kanban"
+                and self.kanban_presentation == "grouped"):
+            # The readable board COUNTS done work it cannot draw (the narrow or
+            # collapsed rail, past `+N more`); a selection there would rest on
+            # a card the screen does not show (F-3). It moves by the `z` rule:
+            # the first card of the nearest column at or left of its phase
+            # (HLR-310).
+            cols = self._nav_columns()
+            if not any(self.selected_task_id in col for col in cols):
+                sel = board.task_by_id(self.selected_task_id)
+                at = min(board.phase_index(sel), len(cols) - 1)
+                self.selected_task_id = next(
+                    (cols[i][0] for i in range(at, -1, -1) if cols[i]), None)
 
     def _locate(self, cols: list[list[str]]) -> tuple[int, int] | None:
         for ci, col in enumerate(cols):
@@ -689,13 +707,29 @@ class TaskboardApp(App):
         idx = self.board.phase_index(task) + delta
         idx = max(0, min(idx, len(self.board.phases) - 1))
         snap = self._snapshot(task)      # BEFORE the mutation (LLR-010.1); a
+        kanban = self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+        was = self._locate(self._nav_columns()) if kanban else None
         if self.board.set_task_phase(task, self.board.phases[idx]):
             self._undo_stack.append(snap)  # clamped end is a no-op — nothing
             self.board.save()              # executed, nothing recorded
             self._warn_history_error()
+            if was is not None:
+                cols = self._nav_columns()
+                if not any(task.id in col for col in cols):
+                    # the board counts the task now (a narrow rail): the card
+                    # that took its place takes the cursor, else the one above
+                    # (HLR-310 — the gantt's neighbour rule, not the top)
+                    col = cols[was[0]] if was[0] < len(cols) else []
+                    if col:
+                        self.selected_task_id = col[min(was[1], len(col) - 1)]
             self.refresh_view()
             if self.view_mode == "gantt" and self.board.is_done(task):
                 self._notify_folded(task)
+            elif was is not None and self.selected_task_id != task.id:
+                # only done work leaves the nav: the task was counted
+                # board text: shown raw with markup OFF, never escaped (C-17)
+                self.notify(f"{task.title} done · counted in the ✓ rail · u undo",
+                            markup=False)
 
     def _notify_folded(self, task: Task) -> None:
         """A task `]` finished has left the gantt — it folded into its group's

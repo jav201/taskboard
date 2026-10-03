@@ -1,0 +1,369 @@
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFFFFF                                                              [100%]
+================================== FAILURES ===================================
+___ test_AT_307_the_selected_card_is_always_whole_on_screen[size0-oracle-0] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14395/test_AT_307_the_selected_card_0')
+frozen_today = None, size = (118, 30), kind = 'oracle', g_presses = 0
+
+    @pytest.mark.parametrize("size,kind,g_presses", [((118, 30), "oracle", 0), ((80, 24), "oracle", 0),
+                                                    ((80, 24), "oracle", 2), ((118, 30), "14high", 0),
+                                                    ((80, 24), "14high", 0)])
+    async def test_AT_307_the_selected_card_is_always_whole_on_screen(tmp_path, frozen_today, size,
+                                                                      kind, g_presses):
+        """AT-307 (US-302, US-303). Walking `down` the whole Backlog column at the
+        operator's terminal sizes — on the oracle board, under `g g` (horizon, where
+        the `Later` band is taller than the room) and on a board of 14 highs —
+        after every step the board fits the panel (it never scrolls: the head row
+        and the fold row stay on screen), both rows of the selected card and the
+        rule of ITS band are inside it, and a step into a band already drawn moves
+        no band (P2 UX-3, UX-14; P4 UXV3-1). RED on base at 80×24: the panel
+        scrolls and the band names scroll off; RED before increment 003 under
+        horizon and on the 14-high board: a band taller than the room scrolled."""
+        board = many_highs(tmp_path / "board.json") if kind == "14high" else None
+        app = await _kanban_app(tmp_path, size, board=board)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            for _ in range(g_presses):
+                await pilot.press("g")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            h = _viewport_h(app)
+            col = app._nav_columns()[0]
+            for _ in col[1:]:
+                before = [r.split("  ")[0] for r in _painted(app) if is_rule(r)]   # the band SET
+                drawn_before = set(app._line_map)
+                await pilot.press("down")
+                await pilot.pause()
+                rows, idx = _painted(app), app._line_map[app.selected_task_id]
+                top = app.query_one("#viewport").scroll_offset.y
+                assert top == 0 and len(rows) == h, (app.selected_task_id, top, len(rows), h)
+                assert idx + 1 < h, (app.selected_task_id, idx, h)
+>               plan = kanban_plan(app._view_board(), False, app.selected_task_id, TODAY,
+                                   app.query_one("#board").size.width, h, group=app.kanban_group)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:850: TypeError
+___ test_AT_307_the_selected_card_is_always_whole_on_screen[size1-oracle-0] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14395/test_AT_307_the_selected_card_1')
+frozen_today = None, size = (80, 24), kind = 'oracle', g_presses = 0
+
+    @pytest.mark.parametrize("size,kind,g_presses", [((118, 30), "oracle", 0), ((80, 24), "oracle", 0),
+                                                    ((80, 24), "oracle", 2), ((118, 30), "14high", 0),
+                                                    ((80, 24), "14high", 0)])
+    async def test_AT_307_the_selected_card_is_always_whole_on_screen(tmp_path, frozen_today, size,
+                                                                      kind, g_presses):
+        """AT-307 (US-302, US-303). Walking `down` the whole Backlog column at the
+        operator's terminal sizes — on the oracle board, under `g g` (horizon, where
+        the `Later` band is taller than the room) and on a board of 14 highs —
+        after every step the board fits the panel (it never scrolls: the head row
+        and the fold row stay on screen), both rows of the selected card and the
+        rule of ITS band are inside it, and a step into a band already drawn moves
+        no band (P2 UX-3, UX-14; P4 UXV3-1). RED on base at 80×24: the panel
+        scrolls and the band names scroll off; RED before increment 003 under
+        horizon and on the 14-high board: a band taller than the room scrolled."""
+        board = many_highs(tmp_path / "board.json") if kind == "14high" else None
+        app = await _kanban_app(tmp_path, size, board=board)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            for _ in range(g_presses):
+                await pilot.press("g")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            h = _viewport_h(app)
+            col = app._nav_columns()[0]
+            for _ in col[1:]:
+                before = [r.split("  ")[0] for r in _painted(app) if is_rule(r)]   # the band SET
+                drawn_before = set(app._line_map)
+                await pilot.press("down")
+                await pilot.pause()
+                rows, idx = _painted(app), app._line_map[app.selected_task_id]
+                top = app.query_one("#viewport").scroll_offset.y
+                assert top == 0 and len(rows) == h, (app.selected_task_id, top, len(rows), h)
+                assert idx + 1 < h, (app.selected_task_id, idx, h)
+>               plan = kanban_plan(app._view_board(), False, app.selected_task_id, TODAY,
+                                   app.query_one("#board").size.width, h, group=app.kanban_group)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:850: TypeError
+___ test_AT_307_the_selected_card_is_always_whole_on_screen[size2-oracle-2] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14395/test_AT_307_the_selected_card_2')
+frozen_today = None, size = (80, 24), kind = 'oracle', g_presses = 2
+
+    @pytest.mark.parametrize("size,kind,g_presses", [((118, 30), "oracle", 0), ((80, 24), "oracle", 0),
+                                                    ((80, 24), "oracle", 2), ((118, 30), "14high", 0),
+                                                    ((80, 24), "14high", 0)])
+    async def test_AT_307_the_selected_card_is_always_whole_on_screen(tmp_path, frozen_today, size,
+                                                                      kind, g_presses):
+        """AT-307 (US-302, US-303). Walking `down` the whole Backlog column at the
+        operator's terminal sizes — on the oracle board, under `g g` (horizon, where
+        the `Later` band is taller than the room) and on a board of 14 highs —
+        after every step the board fits the panel (it never scrolls: the head row
+        and the fold row stay on screen), both rows of the selected card and the
+        rule of ITS band are inside it, and a step into a band already drawn moves
+        no band (P2 UX-3, UX-14; P4 UXV3-1). RED on base at 80×24: the panel
+        scrolls and the band names scroll off; RED before increment 003 under
+        horizon and on the 14-high board: a band taller than the room scrolled."""
+        board = many_highs(tmp_path / "board.json") if kind == "14high" else None
+        app = await _kanban_app(tmp_path, size, board=board)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            for _ in range(g_presses):
+                await pilot.press("g")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            h = _viewport_h(app)
+            col = app._nav_columns()[0]
+            for _ in col[1:]:
+                before = [r.split("  ")[0] for r in _painted(app) if is_rule(r)]   # the band SET
+                drawn_before = set(app._line_map)
+                await pilot.press("down")
+                await pilot.pause()
+                rows, idx = _painted(app), app._line_map[app.selected_task_id]
+                top = app.query_one("#viewport").scroll_offset.y
+                assert top == 0 and len(rows) == h, (app.selected_task_id, top, len(rows), h)
+                assert idx + 1 < h, (app.selected_task_id, idx, h)
+>               plan = kanban_plan(app._view_board(), False, app.selected_task_id, TODAY,
+                                   app.query_one("#board").size.width, h, group=app.kanban_group)
+E               TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:850: TypeError
+___ test_AT_307_the_selected_card_is_always_whole_on_screen[size3-14high-0] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14395/test_AT_307_the_selected_card_3')
+frozen_today = None, size = (118, 30), kind = '14high', g_presses = 0
+
+    @pytest.mark.parametrize("size,kind,g_presses", [((118, 30), "oracle", 0), ((80, 24), "oracle", 0),
+                                                    ((80, 24), "oracle", 2), ((118, 30), "14high", 0),
+                                                    ((80, 24), "14high", 0)])
+    async def test_AT_307_the_selected_card_is_always_whole_on_screen(tmp_path, frozen_today, size,
+                                                                      kind, g_presses):
+        """AT-307 (US-302, US-303). Walking `down` the whole Backlog column at the
+        operator's terminal sizes — on the oracle board, under `g g` (horizon, where
+        the `Later` band is taller than the room) and on a board of 14 highs —
+        after every step the board fits the panel (it never scrolls: the head row
+        and the fold row stay on screen), both rows of the selected card and the
+        rule of ITS band are inside it, and a step into a band already drawn moves
+        no band (P2 UX-3, UX-14; P4 UXV3-1). RED on base at 80×24: the panel
+        scrolls and the band names scroll off; RED before increment 003 under
+        horizon and on the 14-high board: a band taller than the room scrolled."""
+        board = many_highs(tmp_path / "board.json") if kind == "14high" else None
+        app = await _kanban_app(tmp_path, size, board=board)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            for _ in range(g_presses):
+                await pilot.press("g")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            h = _viewport_h(app)
+            col = app._nav_columns()[0]
+            for _ in col[1:]:
+                before = [r.split("  ")[0] for r in _painted(app) if is_rule(r)]   # the band SET
+                drawn_before = set(app._line_map)
+                await pilot.press("down")
+                await pilot.pause()
+                rows, idx = _painted(app), app._line_map[app.selected_task_id]
+                top = app.query_one("#viewport").scroll_offset.y
+>               assert top == 0 and len(rows) == h, (app.selected_task_id, top, len(rows), h)
+E               AssertionError: ('tm4', 0, 30, 28)
+E               assert (0 == 0 and 30 == 28)
+E                +  where 30 = len(['KANBAN · grouped                                                                                            38 tasks...Offl… ·15d +28d ⛓1│▊ !! Rotate A… ·14d +3d│▊ !! Rate … ·10d +4d ⛓1│▐ Mobile App          │▐ Mobile App          ', ...])
+
+tests\test_kanban_readable.py:848: AssertionError
+___ test_AT_307_the_selected_card_is_always_whole_on_screen[size4-14high-0] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14395/test_AT_307_the_selected_card_4')
+frozen_today = None, size = (80, 24), kind = '14high', g_presses = 0
+
+    @pytest.mark.parametrize("size,kind,g_presses", [((118, 30), "oracle", 0), ((80, 24), "oracle", 0),
+                                                    ((80, 24), "oracle", 2), ((118, 30), "14high", 0),
+                                                    ((80, 24), "14high", 0)])
+    async def test_AT_307_the_selected_card_is_always_whole_on_screen(tmp_path, frozen_today, size,
+                                                                      kind, g_presses):
+        """AT-307 (US-302, US-303). Walking `down` the whole Backlog column at the
+        operator's terminal sizes — on the oracle board, under `g g` (horizon, where
+        the `Later` band is taller than the room) and on a board of 14 highs —
+        after every step the board fits the panel (it never scrolls: the head row
+        and the fold row stay on screen), both rows of the selected card and the
+        rule of ITS band are inside it, and a step into a band already drawn moves
+        no band (P2 UX-3, UX-14; P4 UXV3-1). RED on base at 80×24: the panel
+        scrolls and the band names scroll off; RED before increment 003 under
+        horizon and on the 14-high board: a band taller than the room scrolled."""
+        board = many_highs(tmp_path / "board.json") if kind == "14high" else None
+        app = await _kanban_app(tmp_path, size, board=board)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            for _ in range(g_presses):
+                await pilot.press("g")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            h = _viewport_h(app)
+            col = app._nav_columns()[0]
+            for _ in col[1:]:
+                before = [r.split("  ")[0] for r in _painted(app) if is_rule(r)]   # the band SET
+                drawn_before = set(app._line_map)
+                await pilot.press("down")
+                await pilot.pause()
+                rows, idx = _painted(app), app._line_map[app.selected_task_id]
+                top = app.query_one("#viewport").scroll_offset.y
+>               assert top == 0 and len(rows) == h, (app.selected_task_id, top, len(rows), h)
+E               AssertionError: ('tm4', 0, 30, 22)
+E               assert (0 == 0 and 30 == 22)
+E                +  where 30 = len(['KANBAN · grouped                                                      38 tasks ', 'BACKLOG      20│NEXT          5│D...== Bu… -3d ⛓2│▊ Design … -20d', '▊ !! O… +28d ⛓1│▊ !! … ·14d +3d│▊ !! Ra… +4d ⛓1│▐ Mobile App   │▐ Mobile App   ', ...])
+
+tests\test_kanban_readable.py:848: AssertionError
+_ test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[agenda-kw0] _
+
+mode = 'agenda', kw = {}
+
+    @pytest.mark.parametrize("mode,kw", TITLE_SEATS)
+    def test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket(mode, kw):
+        """P4 qa G-003a: `title_markup` — the title seat of the agenda, the kanban's
+        matrix and lanes, the Focus views — now writes its piece through `_literal`
+        too (increment 001). Rich drops the backslash before ANY bracket, so on the
+        base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
+        (measured at every width 24..100). RED on base `13745f6`."""
+        title = "a" + chr(92) + "[b"
+        p = Project("P", "sky")
+        t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
+        b = Board([p], [t], Path("never-written.json"), phases=["Backlog", "Doing", "Done"])
+        rows = render_view(mode, b, False, t.id, TODAY, 100, 14, {}, **kw).plain.split("\n")
+>       assert any(title in r for r in rows), (mode, kw)
+E       AssertionError: ('agenda', {})
+E       assert False
+E        +  where False = any(<generator object test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket.<locals>.<genexpr> at 0x00000244B0768C70>)
+
+tests\test_kanban_readable.py:1139: AssertionError
+_ test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[kanban-kw1] _
+
+mode = 'kanban', kw = {'presentation': 'matrix'}
+
+    @pytest.mark.parametrize("mode,kw", TITLE_SEATS)
+    def test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket(mode, kw):
+        """P4 qa G-003a: `title_markup` — the title seat of the agenda, the kanban's
+        matrix and lanes, the Focus views — now writes its piece through `_literal`
+        too (increment 001). Rich drops the backslash before ANY bracket, so on the
+        base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
+        (measured at every width 24..100). RED on base `13745f6`."""
+        title = "a" + chr(92) + "[b"
+        p = Project("P", "sky")
+        t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
+        b = Board([p], [t], Path("never-written.json"), phases=["Backlog", "Doing", "Done"])
+        rows = render_view(mode, b, False, t.id, TODAY, 100, 14, {}, **kw).plain.split("\n")
+>       assert any(title in r for r in rows), (mode, kw)
+E       AssertionError: ('kanban', {'presentation': 'matrix'})
+E       assert False
+E        +  where False = any(<generator object test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket.<locals>.<genexpr> at 0x00000244AFD88FB0>)
+
+tests\test_kanban_readable.py:1139: AssertionError
+_ test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[kanban-kw2] _
+
+mode = 'kanban', kw = {'presentation': 'lanes'}
+
+    @pytest.mark.parametrize("mode,kw", TITLE_SEATS)
+    def test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket(mode, kw):
+        """P4 qa G-003a: `title_markup` — the title seat of the agenda, the kanban's
+        matrix and lanes, the Focus views — now writes its piece through `_literal`
+        too (increment 001). Rich drops the backslash before ANY bracket, so on the
+        base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
+        (measured at every width 24..100). RED on base `13745f6`."""
+        title = "a" + chr(92) + "[b"
+        p = Project("P", "sky")
+        t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
+        b = Board([p], [t], Path("never-written.json"), phases=["Backlog", "Doing", "Done"])
+        rows = render_view(mode, b, False, t.id, TODAY, 100, 14, {}, **kw).plain.split("\n")
+>       assert any(title in r for r in rows), (mode, kw)
+E       AssertionError: ('kanban', {'presentation': 'lanes'})
+E       assert False
+E        +  where False = any(<generator object test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket.<locals>.<genexpr> at 0x00000244B0E88520>)
+
+tests\test_kanban_readable.py:1139: AssertionError
+_ test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[focus-kw3] _
+
+mode = 'focus', kw = {'focus_presentation': 'inspector'}
+
+    @pytest.mark.parametrize("mode,kw", TITLE_SEATS)
+    def test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket(mode, kw):
+        """P4 qa G-003a: `title_markup` — the title seat of the agenda, the kanban's
+        matrix and lanes, the Focus views — now writes its piece through `_literal`
+        too (increment 001). Rich drops the backslash before ANY bracket, so on the
+        base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
+        (measured at every width 24..100). RED on base `13745f6`."""
+        title = "a" + chr(92) + "[b"
+        p = Project("P", "sky")
+        t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
+        b = Board([p], [t], Path("never-written.json"), phases=["Backlog", "Doing", "Done"])
+        rows = render_view(mode, b, False, t.id, TODAY, 100, 14, {}, **kw).plain.split("\n")
+>       assert any(title in r for r in rows), (mode, kw)
+E       AssertionError: ('focus', {'focus_presentation': 'inspector'})
+E       assert False
+E        +  where False = any(<generator object test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket.<locals>.<genexpr> at 0x00000244B0D90110>)
+
+tests\test_kanban_readable.py:1139: AssertionError
+_ test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[focus-kw4] _
+
+mode = 'focus', kw = {'focus_presentation': 'review'}
+
+    @pytest.mark.parametrize("mode,kw", TITLE_SEATS)
+    def test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket(mode, kw):
+        """P4 qa G-003a: `title_markup` — the title seat of the agenda, the kanban's
+        matrix and lanes, the Focus views — now writes its piece through `_literal`
+        too (increment 001). Rich drops the backslash before ANY bracket, so on the
+        base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
+        (measured at every width 24..100). RED on base `13745f6`."""
+        title = "a" + chr(92) + "[b"
+        p = Project("P", "sky")
+        t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
+        b = Board([p], [t], Path("never-written.json"), phases=["Backlog", "Doing", "Done"])
+        rows = render_view(mode, b, False, t.id, TODAY, 100, 14, {}, **kw).plain.split("\n")
+>       assert any(title in r for r in rows), (mode, kw)
+E       AssertionError: ('focus', {'focus_presentation': 'review'})
+E       assert False
+E        +  where False = any(<generator object test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket.<locals>.<genexpr> at 0x00000244AFD88FB0>)
+
+tests\test_kanban_readable.py:1139: AssertionError
+_____ test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection _____
+
+    def test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection():
+        """LLR-309.2 (P4 UXV3-1). Under `horizon` at panel 80×22 the `Later` band
+        is taller than the room: it is cut on card boundaries around the selection
+        and the fold row counts the cards cut off — `▲ 3 more in Later   ▼ 1 more in
+        Later` with `td3` selected, `▲ 5 more in Later` with `td5` — so the board
+        is exactly the panel's height and the card is whole; unwindowed (h 0) the
+        band is drawn whole. RED: the band drawn alone and scrolling (the render
+        taller than the panel, the fold row past its bottom)."""
+        b = kg_board.build()
+        for sel, want in (("td3", ("▲ 3 more in Later", "▼ 1 more in Later")),
+                          ("td5", ("▲ 5 more in Later",))):
+            _t, rows, lm = render(b, 80, 22, sel=sel, kanban_group="horizon")
+>           assert len(rows) == 22 and FOLD.match(rows[-1]), (sel, len(rows))
+E           AssertionError: ('td3', 22)
+E           assert (22 == 22 and None)
+E            +  where 22 = len(['KANBAN · grouped · group: horizon                                      28 tasks ', 'BACKLOG       10│NEXT          5...= Bu… -3d ⛓2│▊ Migrate … -4d', '▊ !! Of… +28d ⛓1│▊ !! … ·14d +3d│▊ !! Ra… +4d ⛓1│▊ == S… ·7d -1d│▊ Set up … -12d', ...])
+E            +  and   None = <built-in method match of re.Pattern object at 0x00000244AEA63120>('                                                                                ')
+E            +    where <built-in method match of re.Pattern object at 0x00000244AEA63120> = re.compile('^[▲▼] \\d+ (above|below)').match
+
+tests\test_kanban_readable.py:1154: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0-oracle-0]
+FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1-oracle-0]
+FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size2-oracle-2]
+FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size3-14high-0]
+FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size4-14high-0]
+FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[agenda-kw0]
+FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[kanban-kw1]
+FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[kanban-kw2]
+FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[focus-kw3]
+FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[focus-kw4]
+FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+11 failed, 166 deselected in 3.76s

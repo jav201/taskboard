@@ -1,0 +1,24 @@
+KANBAN · grouped                                                       28 tasks 
+BACKLOG        10│NEXT              5│DOING        6/4│REVIEW        4/3│✓3     
+─────────────────┼───────────────────┼────────────────┼─────────────────┼───────
+── high  9 open · 4 projects ────────┼────────────────┼─────────────────┼───────
+▊ !! Launch new  │▊ !! Partner notice│▊ !! Fix        │                 │       
+▊    homepa… +10d│▊    emails ⛓1 +3d │▊    checko… -2d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │       
+▊ !! Offline sync│▊ !! Rotate API    │▊ !! Rate       │                 │       
+▊ Mobile ⛓1 +28d │▊    keys Ops +3d  │▊    limiti… +4d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │       
+▲ !! Deprecate v1│                   │▊ !! Renew TLS  │                 │       
+▊    endpoin… +7d│                   │▊    certif… -1d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │       
+▊ !! Pen-test    │                   │                │                 │       
+▊    findin… +20d│                   │                │                 │       
+▐ Ops & Security  5 open · 3 high ↑ · project due +5d ┼─────────────────┼───────
+▊ == Update      │                   │                │▊ == Review pull │       
+▊    onboar… ·33d│                   │                │▊    reque… today│       
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+▲ 4 above: Website Redesign (5 open), Mobile App (5 open), API Platform (6 open…

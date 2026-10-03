@@ -1,0 +1,327 @@
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFFFFFFFFF.F....                                                    [100%]
+================================== FAILURES ===================================
+____________ test_TC_309_the_cap_is_two_thirds_of_the_body[0-None] ____________
+
+h = 0, R = None
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+_____________ test_TC_309_the_cap_is_two_thirds_of_the_body[11-5] _____________
+
+h = 11, R = 5
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+_____________ test_TC_309_the_cap_is_two_thirds_of_the_body[12-6] _____________
+
+h = 12, R = 6
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+_____________ test_TC_309_the_cap_is_two_thirds_of_the_body[13-6] _____________
+
+h = 13, R = 6
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+_____________ test_TC_309_the_cap_is_two_thirds_of_the_body[14-7] _____________
+
+h = 14, R = 7
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+____________ test_TC_309_the_cap_is_two_thirds_of_the_body[19-10] _____________
+
+h = 19, R = 10
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+____________ test_TC_309_the_cap_is_two_thirds_of_the_body[20-11] _____________
+
+h = 20, R = 11
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+____________ test_TC_309_the_cap_is_two_thirds_of_the_body[22-12] _____________
+
+h = 22, R = 12
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+____________ test_TC_309_the_cap_is_two_thirds_of_the_body[24-14] _____________
+
+h = 24, R = 14
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+____________ test_TC_309_the_cap_is_two_thirds_of_the_body[30-18] _____________
+
+h = 30, R = 18
+
+    @pytest.mark.parametrize("h,R", sorted(H_TABLE.items()))
+    def test_TC_309_the_cap_is_two_thirds_of_the_body(h, R):
+        """TC-309 (LLR-306.1, the executed h-table). With R = max(5, 2·(h − 3) // 3)
+        a column of m open highs shows all when 3m − 1 ≤ R, else R // 3 and one
+        `+N more ↓` row under them (no `┈` before it); its band rows never exceed
+        R; the overflow is drawn in its project bands. h 0 shows every high.
+        RED: K = R // 3 + 1 → the band passes R."""
+        b = many_highs()
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, h)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:879: TypeError
+___________ test_TC_309_the_overflow_row_sits_right_under_the_band ____________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14263/test_TC_309_the_overflow_row_s0')
+
+    def test_TC_309_the_overflow_row_sits_right_under_the_band(tmp_path):
+        """The `+N more ↓` row: mut, directly under the last shown high (no `┈`),
+        and the overflow highs are selectable in their project bands (nav ⊇)."""
+        b = many_highs()
+        text, rows, lm = render(b, 118, 30)
+        seps = seps_of(rows)
+>       plan = kanban_plan(b, False, "tw3", TODAY, 118, 30)
+E       TypeError: 'NoneType' object is not callable
+
+tests\test_kanban_readable.py:904: TypeError
+____________ test_AT_304_a_board_full_of_highs_keeps_its_projects _____________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14263/test_AT_304_a_board_full_of_hi0')
+frozen_today = None
+
+    async def test_AT_304_a_board_full_of_highs_keeps_its_projects(tmp_path, frozen_today):
+        """AT-304 (US-303). 14 open highs in Backlog at terminal 118×32: the band
+        draws 6 of them and `+8 more ↓`, at least one project band rule is still on
+        screen, and walking `down` reaches every overflow high (each then drawn).
+        RED: an uncapped band (41 rows) leaves no project on screen."""
+        b = many_highs(tmp_path / "board.json")
+        app = await _kanban_app(tmp_path, (118, 32), board=b)
+        async with app.run_test(size=(118, 32)) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "tw5"
+            app.refresh_view()
+            await pilot.pause()
+            rows = _painted(app)
+>           assert any("+8 more ↓" in r for r in rows)
+E           assert False
+E            +  where False = any(<generator object test_AT_304_a_board_full_of_highs_keeps_its_projects.<locals>.<genexpr> at 0x000001B0C07829B0>)
+
+tests\test_kanban_readable.py:926: AssertionError
+________________ test_TC_310_the_help_describes_the_new_board _________________
+
+    def test_TC_310_the_help_describes_the_new_board():
+        """TC-310 (LLR-308.1). The kanban help names the band rule, `┈`, the rail
+        and `+N more ↓` — each absent from the shipped copy — and no longer the
+        per-column band; every bullet fits the help's 44-cell column; the example
+        shows the meta order (`⛓N` before the due); the legend calls `▐` the
+        project's band. RED on base: "the top of each column"."""
+        usage = [line for _h, lines in views.help_usage("kanban") for line in lines]
+        text = " ".join(usage)
+        for word in ("band rule", "┈", "rail", "more ↓"):
+>           assert word in text, word
+E           AssertionError: band rule
+E           assert 'band rule' in 'run the work: move tasks between phases, group by project, priority or horizon. j/k down and up · ↵ opens the card. t...= normal · ++ low (open only) the ── high ── band lifts open high tasks to the top of each column (grouped view only).'
+
+tests\test_kanban_readable.py:949: AssertionError
+_________________ test_AT_306_the_help_explains_what_is_drawn _________________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14263/test_AT_306_the_help_explains_0')
+frozen_today = None
+
+    async def test_AT_306_the_help_explains_what_is_drawn(tmp_path, frozen_today):
+        """AT-306 (US-301..303). `?` in the kanban paints the new copy: the band
+        rule, `┈`, the rail, `+N more ↓` — and not the per-column band. RED on
+        base: "the top of each column"."""
+        app = await _kanban_app(tmp_path, (118, 32))
+        async with app.run_test(size=(118, 32)) as pilot:
+            await pilot.press("4")
+            await pilot.pause()
+            await pilot.press("question_mark")
+            await pilot.pause()
+            painted = "\n".join(w.render().plain for w in app.screen.query("Label"))
+            for word in ("band rule", "┈", "rail", "more ↓", "project band"):
+>               assert word in painted, word
+E               AssertionError: band rule
+E               assert 'band rule' in 'Help · kanban\nUsage\nwhat it is for\n  • run the work: move tasks between phases,\n  • group by project, priority or... Focus\nesc  Focus off\n/  Search\n⇥  Layout\n↓  Down\n↑  Up\n←  Left\n→  Right\nm full map · ? palette · esc/q closes'
+
+tests\test_kanban_readable.py:972: AssertionError
+___ test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size0-True] ____
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14263/test_AT_308_finishing_a_card_k0')
+frozen_today = None, size = (80, 24), moves = True
+
+    @pytest.mark.parametrize("size,moves", [((80, 24), True), ((118, 30), False)])
+    async def test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board(tmp_path, frozen_today,
+                                                                         size, moves):
+        """AT-308 (US-302). At terminal 80×24 the rail is a count: `]` on `to3`
+        (Review, the column's last card) moves the cursor to `ta6`, the card above
+        it, drawn, and one notification names the task literally; `u` brings it
+        back. At 118×30 the rail draws done titles: the cursor stays on `to3`,
+        now a rail title, and nothing is posted. RED on base: the cursor rests on
+        an undrawn task, nothing posted."""
+        b = kg_board.build(tmp_path / "board.json")
+        app = await _kanban_app(tmp_path, size, board=b)
+        async with app.run_test(size=size) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "to3"
+            app.refresh_view()
+            await pilot.pause()
+            before = len(app._notifications)
+            await pilot.press("]")
+            await pilot.pause()
+            assert app.board.task_by_id("to3").phase == "Done"
+            notes = _posted(app, before)
+            if moves:
+>               assert app.selected_task_id == "ta6" and "ta6" in app._line_map
+E               AssertionError: assert ('to3' == 'ta6'
+E                 
+E                 - ta6
+E                 + to3)
+
+tests\test_kanban_readable.py:1003: AssertionError
+________ test_TC_312_the_notification_prints_a_bracket_title_literally ________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14263/test_TC_312_the_notification_p0')
+frozen_today = None
+
+    async def test_TC_312_the_notification_prints_a_bracket_title_literally(tmp_path,
+                                                                              frozen_today):
+        """TC-312 (LLR-310.1, C-17): the notification is markup-off — a title
+        `[b]x[/b]` reaches the painted toast as typed; and a resize to a count
+        rail moves a done selection by the `z` rule, with no notification."""
+        b = kg_board.build(tmp_path / "board.json")
+        b.task_by_id("to3").title = "[b]x[/b]"
+        app = await _kanban_app(tmp_path, (80, 24), board=b)
+        async with app.run_test(size=(80, 24), notifications=True) as pilot:
+            await pilot.press("4")
+            app.selected_task_id = "to3"
+            app.refresh_view()
+            await pilot.pause()
+            before = len(app._notifications)
+            await pilot.press("]")
+            await pilot.pause()
+>           assert _posted(app, before) == ["[b]x[/b] done · counted in the ✓ rail · u undo"]
+E           AssertionError: assert [] == ['[b]x[/b] do...ail · u undo']
+E             
+E             Right contains one more item: '[b]x[/b] done · counted in the ✓ rail · u undo'
+E             Use -v to get more diff
+
+tests\test_kanban_readable.py:1029: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size1-False]
+PASSED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size0]
+PASSED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size1]
+PASSED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size2]
+PASSED tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size3]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[0-None]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[11-5]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[12-6]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[13-6]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[14-7]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[19-10]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[20-11]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[22-12]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[24-14]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body[30-18]
+FAILED tests/test_kanban_readable.py::test_TC_309_the_overflow_row_sits_right_under_the_band
+FAILED tests/test_kanban_readable.py::test_AT_304_a_board_full_of_highs_keeps_its_projects
+FAILED tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board
+FAILED tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn
+FAILED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size0-True]
+FAILED tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally
+16 failed, 5 passed, 144 deselected in 11.91s

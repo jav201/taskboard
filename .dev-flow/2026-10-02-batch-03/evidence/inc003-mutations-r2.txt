@@ -1,0 +1,55 @@
+C1 KILLED — no cut: the band scrolls (P4 UXV3-1)
+   arms resolved 7, red 5; restore sha256 e46de44c44fa0855… OK
+    PASSED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0-oracle-0]
+    PASSED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1-oracle-0]
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size2-oracle-2]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size3-14high-0]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size4-14high-0]
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_cut_keeps_every_count_and_whole_cards
+C2 KILLED — the cut ignores the selection
+   arms resolved 6, red 4; restore sha256 e46de44c44fa0855… OK
+    PASSED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0-oracle-0]
+    PASSED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1-oracle-0]
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size2-oracle-2]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size3-14high-0]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size4-14high-0]
+C3 KILLED — the cut not on a card boundary
+   arms resolved 2, red 1; restore sha256 e46de44c44fa0855… OK
+    PASSED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_cut_keeps_every_count_and_whole_cards
+C5 KILLED — a cut with every band kept draws no fold row
+   arms resolved 2, red 2; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_cut_keeps_every_count_and_whole_cards
+F1 KILLED — a single band that exactly fits is cut (F1)
+   arms resolved 1, red 1; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_cut_keeps_every_count_and_whole_cards
+F2a KILLED — the counts clipped when nothing folds below (F2a)
+   arms resolved 1, red 1; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_cut_keeps_every_count_and_whole_cards
+F2b KILLED — a long band name pushes the `▼` count off (F2b)
+   arms resolved 1, red 1; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_cut_keeps_every_count_and_whole_cards
+F3 KILLED — a lone first row at the cut's bottom (F3)
+   arms resolved 1, red 1; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_cut_keeps_every_count_and_whole_cards
+F10 KILLED — a one-sided `▲` row loses its names (F10)
+   arms resolved 1, red 1; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_board_folds_whole_bands_and_names_them
+F5 KILLED — rail titles counted as cut cards (F5)
+   arms resolved 1, red 1; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_cut_keeps_every_count_and_whole_cards
+10 of 10 KILLED
+C4 KILLED — the cards cut above are not counted
+   arms resolved 1, red 1; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_band_taller_than_the_room_is_cut_around_the_selection
+C6 KILLED — the shared title seat back on `escape` (P4 qa G-003a)
+   arms resolved 5, red 5; restore sha256 e46de44c44fa0855… OK
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[agenda-kw0]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[kanban-kw1]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[kanban-kw2]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[focus-kw3]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_shared_title_seat_prints_a_backslash_before_a_bracket[focus-kw4]
+2 of 2 KILLED

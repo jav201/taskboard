@@ -1,0 +1,32 @@
+[
+ {
+  "id": "Q13",
+  "file": "taskboard/app.py",
+  "old": "        if (self.selected_task_id is not None and self.view_mode == \"kanban\"\n                and self.kanban_presentation == \"grouped\"):",
+  "new": "        elif (self.selected_task_id is not None and self.view_mode == \"kanban\"\n                and self.kanban_presentation == \"grouped\"):",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_312_a_reset_selection_never_lands_on_a_counted_card"
+  ],
+  "why": "F1: the relocation skipped after a reset to the first visible task"
+ },
+ {
+  "id": "Q14",
+  "file": "taskboard/app.py",
+  "old": "                    (cols[i][0] for i in range(at, -1, -1) if cols[i]), None)",
+  "new": "                    (cols[i][0] for i in range(0, at + 1) if cols[i]), None)",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally"
+  ],
+  "why": "F2 (Z1): the `z` rule takes the leftmost column"
+ },
+ {
+  "id": "Q15",
+  "file": "taskboard/app.py",
+  "old": "                        self.selected_task_id = col[min(was[1], len(col) - 1)]",
+  "new": "                        self.selected_task_id = col[len(col) - 1]",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board"
+  ],
+  "why": "F3 (Z2): the column's last card instead of the one that took its place"
+ }
+]

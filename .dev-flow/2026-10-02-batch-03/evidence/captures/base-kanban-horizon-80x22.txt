@@ -1,0 +1,22 @@
+KANBAN · grouped · group: horizon                                      28 tasks 
+BACKLOG       10│NEXT          5│DOING       6/4│REVIEW      4/3│DONE          3
+────────────────┼───────────────┼───────────────┼───────────────┼───────────────
+── high ────────│── high ───────│── high ───────│▐ Overdue      │▐ Done         
+▊ !! … ·30d +10d│▊ !! Pa… +3d ⛓1│▊ !! F… ·9d -2d│▊ == Bu… -3d ⛓2│▊ Migrate … -4d
+▊ !! Of… +28d ⛓1│▊ !! … ·14d +3d│▊ !! Ra… +4d ⛓1│▊ == S… ·7d -1d│▊ Set up … -12d
+▲ !! D… ·26d +7d│───────────────│▊ !! R… ·5d -1d│▐ This week    │▊ Design … -20d
+▊ !! P… ·9d +20d│▐ This week    │───────────────│▊ ++ C… ·2d +1d│               
+────────────────│▊ ++ Op… +6d ⛓1│▐ Overdue      │▊ ==  ·3d today│               
+▐ Later         │▐ Later        │▊ == … ·21d -5d│               │               
+▊ == … ·22d +14d│▊ == A… +12d ⛓1│▐ This week    │               │               
+▊ == … ·15d +35d│▊ == … ·11d +9d│▊ == Au… +2d ⛓1│               │               
+▊ ++ … ·19d +30d│               │▐ Later        │               │               
+▊ == B… ·5d +60d│               │▊ == D… +18d ⛓1│               │               
+▐ No date       │               │               │               │               
+▊ == Plan … ·40d│               │               │               │               
+▊ == Updat… ·33d│               │               │               │               
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                

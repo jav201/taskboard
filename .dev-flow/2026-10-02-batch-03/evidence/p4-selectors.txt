@@ -1,0 +1,23 @@
+G-010 re-collection, 2026-10-02, tree = working tree over 13745f6; each line: nodes collected · -k selector (tests/test_kanban_readable.py)
+52 · AT_301 or TC_302 or TC_303
+11 · AT_301 or TC_304 or TC_305
+5 · AT_302 or TC_306
+4 · AT_302 or TC_307
+70 · AT_303 or TC_308 or TC_301
+16 · AT_304 or TC_309
+1 · AT_305
+2 · AT_306 or TC_310
+14 · AT_307 or TC_311
+6 · AT_308 or TC_312
+62 · TC_301
+49 · TC_302 or TC_303
+8 · TC_304 or TC_305
+4 · TC_306
+3 · TC_307
+7 · TC_308
+15 · TC_309
+1 · TC_310
+9 · TC_311
+3 · TC_312
+1 · TC_313
+2 · taller_than or keeps_every_count

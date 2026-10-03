@@ -1,0 +1,22 @@
+KANBAN · grouped · group: priority                                     28 tasks 
+BACKLOG        10│NEXT              5│DOING        6/4│REVIEW        4/3│✓3     
+─────────────────┼───────────────────┼────────────────┼─────────────────┼───────
+▐ High  9 open ──┼───────────────────┼────────────────┼─────────────────┼───────
+▊ !! Launch new  │▊ !! Partner notice│▊ !! Fix        │                 │       
+▊    homepa… +10d│▊    emails ⛓1 +3d │▊    checko… -2d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │       
+▊ !! Offline sync│▊ !! Rotate API    │▊ !! Rate       │                 │       
+▊ ·15d ⛓1 +28d   │▊    keys ·14d +3d │▊    limiti… +4d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │       
+▲ !! Deprecate v1│                   │▊ !! Renew TLS  │                 │       
+▊    endpoin… +7d│                   │▊    certif… -1d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │       
+▊ !! Pen-test    │                   │                │                 │       
+▊    findin… +20d│                   │                │                 │       
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+▼ 2 below: Normal (13 open), Low (3 open)                                       

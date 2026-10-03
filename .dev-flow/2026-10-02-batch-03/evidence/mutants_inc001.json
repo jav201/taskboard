@@ -1,0 +1,211 @@
+[
+ {
+  "id": "M1",
+  "file": "taskboard/views.py",
+  "old": "    body = _literal(text)\n",
+  "new": "    body = text\n",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width"
+  ],
+  "why": "title pieces printed unescaped"
+ },
+ {
+  "id": "M2",
+  "file": "taskboard/views.py",
+  "old": "    return head, \" \".join(words[i:])",
+  "new": "    return fit(title, w), \"\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it",
+   "tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column"
+  ],
+  "why": "no word wrap: a one-row title cut with an ellipsis"
+ },
+ {
+  "id": "M3",
+  "file": "taskboard/views.py",
+  "old": "        toks.append((f\"⛓{n}\", \"mut\"))\n    if task.archived:\n        toks.append((ARCHIVED_MARK, \"ash\"))\n    else:\n        dtok, dcol = reldue_token(task, today, board, include_done=True)\n        if dtok:\n            toks.append((dtok, dcol))",
+  "new": "        pass\n    if task.archived:\n        toks.append((ARCHIVED_MARK, \"ash\"))\n    else:\n        dtok, dcol = reldue_token(task, today, board, include_done=True)\n        if dtok:\n            toks.append((dtok, dcol))\n    if n:\n        toks.append((f\"⛓{n}\", \"mut\"))",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_303_the_due_token_is_the_last_fact_to_go"
+  ],
+  "why": "the dependants token after the due: the due sheds first"
+ },
+ {
+  "id": "M4",
+  "file": "taskboard/views.py",
+  "old": "            rows.append((c(\"┈\" * wc, \"frame\"), None))",
+  "new": "            pass",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated",
+   "tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column"
+  ],
+  "why": "no separator between stacked cards"
+ },
+ {
+  "id": "M5",
+  "file": "taskboard/views.py",
+  "old": "    k = len(desired)\n",
+  "new": "    k = len(desired)\n    return distribute(room, k)\n",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_305_the_columns_are_sized_by_their_titles",
+   "tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column"
+  ],
+  "why": "equal widths"
+ },
+ {
+  "id": "M6",
+  "file": "taskboard/views.py",
+  "old": "                tail[x - used - 1] = \"┼\"",
+  "new": "                tail[x - used - 2] = \"┼\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule"
+  ],
+  "why": "the rule's crossings one cell off"
+ },
+ {
+  "id": "M7",
+  "file": "taskboard/views.py",
+  "old": "    rail_titles = w >= KANBAN_WIDE and not collapsed",
+  "new": "    rail_titles = w > KANBAN_WIDE and not collapsed",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_307_the_rail_is_titles_when_wide_and_a_count_when_narrow"
+  ],
+  "why": "the 100-cell boundary off by one"
+ },
+ {
+  "id": "M8",
+  "file": "taskboard/views.py",
+  "old": "        band_done = _recent_first(done.get(key, (None, None, []))[2])",
+  "new": "        band_done = list(reversed(_recent_first(done.get(key, (None, None, []))[2])))",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_307_a_full_rail_counts_what_it_cannot_draw"
+  ],
+  "why": "the rail oldest first"
+ },
+ {
+  "id": "M9",
+  "file": "taskboard/views.py",
+  "old": "        drawn = {id(t) for t in shown}",
+  "new": "        drawn = set()",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_308_the_high_band_is_first_and_holds_exactly_the_open_highs",
+   "tests/test_kanban_readable.py"
+  ],
+  "why": "highs drawn again in their project bands"
+ },
+ {
+  "id": "M10",
+  "file": "taskboard/views.py",
+  "old": "    cols = [[t.id for t in plan.high[i]] + [t.id for b in plan.bands for t in b.cols[i]]",
+  "new": "    cols = [[t.id for b in plan.bands for t in b.cols[i]] + [t.id for t in plan.high[i]]",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order",
+   "tests/test_kanban_readable.py::test_AT_303_the_high_band_is_first_and_the_cursor_walks_it"
+  ],
+  "why": "nav walks the band last: not the draw order"
+ },
+ {
+  "id": "M11",
+  "file": "taskboard/views.py",
+  "old": "        while first > 0 and sum(len(b) for b in bands[first - 1:s + 1]) <= room:",
+  "new": "        while False:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_down_into_a_drawn_band_moves_nothing",
+   "tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen"
+  ],
+  "why": "the prototype's selection-first window (re-flows on a down)"
+ },
+ {
+  "id": "M12",
+  "file": "taskboard/views.py",
+  "old": "        s = next((i for i, x in enumerate(ids) if selected_id in x), 0)",
+  "new": "        s = 0",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_the_board_folds_whole_bands_and_names_them",
+   "tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel"
+  ],
+  "why": "the window ignores the selection"
+ },
+ {
+  "id": "M13",
+  "file": "taskboard/views.py",
+  "old": "    if vis(full) > w and up and down:",
+  "new": "    if False:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel"
+  ],
+  "why": "the fold row clips its down side away"
+ },
+ {
+  "id": "M14",
+  "file": "taskboard/views.py",
+  "old": "    return f\"due +{n}d\", \"soon\" if n <= 7 else \"dim\"",
+  "new": "    return f\"due +{n}d\", \"accent\" if n <= 7 else \"dim\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_AT_305_the_kanban_spends_no_accent",
+   "tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule"
+  ],
+  "why": "the project's near due in the accent"
+ },
+ {
+  "id": "M15",
+  "file": "taskboard/views.py",
+  "old": "            rows.append((c(\"┈\" * wc, \"frame\"), None))",
+  "new": "            rows.append((c(\"┈\" * wc, \"mut\"), None))",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_AT_305_the_kanban_spends_no_accent"
+  ],
+  "why": "separators off the frame tone"
+ },
+ {
+  "id": "M16",
+  "file": "taskboard/views.py",
+  "old": "            tag = (tags.get(p.id, p.name), p.color) if p else (\"Inbox\", \"dim\")",
+  "new": "            tag = None",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_308_the_high_band_is_first_and_holds_exactly_the_open_highs",
+   "tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally"
+  ],
+  "why": "no project tag on high cards"
+ },
+ {
+  "id": "M17",
+  "file": "taskboard/views.py",
+  "old": "                         if not any(o.split(\" \")[:k] == words[:k] for o in others)),",
+  "new": "                         if True),",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally"
+  ],
+  "why": "first word always (API / API)"
+ },
+ {
+  "id": "M18",
+  "file": "taskboard/views.py",
+  "old": "    if rest and keep < 2:",
+  "new": "    if False:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_303_the_due_token_is_the_last_fact_to_go"
+  ],
+  "why": "the rest kept with no room: the due sheds"
+ },
+ {
+  "id": "M19",
+  "file": "taskboard/views.py",
+  "old": "                                          n=n_open))",
+  "new": "                                          ))",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_313_the_chrome_names_the_modes_and_counts_hidden_phases"
+  ],
+  "why": "window markers count the rail's phase"
+ },
+ {
+  "id": "M20",
+  "file": "taskboard/views.py",
+  "old": "                                + n_high, n_high))",
+  "new": "                                + 0, n_high))",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule"
+  ],
+  "why": "the open count drops the lifted highs"
+ }
+]

@@ -1,0 +1,127 @@
+[
+ {
+  "id": "Q1",
+  "file": "taskboard/views.py",
+  "old": "    cap = max(5, 2 * (height - KANBAN_HEAD_ROWS) // 3) if height else None  # LLR-306.1",
+  "new": "    cap = None",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body",
+   "tests/test_kanban_readable.py::test_AT_304_a_board_full_of_highs_keeps_its_projects"
+  ],
+  "why": "no cap"
+ },
+ {
+  "id": "Q2",
+  "file": "taskboard/views.py",
+  "old": "            shown = lifted[:cap // 3]",
+  "new": "            shown = lifted[:cap // 3 + 1]",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body"
+  ],
+  "why": "one high too many: the band passes R"
+ },
+ {
+  "id": "Q3",
+  "file": "taskboard/views.py",
+  "old": "    cap = max(5, 2 * (height - KANBAN_HEAD_ROWS) // 3) if height else None  # LLR-306.1",
+  "new": "    cap = max(5, (height - KANBAN_HEAD_ROWS) // 2) if height else None",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_309_the_cap_is_two_thirds_of_the_body"
+  ],
+  "why": "the half-body cap (caps the approved 80x24 frame)"
+ },
+ {
+  "id": "Q4",
+  "file": "taskboard/views.py",
+  "old": "            if plan.overflow[i]:",
+  "new": "            if False:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_309_the_overflow_row_sits_right_under_the_band",
+   "tests/test_kanban_readable.py::test_AT_304_a_board_full_of_highs_keeps_its_projects"
+  ],
+  "why": "no `+N more` row"
+ },
+ {
+  "id": "Q5",
+  "file": "taskboard/app.py",
+  "old": "            h = max(1, h - 2)",
+  "new": "            h = h",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws"
+  ],
+  "why": "the nav asks the full height under a filter"
+ },
+ {
+  "id": "Q6",
+  "file": "taskboard/app.py",
+  "old": "                        self.selected_task_id = col[min(was[1], len(col) - 1)]",
+  "new": "                        self.selected_task_id = col[0]",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board"
+  ],
+  "why": "the cursor to the column's top"
+ },
+ {
+  "id": "Q7",
+  "file": "taskboard/app.py",
+  "old": "            elif was is not None and self.selected_task_id != task.id:",
+  "new": "            elif False:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board",
+   "tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally"
+  ],
+  "why": "no notification"
+ },
+ {
+  "id": "Q8",
+  "file": "taskboard/app.py",
+  "old": "                self.notify(f\"{task.title} done · counted in the ✓ rail · u undo\",\n                            markup=False)",
+  "new": "                self.notify(f\"{task.title} done · counted in the ✓ rail · u undo\",\n                            markup=True)",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally"
+  ],
+  "why": "markup on: a bracket title parsed"
+ },
+ {
+  "id": "Q9",
+  "file": "taskboard/app.py",
+  "old": "        if (self.selected_task_id is not None and self.view_mode == \"kanban\"",
+  "new": "        if False and (self.selected_task_id is not None and self.view_mode == \"kanban\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally"
+  ],
+  "why": "no relocation off a counted done task (resize)"
+ },
+ {
+  "id": "Q10",
+  "file": "taskboard/views.py",
+  "old": "                           \"grouped board; +N more ↓ when it is full\",",
+  "new": "                           \"grouped board.\",",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board",
+   "tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn"
+  ],
+  "why": "the help forgets the cap"
+ },
+ {
+  "id": "Q11",
+  "file": "taskboard/views.py",
+  "old": "\"project band, by colour\"",
+  "new": "\"project header, by colour\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board",
+   "tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn"
+  ],
+  "why": "the legend keeps the old label"
+ },
+ {
+  "id": "Q12",
+  "file": "taskboard/views.py",
+  "old": "\"▊ !! sync daemon ↗ ·3d ⛓2 +4d\"",
+  "new": "\"▊ !! sync daemon ↗ ·3d +4d ⛓2\"",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board"
+  ],
+  "why": "the example's meta order"
+ }
+]

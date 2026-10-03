@@ -1,0 +1,13 @@
+M17 KILLED — first word always (API / API)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally
+M18 KILLED — the rest kept with no room: the due sheds
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_303_the_due_token_is_the_last_fact_to_go
+M19 KILLED — window markers count the rail's phase
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_313_the_chrome_names_the_modes_and_counts_hidden_phases
+M20 KILLED — the open count drops the lifted highs
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule
+4 of 4 KILLED

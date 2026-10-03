@@ -1,0 +1,4 @@
+terminal 120x32: board width 120, viewport height 30, presentation grouped
+terminal 118x30: board width 118, viewport height 28, presentation grouped
+terminal 82x26: board width 82, viewport height 24, presentation grouped
+terminal 80x24: board width 80, viewport height 22, presentation grouped

@@ -1,0 +1,158 @@
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+................F.....................................F................. [ 71%]
+....................................................................FFFF [ 75%]
+F....................................................................... [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.....................                                                    [100%]
+================================== FAILURES ===================================
+______________ test_the_fixture_is_in_git_not_just_on_this_disk _______________
+
+    def test_the_fixture_is_in_git_not_just_on_this_disk():
+        """AC2. Both scripts now depend on this file; while it was untracked the
+        fix worked only on the machine that happened to have it, and a fresh clone
+        would have failed with a missing-fixture error that looks like a bug."""
+        r = subprocess.run(["git", "ls-files", "--error-unmatch",
+                            "prototypes/out/_fixture_late.json"],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, "_fixture_late.json is not tracked"
+E       AssertionError: _fixture_late.json is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/_fixture_late.json'], returncode=1, stdou...: pathspec 'prototypes/out/_fixture_late.json' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_no_live_board.py:59: AssertionError
+____________ test_the_hook_wired_in_this_repo_points_at_the_script ____________
+
+    def test_the_hook_wired_in_this_repo_points_at_the_script():
+        """The logic being correct is worthless if nothing calls it. `core.hooksPath`
+        is repo config, so this asserts the wiring a fresh clone must repeat."""
+        hook = ROOT / ".githooks" / "pre-commit"
+        assert hook.is_file(), "the hook file is missing"
+        assert "precommit_privacy.py" in hook.read_text(encoding="utf-8")
+        got = subprocess.run(["git", "config", "core.hooksPath"], cwd=ROOT,
+                             capture_output=True, text=True).stdout.strip()
+>       assert got == ".githooks", (
+            f"core.hooksPath is {got!r}; run: git config core.hooksPath .githooks")
+E       AssertionError: core.hooksPath is ''; run: git config core.hooksPath .githooks
+E       assert '' == '.githooks'
+E         
+E         - .githooks
+
+tests\test_precommit_gate.py:141: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json] _
+
+rel = 'prototypes/out/_fixture_late.json'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/_fixture_late.json is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/_fixture_late.json'], returncode=1, stdou...: pathspec 'prototypes/out/_fixture_late.json' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg] _
+
+rel = 'prototypes/out/kanban-baseline.svg'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-baseline.svg is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-baseline.svg'], returncode=1, stdo... pathspec 'prototypes/out/kanban-baseline.svg' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg] _
+
+rel = 'prototypes/out/kanban-flow.svg'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-flow.svg is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-flow.svg'], returncode=1, stdout='...ror: pathspec 'prototypes/out/kanban-flow.svg' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg] _
+
+rel = 'prototypes/out/kanban-matrix.svg'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-matrix.svg is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-matrix.svg'], returncode=1, stdout...r: pathspec 'prototypes/out/kanban-matrix.svg' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg] _
+
+rel = 'prototypes/out/kanban-triage.svg'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-triage.svg is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-triage.svg'], returncode=1, stdout...r: pathspec 'prototypes/out/kanban-triage.svg' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_no_live_board.py::test_the_fixture_is_in_git_not_just_on_this_disk
+FAILED tests/test_precommit_gate.py::test_the_hook_wired_in_this_repo_points_at_the_script
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg]
+7 failed, 1814 passed in 310.29s (0:05:10)

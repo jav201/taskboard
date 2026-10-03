@@ -3,12 +3,66 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `a0e7d9a` (local HEAD == `origin/main`; batch 2026-10-02-batch-02 started here)
+**Base ref:** `13745f6` (local HEAD == `origin/main`; batch 2026-10-02-batch-03 started here)
 · **Last refresh:** 2026-10-02
-**Status:** **1677 tests green** (batch `2026-10-02-batch-02`, Batch P: the operator's 12 answers —
-the app-wide colour budget, English everywhere, the gantt's page hint / finish toast / previous
-project sticky / urgency order / weekend shading / echo clip arrows; flow pinned to rev98).
-`test_win_clipboard_roundtrip` remains an intermittent environmental flake.
+**Status:** **1855 tests green** (batch `2026-10-02-batch-03`, Batch A2: the readable kanban —
+two-row cards, one band rule per project across the columns, `┈` separators, the DONE rail,
+proportional widths, one board-wide high band capped with `+N more ↓`, bands folded and named,
+a tall band cut around the selection; flow pinned to rev98).
+`test_win_clipboard_roundtrip` remains an intermittent environmental flake (failed once at P4, G-011).
+
+## Open — after `2026-10-02-batch-03` (Batch A2: the readable kanban)
+
+- ~~**Operator verdicts owed on the provisional visual decisions** (PV-1..PV-10)~~ **DONE 2026-10-02**
+  — the operator accepted all ten on the before/after captures, before the push (PV-2: the cap at
+  two thirds): `2026-10-02-batch-03/evidence/operator-verdict-provisional.json`.
+- **`collapse_runs` can join two adjacent same-style escaped pieces into a tag** (security S-2 of
+  `2026-10-02-batch-03` increment 002, LOW, latent): an unclosed `[` in one piece meets a `]` in the
+  next once `[/][same]` is collapsed. No path this batch draws reaches it (each user piece is
+  bounded by fixed text or another style); the same weakness exists for `escape` everywhere. Fix:
+  `collapse_runs` refuses a merge when the text before holds an unmatched `[`; regression test from the repro.
+- **The gantt's nav asks the full height under a `/` filter** while `render_view` draws it two rows
+  shorter (the D-312 gap, fixed for the kanban only in `2026-10-02-batch-03`): check whether
+  `gantt_plan`'s paging makes nav and draw disagree; if so, extend `_nav_columns`'s `h − 2` to the gantt.
+- **`kanban_plan` repeats `_phase_window`'s window arithmetic** over the open phases (code review
+  F10 of increment 001, accepted): a shared helper taking a phase count.
+- **The cut band at a small room** (P4 UXV3-12): at room 4 (14 highs, 80×24) a cut band shows one
+  card then two blank rows before the fold row, which read as the band's end; below room 3 the band
+  is drawn alone and the panel scrolls (declared). Operator: shrink the high-band cap (PV-2) when a
+  band has to be cut?
+- **The fold row at 80 columns** (P4 UXV3-13): the in-band cut counts push the `▼ below` names into
+  the ellipsis sooner (`Done (0 open)` drops off under horizon); every count still prints.
+- **A band rule's open count includes its highs drawn in the high band** (P4 UXV3-14: `Later 10 open
+  · 3 high ↑` beside fold counts summing to 7): say `7 here · 3 high ↑`?
+- **A toast paints over the fold row's right end** (P4 UXV3-15; the shipped toast) until it expires.
+- **Four threshold clauses asserted weaker than written** (P4 qa G-002, `2026-10-02-batch-03`
+  `04-validation.md`): HLR-305's 80×24 tag-room clause has no node; HLR-306's 80×19 case is asserted
+  as capped-or-not; HLR-303's one-rule-per-group as a subset; widths 24..160 sampled. The behaviour
+  holds by qa probe1; a tests-only pass tightens them.
+- **Done work past the rail's `+N more`, and every done task below 100 cells, cannot be reopened
+  with `[` from the kanban** (D-305): widen to ≥ 100 cells or use the agenda. A selectable count?
+- **The horizon group mode's `Done` band reads `Done (0 open)` in the fold row** (its open cells are
+  empty by definition): word it `Done (N done)`?
+- **The prototype's selected-card detail line** (shown in the approved frame when nothing is folded,
+  not in the commission): ship it?
+- **AT-307 saw the band rules shift one cell once** (a transient width change during a `down` walk
+  at terminal 80×24 — likely a scrollbar or a resize race): the test now compares the band SET;
+  look for the transient at the next UX pass.
+- **`at risk` cannot reach the screen** (P4 UXV3-2, D-315): the band rule prints `at risk` for a
+  project whose status is `at_risk`, but `models.PROJECT_STATUSES` has no such status and
+  `Project.from_dict` maps it to `on_track`. Operator: add the status, derive "at risk" (e.g. late
+  work), or drop the fact?
+- **`up` into a band already drawn re-flows the board** (P4 UXV3-3, D-314 covers `down` only):
+  operator — keep the window on `up` as well?
+- **`left`/`right` land on the next column's first card and re-window to the top** (P4 UXV3-5,
+  UX-11; the shipped `hmove`): operator — should a lateral move stay in the same band?
+- **The entry cursor rests on a done rail title at ≥ 100 cells** (P4 UXV3-9; `_select_first` picks
+  the first visible task in board order): start on the first high card instead?
+- **`done 0d ago` for a task finished today** (P4 UXV3-8): say `done today`.
+- **`?` at 80×24 clips the kanban help's "the board" section** (P4 UXV3-4) — joins the existing help
+  right-column layout item; at 118 two bullets touch the Keys column.
+- **A no-match filter still says `press 'a' to add one`** (P4 UXV3-10); **`z` below 100 cells changes
+  nothing visible** (P4 UXV3-11).
 
 ## Open — after `2026-10-02-batch-02` (Batch P: polish)
 
@@ -48,7 +102,7 @@ project sticky / urgency order / weekend shading / echo clip arrows; flow pinned
 
 ## Open — after `2026-10-02-batch-01` (gantt G-A + AX-2, colour budget on kanban/gantt, README)
 
-- **Batch A2 — readable kanban K-A + R-1b.** Two-row cards, one project band rule across
+- ✓ done in `2026-10-02-batch-03` (HLR-301..310, D-301) — **Batch A2 — readable kanban K-A + R-1b.** Two-row cards, one project band rule across
   columns, `┈` separators, DONE rail, adaptive widths; one board-wide `high` band on top capped
   with "+N more" (cap rule to be set at its P1). Split out of Batch A at P0 under the
   pre-authorized A1/A2 split (`2026-10-02-batch-01` US-105). Seed:

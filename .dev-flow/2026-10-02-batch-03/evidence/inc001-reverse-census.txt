@@ -1,0 +1,2655 @@
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..................................F..................................... [  4%]
+....................F.....................................F..F.......... [  8%]
+FFFF.................................................................... [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+...........................F.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.FF.F [ 55%]
+F.FF.FF.FF.FF.F...F..................................................... [ 60%]
+........................................................................ [ 64%]
+................F.....................................F............F.... [ 68%]
+....................................................................FFFF [ 72%]
+F....................................................................... [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.....................                                                    [100%]
+================================== FAILURES ===================================
+_________________ test_right_moves_to_next_column_first_task __________________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_right_moves_to_next_colum0')
+
+    async def test_right_moves_to_next_column_first_task(tmp_path):
+        from taskboard.views import nav_model
+        app = make_app(tmp_path)
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.pause()
+            await pilot.press("4")
+            cols = nav_model("kanban", app.board, False)
+            app.selected_task_id = cols[0][0]
+            app.refresh_view()
+            await pilot.press("right")
+            assert app.selected_task_id == cols[1][0]   # 2nd phase column's first task
+            await pilot.press("right")
+            # the 3rd phase column has tasks in seed; Right lands on its first task
+>           assert app.selected_task_id == cols[2][0]
+E           IndexError: list index out of range
+
+tests\test_app.py:477: IndexError
+________________ test_kanban_windows_phases_when_they_dont_fit ________________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_kanban_windows_phases_whe0')
+
+    def test_kanban_windows_phases_when_they_dont_fit(tmp_path):
+        """8 phases can't fit at 40 cells with a 12-cell floor: render the window
+        that fits and say how many phases are hidden."""
+        from taskboard.views import render_kanban, _phase_window
+        b = _kanban_board(tmp_path)
+        b.phases = [f"Phase{i}" for i in range(8)]
+        for t in b.tasks:
+            t.phase = b.phases[0]
+        b.tasks[0].phase = b.phases[7]
+        start, widths = _phase_window(b, 38, b.tasks[0])     # width 40 -> inner 38
+        assert len(widths) == 3 and all(wc >= 12 for wc in widths)
+        assert start + len(widths) == 8                      # window followed the selection
+        out = str(render_kanban(b, False, b.tasks[0].id, date(2026, 7, 17), width=40, height=0))
+>       assert "PHASE7" in out and "PHASE0" not in out       # only the window is drawn
+E       AssertionError: assert ('PHASE7' in 'KANBAN · grouped                7 tasks \n◀ 5 PHASE5     0│PHASE6        0│✓1     \n────────────────┼───────────────┼...          │               │       \n▐ Beta  2 open ─┼───────────────┼───────\n▐ Inbox  1 open ┼───────────────┼───────')
+
+tests\test_app.py:1583: AssertionError
+___________________ test_kanban_parity_painted_text_oracle ____________________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_kanban_parity_painted_tex0')
+
+    async def test_kanban_parity_painted_text_oracle(tmp_path):
+        """TC-006 (HLR-003/HLR-004, 01b §4 — the batch's central oracle): painted
+        order == nav order per column, plus the arrow walk, swept after EVERY `s`
+        press (5 modes), after EVERY `g` press (3 modes), and across the full
+        5x3 sort-by-group cross-product. RED counterfactual (EXECUTED, see
+        increment-006): nav fed a different ordering than the renderer (the nav
+        branch reverted to raw `_kanban_groups` order) → the per-column assertion
+        goes red, and `down` moves the cursor off the visually-next card → the
+        walk assertion goes red."""
+        board = _mode_board(tmp_path)
+        app = TaskboardApp(board_path=str(board.path))
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.press("4")
+            await pilot.pause()
+            s_key, g_key = _key_for("kanban_sort"), _key_for("kanban_group")
+            for _ in range(5):                  # after every `s` press
+                await _assert_kanban_parity(app, pilot)
+                await pilot.press(s_key)
+                await pilot.pause()
+            assert app.kanban_sort == "project"             # the cycle closed
+            for _ in range(3):                  # after every `g` press
+>               await _assert_kanban_parity(app, pilot)
+
+tests\test_app.py:2605: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+app = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})
+pilot = <Pilot app=TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})>
+
+    async def _assert_kanban_parity(app, pilot):
+        """01b §4, the whole law: after any mode change AND after any arrow press,
+        the order the cursor walks is the order the screen paints. Anchored in the
+        painted text; `app._nav_columns()` is the other end. Companions:
+        non-emptiness (≥ 2 columns) and union-coverage of every visible task, so
+        an unpainted board cannot satisfy `[] == []` vacuously. The `line_map`
+        agreement at the end is a labelled regression PIN (step 6), not the gate."""
+        names, cols = _painted_kanban(app)
+        assert names == list(app.board.phases)      # nothing windowed at 120 cells
+        painted = _painted_card_ids(app, cols)
+        nav = app._nav_columns()
+        assert len(nav) == len(painted)
+        for ci, (p_col, n_col) in enumerate(zip(painted, nav)):
+            assert p_col == n_col, \
+                f"column {ci} ({names[ci]}): painted {p_col} != nav {n_col}"
+        assert sum(1 for col in painted if col) >= 2, "vacuous: nothing painted"
+        visible = {t.id for t in app.board.visible_tasks(app.show_archived)}
+>       assert {i for col in painted for i in col} == visible
+E       AssertionError: assert {'3006118d', ...ae604b5', ...} == {'3006118d', ...ae604b5', ...}
+E         
+E         Extra items in the right set:
+E         'cc154268'
+E         Use -v to get more diff
+
+tests\test_app.py:2565: AssertionError
+_______________ test_kanban_group_cycles_headers_and_membership _______________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_kanban_group_cycles_heade0')
+
+    async def test_kanban_group_cycles_headers_and_membership(tmp_path):
+        """AT-007 (HLR-004): `g` cycles project→priority→horizon→project. Under
+        horizon, each column's painted group headers are EXACTLY the rule-derived
+        non-empty set (incl. the trailing `Done` group), in canonical order; every
+        card sits under its rule-derived header (nearest header above); the union
+        under all headers is the column's whole task set (a silently dropped group
+        cannot satisfy the quantifier); project headers are GONE. RED
+        counterfactuals: cosmetic grouping (headers change, membership doesn't) →
+        per-card membership red; an empty group drawing a header → header-set
+        equality red; a mode dropped from the cycle → header-set mismatch red."""
+        board = _mode_board(tmp_path)
+        today = date.today()
+    
+        def horizon_of(t):                      # the stated rule, restated plainly
+            if t.phase == board.phases[-1]:
+                return "Done"
+            if t.due_date is None:
+                return "No date"
+            delta = (date.fromisoformat(t.due_date) - today).days
+            if delta < 0:
+                return "Overdue"
+            return "This week" if delta <= 7 else "Later"
+    
+        def priority_of(t):
+            return {"high": "High", "normal": "Normal", "low": "Low"}[t.priority]
+    
+        app = TaskboardApp(board_path=str(board.path))
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.press("4")
+            await pilot.pause()
+            g_key = _key_for("kanban_group")
+            for mode, rule, canon in (
+                    ("priority", priority_of, ["High", "Normal", "Low"]),
+                    ("horizon", horizon_of,
+                     ["Overdue", "This week", "Later", "No date", "Done"]),
+                    ("project", None, None)):
+                await pilot.press(g_key)
+                await pilot.pause()
+                assert app.kanban_group == mode
+                text = board_text(app)
+                names, cols = _painted_kanban(app)
+                if mode == "project":                   # the cycle closed
+                    assert "ProjA" in text and "ProjB" in text
+                    assert "Overdue" not in text and "No date" not in text
+                    continue
+                header_line = text.split("\n")[0]
+                assert f"group: {mode}" in header_line
+                for ci, col in enumerate(cols):
+                    tasks = [t for t in board.tasks
+                             if t.phase == names[ci] and t.title in
+                             {w for kind, w in col if kind == "t"}]
+                    # K4 (2026-09-30): outside group=priority, a column's OPEN high
+                    # cards float into the band above every header — they sit
+                    # under no group header, and only they may
+                    band = set() if mode == "priority" else {
+                        t.title for t in tasks
+                        if t.priority == "high" and not board.is_done(t)
+                        and not t.archived}
+                    headers = [w for kind, w in col if kind == "h"]
+                    want = [h for h in canon
+                            if any(rule(t) == h for t in tasks if t.title not in band)]
+>                   assert headers == want, f"column {names[ci]}: {headers} != {want}"
+E                   AssertionError: column Backlog: ['High  3 open ───────────────────', 'Normal  2 open ─────────────────', 'Low  2 open ────────────────────'] != ['High', 'Low']
+E                   assert ['High  3 ope...────────────'] == ['High', 'Low']
+E                     
+E                     At index 0 diff: 'High  3 open ───────────────────' != 'High'
+E                     Left contains one more item: 'Low  2 open ────────────────────'
+E                     Use -v to get more diff
+
+tests\test_app.py:2793: AssertionError
+__________ test_kanban_aging_token_renders_only_for_dated_open_cards __________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_kanban_aging_token_render0')
+
+    async def test_kanban_aging_token_renders_only_for_dated_open_cards(tmp_path):
+        """AT-011 (HLR-006): a card stamped 5 days ago renders `·5d` in its
+        painted row; a never-stamped card renders NO token; a done card stamped
+        9 days ago renders NO token either (done work rests — its age is not
+        work-in-progress information). N is recomputed through `days_in_phase`,
+        never a literal; rows are located by title, never by index. RED
+        counterfactuals: token derived from `start_date`/`due_date` instead of
+        `phase_changed` → the recomputed-N limb red; None rendered as `·0d` →
+        the unstamped limb red; the done-suppression dropped → the done limb
+        red (EXECUTED, see increment-008 §4)."""
+        from taskboard.models import days_in_phase
+        board = _aging_board(tmp_path)
+        app = TaskboardApp(board_path=str(board.path))
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.press("4")
+            await pilot.pause()
+            text = board_text(app)
+            by_title = {t.title: t for t in board.tasks}
+    
+            def card_of(title):
+                """The one painted COLUMN SEGMENT holding this card — a line is
+                the whole board (several columns), so a token search must be
+                confined to the card's own cell or a neighbour's token leaks in."""
+                hits = [seg for l in text.split("\n") for seg in l.split("│")
+                        if title in seg]
+                assert len(hits) == 1, f"{title}: expected one painted card: {hits}"
+                return hits[0]
+    
+            dated, undated, done = (by_title[w]
+                                    for w in ("bravo", "charlie", "echo"))
+            n = days_in_phase(dated, date.today())
+>           assert n is not None and f"·{n}d" in card_of("bravo")
+E           AssertionError: assert (5 is not None and '·5d' in '▊ == bravo                        ')
+E            +  where '▊ == bravo                        ' = <function test_kanban_aging_token_renders_only_for_dated_open_cards.<locals>.card_of at 0x0000018A2D2CFC40>('bravo')
+
+tests\test_app.py:3182: AssertionError
+________ test_kanban_collapse_toggles_the_terminal_phase_and_restores _________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_kanban_collapse_toggles_t0')
+
+    async def test_kanban_collapse_toggles_the_terminal_phase_and_restores(tmp_path):
+        """AT-012 (HLR-007, §6.5 AMD-02) — both directions, both satisfiable.
+        (a) selection OUTSIDE the terminal phase: `z` leaves the terminal column
+        with exactly one `✓ N` summary row (N recomputed from the fixture), none
+        of its titles painted, every other column byte-identical, the nav model
+        SKIPPING the phase (absent, not empty — painted/nav parity holds over
+        the surviving columns), and no arrow walk landing on its tasks; `z`
+        again, from there, restores the render BYTE-EXACTLY. (b) selection
+        INSIDE the terminal phase: `z` relocates it to the nearest non-empty
+        column's first card (the `action_hmove` landing rule) and the summary
+        row still renders. RED counterfactuals: collapse filters the render but
+        not the nav model → the parity/nav limbs red; N hardcoded or counting
+        archived with `v` off → the recomputed-N limb red; keyed to the SELECTED
+        task's phase (the superseded design) → every terminal-column limb red;
+        the nav column EMPTIED instead of dropped → the nav-shape limb red
+        (EXECUTED, see increment-008 §4)."""
+        board = _aging_board(tmp_path)
+        terminal = [t for t in board.tasks if board.is_done(t)]
+        terminal_ids = {t.id for t in terminal}
+        assert len(terminal) >= 2, "vacuous fixture: nothing to collapse"
+        app = TaskboardApp(board_path=str(board.path))
+        async with app.run_test(size=(120, 40)) as pilot:
+            await pilot.press("4")
+            await pilot.pause()
+            z = _key_for("collapse_toggle")
+    
+            # ---- (a) selection outside the terminal phase ---------------------
+            before = board_text(app)
+            assert app.selected_task_id not in terminal_ids
+            # every other column UNCHANGED, asserted on the painted text per
+            # column (the 01b §4 anchor machinery): a raw line-by-line compare
+            # cannot work here — the collapsed column is SHORTER, so the frame's
+            # rows below it shift up — but each surviving column's painted rows
+            # (headers and cards, in order) must be exactly what they were
+            names0, cols0 = _painted_kanban(app)
+            await pilot.press(z)
+            await pilot.pause()
+            text = board_text(app)
+            n = len([t for t in board.visible_tasks(app.show_archived)
+                     if board.is_done(t)])
+            summary = [l for l in text.split("\n") if f"✓ {n}" in l]
+>           assert len(summary) == 1, f"expected one `✓ {n}` summary row: {summary}"
+E           AssertionError: expected one `✓ 3` summary row: []
+E           assert 0 == 1
+E            +  where 0 = len([])
+
+tests\test_app.py:3230: AssertionError
+____________ test_kanban_collapsed_column_shape_and_nav_exclusion _____________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_kanban_collapsed_column_s0')
+
+    def test_kanban_collapsed_column_shape_and_nav_exclusion(tmp_path):
+        """TC-010 (HLR-007/LLR-007.1), white-box: for the collapsed terminal
+        phase, `_kanban_column_rows` emits EXACTLY ONE `(markup, None)` row —
+        `✓ N`, N the phase's visible count recomputed — and the kanban
+        `nav_model` branch contributes NOTHING for it: the column is ABSENT, not
+        empty — while a genuinely EMPTY phase (Review in this fixture) KEEPS its
+        empty column (the ux B-1 distinction: an empty nav column is still a
+        place, a collapsed one no longer exists). The flag also flows THROUGH
+        the shared seat: `kanban_order(collapsed=True)` returns no groups. The
+        selection-relocation pin of TC-010 is the behavioural limb — AT-012(b)
+        above (folded, V-5). RED: collapse empties the nav column instead of
+        dropping it → the nav-length/`full[:-1]` limbs red (EXECUTED, see
+        increment-008 §4); summary count hardcoded or counting archived → the
+        recomputed-N limb red; the row given a task id → the None limb red (the
+        row would be selectable)."""
+        from rich.text import Text
+        from rich.cells import cell_len
+    
+>       from taskboard.views import _kanban_column_rows, kanban_order, nav_model
+E       ImportError: cannot import name '_kanban_column_rows' from 'taskboard.views' (<temp>\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\census001\taskboard\views.py)
+
+tests\test_app.py:3294: ImportError
+_______ test_matrix_presentation_nav_ignores_the_modes_like_the_render ________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_matrix_presentation_nav_i0')
+
+    def test_matrix_presentation_nav_ignores_the_modes_like_the_render(tmp_path):
+        """Phase-4 PDR ruling (the 3-carry divergence: sort/group Inc-006,
+        collapse Inc-008, focus Inc-009 — matrix render routes BEFORE the mode
+        seat, so a nav that honors the modes parks the cursor on cards the screen
+        does not draw, the F-3 trap in miniature). Rule: in matrix BOTH seats
+        ignore sort/group/collapse/focus, so the nav walks exactly what the
+        matrix draws. RED: nav keeping the focus filter under matrix → the
+        includes-every-visible-task limb red; nav dropping the terminal phase
+        under matrix+collapsed → the terminal-present limb red."""
+        from taskboard.views import nav_model
+        board = _mode_board(tmp_path)
+        proj_b = next(p for p in board.projects if p.name == "ProjB")
+        b_tasks = {t.id for t in board.visible_tasks(False)
+                   if t.project_id == proj_b.id}
+        all_visible = {t.id for t in board.visible_tasks(False)}
+        assert b_tasks and b_tasks < all_visible, "vacuous fixture guard"
+    
+        grouped = nav_model("kanban", board, False, kanban_focus=proj_b.id,
+                            presentation="grouped")
+>       assert {tid for col in grouped for tid in col} == b_tasks, \
+            "grouped+focus must show ONLY the focused project's cards"
+E       AssertionError: grouped+focus must show ONLY the focused project's cards
+E       assert {'6bca71e4', ...', 'ce9faff4'} == {'6bca71e4', ...', 'ce9faff4'}
+E         
+E         Extra items in the right set:
+E         'a08f4f3d'
+E         Use -v to get more diff
+
+tests\test_app.py:3342: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-project-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal0')
+group = 'project', sort = 'project', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-project-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal2')
+group = 'horizon', sort = 'project', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-priority-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal3')
+group = 'project', sort = 'priority', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-priority-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal5')
+group = 'horizon', sort = 'priority', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+__ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-due-project] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal6')
+group = 'project', sort = 'due', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+__ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-due-horizon] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal8')
+group = 'horizon', sort = 'due', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-recent-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal9')
+group = 'project', sort = 'recent', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-recent-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal11')
+group = 'horizon', sort = 'recent', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-unblock-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal12')
+group = 'project', sort = 'unblock', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-False-unblock-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal14')
+group = 'horizon', sort = 'unblock', focus = False, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-project-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal15')
+group = 'project', sort = 'project', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-project-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal17')
+group = 'horizon', sort = 'project', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-priority-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal18')
+group = 'project', sort = 'priority', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-priority-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal20')
+group = 'horizon', sort = 'priority', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-due-project] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal21')
+group = 'project', sort = 'due', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-due-horizon] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal23')
+group = 'horizon', sort = 'due', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-recent-project] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal24')
+group = 'project', sort = 'recent', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-recent-horizon] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal26')
+group = 'horizon', sort = 'recent', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-unblock-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal27')
+group = 'project', sort = 'unblock', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[False-True-unblock-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal29')
+group = 'horizon', sort = 'unblock', focus = True, show_archived = False
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-project-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal30')
+group = 'project', sort = 'project', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-project-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal32')
+group = 'horizon', sort = 'project', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-priority-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal33')
+group = 'project', sort = 'priority', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-priority-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal35')
+group = 'horizon', sort = 'priority', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-due-project] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal36')
+group = 'project', sort = 'due', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-due-horizon] ___
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal38')
+group = 'horizon', sort = 'due', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-recent-project] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal39')
+group = 'project', sort = 'recent', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-recent-horizon] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal41')
+group = 'horizon', sort = 'recent', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-unblock-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal42')
+group = 'project', sort = 'unblock', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-False-unblock-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal44')
+group = 'horizon', sort = 'unblock', focus = False, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-project-project] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal45')
+group = 'project', sort = 'project', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-project-horizon] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal47')
+group = 'horizon', sort = 'project', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-priority-project] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal48')
+group = 'project', sort = 'priority', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-priority-horizon] _
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal50')
+group = 'horizon', sort = 'priority', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-due-project] ____
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal51')
+group = 'project', sort = 'due', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+___ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-due-horizon] ____
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal53')
+group = 'horizon', sort = 'due', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+__ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-recent-project] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal54')
+group = 'project', sort = 'recent', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+__ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-recent-horizon] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal56')
+group = 'horizon', sort = 'recent', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-unblock-project] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal57')
+group = 'project', sort = 'unblock', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_ test_band_is_drawn_and_nav_walks_the_draw_order[True-True-unblock-horizon] __
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_band_is_drawn_and_nav_wal59')
+group = 'horizon', sort = 'unblock', focus = True, show_archived = True
+
+    @pytest.mark.parametrize("group", _KANBAN_GROUP_MODES)
+    @pytest.mark.parametrize("sort", _KANBAN_SORT_MODES)
+    @pytest.mark.parametrize("focus", [False, True])
+    @pytest.mark.parametrize("show_archived", [False, True])
+    def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus,
+                                                        show_archived):
+        """AT-003 (HLR-003). Over EVERY group × sort the seat declares (read from
+        the seat's own tuples, C-31) × focus × show_archived, in the grouped
+        presentation: (1) every column's nav order is its cards' top-to-bottom
+        draw order — the F-3 law; (2) where a column has open highs and the group
+        is not `priority`, they come first, under a painted `── high ──` divider;
+        (3) no done or archived card sits in the band. RED on base: no divider;
+        RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+        b = _board(tmp_path / "b.json")
+        fid = b.projects[0].id if focus else None
+        lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
+                            focus=fid, show_archived=show_archived)
+        cols = nav_model("kanban", b, show_archived, TODAY, 140, selected_id=None,
+                         kanban_sort=sort, kanban_group=group, kanban_focus=fid,
+                         presentation="grouped")
+        drawn = {tid for col in cols for tid in col}
+        assert drawn == set(lm), "nav and draw disagree on WHICH cards exist"
+        for col in cols:
+            assert col == sorted(col, key=lambda tid: lm[tid]), \
+                f"{group}/{sort}: nav order is not draw order: {col}"
+        doing = [t for t in b.tasks if t.phase == "Doing"
+                 and (show_archived or not t.archived)
+                 and (fid is None or t.project_id == fid)]
+        want = _open_high(b, doing)
+        doing_col = next(c for c in cols if set(c) & {t.id for t in doing})
+        if group == "priority":
+            assert not any("── high" in ln for ln in lines)
+            return
+        assert set(doing_col[:len(want)]) == {t.id for t in want}
+        # the divider must be in the DOING column's own cells — Backlog has a band
+        # too, and a whole-row search would let its divider answer for Doing's
+        hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
+        seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
+        ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
+        first = lm[doing_col[0]]
+        cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
+>       assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+E       AssertionError: no divider above Doing's band: '────────────────────────────────────────────────────'
+E       assert '── high' in '────────────────────────────────────────────────────'
+
+tests\test_kanban_priority.py:198: AssertionError
+_______ test_a_card_raised_to_high_joins_the_band_and_keeps_the_cursor ________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_a_card_raised_to_high_joi0')
+
+    async def test_a_card_raised_to_high_joins_the_band_and_keeps_the_cursor(tmp_path):
+        """AT-006 (HLR-003, UX-5): raising the selected card to high with the
+        priority key moves it INTO the band and the cursor goes with it; cycling
+        on to low moves it OUT again, cursor still on it."""
+        from taskboard.keymap import KEYMAP
+        key = next(k for k in KEYMAP if k.action == "prio_cycle").keys.split(",")[0]
+        b = _board(tmp_path / "b.json")
+        b.save()
+        app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+        async with app.run_test(size=(140, 40)) as pilot:
+            await pilot.pause()
+            app.view_mode = "kanban"
+            app.selected_task_id = "na"
+            app.refresh_view()
+            await pilot.pause()
+            await pilot.press(key)                       # normal -> high
+            await pilot.pause()
+            assert app.selected_task_id == "na"
+            lines, lm = _render(app.board, presentation="grouped")
+            band_rows = sorted(lm[t] for t in ("hb", "ha", "hx", "na"))
+>           assert band_rows == list(range(band_rows[0], band_rows[0] + 4)), \
+                "the raised card is not inside the band"
+E           AssertionError: the raised card is not inside the band
+E           assert [4, 7, 10, 13] == [4, 5, 6, 7]
+E             
+E             At index 1 diff: 7 != 5
+E             Use -v to get more diff
+
+tests\test_kanban_priority.py:259: AssertionError
+______________ test_the_fixture_is_in_git_not_just_on_this_disk _______________
+
+    def test_the_fixture_is_in_git_not_just_on_this_disk():
+        """AC2. Both scripts now depend on this file; while it was untracked the
+        fix worked only on the machine that happened to have it, and a fresh clone
+        would have failed with a missing-fixture error that looks like a bug."""
+        r = subprocess.run(["git", "ls-files", "--error-unmatch",
+                            "prototypes/out/_fixture_late.json"],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, "_fixture_late.json is not tracked"
+E       AssertionError: _fixture_late.json is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/_fixture_late.json'], returncode=1, stdou...: pathspec 'prototypes/out/_fixture_late.json' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_no_live_board.py:59: AssertionError
+____________ test_the_hook_wired_in_this_repo_points_at_the_script ____________
+
+    def test_the_hook_wired_in_this_repo_points_at_the_script():
+        """The logic being correct is worthless if nothing calls it. `core.hooksPath`
+        is repo config, so this asserts the wiring a fresh clone must repeat."""
+        hook = ROOT / ".githooks" / "pre-commit"
+        assert hook.is_file(), "the hook file is missing"
+        assert "precommit_privacy.py" in hook.read_text(encoding="utf-8")
+        got = subprocess.run(["git", "config", "core.hooksPath"], cwd=ROOT,
+                             capture_output=True, text=True).stdout.strip()
+>       assert got == ".githooks", (
+            f"core.hooksPath is {got!r}; run: git config core.hooksPath .githooks")
+E       AssertionError: core.hooksPath is ''; run: git config core.hooksPath .githooks
+E       assert '' == '.githooks'
+E         
+E         - .githooks
+
+tests\test_precommit_gate.py:141: AssertionError
+___________ test_the_rule_crosses_exactly_where_the_columns_divide ____________
+
+tmp_path = WindowsPath('<temp>/pytest-of-<user>/pytest-14215/test_the_rule_crosses_exactly_0')
+
+    def test_the_rule_crosses_exactly_where_the_columns_divide(tmp_path):
+        """A rule under a set of columns has ONE job: say where they divide. It was
+        doing it one cell to the right.
+    
+        The builder was inherited from the framed era — it reserved column 0 for a
+        `├` and column w-1 for a `┤`, then wrote the junctions into the span
+        BETWEEN them. While the frame existed those coordinates agreed. Frameless,
+        every row spends the full width, so the rule leaned by one against the row
+        it rules: measured at 120 cells, headers divided at 30·60·90 and the rule
+        crossed at 31·61·91.
+    
+        This measures COLUMNS IN CELLS, not character indices — the two disagree the
+        moment a title holds a wide glyph, and it is the cells that are drawn."""
+        from rich.cells import cell_len
+    
+        def marks(row: str, glyphs: str) -> list[int]:
+            out, col = [], 0
+            for ch in row:
+                if ch in glyphs:
+                    out.append(col)
+                col += cell_len(ch)
+            return out
+    
+        b = board(tmp_path)
+        for presentation in ("grouped", "matrix"):
+            for width in (80, 96, 120):
+                rows_ = str(render_view("kanban", b, False, None, TODAY, width=width,
+                                        height=30, presentation=presentation)).splitlines()
+                divides = [marks(r, "│") for r in rows_]
+                divides = [d for d in divides if d]
+                rules = [marks(r, "┼┴") for r in rows_ if set(r) & set("┼┴")]
+                assert divides, f"{presentation} @{width}: no column divisions at all"
+                assert rules, f"{presentation} @{width}: no rule drawn at all"
+                columns = divides[0]
+                for d in divides:
+                    assert d == columns, f"{presentation} @{width}: rows divide differently"
+                for r in rules:
+>                   assert r == columns, (
+                        f"{presentation} @{width}: rule crosses at {r}, "
+                        f"columns divide at {columns}")
+E                   AssertionError: grouped @80: rule crosses at [72], columns divide at [36, 72]
+E                   assert [72] == [36, 72]
+E                     
+E                     At index 0 diff: 72 != 36
+E                     Right contains one more item: 72
+E                     Use -v to get more diff
+
+tests\test_prism_laws.py:312: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json] _
+
+rel = 'prototypes/out/_fixture_late.json'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/_fixture_late.json is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/_fixture_late.json'], returncode=1, stdou...: pathspec 'prototypes/out/_fixture_late.json' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg] _
+
+rel = 'prototypes/out/kanban-baseline.svg'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-baseline.svg is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-baseline.svg'], returncode=1, stdo... pathspec 'prototypes/out/kanban-baseline.svg' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg] _
+
+rel = 'prototypes/out/kanban-flow.svg'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-flow.svg is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-flow.svg'], returncode=1, stdout='...ror: pathspec 'prototypes/out/kanban-flow.svg' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg] _
+
+rel = 'prototypes/out/kanban-matrix.svg'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-matrix.svg is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-matrix.svg'], returncode=1, stdout...r: pathspec 'prototypes/out/kanban-matrix.svg' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+_ test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg] _
+
+rel = 'prototypes/out/kanban-triage.svg'
+
+    @pytest.mark.parametrize("rel", MUST_STAY_COMMITTABLE)
+    def test_the_inputs_and_reviewed_artifacts_stay_committable(rel):
+        """THE OTHER DIRECTION. Without this, ignoring the whole directory passes
+        every test above and quietly removes the fixture from the repository."""
+        assert not ignored(rel), f"{rel} is a repository file and must not be ignored"
+        r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-triage.svg is not tracked
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-triage.svg'], returncode=1, stdout...r: pathspec 'prototypes/out/kanban-triage.svg' did not match any file(s) known to git\nDid you forget to 'git add'?\n").returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_right_moves_to_next_column_first_task - IndexE...
+FAILED tests/test_app.py::test_kanban_windows_phases_when_they_dont_fit - Ass...
+FAILED tests/test_app.py::test_kanban_parity_painted_text_oracle - AssertionE...
+FAILED tests/test_app.py::test_kanban_group_cycles_headers_and_membership - A...
+FAILED tests/test_app.py::test_kanban_aging_token_renders_only_for_dated_open_cards
+FAILED tests/test_app.py::test_kanban_collapse_toggles_the_terminal_phase_and_restores
+FAILED tests/test_app.py::test_kanban_collapsed_column_shape_and_nav_exclusion
+FAILED tests/test_app.py::test_matrix_presentation_nav_ignores_the_modes_like_the_render
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-project-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-project-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-priority-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-priority-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-due-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-due-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-recent-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-recent-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-unblock-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-False-unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-project-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-project-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-priority-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-priority-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-due-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-due-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-recent-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-recent-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-unblock-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[False-True-unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-project-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-project-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-priority-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-priority-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-due-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-due-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-recent-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-recent-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-unblock-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-False-unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-project-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-project-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-priority-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-priority-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-due-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-due-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-recent-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-recent-horizon]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-unblock-project]
+FAILED tests/test_kanban_priority.py::test_band_is_drawn_and_nav_walks_the_draw_order[True-True-unblock-horizon]
+FAILED tests/test_kanban_priority.py::test_a_card_raised_to_high_joins_the_band_and_keeps_the_cursor
+FAILED tests/test_no_live_board.py::test_the_fixture_is_in_git_not_just_on_this_disk
+FAILED tests/test_precommit_gate.py::test_the_hook_wired_in_this_repo_points_at_the_script
+FAILED tests/test_prism_laws.py::test_the_rule_crosses_exactly_where_the_columns_divide
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg]
+57 failed, 1620 passed in 297.49s (0:04:57)

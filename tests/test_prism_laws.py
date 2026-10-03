@@ -302,13 +302,24 @@ def test_the_rule_crosses_exactly_where_the_columns_divide(tmp_path):
                                     height=30, presentation=presentation)).splitlines()
             divides = [marks(r, "│") for r in rows_]
             divides = [d for d in divides if d]
-            rules = [marks(r, "┼┴") for r in rows_ if set(r) & set("┼┴")]
+            rule_rows = [r for r in rows_ if set(r) & set("┼┴")]
+            rules = [marks(r, "┼┴") for r in rule_rows]
             assert divides, f"{presentation} @{width}: no column divisions at all"
             assert rules, f"{presentation} @{width}: no rule drawn at all"
             columns = divides[0]
             for d in divides:
                 assert d == columns, f"{presentation} @{width}: rows divide differently"
-            for r in rules:
-                assert r == columns, (
+            # A rule crosses every divide under its RULE part. The grouped board's
+            # band rules (2026-10-02-batch-03, HLR-303) carry the group's name
+            # first, so their rule part starts after the text: it is the trailing
+            # run of `─`/`┼`, and every divide from there on must be crossed
+            # (code review F13: anchored on the text's end, not on the first
+            # crossing, so a skipped divide cannot hide).
+            for row, r in zip(rule_rows, rules):
+                k = len(row)
+                while k and row[k - 1] in "─┼┴":
+                    k -= 1
+                start = cell_len(row[:k])
+                assert r == [x for x in columns if x >= start], (
                     f"{presentation} @{width}: rule crosses at {r}, "
                     f"columns divide at {columns}")

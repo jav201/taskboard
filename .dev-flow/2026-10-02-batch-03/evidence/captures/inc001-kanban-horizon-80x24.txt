@@ -1,0 +1,24 @@
+KANBAN · grouped · group: horizon                                      28 tasks 
+BACKLOG        10│NEXT              5│DOING        6/4│REVIEW        4/3│✓3     
+─────────────────┼───────────────────┼────────────────┼─────────────────┼───────
+── high  9 open · 4 projects ────────┼────────────────┼─────────────────┼───────
+▊ !! Launch new  │▊ !! Partner notice│▊ !! Fix        │                 │       
+▊    homepa… +10d│▊    emails ⛓1 +3d │▊    checko… -2d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │       
+▊ !! Offline sync│▊ !! Rotate API    │▊ !! Rate       │                 │       
+▊ Mobile ⛓1 +28d │▊    keys Ops +3d  │▊    limiti… +4d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │       
+▲ !! Deprecate v1│                   │▊ !! Renew TLS  │                 │       
+▊    endpoin… +7d│                   │▊    certif… -1d│                 │       
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │       
+▊ !! Pen-test    │                   │                │                 │       
+▊    findin… +20d│                   │                │                 │       
+▐ Overdue  5 open · 2 high ↑ ────────┼────────────────┼─────────────────┼───────
+                 │                   │▊ == Write API  │▊ == Build       │       
+                 │                   │▊    refere… -5d│▊    compone… -3d│       
+                 │                   │                │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│       
+                 │                   │                │▊ == SDK         │       
+                 │                   │                │▊    regener… -1d│       
+                                                                                
+                                                                                
+▼ 4 below: This week (8 open), Later (10 open), No date (2 open), Done (0 open) 

@@ -166,7 +166,14 @@ def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus
     draw order — the F-3 law; (2) where a column has open highs and the group
     is not `priority`, they come first, under a painted `── high ──` divider;
     (3) no done or archived card sits in the band. RED on base: no divider;
-    RED if nav forgets `band=True` while the renderer asks: order mismatch."""
+    RED if nav forgets `band=True` while the renderer asks: order mismatch.
+
+    Changed 2026-10-02 (batch 2026-10-02-batch-03, R-1b verdict, HLR-305 —
+    supersedes HLR-003's per-column band): the band is ONE band across the
+    board, opened by a `── high` rule above every group's band rule; limb (2)
+    now reads: the column's open highs come first in its nav order and are
+    drawn below that rule and above the first group rule. The `── high`
+    rule is checked as the row that opens the band, not a cell of Doing's."""
     b = _board(tmp_path / "b.json")
     fid = b.projects[0].id if focus else None
     lines, lm = _render(b, presentation="grouped", sort=sort, group=group,
@@ -188,14 +195,12 @@ def test_band_is_drawn_and_nav_walks_the_draw_order(tmp_path, group, sort, focus
         assert not any("── high" in ln for ln in lines)
         return
     assert set(doing_col[:len(want)]) == {t.id for t in want}
-    # the divider must be in the DOING column's own cells — Backlog has a band
-    # too, and a whole-row search would let its divider answer for Doing's
-    hdr = next(ln for ln in lines if all(p.upper() in ln for p in PHASES))
-    seps = [-1] + [x for x, ch in enumerate(hdr) if ch == "│"] + [len(hdr)]
-    ci = next(i for i in range(len(seps) - 1) if "DOING" in hdr[seps[i] + 1:seps[i + 1]])
-    first = lm[doing_col[0]]
-    cell = lines[first - 1][seps[ci] + 1:seps[ci + 1]]
-    assert "── high" in cell, f"no divider above Doing's band: {cell!r}"
+    # the band's own rule opens it, and every band card sits between it and
+    # the first group rule
+    band_rule = next(i for i, ln in enumerate(lines) if ln.startswith("── high"))
+    first_group = next(i for i, ln in enumerate(lines) if ln.startswith("▐ "))
+    for tid in doing_col[:len(want)]:
+        assert band_rule < lm[tid] < first_group, (tid, band_rule, lm[tid], first_group)
     done_ids = {t.id for t in b.tasks if b.is_done(t) or t.archived}
     assert not done_ids & set(doing_col[:len(want)])
 
@@ -255,14 +260,17 @@ async def test_a_card_raised_to_high_joins_the_band_and_keeps_the_cursor(tmp_pat
         await pilot.pause()
         assert app.selected_task_id == "na"
         lines, lm = _render(app.board, presentation="grouped")
-        band_rows = sorted(lm[t] for t in ("hb", "ha", "hx", "na"))
-        assert band_rows == list(range(band_rows[0], band_rows[0] + 4)), \
+        # one board-wide band (2026-10-02-batch-03): the raised card sits under
+        # the `── high` rule and above the first group rule, with the others
+        first_group = next(i for i, ln in enumerate(lines) if ln.startswith("▐ "))
+        assert all(lm[t] < first_group for t in ("hb", "ha", "hx", "na")), \
             "the raised card is not inside the band"
         await pilot.press(key)                       # high -> low
         await pilot.pause()
         assert app.selected_task_id == "na"
         lines, lm = _render(app.board, presentation="grouped")
-        assert lm["na"] > lm["hx"] + 1, "the lowered card is still in the band"
+        first_group = next(i for i, ln in enumerate(lines) if ln.startswith("▐ "))
+        assert lm["na"] > first_group, "the lowered card is still in the band"
 
 
 # --------------------------------------------------------------------------- #

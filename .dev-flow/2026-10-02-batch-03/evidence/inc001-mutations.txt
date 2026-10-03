@@ -1,0 +1,356 @@
+M1 KILLED — title pieces printed unescaped
+   arms resolved 41, red 36; restore sha256 9b59f9ad15ca8eb6… OK
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[0]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[1]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[2]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[3]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[4]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[5]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[6]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[7]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[8]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[9]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[10]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[11]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[12]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[13]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[14]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[15]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[16]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[17]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[18]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[19]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[20]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[21]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[22]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[23]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[24]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[25]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[26]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[27]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[28]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[29]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[30]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[31]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[32]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[33]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[34]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[35]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[36]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[37]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[38]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[39]
+    FAILED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[40]
+M2 KILLED — no word wrap: a one-row title cut with an ellipsis
+   arms resolved 4, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    PASSED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size0-11.0-12]
+    PASSED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size1-5.5-0]
+    PASSED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size2-None-0]
+    FAILED tests/test_kanban_readable.py::test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it
+M3 KILLED — the dependants token after the due: the due sheds first
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_303_the_due_token_is_the_last_fact_to_go
+M4 KILLED — no separator between stacked cards
+   arms resolved 10, red 10; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[24]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[40]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[60]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[80]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[100]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[118]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[160]
+    FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size0-11.0-12]
+    FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size1-5.5-0]
+    FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size2-None-0]
+M5 KILLED — equal widths
+   arms resolved 4, red 2; restore sha256 9b59f9ad15ca8eb6… OK
+    PASSED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size1-5.5-0]
+    PASSED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size2-None-0]
+    FAILED tests/test_kanban_readable.py::test_TC_305_the_columns_are_sized_by_their_titles
+    FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size0-11.0-12]
+M6 KILLED — the rule's crossings one cell off
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule
+M7 KILLED — the 100-cell boundary off by one
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_307_the_rail_is_titles_when_wide_and_a_count_when_narrow
+M8 KILLED — the rail oldest first
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_307_a_full_rail_counts_what_it_cannot_draw
+M9 KILLED — highs drawn again in their project bands
+   arms resolved 145, red 60; restore sha256 9b59f9ad15ca8eb6… OK
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[0]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[1]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[2]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[3]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[4]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[5]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[6]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[7]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[8]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[9]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[10]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[11]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[12]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[13]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[14]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[15]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[16]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[17]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[18]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[19]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[20]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[21]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[22]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[23]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[24]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[25]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[26]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[27]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[28]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[29]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[30]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[31]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[32]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[33]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[34]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[35]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[36]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[37]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[38]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[39]
+    PASSED tests/test_kanban_readable.py::test_TC_302_a_card_is_two_rows_of_exactly_its_width[40]
+    PASSED tests/test_kanban_readable.py::test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it
+    PASSED tests/test_kanban_readable.py::test_TC_303_the_due_token_is_the_last_fact_to_go
+    PASSED tests/test_kanban_readable.py::test_TC_302_the_selected_title_is_reverse_and_the_badge_stays
+    PASSED tests/test_kanban_readable.py::test_TC_305_the_columns_are_sized_by_their_titles
+    PASSED tests/test_kanban_readable.py::test_TC_306_other_group_modes_draw_band_rules_too[priority-names0]
+    PASSED tests/test_kanban_readable.py::test_TC_306_other_group_modes_draw_band_rules_too[horizon-names1]
+    PASSED tests/test_kanban_readable.py::test_TC_306_a_hostile_project_name_prints_literally
+    PASSED tests/test_kanban_readable.py::test_TC_307_the_rail_is_titles_when_wide_and_a_count_when_narrow
+    PASSED tests/test_kanban_readable.py::test_TC_307_a_full_rail_counts_what_it_cannot_draw
+    PASSED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[project]
+    PASSED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[priority]
+    PASSED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[due]
+    PASSED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[recent]
+    PASSED tests/test_kanban_readable.py::test_TC_308_the_band_keeps_the_seats_order[unblock]
+    PASSED tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold
+    PASSED tests/test_kanban_readable.py::test_TC_301_the_arm_set_is_complete
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_a_window_of_phases_follows_the_selection
+    PASSED tests/test_kanban_readable.py::test_TC_313_the_chrome_names_the_modes_and_counts_hidden_phases
+    PASSED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[118-30]
+    PASSED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-24]
+    PASSED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-22]
+    PASSED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[40-22]
+    PASSED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size2-None-0]
+    PASSED tests/test_kanban_readable.py::test_AT_305_the_kanban_spends_no_accent
+    FAILED tests/test_kanban_readable.py::test_TC_308_the_high_band_is_first_and_holds_exactly_the_open_highs
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[24]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[40]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[60]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[80]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[100]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[118]
+    FAILED tests/test_kanban_readable.py::test_TC_304_every_row_is_the_width_and_stacked_cards_are_separated[160]
+    FAILED tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule
+    FAILED tests/test_kanban_readable.py::test_TC_308_the_high_band_is_first_and_holds_exactly_the_open_highs
+    FAILED tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_hostile_name_folds_literally_and_an_exact_fit_folds_nothing
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_board_folds_whole_bands_and_names_them
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_down_into_a_drawn_band_moves_nothing
+    FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size0-11.0-12]
+    FAILED tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size1-5.5-0]
+    FAILED tests/test_kanban_readable.py::test_AT_302_projects_are_named_once_and_done_is_a_rail
+    FAILED tests/test_kanban_readable.py::test_AT_303_the_high_band_is_first_and_the_cursor_walks_it
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1]
+M10 KILLED — nav walks the band last: not the draw order
+   arms resolved 61, red 41; restore sha256 9b59f9ad15ca8eb6… OK
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-project-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-priority-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-due-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-recent-True-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-False-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-False-True]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-True-False]
+    PASSED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[priority-unblock-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-project-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-priority-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-due-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-recent-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[project-unblock-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-project-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-priority-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-due-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-recent-True-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-False-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-False-True]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-True-False]
+    FAILED tests/test_kanban_readable.py::test_TC_301_nav_is_the_draw_order[horizon-unblock-True-True]
+    FAILED tests/test_kanban_readable.py::test_AT_303_the_high_band_is_first_and_the_cursor_walks_it
+M11 KILLED — the prototype's selection-first window (re-flows on a down)
+   arms resolved 3, red 3; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_down_into_a_drawn_band_moves_nothing
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0]
+    FAILED tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1]
+M12 KILLED — the window ignores the selection
+   arms resolved 5, red 5; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_the_board_folds_whole_bands_and_names_them
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[118-30]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-24]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-22]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[40-22]
+M13 KILLED — the fold row clips its down side away
+   arms resolved 4, red 3; restore sha256 9b59f9ad15ca8eb6… OK
+    PASSED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[118-30]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-24]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-22]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[40-22]
+M14 KILLED — the project's near due in the accent
+   arms resolved 2, red 2; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_AT_305_the_kanban_spends_no_accent
+    FAILED tests/test_kanban_readable.py::test_TC_306_each_project_is_named_once_by_a_band_rule
+M15 KILLED — separators off the frame tone
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_AT_305_the_kanban_spends_no_accent
+M16 KILLED — no project tag on high cards
+   arms resolved 2, red 2; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_308_the_high_band_is_first_and_holds_exactly_the_open_highs
+    FAILED tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally
+Traceback (most recent call last):
+  File "<home>\Github\taskboard\.dev-flow\2026-10-02-batch-03\evidence\mutate.py", line 53, in <module>
+    main()
+  File "<home>\Github\taskboard\.dev-flow\2026-10-02-batch-03\evidence\mutate.py", line 29, in main
+    assert text.count(m["old"]) == 1, (m["id"], "mutation site not unique / absent")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('M17', 'mutation site not unique / absent')
+M13 KILLED — the fold row clips its down side away (round 1: SURVIVED)
+   arms resolved 4, red 3; restore sha256 9b59f9ad15ca8eb6… OK
+    PASSED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[118-30]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-24]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[80-22]
+    FAILED tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel[40-22]
+R1 KILLED — groups keyed by name only (N1)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold - ...
+R2 KILLED — the open count counts archived cards (N2)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold - ...
+R3 KILLED — the fold row unescaped (N3)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_hostile_name_folds_literally_and_an_exact_fit_folds_nothing
+R4 KILLED — the fold one row early (N4)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_311_a_hostile_name_folds_literally_and_an_exact_fit_folds_nothing
+R5 KILLED — the badge from 8 cells (N8)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold - ...
+R6 KILLED — the head rule misses the rail's separator (N18)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold - ...
+R7 KILLED — the narrow rail's age from the oldest (N19)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold - ...
+R8 KILLED — tags compared by characters, not words (F3)
+   arms resolved 1, red 1; restore sha256 9b59f9ad15ca8eb6… OK
+    FAILED tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally
+9 of 9 KILLED

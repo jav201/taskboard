@@ -1,0 +1,92 @@
+[
+ {
+  "id": "M13",
+  "file": "taskboard/views.py",
+  "old": "    if vis(full) > w and up and down:",
+  "new": "    if False:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_every_selection_is_drawn_inside_the_panel"
+  ],
+  "why": "the fold row clips its down side away (round 1: SURVIVED)"
+ },
+ {
+  "id": "R1",
+  "file": "taskboard/views.py",
+  "old": "            out.setdefault((name, p.id if p else None), (color, p, []))[2].extend(items)",
+  "new": "            out.setdefault((name, None), (color, p, []))[2].extend(items)",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold"
+  ],
+  "why": "groups keyed by name only (N1)"
+ },
+ {
+  "id": "R2",
+  "file": "taskboard/views.py",
+  "old": "                                sum(1 for c_ in band_cols for t in c_ if not t.archived)",
+  "new": "                                sum(1 for c_ in band_cols for t in c_)",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold"
+  ],
+  "why": "the open count counts archived cards (N2)"
+ },
+ {
+  "id": "R3",
+  "file": "taskboard/views.py",
+  "old": "    return c(_literal(fit(full, w)), \"mut\")",
+  "new": "    return c(fit(full, w), \"mut\")",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_hostile_name_folds_literally_and_an_exact_fit_folds_nothing"
+  ],
+  "why": "the fold row unescaped (N3)"
+ },
+ {
+  "id": "R4",
+  "file": "taskboard/views.py",
+  "old": "    room = (height - len(head) - len(pinned_rows) - 1) if height else None",
+  "new": "    room = (height - len(head) - len(pinned_rows) - 2) if height else None",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_311_a_hostile_name_folds_literally_and_an_exact_fit_folds_nothing"
+  ],
+  "why": "the fold one row early (N4)"
+ },
+ {
+  "id": "R5",
+  "file": "taskboard/views.py",
+  "old": "    if not board.is_done(task) and not task.archived and wc >= 9:",
+  "new": "    if not board.is_done(task) and not task.archived and wc >= 8:",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold"
+  ],
+  "why": "the badge from 8 cells (N8)"
+ },
+ {
+  "id": "R6",
+  "file": "taskboard/views.py",
+  "old": "    head.append(rule_row({x: \"┼\" for x in seps}, w))",
+  "new": "    head.append(rule_row({x: \"┼\" for x in seps[:-1]}, w))",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold"
+  ],
+  "why": "the head rule misses the rail's separator (N18)"
+ },
+ {
+  "id": "R7",
+  "file": "taskboard/views.py",
+  "old": "        age = days_in_phase(band.done[0], today)",
+  "new": "        age = days_in_phase(band.done[-1], today)",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_307_the_secondary_limbs_hold"
+  ],
+  "why": "the narrow rail's age from the oldest (N19)"
+ },
+ {
+  "id": "R8",
+  "file": "taskboard/views.py",
+  "old": "                         if not any(o.split(\" \")[:k] == words[:k] for o in others)),",
+  "new": "                         if not any(o.startswith(\" \".join(words[:k])) for o in others)),",
+  "nodes": [
+   "tests/test_kanban_readable.py::test_TC_308_tags_tell_projects_apart_and_print_literally"
+  ],
+  "why": "tags compared by characters, not words (F3)"
+ }
+]

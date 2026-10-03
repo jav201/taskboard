@@ -1,0 +1,4 @@
+floor-first (P3 draft)   118x30: widths [25, 26, 23, 24] · avg/28 11.29 · full 12 · drawn 21
+floor-first (P3 draft)   80x24: widths [18, 18, 16, 17] · avg/28 5.32 · full 2 · drawn 16
+proportional (shipped)   118x30: widths [24, 27, 23, 24] · avg/28 11.75 · full 13 · drawn 21
+proportional (shipped)   80x24: widths [17, 19, 16, 17] · avg/28 6.21 · full 3 · drawn 16
