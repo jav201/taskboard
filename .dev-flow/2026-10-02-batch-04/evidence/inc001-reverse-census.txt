@@ -1,0 +1,35 @@
+== increment 001 reverse census, working tree vs base 56a1b10 ==
+-- B1: tests (outside this increment's new files) naming a touched symbol
+_rich: test_emoji_picker.py 
+notes_preview: 
+_highlight_markup: 
+highlight_segments: test_edit_window.py 
+_WEEK_HEADER: 
+ConfirmModal: test_app.py test_archive.py 
+TextPrompt: test_app.py test_dependencies.py test_setup_help.py 
+_project_line: 
+_phase_line: 
+_option_lines: 
+_title_text: 
+_grid_text: 
+TeamIdentityPicker: test_team_sync.py 
+BlockerPicker: test_dependencies.py 
+StandupModal: test_app.py 
+CommandPalette: test_colour_budget_app.py test_legend.py test_setup_help.py 
+HelpModal: test_gantt_board.py test_legend.py test_setup_help.py 
+already exists: 
+Team sync failed: 
+Report written: test_report.py 
+Transition log: 
+pinned: kg_board.py test_agenda.py test_app.py test_edit_window.py test_emoji_picker.py test_focus.py test_gantt.py test_kanban_readable.py test_palette_ration.py test_requirements.py test_row_cost.py test_swimlanes.py test_vertical_fill.py test_wave.py 
+archived ·: 
+Mo Tu We: test_prism_laws.py 
+\\\[: 
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_details_markup.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_edit_window.py', LF will be replaced by CRLF the next time Git touches it
+-- B2: files moved: 0
+-- B3: goldens: ls: cannot access 'tests/goldens': No such file or directory
+-- B4: an artifact consumed elsewhere: none written by this increment (paint-only; no file format change)
+-- A3: interface consumed by another module: views.highlight_segments NEW (read by modals.notes_preview); views._highlight_markup signature unchanged; modals._rich removed — importers: tests/test_markup_sites.py 

@@ -1,0 +1,30 @@
+== revision-2 nodes on the frozen round-1 tree (inc002-frozen-r1.sha256, product files verified)
+C:\Users\<user>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFF.                                                                  [100%]
+================================== FAILURES ===================================
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\mut002\tests\test_sync_fields.py:163: AssertionError: [('p1', 'Alpha'), ('1e50da56', 'Ghost'), ('ae638372', 'Ghost'), ('341af24f', 'Ghost')]
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\mut002\tests\test_sync_fields.py:163: AssertionError: [('p1', 'Alpha'), ('3e1c918c', 'Ghost'), ('edb75d5a', 'Ghost'), ('ba5995d1', 'Ghost')]
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\mut002\tests\test_sync_fields.py:163: AssertionError: [('p1', 'Alpha'), ('c2969867', 'Ghost'), ('68476729', 'Ghost'), ('7b31e561', 'Ghost')]
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\mut002\tests\test_sync_fields.py:194: AssertionError: [2, 3, 4, 5]
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\mut002\tests\test_sync_fields.py:230: AssertionError: [{'color': [], 'id': 'p1', 'name': 'Later', 'status': '[@click=app.quit]X', ...}]
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\mut002\taskboard\models.py:541: RecursionError: maximum recursion depth exceeded
+============================== warnings summary ===============================
+tests\test_control_bytes.py:376
+  C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\mut002\tests\test_control_bytes.py:376: SyntaxWarning: invalid escape sequence '\ '
+    keep = "a\tb\nc [b]x[/b] \\\ ñé — 🎉 漢字 ~!@#$%^&*()_+{}|:\"<>?"
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_control_bytes.py::test_TC_410_the_rule_strips_nothing_else
+FAILED tests/test_sync_fields.py::test_TC_413_an_empty_synced_id_never_grows_the_board[\x07]
+FAILED tests/test_sync_fields.py::test_TC_413_an_empty_synced_id_never_grows_the_board[]
+FAILED tests/test_sync_fields.py::test_TC_413_an_empty_synced_id_never_grows_the_board[\x1b\x9b]
+FAILED tests/test_sync_fields.py::test_TC_413_sync_ticks_and_the_startup_save_keep_the_board_size
+FAILED tests/test_sync_fields.py::test_TC_418_setup_republishes_the_first_entry_validated
+FAILED tests/test_control_bytes.py::test_TC_419_a_deeply_nested_team_file_is_refused_visibly
+6 failed, 1 passed, 310 deselected, 1 warning in 3.70s
+exit=1

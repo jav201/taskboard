@@ -1,0 +1,286 @@
+C:\Users\<user>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_AT_407_a_shared_config_cannot_act_or_crash _______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-15672/test_AT_407_a_shared_config_ca0')
+
+    async def test_AT_407_a_shared_config_cannot_act_or_crash(tmp_path):
+        """AT-407 (HLR-404, LLR-404.1, LLR-404.2, US-404) — a hostile `team.json`.
+    
+        Field report (P2 security S-1 HIGH, S-3; P-12, P-15): the shared directory
+        is another person's to write. On base `apply_config_to_board` `setattr`s a
+        synced project's raw fields onto the board: a status `[@click=app.pwn]X`
+        reached the project picker line as markup and a click on it FIRED the
+        action; a colour that is not a palette key (`evil`, `[]`) raises in the
+        board views, a name `123` raises in render; two synced projects (or roster
+        entries) with one id are both kept; a roster name `123` raises in people
+        and standup, a roster hue `[]` in Setup.
+    
+        Law (HLR-404 threshold), each case in its own `App.run_test`, failures
+        collected: (a) the board holds `p1` (`Alpha`, due `2026-10-09`); the
+        synced p1 entry carries the hostile status / colour / name / due; after
+        the startup sync (as `a`) and `P`, p1's picker line paints `Alpha` and
+        `on_track` and neither `[@click` nor `gantt`; then one run per painted
+        cell of that status run: a click on it leaves the view `swimlanes`, and
+        the board keeps p1's name `Alpha` and due `2026-10-09`. (b) a new synced
+        `n1` with the same hostile fields and a duplicate `n1` named `Second`: the
+        board and the picker hold exactly one `n1`, painted
+        `Untitled  ·  on_track` (the first entry), and `Second` is painted
+        nowhere. (c) a roster with a duplicate id and a hostile entry: with no
+        identity the identity picker opens and lists `b` (for the name `123`) and
+        `a`, each once, and not `Dup`; as `a` with the whole hostile `team.json`,
+        each of the eight views (keys `1`..`5`, `7`..`9`) and Setup (`0`) is
+        entered, one run each, across one clock tick, and the app stays up.
+        (d) boundary: a valid synced `paused` / `sky` IS applied (picker paints
+        `paused`, board colour `sky`) and a synced `null` due clears p1's due.
+    
+        RED on the pre-fix tree (the increment-001 tree, no HLR-404 validation):
+        every case but (d) — the per-case reasons are in
+        `evidence/inc002-at407-red-prefix.txt`. Since increment 001 the picker
+        line is Text pieces, so the status no longer parses as an action there;
+        on this tree the hostile entry is caught by what it paints and what it
+        crashes, not by a fired action. Case (d) is a boundary pin that passes on
+        both trees by design (the raw `setattr` applies valid values too)."""
+        failures: list[str] = []
+        n = iter(range(10_000))
+    
+        def d():
+            return tmp_path / f"a{next(n)}"
+    
+        def fixture(projects, roster=ROSTER_OK, user="a", color="lime") -> Path:
+            here = d()
+            shared = _team(here, roster, projects)
+            settings = {"team_shared_dir": str(shared)}
+            if user:
+                settings["team_user_id"] = user
+            p1 = Project("Alpha", color, id="p1", due_date="2026-10-09")
+            task = Task("Plain title", "p1", "Todo", start_date="2026-10-01",
+                        due_date="2026-10-09")
+            return _board(here, [p1], [task], ["Todo", "Done"], settings)
+    
+        def p1_of(app):
+            return next((p for p in app.board.projects if p.id == "p1"), None)
+    
+        def p1_kept(app) -> str | None:
+            p = p1_of(app)
+            if p is not None and p.name == "Alpha" and p.due_date == "2026-10-09":
+                return None
+            return (f"board p1 name / due became {getattr(p, 'name', None)!r} / "
+                    f"{getattr(p, 'due_date', None)!r}")
+    
+        async def open_picker(app, pilot):
+            await _settle(pilot)
+            if app.team_state is None or app.team_state.user_id != "a":
+                return "fixture: team mode as `a` is off"
+            await _press_select(app, pilot, "P")
+            if type(app.screen).__name__ != "ProjectPicker":
+                return f"the project picker did not open (screen {type(app.screen).__name__})"
+            return None
+    
+        def option_rows(app) -> list[str]:
+            return [r.strip(" \u258a\u258e\u2502") for r in _rows(app, "#proj-list") if "  \xb7  " in r]
+    
+        # -- (a) the existing project ------------------------------------------
+        hostile_p1 = [{"id": "p1", **HOSTILE}]
+        found: dict = {}
+    
+        async def a_paint(entries=hostile_p1, key="cells"):
+            """Paint checks; records the painted status run's cells for the clicks."""
+            app = _app(fixture(entries))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                why = await open_picker(app, pilot)
+                if why:
+                    return why
+                rows = _rows(app, "#proj-list")
+                hit = [(i, r) for i, r in enumerate(rows) if "  ·  " in r]
+                if len(hit) != 1:
+                    return f"expected one project line, painted {[r for _, r in hit]!r}"
+                i, row = hit[0]
+                start = row.index("  ·  ") + len("  ·  ")
+                end = row.find("  ·  ", start)
+                found[key] = (i, start, len(row.rstrip()) if end < 0 else end)
+                line = row.strip(" \u258a\u258e\u2502")
+                bad = []
+                if not line.startswith("Alpha  ·  "):
+                    bad.append("the name is not painted `Alpha`")
+                if "on_track" not in line:
+                    bad.append("the status is not painted `on_track`")
+                if "[@click" in line or "gantt" in line:
+                    bad.append("the synced action tag is painted")
+                if p1_kept(app):
+                    bad.append(p1_kept(app))
+                return (f"line {line!r}: " + "; ".join(bad)) if bad else None
+    
+        async def a_click(row: int, col: int, entries=hostile_p1):
+            app = _app(fixture(entries))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                why = await open_picker(app, pilot)
+                if why:
+                    return why
+                if app.view_mode != "swimlanes":
+                    return f"fixture: the view is {app.view_mode!r} before the click"
+                ol = app.screen.query_one("#proj-list")
+                cr = ol.content_region
+                await pilot.click(ol, offset=(cr.x - ol.region.x + col, cr.y - ol.region.y + row))
+                await _settle(pilot)
+                bad = []
+                if app.view_mode != "swimlanes":
+                    bad.append(f"the click changed the view to {app.view_mode!r}")
+                if type(app.screen).__name__ == "ProjectModal":   # a click opens the editor
+                    await pilot.press("escape")
+                    await _settle(pilot)
+                    if app.view_mode != "swimlanes":
+                        bad.append(f"the view is {app.view_mode!r} after esc")
+                if p1_kept(app):
+                    bad.append(p1_kept(app))
+                return "; ".join(bad) or None
+    
+        # -- (b) the new project and its duplicate -----------------------------
+        async def b_new():
+            app = _app(fixture([{"id": "n1", **HOSTILE}, {"id": "n1", "name": "Second"}]))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                why = await open_picker(app, pilot)
+                if why:
+                    return why
+                rows = option_rows(app)
+                bad = []
+                n1 = sum(p.id == "n1" for p in app.board.projects)
+                if n1 != 1:
+                    bad.append(f"the board holds {n1} `n1` projects")
+                if len(rows) != 2:
+                    bad.append(f"{len(rows)} project lines painted for 2 ids")
+                if sum(r.startswith("Untitled  ·  on_track  ·  ") for r in rows) != 1:
+                    bad.append("not exactly one `Untitled  ·  on_track` line")
+                if any("Second" in r for r in _rows(app)):
+                    bad.append("the duplicate entry `Second` is painted")
+                return (f"lines {rows!r}: " + "; ".join(bad)) if bad else None
+    
+        # -- (c) the roster and every view -------------------------------------
+        async def c_identity():
+            app = _app(fixture([], roster=ROSTER_HOSTILE, user=None))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _settle(pilot)
+                if type(app.screen).__name__ != "TeamIdentityPicker":
+                    return f"the identity picker did not open (screen {type(app.screen).__name__})"
+                listed = [r.strip(" \u258a\u258e\u2502") for r in _rows(app, "#identity-list")]
+                listed = [r for r in listed if r]
+                return None if listed == ["b", "a"] else (
+                    f"the picker lists {listed!r}, expected ['b', 'a'] (each roster id once, "
+                    "`b` for the name 123, the first `a`)")
+    
+        everything = [{"id": "p1", **HOSTILE}, {"id": "n1", **HOSTILE},
+                      {"id": "n1", "name": "Second"}]
+    
+        async def c_view(key: str, mode: str, projects=everything):
+            app = _app(fixture(projects, roster=ROSTER_HOSTILE))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _settle(pilot)
+                if app.team_state is None or app.team_state.user_id != "a":
+                    return "fixture: team mode as `a` is off"
+                await pilot.press(key)
+                await _settle(pilot)
+                await pilot.pause(1.2)        # one clock tick: lanes / gantt repaint
+                await _settle(pilot)
+                if app.view_mode != mode:
+                    return f"key {key!r} left the view at {app.view_mode!r}"
+                return None
+    
+        # -- (d) the boundary --------------------------------------------------
+        async def d_valid():
+            app = _app(fixture([{"id": "p1", "status": "paused", "color": "sky",
+                                 "due_date": None}]))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                why = await open_picker(app, pilot)
+                if why:
+                    return why
+                rows = option_rows(app)
+                p = p1_of(app)
+                bad = []
+                if len(rows) != 1 or not rows[0].startswith("Alpha  ·  paused  ·  "):
+                    bad.append(f"the line is not painted `Alpha  ·  paused`: {rows!r}")
+                if p is None or p.color != "sky":
+                    bad.append(f"the synced colour `sky` was not applied "
+                               f"({getattr(p, 'color', None)!r})")
+                if p is None or p.due_date is not None:
+                    bad.append(f"the synced null due did not clear it "
+                               f"({getattr(p, 'due_date', None)!r})")
+                return "; ".join(bad) or None
+    
+        async def clicks(label: str, entries, key: str) -> int:
+            """One run per painted cell of the status run `a_paint` recorded."""
+            if key not in found:
+                failures.append(f"{label}: not executed — no painted p1 line to click "
+                                "(see its paint run)")
+                return 1
+            row, start, end = found[key]
+            for col in range(start, end):
+                await _collect(failures, f"{label} cell {col - start}",
+                               lambda c=col: a_click(row, c, entries))
+            return end - start
+    
+        # (a) first: its paint run finds the painted status cells to click.
+        await _collect(failures, "(a) p1 picker line after the hostile sync", a_paint)
+        total = 1 + await clicks("(a) click on p1's status", hostile_p1, "cells")
+        # Isolation (not a separate threshold): each hostile field alone, so one
+        # field's crash cannot hide another's — the same law, one field per run;
+        # the status alone is clicked cell by cell like the whole entry.
+        alone = {f: [{"id": "p1", f: v}] for f, v in HOSTILE.items()}
+        for f, entries in alone.items():
+            await _collect(failures, f"(a) p1 picker line, synced {f} alone",
+                           lambda e=entries, f=f: a_paint(e, f"alone-{f}"))
+            total += 1
+        total += await clicks("(a) click on p1's status, synced status alone",
+                              alone["status"], "alone-status")
+        arms = [("(b) new n1 and its duplicate in the picker", b_new),
+                ("(c) identity picker over the hostile roster", c_identity)]
+        arms += [(f"(c) view {mode} (key {key!r}) as `a`", lambda k=key, m=mode: c_view(k, m))
+                 for key, mode in VIEW_KEYS]
+        arms += [(f"(c) view {mode} (key {key!r}) as `a`, hostile roster alone",
+                  lambda k=key, m=mode: c_view(k, m, projects=[]))
+                 for key, mode in VIEW_KEYS if mode in ("standup", "people", "setup")]
+        arms.append(("(d) valid paused / sky / null due applied", d_valid))
+        for name, fn in arms:
+            await _collect(failures, name, fn)
+>       _verdict(failures, total + len(arms))
+
+tests\test_markup_sites.py:1225: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+failures = ["(a) p1 picker line after the hostile sync: TypeError: unhashable type: 'list'", "(a) click on p1's status: not execu...picker line, synced due_date alone: line 'Alpha  ·  on_track  ·  1 task': board p1 name / due became 'Alpha' / 7", ...]
+total = 22
+
+    def _verdict(failures: list[str], total: int) -> None:
+>       assert not failures, (f"{len(failures)} of {total} site x payload arms failed:\n  "
+                              + "\n  ".join(failures))
+E       AssertionError: 21 of 22 site x payload arms failed:
+E           (a) p1 picker line after the hostile sync: TypeError: unhashable type: 'list'
+E           (a) click on p1's status: not executed — no painted p1 line to click (see its paint run)
+E           (a) p1 picker line, synced status alone: line 'Alpha  ·  X  ·  1 task': the status is not painted `on_track`
+E           (a) p1 picker line, synced color alone: TypeError: unhashable type: 'list'
+E           (a) p1 picker line, synced name alone: TypeError: object of type 'int' has no len()
+E           (a) p1 picker line, synced due_date alone: line 'Alpha  ·  on_track  ·  1 task': board p1 name / due became 'Alpha' / 7
+E           (a) click on p1's status, synced status alone cell 0: InvalidSelectValueError: Illegal select value "[@click=app.view('gantt')]X".
+E           (b) new n1 and its duplicate in the picker: lines ['Alpha  ·  on_track  ·  1 task', 'Second  ·  on_track  ·  0 tasks']: not exactly one `Untitled  ·  on_track` line; the duplicate entry `Second` is painted
+E           (c) identity picker over the hostile roster: DuplicateID: Unable to add Option('Dup', id='a') due to duplicate ID
+E           (c) view swimlanes (key '1') as `a`: TypeError: unhashable type: 'list'
+E           (c) view agenda (key '2') as `a`: TypeError: unhashable type: 'list'
+E           (c) view gantt (key '3') as `a`: TypeError: unhashable type: 'list'
+E           (c) view kanban (key '4') as `a`: TypeError: unhashable type: 'list'
+E           (c) view focus (key '5') as `a`: TypeError: unhashable type: 'list'
+E           (c) view flow (key '7') as `a`: TypeError: unhashable type: 'list'
+E           (c) view standup (key '8') as `a`: TypeError: unhashable type: 'list'
+E           (c) view people (key '9') as `a`: TypeError: unhashable type: 'list'
+E           (c) view setup (key '0') as `a`: TypeError: unhashable type: 'list'
+E           (c) view standup (key '8') as `a`, hostile roster alone: TypeError: expected string or bytes-like object, got 'int'
+E           (c) view people (key '9') as `a`, hostile roster alone: TypeError: expected string or bytes-like object, got 'int'
+E           (c) view setup (key '0') as `a`, hostile roster alone: TypeError: unhashable type: 'list'
+E       assert not ["(a) p1 picker line after the hostile sync: TypeError: unhashable type: 'list'", "(a) click on p1's status: not execu...picker line, synced due_date alone: line 'Alpha  ·  on_track  ·  1 task': board p1 name / due became 'Alpha' / 7", ...]
+
+tests\test_markup_sites.py:153: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash
+1 failed, 5 deselected in 41.68s

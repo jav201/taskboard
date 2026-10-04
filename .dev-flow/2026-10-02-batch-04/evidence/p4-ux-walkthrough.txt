@@ -1,0 +1,140 @@
+UX walkthrough — batch 2026-10-02-batch-04 — Phase 4 — ux-reviewer
+====================================================================
+Date: 2026-10-03. Trigger family D. Stack: Textual 8.2.8 TUI, Python 3.12.7.
+Trees walked: the working tree (the change) and `git archive HEAD taskboard`
+(the base, 56a1b10), for contrast only.
+
+MECHANISM
+---------
+- Driver: Textual's headless driver, `App.run_test(size=..., notifications=True)`,
+  on the shipped `TaskboardApp`, each run on a fresh temp board
+  (`tempfile.mkdtemp()`; no user board touched).
+- Input is real: `pilot.press(<key>)` for enter / down / pagedown / esc / d / x / P /
+  f / S, and `pilot.click(offset=(x, y))` (a real mouse event at the screen cell
+  where the project line was painted). No `.focus()`, setter or action call
+  stands in for a key. Task selection is the app's own default (the first task;
+  one task per board), not a setter.
+- Read-back is the painted frame: `screen._compositor.render_strips(...)` after
+  layout (the composited cells, toasts included), cut to the modal's region.
+  Styles are read off the painted segments (bold flag, foreground colour). The
+  app renders "dim" as a blended foreground colour (#606a75 / #a1a1a1), so dim is
+  judged by colour against the base run, not by the dim flag.
+- Note on the mechanism: `run_test` defaults to `notifications=False`; with the
+  default, no Toast is mounted and a toast criterion reads nothing. The first
+  pass of this walkthrough hit that (0 toasts), and it was re-run with
+  `notifications=True`. The batch's own toast tests already pass that flag.
+- The driver is a scratch script outside the repo (walk.py, sha256
+  205439710e833cfc727f68cecb1ef3348d0ddd4a8454a158c27050545873db26); its output
+  is excerpted below. Temp paths are redacted to <tmp>.
+
+CRITERIA — verdicts (evidence state: executed)
+----------------------------------------------
+| #    | Criterion (when the user does X, they observe Y) | Driven with | Painted result | Verdict |
+|------|---------------------------------------------------|-------------|----------------|---------|
+| C1.1 | `enter` on a task at 140x40: Project / Phase / Priority / Start / Due, one per row, value beside label | press enter | 5 rows, values at col 23 (see D-140-short) | PASS |
+| C1.2 | same at 80x24 | press enter | 5 rows (D-80-short) | PASS |
+| C1.3 | 89-char project name wraps under its own value column, nothing cut, at 140x40 and 80x24 | press enter | 140: 2 rows, 80: 3 rows, all at col 23, ends "...phase two" (D-*-long) | PASS |
+| C1.4 | blocked task with no dates | press enter | "Phase  Doing · blocked", "Start  —", "Due  —" | PASS |
+| C1.5 | Inbox task (no project) | press enter | "Project  Inbox" | PASS |
+| C1.6 | the box scrolls to notes / URLs / images at 80x24 | press down, pagedown x3 | scroll_y 0->1->max (2 short, 4 long); "Images" + "missing: missing-shot.png" painted at the bottom | PASS |
+| C1.7 | esc closes the details view | press escape | top screen TaskDetails -> main Screen | PASS |
+| C1.8 | compared with the captures | — | base: Phase/Priority/Start/Due rows painted blank (only "Project" shown); after: matches after-details-* exactly in the grid rows | PASS |
+| C2.1 | delete confirm (d) paints the title exactly | press d, then esc | "Delete '[LINK=http://e]x'?", "Delete 'x\\\'?", "Delete ':smile: [b]y[/b]'?"; esc keeps the task | PASS |
+| C2.2 | archive toast (x) paints the title exactly, legible | press x | '"[LINK=http://e]x" archived · v shows it, then x brings it back' (wraps at the toast width, words whole), likewise the other two, at 140x40 and 80x24 | PASS |
+| C2.3 | project picker (P) paints the name exactly, name bold | press P | "[LINK=http://e]x  ·  on_track  ·  1 task"; name bold fg #1d6484, status plain #e0e0e0 = base "Alpha" | PASS |
+| C2.4 | phase editor (f) paints the phase exactly, index dim, name bold | press f | "2.  x\\\  ·  1 task"; "2." #a1a1a1 not bold, name bold #e0e0e0 = base "Gamma" | PASS |
+| C2.5 | standup (S) paints project and title exactly, header bold, phase dim | press S | "▐ :smile: [b]y[/b]" bold #8b98a5; "→ :smile: [b]y[/b] :smile: [b]y[/b]" phase #606a75 = base | PASS |
+| C2.6 | the three texts, every surface, also at 80x24 | same keys | all exact, all styles as at 140x40 | PASS |
+| C3.1 | team.json with status "[@click=app.view('gantt')]X": P shows status on_track | press P | "Shared  ·  on_track  ·  0 tasks" (new project) / "·  1 task" (project already on the board) | PASS |
+| C3.2 | clicking the line only opens the project editor | mouse click on the painted "Shared" and on "on_track" cells | top screen -> ProjectModal; view_mode stays "swimlanes"; esc returns | PASS |
+| C3.3 | unreadable (5000-deep) team.json: the app starts and a toast says so | start app | main Screen up, view swimlanes; toast "Team sync / team.json in <tmp> could not be read; team sync waits for a readable file." | PASS |
+
+PAINTED EVIDENCE (excerpts, working tree)
+-----------------------------------------
+D-140-short (enter, 140x40):
+  │  Write the launch checklist  —  o open raw · esc close            │
+  │  Project              Website                                     │
+  │  Phase                Doing                                       │
+  │  Priority             high                                        │
+  │  Start                2026-10-01                                  │
+  │  Due                  2026-10-09                                  │
+D-80-long (enter, 80x24):
+  │  Project              Website relaunch for the northern region    │
+  │                       customer portal and partner onboarding phase│
+  │                       two                                         │
+  │  Phase                Doing                                       │
+  ... after down + pagedown (scroll_y 0 -> 1 -> 4 of max 4):
+  │  URLs / link · https://example.com/launch / Images / missing: missing-shot.png
+D-blocked-nodates (80x24 and 140x40):
+  │  Phase                Doing · blocked                             │
+  │  Start                —                                           │
+  │  Due                  —                                           │
+D-inbox: │  Project              Inbox                                 │
+Toast, 80x24:  ▌ Archive
+               ▌ "[LINK=http://e]x" archived · v
+               ▌ shows it, then x brings it back
+Toast, team:   ▌ Team sync
+               ▌ team.json in
+               ▌ <tmp> could not
+               ▌ be read; team sync waits for a readable file.
+
+BASE CONTRAST (same driver on the base tree; shows the defects are gone)
+------------------------------------------------------------------------
+- base, details 80x24: under "Project" the Phase / Priority / Start / Due rows
+  paint blank (matches base-details-*.txt).
+- base, "[LINK=http://e]x": MarkupError on `d` and on `P` (the app crashes).
+- base, "x\\\": picker paints "x\\[/b]  ·  on_track", phase editor "2.  x\\[/b]",
+  standup row "→ x\\\ x\\[/dim]".
+- base, team: a project already on the board takes the hostile status raw;
+  the picker paints "Shared  ·  X  ·  1 task"; clicking the line raises
+  InvalidSelectValueError opening the editor.
+- base, plain names: every style read above (bold / colour) is identical to the
+  working tree's — "styles as before" holds.
+
+FINDINGS
+--------
+UXV-1 minor (= UX-3, operator's call): the details title now has 2 blank rows
+  above it and 0 below; the base had 1 below (the grid's first-row margin made
+  it). The change removed the gap under the title along with the per-row
+  margin. Legible, but the title reads as the first grid row.
+UXV-2 minor, pre-existing (same in base captures): at 80x24 the scrollbar thumb
+  ("▆▆") paints 2 cells inside the right border, in the content padding, with no
+  visible track; the only cue that Images sits below the fold. Not introduced
+  by this batch.
+UXV-3 minor: the unreadable-team.json toast puts the full shared-folder path in
+  the middle of the sentence; a long path takes a toast line of its own and
+  splits "could not / be read". Legible; putting the path last (or clipping it)
+  would keep the sentence whole.
+No blocking finding.
+
+THE THREE ACTS
+--------------
+- Automated walkthrough: performed — the criteria above, via Textual's headless
+  driver with real keys and mouse, read off the composited frame.
+- Expert inspection: performed — a cognitive walkthrough by this reviewer (not a
+  user) of the tasks "read a task's fields", "read a long project", "confirm a
+  delete / archive", "manage projects / phases", "read the standup", "start in
+  team mode with a bad shared file", against the criteria above.
+- Evaluation with users: not performed — this team is one person and no user of
+  this surface exists outside it. The operator's PV-1 / UX-3 / UX-4 verdict on
+  the captures is an operator decision, not a user evaluation.
+- Limits: the headless driver does not exercise a real terminal's font,
+  colour profile or wide-glyph handling; ":smile:" was checked as literal text,
+  no real emoji glyph was walked; sizes walked: 140x40 and 80x24 only.
+
+RECOMMENDATIONS (the operator decides)
+--------------------------------------
+- PV-1 (one row per field, no blank row between, long values wrap; edit modals
+  untouched): ACCEPT. It is the fix: the base painted four of five fields blank.
+  Compact rows keep notes and URLs above the fold at 140x40 and the five fields
+  visible at 80x24 without scrolling.
+- UX-3 (a gap under the title): ACCEPT, cost-neutral if done by moving one of
+  the two blank rows above the title to below it, rather than adding one. It
+  restores the base's separation (UXV-1) without pushing Images further below
+  the fold at 80x24.
+- UX-4 (label column 20 -> 10): ACCEPT. The longest label, "Priority", is 8 cells;
+  10 leaves a 2-cell gap. At 80x24 the value column gains 10 cells, so the
+  89-character name wraps on 2 rows instead of 3 and one more row of
+  notes/URLs fits; the eye travels 10 fewer cells from label to value. Risk:
+  none seen — no label is longer than 8 cells today; a future longer label
+  would need the column re-checked.

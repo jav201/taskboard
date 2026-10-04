@@ -1,0 +1,40 @@
+◆ TASKBOARD · grid 2×1                                                                                                       1 open · 0 due
+   ▐ Website relaunch for the northern region customer portal a…   1 │
+ │ ▒░░▓▒▓░▓▓▓▒░░▓▓▓╎▓▒▒▓▓░▒░▓▓░▓▓░···································│
+ │                               ▄                                   │
+ │                              Oct 9 ·1                             │
+ │ -7d                                                           +21d│
+ │ ▊ Write the launch checklist                            ! ↗ Oct 9 │
+ │                                                                   │
+ │                  ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+ │                  │                                                                                                  │
+ │                  │                                                                                                  │
+ │                  │  Write the launch checklist  —  o open raw · esc close                                           │
+ │                  │                                                                                                  │
+ │                  │  Project              Website relaunch for the northern region customer portal and partner       │
+ │                  │                                                                                                  │
+ │                  │                                                                                                  │
+ │                  │                                                                                                  │
+ │                  │                                                                                                  │
+ │                  │                                                                                                  │
+ │                  │  Notes  highlight: ==…== yellow, !!…!! red, ++…++ green                                          │
+ │                  │  Draft the owner list and the rollback plan.                                                     │
+ │                  │  Review with ops on Friday.                                                                      │
+ │                  │                                                                                                  │
+ │                  │  URLs                                                                                            │
+ │                  │                                                                                                  │
+ │                  │  link · https://example.com/launch                                                               │
+ │                  │                                                                                                  │
+ │                  │  Images                                                                                          │
+ │                  │                                                                                                  │
+ │                  │  —                                                                                               │
+ │                  │                                                                                                  │
+ │                  ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+ │                                                                   │
+ │                                                                   │
+ │                                                                   │
+ │                                                                   │
+ │                                                                   │
+ │ 0/1 done                                                          │
+  10:59:30 · Sat 03 Oct 2026 · W40 · Mexico City 10:59 · New York 12:59
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8 Standup  9 People  0 Setup  ↵ Details  a  e  d  ⇥  ↓  ↑

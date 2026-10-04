@@ -17,7 +17,12 @@ from taskboard.app import TaskboardApp
 from taskboard.models import Board, Project, Task
 from taskboard.modals import ImageViewer, TaskDetails
 
-HOSTILE = ["[LINK=http://e]x", "[B]bold?", "[ red]x", "a[b"]
+# the first four from S1 (2026-09-30); the last two are batch 2026-10-02-batch-04's
+# contract §1.3 payloads (review F3): `x\\\` (x then three backslashes — an
+# escape-then-parse round trip eats them; this substring check sees an eaten or
+# altered payload, not a doubled one — exact paint is AT-401's, code review G3) and
+# a Rich emoji code plus a Rich tag (a Rich parse turns `:smile:` into 😄)
+HOSTILE = ["[LINK=http://e]x", "[B]bold?", "[ red]x", "a[b", "x\\\\\\", ":smile: [b]y[/b]"]
 
 
 def _app(tmp_path, **fields) -> TaskboardApp:
@@ -87,15 +92,10 @@ async def test_details_show_bracketed_task_text_literally(tmp_path, text, where)
         else:
             await _open_details(app, pilot)
             assert isinstance(app.screen, TaskDetails), "the details view did not open"
-        if where in ("project", "phase"):
-            # the details grid paints its cells blank in textual 8.2.8 — on
-            # the base tree too (pre-existing, BACKLOG) — so these two fields
-            # are read off what each label RENDERS (Textual's parse), not the screen
-            built = [str(w.render()) for w in app.screen.query("#details-box Label")]
-            assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
-        else:
-            box = "#viewer-box" if where == "viewer-title" else "#details-box"
-            assert text in _painted(app, box), f"{where}: {text!r} not painted literally"
+        # the project and phase fields are read off the PAINTED screen too since the
+        # details grid paints its cells (batch 2026-10-02-batch-04, HLR-403)
+        box = "#viewer-box" if where == "viewer-title" else "#details-box"
+        assert text in _painted(app, box), f"{where}: {text!r} not painted literally"
 
 
 async def test_details_still_highlight_the_notes(tmp_path):

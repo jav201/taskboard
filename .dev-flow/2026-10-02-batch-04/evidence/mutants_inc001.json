@@ -1,0 +1,183 @@
+[
+ {
+  "id": "M1",
+  "file": "taskboard/modals.py",
+  "old": "            yield Label(Text(self.message), classes=\"modal-title\")",
+  "new": "            yield Label(self.message, classes=\"modal-title\")",
+  "nodes": [
+   "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str"
+  ],
+  "why": "the confirm modal hands the message to Textual as a str (by position: ConfirmModal.compose, Text(...) wrapper removed)"
+ },
+ {
+  "id": "M2",
+  "file": "taskboard/modals.py",
+  "old": "        line = Text.assemble((p.name, \"bold\"), \"  ·  \", p.status)",
+  "new": "        line = Text.from_markup(f\"[b]{p.name}[/b]  ·  {p.status}\")",
+  "nodes": [
+   "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "tests/test_markup_census.py::test_TC_406_no_user_value_reaches_a_markup_parser"
+  ],
+  "why": "the picker line parses the project name and status again (the S-1 seat)"
+ },
+ {
+  "id": "M3",
+  "file": "taskboard/app.py",
+  "old": "        self.notify(body, title=\"Archive\", severity=\"information\", markup=False)",
+  "new": "        self.notify(body, title=\"Archive\", severity=\"information\")",
+  "nodes": [
+   "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str",
+   "tests/test_archive.py::test_the_notify_cannot_be_hijacked_by_a_hostile_title"
+  ],
+  "why": "the archive toast parses the title with markup on"
+ },
+ {
+  "id": "M4",
+  "file": "taskboard/modals.py",
+  "old": "                out.append(segment, HEX[tone])",
+  "new": "                out.append(segment)",
+  "nodes": [
+   "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "tests/test_details_markup.py::test_details_still_highlight_the_notes"
+  ],
+  "why": "the notes pieces lose their highlight tones"
+ },
+ {
+  "id": "M5",
+  "file": "taskboard/views.py",
+  "old": "            out.append((m.group(1), \"soon\"))",
+  "new": "            out.append((m.group(1), \"over\"))",
+  "nodes": [
+   "tests/test_highlight_segments.py",
+   "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style"
+  ],
+  "why": "the tokeniser gives ==..== the wrong tone (board and preview both)"
+ },
+ {
+  "id": "M6",
+  "file": "taskboard/modals.py",
+  "old": "        grid.append(_WEEK_HEADER, \"dim\")       # a piece: Text(style=) would dim every day",
+  "new": "        grid = Text(_WEEK_HEADER, style=\"dim\")",
+  "nodes": [
+   "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style"
+  ],
+  "why": "the calendar's base style dims every day (the defect TC-415 caught during the conversion)"
+ },
+ {
+  "id": "M7",
+  "file": "taskboard/app.py",
+  "old": "            self.notify(err, title=\"Transition log\", severity=\"warning\", markup=False)",
+  "new": "            self.notify(err, title=\"Transition log\", severity=\"warning\")",
+  "nodes": [
+   "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str"
+  ],
+  "why": "the transition-log toast parses an OS error text holding a path"
+ },
+ {
+  "id": "M8",
+  "file": "taskboard/modals.py",
+  "old": "            ol.add_option(Option(Text(str(name)), id=uid))",
+  "new": "            ol.add_option(Option(str(name), id=uid))",
+  "nodes": [
+   "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str"
+  ],
+  "why": "the identity picker hands a synced roster name to Textual as a str"
+ },
+ {
+  "id": "M9",
+  "file": "taskboard/modals.py",
+  "old": "            yield Label(Text(self._title, style=\"bold\"), classes=\"modal-title\")",
+  "new": "            yield Label(Text(self._title), classes=\"modal-title\")",
+  "nodes": [
+   "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style"
+  ],
+  "why": "the prompt title loses its bold piece"
+ },
+ {
+  "id": "M10",
+  "file": "taskboard/views.py",
+  "old": "    parts = [c(escape(segment), tone) for segment, tone in highlight_segments(text)]",
+  "new": "    parts = [c(escape(escape(segment)), tone) for segment, tone in highlight_segments(text)]",
+  "nodes": [
+   "tests/test_highlight_segments.py"
+  ],
+  "why": "the board markup is re-escaped (no longer byte-identical)"
+ },
+ {
+  "id": "M11",
+  "file": "taskboard/modals.py",
+  "old": "            self.notify(f\"'{name}' already exists.\", severity=\"warning\", markup=False)",
+  "new": "            self.notify(f\"'{name}' already exists.\", severity=\"warning\")",
+  "nodes": [
+   "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str"
+  ],
+  "why": "the phase editor's duplicate-name toast parses the typed name"
+ },
+ {
+  "id": "M12",
+  "file": "taskboard/app.py",
+  "old": "            self.notify(f\"Team sync failed: {exc}\", title=\"Team sync\",\n                        severity=\"warning\", markup=False)",
+  "new": "            self.notify(f\"Team sync failed: {exc}\", title=\"Team sync\",\n                        severity=\"warning\")",
+  "nodes": [
+   "tests/test_markup_sites.py::test_TC_412_the_sync_failure_toast_shows_the_exception_text"
+  ],
+  "why": "the sync-failure toast parses the exception text"
+ },
+ {
+  "id": "C1",
+  "file": "tests/test_markup_census.py",
+  "old": "ATTR_SINKS = {\"border_title\", \"border_subtitle\", \"tooltip\"}",
+  "new": "ATTR_SINKS = {\"border_title\", \"border_subtitle\"}",
+  "nodes": [
+   "tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites"
+  ],
+  "why": "the census drops the tooltip attribute sink (Q2-9)"
+ },
+ {
+  "id": "C2",
+  "file": "tests/test_markup_census.py",
+  "old": "                elif isinstance(t, (ast.Tuple, ast.List)) and name in {\n                        x.id for x in ast.walk(t) if isinstance(x, ast.Name)}:\n                    return None",
+  "new": "                elif False:\n                    return None",
+  "nodes": [
+   "tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites"
+  ],
+  "why": "the census trusts a tuple-unpack rebinding (S2-3)"
+ },
+ {
+  "id": "C3",
+  "file": "tests/test_markup_census.py",
+  "old": "PARSERS = {\"_rich\", \"from_markup\", \"from_ansi\"}",
+  "new": "PARSERS = {\"_rich\", \"from_ansi\"}",
+  "nodes": [
+   "tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites",
+   "tests/test_markup_census.py::test_TC_406_no_user_value_reaches_a_markup_parser"
+  ],
+  "why": "the census stops seeing Text.from_markup (a narrowed scanner)"
+ },
+ {
+  "id": "C4",
+  "file": "tests/test_markup_census.py",
+  "old": "        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):\n            return s(node.left) and s(node.right)        # list + list of options",
+  "new": "        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):\n            return True",
+  "nodes": [
+   "tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites"
+  ],
+  "why": "the census trusts any + of options"
+ },
+ {
+  "id": "C5",
+  "file": "tests/test_markup_census.py",
+  "old": "            return bool(returns) and all(self.safe(r, fn) for r in returns)",
+  "new": "            return True",
+  "nodes": [
+   "tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites"
+  ],
+  "why": "the census trusts a -> Text function by its annotation alone (code review F1)"
+ }
+]

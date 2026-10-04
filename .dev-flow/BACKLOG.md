@@ -3,20 +3,71 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `13745f6` (local HEAD == `origin/main`; batch 2026-10-02-batch-03 started here)
-· **Last refresh:** 2026-10-02
-**Status:** **1855 tests green** (batch `2026-10-02-batch-03`, Batch A2: the readable kanban —
-two-row cards, one band rule per project across the columns, `┈` separators, the DONE rail,
-proportional widths, one board-wide high band capped with `+N more ↓`, bands folded and named,
-a tall band cut around the selection; flow pinned to rev98).
-`test_win_clipboard_roundtrip` remains an intermittent environmental flake (failed once at P4, G-011).
+**Base ref:** `56a1b10` (local HEAD == `origin/main`; batch 2026-10-02-batch-04 started here)
+· **Last refresh:** 2026-10-03
+**Status:** **2218 tests green** (batch `2026-10-02-batch-04`, Batch S: hardening — user and synced
+text as Text pieces, never parsed, with a derived census; control bytes stripped at the board, team
+and clipboard doors; synced project and roster fields through the loading rule; the details grid
+paints its fields; flow rev99, the validator run from a read-only rev99 snapshot after P4, D-420).
+`test_win_clipboard_roundtrip` remains an intermittent environmental flake (passed in the P4 gate run).
+
+## Open — after `2026-10-02-batch-04` (Batch S: hardening)
+
+- **The markup census's residual blind spots** (code review H1, H2, round-1 residuals and security
+  S4-4 of `2026-10-02-batch-04`, LOW): `tests/test_markup_census.py` trusts a `-> Text` call by NAME,
+  so six shapes still fool it — a local rebinding of the name, a parameter of that name, an import
+  alias, a lying helper in an uncensused module, `self.x = str` before `self.x(...)`, an unannotated
+  namesake; also a module-attribute widget (`w.Label(x)`), a widget subclass passing `content` to
+  `super().__init__`, `getattr(Text, "from_markup")`, and a piece style built from data
+  (`Text(t, style=p.color)`, D-413 is review-only). None is used today. Fix: refuse a trusted name
+  that is a parameter, stored, or imported in the calling function/module; collect unannotated
+  namesakes; plant each shape in TC-403. H2: the `_text_functions` docstring says "its definition".
+- **Ctrl+V through the handler is untested** (P4 qa G-001): TC-414 calls `_clean_clipboard_text`
+  directly and the Ctrl+V tests patch `modals.grab_clipboard_text`, past the cleaner. Add a test
+  that drives the real paste with a dirty clipboard stub below the cleaner.
+- **Roster hues may wear alert tones** (security S4-2, LOW): `clean_roster` accepts any `HEX` key,
+  so a teammate's hue can be `over` / `soon` / `accent`. Restrict to a person-hue subset.
+- **Hand-edited data is normalised silently** (security S4-3, LOW): `Project.from_dict` turns a
+  hand-edited `archived: 1` into `False`, and `clean_strings` keeps the later of two keys equal once
+  cleaned (D-410, D-408). Consider a load-report line naming normalised fields.
+- **Setup saving over an unreadable `team.json` resets its version** (security S5-1, LOW): the new
+  file gets `version: 1`, teammates holding a newer version ignore it. Warn on save, or carry the
+  last adopted version + 1.
+- **Synced phases and project extras are cleaned, not bounded** (D-414): duplicate phase names and
+  the list's length are unbounded; a new project adopts unknown synced keys into `extra`.
+- **`history.jsonl` is not cleaned** (D-409; security note): legacy records may hold control bytes
+  (never painted: phases are matched against the board's), and `history.read`'s `json.loads` does
+  not catch `RecursionError` (a local file). Clean at `history.read` and catch it.
+- **A teammate's task dates are untyped** (code review note, increment 002): `Task.from_dict` lets an
+  int or list `due_date` / `start_date` through; no crash was found (8 views rendered).
+- **Unicode format characters pass** (P2 security S-9): bidi overrides and zero-width characters
+  are not control bytes; a roster name or title can be visually spoofed.
+- **The details view paints values in the label tone** (P2 UX-8, pre-existing): `.modal Label`
+  colours both `#8b98a5`; the values are the information.
+- **Two test names say "escapes"** (code review F5 of increment 001): `test_app.py`
+  `test_manage_projects_escapes_markup_name`, `test_phase_name_with_markup_is_escaped` now assert the
+  text is NOT escaped. Rename when the file is next touched.
+- **The `team.json` toast wraps mid-sentence on a long path** (P4 UXV-3, minor); **the 80×24 details
+  scrollbar thumb sits inside the border with no track** (P4 UXV-2, pre-existing).
+- **`run_test` hides toasts unless `notifications=True`** (P4 ux note): a toast assertion without the
+  flag finds nothing. Record it in `docs/engineering-rules.md` when that file exists.
+- **`.modal-title { margin-bottom: 1 }` never applies to a Label title inside `.modal`** (code review
+  observation, increment 004 of `2026-10-02-batch-04`): `.modal Label { margin-top: 1 }` outranks it,
+  and Textual's `margin-top` replaces the whole margin, so every modal title has a row above and none
+  below. The details view now overrides it by id (UX-3); decide whether the edit modals should match,
+  then drop or fix the dead declaration.
+- **`state.json` `owner` holds the full local path** (security S7-1 of `2026-10-02-batch-04`, LOW,
+  pre-existing): the Windows account name reaches the remote. Decide whether `owner` must be a machine
+  path; if not, make it repo-relative at batch init.
 
 ## Open — after `2026-10-02-batch-03` (Batch A2: the readable kanban)
 
 - ~~**Operator verdicts owed on the provisional visual decisions** (PV-1..PV-10)~~ **DONE 2026-10-02**
   — the operator accepted all ten on the before/after captures, before the push (PV-2: the cap at
   two thirds): `2026-10-02-batch-03/evidence/operator-verdict-provisional.json`.
-- **`collapse_runs` can join two adjacent same-style escaped pieces into a tag** (security S-2 of
+- **`collapse_runs` can join two adjacent same-style escaped pieces into a tag** (kept open by
+  `2026-10-02-batch-04`, D-405: its seat is `views.py`'s Rich markup, not the Textual sinks that batch
+  converted to Text pieces; the class cannot occur there any more) (security S-2 of
   `2026-10-02-batch-03` increment 002, LOW, latent): an unclosed `[` in one piece meets a `]` in the
   next once `[/][same]` is collapsed. No path this batch draws reaches it (each user piece is
   bounded by fixed text or another style); the same weakness exists for `escape` everywhere. Fix:
@@ -86,10 +137,10 @@ a tall band cut around the selection; flow pinned to rev98).
 - **An echo clipped on the opposite side still draws an edge bracket** (increment-004 code review
   F3): a due before the window draws `⟧`, a start past it `⟦`; for rest work `drawn` lacks
   "beyond". Unreachable through the app (the selection moves onto open work).
-- **Titles carry terminal escape sequences** (security L1, pre-existing): ESC in a board-file title
+- ✓ done in `2026-10-02-batch-04` (HLR-402, `strip_controls` at the board, team and clipboard doors) — **Titles carry terminal escape sequences** (security L1, pre-existing): ESC in a board-file title
   reaches the terminal (only BEL/BS/VT/FF/CR are stripped); in team mode a teammate's file could
   inject sequences. Apply `_clean_clipboard_text`'s character rule when a board loads.
-- **`app.py` notifies prompt-typed ids and exceptions with markup on** (security S-5 of P2,
+- ✓ done in `2026-10-02-batch-04` (LLR-401.2: every user/OS-text toast `markup=False`, no escape) — **`app.py` notifies prompt-typed ids and exceptions with markup on** (security S-5 of P2,
   pre-existing): `app.py` the setup id prompts and the team-sync failure — `[/]` raises
   `MarkupError`. Pass `markup=False`.
 - **Cleanup:** `app._select_first`'s `group_of` is a fourth spelling of the gantt group key, `None`
@@ -176,16 +227,16 @@ a tall band cut around the selection; flow pinned to rev98).
   People view still mark high priority with `!` in ink (`card_cell` without
   `badge`).
 - **ProjectModal is still the old crowded modal** (out of scope by commission).
-- **Security S1, the remaining sites (MEDIUM).** Fixed in the editor preview,
+- ✓ done in `2026-10-02-batch-04` (HLR-401: 58 sink sites and 15 parser calls converted to Text pieces, a derived census TC-401..406) — **Security S1, the remaining sites (MEDIUM).** Fixed in the editor preview,
   `TaskDetails`, `image_block` and the `ImageViewer` title (batch
   2026-09-30-batch-01, increments 001/003). About 13 other sites in
   `modals.py` still hand `escape()`d user text to Textual as a str (Select /
   Option labels, confirm/prompt titles, `notify`, standup title/phase) — wrap
   them with `_rich` and extend `tests/test_details_markup.py`.
-- **`TaskDetails` info grid paints blank (pre-existing).** Project / phase /
+- ✓ done in `2026-10-02-batch-04` (HLR-403: a scoped rule; PV-1 provisional, UX-3 / UX-4 open to the operator) — **`TaskDetails` info grid paints blank (pre-existing).** Project / phase /
   priority / start / due labels in the `.modal-grid` render no cells (seen on
   the base tree too, textual 8.2.8).
-- **Security S2 (LOW).** ESC / C1 bytes in notes survive `_highlight_markup`;
+- ✓ done in `2026-10-02-batch-04` (HLR-402) — **Security S2 (LOW).** ESC / C1 bytes in notes survive `_highlight_markup`;
   strip C0/C1 (keep `\n`, `\t`) once at load/sync.
 - **80-column kanban titles are 1–10 characters** after the badge (−3 per
   normal/low card, −1 per high). Watch for a request to shed the badge first.

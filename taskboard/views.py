@@ -2927,25 +2927,34 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
 _HIGHLIGHT_RE = re.compile(r"==(.*?)==|!!(.*?)!!|\+\+(.*?)\+\+")
 
 
+def highlight_segments(text: str) -> list[tuple[str, str]]:
+    """The one tokeniser of the notes' highlight syntax: ==text== `soon`,
+    !!text!! `over`, ++text++ `green`, everything else `mut` — as (segment,
+    tone) pairs, markers dropped. The board's markup (`_highlight_markup`) and
+    the details / editor preview's Text pieces (`modals.notes_preview`) both read
+    it, so the two seats cannot disagree on what a note highlights (D-411)."""
+    out: list[tuple[str, str]] = []
+    last = 0
+    for m in _HIGHLIGHT_RE.finditer(text):
+        if m.start() > last:
+            out.append((text[last:m.start()], "mut"))
+        if m.group(1) is not None:
+            out.append((m.group(1), "soon"))
+        elif m.group(2) is not None:
+            out.append((m.group(2), "over"))
+        else:
+            out.append((m.group(3), "green"))
+        last = m.end()
+    if last < len(text):
+        out.append((text[last:], "mut"))
+    return out
+
+
 def _highlight_markup(text: str) -> str:
     """Render ==text== (yellow), !!text!! (red), ++text++ (green). The
     non-highlighted text is returned in the 'mut' tone so the caller can use the
     result directly without wrapping it again."""
-    parts: list[str] = []
-    last = 0
-    for m in _HIGHLIGHT_RE.finditer(text):
-        if m.start() > last:
-            parts.append(c(escape(text[last:m.start()]), "mut"))
-        inner = escape(m.group(1) or m.group(2) or m.group(3))
-        if m.group(1) is not None:
-            parts.append(c(inner, "soon"))
-        elif m.group(2) is not None:
-            parts.append(c(inner, "over"))
-        else:
-            parts.append(c(inner, "green"))
-        last = m.end()
-    if last < len(text):
-        parts.append(c(escape(text[last:]), "mut"))
+    parts = [c(escape(segment), tone) for segment, tone in highlight_segments(text)]
     return "".join(parts) if parts else c(escape(text), "mut")
 
 

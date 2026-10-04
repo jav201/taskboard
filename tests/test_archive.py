@@ -555,10 +555,12 @@ async def test_archiving_says_so_and_names_the_way_back(tmp_path):
 
 
 async def test_the_notify_cannot_be_hijacked_by_a_hostile_title(tmp_path):
-    """The title is the user's text and a notify renders markup. A title holding
-    a colour tag must arrive as CHARACTERS, through the same escape the views
-    use — the hostile-title law, applied to the one new place user text reaches
-    the screen."""
+    """The title is the user's text and a notify renders markup unless told not
+    to. A title holding a colour tag must arrive as CHARACTERS — the hostile-title
+    law. Since batch 2026-10-02-batch-04 (S1, LLR-401.2) the toast carries the RAW
+    title with markup OFF: `escape` left `[LINK=…` to Textual's parser, and with
+    markup off an escape would paint its backslash. RED if markup is left on or
+    the title is escaped."""
     from taskboard.app import TaskboardApp
     b = board(tmp_path, "hostile.json")
     p = Project("Atlas", "lime", "on_track")
@@ -567,14 +569,16 @@ async def test_the_notify_cannot_be_hijacked_by_a_hostile_title(tmp_path):
     b.save()
     app = TaskboardApp(board_path=str(tmp_path / "hostile.json"))
     said = []
-    app.notify = lambda msg, **k: said.append(msg)
+    app.notify = lambda msg, **k: said.append((msg, k))
     async with app.run_test() as pilot:
         await pilot.pause()
         app.selected_task_id = app.board.tasks[0].id
         app.action_archive()
         await pilot.pause()
     assert said, "nothing was said at all"
-    assert "\\[bold red]" in said[-1], said[-1]
+    msg, kw = said[-1]
+    assert "[bold red]not a tag[/] plain" in msg and "\\" not in msg, msg
+    assert kw.get("markup") is False, kw
 
 
 @pytest.mark.parametrize("mode", ["swimlanes", "agenda", "kanban"])

@@ -1,0 +1,42 @@
+[
+ {
+  "id": "R5",
+  "file": "taskboard/app.py",
+  "old": "team_projects.setdefault(p[\"id\"], p)     # the first entry of an id wins",
+  "new": "team_projects[p[\"id\"]] = p",
+  "nodes": [
+   "tests/test_sync_fields.py::test_TC_418_setup_republishes_the_first_entry_validated"
+  ],
+  "why": "Setup keeps the last duplicate (F3)"
+ },
+ {
+  "id": "R6",
+  "file": "taskboard/app.py",
+  "old": "\"name\": proj.name,\n                    \"color\": proj.color,\n                    \"status\": proj.status,\n                    \"template\": template if isinstance(template, str) else \"\",",
+  "new": "\"name\": team_projects[proj.id].get(\"name\", proj.name),\n                    \"color\": team_projects[proj.id].get(\"color\", proj.color),\n                    \"status\": team_projects[proj.id].get(\"status\", proj.status),\n                    \"template\": team_projects[proj.id].get(\"template\", \"\"),",
+  "nodes": [
+   "tests/test_sync_fields.py::test_TC_418_setup_republishes_the_first_entry_validated"
+  ],
+  "why": "Setup republishes the raw synced fields (F3)"
+ },
+ {
+  "id": "R7",
+  "file": "taskboard/models.py",
+  "old": "if c in \"\\t\\n\" or 0x20 <= ord(c) < 0x7f or ord(c) >= 0xa0",
+  "new": "if c in \"\\t\" or 0x20 <= ord(c) < 0x7f or ord(c) >= 0xa0",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "the rule also drops newline (F2 mutA)"
+ },
+ {
+  "id": "R8",
+  "file": "taskboard/models.py",
+  "old": "if c in \"\\t\\n\" or 0x20 <= ord(c) < 0x7f or ord(c) >= 0xa0",
+  "new": "if c in \"\\t\\n\" or 0x20 <= ord(c) < 0x7f",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "the rule drops every character from U+00A0 (F2 mutB)"
+ }
+]

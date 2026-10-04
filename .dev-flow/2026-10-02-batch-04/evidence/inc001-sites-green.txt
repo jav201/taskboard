@@ -1,0 +1,59 @@
+$ python -B -m pytest -q -p no:cacheprovider -rA tests/test_markup_sites.py tests/test_details_markup.py
+# tree: the live working tree (increment 001 conversion applied; base 56a1b10)
+C:\Users\<user>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+................................................                         [100%]
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+PASSED tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly
+PASSED tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly
+PASSED tests/test_markup_sites.py::test_TC_412_the_sync_failure_toast_shows_the_exception_text
+PASSED tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_still_highlight_the_notes
+48 passed in 67.70s (0:01:07)
+[exit code 0]

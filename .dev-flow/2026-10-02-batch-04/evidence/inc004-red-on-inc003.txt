@@ -1,0 +1,17 @@
+PASSED tests/test_details_grid.py::test_TC_411_every_grid_cell_paints_on_its_labels_row[size0]
+PASSED tests/test_details_grid.py::test_TC_411_every_grid_cell_paints_on_its_labels_row[size1]
+PASSED tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size0-2]
+PASSED tests/test_details_grid.py::test_TC_411_the_edit_modals_keep_their_grid[<lambda>-base0]
+PASSED tests/test_details_grid.py::test_TC_411_the_edit_modals_keep_their_grid[<lambda>-base1]
+PASSED tests/test_details_grid.py::test_AT_406_the_details_view_shows_its_five_fields
+FAILED tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size1-2]
+FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]
+FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]
+FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size0]
+FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size1]
+5 failed, 6 passed in 5.84s
+<home>\Github\taskboard\tests\test_details_grid.py:92: assert (1, 3) == (1, 2)
+<home>\Github\taskboard\tests\test_details_grid.py:129: AssertionError: (2, 3, ['', '', 'Write the spec  —  o open raw · esc close', 'Project              Alpha'])
+<home>\Github\taskboard\tests\test_details_grid.py:129: AssertionError: (2, 3, ['', '', 'Write the spec  —  o open raw · esc close', 'Project              Alpha'])
+<home>\Github\taskboard\tests\test_details_grid.py:151: AssertionError: [21, 21, 21, 21, 21]
+<home>\Github\taskboard\tests\test_details_grid.py:151: AssertionError: [21, 21, 21, 21, 21]

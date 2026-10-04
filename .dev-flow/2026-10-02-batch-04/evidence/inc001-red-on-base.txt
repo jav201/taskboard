@@ -1,0 +1,546 @@
+$ python -B -m pytest -q -p no:cacheprovider -rA tests/test_markup_sites.py
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+__________________ test_AT_401_board_text_is_painted_exactly __________________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14752/test_AT_401_board_text_is_pain0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000235170F3B90>
+
+    async def test_AT_401_board_text_is_painted_exactly(tmp_path, monkeypatch):
+        """AT-401 (HLR-401, US-401) — board-file text in every dialog and picker.
+    
+        Field report: a title, project or phase name, note, URL or image reference
+        from the board file is handed to Textual's markup parser (a str prompt or
+        label, `escape` first — which leaves `[LINK=…]` alone) or to Rich's
+        (`modals._rich`, `notes_preview`, which read `:smile:` and eat
+        backslashes). Law: every §5.1 site marked AT-401 x every payload, each in
+        its own run: the screen stays up and paints the payload exactly — box-
+        cropped (confirm, picker, blocker, phase editor, prompt, standup, details,
+        viewer boxes), the task editor's Select read as its current value and its
+        opened list, the archive / pin toasts read off the painted `Toast`, the
+        editor preview fed by KEYS typed into the notes. The file-backed image
+        branches run with the bracket name only (`a[B]x.png`, `bad[B].png`: the
+        other payloads are not legal Windows file names); the image-URL branch
+        runs with the URL-legal payloads `x\\\\\\` and `:smile:` (`valid_url`
+        refuses `[`, `]` and space, so `[LINK=…` and `[b]y[/b]` land in
+        `missing:`, which is armed for every payload). The details URL list shows
+        every stored URL string, so its arm stores the payload itself as the URL
+        (a board file or a synced task can hold any string there).
+        RED on base: `MarkupError` at the Textual-parsed sites, the payload
+        altered at the `_rich` sites (P-1, P-7, P-11). Not every arm is RED on
+        base — Textual's parser reads no emoji code and keeps a backslash that
+        precedes no `[`, and Rich's ignores an uppercase tag — those arms are
+        pins that the conversion keeps the text; the base transcript lists the
+        RED ones. Four `[LINK=…` arms are RED on base UPSTREAM of the site they
+        name: the project archive / delete confirms, the delete-phase confirm and
+        the rename prompt never open, because the picker or phase list they open
+        from dies first."""
+        failures: list[str] = []
+        arms = []
+        n = iter(range(10_000))
+    
+        def d():
+            return tmp_path / f"a{next(n)}"
+    
+        today = date.today().isoformat()
+        for p in PAYLOADS:
+            arms += [
+                (f"delete-task confirm d [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), title=p), ["d"], "#confirm-box", f"Delete '{p}'?", "ConfirmModal")),
+                (f"archive toast x [{p!r}]", lambda p=p: _toast_arm(
+                    _one(d(), title=p), ["x"], "Archive", f'"{p}" archived')),
+                (f"pin toast T [{p!r}]", lambda p=p: _toast_arm(
+                    _one(d(), project=p), ["T"], "Pin project", f'"{p}" pinned')),
+                (f"project picker line P [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), project=p), ["P"], "#picker-box", f"{p}  ·  on_track",
+                    "ProjectPicker")),
+                (f"project archive confirm P j x [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), project=p), ["P", "j", "x"], "#confirm-box", f"Archive '{p}'?",
+                    "ConfirmModal")),
+                (f"project delete confirm P j d [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), project=p), ["P", "j", "d"], "#confirm-box", f"Delete '{p}'?",
+                    "ConfirmModal")),
+                (f"blocker picker b [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), others=[(p, "Doing", {})]), ["b"], "#blocker-box", p,
+                    "BlockerPicker", row=True)),
+                (f"task editor project select e [{p!r}]", lambda p=p: _editor_select_arm(
+                    _one(d(), project=p), "#f-project", p)),
+                (f"task editor phase select e [{p!r}]", lambda p=p: _editor_select_arm(
+                    _one(d(), phase=p, phases=["Backlog", p, "Done"]), "#f-phase", p)),
+                (f"phase editor list f [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), phase=p, phases=[p, "Doing", "Done"]), ["f"], "#picker-box",
+                    f"{p}  ·  1 task", "PhaseEditor")),
+                (f"delete-phase confirm f d [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), phase=p, phases=[p, "Doing", "Done"]), ["f", "d"], "#confirm-box",
+                    f"Delete '{p}'?", "ConfirmModal")),
+                (f"rename-phase prompt f e [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), phase=p, phases=[p, "Doing", "Done"]), ["f", "e"], "#modal-box",
+                    p, "TextPrompt")),
+                (f"standup project S [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), project=p, phase_changed=today), ["S"], "#modal-box", f"▐ {p}",
+                    "StandupModal")),
+                (f"standup title S [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), title=p, phase_changed=today), ["S"], "#modal-box",
+                    f"→ {p} Doing", "StandupModal")),
+                (f"standup phase S [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), phase=p, phases=["Backlog", p, "Done"], phase_changed=today),
+                    ["S"], "#modal-box", f"→ Plain title {p}", "StandupModal")),
+                (f"details title enter [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), title=p), ["enter"], "#details-box", f"{p}  —  o open raw",
+                    "TaskDetails")),
+                (f"details notes enter [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), notes=p), ["enter"], "#details-box", p, "TaskDetails")),
+                (f"details URL enter [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), urls=[p]), ["enter"], "#details-box", f"link · {p}",
+                    "TaskDetails")),
+                (f"image viewer title i [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), title=p), ["i"], "#viewer-box", f"{p}  —  o open raw",
+                    "ImageViewer")),
+                (f"image block missing: enter [{p!r}]", lambda p=p: _box_arm(
+                    _one(d(), images=[p]), ["enter"], "#details-box", f"missing: {p}",
+                    "TaskDetails")),
+                (f"editor preview e + typed notes [{p!r}]", lambda p=p: _preview_arm(_one(d()), p)),
+            ]
+        for q in (P_BACK, ":smile:"):         # the URL-legal payloads (see docstring)
+            arms.append((f"image block link · enter [{q!r}]", lambda q=q: _box_arm(
+                _one(d(), images=[f"https://e.example/{q}"]), ["enter"], "#details-box",
+                f"link · https://e.example/{q}", "TaskDetails")))
+    
+        async def file_arm(name: str, corrupt: bool):
+            here = d()
+            here.mkdir(parents=True)
+            if corrupt:
+                (here / name).write_bytes(b"not a png at all")
+            else:
+                _png(here / name)
+            monkeypatch.chdir(here)               # the reference is the bare name
+            expected = f"could not render: {name}" if corrupt else name
+            return await _box_arm(_one(here, images=[name]), ["enter"], "#details-box",
+                                  expected, "TaskDetails", end=True)
+    
+        arms.append(("image block existing image a[B]x.png enter",
+                     lambda: file_arm("a[B]x.png", False)))
+        arms.append(("image block could not render: bad[B].png enter",
+                     lambda: file_arm("bad[B].png", True)))
+    
+        for name, fn in arms:
+            await _collect(failures, name, fn)
+>       _verdict(failures, len(arms))
+
+<home>\Github\taskboard\tests\test_markup_sites.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+failures = ['delete-task confirm d [\'[LINK=http://e]x\']: MarkupError: Expected markup value (found "://e]x\'?").', 'archive toa...irm P j d ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  on_track  ·  1 task').", ...]
+total = 67
+
+    def _verdict(failures: list[str], total: int) -> None:
+>       assert not failures, (f"{len(failures)} of {total} site x payload arms failed:\n  "
+                              + "\n  ".join(failures))
+E       AssertionError: 29 of 67 site x payload arms failed:
+E           delete-task confirm d ['[LINK=http://e]x']: MarkupError: Expected markup value (found "://e]x'?").
+E           archive toast x ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x" archived · v shows it, then x brings it back').
+E           pin toast T ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x" pinned').
+E           project picker line P ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  on_track  ·  1 task').
+E           project archive confirm P j x ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  on_track  ·  1 task').
+E           project delete confirm P j d ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  on_track  ·  1 task').
+E           blocker picker b ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').
+E           task editor project select e ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').
+E           task editor phase select e ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').
+E           phase editor list f ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  1 task').
+E           delete-phase confirm f d ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  1 task').
+E           rename-phase prompt f e ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  1 task').
+E           standup project S ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]').
+E           standup title S ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x [dim]Doing[/dim]').
+E           standup phase S ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/dim]').
+E           project picker line P ['x\\\\\\']: 'x\\\\\\  ·  on_track' not painted in #picker-box; painted ['Projects  —  e edit · x archive · d delete · esc close', '╭──────────────────────────────────────────────────────╮', '│ x\\\\[/b]  ·  on_track  ·  1 task                      │', '╰──────────────────────────────────────────────────────╯']
+E           phase editor list f ['x\\\\\\']: 'x\\\\\\  ·  1 task' not painted in #picker-box; painted ['Phases  —  a add · e rename · d delete · [ / ] reorder ·', '▊▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▎', '▊ 1.  x\\\\[/b]  ·  1 task                               ▎', '▊ 2.  Doing  ·  0 tasks                                ▎', '▊ 3.  Done  ·  0 tasks                                 ▎', '▊▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▎']
+E           standup project S ['x\\\\\\']: '▐ x\\\\\\' not painted in #modal-box; painted ['Standup · week ending 2026-10-03', '▐ x\\\\[/b]', '→ Plain title Doing', '0/1 closed this week', 'S or esc closes']
+E           standup phase S ['x\\\\\\']: '→ Plain title x\\\\\\' not painted in #modal-box; painted ['Standup · week ending 2026-10-03', '▐ Plain', '→ Plain title x\\\\[/dim]', '0/1 closed this week', 'S or esc closes']
+E           details title enter ['x\\\\\\']: 'x\\\\\\  —  o open raw' not painted in #details-box; painted ['x\\[/b]  —  o open raw · esc close', 'Notes  highlight: ==…== yellow, !!…!! red, ++…++ green', '—', 'URLs', '—', 'Images', '—']
+E           details notes enter ['x\\\\\\']: 'x\\\\\\' not painted in #details-box; painted ['Plain title  —  o open raw · esc close', 'Notes  highlight: ==…== yellow, !!…!! red, ++…++ green', 'x\\[/]', 'URLs', '—', 'Images', '—']
+E           image viewer title i ['x\\\\\\']: 'x\\\\\\  —  o open raw' not painted in #viewer-box; painted ['x\\[/b]  —  o open raw · esc close', 'No images on this task.']
+E           editor preview e + typed notes ['x\\\\\\']: 'x\\\\\\' not painted in #task-preview; painted ['x\\[/]']
+E           details title enter [':smile: [b]y[/b]']: ':smile: [b]y[/b]  —  o open raw' not painted in #details-box; painted ['😄 [b]y[/b]  —  o open raw · esc close', 'Notes  highlight: ==…== yellow, !!…!! red, ++…++ green', '—', 'URLs', '—', 'Images', '—']
+E           details notes enter [':smile: [b]y[/b]']: ':smile: [b]y[/b]' not painted in #details-box; painted ['Plain title  —  o open raw · esc close', 'Notes  highlight: ==…== yellow, !!…!! red, ++…++ green', '😄 [b]y[/b]', 'URLs', '—', 'Images', '—']
+E           details URL enter [':smile: [b]y[/b]']: 'link · :smile: [b]y[/b]' not painted in #details-box; painted ['Plain title  —  o open raw · esc close', 'Notes  highlight: ==…== yellow, !!…!! red, ++…++ green', '—', 'URLs', 'link · 😄 [b]y[/b]', 'Images', '—']
+E           image viewer title i [':smile: [b]y[/b]']: ':smile: [b]y[/b]  —  o open raw' not painted in #viewer-box; painted ['😄 [b]y[/b]  —  o open raw · esc close', 'No images on this task.']
+E           image block missing: enter [':smile: [b]y[/b]']: 'missing: :smile: [b]y[/b]' not painted in #details-box; painted ['Plain title  —  o open raw · esc close', 'Notes  highlight: ==…== yellow, !!…!! red, ++…++ green', '—', 'URLs', '—', 'Images', 'missing: 😄 [b]y[/b]']
+E           editor preview e + typed notes [':smile: [b]y[/b]']: ':smile: [b]y[/b]' not painted in #task-preview; painted ['😄 [b]y[/b]']
+E       assert not ['delete-task confirm d [\'[LINK=http://e]x\']: MarkupError: Expected markup value (found "://e]x\'?").', 'archive toa...irm P j d ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  on_track  ·  1 task').", ...]
+
+<home>\Github\taskboard\tests\test_markup_sites.py:153: AssertionError
+_________________ test_AT_402_synced_text_is_painted_exactly __________________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14752/test_AT_402_synced_text_is_pai0')
+
+    async def test_AT_402_synced_text_is_painted_exactly(tmp_path):
+        """AT-402 (HLR-401, US-401) — a teammate's text from `team.json`.
+    
+        Field report: in team mode a roster name reaches the identity picker that
+        opens at mount (`_init_team_mode` → `TeamIdentityPicker`), and a
+        synced project name or phase reaches the board through the startup sync
+        (`apply_config_to_board`) and from there the task editor's Selects and the
+        project picker — another person's file, handed to Textual's parser with
+        `escape` first. Law: for each payload, each in its own run: the identity
+        picker paints the roster name exactly (one row equal to it); after the
+        startup sync (asserted: the board holds the synced name / phase) the
+        editor's project and phase Selects paint it (current value and opened
+        list) and the project picker line paints it. RED on base: `MarkupError`
+        for `[LINK=…]`; the other payloads may paint unchanged through Textual's
+        parser (recorded per arm)."""
+        failures: list[str] = []
+        arms = []
+        n = iter(range(10_000))
+    
+        def d():
+            return tmp_path / f"a{next(n)}"
+    
+        def synced(here: Path, *, name=None, phases=("Todo", "Done")) -> Path:
+            tp = {"id": "tp", "name": name or "Local", "color": "sky", "status": "on_track"}
+            shared = _team(here, [{"id": "a", "name": "Ann"}], [tp], phases)
+            proj = Project("Local", "sky", id="tp")
+            return _board(here, [proj], [Task("Plain title", "tp", "Todo")], ["Todo", "Done"],
+                          {"team_shared_dir": str(shared), "team_user_id": "a"})
+    
+        async def identity_arm(p):
+            here = d()
+            shared = _team(here, [{"id": "a", "name": p}, {"id": "b", "name": "Bo"}])
+            path = _board(here, [Project("Local", "sky")], [Task("Plain title")], None,
+                          {"team_shared_dir": str(shared)})
+            app = _app(path)
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _settle(pilot)
+                if type(app.screen).__name__ != "TeamIdentityPicker":
+                    return f"the identity picker did not open (screen {type(app.screen).__name__})"
+                rows = _rows(app, "#identity-box")
+                return None if _option_row(rows, p) else _miss("#identity-box", p, rows)
+    
+        async def editor_arm(p, sel_id, **kw):
+            app = _app(synced(d(), **kw))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await pilot.pause()
+                got = app.board.projects[0].name if sel_id == "#f-project" else app.board.phases[0]
+                if got != p:
+                    return f"fixture: the startup sync did not apply the payload (board holds {got!r})"
+                await _press_select(app, pilot, "e")
+                if type(app.screen).__name__ != "TaskModal":
+                    return f"the task editor did not open (screen {type(app.screen).__name__})"
+                return await _select_checks(app, pilot, sel_id, p)
+    
+        async def picker_arm(p):
+            app = _app(synced(d(), name=p))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await pilot.pause()
+                if app.board.projects[0].name != p:
+                    return "fixture: the startup sync did not apply the synced name"
+                await _press_select(app, pilot, "P")
+                rows = _rows(app, "#picker-box")
+                want = f"{p}  ·  on_track"
+                return None if _shows(rows, want) else _miss("#picker-box", want, rows)
+    
+        for p in PAYLOADS:
+            arms += [
+                (f"team identity picker roster name [{p!r}]", lambda p=p: identity_arm(p)),
+                (f"synced project name in editor select [{p!r}]",
+                 lambda p=p: editor_arm(p, "#f-project", name=p)),
+                (f"synced phase in editor select [{p!r}]",
+                 lambda p=p: editor_arm(p, "#f-phase", phases=(p, "Done"))),
+                (f"synced project name in project picker [{p!r}]", lambda p=p: picker_arm(p)),
+            ]
+        for name, fn in arms:
+            await _collect(failures, name, fn)
+>       _verdict(failures, len(arms))
+
+tests\test_markup_sites.py:447: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+failures = ["team identity picker roster name ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').", "synce...\\\\[/b]  ·  on_track  ·  1 task                      │', '╰──────────────────────────────────────────────────────╯']"]
+total = 12
+
+    def _verdict(failures: list[str], total: int) -> None:
+>       assert not failures, (f"{len(failures)} of {total} site x payload arms failed:\n  "
+                              + "\n  ".join(failures))
+E       AssertionError: 5 of 12 site x payload arms failed:
+E           team identity picker roster name ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').
+E           synced project name in editor select ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').
+E           synced phase in editor select ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').
+E           synced project name in project picker ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  on_track  ·  1 task').
+E           synced project name in project picker ['x\\\\\\']: 'x\\\\\\  ·  on_track' not painted in #picker-box; painted ['Projects  —  e edit · x archive · d delete · esc close', '╭──────────────────────────────────────────────────────╮', '│ x\\\\[/b]  ·  on_track  ·  1 task                      │', '╰──────────────────────────────────────────────────────╯']
+E       assert not ["team identity picker roster name ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').", "synce...\\\\[/b]  ·  on_track  ·  1 task                      │', '╰──────────────────────────────────────────────────────╯']"]
+
+tests\test_markup_sites.py:153: AssertionError
+______________ test_AT_403_typed_and_os_text_is_painted_exactly _______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14752/test_AT_403_typed_and_os_text_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002351A612C60>
+
+    async def test_AT_403_typed_and_os_text_is_painted_exactly(tmp_path, monkeypatch):
+        """AT-403 (HLR-401, US-401) — typed ids and names, file paths, OS errors.
+    
+        Field report (S-5): `app.py` and the phase editor notify a typed id or
+        name, a file path and an OS error message with markup ON — the Setup id
+        is lowercased (`[LINK=…` becomes Textual's `[link=…` tag), the duplicate
+        phase name is `escape`d, the report and recovery paths and the
+        transition-log error are not escaped at all, and a board directory named
+        `a[B]x` or `[B]x` is a markup tag inside them. Law: each in its own run,
+        the toast read off the painted `Toast` equals the text exactly: Setup
+        `0` → roster / projects section → `a`, an id typed twice → `Member|Project
+        '<id lowercased>' already exists.`; phase editor `a` and `e` with an
+        existing name → `'<name>' already exists.`; `R` → `Report written to
+        <the written file>` (the one `.html` found on disk, compared whole with
+        `str(path)`); an unreadable board at mount → the recovery message naming
+        the `.corrupt` copy found on disk; a DIRECTORY named `history.jsonl` beside
+        the board in `a[B]x`, then `]` → the toast equals `history.HISTORY_ERROR`
+        of that same failing write (it holds `repr(path)`, P-16). RED on base:
+        `MarkupError` or the text altered (`a[B]x` paints `ax`; the separator
+        before `[B]x` is eaten). The `[LINK=…` phase-editor duplicate arms are
+        RED UPSTREAM: the phase list they are typed from dies first. The
+        three-backslash payload is inert at the Setup and phase-name toasts on
+        base (no tag follows it)."""
+        failures: list[str] = []
+        arms = []
+        n = iter(range(10_000))
+    
+        def d():
+            return tmp_path / f"a{next(n)}"
+    
+        async def setup_arm(p, tabs, title_word):
+            app = _app(_one(d()))
+            uid = p.strip().lower()
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _press_select(app, pilot, "0", *(["tab"] * tabs))
+                if app.view_mode != "setup" or app._setup_state.get("cursor_section") != tabs:
+                    return "fixture: not in the Setup section"
+                for _ in range(2):
+                    await pilot.press("a")
+                    await _settle(pilot)
+                    if type(app.screen).__name__ != "TextPrompt":
+                        return f"the id prompt did not open (screen {type(app.screen).__name__})"
+                    await pilot.press(*p, "enter")
+                    await _settle(pilot)
+                return _toast_check(app, "Setup", f"{title_word} '{uid}' already exists.", True)
+    
+        async def phase_dup_arm(p, rename):
+            phases = ["A", p, "Done"]
+            app = _app(_one(d(), phase="A", phases=phases))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _press_select(app, pilot, "f", "e" if rename else "a")
+                if type(app.screen).__name__ != "TextPrompt":
+                    return f"the phase prompt did not open (screen {type(app.screen).__name__})"
+                if rename:
+                    await pilot.press("end", "backspace")
+                await pilot.press(*p)
+                await pilot.pause()
+                typed = app.screen.query_one("#f-text").value
+                if typed != p:
+                    return f"fixture: the prompt holds {typed!r}"
+                await pilot.press("enter")
+                await _settle(pilot)
+                if app.board.phases != phases:
+                    return f"the phases changed to {app.board.phases!r}"
+                return _toast_check(app, None, f"'{p}' already exists.", True)
+    
+        async def report_arm(dirname):
+            here = d() / dirname
+            app = _app(_one(here))
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _press_select(app, pilot, "R")
+                written = list((here / "reports").glob("*.html"))
+                if len(written) != 1:
+                    return f"fixture: {len(written)} reports on disk"
+                return _toast_check(app, "Report", f"Report written to {written[0]}", True)
+    
+        async def recovered_arm(dirname):
+            here = d() / dirname
+            here.mkdir(parents=True)
+            (here / "board.json").write_text("{not json", encoding="utf-8")
+            app = _app(here / "board.json")
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _settle(pilot)
+                backup = here / "board.json.corrupt"
+                if not backup.is_file():
+                    return "fixture: no .corrupt copy on disk"
+                return _toast_check(app, "Board recovered",
+                                    f"board.json was unreadable; a copy was kept at {backup}. "
+                                    "Started empty — the original file was not overwritten.",
+                                    True)
+    
+        async def history_arm():
+            here = d() / "a[B]x"
+            path = _one(here, phase="Backlog")
+            (here / "history.jsonl").mkdir()
+            monkeypatch.setattr(history, "HISTORY_ERROR", None)
+            app = _app(path)
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _press_select(app, pilot, "]")
+                err = history.HISTORY_ERROR
+                if app.board.tasks[0].phase != "Doing":
+                    return "fixture: ] did not move the task"
+                if not err or repr(str(here / "history.jsonl")) not in err:
+                    return f"fixture: the failing write left {err!r}"
+                return _toast_check(app, "Transition log", err, True)
+    
+        for p in PAYLOADS:
+            arms += [
+                (f"Setup duplicate member id [{p!r}]", lambda p=p: setup_arm(p, 2, "Member")),
+                (f"Setup duplicate project id [{p!r}]", lambda p=p: setup_arm(p, 1, "Project")),
+                (f"phase editor add duplicate [{p!r}]", lambda p=p: phase_dup_arm(p, False)),
+                (f"phase editor rename duplicate [{p!r}]", lambda p=p: phase_dup_arm(p, True)),
+            ]
+        for dirname in DIRS:
+            arms += [
+                (f"report-written toast R [{dirname}]", lambda x=dirname: report_arm(x)),
+                (f"board-recovered toast [{dirname}]", lambda x=dirname: recovered_arm(x)),
+            ]
+        arms.append(("transition-log toast ] [a[B]x/history.jsonl a directory]", history_arm))
+        for name, fn in arms:
+            await _collect(failures, name, fn)
+>       _verdict(failures, len(arms))
+
+tests\test_markup_sites.py:572: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+failures = ['Setup duplicate member id [\'[LINK=http://e]x\']: MarkupError: Expected markup value (found "://e]x\' already exists...qual to "Project \':smile: [b]y[/b]\' already exists."; toasts ["Setup\\nProject \':smile: y\' already exists."]', ...]
+total = 17
+
+    def _verdict(failures: list[str], total: int) -> None:
+>       assert not failures, (f"{len(failures)} of {total} site x payload arms failed:\n  "
+                              + "\n  ".join(failures))
+E       AssertionError: 11 of 17 site x payload arms failed:
+E           Setup duplicate member id ['[LINK=http://e]x']: MarkupError: Expected markup value (found "://e]x' already exists.").
+E           Setup duplicate project id ['[LINK=http://e]x']: MarkupError: Expected markup value (found "://e]x' already exists.").
+E           phase editor add duplicate ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  0 tasks').
+E           phase editor rename duplicate ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x[/b]  ·  0 tasks').
+E           Setup duplicate member id [':smile: [b]y[/b]']: no 'Setup' toast equal to "Member ':smile: [b]y[/b]' already exists."; toasts ["Setup\nMember ':smile: y' already exists."]
+E           Setup duplicate project id [':smile: [b]y[/b]']: no 'Setup' toast equal to "Project ':smile: [b]y[/b]' already exists."; toasts ["Setup\nProject ':smile: y' already exists."]
+E           report-written toast R [a[B]x]: no 'Report' toast equal to 'Report written to <home>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-14752\\test_AT_403_typed_and_os_text_0\\a12\\a[B]x\\reports\\board-2026-10-03.html'; toasts ['Report\nReport written to <home>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-14752\\test_AT_403_typed_and_os_text_0\\a12\\ax\\reports\\board-2026-10-03.html']
+E           board-recovered toast [a[B]x]: no 'Board recovered' toast equal to 'board.json was unreadable; a copy was kept at <home>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-14752\\test_AT_403_typed_and_os_text_0\\a13\\a[B]x\\board.json.corrupt. Started empty — the original file was not overwritten.'; toasts ['View keys renumbered\nThe columns view was retired — kanban does the same job better. The views are now 1 lanes · 2 agenda · 3 gantt · 4 kanban.', 'Board recovered\nboard.json was unreadable; a copy was kept at <home>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-14752\\test_AT_403_typed_and_os_text_0\\a13\\ax\\board.json.corrupt. Started empty — the original file was not overwritten.']
+E           report-written toast R [[B]x]: no 'Report' toast equal to 'Report written to <home>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-14752\\test_AT_403_typed_and_os_text_0\\a14\\[B]x\\reports\\board-2026-10-03.html'; toasts ['Report\nReport written to <home>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-14752\\test_AT_403_typed_and_os_text_0\\a14[B]x\\reports\\board-2026-10-03.html']
+E           board-recovered toast [[B]x]: no 'Board recovered' toast equal to 'board.json was unreadable; a copy was kept at <home>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-14752\\test_AT_403_typed_and_os_text_0\\a15\\[B]x\\board.json.corrupt. Started empty — the original file was not overwritten.'; toasts ['View keys renumbered\nThe columns view was retired — kanban does the same job better. The views are now 1 lanes · 2 agenda · 3 gantt · 4 kanban.', 'Board recovered\nboard.json was unreadable; a copy was kept at <home>\\AppData\\Local\\Temp\\pytest-of-<user>\\pytest-14752\\test_AT_403_typed_and_os_text_0\\a15[B]x\\board.json.corrupt. Started empty — the original file was not overwritten.']
+E           transition-log toast ] [a[B]x/history.jsonl a directory]: no 'Transition log' toast equal to "PermissionError: [Errno 13] Permission denied: '<home>\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-<user>\\\\pytest-14752\\\\test_AT_403_typed_and_os_text_0\\\\a16\\\\a[B]x\\\\history.jsonl'"; toasts ["Transition log\nPermissionError: [Errno 13] Permission denied: '<home>\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-<user>\\\\pytest-14752\\\\test_AT_403_typed_and_os_text_0\\\\a16\\\\ax\\\\history.jsonl'"]
+E       assert not ['Setup duplicate member id [\'[LINK=http://e]x\']: MarkupError: Expected markup value (found "://e]x\' already exists...qual to "Project \':smile: [b]y[/b]\' already exists."; toasts ["Setup\\nProject \':smile: y\' already exists."]', ...]
+
+tests\test_markup_sites.py:153: AssertionError
+_________ test_TC_412_the_sync_failure_toast_shows_the_exception_text _________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14752/test_TC_412_the_sync_failure_t0')
+
+    async def test_TC_412_the_sync_failure_toast_shows_the_exception_text(tmp_path):
+        """TC-412 (LLR-401.2, D-407) — declared fault injection.
+    
+        Field report: `_team_sync_tick` notifies `f"Team sync failed: {exc}"` with
+        markup ON and no escape, so an exception message holding a tag kills the
+        screen or vanishes. The sync path swallows its own errors (Q-3), so no
+        black-box input reaches the toast: `TeamState.sync` is patched, AFTER the
+        app has mounted and run its startup sync, to raise an exception carrying
+        each payload, and the app's own tick callback is driven. Law: the painted
+        `Team sync` toast's message equals `Team sync failed: <payload>` exactly.
+        RED on base: `MarkupError` for `[LINK=…]`, `[b]y[/b]` styled away
+        (`:smile: y`); `x\\\\\\` paints unchanged on base — no tag follows it in
+        this message, an inert arm kept as a pin."""
+        failures: list[str] = []
+        arms = []
+        n = iter(range(10_000))
+    
+        async def arm(p):
+            here = tmp_path / f"a{next(n)}"
+            shared = _team(here, [{"id": "a", "name": "Ann"}])
+            path = _board(here, [Project("Local", "sky")], [Task("Plain title")], ["Todo", "Done"],
+                          {"team_shared_dir": str(shared), "team_user_id": "a"})
+            app = _app(path)
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _settle(pilot)
+                if app.team_state is None:
+                    return "fixture: team mode is off"
+    
+                def boom(self, board):
+                    raise RuntimeError(p)
+    
+                with patch.object(TeamState, "sync", boom):
+                    app._team_sync_tick()
+                    await _settle(pilot)
+                return _toast_check(app, "Team sync", f"Team sync failed: {p}", True)
+    
+        for p in PAYLOADS:
+            arms.append((f"team-sync failure toast [{p!r}]", lambda p=p: arm(p)))
+        for name, fn in arms:
+            await _collect(failures, name, fn)
+>       _verdict(failures, len(arms))
+
+tests\test_markup_sites.py:616: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+failures = ["team-sync failure toast ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').", "team-sync fail...o 'Team sync' toast equal to 'Team sync failed: :smile: [b]y[/b]'; toasts ['Team sync\\nTeam sync failed: :smile: y']"]
+total = 3
+
+    def _verdict(failures: list[str], total: int) -> None:
+>       assert not failures, (f"{len(failures)} of {total} site x payload arms failed:\n  "
+                              + "\n  ".join(failures))
+E       AssertionError: 2 of 3 site x payload arms failed:
+E           team-sync failure toast ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').
+E           team-sync failure toast [':smile: [b]y[/b]']: no 'Team sync' toast equal to 'Team sync failed: :smile: [b]y[/b]'; toasts ['Team sync\nTeam sync failed: :smile: y']
+E       assert not ["team-sync failure toast ['[LINK=http://e]x']: MarkupError: Expected markup value (found '://e]x').", "team-sync fail...o 'Team sync' toast equal to 'Team sync failed: :smile: [b]y[/b]'; toasts ['Team sync\\nTeam sync failed: :smile: y']"]
+
+tests\test_markup_sites.py:153: AssertionError
+____________ test_TC_415_converted_sites_keep_their_painted_style _____________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14752/test_TC_415_converted_sites_ke0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000235176C7A70>
+
+    async def test_TC_415_converted_sites_keep_their_painted_style(tmp_path, monkeypatch):
+        """TC-415 (LLR-401.3) — the conversion to Text pieces keeps every painted style.
+    
+        Field report: the sites LLR-401.3 converts carry app styling written as
+        markup around user text (`[b]{name}[/b]`, `[dim]archived[/dim]`, `[u]…`,
+        `[b reverse]15[/]`, the notes' `==`/`!!`/`++` tones); rebuilding them as
+        pieces can silently drop a piece's style, and nothing else would notice.
+        Law: each reading below — the painted flags (bold, dim, reverse, underline)
+        and foreground colour over the named text, read from the painted segments
+        of the site's own box — equals the literal the base tree painted
+        (`STYLE_BASE`, recorded first by `evidence/inc001_style_base.py`); and the
+        app's bracket key hints paint without a backslash: the phase editor's
+        `[ / ] reorder` and the calendar's `[ ] month`.
+    
+        A PRESERVATION PIN: GREEN on base for every `STYLE_BASE` arm. The mutation
+        that reddens each arm: drop the bold piece (details / viewer / prompt /
+        standup / help / calendar month titles, picker and phase-editor names,
+        `▐ project`) → bold False; drop a dim piece (`archived`, `N.`, standup
+        phase and `k/n closed`, calendar header and outside days, help meaning,
+        `—`, `missing:` / `could not render:`) → that text paints its "(plain)"
+        neighbour's colour; drop `[u]` → underline False; drop `reverse` from the
+        selected day → reverse False; let a style piece cover user text → the
+        "(plain)" / reference pins change; build the notes without the shared
+        tokeniser → the tones turn plain and the markers paint. Known base RED:
+        the calendar title paints `[ \\] month` (the `\\]` escape is not undone
+        by Textual) — the law arm, not a base pin; on base this node fails on that
+        arm alone."""
+        got = await _style_readings(tmp_path, monkeypatch.chdir)
+        failures = [f"{k}: base painted {v!r}, now {got.get(k, '<not read>')!r}"
+                    for k, v in STYLE_BASE.items() if got.get(k, "<not read>") != v]
+        phase_title = got.get("phase editor title") or ""
+        if "[ / ] reorder" not in phase_title or "\\" in phase_title:
+            failures.append(f"phase editor title: {phase_title!r} does not paint '[ / ] reorder' "
+                            "without a backslash")
+        cal_title = got.get("calendar title") or ""
+        if "[ ] month" not in cal_title or "\\" in cal_title:
+            failures.append(f"calendar title: {cal_title!r} does not paint '[ ] month' "
+                            "without a backslash")
+>       assert not failures, (f"{len(failures)} of {len(STYLE_BASE) + 2} style arms failed:\n  "
+                              + "\n  ".join(failures))
+E       AssertionError: 1 of 40 style arms failed:
+E           calendar title: 'October 2026  —  ←→ day · ↑↓ week · [ \\] month · t today · enter pick' does not paint '[ ] month' without a backslash
+E       assert not ["calendar title: 'October 2026  —  ←→ day · ↑↓ week · [ \\\\] month · t today · enter pick' does not paint '[ ] month' without a backslash"]
+
+<home>\Github\taskboard\tests\test_markup_sites.py:910: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+FAILED tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly
+FAILED tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly
+FAILED tests/test_markup_sites.py::test_TC_412_the_sync_failure_toast_shows_the_exception_text
+FAILED tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style
+5 failed in 114.19s (0:01:54)
+[exit code 1]

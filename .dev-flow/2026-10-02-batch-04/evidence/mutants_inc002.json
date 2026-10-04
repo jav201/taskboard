@@ -1,0 +1,245 @@
+[
+ {
+  "id": "N1",
+  "file": "taskboard/models.py",
+  "old": "if c in \"\\t\\n\" or 0x20 <= ord(c) < 0x7f or ord(c) >= 0xa0",
+  "new": "if c in \"\\t\\n\\r\" or 0x20 <= ord(c) < 0x7f or ord(c) >= 0xa0",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "the rule keeps CR"
+ },
+ {
+  "id": "N2",
+  "file": "taskboard/models.py",
+  "old": "if c in \"\\t\\n\" or 0x20 <= ord(c) < 0x7f or ord(c) >= 0xa0",
+  "new": "if c in \"\\t\\n\" or 0x20 <= ord(c) <= 0x7f or ord(c) >= 0xa0",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "the rule keeps DEL"
+ },
+ {
+  "id": "N3",
+  "file": "taskboard/models.py",
+  "old": "if c in \"\\t\\n\" or 0x20 <= ord(c) < 0x7f or ord(c) >= 0xa0",
+  "new": "if c in \"\\t\\n\" or 0x20 <= ord(c) < 0x7f or ord(c) > 0xa0",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "the rule drops NBSP"
+ },
+ {
+  "id": "N4",
+  "file": "taskboard/models.py",
+  "old": "return \"\".join(c for c in value.replace(\"\\r\\n\", \"\\n\")",
+  "new": "return \"\".join(c for c in value",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "CR-LF is not turned into a newline (the CR is dropped, the pair joins)"
+ },
+ {
+  "id": "N5",
+  "file": "taskboard/models.py",
+  "old": "return {strip_controls(k): clean_strings(v) for k, v in value.items()}",
+  "new": "return {k: clean_strings(v) for k, v in value.items()}",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "keys are not cleaned"
+ },
+ {
+  "id": "N6",
+  "file": "taskboard/models.py",
+  "old": "return strip_controls(text)[:_MAX_PASTE_CHARS] or None",
+  "new": "return text[:_MAX_PASTE_CHARS] or None",
+  "nodes": [
+   "tests/test_control_bytes.py",
+   "tests/test_app.py::test_clean_clipboard_text_strips_controls_and_caps"
+  ],
+  "why": "the clipboard bypasses the rule"
+ },
+ {
+  "id": "N7",
+  "file": "taskboard/models.py",
+  "old": "raw = clean_strings(raw)        # the load door: no control byte gets in",
+  "new": "pass",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "the load door is open"
+ },
+ {
+  "id": "N8",
+  "file": "taskboard/team_sync.py",
+  "old": "return clean_strings(data) if isinstance(data, dict) else None",
+  "new": "return data if isinstance(data, dict) else None",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "the sync door is open"
+ },
+ {
+  "id": "N9",
+  "file": "taskboard/models.py",
+  "old": "if not isinstance(color, str):         # a synced or hand-edited value of",
+  "new": "if False:",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "an unhashable colour reaches the dict lookup (S2-2)"
+ },
+ {
+  "id": "N10",
+  "file": "taskboard/models.py",
+  "old": "name=name if isinstance(name, str) and name else \"Untitled\",",
+  "new": "name=name if name is not None else \"Untitled\",",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_control_bytes.py"
+  ],
+  "why": "a non-text name loads raw"
+ },
+ {
+  "id": "N11",
+  "file": "taskboard/models.py",
+  "old": "archived=d.get(\"archived\") is True,",
+  "new": "archived=bool(d.get(\"archived\", False)),",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_control_bytes.py"
+  ],
+  "why": "a truthy non-boolean flag archives"
+ },
+ {
+  "id": "N12",
+  "file": "taskboard/models.py",
+  "old": "due_date=due if isinstance(due, str) else None,",
+  "new": "due_date=due,",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_control_bytes.py"
+  ],
+  "why": "a non-text date loads raw"
+ },
+ {
+  "id": "N13",
+  "file": "taskboard/team_sync.py",
+  "old": "if not isinstance(pid, str) or pid in seen:",
+  "new": "if not isinstance(pid, str):",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "a later entry of the same id is applied (S3-1)"
+ },
+ {
+  "id": "N14",
+  "file": "taskboard/team_sync.py",
+  "old": "if key == \"name\" and not (isinstance(value, str) and value):",
+  "new": "if False:",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "a refused synced name overwrites with Untitled"
+ },
+ {
+  "id": "N15",
+  "file": "taskboard/team_sync.py",
+  "old": "if key.endswith(\"_date\") and not (value is None or isinstance(value, str)):",
+  "new": "if False:",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "a refused synced date clears the date"
+ },
+ {
+  "id": "N16",
+  "file": "taskboard/team_sync.py",
+  "old": "if key not in pd:",
+  "new": "if False:",
+  "nodes": [
+   "tests/test_sync_fields.py"
+  ],
+  "why": "absent keys are applied with the loading defaults (A2-1)"
+ },
+ {
+  "id": "N17",
+  "file": "taskboard/team_sync.py",
+  "old": "setattr(existing, key, getattr(fresh, key))",
+  "new": "setattr(existing, key, pd[key])",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "the raw synced value is applied (S-1's seat)"
+ },
+ {
+  "id": "N18",
+  "file": "taskboard/team_sync.py",
+  "old": "\"hue\": hue if isinstance(hue, str) and hue in HEX else \"mut\"})",
+  "new": "\"hue\": hue})",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "a roster hue outside the palette reaches the views"
+ },
+ {
+  "id": "N19",
+  "file": "taskboard/team_sync.py",
+  "old": "out.append({**r, \"name\": name if isinstance(name, str) and name else r[\"id\"],",
+  "new": "out.append({**r, \"name\": name,",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "a non-text roster name reaches the views"
+ },
+ {
+  "id": "N20",
+  "file": "taskboard/team_sync.py",
+  "old": "if not (isinstance(r, dict) and isinstance(r.get(\"id\"), str)) or r[\"id\"] in seen:",
+  "new": "if not (isinstance(r, dict) and isinstance(r.get(\"id\"), str)):",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "duplicate roster ids kept"
+ },
+ {
+  "id": "N21",
+  "file": "taskboard/team_sync.py",
+  "old": "return clean_roster(self.config.get(\"roster\", []))",
+  "new": "return [r for r in self.config.get(\"roster\", []) if isinstance(r, dict) and isinstance(r.get(\"id\"), str)]",
+  "nodes": [
+   "tests/test_sync_fields.py",
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "roster() bypasses the cleaner"
+ },
+ {
+  "id": "N22",
+  "file": "taskboard/app.py",
+  "old": "for r in clean_roster(cfg.get(\"roster\", []))]",
+  "new": "for r in cfg.get(\"roster\", []) if isinstance(r, dict) and isinstance(r.get(\"hue\", \"mut\"), str) and isinstance(r.get(\"name\"), str)]",
+  "nodes": [
+   "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash"
+  ],
+  "why": "the Setup view's roster bypasses the cleaner (A3-1)"
+ },
+ {
+  "id": "N23",
+  "file": "taskboard/app.py",
+  "old": "existing = _read_json(team_json_path)",
+  "new": "existing = __import__(\"json\").loads(team_json_path.read_text(encoding=\"utf-8\")) if team_json_path.exists() else None",
+  "nodes": [
+   "tests/test_control_bytes.py"
+  ],
+  "why": "the Setup view's team.json read bypasses the sync door (A-3)"
+ }
+]

@@ -1,0 +1,9 @@
+P-1 Label(escape(payload)) -> MarkupError: Expected markup value (found '://e]x').
+P-1 escape(payload) == payload -> True
+P-2 _rich(...).plain == payload -> True
+P-3 ESC kept in title -> True | BEL kept -> True | C1 0x9b kept in notes -> True
+P-4 ESC kept in a synced title -> True
+P-5 grid label heights -> [0, 0]
+P-6 payload painted literally, count over (label, option, select, button) -> 4
+P-7 notify(markup=False) toasts -> ['View keys renumbered\nThe columns view was retired — kanban does the same job better. The views are now 1 lanes · 2 agenda · 3 gantt · 4 kanban.', '[LINK=http://e]x']
+P-7 notify(escape(payload)) markup on -> MarkupError

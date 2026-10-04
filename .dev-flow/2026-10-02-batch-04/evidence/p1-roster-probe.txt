@@ -1,0 +1,6 @@
+P-15 roster hue 'evil' -> people ok, standup ok, setup ok
+P-15 roster hue [] -> people ok, standup ok, setup TypeError
+P-15 roster name 123 -> people TypeError, standup TypeError, setup ok
+P-15 duplicate project id n1 in team.json -> projects with id n1: 2 | roster entries with id a: 2
+P-15 project_color_on_load([]) -> TypeError
+P-15 project_color_on_load({}) -> TypeError

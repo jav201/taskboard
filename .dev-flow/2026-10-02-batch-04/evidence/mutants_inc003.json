@@ -1,0 +1,17 @@
+[
+ {"id": "G1", "file": "taskboard/taskboard.tcss",
+  "old": "#details-box .modal-grid Label {\n    margin-top: 0;\n    height: auto;\n}",
+  "new": "#details-box .modal-grid Label {\n    margin-top: 1;\n    height: auto;\n}",
+  "nodes": ["tests/test_details_grid.py", "tests/test_details_markup.py"],
+  "why": "the top margin returns: the cells paint blank again (P-9)"},
+ {"id": "G2", "file": "taskboard/taskboard.tcss",
+  "old": "#details-box .modal-grid Label {\n    margin-top: 0;\n    height: auto;\n}",
+  "new": "#details-box .modal-grid Label {\n    margin-top: 0;\n    height: 1;\n}",
+  "nodes": ["tests/test_details_grid.py"],
+  "why": "one row per cell: a long value is cut (UX-1)"},
+ {"id": "G3", "file": "taskboard/taskboard.tcss",
+  "old": "#details-box .modal-grid Label {\n    margin-top: 0;\n    height: auto;\n}",
+  "new": ".modal-grid Label {\n    margin-top: 0;\n    height: auto;\n}",
+  "nodes": ["tests/test_details_grid.py::test_TC_411_the_edit_modals_keep_their_grid"],
+  "why": "the rule leaks to every modal grid"}
+]

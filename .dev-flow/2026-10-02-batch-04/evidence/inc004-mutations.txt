@@ -1,0 +1,34 @@
+U1 KILLED — no row under the title: the gap is removed, not moved (UX-3)
+   arms resolved 2, red 2; restore sha256 9557e062ed2ac593… OK
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]
+U2 KILLED — a row added instead of moved: two above, one below
+   arms resolved 2, red 2; restore sha256 9557e062ed2ac593… OK
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]
+U3 SURVIVED — the longhand form: margin-bottom is lost to .modal Label's margin-top (the trap the comment names)
+   arms resolved 2, red 0; restore sha256 9557e062ed2ac593… OK
+    PASSED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]
+    PASSED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]
+U4 KILLED — the 20-cell column returns (UX-4 undone); the long name back to 3 rows at 80x24
+   arms resolved 4, red 3; restore sha256 9557e062ed2ac593… OK
+    PASSED tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size0-2]
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size0]
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size1]
+    FAILED tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size1-2]
+U5 KILLED — off by one: `Priority` still fits in 9, only the offset sees it
+   arms resolved 2, red 2; restore sha256 9557e062ed2ac593… OK
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size0]
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size1]
+U6 KILLED — the column rule leaks to the edit modals
+   arms resolved 2, red 2; restore sha256 9557e062ed2ac593… OK
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size0]
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size1]
+5 of 6 KILLED
+exit=0
+# Disposition (orchestrator, 2026-10-04): U3 is an EQUIVALENT mutant, not a test gap. Inside
+# `#details-box .modal-title` (id + class) the longhand margin-top/margin-bottom wins over
+# `.modal Label` (class + type) just as the shorthand does; the trap is only for a rule that
+# `.modal Label` outranks (the base `.modal-title`). The stylesheet comment claimed the
+# shorthand was required; it was corrected to name the selector's rank (comment-only edit,
+# frozen r2). 5 of 5 non-equivalent mutants KILLED.

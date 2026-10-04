@@ -306,12 +306,12 @@ async def test_the_preview_follows_the_typing_to_the_last_line(tmp_path):
 
 
 async def test_the_preview_paints_markup_typed_in_a_note_as_text(tmp_path):
-    """Security (family C, C-17: markup rendering over file-derived text). The
-    preview feeds the notes to rich markup; a note is user/file text, so a
-    `[link=…]` or `[reverse]` typed into it must come out LITERALLY, never as
-    a style or a hyperlink. `_highlight_markup` escapes every slice it emits;
-    this pins that the preview goes through it. RED: render the raw notes as
-    markup -> the brackets vanish into a style."""
+    """Security (family C, C-17: markup rendering over file-derived text). A note
+    is user/file text, so a `[link=…]` or `[reverse]` typed into it must come out
+    LITERALLY, never as a style or a hyperlink. Since batch 2026-10-02-batch-04
+    (S1, LLR-401.3) the preview is built from `highlight_segments` as Text
+    pieces and no parser reads the notes; this pins that. RED: render the raw
+    notes as markup -> the brackets vanish into a style."""
     app = _app(tmp_path)
     async with app.run_test(size=(120, 36)) as pilot:
         scr = await _open_editor(app, pilot)

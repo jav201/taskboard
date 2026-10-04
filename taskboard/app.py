@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import os
 import webbrowser
 from datetime import date
@@ -24,8 +23,9 @@ from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
                      StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
-from .team_sync import TeamState, probe_setup_health
-from .views import (clip, escape, filtered_board, focus_tasks, gantt_group_key, group_key,
+from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
+                        probe_setup_health)
+from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, sort_by_due,
                     render_view, valid_url)
 
@@ -280,7 +280,7 @@ class TaskboardApp(App):
         self.notify(
             f"{len(moved)} task(s) finished more than {AUTO_ARCHIVE_DAYS} days ago "
             "were archived. Press 'v' to see archived items, 'x' to bring one back.",
-            title="Archived old work", severity="information", timeout=8)
+            title="Archived old work", severity="information", timeout=8, markup=False)
 
     def _warn_if_rescued(self) -> None:
         """Surface a load that had to repair drifted/corrupt data, so the user
@@ -293,13 +293,13 @@ class TaskboardApp(App):
             self.notify(
                 f"board.json was unreadable; a copy was kept at {where}. "
                 "Started empty — the original file was not overwritten.",
-                title="Board recovered", severity="error", timeout=10)
+                title="Board recovered", severity="error", timeout=10, markup=False)
         elif r.get("tasks_rescued") or r.get("projects_rescued"):
             n = r.get("tasks_rescued", 0) + r.get("projects_rescued", 0)
             self.notify(
                 f"{n} item(s) had an unreadable format and were recovered "
                 "(see their notes). Nothing was lost.",
-                title="Tasks recovered", severity="warning", timeout=10)
+                title="Tasks recovered", severity="warning", timeout=10, markup=False)
 
     # ---- team sync ---------------------------------------------------------
     def _init_team_mode(self) -> None:
@@ -315,7 +315,12 @@ class TaskboardApp(App):
         self.team_state = TeamState.from_settings(shared_dir, user_id)
         if self.team_state is None:
             return
-        self.team_state.load_config()
+        team_file = self.team_state.shared_dir / TEAM_FILENAME
+        if (not self.team_state.load_config() and team_file.exists()
+                and _read_json(team_file) is None):          # unreadable, not incomplete
+            self.notify(f"team.json in {shared_dir} could not be read; team sync waits "
+                        "for a readable file.", title="Team sync", severity="warning",
+                        markup=False)
         if self.team_state.user_id:
             self._run_team_sync()
             self._start_team_daemon()
@@ -362,7 +367,7 @@ class TaskboardApp(App):
             self.refresh_view()
         except Exception as exc:
             self.notify(f"Team sync failed: {exc}", title="Team sync",
-                        severity="warning")
+                        severity="warning", markup=False)
 
     def _setup_config(self) -> dict:
         """The authoritative team config if team mode is active, else an empty
@@ -381,20 +386,22 @@ class TaskboardApp(App):
         interval = self.board.settings.get("team_sync_interval")
         if not isinstance(interval, int) or interval < 5:
             interval = max(5, int(self.team_sync_interval // 60))
-        team_projects = {
-            p.get("id"): p for p in cfg.get("projects", [])
-            if isinstance(p, dict) and isinstance(p.get("id"), str)
-        }
+        team_projects: dict = {}
+        for p in cfg.get("projects", []):
+            if isinstance(p, dict) and isinstance(p.get("id"), str):
+                team_projects.setdefault(p["id"], p)     # the first entry of an id wins
         projects = []
         for proj in self.board.projects:
             if proj.id in team_projects:
-                tp = team_projects[proj.id]
+                # the board's values, which passed the loading rule when the
+                # config was applied — never the raw synced ones (code review F3)
+                template = team_projects[proj.id].get("template")
                 projects.append({
                     "id": proj.id,
-                    "name": tp.get("name", proj.name),
-                    "color": tp.get("color", proj.color),
-                    "status": tp.get("status", proj.status),
-                    "template": tp.get("template", ""),
+                    "name": proj.name,
+                    "color": proj.color,
+                    "status": proj.status,
+                    "template": template if isinstance(template, str) else "",
                     "shared": True,
                 })
             else:
@@ -406,11 +413,8 @@ class TaskboardApp(App):
                     "template": "",
                     "shared": False,
                 })
-        roster = [
-            {"id": r.get("id", ""), "name": r.get("name", ""), "hue": r.get("hue", "mut")}
-            for r in cfg.get("roster", [])
-            if isinstance(r, dict) and isinstance(r.get("id"), str)
-        ]
+        roster = [{"id": r["id"], "name": r["name"], "hue": r["hue"]}
+                  for r in clean_roster(cfg.get("roster", []))]
         return {
             "enabled": self.team_state is not None,
             "shared_dir": str(shared_dir) if shared_dir else "",
@@ -517,7 +521,7 @@ class TaskboardApp(App):
         from .report import write_report
         out = write_report(self.board)
         self.notify(f"Report written to {out}", title="Report",
-                    severity="information", timeout=10)
+                    severity="information", timeout=10, markup=False)
 
     def action_standup(self) -> None:
         """`S` — the week in one modal: what moved and what closed, per
@@ -690,7 +694,7 @@ class TaskboardApp(App):
         only nags the operator when the message changes."""
         err = history.HISTORY_ERROR
         if err and err != self._last_history_error:
-            self.notify(err, title="Transition log", severity="warning")
+            self.notify(err, title="Transition log", severity="warning", markup=False)
             self._last_history_error = err
 
     def action_phase_move(self, delta: int) -> None:
@@ -1002,11 +1006,9 @@ class TaskboardApp(App):
             path = Path(shared_dir)
             path.mkdir(parents=True, exist_ok=True)
             team_json_path = path / "team.json"
-            existing = None
-            try:
-                existing = json.loads(team_json_path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
-                pass
+            # through the sync door: the phases and template republished below
+            # come from a teammate's file (P2 A-3)
+            existing = _read_json(team_json_path)
             version = 1
             if isinstance(existing, dict) and isinstance(existing.get("version"), int):
                 version = existing["version"] + 1
@@ -1180,7 +1182,7 @@ class TaskboardApp(App):
         roster = self._setup_state.setdefault("roster", [])
         if any(r.get("id") == uid for r in roster):
             self.notify(f"Member '{uid}' already exists.", title="Setup",
-                        severity="warning")
+                        severity="warning", markup=False)
             return
         roster.append({"id": uid, "name": uid, "hue": "mut"})
         self.refresh_view()
@@ -1192,7 +1194,7 @@ class TaskboardApp(App):
         projects = self._setup_state.setdefault("projects", [])
         if any(p.get("id") == pid for p in projects):
             self.notify(f"Project '{pid}' already exists.", title="Setup",
-                        severity="warning")
+                        severity="warning", markup=False)
             return
         from .models import PROJECT_COLORS
         projects.append({"id": pid, "name": pid, "color": PROJECT_COLORS[0],
@@ -1279,9 +1281,9 @@ class TaskboardApp(App):
             return
         proj.pinned = not proj.pinned
         self.board.save()
-        shown = escape(clip(proj.name, 40))
+        shown = clip(proj.name, 40)
         self.notify(f'"{shown}" {"pinned" if proj.pinned else "unpinned"}',
-                    title="Pin project", severity="information")
+                    title="Pin project", severity="information", markup=False)
         self.refresh_view()
 
     def action_kanban_sort(self) -> None:
@@ -1457,7 +1459,7 @@ class TaskboardApp(App):
         self.refresh_view()
         self.notify(f"{len(moved)} finished task(s) archived. Press 'v' to see "
                     "them, 'x' to bring one back.",
-                    title="Archived", severity="information", timeout=8)
+                    title="Archived", severity="information", timeout=8, markup=False)
 
     def action_delete(self) -> None:
         task = self.selected_task
@@ -1490,12 +1492,12 @@ class TaskboardApp(App):
         self._undo_stack.append(self._snapshot(task))
         task.archived = not task.archived
         self.board.save()
-        # the title is the user's text and goes through the SAME escape the views
-        # use: a title holding markup must never be able to render as markup here
+        # the title is the user's text: shown raw with markup OFF, never escaped
+        # (S1) — a title holding markup must never render as markup here
         if self.view_mode == "setup":
             self.action_setup_remove()
             return
-        shown = escape(clip(task.title, 40))
+        shown = clip(task.title, 40)
         if task.archived:
             # WITH `v` OFF THE ROW LEAVES THE SCREEN, and the selection leaves
             # with it — so `x` on its own no longer targets this task. Saying
@@ -1505,7 +1507,7 @@ class TaskboardApp(App):
                        else "v shows it, then x brings it back"))
         else:
             body = f'"{shown}" restored'
-        self.notify(body, title="Archive", severity="information")
+        self.notify(body, title="Archive", severity="information", markup=False)
         self.refresh_view()
 
     def action_toggle_archived(self) -> None:

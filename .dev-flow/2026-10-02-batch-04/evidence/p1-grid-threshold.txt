@@ -1,0 +1,10 @@
+base     140x40 name= 5 chars: cell heights [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rows [14, 14, 15, 15, 16, 16, 17, 17, 18, 18], value x [44], five rows visible at scroll 0: True, name painted whole: False, max_scroll_y 0
+base     140x40 name=89 chars: cell heights [1, 1, 0, 0, 0, 0, 0, 0, 0, 0], rows [13, 13, 15, 15, 16, 16, 17, 17, 18, 18], value x [44], five rows visible at scroll 0: True, name painted whole: False, max_scroll_y 0
+base     80x24 name= 5 chars: cell heights [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rows [6, 6, 7, 7, 8, 8, 9, 9, 10, 10], value x [26], five rows visible at scroll 0: True, name painted whole: False, max_scroll_y 1
+base     80x24 name=89 chars: cell heights [2, 2, 0, 0, 0, 0, 0, 0, 0, 0], rows [6, 6, 9, 9, 10, 10, 11, 11, 12, 12], value x [26], five rows visible at scroll 0: True, name painted whole: False, max_scroll_y 3
+base     edit-modal grid cell heights: {'ProjectModal': [2, 3, 2, 3, 2, 3, 2, 3, 2, 3], 'ClockModal': [2, 3, 2, 3]}
+planned  140x40 name= 5 chars: cell heights [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], rows [13, 13, 14, 14, 15, 15, 16, 16, 17, 17], value x [44], five rows visible at scroll 0: True, name painted whole: True, max_scroll_y 0
+planned  140x40 name=89 chars: cell heights [1, 2, 1, 1, 1, 1, 1, 1, 1, 1], rows [12, 12, 14, 14, 15, 15, 16, 16, 17, 17], value x [44], five rows visible at scroll 0: True, name painted whole: True, max_scroll_y 0
+planned  80x24 name= 5 chars: cell heights [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], rows [5, 5, 6, 6, 7, 7, 8, 8, 9, 9], value x [26], five rows visible at scroll 0: True, name painted whole: True, max_scroll_y 1
+planned  80x24 name=89 chars: cell heights [1, 3, 1, 1, 1, 1, 1, 1, 1, 1], rows [5, 5, 8, 8, 9, 9, 10, 10, 11, 11], value x [26], five rows visible at scroll 0: True, name painted whole: True, max_scroll_y 3
+planned  edit-modal grid cell heights: {'ProjectModal': [2, 3, 2, 3, 2, 3, 2, 3, 2, 3], 'ClockModal': [2, 3, 2, 3]}

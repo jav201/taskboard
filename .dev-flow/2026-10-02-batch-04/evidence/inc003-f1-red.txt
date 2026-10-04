@@ -1,0 +1,2 @@
+80x24: painted field labels ['Project', 'Phase', 'Priority', 'Start', 'Due'] | old clause True | new clause True
+80x12: painted field labels ['Project', 'Phase'] | old clause True | new clause False

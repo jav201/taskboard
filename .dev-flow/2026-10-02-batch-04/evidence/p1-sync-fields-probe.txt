@@ -1,0 +1,4 @@
+P-12 synced status applied -> '[@click=app.pwn]X'
+P-12 project picker: crash InvalidSelectValueError | actions fired: ['pwn']
+P-12 colour 'evil' -> swimlanes KeyError, agenda KeyError, gantt KeyError, kanban KeyError, focus ok
+P-12 name 123 -> swimlanes AttributeError, agenda TypeError, gantt TypeError, kanban TypeError, focus ok

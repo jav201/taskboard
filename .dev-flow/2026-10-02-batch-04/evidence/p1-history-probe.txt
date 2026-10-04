@@ -1,0 +1,1 @@
+P-16 HISTORY_ERROR exception type -> PermissionError | holds str(path): False | holds repr(str(path)): True | holds 'a[B]x': True

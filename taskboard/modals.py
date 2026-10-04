@@ -1,7 +1,7 @@
 """Add/edit modals for tasks and projects.
 
 Notes on the pitfalls these avoid:
-- Select option labels are markup sinks too -> project names are escaped (A1).
+- Select option labels are markup sinks too -> user text is a Text piece (A1, S1).
 - ``Select.BLANK`` is a plain bool in textual 8.2.8, not a unique sentinel
   (A7). We never rely on it: ``allow_blank=False`` + an explicit "(none)"
   option whose value we map to ``None`` ourselves.
@@ -20,7 +20,6 @@ from unicodedata import east_asian_width
 
 from rich._emoji_codes import EMOJI as _RICH_EMOJI
 from rich.cells import cell_len
-from rich.markup import escape
 from rich.text import Text
 
 from textual import events
@@ -39,7 +38,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image)
 from .keymap import palette_commands
-from .views import _highlight_markup, valid_url
+from .views import HEX, highlight_segments, valid_url
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
 # detects the terminal's graphics support by QUERYING the terminal, which only
@@ -109,7 +108,7 @@ def search_emoji(needle: str) -> list[tuple[str, str]]:
         return _EMOJI_CHOICES
     return [pair for pair in _EMOJI_CHOICES if q in pair[0]]
 
-_WEEK_HEADER = "[dim]Mo Tu We Th Fr Sa Su[/dim]"
+_WEEK_HEADER = "Mo Tu We Th Fr Sa Su"
 
 
 class CalendarModal(ModalScreen[str | None]):
@@ -141,27 +140,23 @@ class CalendarModal(ModalScreen[str | None]):
             yield Label(self._title_text(), id="cal-title", classes="modal-title")
             yield Static(self._grid_text(), id="cal-grid")
 
-    def _title_text(self) -> str:
-        # escape the literal [ ] (the month-nav keys) so Rich renders them
-        # verbatim instead of treating them as a markup tag
-        return (f"[b]{self._sel:%B %Y}[/b]  —  "
-                "←→ day · ↑↓ week · \\[ \\] month · t today · enter pick")
+    def _title_text(self) -> Text:
+        return Text.assemble((f"{self._sel:%B %Y}", "bold"),
+                             "  —  ←→ day · ↑↓ week · [ ] month · t today · enter pick")
 
-    def _grid_text(self) -> str:
+    def _grid_text(self) -> Text:
         d = self._sel
-        lines = [_WEEK_HEADER]
+        grid = Text()
+        grid.append(_WEEK_HEADER, "dim")       # a piece: Text(style=) would dim every day
         for week in calendar.Calendar(firstweekday=0).monthdatescalendar(d.year, d.month):
-            cells = []
-            for day in week:
-                label = f"{day.day:2d}"
-                if day == d:
-                    cells.append(f"[b reverse]{label}[/]")
-                elif day.month != d.month:
-                    cells.append(f"[dim]{label}[/dim]")
-                else:
-                    cells.append(label)
-            lines.append(" ".join(cells))
-        return "\n".join(lines)
+            grid.append("\n")
+            for i, day in enumerate(week):
+                if i:
+                    grid.append(" ")
+                style = ("bold reverse" if day == d
+                         else "dim" if day.month != d.month else "")
+                grid.append(f"{day.day:2d}", style)
+        return grid
 
     def _redraw(self) -> None:
         # NOT _render: that name is Textual's internal Widget._render(), which
@@ -230,14 +225,14 @@ class EmojiPicker(ModalScreen[str | None]):
         # keyed by NAME, not by glyph: names are unique, glyphs are NOT
         # (`-1` and `__1` are both the same thumbs-down), and duplicate option
         # ids raise DuplicateID.
-        lst.add_options([Option(f"{g}  {escape(n.replace('_', ' '))}", id=n)
+        lst.add_options([Option(Text(f"{g}  {n.replace('_', ' ')}"), id=n)
                          for n, g in shown])
         # SAY when the list is cut. A picker that silently shows 200 of 900
         # teaches you the other 700 do not exist.
         note = (f"{len(hits)} matches · showing the first {len(shown)}"
                 if len(hits) > len(shown) else f"{len(hits)} matches")
         self.query_one("#emoji-count", Label).update(
-            note if hits else "[dim]no emoji by that name[/dim]")
+            Text(note) if hits else "[dim]no emoji by that name[/dim]")
 
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "emoji-search":
@@ -332,23 +327,23 @@ class DatePickerMixin:
 TASK_CHIPS_ONE_ROW = 122
 
 
-def _rich(markup: str) -> Text:
-    """App-built markup holding `escape()`d task text, parsed HERE by Rich.
-    `escape` follows Rich's tag rules; handed to a Textual widget as a str,
-    Textual's own parser reads `[B]` / `[LINK=…` too (security review S1)."""
-    return Text.from_markup(markup)
-
-
 def notes_preview(text: str) -> Text:
-    """The notes as the board paints them: each line through the app's one
-    highlight renderer (a highlight never crosses a line there either).
+    """The notes as the board paints them: each line through the board's one
+    highlight tokeniser, `highlight_segments` (a highlight never crosses a line
+    there either), each segment a Text PIECE in its tone.
 
-    Parsed HERE, by Rich, into a Text — never handed to a Static as a markup
-    string: `_highlight_markup` escapes for Rich's tag rules, and Textual's
-    parser also reads `[B]` or `[LINK=…` as tags (a note holding one crashed
-    the editor and could arrive by team sync — security review S1)."""
-    return Text.from_markup("\n".join(_highlight_markup(ln) if ln.strip() else ""
-                                      for ln in text.split("\n")))
+    No parser reads the notes (S1, S-4): escaping and re-parsing them doubled
+    backslashes and turned `:smile:` into an emoji, and handed to a Static as a
+    str Textual's own parser read `[B]` or `[LINK=…` as tags — a note holding one
+    crashed the editor and could arrive by team sync."""
+    out = Text()
+    for i, ln in enumerate(text.split("\n")):
+        if i:
+            out.append("\n")
+        if ln.strip():
+            for segment, tone in highlight_segments(ln):
+                out.append(segment, HEX[tone])
+    return out
 
 
 class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
@@ -374,8 +369,8 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
         # auto-height modal scrolled the title and Save away the moment you
         # typed in the notes. The `#task-*` rules live in taskboard.tcss.
         t = self._edit_task
-        proj_options = [("(none · Inbox)", NONE_VALUE)] + [
-            (escape(p.name), p.id) for p in self.board.projects
+        proj_options = [(Text("(none · Inbox)"), NONE_VALUE)] + [
+            (Text(p.name), p.id) for p in self.board.projects
         ]
         proj_value = t.project_id if (t and t.project_id) else NONE_VALUE
         phases = self.board.phases
@@ -393,10 +388,10 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                 with Horizontal(id="task-chips-what"):
                     yield Select(proj_options, value=proj_value, allow_blank=False,
                                  id="f-project")
-                    yield Select([(escape(p), p) for p in phases],
+                    yield Select([(Text(p), p) for p in phases],
                                  value=(t.phase if (t and t.phase in phases) else phases[0]),
                                  allow_blank=False, id="f-phase")
-                    yield Select([(p, p) for p in TASK_PRIORITIES],
+                    yield Select([(Text(p), p) for p in TASK_PRIORITIES],
                                  value=(t.priority if t else "normal"),
                                  allow_blank=False, id="f-priority")
                 with Horizontal(id="task-chips-when"):
@@ -502,7 +497,8 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
         area = self.query_one("#f-images", TextArea)
         existing = area.text.rstrip("\n")
         area.text = (existing + "\n" if existing else "") + "\n".join(added)
-        self.notify(f"Added {len(added)} image{'' if len(added) == 1 else 's'}.")
+        self.notify(f"Added {len(added)} image{'' if len(added) == 1 else 's'}.",
+                    markup=False)
 
     def action_cancel(self) -> None:
         self.dismiss(None)
@@ -559,11 +555,11 @@ class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
             yield Input(value=(p.name if p else ""), placeholder="project name", id="f-name")
             with Grid(classes="modal-grid"):
                 yield Label("Color")
-                yield Select([(col, col) for col in PROJECT_COLORS],
+                yield Select([(Text(col), col) for col in PROJECT_COLORS],
                              value=(p.color if p else "violet"),
                              allow_blank=False, id="f-color")
                 yield Label("Status")
-                yield Select([(s, s) for s in PROJECT_STATUSES],
+                yield Select([(Text(s), s) for s in PROJECT_STATUSES],
                              value=(p.status if p else "on_track"),
                              allow_blank=False, id="f-status")
                 yield Label("Pinned")
@@ -615,7 +611,8 @@ class ProjectPicker(ModalScreen[None]):
 
     Mutations persist immediately (Board.save) and re-render the board behind
     the modal, so the picker stays open for the next action. Option labels are
-    markup sinks -> project names are escaped (A1). Deleting a project reassigns
+    markup sinks -> each line is a Text built from pieces (A1, S1, S-1: a synced
+    status reached it as markup and carried a click action). Deleting a project reassigns
     its tasks to no-project (Inbox), the least-destructive choice — no task is
     ever lost to a project delete.
     """
@@ -644,13 +641,14 @@ class ProjectPicker(ModalScreen[None]):
         self.query_one("#proj-list", OptionList).focus()
 
     # ---- list rendering ----------------------------------------------------
-    def _project_line(self, p: Project) -> str:
+    def _project_line(self, p: Project) -> Text:
         n = sum(1 for t in self.board.tasks if t.project_id == p.id)
-        parts = [f"[b]{escape(p.name)}[/b]", p.status]
+        line = Text.assemble((p.name, "bold"), "  ·  ", p.status)
         if p.archived:
-            parts.append("[dim]archived[/dim]")
-        parts.append(f"{n} task{'s' if n != 1 else ''}")
-        return "  ·  ".join(parts)
+            line.append("  ·  ")
+            line.append("archived", "dim")
+        line.append(f"  ·  {n} task{'s' if n != 1 else ''}")
+        return line
 
     def _reload(self, keep: str | None = None) -> None:
         """Rebuild the list from the board (clear-before-add avoids DuplicateIds)."""
@@ -760,7 +758,7 @@ class ProjectPicker(ModalScreen[None]):
 class BlockerPicker(ModalScreen[str | None]):
     """Pick an existing task that blocks the selected one, or choose to create a
     new blocker.  Returns the chosen task id, the sentinel ``"__new__"``, or
-    ``None`` on cancel.  Candidate titles are escaped (A1); the blocked task
+    ``None`` on cancel.  Candidate titles are Text pieces (A1, S1); the blocked task
     itself and any done/archived tasks are excluded."""
 
     BINDINGS = [("escape", "cancel", "Cancel")]
@@ -784,7 +782,7 @@ class BlockerPicker(ModalScreen[str | None]):
                 continue
             if self.board.is_done(t) or t.archived:
                 continue
-            ol.add_option(Option(escape(t.title), id=t.id))
+            ol.add_option(Option(Text(t.title), id=t.id))
         ol.highlighted = 0
         ol.focus()
 
@@ -826,7 +824,7 @@ class TeamIdentityPicker(ModalScreen[str | None]):
             if not isinstance(uid, str):
                 continue
             name = member.get("name", uid)
-            ol.add_option(Option(escape(str(name)), id=uid))
+            ol.add_option(Option(Text(str(name)), id=uid))
         if ol.option_count:
             ol.highlighted = 0
             ol.focus()
@@ -897,9 +895,9 @@ class ConfirmModal(ModalScreen[bool]):
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="confirm-box", classes="modal"):
-            yield Label(escape(self.message), classes="modal-title")
+            yield Label(Text(self.message), classes="modal-title")
             with Horizontal(classes="modal-buttons"):
-                yield Button(self.confirm, variant=self.variant, id="yes")
+                yield Button(Text(self.confirm), variant=self.variant, id="yes")
                 yield Button("Cancel", variant="default", id="no")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -923,7 +921,7 @@ class TextPrompt(ModalScreen[str | None]):
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="modal-box", classes="modal"):
-            yield Label(f"[b]{escape(self._title)}[/b]", classes="modal-title")
+            yield Label(Text(self._title, style="bold"), classes="modal-title")
             yield Input(value=self._initial, placeholder=self._placeholder, id="f-text")
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
@@ -953,7 +951,7 @@ class PhaseEditor(ModalScreen[None]):
 
     Mutations persist immediately (Board.save) and re-render the board behind
     the modal, so the editor stays open for the next action. Phase names are
-    user text -> escaped everywhere they are rendered (A1). Renaming moves the
+    user text -> a Text piece everywhere they are rendered (A1, S1). Renaming moves the
     tasks that referenced the old name and deleting reassigns them to a
     neighbour, so no edit here can orphan a task; the last phase can't be
     deleted because every view indexes into the list.
@@ -987,10 +985,10 @@ class PhaseEditor(ModalScreen[None]):
         self.query_one("#phase-list", OptionList).focus()
 
     # ---- list rendering ----------------------------------------------------
-    def _phase_line(self, index: int, name: str) -> str:
+    def _phase_line(self, index: int, name: str) -> Text:
         n = sum(1 for t in self.board.tasks if t.phase == name)
-        return (f"[dim]{index + 1}.[/dim]  [b]{escape(name)}[/b]"
-                f"  ·  {n} task{'s' if n != 1 else ''}")
+        return Text.assemble((f"{index + 1}.", "dim"), "  ", (name, "bold"),
+                             f"  ·  {n} task{'s' if n != 1 else ''}")
 
     def _reload(self, keep: int | None = None) -> None:
         """Rebuild the list from the board (clear-before-add avoids DuplicateIds)."""
@@ -1039,7 +1037,7 @@ class PhaseEditor(ModalScreen[None]):
             self.notify("A phase needs a name.", severity="warning")
             return
         if not self.board.add_phase(name):
-            self.notify(f"'{escape(name)}' already exists.", severity="warning")
+            self.notify(f"'{name}' already exists.", severity="warning", markup=False)
             return
         self._committed(len(self.board.phases) - 1)
 
@@ -1058,7 +1056,7 @@ class PhaseEditor(ModalScreen[None]):
             self.notify("A phase needs a name.", severity="warning")
             return
         if not self.board.rename_phase(old, new):
-            self.notify(f"'{escape(new)}' already exists.", severity="warning")
+            self.notify(f"'{new}' already exists.", severity="warning", markup=False)
             return
         self._committed(self.board.phases.index(new))
 
@@ -1100,22 +1098,22 @@ def image_block(ref: str):
     missing / unrenderable local file yields a dim notice. A generator of
     widgets, shared by ImageViewer and TaskDetails. Never raises."""
     if valid_url(ref):                       # remote: can't inline; link it
-        yield Label(_rich(f"link · {escape(ref)}"))
+        yield Label(Text(f"link · {ref}"))
         return
     path = Path(ref)
     if path.suffix.lower() not in IMAGE_EXTS or not path.is_file():
-        yield Label(_rich(f"[dim]missing:[/dim] {escape(ref)}"))
+        yield Label(Text.assemble(("missing:", "dim"), f" {ref}"))
         return
     if AutoImage is None:
-        yield Label(_rich(f"[dim](install textual-image to preview)[/dim] {escape(ref)}"))
+        yield Label(Text.assemble(("(install textual-image to preview)", "dim"), f" {ref}"))
         return
     try:
         img = AutoImage(str(path))           # size comes from the Image TCSS rule
     except Exception:                        # never blank the modal on one bad file
-        yield Label(_rich(f"[dim]could not render:[/dim] {escape(ref)}"))
+        yield Label(Text.assemble(("could not render:", "dim"), f" {ref}"))
         return
     yield img
-    yield Label(_rich(f"[dim]{escape(path.name)}[/dim]"))
+    yield Label(Text(path.name, style="dim"))
 
 
 class ImageViewer(ModalScreen[None]):
@@ -1135,7 +1133,7 @@ class ImageViewer(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="viewer-box", classes="modal"):
             yield Label(
-                _rich(f"[b]{escape(self._view_task.title)}[/b]  —  o open raw · esc close"),
+                Text.assemble((self._view_task.title, "bold"), "  —  o open raw · esc close"),
                 classes="modal-title")
             if not self._view_task.images:
                 yield Label("[dim]No images on this task.[/dim]")
@@ -1153,8 +1151,8 @@ class ImageViewer(ModalScreen[None]):
 class TaskDetails(ModalScreen[None]):
     """Read-only view of every field on a task, with images rendered inline.
     No save/edit control (can't mutate the task) — ``o`` opens images/URLs raw
-    in the OS handler, ``esc`` closes. Every user-controlled string is escaped
-    (markup-injection pitfall A1)."""
+    in the OS handler, ``esc`` closes. Every user-controlled string is a Text
+    piece, never parsed (markup-injection pitfall A1, S1)."""
 
     BINDINGS = [("escape", "close", "Close"), ("o", "open_raw", "Open raw")]
 
@@ -1166,21 +1164,21 @@ class TaskDetails(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         t = self._detail_task
         proj = self._board.project_by_id(t.project_id)
-        proj_name = escape(proj.name) if proj else "Inbox"
+        proj_name = proj.name if proj else "Inbox"
         with VerticalScroll(id="details-box", classes="modal"):
-            yield Label(_rich(f"[b]{escape(t.title)}[/b]  —  o open raw · esc close"),
+            yield Label(Text.assemble((t.title, "bold"), "  —  o open raw · esc close"),
                         classes="modal-title")
             with Grid(classes="modal-grid"):
                 yield Label("Project")
-                yield Label(_rich(proj_name))
+                yield Label(Text(proj_name))
                 yield Label("Phase")
-                yield Label(_rich(escape(t.phase) + (" · blocked" if t.blocked else "")))
+                yield Label(Text(t.phase + (" · blocked" if t.blocked else "")))
                 yield Label("Priority")
-                yield Label(_rich(escape(t.priority)))
+                yield Label(Text(t.priority))
                 yield Label("Start")
-                yield Label(_rich(escape(t.start_date or "—")))
+                yield Label(Text(t.start_date or "—"))
                 yield Label("Due")
-                yield Label(_rich(escape(t.due_date or "—")))
+                yield Label(Text(t.due_date or "—"))
             yield Label("[b]Notes[/b]  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
             if t.notes:
                 yield Static(notes_preview(t.notes))
@@ -1189,7 +1187,7 @@ class TaskDetails(ModalScreen[None]):
             yield Label("[b]URLs[/b]")
             if t.urls:
                 for u in t.urls:
-                    yield Label(_rich(f"link · {escape(u)}"))
+                    yield Label(Text(f"link · {u}"))
             else:
                 yield Label("[dim]—[/dim]")
             yield Label("[b]Images[/b]")
@@ -1261,26 +1259,27 @@ class HelpModal(ModalScreen[None]):
                                  gantt_previous=self._gantt_previous)
         example, example_meaning = help_example(self._mode)
         with VerticalScroll(id="help-modal-box"):
-            yield Label(f"[b]Help · {self._mode}[/b]", classes="modal-title")
+            yield Label(Text(f"Help · {self._mode}", style="bold"), classes="modal-title")
             with Horizontal():
                 with VerticalScroll(id="help-left"):
                     yield Label("[b]Usage[/b]", classes="modal-title")
                     for heading, bullets in help_usage(self._mode):
-                        yield Label(f"[u]{escape(heading)}[/u]")
+                        yield Label(Text(heading, style="underline"))
                         for bullet in bullets:
-                            yield Label(f"  • {escape(bullet)}")
+                            yield Label(Text(f"  • {bullet}"))
                 with VerticalScroll(id="help-right"):
                     if entries:
                         yield Label("[b]Legend[/b]", classes="modal-title")
                         for swatch, meaning in entries:
-                            yield Label(f"{swatch}  {escape(meaning)}")
+                            yield Label(Text.assemble(Text.from_markup(swatch),
+                                                      f"  {meaning}"))
                     if example:
                         yield Label("[b]Example[/b]", classes="modal-title")
-                        yield Label(example)
-                        yield Label(f"[dim]{escape(example_meaning)}[/dim]")
+                        yield Label(Text.from_markup(example))
+                        yield Label(Text(example_meaning, style="dim"))
                     yield Label("[b]Keys[/b]", classes="modal-title")
                     for k in bar_keys(self._mode):
-                        yield Label(f"{k.show}  {escape(k.label)}")
+                        yield Label(Text(f"{k.show}  {k.label}"))
             yield Label("[dim]m full map · ? palette · esc/q closes[/dim]",
                         classes="modal-title")
 
@@ -1325,19 +1324,20 @@ class StandupModal(ModalScreen[None]):
         from .models import standup_query
         groups = standup_query(self._board, self._today, self._show_archived)
         with VerticalScroll(id="modal-box", classes="modal"):
-            yield Label(f"[b]Standup · week ending {self._today.isoformat()}[/b]",
+            yield Label(Text(f"Standup · week ending {self._today.isoformat()}", style="bold"),
                         classes="modal-title")
             if not groups:
                 # the honest empty week — one line, no invented motion
                 yield Label("Nothing moved this week.")
             for name, items in groups:
-                yield Label(f"[b]▐ {escape(name)}[/b]", classes="modal-title")
+                yield Label(Text(f"▐ {name}", style="bold"), classes="modal-title")
                 for task, done in items:
                     mark = "✓" if done else "→"
-                    yield Label(f"  {mark} {escape(task.title)}"
-                                f" [dim]{escape(task.phase)}[/dim]")
+                    yield Label(Text.assemble(f"  {mark} {task.title} ",
+                                              (task.phase, "dim")))
                 closed = sum(1 for _t, d in items if d)
-                yield Label(f"  [dim]{closed}/{len(items)} closed this week[/dim]")
+                yield Label(Text.assemble("  ", (f"{closed}/{len(items)} closed this week",
+                                                 "dim")))
             yield Label("[dim]S or esc closes[/dim]", classes="modal-title")
 
     def action_close(self) -> None:
@@ -1386,8 +1386,8 @@ class CommandPalette(ModalScreen[None]):
     def on_mount(self) -> None:
         self.query_one("#palette-input", Input).focus()
 
-    def _option_lines(self, commands: list[tuple[str, str, str]]) -> list[str]:
-        return [f"{show}  {escape(label)}" for show, label, _action in commands]
+    def _option_lines(self, commands: list[tuple[str, str, str]]) -> list[Text]:
+        return [Text(f"{show}  {label}") for show, label, _action in commands]
 
     def _refresh_list(self) -> None:
         lst = self.query_one("#palette-list", OptionList)

@@ -1,0 +1,32 @@
+[
+ {
+  "id": "C2",
+  "file": "tests/test_markup_census.py",
+  "old": "                elif isinstance(t, (ast.Tuple, ast.List)) and name in {\n                        x.id for x in ast.walk(t) if isinstance(x, ast.Name)}:\n                    return None",
+  "new": "                elif False:\n                    return None",
+  "nodes": [
+   "tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites"
+  ],
+  "why": "the census trusts a tuple-unpack rebinding (S2-3; the planted arm made able to go RED after run 2)"
+ },
+ {
+  "id": "C5",
+  "file": "tests/test_markup_census.py",
+  "old": "            return all(self._returns_inert(fn) for fn in fns)   # every namesake (G1)",
+  "new": "            return True",
+  "nodes": [
+   "tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites"
+  ],
+  "why": "the census trusts a -> Text function by its annotation alone (code review F1)"
+ },
+ {
+  "id": "C6",
+  "file": "tests/test_markup_census.py",
+  "old": "            return all(self._returns_inert(fn) for fn in fns)   # every namesake (G1)",
+  "new": "            return self._returns_inert(fns[-1])",
+  "nodes": [
+   "tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites"
+  ],
+  "why": "the census judges only the last same-named definition (code review G1)"
+ }
+]

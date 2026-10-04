@@ -1,0 +1,11 @@
+C2 KILLED — the census trusts a tuple-unpack rebinding (S2-3; the planted arm made able to go RED after run 2)
+   arms resolved 1, red 1; restore sha256 a1af4f13bba462c4… OK
+    FAILED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+C5 KILLED — the census trusts a -> Text function by its annotation alone (code review F1)
+   arms resolved 1, red 1; restore sha256 a1af4f13bba462c4… OK
+    FAILED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+C6 KILLED — the census judges only the last same-named definition (code review G1)
+   arms resolved 1, red 1; restore sha256 a1af4f13bba462c4… OK
+    FAILED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+3 of 3 KILLED
+exit=0

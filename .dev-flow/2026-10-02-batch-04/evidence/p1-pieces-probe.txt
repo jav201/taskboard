@@ -1,0 +1,12 @@
+P-11 the escape-and-parse seat, title template `[b]{t}[/b]  —  esc`:
+   '[LINK=http://e]x'       -> '[LINK=http://e]x  —  esc'         exact=True
+   'x\\'                    -> 'x\\  —  esc'                      exact=True
+   ':smile: [b]y[/b]'       -> '😄 [b]y[/b]  —  esc'               exact=False
+   'a\\\\'                  -> 'a\\  —  esc'                      exact=False
+   'x\\\\\\'                -> 'x\\[/b]  —  esc'                  exact=False
+P-13 Text pieces, Text.assemble((t, 'bold'), '  —  esc'):
+   '[LINK=http://e]x'       -> '[LINK=http://e]x  —  esc'         exact=True style-only-on-piece=True
+   'x\\'                    -> 'x\\  —  esc'                      exact=True style-only-on-piece=True
+   ':smile: [b]y[/b]'       -> ':smile: [b]y[/b]  —  esc'         exact=True style-only-on-piece=True
+   'a\\\\'                  -> 'a\\\\  —  esc'                    exact=True style-only-on-piece=True
+   'x\\\\\\'                -> 'x\\\\\\  —  esc'                  exact=True style-only-on-piece=True

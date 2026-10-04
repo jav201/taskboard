@@ -191,8 +191,9 @@ def test_no_literal_in_the_source_can_emit_the_second_person():
     """At the source, not just in one render: a string the app could ever print
     is checked, so a rarely-hit branch cannot smuggle a voice in."""
     # ONE named exemption, because a named exemption is honest and a weakened
-    # pattern is not: "We" here is Wednesday, in the date picker's weekday row.
-    EXEMPT = {"[dim]Mo Tu We Th Fr Sa Su[/dim]"}
+    # pattern is not: "We" here is Wednesday, in the date picker's weekday row
+    # (a dim Text piece since batch 2026-10-02-batch-04: the literal lost its markup).
+    EXEMPT = {"Mo Tu We Th Fr Sa Su"}
     offenders = []
     for path in sorted(SRC.glob("*.py")):
         src = path.read_text(encoding="utf-8")
