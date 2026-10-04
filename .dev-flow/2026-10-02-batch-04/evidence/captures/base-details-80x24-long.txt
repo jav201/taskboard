@@ -1,0 +1,24 @@
+◆ TASKBOARD · grid 2×1                                           1 open · 0 due
+  ╭──────────────────────────────────────────────────────────────────────────╮
+ ││                                                                          │
+ ││                                                                          │
+ ││  Write the launch checklist  —  o open raw · esc close                   │
+ ││                                                                          │
+ ││  Project              Website relaunch for the northern region           │
+ ││                       customer portal and partner onboarding phase       │
+ ││                                                                          │
+ ││                                                                          │
+ ││                                                                          │
+ ││                                                                          │
+ ││                                                                          │
+ ││  Notes  highlight: ==…== yellow, !!…!! red, ++…++ green                  │
+ ││  Draft the owner list and the rollback plan.                             │
+ ││  Review with ops on Friday.                                              │
+ ││                                                                      ▁▁  │
+ ││  URLs                                                                    │
+ ││                                                                          │
+ ││  link · https://example.com/launch                                       │
+ ││                                                                          │
+ │╰──────────────────────────────────────────────────────────────────────────╯
+  10:59:30 · Sat 03 Oct 2026 · W40 · Mexico City 10:59 · New York 12:59
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  ⇥  ↓  ↑

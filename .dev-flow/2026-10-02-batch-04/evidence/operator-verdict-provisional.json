@@ -1,0 +1,21 @@
+{
+  "batch": "2026-10-02-batch-04",
+  "exported": "2026-10-04T01:51:44.105Z",
+  "answers": {
+    "PV-1": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "UX-3": {
+      "choice": "apply",
+      "label": "Aplicarlo",
+      "note": ""
+    },
+    "UX-4": {
+      "choice": "apply",
+      "label": "Aplicarlo",
+      "note": ""
+    }
+  }
+}

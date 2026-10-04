@@ -296,8 +296,10 @@ async def test_manage_projects_empty_state_no_crash(tmp_path):
 
 
 async def test_manage_projects_escapes_markup_name(tmp_path):
-    """A project name full of markup is listed literally (escaped), never parsed
-    as tags -> no MarkupError when the picker builds its list (pitfall A1)."""
+    """A project name full of markup is listed literally, never parsed as tags ->
+    no MarkupError when the picker builds its list (pitfall A1). Since batch
+    2026-10-02-batch-04 (S1, LLR-401.3) the line is a Text built from pieces: its
+    plain text is the name as typed, with no escaping backslash."""
     app = make_app(tmp_path)
     async with app.run_test(size=(120, 40)) as pilot:
         await pilot.press("p")                              # add a markup-named project
@@ -309,8 +311,8 @@ async def test_manage_projects_escapes_markup_name(tmp_path):
         ol = app.screen.query_one("#proj-list", OptionList)
         prompts = [str(ol.get_option_at_index(i).prompt)
                    for i in range(len(app.board.projects))]
-        # the brackets are backslash-escaped in the list -> rendered literally
-        assert any("\\[red]boom\\[/red]" in pr for pr in prompts)
+        # a Text piece: the plain text IS the name, brackets and all
+        assert any("[red]boom[/red]" in pr and "\\" not in pr for pr in prompts), prompts
 
 
 async def test_ribbon_shows_time_date_week_and_two_clocks(tmp_path):
@@ -2046,9 +2048,10 @@ async def test_phase_editor_refuses_deleting_the_last_phase(tmp_path):
 
 
 async def test_phase_name_with_markup_is_escaped(tmp_path):
-    """WHY: phase names are user text and the editor's rows are markup — an
-    unescaped '[red]' would either vanish as a tag or raise MarkupError while the
-    list builds (pitfall A1)."""
+    """WHY: phase names are user text — parsed as markup, '[red]' would either
+    vanish as a tag or raise MarkupError while the list builds (pitfall A1). Since
+    batch 2026-10-02-batch-04 (S1, LLR-401.3) each row is a Text built from pieces,
+    so its plain text is the name as typed, with no escaping backslash."""
     app = _phase_app(tmp_path, ("[red]boom[/red]", "Done"),
                      [Task("t", None, "[red]boom[/red]")])
     async with app.run_test(size=(120, 40)) as pilot:
@@ -2056,7 +2059,7 @@ async def test_phase_name_with_markup_is_escaped(tmp_path):
         await pilot.pause()
         ol = app.screen.query_one("#phase-list", OptionList)
         prompts = [str(ol.get_option_at_index(i).prompt) for i in range(ol.option_count)]
-        assert any("\\[red]boom\\[/red]" in pr for pr in prompts)
+        assert any("[red]boom[/red]" in pr and "\\" not in pr for pr in prompts), prompts
 
 
 async def test_phase_editor_reorder_left_and_boundaries(tmp_path):

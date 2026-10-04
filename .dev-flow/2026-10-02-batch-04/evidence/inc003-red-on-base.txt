@@ -1,0 +1,84 @@
+== base 56a1b10 (git archive) + this increment's test files
+C:\Users\<user>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFF..F.....F....FFFFFFFFFFFFFF...........F....FF.                       [100%]
+================================== FAILURES ===================================
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_grid.py:72: AssertionError: [0, 0, 0, 0, 0, 0, ...]
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_grid.py:72: AssertionError: [0, 0, 0, 0, 0, 0, ...]
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_grid.py:91: assert (1, 1) == (1, 2)
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_grid.py:91: assert (2, 2) == (1, 3)
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_grid.py:172: AssertionError: [((140, 40), {}, [None, None, None, None, None]), ((140, 40), {}, 'order', [-1, -1, -1, -1, -1]), ((80, 24), 'long: la..._date': None, 'start_date': None}, 'order', [-1, -1, -1, -1, -1]), ((80, 24), {}, [None, None, None, None, None]), ...]
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: notes: ':smile: [b]y[/b]' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: title: 'x\\\\\\' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: title: ':smile: [b]y[/b]' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: project: '[LINK=http://e]x' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: project: '[B]bold?' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: project: '[ red]x' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: project: 'a[b' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: project: 'x\\\\\\' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: project: ':smile: [b]y[/b]' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: phase: '[LINK=http://e]x' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: phase: '[B]bold?' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: phase: '[ red]x' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: phase: 'a[b' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: phase: 'x\\\\\\' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: phase: ':smile: [b]y[/b]' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: image: ':smile: [b]y[/b]' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: viewer-title: 'x\\\\\\' not painted literally
+C:\Users\<user>\AppData\Local\Temp\claude\C--Users-<user>-clde\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base-pristine\tests\test_details_markup.py:98: AssertionError: viewer-title: ':smile: [b]y[/b]' not painted literally
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_details_grid.py::test_TC_411_the_edit_modals_keep_their_grid[<lambda>-base0]
+PASSED tests/test_details_grid.py::test_TC_411_the_edit_modals_keep_their_grid[<lambda>-base1]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-a[b]
+PASSED tests/test_details_markup.py::test_details_still_highlight_the_notes
+FAILED tests/test_details_grid.py::test_TC_411_every_grid_cell_paints_on_its_labels_row[size0]
+FAILED tests/test_details_grid.py::test_TC_411_every_grid_cell_paints_on_its_labels_row[size1]
+FAILED tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size0-2]
+FAILED tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size1-3]
+FAILED tests/test_details_grid.py::test_AT_406_the_details_view_shows_its_five_fields
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-x\\\\\\]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[LINK=http://e]x]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[B]bold?]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[ red]x]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-a[b]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-x\\\\\\]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[LINK=http://e]x]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[B]bold?]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[ red]x]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-a[b]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-x\\\\\\]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-x\\\\\\]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-:smile: [b]y[/b]]
+23 failed, 27 passed in 15.67s
+exit=1

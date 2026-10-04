@@ -518,21 +518,37 @@ def grab_clipboard_image():
 _MAX_PASTE_CHARS = 100_000
 
 
+def strip_controls(value):
+    """The one control-byte rule (S2, L1): a str loses every C0 byte but tab and
+    newline, DEL and every C1 byte — all of which some terminals read as control
+    introducers, so a title or a note carrying one could drive the terminal. CR
+    is one of them, so a CR-LF pair keeps its newline and a lone CR is removed.
+    Every other character is kept (accents, emoji, NBSP); any other value is
+    returned unchanged."""
+    if not isinstance(value, str):
+        return value
+    return "".join(c for c in value
+                   if c in "\t\n" or 0x20 <= ord(c) < 0x7f or ord(c) >= 0xa0)
+
+
+def clean_strings(value):
+    """`strip_controls` over every string inside nested dicts and lists, keys
+    included (two keys equal once cleaned keep the later value) — applied where
+    text enters the app: the board file and the shared team directory."""
+    if isinstance(value, dict):
+        return {strip_controls(k): clean_strings(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [clean_strings(v) for v in value]
+    return strip_controls(value)
+
+
 def _clean_clipboard_text(text: str | None) -> str | None:
-    """Make clipboard text safe to insert into a field: drop C0/C1 control
-    characters (except tab/newline/carriage-return) so stray control bytes can't
-    corrupt the terminal, and cap the length so a huge/binary clipboard can't
-    freeze rendering. None if nothing usable remains."""
+    """Make clipboard text safe to insert into a field: the one control-byte rule
+    (`strip_controls`), then a length cap so a huge/binary clipboard can't freeze
+    rendering. None if nothing usable remains."""
     if not text:
         return None
-    # keep tab/newline/CR + printable ASCII (0x20-0x7E) + everything from 0xA0 up
-    # (accents, emoji, NBSP…); drop C0 (incl. ESC), DEL (0x7F), and C1 (0x80-0x9F)
-    # — all of which some terminals treat as control introducers.
-    cleaned = "".join(
-        c for c in text
-        if c in "\t\n\r" or (0x20 <= ord(c) < 0x7f) or ord(c) >= 0xa0
-    )
-    return cleaned[:_MAX_PASTE_CHARS] or None
+    return strip_controls(text)[:_MAX_PASTE_CHARS] or None
 
 
 def _win_clipboard_text() -> str | None:
@@ -724,6 +740,8 @@ def project_color_on_load(color) -> str:
     A FIXED POINT — every output is in PROJECT_COLORS and no output is a remap
     key, so loading and saving repeatedly never keeps changing a project's
     colour. A board that used no dropped hue is not touched at all."""
+    if not isinstance(color, str):         # a synced or hand-edited value of
+        return "violet"                    # any type (S2-2): [] is unhashable
     if color in PROJECT_COLORS:
         return color
     return DROPPED_PROJECT_COLORS.get(color, "violet")
@@ -743,15 +761,20 @@ class Project:
 
     @classmethod
     def from_dict(cls, d: dict) -> "Project":
+        """The loading rule for a project, from a board file or a teammate's
+        `team.json` alike (HLR-404): a name that is not non-empty text is
+        `Untitled`, a date that is not text is None, an unknown status or colour
+        of any type is the default, a flag is True only as the boolean True."""
+        name, start, due = d.get("name"), d.get("start_date"), d.get("due_date")
         return cls(
             id=d.get("id") or _new_id(),
-            name=d.get("name", "Untitled"),
+            name=name if isinstance(name, str) and name else "Untitled",
             color=project_color_on_load(d.get("color")),
             status=d.get("status") if d.get("status") in PROJECT_STATUSES else "on_track",
-            archived=bool(d.get("archived", False)),
-            pinned=bool(d.get("pinned", False)),
-            start_date=d.get("start_date"),
-            due_date=d.get("due_date"),
+            archived=d.get("archived") is True,
+            pinned=d.get("pinned") is True,
+            start_date=start if isinstance(start, str) else None,
+            due_date=due if isinstance(due, str) else None,
             extra=_extra_keys(d, _PROJECT_KEYS),
         )
 
@@ -869,8 +892,10 @@ class Board:
             board.save()
             return board
         try:
-            raw = json.loads(path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError, TypeError, ValueError):
+            # the load door: no control byte gets in. A file nested deeper than
+            # the cleaning can follow is unreadable like any other (S4-1).
+            raw = clean_strings(json.loads(path.read_text(encoding="utf-8")))
+        except (json.JSONDecodeError, OSError, TypeError, ValueError, RecursionError):
             raw = None
         if not isinstance(raw, dict):
             # Whole file unreadable: quarantine a copy so a later save can never

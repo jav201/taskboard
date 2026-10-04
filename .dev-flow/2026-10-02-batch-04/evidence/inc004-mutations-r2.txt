@@ -1,0 +1,32 @@
+U1 KILLED — no row under the title: the gap is removed, not moved (UX-3)
+   arms resolved 2, red 2; restore sha256 920a99451c8aa6d4… OK
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]
+U2 KILLED — a row added instead of moved: two above, one below
+   arms resolved 2, red 2; restore sha256 920a99451c8aa6d4… OK
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]
+U3 SURVIVED — the longhand form in the same id rule: EQUIVALENT (the id rule outranks .modal Label either way; disposition in inc004-mutations.txt)
+   arms resolved 2, red 0; restore sha256 920a99451c8aa6d4… OK
+    PASSED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]
+    PASSED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]
+U4 KILLED — the 20-cell column returns (UX-4 undone); the long name back to 3 rows at 80x24
+   arms resolved 4, red 3; restore sha256 920a99451c8aa6d4… OK
+    PASSED tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size0-2]
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size0]
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size1]
+    FAILED tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size1-2]
+U5 KILLED — off by one: `Priority` still fits in 9, only the offset sees it
+   arms resolved 2, red 2; restore sha256 920a99451c8aa6d4… OK
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size0]
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size1]
+U6 KILLED — the column rule leaks to the edit modals
+   arms resolved 2, red 2; restore sha256 920a99451c8aa6d4… OK
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size0]
+    FAILED tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size1]
+U7 KILLED — the title rule leaks to every modal (code review F1 of increment 004)
+   arms resolved 2, red 2; restore sha256 920a99451c8aa6d4… OK
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]
+    FAILED tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]
+6 of 7 KILLED
+exit=0

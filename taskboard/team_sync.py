@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .models import Board, Project, Task
+from .models import Board, Project, Task, clean_strings
 
 TEAM_FILENAME = "team.json"
 USER_FILE_PREFIX = "board."
@@ -28,12 +28,33 @@ def _utc_now_iso() -> str:
 
 
 def _read_json(path: Path) -> dict | None:
-    """Never-raises JSON read.  Missing, unreadable or non-dict → None."""
+    """Never-raises JSON read.  Missing, unreadable or non-dict → None.  The sync
+    door: every string a teammate wrote loses its control bytes here, before any
+    task, project, phase or roster entry is built from it (S2, L1). A file nested
+    deeper than the cleaning can follow is refused like any unreadable one — it
+    crashed every teammate's startup when it escaped (S4-1)."""
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        data = clean_strings(json.loads(path.read_text(encoding="utf-8")))
+    except (OSError, json.JSONDecodeError, TypeError, ValueError, RecursionError):
         return None
     return data if isinstance(data, dict) else None
+
+
+def clean_roster(roster) -> list[dict]:
+    """A synced roster through a loading rule (HLR-404, S2-1): one entry per id
+    (the first), a name that is non-empty text or else the id, a hue that is a
+    palette key or else `mut` — a `[]` hue or an int name crashed the people,
+    standup and setup views, a duplicate id the identity picker."""
+    from .views import HEX          # function-local: views imports this module
+    out, seen = [], set()
+    for r in roster if isinstance(roster, list) else []:
+        if not (isinstance(r, dict) and isinstance(r.get("id"), str)) or r["id"] in seen:
+            continue
+        seen.add(r["id"])
+        name, hue = r.get("name"), r.get("hue")
+        out.append({**r, "name": name if isinstance(name, str) and name else r["id"],
+                    "hue": hue if isinstance(hue, str) and hue in HEX else "mut"})
+    return out
 
 
 def _write_json(path: Path, data: dict) -> bool:
@@ -108,9 +129,9 @@ class TeamState:
         }
 
     def roster(self) -> list[dict]:
-        """Validated roster entries: each has a string ``id``."""
-        roster = self.config.get("roster", [])
-        return [r for r in roster if isinstance(r, dict) and isinstance(r.get("id"), str)]
+        """Validated roster entries (`clean_roster`): one per id, a text name, a
+        palette hue."""
+        return clean_roster(self.config.get("roster", []))
 
     def member_names(self) -> dict[str, str]:
         return {r["id"]: r.get("name", r["id"]) for r in self.roster()}
@@ -240,24 +261,39 @@ class TeamState:
         if not isinstance(team_projects, list):
             return
         by_id = {p.id: p for p in board.projects}
+        seen: set[str] = set()
         for pd in team_projects:
             if not isinstance(pd, dict):
                 continue
             pid = pd.get("id")
-            if not isinstance(pid, str):
-                continue
+            # an empty id (literally, or once its control bytes are stripped) is
+            # refused: `from_dict` would give it a fresh id on every pass and the
+            # board would grow by one project per sync tick (code review F1)
+            if not isinstance(pid, str) or not pid or pid in seen:
+                continue                     # the first entry of an id wins
+            seen.add(pid)
             if pid in by_id:
-                existing = by_id[pid]
+                # Only the keys the entry holds, each through the loading rule
+                # (`Project.from_dict`); refused INPUT leaves the field as it was
+                # (S-1: a raw synced status reached the picker as markup).
+                existing, fresh = by_id[pid], Project.from_dict(pd)
                 for key in ("name", "color", "status", "start_date", "due_date"):
-                    if key in pd:
-                        setattr(existing, key, pd[key])
+                    if key not in pd:
+                        continue
+                    value = pd[key]
+                    if key == "name" and not (isinstance(value, str) and value):
+                        continue
+                    if key.endswith("_date") and not (value is None or isinstance(value, str)):
+                        continue
+                    setattr(existing, key, getattr(fresh, key))
                 if isinstance(pd.get("archived"), bool):
                     existing.archived = pd["archived"]
             else:
                 try:
-                    board.projects.append(Project.from_dict(pd))
+                    project = Project.from_dict(pd)
                 except Exception:
                     continue
+                board.projects.append(project)
 
 
 def sync_tone(team_state: TeamState | None, user_id: str,

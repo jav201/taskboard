@@ -1,0 +1,8 @@
+shipped      input=False grid h=2 cells=[('Label', 0, 1), ('Label', 0, 1), ('Label', 0, 2), ('Label', 0, 2)]
+no-margin    input=False grid h=2 cells=[('Label', 1, 0), ('Label', 1, 0), ('Label', 1, 1), ('Label', 1, 1)]
+no-height3   input=False grid h=2 cells=[('Label', 0, 1), ('Label', 0, 1), ('Label', 0, 2), ('Label', 0, 2)]
+rows-auto    input=False grid h=2 cells=[('Label', 0, 1), ('Label', 0, 1), ('Label', 0, 2), ('Label', 0, 2)]
+rows-3       input=False grid h=6 cells=[('Label', 2, 1), ('Label', 2, 1), ('Label', 2, 4), ('Label', 2, 4)]
+rows-4       input=False grid h=8 cells=[('Label', 3, 1), ('Label', 3, 1), ('Label', 3, 5), ('Label', 3, 5)]
+fix-scoped   input=False grid h=2 cells=[('Label', 1, 0), ('Label', 1, 0), ('Label', 1, 1), ('Label', 1, 1)]
+shipped      input=True  grid h=6 cells=[('Label', 2, 1), ('Input', 3, 0), ('Label', 2, 4), ('Input', 3, 3)]

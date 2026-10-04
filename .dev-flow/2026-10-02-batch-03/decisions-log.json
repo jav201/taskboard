@@ -1,0 +1,52 @@
+[
+  {
+    "station": "P0",
+    "date": "2026-10-02",
+    "decision": "batch opened by rollover from 2026-10-02-batch-02 (decisions_log archived to its decisions-log.json); core; flow pinned to rev98 by operator ruling at kickoff (verbatim: \"Sí, fijar a rev98\"; skills commit 48154ab, read-only snapshot; reason: ~/.claude/skills is rev99-wip and its SKILL.md fails V7); standing authorization = the operator's kickoff answers relayed in the commission; RC-1 origin/main == HEAD 13745f6; kickoff validator 0 block 18 notice (inherited, declared in PLAN.md); triggers B1 B4 C D E F2 fired, A judged not fired (D-310); US-301..303 READY, commission item 9 recorded as decision D-301; approved under the standing authorization; P1 is next."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-02",
+    "decision": "requirements derived: US-301..303, HLR-301..308, 8 LLR, AT-301..306, ledger LED .1-.8, IFC Part A+B; 8 premises measured TRUE (p0-probes.txt incl. the R-1b frame re-rendered over this tree, p1-geometry.txt, base-suite.txt 1677 passed); security scan security_required true (flags token, form, answered in section 6.4); decisions D-301..D-310 (D-301 replace the grouped body, tab unchanged); provisional visual decisions PV-1..PV-5 listed in PLAN.md; approved under the standing authorization; P2 is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-02",
+    "decision": "iteration 1: qa-reviewer FAIL (blockers Q-1 tag rule contradicts the frame, Q-2 phantom + key; 7 major), ux-reviewer PASS-WITH-NOTES (UX-1 silent fold, UX-2 cursor on an undrawn done task, UX-3, UX-4 major), security-reviewer PASS-WITH-NOTES 0 HIGH (S-1, S-2 MEDIUM) -> iterate-to-refine to P1 under the standing authorization; all findings folded (HLR-309 windowing per the approved frame, HLR-310 relocation + notification, LLR-301.3 chrome, readability metric re-derived and floors re-measured, D-311..D-313, LED .9-.13) or carried (UX-9..UX-11 to P4, S-3 to each code review, S-4 BACKLOG L1); increment plan re-cut (C-21); qa and ux re-dispatched."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-02",
+    "decision": "iteration 2: qa-reviewer FAIL (N-1 blocker: the half-body cap capped the approved 80x24 frame), ux-reviewer FAIL (UX-15 blocker: the fold row clipped its down side; UX-13, UX-14 major) -> folded (cap two thirds LED .16, D-303; stable window and two-sided fold row LED .14, D-314; neighbour after ] LED .15); a fresh qa-reviewer discharge re-read returned DISCHARGED (12/12, cap arithmetic re-derived), its three minor fold defects F-1..F-3 folded; approved under the standing authorization (0 blocker, 0 HIGH); increment plan unchanged since the iteration-1 re-cut; P3 is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 001 (the readable board: two-row cards, separators, adaptive widths, band rules, the DONE rail, the high band, band windowing and the fold row, one plan seat for render and nav) approved under the standing authorization: 1 SOURCE file; code-reviewer round 1 BLOCK-UNTIL F1 (HIGH: the UX-15 both-counts assertion could not go RED) with F2-F12, all folded or routed (F2 the / filter nav height and F11 to increment 002), round 2 OK to advance, F1 discharged by re-reading and M13/N20/N20c KILLED; 28/28 mutations KILLED; RED on base 79 failed; reverse census 11 product nodes rewritten in place (D-313 supersessions); LLR-302.1 amended at P3 (LED .17, the frames' proportional widths); suite 1821 passed; P3 continues."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 002 (the cap's nodes over the executed h-table and a 14-high board, the filtered nav height D-312, the kanban help/legend copy, the cursor off undrawn done work with the neighbour rule and a markup-off notification) approved under the standing authorization: 2 SOURCE files; code-reviewer round 1 BLOCK-UNTIL F1 (HIGH: the reset to the first visible task skipped the kanban rule) with F2-F5, folded with RED proof (Q13-Q15 KILLED), round 2 OK to advance, nothing open; security-reviewer PASS-WITH-NOTES 0 HIGH (S-1 fixed, S-2 to BACKLOG); 15/15 mutations KILLED; suite 1845 passed; P3 closed, P4 is next."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-02",
+    "decision": "P4 iteration 1: gate run 1845 passed (orchestrator, C-25, evidence/p4-gate.txt); qa-reviewer PASS-WITH-NOTES (21/21, C-18 8 ATs = 8 functions, 43/43 mutants re-killed; majors G-001 a cited widths transcript missing, G-003a title_markup changed with no regression node, G-004 two old test_app nodes still assert the superseded header; G-006 the ux walkthrough pending); ux-reviewer walkthrough FAIL (UXV3-1 blocker: a band taller than the room scrolls, row 2 and the fold row leave the viewport — on the oracle board under group horizon at 80x24); -> iterate-to-refine HLR-309 (a band taller than the room is clipped around the selection, the fold row names its hidden cards; PV-9) and iterate-to-fix to P3 as increment 003 (with G-001, G-003a, G-003b, G-004, G-005) under the standing authorization; UXV3-2 (at risk unreachable), UXV3-3, UXV3-5..9 routed to the operator / BACKLOG."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-02",
+    "decision": "increment 003 (P4 iterate-to-fix: a band taller than the room is cut around the selection with in-band counts in the fold row, HLR-309 amended LED .18/.21, LLR-309.2 NEW; the shared title-seat regression nodes G-003a; the G-004 rewrites; the widths transcript G-001) approved under the standing authorization: 1 SOURCE file; code-reviewer round 1 BLOCK-UNTIL F1, F2 (HIGH: an exact-fit single band cut; counts clipped) folded with RED proof, round 2 OK to advance (notes F10, F11, F12 folded or declared), round 3 OK to advance, nothing open; 12/12 mutations KILLED; suite 1854 passed + the known clipboard environment flake; P4 iteration 2 is next."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-02",
+    "decision": "P4 iteration 2 approved under the standing authorization: suite 1855 passed (evidence/p4-gate3.txt); qa PASS-WITH-NOTES (G-009..G-012 folded, G-002 deferred); ux re-walk PASS-WITH-NOTES, UXV3-1 fixed (evidence/p4-ux-rewalk.txt), UXV3-12..15 notices routed to close; no HIGH open; P5 next."
+  },
+  {
+    "station": "P5",
+    "date": "2026-10-02",
+    "decision": "P5 closed under the standing authorization: canon folded (22 rows; LLR-306.1 reworded with its shall; HLR-003, LLR-003.2 superseded); BACKLOG reconciled (A2 done, 20 items added incl. PV-1..PV-10 and G-002 DEFER; header 1855 / 13745f6); privacy sweep 0 new hits; closing validator recorded in 05-close.md; the coordinator commits after the operator's visual verdict."
+  }
+]

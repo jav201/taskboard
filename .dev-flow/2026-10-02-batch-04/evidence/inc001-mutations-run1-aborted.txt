@@ -1,0 +1,22 @@
+M1 KILLED — the confirm modal hands the message to Textual as a str (by position: ConfirmModal.compose, Text(...) wrapper removed)
+   arms resolved 2, red 2; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+M2 KILLED — the picker line parses the project name and status again (the S-1 seat)
+   arms resolved 3, red 3; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+    FAILED tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_406_no_user_value_reaches_a_markup_parser
+M3 KILLED — the archive toast parses the title with markup on
+   arms resolved 3, red 3; restore sha256 46e8659268603d5e… MISMATCH
+    FAILED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+    FAILED tests/test_archive.py::test_the_notify_cannot_be_hijacked_by_a_hostile_title
+Traceback (most recent call last):
+  File "C:\Users\<user>\Github\taskboard\.dev-flow\2026-10-02-batch-04\evidence\mutate.py", line 53, in <module>
+    main()
+  File "C:\Users\<user>\Github\taskboard\.dev-flow\2026-10-02-batch-04\evidence\mutate.py", line 48, in main
+    assert restored
+           ^^^^^^^^
+AssertionError
+exit=1

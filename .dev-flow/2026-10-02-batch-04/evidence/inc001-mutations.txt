@@ -1,0 +1,80 @@
+M1 KILLED — the confirm modal hands the message to Textual as a str (by position: ConfirmModal.compose, Text(...) wrapper removed)
+   arms resolved 2, red 2; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+M2 KILLED — the picker line parses the project name and status again (the S-1 seat)
+   arms resolved 3, red 3; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+    FAILED tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_406_no_user_value_reaches_a_markup_parser
+M3 KILLED — the archive toast parses the title with markup on
+   arms resolved 3, red 3; restore sha256 46e8659268603d5e… OK
+    FAILED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+    FAILED tests/test_archive.py::test_the_notify_cannot_be_hijacked_by_a_hostile_title
+M4 KILLED — the notes pieces lose their highlight tones
+   arms resolved 2, red 2; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style
+    FAILED tests/test_details_markup.py::test_details_still_highlight_the_notes
+M5 KILLED — the tokeniser gives ==..== the wrong tone (board and preview both)
+   arms resolved 10, red 5; restore sha256 59595a9ff00f9dab… OK
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[-segments0]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[plain-segments1]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[!!r!!-segments3]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[++g++ tail-segments4]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[a !!!! b-segments7]
+    FAILED tests/test_highlight_segments.py::test_TC_417_the_board_markup_is_unchanged
+    FAILED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[a ==y== b-segments2]
+    FAILED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[x\\ ==[b]== :smile:-segments5]
+    FAILED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[====-segments6]
+    FAILED tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style
+M6 KILLED — the calendar's base style dims every day (the defect TC-415 caught during the conversion)
+   arms resolved 1, red 1; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style
+M7 KILLED — the transition-log toast parses an OS error text holding a path
+   arms resolved 2, red 2; restore sha256 46e8659268603d5e… OK
+    FAILED tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+M8 KILLED — the identity picker hands a synced roster name to Textual as a str
+   arms resolved 2, red 2; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+M9 KILLED — the prompt title loses its bold piece
+   arms resolved 1, red 1; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style
+M10 KILLED — the board markup is re-escaped (no longer byte-identical)
+   arms resolved 9, red 1; restore sha256 59595a9ff00f9dab… OK
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[-segments0]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[plain-segments1]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[a ==y== b-segments2]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[!!r!!-segments3]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[++g++ tail-segments4]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[x\\ ==[b]== :smile:-segments5]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[====-segments6]
+    PASSED tests/test_highlight_segments.py::test_TC_417_segments_drop_markers_and_keep_text[a !!!! b-segments7]
+    FAILED tests/test_highlight_segments.py::test_TC_417_the_board_markup_is_unchanged
+M11 KILLED — the phase editor's duplicate-name toast parses the typed name
+   arms resolved 2, red 2; restore sha256 d47f5a826e705d02… OK
+    FAILED tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly
+    FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+M12 KILLED — the sync-failure toast parses the exception text
+   arms resolved 1, red 1; restore sha256 46e8659268603d5e… OK
+    FAILED tests/test_markup_sites.py::test_TC_412_the_sync_failure_toast_shows_the_exception_text
+C1 KILLED — the census drops the tooltip attribute sink (Q2-9)
+   arms resolved 1, red 1; restore sha256 0440da1d2f106aff… OK
+    FAILED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+C2 SURVIVED — the census trusts a tuple-unpack rebinding (S2-3)
+   arms resolved 1, red 0; restore sha256 0440da1d2f106aff… OK
+    PASSED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+C3 KILLED — the census stops seeing Text.from_markup (a narrowed scanner)
+   arms resolved 2, red 1; restore sha256 0440da1d2f106aff… OK
+    PASSED tests/test_markup_census.py::test_TC_406_no_user_value_reaches_a_markup_parser
+    FAILED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+C4 KILLED — the census trusts any + of options
+   arms resolved 1, red 1; restore sha256 0440da1d2f106aff… OK
+    FAILED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+C5 KILLED — the census trusts a -> Text function by its annotation alone (code review F1)
+   arms resolved 1, red 1; restore sha256 0440da1d2f106aff… OK
+    FAILED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+16 of 17 KILLED
+exit=0

@@ -1,0 +1,10 @@
+# inc004_probe.py over increment 003's stylesheet (scratch tree, tcss sha256 = inc003-frozen-r2)
+140x40 short: above=2 below=0 label_w=7 value_dx=21 title_h=1 visible=True proj_rows=1
+140x40 long: above=2 below=0 label_w=7 value_dx=21 title_h=1 visible=True proj_rows=2
+80x24 short: above=2 below=0 label_w=7 value_dx=21 title_h=1 visible=True proj_rows=1
+80x24 long: above=2 below=0 label_w=7 value_dx=21 title_h=1 visible=True proj_rows=3
+# inc004_probe.py over the working tree (increment 004)
+140x40 short: above=1 below=1 label_w=7 value_dx=11 title_h=1 visible=True proj_rows=1
+140x40 long: above=1 below=1 label_w=7 value_dx=11 title_h=1 visible=True proj_rows=2
+80x24 short: above=1 below=1 label_w=7 value_dx=11 title_h=1 visible=True proj_rows=1
+80x24 long: above=1 below=1 label_w=7 value_dx=11 title_h=1 visible=True proj_rows=2

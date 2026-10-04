@@ -1,0 +1,475 @@
+$ python -B -m pytest -q -p no:cacheprovider -rA tests/test_details_markup.py
+# tree: git archive 56a1b10 (base; taskboard/ unmodified) with tests/test_details_markup.py from the working tree (round 2, HOSTILE extended)
+# base export check: diff -r against a fresh `git archive 56a1b10 taskboard` -> identical
+# taskboard imported from the export: True
+C:\Users\<user>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.....F....FF.....F.....F...........F....FF.                              [100%]
+================================== FAILURES ===================================
+___ test_details_show_bracketed_task_text_literally[notes-:smile: [b]y[/b]] ___
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14784/test_details_show_bracketed_ta5')
+text = ':smile: [b]y[/b]', where = 'notes'
+
+    @pytest.mark.parametrize("text", HOSTILE)
+    @pytest.mark.parametrize("where", ["notes", "title", "project", "phase", "url", "image",
+                                       "viewer-title"])
+    async def test_details_show_bracketed_task_text_literally(tmp_path, text, where):
+        """AT-007 (HLR-005). Each user-controlled string the details view draws —
+        notes, title, project name, phase, URL, image path, and the image viewer's
+        title (review F1) — holding a bracket Textual
+        would parse: the view opens (no crash) and the text is painted exactly as
+        typed. RED on base: MarkupError for `[LINK=…`, vanished text for `[B]…`."""
+        fields = {"notes": "", "urls": [], "images": []}
+        if where == "notes":
+            fields["notes"] = f"before {text} after"
+        elif where in ("title", "viewer-title"):
+            fields["title"] = text
+        elif where == "phase":
+            fields["phase"] = text
+        elif where == "project":
+            fields["project"] = text
+        elif where == "url":
+            fields["urls"] = [f"https://e.example/{text}"]
+        else:
+            fields["images"] = [f"img/{text}.png"]
+        app = _app(tmp_path, **fields)
+        async with app.run_test(size=(140, 40)) as pilot:
+            if where == "viewer-title":           # the image viewer, `i` (review F1)
+                await pilot.pause()
+                app.selected_task_id = app.board.tasks[0].id
+                await pilot.press("i")
+                for _ in range(3):
+                    await pilot.pause()
+                assert isinstance(app.screen, ImageViewer), "the image viewer did not open"
+            else:
+                await _open_details(app, pilot)
+                assert isinstance(app.screen, TaskDetails), "the details view did not open"
+            if where in ("project", "phase"):
+                # the details grid paints its cells blank in textual 8.2.8 — on
+                # the base tree too (pre-existing, BACKLOG) — so these two fields
+                # are read off what each label RENDERS (Textual's parse), not the screen
+                built = [str(w.render()) for w in app.screen.query("#details-box Label")]
+                assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
+            else:
+                box = "#viewer-box" if where == "viewer-title" else "#details-box"
+>               assert text in _painted(app, box), f"{where}: {text!r} not painted literally"
+E               AssertionError: notes: ':smile: [b]y[/b]' not painted literally
+E               assert ':smile: [b]y[/b]' in '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯'
+E                +  where '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯' = _painted(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}), '#details-box')
+
+tests\test_details_markup.py:102: AssertionError
+_______ test_details_show_bracketed_task_text_literally[title-x\\\\\\] ________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14784/test_details_show_bracketed_ta10')
+text = 'x\\\\\\', where = 'title'
+
+    @pytest.mark.parametrize("text", HOSTILE)
+    @pytest.mark.parametrize("where", ["notes", "title", "project", "phase", "url", "image",
+                                       "viewer-title"])
+    async def test_details_show_bracketed_task_text_literally(tmp_path, text, where):
+        """AT-007 (HLR-005). Each user-controlled string the details view draws —
+        notes, title, project name, phase, URL, image path, and the image viewer's
+        title (review F1) — holding a bracket Textual
+        would parse: the view opens (no crash) and the text is painted exactly as
+        typed. RED on base: MarkupError for `[LINK=…`, vanished text for `[B]…`."""
+        fields = {"notes": "", "urls": [], "images": []}
+        if where == "notes":
+            fields["notes"] = f"before {text} after"
+        elif where in ("title", "viewer-title"):
+            fields["title"] = text
+        elif where == "phase":
+            fields["phase"] = text
+        elif where == "project":
+            fields["project"] = text
+        elif where == "url":
+            fields["urls"] = [f"https://e.example/{text}"]
+        else:
+            fields["images"] = [f"img/{text}.png"]
+        app = _app(tmp_path, **fields)
+        async with app.run_test(size=(140, 40)) as pilot:
+            if where == "viewer-title":           # the image viewer, `i` (review F1)
+                await pilot.pause()
+                app.selected_task_id = app.board.tasks[0].id
+                await pilot.press("i")
+                for _ in range(3):
+                    await pilot.pause()
+                assert isinstance(app.screen, ImageViewer), "the image viewer did not open"
+            else:
+                await _open_details(app, pilot)
+                assert isinstance(app.screen, TaskDetails), "the details view did not open"
+            if where in ("project", "phase"):
+                # the details grid paints its cells blank in textual 8.2.8 — on
+                # the base tree too (pre-existing, BACKLOG) — so these two fields
+                # are read off what each label RENDERS (Textual's parse), not the screen
+                built = [str(w.render()) for w in app.screen.query("#details-box Label")]
+                assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
+            else:
+                box = "#viewer-box" if where == "viewer-title" else "#details-box"
+>               assert text in _painted(app, box), f"{where}: {text!r} not painted literally"
+E               AssertionError: title: 'x\\\\\\' not painted literally
+E               assert 'x\\\\\\' in '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯'
+E                +  where '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯' = _painted(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}), '#details-box')
+
+tests\test_details_markup.py:102: AssertionError
+___ test_details_show_bracketed_task_text_literally[title-:smile: [b]y[/b]] ___
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14784/test_details_show_bracketed_ta11')
+text = ':smile: [b]y[/b]', where = 'title'
+
+    @pytest.mark.parametrize("text", HOSTILE)
+    @pytest.mark.parametrize("where", ["notes", "title", "project", "phase", "url", "image",
+                                       "viewer-title"])
+    async def test_details_show_bracketed_task_text_literally(tmp_path, text, where):
+        """AT-007 (HLR-005). Each user-controlled string the details view draws —
+        notes, title, project name, phase, URL, image path, and the image viewer's
+        title (review F1) — holding a bracket Textual
+        would parse: the view opens (no crash) and the text is painted exactly as
+        typed. RED on base: MarkupError for `[LINK=…`, vanished text for `[B]…`."""
+        fields = {"notes": "", "urls": [], "images": []}
+        if where == "notes":
+            fields["notes"] = f"before {text} after"
+        elif where in ("title", "viewer-title"):
+            fields["title"] = text
+        elif where == "phase":
+            fields["phase"] = text
+        elif where == "project":
+            fields["project"] = text
+        elif where == "url":
+            fields["urls"] = [f"https://e.example/{text}"]
+        else:
+            fields["images"] = [f"img/{text}.png"]
+        app = _app(tmp_path, **fields)
+        async with app.run_test(size=(140, 40)) as pilot:
+            if where == "viewer-title":           # the image viewer, `i` (review F1)
+                await pilot.pause()
+                app.selected_task_id = app.board.tasks[0].id
+                await pilot.press("i")
+                for _ in range(3):
+                    await pilot.pause()
+                assert isinstance(app.screen, ImageViewer), "the image viewer did not open"
+            else:
+                await _open_details(app, pilot)
+                assert isinstance(app.screen, TaskDetails), "the details view did not open"
+            if where in ("project", "phase"):
+                # the details grid paints its cells blank in textual 8.2.8 — on
+                # the base tree too (pre-existing, BACKLOG) — so these two fields
+                # are read off what each label RENDERS (Textual's parse), not the screen
+                built = [str(w.render()) for w in app.screen.query("#details-box Label")]
+                assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
+            else:
+                box = "#viewer-box" if where == "viewer-title" else "#details-box"
+>               assert text in _painted(app, box), f"{where}: {text!r} not painted literally"
+E               AssertionError: title: ':smile: [b]y[/b]' not painted literally
+E               assert ':smile: [b]y[/b]' in '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯'
+E                +  where '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯' = _painted(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}), '#details-box')
+
+tests\test_details_markup.py:102: AssertionError
+__ test_details_show_bracketed_task_text_literally[project-:smile: [b]y[/b]] __
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14784/test_details_show_bracketed_ta17')
+text = ':smile: [b]y[/b]', where = 'project'
+
+    @pytest.mark.parametrize("text", HOSTILE)
+    @pytest.mark.parametrize("where", ["notes", "title", "project", "phase", "url", "image",
+                                       "viewer-title"])
+    async def test_details_show_bracketed_task_text_literally(tmp_path, text, where):
+        """AT-007 (HLR-005). Each user-controlled string the details view draws —
+        notes, title, project name, phase, URL, image path, and the image viewer's
+        title (review F1) — holding a bracket Textual
+        would parse: the view opens (no crash) and the text is painted exactly as
+        typed. RED on base: MarkupError for `[LINK=…`, vanished text for `[B]…`."""
+        fields = {"notes": "", "urls": [], "images": []}
+        if where == "notes":
+            fields["notes"] = f"before {text} after"
+        elif where in ("title", "viewer-title"):
+            fields["title"] = text
+        elif where == "phase":
+            fields["phase"] = text
+        elif where == "project":
+            fields["project"] = text
+        elif where == "url":
+            fields["urls"] = [f"https://e.example/{text}"]
+        else:
+            fields["images"] = [f"img/{text}.png"]
+        app = _app(tmp_path, **fields)
+        async with app.run_test(size=(140, 40)) as pilot:
+            if where == "viewer-title":           # the image viewer, `i` (review F1)
+                await pilot.pause()
+                app.selected_task_id = app.board.tasks[0].id
+                await pilot.press("i")
+                for _ in range(3):
+                    await pilot.pause()
+                assert isinstance(app.screen, ImageViewer), "the image viewer did not open"
+            else:
+                await _open_details(app, pilot)
+                assert isinstance(app.screen, TaskDetails), "the details view did not open"
+            if where in ("project", "phase"):
+                # the details grid paints its cells blank in textual 8.2.8 — on
+                # the base tree too (pre-existing, BACKLOG) — so these two fields
+                # are read off what each label RENDERS (Textual's parse), not the screen
+                built = [str(w.render()) for w in app.screen.query("#details-box Label")]
+>               assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
+E               AssertionError: project: ':smile: [b]y[/b]' not in ['Plain title  —  o open raw · esc close', 'Project', '😄 [b]y[/b]', 'Phase', 'Doing', 'Priority', 'normal', 'Start', '—', 'Due', '—', 'Notes  highlight: ==…== yellow, !!…!! red, ++…++ green', 'URLs', '—', 'Images', '—']
+E               assert False
+E                +  where False = any(<generator object test_details_show_bracketed_task_text_literally.<locals>.<genexpr> at 0x000001F6C57F2260>)
+
+tests\test_details_markup.py:99: AssertionError
+___ test_details_show_bracketed_task_text_literally[phase-:smile: [b]y[/b]] ___
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14784/test_details_show_bracketed_ta23')
+text = ':smile: [b]y[/b]', where = 'phase'
+
+    @pytest.mark.parametrize("text", HOSTILE)
+    @pytest.mark.parametrize("where", ["notes", "title", "project", "phase", "url", "image",
+                                       "viewer-title"])
+    async def test_details_show_bracketed_task_text_literally(tmp_path, text, where):
+        """AT-007 (HLR-005). Each user-controlled string the details view draws —
+        notes, title, project name, phase, URL, image path, and the image viewer's
+        title (review F1) — holding a bracket Textual
+        would parse: the view opens (no crash) and the text is painted exactly as
+        typed. RED on base: MarkupError for `[LINK=…`, vanished text for `[B]…`."""
+        fields = {"notes": "", "urls": [], "images": []}
+        if where == "notes":
+            fields["notes"] = f"before {text} after"
+        elif where in ("title", "viewer-title"):
+            fields["title"] = text
+        elif where == "phase":
+            fields["phase"] = text
+        elif where == "project":
+            fields["project"] = text
+        elif where == "url":
+            fields["urls"] = [f"https://e.example/{text}"]
+        else:
+            fields["images"] = [f"img/{text}.png"]
+        app = _app(tmp_path, **fields)
+        async with app.run_test(size=(140, 40)) as pilot:
+            if where == "viewer-title":           # the image viewer, `i` (review F1)
+                await pilot.pause()
+                app.selected_task_id = app.board.tasks[0].id
+                await pilot.press("i")
+                for _ in range(3):
+                    await pilot.pause()
+                assert isinstance(app.screen, ImageViewer), "the image viewer did not open"
+            else:
+                await _open_details(app, pilot)
+                assert isinstance(app.screen, TaskDetails), "the details view did not open"
+            if where in ("project", "phase"):
+                # the details grid paints its cells blank in textual 8.2.8 — on
+                # the base tree too (pre-existing, BACKLOG) — so these two fields
+                # are read off what each label RENDERS (Textual's parse), not the screen
+                built = [str(w.render()) for w in app.screen.query("#details-box Label")]
+>               assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
+E               AssertionError: phase: ':smile: [b]y[/b]' not in ['Plain title  —  o open raw · esc close', 'Project', 'Plain', 'Phase', '😄 [b]y[/b]', 'Priority', 'normal', 'Start', '—', 'Due', '—', 'Notes  highlight: ==…== yellow, !!…!! red, ++…++ green', 'URLs', '—', 'Images', '—']
+E               assert False
+E                +  where False = any(<generator object test_details_show_bracketed_task_text_literally.<locals>.<genexpr> at 0x000001F6C5CF4FB0>)
+
+tests\test_details_markup.py:99: AssertionError
+___ test_details_show_bracketed_task_text_literally[image-:smile: [b]y[/b]] ___
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14784/test_details_show_bracketed_ta35')
+text = ':smile: [b]y[/b]', where = 'image'
+
+    @pytest.mark.parametrize("text", HOSTILE)
+    @pytest.mark.parametrize("where", ["notes", "title", "project", "phase", "url", "image",
+                                       "viewer-title"])
+    async def test_details_show_bracketed_task_text_literally(tmp_path, text, where):
+        """AT-007 (HLR-005). Each user-controlled string the details view draws —
+        notes, title, project name, phase, URL, image path, and the image viewer's
+        title (review F1) — holding a bracket Textual
+        would parse: the view opens (no crash) and the text is painted exactly as
+        typed. RED on base: MarkupError for `[LINK=…`, vanished text for `[B]…`."""
+        fields = {"notes": "", "urls": [], "images": []}
+        if where == "notes":
+            fields["notes"] = f"before {text} after"
+        elif where in ("title", "viewer-title"):
+            fields["title"] = text
+        elif where == "phase":
+            fields["phase"] = text
+        elif where == "project":
+            fields["project"] = text
+        elif where == "url":
+            fields["urls"] = [f"https://e.example/{text}"]
+        else:
+            fields["images"] = [f"img/{text}.png"]
+        app = _app(tmp_path, **fields)
+        async with app.run_test(size=(140, 40)) as pilot:
+            if where == "viewer-title":           # the image viewer, `i` (review F1)
+                await pilot.pause()
+                app.selected_task_id = app.board.tasks[0].id
+                await pilot.press("i")
+                for _ in range(3):
+                    await pilot.pause()
+                assert isinstance(app.screen, ImageViewer), "the image viewer did not open"
+            else:
+                await _open_details(app, pilot)
+                assert isinstance(app.screen, TaskDetails), "the details view did not open"
+            if where in ("project", "phase"):
+                # the details grid paints its cells blank in textual 8.2.8 — on
+                # the base tree too (pre-existing, BACKLOG) — so these two fields
+                # are read off what each label RENDERS (Textual's parse), not the screen
+                built = [str(w.render()) for w in app.screen.query("#details-box Label")]
+                assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
+            else:
+                box = "#viewer-box" if where == "viewer-title" else "#details-box"
+>               assert text in _painted(app, box), f"{where}: {text!r} not painted literally"
+E               AssertionError: image: ':smile: [b]y[/b]' not painted literally
+E               assert ':smile: [b]y[/b]' in '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯'
+E                +  where '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯' = _painted(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}), '#details-box')
+
+tests\test_details_markup.py:102: AssertionError
+____ test_details_show_bracketed_task_text_literally[viewer-title-x\\\\\\] ____
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14784/test_details_show_bracketed_ta40')
+text = 'x\\\\\\', where = 'viewer-title'
+
+    @pytest.mark.parametrize("text", HOSTILE)
+    @pytest.mark.parametrize("where", ["notes", "title", "project", "phase", "url", "image",
+                                       "viewer-title"])
+    async def test_details_show_bracketed_task_text_literally(tmp_path, text, where):
+        """AT-007 (HLR-005). Each user-controlled string the details view draws —
+        notes, title, project name, phase, URL, image path, and the image viewer's
+        title (review F1) — holding a bracket Textual
+        would parse: the view opens (no crash) and the text is painted exactly as
+        typed. RED on base: MarkupError for `[LINK=…`, vanished text for `[B]…`."""
+        fields = {"notes": "", "urls": [], "images": []}
+        if where == "notes":
+            fields["notes"] = f"before {text} after"
+        elif where in ("title", "viewer-title"):
+            fields["title"] = text
+        elif where == "phase":
+            fields["phase"] = text
+        elif where == "project":
+            fields["project"] = text
+        elif where == "url":
+            fields["urls"] = [f"https://e.example/{text}"]
+        else:
+            fields["images"] = [f"img/{text}.png"]
+        app = _app(tmp_path, **fields)
+        async with app.run_test(size=(140, 40)) as pilot:
+            if where == "viewer-title":           # the image viewer, `i` (review F1)
+                await pilot.pause()
+                app.selected_task_id = app.board.tasks[0].id
+                await pilot.press("i")
+                for _ in range(3):
+                    await pilot.pause()
+                assert isinstance(app.screen, ImageViewer), "the image viewer did not open"
+            else:
+                await _open_details(app, pilot)
+                assert isinstance(app.screen, TaskDetails), "the details view did not open"
+            if where in ("project", "phase"):
+                # the details grid paints its cells blank in textual 8.2.8 — on
+                # the base tree too (pre-existing, BACKLOG) — so these two fields
+                # are read off what each label RENDERS (Textual's parse), not the screen
+                built = [str(w.render()) for w in app.screen.query("#details-box Label")]
+                assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
+            else:
+                box = "#viewer-box" if where == "viewer-title" else "#details-box"
+>               assert text in _painted(app, box), f"{where}: {text!r} not painted literally"
+E               AssertionError: viewer-title: 'x\\\\\\' not painted literally
+E               assert 'x\\\\\\' in '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯'
+E                +  where '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯' = _painted(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}), '#viewer-box')
+
+tests\test_details_markup.py:102: AssertionError
+_ test_details_show_bracketed_task_text_literally[viewer-title-:smile: [b]y[/b]] _
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-14784/test_details_show_bracketed_ta41')
+text = ':smile: [b]y[/b]', where = 'viewer-title'
+
+    @pytest.mark.parametrize("text", HOSTILE)
+    @pytest.mark.parametrize("where", ["notes", "title", "project", "phase", "url", "image",
+                                       "viewer-title"])
+    async def test_details_show_bracketed_task_text_literally(tmp_path, text, where):
+        """AT-007 (HLR-005). Each user-controlled string the details view draws —
+        notes, title, project name, phase, URL, image path, and the image viewer's
+        title (review F1) — holding a bracket Textual
+        would parse: the view opens (no crash) and the text is painted exactly as
+        typed. RED on base: MarkupError for `[LINK=…`, vanished text for `[B]…`."""
+        fields = {"notes": "", "urls": [], "images": []}
+        if where == "notes":
+            fields["notes"] = f"before {text} after"
+        elif where in ("title", "viewer-title"):
+            fields["title"] = text
+        elif where == "phase":
+            fields["phase"] = text
+        elif where == "project":
+            fields["project"] = text
+        elif where == "url":
+            fields["urls"] = [f"https://e.example/{text}"]
+        else:
+            fields["images"] = [f"img/{text}.png"]
+        app = _app(tmp_path, **fields)
+        async with app.run_test(size=(140, 40)) as pilot:
+            if where == "viewer-title":           # the image viewer, `i` (review F1)
+                await pilot.pause()
+                app.selected_task_id = app.board.tasks[0].id
+                await pilot.press("i")
+                for _ in range(3):
+                    await pilot.pause()
+                assert isinstance(app.screen, ImageViewer), "the image viewer did not open"
+            else:
+                await _open_details(app, pilot)
+                assert isinstance(app.screen, TaskDetails), "the details view did not open"
+            if where in ("project", "phase"):
+                # the details grid paints its cells blank in textual 8.2.8 — on
+                # the base tree too (pre-existing, BACKLOG) — so these two fields
+                # are read off what each label RENDERS (Textual's parse), not the screen
+                built = [str(w.render()) for w in app.screen.query("#details-box Label")]
+                assert any(text in b for b in built), f"{where}: {text!r} not in {built}"
+            else:
+                box = "#viewer-box" if where == "viewer-title" else "#details-box"
+>               assert text in _painted(app, box), f"{where}: {text!r} not painted literally"
+E               AssertionError: viewer-title: ':smile: [b]y[/b]' not painted literally
+E               assert ':smile: [b]y[/b]' in '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯'
+E                +  where '╭──────────────────────────────────────────────────────────────────────────────────────────────────╮\n│              ...               │\n╰──────────────────────────────────────────────────────────────────────────────────────────────────╯' = _painted(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}), '#viewer-box')
+
+tests\test_details_markup.py:102: AssertionError
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-:smile: [b]y[/b]]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-a[b]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-x\\\\\\]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[LINK=http://e]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[B]bold?]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[ red]x]
+PASSED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-a[b]
+PASSED tests/test_details_markup.py::test_details_still_highlight_the_notes
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-x\\\\\\]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-:smile: [b]y[/b]]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-x\\\\\\]
+FAILED tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-:smile: [b]y[/b]]
+8 failed, 35 passed in 11.31s
+[exit code 1]

@@ -82,6 +82,25 @@ KeyBar {
     content-align: left middle;
     height: 3;
 }
+/* the details view's info grid holds labels only: its rows are sized to a
+   one-line label, so the top margin above ate each row and every field painted
+   blank (batch 2026-10-02-batch-04, P-9). One row per field; a long value wraps
+   (UX-1). The edit modals' grids, whose rows hold 3-row inputs, are untouched. */
+#details-box .modal-grid Label {
+    margin-top: 0;
+    height: auto;
+}
+/* the operator's verdict, 2026-10-04 (UX-3, UX-4): one blank row under the
+   details title instead of two above it, and a 10-cell label column. The id
+   selector is what counts: `.modal Label` outranks `.modal-title`, and its
+   `margin-top` replaces the whole margin, so `.modal-title`'s `margin-bottom`
+   never reached the details title. */
+#details-box .modal-title {
+    margin: 0 0 1 0;
+}
+#details-box .modal-grid {
+    grid-columns: 10 1fr;
+}
 .modal Input {
     border: tall #1b2431;
     background: #0b111a;

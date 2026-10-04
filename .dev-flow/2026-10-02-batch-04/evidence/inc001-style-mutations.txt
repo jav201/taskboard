@@ -1,0 +1,322 @@
+$ PYTHONIOENCODING=utf-8 python -B .dev-flow/2026-10-02-batch-04/evidence/inc001_style_mutations.py <scratch: git archive 56a1b10 + working-tree taskboard/ and tests/ overlaid>
+node: tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style
+arms: 51 (49 STYLE_BASE + 2 law); mutants: 51, one per arm
+
+[01] arm: details title
+     mutation: taskboard/modals.py:1169 — TaskDetails.compose title row: drop the 'bold' style of the title piece
+     node FAILED; red arms (1): ['details title (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[02] arm: details title tail
+     mutation: taskboard/taskboard.tcss:67 — taskboard.tcss `.modal-title` rule: text-style bold -> none
+     node FAILED; red arms (2): ['details title tail', 'viewer title tail']
+     verdict: KILLED
+     restore sha256 a5a35f8ce867e6ab… OK
+
+[03] arm: details title (CSS bold off)
+     mutation: taskboard/modals.py:1169 — TaskDetails.compose title row: drop the 'bold' style of the title piece
+     node FAILED; red arms (1): ['details title (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[04] arm: details title tail (CSS bold off)
+     mutation: taskboard/modals.py:1169 — TaskDetails.compose title row: give the tail piece a 'bold' style
+     node FAILED; red arms (1): ['details title tail (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[05] arm: details — placeholders
+     mutation: taskboard/modals.py:1186 — TaskDetails.compose empty-notes placeholder: strip its dim tag pair
+     node FAILED; red arms (1): ['details — placeholders']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[06] arm: viewer title
+     mutation: taskboard/modals.py:1136 — ImageViewer.compose title row: drop the 'bold' style of the title piece
+     node FAILED; red arms (1): ['viewer title (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[07] arm: viewer title tail
+     mutation: taskboard/taskboard.tcss:67 — taskboard.tcss `.modal-title` rule: text-style bold -> none
+     node FAILED; red arms (2): ['details title tail', 'viewer title tail']
+     verdict: KILLED
+     restore sha256 a5a35f8ce867e6ab… OK
+
+[08] arm: viewer title (CSS bold off)
+     mutation: taskboard/modals.py:1136 — ImageViewer.compose title row: drop the 'bold' style of the title piece
+     node FAILED; red arms (1): ['viewer title (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[09] arm: viewer title tail (CSS bold off)
+     mutation: taskboard/modals.py:1136 — ImageViewer.compose title row: give the tail piece a 'bold' style
+     node FAILED; red arms (1): ['viewer title tail (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[10] arm: missing: prefix
+     mutation: taskboard/modals.py:1105 — image_block missing row: drop the 'dim' style of the prefix piece
+     node FAILED; red arms (1): ['missing: prefix']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[11] arm: missing: reference
+     mutation: taskboard/modals.py:1105 — image_block missing row: let a 'dim' style cover the reference
+     node FAILED; red arms (1): ['missing: reference']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[12] arm: could not render: prefix
+     mutation: taskboard/modals.py:1113 — image_block could-not-render row: drop the 'dim' style of the prefix piece
+     node FAILED; red arms (1): ['could not render: prefix']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[13] arm: could not render: reference
+     mutation: taskboard/modals.py:1113 — image_block could-not-render row: let a 'dim' style cover the reference
+     node FAILED; red arms (1): ['could not render: reference']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[14] arm: picker: Beta row is off the cursor
+     mutation: taskboard/modals.py:664 — ProjectPicker._reload: when no row is kept, highlight the second project
+     node FAILED; red arms (4): ['picker: Beta row is off the cursor', 'picker off-cursor name', 'picker off-cursor archived', 'picker off-cursor status (plain)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[15] arm: picker off-cursor name
+     mutation: taskboard/modals.py:646 — ProjectPicker._project_line: drop the 'bold' style of the name piece
+     node FAILED; red arms (1): ['picker off-cursor name']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[16] arm: picker off-cursor archived
+     mutation: taskboard/modals.py:649 — ProjectPicker._project_line: drop the 'dim' style of the archived piece
+     node FAILED; red arms (1): ['picker off-cursor archived']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[17] arm: picker off-cursor status (plain)
+     mutation: taskboard/modals.py:646 — ProjectPicker._project_line: let a 'dim' style cover the status
+     node FAILED; red arms (1): ['picker off-cursor status (plain)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[18] arm: phase editor: row 2 is off the cursor
+     mutation: taskboard/modals.py:1001 — PhaseEditor._reload: default cursor row 0 -> 1
+     node FAILED; red arms (4): ['phase editor: row 2 is off the cursor', 'phase editor off-cursor N.', 'phase editor off-cursor name', 'phase editor off-cursor count (plain)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[19] arm: phase editor off-cursor N.
+     mutation: taskboard/modals.py:990 — PhaseEditor._phase_line: drop the 'dim' style of the N. piece
+     node FAILED; red arms (1): ['phase editor off-cursor N.']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[20] arm: phase editor off-cursor name
+     mutation: taskboard/modals.py:990 — PhaseEditor._phase_line: drop the 'bold' style of the name piece
+     node FAILED; red arms (1): ['phase editor off-cursor name']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[21] arm: phase editor off-cursor count (plain)
+     mutation: taskboard/modals.py:991 — PhaseEditor._phase_line: let a 'dim' style cover the count
+     node FAILED; red arms (1): ['phase editor off-cursor count (plain)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[22] arm: text prompt title
+     mutation: taskboard/modals.py:924 — TextPrompt.compose title: drop the style='bold' argument
+     node FAILED; red arms (1): ['text prompt title (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[23] arm: text prompt title (CSS bold off)
+     mutation: taskboard/modals.py:924 — TextPrompt.compose title: drop the style='bold' argument
+     node FAILED; red arms (1): ['text prompt title (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[24] arm: standup title
+     mutation: taskboard/modals.py:1327 — StandupModal.compose title: drop the style='bold' argument
+     node FAILED; red arms (1): ['standup title (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[25] arm: standup ▐ project
+     mutation: taskboard/modals.py:1333 — StandupModal.compose project heading: drop the style='bold' argument
+     node FAILED; red arms (1): ['standup ▐ project (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[26] arm: standup title (CSS bold off)
+     mutation: taskboard/modals.py:1327 — StandupModal.compose title: drop the style='bold' argument
+     node FAILED; red arms (1): ['standup title (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[27] arm: standup ▐ project (CSS bold off)
+     mutation: taskboard/modals.py:1333 — StandupModal.compose project heading: drop the style='bold' argument
+     node FAILED; red arms (1): ['standup ▐ project (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[28] arm: standup phase
+     mutation: taskboard/modals.py:1337 — StandupModal.compose task row: drop the 'dim' style of the phase piece
+     node FAILED; red arms (1): ['standup phase']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[29] arm: standup task title (plain)
+     mutation: taskboard/modals.py:1336 — StandupModal.compose task row: let a 'dim' style cover the task title
+     node FAILED; red arms (1): ['standup task title (plain)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[30] arm: standup k/n closed
+     mutation: taskboard/modals.py:1340 — StandupModal.compose k/n closed row: drop its 'dim' style
+     node FAILED; red arms (1): ['standup k/n closed']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[31] arm: calendar opened
+     mutation: taskboard/modals.py:314 — TaskModal._open_calendar: replace the push_screen call with a no-op
+     node FAILED; red arms (0): -; node failed without an arm message (crash)
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[32] arm: calendar month
+     mutation: taskboard/modals.py:144 — CalendarModal._title_text: drop the 'bold' style of the month piece
+     node FAILED; red arms (1): ['calendar month (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[33] arm: calendar month (CSS bold off)
+     mutation: taskboard/modals.py:144 — CalendarModal._title_text: drop the 'bold' style of the month piece
+     node FAILED; red arms (1): ['calendar month (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[34] arm: calendar week header
+     mutation: taskboard/modals.py:150 — CalendarModal._grid_text: drop the 'dim' style of the week header
+     node FAILED; red arms (1): ['calendar week header']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[35] arm: calendar selected day
+     mutation: taskboard/modals.py:156 — CalendarModal._grid_text: drop 'reverse' from the selected day's style
+     node FAILED; red arms (1): ['calendar selected day']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[36] arm: calendar day in month
+     mutation: taskboard/modals.py:157 — CalendarModal._grid_text: give in-month days a 'bold' style
+     node FAILED; red arms (1): ['calendar day in month']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[37] arm: calendar days outside the month
+     mutation: taskboard/modals.py:157 — CalendarModal._grid_text: drop the 'dim' style of out-of-month days
+     node FAILED; red arms (1): ['calendar days outside the month']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[38] arm: help title
+     mutation: taskboard/modals.py:1262 — HelpModal.compose title: drop the style='bold' argument
+     node FAILED; red arms (1): ['help title (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[39] arm: help Usage heading
+     mutation: taskboard/modals.py:1265 — HelpModal.compose 'Usage' heading: strip its b tag pair
+     node FAILED; red arms (1): ['help Usage heading (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[40] arm: help Keys heading
+     mutation: taskboard/modals.py:1280 — HelpModal.compose 'Keys' heading: strip its b tag pair
+     node FAILED; red arms (1): ['help Keys heading (CSS bold off)']
+     verdict: SURVIVED — expected: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+     restore sha256 d47f5a826e705d02… OK
+
+[41] arm: help usage section heading
+     mutation: taskboard/modals.py:1267 — HelpModal.compose usage heading: drop the style='underline' argument
+     node FAILED; red arms (1): ['help usage section heading']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[42] arm: help example meaning
+     mutation: taskboard/modals.py:1279 — HelpModal.compose example meaning: drop the style='dim' argument
+     node FAILED; red arms (1): ['help example meaning']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[43] arm: help usage bullet (plain)
+     mutation: taskboard/modals.py:1269 — HelpModal.compose usage bullet: give it a 'dim' style
+     node FAILED; red arms (1): ['help usage bullet (plain)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[44] arm: help title (CSS bold off)
+     mutation: taskboard/modals.py:1262 — HelpModal.compose title: drop the style='bold' argument
+     node FAILED; red arms (1): ['help title (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[45] arm: help Usage heading (CSS bold off)
+     mutation: taskboard/modals.py:1265 — HelpModal.compose 'Usage' heading: strip its b tag pair
+     node FAILED; red arms (1): ['help Usage heading (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[46] arm: help Keys heading (CSS bold off)
+     mutation: taskboard/modals.py:1280 — HelpModal.compose 'Keys' heading: strip its b tag pair
+     node FAILED; red arms (1): ['help Keys heading (CSS bold off)']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[47] arm: details highlight
+     mutation: taskboard/modals.py:1184 — TaskDetails.compose notes: build them as plain Text instead of through the shared tokeniser
+     node FAILED; red arms (1): ['details highlight']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[48] arm: preview typed
+     mutation: taskboard/modals.py:417 — TaskModal.compose notes editor: make the TextArea read-only
+     node FAILED; red arms (2): ['preview typed', 'preview highlight']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[49] arm: preview highlight
+     mutation: taskboard/modals.py:450 — TaskModal.on_text_area_changed: rebuild the preview as plain Text instead of through the shared tokeniser
+     node FAILED; red arms (1): ['preview highlight']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[50] arm: phase editor title
+     mutation: taskboard/modals.py:980 — PhaseEditor.compose title: double the backslash that escapes the reorder key hint's opening bracket (an escape applied twice). Deleting it instead is NOT a fault: Textual 8.2.8 reads `[ / ]` as text, not a tag — measured in round 2, that deletion leaves the node GREEN and the row painted the same
+     node FAILED; red arms (1): ['phase editor title']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+[51] arm: calendar title
+     mutation: taskboard/modals.py:145 — CalendarModal._title_text: insert an escaping backslash before the month key hint
+     node FAILED; red arms (1): ['calendar title']
+     verdict: KILLED
+     restore sha256 d47f5a826e705d02… OK
+
+SUMMARY: 42 of 51 arms KILLED, 9 SURVIVED
+  SURVIVED details title: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+  SURVIVED viewer title: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+  SURVIVED text prompt title: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+  SURVIVED standup title: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+  SURVIVED standup ▐ project: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+  SURVIVED calendar month: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+  SURVIVED help title: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+  SURVIVED help Usage heading: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+  SURVIVED help Keys heading: cannot go RED by any single code-side mutation: the stylesheet's `.modal-title { text-style: bold }` bolds the row anyway; the code's bold piece is pinned by the '(CSS bold off)' sibling arm
+[exit code 0]
+# restore check: sha256 of every scratch taskboard/*.py, taskboard/*.tcss and tests/*.py identical before and after the battery (sha256sum -c: OK)
