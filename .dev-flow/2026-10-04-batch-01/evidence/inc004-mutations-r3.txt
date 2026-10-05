@@ -1,0 +1,48 @@
+Q22: KILLED — F1: row guard removed (cell clip kept)
+   file taskboard/modals.py restore sha256 7fa70f596f38319c OK
+   nodes resolved 13 · RED 2 · GREEN 11 · 2 failed, 11 passed in 25.84s
+   RED   tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+   RED   tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+   GREEN tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+   GREEN tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+   GREEN tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+   GREEN tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+   GREEN tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter
+Q22b: KILLED — F1: clip by len() (row guard kept)
+   file taskboard/modals.py restore sha256 7fa70f596f38319c OK
+   nodes resolved 13 · RED 1 · GREEN 12 · 1 failed, 12 passed in 25.25s
+   RED   tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+   GREEN tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+   GREEN tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+   GREEN tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+   GREEN tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+   GREEN tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter
+Q23: KILLED — F1: filter unclipped
+   file taskboard/modals.py restore sha256 7fa70f596f38319c OK
+   nodes resolved 13 · RED 1 · GREEN 12 · 1 failed, 12 passed in 25.74s
+   RED   tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+   GREEN tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+   GREEN tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+   GREEN tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+   GREEN tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+   GREEN tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter

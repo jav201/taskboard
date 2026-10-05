@@ -1,0 +1,11 @@
+scanner  : reads its 64 pattern(s) from its own marked block `devflow-scan-spec:PATTERNS` in this file
+scope    : sections 1. 2. 3. 4. of `<repo>/.dev-flow/2026-10-04-batch-01/01-requirements.md`, with 3b. 3c. excluded -- 45700 byte(s) read
+controls : 5 row(s) for the 4 control(s) this file defines — the placeholder control is a PAIR (the template's own words must NOT fire, and the same line unbracketed MUST), so it prints two rows
+control  : positive                 expected true  got true  ok
+control  : negative                 expected false got false ok
+control  : placeholder              expected false got false ok
+control  : placeholder-unbracketed  expected true  got true  ok
+control  : authored-in-brackets     expected true  got true  ok
+flags    : `token`, `session`, `hash`, `migration`, `form`, `escape`
+security_required: true
+Answer the batch's security questions and record them in §6.3 *Open risks* of the scanned requirements document.

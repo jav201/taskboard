@@ -1,0 +1,24 @@
+KANBAN · grouped                                                       15 tasks
+BACKLOG    0│NEXT                   10│DOING            3/4│REVIEW   0/3│✓2
+────────────┼─────────────────────────┼────────────────────┼────────────┼───────
+── high  2 open · 1 project ──────────┼────────────────────┼────────────┼───────
+            │▊ !! Rotate API keys     │▊ !! Renew TLS      │            │
+            │▊ ·14d ▸1 Ops +3d        │▊    certificate -1d│            │
+▐ Mobile App  1 open · project due +35d ───────────────────┼────────────┼───────
+            │                         │▊ == Audit          │            │✓1
+            │                         │▊    dependenci… +2d│            │12d ago
+▐ API Platform  1 open · project due +21d ─────────────────┼────────────┼───────
+            │                         │▊ == Write API      │            │
+            │                         │▊    reference -5d  │            │
+▐ Data Warehouse  0 open · project due +60d ───────────────┼────────────┼───────
+            │                         │                    │            │✓1
+            │                         │                    │            │6d ago
+
+
+                                       ▌
+                                       ▌ Dependencies
+                                       ▌ Links migrated: 6 tasks · backup
+                                       ▌ board.json.pre-links-migration · u
+▼ 1 below: Inbox (9 open)              ▌ undo
+  14:39:28 · Sun 04 Oct 2026 · W40 · Me▌
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

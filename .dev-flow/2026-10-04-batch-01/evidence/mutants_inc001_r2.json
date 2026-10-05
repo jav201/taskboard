@@ -1,0 +1,214 @@
+{
+ "export": "<scratchpad>/x001",
+ "mutants": [
+  {
+   "id": "M1",
+   "file": "taskboard/models.py",
+   "old": "wanted = [x for x in live if not is_open(board, by_id[x]) or x == blocker]",
+   "new": "wanted = list(live)",
+   "what": "released links to open tasks kept (L3)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M2",
+   "file": "taskboard/models.py",
+   "old": "        if blocker is not None and is_open(board, by_id[blocker]):",
+   "new": "        if blocker is not None:",
+   "what": "D-515: a closed last link clears the flag (L8)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M4",
+   "file": "taskboard/models.py",
+   "old": "    return (isinstance(m, dict) and type(m.get(\"links\")) is int\n            and m.get(\"links\") == LINKS_MIGRATION)",
+   "new": "    return isinstance(m, dict) and bool(m.get(\"links\"))",
+   "what": "the mark read loosely (truthy)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M5",
+   "file": "taskboard/models.py",
+   "old": "            with open(p, \"xb\") as fh:",
+   "new": "            with open(p, \"wb\") as fh:",
+   "what": "overwrite a taken backup name",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M6",
+   "file": "taskboard/models.py",
+   "old": "        _set_links(board, changes, \"before\")\n        if had_mark:",
+   "new": "        if had_mark:",
+   "what": "no rollback of the links on failure",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M7",
+   "file": "taskboard/models.py",
+   "old": "        board.save_atomic(MIGRATION_TEMP)\n    except OSError as exc:",
+   "new": "        board.save()\n    except OSError as exc:",
+   "what": "save in place, not atomically",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M8",
+   "file": "taskboard/models.py",
+   "old": "        if changes or had_mark:",
+   "new": "        if changes:",
+   "what": "a replaced malformed mark not logged (S2-2)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M9",
+   "file": "taskboard/models.py",
+   "old": "MIGRATION_BACKUP = \".pre-links-migration\"",
+   "new": "MIGRATION_BACKUP = \".pre-links-migration.json\"",
+   "what": "a backup name team pull reads",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M10",
+   "file": "taskboard/models.py",
+   "old": "        live = list(dict.fromkeys(x for x in stored if x != t.id and x in by_id))",
+   "new": "        live = []\n        for x in stored:\n            if x != t.id and x in by_id and x not in live:\n                live.append(x)",
+   "what": "quadratic dedupe (TC-518)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M11",
+   "file": "taskboard/app.py",
+   "old": "        if not self._migrate_links():\n            return\n        self._announce_renumbering()\n        self._sweep_old_done()",
+   "new": "        self._announce_renumbering()\n        self._sweep_old_done()\n        if not self._migrate_links():\n            return",
+   "what": "the migration after the renumber save and the sweep",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M12",
+   "file": "taskboard/app.py",
+   "old": "                for one in entry[\"migration\"]:",
+   "new": "                for one in entry[\"migration\"][:1]:",
+   "what": "undo restores only one task",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M13",
+   "file": "taskboard/app.py",
+   "old": "            self.exit(return_code=1, message=Text(",
+   "new": "            return True\n            self.exit(return_code=1, message=Text(",
+   "what": "a failed backup does not stop the app",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M14",
+   "file": "taskboard/app.py",
+   "old": "        self._undo_stack.append(self._snapshot(task))\n        task.blocked = not task.blocked",
+   "new": "        self._undo_stack.append(self._snapshot(task))\n        task.blocked = not task.blocked\n        task.depends_on = [*task.depends_on, task.id]",
+   "what": "b touches depends_on",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M15",
+   "file": "taskboard/models.py",
+   "old": "        if p.is_symlink():\n            continue",
+   "new": "        pass",
+   "what": "a symlink at the name written through",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M3",
+   "file": "taskboard/models.py",
+   "old": "            keep = [x for x in wanted if x not in reach]",
+   "new": "            keep = wanted",
+   "what": "no loop check (L7, A2-2)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M16",
+   "file": "taskboard/models.py",
+   "old": "            with open(tmp, \"x\", encoding=\"utf-8\") as fh:",
+   "new": "            with open(tmp, \"w\", encoding=\"utf-8\") as fh:",
+   "what": "temp written through an existing name (F2)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M17",
+   "file": "taskboard/models.py",
+   "old": "        for made in (result.log, result.backup):     # this failed run's own files\n            if made:\n                (target.parent / made).unlink(missing_ok=True)\n",
+   "new": "",
+   "what": "a failed run leaves its files (F5)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M18",
+   "file": "taskboard/models.py",
+   "old": "        if by_id[t.id] is not t:\n            continue                    # a repeated id: left as it is (F4)\n",
+   "new": "",
+   "what": "a repeated id migrated twice (F4)",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M19",
+   "file": "taskboard/models.py",
+   "old": "            reach, todo = {t.id}, [t.id]\n            while todo:\n                for a in into.get(todo.pop(), ()):\n                    if a not in reach:\n                        reach.add(a)\n                        todo.append(a)\n            keep = [x for x in wanted if x not in reach]",
+   "new": "            reach = {t.id}\n            keep = [x for x in wanted if x not in reach]",
+   "what": "the walk back stops at the task itself",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  }
+ ]
+}

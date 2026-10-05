@@ -29,7 +29,8 @@ from rich.table import Table
 from rich.text import Text
 
 from . import history
-from .models import Board, Task, critical_chain, days_in_phase, parse_iso, unblocks_count
+from .models import (Board, Task, critical_chain, days_in_phase, link_conflicts, link_marks,
+                     open_predecessors, parse_iso, unblocks_count)
 from .team_sync import TeamState, sync_tone
 from .wave import DOT_ROWS, Bitmap, load_curve
 
@@ -347,13 +348,36 @@ PRIORITY_BADGE = {"high": ("!!", "over"), "normal": ("==", "soon"),
                   "low": ("++", "green")}
 
 
+def _link_tokens(task: Task, board: Board,
+                 marks: dict[str, tuple[int, int]] | None) -> list[tuple[str, str]]:
+    """`▸M` then `◂N` (each only when ≥ 1) in the muted tone the `⛓` wore
+    (D-506). Only a BOARD task carries them: a teammate's task — the same id
+    or not — is not in the board, so it paints none (A-11, S-8)."""
+    if board.task_by_id(task.id) is not task:
+        return []
+    waits, unblocks = (marks if marks is not None else link_marks(board)).get(task.id, (0, 0))
+    out = []
+    if unblocks:
+        out.append((f"▸{unblocks}", "mut"))
+    if waits:
+        out.append((f"◂{waits}", "mut"))
+    return out
+
+
+# The lanes' title floor (operator D-529): 5 characters and `…`. The kanban
+# readability measure counts a title only once its first word shows
+# (`kg_board._visible_chars`), and the kg board's median first word is 5.
+CARD_TITLE_FLOOR = 6
+
+
 def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
               prefix: str = "", prefix_color: str = "mut",
               allow_priority: bool = True, today: date | None = None,
-              unblocks: dict[str, int] | None = None,
-              readonly: bool = False, badge: bool = False) -> str:
+              marks: dict[str, tuple[int, int]] | None = None,
+              readonly: bool = False, badge: bool = False,
+              title_floor: int = 0) -> str:
     """A width-exact card: `prefix` + [badge] + truncated title + right
-    indicators (↗ ! ▤ ·Nd +Nd ⛓N ▣).
+    indicators (↗ ! ▤ ·Nd ▸N ◂N +Nd ▣).
 
     `badge=True` (the kanban) puts the PRIORITY_BADGE of an open card between
     the prefix and the title and drops the `!` token, which the badge replaces;
@@ -368,9 +392,15 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
     zero: an unstamped card renders no token rather than a lying `·0d`, and
     done work rests — its age is not work-in-progress information).
 
-    `unblocks` is a precomputed ``{task_id: count}`` map so a render pass pays
-    for the dependency count once, not per card (O(tasks²) trap).  When it is
-    omitted the helper computes the count directly (used by unit tests)."""
+    `marks` is `link_marks(board)` — ``{task_id: (◂, ▸)}`` — computed once per
+    render, so a pass pays for the links once, not per card (O(tasks²) trap).
+    When it is omitted the helper derives it (unit tests).
+
+    `title_floor` (the lanes pass CARD_TITLE_FLOOR): the title keeps that many
+    cells (or its whole length) before any indicator is kept — the age is shed
+    first, then `▸M`, then the rest from the left, and `◂N` last (D-533). 0
+    (every other caller) keeps the shipped law: an indicator is kept the moment
+    its cells fit."""
     if wc <= 0:
         return ""
     if wc < len(prefix):
@@ -412,34 +442,50 @@ def card_cell(task: Task, board: Board, wc: int, selected: bool, *,
         # board by colour. Its siblings already sit in neutral houses (↗ accent,
         # ! ink); this is the quietest of the three and takes the quietest tone.
         tokens.append(("▤", "mut"))     # width-1 image indicator, distinct from ↗/!
+    age_token = None
     if not board.is_done(task):
         age = days_in_phase(task, today or date.today())
         if age is not None:
             # Age is a FACT about sitting still, not a judgement on it — the
             # quiet dim house (the same house date distances wear), never a
             # severity hue and never a project colour.
-            tokens.append((f"·{age}d", "dim"))
+            age_token = (f"·{age}d", "dim")
+            tokens.append(age_token)
+    # the links (batch 2026-10-04-batch-01, HLR-501): ▸N = N open tasks wait on
+    # this one, ◂N = it waits on N open tasks. Before the due token, so under
+    # width pressure ▸ goes first, then ◂, and the deadline is kept longest.
+    link_tokens = _link_tokens(task, board, marks)
+    tokens.extend(link_tokens)
     if not task.archived:
         # The deadline countdown (operator, 2026-08-24): days until the due
         # date rides EVERY dated card, the last phase included — a done card
         # keeps the FACT in the quiet dim house, never a judging hue
-        # (reldue_token's include_done seat). Listed before the dependency and
-        # archived marks, so both are shed later than it. Put-away work shows
-        # nothing: an archived task has no live deadline.
+        # (reldue_token's include_done seat). Listed after the link marks, so
+        # they are shed before it. Put-away work shows nothing: an archived
+        # task has no live deadline.
         dtok, dcol = reldue_token(task, today or date.today(), board,
                                   include_done=True)
         if dtok:
             tokens.append((dtok, dcol))
-    # dependency unblock count: tasks waiting on this one.  The bare ⛓ is
-    # U+26D3 with NO VS16 so it costs one cell (cell_len("⛓") == 1).
-    n = unblocks.get(task.id) if unblocks is not None else unblocks_count(board, task)
-    if n:
-        tokens.append((f"⛓{n}", "mut"))
     if task.archived:
         # LAST in the list so it is the last thing shed under width pressure —
         # it is the only token here that says the row is not live work.
         tokens.append((ARCHIVED_MARK, "ash"))
-    ind_markup, used = _fit_indicators(tokens, wc - len(prefix) - badge_w)
+    room = wc - len(prefix) - badge_w
+    budget = room - max(0, min(title_floor, room, cell_len(task.title)))
+    if title_floor:
+        # operator D-533 "Dejar ◂ solo, quitar la edad antes" (A-12): under the
+        # floor the age goes first, then `▸`, then the other meta from the left;
+        # `◂` (waits on N open) is the last to go
+        waits = [tk for tk in link_tokens if tk[0].startswith("◂")]
+        order = ([age_token] if age_token in tokens else []) + \
+            [tk for tk in link_tokens if tk not in waits] + \
+            [tk for tk in tokens if tk != age_token and tk not in link_tokens] + waits
+        for tk in order:
+            if sum(1 + cell_len(g) for g, _ in tokens) <= budget:
+                break
+            tokens.remove(tk)
+    ind_markup, used = _fit_indicators(tokens, budget)
     title_w = max(0, wc - len(prefix) - badge_w - used)
     pre = c(prefix, prefix_color) if prefix else ""
     return (pre + badge_markup + title_markup(task, title_w, selected, arrow=False)
@@ -2107,11 +2153,13 @@ def gantt_tasks(board: Board, tasks: list[Task], project_id: str | None) -> list
 
 def _flowing(board: Board, task: Task) -> bool:
     """A task is "in progress" — worth animating a flow packet on — when it
-    has left the first phase, is not done, and is not blocked."""
+    has left the first phase, is not done, is not blocked and waits on no open
+    task (D-519: before the links had a meaning of their own, a waiting task
+    was always blocked, so its stillness is unchanged)."""
     # and NOT archived: a bar that animates is claiming to be work in motion,
     # which is the one thing put-away work is not
     return (not board.is_done(task) and not task.blocked and not task.archived
-            and board.phase_index(task) > 0)
+            and board.phase_index(task) > 0 and not open_predecessors(board, task))
 
 
 def _behind(c0: int, c1: int, today_cell: int, progress: float) -> bool:
@@ -2281,7 +2329,8 @@ def _gantt_open(board: Board, t: Task) -> bool:
 
 def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
                today: date, body_rows: int,
-               focus: str | None = None, previous: str | None = None) -> list[GanttGroup]:
+               focus: str | None = None, previous: str | None = None,
+               pinned: str | None = None) -> list[GanttGroup]:
     """THE ONE SEAT for what the gantt draws and in what order — the renderer
     and `nav_model` both read it, so the cursor cannot walk an order the screen
     does not show (F-3).
@@ -2319,6 +2368,13 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
     if sel_i is not None:
         unfold[sel_i] = True
         left -= len(raw[sel_i][1])
+    # `pinned` (the gantt link mode's waiter, D-528) unfolds like the selection:
+    # the link is drawn between two rows, so neither may fold. None elsewhere.
+    pin_i = next((i for i, (p, o, r) in enumerate(raw)
+                  if pinned is not None and group_key(p) == pinned), None)
+    if pin_i is not None and pin_i != sel_i:
+        unfold[pin_i] = True
+        left -= len(raw[pin_i][1])
 
     def pressure(i):
         ts = raw[i][1]
@@ -2328,7 +2384,7 @@ def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
         return (previous is None or group_key(raw[i][0]) != previous,
                 -urgent, -due_today, min(dues or [date.max]))
 
-    for i in sorted((i for i in range(len(raw)) if i != sel_i), key=pressure):
+    for i in sorted((i for i in range(len(raw)) if i not in (sel_i, pin_i)), key=pressure):
         n = len(raw[i][1])
         if n and n <= left:
             unfold[i] = True
@@ -2372,17 +2428,14 @@ def gantt_due_chip(due_iso: str | None, today: date, width: int) -> str:
 
 def gantt_dep_mark(task: Task, board: Board, chain: set[str]) -> str:
     """The dependency mark, in its own one-cell gutter so it never covers a
-    label or a bar. `over` when the task is planned to START before an open
-    dependency is due (a plan that cannot hold); bold bright on the critical
-    chain (structure, not hue); muted otherwise; blank when nothing open is
-    waited on."""
-    deps = [d for x in task.depends_on
-            if (d := board.task_by_id(x)) is not None and not board.is_done(d)]
-    if not deps:
+    label or a bar: a task that waits on an OPEN predecessor (archived ones are
+    closed — LLR-501.3). `over` when a predecessor's due overlaps its plan by a
+    day or more (the one measure, D-503: a start ON the due day conflicts); bold
+    bright on the critical chain (structure, not hue); muted otherwise; blank
+    when nothing open is waited on."""
+    if not open_predecessors(board, task):
         return " "
-    s = parse_iso(task.start_date)
-    dd = [d for x in deps if (d := parse_iso(x.due_date))]
-    if s and dd and s < max(dd):
+    if link_conflicts(board, task):
         return c("↳", "over")
     if task.id in chain:
         return c("↳", "bright", bold=True)
@@ -2757,7 +2810,7 @@ def render_gantt(board, show_archived, selected_id, today=None,
 
 def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height=0,
                  line_map=None, tick=0, focus: str | None = None,
-                 previous: str | None = None):
+                 previous: str | None = None, pinned_id: str | None = None):
     """THE WHOLE BOARD, FITTED (G-A), WITH A RULER THAT ANSWERS (AX-2).
 
     The shipped gantt laid every board on two days per cell with today at 30 %
@@ -2777,8 +2830,9 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
     h = height or 24
     label_w, chip_w, field_w = gantt_columns(w)
     body_rows = max(0, h - 1 - GANTT_RULER_ROWS) if height else 10 ** 6
+    pinned_t = board.task_by_id(pinned_id) if pinned_id else None
     groups = gantt_plan(board, show_archived, selected_id, today, body_rows, focus,
-                        previous)
+                        previous, gantt_group_key(board, pinned_t) if pinned_t else None)
     ax = gantt_axis(field_w, today, *gantt_window(groups, today))
     guides, weekends = ax.guides(), ax.weekends()
     chain = set(critical_chain(board))
@@ -2885,11 +2939,22 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
             rows.append((_pad(c(f"  +{len(groups) - len(page)} not shown", "mut"), w),
                          None))
     else:
-        for g in groups:
+        # the link mode's pin (D-528): when the selected group and the pinned one
+        # cannot both be drawn whole, they share the rows left — the pinned group
+        # half, the selection the rest — instead of each counting the other whole
+        share: dict[int, int] = {}
+        pin_g = next((i for i, g in enumerate(groups) if g.unfolded and pinned_id
+                      and any(t.id == pinned_id for t in g.open)), None)
+        avail = body_rows - len(groups)
+        if (pin_g is not None and sel_g is not None and pin_g != sel_g
+                and len(groups[pin_g].open) + len(groups[sel_g].open) > avail):
+            share[pin_g] = min(len(groups[pin_g].open), max(0, avail // 2))
+            share[sel_g] = avail - share[pin_g]
+        for gi, g in enumerate(groups):
             shown, paged, hint = (g.open if g.unfolded else []), False, ""
             if g.unfolded:
-                room = body_rows - len(groups) - sum(len(x.open) for x in groups
-                                                     if x.unfolded and x is not g)
+                room = share.get(gi, body_rows - len(groups) - sum(
+                    len(x.open) for x in groups if x.unfolded and x is not g))
                 if len(shown) > room:     # the selected group, taller than the body
                     if room < 1:          # only when groups == body and the
                         shown, paged = [], True   # selection is rest work: no row owed
@@ -2897,8 +2962,18 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
                         # pages of the rows left, less one for the hint row
                         # under the page (answer D9) when there are two or more
                         size = room - 1 if room >= 2 else room
-                        i = next((j for j, t in enumerate(shown) if t.id == selected_id), 0)
+                        ids = [t.id for t in shown]       # the page holds the selection,
+                        i = (ids.index(selected_id) if selected_id in ids     # else the
+                             else ids.index(pinned_id) if pinned_id in ids else 0)  # pin
                         first = (i // size) * size
+                        if (selected_id in ids and pinned_id in ids
+                                and abs(ids.index(pinned_id) - i) < size):
+                            # the link's two rows in one group: a page that
+                            # holds both, whenever one can (code review 006 M1)
+                            hi = max(i, ids.index(pinned_id))
+                            lo = min(i, ids.index(pinned_id))
+                            if not first <= lo or not hi < first + size:
+                                first = hi - size + 1
                         above, below = first, max(0, len(shown) - first - size)
                         shown, paged = shown[first:first + size], True
                         if room >= 2:
@@ -3290,7 +3365,7 @@ def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
                            inner), "dim"))]
 
     ordered = stale_order(board, tasks, today)
-    unblocks = {t.id: unblocks_count(board, t) for t in ordered}
+    marks = link_marks(board)
     try:
         idx = next(i for i, t in enumerate(ordered) if t.id == selected_id)
     except StopIteration:
@@ -3361,7 +3436,7 @@ def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
                                     prefix_color="accent" if i == idx
                                     else project_color(board, q),
                                     today=today,
-                                    unblocks=unblocks), q.id))
+                                    marks=marks), q.id))
 
     title = c("◆ FOCUS", "bright", bold=True) + c(" · review", "mut")
     right = c(f"{idx + 1}/{len(ordered)} · stale first", "mut")
@@ -4136,6 +4211,7 @@ def render_people(board, show_archived, selected_id, today=None,
     today = today or date.today()
     w = _clamp_width(width)
     inner = w
+    marks = link_marks(board)            # board tasks only; a teammate's paint none
 
     chrome = render_team_filter_chrome(team_filter)
     lines = [header(c("PEOPLE", "bright", bold=True) + c(" · ", "mut") + chrome,
@@ -4191,7 +4267,7 @@ def render_people(board, show_archived, selected_id, today=None,
                 readonly = not is_self
                 card = card_cell(t, board, max(0, inner - prefix_w),
                                  t.id == selected_id, today=today,
-                                 readonly=readonly)
+                                 readonly=readonly, marks=marks)
                 lines.append(line("  " + card))
                 if line_map is not None:
                     line_map[t.id] = len(lines) - 1
@@ -4546,7 +4622,7 @@ def _wrap_title(title: str, w: int) -> tuple[str, str]:
     return head, " ".join(words[i:])
 
 
-def _card_meta(task, board, today, unblocks, tag) -> list[tuple[str, str]]:
+def _card_meta(task, board, today, marks, tag) -> list[tuple[str, str]]:
     """Row 2's tokens, the least needed first: `_fit_indicators` sheds from the
     left, so the due token is the last to go (LLR-301.2)."""
     toks: list[tuple[str, str]] = []
@@ -4558,11 +4634,11 @@ def _card_meta(task, board, today, unblocks, tag) -> list[tuple[str, str]]:
         age = days_in_phase(task, today)
         if age is not None:
             toks.append((f"·{age}d", "dim"))
+    # the link marks go before the project tag (shed first): the high band's
+    # tag says whose card it is, an accepted mark (A2 R-1b) — amendment A-3
+    toks.extend(_link_tokens(task, board, marks))
     if tag:
         toks.append(tag)
-    n = unblocks.get(task.id) if unblocks is not None else unblocks_count(board, task)
-    if n:
-        toks.append((f"⛓{n}", "mut"))
     if task.archived:
         toks.append((ARCHIVED_MARK, "ash"))
     else:
@@ -4572,7 +4648,7 @@ def _card_meta(task, board, today, unblocks, tag) -> list[tuple[str, str]]:
     return toks
 
 
-def kanban_card(task, board, wc, selected, *, today, unblocks=None,
+def kanban_card(task, board, wc, selected, *, today, marks=None,
                 tag=None) -> tuple[str, str]:
     """A kanban card as two rows of exactly `wc` cells (LLR-301.2): the title
     across the column on row 1 (after the shipped badge), its rest and the
@@ -4590,7 +4666,7 @@ def kanban_card(task, board, wc, selected, *, today, unblocks=None,
         badge, bw = f"[b reverse {HEX[tone]}]{token}[/] ", 3
     tw = wc - 2 - bw
     head, rest = _wrap_title(task.title, tw)
-    tokens = _card_meta(task, board, today, unblocks, tag)
+    tokens = _card_meta(task, board, today, marks, tag)
     keep = tw - (1 + cell_len(tokens[-1][0]) if tokens else 0)
     if rest and keep < 2:
         # no room for the rest beside the last fact: row 1 says the title goes
@@ -4624,7 +4700,7 @@ def _project_tags(board) -> dict:
     return out
 
 
-def _kanban_cell(cards, board, wc, selected_id, today, unblocks,
+def _kanban_cell(cards, board, wc, selected_id, today, marks,
                  tags=None) -> list[tuple[str, str | None]]:
     """One band's rows in one column: its cards, one `┈` row between each two."""
     rows: list[tuple[str, str | None]] = []
@@ -4636,7 +4712,7 @@ def _kanban_cell(cards, board, wc, selected_id, today, unblocks,
             p = board.project_by_id(t.project_id)
             tag = (tags.get(p.id, p.name), p.color) if p else ("Inbox", "dim")
         r1, r2 = kanban_card(t, board, wc, t.id == selected_id, today=today,
-                             unblocks=unblocks, tag=tag)
+                             marks=marks, tag=tag)
         rows += [(r1, t.id), (r2, None)]
     return rows
 
@@ -4716,8 +4792,7 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
                        group=group, collapsed=collapsed, focus=focus)
     focused = board.project_by_id(focus) if focus is not None else None
     n_open = len(board.phases) - 1
-    all_open = [t for t in board.tasks if not board.is_done(t) and not t.archived]
-    unblocks = {t.id: unblocks_count(board, t) for t in all_open}
+    marks = link_marks(board)
     sep = c("│", "frame")
     seps, x = [], 0
     for wc in plan.widths:
@@ -4765,7 +4840,7 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
         tags = _project_tags(board)
         cells = []
         for i, wc in zip(shown, plan.widths):
-            col = _kanban_cell(plan.high[i], board, wc, selected_id, today, unblocks, tags)
+            col = _kanban_cell(plan.high[i], board, wc, selected_id, today, marks, tags)
             if plan.overflow[i]:
                 col.append((c(fit(f"+{plan.overflow[i]} more ↓", wc), "mut"), None))
             cells.append(col)
@@ -4777,7 +4852,7 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
         pinned_rows = [(_band_rule(facts, seps, w), [])] + block(cells, [])
     bands = []
     for band in plan.bands:
-        cells = [_kanban_cell(band.cols[i], board, wc, selected_id, today, unblocks)
+        cells = [_kanban_cell(band.cols[i], board, wc, selected_id, today, marks)
                  for i, wc in zip(shown, plan.widths)]
         rail = _rail_cells(band, plan, selected_id, today)
         rows = [(_band_rule(_band_facts(band, today), seps, w), [])] + block(cells, rail)
@@ -4980,10 +5055,8 @@ def _kanban_lanes(board, show_archived, selected_id, today, w, height, line_map,
 
     lanes = kanban_order(board, tasks, show_archived, group=group, sort=sort,
                          collapsed=collapsed, focus=focus, today=today)
-    # dependency counts are a board-wide fact: compute once, use everywhere.
-    all_open = [t for t in board.tasks
-                if not board.is_done(t) and not t.archived]
-    unblocks = {t.id: unblocks_count(board, t) for t in all_open}
+    # the link marks are a board-wide fact: compute once, use everywhere.
+    marks = link_marks(board)
 
     right = c(f"{len(tasks)} tasks", "mut")
     mode = c(" · lanes", "mut")
@@ -5029,7 +5102,8 @@ def _kanban_lanes(board, show_archived, selected_id, today, w, height, line_map,
                            prefix="▊ ",
                            prefix_color=project_color(board, t),
                            today=today,
-                           unblocks=unblocks, badge=True), t.id)
+                           marks=marks, badge=True,
+                           title_floor=CARD_TITLE_FLOOR), t.id)
                 for t in shown]
             if len(bucket) > cap:
                 rows.append((c(fit(f"+{len(bucket) - cap + 1} more", wc), "dim"), None))
@@ -5581,7 +5655,8 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
                                    "then: s sort · g group · z collapse."]),
             ("the card's numbers", ["·Nd = days IN the phase (ageing)",
                                     "+Nd = days UNTIL the deadline (countdown)",
-                                    "⛓N = N tasks depend on this one"]),
+                                    "◂N = waits on N open tasks · L links",
+                                    "▸N = N open tasks wait on this one"]),
             ("the board", ["!! high · == normal · ++ low (open only)",
                            "open highs ride one band on top of the",
                            "grouped board; +N more ↓ when it is full",
@@ -5674,9 +5749,9 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
 def help_example(mode: str) -> tuple[str, str]:
     """(annotated example line, what it means) for the active view."""
     if mode == "kanban":
-        return ("▊ !! sync daemon ↗ ·3d ⛓2 +4d",
+        return ("▊ !! sync daemon ↗ ·3d ▸2 ◂1 +4d",
                 "!! high (== normal, ++ low) · ↗ url · 3d in phase · "
-                "unblocks 2 · due in 4d")
+                "2 wait on it · waits on 1 · due in 4d")
     if mode == "swimlanes":
         return ("▎ platform ████▒░◆ 12d",
                 "the curve is the load; the air before ◆ is what does not fit")
@@ -5870,4 +5945,108 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
         if drawn:
             out.append((c(ARCHIVED_MARK, "ash"),
                         "archived: put away, not deleted — x brings it back"))
+    return out
+
+
+# ---------------------------------------------------------------------------
+# the gantt link mode's frame (batch 2026-10-04-batch-01, LLR-502.3, D-A)
+# ---------------------------------------------------------------------------
+LINK_BACKGROUND = {" ", LATTICE, FIELD_WEEK} | set(RULE_PHASES)
+
+
+def _cell_index(plain: str, col: int) -> int | None:
+    """The index of the character painted at cell `col` (a wide glyph in a label
+    takes two cells), or None past the end."""
+    w = 0
+    for i, ch in enumerate(plain):
+        if w == col:
+            return i
+        w += cell_len(ch)
+        if w > col:
+            return None
+    return None
+
+
+def gantt_link_order(board: Board, show_archived: bool, today: date,
+                     previous: str | None = None) -> list[Task]:
+    """The open tasks in the order the gantt draws them (every group unfolded):
+    the link mode's candidate cycle."""
+    groups = gantt_plan(board, show_archived, None, today, 10 ** 6, None, previous)
+    return [t for g in groups for t in g.open]
+
+
+def gantt_link_frame(board: Board, show_archived: bool, waiter: Task, cand: Task | None,
+                     today: date, width: int, height: int, right: str,
+                     loops: set[str]) -> tuple[Text, dict]:
+    """The gantt as link mode paints it: the candidate is the selection (its group
+    unfolds), the waiter's group is kept open as the previous one, the header says
+    `GANTT · LINK` with `right`, each loop row wears `⟲` in its gutter, and
+    `gantt_link_overlay` draws the proposed link on the FIELD only. Returns the
+    Text and the facts the tests read (`label_w`, rows, the `═` and connector
+    cells)."""
+    w = _clamp_width(width)
+    line_map: dict[str, int] = {}
+    lines, _drawn, _groups, ax = _gantt_frame(
+        board, show_archived, cand.id if cand else None, today, w, height, line_map, 0,
+        None, gantt_group_key(board, waiter), waiter.id)
+    lines[0] = header(c("◆ GANTT · LINK", "bright", bold=True), c(escape(right), "mut"), w,
+                      tone="bright")
+    label_w = gantt_columns(w)[0]
+    text = Text()
+    rows = [Text.from_markup(ln) for ln in lines]
+    for tid in loops:
+        r = line_map.get(tid)
+        i = _cell_index(rows[r].plain, label_w) if r is not None else None
+        if i is not None:
+            rows[r] = rows[r][:i] + Text("⟲", style=HEX["mut"]) + rows[r][i + 1:]
+    facts = gantt_link_overlay(rows, line_map, ax, label_w, waiter, cand)
+    for i, r in enumerate(rows[:height] if height else rows):
+        if i:
+            text.append("\n")
+        text.append_text(r)
+    facts.update(label_w=label_w, line_map=line_map)
+    return text, facts
+
+
+def gantt_link_overlay(rows: list[Text], line_map: dict[str, int], ax: GanttAxis,
+                       label_w: int, waiter: Task, cand: Task | None) -> dict:
+    """Draw the proposed link on the painted rows, in place (LLR-502.3): from the
+    cell after the candidate's due, a connector in the bright tone toward the
+    waiter's row, over BACKGROUND cells only; on the waiter's row the overlap days
+    (the one measure) as `═` in the over tone — none for a waiter with no start.
+    Never in the label column or the gutter: every cell written is right of
+    `label_w`. Returns the columns it wrote."""
+    out = {"overlap": [], "connector": []}
+    if cand is None:
+        return out
+    pdue, start = parse_iso(cand.due_date), parse_iso(waiter.start_date)
+    rw, rc = line_map.get(waiter.id), line_map.get(cand.id)
+    first = label_w + 1                                 # the field's first column
+
+    def put(r: int, col: int, glyph: str, tone: str, only_background: bool) -> bool:
+        if col < first or col >= first + ax.w or r >= len(rows):
+            return False
+        i = _cell_index(rows[r].plain, col)
+        if i is None:
+            return False
+        if only_background and rows[r].plain[i] not in LINK_BACKGROUND:
+            return False
+        rows[r] = rows[r][:i] + Text(glyph, style=HEX[tone]) + rows[r][i + 1:]
+        return True
+
+    if rw is not None and pdue is not None and start is not None and start <= pdue:
+        for x in range(max(0, ax.cell(start)), min(ax.w - 1, ax.end_cell(pdue)) + 1):
+            if put(rw, first + x, "═", "over", False):
+                out["overlap"].append(first + x)
+    if rw is not None and rc is not None and pdue is not None and rw != rc:
+        col = first + ax.end_cell(pdue) + 1
+        down = rw > rc
+        if put(rc, col, "╮" if down else "╯", "bright", True):
+            out["connector"].append((rc, col))
+        lo, hi = (rc, rw) if down else (rw, rc)
+        for r in range(lo + 1, hi):
+            if put(r, col, "│", "bright", True):
+                out["connector"].append((r, col))
+        if put(rw, col, "╯" if down else "╮", "bright", True):
+            out["connector"].append((rw, col))
     return out

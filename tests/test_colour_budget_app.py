@@ -466,9 +466,11 @@ KEY_HEXES = {HEX["bright"], HEX["mut"], HEX["dim"]}
 # The base strings, frozen (qa P2 Q-12): the words must not move, only the tones.
 KEYBAR_BASE = {   # read off the base tree a0e7d9a (`key_bar_plain`), not typed
     ("gantt", 80, "primary"):
-        "? Map  ; More  q Quit  1 Lanes  2 Agenda  3  4  5  7  8  9  0  ↵  a  e  d  ↓  ↑",
+        # batch 2026-10-04-batch-01 added `L` (Link) to the primary layer: the
+        # bar sheds one more word ("Agenda") and keeps every key
+        "? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ↓  ↑",
     ("gantt", 118, "more"):
-        "? Map  ; More  q  1  2  3  4  5  7  8  9  0  ↵  a  e  d  x  X  v  u  t  T  [  ]  !  b"
+        "? Map  ; More  q  1  2  3  4  5  7  8  9  0  ↵  a  e  d  L  x  X  v  u  t  T  [  ]  !  b"
         "  +  -  F  esc  /  ↓  ↑  ←  →",
 }
 

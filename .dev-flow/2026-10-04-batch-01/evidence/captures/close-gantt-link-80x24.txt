@@ -1,0 +1,24 @@
+◆ GANTT · LINK                                    24 candidates · ⟲0 would loop
+◆ dates · Mobile A…  September    ┃4 October      ┃◆ November    ┃Dec
+1st/15th · 2 d/cell   ┆  ┆  Oct 1 ⟦━━━━⟧ Oct 12  1   ┆  15  ┆   1  ┆   15
+▾ Website Redes… ▲2  ●─────────────╎──◆┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 10
+  Build component …  ▬╌╌╌╌╌╌╌╌╌╌◕··╎┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲7d
+  Fix checkout 500…  ·┆··┆···┆▬╌◑··╎┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲6d
+  Optimize image a… ↳·┆··┆···┆··┆··╌◔··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·  Oct 6
+  Launch new homep… ↳·┆··┆···┆··┆··═════╮··┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 10
+  SEO redirects map  ·┆··┆···┆··┆··╌╌╌╌╌○··┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 14
+▾ Mobile App     ▲2  ·┆────────────●───────────────◆·┆···┆··┆···┆··┆···┆·  Nov 4
+  Crash reporting    ·┆··┆···┆·▬╌╌◕╎┆··┆│··┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲3d
+  Audit dependenci…  ·┆··┆···▬━━━━◑╎┆··┆│··┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲2d
+  Add push notific… ↳·┆··┆···┆··┆·━━━━━◔╯··┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 12
+  Offline sync      ↳·┆··┆···┆··┆··╎┆·━━━━━━━━━○··┆··┆···┆··┆···┆··┆···┆· Oct 28
+  Beta release to … ↳·┆··┆···┆··┆··╎┆··┆···┆··┆━━━━○·┆···┆··┆···┆··┆···┆·  Nov 4
+▸ API Platform 6 ▲3  ◂─────●───────╎────────◆·┆···┆··┆···┆··┆···┆··┆···┆· Oct 21
+▸ Data Warehouse  4  ·┆··┆··───────╎────●──────────────────────◆┆··┆···┆· Nov 29
+▸ Ops & Secur… 5 ▲3  ◂─────────────╎◆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·  Oct 5
+
+
+
+ LINK filter: push▏  Launch new homepage waits on… Add push notifications
+ ◂ overlaps 9d: due Oct 12, this starts Oct 4
+ ↑↓ choose · type to filter · ↵ link · esc cancel

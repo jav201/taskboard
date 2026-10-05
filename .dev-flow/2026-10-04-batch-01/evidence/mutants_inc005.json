@@ -1,0 +1,55 @@
+{
+ "export": "<home>\\AppData\\Local\\Temp\\claude\\<session>\\f46e746a-67bb-40fe-b907-7aec72789cc7\\scratchpad\\bat005",
+ "mutants": [
+  {
+   "id": "R1",
+   "file": "taskboard/modals.py",
+   "old": "            if folded:\n",
+   "new": "            if False:\n",
+   "what": "F4: folded row not said",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R2",
+   "file": "taskboard/modals.py",
+   "old": "folded = facts[\"line_map\"].get(self.waiter.id, rows) >= rows",
+   "new": "folded = True",
+   "what": "F4: said even when the row is drawn",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R3",
+   "file": "taskboard/modals.py",
+   "old": "folded = facts[\"line_map\"].get(self.waiter.id, rows) >= rows",
+   "new": "folded = self.waiter.id not in facts[\"line_map\"] and False",
+   "what": "F4: a drawn-past-the-frame row not counted",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R4",
+   "file": "taskboard/views.py",
+   "old": "if put(rw, first + x, \"═\", \"over\", False):",
+   "new": "if put(rw, first + x, \"═\", \"soon\", False):",
+   "what": "G-002: overlap tone",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R5",
+   "file": "taskboard/views.py",
+   "old": "if put(rc, col, \"╮\" if down else \"╯\", \"bright\", True):",
+   "new": "if put(rc, col, \"╮\" if down else \"╯\", \"mut\", True):",
+   "what": "G-002: connector tone",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  }
+ ]
+}

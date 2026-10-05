@@ -1,0 +1,257 @@
+{
+ "export": "<home>/AppData/Local/Temp/claude/<session>/f46e746a-67bb-40fe-b907-7aec72789cc7/scratchpad/x003",
+ "mutants": [
+  {
+   "id": "P1",
+   "file": "taskboard/models.py",
+   "old": "    if not is_open(board, pred):\n        return f\"{_clip_title(pred.title)} is closed\"\n",
+   "new": "",
+   "what": "a closed task can be waited on",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P2",
+   "file": "taskboard/models.py",
+   "old": "    path = loop_path(board, waiter, pred)\n    if path:",
+   "new": "    path = None\n    if path:",
+   "what": "loops not refused",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P3",
+   "file": "taskboard/models.py",
+   "old": "        if len(names) > 6:",
+   "new": "        if len(names) > 60:",
+   "what": "a long loop path not shortened",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P4",
+   "file": "taskboard/models.py",
+   "old": "    out.sort(key=lambda c: (not c.same_project,",
+   "new": "    out.sort(key=lambda c: (c.same_project,",
+   "what": "other projects first",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P5",
+   "file": "taskboard/models.py",
+   "old": "        if t is waiter or not is_open(board, t) or (q and q not in t.title.lower()):",
+   "new": "        if t is waiter or (q and q not in t.title.lower()):",
+   "what": "done work offered",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P6",
+   "file": "taskboard/models.py",
+   "old": "        loop = loop_path(board, waiter, t) if t.id in loopers else None",
+   "new": "        loop = None",
+   "what": "loop candidates not marked",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P7",
+   "file": "taskboard/models.py",
+   "old": "                else f\"ok — due {(s - pd).days}d before this starts\")",
+   "new": "                else f\"ok — due {(s - pd).days + 1}d before this starts\")",
+   "what": "a hint off by a day",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P8",
+   "file": "taskboard/models.py",
+   "old": "            for w in open_dependents(board, t):\n                if w.id not in inside and w not in waiters:",
+   "new": "            for w in open_dependents(board, t):\n                if w not in waiters:",
+   "what": "project waiters inside counted",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P9",
+   "file": "taskboard/modals.py",
+   "old": "        if not proj.archived and self._refused(proj):\n            return\n        if not proj.archived:",
+   "new": "        if not proj.archived:",
+   "what": "project archive unguarded",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P10",
+   "file": "taskboard/modals.py",
+   "old": "        ol.highlighted = first if first is not None else 0",
+   "new": "        ol.highlighted = 0",
+   "what": "highlight starts on create",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P11",
+   "file": "taskboard/modals.py",
+   "old": "                options.append(Option(line, id=f\"c:{c.task.id}\", disabled=bool(c.loop)))",
+   "new": "                options.append(Option(line, id=f\"c:{c.task.id}\"))",
+   "what": "a loop row selectable",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P12",
+   "file": "taskboard/modals.py",
+   "old": "                options.append(Option(Text.assemble(\"  \" * (depth - 1) + \"└ \",\n                                                    self._row(w, None)), disabled=True))",
+   "new": "                options.append(Option(Text.assemble(\"  \" * (depth - 1) + \"└ \",\n                                                    self._row(w, None)), id=f\"d:{w.id}\"))",
+   "what": "a chain row selectable",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P13",
+   "file": "taskboard/modals.py",
+   "old": "        if oid.startswith(\"p:\"):\n            self.app.unlink_tasks(t, other)\n        else:\n            self.app.unlink_tasks(other, t)",
+   "new": "        self.app.unlink_tasks(t, other)",
+   "what": "x removes the wrong direction",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P14",
+   "file": "taskboard/app.py",
+   "old": "        why = link_refusal(self.board, waiter, pred)\n        if why is not None:",
+   "new": "        why = None\n        if why is not None:",
+   "what": "the app skips the refusal",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P15",
+   "file": "taskboard/app.py",
+   "old": "        self._undo_stack.append(self._snapshot(waiter))\n        waiter.depends_on = [x for x in waiter.depends_on if x != pred.id]",
+   "new": "        waiter.depends_on = [x for x in waiter.depends_on if x != pred.id]",
+   "what": "unlink not undoable",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P16",
+   "file": "taskboard/app.py",
+   "old": "        new = Task(title, project_id=waiter.project_id, phase=self.board.phases[0])",
+   "new": "        new = Task(title, phase=self.board.phases[0])",
+   "what": "a created task lands in the Inbox",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P17",
+   "file": "taskboard/app.py",
+   "old": "        self.focused_project_id = None\n        self.search_query = None\n",
+   "new": "",
+   "what": "jump keeps a hiding filter",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P18",
+   "file": "taskboard/modals.py",
+   "old": "        if ol.has_focus:\n            self.query_one(\"#details-box\").focus()\n        else:",
+   "new": "        if False:\n            pass\n        else:",
+   "what": "tab never returns to the box",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P19",
+   "file": "taskboard/modals.py",
+   "old": "        open_preds = [p for p in preds if is_open(b, p)]",
+   "new": "        open_preds = [p for p in preds if is_open(b, p) and is_open(b, t)]",
+   "what": "F1: a closed task's open predecessors painted done",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P20",
+   "file": "taskboard/modals.py",
+   "old": "        if not is_open(b, t):\n            state = \"\"",
+   "new": "        if False:\n            state = \"\"",
+   "what": "F1: a closed task says waiting/ready",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "P21",
+   "file": "taskboard/app.py",
+   "old": "        if self.selected_task_id != task.id:",
+   "new": "        if False:",
+   "what": "F3: an undrawable jump said nothing",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  }
+ ]
+}

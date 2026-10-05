@@ -1,0 +1,24 @@
+## P-1  `b` writes blocked=True AND appends the picked id; unblock keeps the id
+   screen after b: BlockerPicker
+   after pick: blocked = True depends_on = ['tw2']
+   after b again: blocked = False depends_on = ['tw2']
+## P-3  archive `x` and delete `d` of an OPEN task that an open task waits on succeed (no guard)
+   ta3 archived after x: True
+   screen after d: ConfirmModal
+   tm2 present after d + yes: False · tm3.depends_on = ['tm2']
+## P-5  the details view shows no dependency (enter on a waiting task)
+   screen: TaskDetails · any label holding 'Audit dependencies': False · 'Waits on': False
+## P-2  shipped marks: ⛓N on the predecessor only; nothing on the waiting card
+   kanban tm2: '▊ == Audit dependencies ' / '▊ ·6d ⛓1 +2d            '
+   kanban tm3: '▊ == Add push           ' / '▊    notifications +12d '
+   kanban tw5: '▊ !! Launch new homepage' / '▊ ·30d +10d             '
+   kanban ta2: '▲ !! Deprecate v1       ' / '▊    endpoints ·26d +7d '
+   card_cell tm2: 'Audit dependencies            ·6d +2d ⛓1'
+   gantt_dep_mark ta2 with its only predecessor ARCHIVED: '↳'
+   gantt_dep_mark tw5 starting ON tw4's due day: '[#8b98a5]↳[/]' (over = conflict)
+## P-8  OptionList paints a two-line Text prompt, and a disabled option is skipped by the cursor
+   highlighted after down from 'a': c (expected c: the disabled row skipped)
+   option count: 4 · prompt 1 plain: 'row one [b]x[/b]\n    second line'
+## P-10 the undo stack holds ONE task per entry (app.py _snapshot)
+   _snapshot returns {'task_id', 'fields'[, 'task', 'index']}: True
+   _UNDO_FIELDS = ('phase', 'phase_changed', 'priority', 'blocked', 'due_date', 'archived', 'pinned', 'depends_on')

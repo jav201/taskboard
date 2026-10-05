@@ -1,0 +1,44 @@
+P8: KILLED — project waiters inside counted
+   file taskboard/models.py restore sha256 22090a5aa723776a OK
+   nodes resolved 41 · RED 1 · GREEN 40 · 1 failed, 40 passed in 19.53s
+   RED   tests/test_links.py::test_TC_517_a_project_whose_waiters_are_inside_archives
+   GREEN tests/test_details_links.py::test_AT_504_the_details_show_and_edit_the_links
+   GREEN tests/test_details_links.py::test_TC_513_a_closed_tasks_rows_show_their_own_state
+   GREEN tests/test_details_links.py::test_TC_513_a_jump_the_view_cannot_draw_is_said
+   GREEN tests/test_details_links.py::test_TC_513_rows_paint_done_and_archived_and_the_jump_clears_filters
+   GREEN tests/test_details_links.py::test_TC_513_the_section_equals_the_oracle
+   GREEN tests/test_link_picker.py::test_AT_502_L_links_from_the_picker
+   GREEN tests/test_link_picker.py::test_TC_507_a_link_is_refused_when_it_is_self_closed_or_a_loop
+   GREEN tests/test_link_picker.py::test_TC_507_the_app_refuses_a_loop_even_when_asked_directly
+   GREEN tests/test_link_picker.py::test_TC_508_L_is_one_new_key_painted_at_80_columns
+   GREEN tests/test_link_picker.py::test_TC_509_candidates_and_hints_equal_the_oracle[ta2]
+   GREEN tests/test_link_picker.py::test_TC_509_candidates_and_hints_equal_the_oracle[to4]
+   GREEN tests/test_link_picker.py::test_TC_509_candidates_and_hints_equal_the_oracle[tw5]
+   GREEN tests/test_link_picker.py::test_TC_510_rows_paint_their_state_and_undo_takes_a_link_back
+   GREEN tests/test_link_picker.py::test_TC_510_the_picker_filters_starts_on_a_candidate_and_creates
+   GREEN tests/test_links.py::test_AT_501_the_board_says_who_waits_and_b_is_an_outside_block
+   GREEN tests/test_links.py::test_AT_505_work_others_wait_on_is_not_put_away
+   GREEN tests/test_links.py::test_TC_501_dangling_self_duplicate_and_teammate_ids_do_not_count
+   GREEN tests/test_links.py::test_TC_501_waiting_is_derived_from_live_links_in_every_session_state
+   GREEN tests/test_links.py::test_TC_502_a_predecessor_off_the_board_closes_no_loop
+   GREEN tests/test_links.py::test_TC_502_the_loop_path_runs_through_closed_tasks
+   GREEN tests/test_links.py::test_TC_503_the_one_overlap_measure[2026-10-01-None-None-0]
+   GREEN tests/test_links.py::test_TC_503_the_one_overlap_measure[2026-10-08-2026-10-20-2026-10-10-3]
+   GREEN tests/test_links.py::test_TC_503_the_one_overlap_measure[2026-10-10-2026-10-20-2026-10-10-1]
+   GREEN tests/test_links.py::test_TC_503_the_one_overlap_measure[2026-10-11-2026-10-20-2026-10-10-0]
+   GREEN tests/test_links.py::test_TC_503_the_one_overlap_measure[None-2026-10-07-2026-10-10-3]
+   GREEN tests/test_links.py::test_TC_503_the_one_overlap_measure[None-2026-10-10-2026-10-10-0]
+   GREEN tests/test_links.py::test_TC_503_the_one_overlap_measure[None-2026-10-12-2026-10-10-0]
+   GREEN tests/test_links.py::test_TC_503_the_one_overlap_measure[None-None-2026-10-10-0]
+   GREEN tests/test_links.py::test_TC_504_cards_paint_the_marks_never_the_chain
+   GREEN tests/test_links.py::test_TC_504_every_card_caller_passes_one_map
+   GREEN tests/test_links.py::test_TC_504_the_help_names_the_marks_and_L
+   GREEN tests/test_links.py::test_TC_505_the_gutter_and_the_packet_read_the_same_rule
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+   GREEN tests/test_links.py::test_TC_506_done_says_once_what_became_ready
+   GREEN tests/test_links.py::test_TC_506_ready_lines_are_capped_and_say_a_block_remains
+   GREEN tests/test_links.py::test_TC_517_delete_is_judged_again_after_its_confirm
+   GREEN tests/test_links.py::test_TC_517_the_refusal_names_who_waits
+   GREEN tests/test_links.py::test_TC_517_the_refusal_paints_a_markup_title_literally
+   GREEN tests/test_links.py::test_TC_517_x_in_setup_never_touches_a_task
+   GREEN tests/test_links.py::test_TC_518_the_derivations_are_bounded_on_hostile_boards

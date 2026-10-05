@@ -1,0 +1,7 @@
+## Increment 007 identity proof — every render the D-533 change must not touch, before (006 frozen r2 views.py f21f3683…) vs after (007 views.py 3f773ada…), 2026-10-04
+Script: scratchpad identity007.py (kg board, synthetic): render_view for swimlanes, agenda, gantt, kanban grouped + matrix, focus × 6 sizes (60×20 … 200×50) × every selection incl. none, plus card_cell with no title floor (every other caller's law) × every task × widths 0–59, selected and not.
+before: 4404 e369ea6d4086e60ddbe47ea1fe74666c593454f129237e21cbf65d729eaadc2c
+after:  4404 e369ea6d4086e60ddbe47ea1fe74666c593454f129237e21cbf65d729eaadc2c   → IDENTICAL
+Positive control (the same script over the kanban LANES presentation, which the change targets):
+before: 4230 6a42b83c502fbe20fba65777828059c2380fd548233d689988db593d1e6cdfd8
+after:  4230 54fccab6c78c7344276604ffd3c31167ba96d17cbf54fea800bb23da68244882   → DIFFERENT (the instrument can say no)

@@ -1,0 +1,22 @@
+## RED on base 0447070 (git archive) + this increment's tests — 2026-10-03
+
+### collection of test_link_migration.py on base
+## RED on base 0447070 (git archive) + this increment's tests — 2026-10-03
+
+### collection of test_link_migration.py on base
+
+### TC-506 alone on base
+E               AssertionError: assert 2 == 1
+E                +  where 2 = len([Screen(id='_default'), BlockerPicker()])
+E                +    where [Screen(id='_default'), BlockerPicker()] = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}).screen_stack
+FAILED tests/test_links.py::test_TC_506_b_is_the_external_block_only - Assert...
+
+### the base app started on the legacy board file (AT-506's input)
+L2 after the base start: (True, ['to1', 'to2']) (the rule wants (False, ['to2']))
+L3 after the base start: (False, ['ta1']) (the rule wants (False, []))
+files beside the board: []
+
+### test_link_migration.py collected on base (re-run)
+ImportError while importing test module '<home>\AppData\Local\Temp\claude\<session>\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base001\tests\test_link_migration.py'.
+E   ImportError: cannot import name 'MIGRATION_BACKUP' from 'taskboard.models' (<home>\AppData\Local\Temp\claude\<session>\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\base001\taskboard\models.py)
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!

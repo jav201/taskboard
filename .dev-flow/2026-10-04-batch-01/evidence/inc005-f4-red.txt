@@ -1,0 +1,5 @@
+## RED-first for ux F4 (P4 fold, increment 005): the new TC-512 arm on increment 004's frozen r3 product (modals.py 7fa70f59…) — 2026-10-04
+7fa70f596f38319c2f41bd679ce3aee328e7da2ead2cf87f2d17f7e67061e994 *taskboard/modals.py
+E           assert False
+FAILED tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said
+1 failed, 13 deselected in 1.17s

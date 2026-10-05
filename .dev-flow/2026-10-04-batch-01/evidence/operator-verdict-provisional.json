@@ -1,0 +1,56 @@
+{
+  "batch": "2026-10-04-batch-01",
+  "exported": "2026-10-04T22:21:19.779Z",
+  "answers": {
+    "PV-1": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "PV-2": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "PV-3": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "PV-4": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "PV-5": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "PV-6": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "PV-7": {
+      "choice": "accept",
+      "label": "Aceptar",
+      "note": ""
+    },
+    "D-528": {
+      "choice": "now",
+      "label": "Corregirlo antes del push",
+      "note": ""
+    },
+    "D-529": {
+      "choice": "now",
+      "label": "Corregirlo antes del push",
+      "note": ""
+    },
+    "D-530": {
+      "choice": "now",
+      "label": "Corregirlo antes del push",
+      "note": "Nota sobre otro tema, agrega funcionalidad para que se pueda hacer presentación de un proyecto completo. Donde se vea el gannt, las tareas y el texto de las tareas en un formato apropiado para presentar. ADemás de poder exportar SVG o una imagen de lo proyectado."
+    }
+  }
+}

@@ -1,0 +1,78 @@
+## inc001 reverse census — 2026-10-03 — tree base 0447070 + increment 001
+
+### Q-1: test files that start TaskboardApp AND hold a link or a blocked task (grep)
+tests/test_app.py: depends_on=10 blocked=True=4 kg_board=0
+tests/test_colour_budget.py: depends_on=0 blocked=True=0 kg_board=3
+tests/test_colour_budget_app.py: depends_on=0 blocked=True=0 kg_board=16
+tests/test_dependencies.py: depends_on=28 blocked=True=2 kg_board=0
+tests/test_english.py: depends_on=0 blocked=True=0 kg_board=5
+tests/test_gantt_board.py: depends_on=6 blocked=True=0 kg_board=22
+tests/test_gantt_polish.py: depends_on=0 blocked=True=0 kg_board=12
+tests/test_kanban_priority.py: depends_on=0 blocked=True=1 kg_board=0
+tests/test_kanban_readable.py: depends_on=0 blocked=True=1 kg_board=38
+tests/test_lanes_grid.py: depends_on=0 blocked=True=1 kg_board=0
+tests/test_legend.py: depends_on=0 blocked=True=1 kg_board=0
+tests/test_link_migration.py: depends_on=14 blocked=True=6 kg_board=17
+tests/test_links.py: depends_on=5 blocked=True=0 kg_board=3
+tests/test_setup_help.py: depends_on=1 blocked=True=0 kg_board=0
+
+### Q2-5: kg_board users comparing settings or saved bytes
+tests/test_colour_budget_app.py:43:    tree = ast.parse(Path(app_mod.__file__).read_text(encoding="utf-8"))
+tests/test_colour_budget_app.py:382:    b.settings["team_shared_dir"] = str(tmp_path / "team")
+tests/test_colour_budget_app.py:383:    b.settings["team_user_id"] = "jav"
+tests/test_colour_budget_app.py:525:    css = Path(app_module.__file__).with_name("taskboard.tcss").read_text(encoding="utf-8")
+tests/test_colour_budget_app.py:534:    src = Path(app_module.__file__).read_text(encoding="utf-8")
+tests/test_english.py:128:        tree = ast.parse(path.read_text(encoding="utf-8"))
+tests/test_english.py:228:    b.settings["team_shared_dir"] = str(tmp_path / "team")
+tests/test_english.py:229:    b.settings["team_user_id"] = "jav"
+tests/test_gantt_polish.py:291:    css = Path(app_mod.__file__).with_name("taskboard.tcss").read_text(encoding="utf-8")
+tests/test_link_migration.py:41:    data = json.loads(path.read_text(encoding="utf-8"))
+tests/test_link_migration.py:110:    raw = path.read_bytes()
+tests/test_link_migration.py:116:    assert taken.read_bytes() == b"somebody else's file"
+tests/test_link_migration.py:117:    assert (tmp_path / result.backup).read_bytes() == raw
+tests/test_link_migration.py:118:    log = json.loads((tmp_path / result.log).read_text(encoding="utf-8"))
+tests/test_link_migration.py:121:    saved = json.loads(path.read_text(encoding="utf-8"))
+tests/test_link_migration.py:122:    assert saved["settings"]["migrations"] == {"links": 1}
+tests/test_link_migration.py:139:    assert links_marked(Board.load(path).settings)
+tests/test_link_migration.py:148:    b = Board([], [Task("lone")], path, settings={"migrations": mark})
+tests/test_link_migration.py:150:    assert not links_marked(b.settings)
+tests/test_link_migration.py:153:    log = json.loads((tmp_path / result.log).read_text(encoding="utf-8"))
+tests/test_link_migration.py:155:    assert links_marked(Board.load(path).settings)
+tests/test_link_migration.py:164:    b.settings["migrations"] = {"links": 1}
+tests/test_link_migration.py:166:    raw = path.read_bytes()
+tests/test_link_migration.py:168:    assert path.read_bytes() == raw and _beside(path) == set()
+tests/test_link_migration.py:174:    assert bad.read_text(encoding="utf-8") == "{not json"
+tests/test_link_migration.py:186:    raw = path.read_bytes()
+tests/test_link_migration.py:207:    assert path.read_bytes() == raw
+tests/test_link_migration.py:209:    assert "migrations" not in b.settings
+tests/test_link_migration.py:242:    assert links_marked(Board.load(real).settings)
+tests/test_link_migration.py:286:    assert links_marked(Board.load(path).settings)
+tests/test_link_migration.py:303:    raw = path.read_bytes()
+tests/test_link_migration.py:311:        assert backup.read_bytes() == raw
+tests/test_link_migration.py:317:        log = json.loads((tmp_path / logs[0]).read_text(encoding="utf-8"))
+tests/test_link_migration.py:322:    listing = {n: (tmp_path / n).read_bytes() for n in _beside(path)}
+tests/test_link_migration.py:323:    board_bytes = path.read_bytes()
+tests/test_link_migration.py:328:    assert path.read_bytes() == board_bytes
+tests/test_link_migration.py:329:    assert {n: (tmp_path / n).read_bytes() for n in _beside(path)} == listing
+tests/test_link_migration.py:346:    assert links_marked(Board.load(path).settings)
+tests/test_link_migration.py:358:    raw = path.read_bytes()
+tests/test_link_migration.py:375:    assert path.read_bytes() == raw
+tests/test_link_migration.py:376:    assert not links_marked(Board.load(path).settings)
+tests/test_links.py:43:            saved = {x["id"]: x for x in json.loads(path.read_text(encoding="utf-8"))["tasks"]}
+tests/test_requirements.py:33:    for raw in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines():
+tests/test_requirements.py:86:        tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
+tests/test_requirements.py:124:    text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+(end)
+
+### B1 symbols touched: action_toggle_blocked / BlockerPicker / _undo_stack / on_mount / Board.save
+toggle_blocked                   tests/test_app.py tests/test_dependencies.py tests/test_links.py 
+BlockerPicker                    tests/test_links.py 
+_undo_stack                      tests/test_app.py 
+def on_mount                     
+_serialized\|save_atomic         
+settings\["migrations"\]\|migrations tests/kg_board.py tests/test_app.py tests/test_dependencies.py tests/test_link_migration.py 
+
+### B2 moved files: git diff --name-status HEAD -- taskboard tests | grep ^R
+(none)
+### B3: ls tests/goldens
+ls: cannot access 'tests/goldens': No such file or directory

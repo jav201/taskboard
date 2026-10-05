@@ -544,7 +544,10 @@ async def test_AT_207_the_project_just_left_stays_open(tmp_path, frozen, size, m
 # TC-208 / AT-206 — finishing a task in the gantt says where it went (HLR-206)
 # =========================================================================== #
 def toasts(app) -> list[str]:
-    return [n.message for n in app._notifications]
+    """The fold notices (HLR-206). Since batch 2026-10-04-batch-01 finishing a
+    task can also post a `Ready` toast for the work it let go (HLR-501); that
+    is another law's toast, pinned in tests/test_links.py, so it is left out."""
+    return [n.message for n in app._notifications if n.title != "Ready"]
 
 
 async def test_AT_206_a_finished_task_says_where_it_folded(tmp_path, frozen):

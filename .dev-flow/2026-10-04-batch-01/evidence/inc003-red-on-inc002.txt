@@ -1,0 +1,15 @@
+## RED of increment 003's tests on increment 002's product (frozen r2; hashes matched) — 2026-10-04
+E   ImportError: cannot import name 'LinkPicker' from 'taskboard.modals' (<home>\AppData\Local\Temp\claude\<session>\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\red003\taskboard\modals.py)
+ERROR tests/test_link_picker.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.44s
+FAILED tests/test_details_links.py::test_TC_513_the_section_equals_the_oracle
+FAILED tests/test_details_links.py::test_AT_504_the_details_show_and_edit_the_links
+2 failed in 0.88s
+>       assert not failures, (f"{len(failures)} of {total} site x payload arms failed:\n  "
+E       AssertionError: 3 of 67 site x payload arms failed:
+PASSED tests/test_links.py::test_TC_517_the_refusal_paints_a_markup_title_literally
+PASSED tests/test_links.py::test_TC_502_a_predecessor_off_the_board_closes_no_loop
+FAILED tests/test_links.py::test_AT_505_work_others_wait_on_is_not_put_away
+FAILED tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly
+2 failed, 2 passed, 28 deselected in 25.30s

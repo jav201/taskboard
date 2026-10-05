@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             27 tasks
+BACKLOG  ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮2
+─────────│                                                                                                  │─────────
+── high  │  Add push notifications  —  o open raw · esc close                                               │─────────
+▊ !! Laun│                                                                                                  │
+▊ ·34d ◂2│  Project    Mobile App                                                                           │
+┈┈┈┈┈┈┈┈┈│  Phase      Next                                                                                 │
+▊ !! Offl│  Priority   normal                                                                               │
+▊ ·19d ▸1│  Start      2026-10-01                                                                           │
+┈┈┈┈┈┈┈┈┈│  Due        2026-10-12                                                                           │
+▲ !! Depr│                                                                                                  │
+▊    endp│  Dependencies  ◂ waiting  L link · tab links · x remove · ↵ jump                                 │
+┈┈┈┈┈┈┈┈┈│  Waits on  ◂1 open of 1                                                                          │
+▊ !! Pen-│  Audit dependencies   DOING · due Oct 2 · open                                                   │
+▊ ·13d Op│  Unblocks  ▸1 direct · 2 in chain                                                                │
+▐ Website│  Offline sync   BACKLOG · due Oct 28                                                             │─────────
+▊ == SEO │    └ Beta release to testers   BACKLOG · due Nov 4                                               │
+▊ ·26d +1│                                                                                                  │
+▐ Mobile │  ◂ starts Oct 1, overlaps Audit dependencies by 2d (due Oct 2)                                   │─────────
+▊ == Beta│                                                                                                  │p CI pip…
+▊    test│  Notes  highlight: ==…== yellow, !!…!! red, ++…++ green                                          │16d ago
+▐ API Pla│  —                                                                                               │─────────
+▊ == Plan│                                                                                              ▃▃  │
+▊ ·44d   │  URLs                                                                                            │
+         │                                                                                                  │
+         │  —                                                                                               │
+         │                                                                                                  │
+▼ 2 below╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+  14:39:17 · Sun 04 Oct 2026 · W40 · Mexico City 14:39 · New York 16:39
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

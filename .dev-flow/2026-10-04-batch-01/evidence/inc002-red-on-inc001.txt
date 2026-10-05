@@ -1,0 +1,14 @@
+## RED of increment 002's tests on increment 001's product (frozen r4, hashes above match) — 2026-10-03
+ImportError while importing test module '<home>\AppData\Local\Temp\claude\<session>\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\red002\tests\test_links.py'.
+E   ImportError: cannot import name 'archive_refusal' from 'taskboard.models' (<home>\AppData\Local\Temp\claude\<session>\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\red002\taskboard\models.py)
+ERROR tests/test_links.py
+
+### the superseded pins, on increment 001's product
+FAILED tests/test_dependencies.py::test_unblocks_token_absent_at_zero_and_present_at_two
+FAILED tests/test_dependencies.py::test_unblocks_token_keeps_width_contract
+FAILED tests/test_kanban_readable.py::test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it
+FAILED tests/test_kanban_readable.py::test_TC_303_the_due_token_is_the_last_fact_to_go
+FAILED tests/test_kanban_readable.py::test_TC_310_the_help_describes_the_new_board
+FAILED tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size1-tw2-tm6]
+FAILED tests/test_gantt_board.py::test_TC_105_the_dependency_mark - Assertion...
+7 failed, 236 passed in 44.22s

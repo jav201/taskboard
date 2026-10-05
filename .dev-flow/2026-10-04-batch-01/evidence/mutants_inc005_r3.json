@@ -1,0 +1,75 @@
+{
+ "export": "<home>\\AppData\\Local\\Temp\\claude\\<session>\\f46e746a-67bb-40fe-b907-7aec72789cc7\\scratchpad\\bat005r3",
+ "mutants": [
+  {
+   "id": "R1",
+   "file": "taskboard/modals.py",
+   "old": "            if folded:\n",
+   "new": "            if False:\n",
+   "what": "F4: folded row not said",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R2",
+   "file": "taskboard/modals.py",
+   "old": "and self.waiter.id not in facts[\"line_map\"])",
+   "new": "and True)",
+   "what": "F4: said even when the row is drawn",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R4",
+   "file": "taskboard/views.py",
+   "old": "if put(rw, first + x, \"═\", \"over\", False):",
+   "new": "if put(rw, first + x, \"═\", \"soon\", False):",
+   "what": "G-002: overlap tone",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R5",
+   "file": "taskboard/views.py",
+   "old": "if put(rc, col, \"╮\" if down else \"╯\", \"bright\", True):",
+   "new": "if put(rc, col, \"╮\" if down else \"╯\", \"mut\", True):",
+   "what": "G-002: connector tone",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R6",
+   "file": "taskboard/modals.py",
+   "old": "                elif room >= 20:\n",
+   "new": "                elif False:\n",
+   "what": "N1: no short form, the reason lost at 80",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R7",
+   "file": "taskboard/modals.py",
+   "old": "        folded = (is_open(self.board, self.waiter)\n",
+   "new": "        folded = (True\n",
+   "what": "N2: a closed waiter gets the note",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "R8",
+   "file": "taskboard/modals.py",
+   "old": "clip(self.waiter.title, room - 4 - len(tail)) + tail",
+   "new": "clip(self.waiter.title + tail, room - 4)",
+   "what": "N1: the reason clipped, not the title",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  }
+ ]
+}

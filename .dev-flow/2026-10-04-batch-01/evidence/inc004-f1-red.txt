@@ -1,0 +1,8 @@
+## RED-first for code review F1 (increment 004): the new TC-512 arms on frozen r1 (modals.py eb2ae9ba…) — 2026-10-04
+E           assert False
+E           assert False
+PASSED tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter
+PASSED tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+FAILED tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+FAILED tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+2 failed, 2 passed, 9 deselected in 21.88s

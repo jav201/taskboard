@@ -1,0 +1,77 @@
+{
+ "export": "<home>\\AppData\\Local\\Temp\\claude\\<session>\\f46e746a-67bb-40fe-b907-7aec72789cc7\\scratchpad\\bat007",
+ "mutants": [
+  {
+   "id": "U1",
+   "file": "taskboard/views.py",
+   "old": "order = ([age_token] if age_token in tokens else []) + \\\n",
+   "new": "order = [] + \\\n",
+   "what": "the age not shed first",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  },
+  {
+   "id": "U2",
+   "file": "taskboard/views.py",
+   "old": "            [tk for tk in tokens if tk != age_token and tk not in link_tokens] + waits\n",
+   "new": "            waits + [tk for tk in tokens if tk != age_token and tk not in link_tokens]\n",
+   "what": "`◂` shed before other meta",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  },
+  {
+   "id": "U3",
+   "file": "taskboard/views.py",
+   "old": "            [tk for tk in link_tokens if tk not in waits] + \\\n",
+   "new": "            [] + \\\n",
+   "what": "`▸` never shed",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  },
+  {
+   "id": "U4",
+   "file": "taskboard/views.py",
+   "old": "        waits = [tk for tk in link_tokens if tk[0].startswith(\"◂\")]\n",
+   "new": "        waits = []\n",
+   "what": "`◂` treated as other meta",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  },
+  {
+   "id": "U5",
+   "file": "taskboard/views.py",
+   "old": "    if title_floor:\n        # operator D-533",
+   "new": "    if False:\n        # operator D-533",
+   "what": "no shed order (the shipped left-drop)",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  },
+  {
+   "id": "U6",
+   "file": "taskboard/views.py",
+   "old": "CARD_TITLE_FLOOR = 6\n",
+   "new": "CARD_TITLE_FLOOR = 3\n",
+   "what": "floor too low",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  }
+ ]
+}

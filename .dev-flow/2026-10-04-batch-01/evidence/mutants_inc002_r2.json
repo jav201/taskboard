@@ -1,0 +1,299 @@
+{
+ "export": "<home>/AppData/Local/Temp/claude/<session>/f46e746a-67bb-40fe-b907-7aec72789cc7/scratchpad/x002",
+ "mutants": [
+  {
+   "id": "N1",
+   "file": "taskboard/models.py",
+   "old": "    return [p for p in _live(task, by_id) if is_open(board, p)]",
+   "new": "    return list(_live(task, by_id))",
+   "what": "closed predecessors counted",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N2",
+   "file": "taskboard/models.py",
+   "old": "    return [by_id[x] for x in dict.fromkeys(task.depends_on)\n            if x != task.id and x in by_id]",
+   "new": "    return [by_id[x] for x in task.depends_on\n            if x != task.id and x in by_id]",
+   "what": "a repeated id counted twice",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N3",
+   "file": "taskboard/models.py",
+   "old": "        return max(0, (pdue - start).days + 1)",
+   "new": "        return max(0, (pdue - start).days)",
+   "what": "the strict measure (start on the due day = 0)",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N4",
+   "file": "taskboard/models.py",
+   "old": "        for p in _live(by_id[cur], by_id):\n            if p.id in parent:",
+   "new": "        for p in [q for q in _live(by_id[cur], by_id) if is_open(board, q)]:\n            if p.id in parent:",
+   "what": "loop search over open tasks only",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N5",
+   "file": "taskboard/views.py",
+   "old": "    if board.task_by_id(task.id) is not task:\n        return []\n",
+   "new": "",
+   "what": "a teammate's task paints marks",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N6",
+   "file": "taskboard/views.py",
+   "old": "    toks.extend(_link_tokens(task, board, marks))\n    if tag:\n        toks.append(tag)\n",
+   "new": "    if tag:\n        toks.append(tag)\n",
+   "what": "marks dropped from the kanban card",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N7",
+   "file": "taskboard/views.py",
+   "old": "    if not open_predecessors(board, task):\n        return \" \"\n    if link_conflicts(board, task):",
+   "new": "    if not [p for p in task.depends_on if board.task_by_id(p) and not board.is_done(board.task_by_id(p))]:\n        return \" \"\n    if link_conflicts(board, task):",
+   "what": "gutter counts an archived predecessor",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N8",
+   "file": "taskboard/views.py",
+   "old": "            and board.phase_index(task) > 0 and not open_predecessors(board, task))",
+   "new": "            and board.phase_index(task) > 0)",
+   "what": "the packet runs on a waiting task",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N9",
+   "file": "taskboard/models.py",
+   "old": "    if len(lines) > 3:\n        lines = lines[:3] + [f\"+{len(lines) - 3} more ready\"]\n",
+   "new": "",
+   "what": "no cap on ready lines",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N10",
+   "file": "taskboard/models.py",
+   "old": "        if t.id not in waiting_before or t.id in now or not is_open(board, t):",
+   "new": "        if t.id not in waiting_before or not is_open(board, t):",
+   "what": "ready said for a task still waiting",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N11",
+   "file": "taskboard/app.py",
+   "old": "        if not task.archived and self._refuse(task, \"archive\"):\n            return\n",
+   "new": "",
+   "what": "x not guarded",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N12",
+   "file": "taskboard/app.py",
+   "old": "        if task is None or self._refuse(task, \"delete\"):\n            return\n        self.push_screen",
+   "new": "        if task is None:\n            return\n        self.push_screen",
+   "what": "d guarded only after its confirm",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N13",
+   "file": "taskboard/app.py",
+   "old": "        if archive is not None and not (archive and not task.archived and self._refuse(\n                task, \"archive\", \" — other changes saved\")):",
+   "new": "        if archive is not None:",
+   "what": "the editor's archived box not guarded",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N14",
+   "file": "taskboard/models.py",
+   "old": "    waiters = [w for w in open_dependents(board, task) if w.id not in leaving]",
+   "new": "    waiters = open_dependents(board, task)",
+   "what": "waiters inside the archived set counted",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N15",
+   "file": "taskboard/views.py",
+   "old": "                                 readonly=readonly, marks=marks)",
+   "new": "                                 readonly=readonly)",
+   "what": "the people view on the fallback",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N16",
+   "file": "taskboard/models.py",
+   "old": "    for t in by_id.values():\n        if not is_open(board, t):\n            continue\n        for p in _live(t, by_id):",
+   "new": "    for t in by_id.values():\n        for p in _live(t, by_id):",
+   "what": "closed waiters counted in the marks",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N18",
+   "file": "taskboard/views.py",
+   "old": "    if unblocks:\n        out.append((f\"▸{unblocks}\", \"mut\"))\n    if waits:\n        out.append((f\"◂{waits}\", \"mut\"))",
+   "new": "    if waits:\n        out.append((f\"◂{waits}\", \"mut\"))\n    if unblocks:\n        out.append((f\"▸{unblocks}\", \"mut\"))",
+   "what": "◂ shed before ▸",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N19",
+   "file": "taskboard/app.py",
+   "old": "        for line in ready_messages(self.board, waiting_before, {task.id}):",
+   "new": "        for line in ready_messages(self.board, waiting_before, set()):",
+   "what": "ready never said",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N20",
+   "file": "taskboard/app.py",
+   "old": "        if self.view_mode == \"setup\":\n            # FIRST",
+   "new": "        if False:\n            # FIRST",
+   "what": "Setup x reaches the task (F2)",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N21",
+   "file": "taskboard/app.py",
+   "old": "            if self.view_mode == \"gantt\" and self.board.is_done(task):\n                self._notify_folded(task)",
+   "new": "            if False:\n                self._notify_folded(task)",
+   "what": "no fold notice (F1's helper still sees it)",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  },
+  {
+   "id": "N22",
+   "file": "taskboard/app.py",
+   "old": "        if not ok or self._refuse(task, \"delete\"):",
+   "new": "        if not ok:",
+   "what": "delete not judged again after its confirm (F4)",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_dependencies.py",
+    "tests/test_kanban_readable.py",
+    "tests/test_gantt_board.py",
+    "tests/test_gantt_polish.py"
+   ]
+  }
+ ]
+}

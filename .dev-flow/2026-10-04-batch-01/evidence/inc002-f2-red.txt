@@ -1,0 +1,4 @@
+## F2 RED-first — tree = increment 002 frozen r1 product (app.py sha256 4d2d9964d563a7c5) + the new TC-517 arm, 2026-10-04
+E           AssertionError: assert not True
+FAILED tests/test_links.py::test_TC_517_x_in_setup_never_touches_a_task - Ass...
+1 failed, 23 deselected in 0.80s

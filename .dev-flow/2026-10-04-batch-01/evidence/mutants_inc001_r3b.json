@@ -1,0 +1,27 @@
+{
+ "export": "<scratchpad>/x001",
+ "mutants": [
+  {
+   "id": "M9",
+   "file": "taskboard/models.py",
+   "old": "MIGRATION_BACKUP = \".pre-links-migration\"",
+   "new": "MIGRATION_BACKUP = \".pre-links-migration.json\"",
+   "what": "a backup name team pull reads",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  },
+  {
+   "id": "M7",
+   "file": "taskboard/models.py",
+   "old": "        board.save_atomic()\n    except OSError as exc:",
+   "new": "        board.save()\n    except OSError as exc:",
+   "what": "save in place, not atomically",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  }
+ ]
+}

@@ -7,6 +7,7 @@ import webbrowser
 from datetime import date
 from pathlib import Path
 
+from rich.text import Text
 from textual import events
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -17,8 +18,10 @@ from textual.widgets import Static
 
 from . import history
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
-                     bump_due, default_board_path, next_priority)
-from .modals import (BlockerPicker, ClockModal, CommandPalette, ConfirmModal,
+                     archive_refusal, bump_due, default_board_path, link_refusal,
+                     next_priority, ready_messages, run_link_migration, strip_controls,
+                     waiting_ids)
+from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, PhaseEditor, ProjectModal, ProjectPicker,
                      StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
@@ -223,7 +226,7 @@ class TaskboardApp(App):
         "add_task", "add_project", "manage_projects", "manage_phases",
         "details", "edit", "delete", "archive", "purge_done", "report",
         "toggle_archived", "open_url", "open_images", "clocks",
-        "phase_move", "prio_cycle", "toggle_blocked",
+        "phase_move", "prio_cycle", "toggle_blocked", "link",
         "kanban_sort", "kanban_group", "collapse_toggle",
         "focus_cycle", "focus_exit", "due_bump", "undo", "standup",
         "toggle_presentation", "cursor", "hmove",
@@ -246,6 +249,10 @@ class TaskboardApp(App):
             yield KeyBar(id="keybar")
 
     def on_mount(self) -> None:
+        # FIRST, before any other write: the backup must hold the file as the
+        # user left it (LLR-505.3) — the renumber notice and the sweep both save.
+        if not self._migrate_links():
+            return
         self._announce_renumbering()
         self._sweep_old_done()
         self._select_first()
@@ -255,6 +262,34 @@ class TaskboardApp(App):
         self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
         self._init_team_mode()
+
+    def _migrate_links(self) -> bool:
+        """The one-time link migration (HLR-505). Returns False when it failed:
+        the board file was not touched, and the app stops rather than work on
+        links that would be read with the wrong meaning (D-518). On success
+        every changed task is one undo step, and the toast names the backup."""
+        result = run_link_migration(self.board)
+        if result is None:
+            return True
+        if result.error is not None:
+            # a Text piece: the reason holds a file name, and Rich would parse a
+            # str printed at exit as markup (S1)
+            self.exit(return_code=1, message=Text(
+                f"Link migration stopped: {result.error}. The board file was not changed. "
+                "Free space or write access in the board's folder, or run "
+                "taskboard --board on a copy."))
+            return False
+        if result.changes:
+            self._undo_stack.append({"migration": [
+                {"task_id": ch.task_id,
+                 "fields": {"blocked": ch.before[0], "depends_on": list(ch.before[1])}}
+                for ch in result.changes]})
+            n = len(result.changes)
+            self.notify(f"Links migrated: {n} task{'s' if n != 1 else ''} · "
+                        f"backup {result.backup} · u undo",
+                        title="Dependencies", severity="information", timeout=30,
+                        markup=False)
+        return True
 
     def _announce_renumbering(self) -> None:
         """Say ONCE that the keys moved. Muscle memory is a real thing a user
@@ -713,6 +748,7 @@ class TaskboardApp(App):
         snap = self._snapshot(task)      # BEFORE the mutation (LLR-010.1); a
         kanban = self.view_mode == "kanban" and self.kanban_presentation == "grouped"
         was = self._locate(self._nav_columns()) if kanban else None
+        waiting = waiting_ids(self.board)
         if self.board.set_task_phase(task, self.board.phases[idx]):
             self._undo_stack.append(snap)  # clamped end is a no-op — nothing
             self.board.save()              # executed, nothing recorded
@@ -734,6 +770,24 @@ class TaskboardApp(App):
                 # board text: shown raw with markup OFF, never escaped (C-17)
                 self.notify(f"{task.title} done · counted in the ✓ rail · u undo",
                             markup=False)
+            self._say_ready(waiting, task)
+
+    def _say_ready(self, waiting_before: set[str], task: Task) -> None:
+        """When `task` has just reached the last phase, say once which waiting
+        tasks it let go (LLR-501.4). Titles are board text: raw, markup OFF."""
+        if not self.board.is_done(task):
+            return
+        for line in ready_messages(self.board, waiting_before, {task.id}):
+            self.notify(line, title="Ready", severity="information", markup=False)
+
+    def _refuse(self, task: Task, verb: str, extra: str = "") -> bool:
+        """The guard (HLR-504): an open task that open tasks wait on is not
+        archived or deleted. True when refused — said with the waiters named."""
+        why = archive_refusal(self.board, task, verb)
+        if why is None:
+            return False
+        self.notify(why + extra, title="Links", severity="warning", markup=False)
+        return True
 
     def _notify_folded(self, task: Task) -> None:
         """A task `]` finished has left the gantt — it folded into its group's
@@ -759,67 +813,122 @@ class TaskboardApp(App):
         self.refresh_view()
 
     def action_toggle_blocked(self) -> None:
-        """`b` — block the selected task (with a blocker task) or unblock it.
-
-        Blocking asks "What blocks it?" when there are candidate tasks.  The
-        operator can create a new blocker or pick an existing open task; the
-        blocked task gets ``blocked=True`` and the blocker id appended to
-        ``depends_on``.  Cancelling the prompt leaves no snapshot on the undo
-        stack.  With no candidates (single-task board) the flag flips directly.
-        Unblocking flips the flag back without asking, preserving ``depends_on``
-        so undo can restore it."""
+        """`b` — the EXTERNAL block (`▲`): a block with no task to point at.
+        It flips the flag and nothing else; waiting on another task is a link
+        (`L`), never this flag (HLR-501, D-504)."""
         task = self.selected_task
         if task is None:
             return
-        if task.blocked:
-            self._undo_stack.append(self._snapshot(task))
-            task.blocked = False
-            self.board.save()
-            self.refresh_view()
-            return
-        candidates = [t for t in self.board.tasks
-                      if t is not task
-                      and not self.board.is_done(t)
-                      and not t.archived]
-        if not candidates:
-            # no candidate blocker -> plain flip, no prompt
-            self._undo_stack.append(self._snapshot(task))
-            task.blocked = True
-            self.board.save()
-            self.refresh_view()
-            return
-        self.push_screen(BlockerPicker(self.board, task.id),
-                         lambda result: self._on_blocker_picked(task, result))
-
-    def _on_blocker_picked(self, task: Task, result: str | None) -> None:
-        """Commit the blocker choice: cancelled prompts leave no snapshot."""
-        if result is None:
-            return
-        if result == "__new__":
-            self.push_screen(TextPrompt("New blocker title", placeholder="title"),
-                             lambda title: self._on_new_blocker(task, title))
-            return
-        blocker = self.board.task_by_id(result)
-        if blocker is None:
-            return
         self._undo_stack.append(self._snapshot(task))
-        task.blocked = True
-        task.depends_on = [*task.depends_on, blocker.id]
+        task.blocked = not task.blocked
         self.board.save()
         self.refresh_view()
 
-    def _on_new_blocker(self, task: Task, title: str | None) -> None:
-        """Create a new blocker task, persist it, and link it."""
+    # ---- links: `L` (HLR-502, LLR-502.1) -------------------------------------
+    def action_link(self) -> None:
+        """`L` — "this task waits on…": the picker (D-B2), or in the gantt the
+        link mode drawn on the chart (D-A). Nothing without a selected task."""
+        task = self.selected_task
+        if task is None:
+            return
+        if self.view_mode == "gantt":
+            self.push_screen(GanttLinkMode(self.board, task, self.show_archived, date.today()),
+                             lambda result: self._on_link_picked(task, result))
+        else:
+            self.open_link_picker(task)
+
+    def open_link_picker(self, waiter: Task, after=None) -> None:
+        self.push_screen(LinkPicker(self.board, waiter),
+                         lambda result: self._on_link_picked(waiter, result, after))
+
+    def _on_link_picked(self, waiter: Task, result, after=None) -> None:
+        if result:
+            kind, value = result
+            pred = self.board.task_by_id(value)
+            if kind == "link" and pred is not None:
+                self.link_tasks(waiter, pred)
+            elif kind == "unlink" and pred is not None:
+                self.unlink_tasks(waiter, pred)
+            elif kind == "new":
+                self._create_and_link(waiter, value)
+            elif kind == "ask":
+                self.push_screen(TextPrompt("New task it waits on", placeholder="title"),
+                                 lambda title: self._ask_done(waiter, title, after))
+                return
+        if after is not None:
+            after()
+
+    def _ask_done(self, waiter: Task, title: str | None, after=None) -> None:
+        if title:
+            self._create_and_link(waiter, title)
+        if after is not None:
+            after()
+
+    def link_tasks(self, waiter: Task, pred: Task) -> bool:
+        """Add the link `waiter` waits on `pred` — refused with the reason when it
+        is the task itself, a closed task or a loop (named by its path). One
+        undo step. Titles are board text: raw, markup OFF (S1)."""
+        why = link_refusal(self.board, waiter, pred)
+        if why is not None:
+            self.notify(why, title="Links", severity="warning", markup=False)
+            return False
+        if pred.id in waiter.depends_on:
+            return False
+        self._undo_stack.append(self._snapshot(waiter))
+        waiter.depends_on = [*waiter.depends_on, pred.id]
+        self.board.save()
+        self.refresh_view()
+        self.notify(f"{clip(waiter.title, 40)} waits on {clip(pred.title, 40)} · u undo",
+                    title="Links", markup=False)
+        return True
+
+    def unlink_tasks(self, waiter: Task, pred: Task) -> None:
+        """Remove the link `waiter` waits on `pred`. One undo step."""
+        if pred.id not in waiter.depends_on:
+            return
+        self._undo_stack.append(self._snapshot(waiter))
+        waiter.depends_on = [x for x in waiter.depends_on if x != pred.id]
+        self.board.save()
+        self.refresh_view()
+        self.notify(f"{clip(waiter.title, 40)} no longer waits on {clip(pred.title, 40)} "
+                    "· u undo", title="Links", markup=False)
+
+    def _create_and_link(self, waiter: Task, title: str) -> None:
+        """The picker's create row: a new task in the waiter's project, first
+        phase, no dates, and the link to it. `u` takes the link back; the task
+        stays (a modal add records nothing, LLR-010.1)."""
+        title = strip_controls(title).strip()
         if not title:
             return
-        self._undo_stack.append(self._snapshot(task))
-        phase = self.board.phases[0] if self.board.phases else "Backlog"
-        blocker = Task(title, project_id=task.project_id, phase=phase)
-        self.board.add_task(blocker)
-        task.blocked = True
-        task.depends_on = [*task.depends_on, blocker.id]
-        self.board.save()
+        if len(self.board.phases) < 2:
+            # a one-phase board: its first phase is the last, so the new task
+            # would be closed and the link refused (code review F4)
+            self.notify("a one-phase board has no open phase to create it in",
+                        title="Links", severity="warning", markup=False)
+            return
+        new = Task(title, project_id=waiter.project_id, phase=self.board.phases[0])
+        self.board.add_task(new)
+        self.link_tasks(waiter, new)
+
+    def jump_to(self, task_id: str) -> None:
+        """Select a linked task from the details view: focus and search are left
+        so it can be drawn; archived work hidden by `v` is said, not jumped to."""
+        task = self.board.task_by_id(task_id)
+        if task is None:
+            return
+        if task.archived and not self.show_archived:
+            self.notify(f"{clip(task.title, 40)} is archived — v shows it",
+                        title="Links", markup=False)
+            return
+        self.focused_project_id = None
+        self.search_query = None
+        self.selected_task_id = task.id
         self.refresh_view()
+        if self.selected_task_id != task.id:
+            # this view does not draw it (finished work folded away, a view of
+            # pinned work only): say so rather than select something else
+            self.notify(f"{clip(task.title, 40)} is not drawn in this view",
+                        title="Links", markup=False)
 
     def action_due_bump(self, delta: int) -> None:
         """`+` / `=` (delta +1 — ONE aliased seat entry, §6.5 AMD-06) and `-`
@@ -874,6 +983,19 @@ class TaskboardApp(App):
         writes nothing."""
         while self._undo_stack:
             entry = self._undo_stack.pop()
+            if "migration" in entry:
+                # the whole link migration is ONE step; the mark stays, so it
+                # never runs again on its own (D-517)
+                for one in entry["migration"]:
+                    t = self.board.task_by_id(one["task_id"])
+                    if t is not None:
+                        for f, v in one["fields"].items():
+                            setattr(t, f, list(v) if f == "depends_on" else v)
+                self.board.save()
+                self.refresh_view()
+                self.notify("Links migration undone — the old links now read as waits.",
+                            title="Undo", severity="information", markup=False)
+                return
             task = self.board.task_by_id(entry["task_id"])
             if task is None:
                 gone = entry.get("task")
@@ -1420,6 +1542,8 @@ class TaskboardApp(App):
     def _on_task_edited(self, task: Task, data: dict | None) -> None:
         if not data:
             return
+        waiting = waiting_ids(self.board)
+        archive = data.pop("archived", None)
         for k, v in data.items():
             if k == "phase":
                 # routed through the board so the move is DATED; assigning it
@@ -1427,9 +1551,15 @@ class TaskboardApp(App):
                 self.board.set_task_phase(task, v)
                 continue
             setattr(task, k, v)
+        # the archive box is judged AFTER the edited phase (architect A-12): an
+        # edit that finishes the task and archives it is allowed
+        if archive is not None and not (archive and not task.archived and self._refuse(
+                task, "archive", " — other changes saved")):
+            task.archived = archive
         self.board.save()
         self._warn_history_error()
         self.refresh_view()
+        self._say_ready(waiting, task)
 
     def action_purge_done(self) -> None:
         """`X` — the ONE-TIME archive of finished work the board has no date for.
@@ -1463,13 +1593,15 @@ class TaskboardApp(App):
 
     def action_delete(self) -> None:
         task = self.selected_task
-        if task is None:
+        if task is None or self._refuse(task, "delete"):
             return
         self.push_screen(ConfirmModal(f"Delete '{task.title}'?"),
                         lambda ok, t=task: self._on_delete(t, ok))
 
     def _on_delete(self, task: Task, ok: bool) -> None:
-        if not ok:
+        # judged again: a sync tick could have changed the board while the
+        # confirm was open (security S-7)
+        if not ok or self._refuse(task, "delete"):
             return
         self._undo_stack.append(self._snapshot(task, deleted=True))
         self.board.delete_task(task.id)
@@ -1486,17 +1618,22 @@ class TaskboardApp(App):
         was. So the app states the fact and names the way back — and since the
         batch-04 undo shipped, `u` also reverses it (LLR-010.1: archive is in
         the undo domain), so the pre-flip state is snapshotted first."""
+        if self.view_mode == "setup":
+            # FIRST: in Setup `x` removes a setup row and never touches the
+            # task still selected on the board behind it (code review F2,
+            # security S-7; operator: "Corregir en el 002")
+            self.action_setup_remove()
+            return
         task = self.selected_task
         if task is None:
+            return
+        if not task.archived and self._refuse(task, "archive"):
             return
         self._undo_stack.append(self._snapshot(task))
         task.archived = not task.archived
         self.board.save()
         # the title is the user's text: shown raw with markup OFF, never escaped
         # (S1) — a title holding markup must never render as markup here
-        if self.view_mode == "setup":
-            self.action_setup_remove()
-            return
         shown = clip(task.title, 40)
         if task.archived:
             # WITH `v` OFF THE ROW LEAVES THE SCREEN, and the selection leaves

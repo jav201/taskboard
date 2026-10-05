@@ -70,6 +70,8 @@ EXEMPT = {
     ('app.py', 'TaskboardApp.refresh_view', 'update',
      'content <- render_view(self.view_mode, self.board, self.show_archived, self.selected_task_id, width=w, height=h, line_map=self._line_map, presentation=self.kanban_presentation, tick=self._tick_n, kanban_sort=self.kanban_sort, kanban_group=self.kanban_group, kanban_collapsed=self.kanban_collapsed, kanban_focus=self.focused_project_id, gantt_focus=self.focused_project_id, gantt_previous=self._gantt_previous, lanes_presentation=self.lanes_presentation, focus_presentation=self.focus_presentation, search_query=self.search_query, team_state=self.team_state, team_filter=self.team_filter, setup_state=self._setup_state)'):
         "the board seat: views.render_view builds Rich markup with escape (D-405, out of this census)",
+    ("modals.py", "GanttLinkMode._paint", "update", "frame"):
+        "the gantt link mode's frame: views.gantt_link_frame, the board seat's gantt with escape (D-405, LLR-502.3)",
     ("modals.py", "HelpModal.compose", "from_markup", "example"):
         "help_example(mode): a constant example per view",
     ("modals.py", "HelpModal.compose", "from_markup", "swatch"):

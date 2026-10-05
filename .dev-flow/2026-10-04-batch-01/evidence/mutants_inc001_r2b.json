@@ -1,0 +1,16 @@
+{
+ "export": "<scratchpad>/x001",
+ "mutants": [
+  {
+   "id": "M6",
+   "file": "taskboard/models.py",
+   "old": "        _set_links(board, changes, \"before\")\n        for made in",
+   "new": "        for made in",
+   "what": "no rollback of the links on failure",
+   "tests": [
+    "tests/test_link_migration.py",
+    "tests/test_links.py"
+   ]
+  }
+ ]
+}

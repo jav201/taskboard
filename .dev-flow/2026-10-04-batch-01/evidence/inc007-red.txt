@@ -1,0 +1,18 @@
+## RED of increment 007's tests (operator D-533) on increment 006 frozen r2 — 2026-10-04
+f21f36835bab9c1b34a8fab735c79bc5c34f47c121bc86453ef75d622b5fc9dc *taskboard/views.py
+E           assert Counter() == Counter({1: 7, 2: 1})
+E                       AssertionError: ('\u258a !! Launch n\u2026 +10d', 2)
+E                       assert '\u25c22' in '\u258a !! Launch n\u2026 +10d'
+E                       AssertionError: ('\u258a ++ Optim\u2026 +6d', 1)
+E                       assert '\u25c21' in '\u258a ++ Optim\u2026 +6d'
+E                       AssertionError: ('\u258a !! Launch n\u2026 +10d', 2)
+E                       assert '\u25c22' in '\u258a !! Launch n\u2026 +10d'
+E           AssertionError: (16, '\u258a == Add p\u2026 +12d')
+E           assert not (True and not False)
+PASSED tests/test_links.py::test_TC_504_wide_lanes_still_paint_every_mark
+FAILED tests/test_links.py::test_AT_501_the_board_says_who_waits_and_b_is_an_outside_block
+FAILED tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size0]
+FAILED tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size1]
+FAILED tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size2]
+FAILED tests/test_links.py::test_TC_504_the_lanes_floor_sheds_age_then_unblocks_and_keeps_waits
+5 failed, 1 passed, 26 deselected in 2.18s

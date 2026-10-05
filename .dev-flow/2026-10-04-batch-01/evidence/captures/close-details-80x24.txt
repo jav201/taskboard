@@ -1,0 +1,24 @@
+KANBAN · grouped                                                       27 tasks
+BA╭──────────────────────────────────────────────────────────────────────────╮
+──│                                                                          │──
+──│  Add push notifications  —  o open raw · esc close                       │──
+▊ │                                                                          │
+▊ │  Project    Mobile App                                                   │
+┈┈│  Phase      Next                                                         │
+▊ │  Priority   normal                                                       │
+▊ │  Start      2026-10-01                                                   │
+┈┈│  Due        2026-10-12                                                   │
+▲ │                                                                          │
+▊ │  Dependencies  ◂ waiting  L link · tab links · x remove · ↵ jump         │
+┈┈│  Waits on  ◂1 open of 1                                                  │
+▊ │  Audit dependencies   DOING · due Oct 2 · open                       ▂▂  │
+▊ │  Unblocks  ▸1 direct · 2 in chain                                        │
+▐ │  Offline sync   BACKLOG · due Oct 28                                     │──
+▊ │    └ Beta release to testers   BACKLOG · due Nov 4                       │
+▊ │                                                                          │
+▐ │  ◂ starts Oct 1, overlaps Audit dependencies by 2d (due Oct 2)           │──
+▊ │                                                                          │
+▊ │                                                                          │go
+▼ ╰──────────────────────────────────────────────────────────────────────────╯p…
+  14:39:18 · Sun 04 Oct 2026 · W40 · Mexico City 14:39 · New York 16:39
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

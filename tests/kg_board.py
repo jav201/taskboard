@@ -122,8 +122,11 @@ def build(path: Path | str = "kg-board-never-saved.json") -> Board:
             start_date=_d(s), due_date=_d(d), blocked=blocked,
             depends_on=[f"t{x}" for x in deps],
             phase_changed=(TODAY - timedelta(days=age)).isoformat(), id=f"t{key}"))
+    # marked as migrated: this board is new-model data — its links already
+    # mean "waits on" (batch 2026-10-04-batch-01, §5 fixture seam, Q-1)
     return Board(list(projects.values()), tasks, Path(path),
-                 {"wip_limits": {"Doing": 4, "Review": 3}}, PHASES)
+                 {"wip_limits": {"Doing": 4, "Review": 3},
+                  "migrations": {"links": 1}}, PHASES)
 
 
 # --- title readability (batch 2026-10-02-batch-03) ----------------------------
@@ -167,3 +170,64 @@ def body(rows: list[str], h: int) -> list[str]:
     if region and re.match(r"^[▲▼] \d+ (above|below)", region[-1]):
         region = region[:-1]
     return region
+
+
+# --- links (batch 2026-10-04-batch-01) ----------------------------------------
+def shifted(path: Path | str) -> Board:
+    """The kg board moved to the real today — every date and `phase_changed` by
+    `date.today() − TODAY` — and saved at `path`: the AT board (§5, qa Q-3), so a
+    done task is never swept by the 20-day rule just because the calendar moved."""
+    delta = date.today() - TODAY
+    b = build(path)
+
+    def mv(iso):
+        return None if iso is None else (date.fromisoformat(iso) + delta).isoformat()
+    for item in [*b.projects, *b.tasks]:
+        item.start_date, item.due_date = mv(item.start_date), mv(item.due_date)
+    for t in b.tasks:
+        t.phase_changed = mv(t.phase_changed)
+    b.save()
+    return b
+
+
+# The legacy shapes the shipped `b` wrote (prototype `deps_logic.legacy_board`,
+# re-derived), plus a 2-cycle (L7) and a blocked task whose last link is done
+# (L8) — §5 of the requirements. Each: (id, title, blocked, depends_on).
+LEGACY = [
+    ("L1", "Legacy: ship invoice export", True, ["tm2"]),
+    ("L2", "Legacy: rotate prod secrets", True, ["to1", "to2"]),
+    ("L3", "Legacy: write release notes", False, ["ta1"]),
+    ("L4", "Legacy: tidy staging DB", False, ["td1"]),
+    ("L5", "Legacy: vendor contract", True, ["gone1"]),
+    ("L6", "Legacy: waiting on legal", True, []),
+    ("L7a", "Legacy: loop one", True, ["L7b"]),
+    ("L7b", "Legacy: loop two", True, ["L7a"]),
+    ("L8", "Legacy: blocked after done", True, ["td1"]),
+]
+# what the rule lands each shape on: (blocked, depends_on)
+LEGACY_AFTER = {"L1": (False, ["tm2"]), "L2": (False, ["to2"]), "L3": (False, []),
+                "L4": (False, ["td1"]), "L5": (True, []), "L6": (True, []),
+                "L7a": (False, ["L7b"]), "L7b": (True, []), "L8": (True, ["td1"])}
+LEGACY_CHANGED = {"L1", "L2", "L3", "L5", "L7a", "L7b"}
+
+
+def legacy(path: Path | str, *, old_done: bool = True) -> Board:
+    """A board as the shipped app left it: the kg tasks the shapes point at
+    (their own links cleared), the shapes, NO migration mark, no renumber key,
+    and — when `old_done` — one done task stamped 30 days ago, so the old-done
+    sweep has something to save (a migration that ran after it would back up
+    the wrong bytes). Saved at `path`."""
+    from taskboard.models import Task
+    b = shifted(path)
+    refs = {"tm1", "tm2", "to1", "to2", "ta1", "td1"}
+    b.tasks = [t for t in b.tasks if t.id in refs]
+    for t in b.tasks:
+        t.depends_on = []
+    if old_done:
+        b.task_by_id("tm1").phase_changed = (date.today() - timedelta(days=30)).isoformat()
+    for tid, title, blocked, deps in LEGACY:
+        b.tasks.append(Task(title, phase="Next", blocked=blocked, depends_on=list(deps),
+                            id=tid))
+    b.settings = {"wip_limits": {"Doing": 4, "Review": 3}}
+    b.save()
+    return b

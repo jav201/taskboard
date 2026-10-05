@@ -1,0 +1,24 @@
+KANBAN · grouped                                                       27 tasks
+BACKLOG        10│NEXT              5│DOING        6/4│REVIEW        4/3│✓2
+─────────────────┼───────────────────┼────────────────┼─────────────────┼───────
+── high  9 open · 4 projects ────────┼────────────────┼─────────────────┼───────
+▊ !! Launch new  │▊ !! Partner notice│▊ !! Fix        │                 │
+▊    homepage +6d│▊    emails API -1d│▊    checko… -6d│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │
+▊ !! Offline sync│▊ !! Rotate API    │▊ !! Rate       │                 │
+▊ ◂1 Mobile +24d │▊    keys Ops -1d  │▊    limi… today│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │
+▲ !! Deprecate v1│                   │▊ !! Renew TLS  │                 │
+▊    endpoin… +3d│                   │▊    certif… -5d│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │
+▊ !! Pen-test    │                   │                │                 │
+▊    findin… +16d│                   │                │                 │
+▐ Website Redesign  5 open · 2 high ↑ · project due +6d ────────────────┼───────
+▊ == SEO         │▊ ++ Optimize image│ ▌
+▊    redire… +10d│▊    assets ◂1 +2d │ ▌ Links
+▐ Mobile App  5 open · 1 high ↑ · proje▌ can't archive Partner notice emails  ──
+▊ == Beta release│▊ == Add push      │▊▌ — 1 open task waits on it (Deprecate
+▊    to tes… +31d│▊    notificat… +8d│▊▌ v1 endpoints). Finish it, or remove  go
+▼ 3 below: API Platform (6 open), Data ▌ the link in its details (↵, then x). p…
+  14:39:24 · Sun 04 Oct 2026 · W40 · Me▌
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

@@ -1,0 +1,22 @@
+Light UX walkthrough after the second re-open (increment 007) — batch 2026-10-04-batch-01 — ux-reviewer, 2026-10-04
+(the reviewer's report, transcribed by the orchestrator; home paths omitted)
+
+Verdict: PASS-WITH-NOTES. D-533 met as worded at 118×30, 118×40, 80×24, 140×30, 160×40; the grouped
+kanban unchanged (painted strips identical to close-kanban-{118x30,80x24} but the clock line).
+Mechanism: run_test with the app's keys (4 tab tab; 4), synthetic kg_board, capture_b1.py with
+CAPTURE_SIZES; waiting cards derived from the board data (8: 7×◂1, 1×◂2), not from card_cell.
+
+Every waiting card shows ◂N with the right N ............. 8 of 8 at each size ........ approved
+Titles keep ≥ 6 cells ..................................... 0 under 6 at any size ...... approved
+The age goes first: Optimiz… ·16d ▸1 ◂1 +2d (160) → Optimize… ▸1 ◂1 +2d (140) → Optimi… ◂1 +2d (118) . approved
+▸ next: Partne… ▸1 -1d (118) → Partn… -1d (80) ............................................ approved
+close3-kanban-lanes-* match the driven strips but the clock .............................. approved
+
+N-1 minor, product (the ruling's trade-off): at 80 an overdue waiting card loses its overdue chip
+     (SDK re… ◂1 -5d at 118 → SDK r… ◂1 at 80); the due is "other meta" under D-533. If overdue
+     should outrank ◂, that is a new ruling, not a defect.
+N-2 nit, product (existing): a cut at a word gap leaves a blank cell before … (Beta …, Build …).
+N-3 nit, evidence: no painted grouped-kanban baseline at 118×40, 140×30, 160×40 (the identity sweep
+     covers them structurally).
+
+Not covered: SVG colour of ◂; evaluation with users (one-person team).

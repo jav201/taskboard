@@ -11,7 +11,6 @@ from rich.text import Text
 
 from taskboard.app import TaskboardApp
 from taskboard.keymap import KEYMAP
-from taskboard.modals import BlockerPicker, TextPrompt
 from taskboard.models import Board, Project, Task, critical_chain, unblocks_count
 from taskboard.views import HEX, _kanban_cell_order, card_cell, kanban_order, render_gantt
 
@@ -25,88 +24,18 @@ def _board(tmp_path, *tasks, phases=None, name="board.json") -> Board:
     for t in tasks:
         t.project_id = p.id
     board = Board([p], list(tasks), tmp_path / name,
+                  settings={"migrations": {"links": 1}},   # new-model data
                   phases=phases or ["Backlog", "Doing", "Review", "Done"])
     board.save()
     return board
 
 
 # --------------------------------------------------------------------------- #
-# AT-D1: block flow wires depends_on + blocked, undo restores, blocker persists
+# AT-D1 (the block-becomes-task flow) is SUPERSEDED by batch 2026-10-04-batch-01
+# (D-504, LLR-501.4): `b` is the external block only and no longer links; links
+# are made with `L` (tests/test_link_picker.py) and `b` is pinned in
+# tests/test_links.py (TC-506).
 # --------------------------------------------------------------------------- #
-async def test_block_flow_links_existing_task_and_undo_restores(tmp_path):
-    a = Task("A", phase="Doing")
-    b = Task("B", phase="Doing")
-    board = _board(tmp_path, a, b)
-    app = TaskboardApp(board_path=str(board.path))
-    async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.press("4")
-        await pilot.pause()
-        app.selected_task_id = a.id
-        await pilot.press(_key_for("toggle_blocked"))
-        await pilot.pause()
-        assert isinstance(app.screen, BlockerPicker)
-        ol = app.screen.query_one("#blocker-list")
-        # option 0 is "(create new blocker)", option 1 is B
-        ol.highlighted = 1
-        await pilot.press("enter")
-        await pilot.pause()
-
-        a_loaded = app.board.task_by_id(a.id)
-        assert a_loaded.blocked is True
-        assert b.id in a_loaded.depends_on
-        # board persisted
-        reloaded = Board.load(board.path)
-        assert reloaded.task_by_id(a.id).blocked is True
-        assert b.id in reloaded.task_by_id(a.id).depends_on
-
-        # undo restores blocked + depends_on
-        await pilot.press(_key_for("undo"))
-        await pilot.pause()
-        a_loaded = app.board.task_by_id(a.id)
-        assert a_loaded.blocked is False
-        assert a_loaded.depends_on == []
-        # the blocker itself persists
-        assert app.board.task_by_id(b.id) is not None
-
-
-async def test_block_flow_creates_new_blocker_and_undo_restores(tmp_path):
-    a = Task("A", phase="Doing")
-    blocker = Task("B", phase="Doing")  # candidate so picker opens
-    board = _board(tmp_path, a, blocker)
-    app = TaskboardApp(board_path=str(board.path))
-    async with app.run_test(size=(120, 40)) as pilot:
-        await pilot.press("4")
-        await pilot.pause()
-        app.selected_task_id = a.id
-        await pilot.press(_key_for("toggle_blocked"))
-        await pilot.pause()
-        assert isinstance(app.screen, BlockerPicker)
-        ol = app.screen.query_one("#blocker-list")
-        ol.highlighted = 0                       # "(create new blocker)"
-        await pilot.press("enter")
-        await pilot.pause()
-        assert isinstance(app.screen, TextPrompt)
-        app.screen.query_one("#f-text").value = "New blocker"
-        await pilot.press("enter")
-        await pilot.pause()
-
-        a_loaded = app.board.task_by_id(a.id)
-        assert a_loaded.blocked is True
-        assert len(a_loaded.depends_on) == 1
-        new_id = a_loaded.depends_on[0]
-        new_blocker = app.board.task_by_id(new_id)
-        assert new_blocker is not None
-        assert new_blocker.title == "New blocker"
-
-        # undo restores A; created blocker persists (modal add is not undoable)
-        await pilot.press(_key_for("undo"))
-        await pilot.pause()
-        a_loaded = app.board.task_by_id(a.id)
-        assert a_loaded.blocked is False
-        assert a_loaded.depends_on == []
-        assert app.board.task_by_id(new_id) is not None
-
-
 async def test_unblock_on_blocked_task_flips_without_prompt(tmp_path):
     a = Task("A", phase="Doing", blocked=True, depends_on=["nope"])
     board = _board(tmp_path, a)
@@ -117,8 +46,8 @@ async def test_unblock_on_blocked_task_flips_without_prompt(tmp_path):
         app.selected_task_id = a.id
         await pilot.press(_key_for("toggle_blocked"))
         await pilot.pause()
-        # no candidates except self -> direct flip, no prompt
-        assert not isinstance(app.screen, BlockerPicker)
+        # `b` never prompts (D-504): no screen is pushed
+        assert len(app.screen_stack) == 1
         assert app.board.task_by_id(a.id).blocked is False
         # depends_on is untouched on unblock
         assert app.board.task_by_id(a.id).depends_on == ["nope"]
@@ -148,10 +77,12 @@ def test_unblocks_token_absent_at_zero_and_present_at_two(tmp_path):
     d2 = Task("D2", project_id=p.id, phase="Backlog", depends_on=[hub.id])
     board = Board([p], [hub, d1, d2], tmp_path / "board.json")
     board.save()
+    # superseded by batch 2026-10-04-batch-01 (HLR-501): `⛓N` became `▸N` on
+    # the predecessor, and the waiting card now says `◂N` (TC-504 in test_links)
     plain = Text.from_markup(card_cell(hub, board, 40, False, today=today)).plain
-    assert "⛓2" in plain
+    assert "▸2" in plain and "⛓" not in plain
     plain_leaf = Text.from_markup(card_cell(d1, board, 40, False, today=today)).plain
-    assert "⛓" not in plain_leaf
+    assert "◂1" in plain_leaf and "▸" not in plain_leaf
 
 
 def test_unblocks_token_keeps_width_contract(tmp_path):
@@ -168,9 +99,9 @@ def test_unblocks_token_keeps_width_contract(tmp_path):
         assert cell_len(Text.from_markup(cell).plain) == wc, f"wc={wc}"
     # the multi-cell token is shed cleanly under pressure
     narrow = Text.from_markup(card_cell(hub, board, 2, False, today=today)).plain
-    assert "⛓" not in narrow
+    assert "▸" not in narrow
     wide = Text.from_markup(card_cell(hub, board, 40, False, today=today)).plain
-    assert "⛓5" in wide
+    assert "▸5" in wide
 
 
 # --------------------------------------------------------------------------- #

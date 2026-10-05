@@ -1,0 +1,30 @@
+
+         ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+         │                                                                                                  │
+         │  Launch new homepage waits on…                                                                   │
+         │                                                                                                  │
+         │  ▊▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▎  │
+         │  ▊  type to filter                                                                            ▎  │
+         │  ▊▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▎  │
+         │  24 of 24 open                                                                                   │
+         │  linked now: Build component library · Optimize image assets                                     │
+         │                                                                                                  │
+         │  ▊▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▎  │
+         │  ▊ + create a new task it waits on                                                            ▎  │
+         │  ▊ Same project                                                                               ▎  │
+         │  ▊   Build component library   REVIEW · due Sep 27                                         ▁▁ ▎  │
+         │  ▊     ✓ linked (↵ removes) · ok — due 7d before this starts                                  ▎  │
+         │  ▊   Fix checkout 500 error   DOING · due Sep 28                                              ▎  │
+         │  ▊     ok — due 6d before this starts                                                         ▎  │
+         │  ▊   Optimize image assets   NEXT · due Oct 6                                                 ▎  │
+         │  ▊     ✓ linked (↵ removes) · ◂ overlaps 3d: due Oct 6, this starts Oct 4                     ▎  │
+         │  ▊   SEO redirects map   BACKLOG · due Oct 14                                                 ▎  │
+         │  ▊     ◂ overlaps 11d: due Oct 14, this starts Oct 4                                          ▎  │
+         │  ▊ Other projects                                                                             ▎  │
+         │  ▊   Write API reference   API Platform · DOING · due Sep 25                                  ▎  │
+         │  ▊▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▎  │
+         │  ↑↓ move  ·  ↵ link / unlink  ·  type filter  ·  esc cancel                                      │
+         │                                                                                                  │
+         ╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
