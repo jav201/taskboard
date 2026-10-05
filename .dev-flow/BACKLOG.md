@@ -3,13 +3,86 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `56a1b10` (local HEAD == `origin/main`; batch 2026-10-02-batch-04 started here)
-· **Last refresh:** 2026-10-03
-**Status:** **2218 tests green** (batch `2026-10-02-batch-04`, Batch S: hardening — user and synced
-text as Text pieces, never parsed, with a derived census; control bytes stripped at the board, team
-and clipboard doors; synced project and roster fields through the loading rule; the details grid
-paints its fields; flow rev99, the validator run from a read-only rev99 snapshot after P4, D-420).
-`test_win_clipboard_roundtrip` remains an intermittent environmental flake (passed in the P4 gate run).
+**Base ref:** `0447070` (local HEAD == `origin/main`; batch 2026-10-04-batch-01 started here)
+· **Last refresh:** 2026-10-04
+**Status:** **2296 tests** (batch `2026-10-04-batch-01`, Batch B1: waits-on links — `◂N`/`▸N`,
+the ready message, `L` through the picker and the gantt link mode, the details dependency section,
+the archive/delete guard, the one-time link migration with backup, log, undo and run-once; flow
+rev99 from a read-only snapshot). `test_win_clipboard_roundtrip` remains an intermittent
+environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
+
+## Open — after `2026-10-04-batch-01` (Batch B1: waits-on links)
+
+- **Present a whole project** (operator request with the visual verdict, 2026-10-04 — a new
+  feature, routed to a PROTOTYPE ROUND FIRST, real renders and the operator's verdict before any
+  increment): a presentation of one complete project — its gantt, its tasks and the tasks' text —
+  in a format fit to present, with an export of what is shown to SVG or an image. Operator's
+  words: "presentación de un proyecto completo. Donde se vea el gantt, las tareas y el texto de
+  las tareas en un formato apropiado para presentar. Además de poder exportar SVG o una imagen de
+  lo proyectado." Open questions for the round: full-screen view vs export-only; page size and
+  pagination; which task text (notes, links); the export path and file naming.
+- **Batch B2 — milestones, moving linked dates, the M-3 offer** (D-501, the pre-authorized B1/B2
+  split): milestones M-1/M-2, moving a task's dates moves what waits on it (round 6), the one-time
+  M-3 milestone offer. Seed: the kg_mejoras verdict frames; the waits-on model and the one overlap
+  measure (`models.link_overlap`, D-503) are in place. Batch C (the chain map view) keeps key `6`.
+- ✓ done in `2026-10-04-batch-01` increment 006 (operator: "Corregirlo antes del push"; A-9) — **The gantt link mode can fold the waiter's row** (ux F4, MED; D-528): `gantt_plan` unfolds
+  groups greedily by fit, so at 118×20 — and at 118×30 on boards with larger projects — the
+  waiter's group folds and the overlay has no row to draw on; increment 005 says it on the hint
+  row (A-8). The fix is a fold rule that keeps the waiter's group open (fold every other group
+  first), in the shared seat that also feeds `nav_model` — the operator's call at PV-5.
+- ✓ done in `2026-10-04-batch-01` increment 006 (operator: "Corregirlo antes del push"; A-10) — **A lanes card can lose its whole title** (ux U-2, MED; D-529): `card_cell` keeps indicators the
+  moment their cells fit, so beside `▸1 ◂1` (5 cells, where `⛓1` was 2) two cards at 118 and 80
+  paint no title (one at base). A title floor breaks two shipped width contracts
+  (`tests/test_cells.py`: the aging and deadline tokens are kept the moment they fit) — the
+  operator's call at PV-1 on which wins.
+- ✓ done in `2026-10-04-batch-01` increment 006 (operator: "Corregirlo antes del push"; A-11) — **A read-only board on Windows leaves a temp file per launch** (security close F1, LOW; D-530):
+  `Board.save_atomic` copies the board's mode onto its temp file, so on Windows the read-only bit
+  makes `os.replace` and the cleanup `unlink` both fail; each launch of an unmigrated read-only
+  board leaves a `.board.json.<random>.tmp` and the error names the temp file. Fix: clear the bit
+  before the unlink (or copy the mode only off Windows), with a read-only-board test.
+- ✓ done in `2026-10-04-batch-01` increment 007 (operator: "Dejar ◂ solo, quitar la edad antes"; A-12) — **Lanes show no link marks below about 140 columns** (ux R6-3, D-533; flagged to the operator):
+  the D-529 floor sheds `▸`/`◂` before the age `·Nd`, so at 118 and 80 the lanes paint no marks;
+  the operator may prefer the age shed first, or `◂` kept alone.
+- **At 80 columns an overdue waiting lanes card loses its overdue chip** (ux N-1 after increment
+  007): under D-533 the due is "other meta" and goes before `◂` (`SDK re… ◂1 -5d` at 118 → `SDK r…
+  ◂1` at 80). If overdue should outrank `◂`, that is a new operator ruling.
+- **Lanes test and wording details** (qa G-009, G-010; ux N-2, N-3, after increment 007): TC-504
+  checks waiting cards by a unique title prefix and ends with `assert waiting_seen` — assert the exact
+  number of waiting cards painted instead; the 160×40 test's docstring says "no `▸` at 118" where it
+  means no WAITING card shows `▸`; a cut at a word gap leaves a blank cell before `…`; no painted
+  grouped-kanban baseline at 118×40, 140×30, 160×40.
+- **Link-mode paging details** (ux R6-1, R6-2, LOW): the fallback note says "folded" when the waiter
+  is only off the page ("is off this page" reads truer); when the two groups share the rows, the
+  waiter's group gets no `▲/▼` pager line.
+- **The read-only exit advice names the folder** (ux R6-4, LOW): since D-530/D-532 the cause is the
+  board file's own read-only bit; the message should say so.
+- **`python -m taskboard` exits 0 after a fail-closed stop** (ux R6-5, LOW, pre-existing):
+  `__main__.py` ignores `app.return_code`, so a script reads success.
+- **`critical_chain` is recursive and exponential on dense boards** (security S-6, MEDIUM,
+  pre-existing): the gantt's critical chain walks every path; the waits-on model's own searches
+  are iterative (D-522) but this seat was not this batch's requirement.
+- **An unreadable board is saved over by the renumber notice** (security S-13, LOW,
+  pre-existing): the migration does nothing on an unreadable file; the renumber path still saves.
+- **Render cost grows quadratically on boards of thousands of tasks** (code review 002 F8):
+  `link_marks` is computed once per render, but some views still pay per card on large boards.
+- **`◂` carries several meanings** (ux UX-22, PV-1): a card's wait count, the conflict prefix,
+  the details heading's "◂ waiting" and the gantt's off-window glyph; on cards it always carries a
+  count.
+- **Both `L` surfaces start on the first candidate even when it is already linked** (ux U-3,
+  LOW): `L ↵` then removes a link (said, and `u` restores it); start on the first unlinked one.
+- **Link-mode details** (ux U-4, U-5, LOW): `═` runs past the waiter's own due and covers its `○`;
+  the waiter's row loses its selection mark while the candidate holds it.
+- **80-column details** (ux U-6, U-7, N-5, N-6, LOW/NIT): the grouped kanban shows `◂` on 2 of 5
+  waiting cards (a wrapped title takes the meta row, as `⛓` did); the picker shows about two
+  candidates and a long hint wraps to a third line; the migration toast splits "u / undo"; the
+  loop legend clips.
+- **Wording seams** (ux N-1..N-4, N-7, NIT): the picker's and link mode's key rows say different
+  things; "↵ link" is offered on "no match"; toast titles "Links" vs "Dependencies"; "Waits on
+  ◂0 open of 0" after the last link is removed; `L` pushes "Standup" off key `8` in kanban at 118.
+- **The picker lists every open task** (increment 003 risk): on a board of thousands the list is
+  long; the filter narrows it.
+- **A comment overstates** (code review 005 NIT): `GanttLinkMode._paint` says rows past the frame
+  are not mapped; at a frame of 3 rows the candidate can be (never the waiter, so `folded` holds).
 
 ## Open — after `2026-10-02-batch-04` (Batch S: hardening)
 

@@ -1,0 +1,35 @@
+{
+ "export": "<home>\\AppData\\Local\\Temp\\claude\\<session>\\f46e746a-67bb-40fe-b907-7aec72789cc7\\scratchpad\\bat004r2",
+ "mutants": [
+  {
+   "id": "Q22",
+   "file": "taskboard/modals.py",
+   "old": "        out.truncate(w - 1, overflow=\"ellipsis\")      # one row, whatever the glyphs\n",
+   "new": "",
+   "what": "F1: row guard removed (cell clip kept)",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q22b",
+   "file": "taskboard/modals.py",
+   "old": "w - 1 - fixed - cell_len(waiter)",
+   "new": "w - 1 - fixed - len(waiter)",
+   "what": "F1: clip by len() (row guard kept)",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q23",
+   "file": "taskboard/modals.py",
+   "old": "out.append(clip(self.filter, max(4, w // 3)) + \"▏  \")",
+   "new": "out.append(self.filter + \"▏  \")",
+   "what": "F1: filter unclipped",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  }
+ ]
+}

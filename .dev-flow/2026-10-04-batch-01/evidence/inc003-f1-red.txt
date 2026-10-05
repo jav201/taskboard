@@ -1,0 +1,5 @@
+## F1 RED-first — increment 003 tree before the fix (modals.py sha256 9ce401c71ef89041), 2026-10-04
+E               AssertionError: False
+E               assert {'p:ta5': 'ar...:tw4': 'done'} == {'p:ta5': 'ar...:tw4': 'open'}
+FAILED tests/test_details_links.py::test_TC_513_a_closed_tasks_rows_show_their_own_state
+1 failed, 3 deselected in 0.75s

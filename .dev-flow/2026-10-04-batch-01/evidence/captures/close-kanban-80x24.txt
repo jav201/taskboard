@@ -1,0 +1,24 @@
+KANBAN · grouped                                                       27 tasks
+BACKLOG        10│NEXT              5│DOING        6/4│REVIEW        4/3│✓2
+─────────────────┼───────────────────┼────────────────┼─────────────────┼───────
+── high  9 open · 4 projects ────────┼────────────────┼─────────────────┼───────
+▊ !! Launch new  │▊ !! Partner notice│▊ !! Fix        │                 │
+▊    homepage +6d│▊    emails API -1d│▊    checko… -6d│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │
+▊ !! Offline sync│▊ !! Rotate API    │▊ !! Rate       │                 │
+▊ ◂1 Mobile +24d │▊    keys Ops -1d  │▊    limi… today│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │
+▲ !! Deprecate v1│                   │▊ !! Renew TLS  │                 │
+▊    endpoin… +3d│                   │▊    certif… -5d│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │
+▊ !! Pen-test    │                   │                │                 │
+▊    findin… +16d│                   │                │                 │
+▐ Website Redesign  5 open · 2 high ↑ · project due +6d ────────────────┼───────
+▊ == SEO         │▊ ++ Optimize image│                │▊ == Build       │
+▊    redire… +10d│▊    assets ◂1 +2d │                │▊    compone… -7d│
+▐ Mobile App  5 open · 1 high ↑ · project due +31d ───┼─────────────────┼───────
+▊ == Beta release│▊ == Add push      │▊ == Audit      │▊ ++ Crash       │✓1
+▊    to tes… +31d│▊    notificat… +8d│▊    depend… -2d│▊    reporti… -3d│16d ago
+▼ 3 below: API Platform (6 open), Data Warehouse (4 open), Ops & Security (5 op…
+  14:39:13 · Sun 04 Oct 2026 · W40 · Mexico City 14:39 · New York 16:39
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

@@ -1,0 +1,40 @@
+Light P4 UX walkthrough after the re-open (increment 006) — batch 2026-10-04-batch-01 — ux-reviewer, 2026-10-04
+(the reviewer's report, transcribed by the orchestrator; home paths omitted)
+
+Verdict: PASS-WITH-NOTES. D-528, D-529, D-530 met as the operator worded them; no regression against the
+accepted PV-1..PV-7. Five LOW, no HIGH or MED.
+Mechanism: Textual run_test with real keys (3, L, ↓, 4 tab tab) on synthetic kg_board boards; the
+starting selection set in app state (E-2); views.py and models.py matched inc006-frozen-r2.
+
+D-528 waiter's group stays open: `L` on tw5, ↓ through all 23 candidates at 118×30, 118×20, 118×14,
+  118×13, 118×12, 80×24, 80×14, 80×12; an 11-task-project board at 118×30 and 118×20; waiter tm4 at
+  118×14 — both rows drawn 23/23 at 118×30, 118×20, 80×24; 35/35 on the big board at 118×30; 21/23
+  at 118×14 with the rows shared; never a missing waiter without the note .............. executed, met
+D-528 note only as fallback: 23/23 at 12 rows; above 12 rows only when the candidate is in the
+  waiter's own group and further than one page (13–14 rows; 20 rows on the big board); never while the
+  waiter row is drawn ...................................................................... executed, met (R6-1)
+Plain gantt unchanged: capture_b1.py on all 9 surfaces at 118×30 and 80×24 vs close-*/close2-*:
+  identical but the clock line ........................................................... executed, met
+D-529 lanes titles: 4 tab tab at 118×30, 118×40, 80×24, 140×30, 160×40 — every card ≥ 5 characters
+  + `…`; no ⛓ ................................................................................ executed, met
+D-533 marks in lanes (◂/▸): 118×30 0/0 · 118×40 0/0 · 80×24 0/0 · 140×30 9/5 · 160×40 9/9 ... executed, as declared
+D-530 read-only board: 3 launches via run_test + 1 via `python -m taskboard --board`: "Link migration
+  stopped: board.json: Permission denied. The board file was not changed…"; only board.json left,
+  bytes unchanged; in-app return code 1 .................................................... executed, met
+
+Findings
+R6-1 LOW product+evidence  the fallback note says "folded" while the group shows ▾ and a pager — the
+                           waiter is off the page, not folded; and it appears at 13–20 rows in same-group
+                           far cases, not only at ≤ 12 rows as the packet said. Suggest "is off this page".
+R6-2 LOW product           when the groups share rows (118×14) only the candidate's group gets its
+                           ▲/▼ pager line; the waiter's group shows 1 of 5 with no indicator.
+R6-3 LOW product, flag     at 118 and 80 the lanes show no link marks while the age ·Nd stays; marks
+     to the operator       come back near 140 columns (9/5); he may prefer age shed before marks, or
+                           keeping ◂ only.
+R6-4 LOW product copy      the read-only exit advice points at the folder ("Free space or write access
+                           in the board's folder"); the cause is the file's own read-only bit.
+R6-5 LOW product, pre-     `python -m taskboard` exits 0 when the app stops fail-closed (__main__.py
+     existing              ignores app.return_code).
+
+Not covered: evaluation with users (one-person team; the operator's look at the captures is the
+visual verdict); colours not re-rendered from SVG; the real entry point only for the read-only case.

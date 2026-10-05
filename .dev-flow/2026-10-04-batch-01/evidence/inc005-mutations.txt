@@ -1,0 +1,85 @@
+R1: KILLED — F4: folded row not said
+   file taskboard/modals.py restore sha256 35dee802fd3fe588 OK
+   nodes resolved 14 · RED 1 · GREEN 13 · 1 failed, 13 passed in 18.85s
+   RED   tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said
+   GREEN tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+   GREEN tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+   GREEN tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+   GREEN tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+   GREEN tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter
+R2: KILLED — F4: said even when the row is drawn
+   file taskboard/modals.py restore sha256 35dee802fd3fe588 OK
+   nodes resolved 14 · RED 1 · GREEN 13 · 1 failed, 13 passed in 20.53s
+   RED   tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said
+   GREEN tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+   GREEN tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+   GREEN tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+   GREEN tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+   GREEN tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter
+R3: KILLED — F4: a drawn-past-the-frame row not counted
+   file taskboard/modals.py restore sha256 35dee802fd3fe588 OK
+   nodes resolved 14 · RED 1 · GREEN 13 · 1 failed, 13 passed in 19.25s
+   RED   tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said
+   GREEN tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+   GREEN tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+   GREEN tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+   GREEN tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+   GREEN tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter
+R4: KILLED — G-002: overlap tone
+   file taskboard/views.py restore sha256 e5892c72483ce28c OK
+   nodes resolved 14 · RED 1 · GREEN 13 · 1 failed, 13 passed in 19.92s
+   RED   tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+   GREEN tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+   GREEN tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+   GREEN tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+   GREEN tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+   GREEN tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter
+R5: KILLED — G-002: connector tone
+   file taskboard/views.py restore sha256 e5892c72483ce28c OK
+   nodes resolved 14 · RED 1 · GREEN 13 · 1 failed, 13 passed in 20.12s
+   RED   tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+   GREEN tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+   GREEN tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+   GREEN tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+   GREEN tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+   GREEN tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]
+   GREEN tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]
+   GREEN tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter

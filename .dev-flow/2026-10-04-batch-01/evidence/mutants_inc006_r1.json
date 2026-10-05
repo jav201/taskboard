@@ -1,0 +1,123 @@
+{
+ "export": "<home>\\AppData\\Local\\Temp\\claude\\<session>\\f46e746a-67bb-40fe-b907-7aec72789cc7\\scratchpad\\bat006r1",
+ "mutants": [
+  {
+   "id": "S1",
+   "file": "taskboard/models.py",
+   "old": "        if target.exists() and not os.access(target, os.W_OK):\n",
+   "new": "        if False:\n",
+   "what": "D-530: no read-only check",
+   "tests": [
+    "tests/test_link_migration.py"
+   ]
+  },
+  {
+   "id": "S2",
+   "file": "taskboard/models.py",
+   "old": "                os.chmod(name, stat.S_IREAD | stat.S_IWRITE)    # a copied read-only\n",
+   "new": "                pass    # a copied read-only\n",
+   "what": "D-530: cleanup keeps the read-only bit",
+   "tests": [
+    "tests/test_link_migration.py"
+   ]
+  },
+  {
+   "id": "S3",
+   "file": "taskboard/models.py",
+   "old": "            except OSError:\n                pass                            # never mask the save's own error\n            raise\n",
+   "new": "            except OSError:\n                pass                            # never mask the save's own error\n",
+   "what": "D-530: the save's error swallowed",
+   "tests": [
+    "tests/test_link_migration.py"
+   ]
+  },
+  {
+   "id": "S4",
+   "file": "taskboard/views.py",
+   "old": "    if pin_i is not None and pin_i != sel_i:\n",
+   "new": "    if False:\n",
+   "what": "D-528: the pin ignored",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "S5",
+   "file": "taskboard/views.py",
+   "old": "else ids.index(pinned_id) if pinned_id in ids else 0)",
+   "new": "else 0)",
+   "what": "D-528: the pinned group not paged to the waiter",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "S6",
+   "file": "taskboard/views.py",
+   "old": "                and len(groups[pin_g].open) + len(groups[sel_g].open) > avail):\n",
+   "new": "                and False):\n",
+   "what": "D-528: no sharing of the rows left",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "S7",
+   "file": "taskboard/views.py",
+   "old": "        None, gantt_group_key(board, waiter), waiter.id)\n",
+   "new": "        None, gantt_group_key(board, waiter), None)\n",
+   "what": "D-528: link mode does not pin",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "S8",
+   "file": "taskboard/views.py",
+   "old": "CARD_TITLE_FLOOR = 6\n",
+   "new": "CARD_TITLE_FLOOR = 3\n",
+   "what": "D-529: floor too low",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  },
+  {
+   "id": "S9",
+   "file": "taskboard/views.py",
+   "old": "                           title_floor=CARD_TITLE_FLOOR), t.id)\n",
+   "new": "                           ), t.id)\n",
+   "what": "D-529: lanes pass no floor",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  },
+  {
+   "id": "S10",
+   "file": "taskboard/views.py",
+   "old": "        tokens.remove(tk)\n",
+   "new": "        pass\n",
+   "what": "D-529: marks not shed first",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  },
+  {
+   "id": "S11",
+   "file": "taskboard/views.py",
+   "old": "    budget = room - max(0, min(title_floor, room, cell_len(task.title)))\n",
+   "new": "    budget = room\n",
+   "what": "D-529: no floor in the budget",
+   "tests": [
+    "tests/test_links.py",
+    "tests/test_cells.py",
+    "tests/test_kanban_readable.py"
+   ]
+  }
+ ]
+}

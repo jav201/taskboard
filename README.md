@@ -110,12 +110,13 @@ between the short and the full layer. Every key below is also in the command pal
 | `1`–`5`, `7`–`9`, `0` | Views | See [Views](#views) |
 | `↑` `↓` / `k` `j` | Move | Move the selection in the order the view draws |
 | `←` `→` / `h` `l` | Across | Move between columns (kanban) |
-| `Enter` | Details | Every field of the selected task, read-only |
+| `Enter` | Details | Every field of the selected task; its links can be changed there |
 | `a` / `e` | Add / Edit | Add a task / edit the selected one in the full-screen editor |
 | `d` / `Delete` | Delete | Delete the selected task (asks first) |
+| `L` | Link | Make the selected task wait on another one (a picker; on the gantt, a link mode) |
 | `[` `]` | Phase | Move the selected task one phase back / forward |
 | `!` | Priority | Cycle low → normal → high |
-| `b` | Blocked | Block the task on another one, or unblock it |
+| `b` | Blocked | Mark an outside block (`▲`) on the task, or clear it |
 | `+` `=` / `-` | Due | Due date one day later / earlier |
 | `u` | Undo | Undo the last quick change |
 | `x` / `v` | Archive | Archive or unarchive / show archived tasks |
@@ -145,12 +146,36 @@ In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes t
 - **Projects.** `p` adds one; `P` manages them (edit, archive, delete). Archiving a project
   archives its open tasks too; deleting a project moves its tasks to the Inbox.
 
-## Dependencies and blocking
+## Links and blocking
 
-`b` asks what blocks the selected task — pick an open task or create one — and records it as a
-dependency. A task that others wait on shows `⛓N` on its kanban card, the kanban `unblock` sort
-puts those first, and the gantt draws the critical chain (the longest chain of open
-dependencies) as a heavy `━` line. Unblocking keeps the recorded dependency.
+A **link** says a task waits on another one. `L` on the selected task opens a picker: tasks of
+the same project first, then by due date; type to filter; each row says what the link would mean
+for the dates ("overlaps 3d", "ok — due 2d before this starts"). A task already linked says
+`↵ removes`; one that would close a loop is shown with the loop and cannot be picked. The picker
+can also create a new task to wait on. On the gantt, `L` opens a link mode that draws the link
+before you make it. `u` undoes a link like any quick change.
+
+Cards show `◂N` when the task waits on N open tasks and `▸N` when N open tasks wait on it. When
+the last task it waits on is finished, the board says once that it is ready. The details view
+(`Enter`) lists what a task waits on and what it unblocks, down the chain, with any date
+conflict; there `tab` moves to the links, `x` removes one, `↵` jumps to it and `L` adds one.
+
+`b` is the **outside block** (`▲`): something no task on the board stands for. It is independent
+of links. A task that open tasks still wait on cannot be archived or deleted (nor its project
+archived) until it is finished or the links are removed — the refusal names who waits.
+
+The kanban `unblock` sort puts tasks with the most waiting work first, and the gantt draws the
+critical chain (the longest chain of open links) as a heavy `━` line.
+
+**The one-time link migration.** Boards written by earlier versions recorded a link every time
+`b` blocked a task and kept it after unblocking. The first start of this version reads those
+links once: a task still blocked on a task now waits on it, links that had been released are
+dropped, and blocks with no task to point at stay. Before changing anything it copies the board
+file to `<board file>.pre-links-migration` and writes every change to
+`<board file>.links-migration-log`; `u` right after the start undoes it. It never runs again on
+its own. To go back later, close the app and copy the backup over the board file — the restored
+board is migrated again at the next start. If the backup cannot be written the app does not open
+the board (free space or write access in its folder, or run `taskboard --board` on a copy).
 
 ## Kanban
 

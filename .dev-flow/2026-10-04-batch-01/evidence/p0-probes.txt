@@ -1,0 +1,53 @@
+## P0 probes — 2026-10-04 — tree 0447070
+
+### B1 reverse grep (symbols this batch touches), tests/ at base
+BlockerPicker      tests/test_dependencies.py tests/test_markup_sites.py tests/__pycache__/test_dependencies.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_markup_sites.cpython-312-pytest-8.3.4.pyc 
+toggle_blocked     tests/test_app.py tests/test_dependencies.py tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_app.cpython-312.pyc tests/__pycache__/test_dependencies.cpython-312-pytest-8.3.4.pyc 
+depends_on         tests/kg_board.py tests/test_app.py tests/test_dependencies.py tests/test_gantt.py tests/test_gantt_board.py tests/test_setup_help.py tests/__pycache__/kg_board.cpython-312.pyc tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_app.cpython-312.pyc tests/__pycache__/test_dependencies.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_gantt.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_gantt.cpython-312.pyc tests/__pycache__/test_gantt_board.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_setup_help.cpython-312-pytest-8.3.4.pyc 
+unblocks_count     tests/test_app.py tests/test_dependencies.py tests/test_kanban_readable.py tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_app.cpython-312.pyc tests/__pycache__/test_dependencies.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_kanban_readable.cpython-312-pytest-8.3.4.pyc 
+⛓                tests/test_cells.py tests/test_dependencies.py tests/test_kanban_readable.py tests/__pycache__/test_cells.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_dependencies.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_kanban_readable.cpython-312-pytest-8.3.4.pyc 
+gantt_dep_mark     tests/test_gantt_board.py tests/__pycache__/test_gantt_board.cpython-312-pytest-8.3.4.pyc 
+action_archive     tests/test_archive.py tests/__pycache__/test_archive.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_archive.cpython-312.pyc 
+action_delete      
+TaskDetails        tests/test_app.py tests/test_details_grid.py tests/test_details_markup.py tests/test_markup_sites.py tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_app.cpython-312.pyc tests/__pycache__/test_details_grid.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_details_grid.cpython-312.pyc tests/__pycache__/test_details_markup.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_details_markup.cpython-312.pyc tests/__pycache__/test_markup_sites.cpython-312-pytest-8.3.4.pyc 
+_UNDO_FIELDS       
+action_undo        tests/test_app.py tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_app.cpython-312.pyc 
+blocked=True       tests/test_app.py tests/test_dependencies.py tests/test_kanban_priority.py tests/test_kanban_readable.py tests/test_lanes_grid.py tests/test_legend.py 
+kanban_card        tests/test_kanban_readable.py tests/__pycache__/test_kanban_readable.cpython-312-pytest-8.3.4.pyc 
+card_cell          tests/test_app.py tests/test_archive.py tests/test_cells.py tests/test_colour_budget.py tests/test_dependencies.py tests/test_kanban_priority.py tests/test_palette_ration.py tests/__pycache__/test_archive.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_archive.cpython-312.pyc tests/__pycache__/test_cells.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_colour_budget.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_dependencies.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_kanban_priority.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_palette_ration.cpython-312-pytest-8.3.4.pyc 
+_card_meta         
+help_usage         tests/test_english.py tests/test_kanban_priority.py tests/test_kanban_readable.py tests/test_markup_sites.py tests/__pycache__/test_english.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_english.cpython-312.pyc tests/__pycache__/test_kanban_priority.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_kanban_readable.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_markup_sites.cpython-312-pytest-8.3.4.pyc 
+legend_entries     tests/test_archive.py tests/test_colour_budget_app.py tests/test_gantt_board.py tests/test_gantt_polish.py tests/test_kanban_priority.py tests/test_kanban_readable.py tests/test_legend.py tests/test_markup_census.py tests/__pycache__/test_archive.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_archive.cpython-312.pyc tests/__pycache__/test_colour_budget_app.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_gantt_board.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_gantt_polish.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_kanban_priority.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_kanban_readable.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_legend.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_legend.cpython-312.pyc tests/__pycache__/test_markup_census.cpython-312-pytest-8.3.4.pyc tests/__pycache__/test_markup_census.cpython-312.pyc 
+
+### B3 goldens
+ls: cannot access 'tests/goldens': No such file or directory
+
+### keys free at base (keymap.py)
+"L": 0
+"m": 0
+"6": 0
+122:    Key("c", "c", "clocks", "Clocks", group="misc", bar=False),
+
+### RC-1 (b) already shipped? (git grep origin/main)
+waits on       origin/main:taskboard/views.py:3 
+◂            origin/main:taskboard/views.py:7 
+LinkPicker     
+link mode      
+open_waiters   
+migrat.*link   
+pre-links      
+
+### team sync: foreign tasks enter board.tasks?
+taskboard/team_sync.py:154:        for t in board.tasks:
+taskboard/team_sync.py:208:    def foreign_tasks(self) -> list[tuple[Task, str]]:
+taskboard/app.py:780:        candidates = [t for t in self.board.tasks
+taskboard/app.py:862:            entry["index"] = self.board.tasks.index(task)
+taskboard/app.py:882:                idx = min(entry["index"], len(self.board.tasks))
+taskboard/app.py:883:                self.board.tasks.insert(idx, gone)   # SAME object, SAME id
+taskboard/views.py:3979:    from ``team_state.foreign_tasks()`` filtered by owner.  The filter semantics
+taskboard/views.py:3984:        tasks = list(board.tasks)
+taskboard/views.py:3986:        tasks = [t for t, owner in team_state.foreign_tasks() if owner == uid]
+taskboard/views.py:4373:                  for t in board.tasks
+taskboard/views.py:4719:    all_open = [t for t in board.tasks if not board.is_done(t) and not t.archived]
+taskboard/views.py:4949:                  for t in board.tasks
+taskboard/views.py:4984:    all_open = [t for t in board.tasks

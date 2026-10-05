@@ -177,7 +177,9 @@ def test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it():
     b = kg_board.build()
     r1, r2 = kanban_card(b.task_by_id("tm5"), b, 24, False, today=TODAY)
     assert _plain(r1) == "▊ == Beta release to    "
-    assert _plain(r2) == "▊    testers ·15d +35d  "
+    # since batch 2026-10-04-batch-01 `tm5` paints `◂1` (it waits on `tm4`);
+    # the age is shed first to keep it (the shed order, PV-1)
+    assert _plain(r2) == "▊    testers ◂1 +35d    "
     t = Task("Supercalifragilisticexpialidocious now", b.projects[0].id, "Doing")
     r1, r2 = kanban_card(t, b, 16, False, today=TODAY)
     assert _plain(r1).rstrip().endswith("…") and _plain(r2).strip() in ("▊", "▊ ·0d")
@@ -185,20 +187,21 @@ def test_TC_302_the_title_wraps_on_a_word_and_the_rest_sits_under_it():
 
 def test_TC_303_the_due_token_is_the_last_fact_to_go():
     """TC-303 (LLR-301.2). Under width pressure the meta strip sheds from the
-    left — age, then `⛓N`, then the due token LAST: at every width from 9 a
-    dated open card still shows its due. RED: `⛓N` after the due → at `wc` 14
-    `Fix checkout`'s `-2d` is shed before `⛓`."""
+    left — age, then the link marks `▸N`/`◂N` (batch 2026-10-04-batch-01, they
+    replaced `⛓N`), then the due token LAST: at every width from 9 a dated open
+    card still shows its due. RED: a mark after the due → at `wc` 14 `Build
+    component library`'s `-3d` is shed before `▸2`."""
     b = kg_board.build()
-    unb = {t.id: models.unblocks_count(b, t) for t in b.tasks}
+    unb = views.link_marks(b)
     for t in b.tasks:
         due, _tone = views.reldue_token(t, TODAY, b, include_done=True)
         if not due or t.archived:
             continue
         for wc in range(9, 41):
-            _r1, r2 = kanban_card(t, b, wc, False, today=TODAY, unblocks=unb)
+            _r1, r2 = kanban_card(t, b, wc, False, today=TODAY, marks=unb)
             assert _plain(r2).rstrip().endswith(due), (t.id, wc, _plain(r2))
-    hub = b.task_by_id("tw2")                       # ⛓2 and a due
-    _r1, r2 = kanban_card(hub, b, 14, False, today=TODAY, unblocks=unb)
+    hub = b.task_by_id("tw2")                       # ▸2 and a due
+    _r1, r2 = kanban_card(hub, b, 14, False, today=TODAY, marks=unb)
     assert _plain(r2).rstrip().endswith("-3d")
 
 
@@ -957,7 +960,7 @@ def test_TC_310_the_help_describes_the_new_board():
     """TC-310 (LLR-308.1). The kanban help names the band rule, `┈`, the rail
     and `+N more ↓` — each absent from the shipped copy — and no longer the
     per-column band; every bullet fits the help's 44-cell column; the example
-    shows the meta order (`⛓N` before the due); the legend calls `▐` the
+    shows the meta order (`▸N` before the due); the legend calls `▐` the
     project's band. RED on base: "the top of each column"."""
     usage = [line for _h, lines in views.help_usage("kanban") for line in lines]
     text = " ".join(usage)
@@ -966,7 +969,7 @@ def test_TC_310_the_help_describes_the_new_board():
     assert "top of each column" not in text and "grouped" in text
     assert all(cell_len(line) <= 44 for line in usage), [x for x in usage if cell_len(x) > 44]
     line, _meaning = views.help_example("kanban")
-    assert line.index("⛓") < line.index("+4d")
+    assert line.index("▸") < line.index("+4d")
     b = kg_board.build()
     labels = [m for s, m in views.legend_entries("kanban", b, TODAY, 118, 30)
               if _plain(s) == "▐"]
@@ -1020,7 +1023,11 @@ async def test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board(tmp_path, f
         notes = _posted(app, before)
         if lands:
             assert app.selected_task_id == lands and lands in app._line_map
-            assert notes == [f"{title} done · counted in the ✓ rail · u undo"]
+            # since batch 2026-10-04-batch-01 finishing `tw2` also lets its
+            # waiter go: one ready toast follows (HLR-501)
+            ready = (["Optimize image assets is ready — Build component library done"]
+                     if sel == "tw2" else [])
+            assert notes == [f"{title} done · counted in the ✓ rail · u undo"] + ready
             await pilot.press("u")
             await pilot.pause()
             assert app.board.task_by_id(sel).phase == "Review"

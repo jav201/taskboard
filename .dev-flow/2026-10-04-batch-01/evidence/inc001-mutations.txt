@@ -1,0 +1,375 @@
+M1: KILLED — released links to open tasks kept (L3)
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 5 · GREEN 17 · 5 failed, 17 passed in 3.56s
+   RED   tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   RED   tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   RED   tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   RED   tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   RED   tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M2: KILLED — D-515: a closed last link clears the flag (L8)
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 3 · GREEN 19 · 3 failed, 19 passed in 1.49s
+   RED   tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   RED   tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   RED   tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M3: KILLED — no loop check (L7, the A2-2 arm)
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 3 · GREEN 19 · 3 failed, 19 passed in 1.67s
+   RED   tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   RED   tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   RED   tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M4: KILLED — the mark read loosely (truthy)
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 2 · GREEN 20 · 2 failed, 20 passed in 1.72s
+   RED   tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   RED   tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M5: KILLED — overwrite a taken backup name
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 2 · GREEN 20 · 2 failed, 20 passed in 1.66s
+   RED   tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   RED   tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M6: KILLED — no rollback of the links on failure
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 1 · GREEN 21 · 1 failed, 21 passed in 1.73s
+   RED   tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M7: KILLED — save in place, not atomically
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 1 · GREEN 21 · 1 failed, 21 passed in 1.75s
+   RED   tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M8: KILLED — a replaced malformed mark not logged (S2-2)
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 5 · GREEN 17 · 5 failed, 17 passed in 1.71s
+   RED   tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   RED   tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   RED   tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   RED   tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   RED   tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M9: KILLED — a backup name team pull reads
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 1 · GREEN 21 · 1 failed, 21 passed in 1.83s
+   RED   tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M10: KILLED — quadratic dedupe (TC-518)
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 1 · GREEN 21 · 1 failed, 21 passed in 3.40s
+   RED   tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M11: KILLED — the migration after the renumber save and the sweep
+   file taskboard/app.py restore sha256 18936511258cd99f OK
+   nodes resolved 22 · RED 2 · GREEN 20 · 2 failed, 20 passed in 1.65s
+   RED   tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   RED   tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M12: KILLED — undo restores only one task
+   file taskboard/app.py restore sha256 18936511258cd99f OK
+   nodes resolved 22 · RED 2 · GREEN 20 · 2 failed, 20 passed in 1.75s
+   RED   tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   RED   tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M13: KILLED — a failed backup does not stop the app
+   file taskboard/app.py restore sha256 18936511258cd99f OK
+   nodes resolved 22 · RED 1 · GREEN 21 · 1 failed, 21 passed in 1.80s
+   RED   tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only
+M14: KILLED — b touches depends_on
+   file taskboard/app.py restore sha256 18936511258cd99f OK
+   nodes resolved 22 · RED 1 · GREEN 21 · 1 failed, 21 passed in 1.59s
+   RED   tests/test_links.py::test_TC_506_b_is_the_external_block_only
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+M15: SURVIVED — a symlink at the name written through
+   file taskboard/models.py restore sha256 7425c4115e392f0e OK
+   nodes resolved 22 · RED 0 · GREEN 22 · 22 passed in 1.58s
+   GREEN tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup
+   GREEN tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked
+   GREEN tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app
+   GREEN tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   GREEN tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   GREEN tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   GREEN tests/test_link_migration.py::test_TC_515_a_board_needing_no_change_is_marked_without_backup
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[1]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark0]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark2]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark3]
+   GREEN tests/test_link_migration.py::test_TC_515_a_malformed_mark_never_raises_and_forces_the_backup[mark4]
+   GREEN tests/test_link_migration.py::test_TC_515_a_marked_or_unreadable_board_is_left_alone
+   GREEN tests/test_link_migration.py::test_TC_515_a_symlinked_board_keeps_its_link
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[log]
+   GREEN tests/test_link_migration.py::test_TC_515_any_failure_leaves_the_file_untouched_and_unmarked[save]
+   GREEN tests/test_link_migration.py::test_TC_515_backup_is_the_files_own_bytes_and_names_are_never_reused
+   GREEN tests/test_link_migration.py::test_TC_515_team_pull_never_reads_the_backup_or_the_log
+   GREEN tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept
+   GREEN tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   GREEN tests/test_links.py::test_TC_506_b_is_the_external_block_only

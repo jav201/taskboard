@@ -274,9 +274,9 @@ async def test_AT_401_board_text_is_painted_exactly(tmp_path, monkeypatch):
             (f"project delete confirm P j d [{p!r}]", lambda p=p: _box_arm(
                 _one(d(), project=p), ["P", "j", "d"], "#confirm-box", f"Delete '{p}'?",
                 "ConfirmModal")),
-            (f"blocker picker b [{p!r}]", lambda p=p: _box_arm(
-                _one(d(), others=[(p, "Doing", {})]), ["b"], "#blocker-box", p,
-                "BlockerPicker", row=True)),
+            (f"link picker L [{p!r}]", lambda p=p: _box_arm(
+                _one(d(), others=[(p, "Doing", {})]), ["L"], "#link-box", p,
+                "LinkPicker")),
             (f"task editor project select e [{p!r}]", lambda p=p: _editor_select_arm(
                 _one(d(), project=p), "#f-project", p)),
             (f"task editor phase select e [{p!r}]", lambda p=p: _editor_select_arm(

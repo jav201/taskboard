@@ -34,11 +34,14 @@ from textual.widgets import (Button, Checkbox, Input, Label, OptionList, Select,
 from textual.widgets.option_list import Option
 
 from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
-                     Board, Project, Task, _new_id, city_names,
+                     Board, Project, Task, _new_id, city_names, dependents_chain,
+                     is_open, link_candidates, link_conflicts, loopers_of,
+                     project_archive_refusal,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image)
 from .keymap import palette_commands
-from .views import HEX, highlight_segments, valid_url
+from .views import (HEX, clip, gantt_group_key, gantt_link_frame, gantt_link_order,
+                    highlight_segments, valid_url)
 
 # Imported at MODULE load (before the app starts) on purpose: textual-image
 # detects the terminal's graphics support by QUERYING the terminal, which only
@@ -706,6 +709,8 @@ class ProjectPicker(ModalScreen[None]):
         proj = self._current()
         if proj is None:
             return
+        if not proj.archived and self._refused(proj):
+            return
         if not proj.archived:
             # Archiving a project also archives its open tasks: the project is the
             # container, and a project that is no longer active should not leave
@@ -726,7 +731,17 @@ class ProjectPicker(ModalScreen[None]):
             return
         self._do_archive_toggle(proj)
 
+    def _refused(self, proj: Project) -> bool:
+        """The guard (D-523): archiving a project archives its tasks, so it is
+        refused while an open task outside it waits on one of them."""
+        why = project_archive_refusal(self.board, proj.id)
+        if why is not None:
+            self.app.notify(why, title="Links", severity="warning", markup=False)
+        return why is not None
+
     def _do_archive_toggle(self, proj: Project) -> None:
+        if not proj.archived and self._refused(proj):     # judged again at yes
+            return
         proj.archived = not proj.archived
         for t in self.board.tasks:
             if t.project_id == proj.id:
@@ -755,44 +770,286 @@ class ProjectPicker(ModalScreen[None]):
         self.dismiss(None)
 
 
-class BlockerPicker(ModalScreen[str | None]):
-    """Pick an existing task that blocks the selected one, or choose to create a
-    new blocker.  Returns the chosen task id, the sentinel ``"__new__"``, or
-    ``None`` on cancel.  Candidate titles are Text pieces (A1, S1); the blocked task
-    itself and any done/archived tasks are excluded."""
+class LinkPicker(ModalScreen[tuple[str, str] | None]):
+    """`L` — "‹waiter› waits on…" (D-B2, LLR-502.2). Lists the open tasks the
+    waiter could wait on — its own project first, then by due, undated last —
+    filtered as you type; a linked row says ↵ removes it, a row that would close
+    a loop is disabled and shows the loop. Returns ("link" | "unlink", task id),
+    ("new", title) for the create row, ("ask", "") for the create row with an
+    empty filter, or None. Every user text is a Text piece (S1)."""
 
-    BINDINGS = [("escape", "cancel", "Cancel")]
+    BINDINGS = [("escape", "cancel", "Cancel"),
+                Binding("down", "move(1)", "Down", priority=True, show=False),
+                Binding("up", "move(-1)", "Up", priority=True, show=False)]
 
-    def __init__(self, board: Board, blocked_task_id: str):
+    DEFAULT_CSS = """
+    LinkPicker { align: center middle; }
+    #link-box { width: 100; max-width: 95%; height: 90%; padding: 1 2;
+                background: #0d1219; border: round #334154; }
+    #link-box Label { margin: 0; }
+    #link-list { height: 1fr; margin-top: 1; }
+    """
+
+    def __init__(self, board: Board, waiter: Task):
         super().__init__()
         self.board = board
-        self.blocked_task_id = blocked_task_id
+        self.waiter = waiter
+        self._loopers = loopers_of(board, waiter)      # ONE walk per open (D-522)
+        self._total = len(link_candidates(board, waiter, loopers=self._loopers))
 
     def compose(self) -> ComposeResult:
-        with VerticalScroll(id="blocker-box", classes="modal"):
-            yield Label("[b]What blocks it?[/b]  —  pick a task or create a new blocker",
-                        classes="modal-title")
-            yield OptionList(id="blocker-list")
+        w = self.waiter
+        linked = [self.board.task_by_id(x) for x in dict.fromkeys(w.depends_on)]
+        linked = [t for t in linked if t is not None and t is not w]
+        now = Text("linked now: ", style=HEX["dim"])
+        if linked:
+            for i, t in enumerate(linked):
+                now.append(" · " if i else "", style=HEX["dim"])
+                now.append(t.title)
+        else:
+            now.append("nothing", style=HEX["dim"])
+        with Vertical(id="link-box"):
+            yield Label(Text.assemble((w.title, "bold"), " waits on…"), classes="modal-title")
+            yield Input(placeholder="type to filter", id="link-filter")
+            yield Label(Text(""), id="link-count")
+            yield Label(now, id="link-linked")
+            yield OptionList(id="link-list")
+            yield Label(Text("↑↓ move  ·  ↵ link / unlink  ·  type filter  ·  esc cancel",
+                             style=HEX["dim"]))
 
     def on_mount(self) -> None:
-        ol = self.query_one("#blocker-list", OptionList)
-        ol.add_option(Option("(create new blocker)", id="__new__"))
-        for t in self.board.tasks:
-            if t.id == self.blocked_task_id:
+        self._fill("")
+        self.query_one("#link-filter", Input).focus()
+
+    def _meta(self, t: Task, same: bool) -> Text:
+        due = parse_iso(t.due_date)
+        bits = Text(style=HEX["dim"])
+        if not same:
+            p = self.board.project_by_id(t.project_id)
+            bits.append(p.name if p else "Inbox")
+            bits.append(" · ")
+        bits.append(t.phase.upper())
+        bits.append(" · " + (f"due {due:%b} {due.day}" if due else "no due"))
+        return bits
+
+    def _fill(self, query: str) -> None:
+        ol = self.query_one("#link-list", OptionList)
+        ol.clear_options()
+        rows = link_candidates(self.board, self.waiter, query, loopers=self._loopers)
+        q = query.strip()
+        if q:
+            create = Text.assemble("+ create “", q, "” as a new task it waits on")
+        else:
+            create = Text("+ create a new task it waits on")
+        options = [Option(create, id="__new__")]
+        first = None
+        for same, heading in ((True, "Same project"), (False, "Other projects")):
+            part = [c for c in rows if c.same_project == same]
+            if not part:
                 continue
-            if self.board.is_done(t) or t.archived:
-                continue
-            ol.add_option(Option(Text(t.title), id=t.id))
-        ol.highlighted = 0
-        ol.focus()
+            options.append(Option(Text(heading, style="bold"), disabled=True))
+            for c in part:
+                line = Text("  ")
+                line.append(c.task.title, style="bold" if c.linked else "")
+                line.append("   ")
+                line.append_text(self._meta(c.task, same))
+                line.append("\n    ")
+                if c.loop:
+                    names = [t.title for t in c.loop[1:-1]]
+                    line.append("⟲ would loop: this → " + " → ".join(names) + " → this",
+                                style=HEX["dim"])
+                    line.stylize(HEX["dim"])
+                else:
+                    if c.linked:
+                        line.append("✓ linked (↵ removes) · ", style=HEX["mut"])
+                    line.append(c.hint, style=HEX["over"] if c.hint.startswith("◂")
+                                else HEX["dim"])
+                options.append(Option(line, id=f"c:{c.task.id}", disabled=bool(c.loop)))
+                if first is None and not c.loop:
+                    first = len(options) - 1
+        ol.add_options(options)
+        ol.highlighted = first if first is not None else 0
+        self.query_one("#link-count", Label).update(
+            Text(f"{len(rows)} of {self._total} open", style=HEX["dim"]))
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        self._fill(event.value)
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        ol = self.query_one("#link-list", OptionList)
+        if ol.highlighted is not None:
+            self._choose(ol.get_option_at_index(ol.highlighted).id)
 
     def action_move(self, delta: int) -> None:
-        ol = self.query_one("#blocker-list", OptionList)
-        cur = ol.highlighted if ol.highlighted is not None else 0
-        ol.highlighted = max(0, min(ol.option_count - 1, cur + delta))
+        ol = self.query_one("#link-list", OptionList)
+        if delta > 0:
+            ol.action_cursor_down()
+        else:
+            ol.action_cursor_up()
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        self.dismiss(event.option.id)
+        self._choose(event.option.id)
+
+    def _choose(self, oid: str | None) -> None:
+        if oid == "__new__":
+            q = self.query_one("#link-filter", Input).value.strip()
+            self.dismiss(("new", q) if q else ("ask", ""))
+        elif oid and oid.startswith("c:"):
+            tid = oid[2:]
+            self.dismiss(("unlink" if tid in self.waiter.depends_on else "link", tid))
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class GanttLinkMode(ModalScreen[tuple[str, str] | None]):
+    """`L` in the gantt — the link mode (D-A, LLR-502.3). The gantt is painted with
+    the candidate as its selection (its group unfolds) and the proposed link drawn
+    on the field; ↑/↓ choose among the open tasks in the gantt's order, skipping
+    loops (marked `⟲`) and, with a filter, titles that do not hold it; every
+    printable key is filter text, backspace edits it; ↵ links (or unlinks a linked
+    candidate), esc cancels. The status rows are Text pieces (S1); the frame is the
+    views seat's (D-405, the census's one EXEMPT repaint)."""
+
+    BINDINGS = [Binding("escape", "cancel", "Cancel", priority=True),
+                Binding("down", "move(1)", "Down", priority=True, show=False),
+                Binding("up", "move(-1)", "Up", priority=True, show=False),
+                Binding("enter", "choose", "Link", priority=True, show=False),
+                Binding("backspace", "erase", "Erase", priority=True, show=False)]
+
+    DEFAULT_CSS = """
+    GanttLinkMode { background: #0b0f17; }
+    #glink-frame { height: 1fr; }
+    #glink-status { height: 3; }
+    """
+
+    def __init__(self, board: Board, waiter: Task, show_archived: bool, today: date):
+        super().__init__()
+        self.board, self.waiter = board, waiter
+        self.show_archived, self.today = show_archived, today
+        self.filter = ""
+        by_id = {c.task.id: c for c in link_candidates(board, waiter)}
+        order = gantt_link_order(board, show_archived, today, gantt_group_key(board, waiter))
+        self._cands = [by_id[t.id] for t in order if t.id in by_id]
+        self._loops = {c.task.id for c in self._cands if c.loop}
+        self._cursor = next((i for i, c in enumerate(self._cands) if not c.loop), None)
+
+    def compose(self) -> ComposeResult:
+        yield Static(id="glink-frame")
+        yield Static(id="glink-status")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def on_resize(self, event: events.Resize) -> None:
+        self._paint()
+
+    def _allowed(self, c) -> bool:
+        q = self.filter.strip().lower()
+        return not c.loop and (not q or q in c.task.title.lower())
+
+    @property
+    def candidate(self):
+        if self._cursor is None or not self._allowed(self._cands[self._cursor]):
+            return None
+        return self._cands[self._cursor]
+
+    def _paint(self) -> None:
+        w, h = self.size.width or 118, self.size.height or 30
+        cand = self.candidate
+        right = f"{len(self._cands)} candidates · ⟲{len(self._loops)} would loop"
+        rows = max(3, h - 3)
+        frame, facts = gantt_link_frame(self.board, self.show_archived, self.waiter,
+                                        cand.task if cand else None, self.today, w,
+                                        rows, right, self._loops)
+        # a closed waiter is never drawn, at any height: nothing to say (N2)
+        folded = (is_open(self.board, self.waiter)
+                  and self.waiter.id not in facts["line_map"])   # rows past the frame are not mapped
+        self.query_one("#glink-frame", Static).update(frame)
+        self.query_one("#glink-status", Static).update(self._status(cand, w, folded))
+
+    def _status(self, cand, w: int, folded: bool = False) -> Text:
+        """Three rows: what is being linked (titles clip to fit), the candidate's
+        timing, then the keys — never clipped — with the first loop's path after
+        them in what room is left."""
+        linked = cand is not None and cand.linked
+        out = Text(" LINK ", style="bold")
+        if self.filter:
+            out.append("filter: ", style=HEX["dim"])
+            out.append(clip(self.filter, max(4, w // 3)) + "▏  ")
+        fixed = out.cell_len + 11 + (10 if linked else 0)
+        half = max(4, (w - 1 - fixed) // 2)
+        waiter = clip(self.waiter.title, half)
+        out.append(waiter)
+        out.append(" waits on… ", style=HEX["dim"])
+        if cand is not None:
+            out.append(clip(cand.task.title, max(4, w - 1 - fixed - cell_len(waiter))), style="bold")
+            if linked:
+                out.append("  ✓ linked", style=HEX["mut"])
+        else:
+            out.append("no match" if self.filter else "nothing to link", style=HEX["dim"])
+        out.truncate(w - 1, overflow="ellipsis")      # one row, whatever the glyphs
+        out.append("\n ")
+        if cand is not None:
+            out.append(clip(cand.hint, w - 2),
+                       style=HEX["over"] if cand.hint.startswith("◂") else HEX["dim"])
+            if folded:
+                # the frame could not unfold the waiter's group beside the
+                # candidate's: say it rather than lose the link in silence (ux F4)
+                # the title clips, the reason stays (code review 005 N1)
+                room = w - 2 - cell_len(clip(cand.hint, w - 2))
+                tail = " is folded — a taller terminal draws the link"
+                if room >= len(tail) + 8:
+                    out.append("  · " + clip(self.waiter.title, room - 4 - len(tail)) + tail,
+                               style=HEX["dim"])
+                elif room >= 20:
+                    out.append("  · waiter row folded", style=HEX["dim"])
+        keys = "↑↓ choose · type to filter · " + ("↵ unlink" if linked else "↵ link") + " · esc cancel"
+        out.append("\n ")
+        out.append(keys, style=HEX["dim"])
+        first_loop = next((c for c in self._cands if c.loop), None)
+        room = w - 2 - len(keys) - 11
+        if first_loop is not None and room >= 8:
+            path = ["this", *(t.title for t in first_loop.loop[1:-1]), "this"]
+            out.append("   ⟲ loop: ", style=HEX["mut"])
+            out.append(clip(" → ".join(path), room), style=HEX["dim"])
+        return out
+
+    def action_move(self, delta: int) -> None:
+        n = len(self._cands)
+        if not n:
+            return
+        i = self._cursor if self._cursor is not None else (-1 if delta > 0 else n)
+        for _ in range(n):
+            i = (i + delta) % n
+            if self._allowed(self._cands[i]):
+                self._cursor = i
+                break
+        self._paint()
+
+    def on_key(self, event: events.Key) -> None:
+        if event.character and event.character.isprintable() and len(event.character) == 1:
+            self.filter += event.character
+            event.stop()
+            if self.candidate is None:
+                self._cursor = None
+                self.action_move(1)
+            else:
+                self._paint()
+
+    def action_erase(self) -> None:
+        self.filter = self.filter[:-1]
+        if self.candidate is None:
+            self._cursor = None
+            self.action_move(1)
+        else:
+            self._paint()
+
+    def action_choose(self) -> None:
+        cand = self.candidate
+        if cand is None:
+            return
+        self.dismiss(("unlink" if cand.linked else "link", cand.task.id))
 
     def action_cancel(self) -> None:
         self.dismiss(None)
@@ -1149,12 +1406,22 @@ class ImageViewer(ModalScreen[None]):
 
 
 class TaskDetails(ModalScreen[None]):
-    """Read-only view of every field on a task, with images rendered inline.
-    No save/edit control (can't mutate the task) — ``o`` opens images/URLs raw
-    in the OS handler, ``esc`` closes. Every user-controlled string is a Text
+    """Every field on a task, with images rendered inline — read-only but for
+    its links (D-B, LLR-503.1): the dependency section lists what it waits on
+    and what it unblocks (direct and down the chain), with each conflict; `x`
+    removes the highlighted direct link, `↵` jumps to it, `L` adds one through
+    the picker, `tab` moves between the box and the links. ``o`` opens
+    images/URLs raw, ``esc`` closes. Every user-controlled string is a Text
     piece, never parsed (markup-injection pitfall A1, S1)."""
 
-    BINDINGS = [("escape", "close", "Close"), ("o", "open_raw", "Open raw")]
+    BINDINGS = [("escape", "close", "Close"), ("o", "open_raw", "Open raw"),
+                ("L", "link", "Link"), ("x", "remove", "Remove link"),
+                ("enter", "jump", "Jump"),
+                Binding("tab", "focus_links", "Links", priority=True, show=False)]
+
+    DEFAULT_CSS = """
+    #deps-list { height: auto; max-height: 14; border: none; padding: 0; }
+    """
 
     def __init__(self, task: Task, board: Board):
         super().__init__()
@@ -1179,6 +1446,7 @@ class TaskDetails(ModalScreen[None]):
                 yield Label(Text(t.start_date or "—"))
                 yield Label("Due")
                 yield Label(Text(t.due_date or "—"))
+            yield from self._links()
             yield Label("[b]Notes[/b]  [dim]highlight: ==…== yellow, !!…!! red, ++…++ green[/dim]")
             if t.notes:
                 yield Static(notes_preview(t.notes))
@@ -1196,6 +1464,129 @@ class TaskDetails(ModalScreen[None]):
                     yield from image_block(ref)
             else:
                 yield Label("[dim]—[/dim]")
+
+    # ---- the dependency section (D-B) -------------------------------------
+    def _links(self):
+        t, b = self._detail_task, self._board
+        by_id: dict[str, Task] = {}
+        for x in b.tasks:
+            by_id.setdefault(x.id, x)          # the first of a repeated id
+        preds = [by_id[x] for x in dict.fromkeys(t.depends_on) if x != t.id and x in by_id]
+        # each predecessor's OWN state (code review F1, operator "Corregir en el
+        # 003"): a closed task still lists what it waited on, truthfully
+        open_preds = [p for p in preds if is_open(b, p)]
+        chain = dependents_chain(b, t)
+        direct = [w for w, depth in chain if depth == 1]
+        if not is_open(b, t):
+            state = ""                         # closed: neither waiting nor ready
+        elif open_preds:
+            state = "  ◂ waiting"
+        elif preds and is_open(b, t):
+            state = "  ready"
+        else:
+            state = ""
+        keys = ("  L link · tab links · x remove · ↵ jump" if preds or direct
+                else "  L link")
+        yield Label(Text.assemble(("Dependencies", "bold"), (state, HEX["mut"]),
+                                  (keys, HEX["dim"])), id="deps-head")
+        if not preds and not chain:
+            yield Label(Text("no links — L adds one", style=HEX["dim"]))
+            return
+        ol = OptionList(id="deps-list")
+        options = [Option(Text.assemble(("Waits on", "bold"),
+                                        (f"  ◂{len(open_preds)} open of {len(preds)}",
+                                         HEX["dim"])), disabled=True)]
+        for p in preds:
+            state = ("open" if p in open_preds else
+                     "archived" if p.archived else "done")
+            options.append(Option(self._row(p, state), id=f"p:{p.id}"))
+        options.append(Option(Text.assemble(
+            ("Unblocks", "bold"),
+            (f"  ▸{len(direct)} direct · {len(chain)} in chain", HEX["dim"])), disabled=True))
+        for w, depth in chain:
+            if depth == 1:
+                options.append(Option(self._row(w, None), id=f"d:{w.id}"))
+            else:
+                options.append(Option(Text.assemble("  " * (depth - 1) + "└ ",
+                                                    self._row(w, None)), disabled=True))
+        ol.add_options(options)
+        yield ol
+        for p, n in link_conflicts(b, t):
+            yield Label(Text.assemble(("◂ ", HEX["over"]), self._conflict(t, p, n)))
+
+    def _row(self, task: Task, state: str | None) -> Text:
+        due = parse_iso(task.due_date)
+        meta = f"{task.phase.upper()} · " + (f"due {due:%b} {due.day}" if due else "no due")
+        if state:
+            meta += f" · {state}"
+        return Text.assemble(task.title, "   ", (meta, HEX["dim"]))
+
+    @staticmethod
+    def _conflict(t: Task, p: Task, n: int) -> Text:
+        def md(iso):
+            d = parse_iso(iso)
+            return f"{d:%b} {d.day}"
+        if parse_iso(t.start_date) is not None:
+            head = f"starts {md(t.start_date)}, overlaps "
+        else:
+            head = f"due {md(t.due_date)}, overlaps "
+        return Text.assemble(head, p.title, f" by {n}d (due {md(p.due_date)})")
+
+    def on_mount(self) -> None:
+        self.query_one("#details-box").focus()
+
+    def _highlighted(self) -> str | None:
+        lists = self.query("#deps-list")
+        if not lists:
+            return None
+        ol = lists.first(OptionList)
+        if ol.highlighted is None:
+            return None
+        return ol.get_option_at_index(ol.highlighted).id
+
+    def _repaint(self) -> None:
+        self.refresh(recompose=True)
+        self.call_after_refresh(lambda: self.query_one("#details-box").focus())
+
+    def action_focus_links(self) -> None:
+        lists = self.query("#deps-list")
+        if not lists:
+            return
+        ol = lists.first(OptionList)
+        if ol.has_focus:
+            self.query_one("#details-box").focus()
+        else:
+            ol.focus()
+            if ol.highlighted is None or ol.get_option_at_index(ol.highlighted).disabled:
+                ol.action_cursor_down()
+
+    def action_remove(self) -> None:
+        oid = self._highlighted()
+        if not oid:
+            return
+        t = self._detail_task
+        other = self._board.task_by_id(oid[2:])
+        if other is None:
+            return
+        if oid.startswith("p:"):
+            self.app.unlink_tasks(t, other)
+        else:
+            self.app.unlink_tasks(other, t)
+        self._repaint()
+
+    def action_jump(self) -> None:
+        oid = self._highlighted()
+        if oid:
+            self.dismiss(None)
+            self.app.jump_to(oid[2:])
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        if event.option.id:
+            self.dismiss(None)
+            self.app.jump_to(event.option.id[2:])
+
+    def action_link(self) -> None:
+        self.app.open_link_picker(self._detail_task, after=self._repaint)
 
     def action_open_raw(self) -> None:
         self.app.open_all_images_raw(self._detail_task)

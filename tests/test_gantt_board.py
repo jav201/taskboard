@@ -577,7 +577,9 @@ def test_TC_105_the_dependency_mark():
     assert gantt_dep_mark(later, b, set()) == views.c("↳", "mut")
     assert gantt_dep_mark(later, b, {"l"}) == views.c("↳", "bright", bold=True)
     assert gantt_dep_mark(nostart, b, set()) == views.c("↳", "mut")
-    assert gantt_dep_mark(same_day, b, set()) == views.c("↳", "mut")
+    # batch 2026-10-04-batch-01, D-503 (one overlap measure): a start ON the
+    # dependency's due day is a 1-day overlap, so it is `over` now
+    assert gantt_dep_mark(same_day, b, set()) == views.c("↳", "over")
     assert gantt_dep_mark(on_done, b, set()) == " "
     assert gantt_dep_mark(missing, b, set()) == " "
 

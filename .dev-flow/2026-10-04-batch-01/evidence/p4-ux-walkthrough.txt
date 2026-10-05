@@ -1,0 +1,61 @@
+P4 UX walkthrough — batch 2026-10-04-batch-01 — ux-reviewer, 2026-10-04
+(the reviewer's report, transcribed by the orchestrator; home paths omitted)
+
+Overall verdict: PASS-WITH-NOTES. No HIGH; three MED (F4, U-2, E-1).
+Context of use: the operator, alone, keyboard-first; task: see what can start, link, keep the plan
+sound; environment: a resized terminal, judged at 118 and 80 columns.
+Mechanism: Textual run_test with real key presses on a synthetic kg_board (D); close captures (C);
+selection set through app.selected_task_id as setup (S), every action after it a real key.
+
+Walkthrough
+US-501  kanban `4` grouped @118: ◂N / ▸N muted where ⛓ stood, no accent on any mark ......... D executed
+US-501  lanes `4 tab tab`: a card with both marks loses its whole title (`▊ ==  ·7d ▸1 ◂1 +8d`) .. D failed (U-2)
+US-501  `]` twice on Audit dependencies: one "Ready" toast "Add push notifications is ready —
+        Audit dependencies done" ......................................................... C executed
+US-502  `L` in kanban: picker, highlight on the first candidate (already linked: "✓ linked
+        (↵ removes)"); `ma` → "4 of 24 open"; loop row "⟲ would loop: this → SEO redirects map → this" D+S executed
+US-502  `L` in gantt, ↑/↓, `zqx`, ↵, backspace, `push`, ↵: header "24 candidates · ⟲1 would loop";
+        ⟲ muted in the gutter; `zqx` "no match", ↵ leaves the file unchanged; `push` draws a bright
+        connector and ═ in the over tone; ↵ links (file re-read: tw5 gains tm3), toast "… · u undo";
+        accent only on today cells .................................................... D+S executed
+US-502  same at 118×20, or 118×30 with 11-task projects: the waiter's group stays folded — no ═,
+        no connector; status rows still correct ......................................... D+S failed (F4)
+US-503  `enter`, `tab`, ↓, ↑, ↵: section, counts, conflict line painted; tab enters the list; ↵
+        closes and selects tm2 (jump target read from app state; AT-504 asserts the paint) .. D+S executed
+US-503  `enter`, `tab`, `x`, esc, `u`: row removed, file `tm3: []`, heading loses "◂ waiting";
+        `u` restores ['tm2']; with no links "no links — L adds one" .......................... D+S executed
+US-504  `d` on Partner notice emails: refusal toast naming Deprecate v1 endpoints; no confirm .. D+S executed
+US-505  legacy board start: toast "Links migrated: 6 tasks · backup board.json.pre-links-migration
+        · u undo"; timeout and undo not visible in a still (AT-506 covers them) ............. C executed
+
+Findings
+F4   MED  product   link mode does not keep the waiter's group open: greedy fold by fit folds it at
+                    118×20, and at the 118×30 reference with 11-task projects; overlay vanishes
+                    silently; no wrong action (status rows true, ↵ correct). Recommend: fold every
+                    other group first, or at least say on the hint row that the waiter's row is off.
+U-2  MED  product   lanes: a card's title cut to nothing while age and marks stay (base: 1 such card;
+                    close: 2 at both widths, `▸1 ◂1` is 5 cells vs base `⛓1` 2).
+E-1  MED  evidence  capture_b1.py "kanban-lanes" pressed `4 tab` (matrix), not `4 tab tab` (lanes).
+U-3  LOW  product   both `L` surfaces start on the first candidate even when it is linked: `L ↵` unlinks.
+U-4  LOW  product   ═ runs past the waiter's own due and paints over its ○.
+U-5  LOW  product   in link mode the waiter's row loses its selection mark.
+U-6  LOW  product   grouped kanban @80: ◂ shows on 2 of 5 waiting cards (title wrap takes the meta
+                    row; same as base ⛓).
+U-7  LOW  product   picker @80×24 shows ~2 candidates; a long hint wraps to a third line.
+E-2  LOW  evidence  captures set the selection by property; PLAN PV-5 said "two status rows".
+N-1..N-7 NIT        keys wording differs between the two L surfaces; "↵ link" offered on no match;
+                    toast titles "Links" vs "Dependencies"; "◂0 open of 0"; "u / undo" split @80;
+                    loop legend clipped @80; `L` pushes "Standup" off key 8 @118 kanban.
+
+PV verdicts
+PV-1 keep (grouped); change (lanes: U-2; re-shoot E-1)   base-kanban-* → close-kanban-*; base/close-kanban-lanes-*
+PV-2 keep                                                  base-gantt-* → close-gantt-*
+PV-3 keep, with U-3, U-7                                   — → close-picker-*
+PV-4 keep                                                  base-details-* → close-details-*
+PV-5 keep the design, change the fold rule (F4); U-4, U-5  — → close-gantt-link-*
+PV-6 keep, with N-3, N-5                                   — → close-guard-*, close-ready-*, close-migration-*
+PV-7 keep                                                  base-gantt-* → close-gantt-*; close-picker-*
+
+Not covered: evaluation with users (one-person team; the operator's look at the captures is the
+visual verdict still owed); toast timing/severity colour, the migration's `u` and second start were
+not driven (AT-505..508 cover them); colour checked from painted segments, not SVG rendering.

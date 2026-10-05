@@ -1,0 +1,5 @@
+## Canon re-fold at the second re-close (D-535), 2026-10-04 — devflow-init.py --fold-canon from the read-only rev99 snapshot
+This batch's own 18 uncommitted rows removed and folded again from the amended statements (A-12):
+canon: REQUIREMENTS.md -- 18 folded, 0 kept, 0 refused
+Second run:
+canon: REQUIREMENTS.md -- 0 folded, 18 kept, 0 refused

@@ -73,6 +73,10 @@ KEYMAP: tuple[Key, ...] = (
     Key("a", "a", "add_task", "Add", primary=True, group="task"),
     Key("e", "e", "edit", "Edit", primary=True, group="task"),
     Key("d,delete", "d", "delete", "Del", primary=True, group="task"),
+    # `L` — "this task waits on…": the picker, or the link mode in the gantt
+    # (batch 2026-10-04-batch-01, LLR-502.1). Only where a task is selected.
+    Key("L", "L", "link", "Link", primary=True, group="task",
+        views=("swimlanes", "agenda", "gantt", "kanban", "focus")),
     Key("x", "x", "archive", "Archive", group="task"),
     Key("X", "X", "purge_done", "Purge done", group="task"),
     Key("v", "v", "toggle_archived", "Archived", group="task"),

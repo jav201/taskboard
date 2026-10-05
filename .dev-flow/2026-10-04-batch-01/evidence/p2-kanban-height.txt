@@ -1,0 +1,4 @@
+grouped  width 118: every band drawn from height 33
+grouped  width 80: every band drawn from height 33
+lanes    width 118: every band drawn from height 20
+lanes    width 80: every band drawn from height 20

@@ -1,0 +1,9 @@
+open candidates for tw5: 24
+filter 'ma': 4 ['Optimize image assets', 'SEO redirects map', 'Partner notice emails', 'Plan Q4 roadmap']
+overlap(tm3 on tm2): 2
+loop_path(tm2 waits on tm5): Audit dependencies → Beta release to testers → Offline sync → Add push notifications → Audit dependencies
+downstream of tm3: ['Offline sync', 'Beta release to testers']
+complete tw2 -> ['Build component library → Done', 'Optimize image assets is ready — Build component library done']
+overlap tw5 on tw4 when tw5 starts on tw4's due day: 1
+... and when tw4 is due the day before: 0
+tw5 overlaps on its preds: [('Build component library', 0), ('Optimize image assets', 3)]

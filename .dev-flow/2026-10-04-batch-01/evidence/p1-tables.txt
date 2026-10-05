@@ -1,0 +1,100 @@
+## TC-503 overlap truth table (the one measure)
+| start before the due day | 2026-10-08 | 2026-10-20 | 2026-10-10 | 3 |
+| start ON the due day | 2026-10-10 | 2026-10-20 | 2026-10-10 | 1 |
+| start the day after | 2026-10-11 | 2026-10-20 | 2026-10-10 | 0 |
+| no start, due before pred due | None | 2026-10-07 | 2026-10-10 | 3 |
+| no start, due ON pred due | None | 2026-10-10 | 2026-10-10 | 0 |
+| no start, due after | None | 2026-10-12 | 2026-10-10 | 0 |
+| pred has no due | 2026-10-01 | None | None | 0 |
+| waiter has no dates | None | None | 2026-10-10 | 0 |
+
+## TC-509 picker rows (waiter · order · hint); precondition: tw6 waits on tw5
+### waiter tw5 (Launch new homepage) — 24 candidates
+| same | tw2 | Build component library | ✓ linked (↵ removes) · ok — due 7d before this starts |
+| same | tw3 | Fix checkout 500 error | ok — due 6d before this starts |
+| same | tw4 | Optimize image assets | ✓ linked (↵ removes) · ◂ overlaps 3d: due Oct 6, this starts Oct 4 |
+| same | tw6 | SEO redirects map | ⟲ would loop: this → SEO redirects map → this |
+| other | ta1 | Write API reference | ok — due 9d before this starts |
+| other | to1 | Renew TLS certificate | ok — due 5d before this starts |
+| other | ta6 | SDK regeneration | ok — due 5d before this starts |
+| other | to3 | Review pull requests | ok — due 4d before this starts |
+| other | tm6 | Crash reporting | ok — due 3d before this starts |
+| other | tm2 | Audit dependencies | ok — due 2d before this starts |
+| other | ta3 | Partner notice emails | ok — due 1d before this starts |
+| other | to2 | Rotate API keys | ok — due 1d before this starts |
+| other | ta4 | Rate limiting | ◂ overlaps 1d: due Oct 4, this starts Oct 4 |
+| other | ta2 | Deprecate v1 endpoints | ◂ overlaps 4d: due Oct 7, this starts Oct 4 |
+| other | td2 | Compress database backups | ◂ overlaps 6d: due Oct 9, this starts Oct 4 |
+| other | tm3 | Add push notifications | ◂ overlaps 9d: due Oct 12, this starts Oct 4 |
+| other | td4 | Daily revenue model | ◂ overlaps 15d: due Oct 18, this starts Oct 4 |
+| other | to5 | Pen-test findings | ◂ overlaps 17d: due Oct 20, this starts Oct 4 |
+| other | tm4 | Offline sync | ◂ overlaps 25d: due Oct 28, this starts Oct 4 |
+| other | td3 | Archive old logs | ◂ overlaps 27d: due Oct 30, this starts Oct 4 |
+| other | tm5 | Beta release to testers | ◂ overlaps 32d: due Nov 4, this starts Oct 4 |
+| other | td5 | BI dashboard cut-over | ◂ overlaps 57d: due Nov 29, this starts Oct 4 |
+| other | ta5 | Plan Q4 roadmap | no due date — timing can't be checked |
+| other | to4 | Update onboarding copy | no due date — timing can't be checked |
+### waiter ta2 (Deprecate v1 endpoints) — 24 candidates
+| same | ta1 | Write API reference | ok — due on or before the day this is due |
+| same | ta6 | SDK regeneration | ok — due on or before the day this is due |
+| same | ta3 | Partner notice emails | ✓ linked (↵ removes) · ok — due on or before the day this is due |
+| same | ta4 | Rate limiting | ok — due on or before the day this is due |
+| same | ta5 | Plan Q4 roadmap | no due date — timing can't be checked |
+| other | tw2 | Build component library | ok — due on or before the day this is due |
+| other | tw3 | Fix checkout 500 error | ok — due on or before the day this is due |
+| other | to1 | Renew TLS certificate | ok — due on or before the day this is due |
+| other | to3 | Review pull requests | ok — due on or before the day this is due |
+| other | tm6 | Crash reporting | ok — due on or before the day this is due |
+| other | tm2 | Audit dependencies | ok — due on or before the day this is due |
+| other | to2 | Rotate API keys | ok — due on or before the day this is due |
+| other | tw4 | Optimize image assets | ok — due on or before the day this is due |
+| other | td2 | Compress database backups | ◂ overlaps 2d: due Oct 9, this is due Oct 7 |
+| other | tw5 | Launch new homepage | ◂ overlaps 3d: due Oct 10, this is due Oct 7 |
+| other | tm3 | Add push notifications | ◂ overlaps 5d: due Oct 12, this is due Oct 7 |
+| other | tw6 | SEO redirects map | ◂ overlaps 7d: due Oct 14, this is due Oct 7 |
+| other | td4 | Daily revenue model | ◂ overlaps 11d: due Oct 18, this is due Oct 7 |
+| other | to5 | Pen-test findings | ◂ overlaps 13d: due Oct 20, this is due Oct 7 |
+| other | tm4 | Offline sync | ◂ overlaps 21d: due Oct 28, this is due Oct 7 |
+| other | td3 | Archive old logs | ◂ overlaps 23d: due Oct 30, this is due Oct 7 |
+| other | tm5 | Beta release to testers | ◂ overlaps 28d: due Nov 4, this is due Oct 7 |
+| other | td5 | BI dashboard cut-over | ◂ overlaps 53d: due Nov 29, this is due Oct 7 |
+| other | to4 | Update onboarding copy | no due date — timing can't be checked |
+### waiter to4 (Update onboarding copy) — 24 candidates
+| same | to1 | Renew TLS certificate | this has no dates — timing can't be checked |
+| same | to3 | Review pull requests | this has no dates — timing can't be checked |
+| same | to2 | Rotate API keys | this has no dates — timing can't be checked |
+| same | to5 | Pen-test findings | this has no dates — timing can't be checked |
+| other | ta1 | Write API reference | this has no dates — timing can't be checked |
+| other | tw2 | Build component library | this has no dates — timing can't be checked |
+| other | tw3 | Fix checkout 500 error | this has no dates — timing can't be checked |
+| other | ta6 | SDK regeneration | this has no dates — timing can't be checked |
+| other | tm6 | Crash reporting | this has no dates — timing can't be checked |
+| other | tm2 | Audit dependencies | this has no dates — timing can't be checked |
+| other | ta3 | Partner notice emails | this has no dates — timing can't be checked |
+| other | ta4 | Rate limiting | this has no dates — timing can't be checked |
+| other | tw4 | Optimize image assets | this has no dates — timing can't be checked |
+| other | ta2 | Deprecate v1 endpoints | this has no dates — timing can't be checked |
+| other | td2 | Compress database backups | this has no dates — timing can't be checked |
+| other | tw5 | Launch new homepage | this has no dates — timing can't be checked |
+| other | tm3 | Add push notifications | this has no dates — timing can't be checked |
+| other | tw6 | SEO redirects map | this has no dates — timing can't be checked |
+| other | td4 | Daily revenue model | this has no dates — timing can't be checked |
+| other | tm4 | Offline sync | this has no dates — timing can't be checked |
+| other | td3 | Archive old logs | this has no dates — timing can't be checked |
+| other | tm5 | Beta release to testers | this has no dates — timing can't be checked |
+| other | td5 | BI dashboard cut-over | this has no dates — timing can't be checked |
+| other | ta5 | Plan Q4 roadmap | this has no dates — timing can't be checked |
+
+## TC-513 details sections (kg board, unshifted)
+### tm3 Add push notifications: waits on 1 open of 1; ▸1 direct · 2 in chain
+   waits on: Audit dependencies [open]
+   unblocks: Offline sync
+   └ Beta release to testers
+   conflict: ◂ starts Oct 1, overlaps Audit dependencies by 2d (due Oct 2)
+### tw5 Launch new homepage: waits on 2 open of 2; ▸0 direct · 0 in chain
+   waits on: Build component library [open]
+   waits on: Optimize image assets [open]
+   conflict: ◂ starts Oct 4, overlaps Optimize image assets by 3d (due Oct 6)
+### ta2 Deprecate v1 endpoints: waits on 1 open of 1; ▸0 direct · 0 in chain
+   waits on: Partner notice emails [open]
+### to4 Update onboarding copy: waits on 0 open of 0; ▸0 direct · 0 in chain

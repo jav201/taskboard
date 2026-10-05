@@ -1,0 +1,220 @@
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+.................................................................FF.F.FF [ 50%]
+F....................................................................... [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+...............................                                          [100%]
+================================== FAILURES ===================================
+______________ test_AT_206_a_finished_task_says_where_it_folded _______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-15908/test_AT_206_a_finished_task_sa0')
+frozen = None
+
+    async def test_AT_206_a_finished_task_says_where_it_folded(tmp_path, frozen):
+        """AT-206 (HLR-206). Terminal 118x30, key `3`: the entry selection `tw2`
+        (Review) and `]` \u2192 exactly one notice, `Build component library done \xb7
+        folded into \u27132 \xb7 u undo`. RED on the base tree: no notice (P-10)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            assert app.selected_task_id == "tw2"
+            before = len(toasts(app))
+            await pilot.press("]")
+            await pilot.pause()
+>           assert toasts(app)[before:] == ["Build component library done \xb7 folded into \u27132 \xb7 u undo"]
+E           AssertionError: assert ['Build compo...library done'] == ['Build compo... \u27132 \xb7 u undo']
+E             
+E             Left contains one more item: 'Optimize image assets is ready — Build component library done'
+E             Use -v to get more diff
+
+tests\test_gantt_polish.py:563: AssertionError
+______________ test_TC_208_only_the_move_that_finishes_notifies _______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-15908/test_TC_208_only_the_move_that0')
+frozen = None
+
+    async def test_TC_208_only_the_move_that_finishes_notifies(tmp_path, frozen):
+        """TC-208 (LLR-206.1). `tw3` (Doing): one `]` \u2192 Review, no notice; a second
+        \u2192 Done, the notice; `]` in the kanban never notifies."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            await pilot.press("down")
+            await pilot.pause()
+            assert app.selected_task_id == "tw3"
+            n = len(toasts(app))
+            await pilot.press("]")
+            await pilot.pause()
+            assert len(toasts(app)) == n
+            await pilot.press("]")
+            await pilot.pause()
+            assert toasts(app)[n:] == ["Fix checkout 500 error done \xb7 folded into \u27132 \xb7 u undo"]
+        app = _app(tmp_path / "k")
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("4")
+            await pilot.pause()
+            app.selected_task_id = "tw2"        # Review: one `]` finishes it, in the kanban
+            app.refresh_view()
+            await pilot.pause()
+            n = len(toasts(app))
+            await pilot.press("]")
+            await pilot.pause()
+            assert app.board.is_done(app.board.task_by_id("tw2")), "the move must happen"
+>           assert len(toasts(app)) == n
+E           AssertionError: assert 2 == 1
+E            +  where 2 = len(['The columns view was retired — kanban does the same job better. The views are now 1 lanes · 2 agenda · 3 gantt · 4 kanban.', 'Optimize image assets is ready — Build component library done'])
+E            +    where ['The columns view was retired — kanban does the same job better. The views are now 1 lanes · 2 agenda · 3 gantt · 4 kanban.', 'Optimize image assets is ready — Build component library done'] = toasts(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}))
+
+tests\test_gantt_polish.py:596: AssertionError
+__________________ test_TC_208_the_count_follows_the_filter ___________________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-15908/test_TC_208_the_count_follows_0')
+frozen = None
+
+    async def test_TC_208_the_count_follows_the_filter(tmp_path, frozen):
+        """Under a `/` filter the count is the filtered group's (code review F1):
+        filtering on "Build", `tw2` finished \u2192 `\u27131` (the filter hides the other
+        finished task)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 30)) as pilot:
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            await pilot.press("slash")
+            await pilot.pause()
+            for ch in "Build":
+                await pilot.press(ch)
+            await pilot.press("enter")
+            await pilot.pause()
+            assert app.selected_task_id == "tw2"
+            await pilot.press("]")
+            await pilot.pause()
+>           assert toasts(app)[-1] == "Build component library done \xb7 folded into \u27131 \xb7 u undo"
+E           AssertionError: assert 'Optimize ima... library done' == 'Build compon...o \u27131 \xb7 u undo'
+E             
+E             - Build component library done \xb7 folded into \u27131 \xb7 u undo
+E             + Optimize image assets is ready — Build component library done
+
+tests\test_gantt_polish.py:638: AssertionError
+___________ test_TC_208_a_markup_title_is_shown_literally[[b]x[/b]] ___________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-15908/test_TC_208_a_markup_title_is_0')
+frozen = None, title = '[b]x[/b]'
+
+    @pytest.mark.parametrize("title", ["[b]x[/b]", "[/]", "[@click=app.quit]q[/]"])
+    async def test_TC_208_a_markup_title_is_shown_literally(tmp_path, frozen, title):
+        """A board title that looks like markup is shown as typed — markup is off,
+        the title is not escaped (security S-1) — and the app keeps running (a
+        `[@click=app.quit]` payload must not quit it)."""
+        b = kg_board.build(tmp_path / "board.json")
+        b.task_by_id("tw2").title = title
+        app = _app(tmp_path, b)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:   # paint the toast
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            await pilot.press("]")
+            await pilot.pause()
+>           assert toasts(app)[-1] == f"{title} done \xb7 folded into \u27132 \xb7 u undo"
+E           AssertionError: assert 'Optimize ima...[b]x[/b] done' == '[b]x[/b] don...o \u27132 \xb7 u undo'
+E             
+E             - [b]x[/b] done \xb7 folded into \u27132 \xb7 u undo
+E             + Optimize image assets is ready — [b]x[/b] done
+
+tests\test_gantt_polish.py:668: AssertionError
+_____________ test_TC_208_a_markup_title_is_shown_literally[[/]] ______________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-15908/test_TC_208_a_markup_title_is_1')
+frozen = None, title = '[/]'
+
+    @pytest.mark.parametrize("title", ["[b]x[/b]", "[/]", "[@click=app.quit]q[/]"])
+    async def test_TC_208_a_markup_title_is_shown_literally(tmp_path, frozen, title):
+        """A board title that looks like markup is shown as typed — markup is off,
+        the title is not escaped (security S-1) — and the app keeps running (a
+        `[@click=app.quit]` payload must not quit it)."""
+        b = kg_board.build(tmp_path / "board.json")
+        b.task_by_id("tw2").title = title
+        app = _app(tmp_path, b)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:   # paint the toast
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            await pilot.press("]")
+            await pilot.pause()
+>           assert toasts(app)[-1] == f"{title} done \xb7 folded into \u27132 \xb7 u undo"
+E           AssertionError: assert 'Optimize ima...dy \u2014 [/] done' == '[/] done \xb7 f...o \u27132 \xb7 u undo'
+E             
+E             - [/] done \xb7 folded into \u27132 \xb7 u undo
+E             + Optimize image assets is ready — [/] done
+
+tests\test_gantt_polish.py:668: AssertionError
+____ test_TC_208_a_markup_title_is_shown_literally[[@click=app.quit]q[/]] _____
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-15908/test_TC_208_a_markup_title_is_2')
+frozen = None, title = '[@click=app.quit]q[/]'
+
+    @pytest.mark.parametrize("title", ["[b]x[/b]", "[/]", "[@click=app.quit]q[/]"])
+    async def test_TC_208_a_markup_title_is_shown_literally(tmp_path, frozen, title):
+        """A board title that looks like markup is shown as typed — markup is off,
+        the title is not escaped (security S-1) — and the app keeps running (a
+        `[@click=app.quit]` payload must not quit it)."""
+        b = kg_board.build(tmp_path / "board.json")
+        b.task_by_id("tw2").title = title
+        app = _app(tmp_path, b)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:   # paint the toast
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            await pilot.press("]")
+            await pilot.pause()
+>           assert toasts(app)[-1] == f"{title} done \xb7 folded into \u27132 \xb7 u undo"
+E           AssertionError: assert 'Optimize ima...uit]q[/] done' == '[@click=app....o \u27132 \xb7 u undo'
+E             
+E             - [@click=app.quit]q[/] done \xb7 folded into \u27132 \xb7 u undo
+E             + Optimize image assets is ready — [@click=app.quit]q[/] done
+
+tests\test_gantt_polish.py:668: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_polish.py::test_AT_206_a_finished_task_says_where_it_folded
+FAILED tests/test_gantt_polish.py::test_TC_208_only_the_move_that_finishes_notifies
+FAILED tests/test_gantt_polish.py::test_TC_208_the_count_follows_the_filter
+FAILED tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[b]x[/b]]
+FAILED tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[/]]
+FAILED tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[@click=app.quit]q[/]]
+6 failed, 2257 passed in 325.58s (0:05:25)
+exit 1

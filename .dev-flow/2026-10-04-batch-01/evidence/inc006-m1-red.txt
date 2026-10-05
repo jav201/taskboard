@@ -1,0 +1,5 @@
+## RED-first for code review 006 M1 (the same-group page) on frozen r1 (views.py 4af2727b…) — 2026-10-04
+4af2727b3fb5bbb3ac2e450e4f44e7e9c83c3f7e1542e98561c823bf18b61d02 *taskboard/views.py
+E                           AssertionError: (11, 'tw3', 'tw4')
+FAILED tests/test_gantt_link.py::test_TC_512_one_page_holds_both_when_it_can
+1 failed, 15 deselected in 0.35s

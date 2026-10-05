@@ -1,0 +1,255 @@
+{
+ "export": "<home>\\AppData\\Local\\Temp\\claude\\<session>\\f46e746a-67bb-40fe-b907-7aec72789cc7\\scratchpad\\bat004r2",
+ "mutants": [
+  {
+   "id": "Q1",
+   "file": "taskboard/views.py",
+   "old": "first = label_w + 1 ",
+   "new": "first = label_w - 3 ",
+   "what": "overlay into the label column",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q2",
+   "file": "taskboard/views.py",
+   "old": "min(ax.w - 1, ax.end_cell(pdue)) + 1)",
+   "new": "min(ax.w - 1, ax.end_cell(pdue)) + 2)",
+   "what": "═ one day too many",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q3",
+   "file": "taskboard/views.py",
+   "old": "put(r, col, \"│\", \"bright\", True)",
+   "new": "put(r, col, \"│\", \"bright\", False)",
+   "what": "connector over bars",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q4",
+   "file": "taskboard/views.py",
+   "old": "pdue, start = parse_iso(cand.due_date), parse_iso(waiter.start_date)",
+   "new": "pdue, start = parse_iso(cand.due_date), parse_iso(waiter.start_date or waiter.due_date)",
+   "what": "═ for a waiter with no start",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q5",
+   "file": "taskboard/modals.py",
+   "old": "return not c.loop and (not q",
+   "new": "return (not q",
+   "what": "loop selectable",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q6",
+   "file": "taskboard/modals.py",
+   "old": "(not q or q in c.task.title.lower())",
+   "new": "True",
+   "what": "filter ignored",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q7",
+   "file": "taskboard/modals.py",
+   "old": "self._cursor = next((i for i, c in enumerate(self._cands) if not c.loop), None)",
+   "new": "self._cursor = len(self._cands) - 1",
+   "what": "cursor starts on the last row",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q8",
+   "file": "taskboard/modals.py",
+   "old": "        cand = self.candidate\n        if cand is None:\n            return\n",
+   "new": "        cand = self.candidate or self._cands[0]\n",
+   "what": "↵ on no match links",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q9",
+   "file": "taskboard/modals.py",
+   "old": "self.dismiss((\"unlink\" if cand.linked else \"link\", cand.task.id))",
+   "new": "self.dismiss((\"link\", cand.task.id))",
+   "what": "a linked candidate linked again",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q10",
+   "file": "taskboard/modals.py",
+   "old": "out.append(keys, style=HEX[\"dim\"])",
+   "new": "out.append(clip(keys, w // 2), style=HEX[\"dim\"])",
+   "what": "keys clipped",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q11",
+   "file": "taskboard/modals.py",
+   "old": "        out.append(waiter)\n",
+   "new": "        out.append_text(Text.from_markup(waiter))\n",
+   "what": "S1: waiter title parsed",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q12",
+   "file": "taskboard/app.py",
+   "old": "if self.view_mode == \"gantt\":\n            self.push_screen(GanttLinkMode",
+   "new": "if False:\n            self.push_screen(GanttLinkMode",
+   "what": "gantt opens the picker",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q13",
+   "file": "taskboard/views.py",
+   "old": "    for tid in loops:\n",
+   "new": "    for tid in ():\n",
+   "what": "⟲ gutter mark dropped",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q14",
+   "file": "taskboard/views.py",
+   "old": "c(\"◆ GANTT · LINK\", \"bright\", bold=True)",
+   "new": "c(\"◆ GANTT\", \"bright\", bold=True)",
+   "what": "header unnamed",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q15",
+   "file": "taskboard/modals.py",
+   "old": "self.filter = self.filter[:-1]",
+   "new": "self.filter = self.filter",
+   "what": "backspace does nothing",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q16",
+   "file": "taskboard/app.py",
+   "old": "if len(self.board.phases) < 2:",
+   "new": "if False:",
+   "what": "one-phase create guard (R2-2)",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q17",
+   "file": "taskboard/views.py",
+   "old": "col = first + ax.end_cell(pdue) + 1",
+   "new": "col = first + ax.end_cell(pdue) + 2",
+   "what": "connector a day late",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q18",
+   "file": "taskboard/modals.py",
+   "old": "    def action_cancel(self) -> None:\n        self.dismiss(None)\n\n\nclass TeamIdentityPicker",
+   "new": "    def action_cancel(self) -> None:\n        self.dismiss((\"link\", self._cands[-1].task.id))\n\n\nclass TeamIdentityPicker",
+   "what": "esc links",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q19",
+   "file": "taskboard/modals.py",
+   "old": "right = f\"{len(self._cands)} candidates",
+   "new": "right = f\"{len(self._cands) - len(self._loops)} candidates",
+   "what": "count excludes loops",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q20",
+   "file": "taskboard/modals.py",
+   "old": "if first_loop is not None and room >= 8:",
+   "new": "if False:",
+   "what": "legend missing",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q22",
+   "file": "taskboard/modals.py",
+   "old": "        out.truncate(w - 1, overflow=\"ellipsis\")      # one row, whatever the glyphs\n",
+   "new": "",
+   "what": "F1: row guard removed (cell clip kept)",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q22b",
+   "file": "taskboard/modals.py",
+   "old": "w - 1 - fixed - cell_len(waiter)",
+   "new": "w - 1 - fixed - len(waiter)",
+   "what": "F1: clip by len() (row guard kept)",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q23",
+   "file": "taskboard/modals.py",
+   "old": "out.append(clip(self.filter, max(4, w // 3)) + \"▏  \")",
+   "new": "out.append(self.filter + \"▏  \")",
+   "what": "F1: filter unclipped",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q24",
+   "file": "taskboard/views.py",
+   "old": "    return [t for g in groups for t in g.open]",
+   "new": "    return sorted((t for g in groups for t in g.open), key=lambda t: t.title)",
+   "what": "F2: cycle not in gantt order",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  },
+  {
+   "id": "Q21",
+   "file": "taskboard/modals.py",
+   "old": "            if linked:\n                out.append(\"  ✓ linked\"",
+   "new": "            if False:\n                out.append(\"  ✓ linked\"",
+   "what": "linked not said",
+   "tests": [
+    "tests/test_gantt_link.py"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+KANBAN · grouped                                                       27 tasks
+BACKLOG        10│NEXT              5│DOING        5/4│REVIEW        4/3│✓3
+─────────────────┼───────────────────┼────────────────┼─────────────────┼───────
+── high  9 open · 4 projects ────────┼────────────────┼─────────────────┼───────
+▊ !! Launch new  │▊ !! Partner notice│▊ !! Fix        │                 │
+▊    homepage +6d│▊    emails API -1d│▊    checko… -6d│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │
+▊ !! Offline sync│▊ !! Rotate API    │▊ !! Rate       │                 │
+▊ ◂1 Mobile +24d │▊    keys Ops -1d  │▊    limi… today│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                 │
+▲ !! Deprecate v1│                   │▊ !! Renew TLS  │                 │
+▊    endpoin… +3d│                   │▊    certif… -5d│                 │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │                │                 │
+▊ !! Pen-test    │                   │ ▌
+▊    findin… +16d│                   │ ▌ Audit dependencies done · counted in
+▐ Website Redesign  5 open · 2 high ↑ ·▌ the ✓ rail · u undo                  ──
+▊ == SEO         │▊ ++ Optimize image│ ▌
+▊    redire… +10d│▊    assets ◂1 +2d │                │▊    compone… -7d│
+▐ Mobile App  4 open · 1 high ↑ · proje▌                                      ──
+▊ == Beta release│▊ == Add push      │ ▌ Ready
+▊    to tes… +31d│▊    notificat… +8d│ ▌ Add push notifications is ready —    o
+▼ 3 below: API Platform (6 open), Data ▌ Audit dependencies done              p…
+  14:39:26 · Sun 04 Oct 2026 · W40 · Me▌
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

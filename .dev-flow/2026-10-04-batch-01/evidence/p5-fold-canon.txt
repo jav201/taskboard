@@ -1,0 +1,23 @@
+## Canon fold — devflow-init.py --fold-canon from the read-only rev99 snapshot, 2026-10-04
+Run 1: wrote REQUIREMENTS.md (18 rows appended — git diff --stat: 18 insertions), then its stdout raised UnicodeEncodeError (cp1252 console) while echoing the folded rows; the write had completed (the script writes before it prints).
+Run 2 (PYTHONIOENCODING=utf-8):
+root: <home>\Github\taskboard
+kept: HLR-501 -- already in the canon; an existing row is never rewritten
+kept: HLR-502 -- already in the canon; an existing row is never rewritten
+kept: HLR-503 -- already in the canon; an existing row is never rewritten
+kept: HLR-504 -- already in the canon; an existing row is never rewritten
+kept: HLR-505 -- already in the canon; an existing row is never rewritten
+kept: LLR-501.1 -- already in the canon; an existing row is never rewritten
+kept: LLR-501.2 -- already in the canon; an existing row is never rewritten
+kept: LLR-501.3 -- already in the canon; an existing row is never rewritten
+kept: LLR-501.4 -- already in the canon; an existing row is never rewritten
+kept: LLR-502.1 -- already in the canon; an existing row is never rewritten
+kept: LLR-502.2 -- already in the canon; an existing row is never rewritten
+kept: LLR-502.3 -- already in the canon; an existing row is never rewritten
+kept: LLR-502.4 -- already in the canon; an existing row is never rewritten
+kept: LLR-503.1 -- already in the canon; an existing row is never rewritten
+kept: LLR-504.1 -- already in the canon; an existing row is never rewritten
+kept: LLR-505.1 -- already in the canon; an existing row is never rewritten
+kept: LLR-505.2 -- already in the canon; an existing row is never rewritten
+kept: LLR-505.3 -- already in the canon; an existing row is never rewritten
+canon: REQUIREMENTS.md -- 0 folded, 18 kept, 0 refused

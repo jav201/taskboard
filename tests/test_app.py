@@ -2517,7 +2517,10 @@ def _mode_board(tmp_path, name="modes.json") -> Board:
     ]
     # one dependency so the unblock sort has a distinct order from the others
     tasks[0].depends_on = [tasks[4].id]
+    # new-model data: the link already means "waits on", so the one-time link
+    # migration must not read it as a released `b` (batch 2026-10-04-batch-01)
     b = Board([pa, pb], tasks, tmp_path / name,
+              settings={"migrations": {"links": 1}},
               phases=["Backlog", "Doing", "Review", "Done"])
     b.save()
     return b

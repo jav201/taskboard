@@ -1,0 +1,24 @@
+## R2-F1 RED-first proof (export copy of frozen r2) — r1's per-link FORWARD search, the cost the arm claims to catch
+
+mutant + frozen r2 test (hub LAST):
+   PASSED tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   PASSED tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   PASSED tests/test_link_migration.py::test_TC_514_a_repeated_task_id_is_left_as_it_is
+   PASSED tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   PASSED tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   5 passed, 19 deselected in 0.59s
+mutant + fixed test (hub FIRST):
+   PASSED tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   PASSED tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   PASSED tests/test_link_migration.py::test_TC_514_a_repeated_task_id_is_left_as_it_is
+   PASSED tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   FAILED tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   1 failed, 4 passed, 19 deselected in 18.99s
+product + fixed test:
+   PASSED tests/test_link_migration.py::test_TC_514_the_legacy_shapes_land_on_the_rule
+   PASSED tests/test_link_migration.py::test_TC_514_no_kept_link_closes_a_loop
+   PASSED tests/test_link_migration.py::test_TC_514_a_repeated_task_id_is_left_as_it_is
+   PASSED tests/test_link_migration.py::test_TC_514_an_empty_board_has_nothing_to_change
+   PASSED tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+   5 passed, 19 deselected in 0.59s
+restore sha256 models 5feff32e3b02d209 -> 5feff32e3b02d209 · test 305647551ac60480 -> 305647551ac60480

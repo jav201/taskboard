@@ -1,0 +1,30 @@
+## RED of increment 004's tests on increment 003's frozen r2 product (app/modals/models/keymap hashes = inc003-frozen-r2; views.py = inc002-frozen-r2 69e62c2f…, unchanged in 003) — 2026-10-04
+e251b259fbf3f3e00a2e12e4386ca792077f64a6001312aeb309113250ce9cbf *taskboard/app.py
+46ddf62958dd92e76c1127e59383ce41b342876c7c66596d1d5f1accfc42dff3 *taskboard/modals.py
+22090a5aa723776ae12fbdf41d1c90caa118af4fa5c58eb7917918b9d009ce08 *taskboard/models.py
+587bdfd95d68ae31512a452cc0bdf371f34b04e74ca0f5b5dd30250989e30387 *taskboard/keymap.py
+69e62c2f8db4b309990165e379488c79b8f3e1ef93e24af6fce31d9528d9f242 *taskboard/views.py
+E   ImportError: cannot import name 'GanttLinkMode' from 'taskboard.modals' (<home>\AppData\Local\Temp\claude\<session>\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\red004\taskboard\modals.py)
+ERROR tests/test_gantt_link.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.51s
+
+## node-level variant: the missing import replaced by an empty stand-in class so each node runs
+PASSED tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused
+PASSED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+PASSED tests/test_markup_census.py::test_TC_406_no_user_value_reaches_a_markup_parser
+PASSED tests/test_markup_census.py::test_TC_403_the_census_finds_planted_sites
+PASSED tests/test_markup_census.py::test_TC_404_the_census_population_is_not_empty
+PASSED tests/test_markup_census.py::test_TC_405_a_markup_off_notify_shows_the_raw_text
+FAILED tests/test_gantt_link.py::test_TC_511_the_overlap_is_exactly_the_overlap_days
+FAILED tests/test_gantt_link.py::test_TC_511_boundaries[tw5-tw2-False]
+FAILED tests/test_gantt_link.py::test_TC_511_boundaries[tw5-td5-True]
+FAILED tests/test_gantt_link.py::test_TC_511_boundaries[ta2-td2-False]
+FAILED tests/test_gantt_link.py::test_TC_511_boundaries[tw5-to4-False]
+FAILED tests/test_gantt_link.py::test_TC_511_loop_rows_wear_the_mark_in_the_gutter
+FAILED tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter
+FAILED tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns
+FAILED tests/test_gantt_link.py::test_AT_503_link_in_the_gantt
+FAILED tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text
+FAILED tests/test_markup_census.py::test_TC_402_every_exemption_names_one_live_site
+11 failed, 6 passed in 4.60s

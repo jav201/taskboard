@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             27 tasks
+BACKLOG               10│NEXT                      5│DOING               6/4│REVIEW               4/3│✓ DONE 2
+────────────────────────┼───────────────────────────┼───────────────────────┼────────────────────────┼────────────────
+── high  9 open · 4 projects ───────────────────────┼───────────────────────┼────────────────────────┼────────────────
+▊ !! Launch new homepage│▊ !! Partner notice emails │▊ !! Fix checkout 500  │                        │
+▊ ·34d ◂2 Website +6d   │▊ ·12d ▸1 API -1d          │▊    error Website -6d │                        │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │
+▊ !! Offline sync       │▊ !! Rotate API keys       │▊ !! Rate limiting     │                        │
+▊ ·19d ▸1 ◂1 Mobile +24d│▊ ·18d Ops -1d             │▊ ·14d ▸1 API today    │                        │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                        │
+▲ !! Deprecate v1       │                           │▊ !! Renew TLS         │                        │
+▊    endpoints API +3d  │                           │▊    certificate -5d   │                        │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                        │
+▊ !! Pen-test findings  │                           │                       │                        │
+▊ ·13d Ops +16d         │                           │                       │                        │
+▐ Website Redesign  5 open · 2 high ↑ · project due +6d ────────────────────┼────────────────────────┼────────────────
+▊ == SEO redirects map  │▊ ++ Optimize image assets │                       │▊ == Build component    │
+▊ ·26d +10d             │▊ ·16d ▸1 ◂1 +2d           │                       │▊    library ·8d ▸2 -7d │
+▐ Mobile App  5 open · 1 high ↑ · project due +31d ─┼───────────────────────┼────────────────────────┼────────────────
+▊ == Beta release to    │▊ == Add push notifications│▊ == Audit dependencies│▊ ++ Crash reporting    │✓ Set up CI pip…
+▊    testers ◂1 +31d    │▊ ·7d ▸1 ◂1 +8d            │▊ ·10d ▸1 -2d          │▊ ·6d -3d               │  done 16d ago
+▐ API Platform  6 open · 3 high ↑ · project due +17d ───────────────────────┼────────────────────────┼────────────────
+▊ == Plan Q4 roadmap    │                           │▊ == Write API         │▊ == SDK regeneration   │
+▊ ·44d                  │                           │▊    reference ·25d -9d│▊ ·11d ◂1 -5d           │
+
+
+
+▼ 2 below: Data Warehouse (4 open), Ops & Security (5 open)
+  14:39:13 · Sun 04 Oct 2026 · W40 · Mexico City 14:39 · New York 16:39
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

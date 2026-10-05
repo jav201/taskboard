@@ -8,8 +8,12 @@ empty (we never overwrite it, so the user can recover it by hand).
 
 from __future__ import annotations
 
+import errno
 import json
+import os
 import shutil
+import stat
+import tempfile
 import unicodedata
 from dataclasses import asdict, dataclass, field
 from datetime import date, timedelta
@@ -939,15 +943,49 @@ class Board:
         d = asdict(item)
         return {**d.pop("extra", {}), **d}
 
-    def save(self) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        data = {
+    def _serialized(self) -> str:
+        return json.dumps({
             "phases": self.phases,
             "projects": [self._to_dict(p) for p in self.projects],
             "tasks": [self._to_dict(t) for t in self.tasks],
             "settings": self.settings,
-        }
-        self.path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        }, indent=2)
+
+    def save(self) -> None:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(self._serialized(), encoding="utf-8")
+
+    def save_atomic(self) -> None:
+        """Save so the file on disk holds either the old bytes or the new ones,
+        never a truncated half: write a fresh temporary file beside the RESOLVED
+        file (a symlinked board keeps its link; its target is replaced), then
+        swap it in. The temporary name is random and created exclusively
+        (`.<board file name>.<random>.tmp`): nothing at it is written through,
+        a file a crash left there never blocks a later save, and team pull's
+        `board.*.json` never matches it. It goes on failure."""
+        target = self.path.resolve()
+        if target.exists() and not os.access(target, os.W_OK):
+            # a read-only board is refused before anything is written: on
+            # Windows its bit, copied to the temp file, made the swap AND the
+            # cleanup fail — a temp file per launch, named in the error (D-530)
+            raise PermissionError(errno.EACCES, os.strerror(errno.EACCES), str(target))
+        fd, name = tempfile.mkstemp(dir=target.parent, prefix=f".{target.name}.",
+                                    suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                fh.write(self._serialized())
+            # the swapped-in file keeps the board's permissions, not mkstemp's
+            # owner-only 0600 (code review N1)
+            if target.exists():
+                os.chmod(name, stat.S_IMODE(target.stat().st_mode))
+            os.replace(name, target)
+        except OSError:
+            try:                                # the temp file goes on every failure:
+                os.chmod(name, stat.S_IREAD | stat.S_IWRITE)    # a copied read-only
+                Path(name).unlink(missing_ok=True)              # bit blocks its unlink
+            except OSError:
+                pass                            # never mask the save's own error
+            raise
 
     # ---- ribbon clock settings --------------------------------------------
     def get_clocks(self) -> tuple[str, str]:
@@ -1366,3 +1404,462 @@ def critical_chain(board: Board) -> list[str]:
         ):
             best_chain = chain
     return best_chain if len(best_chain) >= 2 else []
+
+
+# ---- links: "waits on" (batch 2026-10-04-batch-01) ---------------------------
+def is_open(board: Board, task: Task) -> bool:
+    """Neither in the board's last phase nor archived (LLR-501.1)."""
+    return not board.is_done(task) and not task.archived
+
+
+# ---- the one-time link migration (HLR-505) -----------------------------------
+# Until this batch the ONLY writer of `depends_on` was `b`: blocking appended the
+# picked id and set the flag; unblocking cleared the flag and KEPT the id. Read
+# with the new meaning (a link = "waits on"), every kept id would re-block work
+# the user had already unblocked. `migrate_links` reads the legacy shapes back by
+# the rule the operator ruled on (`deps_logic.migrate`) plus D-515 and D-516;
+# `run_link_migration` applies it ONCE, a backup first.
+LINKS_MIGRATION = 1
+MIGRATION_BACKUP = ".pre-links-migration"
+MIGRATION_LOG = ".links-migration-log"
+
+
+@dataclass
+class LinkChange:
+    task_id: str
+    title: str
+    before: tuple[bool, list[str]]
+    after: tuple[bool, list[str]]
+    note: str
+
+
+@dataclass
+class LinkMigration:
+    changes: list[LinkChange]
+    backup: str | None = None
+    log: str | None = None
+    error: str | None = None
+
+
+def links_marked(settings: dict) -> bool:
+    """Marked ⇔ `settings["migrations"]` is a dict whose `links` is exactly the
+    int 1. Read totally: a hand-edited value of any type never raises (S-4)."""
+    m = settings.get("migrations")
+    return (isinstance(m, dict) and type(m.get("links")) is int
+            and m.get("links") == LINKS_MIGRATION)
+
+
+def migrate_links(board: Board) -> list[LinkChange]:
+    """What the legacy rule changes, per task in board order; the board is NOT
+    touched (LLR-505.1).
+
+    Dangling, self and repeated ids go. A blocked task whose last stored id is
+    live and OPEN now waits on it and loses the flag — the flag `b` set meant
+    exactly that link. Its last stored id live but CLOSED: the flag stays (D-515:
+    it may have been set again after that link was done). No live last id: the
+    flag stays (an outside block, or a deleted blocker nobody can vouch for).
+    Every other id pointing at an open task was released by an unblock and goes;
+    ids pointing at a closed task are satisfied and stay. Any link that would
+    close a loop over the links already kept goes too, and a blocker dropped so
+    leaves its flag on (D-516) — so the migrated board holds no cycle."""
+    by_id: dict[str, Task] = {}
+    for t in board.tasks:
+        by_id.setdefault(t.id, t)       # the first of a repeated id, as task_by_id
+    into: dict[str, list[str]] = {}     # x -> the tasks whose kept links point at x
+    done_ids: set[str] = set()          # tasks already processed (they own kept links)
+    changes: list[LinkChange] = []
+    for t in board.tasks:
+        if by_id[t.id] is not t:
+            continue                    # a repeated id: left as it is (F4)
+        stored = list(t.depends_on)
+        live = list(dict.fromkeys(x for x in stored if x != t.id and x in by_id))
+        last = stored[-1] if stored else None
+        blocker = last if t.blocked and last in by_id and last != t.id else None
+        wanted = [x for x in live if not is_open(board, by_id[x]) or x == blocker]
+        if t.id in into and any(x in done_ids for x in wanted):
+            # one walk back over the kept links: every task that can already
+            # reach this one; a link to any of them would close a loop. Only a
+            # processed task owns kept links, so only a link to one can close it
+            reach, todo = {t.id}, [t.id]
+            while todo:
+                for a in into.get(todo.pop(), ()):
+                    if a not in reach:
+                        reach.add(a)
+                        todo.append(a)
+            keep = [x for x in wanted if x not in reach]
+        else:
+            keep = wanted
+        for x in keep:
+            into.setdefault(x, []).append(t.id)
+        done_ids.add(t.id)
+        blocked, note = t.blocked, "released links dropped"
+        if blocker is not None and is_open(board, by_id[blocker]):
+            if blocker in keep:
+                blocked = False
+                note = "flag cleared, waits on its blocker — press b if this was an outside block"
+            else:
+                note = "blocked kept — its link would close a loop"
+        elif t.blocked:
+            note = ("blocked kept — its last link is done" if blocker is not None
+                    else "blocked kept — no task to wait on")
+        if (blocked, keep) != (t.blocked, stored):
+            changes.append(LinkChange(t.id, t.title, (t.blocked, stored),
+                                      (blocked, keep), note))
+    return changes
+
+
+def _create_beside(target: Path, suffix: str, data: bytes) -> Path:
+    """Write `data` to `<file name><suffix>` beside `target`, or to the first
+    free `.1`, `.2`, … — by EXCLUSIVE create, so no existing file is ever
+    overwritten and no symlink (dangling or not) is written through."""
+    for n in range(1000):
+        p = target.with_name(target.name + suffix + (f".{n}" if n else ""))
+        if p.is_symlink():
+            continue
+        try:
+            with open(p, "xb") as fh:
+                fh.write(data)
+            return p
+        except FileExistsError:
+            continue
+    raise FileExistsError(errno.EEXIST, "no free name", target.name + suffix)
+
+
+def _set_links(board: Board, changes: list[LinkChange], side: str) -> None:
+    for ch in changes:
+        t = board.task_by_id(ch.task_id)
+        if t is not None:
+            blocked, deps = getattr(ch, side)
+            t.blocked, t.depends_on = blocked, list(deps)
+
+
+def run_link_migration(board: Board, today: date | None = None) -> LinkMigration | None:
+    """Migrate the board's links ONCE (LLR-505.2). None when there is nothing to
+    run: the load was unreadable, or the board carries the mark.
+
+    Order: the backup (the board file's own bytes), then the log, then the
+    changes, the mark and ONE atomic save. Any failure puts the board back as it
+    was in memory, leaves the file untouched and unmarked, and returns the
+    reason — a file name and the OS's words, never a directory path. A malformed
+    mark is replaced, and replacing it forces the backup and the log (S2-2)."""
+    if board.load_report.get("file_unreadable") or links_marked(board.settings):
+        return None
+    had_mark = "migrations" in board.settings
+    old_mark = board.settings.get("migrations")
+    changes = migrate_links(board)
+    result = LinkMigration(changes)
+    target = board.path.resolve()
+    try:
+        if changes or had_mark:
+            result.backup = _create_beside(target, MIGRATION_BACKUP,
+                                           target.read_bytes()).name
+            log = {"date": (today or date.today()).isoformat(),
+                   "backup": result.backup,
+                   "replaced_mark": old_mark if had_mark else None,
+                   "changes": [asdict(ch) for ch in changes]}
+            result.log = _create_beside(target, MIGRATION_LOG,
+                                        json.dumps(log, indent=2).encode("utf-8")).name
+        _set_links(board, changes, "after")
+        # a dict keeps its other keys (S3-3); anything else is replaced whole
+        mark = dict(old_mark) if isinstance(old_mark, dict) else {}
+        mark["links"] = LINKS_MIGRATION
+        board.settings["migrations"] = mark
+        board.save_atomic()
+    except OSError as exc:
+        _set_links(board, changes, "before")
+        for made in (result.log, result.backup):     # this failed run's own files
+            if made:
+                (target.parent / made).unlink(missing_ok=True)
+        result.backup = result.log = None
+        if had_mark:
+            board.settings["migrations"] = old_mark
+        else:
+            board.settings.pop("migrations", None)
+        name = Path(exc.filename).name if exc.filename else target.name
+        result.error = f"{name}: {exc.strerror or type(exc).__name__}"
+    return result
+
+
+# ---- the waits-on model (LLR-501.1) ------------------------------------------
+# A link is an id in `depends_on`: the task (the waiter) waits on the task with
+# that id (the predecessor). It is independent of `blocked`, the external block.
+# Waiting is DERIVED, never stored. Only board tasks count (a teammate's task is
+# never one), only LIVE links (an id naming another board task), once per id.
+# Every derivation looks tasks up through one id map and recurses nowhere, so a
+# hand-edited or hostile board (a stored cycle, a task with 100 000 ids) costs
+# a bounded walk, never a hang (S-5, D-522).
+
+
+def _ids(board: Board) -> dict[str, Task]:
+    out: dict[str, Task] = {}
+    for t in board.tasks:
+        out.setdefault(t.id, t)
+    return out
+
+
+def _live(task: Task, by_id: dict[str, Task]) -> list[Task]:
+    return [by_id[x] for x in dict.fromkeys(task.depends_on)
+            if x != task.id and x in by_id]
+
+
+def open_predecessors(board: Board, task: Task, by_id: dict | None = None) -> list[Task]:
+    """The open tasks `task` waits on — none when `task` itself is closed."""
+    if not is_open(board, task):
+        return []
+    by_id = by_id if by_id is not None else _ids(board)
+    return [p for p in _live(task, by_id) if is_open(board, p)]
+
+
+def open_dependents(board: Board, task: Task) -> list[Task]:
+    """The open tasks that wait on `task` — none when `task` itself is closed
+    (a finished predecessor's links are satisfied)."""
+    if not is_open(board, task):
+        return []
+    return [t for t in _ids(board).values()
+            if t is not task and task.id in t.depends_on and is_open(board, t)]
+
+
+def link_marks(board: Board) -> dict[str, tuple[int, int]]:
+    """(◂ open predecessors, ▸ open dependents) per board task, built from ONE
+    pass over the links (a reverse index), so a render pays O(links) once."""
+    by_id = _ids(board)
+    marks = {tid: [0, 0] for tid in by_id}
+    for t in by_id.values():
+        if not is_open(board, t):
+            continue
+        for p in _live(t, by_id):
+            if is_open(board, p):
+                marks[t.id][0] += 1
+                marks[p.id][1] += 1
+    return {k: (w, u) for k, (w, u) in marks.items()}
+
+
+def dependents_chain(board: Board, task: Task) -> list[tuple[Task, int]]:
+    """Every open task that waits on `task` — directly (depth 1) or down the
+    chain (depth ≥ 2) — breadth first, each once."""
+    waiters: dict[str, list[Task]] = {}
+    for t in board.tasks:
+        if is_open(board, t):
+            for x in dict.fromkeys(t.depends_on):
+                if x != t.id:
+                    waiters.setdefault(x, []).append(t)
+    out, seen, level, depth = [], {task.id}, [task], 0
+    if not is_open(board, task):
+        return out
+    while level:
+        depth += 1
+        nxt = []
+        for cur in level:
+            for w in waiters.get(cur.id, ()):
+                if w.id not in seen:
+                    seen.add(w.id)
+                    out.append((w, depth))
+                    nxt.append(w)
+        level = nxt
+    return out
+
+
+def link_overlap(waiter: Task, pred: Task) -> int:
+    """THE overlap measure (`cascade.overlap`, one everywhere — D-503), in days,
+    both days counting: a waiter with a start overlaps by `pred.due − start + 1`;
+    one with no start compares dues, `pred.due − waiter.due`; 0 when a date it
+    needs is absent. A start ON the predecessor's due day is 1 day."""
+    pdue = parse_iso(pred.due_date)
+    if pdue is None:
+        return 0
+    start = parse_iso(waiter.start_date)
+    if start is not None:
+        return max(0, (pdue - start).days + 1)
+    due = parse_iso(waiter.due_date)
+    return max(0, (pdue - due).days) if due is not None else 0
+
+
+def link_conflicts(board: Board, task: Task) -> list[tuple[Task, int]]:
+    """The open predecessors whose overlap with `task` is ≥ 1 day (rule 9′)."""
+    return [(p, n) for p in open_predecessors(board, task)
+            if (n := link_overlap(task, p)) >= 1]
+
+
+def loop_path(board: Board, waiter: Task, pred: Task) -> list[Task] | None:
+    """Would `waiter` waiting on `pred` close a loop? Searches every stored live
+    link, closed tasks included (D-512), iteratively with parent pointers, and
+    returns `waiter → pred → … → waiter`, or None."""
+    by_id = _ids(board)
+    if pred.id == waiter.id:
+        return [waiter, waiter]
+    if pred.id not in by_id:            # not a board task: no stored link reaches it
+        return None
+    parent: dict[str, str | None] = {pred.id: None}
+    todo = [pred.id]
+    while todo:
+        cur = todo.pop()
+        for p in _live(by_id[cur], by_id):
+            if p.id in parent:
+                continue
+            parent[p.id] = cur
+            if p.id == waiter.id:
+                path, node = [], p.id
+                while node is not None:
+                    path.append(by_id[node])
+                    node = parent[node]
+                return [waiter] + path[::-1]
+            todo.append(p.id)
+    return None
+
+
+def waiting_ids(board: Board) -> set[str]:
+    """The ids of the open tasks with at least one open predecessor."""
+    return {tid for tid, (w, _u) in link_marks(board).items() if w}
+
+
+def ready_messages(board: Board, waiting_before: set[str], finished: set[str]) -> list[str]:
+    """One line per task that stopped waiting in a mutation that moved the tasks
+    `finished` into the last phase: "‹title› is ready — ‹pred› done" (+ " (still
+    ▲ blocked)"). At most 3 lines, then one "+K more ready" (D-508). A task let
+    go only because a link was removed is not listed — that was the user's act."""
+    by_id = _ids(board)
+    now = waiting_ids(board)
+    lines = []
+    for t in board.tasks:
+        if t.id not in waiting_before or t.id in now or not is_open(board, t):
+            continue
+        preds = [p for p in _live(t, by_id) if p.id in finished]
+        if not preds:
+            continue
+        line = (f"{_clip_title(t.title)} is ready — "
+                + ", ".join(_clip_title(p.title) for p in preds) + " done")
+        lines.append(line + (" (still ▲ blocked)" if t.blocked else ""))
+    if len(lines) > 3:
+        lines = lines[:3] + [f"+{len(lines) - 3} more ready"]
+    return lines
+
+
+def _clip_title(title: str, n: int = 40) -> str:
+    return title if len(title) <= n else title[:n - 1] + "…"
+
+
+def _names(tasks: list[Task]) -> str:
+    shown = ", ".join(_clip_title(t.title) for t in tasks[:3])
+    return shown + (f" and {len(tasks) - 3} more" if len(tasks) > 3 else "")
+
+
+def archive_refusal(board: Board, task: Task, verb: str,
+                    leaving: set[str] | None = None) -> str | None:
+    """Why `task` cannot be archived or deleted (`verb`), or None (HLR-504): an
+    OPEN task that open tasks outside `leaving` (what is being archived with it)
+    wait on is refused, naming them. A finished task archives as before."""
+    leaving = leaving or {task.id}
+    waiters = [w for w in open_dependents(board, task) if w.id not in leaving]
+    if not waiters:
+        return None
+    n = len(waiters)
+    return (f"can't {verb} {_clip_title(task.title)} — {n} open task"
+            f"{'s wait' if n != 1 else ' waits'} on it ({_names(waiters)}). "
+            "Finish it, or remove the link in its details (↵, then x).")
+
+
+# ---- choosing a link (LLR-502.1, LLR-502.2) ----------------------------------
+def _md(d: date) -> str:
+    return f"{d:%b} {d.day}"
+
+
+def link_refusal(board: Board, waiter: Task, pred: Task) -> str | None:
+    """Why `waiter` may not wait on `pred`, or None: the task itself, a closed
+    task, or a loop — named by its path (a long one shortened in the middle)."""
+    if pred.id == waiter.id:
+        return "a task cannot wait on itself"
+    if not is_open(board, pred):
+        return f"{_clip_title(pred.title)} is closed"
+    path = loop_path(board, waiter, pred)
+    if path:
+        names = [_clip_title(t.title) for t in path]
+        if len(names) > 6:
+            names = names[:3] + ["…"] + names[-2:]
+        return "would create a loop: " + " → ".join(names)
+    return None
+
+
+def link_hint(waiter: Task, pred: Task) -> str:
+    """What waiting on `pred` would mean for `waiter`'s dates (the one measure,
+    D-503), in the words of LLR-502.2."""
+    s, d = parse_iso(waiter.start_date), parse_iso(waiter.due_date)
+    pd = parse_iso(pred.due_date)
+    if s is None and d is None:
+        return "this has no dates — timing can't be checked"
+    if pd is None:
+        return "no due date — timing can't be checked"
+    n = link_overlap(waiter, pred)
+    if s is not None:
+        return (f"◂ overlaps {n}d: due {_md(pd)}, this starts {_md(s)}" if n
+                else f"ok — due {(s - pd).days}d before this starts")
+    return (f"◂ overlaps {n}d: due {_md(pd)}, this is due {_md(d)}" if n
+            else "ok — due on or before the day this is due")
+
+
+@dataclass
+class LinkCandidate:
+    task: Task
+    same_project: bool
+    linked: bool
+    loop: list[Task] | None
+    hint: str
+
+
+def loopers_of(board: Board, waiter: Task) -> set[str]:
+    """Every board task that already (transitively) waits on `waiter`, over
+    every stored live link, closed tasks included: making `waiter` wait on any
+    of them closes a loop. ONE reverse walk per picker open (D-522)."""
+    waits_on_me: dict[str, list[str]] = {}
+    by_id = _ids(board)
+    for t in by_id.values():
+        for p in _live(t, by_id):
+            waits_on_me.setdefault(p.id, []).append(t.id)
+    seen, todo = {waiter.id}, [waiter.id]
+    while todo:
+        for x in waits_on_me.get(todo.pop(), ()):
+            if x not in seen:
+                seen.add(x)
+                todo.append(x)
+    seen.discard(waiter.id)
+    return seen
+
+
+def link_candidates(board: Board, waiter: Task, query: str = "",
+                    loopers: set[str] | None = None) -> list[LinkCandidate]:
+    """The tasks `waiter` could wait on (LLR-502.2): every open board task but
+    the waiter, its own project first, then by due (undated last), then title;
+    `query` keeps titles containing it, case-insensitively. A candidate already
+    linked says so; one that would close a loop carries its path."""
+    q = query.strip().lower()
+    loopers = loopers if loopers is not None else loopers_of(board, waiter)
+    linked = set(waiter.depends_on)
+    out = []
+    for t in _ids(board).values():
+        if t is waiter or not is_open(board, t) or (q and q not in t.title.lower()):
+            continue
+        loop = loop_path(board, waiter, t) if t.id in loopers else None
+        hint = link_hint(waiter, t)
+        out.append(LinkCandidate(t, t.project_id == waiter.project_id, t.id in linked,
+                                 loop, hint))
+    out.sort(key=lambda c: (not c.same_project, parse_iso(c.task.due_date) is None,
+                            parse_iso(c.task.due_date) or date.max, c.task.title.lower()))
+    return out
+
+
+def project_archive_refusal(board: Board, project_id: str) -> str | None:
+    """The project archive's guard (D-523): archiving a project archives its
+    tasks, so it is refused when an open task OUTSIDE the project waits on one
+    of them — named, as `archive_refusal` names them."""
+    inside = {t.id for t in board.tasks if t.project_id == project_id}
+    waiters: list[Task] = []
+    for t in board.tasks:
+        if t.id in inside:
+            for w in open_dependents(board, t):
+                if w.id not in inside and all(w is not x for x in waiters):
+                    waiters.append(w)
+    if not waiters:
+        return None
+    n = len(waiters)
+    return (f"can't archive this project — {n} open task"
+            f"{'s' if n != 1 else ''} outside it wait{'' if n != 1 else 's'} on its "
+            f"tasks ({_names(waiters)}). Finish them, or remove the links first.")

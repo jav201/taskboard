@@ -1,0 +1,17 @@
+{
+ "export": "<home>/AppData/Local/Temp/claude/<session>/f46e746a-67bb-40fe-b907-7aec72789cc7/scratchpad/x003",
+ "mutants": [
+  {
+   "id": "P8",
+   "file": "taskboard/models.py",
+   "old": "                if w.id not in inside and all(w is not x for x in waiters):",
+   "new": "                if all(w is not x for x in waiters):",
+   "what": "project waiters inside counted",
+   "tests": [
+    "tests/test_link_picker.py",
+    "tests/test_details_links.py",
+    "tests/test_links.py"
+   ]
+  }
+ ]
+}

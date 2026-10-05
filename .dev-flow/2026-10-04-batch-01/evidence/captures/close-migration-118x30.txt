@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             15 tasks
+BACKLOG      0│NEXT                                 10│DOING                       3/4│REVIEW     0/3│✓ DONE 2
+──────────────┼───────────────────────────────────────┼───────────────────────────────┼──────────────┼────────────────
+── high  2 open · 1 project ──────────────────────────┼───────────────────────────────┼──────────────┼────────────────
+              │▊ !! Rotate API keys                   │▊ !! Renew TLS certificate     │              │
+              │▊ ·14d ▸1 Ops +3d                      │▊ ·5d Ops -1d                  │              │
+▐ Mobile App  1 open · project due +35d ──────────────┼───────────────────────────────┼──────────────┼────────────────
+              │                                       │▊ == Audit dependencies        │              │✓ Set up CI pip…
+              │                                       │▊ ·6d ▸1 +2d                   │              │  done 12d ago
+▐ API Platform  1 open · project due +21d ────────────┼───────────────────────────────┼──────────────┼────────────────
+              │                                       │▊ == Write API reference       │              │
+              │                                       │▊ ·21d -5d                     │              │
+▐ Data Warehouse  0 open · project due +60d ──────────┼───────────────────────────────┼──────────────┼────────────────
+              │                                       │                               │              │✓ Migrate user …
+              │                                       │                               │              │  done 6d ago
+
+
+
+
+
+
+
+
+
+                                                          ▌
+                                                          ▌ Dependencies
+                                                          ▌ Links migrated: 6 tasks · backup
+▼ 1 below: Inbox (9 open)                                 ▌ board.json.pre-links-migration · u undo
+  14:39:27 · Sun 04 Oct 2026 · W40 · Mexico City 14:39 · N▌
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

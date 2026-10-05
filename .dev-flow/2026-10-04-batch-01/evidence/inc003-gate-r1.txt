@@ -1,0 +1,120 @@
+<home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+...........................................F............................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+..............................................F......................... [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+............................................                             [100%]
+================================== FAILURES ===================================
+__________ test_TC_203_the_key_bar_wears_bright_keys_and_muted_words __________
+
+    def test_TC_203_the_key_bar_wears_bright_keys_and_muted_words():
+        """TC-203 (LLR-202.1). Every view × both layers × widths 24..160: the bar's
+        hexes are only bright (keys, bold), mut (words) and dim (the overflow note);
+        every key shown is bold bright; the markup paints exactly the plain bar.
+        RED on the base tree: accent keys (primary), eight group hues (more)."""
+        from taskboard.app import VIEW_ORDER as views_
+        checked = 0
+        for view in views_:
+            for layer in ("primary", "more"):
+                for width in (24, 60, 80, 118, 160):
+                    markup = render_key_bar(width, view, layer)
+                    assert set(h.lower() for h in HEXES.findall(markup)) <= KEY_HEXES, (view, layer, width)
+                    text = render_markup(markup)
+                    assert text.plain == key_bar_plain(width, view, layer)
+                    at = 0
+                    for show, label in fit_bar(width, view, layer)[0]:   # each key's own cell
+                        st = " ".join(str(sp.style) for sp in text.spans if sp.start <= at < sp.end)
+                        assert "bold" in st and HEX["bright"] in st, (view, layer, width, show, st)
+                        at += len(f"{show} {label}".strip()) + 2
+                    checked += 1
+        assert checked == 9 * 2 * 5
+        for (view, width, layer), plain in KEYBAR_BASE.items():
+>           assert key_bar_plain(width, view, layer) == plain
+E           AssertionError: assert '? Map  ; Mor...e  d  L  \u2193  \u2191' == '? Map  ; Mor...a  e  d  \u2193  \u2191'
+E             
+E             - ? Map  ; More  q Quit  1 Lanes  2 Agenda  3  4  5  7  8  9  0  \u21b5  a  e  d  \u2193  \u2191
+E             + ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  \u21b5  a  e  d  L  \u2193  \u2191
+
+tests\test_colour_budget_app.py:498: AssertionError
+___________ test_TC_518_migration_cost_is_bounded_on_hostile_boards ___________
+
+tmp_path = WindowsPath('<home>/AppData/Local/Temp/pytest-of-<user>/pytest-16007/test_TC_518_migration_cost_is_0')
+
+    def test_TC_518_migration_cost_is_bounded_on_hostile_boards(tmp_path):
+        """TC-518, the migration's arm (S-5): a chain of 5000 blocked tasks, one task
+        holding 100 000 ids, and a dense 800-task board each migrate in < 1 s with no
+        RecursionError. RED: a linear `x not in list` dedupe (quadratic on 100 000
+        ids) or a loop search on every link."""
+        chain = [Task(f"c{i}", blocked=True, depends_on=[f"c{i - 1}"] if i else [], id=f"c{i}")
+                 for i in range(5000)]
+        many = [Task("hub", blocked=True, depends_on=[f"c{i % 5000}" for i in range(100_000)],
+                     id="hub")]
+        dense = [Task(f"d{i}", blocked=True, depends_on=[f"d{j}" for j in range(800) if j != i][:400],
+                      id=f"d{i}") for i in range(800)]
+        # code review F1: a done hub linked to N done tasks, each linked forward,
+        # listed in reverse — every link is kept (closed targets), so a search per
+        # link costs links × graph; one walk back per task does not
+        n = 400
+        hub = [Task("hub", phase="Done", depends_on=[f"h{i}" for i in range(n)], id="hub")]
+        spokes = [Task(f"h{i}", phase="Done", id=f"h{i}",
+                       depends_on=[f"h{j}" for j in range(i + 1, min(n, i + 150))])
+                  for i in range(n)][::-1]
+        for tasks in (chain, chain + many, dense, hub + spokes):
+            b = Board([], tasks, tmp_path / "h.json")
+            t0 = time.perf_counter()
+            migrate_links(b)
+            assert time.perf_counter() - t0 < 1.0
+        # security S3-2: closed tasks linked FORWARD in board order. A chain stays
+        # under 1 s (only a link to an already-processed task can close a loop); a
+        # dense rotating board of 800 closed tasks × 400 links is the declared
+        # exception, bounded at 2 s (D-526: paid once, at start)
+        closed_chain = [Task(f"k{i}", phase="Done", id=f"k{i}",
+                             depends_on=[f"k{i + 1}"] if i < 4999 else []) for i in range(5000)]
+        rotating = [Task(f"r{i}", phase="Done", id=f"r{i}",
+                         depends_on=[f"r{(i + k) % 800}" for k in range(1, 401)])
+                    for i in range(800)]
+        for tasks, bound in ((closed_chain, 1.0), (rotating, 2.0)):
+            b = Board([], tasks, tmp_path / "h.json", phases=["Doing", "Done"])
+            t0 = time.perf_counter()
+            migrate_links(b)
+>           assert time.perf_counter() - t0 < bound
+E           assert (395070.6716206 - 395068.6627537) < 2.0
+E            +  where 395070.6716206 = <built-in function perf_counter>()
+E            +    where <built-in function perf_counter> = time.perf_counter
+
+tests\test_link_migration.py:336: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_colour_budget_app.py::test_TC_203_the_key_bar_wears_bright_keys_and_muted_words
+FAILED tests/test_link_migration.py::test_TC_518_migration_cost_is_bounded_on_hostile_boards
+2 failed, 2274 passed in 472.32s (0:07:52)
+exit 1

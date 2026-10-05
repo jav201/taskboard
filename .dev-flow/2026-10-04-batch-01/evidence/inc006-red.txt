@@ -1,0 +1,24 @@
+## RED of increment 006's new tests on the product as closed (increment 005 frozen r3; the hashes below) — 2026-10-04
+22090a5aa723776ae12fbdf41d1c90caa118af4fa5c58eb7917918b9d009ce08 *taskboard/models.py
+e5892c72483ce28cf3363daf5039b199974c14a7e4dd08c80d169fc7ced387af *taskboard/views.py
+6febc9247af5dfeb45f3be3d33ab4a0abe45cf6f30e21bd7375e2a01487606a3 *taskboard/modals.py
+b0ca7add8f60a0e23c6a146943e0c18e08c909cb75f8f8a0268f6be44cb83049 *taskboard/app.py
+E               AssertionError: .board.json.zsif24gg.tmp: Access is denied
+E               assert False
+E           AssertionError: {'.board.json.xuk43bst.tmp'}
+E           assert {'.board.json.xuk43bst.tmp'} == set()
+E           AssertionError: ['\u25c6 GANTT \xb7 LINK                                                                          24 candidates \xb7 \u27f21 would loo...h reporting              \xb7\xb7\x
+E           assert (0 == 1)
+E               AssertionError: ('\u258a !! \u2026 \xb730d \u25c22 +10d', '')
+E               assert (0 >= 5 or '' in ['Design homepage mockups', 'Build component library', 'Fix checkout 500 error', 'Optimize image assets', 'Launch new homepage', 'SEO redirects map', ...])
+E               AssertionError: ('\u258a ++  \u25b81 \u25c21 +6d', '')
+E               assert (0 >= 5 or '' in ['Design homepage mockups', 'Build component library', 'Fix checkout 500 error', 'Optimize image assets', 'Launch new homepage', 'SEO redirects map', ...])
+E               AssertionError: ('\u258a !! \u2026 \xb730d \u25c22 +10d', '')
+E               assert (0 >= 5 or '' in ['Design homepage mockups', 'Build component library', 'Fix checkout 500 error', 'Optimize image assets', 'Launch new homepage', 'SEO redirects map', ...])
+FAILED tests/test_link_migration.py::test_TC_515_a_read_only_board_leaves_no_file_beside_it
+FAILED tests/test_link_migration.py::test_AT_508_a_read_only_board_stops_the_app_and_leaves_nothing
+FAILED tests/test_gantt_link.py::test_TC_512_link_mode_keeps_the_waiters_group_open
+FAILED tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size0]
+FAILED tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size1]
+FAILED tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size2]
+6 failed, 66 deselected in 2.50s
