@@ -147,7 +147,7 @@ RC-1 (b): none already shipped (`p0-probes.txt`).
 
 ### HLR-602 — The gantt draws milestones as dates, not bars
 - **Traceability:** US-602
-- **Ledger:** LED-2026-10-04-batch-02.1, LED-2026-10-04-batch-02.2, LED-2026-10-04-batch-02.3
+- **Ledger:** LED-2026-10-04-batch-02.1, LED-2026-10-04-batch-02.2, LED-2026-10-04-batch-02.3, LED-2026-10-04-batch-02.11
 - **Statement:** In the gantt, the system shall draw a milestone's row as its label prefixed by `◆`, a `◆` on its date with the date written beside it and no bar, and a chip `in Nd`, `today`, `▲Nd` or `✓ done`; a late milestone in the over tone, an upcoming one in its project's hue, a reached one as `◆✓` with its label and date in the reached grey (LED .11), drawn among its group's open rows by date while the group has open work; the dependency gutter `↳` for a milestone as for any task; the ruler's month row shall mark the selected task's project's milestones with `◆` in the same tones; the one-line legend shall name `◆ milestone` and `◆✓ reached` when the frame draws them; `]` that leaves a milestone drawn shall say it was reached, not folded; and the arrow keys shall walk every drawn row.
 - **Validation:** `test`
 - **Executed verification:** `python -m pytest -q tests/test_gantt_milestones.py`
@@ -234,7 +234,7 @@ RC-1 (b): none already shipped (`p0-probes.txt`).
 
 ### LLR-602.2 — The milestone row
 - **Traceability:** HLR-602
-- **Ledger:** LED-2026-10-04-batch-02.1, LED-2026-10-04-batch-02.2
+- **Ledger:** LED-2026-10-04-batch-02.1, LED-2026-10-04-batch-02.2, LED-2026-10-04-batch-02.11
 - **Statement:** `views.py` shall provide (NEW) `milestone_tone(task, board, today)` — the reached grey (`reached`) once reached (LED .11), `over` late, else the project's hue (`dim` with no project) — `gantt_milestone_cells(task, board, ax, today, tone)` — `◆` at the due's cell (`◆✓` when reached), the due written as `Mon D` one cell after it, or before it when it does not fit after, in `reached` / `over` / `mut`; an off-window due draws `◂`/`▸` at the edge and `◆` beside it; no due draws nothing — and `gantt_milestone_chip(task, board, today, width)` — `✓ done` reached, `▲Nd` over, `today` soon, `in Nd` mut, `no due` dim — and `_gantt_frame` shall label a milestone row ` ◆ ‹title›` (the `◆` in its tone, the title through the views' escape) with the shipped gutter.
 - **Validation:** `test (unit)`
 - **Executed verification:** `pytest tests/test_gantt_milestones.py -k TC_610`
@@ -264,7 +264,7 @@ RC-1 (b): none already shipped (`p0-probes.txt`).
 
 ### LLR-603.2 — The band rule's milestones
 - **Traceability:** HLR-603
-- **Ledger:** LED-2026-10-04-batch-02.1, LED-2026-10-04-batch-02.2, LED-2026-10-04-batch-02.8
+- **Ledger:** LED-2026-10-04-batch-02.1, LED-2026-10-04-batch-02.2, LED-2026-10-04-batch-02.8, LED-2026-10-04-batch-02.11
 - **Statement:** `band_milestones(board, project, today, show_archived)` (NEW) shall return the project's visible, non-archived, dated milestones in the order late (by due), upcoming (by due), then the one reached milestone with the latest due; `_band_facts` shall append them, after ` ── `, through a layout (NEW) that in the band room gives as many as possible a title of ≥ 8 cells — the first ones whole first — then shows dates only, then `── +N ◆` for the open ones left out, and when not even one date fits, `+N ◆` alone if it fits; tones: late `◆`, date and relative in over; upcoming `◆` in the project hue, date ink, relative mut (`today` in soon); reached all in the reached grey (LED .11); titles `hd` (the reached grey when reached); every title a literal piece (S1); only bands whose project is a `Project` (the project grouping) carry them; `band_rule_facts` (NEW) is the one seat for a rule's facts, read by the renderer and by `legend_entries("kanban")`, which names `◆` exactly when a rule draws one (it takes the kanban's presentation, grouping and focus); `help_usage("kanban")` names it.
 - **Validation:** `test (unit)`
 - **Executed verification:** `pytest tests/test_kanban_milestones.py -k TC_613`
