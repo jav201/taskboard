@@ -1,0 +1,145 @@
+{
+ "export": "<scratch>/bat002",
+ "mutants": [
+  {
+   "id": "G1",
+   "file": "taskboard/views.py",
+   "old": "    rows = [tuple(sort_by_due(o + [t for t in r if t.milestone and board.is_done(t)\n                                   and not t.archived])) if o else ()\n",
+   "new": "    rows = [tuple(o) if o else ()\n",
+   "what": "reached milestones never rows",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G2",
+   "file": "taskboard/views.py",
+   "old": "    rows = [tuple(sort_by_due(o + [t for t in r if t.milestone",
+   "new": "    rows = [tuple((o + [t for t in r if t.milestone",
+   "what": "reached rows appended, not merged by due",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G3",
+   "file": "taskboard/views.py",
+   "old": "                                   and not t.archived])) if o else ()\n",
+   "new": "                                   and not t.archived])) if True else ()\n",
+   "what": "reached rows without open work",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G4",
+   "file": "taskboard/views.py",
+   "old": "        return [[t.id for g in groups for t in g.rows]]",
+   "new": "        return [[t.id for g in groups for t in g.open]]",
+   "what": "nav walks open, not rows",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G5",
+   "file": "taskboard/views.py",
+   "old": "    if board.is_done(task):\n        return \"ash\"\n",
+   "new": "    if board.is_done(task):\n        return project_color(board, task)\n",
+   "what": "a reached milestone in its project hue",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G6",
+   "file": "taskboard/views.py",
+   "old": "    elif d < today:\n        lab, tone = f\"▲{(today - d).days}d\", \"over\"\n    elif d == today:\n        lab, tone = \"today\", \"soon\"\n    else:\n        lab, tone = f\"in {(d - today).days}d\", \"mut\"\n",
+   "new": "    elif d <= today:\n        lab, tone = f\"▲{(today - d).days}d\", \"over\"\n    else:\n        lab, tone = f\"in {(d - today).days}d\", \"mut\"\n",
+   "what": "today chipped as late",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G7",
+   "file": "taskboard/views.py",
+   "old": "        if t.milestone:            # one date, no bar (M-1, LLR-602.2)\n",
+   "new": "        if False:                  # one date, no bar (M-1, LLR-602.2)\n",
+   "what": "a milestone drawn as a bar",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G8",
+   "file": "taskboard/views.py",
+   "old": "    items = [(\"⟦━⟧\", \"bright\", \"selected, exact dates\", \"selected\"),\n             # right after the selection, as the M-1 frames place them (D-624)\n             (\"◆\", \"mut\", \"milestone\", \"milestone\"),\n             (\"◆✓\", \"ash\", \"reached\", \"reached\"),\n             (\"↳\", \"mut\", \"waits on open work\" if wide else \"waits\", \"waits\"),\n             (\"↳\", \"over\", \"starts before its dependency is due\" if wide else \"starts early\",\n              \"early\"),\n             (CRITICAL_REACH, \"crit\", \"critical chain\" if wide else \"chain\", \"crit\"),\n             (\"●\", \"mut\", \"progress\", \"progress\"),\n             (\"◆\", \"mut\", \"committed due\" if wide else \"due\", \"due\"),\n             (\"◂▸\", \"mut\", \"beyond window\", \"beyond\")]",
+   "new": "    items = [(\"⟦━⟧\", \"bright\", \"selected, exact dates\", \"selected\"),\n             (\"↳\", \"mut\", \"waits on open work\" if wide else \"waits\", \"waits\"),\n             (\"↳\", \"over\", \"starts before its dependency is due\" if wide else \"starts early\",\n              \"early\"),\n             (CRITICAL_REACH, \"crit\", \"critical chain\" if wide else \"chain\", \"crit\"),\n             (\"●\", \"mut\", \"progress\", \"progress\"),\n             (\"◆\", \"mut\", \"committed due\" if wide else \"due\", \"due\"),\n             (\"◂▸\", \"mut\", \"beyond window\", \"beyond\"),\n             (\"◆\", \"mut\", \"milestone\", \"milestone\"),\n             (\"◆✓\", \"ash\", \"reached\", \"reached\")]",
+   "what": "legend items appended last",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G9",
+   "file": "taskboard/views.py",
+   "old": "            if (t.project_id == sel_p.id and t.milestone and not t.archived\n",
+   "new": "            if (t.milestone and not t.archived\n",
+   "what": "ruler marks from every project",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G10",
+   "file": "taskboard/views.py",
+   "old": "                title = c(title, \"ash\")\n",
+   "new": "                title = title\n",
+   "what": "a reached title not ash",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G11",
+   "file": "taskboard/app.py",
+   "old": "        if task.milestone and g is not None and any(t is task for t in g.rows):\n",
+   "new": "        if False:\n",
+   "what": "] says folded for a drawn milestone",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G12",
+   "file": "taskboard/views.py",
+   "old": "            title = title_markup(t, label_w - 4, t.id == selected_id)\n",
+   "new": "            title = t.title\n",
+   "what": "an unescaped title",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G13",
+   "file": "taskboard/views.py",
+   "old": "    if x < 0:\n        cells[0] = (OFF_LEFT, \"mut\")\n        x = 1\n",
+   "new": "    if x < 0:\n        cells[0] = (OFF_LEFT, \"mut\")\n        x = 0\n",
+   "what": "the off-window diamond covers the edge glyph",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  },
+  {
+   "id": "G14",
+   "file": "taskboard/views.py",
+   "old": "        cells[at - 1 if at == after else at + len(lab)] = (\" \", \"gap\")   # `◆ Oct 10`\n",
+   "new": "",
+   "what": "no space between the diamond and its date",
+   "tests": [
+    "tests/test_gantt_milestones.py"
+   ]
+  }
+ ]
+}

@@ -114,6 +114,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `a` / `e` | Add / Edit | Add a task / edit the selected one in the full-screen editor |
 | `d` / `Delete` | Delete | Delete the selected task (asks first) |
 | `L` | Link | Make the selected task wait on another one (a picker; on the gantt, a link mode) |
+| `M` | Milestone | Make the selected task a milestone — one date, its due — or a task again |
 | `[` `]` | Phase | Move the selected task one phase back / forward |
 | `!` | Priority | Cycle low → normal → high |
 | `b` | Blocked | Mark an outside block (`▲`) on the task, or clear it |
@@ -145,6 +146,28 @@ In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes t
   tasks and `x` brings one back.
 - **Projects.** `p` adds one; `P` manages them (edit, archive, delete). Archiving a project
   archives its open tasks too; deleting a project moves its tasks to the Inbox.
+
+## Milestones
+
+A **milestone** is a task with one date — its due — and no duration: a commitment, not work.
+`M` on the selected task makes it one (its start becomes its due) or a task again; the editor
+(`e`) has the same `milestone` box. A task with no date cannot be a milestone. `+`/`-` move a
+milestone's single date, `u` undoes, and team sync carries the flag.
+
+In the **gantt** a milestone is a row ` ◆ title` with a `◆` on its date and a chip saying how far
+it is (`in 10d`, `today`, `▲2d` late); a reached one turns ash (`◆✓`, `✓ done`) and stays among its
+project's rows while the project has open work. The ruler marks the selected project's milestones.
+
+In the **kanban** a milestone is never a card and never counted: it rides its project's band rule
+(`◆ Oct 10 Launch · in 10d`), late ones first, then the upcoming ones, then the last one reached.
+
+**The one-time milestone offer.** The first time this version opens a board that holds one-day
+tasks (start = due) or dated tasks with no start, it offers — once — to make milestones of them:
+one-day tasks come pre-checked, the others unchecked; `space` toggles, `↵` converts exactly the
+checked ones, `esc` converts none (and the offer does not come back). Converting first copies the
+board file to `<board>.pre-milestones` and writes `<board>.milestones-log`; `u` undoes the whole
+conversion. A board this version creates is never offered. Restoring the backup file brings back a
+board without the offer's mark, so it is offered again at the next start.
 
 ## Links and blocking
 

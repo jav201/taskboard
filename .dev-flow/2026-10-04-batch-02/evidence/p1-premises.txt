@@ -1,0 +1,64 @@
+
+## P-1 Task has no milestone field; an unknown 'milestone' key round-trips through extra
+Task fields: ['title', 'project_id', 'phase', 'priority', 'start_date', 'due_date', 'notes', 'urls', 'images', 'archived', 'pinned', 'blocked', 'depends_on', 'phase_changed', 'extra', 'id']
+from_dict({'milestone': True}).extra = {'milestone': True}
+_to_dict keeps it: True
+
+## P-2 'M' is unbound: KEYMAP keys and every modal BINDINGS
+any KEYMAP entry binds 'M': False
+modal classes binding 'M': []
+'m' bound: False · 'c' -> ['clocks']
+
+## P-3 the shipped gantt draws a one-day task (start == due) as a single ◆ in its priority hue, no label mark
+'◆ GANTT                                                                                              nothing past due '
+'◆ dates · Web                  Oct 4                                       ◆               ┃November                  '
+'    Mondays · 1 day = 2 cells      ⟦━━━━━━━━⟧ Oct 4–8            19            26            2             9          '
+'▾ Web                          ····╎───────────────────●───────────────────◆···┆·············┆·············┆··  Oct 24'
+'  Build                        ····▬╌╌╌╌╌╌╌╌◔······┆·············┆·············┆·············┆·············┆··   Oct 8'
+'  Launch                       ····╎·┆·········◆···┆·············┆·············┆·············┆·············┆··  Oct 10'
+'                                                                                                                      '
+one-day bar cells (non-blank): [('◆', 'rose')]
+
+## P-4 gantt: rest work (done or archived) draws no row; nav walks GanttGroup.open only
+GanttGroup fields: ('project', 'open', 'rest', 'late', 'unfolded')
+open: ['t1', 'm1'] rest: ['d1']
+nav: [['t1', 'm1']]
+'Mock-ups ok' painted: False
+
+## P-5 kanban: header 'N tasks' and the WIP tags count every visible task (phase_buckets over plan.tasks)
+plan.tasks: ['m1', 't1', 'd1']
+buckets: [[], ['m1', 't1'], ['d1']]
+header row: 'KANBAN · grouped                                                                                              3 tasks '
+
+## P-6 team push writes every Task field (Board._to_dict); a pulled task goes through Task.from_dict
+push uses board._to_dict: True
+foreign_tasks uses Task.from_dict: True
+
+## P-7 the B1 migration seat: settings['migrations'] dict, links_marked, _create_beside, run_link_migration
+links_marked True
+_create_beside True
+run_link_migration True
+LINKS_MIGRATION True
+MIGRATION_BACKUP True
+links_marked({'migrations': {'links': 1, 'milestones': 1}}) = True
+
+## P-8 Board.load on a missing path seeds, saves, and leaves load_report == {} (no 'created' signal today)
+file written: True · load_report: {} · settings: {}
+seed one-day tasks: [] · seed open due-only tasks: 11
+
+## P-10 the undo snapshot fields (app._UNDO_FIELDS)
+('phase', 'phase_changed', 'priority', 'blocked', 'due_date', 'archived', 'pinned', 'depends_on')
+
+## P-12 the editor's one-row chip threshold and its widget ids
+TASK_CHIPS_ONE_ROW = 122
+
+## P-13 Textual OptionList bindings (does it claim space / enter?)
+[('down', 'cursor_down'), ('end', 'last'), ('enter', 'select'), ('home', 'first'), ('pagedown', 'page_down'), ('pageup', 'page_up'), ('up', 'cursor_up')]
+textual 8.2.8
+
+## P-14 bump_due moves only due_date
+after +1: start 2026-10-07 due 2026-10-08
+
+## P-15 the B1 link-migration toast and undo entry shape (app source)
+undo entry key "migration": True · undo toast says 'Links migration undone': True
+on_mount order: ['if not self._migrate_links():', 'self._announce_renumbering()', 'self._sweep_old_done()', 'self._select_first()', 'self._apply_clock_settings()', 'self._warn_if_rescued()', 'self._init_team_mode()']

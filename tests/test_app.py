@@ -3901,7 +3901,10 @@ async def test_undo_stack_snapshot_stale_skip_and_no_write_on_empty(tmp_path):
         assert entry["fields"] == {"phase": "Doing", "phase_changed": None,
                                    "priority": "normal", "blocked": False,
                                    "due_date": None, "archived": False,
-                                   "pinned": False, "depends_on": []}
+                                   "pinned": False, "depends_on": [],
+                                   # batch 2026-10-04-batch-02 (LLR-601.2): `M`
+                                   # moves the start, so `u` restores it too
+                                   "start_date": None, "milestone": False}
         # purged since the snapshot -> the entry is SKIPPED, no raise
         app.board.delete_task(task.id)      # the route undo does not cover
         await pilot.pause()

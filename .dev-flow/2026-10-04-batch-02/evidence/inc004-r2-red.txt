@@ -1,0 +1,8 @@
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_milestone_offer.py -k "odd_due or start_actually or both_dates or identity_picker or long_title"   # increment 004 r1 product + the r2 arms
+PASSED tests/test_milestone_offer.py::test_TC_616_the_offer_covers_the_identity_picker_until_answered
+FAILED tests/test_milestone_offer.py::test_TC_615_odd_due_spellings_come_back_exactly_on_failure
+FAILED tests/test_milestone_offer.py::test_TC_615_the_log_records_the_start_actually_written
+FAILED tests/test_milestone_offer.py::test_TC_616_u_restores_both_dates_byte_exact
+FAILED tests/test_milestone_offer.py::test_TC_617_a_long_title_is_cut_before_its_project_and_date
+4 failed, 1 passed, 32 deselected in 1.07s
+exit 1

@@ -53,7 +53,7 @@ Próximo paso: confirmar con Lucía si el webhook de pagos puede quedar detrás 
 
 # Every widget id the rest of the app and the existing tests talk to. The
 # editor's layout may move them; it may not drop or hide one.
-CONTRACT_IDS = ("f-title", "f-project", "f-phase", "f-priority", "f-start",
+CONTRACT_IDS = ("f-title", "f-project", "f-phase", "f-priority", "f-milestone", "f-start",
                 "cal-f-start", "f-due", "cal-f-due", "f-blocked", "f-archived",
                 "f-pinned", "f-notes", "f-urls", "f-images", "paste-img",
                 "save", "cancel")
@@ -210,7 +210,7 @@ async def test_every_chip_stays_reachable_at_every_width(tmp_path, width):
 # --------------------------------------------------------------------------- #
 # LLR-001.2 — focus is the navigation model, so it must be visible
 # --------------------------------------------------------------------------- #
-FOCUS_MARKED = ("f-title", "f-project", "f-phase", "f-priority", "f-start",
+FOCUS_MARKED = ("f-title", "f-project", "f-phase", "f-priority", "f-milestone", "f-start",
                 "cal-f-start", "f-due", "cal-f-due", "f-blocked", "f-archived",
                 "f-pinned", "paste-img", "save", "cancel")
 
@@ -360,7 +360,7 @@ async def test_an_empty_note_previews_as_nothing(tmp_path):
 # --------------------------------------------------------------------------- #
 # AT-005 — keyboard: tab walks the editor, Save works from the keys, esc drops
 # --------------------------------------------------------------------------- #
-TAB_ORDER = ["f-title", "f-project", "f-phase", "f-priority", "f-start",
+TAB_ORDER = ["f-title", "f-project", "f-phase", "f-priority", "f-milestone", "f-start",
              "cal-f-start", "f-due", "cal-f-due", "f-blocked", "f-archived",
              "f-pinned", "f-notes", "f-urls", "f-images", "paste-img", "save",
              "cancel"]

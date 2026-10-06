@@ -1,0 +1,30 @@
+◆ GANTT                                                                                         ▲6 past due · chain 4
+◆ dates ·╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+     Mond│                                                                                                  │
+▾ Website│  Launch new homepage  —  o open raw · esc close                                                  │·  Oct 15
+ ◆ Mockup│                                                                                                  │·  ✓ done
+  Build c│  Project    Website Redesign                                                                     │·     ▲3d
+  Fix che│  Phase      Backlog · ◆ milestone                                                                │·     ▲2d
+  Optimiz│  Priority   high                                                                                 │·  Oct 11
+ ◆ Launch│  Start      2026-10-15                                                                           │·  in 10d
+  SEO red│  Due        2026-10-15                                                                           │·  Oct 19
+▸ Mobile │                                                                                                  │·   Nov 9
+▾ API Pla│  Dependencies  ◂ waiting  L link · tab links · x remove · ↵ jump                                 │·  Oct 26
+  Write A│  Waits on  ◂2 open of 2                                                                          │·     ▲5d
+  SDK reg│  Build component library   REVIEW · due Oct 2 · open                                             │·     ▲1d
+ ◆ Partne│  Optimize image assets   NEXT · due Oct 11 · open                                                │·   in 3d
+  Rate li│  Unblocks  ▸0 direct · 0 in chain                                                                │·   Oct 9
+  Depreca│                                                                                                  │·  Oct 12
+  Plan Q4│  Notes  highlight: ==…== yellow, !!…!! red, ++…++ green                                          │·  no due
+▸ Data Wa│  —                                                                                               │·   Dec 4
+▾ Ops & S│                                                                                                  │·  Oct 10
+ ◆ Securi│  URLs                                                                                            │·     ▲2d
+  Renew T│                                                                                                  │·     ▲1d
+  Review │  —                                                                                               │·   today
+  Rotate │                                                                                                  │·   Oct 8
+  Pen-tes│  Images                                                                                          │·  Oct 25
+  Update │                                                                                              ▇▇  │·  no due
+         │                                                                                                  │
+ ⟦━⟧ sele╰──────────────────────────────────────────────────────────────────────────────────────────────────╯ is due
+  00:52:24 · Mon 05 Oct 2026 · W41 · Mexico City 00:52 · New York 02:52
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8 Standup  9  0  ↵  a  e  d  L  ↓  ↑

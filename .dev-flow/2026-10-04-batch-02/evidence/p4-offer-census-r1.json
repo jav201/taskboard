@@ -1,0 +1,12 @@
+{
+ "summary": {
+  "app_starts": 585,
+  "unmarked_starts": 564,
+  "suppressed_starts_with_a_candidate": 140,
+  "suppressed_tests": 123,
+  "offers_in_unmarked_nodes": 0,
+  "marked_starts": 21,
+  "offers_in_marked_nodes": 13
+ },
+ "leaked": []
+}

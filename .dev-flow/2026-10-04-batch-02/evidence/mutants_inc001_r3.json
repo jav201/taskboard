@@ -1,0 +1,196 @@
+{
+ "export": "<scratch>/bat001r3",
+ "mutants": [
+  {
+   "id": "M1",
+   "file": "taskboard/models.py",
+   "old": "                milestone=d.get(\"milestone\") is True,\n",
+   "new": "                milestone=bool(d.get(\"milestone\")),\n",
+   "what": "from_dict reads bool(), not `is True`",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M2",
+   "file": "taskboard/models.py",
+   "old": "    day = (due or start).isoformat()\n",
+   "new": "    day = (start or due).isoformat()\n",
+   "what": "the start wins over the due",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M3",
+   "file": "taskboard/models.py",
+   "old": "    if task.milestone:                  # a milestone moves whole: one date (D-605)\n",
+   "new": "    if False:                           # a milestone moves whole: one date (D-605)\n",
+   "what": "bump moves only the due",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M4",
+   "file": "taskboard/models.py",
+   "old": "        return MILESTONE_NEEDS_DATE\n",
+   "new": "        task.milestone = True\n        return MILESTONE_NEEDS_DATE\n",
+   "what": "an undated task flagged anyway",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M5",
+   "file": "taskboard/models.py",
+   "old": "                milestone=d.get(\"milestone\") is True,\n",
+   "new": "",
+   "what": "from_dict drops the field",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M6",
+   "file": "taskboard/app.py",
+   "old": "        self._undo_stack.append(snap)\n        self.board.save()\n        self.refresh_view()\n        name = clip(task.title, 40)\n",
+   "new": "        self._undo_stack.append(self._snapshot(task))\n        self.board.save()\n        self.refresh_view()\n        name = clip(task.title, 40)\n",
+   "what": "snapshot taken after the change",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M7",
+   "file": "taskboard/app.py",
+   "old": "                    \"start_date\", \"milestone\")",
+   "new": "                    \"milestone\",)",
+   "what": "start_date not restored by u",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M8",
+   "file": "taskboard/app.py",
+   "old": "            self.notify(err, title=\"Milestone\", severity=\"warning\", markup=False)\n            return\n",
+   "new": "            self.notify(err, title=\"Milestone\", severity=\"warning\", markup=False)\n",
+   "what": "a refusal still pushes and saves",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M9",
+   "file": "taskboard/app.py",
+   "old": "            return f\"on the {p.name} band\"\n        return \"shown on the gantt\"\n",
+   "new": "            return f\"on the {p.name} band\"\n        return f\"on the {p.name if p else 'Inbox'} band\"\n",
+   "what": "\"on the band\" everywhere",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M10",
+   "file": "taskboard/app.py",
+   "old": "        if want is not None:\n            self._apply_editor_milestone(task, want, prior_start)\n        # the archive",
+   "new": "        # the archive",
+   "what": "the edit handler ignores the box",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M11",
+   "file": "taskboard/app.py",
+   "old": "        elif (start is not None and due is not None and start != due\n                and start != parse_iso(prior_start)):\n",
+   "new": "        elif False:\n",
+   "what": "the replaced start not said",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M12",
+   "file": "taskboard/modals.py",
+   "old": "            \"milestone\": bool(self.query_one(\"#f-milestone\", Checkbox).value),\n",
+   "new": "",
+   "what": "the payload drops the box",
+   "tests": [
+    "tests/test_milestones.py",
+    "tests/test_edit_window.py"
+   ]
+  },
+  {
+   "id": "M13",
+   "file": "taskboard/modals.py",
+   "old": "                                 + (\" · ◆ milestone\" if t.milestone else \"\")))",
+   "new": "                                 ))",
+   "what": "no details mark",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M14",
+   "file": "taskboard/keymap.py",
+   "old": "    Key(\"M\", \"M\", \"milestone_toggle\", \"Milestone\", group=\"task\",\n        views=(\"swimlanes\", \"agenda\", \"gantt\", \"kanban\", \"focus\")),\n",
+   "new": "    Key(\"M\", \"M\", \"milestone_toggle\", \"Milestone\", group=\"task\",\n        views=None),\n",
+   "what": "M scoped everywhere",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M15",
+   "file": "taskboard/modals.py",
+   "old": "TASK_CHIPS_ONE_ROW = 137",
+   "new": "TASK_CHIPS_ONE_ROW = 122",
+   "what": "the threshold not re-measured",
+   "tests": [
+    "tests/test_edit_window.py"
+   ]
+  },
+  {
+   "id": "MB",
+   "file": "taskboard/app.py",
+   "old": "                and any(t.project_id == p.id and not t.milestone\n                        and is_open(self.board, t) for t in self.board.tasks)):\n",
+   "new": "                and any(t.project_id == p.id and not t.milestone\n                        and True for t in self.board.tasks)):\n",
+   "what": "‹where› ignores whether the card is open (code review mutant B)",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "MC",
+   "file": "taskboard/app.py",
+   "old": "        if set_milestone(task, True):\n            task.milestone = False\n",
+   "new": "        if set_milestone(task, True):\n            pass\n",
+   "what": "a refused box keeps an existing flag (code review mutant C)",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "MD",
+   "file": "taskboard/app.py",
+   "old": "                and (not was_milestone or start != parse_iso(prior_start))):\n",
+   "new": "                and True):\n",
+   "what": "the start toast fires for an untouched start field (F-4)",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "ME",
+   "file": "taskboard/app.py",
+   "old": "                and (not was_milestone or start != parse_iso(prior_start))):\n",
+   "new": "                and start != parse_iso(prior_start)):\n",
+   "what": "the start toast ignores a task becoming a milestone (F2-1)",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+◆ GANTT                                                   ▲6 past due · chain 4
+◆ ╭──────────────────────────────────────────────────────────────────────────╮
+1s│                                                                          │
+▾ │  Launch new homepage  —  o open raw · esc close                          │15
+ ◆│                                                                          │ne
+  │  Project    Website Redesign                                             │3d
+  │  Phase      Backlog · ◆ milestone                                        │2d
+  │  Priority   high                                                         │11
+ ◆│  Start      2026-10-15                                                   │0d
+  │  Due        2026-10-15                                                   │19
+▸ │                                                                          │ 9
+▸ │  Dependencies  ◂ waiting  L link · tab links · x remove · ↵ jump         │26
+▸ │  Waits on  ◂2 open of 2                                                  │ 4
+▾ │  Build component library   REVIEW · due Oct 2 · open                     │10
+ ◆│  Optimize image assets   NEXT · due Oct 11 · open                        │2d
+  │  Unblocks  ▸0 direct · 0 in chain                                    ▇▇  │1d
+  │                                                                          │ay
+  │  Notes  highlight: ==…== yellow, !!…!! red, ++…++ green                  │ 8
+  │  —                                                                       │25
+  │                                                                          │ue
+  │                                                                          │
+ ⟦╰──────────────────────────────────────────────────────────────────────────╯
+  00:52:25 · Mon 05 Oct 2026 · W41 · Mexico City 00:52 · New York 02:52
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ↓  ↑

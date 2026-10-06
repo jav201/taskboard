@@ -1,0 +1,9 @@
+Gate after the operator's visual verdict (UXV-5 applied, LED-2026-10-04-batch-02.11), 2026-10-06.
+
+    python -m pytest tests -q
+    env: NO_COLOR unset, TERM=xterm-256color, COLORTERM=truecolor, PYTHONIOENCODING=utf-8
+    (NO_COLOR/TERM=dumb downgrade rich to greyscale and redden _painted colour
+    assertions for no product reason — observed on AT-603 before the env fix.)
+
+2486 passed in 380.34s (0:06:20)  ·  exit 0
+0 failed — the known clipboard environment flake G-011 did not fire this run.

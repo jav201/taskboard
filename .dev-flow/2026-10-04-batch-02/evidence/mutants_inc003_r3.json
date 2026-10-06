@@ -1,0 +1,195 @@
+{
+ "export": "<scratch>/bat003r3",
+ "mutants": [
+  {
+   "id": "K1",
+   "file": "taskboard/views.py",
+   "old": "    return [t for t in tasks if not t.milestone]\n\n\ndef _kanban_groups",
+   "new": "    return list(tasks)\n\n\ndef _kanban_groups",
+   "what": "kanban_work filters nothing",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K2",
+   "file": "taskboard/views.py",
+   "old": "    tasks = kanban_work(board.visible_tasks(show_archived))\n    if focus is not None and board.project_by_id(focus) is not None:",
+   "new": "    tasks = board.visible_tasks(show_archived)\n    if focus is not None and board.project_by_id(focus) is not None:",
+   "what": "the grouped plan lays out milestones",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K3",
+   "file": "taskboard/views.py",
+   "old": "    inner = w\n    tasks = kanban_work(board.visible_tasks(show_archived))\n    label_w = max(6",
+   "new": "    inner = w\n    tasks = board.visible_tasks(show_archived)\n    label_w = max(6",
+   "what": "the matrix counts milestones",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K4",
+   "file": "taskboard/views.py",
+   "old": "    inner = w\n    tasks = kanban_work(board.visible_tasks(show_archived))\n    focused =",
+   "new": "    inner = w\n    tasks = board.visible_tasks(show_archived)\n    focused =",
+   "what": "the lanes draw milestones",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K5",
+   "file": "taskboard/views.py",
+   "old": "        tasks = kanban_work(tasks)       # a milestone is never a card (LLR-603.1)\n",
+   "new": "",
+   "what": "the nav walks milestones",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K6",
+   "file": "taskboard/views.py",
+   "old": "            total = len(kanban_work(board.visible_tasks(show_archived)))   # LLR-603.1\n            hits = len(kanban_work(fb.visible_tasks(show_archived)))",
+   "new": "            total = len(board.visible_tasks(show_archived))\n            hits = len(fb.visible_tasks(show_archived))",
+   "what": "the filter counts milestones",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K7",
+   "file": "taskboard/views.py",
+   "old": "    return late + ahead + [(\"reached\", t) for t in reached]",
+   "new": "    return ahead + late + [(\"reached\", t) for t in reached]",
+   "what": "late after upcoming",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K8",
+   "file": "taskboard/views.py",
+   "old": "    reached = sort_by_due([t for t in ms if board.is_done(t)])[-1:]",
+   "new": "    reached = sort_by_due([t for t in ms if board.is_done(t)])",
+   "what": "every reached milestone listed",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K9",
+   "file": "taskboard/views.py",
+   "old": "        more = sum(1 for kind, _t in items[n:] if kind != \"reached\")\n        return out",
+   "new": "        more = len(items[n:])\n        return out",
+   "what": "reached counted in +N",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K10",
+   "file": "taskboard/views.py",
+   "old": "    return [(f\"+{more} ◆\", \"mut\")] if more and len(f\"+{more} ◆\") <= room else []",
+   "new": "    return []",
+   "what": "no +N fallback (D-619)",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K11",
+   "file": "taskboard/views.py",
+   "old": "    return facts + [(\" ── \", \"frame\")] + more, True\n",
+   "new": "    return facts, True\n",
+   "what": "the band rule carries nothing",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K12",
+   "file": "taskboard/app.py",
+   "old": "            if sel is not None and sel.milestone:\n",
+   "new": "            if False:\n",
+   "what": "a milestone selection jumps to the first task, not the nearest column",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K13",
+   "file": "taskboard/app.py",
+   "old": "                        if best is None or cp > best[0]:\n",
+   "new": "                        if best is None or cp < best[0]:\n",
+   "what": "the farthest column, not the nearest",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K14",
+   "file": "taskboard/views.py",
+   "old": "            tone, dk, tk, rk = color, \"ink\", \"hd\", \"soon\" if n == 0 else \"mut\"\n",
+   "new": "            tone, dk, tk, rk = color, \"ink\", \"hd\", \"mut\"\n",
+   "what": "today not in soon",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K15",
+   "file": "taskboard/views.py",
+   "old": "            tone, dk, tk, rk = color, \"ink\", \"hd\", \"soon\" if n == 0 else \"mut\"\n",
+   "new": "            tone, dk, tk, rk = \"over\", \"ink\", \"hd\", \"soon\" if n == 0 else \"mut\"\n",
+   "what": "an upcoming milestone in over",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "K16",
+   "file": "taskboard/views.py",
+   "old": "            if tw < 8:\n                break\n",
+   "new": "            if tw < 1:\n                break\n",
+   "what": "titles cut below 8 cells",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "KL1",
+   "file": "taskboard/views.py",
+   "old": "        if kanban_presentation == \"grouped\" and kanban_group == \"project\":\n",
+   "new": "        if True:\n",
+   "what": "the legend blind to the presentation and the grouping (K-1)",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "KL2",
+   "file": "taskboard/views.py",
+   "old": "                           \"◆ on a band rule: a milestone, never a card\",\n",
+   "new": "",
+   "what": "the kanban help bullet deleted (K-2)",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  },
+  {
+   "id": "KL3",
+   "file": "taskboard/views.py",
+   "old": "            if any(band_rule_facts(board, b, today, show_archived, kw)[1] for b in plan.bands):\n",
+   "new": "            if any(band_rule_facts(board, b, today, show_archived, kw)[1] for b in plan.bands\n                   if any(t for col in b.cols for t in col)):\n",
+   "what": "the legend keyed on an open card (K-1 b)",
+   "tests": [
+    "tests/test_kanban_milestones.py"
+   ]
+  }
+ ]
+}

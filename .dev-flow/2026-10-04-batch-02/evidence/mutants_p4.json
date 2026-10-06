@@ -1,0 +1,25 @@
+{
+ "export": "<session>/scratchpad/batp4",
+ "mutants": [
+  {
+   "id": "V1",
+   "file": "taskboard/models.py",
+   "old": "        for t in convert:\n            set_milestone(t, True)\n",
+   "new": "        for t in convert:\n            set_milestone(t, True)\n        for t, _p in milestone_candidates(board):\n            set_milestone(t, True)\n",
+   "what": "unchosen candidates converted silently",
+   "tests": [
+    "tests/test_milestone_offer.py::test_AT_604_only_what_was_picked_is_converted_backed_up_logged_and_undoable"
+   ]
+  },
+  {
+   "id": "V2",
+   "file": "taskboard/views.py",
+   "old": "            if (t.project_id == sel_p.id and t.milestone and not t.archived\n",
+   "new": "            if (t.project_id == sel_p.id and t.milestone and not t.archived\n                    and t.phase == board.phases[-1]\n",
+   "what": "the ruler marks only reached milestones",
+   "tests": [
+    "tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them"
+   ]
+  }
+ ]
+}

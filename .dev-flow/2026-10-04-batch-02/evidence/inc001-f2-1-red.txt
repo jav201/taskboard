@@ -1,0 +1,2 @@
+FAILED tests/test_milestones.py::test_TC_605_the_editor_box_applies_after_the_dates[tick-only]
+1 failed, 7 passed, 33 deselected in 6.87s

@@ -1,0 +1,29 @@
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_gantt_milestones.py   # increment-001 product (views.py at 4b2c13a, app.py without the 002 hunk) + increment-002 tests; the three NEW helper names stubbed to raise so every arm runs
+PASSED tests/test_gantt_milestones.py::test_TC_609_a_selected_reached_milestone_unfolds_its_group
+PASSED tests/test_gantt_milestones.py::test_TC_611_a_project_without_milestones_marks_only_its_due
+FAILED tests/test_gantt_milestones.py::test_TC_609_rows_merge_reached_milestones_by_due_while_open_work_remains
+FAILED tests/test_gantt_milestones.py::test_TC_609_a_group_with_only_reached_milestones_draws_no_row
+FAILED tests/test_gantt_milestones.py::test_TC_609_nav_walks_the_drawn_rows_in_draw_order[size0]
+FAILED tests/test_gantt_milestones.py::test_TC_609_nav_walks_the_drawn_rows_in_draw_order[size1]
+FAILED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[ta3]
+FAILED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[td0]
+FAILED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[tm5]
+FAILED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[to0]
+FAILED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[tw0]
+FAILED tests/test_gantt_milestones.py::test_TC_610_tone_and_chip_equal_the_verdicts_rule[tw5]
+FAILED tests/test_gantt_milestones.py::test_TC_610_today_no_due_and_the_inbox
+FAILED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[-40]
+FAILED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[0]
+FAILED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[6]
+FAILED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[25]
+FAILED tests/test_gantt_milestones.py::test_TC_610_cells_hold_one_diamond_and_its_date_and_never_a_bar[400]
+FAILED tests/test_gantt_milestones.py::test_TC_610_a_milestone_title_paints_literally[[b]x[/b]]
+FAILED tests/test_gantt_milestones.py::test_TC_610_a_milestone_title_paints_literally[[/]]
+FAILED tests/test_gantt_milestones.py::test_TC_610_a_milestone_title_paints_literally[ends in \\]
+FAILED tests/test_gantt_milestones.py::test_TC_611_the_month_row_marks_the_selected_projects_milestones
+FAILED tests/test_gantt_milestones.py::test_TC_611_the_legend_names_milestones_right_after_the_selection[118-30]
+FAILED tests/test_gantt_milestones.py::test_TC_611_the_legend_names_milestones_right_after_the_selection[80-24]
+FAILED tests/test_gantt_milestones.py::test_TC_611_the_map_and_the_help_name_milestones
+FAILED tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them
+24 failed, 2 passed in 1.43s
+exit 1

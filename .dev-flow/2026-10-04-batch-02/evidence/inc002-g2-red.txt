@@ -1,0 +1,2 @@
+FAILED tests/test_gantt_milestones.py::test_TC_610_a_reached_milestone_on_the_last_column_keeps_its_day
+1 failed, 28 passed in 2.50s

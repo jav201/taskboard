@@ -1,0 +1,30 @@
+KANBAN · matrix                                                                                              25 tasks
+              │BACKLOG           8│NEXT              4│DOING           6/4│REVIEW         4/3│DONE             3│ prog
+──────────────┼───────────────────┼───────────────────┼───────────────────┼──────────────────┼──────────────────┼─────
+▐ Website Red…│ ▊                 │ ▊                 │ ▊                 │ ▊                │ ▊                │  50%
+▐ Mobile App  │ ▊                 │ ▊                 │ ▊                 │ ▊                │ ▊                │  42%
+▐ API Platform│ ▊▊                │ ·                 │ ▊▊                │ ▊                │ ·                │  33%
+▐ Data Wareho…│ ▊▊                │ ▊                 │ ▊                 │ ·                │ ▊                │  29%
+▐ Ops & Secur…│ ▊▊                │ ▊                 │ ▊                 │ ▊                │ ·                │  29%
+──────────────┴───────────────────┴───────────────────┴───────────────────┴──────────────────┴──────────────────┴─────
+ ▊ Fix checkout 500 error                                                               Website Redesign · Doing · 3/5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  00:46:18 · Mon 05 Oct 2026 · W41 · Mexico City 00:46 · New York 02:46
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

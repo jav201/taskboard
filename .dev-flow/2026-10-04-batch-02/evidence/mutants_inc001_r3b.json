@@ -1,0 +1,25 @@
+{
+ "export": "<scratch>/bat001r3",
+ "mutants": [
+  {
+   "id": "M10",
+   "file": "taskboard/app.py",
+   "old": "        if want is not None:\n            self._apply_editor_milestone(task, want, prior_start, was_milestone)\n        # the archive",
+   "new": "        # the archive",
+   "what": "the edit handler ignores the box",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  },
+  {
+   "id": "M11",
+   "file": "taskboard/app.py",
+   "old": "        elif (start is not None and due is not None and start != due\n                and (not was_milestone or start != parse_iso(prior_start))):\n",
+   "new": "        elif False:\n",
+   "what": "the replaced start not said",
+   "tests": [
+    "tests/test_milestones.py"
+   ]
+  }
+ ]
+}

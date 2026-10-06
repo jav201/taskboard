@@ -1,0 +1,8 @@
+V1: KILLED — unchosen candidates converted silently
+   file taskboard/models.py restore sha256 b9665b21c8c50479 OK
+   nodes resolved 1 · RED 1 · GREEN 0 · 1 failed in 1.25s
+   RED   tests/test_milestone_offer.py::test_AT_604_only_what_was_picked_is_converted_backed_up_logged_and_undoable
+V2: KILLED — the ruler marks only reached milestones
+   file taskboard/views.py restore sha256 5157175782588e80 OK
+   nodes resolved 1 · RED 1 · GREEN 0 · 1 failed in 1.30s
+   RED   tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them

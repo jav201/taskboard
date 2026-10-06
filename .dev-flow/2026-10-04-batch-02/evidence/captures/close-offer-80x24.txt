@@ -1,0 +1,24 @@
+
+
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ ◆ Milestones · convert one-day tasks?   8 candidates · shown once            │
+│                                                                              │
+│ Converting keeps the task, its links and its history; it becomes a ◆ date.   │
+│ One-day tasks (start = due)                                                  │
+│ ▣ Partner notice emails   API Platform · Oct 8 · 1 waits on it               │
+│ ▣ Launch new homepage   Website Redesign · Oct 15                            │
+│ ▣ Beta release to testers   Mobile App · Nov 9                               │
+│ Due date, no start                                                           │
+│ □ Review pull requests   Ops & Security · Oct 5                              │
+│ □ Rotate API keys   Ops & Security · Oct 8                                   │
+│ □ Optimize image assets   Website Redesign · Oct 11 · 1 waits on it          │
+│ □ Deprecate v1 endpoints   API Platform · Oct 12                             │
+│ □ SEO redirects map   Website Redesign · Oct 19                              │
+│ space toggle  ·  ↵ convert 3  ·  esc not now — won't ask again               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+
+

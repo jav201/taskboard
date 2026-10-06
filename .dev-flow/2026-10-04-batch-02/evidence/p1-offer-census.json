@@ -1,0 +1,3286 @@
+{
+ "summary": {
+  "app_starts": 541,
+  "starts_with_any_candidate": 274,
+  "starts_with_a_one_day_candidate": 0,
+  "tests_with_any_candidate": 251,
+  "tests_starting_an_app": 372,
+  "files_with_any_candidate": [
+   "tests/test_app.py",
+   "tests/test_archive.py",
+   "tests/test_colour_budget.py",
+   "tests/test_colour_budget_app.py",
+   "tests/test_control_bytes.py",
+   "tests/test_details_links.py",
+   "tests/test_edit_window.py",
+   "tests/test_english.py",
+   "tests/test_flow_view.py",
+   "tests/test_focus.py",
+   "tests/test_gantt_board.py",
+   "tests/test_gantt_link.py",
+   "tests/test_gantt_polish.py",
+   "tests/test_kanban_priority.py",
+   "tests/test_kanban_readable.py",
+   "tests/test_keymap.py",
+   "tests/test_lanes_grid.py",
+   "tests/test_legend.py",
+   "tests/test_link_migration.py",
+   "tests/test_link_picker.py",
+   "tests/test_links.py",
+   "tests/test_markup_sites.py",
+   "tests/test_report.py",
+   "tests/test_setup_help.py",
+   "tests/test_team_sync.py",
+   "tests/test_team_views.py",
+   "tests/test_view_survival.py"
+  ]
+ },
+ "rows": [
+  {
+   "node": "tests/test_app.py::test_boots_and_seeds",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_two_now_opens_agenda",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_the_renumbering_is_announced_exactly_once",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_the_renumbering_is_announced_exactly_once",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_all_four_views_switch",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_add_task_modal_appears",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_edit_task",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_archive_and_show_archived_toggle",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_add_project",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_manage_projects_edit_status_persists",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_manage_projects_archive_hides_and_persists",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_manage_projects_unarchive_restores_tasks",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_manage_projects_delete_moves_tasks_to_inbox",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_manage_projects_empty_state_no_crash",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_manage_projects_escapes_markup_name",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_ribbon_shows_time_date_week_and_two_clocks",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_clock_modal_search_pick_persists",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_clock_modal_finds_an_accented_city_from_an_ascii_keyboard",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_clock_modal_unknown_city_falls_back",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_ribbon_is_painted_and_not_overlapping_footer",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_board_fills_viewport_width",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_board_reflows_on_resize",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_tiny_size_does_not_crash",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_right_moves_to_next_column_first_task",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_up_at_top_of_column_is_noop",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_no_keypress_selects_offscreen_task",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_agenda_nav_follows_urgency_order",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_nav_scrolls_selection_into_view_when_overflowing",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_url_task_open_action",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_url_renders_link_and_arrow",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_at_002_multiple_urls_black_box",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_open_images_allowlist_and_isfile",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_at_003_images_black_box",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_markup_injection_is_escaped",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_clipboard_paste_saves_and_appends",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_image_viewer_opens_without_crash",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_image_viewer_open_raw_fires",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_task_notes_persist_through_reload",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_enter_opens_readonly_details",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_details_shows_all_fields_and_image",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_details_escapes_notes_markup",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_ctrl_v_pastes_into_focused_input",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_ctrl_v_pastes_into_focused_textarea",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_ctrl_v_empty_clipboard_is_noop",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_enter_and_escape",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_navigation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_calendar_button_writes_date_into_field",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_modal_sets_phase_and_blocked_and_persists",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_view_renders_with_a_new_colour",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_tab_toggles_kanban_presentation",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_opens_and_lists_phases",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_reorder_key_moves_phase",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_add_via_prompt",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_rename_moves_tasks_through_the_ui",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_add_rejects_duplicate",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_prompt_cancel_is_a_noop",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_delete_reassigns_through_the_ui",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_refuses_deleting_the_last_phase",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_name_with_markup_is_escaped",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_reorder_left_and_boundaries",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_editor_blank_name_is_rejected",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_move_forward_dates_the_move",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_move_round_trip_restamps_and_the_ends_are_silent_no_ops",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_phase_move_clamps_unknown_phase_into_bucket_zero",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_prio_cycle_walks_the_declared_order_and_paints_the_marker",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_toggle_blocked_flips_the_flag_and_the_card_prefix",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_parity_painted_text_oracle",
+   "one_day": 0,
+   "due_only": 4,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_sort_cycles_and_names_the_mode",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_sort_parity_arrow_walk",
+   "one_day": 0,
+   "due_only": 4,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_group_cycles_headers_and_membership",
+   "one_day": 0,
+   "due_only": 4,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_group_parity_arrow_walk",
+   "one_day": 0,
+   "due_only": 4,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_mode_keys_are_noops_outside_kanban",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_wip_header_shows_count_over_default_limit",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_wip_header_honors_a_non_default_limit",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_aging_token_renders_only_for_dated_open_cards",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_kanban_collapse_toggles_the_terminal_phase_and_restores",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_collapse_key_is_a_noop_outside_kanban",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_focus_cycle_filters_the_board_and_escape_restores",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_focus_cycle_order_seat_filter_and_archived_drop",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_due_bump_moves_dated_and_undated_tasks_forward",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_due_bump_minus_and_the_equals_alias",
+   "one_day": 0,
+   "due_only": 3,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_undo_restores_the_phase_and_its_stamp_verbatim",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_undo_covers_archive_and_delete_but_not_modal_add",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_undo_is_lifo_and_the_empty_stack_says_so",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_undo_stack_snapshot_stale_skip_and_no_write_on_empty",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_standup_modal_lists_the_week_grouped_and_marked",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_standup_modal_empty_week_says_so_in_one_line",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_search_filters_kanban",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_search_esc_clears_focus_after_query",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_app.py::test_search_empty_query_clears_filter",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_archive.py::test_the_purge_says_the_count_before_it_moves_anything",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_archive.py::test_confirming_the_purge_archives_and_says_so",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_archive.py::test_the_purge_says_so_when_there_is_nothing_to_do",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_archive.py::test_the_edit_modal_can_archive_the_task_it_has_open",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_archive.py::test_x_still_toggles_the_archive_from_the_board",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_archive.py::test_archiving_says_so_and_names_the_way_back",
+   "one_day": 0,
+   "due_only": 2,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_archive.py::test_the_notify_cannot_be_hijacked_by_a_hostile_title",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_archive.py::test_the_selection_lands_somewhere_sane_when_the_row_vanishes",
+   "one_day": 0,
+   "due_only": 3,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_colour_budget.py::test_AT_106_the_panels_paint_the_accent_only_for_today_and_the_filter",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_colour_budget_app.py::test_AT_201_every_view_paints_the_accent_only_for_focus",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_colour_budget_app.py::test_AT_203_soon_is_amber_and_the_packet_quiet",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_control_bytes.py::test_TC_409_the_setup_view_republishes_a_clean_config",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_control_bytes.py::test_AT_404_a_dirty_board_opens_clean_and_saves_clean",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_control_bytes.py::test_AT_405_what_the_app_pushes_reaches_a_teammate_clean",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_control_bytes.py::test_AT_405_what_the_app_pushes_reaches_a_teammate_clean",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_control_bytes.py::test_TC_419_a_deeply_nested_team_file_is_refused_visibly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_control_bytes.py::test_TC_419_a_deeply_nested_team_file_is_refused_visibly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_dependencies.py::test_unblock_on_blocked_task_flips_without_prompt",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_411_every_grid_cell_paints_on_its_labels_row[size0]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_411_every_grid_cell_paints_on_its_labels_row[size1]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size0-2]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_411_a_long_value_wraps_under_itself[size1-2]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_411_the_edit_modals_keep_their_grid[<lambda>-base0]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_411_the_edit_modals_keep_their_grid[<lambda>-base1]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size0]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_420_one_blank_row_above_the_title_and_one_below[size1]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size0]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_TC_421_the_label_column_is_ten_cells[size1]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_AT_406_the_details_view_shows_its_five_fields",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_AT_406_the_details_view_shows_its_five_fields",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_AT_406_the_details_view_shows_its_five_fields",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_grid.py::test_AT_406_the_details_view_shows_its_five_fields",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_TC_513_the_section_equals_the_oracle",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_TC_513_the_section_equals_the_oracle",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_TC_513_the_section_equals_the_oracle",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_TC_513_the_section_equals_the_oracle",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_TC_513_the_section_equals_the_oracle",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_AT_504_the_details_show_and_edit_the_links",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_TC_513_rows_paint_done_and_archived_and_the_jump_clears_filters",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_TC_513_a_closed_tasks_rows_show_their_own_state",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_links.py::test_TC_513_a_jump_the_view_cannot_draw_is_said",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[LINK=http://e]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[B]bold?]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-[ red]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-a[b]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-x\\\\\\\\\\\\]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[notes-:smile: [b]y[/b]]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[LINK=http://e]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[B]bold?]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-[ red]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-a[b]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-x\\\\\\\\\\\\]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[title-:smile: [b]y[/b]]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[LINK=http://e]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[B]bold?]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-[ red]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-a[b]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-x\\\\\\\\\\\\]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[project-:smile: [b]y[/b]]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[LINK=http://e]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[B]bold?]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-[ red]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-a[b]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-x\\\\\\\\\\\\]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[phase-:smile: [b]y[/b]]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[LINK=http://e]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[B]bold?]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-[ red]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-a[b]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-x\\\\\\\\\\\\]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[url-:smile: [b]y[/b]]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[LINK=http://e]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[B]bold?]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-[ red]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-a[b]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-x\\\\\\\\\\\\]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[image-:smile: [b]y[/b]]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[LINK=http://e]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[B]bold?]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-[ red]x]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-a[b]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-x\\\\\\\\\\\\]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_show_bracketed_task_text_literally[viewer-title-:smile: [b]y[/b]]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_details_markup.py::test_details_still_highlight_the_notes",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_the_notes_own_the_screen_while_writing[120x36]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_the_notes_own_the_screen_while_writing[80x24]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_a_new_task_gets_the_same_room",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[80]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[84]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[88]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[92]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[96]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[100]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[104]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[108]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[112]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[116]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[120]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[124]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[128]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[132]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[136]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[140]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[threshold-1]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_every_chip_stays_reachable_at_every_width[threshold]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_focus_mark_shows_on_every_one_row_control",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_the_preview_paints_the_note_on_open",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_the_preview_follows_the_typing_to_the_last_line",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_the_preview_paints_markup_typed_in_a_note_as_text",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[LINK=http://e]x]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[B]bold?]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[[ red]x]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_a_bracket_textual_would_parse_neither_crashes_nor_vanishes[a[b]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_an_empty_note_previews_as_nothing",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_tab_walks_the_editor_and_save_works_from_the_keys[120x36]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_tab_walks_the_editor_and_save_works_from_the_keys[80x24]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_escape_discards_an_edited_task",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_the_editor_paints_its_keys_in_full[120x36]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_the_editor_paints_its_keys_in_full[80x24]",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_save_payload_round_trips_every_field",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_edit_window.py::test_project_modal_keeps_its_box",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_emoji_picker.py::test_ctrl_e_inserts_the_glyph_at_the_cursor",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_emoji_picker.py::test_escaping_the_picker_inserts_nothing",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_emoji_picker.py::test_ctrl_e_without_a_text_field_focused_does_not_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_emoji_picker.py::test_the_picker_says_when_it_is_showing_only_some",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_emoji_picker.py::test_both_editors_say_the_key_exists",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_english.py::test_AT_204_no_spanish_is_painted",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_flow_view.py::test_key_7_switches_to_flow_view",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_focus.py::test_pin_task_persists_and_appears_in_focus",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_focus.py::test_project_pin_includes_all_its_tasks",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_focus.py::test_focus_tab_cycles_presentations",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_focus.py::test_unpinning_the_selected_task_moves_the_cursor_within_focus",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_focus.py::test_focus_respects_archived_toggle",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_focus.py::test_inbox_task_project_pin_is_no_op_and_notifies",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_101_the_whole_board_is_on_screen[size0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_101_the_whole_board_is_on_screen[size1]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_102_down_walks_the_drawn_open_work[size0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_102_down_walks_the_drawn_open_work[size1]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_103_chips_and_the_dependency_gutter",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_104_the_ruler_is_at_the_top",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_105_the_echo_follows_the_selection",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_108_entering_on_a_done_task_lands_on_drawn_work",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_113_finishing_a_task_moves_one_row_and_an_extra_key_is_local",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_109_show_archived_grows_the_rest_count",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_110_focus_narrows_to_one_group_and_its_window",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_111_a_filter_narrows_nav_and_keeps_the_ruler",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_AT_112_the_legend_under_a_filter_describes_the_filtered_frame",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column[size0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column[size1]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_the_cycle_skips_loops_and_follows_the_filter",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_keys_are_painted_at_80_columns",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[wide-title]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_keys_survive_wide_titles_and_a_long_filter[long-filter]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_link_mode_keeps_the_waiters_group_open",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_link_mode_keeps_the_waiters_group_open",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_TC_512_a_folded_waiter_row_is_said",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_AT_503_link_in_the_gantt",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_AT_503_board_text_is_painted_as_text",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_link.py::test_R2_2_create_on_a_one_phase_board_is_refused",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_AT_205_a_long_project_says_how_much_is_off_the_page",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_AT_208_urgent_projects_stay_open",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_AT_209_weekends_are_painted_in_the_app",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_210_only_the_group_just_left_is_remembered",
+   "one_day": 0,
+   "due_only": 7,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_210_the_legend_asks_the_same_frame",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_AT_207_the_project_just_left_stays_open[size0-2]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_AT_207_the_project_just_left_stays_open[size1-1]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_AT_206_a_finished_task_says_where_it_folded",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_208_only_the_move_that_finishes_notifies",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_208_only_the_move_that_finishes_notifies",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_208_the_count_is_the_groups_own_with_v_on",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_208_the_count_follows_the_filter",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[b]x[/b]]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[/]]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[@click=app.quit]q[/]]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_history.py::test_phase_move_appends_one_transition",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_history.py::test_history_error_is_surfaced_without_aborting_move",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_priority.py::test_the_cursor_walks_the_band_first_in_the_app",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_priority.py::test_a_card_raised_to_high_joins_the_band_and_keeps_the_cursor",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_priority.py::test_the_app_paints_a_badge_on_every_open_card[grouped]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_priority.py::test_the_app_paints_a_badge_on_every_open_card[lanes]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size0-11.0-12]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size1-5.5-0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_301_cards_read_across_the_column[size2-None-0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_302_projects_are_named_once_and_done_is_a_rail",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_302_projects_are_named_once_and_done_is_a_rail",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_303_the_high_band_is_first_and_the_cursor_walks_it",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_305_the_kanban_spends_no_accent",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_305_the_kanban_spends_no_accent",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size0-oracle-0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size1-oracle-0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size2-oracle-2]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size3-14high-0]",
+   "one_day": 0,
+   "due_only": 15,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_307_the_selected_card_is_always_whole_on_screen[size4-14high-0]",
+   "one_day": 0,
+   "due_only": 15,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_304_a_board_full_of_highs_keeps_its_projects",
+   "one_day": 0,
+   "due_only": 15,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size0-to3-ta6]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size1-tw2-tm6]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_AT_308_finishing_a_card_keeps_the_cursor_on_the_board[size2-to3-None]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_TC_312_the_notification_prints_a_bracket_title_literally",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_TC_312_a_reset_selection_never_lands_on_a_counted_card[filter]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_TC_312_a_reset_selection_never_lands_on_a_counted_card[lost]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size1]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size2]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_kanban_readable.py::test_TC_309_a_filtered_board_walks_what_it_draws[size3]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_keymap.py::test_the_app_paints_its_keys_instead_of_a_blank_row",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_keymap.py::test_switching_views_restates_the_keys_for_that_view",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_lanes_grid.py::test_tab_cycles_swimlanes_presentations",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_legend.py::test_pressing_question_mark_opens_help_modal",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_legend.py::test_the_palette_follows_the_view_the_reader_is_on",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_legend.py::test_the_palette_lists_exactly_the_current_views_live_keys",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_legend.py::test_the_palette_keys_follow_the_views_scope",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_legend.py::test_the_palette_filters_commands_by_name_or_key",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_legend.py::test_the_palette_runs_a_selected_command",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_legend.py::test_the_palette_closes_without_running",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_migration.py::test_TC_516_one_toast_one_undo_step_mark_kept",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_migration.py::test_AT_506_an_old_board_opens_migrated_once_with_its_backup",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_migration.py::test_AT_507_a_board_needing_no_change_is_only_marked",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_migration.py::test_AT_508_a_backup_that_cannot_be_made_stops_the_app",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_migration.py::test_AT_508_a_read_only_board_stops_the_app_and_leaves_nothing",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_picker.py::test_TC_510_the_picker_filters_starts_on_a_candidate_and_creates",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_picker.py::test_AT_502_L_links_from_the_picker",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_picker.py::test_TC_507_the_app_refuses_a_loop_even_when_asked_directly",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_link_picker.py::test_TC_510_rows_paint_their_state_and_undo_takes_a_link_back",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_506_b_is_the_external_block_only",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_506_done_says_once_what_became_ready",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_AT_501_the_board_says_who_waits_and_b_is_an_outside_block",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_AT_505_work_others_wait_on_is_not_put_away",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_517_delete_is_judged_again_after_its_confirm",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_517_x_in_setup_never_touches_a_task",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_517_the_refusal_paints_a_markup_title_literally",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_517_a_project_whose_waiters_are_inside_archives",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size0]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size1]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_504_a_lanes_card_keeps_a_readable_title[size2]",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_links.py::test_TC_504_wide_lanes_still_paint_every_mark",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_401_board_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_402_synced_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_412_the_sync_failure_toast_shows_the_exception_text",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_412_the_sync_failure_toast_shows_the_exception_text",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_412_the_sync_failure_toast_shows_the_exception_text",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 1,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_markup_sites.py::test_AT_407_a_shared_config_cannot_act_or_crash",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_report.py::test_pressing_R_writes_the_report_and_reports_the_path",
+   "one_day": 0,
+   "due_only": 5,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_rescue.py::test_app_notifies_when_tasks_are_rescued",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_configured_identity_syncs_on_mount",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_key_0_switches_view",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_renders_grid_with_sections",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_esc_returns_to_previous_view",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_save_writes_team_json_and_settings",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_esc_leaves_files_unchanged",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_question_mark_opens_per_view_help_modal",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_help_modal_shows_usage_legend_example_and_keys",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_help_modal_m_opens_full_keymap",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_help_modal_question_mark_opens_command_palette",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_enter_edits_shared_directory",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_enter_edits_sync_interval",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_space_toggles_team_mode_enabled",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_a_adds_project_row",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_setup_help.py::test_setup_x_removes_roster_row",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_sync_fields.py::test_TC_413_sync_ticks_and_the_startup_save_keep_the_board_size",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_sync_fields.py::test_TC_418_setup_republishes_the_first_entry_validated",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_team_sync.py::test_first_run_team_mode_prompts_identity_and_syncs",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_team_sync.py::test_daemon_sync_pulls_foreign_tasks",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_team_views.py::test_standup_key_8_switches_view",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_team_views.py::test_action_team_filter_cycle",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_team_views.py::test_key_9_switches_to_people_view",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_team_views.py::test_cursor_in_people_without_a_team_does_not_crash",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[swimlanes-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[swimlanes-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[swimlanes-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[agenda-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[agenda-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[agenda-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[gantt-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[gantt-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[gantt-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[kanban-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[kanban-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[kanban-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[focus-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[focus-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[focus-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[flow-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[flow-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[flow-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[standup-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[standup-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[standup-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[people-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[people-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[people-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[setup-archived_only]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[setup-empty_board]",
+   "one_day": 0,
+   "due_only": 0,
+   "fresh": false
+  },
+  {
+   "node": "tests/test_view_survival.py::test_view_survives_cursor_keys_in_degraded_regime[setup-no_team_small_board]",
+   "one_day": 0,
+   "due_only": 11,
+   "fresh": false
+  }
+ ]
+}

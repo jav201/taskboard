@@ -1,0 +1,26 @@
+today 2026-10-04 · visible 31 · milestones 6 · kanban N tasks after 25
+w 118 · Website Redesign   facts '▐ Website Redesign  4 open · 1 high ↑ · project due +10d' = 56 cells · room 56
+w 118 · Mobile App         facts '▐ Mobile App  4 open · 1 high ↑ · project due +35d' = 50 cells · room 62
+w 118 · API Platform       facts '▐ API Platform  5 open · 2 high ↑ · at risk · project due +21d' = 62 cells · room 50
+w 118 · Data Warehouse     facts '▐ Data Warehouse  4 open · project due +60d' = 43 cells · room 69
+w 118 · Ops & Security     facts '▐ Ops & Security  5 open · 3 high ↑ · project due +5d' = 53 cells · room 59
+w 80 · Website Redesign   facts '▐ Website Redesign  4 open · 1 high ↑ · project due +10d' = 56 cells · room 18
+w 80 · Mobile App         facts '▐ Mobile App  4 open · 1 high ↑ · project due +35d' = 50 cells · room 24
+w 80 · API Platform       facts '▐ API Platform  5 open · 2 high ↑ · at risk · project due +21d' = 62 cells · room 12
+w 80 · Data Warehouse     facts '▐ Data Warehouse  4 open · project due +60d' = 43 cells · room 31
+w 80 · Ops & Security     facts '▐ Ops & Security  5 open · 3 high ↑ · project due +5d' = 53 cells · room 21
+
+## the height at 118 at which every band is drawn (no fold row)
+all bands drawn from height 30
+
+## the segments, by the prototype's layout, at the shipped rooms
+w 118 · Website Redesign   room  56: '◆ Oct 10 Launch new hom… · in 10d ── ◆ Sep 18 Mockups… ✓' (56)
+w 80 · Website Redesign   room  18: '◆ Oct 10 · in 10d' (17)
+w 118 · Mobile App         room  62: '◆ Nov 4 Beta release to testers · in 35d' (40)
+w 80 · Mobile App         room  24: '◆ Nov 4 · in 35d' (16)
+w 118 · API Platform       room  50: '◆ Oct 3 Partner notice emails · in 3d' (37)
+w 80 · API Platform       room  12: '' (0)
+w 118 · Data Warehouse     room  69: '◆ Oct 18 Revenue model signed off · in 18d' (42)
+w 80 · Data Warehouse     room  31: '◆ Oct 18 Revenue mode… · in 18d' (31)
+w 118 · Ops & Security     room  59: '◆ Sep 28 Security review sign-off · 2d late' (43)
+w 80 · Ops & Security     room  21: '◆ Sep 28 · 2d late' (18)
