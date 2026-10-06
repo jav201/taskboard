@@ -1,0 +1,30 @@
+
+    ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    │                                                                                                            │
+    │  Help · gantt                                                                                              │
+    │                                                                                                            │
+    │  Usage                                           Legend                                                    │
+    │                                                                                                            │
+    │  what it is for                                  ────  the span: ash is elapsed, colour is what remains    │
+    │    • the whole board, fitted to the open work.   ●  how far the work actually got                          │
+    │    • ▾ open · ▸ folded when it does not fit.     ◆  the project's committed due date                       │
+    │  first thing to do                               ╎  today                                                  │
+    │    • read the ruler on top: months and days;     ·┆·  calendar guide: Mondays, or the 1st                  │
+    │    • ⟦━⟧ marks the task's exact dates.           ┃  the ruler: a month starts here                         │
+    │  the marks                                       ⟦━⟧  the ruler: the selected task's exact dates           │
+    │    • ─ span · ● progress · ◆ due                 ◆  a milestone: one date, no bar                          │
+    │    • ╌ task, tip ○◔◑◕ = phase · ━ critical chain ◆✓  a milestone reached                                   │
+    │    • ↳ waits on another · ✓n done · ▲n late      ╌╌◔  a task's reach, tipped by its phase                  │
+    │    • ◆ title = a milestone · ◆✓ reached · M      ↳  waits on open work (red: starts too early)             │
+    │                                                  ◂▸  the work runs beyond the window                       │
+    │                                                  ▸  a folded project: its open count, no rows              │
+    │                                                  ✓2  finished work, folded into a count                    │
+    │                                                  Example                                                   │
+    │                                                                                                            │
+    │                                                  ▸ Ops     4 open  ◂───╎──●────◆··                         │
+    │  m full map · ? palette · esc/q closes                                                                     │
+    │                                                                                                            │
+    │                                                                                                            │
+    ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+

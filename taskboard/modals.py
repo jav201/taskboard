@@ -36,7 +36,7 @@ from textual.widgets.option_list import Option
 from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITIES,
                      Board, Project, Task, _new_id, city_names, dependents_chain,
                      is_open, link_candidates, link_conflicts, loopers_of,
-                     project_archive_refusal,
+                     open_dependents, project_archive_refusal,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
                      resolve_city, save_pil_image)
 from .keymap import palette_commands
@@ -327,7 +327,7 @@ class DatePickerMixin:
 # tests/test_edit_window.py walks 80..140 columns and both sides of this value.
 # Folded, the row needs 80 columns; below 80 the flags clip (80x24 is the
 # smallest size this editor supports).
-TASK_CHIPS_ONE_ROW = 122
+TASK_CHIPS_ONE_ROW = 137        # 122 + the milestone box (batch 2026-10-04-batch-02, p3_chip_threshold.py)
 
 
 def notes_preview(text: str) -> Text:
@@ -397,6 +397,10 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                     yield Select([(Text(p), p) for p in TASK_PRIORITIES],
                                  value=(t.priority if t else "normal"),
                                  allow_blank=False, id="f-priority")
+                    # one date, its due (LLR-601.3): in this half because the
+                    # dates-and-flags half has no room left at 80 columns
+                    yield Checkbox("milestone", value=bool(t.milestone) if t else False,
+                                   id="f-milestone")
                 with Horizontal(id="task-chips-when"):
                     yield Input(value=(t.start_date or "" if t else ""),
                                 placeholder="start", id="f-start", classes="date-input")
@@ -527,6 +531,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
             "blocked": bool(self.query_one("#f-blocked", Checkbox).value),
             "archived": bool(self.query_one("#f-archived", Checkbox).value),
             "pinned": bool(self.query_one("#f-pinned", Checkbox).value),
+            "milestone": bool(self.query_one("#f-milestone", Checkbox).value),
             "priority": self._val("f-priority"),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
@@ -900,6 +905,129 @@ class LinkPicker(ModalScreen[tuple[str, str] | None]):
 
     def action_cancel(self) -> None:
         self.dismiss(None)
+
+
+class MilestoneOffer(ModalScreen[list | None]):
+    """The one-time milestone offer (M-3 as a migration, LLR-605.4): the board's
+    one-day tasks pre-checked, its due-only tasks unchecked, each row naming its
+    project, its date and how many open tasks wait on it. `space` toggles the
+    highlighted row, `↵` answers with the checked tasks' own ids (by option index,
+    never a re-parsed string), `esc` answers with none. Every user string is a Text
+    piece (S1)."""
+
+    BINDINGS = [("escape", "not_now", "Not now"),
+                Binding("space", "toggle", "Toggle", priority=True, show=False)]
+
+    DEFAULT_CSS = """
+    MilestoneOffer { align: center middle; }
+    #offer-box { width: 96; max-width: 100%; height: auto; max-height: 100%;
+                 padding: 0 1; background: #0d1219; border: round #334154; }
+    #offer-box Label { margin: 0; }
+    #offer-list { height: auto; border: none; padding: 0; }
+    """
+
+    def __init__(self, board: Board, candidates: list, today: date):
+        super().__init__()
+        self.board = board
+        self.today = today
+        self._rows = [t for t, _p in candidates]
+        self._on = [preset for _t, preset in candidates]
+        self._index: dict[int, int] = {}          # option index -> row index
+
+    def _offer_row(self, i: int) -> Text:
+        """`▣ title   Project · Mon D[ · N waits on it]`: the title is cut with `…`
+        to the cells the row leaves, so its project and date always show (code review
+        O-1); only the box carries the colour (O-2)."""
+        t = self._rows[i]
+        p = self.board.project_by_id(t.project_id)
+        d = parse_iso(t.due_date)
+        waits = len(open_dependents(self.board, t))
+        meta = Text("   ", style=HEX["dim"])
+        meta.append(p.name if p else "Inbox")
+        meta.append(f" · {d:%b} {d.day}")
+        if waits:
+            meta.append(f" · {waits} wait{'s' if waits == 1 else ''} on it")
+        line = Text(no_wrap=True, overflow="ellipsis")
+        line.append("▣ " if self._on[i] else "□ ",
+                    style=HEX["accent"] if self._on[i] else HEX["mut"])
+        line.append(clip(t.title, max(4, self._width() - 2 - meta.cell_len)), style="bold")
+        line.append_text(meta)
+        return line
+
+    def _width(self) -> int:
+        """The cells a row has: the list's own width once laid out, else the box's."""
+        lists = self.query("#offer-list")
+        w = lists.first().scrollable_content_region.width if lists else 0
+        return w if w > 0 else min(96, self.app.size.width) - 6
+
+    def _offer_keys(self) -> Text:
+        n = sum(self._on)
+        return Text(f"space toggle  ·  ↵ convert {n}  ·  esc not now — won't ask again",
+                    style=HEX["dim"])
+
+    def compose(self) -> ComposeResult:
+        n = len(self._rows)
+        with Vertical(id="offer-box"):
+            yield Label(Text.assemble(("◆ Milestones", "bold"), " · convert one-day tasks?",
+                                      (f"   {n} candidate{'s' if n != 1 else ''} · shown once",
+                                       HEX["mut"])), classes="modal-title")
+            yield Label(Text("Converting keeps the task, its links and its history; "
+                             "it becomes a ◆ date.", style=HEX["dim"]))
+            yield OptionList(id="offer-list")
+            yield Label(self._offer_keys(), id="offer-keys")
+
+    def on_mount(self) -> None:
+        ol = self.query_one("#offer-list", OptionList)
+        options = []
+        first = None
+        for preset, heading in ((True, "One-day tasks (start = due)"),
+                                (False, "Due date, no start")):
+            part = [i for i in range(len(self._rows)) if self._on[i] is preset]
+            if not part:
+                continue
+            options.append(Option(Text(heading, style="bold"), disabled=True))
+            for i in part:
+                self._index[len(options)] = i
+                if first is None:
+                    first = len(options)
+                options.append(Option(self._offer_row(i)))
+        ol.add_options(options)
+        ol.highlighted = first
+        ol.focus()
+        self._fit(self.app.size.height)
+        self.call_after_refresh(self._repaint_rows)
+
+    def _repaint_rows(self) -> None:
+        """Re-cut every row to the width the list now has (after layout, on resize)."""
+        ol = self.query_one("#offer-list", OptionList)
+        for index, i in self._index.items():
+            ol.replace_option_prompt_at_index(index, self._offer_row(i))
+
+    def on_resize(self, event: events.Resize) -> None:
+        self._fit(event.size.height)
+        if self._index:
+            self.call_after_refresh(self._repaint_rows)
+
+    def _fit(self, height: int) -> None:
+        """The list scrolls inside the screen so the title and the keys row stay
+        painted at any height (ux UX-3): the box's border, title, line and keys
+        row take 5 rows; one more is air."""
+        self.query_one("#offer-list", OptionList).styles.max_height = max(3, height - 6)
+
+    def action_toggle(self) -> None:
+        ol = self.query_one("#offer-list", OptionList)
+        i = self._index.get(ol.highlighted) if ol.highlighted is not None else None
+        if i is None:
+            return                                # a heading: nothing to toggle
+        self._on[i] = not self._on[i]
+        ol.replace_option_prompt_at_index(ol.highlighted, self._offer_row(i))
+        self.query_one("#offer-keys", Label).update(self._offer_keys())
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self.dismiss([self._rows[i].id for i in range(len(self._rows)) if self._on[i]])
+
+    def action_not_now(self) -> None:
+        self.dismiss([])
 
 
 class GanttLinkMode(ModalScreen[tuple[str, str] | None]):
@@ -1439,7 +1567,8 @@ class TaskDetails(ModalScreen[None]):
                 yield Label("Project")
                 yield Label(Text(proj_name))
                 yield Label("Phase")
-                yield Label(Text(t.phase + (" · blocked" if t.blocked else "")))
+                yield Label(Text(t.phase + (" · blocked" if t.blocked else "")
+                                 + (" · ◆ milestone" if t.milestone else "")))
                 yield Label("Priority")
                 yield Label(Text(t.priority))
                 yield Label("Start")
@@ -1625,9 +1754,13 @@ class HelpModal(ModalScreen[None]):
                  show_archived: bool = False,
                  team_state=None, team_filter: str = "equipo",
                  selected_id: str | None = None, gantt_focus: str | None = None,
-                 gantt_previous: str | None = None):
+                 gantt_previous: str | None = None, kanban_presentation: str = "grouped",
+                 kanban_group: str = "project", kanban_focus: str | None = None):
         super().__init__()
         self._mode = mode
+        self._kanban = {"kanban_presentation": kanban_presentation,   # the kanban's legend
+                        "kanban_group": kanban_group,                 # reads what it draws
+                        "kanban_focus": kanban_focus}                 # (code review K-1)
         self._selected_id = selected_id      # the gantt's legend reads the frame
         self._gantt_focus = gantt_focus      # the screen shows (code review F3)
         self._gantt_previous = gantt_previous
@@ -1647,7 +1780,7 @@ class HelpModal(ModalScreen[None]):
                                  team_filter=self._team_filter,
                                  selected_id=self._selected_id,
                                  gantt_focus=self._gantt_focus,
-                                 gantt_previous=self._gantt_previous)
+                                 gantt_previous=self._gantt_previous, **self._kanban)
         example, example_meaning = help_example(self._mode)
         with VerticalScroll(id="help-modal-box"):
             yield Label(Text(f"Help · {self._mode}", style="bold"), classes="modal-title")

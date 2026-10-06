@@ -1,0 +1,36 @@
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_milestone_offer.py tests/test_milestone_offer_seam.py   # increment-003 product (models 221276da, app da16dda6, modals f541ccc0 = the 003 r2 freeze) + increment-004 tests; new names stubbed, the export's seam raising=False
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations0-True]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations1-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations2-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations3-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations4-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[migrations5-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[x-False]
+PASSED tests/test_milestone_offer.py::test_TC_614_the_mark_is_read_totally[None-False]
+PASSED tests/test_milestone_offer.py::test_TC_616_no_offer_on_an_unreadable_load
+PASSED tests/test_milestone_offer.py::test_TC_616_a_read_only_board_without_candidates_says_nothing
+PASSED tests/test_milestone_offer_seam.py::test_seam_unmarked_starts_see_no_offer_and_no_offer_write
+FAILED tests/test_milestone_offer.py::test_TC_614_the_candidates_of_the_one_day_board_in_order
+FAILED tests/test_milestone_offer.py::test_TC_614_what_is_never_a_candidate
+FAILED tests/test_milestone_offer.py::test_TC_615_backup_log_flags_mark_and_never_twice
+FAILED tests/test_milestone_offer.py::test_TC_615_none_chosen_marks_without_backup_and_counts_the_ineligible
+FAILED tests/test_milestone_offer.py::test_TC_615_a_malformed_mark_is_replaced_backed_up_and_logged
+FAILED tests/test_milestone_offer.py::test_TC_615_any_failure_leaves_the_file_untouched_and_unmarked[backup]
+FAILED tests/test_milestone_offer.py::test_TC_615_any_failure_leaves_the_file_untouched_and_unmarked[log]
+FAILED tests/test_milestone_offer.py::test_TC_615_any_failure_leaves_the_file_untouched_and_unmarked[save]
+FAILED tests/test_milestone_offer.py::test_TC_615_a_failing_cleanup_still_restores_first
+FAILED tests/test_milestone_offer.py::test_TC_615_a_team_pull_sees_no_extra_user
+FAILED tests/test_milestone_offer.py::test_TC_616_a_seeded_board_is_marked_and_never_offered
+FAILED tests/test_milestone_offer.py::test_TC_616_enter_with_nothing_checked_is_not_now
+FAILED tests/test_milestone_offer.py::test_TC_616_both_migrations_on_one_start_undo_the_offer_first
+FAILED tests/test_milestone_offer.py::test_TC_616_quitting_unanswered_leaves_the_board_unmarked
+FAILED tests/test_milestone_offer.py::test_TC_617_rows_order_marks_and_keys
+FAILED tests/test_milestone_offer.py::test_TC_617_enter_returns_the_checked_candidates_own_ids
+FAILED tests/test_milestone_offer.py::test_TC_617_user_text_paints_literally
+FAILED tests/test_milestone_offer.py::test_TC_617_thirty_four_candidates_fit_80x24
+FAILED tests/test_milestone_offer.py::test_AT_604_only_what_was_picked_is_converted_backed_up_logged_and_undoable
+FAILED tests/test_milestone_offer.py::test_AT_605_not_now_and_no_candidate_mark_and_convert_nothing
+FAILED tests/test_milestone_offer.py::test_AT_606_a_backup_that_cannot_be_made_changes_nothing
+FAILED tests/test_milestone_offer_seam.py::test_seam_marked_starts_see_the_offer
+22 failed, 11 passed in 3.74s
+exit 1

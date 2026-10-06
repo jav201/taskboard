@@ -1,0 +1,91 @@
+# p0-probes — batch 2026-10-04-batch-02 — 2026-10-04T21:22:04-06:00 — HEAD 4b2c13a
+
+## RC-1 (a)
+$ git rev-parse HEAD origin/main; git merge-base HEAD origin/main
+4b2c13ae6ab2ad66ceaa6b54e2f9abbc8900f7d2
+4b2c13ae6ab2ad66ceaa6b54e2f9abbc8900f7d2
+4b2c13ae6ab2ad66ceaa6b54e2f9abbc8900f7d2
+
+## RC-2
+$ git ls-remote --exit-code --heads origin | wc -l ; exit
+5
+exit 0
+$ git log -1 --format=%ci origin/main
+2026-10-04 19:06:52 -0600
+
+## RC-1 (b) already-shipped check (origin/main)
+milestone          
+date_links         
+push_delta         
+◆✓             
+convert one-day    
+shift+left         
+shift+right        
+alt+left           
+dependents:        origin/main:taskboard/models.py:1 
+
+## B1 reverse census (symbol -> test files)
+_gantt_bar           test_app.py test_gantt.py test_gantt_board.py 
+gantt_plan           test_app.py test_gantt.py test_gantt_board.py test_gantt_link.py test_gantt_polish.py 
+GanttGroup           
+gantt_month_row      
+gantt_echo           test_gantt_board.py test_gantt_polish.py 
+_gantt_legend        test_gantt_board.py test_vertical_fill.py 
+gantt_tasks          test_archive.py 
+_band_facts          
+_band_rule           test_kanban_readable.py 
+_windowed_header     test_app.py 
+phase_buckets        test_app.py test_kanban_readable.py 
+kanban_plan          test_kanban_readable.py 
+kanban_order         test_app.py test_dependencies.py test_kanban_priority.py test_kanban_readable.py 
+nav_model            test_app.py test_archive.py test_flow_view.py test_gantt_board.py test_kanban_priority.py test_kanban_readable.py test_lanes_grid.py test_swimlanes.py test_team_views.py 
+_UNDO_FIELDS         
+bump_due             test_momentum.py 
+due_bump             test_app.py test_momentum.py 
+_TASK_KEYS           
+from_dict            test_app.py test_palette_ration.py test_rescue.py test_sync_fields.py 
+TaskModal            test_app.py test_edit_window.py test_emoji_picker.py test_markup_sites.py 
+TaskDetails          test_app.py test_details_grid.py test_details_links.py test_details_markup.py test_markup_sites.py 
+KEYMAP               test_app.py test_archive.py test_dependencies.py test_kanban_priority.py test_keymap.py test_legend.py test_link_picker.py test_links.py test_momentum.py test_readme.py test_report.py 
+_migrate_links       
+run_link_migration   test_link_migration.py 
+help_usage           test_english.py test_kanban_priority.py test_kanban_readable.py test_links.py test_markup_sites.py 
+legend_entries       test_archive.py test_colour_budget_app.py test_gantt_board.py test_gantt_polish.py test_kanban_priority.py test_kanban_readable.py test_legend.py test_markup_census.py 
+◆                  test_app.py test_colour_budget_app.py test_gantt.py test_gantt_board.py test_gantt_link.py test_swimlanes.py 
+
+## B2 file moves
+none planned: new files only (tests), no rename
+
+## B3 goldens
+$ ls tests/goldens
+ls: cannot access 'tests/goldens': No such file or directory
+
+## A (judged) module map
+$ ls docs/ARCHITECTURE.md
+ls: cannot access 'docs/ARCHITECTURE.md': No such file or directory
+$ ls taskboard/*.py
+taskboard/__init__.py
+taskboard/__main__.py
+taskboard/app.py
+taskboard/history.py
+taskboard/keymap.py
+taskboard/modals.py
+taskboard/models.py
+taskboard/report.py
+taskboard/ribbon.py
+taskboard/team_sync.py
+taskboard/views.py
+taskboard/wave.py
+
+## US-4 move mode exists?
+$ grep -n 'shift+\|alt+\|move_mode\|cascade\|date_links' taskboard/*.py
+taskboard/models.py:1663:    """THE overlap measure (`cascade.overlap`, one everywhere — D-503), in days,
+(exit 0)
+
+## F2 backlog currency
+6:**Base ref:** `0447070` (local HEAD == `origin/main`; batch 2026-10-04-batch-01 started here)
+HEAD 4b2c13a
+
+## F1 flow identity
+V7 clean in the kickoff run (0 block); installed skills HEAD:
+1d3c364 flow rev100 closefix 1 — the bundle re-synced (--sync-bundle)

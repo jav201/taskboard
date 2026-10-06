@@ -1,0 +1,47 @@
+TODAY 2026-09-30 · tasks 28 · phases ['Backlog', 'Next', 'Doing', 'Review', 'Done']
+
+## M-3 candidates over one_day_board (the offer's two groups, in the frame's order)
+▣ ta3  Partner notice emails        API Platform       Oct 3 · one-day task · 1 waits on it
+▣ tw5  Launch new homepage          Website Redesign   Oct 10 · one-day task
+▣ tm5  Beta release to testers      Mobile App         Nov 4 · one-day task
+□ to3  Review pull requests         Ops & Security     Sep 30 · due date, no start
+□ to2  Rotate API keys              Ops & Security     Oct 3 · due date, no start
+□ tw4  Optimize image assets        Website Redesign   Oct 6 · due date, no start · 1 waits on it
+□ ta2  Deprecate v1 endpoints       API Platform       Oct 7 · due date, no start
+□ tw6  SEO redirects map            Website Redesign   Oct 14 · due date, no start
+one-day: 3 due-only: 5
+
+## M-1 milestone chips and tones over milestone_board
+tw5  Launch new homepage          due 2026-10-10 phase Backlog  tone violet  chip '  in 10d'
+tm5  Beta release to testers      due 2026-11-04 phase Backlog  tone sky     chip '  in 35d'
+ta3  Partner notice emails        due 2026-10-03 phase Next     tone lime    chip '   in 3d'
+tw0  Mockups approved             due 2026-09-18 phase Done     tone ash     chip '  ✓ done'
+to0  Security review sign-off     due 2026-09-28 phase Next     tone over    chip '     ▲2d'
+td0  Revenue model signed off     due 2026-10-18 phase Backlog  tone amber   chip '  in 18d'
+
+## M-2 band-rule order per project (_ms_bits: late, upcoming by date, last reached)
+Website Redesign   Launch new homepage [violet] in 10d | Mockups approved [ash] ✓
+Mobile App         Beta release to testers [sky] in 35d
+API Platform       Partner notice emails [lime] in 3d
+Data Warehouse     Revenue model signed off [amber] in 18d
+Ops & Security     Security review sign-off [over] 2d late
+
+## M-2 band segments at the frame's room (118 wide)
+Website Redesign   room  70: '◆ Oct 10 Launch new homepage · in 10d ── ◆ Sep 18 Mockups approved ✓' (68)
+Website Redesign   room  40: '◆ Oct 10 Launch new homepage · in 10d' (37)
+Website Redesign   room  20: '◆ Oct 10 · in 10d' (17)
+Mobile App         room  70: '◆ Nov 4 Beta release to testers · in 35d' (40)
+Mobile App         room  40: '◆ Nov 4 Beta release to testers · in 35d' (40)
+Mobile App         room  20: '◆ Nov 4 · in 35d' (16)
+API Platform       room  70: '◆ Oct 3 Partner notice emails · in 3d' (37)
+API Platform       room  40: '◆ Oct 3 Partner notice emails · in 3d' (37)
+API Platform       room  20: '◆ Oct 3 · in 3d' (15)
+Data Warehouse     room  70: '◆ Oct 18 Revenue model signed off · in 18d' (42)
+Data Warehouse     room  40: '◆ Oct 18 Revenue model signed … · in 18d' (40)
+Data Warehouse     room  20: '◆ Oct 18 · in 18d' (17)
+Ops & Security     room  70: '◆ Sep 28 Security review sign-off · 2d late' (43)
+Ops & Security     room  40: '◆ Sep 28 Security review sign… · 2d late' (40)
+Ops & Security     room  20: '◆ Sep 28 · 2d late' (18)
+
+## HLR-603 count threshold (executed on base 4b2c13a, kanban `N tasks` = visible tasks)
+visible tasks: 31 · milestones: 6 · non-milestone: 25

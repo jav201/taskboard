@@ -1,0 +1,9 @@
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_kanban_milestones.py -k "help_names or legend_names or band_of_done"   # increment 003 r1 product + the K-1/K-2 arms
+PASSED tests/test_kanban_milestones.py::test_TC_613_the_kanban_help_names_the_band_milestone
+FAILED tests/test_kanban_milestones.py::test_TC_613_the_legend_names_the_band_milestone_exactly_when_drawn[grouped-project-True]
+FAILED tests/test_kanban_milestones.py::test_TC_613_the_legend_names_the_band_milestone_exactly_when_drawn[matrix-project-False]
+FAILED tests/test_kanban_milestones.py::test_TC_613_the_legend_names_the_band_milestone_exactly_when_drawn[lanes-project-False]
+FAILED tests/test_kanban_milestones.py::test_TC_613_the_legend_names_the_band_milestone_exactly_when_drawn[grouped-priority-False]
+FAILED tests/test_kanban_milestones.py::test_TC_613_a_band_of_done_cards_carries_its_milestone_and_the_legend_says_so
+5 failed, 1 passed, 65 deselected in 0.55s
+exit 1

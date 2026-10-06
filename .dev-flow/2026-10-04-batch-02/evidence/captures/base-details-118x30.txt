@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             28 tasks
+BACKLOG  ╭──────────────────────────────────────────────────────────────────────────────────────────────────╮3
+─────────│                                                                                                  │─────────
+── high  │  Launch new homepage  —  o open raw · esc close                                                  │─────────
+▊ !! Laun│                                                                                                  │
+▊ ·30d ◂2│  Project    Website Redesign                                                                     │
+┈┈┈┈┈┈┈┈┈│  Phase      Backlog                                                                              │
+▊ !! Offl│  Priority   high                                                                                 │
+▊ ·15d ▸1│  Start      2026-10-14                                                                           │
+┈┈┈┈┈┈┈┈┈│  Due        2026-10-14                                                                           │
+▲ !! Depr│                                                                                                  │
+▊    endp│  Dependencies  ◂ waiting  L link · tab links · x remove · ↵ jump                                 │
+┈┈┈┈┈┈┈┈┈│  Waits on  ◂2 open of 2                                                                          │
+▊ !! Pen-│  Build component library   REVIEW · due Oct 1 · open                                             │
+▊ ·9d Ops│  Optimize image assets   NEXT · due Oct 10 · open                                                │
+▐ Website│  Unblocks  ▸0 direct · 0 in chain                                                                │─────────
+▊ == SEO │                                                                                                  │n homepa…
+▊ ·22d +1│  Notes  highlight: ==…== yellow, !!…!! red, ++…++ green                                          │18d ago
+▐ Mobile │  —                                                                                               │─────────
+▊ == Beta│                                                                                                  │p CI pip…
+▊    test│  URLs                                                                                            │12d ago
+▐ API Pla│                                                                                                  │─────────
+▊ == Plan│  —                                                                                               │
+▊ ·40d   │                                                                                                  │
+         │  Images                                                                                          │
+         │                                                                                              ▇▇  │
+         │                                                                                                  │
+▼ 2 below╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+  21:51:43 · Sun 04 Oct 2026 · W40 · Mexico City 21:51 · New York 23:51
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

@@ -1,0 +1,2 @@
+FAILED tests/test_milestones.py::test_TC_605_the_editor_box_applies_after_the_dates[due-only]
+1 failed, 20 passed, 19 deselected in 9.34s

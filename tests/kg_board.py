@@ -231,3 +231,35 @@ def legacy(path: Path | str, *, old_done: bool = True) -> Board:
     b.settings = {"wip_limits": {"Doing": 4, "Review": 3}}
     b.save()
     return b
+
+
+# --- milestones (batch 2026-10-04-batch-02, §5) -------------------------------
+# The prototype's round-5 boards (`variants_round5.one_day_board` / `milestone_board`),
+# re-derived. `today` is the board's own today: `TODAY` for `build`, `date.today()` for
+# `shifted` — every offset below is relative to it, as the frames are.
+ONE_DAY = (("tw5", 10), ("tm5", 35), ("ta3", 3))     # Launch, Beta release, Partner notice
+ADDED_MILESTONES = (("tw0", "pweb", "Mockups approved", "Done", -12, ["tw1"]),
+                    ("to0", "pops", "Security review sign-off", "Next", -2, []),
+                    ("td0", "pdwh", "Revenue model signed off", "Backlog", 18, ["td4"]))
+MILESTONE_IDS = {"tw5", "tm5", "ta3", "tw0", "to0", "td0"}
+
+
+def one_day(b: Board, today: date = TODAY) -> Board:
+    """The operator's habit: milestones typed as one-day tasks (start == due)."""
+    for tid, off in ONE_DAY:
+        t = b.task_by_id(tid)
+        t.start_date = t.due_date = (today + timedelta(days=off)).isoformat()
+    return b
+
+
+def milestones(b: Board, today: date = TODAY) -> Board:
+    """`one_day` converted, plus one reached, one late and one ahead milestone."""
+    one_day(b, today)
+    for tid, _off in ONE_DAY:
+        b.task_by_id(tid).milestone = True
+    for tid, pid, title, phase, off, deps in ADDED_MILESTONES:
+        d = (today + timedelta(days=off)).isoformat()
+        b.tasks.append(Task(title, project_id=pid, phase=phase, start_date=d, due_date=d,
+                            depends_on=list(deps), phase_changed=d, milestone=True, id=tid))
+    b.task_by_id("td5").depends_on = ["td0"]
+    return b

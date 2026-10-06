@@ -665,6 +665,27 @@ def bump_due(task: "Task", delta: int, today: date) -> None:
     saves (the `set_task_phase` convention)."""
     base = parse_iso(task.due_date) or today
     task.due_date = (base + timedelta(days=delta)).isoformat()
+    if task.milestone:                  # a milestone moves whole: one date (D-605)
+        task.start_date = task.due_date
+
+
+MILESTONE_NEEDS_DATE = "a milestone needs a date — give it a due date first"
+
+
+def set_milestone(task: "Task", on: bool) -> str | None:
+    """Make `task` a milestone (`on`) or a task again (LLR-601.1). A milestone has
+    ONE date, its due: the start becomes the due, or — with only a start — the
+    due becomes the start. With no readable date nothing changes and the reason
+    is returned; no date is ever invented. Clearing touches the flag only."""
+    if not on:
+        task.milestone = False
+        return None
+    due, start = parse_iso(task.due_date), parse_iso(task.start_date)
+    if due is None and start is None:
+        return MILESTONE_NEEDS_DATE
+    day = (due or start).isoformat()
+    task.milestone, task.start_date, task.due_date = True, day, day
+    return None
 
 
 def _extra_keys(d: dict, known: set[str]) -> dict:
@@ -677,7 +698,7 @@ _PROJECT_KEYS = {"id", "name", "color", "status", "archived", "pinned", "start_d
                  "due_date", "extra"}
 _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
               "due_date", "notes", "urls", "images", "archived", "pinned", "extra",
-              "phase_changed", "depends_on",
+              "phase_changed", "depends_on", "milestone",
               "status", "url"}          # last two: legacy, consumed by the migration
 
 
@@ -803,6 +824,9 @@ class Task:
     # has no history, so this can only ever start counting from now. `None`
     # means UNKNOWN and must never be read as zero.
     phase_changed: str | None = None
+    # one date, its due, no duration (batch 2026-10-04-batch-02, D-603). Only the
+    # boolean true counts: a hand-edited or synced "yes" is not a milestone.
+    milestone: bool = False
     extra: dict = field(default_factory=dict)
     id: str = field(default_factory=_new_id)
 
@@ -848,6 +872,7 @@ class Task:
                 # additive; absent -> unknown, never back-filled with a guess
                 phase_changed=(d.get("phase_changed")
                                if isinstance(d.get("phase_changed"), str) else None),
+                milestone=d.get("milestone") is True,
             )
         except Exception as exc:                    # never let one bad task raise
             return _rescue_task(d, type(exc).__name__)
@@ -892,7 +917,11 @@ class Board:
     def load(cls, path: str | Path) -> "Board":
         path = Path(path)
         if not path.exists():
-            board = cls(*seed_data(), path=path)
+            # a board this version seeds is new-model data: neither migration has
+            # anything to read on it (D-617; B1's links, this batch's milestones)
+            board = cls(*seed_data(), path=path,
+                        settings={"migrations": {"links": LINKS_MIGRATION,
+                                                 "milestones": MILESTONES_MIGRATION}})
             board.save()
             return board
         try:
@@ -1575,6 +1604,127 @@ def run_link_migration(board: Board, today: date | None = None) -> LinkMigration
             board.settings["migrations"] = old_mark
         else:
             board.settings.pop("migrations", None)
+        name = Path(exc.filename).name if exc.filename else target.name
+        result.error = f"{name}: {exc.strerror or type(exc).__name__}"
+    return result
+
+
+# ---- the one-time milestone offer (HLR-605, M-3 as a migration) ---------------
+# An existing board holds the operator's habit: milestones typed as one-day tasks
+# (start == due) and dated tasks with no start. The offer shows them ONCE; it
+# converts exactly what the user checks, a backup and a log first, and records the
+# mark whatever the answer, so it never shows again (operator: "Sí: respaldo +
+# registro + deshacer").
+MILESTONES_MIGRATION = 1
+MILESTONE_BACKUP = ".pre-milestones"
+MILESTONE_LOG = ".milestones-log"
+MILESTONE_LOG_NOTE = ("restoring the backup brings back a board without the offer's mark; "
+                      "the offer is shown again at the next start")
+
+
+def milestones_marked(settings: dict) -> bool:
+    """Marked ⇔ `settings["migrations"]` is a dict whose `milestones` is exactly
+    the int 1 — read totally, as `links_marked` reads its own key (LLR-605.1)."""
+    m = settings.get("migrations")
+    return (isinstance(m, dict) and type(m.get("milestones")) is int
+            and m.get("milestones") == MILESTONES_MIGRATION)
+
+
+def milestone_candidates(board: Board) -> list[tuple[Task, bool]]:
+    """`(task, preset)` for every open board task (the first of a repeated id) that
+    is not a milestone, has a text title and a readable due: preset when its
+    readable start equals its due (one-day), not preset when it has no start
+    (due-only); any other start is a duration and not a candidate. Group 1 first,
+    then by due, then board order (LLR-605.1)."""
+    by_id = _ids(board)
+    rows = []
+    for i, t in enumerate(board.tasks):
+        if by_id.get(t.id) is not t:
+            continue                    # a repeated id: the first one only (B1 F4)
+        if (not is_open(board, t) or t.milestone or not isinstance(t.title, str)):
+            continue
+        due = parse_iso(t.due_date)
+        if due is None:
+            continue
+        if t.start_date is None or t.start_date == "":
+            rows.append((False, due, i, t))
+        elif parse_iso(t.start_date) == due:
+            rows.append((True, due, i, t))
+    rows.sort(key=lambda r: (not r[0], r[1], r[2]))
+    return [(t, preset) for preset, _d, _i, t in rows]
+
+
+@dataclass
+class MilestoneConversion:
+    changes: list[dict]
+    ineligible: int = 0
+    backup: str | None = None
+    log: str | None = None
+    error: str | None = None
+
+
+def run_milestone_offer(board: Board, chosen, today: date | None = None
+                        ) -> MilestoneConversion | None:
+    """Answer the offer ONCE (LLR-605.2). None on an unreadable load or a marked
+    board. Converts each CANDIDATE (re-read now) whose id was chosen, at most once;
+    chosen ids no longer candidates are counted, never converted. With anything to
+    convert — or a malformed mark to replace — the board file's bytes are read once,
+    here, and backed up, then logged, by exclusive create; then the flags, the mark
+    and ONE atomic save. Any failure restores the board in memory FIRST, then removes
+    this run's files best-effort, and returns the reason (basename and strerror)."""
+    if board.load_report.get("file_unreadable") or milestones_marked(board.settings):
+        return None
+    chosen = list(chosen)
+    had_mark = "migrations" in board.settings
+    old_mark = board.settings.get("migrations")
+    replaced = (had_mark and not isinstance(old_mark, dict)) or (
+        isinstance(old_mark, dict) and "milestones" in old_mark)
+    cands = [t for t, _preset in milestone_candidates(board)]
+    picked = set(chosen)
+    convert = [t for t in cands if t.id in picked]          # each at most once
+    result = MilestoneConversion([], len(picked - {t.id for t in convert}))
+    # each converted task's stored dates, byte-exact: converting writes the due in
+    # canonical form, so both come back on a failure and with `u` (security S4-1)
+    before = [(t, t.milestone, t.start_date, t.due_date) for t in convert]
+    target = board.path.resolve()
+    made: list[str] = []
+    try:
+        if convert or replaced:
+            raw = target.read_bytes()
+            result.backup = _create_beside(target, MILESTONE_BACKUP, raw).name
+            made.append(result.backup)
+            log = {"date": (today or date.today()).isoformat(), "backup": result.backup,
+                   "replaced_mark": old_mark if replaced else None,
+                   "note": MILESTONE_LOG_NOTE,
+                   "changes": [{"task_id": t.id, "title": t.title, "start_before": t.start_date,
+                                "due_before": t.due_date,
+                                "start_after": parse_iso(t.due_date).isoformat()}
+                               for t in convert]}
+            result.log = _create_beside(target, MILESTONE_LOG,
+                                        json.dumps(log, indent=2).encode("utf-8")).name
+            made.append(result.log)
+        for t in convert:
+            set_milestone(t, True)
+        mark = dict(old_mark) if isinstance(old_mark, dict) else {}
+        mark["milestones"] = MILESTONES_MIGRATION
+        board.settings["migrations"] = mark
+        board.save_atomic()
+        result.changes = [{"task_id": t.id, "title": t.title, "start_before": s0,
+                           "due_before": d0, "start_after": t.start_date}
+                          for t, _m0, s0, d0 in before]
+    except OSError as exc:
+        for t, m0, s0, d0 in before:             # the board first …
+            t.milestone, t.start_date, t.due_date = m0, s0, d0
+        if had_mark:
+            board.settings["migrations"] = old_mark
+        else:
+            board.settings.pop("migrations", None)
+        for name in made:                        # … then this run's files, best-effort
+            try:
+                (target.parent / name).unlink(missing_ok=True)
+            except OSError:
+                pass
+        result.backup = result.log = None
         name = Path(exc.filename).name if exc.filename else target.name
         result.error = f"{name}: {exc.strerror or type(exc).__name__}"
     return result

@@ -1,0 +1,6 @@
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_milestones.py -k AT_601   # base 4b2c13a product; the module's two new imports stubbed so the AT itself runs (code review F-5)
+E           KeyError: 'milestone'
+tests\test_milestones.py:455: KeyError
+FAILED tests/test_milestones.py::test_AT_601_a_task_becomes_a_milestone_saved_undoable_said_and_pushed
+1 failed, 39 deselected in 2.64s
+exit 1

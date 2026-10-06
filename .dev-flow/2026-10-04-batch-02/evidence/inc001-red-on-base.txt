@@ -1,0 +1,14 @@
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_milestones.py   # base 4b2c13a product + increment-001 tests
+ImportError while importing test module '<home>\AppData\Local\Temp\claude\<session>\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\red001\tests\test_milestones.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+<home>\anaconda3\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_milestones.py:28: in <module>
+    from taskboard.models import (MILESTONE_NEEDS_DATE, Board, Project, Task, bump_due,
+E   ImportError: cannot import name 'MILESTONE_NEEDS_DATE' from 'taskboard.models' (<home>\AppData\Local\Temp\claude\<session>\f46e746a-67bb-40fe-b907-7aec72789cc7\scratchpad\red001\taskboard\models.py)
+=========================== short test summary info ===========================
+ERROR tests/test_milestones.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.63s
+exit 2

@@ -18,11 +18,13 @@ from textual.widgets import Static
 
 from . import history
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
-                     archive_refusal, bump_due, default_board_path, link_refusal,
-                     next_priority, ready_messages, run_link_migration, strip_controls,
-                     waiting_ids)
+                     archive_refusal, bump_due, default_board_path, is_open, link_refusal,
+                     milestone_candidates, milestones_marked, next_priority, parse_iso,
+                     ready_messages, run_link_migration, run_milestone_offer,
+                     set_milestone, strip_controls, waiting_ids)
 from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
-                     HelpModal, ImageViewer, PhaseEditor, ProjectModal, ProjectPicker,
+                     HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+                     ProjectPicker,
                      StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
@@ -31,6 +33,10 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
 from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, sort_by_due,
                     render_view, valid_url)
+
+def _md(d: date) -> str:
+    return f"{d:%b} {d.day}"
+
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
 # the ambient's cycle length is this times the number of phases it rotates
@@ -230,7 +236,7 @@ class TaskboardApp(App):
         "kanban_sort", "kanban_group", "collapse_toggle",
         "focus_cycle", "focus_exit", "due_bump", "undo", "standup",
         "toggle_presentation", "cursor", "hmove",
-        "pin_toggle", "project_pin_toggle"})
+        "pin_toggle", "project_pin_toggle", "milestone_toggle"})
 
     def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
         """While a modal is open, release the board's priority arrow/vim bindings
@@ -262,6 +268,50 @@ class TaskboardApp(App):
         self.set_interval(TICK_SECONDS, self._tick)
         self._warn_if_rescued()
         self._init_team_mode()
+        # LAST: the one-time milestone offer covers whatever start opened (the
+        # identity picker included) until it is answered (D-615)
+        self._offer_milestones()
+
+    def _offer_milestones(self) -> None:
+        """The one-time milestone offer (HLR-605): nothing on an unreadable load or
+        a marked board; a board with no candidate is marked silently (a failed write
+        here says nothing — no offer was shown, D-616); otherwise the offer opens
+        and its answer is applied. Quitting unanswered leaves the board unmarked."""
+        if self.board.load_report.get("file_unreadable") or milestones_marked(self.board.settings):
+            return
+        cands = milestone_candidates(self.board)
+        if not cands:
+            run_milestone_offer(self.board, [])
+            return
+        self.push_screen(MilestoneOffer(self.board, cands, date.today()),
+                         self._on_offer_answered)
+
+    def _on_offer_answered(self, chosen: list | None) -> None:
+        result = run_milestone_offer(self.board, list(chosen or []), date.today())
+        if result is None:
+            return
+        if result.error is not None:
+            self.notify(f"Milestone offer stopped: {result.error}. The board file was not "
+                        "changed; the offer returns at the next start.",
+                        title="Milestones", severity="error", timeout=30, markup=False)
+            return
+        late = (f" · {result.ineligible} no longer eligible" if result.ineligible else "")
+        if result.changes:
+            self._undo_stack.append({"milestones": [
+                {"task_id": ch["task_id"],
+                 "fields": {"milestone": False, "start_date": ch["start_before"],
+                            "due_date": ch["due_before"]}}
+                for ch in result.changes]})
+            n = len(result.changes)
+            self.notify(f"Milestones: {n} converted{late} · backup {result.backup} · u undo",
+                        title="Milestones", timeout=30, markup=False)
+        elif late:
+            self.notify(f"Milestones: 0 converted{late}", title="Milestones", timeout=30,
+                        markup=False)
+        else:
+            self.notify("Not now — this offer won't show again; M makes any task a "
+                        "milestone.", title="Milestones", timeout=30, markup=False)
+        self.refresh_view()
 
     def _migrate_links(self) -> bool:
         """The one-time link migration (HLR-505). Returns False when it failed:
@@ -530,7 +580,10 @@ class TaskboardApp(App):
                                    team_filter=self.team_filter,
                                    selected_id=self.selected_task_id,
                                    gantt_focus=self.focused_project_id,
-                                   gantt_previous=self._gantt_previous))
+                                   gantt_previous=self._gantt_previous,
+                                   kanban_presentation=self.kanban_presentation,
+                                   kanban_group=self.kanban_group,
+                                   kanban_focus=self.focused_project_id))
 
     async def _on_palette_run(self, action: str | None) -> None:
         """Execute the action selected from the palette, if any."""
@@ -656,6 +709,21 @@ class TaskboardApp(App):
             else:
                 self.selected_task_id = order[0] if order else None
             return
+        if self.view_mode == "kanban":
+            # a milestone is never a kanban card (LLR-603.1, D-614): the selection
+            # moves to the first card of the nearest drawn column at or left of
+            # its phase, in the presentation's own column order (the `z` rule)
+            tasks = [t for t in tasks if not t.milestone]
+            sel = board.task_by_id(self.selected_task_id)
+            if sel is not None and sel.milestone:
+                cols = [col for col in self._nav_columns() if col]     # built once (K-3)
+                ph, best = board.phase_index(sel), None
+                for col in cols:
+                    if (cp := board.phase_index(board.task_by_id(col[0]))) <= ph:
+                        if best is None or cp > best[0]:
+                            best = (cp, col[0])
+                first = cols[0][0] if cols else None
+                self.selected_task_id = best[1] if best else first
         ids = [t.id for t in tasks]
         if self.selected_task_id not in ids:
             self.selected_task_id = ids[0] if ids else None
@@ -795,11 +863,14 @@ class TaskboardApp(App):
         board text: shown raw with markup OFF, never escaped (security S-1)."""
         group = gantt_group_key(self.board, task)
         board = self._view_board()
-        rest = next((len(g.rest) for g in gantt_plan(board, self.show_archived, None,
-                                                     date.today(), 10 ** 6,
-                                                     self.focused_project_id)
-                     if group_key(g.project) == group),
-                    0)
+        g = next((g for g in gantt_plan(board, self.show_archived, None, date.today(),
+                                        10 ** 6, self.focused_project_id)
+                  if group_key(g.project) == group), None)
+        if task.milestone and g is not None and any(t is task for t in g.rows):
+            # a reached milestone stays drawn among its group's rows (D-606, D-614)
+            self.notify(f"{clip(task.title, 40)} reached · ◆✓ · u undo", markup=False)
+            return
+        rest = len(g.rest) if g is not None else 0
         self.notify(f"{task.title} done · folded into ✓{rest} · u undo", markup=False)
 
     def action_prio_cycle(self) -> None:
@@ -811,6 +882,68 @@ class TaskboardApp(App):
         task.priority = next_priority(task.priority)
         self.board.save()
         self.refresh_view()
+
+    def action_milestone_toggle(self) -> None:
+        """`M` — the selected task becomes a milestone (one date, its due) or a
+        task again (LLR-601.2). A task with no date is refused and nothing is
+        written; otherwise ONE undo step, taken before the change, and a toast
+        saying where the milestone now shows."""
+        task = self.selected_task
+        if task is None:
+            return
+        snap = self._snapshot(task)
+        old_start = parse_iso(task.start_date)
+        err = set_milestone(task, not task.milestone)
+        if err:
+            self.notify(err, title="Milestone", severity="warning", markup=False)
+            return
+        self._undo_stack.append(snap)
+        self.board.save()
+        self.refresh_view()
+        name = clip(task.title, 40)
+        if not task.milestone:
+            self.notify(f"{name} is a task again · u undo", title="Milestone", markup=False)
+            return
+        day = parse_iso(task.due_date)
+        moved = (f" · start was {_md(old_start)}"
+                 if old_start is not None and old_start != day else "")
+        self.notify(f"{name} is a milestone · ◆ {_md(day)}{moved} · "
+                    f"{self._milestone_where(task)} · u undo",
+                    title="Milestone", markup=False)
+
+    def _milestone_where(self, task: Task) -> str:
+        """Where a milestone shows: on its project's kanban band only when that
+        band is drawn here — the grouped project grouping and a project that
+        still has an open card that is not a milestone (D-607, D-623)."""
+        p = self.board.project_by_id(task.project_id)
+        if (self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+                and self.kanban_group == "project" and p is not None
+                and any(t.project_id == p.id and not t.milestone
+                        and is_open(self.board, t) for t in self.board.tasks)):
+            return f"on the {p.name} band"
+        return "shown on the gantt"
+
+    def _apply_editor_milestone(self, task: Task, want: bool,
+                                prior_start: str | None = None,
+                                was_milestone: bool = False) -> None:
+        """The editor's milestone box, applied AFTER every other field (LLR-601.3):
+        the due is the date, so a start that differs from it is replaced — and said
+        when the task BECOMES a milestone or the user changed the start field (an
+        existing milestone's untouched start field, still showing its old date, is
+        not news: code review F-4, F2-1); a box ticked on a task with no date leaves
+        it a task, and says so."""
+        if not want:
+            set_milestone(task, False)
+            return
+        start, due = parse_iso(task.start_date), parse_iso(task.due_date)
+        if set_milestone(task, True):
+            task.milestone = False
+            self.notify("not a milestone — a milestone needs a date (other changes saved)",
+                        title="Milestone", severity="warning", markup=False)
+        elif (start is not None and due is not None and start != due
+                and (not was_milestone or start != parse_iso(prior_start))):
+            self.notify(f"milestone: the start follows the due ({_md(due)})",
+                        title="Milestone", markup=False)
 
     def action_toggle_blocked(self) -> None:
         """`b` — the EXTERNAL block (`▲`): a block with no task to point at.
@@ -950,10 +1083,11 @@ class TaskboardApp(App):
     # they mutate nothing, so there is nothing to undo. A modal add records
     # NOTHING: creation is deliberate, deletion covers the destructive path.
     _UNDO_FIELDS = ("phase", "phase_changed", "priority", "blocked",
-                    "due_date", "archived", "pinned", "depends_on")
+                    "due_date", "archived", "pinned", "depends_on",
+                    "start_date", "milestone")
 
     def _snapshot(self, task: Task, *, deleted: bool = False) -> dict:
-        """The pre-mutation state of ONE task: the six mutable fields VERBATIM
+        """The pre-mutation state of ONE task: the `_UNDO_FIELDS` VERBATIM
         — the stamp included, because restoring `phase` without `phase_changed`
         would fabricate a fresh-looking card (the models.py:1016 honesty rule).
         A delete keeps the FULL task object and its position, so the
@@ -983,6 +1117,18 @@ class TaskboardApp(App):
         writes nothing."""
         while self._undo_stack:
             entry = self._undo_stack.pop()
+            if "milestones" in entry:
+                # the whole conversion is ONE step; the mark stays (D-610)
+                for one in entry["milestones"]:
+                    t = self.board.task_by_id(one["task_id"])
+                    if t is not None:
+                        for f, v in one["fields"].items():
+                            setattr(t, f, v)
+                self.board.save()
+                self.refresh_view()
+                self.notify("Milestone conversion undone — the tasks are back as they were",
+                            title="Undo", severity="information", markup=False)
+                return
             if "migration" in entry:
                 # the whole link migration is ONE step; the mark stays, so it
                 # never runs again on its own (D-517)
@@ -1516,7 +1662,9 @@ class TaskboardApp(App):
     def _on_task_added(self, data: dict | None) -> None:
         if not data:
             return
+        want = data.pop("milestone", False)
         task = Task(**data)
+        self._apply_editor_milestone(task, want)
         self.board.add_task(task)
         self.selected_task_id = task.id
         self.refresh_view()
@@ -1544,6 +1692,8 @@ class TaskboardApp(App):
             return
         waiting = waiting_ids(self.board)
         archive = data.pop("archived", None)
+        want = data.pop("milestone", None)
+        prior_start, was_milestone = task.start_date, task.milestone
         for k, v in data.items():
             if k == "phase":
                 # routed through the board so the move is DATED; assigning it
@@ -1551,6 +1701,8 @@ class TaskboardApp(App):
                 self.board.set_task_phase(task, v)
                 continue
             setattr(task, k, v)
+        if want is not None:
+            self._apply_editor_milestone(task, want, prior_start, was_milestone)
         # the archive box is judged AFTER the edited phase (architect A-12): an
         # edit that finishes the task and archives it is allowed
         if archive is not None and not (archive and not task.archived and self._refuse(

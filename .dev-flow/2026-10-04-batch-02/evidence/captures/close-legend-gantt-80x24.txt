@@ -1,0 +1,24 @@
+
+  ╭──────────────────────────────────────────────────────────────────────────╮
+  │                                                                          │
+  │  Help · gantt                                                            │
+  │                                                                          │
+  │  Usage                                           Legend                  │
+  │                                                                          │
+  │  what it is for                                  ────  the span: ash is  │
+  │    • the whole board, fitted to the open work.   ●  how far the work ac  │
+  │    • ▾ open · ▸ folded when it does not fit.     ◆  the project's commi  │
+  │  first thing to do                               ╎  today                │
+  │    • read the ruler on top: months and days;     ·┆·  calendar guide: M  │
+  │    • ⟦━⟧ marks the task's exact dates.           ┃  the ruler: a month   │
+  │  the marks                                       ⟦━⟧  the ruler: the se  │
+  │    • ─ span · ● progress · ◆ due                 ◆  a milestone: one da  │
+  │    • ╌ task, tip ○◔◑◕ = phase · ━ critical chain ◆✓  a milestone reache  │
+  │    • ↳ waits on another · ✓n done · ▲n late      ╌╌◔  a task's reach, t  │
+  │    • ◆ title = a milestone · ◆✓ reached · M      ↳  waits on open work   │
+  │  m full map · ? palette · esc/q closes                                   │
+  │                                                                          │
+  │                                                                          │
+  ╰──────────────────────────────────────────────────────────────────────────╯
+
+

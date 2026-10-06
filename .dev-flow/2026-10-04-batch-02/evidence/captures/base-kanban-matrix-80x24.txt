@@ -1,0 +1,24 @@
+KANBAN · matrix                                                        28 tasks
+              │◀ 1 NEXT     5│DOING      6/4│REVIEW     4/3│DONE         3│ prog
+──────────────┼──────────────┼──────────────┼──────────────┼──────────────┼─────
+▐ Website Red…│ ▊            │ ▊            │ ▊            │ ▊            │  42%
+▐ Mobile App  │ ▊            │ ▊            │ ▊            │ ▊            │  42%
+▐ API Platform│ ▊            │ ▊▊           │ ▊            │ ·            │  33%
+▐ Data Wareho…│ ▊            │ ▊            │ ·            │ ▊            │  35%
+▐ Ops & Secur…│ ▊            │ ▊            │ ▊            │ ·            │  30%
+──────────────┴──────────────┴──────────────┴──────────────┴──────────────┴─────
+ ▊ Fix checkout 500 error                         Website Redesign · Doing · 3/5
+
+
+
+
+
+
+
+
+
+
+
+
+  21:51:41 · Sun 04 Oct 2026 · W40 · Mexico City 21:51 · New York 23:51
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

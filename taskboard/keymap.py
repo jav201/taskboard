@@ -83,6 +83,10 @@ KEYMAP: tuple[Key, ...] = (
     Key("u", "u", "undo", "Undo", group="task"),
     Key("t", "t", "pin_toggle", "Pin task", group="task"),
     Key("T", "T", "project_pin_toggle", "Pin proj", group="task"),
+    # `M` — one date, its due: a milestone (batch 2026-10-04-batch-02, D-604).
+    # Shifted like `L`; `m` stays free for moving linked dates (B2b).
+    Key("M", "M", "milestone_toggle", "Milestone", group="task",
+        views=("swimlanes", "agenda", "gantt", "kanban", "focus")),
 
     # -- phase / priority -----------------------------------------------------
     Key("[", "[", "phase_move(-1)", "Phase−", group="phase"),

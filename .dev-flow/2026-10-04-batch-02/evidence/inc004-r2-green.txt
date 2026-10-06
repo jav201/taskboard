@@ -1,0 +1,6 @@
+PASSED tests/test_milestone_offer.py::test_TC_615_odd_due_spellings_come_back_exactly_on_failure
+PASSED tests/test_milestone_offer.py::test_TC_615_the_log_records_the_start_actually_written
+PASSED tests/test_milestone_offer.py::test_TC_616_u_restores_both_dates_byte_exact
+PASSED tests/test_milestone_offer.py::test_TC_616_the_offer_covers_the_identity_picker_until_answered
+PASSED tests/test_milestone_offer.py::test_TC_617_a_long_title_is_cut_before_its_project_and_date
+5 passed, 32 deselected in 1.19s

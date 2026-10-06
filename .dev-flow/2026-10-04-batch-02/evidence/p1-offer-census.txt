@@ -1,0 +1,7 @@
+$ PYTHONPATH=.dev-flow/2026-10-04-batch-02/evidence python -m pytest -q -p no:cacheprovider -p p1_offer_census   # base 4b2c13a, 2026-10-04T21:31:48-06:00
+........................................................................ [ 99%]
+..                                                                       [100%]
+OFFER CENSUS {"app_starts": 541, "starts_with_any_candidate": 274, "starts_with_a_one_day_candidate": 0, "tests_with_any_candidate": 251, "tests_starting_an_app": 372, "files_with_any_candidate": ["tests/test_app.py", "tests/test_archive.py", "tests/test_colour_budget.py", "tests/test_colour_budget_app.py", "tests/test_control_bytes.py", "tests/test_details_links.py", "tests/test_edit_window.py", "tests/test_english.py", "tests/test_flow_view.py", "tests/test_focus.py", "tests/test_gantt_board.py", "tests/test_gantt_link.py", "tests/test_gantt_polish.py", "tests/test_kanban_priority.py", "tests/test_kanban_readable.py", "tests/test_keymap.py", "tests/test_lanes_grid.py", "tests/test_legend.py", "tests/test_link_migration.py", "tests/test_link_picker.py", "tests/test_links.py", "tests/test_markup_sites.py", "tests/test_report.py", "tests/test_setup_help.py", "tests/test_team_sync.py", "tests/test_team_views.py", "tests/test_view_survival.py"]}
+
+2306 passed in 427.32s (0:07:07)
+exit 0

@@ -11,6 +11,45 @@ the archive/delete guard, the one-time link migration with backup, log, undo and
 rev99 from a read-only snapshot). `test_win_clipboard_roundtrip` remains an intermittent
 environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
 
+## Open — after `2026-10-04-batch-02` (Batch B2a: milestones and the one-time offer)
+
+- **Batch B2b — moving a task's dates moves what waits on it** (US-604; D-601, the pre-authorized
+  B2a/B2b split): push by default, a per-project setting, `m` per move. P0 found no gantt move or
+  edit mode at base (`2026-10-04-batch-02/evidence/p0-probes.txt` §US-4), so it is ≥ 3 increments
+  alone. Architect notes (A-14): the cascade wraps `bump_due` / `set_milestone`; a milestone's due
+  is authoritative (its start follows); re-derive the round-6 frames against `Task.milestone`.
+- **The link migration has the cleanup-before-restore pattern** (security S-4, MEDIUM, B2 P2): in
+  `run_link_migration` a failing `unlink` of its own backup/log inside the error handler can raise
+  before the board and the mark are restored. B2's offer restores first and cleans up best-effort;
+  give the link migration the same order (and a RED arm with a refusing `unlink`).
+- **A task whose title is not text crashes the app** (security S-9, LOW, pre-existing): a board
+  file with `"title": 5` (or a list) reaches string-only paths at render. B2 only keeps such a task
+  out of the milestone offer (D-625). Fix at the load boundary (coerce or quarantine), with a test.
+- **The kanban `?` legend reads the unfiltered board** (code review K2-1, LOW): its `◆` band-rule
+  line is shown when any band has a milestone, including bands folded off screen or filtered out.
+- **A late milestone can sit below the fold on the kanban** (ux UX2-2, PV-605): at 118×30 the high
+  band pushes Ops & Security's late milestone off screen; a marker on the fold row (`▾ N more · ▲1 ◆`)
+  would say it.
+- **A project with only milestones draws no kanban band** (D-623): a rule-only band would carry its
+  milestones; today they show on the gantt only.
+- **Milestones in the other views**: lanes, agenda and focus draw a milestone as a plain task (the
+  flag is ignored there). Decide per view with a prototype round first.
+- **`u` on a single-task change is silent** (ux UXV-3, LOW): after `M` in the kanban the card leaves
+  or rejoins the columns with no message; a one-line undo toast would say what came back.
+- **The `?` help at 80 cells cuts lines mid-word with no `…`** (ux UXV-6, LOW; every legend line,
+  not only the new ones).
+- **Test strength, LOW** (qa P4 F-3..F-5): several AT arms set the selection directly instead of
+  walking with keys; nothing pushes offer-converted milestones to a team folder (same path as `M`,
+  covered by AT-601); AT-602's month-row ash `◆` is checked as "any", not at Mockups' column.
+- **A failed backup write leaves a partial file** (security close S5-3, LOW): `_create_beside`
+  (shared by the link migration and the milestone offer) does not remove its exclusively created
+  file when the write itself fails (a full disk); the board is never harmed and the next run takes
+  `.1`. Unlink it on a failed write, with a RED arm.
+- **`Mon D` formatter in three copies** (code review F-6, NIT): `_md` in `models.py`, `views.py`
+  and `app.py`; keep one.
+- `test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011): it failed on
+  its own clipboard SETUP in every B2 gate run.
+
 ## Open — after `2026-10-04-batch-01` (Batch B1: waits-on links)
 
 - **Present a whole project** (operator request with the visual verdict, 2026-10-04 — a new
@@ -21,7 +60,7 @@ environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
   las tareas en un formato apropiado para presentar. Además de poder exportar SVG o una imagen de
   lo proyectado." Open questions for the round: full-screen view vs export-only; page size and
   pagination; which task text (notes, links); the export path and file naming.
-- **Batch B2 — milestones, moving linked dates, the M-3 offer** (D-501, the pre-authorized B1/B2
+- ✓ B2a done in `2026-10-04-batch-02` (milestones M-1/M-2 and the M-3 offer); moving linked dates is B2b above — **Batch B2 — milestones, moving linked dates, the M-3 offer** (D-501, the pre-authorized B1/B2
   split): milestones M-1/M-2, moving a task's dates moves what waits on it (round 6), the one-time
   M-3 milestone offer. Seed: the kg_mejoras verdict frames; the waits-on model and the one overlap
   measure (`models.link_overlap`, D-503) are in place. Batch C (the chain map view) keeps key `6`.
