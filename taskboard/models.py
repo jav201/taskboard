@@ -1810,24 +1810,217 @@ def dependents_chain(board: Board, task: Task) -> list[tuple[Task, int]]:
 
 
 def link_overlap(waiter: Task, pred: Task) -> int:
-    """THE overlap measure (`cascade.overlap`, one everywhere — D-503), in days,
+    """THE overlap measure (`cascade.overlap`, one everywhere — D-503, D-633), in days,
     both days counting: a waiter with a start overlaps by `pred.due − start + 1`;
     one with no start compares dues, `pred.due − waiter.due`; 0 when a date it
-    needs is absent. A start ON the predecessor's due day is 1 day."""
-    pdue = parse_iso(pred.due_date)
-    if pdue is None:
-        return 0
-    start = parse_iso(waiter.start_date)
-    if start is not None:
-        return max(0, (pdue - start).days + 1)
-    due = parse_iso(waiter.due_date)
-    return max(0, (pdue - due).days) if due is not None else 0
+    needs is absent. A start ON the predecessor's due day is 1 day. The single
+    rule lives in `_cascade_overlap` (D-633) — this reads the STORED dates."""
+    return _cascade_overlap(parse_iso(waiter.start_date), parse_iso(waiter.due_date),
+                            parse_iso(pred.due_date))
 
 
 def link_conflicts(board: Board, task: Task) -> list[tuple[Task, int]]:
     """The open predecessors whose overlap with `task` is ≥ 1 day (rule 9′)."""
     return [(p, n) for p in open_predecessors(board, task)
             if (n := link_overlap(task, p)) >= 1]
+
+
+# --- moving linked dates (batch 2026-10-06-batch-01, LLR-604.1) ----------------
+CASCADE_MODES = ("flag", "push_delta", "together")
+CASCADE_ALL_MODES = CASCADE_MODES + ("push",)
+CASCADE_DEFAULT_MODE = "push_delta"
+
+
+@dataclass
+class Plan:
+    """What one date move does to a chain, computed before anything is written."""
+    mode: str
+    moved: dict = field(default_factory=dict)          # id -> (start|None, due|None)
+    shift: dict = field(default_factory=dict)          # id -> days
+    conflicts: list = field(default_factory=list)      # (waiter, pred, TOTAL days) after
+    new_conflicts: list = field(default_factory=list)  # (waiter, pred, ADDED days)
+    project_over: dict = field(default_factory=dict)   # project id -> days past due, after
+    project_over_before: dict = field(default_factory=dict)
+
+
+def _cascade_dates(t: Task) -> tuple[date | None, date | None]:
+    """A task's dates for the cascade: a milestone's start IS its due (the shipped
+    invariant), so the milestone always takes the start arm of the measure."""
+    s, d = parse_iso(t.start_date), parse_iso(t.due_date)
+    if t.milestone and d:
+        s = d
+    return s, d
+
+
+def _cascade_open(board: Board, t: Task) -> bool:
+    return not board.is_done(t) and not t.archived
+
+
+def _cascade_dependents(board: Board, tid: str) -> list[Task]:
+    return [t for t in board.tasks if tid in t.depends_on and _cascade_open(board, t)]
+
+
+def _cascade_downstream(board: Board, tid: str) -> set[str]:
+    """Open tasks that transitively wait on tid, through open tasks only."""
+    t = board.task_by_id(tid)
+    if t is None or not _cascade_open(board, t):
+        return set()
+    seen, todo = set(), [tid]
+    while todo:
+        for w in _cascade_dependents(board, todo.pop()):
+            if w.id not in seen:
+                seen.add(w.id)
+                todo.append(w.id)
+    return seen
+
+
+def _cascade_overlap(ws: date | None, wd: date | None, pdue: date | None) -> int:
+    """`link_overlap`'s rule on PLANNED dates (D-633 — ONE measure, the same one
+    the screen paints): both days count on the start arm."""
+    if pdue is None:
+        return 0
+    if ws is not None:
+        return max(0, (pdue - ws).days + 1)
+    return max(0, (pdue - wd).days) if wd is not None else 0
+
+
+def resolve_mode(board: Board, task_id: str, override: str | None = None) -> str:
+    """The mode a move runs under: the per-move override, else the moved task's
+    project's `date_links`, else the default. A stored value outside the three
+    modes reads as the default (the lenient model — it arrives from a file)."""
+    if override in CASCADE_ALL_MODES:
+        return override
+    t = board.task_by_id(task_id)
+    pr = board.project_by_id(t.project_id) if t is not None else None
+    v = pr.extra.get("date_links") if pr is not None else None
+    return v if v in CASCADE_MODES else CASCADE_DEFAULT_MODE
+
+
+def plan_move(board: Board, task_id: str, start_delta: int, due_delta: int, mode: str,
+              today: date) -> Plan:
+    """Plan the cascade of one date move — pure, writes nothing.
+
+    Modes (LLR-604.1): `flag` moves nothing else (the shipped ↳ conflict mark is
+    the flag); `push_delta` (DEFAULT) pushes a dependent later by only the overlap
+    the move ADDED — slack absorbs, a pre-existing overlap is tolerated, a zero or
+    earlier move pulls nothing; `together` shifts the whole open downstream by the
+    due delta, both directions (all gaps kept); `push` (strict finish-to-start) is
+    accepted under its name and offered nowhere. Done/archived never move and stop
+    the chain. A milestone ignores `start_delta` and moves whole. An undated moved
+    task bases its dates on `today` (the bump's own rule) before the cascade is
+    computed."""
+    assert mode in CASCADE_ALL_MODES, mode
+    t = board.task_by_id(task_id)
+    if t.milestone:
+        start_delta = due_delta
+    s, d = _cascade_dates(t)
+    if s is None and start_delta:
+        s = today
+    if d is None and due_delta:
+        d = today
+    plan = Plan(mode)
+    plan.moved[task_id] = (s + timedelta(days=start_delta) if s else None,
+                           d + timedelta(days=due_delta) if d else None)
+    plan.shift[task_id] = due_delta
+    down = _cascade_downstream(board, task_id)
+
+    def new(x: Task):
+        return plan.moved.get(x.id, _cascade_dates(x))
+
+    def put(w: Task, k: int):
+        ws, wd = _cascade_dates(w)
+        kk = timedelta(days=k)
+        plan.moved[w.id] = (ws + kk if ws else None, wd + kk if wd else None)
+        plan.shift[w.id] = k
+
+    if mode == "together" and due_delta:
+        for wid in down:
+            put(board.task_by_id(wid), due_delta)
+    elif mode in ("push", "push_delta"):
+        todo = [task_id]
+        while todo:
+            for w in _cascade_dependents(board, todo.pop(0)):
+                k = 0
+                for p in w.depends_on:
+                    pt = board.task_by_id(p)
+                    if pt is None or not _cascade_open(board, pt):
+                        continue
+                    ov_new = _cascade_overlap(*_cascade_dates(w), new(pt)[1])
+                    ov_old = (_cascade_overlap(*_cascade_dates(w), _cascade_dates(pt)[1])
+                              if mode == "push_delta" else 0)
+                    k = max(k, ov_new - ov_old)
+                if k > plan.shift.get(w.id, 0):
+                    put(w, k)
+                    todo.append(w.id)
+
+    def old(x: Task):
+        return _cascade_dates(x)
+
+    def conflicts(dates) -> list[tuple[str, str, int]]:
+        out = []
+        for w in board.tasks:
+            if not _cascade_open(board, w):
+                continue
+            for p in w.depends_on:
+                pt = board.task_by_id(p)
+                if pt and _cascade_open(board, pt):
+                    ov = _cascade_overlap(*dates(w), dates(pt)[1])
+                    if ov:
+                        out.append((w.id, p, ov))
+        return out
+
+    before = {(a, b_): n for a, b_, n in conflicts(old)}
+    plan.conflicts = conflicts(new)
+    plan.new_conflicts = [(a, b_, n - before.get((a, b_), 0))   # the ADDED days; a
+                          for a, b_, n in plan.conflicts         # pair that never existed
+                          if n > before.get((a, b_), 0)]         # before is still added
+
+    def over(ids, dates) -> dict[str, int]:
+        out: dict[str, int] = {}
+        for i in ids:
+            x = board.task_by_id(i)
+            pr = board.project_by_id(x.project_id)
+            pdue = parse_iso(pr.due_date) if pr else None
+            nd = dates(x)[1]
+            if pdue and nd and nd > pdue:
+                out[pr.id] = max(out.get(pr.id, 0), (nd - pdue).days)
+        return out
+
+    plan.project_over = over(plan.moved, new)
+    plan.project_over_before = over([x.id for x in board.tasks], old)
+    return plan
+
+
+def apply_plan(board: Board, plan: Plan) -> None:
+    """Write a plan's dates. A milestone's stored start follows its due (the plan
+    holds them equal); a task that vanished since the plan is skipped (C-2)."""
+    for tid, (s, d) in plan.moved.items():
+        t = board.task_by_id(tid)
+        if t is None:
+            continue
+        if t.start_date is not None and s:
+            t.start_date = s.isoformat()
+        if d:
+            t.due_date = d.isoformat()
+
+
+def snapshot(board: Board, plan: Plan) -> dict[str, tuple[str | None, str | None]]:
+    """One undo step: the stored dates of every task the plan will touch (a task
+    that vanished since the plan is skipped — its bytes are already gone)."""
+    out = {}
+    for i in plan.moved:
+        t = board.task_by_id(i)
+        if t is not None:
+            out[i] = (t.start_date, t.due_date)
+    return out
+
+
+def restore(board: Board, snap: dict) -> None:
+    for i, (s, d) in snap.items():
+        t = board.task_by_id(i)
+        if t is None:
+            continue
+        t.start_date, t.due_date = s, d
 
 
 def loop_path(board: Board, waiter: Task, pred: Task) -> list[Task] | None:

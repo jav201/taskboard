@@ -3,7 +3,7 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `0447070` (local HEAD == `origin/main`; batch 2026-10-04-batch-01 started here)
+**Base ref:** `e085cef` (local HEAD == `origin/main`; batch 2026-10-06-batch-01 started here)
 · **Last refresh:** 2026-10-04
 **Status:** **2296 tests** (batch `2026-10-04-batch-01`, Batch B1: waits-on links — `◂N`/`▸N`,
 the ready message, `L` through the picker and the gantt link mode, the details dependency section,
@@ -11,13 +11,26 @@ the archive/delete guard, the one-time link migration with backup, log, undo and
 rev99 from a read-only snapshot). `test_win_clipboard_roundtrip` remains an intermittent
 environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
 
-## Open — after `2026-10-04-batch-02` (Batch B2a: milestones and the one-time offer)
+- ✓ done in `2026-10-06-batch-01` (operator's visual verdict 2026-10-07: PV-612..PV-615 + UXV-6
+  all accepted) — **B2b: moving a task's dates moves what waits on it** (US-604): the cascade
+  engine (push_delta default, ONE measure — the shipped `link_overlap`), the `+`/`-` bump and the
+  editor routed through it with the C-3 toast and one undo entry, `m` re-applying the last move
+  under the next mode, the per-project `date_links` setting in the project editor. 2512 tests
+  green; 27 mutants killed across three batteries.
 
-- **Batch B2b — moving a task's dates moves what waits on it** (US-604; D-601, the pre-authorized
-  B2a/B2b split): push by default, a per-project setting, `m` per move. P0 found no gantt move or
-  edit mode at base (`2026-10-04-batch-02/evidence/p0-probes.txt` §US-4), so it is ≥ 3 increments
-  alone. Architect notes (A-14): the cascade wraps `bump_due` / `set_milestone`; a milestone's due
-  is authoritative (its start follows); re-derive the round-6 frames against `Task.milestone`.
+## Open — after `2026-10-06-batch-01` (Batch B2b: moving linked dates)
+
+- **The tested `restore` is not the code path the app runs** (P4 DS-5, LOW): production hand-rolls
+  two restore loops while `models.restore` is unit-tested — three copies of one rule can drift.
+- **`bump_due` has no production caller** (P4 ARCH4-4/SEC4-6, LOW): its today-base is
+  re-implemented in `plan_move`; two implementations of one rule.
+- **`Plan.conflicts` (the totals) is computed but consumed by nobody** (P4 ARCH4-3, NIT).
+- **The C-5 vanished-task arm is unreachable through the UI** (P4 SEC4-3, LOW): deleting a task
+  pushes its own undo entry, evicting the cascade entry the gate reads.
+- **Toast rungs below 80 columns are unpinned** (P4 GAP-3): degrade by design (count rungs, then
+  the clipped lead); the contract pins 118/80 only.
+
+## Open — after `2026-10-04-batch-02` (Batch B2a: milestones and the one-time offer)
 - **The link migration has the cleanup-before-restore pattern** (security S-4, MEDIUM, B2 P2): in
   `run_link_migration` a failing `unlink` of its own backup/log inside the error handler can raise
   before the board and the mark are restored. B2's offer restores first and cleans up best-effort;

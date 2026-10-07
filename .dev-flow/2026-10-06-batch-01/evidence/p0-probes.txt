@@ -1,0 +1,71 @@
+# p0 probes — batch 2026-10-06-batch-01 (B2b, moving linked dates), 2026-10-06
+
+## B1 reverse census — symbols the cascade touches, asserted by other requirements' tests:
+### bump_due
+  tests/test_milestones.py
+  tests/test_momentum.py
+  tests/__pycache__/test_milestones.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_momentum.cpython-312-pytest-8.3.4.pyc
+  def: taskboard/models.py:658:def bump_due(task: "Task", delta: int, today: date) -> None:
+### set_milestone
+  tests/test_milestones.py
+  tests/__pycache__/test_milestones.cpython-312-pytest-8.3.4.pyc
+  def: taskboard/models.py:675:def set_milestone(task: "Task", on: bool) -> str | None:
+### move_task
+### shift_task
+### open_predecessors
+  tests/test_details_links.py
+  tests/test_links.py
+  tests/__pycache__/test_details_links.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_links.cpython-312-pytest-8.3.4.pyc
+  def: taskboard/models.py:1755:def open_predecessors(board: Board, task: Task, by_id: dict | None = None) -> list[Task]:
+### link_conflicts
+  def: taskboard/models.py:1827:def link_conflicts(board: Board, task: Task) -> list[tuple[Task, int]]:
+### waits_on
+### depends_on
+  tests/kg_board.py
+  tests/test_app.py
+  tests/test_dependencies.py
+  tests/test_details_links.py
+  tests/test_gantt.py
+  tests/test_gantt_board.py
+  tests/test_gantt_link.py
+  tests/test_links.py
+  tests/test_link_migration.py
+  tests/test_link_picker.py
+  tests/test_milestones.py
+  tests/test_setup_help.py
+  tests/__pycache__/kg_board.cpython-312.pyc
+  tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_app.cpython-312.pyc
+  tests/__pycache__/test_dependencies.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_details_links.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_gantt.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_gantt.cpython-312.pyc
+  tests/__pycache__/test_gantt_board.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_gantt_link.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_links.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_link_migration.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_link_picker.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_milestones.cpython-312-pytest-8.3.4.pyc
+  tests/__pycache__/test_setup_help.cpython-312-pytest-8.3.4.pyc
+
+## B3 goldens:
+ls: cannot access 'tests/goldens': No such file or directory
+
+## F2 backlog header:
+# BACKLOG — taskboard (canonical, cross-batch)
+
+Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
+No `docs/engineering-rules.md` exists in this repo, so this is the default location.
+
+**Base ref:** `0447070` (local HEAD == `origin/main`; batch 2026-10-04-batch-01 started here)
+
+## RC-1 (b) — US-604's outcome is not already shipped (the executed grep, Q-6):
+$ git grep -l "push_delta\|date_links\|plan_move" origin/main
+  origin/main:.dev-flow/2026-10-04-batch-01/01-requirements.md
+  origin/main:.dev-flow/2026-10-04-batch-01/PLAN.md
+  origin/main:.dev-flow/2026-10-04-batch-02/PLAN.md
+  origin/main:.dev-flow/2026-10-04-batch-02/evidence/p0-probes.txt
+  origin/main:.dev-flow/state.json
+  (closed dev-flow records only; zero hits in taskboard/ source or REQUIREMENTS.md)

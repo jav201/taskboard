@@ -1,0 +1,6 @@
+
+tests\test_cascade_app.py:456: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_cascade_app.py::test_TC_632_the_toast_survives_an_empty_title_and_a_start_only_move
+FAILED tests/test_cascade_app.py::test_TC_633_undo_restores_a_freshly_dated_field_to_untouched
+2 failed, 6 passed in 6.98s

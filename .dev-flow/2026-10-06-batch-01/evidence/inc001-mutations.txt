@@ -1,0 +1,16 @@
+models.py sha256 before: 2e37b80cef0a2f5c65e4ba2dd9ea34b2e82bdcef207e1ac043214991cb66a4e8
+baseline (unmutated): 11 passed in 0.21s  — the suite is green before any mutant
+KILLED   M1 push_delta repairs old overlaps (strict in disguise)  [4 failed, 7 passed in 0.30s]
+KILLED   M2 done tasks join the cascade  [1 failed, 10 passed in 0.29s]
+KILLED   M3 a milestone keeps its start delta  [1 failed, 10 passed in 0.29s]
+KILLED   M4 resolve_mode ignores the override  [1 failed, 10 passed in 0.30s]
+KILLED   M5 new_conflicts carries the TOTAL, not the added days  [1 failed, 10 passed in 0.28s]
+KILLED   M6 an undated task never bases on today  [1 failed, 10 passed in 0.28s]
+KILLED   M7 the start arm drops the +1 (both days no longer count)  [3 failed, 8 passed in 0.30s]
+KILLED   M8 restore writes nothing  [1 failed, 10 passed in 0.29s]
+KILLED   M9 together never pulls back  [1 failed, 10 passed in 0.30s]
+KILLED   M10 the downstream is not transitive  [1 failed, 10 passed in 0.29s]
+BAD      M11 BAD ANCHOR — the harness must report this mutant as BAD, never as killed  (anchor not found — the harness reports non-application)
+models.py sha256 after:  2e37b80cef0a2f5c65e4ba2dd9ea34b2e82bdcef207e1ac043214991cb66a4e8  (restore proven by hash)
+
+10 KILLED · 1 BAD (harness proof) · SURVIVED: none

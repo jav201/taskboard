@@ -1,0 +1,5 @@
+Gate: python -m pytest tests -q  (env: NO_COLOR unset, TERM=xterm-256color, COLORTERM=truecolor, PYTHONIOENCODING=utf-8)
+1 failed, 2501 passed in 378.39s (0:06:18) · exit 1
+the 1 failed = tests/test_app.py::test_win_clipboard_roundtrip — the DECLARED environment flake G-011
+(clipboard roundtrip fails on its own SETUP in this shell; passed in the increment-001 gate and
+every prior gate run; untouched by this batch's diff).

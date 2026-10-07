@@ -1,0 +1,57 @@
+P1: bump -> m(together) -> u restores PRE-MOVE dates; m then refuses
+  PASS  P1 m moved tm5 under together  — tm5=2026-11-11
+  PASS  P1 one u after m restores PRE-MOVE dates  — {'tm2': '2026-10-08', 'tm3': '2026-10-18', 'tm4': '2026-11-03', 'tm5': '2026-11-10'}
+  PASS  P1 m after the undo refuses  — Move
+m re-applies the last date move — nothing to re-apply
+  PASS  P1 the refusal writes nothing
+P2: bump -> pin (single-task entry) -> m refuses; u; u restores dates
+  PASS  P2 the pin landed
+  PASS  P2 m with a single-task entry on top refuses  — Move
+m re-applies the last date move — nothing to re-apply
+  PASS  P2 the refusal moved no date  — dates still bumped
+  PASS  P2 u undoes the pin
+  PASS  P2 the cascade entry still undoes clean under the pin entry  — {'tm2': '2026-10-08', 'tm3': '2026-10-18', 'tm4': '2026-11-03'}
+P3: the undo stack's four shapes interleaved; m refuses on each shape
+  PASS  P3 m refuses with a milestones entry above the move  — m re-applies the last date move — nothing to re-apply
+  PASS  P3 the refusal moved no date
+  PASS  P3 u replays the milestones shape
+  PASS  P3 u undoes the conversion; board back to frozen bytes
+  PASS  P3 m refuses with a migration entry on top  — Move
+m re-applies the last date move — nothing to re-apply
+  PASS  P3 the refusal wrote nothing
+  PASS  P3 u replays the migration shape
+  PASS  P3 u replays the cascade; board back to frozen bytes
+  PASS  P3 m after the moved task vanished refuses (C-5)  — Move
+m re-applies the last date move — nothing to re-apply
+P4: m after an EDITOR chain save re-applies the same move under the next mode
+  PASS  P4 the editor moved the chain  — 2026-11-06
+  PASS  P4 the editor entry is the cascade shape  — {"task_id": "tm2", "sd": 0, "dd": 3, "mode": "push_delta", "tasks": [{"task_id": "tm2", "fields": {"start_date": "2026-0
+  PASS  P4 m re-applied the EDITOR move under together (tm5 +3)  — tm5=2026-11-13 exp=2026-11-13
+  PASS  P4 m's toast names the new mode  — Move
+▌Audit dependencies due Oct 11 (+3d) · moved Add push, Offline, Beta +3d each · Mobile +3d past ◆ · u undo · m change
+  PASS  P4 one u restores the pre-edit dates  — {'tm2': '2026-10-08', 'tm3': '2026-10-18', 'tm4': '2026-11-03', 'tm5': '2026-11-10'}
+P5: m after an EDITOR SOLO save (silent) — m speaks from its own seat
+  PASS  P5 the solo edit applied
+  PASS  P5 the solo editor save stayed SILENT (D-629)  — []
+  PASS  P5 but the solo save DID record the cascade undo entry
+  PASS  P5 m re-applied the solo move (dates unchanged, entry replaced)
+  PASS  P5 m's seat says the move (say_solo)  — Move
+▌SDK regeneration due Nov 3 (+29d) · API Platform +7d past ◆ · u undo · m change for this move
+  PASS  P5 u restores the pre-edit due
+P6: the toast at 60/40/24 columns — push_delta, flag, mixed shifts
+  PASS  P6a @60: toast message fits the width  — vis=56 :: '▌Audit… due Oct 9 (+1d) · pushed 2 +1d each · u undo · m'
+  PASS  P6a @60: the count rung (names do not fit)  — ▌Audit… due Oct 9 (+1d) · pushed 2 +1d each · u undo · m
+  PASS  P6a @40: toast message fits the width  — vis=40 :: '▌Audit… due Oct 9 (+1d) · pushed 2 +1d …'
+  PASS  P6a @40: count rung, no names  — ▌Audit… due Oct 9 (+1d) · pushed 2 +1d …
+  PASS  P6a @24: toast message fits the width  — vis=24 :: '▌Audit… due Oct 9 (+1d)…'
+  PASS  P6b @60: the flag toast fits and names  — vis=57 :: '▌Audit… due Oct 9 (+1d) · flagged 1 +1d each · u undo · m'
+  PASS  P6c @118: the mixed-shift NAMES form  — Move
+▌Anchor due Oct 12 (+4d) · pushed 2 dependents (Beta release +4d, Offline sync +1d) · u undo · m change for this move
+  PASS  P6c @60: the mixed-shift COUNT form fits  — vis=58 :: '▌Anchor due Oct 12 (+4d) · pushed 2 (+4d/+1d) · u undo · m'
+  PASS  P6c @40: the mixed-shift COUNT form fits  — vis=40 :: '▌Anchor due Oct 12 (+4d) · pushed 2 (+4…'
+P7: team sync — D-630 (existing keeps local; first-seen imports whole)
+  PASS  P7 an EXISTING project keeps its local date_links (D-630)
+  PASS  P7 the merge itself ran (the team's name landed)
+  PASS  P7 a FIRST-SEEN project imports date_links whole (S-4)  — {'date_links': 'together'}
+
+== 41 passed, 0 failed ==

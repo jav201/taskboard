@@ -1,0 +1,15 @@
+app.py sha256 before:    e762110f866519d361814f9baf45523c6bb6528b6d11195e73c6821cb8ebe659
+keymap.py sha256 before: e1f0e072c3c487bc3321208309284a1cc940bd633045dbfbfa6fa7b20eb6629a
+baseline (unmutated): 3 passed in 1.63s
+KILLED   N1 the bump bypasses the cascade (the old body)  [3 failed in 1.20s]
+KILLED   N2 one undo entry per task instead of one cascade entry  [3 failed in 1.15s]
+KILLED   N3 m cycles the wrong way (push_delta -> flag)  [2 failed, 1 passed in 1.48s]
+KILLED   N4 m never restores first (re-plans from the moved dates)  [1 failed, 2 passed in 1.51s]
+KILLED   N5 the toast never names (count rungs only)  [2 failed, 1 passed in 1.26s]
+BAD      N6 the flag clause reports totals, not the added days  (anchor not found)
+KILLED   N7 the refusal literal is wrong  [1 failed, 2 passed in 1.74s]
+KILLED   N8 m is not bound  [2 failed, 1 passed in 1.55s]
+BAD      N9 BAD ANCHOR — the harness must report this mutant as BAD  (anchor not found)
+app.py sha256 after:     e762110f866519d361814f9baf45523c6bb6528b6d11195e73c6821cb8ebe659  (restore proven by hash)
+
+7 KILLED · 2 BAD (harness proof) · SURVIVED: none

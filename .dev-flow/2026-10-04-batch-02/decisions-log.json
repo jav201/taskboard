@@ -1,0 +1,87 @@
+[
+  {
+    "station": "P0",
+    "date": "2026-10-04",
+    "decision": "standing authorization — the operator's kickoff commission (Gates: \"Autónomo + ambas excepciones\"): P0 approved. Batch opened by rollover from 2026-10-04-batch-01 (its decisions_log, 24 entries, moved to .dev-flow/2026-10-04-batch-01/decisions-log.json); core; flow rev100, the installed bundle (skills 1d3c364; operator: \"rev100, la instalada\"); RC-1 origin/main == HEAD == merge-base 4b2c13a; RC-2 origin answered; kickoff validator 0 block 31 notice (inherited, declared in PLAN.md); triggers B1 B4 C5 C6 C8 D1 D2 E1 F2 fired, A1-A4 judged not fired (D-602); stories US-601, US-602, US-603, US-605 READY; D-601: US-604 moving linked dates OUT to BACKLOG as B2b under the pre-authorized split (P-17: no move mode exists); P1 is next."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-04",
+    "decision": "standing authorization — the operator's kickoff commission: P1 approved. Requirements derived: US-601, 602, 603, 605 (US-604 OUT, D-601); HLR-601, 602, 603, 605; LLR-601.1-601.3, 602.1-602.3, 603.1, 603.2, 605.1-605.4; AT-601..AT-606; TC-601..TC-617; ledger LED .1; IFC Part A (Part B blocks added by the increments that create #f-milestone and #offer-list); 17 premises executed TRUE (p1-premises.txt, p1-thresholds.txt from the prototype's own rules, p1-offer-census: 274 of 541 app starts would open the offer, base-suite 2306 passed exit 0); security scan security_required true (flags migration, escape), answered in section 6.3; decisions D-601..D-611; provisional visual decisions PV-601..PV-609 in PLAN.md; P2 is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-04",
+    "decision": "standing authorization — P2 iteration 1: qa-reviewer FAIL (blocker Q-1: AT-603's band literal cannot fit the shipped band facts at 118; 12 majors), architect FAIL (blocker A-1: AT-601's sync arm observes no shipped surface; majors A-2 backup timing, A-3 date writers, A-4 _notify_folded and _select_first), security-reviewer PASS-WITH-NOTES (0 HIGH; S-1, S-3..S-6 MEDIUM; S-2, S-7..S-9 LOW), ux-reviewer FAIL (UX-1..UX-4 contract majors) -> iterate-to-refine to P1 (no HIGH; every disposition recorded in 02-review.md)."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-04",
+    "decision": "standing authorization — P1 iteration 2 approved: every P2 iteration-1 finding folded (02-review.md; ledger LED .2): blockers Q-1 (band literal re-derived at the shipped rooms, p1-thresholds-shipped.txt, P-18) and A-1 (sync arm moved to TC-607); D-611 seam rewritten (patch taskboard.app.milestones_marked), D-612..D-625; TC-607, TC-608 assigned; P-18, P-19 added; §1.6 NEW literals; contract 53996 characters (V26 budget); scan iteration 2 flags migration, escape answered in section 6.3; base captures re-taken on the shifted board (Q-23); PV-610, PV-611 added; validator 0 block; P2 iteration 2 (the same four lenses re-read) is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-04",
+    "decision": "standing authorization — P2 iteration 2: architect FAIL (major A2-1: the reached-toast arm cannot reach Done with one ]), qa-reviewer PASS-WITH-NOTES (majors Q2-1 AT-601 cannot re-select a milestone in the kanban, Q2-2 = A2-1, Q-12 partial: no AT reads the pushed team file), security-reviewer PASS-WITH-NOTES (0 HIGH, S-7b LOW partial), ux-reviewer PASS-WITH-NOTES (UX2-1..UX2-4 minor) -> iterate-to-refine to P1 (0 blocker, 0 HIGH; majors are requirement defects; dispositions in 02-review.md iteration 2)."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-04",
+    "decision": "standing authorization — P1 iteration 3 approved: P2 iteration-2 findings folded (ledger LED .3; 02-review.md iteration 2): AT-601 in the gantt with a team-push arm (Q2-1, A2-2, Q-12), the reached arm pressed to Done (A2-1, Q2-2), the lanes-window z rule (A2-3), the filter counts (A2-4), census pass condition (Q-9), title cut constant (Q-11), P-18 wording (Q2-3), <where> rule (UX2-1), PV-602/605/607/611 (UX-10, UX2-2..UX2-4), the log note (S-7b); contract 53939 characters; validator 0 block; P2 iteration 3 (the four lenses re-read the delta) is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-04",
+    "decision": "standing authorization — P2 iteration 3 approved: architect PASS, ux-reviewer PASS, qa-reviewer PASS-WITH-NOTES, security-reviewer PASS-WITH-NOTES; 0 blocker, 0 major, 0 HIGH; the 4 minors (Q3-1, Q3-2/UX3-1, Q3-3/S-7b) folded at the gate (ledger LED .4: the kanban's / filter count excludes milestones; the team arm polls 5 s; the log note asserted); carried to increment 001's gate: the AT team folder is tmp_path (security); P3 is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-04",
+    "decision": "standing authorization — P3 increment 001 approved (revision 3): HLR-601 / LLR-601.1-601.3, the milestone flag, M, the editor box, the details mark; 4 SOURCE (models, app, modals, keymap; at the cap, reason declared); TC-601..608 + AT-601 (41 new nodes); 19/19 mutants KILLED; code-reviewer r1 OK-WITH-NOTES (F-1..F-5, F-7 folded; F-6 NIT open), r2 BLOCK-UNTIL F2-1 (HIGH, product, increment under construction) fixed without stopping under the second exception, RED-first, LED .6, r3 OK-WITH-NOTES 0 HIGH; gate on frozen r3 2346 passed 1 failed (the known clipboard environment flake G-011); TASK_CHIPS_ONE_ROW re-measured 137; increment 002 (the gantt) is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-04",
+    "decision": "standing authorization — P3 increment 002 approved (revision 2): HLR-602 / LLR-602.1-602.3, the gantt milestone row (M-1), reached rows, ruler marks (AX-2), legend after the selection, the reached toast; 2 SOURCE (views, app); TC-609..611 + AT-602 (29 new nodes); 16/16 mutants KILLED; code-reviewer r1 OK-WITH-NOTES (G-1 MEDIUM tests-only, G-2 LOW product folded RED-first, G-3, G-4), r2 OK-WITH-NOTES 0 HIGH (G2-1 LOW evidence corrected); gate on frozen r2 2375 passed 1 failed (the known clipboard environment flake G-011); increment 003 (the kanban) is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-04",
+    "decision": "standing authorization — P3 increment 003 approved (revision 2): HLR-603 / LLR-603.1, LLR-603.2, a milestone is never a kanban card, count, filter count or selection (one seat kanban_work), the band-rule milestones (M-2) with the D-619 fallback, one seat band_rule_facts for renderer and legend; 3 SOURCE (views, app, modals); TC-612, TC-613 + AT-603 (71 new nodes); 19/19 mutants KILLED (r1 K7, K8 survived: an input-set gap closed with a synthetic arm); code-reviewer r1 OK-WITH-NOTES (K-1 MEDIUM product, K-2 MEDIUM tests, K-3 LOW, all folded RED-first; D-623 wording and the legend seat amended, LED .8; the filter literal phantom fixed, LED .7), r2 OK-WITH-NOTES 0 HIGH (K2-1 LOW pre-existing pattern to BACKLOG); gate on frozen r2 2446 passed 1 failed (the known clipboard environment flake G-011); increment 004 (the offer) is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-05",
+    "decision": "standing authorization — P3 increment 004 approved (revision 2): HLR-605 / LLR-605.1-605.4, the one-time milestone offer as a migration (candidates, backup by exclusive create, log, atomic save, run-once mark, fail-closed restore-first, u in one step, seeded boards marked), the conftest seam; 3 SOURCE (models, app, modals); TC-614..617 + AT-604..606 + 2 seam controls (39 new nodes); 23/23 mutants KILLED; code-reviewer r1 OK-WITH-NOTES (O-1 MEDIUM product, O-2, O-3 LOW, NIT; folded RED-first, LED .10), r2 OK-WITH-NOTES 0 HIGH; security-reviewer r1 PASS-WITH-NOTES (S4-1 LOW folded), r2 PASS; gate on frozen r2 2485 passed 1 failed (the known clipboard environment flake G-011); every LLR now has an increment; P4 is next."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-05",
+    "decision": "standing authorization (autonomous gates) — P4 qa F-1 and F-2 (MEDIUM, test strength only; qa confirms the product correct) folded without stopping under the tests/evidence exception: AT-604 asserts the saved milestone set exactly in both arms; AT-602 counts two Data Warehouse marks on the month row. RED-first: mutant V2 (the ruler marks only reached milestones) SURVIVED on the old AT-602 (evidence/p4-mutations-before.txt) and is KILLED after (p4-mutations-after.txt); V1 (unchosen candidates converted silently) was already KILLED by AT-604's undo arm and stays KILLED. Product code untouched."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-05",
+    "decision": "standing authorization — P4 ux UXV-1 (MEDIUM, evidence only): the close editor/details captures showed a non-milestone task because the driver set the selection in the kanban, which never selects a milestone (D-614). capture_b2.py now walks to the milestone in the gantt with real keys for the close editor/details shots; the four captures retaken (close-editor-*, close-details-* now show the ticked box and '· ◆ milestone'). Base shots unchanged."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-05",
+    "decision": "autonomous — a stray synthetic board y.json (demo data with the uncommitted milestone key, written 2026-10-04 23:59 by one of this batch's probes) was found untracked at the repo root; moved to the session scratchpad (stray-y.json), not deleted, so it is recoverable; it is not the operator's board."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-05",
+    "decision": "autonomous — the offer census P4 r1 measured 140 suppressed starts against the §5 threshold of 274 (P1). The two measures differ: P1 counted every start with a candidate when no board carried a mark; since increment 004 a board created by Board.load is seeded with the mark (it never offers, seam or not), and P4 r1 counted only unmarked boards. The census plugin r2 records every row and the P1-comparable count split by reason; the threshold is judged on that reconciliation, 0 offers in unmarked nodes being the safety condition."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-05",
+    "decision": "standing authorization — P4 approved (PASS-WITH-NOTES: qa, ux APPROVE-WITH-NOTES, 0 HIGH; F-1, F-2, UXV-1 folded; the seam census reconciled, 297 >= 274 on P1's measure, 0 offers in unmarked nodes; close gate 2485 passed, 1 failed = G-011 flake); security close PASS-WITH-NOTES (S5-1 folded, S5-2 advisory, S5-3 BACKLOG); canon folded (16) and LLR-001.3 amended to 18 ids; BACKLOG updated (13 items); batch closed at P5. Commit and push are the coordinator's, after the operator's visual verdict."
+  },
+  {
+    "station": "P5",
+    "date": "2026-10-06",
+    "decision": "the operator's visual verdict arrived (taskboard-veredicto-b2a.json): PV-601..PV-611 all accepted; UXV-5 decided 'Aclararlo a un gris legible (~4.5:1)' — applied: new palette tone reached #7a828c (4.9:1 on #0d1117, measured) at every reached-milestone seat (milestone_tone, gantt_milestone_cells x2, gantt_milestone_chip, _gantt_legend, the gantt row title, the band-rule piece, the help map); the consumed field keeps ash; RED-first (4 RED on the old code), contract amended at LED-2026-10-04-batch-02.11, close captures retaken (gantt, kanban, legend-gantt, gantt-reached); UXV-2/UXV-4/UXV-7/UX-12 carried no change request. Commit and push follow under the standing authorization ('Commit + push tras tu veredicto visual')."
+  }
+]

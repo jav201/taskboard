@@ -118,7 +118,8 @@ between the short and the full layer. Every key below is also in the command pal
 | `[` `]` | Phase | Move the selected task one phase back / forward |
 | `!` | Priority | Cycle low → normal → high |
 | `b` | Blocked | Mark an outside block (`▲`) on the task, or clear it |
-| `+` `=` / `-` | Due | Due date one day later / earlier |
+| `+` `=` / `-` | Due | Due date one day later / earlier — what waits on it follows by the project's rule |
+| `m` | Chain | Re-apply the last date move under the next mode (stay / push / together) |
 | `u` | Undo | Undo the last quick change |
 | `x` / `v` | Archive | Archive or unarchive / show archived tasks |
 | `X` | Purge done | Archive all finished work that has no completion date (asks first) |

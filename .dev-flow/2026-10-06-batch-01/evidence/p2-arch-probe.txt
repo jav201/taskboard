@@ -1,0 +1,19 @@
+AT-607 push_delta tm2 +1 @118 (rung 1): '▌Audit dependencies due Oct 9 (+1d) · pushed Add push, Offline sync +1d each · u undo · m change for this move'  [w=110]
+AT-607 push_delta tm2 +1 @80 (rung 6): '▌Audit dependencies due Oct 9 (+1d) · pushed 2 +1d each · u undo · m change'  [w=75]
+
+AT-608 together tm2 +1 @118 (rung 3): '▌Audit dependencies due Oct 9 (+1d) · moved Add push, Offline, Beta +1d each · Mobile +1d past ◆ · u undo · m change'  [w=116]
+AT-608 together tm2 +1 @80 (rung 8): '▌Audit… due Oct 9 (+1d) · moved 3 +1d each · Mobile +1d past ◆ · u undo · m'  [w=75]
+
+AT-610 together td4 +2 @118 (rung 2): '▌Daily revenue model due Oct 26 (+2d) · moved Revenue, BI dashboard +2d each · Data +2d past ◆ · u undo · m change'  [w=114]
+AT-610 together td4 +2 @80 (rung 8): '▌Daily… due Oct 26 (+2d) · moved 2 +2d each · Data +2d past ◆ · u undo · m'  [w=74]
+
+AT-610 flag td4 +2 @118 (rung 0): '▌Daily revenue model due Oct 26 (+2d) · flagged 0 dependents () · u undo · m change for this move'  [w=97]
+AT-610 flag td4 +2 @80 (rung 5): '▌Daily revenue model due Oct 26 (+2d) · flagged 0 () · u undo · m change'  [w=72]
+
+--- substring checks the contract pins (iteration-3 literals) ---
+PASS AT-607@118 holds 'pushed Add push, Offline sync +1d each'
+PASS AT-607@80 holds 'pushed 2 +1d each'
+PASS AT-608@118 holds 'Mobile +1d past ◆'
+PASS AT-610@118 holds 'Data +2d past ◆'
+
+probe done

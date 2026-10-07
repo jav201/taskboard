@@ -1,0 +1,8 @@
+E           assert '2026-10-07' == None
+E            +  where '2026-10-07' = Task(title='Start only', project_id='pweb', phase='Next', priority='normal', start_date='2026-10-07', due_date=None, n...=[], archived=False, pinned=False, blocked=False, depends_on=[], phase_changed=None, milestone=True, extra={}, id='t7').start_date
+E            +  and   None = Task(title='Start only', project_id='pweb', phase='Next', priority='normal', start_date='2026-10-07', due_date=None, n...=[], archived=False, pinned=False, blocked=False, depends_on=[], phase_changed=None, milestone=True, extra={}, id='t7').due_date
+
+tests\test_cascade_app.py:502: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_cascade_app.py::test_TC_634_the_milestone_box_and_a_start_edit_in_one_save
+1 failed in 0.85s

@@ -1,0 +1,24 @@
+KANBAN · grouped                                                       25 tasks
+BACKLOG        8│NEXT              4│DOING        6/4│REVIEW         4/3│✓3
+────────────────┼───────────────────┼────────────────┼──────────────────┼───────
+── high  7 open · 4 projects ───────┼────────────────┼──────────────────┼───────
+▊ !! Offline    │▊ !! Rotate API    │▊ !! Fix        │                  │
+▊    sync +29d  │▊    keys Ops +3d  │▊    checko… -2d│                  │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                  │
+▲ !! Deprecate  │                   │▊ !! Rate       │                  │
+▊    v1 end… +7d│                   │▊    limiti… +4d│                  │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                   │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                  │
+▊ !! Pen-test   │                   │▊ !! Renew TLS  │                  │
+▊    findi… +20d│                   │▊    certif… -1d│                  │
+▐ Website Redesign  4 open · 1 high ↑ · project due +10d ── ◆ Oct 16 · in 10d ──
+▊ == SEO        │▊ ++ Optimize image│                │▊ == Build        │✓1
+▊    redir… +14d│▊    assets ◂1 +6d │                │▊    componen… -3d│18d ago
+▐ Mobile App  4 open · 1 high ↑ · project due +35d ── ◆ Nov 10 · in 35d ┼───────
+                │▊ == Add push      │▊ == Audit      │▊ ++ Crash        │✓1
+                │▊    notifica… +13d│▊ ▌                                      go
+▐ API Platform  5 open · 2 high ↑ · pro▌ Move                                 ──
+▊ == Plan Q4    │                   │▊ ▌ ▌Audit dependencies due Oct 10 (+1d)
+▊    roadm… ·40d│                   │▊ ▌ · pushed 2 +1d each · u undo · m
+▼ 2 below: Data Warehouse (4 open), Ops▌ change
+  21:23:03 · Tue 06 Oct 2026 · W41 · Me▌
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

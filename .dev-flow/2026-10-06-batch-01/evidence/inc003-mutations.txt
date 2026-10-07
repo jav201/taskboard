@@ -1,0 +1,15 @@
+sha256 before: {'app.py': '306660da00c4', 'modals.py': '0ae58b2ae601'}
+baseline (unmutated): 10 passed in 8.69s
+KILLED   P1 the editor writes dates directly, no cascade  [3 failed, 7 passed in 7.73s]
+KILLED   P2 the editor toasts every date save (say_solo forced)  [1 failed, 9 passed in 8.33s]
+SURVIVED P3 the milestone gate uses the pre-canonicalization delta (K returns)  [10 passed in 8.10s]
+KILLED   P4 the undo-entry patch loop removed (TC-633's fix reverted)  [1 failed, 9 passed in 8.22s]
+BAD      P5 resolve_mode repairs junk (coerces instead of defaulting silently)  (anchor not found in app.py)
+BAD      P6 the picker's carve-out setattr's onto the project (no extra write)  (anchor not found in app.py)
+KILLED   P7 the select stores the on-screen label instead of the engine string  [1 failed, 9 passed in 8.07s]
+KILLED   P8 the silence gate drops the conflicts arm (flag edits go silent)  [1 failed, 9 passed in 8.18s]
+SURVIVED P9 the empty-title guard removed (DS-1 returns)  [10 passed in 8.14s]
+BAD      P10 BAD ANCHOR — the harness must report this mutant as BAD  (anchor not found in app.py)
+sha256 after:  {'app.py': '306660da00c4', 'modals.py': '0ae58b2ae601'}  (restore proven)
+
+5 KILLED · 3 BAD (harness proof) · SURVIVED: ['P3 the milestone gate uses the pre-canonicalization delta (K returns)', 'P9 the empty-title guard removed (DS-1 returns)']
