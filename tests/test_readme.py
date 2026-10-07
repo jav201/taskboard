@@ -82,9 +82,9 @@ def test_TC_120_the_readme_names_every_view_with_its_key():
     rows = {m.group(1): m.group(2) for m in
             re.finditer(r"^\| `(\d)` \| \*\*(\w+)\*\* \|", _read("README.md"), re.M)}
     names = {"swimlanes": "Lanes", "agenda": "Agenda", "gantt": "Gantt",
-             "kanban": "Kanban", "focus": "Focus", "flow": "Flow",
+             "kanban": "Kanban", "focus": "Focus", "chainmap": "Chains", "flow": "Flow",
              "standup": "Standup", "people": "People", "setup": "Setup"}
-    assert len(VIEW_KEYS) == 9
+    assert len(VIEW_KEYS) == 10
     for key, view in VIEW_KEYS.items():
         assert rows.get(key) == names[view], (key, view, rows)
     assert set(rows) == set(VIEW_KEYS), set(rows) ^ set(VIEW_KEYS)

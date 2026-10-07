@@ -75,7 +75,7 @@ def test_TC_202_the_census_set_is_complete():
     presentations — 16 pairs. Losing one (a parse that misses a branch, a view
     dropped from VIEW_ORDER) turns this RED before the census can go quiet."""
     ps = pairs()
-    assert len(VIEW_ORDER) == 9 and len(ps) == 16, ps
+    assert len(VIEW_ORDER) == 10 and len(ps) == 17, ps
     assert {v for v, _ in ps} == set(VIEW_ORDER)
 
 
@@ -143,8 +143,8 @@ def due_today(b) -> int:
 # TC-201 — every title bold bright
 # =========================================================================== #
 TITLES = {"swimlanes": "TASKBOARD", "agenda": "AGENDA", "gantt": "GANTT", "kanban": "KANBAN",
-          "focus": "FOCUS", "flow": "FLOW", "standup": "STANDUP", "people": "PEOPLE",
-          "setup": "SETUP"}
+          "focus": "FOCUS", "chainmap": "CHAIN", "flow": "FLOW", "standup": "STANDUP",
+          "people": "PEOPLE", "setup": "SETUP"}
 
 
 @pytest.mark.parametrize("w,h", [(118, 30), (24, 10)])
@@ -180,7 +180,7 @@ def test_TC_202_every_accent_run_is_a_focus_role(tmp_path):
             reached.add((mode, tuple(kw.items()), w))
             assert not off_role(mode, kw, text, due_today(b)), (mode, kw, w, off_role(
                 mode, kw, text, due_today(b))[:5])
-    assert len(reached) == 16 * len(SIZES)
+    assert len(reached) == 17 * len(SIZES)
 
 
 def test_TC_202_the_census_can_see_the_accent(tmp_path):
@@ -415,7 +415,7 @@ async def test_AT_201_every_view_paints_the_accent_only_for_focus(tmp_path, froz
                 if view in pres:
                     await pilot.press("tab")
                     await pilot.pause()
-        assert len(seen) == 16, seen
+        assert len(seen) == 17, seen
         await pilot.press("0")
         await pilot.pause()
         setup_line = next(ln for ln in painted(app).split("\n") if " on " in ln.plain)
@@ -468,11 +468,15 @@ KEYBAR_BASE = {   # read off the base tree a0e7d9a (`key_bar_plain`), not typed
     ("gantt", 80, "primary"):
         # batch 2026-10-04-batch-01 added `L` (Link) to the primary layer: the
         # bar sheds one more word ("Agenda") and keeps every key
-        "? Map  ; More  q Quit  1 Lanes  2  3  4  5  7  8  9  0  ↵  a  e  d  L  ↓  ↑",
+        # batch 2026-10-07-batch-02 added `6` (Chains) to the primary layer — the
+        # bar sheds one more word ("Agenda" was already gone) and keeps every key
+        "? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑",
     ("gantt", 118, "more"):
         # batch 2026-10-04-batch-02 added `M` (Milestone); batch 2026-10-06-batch-01
         # added `m` (Chain) to the more layer — both keep every key
-        "? Map  ;  q  1  2  3  4  5  7  8  9  0  ↵  a  e  d  L  x  X  v  u  t  T  M  [  ]  !  b"
+        # batch 2026-10-07-batch-02 added `6` (Chains) — the more layer sheds its
+        # last word ("Map") and keeps every key (117 cells at 118)
+        "?  ;  q  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  x  X  v  u  t  T  M  [  ]  !  b"
         "  +  -  m  F  esc  /  ↓  ↑  ←  →",
 }
 
@@ -497,7 +501,7 @@ def test_TC_203_the_key_bar_wears_bright_keys_and_muted_words():
                     assert "bold" in st and HEX["bright"] in st, (view, layer, width, show, st)
                     at += len(f"{show} {label}".strip()) + 2
                 checked += 1
-    assert checked == 9 * 2 * 5
+    assert checked == 10 * 2 * 5
     for (view, width, layer), plain in KEYBAR_BASE.items():
         assert key_bar_plain(width, view, layer) == plain
 

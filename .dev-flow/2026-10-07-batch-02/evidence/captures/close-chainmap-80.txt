@@ -1,0 +1,24 @@
+◆ CHAIN MAP · who waits on whom           17 linked tasks · ▲2 late · ━ chain 4
+─▌Website Redesign  5 linked ───────────────── set here  ○stay ○push ●together ─
+  Design homepage ─┬▸ Build component ─┬▸ Optimize image  ─┬▸ Launch new
+  ✓ mockups        │  ▷ library   ▲3d  │  ◂1 assets        │  ◂2 homepage
+                   │                   │                   │
+                   ╰▸ Mockups          │                   │
+                      ✓ approved       │                   │
+                                       ╰───────────────────╯
+─▌Mobile App  4 linked · ━ critical chain ────────────── ○stay ●push ○together ─
+ ┃Audit           ━━▸┃Add push        ━━▸┃Offline sync    ━━▸┃Beta release to
+ ┃○ dependencies     ┃◂1 notificati…     ┃◂1        Nov 4    ┃◂1 testers
+─▌API Platform  4 linked · 2 open not linked ─────────── ○stay ●push ○together ─
+  Partner notice  ──▸ Deprecate v1
+  ○ emails Oct 10     ◂1 endpoints
+
+  Rate limiting   ──▸ SDK
+  ○        Oct 11     ◂1 regener… ▲1d
+─▌Ops & Security  6 open · no links ────────────────────────────────────────────
+ Design homepage mocku…                            x remove › · L link · ↵ open
+ ◂ waits on  nothing
+ ▸ unblocks   Build component… (starts 5d early) ·  Mockups approved ✓
+ ▌together: all downstream shifts the same days · m change for this chain
+  11:28:56 · Wed 07 Oct 2026 · W41 · Mexico City 11:28 · New York 13:28
+ ? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑

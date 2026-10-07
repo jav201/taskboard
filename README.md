@@ -1,7 +1,7 @@
 # taskboard
 
 A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
-Run it in a borderless terminal window, pin it on top, and it works as a desktop widget: nine
+Run it in a borderless terminal window, pin it on top, and it works as a desktop widget: ten
 views over one JSON board, with optional team sync through a shared folder.
 
 <p align="center">
@@ -18,7 +18,7 @@ views over one JSON board, with optional team sync through a shared folder.
 
 - **A widget, not a window.** No borders: every view commits with rules, and it reflows to
   whatever size the terminal gives it.
-- **Nine views** over the same tasks — lanes, agenda, gantt, kanban, focus, flow, standup,
+- **Ten views** over the same tasks — lanes, agenda, gantt, kanban, focus, chains, flow, standup,
   people, setup — each one key away.
 - **One file.** Your board is a single JSON file in your home directory; nothing goes to a
   server.
@@ -85,6 +85,7 @@ shows the full keymap and `?` opens the command palette. `q` quits.
 | `3` | **Gantt** | The whole board on a window fitted to the open work, with a date ruler on top |
 | `4` | **Kanban** | Every task in its phase column; `Tab` cycles grouped, matrix and lanes layouts |
 | `5` | **Focus** | Pinned tasks and pinned projects, in five layouts (`Tab`) |
+| `6` | **Chains** | The chain map: who waits on whom, per project — the ready/waits/late marks, the critical chain, and the per-chain `dates` rule on screen |
 | `7` | **Flow** | Read-only: time in phase, a phase × week heatmap, weekly throughput |
 | `8` | **Standup** | Team mode: one row per teammate — load, top task, sync age |
 | `9` | **People** | Team mode: one lane per teammate; their cards are read-only |
@@ -107,7 +108,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `?` | Help | Per-view help (usage, legend, example, keys); `m` there for the full map |
 | `;` | More | Toggle the key bar's layer |
 | `q` | Quit | Quit |
-| `1`–`5`, `7`–`9`, `0` | Views | See [Views](#views) |
+| `1`–`6`, `7`–`9`, `0` | Views | See [Views](#views) |
 | `↑` `↓` / `k` `j` | Move | Move the selection in the order the view draws |
 | `←` `→` / `h` `l` | Across | Move between columns (kanban) |
 | `Enter` | Details | Every field of the selected task; its links can be changed there |

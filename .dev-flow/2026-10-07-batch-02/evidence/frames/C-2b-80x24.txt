@@ -1,0 +1,24 @@
+◆ CHAIN MAP · who waits on whom           15 linked tasks · ▲2 late · ━ chain 4 
+─▌Website Redesign  4 linked · 2 open not linked ─────── ○stay ●push ○together ─
+  Design homepage ──▸ Build component ─┬▸ Optimize image  ─┬▸ Launch new        
+  ✓ mockups           ▷ library   ▲3d  │  ◂1 assets Oct 6  │  ◂2 homepage       
+                                       ╰───────────────────╯                    
+─▌Mobile App  4 linked · ━ critical chain ────────────── ○stay ●push ○together ─
+ ┃Audit           ━━▸┃Add push        ━━▸┃Offline sync    ━━▸┃Beta release to   
+ ┃○ dependencies     ┃◂1 notificati…     ┃◂1       Oct 28    ┃◂1 testers        
+─▌API Platform  4 linked · 2 open not linked ─────────── ○stay ●push ○together ─
+  Partner notice  ──▸ Deprecate v1                                              
+  ○ emails  Oct 3     ◂1 endpoints                                              
+                                                                                
+  Rate limiting   ──▸ SDK                                                       
+  ○         Oct 4     ◂1 regener… ▲1d                                           
+─▌Data Warehouse  3 linked ─────────────────── set here  ○stay ○push ●together ─
+  Migrate user    ──▸ Daily revenue   ──▸ BI dashboard                          
+  ✓ table             ▷ model  Oct 18     ◂1 cut-over                           
+─▌Ops & Security  5 open · no links ────────────────────────────────────────────
+                                                                                
+ ✓ done · ▷ ready · ◂N waits on N · ━ critical chain · ─ starts before due      
+ Add push notifications                            x remove › · L link · ↵ open 
+ ◂ waits on  ›Audit dependenc… (starts 1d early)                                
+ ▸ unblocks   Offline sync (starts 2d early)                                    
+ ▌push: waiters move by the overlap this adds · m change for this chain         

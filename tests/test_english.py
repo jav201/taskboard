@@ -148,6 +148,7 @@ def test_TC_206_help_copy_is_english_and_fits():
     (the fit law of TC-116 widened to every view, qa P2 Q-11). RED on the base
     tree: Spanish everywhere, 27 bullets wider than 44 cells."""
     sections = {"kanban": 4, "swimlanes": 3, "agenda": 3, "gantt": 3, "focus": 3,
+                "chainmap": 3,
                 "flow": 3, "standup": 3, "people": 3, "setup": 3}
     assert set(sections) == set(VIEW_ORDER)
     for mode in VIEW_ORDER:

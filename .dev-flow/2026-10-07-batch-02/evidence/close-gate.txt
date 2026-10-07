@@ -1,0 +1,2 @@
+Close gate: python -m pytest tests -q (env: NO_COLOR unset, TERM=xterm-256color, COLORTERM=truecolor, PYTHONIOENCODING=utf-8)
+2529 passed in 404.16s (0:06:44) · exit 0 — 0 failed (G-011 did not fire).
