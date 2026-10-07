@@ -1,0 +1,4 @@
+=========================== short test summary info ===========================
+FAILED tests/test_cascade.py::test_TC_629_a_move_that_creates_a_first_overlap_reports_it_never_crash
+FAILED tests/test_cascade.py::test_TC_630_a_planned_task_vanished_between_apply_and_restore_never_raises
+2 failed, 11 passed in 0.34s

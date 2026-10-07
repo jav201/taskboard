@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             25 tasks
+BACKLOG               8│NEXT                      4│DOING               6/4│REVIEW                4/3│✓ DONE 3
+───────────────────────┼───────────────────────────┼───────────────────────┼─────────────────────────┼────────────────
+── high  7 open · 4 projects ──────────────────────┼───────────────────────┼─────────────────────────┼────────────────
+▊ !! Offline sync      │▊ !! Rotate API keys       │▊ !! Fix checkout 500  │                         │
+▊ ▸1 ◂1 Mobile +29d    │▊ ·14d Ops +3d             │▊    error Website -2d │                         │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                         │
+▲ !! Deprecate v1      │                           │▊ !! Rate limiting     │                         │
+▊    endpoints API +7d │                           │▊ ·10d ▸1 API +4d      │                         │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                         │
+▊ !! Pen-test findings │                           │▊ !! Renew TLS         │                         │
+▊ ·9d Ops +20d         │                           │▊    certificate -1d   │                         │
+▐ Website Redesign  4 open · 1 high ↑ · project due +10d ── ◆ Oct 16 Launch new hom… · in 10d ── ◆ Sep 24 Mockups… ✓ ─
+▊ == SEO redirects map │▊ ++ Optimize image assets │                       │▊ == Build component     │✓ Design homepa…
+▊ ·22d +14d            │▊ ·12d ▸1 ◂1 +6d           │                       │▊    library ·4d ▸2 -3d  │  done 18d ago
+▐ Mobile App  4 open · 1 high ↑ · project due +35d ── ◆ Nov 11 Beta release to testers · in 36d ─────┼────────────────
+                       │▊ == Add push notifications│▊ == Audit dependencies│▊ ++ Crash reporting     │✓ Set up CI pip…
+                       │▊ ·3d ▸1 ◂1 +13d           │▊ ·6d ▌
+▐ API Platform  5 open · 2 high ↑ · project due +21d ── ◆ ▌ Move                                                    ──
+▊ == Plan Q4 roadmap   │                           │▊ == W▌ ▌Audit dependencies due Oct 9 (+1d) · pushed Add push,
+▊ ·40d                 │                           │▊    r▌ Offline sync +1d each · u undo · m change for this move
+▐ Data Warehouse  4 open · project due +60d ── ◆ Oct 24 Re▌                                                         ──
+▊ ++ Archive old logs  │▊ == Compress database     │▊ == Daily revenue     │                         │✓ Migrate user …
+▊ ·19d +30d            │▊    backups ·11d +9d      │▊    m▌
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │      ▌ Move
+▊ == BI dashboard      │                           │      ▌ ▌Audit dependencies due Oct 9 (+1d) · moved Add push,
+▊    cut-over ◂1 +60d  │                           │      ▌ Offline, Beta +1d each · Mobile +1d past ◆ · u undo · m
+▼ 1 below: Ops & Security (5 open)                        ▌ change
+  21:23:02 · Tue 06 Oct 2026 · W41 · Mexico City 21:23 · N▌
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

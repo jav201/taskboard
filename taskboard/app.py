@@ -18,10 +18,11 @@ from textual.widgets import Static
 
 from . import history
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
-                     archive_refusal, bump_due, default_board_path, is_open, link_refusal,
+                     archive_refusal, default_board_path, is_open, link_refusal,
                      milestone_candidates, milestones_marked, next_priority, parse_iso,
                      ready_messages, run_link_migration, run_milestone_offer,
-                     set_milestone, strip_controls, waiting_ids)
+                     set_milestone, strip_controls, waiting_ids,
+                     CASCADE_MODES, apply_plan, plan_move, resolve_mode, snapshot)
 from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
                      ProjectPicker,
@@ -31,7 +32,7 @@ from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
 from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
-                    gantt_plan, nav_model, sort_by_due,
+                    gantt_plan, nav_model, sort_by_due, fit, vis,
                     render_view, valid_url)
 
 def _md(d: date) -> str:
@@ -1067,17 +1068,157 @@ class TaskboardApp(App):
         """`+` / `=` (delta +1 — ONE aliased seat entry, §6.5 AMD-06) and `-`
         (delta −1): move the selected task's due date one day — from its own
         date, or from today when undated (LLR-009.1, the base lives in the
-        `bump_due` seat). Not view-scoped: it acts on the selection, like the
-        other quick keys."""
+        engine's today rule, `plan_move`). Not view-scoped: it acts on the selection, like the
+        other quick keys. The move ROUTES THROUGH THE CASCADE (LLR-604.2,
+        batch 2026-10-06-batch-01): the chain follows by the project's rule,
+        the toast names what moved, and one `u` takes the whole move back."""
         task = self.selected_task
         if task is None:
             return
-        self._undo_stack.append(self._snapshot(task))
-        bump_due(task, delta, date.today())
-        self.board.save()
-        self.refresh_view()
+        self._apply_cascade(task, 0, delta)
 
-    # ---- undo (LLR-010.1: a session LIFO of single-task snapshots) ---------
+    # ---- moving linked dates (batch 2026-10-06-batch-01) --------------------
+    CASCADE_VERB = {"flag": "flagged", "push_delta": "pushed", "together": "moved",
+                    "push": "pushed"}   # strict push: accepted, never offered
+
+    @staticmethod
+    def _short_title(t: str, n: int) -> str:
+        words = t.split()
+        if not words:
+            return ""
+        out = words[0]
+        for w in words[1:]:
+            if len(out) + 1 + len(w) > n:
+                break
+            out += " " + w
+        return out
+
+    def _cascade_toast(self, task: Task, plan, sd: int = 0) -> str:
+        """The C-3 toast on the contract's ladder (§1.3), PLAIN TEXT: the shipped
+        law is that no toast parses markup (TC-401), so the prototype frame's
+        colours stay out — the text the contract pins is the whole toast. The
+        dependents sort tolerates a planned `None` due (code review 1-1)."""
+        width = self.screen.size.width
+        deps = sorted((t for t in plan.moved if t != task.id
+                       and plan.moved[t] != (None, None)),   # an undated dependent
+                      key=lambda t: (plan.moved[t][1] is None, plan.moved[t][1] or date.min))
+        nd = plan.moved[task.id][1]
+        pr = self.board.project_by_id(task.project_id)
+        over = plan.project_over.get(pr.id, 0) if pr else 0
+        over_before = plan.project_over_before.get(pr.id, 0) if pr else 0
+
+        def clause(names_w: int) -> str:
+            if plan.mode == "flag":
+                if not plan.new_conflicts:
+                    return ""
+                verb = self.CASCADE_VERB[plan.mode]
+                if names_w:
+                    names = ", ".join(self._short_title(
+                        self.board.task_by_id(w).title, names_w)
+                        for w, _, _ in plan.new_conflicts)
+                    days = {n for _, _, n in plan.new_conflicts}
+                    if len(days) == 1:
+                        return f"{verb} {names} +{days.pop()}d"
+                    return (f"{verb} {len(plan.new_conflicts)} overlaps (" + ", ".join(
+                        f"{self._short_title(self.board.task_by_id(w).title, names_w)} +{n}d"
+                        for w, _, n in plan.new_conflicts) + ")")
+                days = sorted({n for _, _, n in plan.new_conflicts})
+                if len(days) == 1:
+                    return f"{verb} {len(plan.new_conflicts)} +{days[0]}d each"
+                return f"{verb} {len(plan.new_conflicts)} overlaps (" + "/".join(
+                    f"+{n}d" for n in days) + ")"
+            if not deps:
+                return ""
+            shifts = {plan.shift[t] for t in deps}
+            verb = self.CASCADE_VERB[plan.mode]
+            if names_w and len(shifts) == 1:
+                names = ", ".join(self._short_title(
+                    self.board.task_by_id(t).title, names_w) for t in deps)
+                return f"{verb} {names} {next(iter(shifts)):+d}d each"
+            if names_w:
+                names = ", ".join(f"{self._short_title(self.board.task_by_id(t).title, names_w)} "
+                                  f"{plan.shift[t]:+d}d" for t in deps)
+                return f"{verb} {len(deps)} dependents ({names})"
+            if len(shifts) == 1:
+                return f"{verb} {len(deps)} {next(iter(shifts)):+d}d each"
+            return f"{verb} {len(deps)} (" + "/".join(f"{plan.shift[t]:+d}d"
+                                                      for t in deps) + ")"
+
+        def toast(title_w, names_w, proj_full, keys):
+            title = task.title if title_w is None else fit(task.title, title_w).rstrip()
+            moved_due = nd is not None and plan.shift[task.id] != 0
+            lead = (f"▌{title} due {_md(nd)} ({plan.shift[task.id]:+d}d)" if moved_due
+                    else f"▌{title} starts {_md(plan.moved[task.id][0])} ({sd:+d}d)")
+            segs = [lead]
+            mid = clause(names_w)
+            if mid:
+                segs.append(mid)
+            if over > over_before:            # the project SLIPS FURTHER past its due
+                pn = pr.name if proj_full else next(iter(pr.name.split()), "")
+                segs.append(f"{pn} +{over}d past ◆")
+            label = ("change for this move", "change", "")[keys]
+            segs.append(" · ".join(f"{k} {v}" if v else k for k, v in
+                                   [("u", "undo"), ("m", label)]))
+            return " · ".join(segs)
+
+        ladder = [(None, 12, True, 0), (None, 12, False, 0), (None, 12, False, 1),
+                  (None, 8, False, 1), (None, 0, True, 0), (None, 0, True, 1),
+                  (None, 0, False, 1), (12, 0, False, 1), (6, 0, False, 2)]
+        row = next((r for a in ladder if vis(r := toast(*a)) <= width), toast(*ladder[-1]))
+        if vis(row) > width:
+            row = fit(row, width)
+        return row
+
+    def _apply_cascade(self, task: Task, sd: int, dd: int, *,
+                       mode: str | None = None, say_solo: bool = True) -> None:
+        """The ONE seat for a date move (LLR-604.2): plan against the resolved
+        mode, snapshot, apply, push ONE multi-task undo entry, save (atomically
+        when the write touches more than one task — D-634) and say it. The bump
+        and `m` say every move (say_solo, the default); the EDITOR passes
+        say_solo=False — LLR-604.3/D-629: its save stays silent unless the
+        cascade moved others or `flag` added overlaps."""
+        plan = plan_move(self.board, task.id, sd, dd,
+                         mode or resolve_mode(self.board, task.id), date.today())
+        snap = snapshot(self.board, plan)
+        apply_plan(self.board, plan)
+        self._undo_stack.append({"cascade": {
+            "task_id": task.id, "sd": sd, "dd": dd, "mode": plan.mode,
+            "tasks": [{"task_id": i, "fields": {"start_date": s, "due_date": d}}
+                      for i, (s, d) in snap.items()]}})
+        if len(plan.moved) > 1:
+            self.board.save_atomic()
+        else:
+            self.board.save()
+        self.refresh_view()
+        if say_solo or len(plan.moved) > 1 or plan.new_conflicts:
+            self.notify(self._cascade_toast(task, plan, sd), title="Move", markup=False)
+
+    def action_cascade_mode(self) -> None:
+        """`m` — re-apply the last date move under the next mode (LLR-604.4):
+        flag → push_delta → together → flag. Works only while that move is the
+        top of the undo stack; otherwise the refusal, verbatim, and nothing
+        moves. The cycle never offers strict `push`."""
+        entry = self._undo_stack[-1] if self._undo_stack else None
+        if entry is None or "cascade" not in entry:
+            self.notify("m re-applies the last date move — nothing to re-apply",
+                        title="Move", severity="information", markup=False)
+            return
+        cas = entry["cascade"]
+        task = self.board.task_by_id(cas["task_id"])
+        if task is None:                       # C-5: the moved task is gone
+            self.notify("m re-applies the last date move — nothing to re-apply",
+                        title="Move", severity="information", markup=False)
+            return
+        self._undo_stack.pop()                 # undo the entry's writes first
+        for one in cas["tasks"]:
+            t = self.board.task_by_id(one["task_id"])
+            if t is not None:
+                t.start_date = one["fields"]["start_date"]
+                t.due_date = one["fields"]["due_date"]
+        nxt = CASCADE_MODES[(CASCADE_MODES.index(cas["mode"]) + 1) % len(CASCADE_MODES)]
+        self._apply_cascade(task, cas["sd"], cas["dd"], mode=nxt)
+
+    # ---- undo (LLR-010.1: a session LIFO of pre-mutation snapshots) --------
     # The covered domain is EXACTLY the quick keys of §3.0 plus archive `x`
     # and delete `d` (§6.5 AMD-05). Collapse/sort/group/focus are VIEW state —
     # they mutate nothing, so there is nothing to undo. A modal add records
@@ -1106,7 +1247,8 @@ class TaskboardApp(App):
         return entry
 
     def action_undo(self) -> None:
-        """`u` — restore the most recent not-yet-undone single-task mutation.
+        """`u` — restore the most recent not-yet-undone mutation (one task or
+        a whole cascade move; the entry's shape says which).
 
         LIFO, and an undo is NOT a new mutation (it pushes nothing, so `u`
         after `u` walks the stack down, never oscillates). A deleted task
@@ -1141,6 +1283,22 @@ class TaskboardApp(App):
                 self.refresh_view()
                 self.notify("Links migration undone — the old links now read as waits.",
                             title="Undo", severity="information", markup=False)
+                return
+            if "cascade" in entry:
+                # one date move is ONE step — every moved task's dates come back
+                # together (LLR-604.2; a task purged since is skipped, the
+                # shipped stale-entry rule)
+                cas = entry["cascade"]
+                for one in cas["tasks"]:
+                    t = self.board.task_by_id(one["task_id"])
+                    if t is not None:
+                        t.start_date = one["fields"]["start_date"]
+                        t.due_date = one["fields"]["due_date"]
+                if len(cas["tasks"]) > 1:
+                    self.board.save_atomic()
+                else:
+                    self.board.save()
+                self.refresh_view()
                 return
             task = self.board.task_by_id(entry["task_id"])
             if task is None:
@@ -1694,6 +1852,13 @@ class TaskboardApp(App):
         archive = data.pop("archived", None)
         want = data.pop("milestone", None)
         prior_start, was_milestone = task.start_date, task.milestone
+        old_start, old_due = task.start_date, task.due_date
+        new_start = data.pop("start_date", old_start)
+        new_due = data.pop("due_date", old_due)
+        n_s, o_s = parse_iso(new_start), parse_iso(old_start)
+        sd = (n_s - o_s).days if n_s is not None and o_s is not None else 0
+        n_d, o_d = parse_iso(new_due), parse_iso(old_due)
+        dd = (n_d - o_d).days if n_d is not None and o_d is not None else 0
         for k, v in data.items():
             if k == "phase":
                 # routed through the board so the move is DATED; assigning it
@@ -1701,6 +1866,13 @@ class TaskboardApp(App):
                 self.board.set_task_phase(task, v)
                 continue
             setattr(task, k, v)
+        # the DATE fields ride the cascade when they actually move (LLR-604.3):
+        # the new value is written here (the milestone box reads it) and a field
+        # whose change is a clean delta is put back to its OLD value so the
+        # cascade applies it exactly once; a cleared/junk/undated field keeps
+        # what the user typed (delta 0) and the cascade leaves it.
+        task.start_date = new_start
+        task.due_date = new_due
         if want is not None:
             self._apply_editor_milestone(task, want, prior_start, was_milestone)
         # the archive box is judged AFTER the edited phase (architect A-12): an
@@ -1708,6 +1880,38 @@ class TaskboardApp(App):
         if archive is not None and not (archive and not task.archived and self._refuse(
                 task, "archive", " — other changes saved")):
             task.archived = archive
+        cascaded = False
+        if sd or dd:
+            if task.milestone:
+                # the box has canonicalized (start == due, set_milestone): the
+                # move that matters is the DUE's post-canonicalization delta; a
+                # zero there means no date moved — the normal save persists the
+                # box and the editor stays silent (code review K, TC-634)
+                a, b = parse_iso(task.due_date), parse_iso(old_due)
+                dd_eff = (a - b).days if a is not None and b is not None else 0
+                if dd_eff:
+                    task.start_date = old_start
+                    task.due_date = old_due
+                    self._apply_cascade(task, 0, dd_eff, say_solo=False)
+                    cascaded = True
+            else:
+                task.start_date = old_start if sd else new_start
+                task.due_date = old_due if dd else new_due
+                self._apply_cascade(task, sd, dd, say_solo=False)
+                cascaded = True
+                # the undo entry must hold the TRUE pre-edit dates: a delta-0
+                # field (a first date typed, say) kept its new value through the
+                # restore dance, so put its old value back (TC-633)
+                for one in self._undo_stack[-1]["cascade"]["tasks"]:
+                    if one["task_id"] == task.id:
+                        if not sd:
+                            one["fields"]["start_date"] = old_start
+                        if not dd:
+                            one["fields"]["due_date"] = old_due
+        if cascaded:
+            self._warn_history_error()
+            self._say_ready(waiting, task)
+            return
         self.board.save()
         self._warn_history_error()
         self.refresh_view()
@@ -1853,7 +2057,11 @@ class TaskboardApp(App):
     def _on_project_added(self, data: dict | None) -> None:
         if not data:
             return
-        self.board.add_project(Project(**data))
+        date_links = data.pop("date_links", None)
+        proj = Project(**data)
+        if date_links:
+            proj.extra["date_links"] = date_links
+        self.board.add_project(proj)
         self.refresh_view()
 
     def action_manage_projects(self) -> None:

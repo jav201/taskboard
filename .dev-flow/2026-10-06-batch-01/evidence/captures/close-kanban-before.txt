@@ -1,0 +1,30 @@
+KANBAN · grouped                                                                                             25 tasks
+BACKLOG               8│NEXT                      4│DOING               6/4│REVIEW                4/3│✓ DONE 3
+───────────────────────┼───────────────────────────┼───────────────────────┼─────────────────────────┼────────────────
+── high  7 open · 4 projects ──────────────────────┼───────────────────────┼─────────────────────────┼────────────────
+▊ !! Offline sync      │▊ !! Rotate API keys       │▊ !! Fix checkout 500  │                         │
+▊ ▸1 ◂1 Mobile +28d    │▊ ·14d Ops +3d             │▊    error Website -2d │                         │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                         │
+▲ !! Deprecate v1      │                           │▊ !! Rate limiting     │                         │
+▊    endpoints API +7d │                           │▊ ·10d ▸1 API +4d      │                         │
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                         │
+▊ !! Pen-test findings │                           │▊ !! Renew TLS         │                         │
+▊ ·9d Ops +20d         │                           │▊    certificate -1d   │                         │
+▐ Website Redesign  4 open · 1 high ↑ · project due +10d ── ◆ Oct 16 Launch new hom… · in 10d ── ◆ Sep 24 Mockups… ✓ ─
+▊ == SEO redirects map │▊ ++ Optimize image assets │                       │▊ == Build component     │✓ Design homepa…
+▊ ·22d +14d            │▊ ·12d ▸1 ◂1 +6d           │                       │▊    library ·4d ▸2 -3d  │  done 18d ago
+▐ Mobile App  4 open · 1 high ↑ · project due +35d ── ◆ Nov 10 Beta release to testers · in 35d ─────┼────────────────
+                       │▊ == Add push notifications│▊ == Audit dependencies│▊ ++ Crash reporting     │✓ Set up CI pip…
+                       │▊ ·3d ▸1 ◂1 +12d           │▊ ·6d ▸1 +2d           │▊ ·2d +1d                │  done 12d ago
+▐ API Platform  5 open · 2 high ↑ · project due +21d ── ◆ Oct 9 Partner notice emails · in 3d ───────┼────────────────
+▊ == Plan Q4 roadmap   │                           │▊ == Write API         │▊ == SDK regeneration    │
+▊ ·40d                 │                           │▊    reference ·21d -5d│▊ ·7d ◂1 -1d             │
+▐ Data Warehouse  4 open · project due +60d ── ◆ Oct 24 Revenue model signed off · in 18d ───────────┼────────────────
+▊ ++ Archive old logs  │▊ == Compress database     │▊ == Daily revenue     │                         │✓ Migrate user …
+▊ ·19d +30d            │▊    backups ·11d +9d      │▊    model ·2d ▸1 +18d │                         │  done 6d ago
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈│                           │                       │                         │
+▊ == BI dashboard      │                           │                       │                         │
+▊    cut-over ◂1 +60d  │                           │                       │                         │
+▼ 1 below: Ops & Security (5 open)
+  21:23:02 · Tue 06 Oct 2026 · W41 · Mexico City 21:23 · New York 23:23
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  7 Flow  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑

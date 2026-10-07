@@ -5839,6 +5839,8 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
                                    "then: s sort · g group · z collapse."]),
             ("the card's numbers", ["·Nd = days IN the phase (ageing)",
                                     "+Nd = days UNTIL the deadline (countdown)",
+                                    "+/- move a date · m: the move again,",
+                                    "next mode (stay / push / together)",
                                     "◂N = waits on N open tasks · L links",
                                     "▸N = N open tasks wait on this one"]),
             ("the board", ["!! high · == normal · ++ low (open only)",

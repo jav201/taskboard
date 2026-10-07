@@ -1,0 +1,18 @@
+=== every AT arm, prototype measure vs shipped measure ===
+AT-607: moved sets identical: True · conflicts identical: True
+AT-608 together: moved sets identical: True · conflicts identical: True
+AT-608 flag: moved sets identical: True · conflicts identical: True
+AT-609: moved sets identical: True · conflicts identical: True
+AT-610 together: moved sets identical: True · conflicts identical: True
+AT-610 flag: moved sets identical: True · conflicts identical: False
+  proto conflicts:   [('td0', 'td4', 2)]
+  shipped conflicts: [('td0', 'td4', 3)]
+AT-611 done-stop: moved sets identical: True · conflicts identical: True
+AT-611 milestone whole: moved sets identical: True · conflicts identical: True
+AT-611 earlier: moved sets identical: True · conflicts identical: True
+
+=== boundary: milestone waiter due = pred due + 1d, pred +1 under push_delta ===
+proto: tm4 +1d -> moved ['tm4'] shifts {'tm4': 1}
+shipped: tm4 +1d -> moved ['tm4', 'tm5'] shifts {'tm4': 1, 'tm5': 1}
+
+probe done

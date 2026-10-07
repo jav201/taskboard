@@ -1,0 +1,76 @@
+pre-existing overlaps: [('tm3', 'tm2', 2), ('tm4', 'tm3', 3), ('ta6', 'ta4', 11)]
+AT board today: 2026-10-06
+
+AT-607 bump +1 push_delta (default) [tm2 s+0 d+1 mode=push_delta]
+  moved: ['tm2', 'tm3', 'tm4']  shifts: {'tm2': 1, 'tm3': 1, 'tm4': 1}
+  new/worse conflicts: none
+  projects pushed past due: none
+    tm2: start 2026-09-28 due 2026-10-09
+    tm3: start 2026-10-08 due 2026-10-19
+    tm4: start 2026-10-17 due 2026-11-04
+AT-608 m->together [tm2 s+0 d+1 mode=together]
+  moved: ['tm2', 'tm3', 'tm4', 'tm5']  shifts: {'tm2': 1, 'tm3': 1, 'tm4': 1, 'tm5': 1}
+  new/worse conflicts: none
+  projects pushed past due: {'pmob': 1}
+    tm2: start 2026-09-28 due 2026-10-09
+    tm3: start 2026-10-08 due 2026-10-19
+    tm4: start 2026-10-17 due 2026-11-04
+    tm5: start 2026-11-11 due 2026-11-11
+AT-608 m->flag [tm2 s+0 d+1 mode=flag]
+  moved: ['tm2']  shifts: {'tm2': 1}
+  new/worse conflicts: [('tm3', 'tm2', 3)]
+  projects pushed past due: none
+    tm2: start 2026-09-28 due 2026-10-09
+AT-609 editor tm2 due +3 push_delta [tm2 s+0 d+3 mode=push_delta]
+  moved: ['tm2', 'tm3', 'tm4']  shifts: {'tm2': 3, 'tm3': 3, 'tm4': 3}
+  new/worse conflicts: none
+  projects pushed past due: none
+    tm2: start 2026-09-28 due 2026-10-11
+    tm3: start 2026-10-10 due 2026-10-21
+    tm4: start 2026-10-19 due 2026-11-06
+AT-610 together: td4 +2 (dwh=together) [td4 s+2 d+2 mode=together]
+  moved: ['td0', 'td4', 'td5']  shifts: {'td0': 2, 'td4': 2, 'td5': 2}
+  new/worse conflicts: none
+  projects pushed past due: {'pdwh': 2}
+    td0: start 2026-10-26 due 2026-10-26
+    td4: start 2026-10-05 due 2026-10-26
+    td5: start 2026-11-07 due 2026-12-07
+AT-610 flag: td4 +2 [td4 s+2 d+2 mode=flag]
+  moved: ['td4']  shifts: {'td4': 2}
+  new/worse conflicts: [('td0', 'td4', 2)]
+  projects pushed past due: none
+    td4: start 2026-10-05 due 2026-10-26
+AT-611 CONTROL (all open): tm2 +3 [tm2 s+3 d+3 mode=push_delta]
+  moved: ['tm2', 'tm3', 'tm4']  shifts: {'tm2': 3, 'tm3': 3, 'tm4': 3}
+  new/worse conflicts: none
+  projects pushed past due: none
+    tm2: start 2026-10-01 due 2026-10-11
+    tm3: start 2026-10-10 due 2026-10-21
+    tm4: start 2026-10-19 due 2026-11-06
+AT-611 done stop (tm3 Done): tm2 +3 [tm2 s+3 d+3 mode=push_delta]
+  moved: ['tm2']  shifts: {'tm2': 3}
+  new/worse conflicts: none
+  projects pushed past due: none
+    tm2: start 2026-10-01 due 2026-10-11
+AT-611 milestone whole: td0 +5 [td0 s+0 d+5 mode=push_delta]
+  moved: ['td0']  shifts: {'td0': 5}
+  new/worse conflicts: none
+  projects pushed past due: none
+    td0: start 2026-10-29 due 2026-10-29
+AT-611 earlier: tm2 -1 pulls nothing [tm2 s-1 d-1 mode=push_delta]
+  moved: ['tm2']  shifts: {'tm2': -1}
+  new/worse conflicts: none
+  projects pushed past due: none
+    tm2: start 2026-09-27 due 2026-10-07
+AT-611 cross-project: ta4 +5 (api=together decides) [ta4 s+5 d+5 mode=together]
+  moved: ['ta4', 'ta6', 'td2']  shifts: {'ta4': 5, 'ta6': 5, 'td2': 5}
+  new/worse conflicts: none
+  projects pushed past due: none
+    ta4: start 2026-10-02 due 2026-10-15
+    ta6: start 2026-10-05 due 2026-10-10
+    td2: start 2026-10-13 due 2026-10-20
+
+probe done
+
+pre-existing overlaps under the SHIPPED measure (link_overlap, S-9/A-14):
+['ta6<ta4 11d', 'td0<td4 1d', 'tm3<tm2 2d', 'tm4<tm3 3d']

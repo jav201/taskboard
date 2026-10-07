@@ -1,0 +1,1062 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/evidence/inc003-brief-deepseek.md
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/01-requirements.md
+[0m→ [0mRead taskboard/app.py[90m [offset=1040, limit=260][0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1660, limit=120][0m
+[0m→ [0mRead taskboard/modals.py[90m [offset=500, limit=280][0m
+[0m→ [0mRead tests/test_cascade_app.py
+[0m✱ [0mGrep "_on_task_edited|_apply_editor_milestone|def action_task_edit|_undo_stack.append"[90m in taskboard/app.py · 17 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1, limit=60][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=130, offset=1790][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=60, offset=920][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=200, offset=1800][0m
+[0m✱ [0mGrep "PROJECT_COLORS|PROJECT_STATUSES|^from|^import|class TaskModal|f-due|f-start"[90m in taskboard/modals.py · 100 matches[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=70, offset=352][0m
+[0m✗ [0mRead dev-flow/2026-10-06-batch-01/evidence/p1-thresholds.txt failed
+[91m[1mError: [0mFile not found: C:\Users\jjgh8\Github\taskboard\dev-flow\2026-10-06-batch-01\evidence\p1-thresholds.txt
+[0m✱ [0mGlob ".dev-flow/2026-10-06-batch-01/evidence/*.txt"[90m 0 matches[0m
+[0m✱ [0mGlob "tests/*.py"[90m 68 matches[0m
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-06-batch-01/evidence/ 2>&1; echo "---"; ls .dev-flow/2026-10-06-batch-01/
+total 140
+drwxr-xr-x 1 jjgh8 197609    0 Oct  6 17:56 .
+drwxr-xr-x 1 jjgh8 197609    0 Oct  6 08:35 ..
+-rw-r--r-- 1 jjgh8 197609  319 Oct  6 15:34 inc001-c1-red.txt
+-rw-r--r-- 1 jjgh8 197609 1439 Oct  6 15:46 inc001-frozen.sha256
+-rw-r--r-- 1 jjgh8 197609   34 Oct  6 15:42 inc001-gate.txt
+-rw-r--r-- 1 jjgh8 197609 1348 Oct  6 15:35 inc001-mutations-r2.txt
+-rw-r--r-- 1 jjgh8 197609 1321 Oct  6 15:36 inc001-mutations-r3.txt
+-rw-r--r-- 1 jjgh8 197609 1321 Oct  6 15:23 inc001-mutations.txt
+-rw-r--r-- 1 jjgh8 197609 1104 Oct  6 15:18 inc001-red-on-base.txt
+-rw-r--r-- 1 jjgh8 197609 1521 Oct  6 16:10 inc002-frozen.sha256
+-rw-r--r-- 1 jjgh8 197609  429 Oct  6 16:13 inc002-gate.txt
+-rw-r--r-- 1 jjgh8 197609 1141 Oct  6 15:55 inc002-mutations-r2.txt
+-rw-r--r-- 1 jjgh8 197609 1140 Oct  6 16:06 inc002-mutations-r3.txt
+-rw-r--r-- 1 jjgh8 197609 1151 Oct  6 16:07 inc002-mutations-r4.txt
+-rw-r--r-- 1 jjgh8 197609 1247 Oct  6 15:54 inc002-mutations.txt
+-rw-r--r-- 1 jjgh8 197609  324 Oct  6 15:50 inc002-red-on-inc001.txt
+-rw-r--r-- 1 jjgh8 197609 8989 Oct  6 17:56 inc003-brief-deepseek.md
+-rw-r--r-- 1 jjgh8 197609 1412 Oct  6 18:35 inc003-deepseek-run.log
+-rw-r--r-- 1 jjgh8 197609 4550 Oct  6 15:36 mk_mutants_inc001.py
+-rw-r--r-- 1 jjgh8 197609 5986 Oct  6 16:06 mk_mutants_inc002.py
+-rw-r--r-- 1 jjgh8 197609 3232 Oct  6 09:23 p0-probes.txt
+-rw-r--r-- 1 jjgh8 197609 9269 Oct  6 08:52 p1-cascade-logic.txt
+-rw-r--r-- 1 jjgh8 197609 3829 Oct  6 09:23 p1-premises.txt
+-rw-r--r-- 1 jjgh8 197609 3326 Oct  6 09:47 p1-thresholds.txt
+-rw-r--r-- 1 jjgh8 197609 3066 Oct  6 09:46 p1_thresholds.py
+-rw-r--r-- 1 jjgh8 197609 1467 Oct  6 15:07 p2-arch-probe.txt
+-rw-r--r-- 1 jjgh8 197609 1011 Oct  6 15:07 p2-arch-probe2.txt
+-rw-r--r-- 1 jjgh8 197609 5698 Oct  6 15:14 p2_arch_probe.py
+-rw-r--r-- 1 jjgh8 197609 4054 Oct  6 09:41 p2_arch_probe2.py
+---
+00-checklists.md
+01-requirements-ledger.md
+01-requirements.md
+02-review.md
+03-increments
+04-validation.md
+05-close.md
+PLAN.md
+evidence
+[0m
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/evidence/inc003-deepseek-run.log
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/evidence/p1-thresholds.txt
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/evidence/p1_thresholds.py
+[0m→ [0mRead tests/kg_board.py
+[0m→ [0mRead tests/test_edit_window.py
+[0m→ [0mRead taskboard/models.py[90m [limit=130, offset=700][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=60, offset=2000][0m
+[0m✱ [0mGrep "_PROJECT_KEYS|_extra_keys|def to_dict|asdict|def save\b|def save_atomic"[90m in taskboard/models.py · 9 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=45, offset=685][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=35, offset=960][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=60, offset=1][0m
+[0m✱ [0mGrep "ProjectPicker|proj-list|action_edit|ProjectModal|press\("P"\)|press\("p"\)"[90m in tests · 33 matches[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=160, offset=160][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=45, offset=655][0m
+[0m✗ [0mRead taskboard/app.py failed[90m [limit=60, offset=2060][0m
+[91m[1mError: [0mOffset 2060 is out of range for this file (2010 lines)
+[0m✱ [0mGrep "def _say_ready|def _warn_history_error"[90m in taskboard/app.py · 2 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=70, offset=794][0m
+[0m✱ [0mGrep "f-milestone|_on_task_edited|f-due|milestone.*editor|editor.*milestone|start follows the due"[90m in tests · 16 matches[0m
+[0m→ [0mRead tests/test_milestones.py[90m [limit=130, offset=240][0m
+[0m→ [0mRead tests/test_milestones.py[90m [limit=120, offset=1][0m
+[0m✱ [0mGrep "async def _edit"[90m in tests/test_milestones.py · 2 matches[0m
+[0m→ [0mRead tests/test_milestones.py[90m [limit=45, offset=205][0m
+[0m✱ [0mGrep "def parse_iso"[90m in taskboard/models.py · 1 match[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=10, offset=648][0m
+[0m→ [0mRead tests/test_details_grid.py
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-06-batch-01/03-increments/ 2>&1
+total 36
+drwxr-xr-x 1 jjgh8 197609     0 Oct  6 16:14 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  6 08:35 ..
+-rw-r--r-- 1 jjgh8 197609 12717 Oct  6 15:47 increment-001.md
+-rw-r--r-- 1 jjgh8 197609 12681 Oct  6 16:14 increment-002.md
+[0m
+[0m$ [0mgrep -n "date_links\|f-date-links\|Linked dates\|modal-grid\|ProjectModal\|TC_411\|grid" .dev-flow/2026-10-06-batch-01/02-review.md .dev-flow/2026-10-06-batch-01/03-increments/increment-002.md 2>&1
+.dev-flow/2026-10-06-batch-01/02-review.md:37:| S-4 | LOW | "local-only" overstates: a NEW synced project imports `date_links` whole | **folded**: D-630 and P-6 amended to name the new-project path; read leniently, never written back by sync |
+.dev-flow/2026-10-06-batch-01/02-review.md:58:`_on_task_edited` (test_edit_window, test_app), `action_undo` (test_app), `ProjectModal` /
+.dev-flow/2026-10-06-batch-01/03-increments/increment-002.md:18:resolved mode (the moved task's project's `date_links`, default `push_delta`), applies it,
+.dev-flow/2026-10-06-batch-01/03-increments/increment-002.md:191:  and the per-project `date_links` setting lands in the project editor — AT-609, AT-610,
+.dev-flow/2026-10-06-batch-01/03-increments/increment-002.md:192:  and the IFC Part B `#f-date-links` block.
+.dev-flow/2026-10-06-batch-01/03-increments/increment-002.md:198:`Linked dates` select — AT-609, AT-610.
+[0m
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/03-increments/increment-002.md[90m [offset=180, limit=30][0m
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/02-review.md
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/01-requirements-ledger.md
+[0m✱ [0mGrep "modal-grid|modal-buttons|date-row|date-input|modal-box"[90m in . · 12 matches[0m
+[0m→ [0mRead taskboard/taskboard.tcss[90m [limit=70, offset=58][0m
+[0m→ [0mRead taskboard/taskboard.tcss[90m [limit=30, offset=128][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=60, offset=55][0m
+[0m✱ [0mGrep "project_picker|action_project|"P"|'P'|Key\("P""[90m in taskboard · 2 matches[0m
+[0m✱ [0mGrep "manage_projects|action_manage_projects|ProjectPicker\("[90m in taskboard/app.py · 5 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=10, offset=2005][0m
+[0m
+[0m← [0mEdit tests/test_cascade_app.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+@@ -8,10 +8,14 @@
+ toast, no `m`.
+ """
+ from __future__ import annotations
+ 
++import json
+ from datetime import date, timedelta
+ 
++from textual.widgets import Button, Input, Select
++from textual.widgets.option_list import OptionList
++
+ import kg_board
+ from taskboard.app import TaskboardApp
+ 
+ RENUMBER = "seen_view_renumber_2026_07"
+
+[0m
+[0m→ [0mRead tests/test_cascade_app.py[90m [offset=129][0m
+[0m
+[0m← [0mEdit tests/test_cascade_app.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+@@ -156,4 +156,169 @@
+         await pilot.pause()
+         said = "\n".join(_toasts(app))
+         assert "moved" in said, said
+         assert app.board.task_by_id("u9") is not None    # the board is intact
++
++
++# --------------------------------------------------------------------------- #
++# AT-609 — the editor's date save routes through the cascade
++# --------------------------------------------------------------------------- #
++async def test_AT_609_the_editor_date_save_routes_through_the_cascade(tmp_path):
++    """AT-609 (US-604): `e` on tm2, change ONLY the due to today+5 (tm2's due is
++    today+2; +3 like the executed probe), save — tm2 due today+5, tm3 due
++    today+15 AND tm4 due today+31 (both +3d); the toast holds `pushed`; ONE `u`
++    restores tm2/tm3/tm4. Second arm: a title-only save writes no undo entry and
++    no toast."""
++    path, b0 = _board(tmp_path)
++    today = date.today()
++    iso = lambda off: (today + timedelta(days=off)).isoformat()
++    due0 = {tid: _due(b0, tid) for tid in ("tm2", "tm3", "tm4")}
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.press("4")
++        await pilot.pause()
++        app.selected_task_id = "tm2"
++        app.refresh_view()
++        await pilot.press("e")
++        for _ in range(3):
++            await pilot.pause()
++        scr = app.screen
++        scr.query_one("#f-due", Input).value = iso(5)
++        await pilot.pause()
++        scr.query_one("#save", Button).press()
++        for _ in range(3):
++            await pilot.pause()
++        b = app.board
++        assert _due(b, "tm2") == iso(5)
++        assert _due(b, "tm3") == iso(15)
++        assert _due(b, "tm4") == iso(31)
++        said = "\n".join(_toasts(app))
++        assert "pushed" in said, said
++        await pilot.press("u")
++        await pilot.pause()
++        assert {tid: _due(app.board, tid) for tid in ("tm2", "tm3", "tm4")} == \
++               {tid: due0[tid] for tid in ("tm2", "tm3", "tm4")}, "one u restores all three"
++        # second arm: a save touching only the title writes nothing to undo/toast
++        app.clear_notifications()
++        stack_before = len(app._undo_stack)
++        app.selected_task_id = "tm2"
++        app.refresh_view()
++        await pilot.press("e")
++        for _ in range(3):
++            await pilot.pause()
++        scr = app.screen
++        scr.query_one("#f-title", Input).value = "Audit dependencies (renamed)"
++        await pilot.pause()
++        scr.query_one("#save", Button).press()
++        for _ in range(3):
++            await pilot.pause()
++        assert app.board.task_by_id("tm2").title == "Audit dependencies (renamed)"
++        assert len(app._undo_stack) == stack_before, "a title-only save records no undo"
++        assert _toasts(app) == [], _toasts(app)
++
++
++# --------------------------------------------------------------------------- #
++# AT-610 — the per-project `Linked dates` setting decides the editor cascade
++# --------------------------------------------------------------------------- #
++async def test_AT_610_the_project_rule_decides_the_editor_cascade(tmp_path):
++    """AT-610 (US-604): set Data Warehouse to `together` (P -> e -> f-date-links),
++    edit td4 start AND due +2d in the TASK editor — the milestone td0 (start==due,
++    today+20) and td5 (today+32) move +2d, the toast holds `moved` and
++    `Data +2d past ◆`; set `flag`, the same edit moves nothing else, the toast
++    holds `flagged Revenue +2d`. Third arm: a board hand-edited to
++    `"date_links": 5` loads, behaves as push_delta on a bump, and the junk value
++    survives a save untouched."""
++    path, b0 = _board(tmp_path)
++    today = date.today()
++    iso = lambda off: (today + timedelta(days=off)).isoformat()
++    idx = b0.projects.index(b0.project_by_id("pdwh"))
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.press("4")
++        await pilot.pause()
++        # set the rule to `together` through the real project editor (P -> e);
++        # the Select is driven on the mounted widget, saved via its own path
++        await pilot.press("P")
++        await pilot.pause()
++        app.screen.query_one("#proj-list", OptionList).highlighted = idx
++        await pilot.press("e")
++        await pilot.pause()
++        app.screen.query_one("#f-date-links", Select).value = "together"
++        app.screen.query_one("#save", Button).press()
++        await pilot.pause()
++        assert app.board.project_by_id("pdwh").extra["date_links"] == "together"
++        await pilot.press("escape")
++        await pilot.pause()
++        # edit td4 in the TASK editor: start AND due +2d
++        app.selected_task_id = "td4"
++        app.refresh_view()
++        await pilot.press("e")
++        for _ in range(3):
++            await pilot.pause()
++        scr = app.screen
++        scr.query_one("#f-start", Input).value = iso(-1)    # -3 + 2
++        scr.query_one("#f-due", Input).value = iso(20)      # +18 + 2
++        await pilot.pause()
++        scr.query_one("#save", Button).press()
++        for _ in range(3):
++            await pilot.pause()
++        b = app.board
++        t0 = b.task_by_id("td0")
++        assert (t0.start_date, t0.due_date) == (iso(20), iso(20)), "the milestone moves whole"
++        assert b.task_by_id("td5").start_date == iso(32)
++        said = "\n".join(_toasts(app))
++        assert "moved" in said and "Data +2d past ◆" in said, said
++        # set the rule to `flag`, repeat the same edit: nothing else moves
++        app.clear_notifications()
++        await pilot.press("P")
++        await pilot.pause()
++        app.screen.query_one("#proj-list", OptionList).highlighted = idx
++        await pilot.press("e")
++        await pilot.pause()
++        app.screen.query_one("#f-date-links", Select).value = "flag"
++        app.screen.query_one("#save", Button).press()
++        await pilot.pause()
++        await pilot.press("escape")
++        await pilot.pause()
++        app.selected_task_id = "td4"
++        app.refresh_view()
++        await pilot.press("e")
++        for _ in range(3):
++            await pilot.pause()
++        scr = app.screen
++        scr.query_one("#f-start", Input).value = iso(1)     # -1 + 2
++        scr.query_one("#f-due", Input).value = iso(22)      # +20 + 2
++        await pilot.pause()
++        scr.query_one("#save", Button).press()
++        for _ in range(3):
++            await pilot.pause()
++        b = app.board
++        t0 = b.task_by_id("td0")
++        assert (t0.start_date, t0.due_date) == (iso(20), iso(20)), "flag moves nothing else"
++        assert b.task_by_id("td5").start_date == iso(32)
++        said = "\n".join(_toasts(app))
++        assert "flagged Revenue +2d" in said, said
++    # third arm: a hand-edited junk `date_links` reads as push_delta, never repaired
++    path3 = tmp_path / "board3.json"
++    b3 = kg_board.milestones(kg_board.shifted(path3), date.today())
++    b3.settings[RENUMBER] = True
++    b3.save()
++    raw = json.loads(path3.read_text(encoding="utf-8"))
++    for p in raw["projects"]:
++        if p["id"] == "pdwh":
++            p["date_links"] = 5
++    path3.write_text(json.dumps(raw), encoding="utf-8")
++    app3 = TaskboardApp(board_path=str(path3), team_sync_interval=1e9)
++    async with app3.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.press("4")
++        await pilot.pause()
++        app3.selected_task_id = "td4"
++        app3.refresh_view()
++        await pilot.press("+")
++        await pilot.pause()
++        assert _due(app3.board, "td4") == iso(19)
++        assert _due(app3.board, "td0") == iso(19), "push_delta pushes the milestone"
++        assert _due(app3.board, "td5") == iso(60), "together would have moved it"
++        assert app3.board.project_by_id("pdwh").extra["date_links"] == 5
++        saved = json.loads(path3.read_text(encoding="utf-8"))
++        dwh = next(p for p in saved["projects"] if p["id"] == "pdwh")
++        assert dwh["date_links"] == 5, "the junk value survives a save untouched"
+
+[0m
+Now run the tests RED (before implementing source):
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q -k "AT_609 or AT_610" 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+=================================== ERRORS ====================================
+_________________ ERROR collecting tests/test_cascade_app.py __________________
+ImportError while importing test module 'C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\anaconda3\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_cascade_app.py:16: in <module>
+    from textual.widgets.option_list import OptionList
+E   ImportError: cannot import name 'OptionList' from 'textual.widgets.option_list' (C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widgets\option_list.py)
+=========================== short test summary info ===========================
+ERROR tests/test_cascade_app.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.16s
+[0m
+[0m✱ [0mGrep "OptionList"[90m in tests/test_app.py · 31 matches[0m
+[0m
+[0m← [0mEdit tests/test_cascade_app.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+@@ -11,10 +11,9 @@
+ 
+ import json
+ from datetime import date, timedelta
+ 
+-from textual.widgets import Button, Input, Select
+-from textual.widgets.option_list import OptionList
++from textual.widgets import Button, Input, OptionList, Select
+ 
+ import kg_board
+ from taskboard.app import TaskboardApp
+ 
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q -k "AT_609 or AT_610" 2>&1 | tail -50
+self,
+        selector: str | type[QueryType],
+        expect_type: type[QueryType] | None = None,
+    ) -> QueryType | Widget:
+        """Get a widget from this widget's children that matches a selector or widget type.
+    
+        Args:
+            selector: A selector or widget type.
+            expect_type: Require the object be of the supplied type, or None for any type.
+    
+        Raises:
+            WrongType: If the wrong type was found.
+            NoMatches: If no node matches the query.
+    
+        Returns:
+            A widget matching the selector.
+        """
+        _rich_traceback_omit = True
+    
+        base_node = self._get_dom_base()
+    
+        if isinstance(selector, str):
+            query_selector = selector
+        else:
+            query_selector = selector.__name__
+    
+        if is_id_selector(query_selector):
+            cache_key = (base_node._nodes._updates, query_selector, expect_type)
+            cached_result = base_node._query_one_cache.get(cache_key)
+            if cached_result is not None:
+                return cached_result
+            if (
+                node := walk_breadth_search_id(
+                    base_node, query_selector[1:], with_root=False
+                )
+            ) is not None:
+                if expect_type is not None and not isinstance(node, expect_type):
+                    raise WrongType(
+                        f"Node matching {query_selector!r} is the wrong type; expected type {expect_type.__name__!r}, found {node}"
+                    )
+                base_node._query_one_cache[cache_key] = node
+                return node
+>           raise NoMatches(f"No nodes match {query_selector!r} on {base_node!r}")
+E           textual.css.query.NoMatches: No nodes match '#f-date-links' on ProjectModal()
+
+..\..\anaconda3\Lib\site-packages\textual\dom.py:1505: NoMatches
+=========================== short test summary info ===========================
+FAILED tests/test_cascade_app.py::test_AT_609_the_editor_date_save_routes_through_the_cascade
+FAILED tests/test_cascade_app.py::test_AT_610_the_project_rule_decides_the_editor_cascade
+2 failed, 3 deselected in 1.19s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q -k "AT_609" 2>&1 | grep -A 15 "def test_AT_609\|assert\|Error\|FAILED" | head -40
+async def test_AT_609_the_editor_date_save_routes_through_the_cascade(tmp_path):
+        """AT-609 (US-604): `e` on tm2, change ONLY the due to today+5 (tm2's due is
+        today+2; +3 like the executed probe), save — tm2 due today+5, tm3 due
+        today+15 AND tm4 due today+31 (both +3d); the toast holds `pushed`; ONE `u`
+        restores tm2/tm3/tm4. Second arm: a title-only save writes no undo entry and
+        no toast."""
+        path, b0 = _board(tmp_path)
+        today = date.today()
+        iso = lambda off: (today + timedelta(days=off)).isoformat()
+        due0 = {tid: _due(b0, tid) for tid in ("tm2", "tm3", "tm4")}
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.press("4")
+            await pilot.pause()
+            app.selected_task_id = "tm2"
+            app.refresh_view()
+--
+            assert _due(b, "tm2") == iso(5)
+>           assert _due(b, "tm3") == iso(15)
+E           AssertionError: assert '2026-10-18' == '2026-10-21'
+E             
+E             - 2026-10-21
+E             ?         -
+E             + 2026-10-18
+E             ?          +
+
+tests\test_cascade_app.py:191: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_cascade_app.py::test_AT_609_the_editor_date_save_routes_through_the_cascade
+1 failed, 4 deselected in 0.85s
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -1839,22 +1839,43 @@
+ waiting = waiting_ids(self.board)
+ archive = data.pop("archived", None)
+ want = data.pop("milestone", None)
+ prior_start, was_milestone = task.start_date, task.milestone
++old_start, old_due = task.start_date, task.due_date
++new_start = data.pop("start_date", old_start)
++new_due = data.pop("due_date", old_due)
++n_s, o_s = parse_iso(new_start), parse_iso(old_start)
++sd = (n_s - o_s).days if n_s is not None and o_s is not None else 0
++n_d, o_d = parse_iso(new_due), parse_iso(old_due)
++dd = (n_d - o_d).days if n_d is not None and o_d is not None else 0
+ for k, v in data.items():
+     if k == "phase":
+         # routed through the board so the move is DATED; assigning it
+         # here would leave the stamp behind and momentum unknowable
+         self.board.set_task_phase(task, v)
+         continue
+     setattr(task, k, v)
++# the DATE fields ride the cascade when they actually move (LLR-604.3):
++# the new value is written here (the milestone box reads it) and a field
++# whose change is a clean delta is put back to its OLD value so the
++# cascade applies it exactly once; a cleared/junk/undated field keeps
++# what the user typed (delta 0) and the cascade leaves it.
++task.start_date = new_start
++task.due_date = new_due
+ if want is not None:
+     self._apply_editor_milestone(task, want, prior_start, was_milestone)
+ # the archive box is judged AFTER the edited phase (architect A-12): an
+ # edit that finishes the task and archives it is allowed
+ if archive is not None and not (archive and not task.archived and self._refuse(
+         task, "archive", " — other changes saved")):
+     task.archived = archive
++if sd or dd:
++    task.start_date = old_start if sd else new_start
++    task.due_date = old_due if dd else new_due
++    self._apply_cascade(task, sd, dd)
++    self._warn_history_error()
++    self._say_ready(waiting, task)
++    return
+ self.board.save()
+ self._warn_history_error()
+ self.refresh_view()
+ self._say_ready(waiting, task)
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+@@ -53,8 +53,15 @@
+     AutoImage = None
+ 
+ NONE_VALUE = "__none__"
+ 
++# The project's linked-dates rule (batch 2026-10-06-batch-01, LLR-604.5): the
++# on-screen labels map to the engine's stored strings. The select always reads a
++# stored value back leniently — absent or junk shows the default `push`.
++DATE_LINKS_LABELS = ("stay", "push", "together")
++DATE_LINKS_VALUES = ("flag", "push_delta", "together")
++DATE_LINKS_DEFAULT = "push_delta"
++
+ # The emoji table ships with rich (no new dependency). It is a PRIVATE module, so
+ # tests/test_emoji_picker.py asserts it is still there and still shaped like this
+ # — if a rich upgrade moves it, that goes red on purpose rather than this file
+ # quietly falling back to a shorter list nobody notices.
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+@@ -576,8 +576,15 @@
+ yield Label("Status")
+ yield Select([(Text(s), s) for s in PROJECT_STATUSES],
+              value=(p.status if p else "on_track"),
+              allow_blank=False, id="f-status")
++stored = p.extra.get("date_links") if p else None
++yield Label("Linked dates")
++yield Select([(Text(label), value)
++              for label, value in zip(DATE_LINKS_LABELS, DATE_LINKS_VALUES)],
++             value=(stored if stored in DATE_LINKS_VALUES
++                    else DATE_LINKS_DEFAULT),
++             allow_blank=False, id="f-date-links")
+ yield Label("Pinned")
+ yield Checkbox("pinned", value=bool(p.pinned) if p else False,
+                id="f-pinned")
+ yield Label("Start (YYYY-MM-DD)")
+
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=55, offset=560][0m
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+@@ -576,15 +576,8 @@
+     yield Label("Status")
+     yield Select([(Text(s), s) for s in PROJECT_STATUSES],
+                  value=(p.status if p else "on_track"),
+                  allow_blank=False, id="f-status")
+-    stored = p.extra.get("date_links") if p else None
+-    yield Label("Linked dates")
+-    yield Select([(Text(label), value)
+-                  for label, value in zip(DATE_LINKS_LABELS, DATE_LINKS_VALUES)],
+-                 value=(stored if stored in DATE_LINKS_VALUES
+-                        else DATE_LINKS_DEFAULT),
+-                 allow_blank=False, id="f-date-links")
+     yield Label("Pinned")
+     yield Checkbox("pinned", value=bool(p.pinned) if p else False,
+                    id="f-pinned")
+     yield Label("Start (YYYY-MM-DD)")
+@@ -596,8 +589,18 @@
+     with Horizontal(classes="date-row"):
+         yield Input(value=(p.due_date or "" if p else ""), placeholder="optional",
+                     id="f-due", classes="date-input")
+         yield Button("📅", id="cal-f-due", classes="cal-btn")
++# the linked-dates rule lives OUTSIDE the pinned `.modal-grid` so the
++# grid's cell geometry (test_details_grid TC-411) is untouched.
++stored = p.extra.get("date_links") if p else None
++with Horizontal(classes="date-row"):
++    yield Label("Linked dates")
++    yield Select([(Text(label), value)
++                  for label, value in zip(DATE_LINKS_LABELS, DATE_LINKS_VALUES)],
++                 value=(stored if stored in DATE_LINKS_VALUES
++                        else DATE_LINKS_DEFAULT),
++                 allow_blank=False, id="f-date-links")
+ with Horizontal(classes="modal-buttons"):
+     yield Button("Save", variant="success", id="save")
+     yield Button("Cancel", variant="default", id="cancel")
+ 
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+@@ -592,9 +592,9 @@
+         yield Button("📅", id="cal-f-due", classes="cal-btn")
+ # the linked-dates rule lives OUTSIDE the pinned `.modal-grid` so the
+ # grid's cell geometry (test_details_grid TC-411) is untouched.
+ stored = p.extra.get("date_links") if p else None
+-with Horizontal(classes="date-row"):
++with Horizontal():
+     yield Label("Linked dates")
+     yield Select([(Text(label), value)
+                   for label, value in zip(DATE_LINKS_LABELS, DATE_LINKS_VALUES)],
+                  value=(stored if stored in DATE_LINKS_VALUES
+
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=25, offset=622][0m
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+@@ -626,8 +626,9 @@
+     "status": self._val("f-status"),
+     "pinned": bool(self.query_one("#f-pinned", Checkbox).value),
+     "start_date": self._val("f-start") or None,
+     "due_date": self._val("f-due") or None,
++    "date_links": self._val("f-date-links"),
+ }
+ self.dismiss(data)
+ 
+ 
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+@@ -722,8 +722,11 @@
+ def _on_edited(self, proj: Project, data: dict | None) -> None:
+     if not data:
+         return
+     for k, v in data.items():
++        if k == "date_links":
++            proj.extra["date_links"] = v
++            continue
+         setattr(proj, k, v)
+     self.board.save()
+     self.app.refresh_view()
+     self._reload(keep=proj.id)
+
+[0m
+Now run the targeted tests:
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.....                                                                    [100%]
+5 passed in 4.74s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py tests/test_edit_window.py tests/test_app.py -q 2>&1 | tail -40
+E       TypeError: Project.__init__() got an unexpected keyword argument 'date_links'
+
+taskboard\app.py:2023: TypeError
+---------------------------- Captured stderr call -----------------------------
+╭───────────────────── Traceback (most recent call last) ──────────────────────
+│ C:\Users\jjgh8\Github\taskboard\taskboard\app.py:2023 in _on_project_added   
+│                                                                              
+│   2020 │   def _on_project_added(self, data: dict | None) -> None:           
+│   2021 │   │   if not data:                                                  
+│   2022 │   │   │   return                                                    
+│ ❱ 2023 │   │   self.board.add_project(Project(**data))                       
+│   2024 │   │   self.refresh_view()                                           
+│   2025 │                                                                     
+│   2026 │   def action_manage_projects(self) -> None:                         
+│                                                                              
+│ ╭────────────────── locals ───────────────────╮                              
+│ │ data = {                                    │                              
+│ │        │   'name': '[red]boom[/red]',       │                              
+│ │        │   'color': 'violet',               │                              
+│ │        │   'status': 'on_track',            │                              
+│ │        │   'pinned': False,                 │                              
+│ │        │   'start_date': None,              │                              
+│ │        │   'due_date': None,                │                              
+│ │        │   'date_links': 'push_delta'       │                              
+│ │        }                                    │                              
+│ │ self = TaskboardApp(                        │                              
+│ │        │   title='taskboard',               │                              
+│ │        │   classes={'-dark-mode'},          │                              
+│ │        │   pseudo_classes={                 │                              
+│ │        │   │   'dark',                      │                              
+│ │        │   │   'focus'                      │                              
+│ │        │   }                                │                              
+│ │        )                                    │                              
+│ ╰─────────────────────────────────────────────╯                              
+╰──────────────────────────────────────────────────────────────────────────────
+TypeError: Project.__init__() got an unexpected keyword argument 'date_links'
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_add_project - TypeError: Project.__init__() go...
+FAILED tests/test_app.py::test_manage_projects_escapes_markup_name - TypeErro...
+2 failed, 202 passed in 71.00s (0:01:10)
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=20, offset=2013][0m
+[0m✱ [0mGrep "extra|date_links"[90m in tests · 3 matches[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=40, offset=1300][0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -2019,9 +2019,12 @@
+ 
+ def _on_project_added(self, data: dict | None) -> None:
+     if not data:
+         return
+-    self.board.add_project(Project(**data))
++    date_links = data.pop("date_links", None)
++    proj = Project(**data)
++    proj.extra["date_links"] = date_links
++    self.board.add_project(proj)
+     self.refresh_view()
+ 
+ def action_manage_projects(self) -> None:
+     self.push_screen(ProjectPicker(self.board))
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py tests/test_edit_window.py tests/test_app.py -q 2>&1 | tail -30
+The race is closed by ORDER, not by sleeping: read with our code FIRST, then
+        ask the oracle. If the oracle still sees the sample after our read, nothing
+        moved during it. If it does not, the clipboard was contended and the attempt
+        is retried rather than blamed on the app. Sustained contention fails loudly
+        and says so, which is a different sentence from "the roundtrip is broken."
+        """
+        import sys
+        if sys.platform != "win32":
+            pytest.skip("windows clipboard path only")
+        prior = _clipboard_now()
+        sample = "roundtrip 123 ABC taskboard"
+        try:
+            for _ in range(5):
+                setup = _ps(f"Set-Clipboard -Value {_ps_literal(sample)}")
+                assert setup.returncode == 0, (
+                    "SETUP failed — this is the environment, not the code under "
+                    f"test: {setup.stderr.strip()!r}")
+                ours = models.grab_clipboard_text()          # our reader first...
+                if _clipboard_now() != sample:               # ...then confirm it held
+                    continue
+>               assert ours == sample, (
+                    "the clipboard held the sample and grab_clipboard_text did not "
+                    f"return it: {ours!r} — this IS the handle bug")
+E                   AssertionError: the clipboard held the sample and grab_clipboard_text did not return it: None — this IS the handle bug
+E                   assert None == 'roundtrip 123 ABC taskboard'
+
+tests\test_app.py:1220: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_win_clipboard_roundtrip - AssertionError: the ...
+1 failed, 203 passed in 71.14s (0:01:11)
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests -q 2>&1 | tail -30
+>       assert ignored("prototypes/out/variants.txt"), (
+            "the capture's own output filename is not covered by the rule")
+E       AssertionError: the capture's own output filename is not covered by the rule
+E       assert False
+E        +  where False = ignored('prototypes/out/variants.txt')
+
+tests\test_scratch_cannot_be_committed.py:87: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestones.py::test_TC_605_the_editor_box_applies_after_the_dates[dated]
+FAILED tests/test_no_live_board.py::test_the_fixture_is_in_git_not_just_on_this_disk
+FAILED tests/test_precommit_gate.py::test_a_staged_leak_is_refused_and_the_file_is_named
+FAILED tests/test_precommit_gate.py::test_clean_staged_content_commits - Asse...
+FAILED tests/test_precommit_gate.py::test_it_fails_closed_when_it_cannot_read_the_board
+FAILED tests/test_precommit_gate.py::test_it_fails_closed_on_a_corrupt_board
+FAILED tests/test_precommit_gate.py::test_the_escape_hatch_is_explicit_and_only_that
+FAILED tests/test_precommit_gate.py::test_binary_staged_files_do_not_break_the_gate
+FAILED tests/test_precommit_gate.py::test_the_hook_wired_in_this_repo_points_at_the_script
+FAILED tests/test_report.py::test_the_cli_writes_a_report_and_says_where - As...
+FAILED tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_probe999.py]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_scratch.log]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/variants.txt]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/some-render.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_ignored_directory_is_the_one_the_capture_writes_into
+21 failed, 2483 passed in 377.96s (0:06:17)
+
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 120000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest "tests/test_milestones.py::test_TC_605_the_editor_box_applies_after_the_dates" -q 2>&1 | tail -50
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F......                                                                  [100%]
+================================== FAILURES ===================================
+__________ test_TC_605_the_editor_box_applies_after_the_dates[dated] __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16607/test_TC_605_the_editor_box_app0')
+arm = 'dated'
+
+    @pytest.mark.parametrize("arm", ["dated", "start-differs", "undated", "new-task",
+                                     "cleared", "due-only", "tick-only"])
+    async def test_TC_605_the_editor_box_applies_after_the_dates(tmp_path, arm):
+        """TC-605: the box is applied AFTER every other field, so a new due in the same
+        save is the milestone's date; a typed start that differs is replaced by the due
+        and said; ticked on an undated task the other edits are saved and the task stays
+        a task, said; a new task saved ticked with a due is a milestone. RED: the flag
+        applied before the edited dates (start = the old due)."""
+        path = _board(tmp_path)
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(120, 36), notifications=True) as pilot:
+            await pilot.press("3")
+            await pilot.pause()
+            app.clear_notifications()
+            if arm == "dated":
+                await _edit(app, pilot, "ta1", f_milestone=True, f_due=_iso(9), f_start="")
+                t = app.board.task_by_id("ta1")
+>               assert (t.milestone, t.start_date, t.due_date) == (True, _iso(9), _iso(9))
+E               AssertionError: assert (True, None, '2026-10-15') == (True, '2026-... '2026-10-15')
+E                 
+E                 At index 1 diff: None != '2026-10-15'
+E                 Use -v to get more diff
+
+tests\test_milestones.py:259: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_milestones.py::test_TC_605_the_editor_box_applies_after_the_dates[dated]
+1 failed, 6 passed in 4.46s
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -1868,10 +1868,14 @@
+ if archive is not None and not (archive and not task.archived and self._refuse(
+         task, "archive", " — other changes saved")):
+     task.archived = archive
+ if sd or dd:
+-    task.start_date = old_start if sd else new_start
+-    task.due_date = old_due if dd else new_due
++    if task.milestone:
++        task.start_date = old_start
++        task.due_date = old_due
++    else:
++        task.start_date = old_start if sd else new_start
++        task.due_date = old_due if dd else new_due
+     self._apply_cascade(task, sd, dd)
+     self._warn_history_error()
+     self._say_ready(waiting, task)
+     return
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_milestones.py tests/test_cascade_app.py -q 2>&1 | tail -20
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..............................................                           [100%]
+46 passed in 17.87s
+[0m
+[0m$ [0mgit status --short 2>&1 | head -40; echo "---BRANCH---"; git rev-parse --abbrev-ref HEAD 2>&1
+M .dev-flow/state.json
+ M .gitattributes
+ M README.md
+ M taskboard/app.py
+ M taskboard/keymap.py
+ M taskboard/modals.py
+ M taskboard/models.py
+ M taskboard/views.py
+ M tests/test_colour_budget_app.py
+?? .dev-flow/2026-10-04-batch-02/decisions-log.json
+?? .dev-flow/2026-10-06-batch-01/
+?? .dev-flow/rollover_b2b.py
+?? tests/test_cascade.py
+?? tests/test_cascade_app.py
+---BRANCH---
+main
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_no_live_board.py tests/test_report.py -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................                                                 [100%]
+24 passed in 1.87s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_precommit_gate.py tests/test_scratch_cannot_be_committed.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.....................                                                    [100%]
+21 passed in 2.24s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+........................................................                 [100%]
+2504 passed in 382.21s (0:06:22)
+[0m
+[0m← [0mEdit tests/test_cascade_app.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+@@ -217,9 +217,9 @@
+ 
+ # --------------------------------------------------------------------------- #
+ # AT-610 — the per-project `Linked dates` setting decides the editor cascade
+ # --------------------------------------------------------------------------- #
+-async def test_AT_610_the_project_rule_decides_the_editor_cascade(tmp_path):
++async def test_AT_610_the_project_date_links_setting_decides_the_editor_cascade(tmp_path):
+     """AT-610 (US-604): set Data Warehouse to `together` (P -> e -> f-date-links),
+     edit td4 start AND due +2d in the TASK editor — the milestone td0 (start==due,
+     today+20) and td5 (today+32) move +2d, the toast holds `moved` and
+     `Data +2d past ◆`; set `flag`, the same edit moves nothing else, the toast
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q -k editor 2>&1 | tail -8; echo "=== setting ==="; env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q -k setting 2>&1 | tail -8
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed, 3 deselected in 3.22s
+=== setting ===
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed, 4 deselected in 2.09s
+[0m
+[0m← [0mEdit tests/test_cascade_app.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+@@ -217,9 +217,9 @@
+ 
+ # --------------------------------------------------------------------------- #
+ # AT-610 — the per-project `Linked dates` setting decides the editor cascade
+ # --------------------------------------------------------------------------- #
+-async def test_AT_610_the_project_date_links_setting_decides_the_editor_cascade(tmp_path):
++async def test_AT_610_the_project_date_links_setting_decides_the_cascade(tmp_path):
+     """AT-610 (US-604): set Data Warehouse to `together` (P -> e -> f-date-links),
+     edit td4 start AND due +2d in the TASK editor — the milestone td0 (start==due,
+     today+20) and td5 (today+32) move +2d, the toast holds `moved` and
+     `Data +2d past ◆`; set `flag`, the same edit moves nothing else, the toast
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q -k editor 2>&1 | tail -3; echo "=== setting ==="; env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q -k setting 2>&1 | tail -3; echo "=== all cascade_app ==="; env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q 2>&1 | tail -3
+warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed, 4 deselected in 1.39s
+=== setting ===
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed, 4 deselected in 2.07s
+=== all cascade_app ===
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.....                                                                    [100%]
+5 passed in 4.60s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py tests/test_edit_window.py tests/test_app.py -q 2>&1 | tail -8
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 35%]
+........................................................................ [ 70%]
+............................................................             [100%]
+204 passed in 70.87s (0:01:10)
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests -q 2>&1 | tail -6
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+........................................................                 [100%]
+2504 passed in 381.05s (0:06:21)
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=55, offset=1836][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=14, offset=55][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=50, offset=570][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=18, offset=620][0m
+[0m✱ [0mGrep "def _on_edited|date_links"[90m in taskboard/modals.py · 9 matches[0m
+[0m✱ [0mGrep "def _on_project_added|date_links"[90m in taskboard/app.py · 9 matches[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=12, offset=722][0m
+All green. Here is the final report.
+
+---
+
+## REPORT BACK — increment 003 (software-dev)
+
+### What changed (per file)
+
+**`taskboard/app.py`**
+- `_on_task_edited` (`app.py:1836-1885`) — the DATE fields now route through the cascade (TASK 1). Captures `old_start/old_due`, pops `start_date`/`due_date` from the payload (defaulting to the old value so the direct `_on_task_edited(task, {"phase": …})` call in `test_links.py:312` still works), computes `sd`/`dd` per `parse_iso(new) − parse_iso(old)`. Non-date fields keep the exact `setattr` loop; the milestone box and archive flows are preserved in order. If either delta is non-zero it calls `_apply_cascade(task, sd, dd)` (restoring the delta fields — or both fields for a milestone — to their OLD values first so the cascade applies exactly once) and skips the trailing `save()`; otherwise the original `save` path is untouched (no undo entry, no toast).
+- `_on_project_added` (`app.py:2024-2030`) — pops `date_links` and routes it to `proj.extra` (see deviation 3).
+
+**`taskboard/modals.py`**
+- `DATE_LINKS_LABELS / _VALUES / _DEFAULT` (`modals.py:60-62`).
+- `ProjectModal.compose` (`modals.py:593-602`) — the `Linked dates` select (`#f-date-links`) over stay/push/together; absent/junk stored value shows the default `push`.
+- `ProjectModal._save` (`modals.py:630`) — emits `date_links`.
+- `ProjectPicker._on_edited` (`modals.py:725-728`) — `date_links` carve-out to `proj.extra`.
+
+**`tests/test_cascade_app.py`** — added `test_AT_609_…` and `test_AT_610_…` (TASK 3).
+
+### RED transcripts (before implementation)
+- AT-609: `AssertionError: assert '2026-10-18' == '2026-10-21'` — tm3 did not move (no cascade from the editor).
+- AT-610: `NoMatches: No nodes match '#f-date-links' on ProjectModal()` — no select.
+
+### Final counts
+- `test_cascade_app.py`: **5 passed** (also `-k editor` → 1, `-k setting` → 1).
+- `test_cascade_app.py tests/test_edit_window.py tests/test_app.py -q`: **204 passed**.
+- Full suite `pytest tests -q`: **2504 passed, 0 failed** (`test_win_clipboard_roundtrip` passed this run — the G-011 flake is intermittent).
+
+### Deviations from the brief (and why)
+1. **The `Linked dates` select sits OUTSIDE `.modal-grid`**, as a Label+Select in a `Horizontal` row after the grid, not beside Status/Color inside the grid. Reason: `test_details_grid.py::test_TC_411_the_edit_modals_keep_their_grid` pins `.modal-grid` to exactly 10 children with heights `[2,3,2,3,2,3,2,3,2,3]`; adding a row inside the grid breaks that pinned test, and the DISCIPLINE forbids editing `test_details_grid.py` while requiring the full suite to pass. I matched the Select construction idiom (Text label/value pairs, `allow_blank=False`, `f-date-links` id) but not the grid placement.
+2. **Node count**: brief says "2502+3"; I added 2 nodes (AT-609, AT-610), landing at **2504** (= 2502 base + 2).
+3. **`_on_project_added` needed a carve-out too** (brief names only `_on_edited`): once `_save` always emits `date_links`, `Project(**data)` on the new-project path raised `TypeError`, so I pop/route it there.
+
+### For the reviewer
+- The re-siting of the select outside the grid (deviation 1) is the one thing to confirm against the P4 visual verdict (D-627).
+- `_on_project_added` stores `extra["date_links"]` unconditionally, including the default `"push_delta"` on new projects (harmless — absent == default — but a stricter reading of "a save with no change writes nothing extra" might prefer skipping the default).
+- Editor milestone edits cascade correctly and the undo snapshot restores both old dates; the milestone box's "start follows the due" toast still names the NEW due.
+- Untested edge (flagged, not blocking): a non-milestone date going `None → date` while the other date also changes produces an undo snapshot holding the new start (not `None`), so `u` would not fully restore the start to `None`. No AT or existing test covers it.

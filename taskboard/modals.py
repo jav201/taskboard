@@ -54,6 +54,15 @@ except Exception:          # pragma: no cover - dependency present in prod
 
 NONE_VALUE = "__none__"
 
+# The project's linked-dates rule (batch 2026-10-06-batch-01, LLR-604.5): the
+# on-screen labels map to the engine's stored strings. The select always reads a
+# stored value back leniently — absent or junk shows the default `push`.
+DATE_LINKS_LABELS = ("stay", "push", "together")
+DATE_LINKS_VALUES = ("flag", "push_delta", "together")
+DATE_LINKS_DEFAULT = "push_delta"   # the engine's CASCADE_DEFAULT_MODE,
+# re-spelled here so modals need not import the engine for one constant —
+# keep the two in agreement (a comment is the leash; P4 ARCH4-2)
+
 # The emoji table ships with rich (no new dependency). It is a PRIVATE module, so
 # tests/test_emoji_picker.py asserts it is still there and still shaped like this
 # — if a rich upgrade moves it, that goes red on purpose rather than this file
@@ -583,6 +592,16 @@ class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                     yield Input(value=(p.due_date or "" if p else ""), placeholder="optional",
                                 id="f-due", classes="date-input")
                     yield Button("📅", id="cal-f-due", classes="cal-btn")
+            # the linked-dates rule lives OUTSIDE the pinned `.modal-grid` so the
+            # grid's cell geometry (test_details_grid TC-411) is untouched.
+            stored = p.extra.get("date_links") if p else None
+            with Horizontal():
+                yield Label("Linked dates")
+                yield Select([(Text(label), value)
+                              for label, value in zip(DATE_LINKS_LABELS, DATE_LINKS_VALUES)],
+                             value=(stored if stored in DATE_LINKS_VALUES
+                                    else DATE_LINKS_DEFAULT),
+                             allow_blank=False, id="f-date-links")
             with Horizontal(classes="modal-buttons"):
                 yield Button("Save", variant="success", id="save")
                 yield Button("Cancel", variant="default", id="cancel")
@@ -610,6 +629,7 @@ class ProjectModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
             "pinned": bool(self.query_one("#f-pinned", Checkbox).value),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,
+            "date_links": self._val("f-date-links"),
         }
         self.dismiss(data)
 
@@ -705,6 +725,9 @@ class ProjectPicker(ModalScreen[None]):
         if not data:
             return
         for k, v in data.items():
+            if k == "date_links":
+                proj.extra["date_links"] = v
+                continue
             setattr(proj, k, v)
         self.board.save()
         self.app.refresh_view()

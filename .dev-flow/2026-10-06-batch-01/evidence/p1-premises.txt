@@ -1,0 +1,74 @@
+# p1 premises — batch 2026-10-06-batch-01, 2026-10-06. Each premise EXECUTED; output pasted.
+
+## P-1 every write site of task due/start dates outside models.py:
+$ grep -rn '\.due_date\s*=\|\.start_date\s*=' taskboard/ | grep -v models.py
+(no output — ZERO direct assignment sites outside models.py; the empty result IS the
+finding: dates are written only through the seats below)
+
+## P-2 the editor seat and its (absent) undo:
+300:            self._undo_stack.append({"milestones": [
+333:            self._undo_stack.append({"migration": [
+821:            self._undo_stack.append(snap)  # clamped end is a no-op — nothing
+881:        self._undo_stack.append(self._snapshot(task))
+900:        self._undo_stack.append(snap)
+955:        self._undo_stack.append(self._snapshot(task))
+1010:        self._undo_stack.append(self._snapshot(waiter))
+1022:        self._undo_stack.append(self._snapshot(waiter))
+1075:        self._undo_stack.append(self._snapshot(task))
+1535:        self._undo_stack.append(self._snapshot(task))
+1688:                        lambda data, t=task: self._on_task_edited(t, data))
+1690:    def _on_task_edited(self, task: Task, data: dict | None) -> None:
+1758:        self._undo_stack.append(self._snapshot(task, deleted=True))
+1784:        self._undo_stack.append(self._snapshot(task))
+
+## P-4 'm' is unbound (keymap grep for bare m):
+88:    Key("M", "M", "milestone_toggle", "Milestone", group="task",
+
+## P-5 multi-task undo entries already replay (app.py):
+300:            self._undo_stack.append({"milestones": [
+333:            self._undo_stack.append({"migration": [
+1120:            if "milestones" in entry:
+1122:                for one in entry["milestones"]:
+1132:            if "migration" in entry:
+1135:                for one in entry["migration"]:
+
+## P-6 team sync merges for an existing project (team_sync.py):
+                # Only the keys the entry holds, each through the loading rule
+                # (`Project.from_dict`); refused INPUT leaves the field as it was
+                # (S-1: a raw synced status reached the picker as markup).
+                existing, fresh = by_id[pid], Project.from_dict(pd)
+                for key in ("name", "color", "status", "start_date", "due_date"):
+                    if key not in pd:
+                        continue
+                    value = pd[key]
+                    if key == "name" and not (isinstance(value, str) and value):
+                        continue
+                    if key.endswith("_date") and not (value is None or isinstance(value, str)):
+                        continue
+                    setattr(existing, key, getattr(fresh, key))
+                if isinstance(pd.get("archived"), bool):
+                    existing.archived = pd["archived"]
+            else:
+                try:
+
+## P-8 bump_due moves a milestone whole:
+def bump_due(task: "Task", delta: int, today: date) -> None:
+    """Move `task.due_date` `delta` days and write it back as ISO text.
+
+    The base is the task's OWN date, or `today` when there is no readable
+    one: an undated task and a corrupt stored string both parse to None
+    (`parse_iso` leniency), and None means the bump starts from today —
+    never from an invented epoch. Pure bar the one field write; the caller
+    saves (the `set_task_phase` convention)."""
+    base = parse_iso(task.due_date) or today
+    task.due_date = (base + timedelta(days=delta)).isoformat()
+    if task.milestone:                  # a milestone moves whole: one date (D-605)
+        task.start_date = task.due_date
+
+## P-1b indirect date writes (setattr seats):
+1155:                    setattr(task, f, v)
+1703:            setattr(task, k, v)
+
+## P-3 project extra survives a load/save round-trip (executed):
+round-trip extra: {'date_links': 'together'}
+OK — extra survives verbatim

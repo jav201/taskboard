@@ -1,0 +1,15 @@
+sha256 before: {'app.py': '306660da00c4', 'modals.py': '0ae58b2ae601', 'models.py': '70865d185f0d'}
+baseline (unmutated): 10 passed in 7.98s
+KILLED   P1 the editor writes dates directly, no cascade  [3 failed, 7 passed in 7.43s]
+KILLED   P2 the editor toasts every date save (say_solo forced)  [1 failed, 9 passed in 8.30s]
+KILLED   P3 the milestone branch cascades even on a zero due delta (K returns)  [1 failed, 9 passed in 8.24s]
+KILLED   P4 the undo-entry patch loop removed (TC-633's fix reverted)  [1 failed, 9 passed in 8.44s]
+KILLED   P5 resolve_mode repairs junk (coerces instead of defaulting silently)  [1 failed, 9 passed in 8.44s]
+KILLED   P6 the picker's carve-out setattr's onto the project (no extra write)  [1 failed, 9 passed in 6.98s]
+KILLED   P7 the select stores the on-screen label instead of the engine string  [1 failed, 9 passed in 8.10s]
+KILLED   P8 the silence gate drops the conflicts arm (flag edits go silent)  [1 failed, 9 passed in 8.30s]
+SURVIVED P9 the empty-title guard removed (DS-1 returns)  [10 passed in 8.89s]
+BAD      P10 BAD ANCHOR — the harness must report this mutant as BAD  (anchor not found in app.py)
+sha256 after:  {'app.py': '306660da00c4', 'modals.py': '0ae58b2ae601', 'models.py': '70865d185f0d'}  (restore proven)
+
+8 KILLED · 1 BAD (harness proof) · SURVIVED: ['P9 the empty-title guard removed (DS-1 returns)']

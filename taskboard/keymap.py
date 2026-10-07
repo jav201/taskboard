@@ -84,7 +84,7 @@ KEYMAP: tuple[Key, ...] = (
     Key("t", "t", "pin_toggle", "Pin task", group="task"),
     Key("T", "T", "project_pin_toggle", "Pin proj", group="task"),
     # `M` — one date, its due: a milestone (batch 2026-10-04-batch-02, D-604).
-    # Shifted like `L`; `m` stays free for moving linked dates (B2b).
+    # Shifted like `L`; its lowercase `m` is the chain's mode key below (B2b).
     Key("M", "M", "milestone_toggle", "Milestone", group="task",
         views=("swimlanes", "agenda", "gantt", "kanban", "focus")),
 
@@ -97,6 +97,10 @@ KEYMAP: tuple[Key, ...] = (
     # -- date -----------------------------------------------------------------
     Key("+,=", "+", "due_bump(1)", "Due+", group="date"),
     Key("-", "-", "due_bump(-1)", "Due-", group="date"),
+    # `m` — re-apply the last date move under the next mode (B2b, LLR-604.4):
+    # the chain's rule is per project, the override is per move. (Was reserved
+    # for this batch since the milestone key landed.)
+    Key("m", "m", "cascade_mode", "Chain", group="date"),
 
     # -- kanban-only ----------------------------------------------------------
     # `s`/`g` reshape kanban columns only, so — like Tab below — they are only

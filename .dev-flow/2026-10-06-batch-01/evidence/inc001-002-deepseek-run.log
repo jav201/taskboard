@@ -1,0 +1,1170 @@
+[0m
+> build · deepseek-flash
+[0m
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/evidence/inc001-002-review-brief.md
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && git status && echo "---DIFFSTAT---" && git diff --stat
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .dev-flow/state.json
+	modified:   .gitattributes
+	modified:   README.md
+	modified:   taskboard/app.py
+	modified:   taskboard/keymap.py
+	modified:   taskboard/modals.py
+	modified:   taskboard/models.py
+	modified:   taskboard/views.py
+	modified:   tests/test_colour_budget_app.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.dev-flow/2026-10-04-batch-02/decisions-log.json
+	.dev-flow/2026-10-06-batch-01/
+	.dev-flow/rollover_b2b.py
+	tests/test_cascade.py
+	tests/test_cascade_app.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+---DIFFSTAT---
+warning: in the working copy of '.gitattributes', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/keymap.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/modals.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/models.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/views.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_colour_budget_app.py', LF will be replaced by CRLF the next time Git touches it
+ .dev-flow/state.json            | 126 +++++++++---------------
+ .gitattributes                  |   1 +
+ README.md                       |   3 +-
+ taskboard/app.py                | 188 +++++++++++++++++++++++++++++++++--
+ taskboard/keymap.py             |   6 +-
+ taskboard/modals.py             |  21 ++++
+ taskboard/models.py             | 213 ++++++++++++++++++++++++++++++++++++++--
+ taskboard/views.py              |   2 +
+ tests/test_colour_budget_app.py |   6 +-
+ 9 files changed, 466 insertions(+), 100 deletions(-)
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && git diff taskboard/models.py taskboard/app.py taskboard/keymap.py taskboard/views.py taskboard/modals.py README.md tests/test_colour_budget_app.py > /c/Users/jjgh8/AppData/Local/Temp/opencode/inc001-002.diff && wc -l /c/Users/jjgh8/AppData/Local/Temp/opencode/inc001-002.diff
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/keymap.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/modals.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/models.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/views.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_colour_budget_app.py', LF will be replaced by CRLF the next time Git touches it
+607 /c/Users/jjgh8/AppData/Local/Temp/opencode/inc001-002.diff
+[0m
+[0m→ [0mRead C:/Users/jjgh8/AppData/Local/Temp/opencode/inc001-002.diff
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/01-requirements.md
+[0m→ [0mRead tests/test_cascade.py
+[0m→ [0mRead tests/test_cascade_app.py
+[0m→ [0mRead taskboard/models.py[90m [offset=1780, limit=260][0m
+[0m→ [0mRead tests/kg_board.py
+[0m→ [0mRead taskboard/app.py[90m [limit=300, offset=1060][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=200, offset=1790][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -n "^def fit\|^def vis\|^def clip\|^def _md\|def save_atomic\|def save\b" taskboard/views.py taskboard/models.py taskboard/app.py | head -50
+taskboard/views.py:80:def vis(s: str) -> int:
+taskboard/views.py:91:def fit(s: str, width: int, align: str = "left") -> str:
+taskboard/views.py:848:def clip(s: str, w: int) -> str:
+taskboard/views.py:2643:def _md(d: date) -> str:
+taskboard/models.py:983:    def save(self) -> None:
+taskboard/models.py:987:    def save_atomic(self) -> None:
+taskboard/models.py:2105:def _md(d: date) -> str:
+taskboard/app.py:38:def _md(d: date) -> str:
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=130, offset=75][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=60, offset=960][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && ls -R .dev-flow/2026-10-06-batch-01 | head -80
+.dev-flow/2026-10-06-batch-01:
+00-checklists.md
+01-requirements-ledger.md
+01-requirements.md
+02-review.md
+03-increments
+04-validation.md
+05-close.md
+PLAN.md
+evidence
+
+.dev-flow/2026-10-06-batch-01/03-increments:
+increment-001.md
+increment-002.md
+
+.dev-flow/2026-10-06-batch-01/evidence:
+inc001-002-deepseek-run.log
+inc001-002-review-brief.md
+inc001-c1-red.txt
+inc001-frozen.sha256
+inc001-gate.txt
+inc001-mutations-r2.txt
+inc001-mutations-r3.txt
+inc001-mutations.txt
+inc001-red-on-base.txt
+inc002-frozen.sha256
+inc002-gate.txt
+inc002-mutations-r2.txt
+inc002-mutations-r3.txt
+inc002-mutations-r4.txt
+inc002-mutations.txt
+inc002-red-on-inc001.txt
+inc003-brief-deepseek.md
+inc003-deepseek-run.log
+mk_mutants_inc001.py
+mk_mutants_inc002.py
+p0-probes.txt
+p1-cascade-logic.txt
+p1-premises.txt
+p1-thresholds.txt
+p1_thresholds.py
+p2-arch-probe.txt
+p2-arch-probe2.txt
+p2_arch_probe.py
+p2_arch_probe2.py
+[0m
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/03-increments/increment-001.md
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/03-increments/increment-002.md
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/evidence/inc003-brief-deepseek.md
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && cat .dev-flow/2026-10-06-batch-01/evidence/inc001-002-deepseek-run.log 2>/dev/null | head -60; echo "=== inc003 run log tail ==="; tail -30 .dev-flow/2026-10-06-batch-01/evidence/inc003-deepseek-run.log 2>/dev/null
+[0m
+> build · deepseek-flash
+[0m
+[0m→ [0mRead .dev-flow/2026-10-06-batch-01/evidence/inc001-002-review-brief.md
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && git status && echo "---DIFFSTAT---" && git diff --stat
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .dev-flow/state.json
+	modified:   .gitattributes
+	modified:   README.md
+	modified:   taskboard/app.py
+	modified:   taskboard/keymap.py
+	modified:   taskboard/modals.py
+	modified:   taskboard/models.py
+	modified:   taskboard/views.py
+	modified:   tests/test_colour_budget_app.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.dev-flow/2026-10-04-batch-02/decisions-log.json
+	.dev-flow/2026-10-06-batch-01/
+	.dev-flow/rollover_b2b.py
+	tests/test_cascade.py
+	tests/test_cascade_app.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+---DIFFSTAT---
+warning: in the working copy of '.gitattributes', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/keymap.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/modals.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/models.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/views.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_colour_budget_app.py', LF will be replaced by CRLF the next time Git touches it
+ .dev-flow/state.json            | 126 +++++++++---------------
+ .gitattributes                  |   1 +
+ README.md                       |   3 +-
+ taskboard/app.py                | 188 +++++++++++++++++++++++++++++++++--
+ taskboard/keymap.py             |   6 +-
+ taskboard/modals.py             |  21 ++++
+ taskboard/models.py             | 213 ++++++++++++++++++++++++++++++++++++++--
+ taskboard/views.py              |   2 +
+ tests/test_colour_budget_app.py |   6 +-
+ 9 files changed, 466 insertions(+), 100 deletions(-)
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && git diff taskboard/models.py taskboard/app.py taskboard/keymap.py taskboard/views.py taskboard/modals.py README.md tests/test_colour_budget_app.py > /c/Users/jjgh8/AppData/Local/Temp/opencode/inc001-002.diff && wc -l /c/Users/jjgh8/AppData/Local/Temp/opencode/inc001-002.diff
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/keymap.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/modals.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/models.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/views.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_colour_budget_app.py', LF will be replaced by CRLF the next time Git touches it
+607 /c/Users/jjgh8/AppData/Local/Temp/opencode/inc001-002.diff
+=== inc003 run log tail ===
+ M taskboard/app.py
+ M taskboard/keymap.py
+ M taskboard/modals.py
+ M taskboard/models.py
+ M taskboard/views.py
+ M tests/test_colour_budget_app.py
+?? .dev-flow/2026-10-04-batch-02/decisions-log.json
+?? .dev-flow/2026-10-06-batch-01/
+?? .dev-flow/rollover_b2b.py
+?? tests/test_cascade.py
+?? tests/test_cascade_app.py
+---BRANCH---
+main
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_no_live_board.py tests/test_report.py -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................                                                 [100%]
+24 passed in 1.87s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_precommit_gate.py tests/test_scratch_cannot_be_committed.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.....................                                                    [100%]
+21 passed in 2.24s
+[0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade.py tests/test_cascade_app.py -q 2>&1 | tail -20
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..................                                                       [100%]
+18 passed in 4.72s
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -n "class Task\|class Project\|class Board\|def project_by_id\|def task_by_id\|def is_done\|title:" taskboard/models.py | head -40
+776:class Project:
+808:class Task:
+809:    title: str
+881:class Board:
+1083:    def project_by_id(self, pid: str | None) -> Project | None:
+1088:    def task_by_id(self, tid: str | None) -> Task | None:
+1114:    def is_done(self, task: Task) -> bool:
+1459:    title: str
+2080:def _clip_title(title: str, n: int = 40) -> str:
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -rn "AT-611\|AT_611" tests/ .dev-flow/2026-10-06-batch-01/03-increments/ 2>/dev/null
+.dev-flow/2026-10-06-batch-01/03-increments/increment-001.md:9:| Acceptance | white-box `TC-618..TC-630` · black-box `AT-607..AT-611` arrive with increments 002/003 (the V2 station-expected reds) |
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=120, offset=776][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=60, offset=1083][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys
+sys.path.insert(0, "tests")
+from taskboard.app import TaskboardApp as A
+for t in ("", "   ", "Audit dependencies now please", "x"):
+    try:
+        print(repr(t), "->", repr(A._short_title(t, 12)))
+    except Exception as e:
+        print(repr(t), "-> RAISED", type(e).__name__, e)
+PY
+'' -> RAISED IndexError list index out of range
+'   ' -> RAISED IndexError list index out of range
+'Audit dependencies now please' -> 'Audit'
+'x' -> 'x'
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys
+sys.path.insert(0, "tests")
+from types import SimpleNamespace
+from datetime import date, timedelta
+import kg_board
+from taskboard.models import (Board, Project, Task, plan_move, apply_plan,
+                              snapshot, restore, resolve_mode)
+from taskboard.app import TaskboardApp as A
+
+KT = kg_board.TODAY
+D = lambda o: (KT + timedelta(days=o))
+
+def ms():
+    return kg_board.milestones(kg_board.build())
+
+print("== empty-title toast repro ==")
+b = ms()
+b.task_by_id("tm3").title = ""
+plan = plan_move(b, "tm2", 0, 1, "push_delta", KT)
+shim = object.__new__(A)
+shim.board = b
+shim.screen = SimpleNamespace(size=SimpleNamespace(width=118))
+try:
+    print(A._cascade_toast(shim, b.task_by_id("tm2"), plan))
+except Exception as e:
+    print("RAISED", type(e).__name__, e)
+
+print("\n== cycle under together, mixed dated/undated ==")
+b = Board([Project("P", id="p1")], [
+    Task("A", project_id="p1", start_date=D(1).isoformat(), due_date=D(5).isoformat(), depends_on=["B"], id="A"),
+    Task("B", phase="Next", depends_on=["A"], id="B"),          # undated
+], __import__("pathlib").Path("x.json"), phases=kg_board.PHASES)
+p = plan_move(b, "A", 0, 2, "together", KT)
+print("moved:", {k: (v[0] and v[0].isoformat(), v[1] and v[1].isoformat()) for k, v in p.moved.items()})
+print("shift:", p.shift)
+
+print("\n== deleted project on moved/dependent ==")
+b = ms()
+b.projects = [pr for pr in b.projects if pr.id != "pmob"]
+try:
+    p = plan_move(b, "tm2", 0, 1, "push_delta", KT)
+    print("ok moved:", sorted(p.moved), "project_over:", p.project_over)
+except Exception as e:
+    print("RAISED", type(e).__name__, e)
+try:
+    print("resolve_mode:", resolve_mode(b, "tm2"))
+except Exception as e:
+    print("resolve RAISED", type(e).__name__, e)
+
+print("\n== task with no project ==")
+b = ms()
+b.task_by_id("tm2").project_id = None
+try:
+    p = plan_move(b, "tm2", 0, 1, "push_delta", KT)
+    print("ok project_over:", p.project_over)
+except Exception as e:
+    print("RAISED", type(e).__name__, e)
+
+print("\n== push_delta cycle termination ==")
+b = Board([Project("P", id="p1")], [
+    Task("A", project_id="p1", start_date=D(0).isoformat(), due_date=D(2).isoformat(), depends_on=["B"], id="A"),
+    Task("B", project_id="p1", start_date=D(4).isoformat(), due_date=D(9).isoformat(), depends_on=["A"], id="B"),
+], __import__("pathlib").Path("x.json"), phases=kg_board.PHASES)
+p = plan_move(b, "A", 0, 3, "push_delta", KT)
+print("shift:", p.shift, "moved:", sorted(p.moved))
+PY
+== empty-title toast repro ==
+Traceback (most recent call last):
+  File "<stdin>", line 22, in <module>
+AttributeError: property 'screen' of 'TaskboardApp' object has no setter
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys
+sys.path.insert(0, "tests")
+from datetime import timedelta
+from pathlib import Path
+import kg_board
+from taskboard.models import Board, Project, Task, plan_move, resolve_mode, apply_plan, snapshot, restore
+
+KT = kg_board.TODAY
+D = lambda o: (KT + timedelta(days=o))
+def ms(): return kg_board.milestones(kg_board.build())
+
+print("== cycle under together, mixed dated/undated ==")
+b = Board([Project("P", id="p1")], [
+    Task("A", project_id="p1", start_date=D(1).isoformat(), due_date=D(5).isoformat(), depends_on=["B"], id="A"),
+    Task("B", phase="Next", depends_on=["A"], id="B"),
+], Path("x.json"), phases=kg_board.PHASES)
+p = plan_move(b, "A", 0, 2, "together", KT)
+print("moved:", {k: (v[0] and v[0].isoformat(), v[1] and v[1].isoformat()) for k, v in p.moved.items()})
+print("shift:", p.shift)
+
+print("\n== deleted project on moved/dependent ==")
+b = ms(); b.projects = [pr for pr in b.projects if pr.id != "pmob"]
+try:
+    p = plan_move(b, "tm2", 0, 1, "push_delta", KT)
+    print("ok moved:", sorted(p.moved), "project_over:", p.project_over, "before:", p.project_over_before)
+except Exception as e:
+    print("RAISED", type(e).__name__, e)
+try: print("resolve_mode:", resolve_mode(b, "tm2"))
+except Exception as e: print("resolve RAISED", type(e).__name__, e)
+
+print("\n== task with no project ==")
+b = ms(); b.task_by_id("tm2").project_id = None
+try:
+    p = plan_move(b, "tm2", 0, 1, "push_delta", KT); print("ok project_over:", p.project_over)
+except Exception as e: print("RAISED", type(e).__name__, e)
+
+print("\n== push_delta cycle termination ==")
+b = Board([Project("P", id="p1")], [
+    Task("A", project_id="p1", start_date=D(0).isoformat(), due_date=D(2).isoformat(), depends_on=["B"], id="A"),
+    Task("B", project_id="p1", start_date=D(4).isoformat(), due_date=D(9).isoformat(), depends_on=["A"], id="B"),
+], Path("x.json"), phases=kg_board.PHASES)
+p = plan_move(b, "A", 0, 3, "push_delta", KT)
+print("shift:", p.shift, "moved:", sorted(p.moved))
+
+print("\n== self-loop push_delta ==")
+b = Board([Project("P", id="p1")], [
+    Task("A", project_id="p1", start_date=D(0).isoformat(), due_date=D(2).isoformat(), depends_on=["A"], id="A"),
+], Path("x.json"), phases=kg_board.PHASES)
+p = plan_move(b, "A", 0, 3, "push_delta", KT)
+print("shift:", p.shift)
+PY
+== cycle under together, mixed dated/undated ==
+moved: {'A': ('2026-10-03', '2026-10-07'), 'B': (None, None)}
+shift: {'A': 2, 'B': 2}
+
+== deleted project on moved/dependent ==
+ok moved: ['tm2', 'tm3', 'tm4'] project_over: {} before: {'pweb': 4, 'pops': 15}
+resolve_mode: push_delta
+
+== task with no project ==
+ok project_over: {}
+
+== push_delta cycle termination ==
+shift: {'A': 3, 'B': 2} moved: ['A', 'B']
+
+== self-loop push_delta ==
+shift: {'A': 3}
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys
+sys.path.insert(0, "tests")
+from types import SimpleNamespace
+import kg_board
+from taskboard.models import plan_move
+from taskboard.app import TaskboardApp as A
+
+KT = kg_board.TODAY
+class Shim(A):
+    def __init__(self, board, width):
+        self.board = board
+        self._w = width
+    @property
+    def screen(self):
+        return SimpleNamespace(size=SimpleNamespace(width=self._w))
+
+b = kg_board.milestones(kg_board.build())
+for mode in ("push_delta", "flag", "together"):
+    p = plan_move(b, "tm2", 0, 1, mode, KT)
+    print(f"--- mode={mode} ---")
+    for w in (1, 8, 16, 24, 40, 60, 80, 118):
+        s = A._cascade_toast(Shim(b, w), b.task_by_id("tm2"), p)
+        print(f"  w={w:>3} vis={Shim(b,w) and __import__('taskboard.views',fromlist=['vis']).vis(s):>3} | {s!r}")
+PY
+--- mode=push_delta ---
+  w=  1 vis=  1 | '…'
+  w=  8 vis=  8 | '▌Audit……'
+  w= 16 vis= 16 | '▌Audit… due Oct…'
+  w= 24 vis= 24 | '▌Audit… due Oct 3 (+1d)…'
+  w= 40 vis= 40 | '▌Audit… due Oct 3 (+1d) · pushed 2 +1d …'
+  w= 60 vis= 56 | '▌Audit… due Oct 3 (+1d) · pushed 2 +1d each · u undo · m'
+  w= 80 vis= 75 | '▌Audit dependencies due Oct 3 (+1d) · pushed 2 +1d each · u undo · m change'
+  w=118 vis=110 | '▌Audit dependencies due Oct 3 (+1d) · pushed Add push, Offline sync +1d each · u undo · m change for this move'
+--- mode=flag ---
+  w=  1 vis=  1 | '…'
+  w=  8 vis=  8 | '▌Audit……'
+  w= 16 vis= 16 | '▌Audit… due Oct…'
+  w= 24 vis= 24 | '▌Audit… due Oct 3 (+1d)…'
+  w= 40 vis= 40 | '▌Audit… due Oct 3 (+1d) · flagged 1 +1d…'
+  w= 60 vis= 57 | '▌Audit… due Oct 3 (+1d) · flagged 1 +1d each · u undo · m'
+  w= 80 vis= 78 | '▌Audit dependencies due Oct 3 (+1d) · flagged Add push +1d · u undo · m change'
+  w=118 vis= 92 | '▌Audit dependencies due Oct 3 (+1d) · flagged Add push +1d · u undo · m change for this move'
+--- mode=together ---
+  w=  1 vis=  1 | '…'
+  w=  8 vis=  8 | '▌Audit……'
+  w= 16 vis= 16 | '▌Audit… due Oct…'
+  w= 24 vis= 24 | '▌Audit… due Oct 3 (+1d)…'
+  w= 40 vis= 40 | '▌Audit… due Oct 3 (+1d) · moved 3 +1d e…'
+  w= 60 vis= 60 | '▌Audit… due Oct 3 (+1d) · moved 3 +1d each · Mobile +1d pas…'
+  w= 80 vis= 75 | '▌Audit… due Oct 3 (+1d) · moved 3 +1d each · Mobile +1d past ◆ · u undo · m'
+  w=118 vis=116 | '▌Audit dependencies due Oct 3 (+1d) · moved Add push, Offline, Beta +1d each · Mobile +1d past ◆ · u undo · m change'
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys
+sys.path.insert(0, "tests")
+from datetime import date, timedelta
+import kg_board
+from taskboard.models import plan_move
+from taskboard.app import TaskboardApp as A
+from types import SimpleNamespace
+
+today = date.today()
+b = kg_board.milestones(kg_board.shifted("scratch-board.json"), today)
+pr = b.project_by_id("pdwh")
+print("pdwh due:", pr.due_date, "start:", pr.start_date)
+for tid in ("td4","td0","td5"):
+    t=b.task_by_id(tid); print(tid, t.start_date, t.due_date, t.milestone, t.depends_on)
+p = plan_move(b, "td4", 2, 2, "together", today)
+print("moved:", {k:(v[0] and v[0].isoformat(),v[1] and v[1].isoformat()) for k,v in p.moved.items()})
+print("project_over:", p.project_over, "before:", p.project_over_before)
+PY
+pdwh due: 2026-12-05 start: 2026-09-26
+td4 2026-10-03 2026-10-24 False ['td1']
+td0 2026-10-24 2026-10-24 True ['td4']
+td5 2026-11-05 2026-12-05 False ['td0']
+moved: {'td4': ('2026-10-05', '2026-10-26'), 'td0': ('2026-10-26', '2026-10-26'), 'td5': ('2026-11-07', '2026-12-07')}
+project_over: {'pdwh': 2} before: {'pweb': 4, 'pops': 15}
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys, asyncio, tempfile, pathlib
+sys.path.insert(0, "tests")
+from datetime import date, timedelta
+import kg_board
+from taskboard.app import TaskboardApp
+
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp())
+    path = d / "board.json"
+    b = kg_board.milestones(kg_board.shifted(path), date.today())
+    b.settings["seen_view_renumber_2026_07"] = True
+    b.task_by_id("tm3").title = ""     # a hand-edited / synced empty title
+    b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118, 30), notifications=True) as pilot:
+        await pilot.press("4"); await pilot.pause()
+        app.selected_task_id = "tm2"; app.refresh_view()
+        try:
+            await pilot.press("+"); await pilot.pause()
+            print("pressed + survived")
+        except BaseException as e:
+            print("PRESS RAISED", type(e).__name__, e)
+        print("tm3 due:", app.board.task_by_id("tm3").due_date)
+        try:
+            print("toasts:", [str(t.render()) for t in app.screen.query("Toast")])
+        except Exception as e:
+            print("toast render raised", type(e).__name__, e)
+asyncio.run(main())
+PY
+pressed + survived
+tm3 due: 2026-10-18
+toasts: []
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys, asyncio, tempfile, pathlib
+sys.path.insert(0, "tests")
+from types import SimpleNamespace
+from datetime import date
+import kg_board
+from taskboard.models import plan_move, Board
+from taskboard.app import TaskboardApp as A
+
+KT = kg_board.TODAY
+class Shim(A):
+    def __init__(self, board, width):
+        self.board = board; self._w = width
+    @property
+    def screen(self): return SimpleNamespace(size=SimpleNamespace(width=self._w))
+
+b = kg_board.milestones(kg_board.build())
+b.task_by_id("tm3").title = ""
+p = plan_move(b, "tm2", 0, 1, "push_delta", KT)
+try:
+    print(A._cascade_toast(Shim(b,118), b.task_by_id("tm2"), p))
+except BaseException as e:
+    print("_cascade_toast RAISED", type(e).__name__, e)
+
+# what does the app do with an action-handler exception?
+from taskboard.app import TaskboardApp
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp()); path = d/"board.json"
+    bb = kg_board.milestones(kg_board.shifted(path), date.today())
+    bb.settings["seen_view_renumber_2026_07"]=True
+    bb.task_by_id("tm3").title=""
+    bb.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press("4"); await pilot.pause()
+        app.selected_task_id="tm2"; app.refresh_view()
+        await pilot.press("+"); await pilot.pause()
+        for attr in ("_exception","_exception_info","return_code","_exit"):
+            print(attr, "=", getattr(app, attr, "<none>"))
+asyncio.run(main())
+PY
+_cascade_toast RAISED IndexError list index out of range
+_exception = None
+_exception_info = <none>
+return_code = None
+_exit = False
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=40, offset=650][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -n "KEYBAR_BASE" tests/test_colour_budget_app.py | head; grep -n "m\b" taskboard/keymap.py | head -20
+467:KEYBAR_BASE = {   # read off the base tree a0e7d9a (`key_bar_plain`), not typed
+501:    for (view, width, layer), plain in KEYBAR_BASE.items():
+7:and both halves are generated from it: the app's `BINDINGS` and the bar the user
+20:from __future__ import annotations
+22:from typing import NamedTuple
+24:from textual.binding import Binding
+25:from textual.widgets import Static
+27:from .views import HEX
+55:    # -- system / layer -------------------------------------------------------
+56:    Key("?", "?", "legend", "Map", universal=True, primary=True, group="system"),
+57:    Key(";", ";", "layer_toggle", "More", universal=True, primary=True, group="system"),
+58:    Key("q", "q", "quit", "Quit", universal=True, primary=True, group="system"),
+87:    # Shifted like `L`; its lowercase `m` is the chain's mode key below (B2b).
+100:    # `m` — re-apply the last date move under the next mode (B2b, LLR-604.4):
+103:    Key("m", "m", "cascade_mode", "Chain", group="date"),
+112:    # from anywhere in the view (§6.5 AMD-02).
+127:    # Global commands: always bound, reachable from `?`/palette, but not drawn
+137:    # derives from the board in ANY view, so — like `R` — it is not scoped.
+142:    # is what moves them, not their position here.
+184:    """All commands reachable from `view` as (show, label, action).
+204:    Degradation, in order: the WORDS go first, from the right, one at a time.
+241:    reads `[#hex][[/]` as the literal text `[[/]` — three phantom cells the
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=15, offset=36][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=12, offset=2105][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=10, offset=2643][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys
+sys.path.insert(0, "tests")
+from types import SimpleNamespace
+from pathlib import Path
+from datetime import date, timedelta
+import kg_board
+from taskboard.models import Board, Project, Task, plan_move
+from taskboard.app import TaskboardApp as A
+
+KT = kg_board.TODAY
+D = lambda o: (KT + timedelta(days=o))
+class Shim(A):
+    def __init__(self, board, width):
+        self.board = board; self._w = width
+    @property
+    def screen(self): return SimpleNamespace(size=SimpleNamespace(width=self._w))
+
+# a task with a start but no due; editor moves ONLY the start (sd=1, dd=0)
+b = Board([Project("P", id="p1")], [
+    Task("Started, never due", project_id="p1", start_date=D(0).isoformat(),
+         due_date=None, id="s1"),
+], Path("x.json"), phases=kg_board.PHASES)
+p = plan_move(b, "s1", 1, 0, "push_delta", KT)
+print("moved:", p.moved)
+try:
+    print(A._cascade_toast(Shim(b,118), b.task_by_id("s1"), p))
+except BaseException as e:
+    print("_cascade_toast RAISED", type(e).__name__, e)
+
+# and a totally undated task bumped (due becomes today+1) - control, should work
+b2 = Board([Project("P", id="p1")], [Task("Undated", project_id="p1", id="u1")],
+           Path("x.json"), phases=kg_board.PHASES)
+p2 = plan_move(b2, "u1", 0, 1, "push_delta", KT)
+print("control toast:", A._cascade_toast(Shim(b2,118), b2.task_by_id("u1"), p2))
+PY
+moved: {'s1': (datetime.date(2026, 10, 1), None)}
+_cascade_toast RAISED TypeError unsupported format string passed to NoneType.__format__
+control toast: ▌Undated due Oct 1 (+1d) · u undo · m change for this move
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -n "bump_due\|restore(\|snapshot(\|apply_plan(\|plan_move(\|resolve_mode(\|CASCADE_MODES\|CASCADE_ALL_MODES\|CASCADE_DEFAULT_MODE" taskboard/*.py
+taskboard/app.py:21:                     archive_refusal, bump_due, default_board_path, is_open, link_refusal,
+taskboard/app.py:25:                     CASCADE_MODES, apply_plan, plan_move, resolve_mode, snapshot)
+taskboard/app.py:817:        snap = self._snapshot(task)      # BEFORE the mutation (LLR-010.1); a
+taskboard/app.py:882:        self._undo_stack.append(self._snapshot(task))
+taskboard/app.py:895:        snap = self._snapshot(task)
+taskboard/app.py:956:        self._undo_stack.append(self._snapshot(task))
+taskboard/app.py:1011:        self._undo_stack.append(self._snapshot(waiter))
+taskboard/app.py:1023:        self._undo_stack.append(self._snapshot(waiter))
+taskboard/app.py:1071:        `bump_due` seat). Not view-scoped: it acts on the selection, like the
+taskboard/app.py:1170:        plan = plan_move(self.board, task.id, sd, dd,
+taskboard/app.py:1171:                         mode or resolve_mode(self.board, task.id), date.today())
+taskboard/app.py:1172:        snap = snapshot(self.board, plan)
+taskboard/app.py:1173:        apply_plan(self.board, plan)
+taskboard/app.py:1207:        nxt = CASCADE_MODES[(CASCADE_MODES.index(cas["mode"]) + 1) % len(CASCADE_MODES)]
+taskboard/app.py:1219:    def _snapshot(self, task: Task, *, deleted: bool = False) -> dict:
+taskboard/app.py:1681:        self._undo_stack.append(self._snapshot(task))
+taskboard/app.py:1929:        self._undo_stack.append(self._snapshot(task, deleted=True))
+taskboard/app.py:1955:        self._undo_stack.append(self._snapshot(task))
+taskboard/models.py:658:def bump_due(task: "Task", delta: int, today: date) -> None:
+taskboard/models.py:1829:CASCADE_MODES = ("flag", "push_delta", "together")
+taskboard/models.py:1830:CASCADE_ALL_MODES = CASCADE_MODES + ("push",)
+taskboard/models.py:1831:CASCADE_DEFAULT_MODE = "push_delta"
+taskboard/models.py:1887:def resolve_mode(board: Board, task_id: str, override: str | None = None) -> str:
+taskboard/models.py:1891:    if override in CASCADE_ALL_MODES:
+taskboard/models.py:1896:    return v if v in CASCADE_MODES else CASCADE_DEFAULT_MODE
+taskboard/models.py:1899:def plan_move(board: Board, task_id: str, start_delta: int, due_delta: int, mode: str,
+taskboard/models.py:1912:    assert mode in CASCADE_ALL_MODES, mode
+taskboard/models.py:1994:def apply_plan(board: Board, plan: Plan) -> None:
+taskboard/models.py:2007:def snapshot(board: Board, plan: Plan) -> dict[str, tuple[str | None, str | None]]:
+taskboard/models.py:2018:def restore(board: Board, snap: dict) -> None:
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys, asyncio, tempfile, pathlib
+sys.path.insert(0, "tests")
+from datetime import date, timedelta
+import kg_board
+from taskboard.app import TaskboardApp
+from textual.widgets import Button, Input
+
+def toast_text(app):
+    return "\n".join(str(t.render()) for t in app.screen.query("Toast"))
+
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp()); path = d/"board.json"
+    b = kg_board.milestones(kg_board.shifted(path), date.today())
+    b.settings["seen_view_renumber_2026_07"]=True; b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press("4"); await pilot.pause()
+        app.selected_task_id="tm2"; app.refresh_view()
+        d0 = app.board.task_by_id("tm2").due_date
+        await pilot.press("+"); await pilot.pause()
+        print("after + :", app.board.task_by_id("tm2").due_date, "stack", len(app._undo_stack))
+        await pilot.press("u"); await pilot.pause()
+        print("after u :", app.board.task_by_id("tm2").due_date, "stack", len(app._undo_stack))
+        app.clear_notifications()
+        await pilot.press("m"); await pilot.pause()
+        print("after m (post-u):", app.board.task_by_id("tm2").due_date,
+              "| toast:", toast_text(app).replace("\n"," / "))
+        # scenario B: + then title-only editor save then m
+        app.clear_notifications()
+        await pilot.press("+"); await pilot.pause()
+        await pilot.press("e")
+        for _ in range(3): await pilot.pause()
+        app.screen.query_one("#f-title", Input).value = "Renamed tm2"
+        await pilot.pause()
+        app.screen.query_one("#save", Button).press()
+        for _ in range(3): await pilot.pause()
+        print("after editor title save: stack", len(app._undo_stack),
+              "due", app.board.task_by_id("tm2").due_date)
+        before_m = app.board.task_by_id("tm3").due_date
+        app.clear_notifications()
+        await pilot.press("m"); await pilot.pause()
+        print("after m following title-edit: tm3", before_m, "->", app.board.task_by_id("tm3").due_date,
+              "| toast:", toast_text(app).replace("\n"," / "))
+asyncio.run(main())
+PY
+after + : 2026-10-08 stack 0
+after u : 2026-10-08 stack 0
+after m (post-u): 2026-10-08 | toast: 
+Traceback (most recent call last):
+  File "<stdin>", line 44, in <module>
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "<stdin>", line 33, in main
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\dom.py", line 1505, in query_one
+    raise NoMatches(f"No nodes match {query_selector!r} on {base_node!r}")
+textual.css.query.NoMatches: No nodes match '#f-title' on MilestoneOffer()
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys, asyncio, tempfile, pathlib
+sys.path.insert(0, "tests")
+from datetime import date
+import kg_board
+from taskboard.app import TaskboardApp
+
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp()); path = d/"board.json"
+    b = kg_board.milestones(kg_board.shifted(path), date.today())
+    b.settings["seen_view_renumber_2026_07"]=True; b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press("4"); await pilot.pause()
+        print("view_mode:", app.view_mode)
+        app.selected_task_id="tm2"; app.refresh_view(); await pilot.pause()
+        print("selected before:", app.selected_task_id, "sel task:", app.selected_task and app.selected_task.id)
+        await pilot.press("+"); await pilot.pause()
+        print("selected after +:", app.selected_task_id, "due:", app.board.task_by_id('tm2').due_date)
+        print("stack:", getattr(app, "_undo_stack", "NO ATTR"))
+        print("due tm3:", app.board.task_by_id('tm3').due_date)
+asyncio.run(main())
+PY
+view_mode: swimlanes
+selected before: tm2 sel task: tm2
+selected after +: tm2 due: 2026-10-08
+stack: []
+due tm3: 2026-10-18
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys, asyncio, tempfile, pathlib
+sys.path.insert(0, "tests")
+from datetime import date
+import kg_board
+from taskboard.app import TaskboardApp
+
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp()); path = d/"board.json"
+    b = kg_board.milestones(kg_board.shifted(path), date.today())
+    b.settings["seen_view_renumber_2026_07"]=True; b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        app.selected_task_id = "tm2"
+        app.refresh_view()
+        # direct method call:
+        app.action_due_bump(1)
+        await pilot.pause()
+        print("direct call due:", app.board.task_by_id('tm2').due_date, "stack", len(app._undo_stack))
+        # now reset and try pilot
+        b2 = kg_board.milestones(kg_board.shifted(path), date.today())
+        print("keybinding keys:", [bd.key for bd in app._bindings.key_to_bindings.get("+", [])] if hasattr(app._bindings,'key_to_bindings') else "n/a")
+asyncio.run(main())
+PY
+direct call due: 2026-10-09 stack 1
+keybinding keys: []
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys, asyncio, tempfile, pathlib
+sys.path.insert(0, "tests")
+from datetime import date
+import kg_board
+from taskboard.app import TaskboardApp
+
+def toasts(app): return [str(t.render()) for t in app.screen.query("Toast")]
+
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp()); path = d/"board.json"
+    b = kg_board.milestones(kg_board.shifted(path), date.today())
+    b.settings["seen_view_renumber_2026_07"]=True
+    b.task_by_id("tm3").title = ""          # empty title on a dependent
+    b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press("4"); await pilot.pause()
+        app.selected_task_id="tm2"; app.refresh_view()
+        app.action_due_bump(1); await pilot.pause()
+        print("tm2 due:", app.board.task_by_id('tm2').due_date)
+        print("tm3 due:", app.board.task_by_id('tm3').due_date, "(moved by cascade?)")
+        print("stack:", len(app._undo_stack))
+        print("toasts:", toasts(app))
+asyncio.run(main())
+PY
+Traceback (most recent call last):
+  File "<stdin>", line 24, in <module>
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "<stdin>", line 19, in main
+  File "C:\Users\jjgh8\Github\taskboard\taskboard\app.py", line 1078, in action_due_bump
+    self._apply_cascade(task, 0, delta)
+  File "C:\Users\jjgh8\Github\taskboard\taskboard\app.py", line 1183, in _apply_cascade
+    self.notify(self._cascade_toast(task, plan), title="Move", markup=False)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\Github\taskboard\taskboard\app.py", line 1160, in _cascade_toast
+    row = next((r for a in ladder if vis(r := toast(*a)) <= width), toast(*ladder[-1]))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\Github\taskboard\taskboard\app.py", line 1160, in <genexpr>
+    row = next((r for a in ladder if vis(r := toast(*a)) <= width), toast(*ladder[-1]))
+                                              ^^^^^^^^^
+  File "C:\Users\jjgh8\Github\taskboard\taskboard\app.py", line 1146, in toast
+    mid = clause(names_w)
+          ^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\Github\taskboard\taskboard\app.py", line 1131, in clause
+    names = ", ".join(self._short_title(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\Github\taskboard\taskboard\app.py", line 1131, in <genexpr>
+    names = ", ".join(self._short_title(
+                      ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\Github\taskboard\taskboard\app.py", line 1086, in _short_title
+    out = words[0]
+          ~~~~~^^^
+IndexError: list index out of range
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys, asyncio, tempfile, pathlib
+sys.path.insert(0, "tests")
+from datetime import date
+import kg_board
+from taskboard.app import TaskboardApp
+from textual.widgets import Button, Input
+
+def toasts(app): return "\n".join(str(t.render()) for t in app.screen.query("Toast"))
+
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp()); path = d/"board.json"
+    b = kg_board.milestones(kg_board.shifted(path), date.today())
+    b.settings["seen_view_renumber_2026_07"]=True; b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press("4"); await pilot.pause()
+        app.selected_task_id="tm2"; app.refresh_view()
+        app.action_due_bump(1); await pilot.pause()
+        print("A: after + tm2", app.board.task_by_id('tm2').due_date, "tm3", app.board.task_by_id('tm3').due_date, "stack", len(app._undo_stack))
+        app.action_undo(); await pilot.pause()
+        print("A: after u tm2", app.board.task_by_id('tm2').due_date, "tm3", app.board.task_by_id('tm3').due_date, "stack", len(app._undo_stack))
+        app.clear_notifications()
+        app.action_cascade_mode(); await pilot.pause()
+        print("A: after m tm2", app.board.task_by_id('tm2').due_date, "tm3", app.board.task_by_id('tm3').due_date,
+              "| toast:", toasts(app).replace("\n"," / "))
+        # scenario B: bump, then title-only editor save, then m
+        app.clear_notifications()
+        app.action_due_bump(1); await pilot.pause()
+        due_before = app.board.task_by_id('tm3').due_date
+        # title-only save through _on_task_edited with a minimal payload
+        t = app.board.task_by_id("tm2")
+        app._on_task_edited(t, {"title": "Renamed tm2", "start_date": t.start_date,
+                                "due_date": t.due_date, "milestone": None, "phase": t.phase,
+                                "archived": None, "priority": t.priority, "blocked": t.blocked,
+                                "notes": t.notes, "urls": list(t.urls), "images": list(t.images),
+                                "pinned": t.pinned, "project_id": t.project_id})
+        await pilot.pause()
+        print("B: stack after title save", len(app._undo_stack))
+        app.clear_notifications()
+        app.action_cascade_mode(); await pilot.pause()
+        print("B: after m tm3", due_before, "->", app.board.task_by_id('tm3').due_date,
+              "| toast:", toasts(app).replace("\n"," / "))
+asyncio.run(main())
+PY
+A: after + tm2 2026-10-09 tm3 2026-10-19 stack 1
+A: after u tm2 2026-10-08 tm3 2026-10-18 stack 0
+A: after m tm2 2026-10-08 tm3 2026-10-18 | toast: Move / m re-applies the last date move — nothing to re-apply
+B: stack after title save 1
+B: after m tm3 2026-10-19 -> 2026-10-19 | toast: Move / ▌Renamed tm2 due Oct 9 (+1d) · moved Add push, Offline, Beta +1d each · Mobile +1d past ◆ · u undo · m change
+[0m
+[0m→ [0mRead tests/test_colour_budget_app.py[90m [limit=70, offset=455][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && git diff .gitattributes && echo "=== rollover script head ===" && head -40 .dev-flow/rollover_b2b.py
+warning: in the working copy of '.gitattributes', LF will be replaced by CRLF the next time Git touches it
+diff --git a/.gitattributes b/.gitattributes
+index 7213634..1dc7a1c 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -5,3 +5,4 @@
+ .dev-flow/2026-10-02-batch-04/evidence/** -text
+ .dev-flow/2026-10-04-batch-01/evidence/** -text
+ .dev-flow/2026-10-04-batch-02/evidence/** -text
++.dev-flow/2026-10-06-batch-01/evidence/** -text
+=== rollover script head ===
+"""Rollover 2026-10-04-batch-02 -> B2b (2026-10-06-batch-01), per
+stations/shared-batch.md §Batch rollover. Uses devflow-init.py's own template
+helpers so the seeded record is byte-faithful to what init would write."""
+import datetime
+import importlib.util
+import json
+import os
+import subprocess
+import sys
+
+ROOT = r"C:\Users\jjgh8\Github\taskboard"
+BUNDLE = r"C:\Users\jjgh8\.claude\skills\dev-flow"
+TODAY = "2026-10-06"
+OUTGOING = "2026-10-04-batch-02"
+OBJECTIVE = ("Batch B2b of the kg_mejoras plan (US-604, the D-601 pre-authorized B2a/B2b split): "
+             "moving a task's dates moves what waits on it -- push by default (push_delta), a "
+             "per-project setting (date_links), m per move; the cascade wraps bump_due / "
+             "set_milestone; a milestone's due is authoritative (its start follows)")
+
+spec = importlib.util.spec_from_file_location(
+    "devflow_init", os.path.join(BUNDLE, "scripts", "devflow-init.py"))
+di = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(di)
+
+state_path = os.path.join(ROOT, ".dev-flow", "state.json")
+doc = json.loads(open(state_path, encoding="utf-8").read())
+assert doc["batch_id"] == OUTGOING, doc["batch_id"]
+assert doc["phase_status"] == "closed", doc["phase_status"]
+
+# 1. Archive the outgoing decisions_log -- MOVED, never copied.
+archive = os.path.join(ROOT, ".dev-flow", OUTGOING, "decisions-log.json")
+assert not os.path.exists(archive), "archive already exists -- refusing to overwrite"
+with open(archive, "w", encoding="utf-8", newline="\n") as fh:
+    json.dump(doc["decisions_log"], fh, indent=2, ensure_ascii=False)
+    fh.write("\n")
+
+batch = di._batch_id(ROOT, TODAY)
+assert batch == "2026-10-06-batch-01", batch
+
+def git(*args):
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+........................................................                 [100%]
+2504 passed in 378.09s (0:06:18)
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -rn "AT-611\|AT 611\|AT611" .dev-flow/2026-10-06-batch-01/ | grep -v "01-requirements.md"
+.dev-flow/2026-10-06-batch-01/03-increments/increment-001.md:9:| Acceptance | white-box `TC-618..TC-630` · black-box `AT-607..AT-611` arrive with increments 002/003 (the V2 station-expected reds) |
+.dev-flow/2026-10-06-batch-01/evidence/inc001-002-deepseek-run.log:247:[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -rn "AT-611\|AT_611" tests/ .dev-flow/2026-10-06-batch-01/03-increments/ 2>/dev/null
+.dev-flow/2026-10-06-batch-01/evidence/inc001-002-deepseek-run.log:248:.dev-flow/2026-10-06-batch-01/03-increments/increment-001.md:9:| Acceptance | white-box `TC-618..TC-630` · black-box `AT-607..AT-611` arrive with increments 002/003 (the V2 station-expected reds) |
+.dev-flow/2026-10-06-batch-01/evidence/p1-thresholds.txt:43:AT-611 CONTROL (all open): tm2 +3 [tm2 s+3 d+3 mode=push_delta]
+.dev-flow/2026-10-06-batch-01/evidence/p1-thresholds.txt:50:AT-611 done stop (tm3 Done): tm2 +3 [tm2 s+3 d+3 mode=push_delta]
+.dev-flow/2026-10-06-batch-01/evidence/p1-thresholds.txt:55:AT-611 milestone whole: td0 +5 [td0 s+0 d+5 mode=push_delta]
+.dev-flow/2026-10-06-batch-01/evidence/p1-thresholds.txt:60:AT-611 earlier: tm2 -1 pulls nothing [tm2 s-1 d-1 mode=push_delta]
+.dev-flow/2026-10-06-batch-01/evidence/p1-thresholds.txt:65:AT-611 cross-project: ta4 +5 (api=together decides) [ta4 s+5 d+5 mode=together]
+.dev-flow/2026-10-06-batch-01/evidence/p1_thresholds.py:64:show("AT-611 CONTROL (all open): tm2 +3", board(), "tm2", 3, 3, "push_delta")
+.dev-flow/2026-10-06-batch-01/evidence/p1_thresholds.py:67:p = show("AT-611 done stop (tm3 Done): tm2 +3", b3, "tm2", 3, 3, "push_delta")
+.dev-flow/2026-10-06-batch-01/evidence/p1_thresholds.py:69:show("AT-611 milestone whole: td0 +5", b, "td0", 0, 5, "push_delta")
+.dev-flow/2026-10-06-batch-01/evidence/p1_thresholds.py:70:show("AT-611 earlier: tm2 -1 pulls nothing", b, "tm2", -1, -1, "push_delta")
+.dev-flow/2026-10-06-batch-01/evidence/p1_thresholds.py:75:show("AT-611 cross-project: ta4 +5 (api=together decides)", b4, "ta4", 5, 5, "together")
+.dev-flow/2026-10-06-batch-01/evidence/p2-arch-probe2.txt:10:AT-611 done-stop: moved sets identical: True · conflicts identical: True
+.dev-flow/2026-10-06-batch-01/evidence/p2-arch-probe2.txt:11:AT-611 milestone whole: moved sets identical: True · conflicts identical: True
+.dev-flow/2026-10-06-batch-01/evidence/p2-arch-probe2.txt:12:AT-611 earlier: moved sets identical: True · conflicts identical: True
+.dev-flow/2026-10-06-batch-01/evidence/p2_arch_probe2.py:63:    ("AT-611 done-stop", "tm2", 3, 3, "push_delta", ("tm3", "DONE")),
+.dev-flow/2026-10-06-batch-01/evidence/p2_arch_probe2.py:64:    ("AT-611 milestone whole", "td0", 0, 5, "push_delta", None),
+.dev-flow/2026-10-06-batch-01/evidence/p2_arch_probe2.py:65:    ("AT-611 earlier", "tm2", -1, -1, "push_delta", None),
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -rn "AT-611\|AT-607\|AT-608\|AT-609\|AT-610" .dev-flow/2026-10-06-batch-01/04-validation.md .dev-flow/2026-10-06-batch-01/01-requirements-ledger.md .dev-flow/2026-10-06-batch-01/05-close.md 2>/dev/null | head -40
+.dev-flow/2026-10-06-batch-01/01-requirements-ledger.md:22:- **What changed:** every AT threshold re-derived by EXECUTING the prototype engine on the exact AT board (`p1-thresholds.txt`): AT-607 moves tm3 AND tm4 (+1d each), tm5 stays; AT-608's together arm gains the tm5 discriminator and the `Mobile +1d past ◆` clause; AT-609 moves tm3 and tm4 (+3d each); AT-610's arms corrected (together: td0/td5 +2d, `Data Warehouse +2d past ◆`; flag: nothing moves, the toast's `flagged` clause with the added days). The ONE overlap measure is now the shipped `link_overlap` applied to planned dates (D-633 — the prototype's milestone carve-out dropped; moved sets identical). The toast grammar adopts the approved C-3 ladder (names when they fit, count when not, the narrowing key suffix `· u undo · m change for this move`); `flagged` is reachable (the flag clause); `m`'s Key entry and the refusal literal pinned. New: D-634 (cascades touching >1 task save through `save_atomic`), the undated-task today base in LLR-604.1 (TC-627), §6.3 reworded (S-3/S-5), D-630/P-6 name the new-project sync path (S-4), RC-1(b) and P-1 evidence pasted (Q-6/A-6), §2.4's no-slow-state line.
+.dev-flow/2026-10-06-batch-01/01-requirements-ledger.md:29:- **What changed:** the toast literals re-pinned to EXECUTED strings (the iteration-2 text had pinned them unexecuted — the same defect class one layer down): the toast ladder is now defined (§1.3) and LLR-604.2 pins AT-607's toast at 118 (`pushed Add push, Offline sync +1d each`) and at 80 (`pushed 2 +1d each`); the project clause carries the full name or the FIRST WORD per the ladder — AT-610's clause corrected to `Data +2d past ◆`; the flag clause's grammar specified (`flagged ‹names› +‹N›d`, ADDED days) and pinned (`flagged Add push +1d` in AT-608, `flagged Revenue +2d` in AT-610). D-633 re-worded: the measures agree in the overlap regime and on every AT arm, they do NOT universally cancel — the slack-boundary behavior is the shipped one and TC-628 pins it (new). `new_conflicts` carries ADDED days, stated (not the prototype's totals). AT-610 pins the editor (the `+`-twice alternative dropped). D-634 extended to the undo's restore. §1.6 gained the refusal and flag-clause rows; §6.3's citation corrected; §5 lists both overlap listings.
+.dev-flow/2026-10-06-batch-01/01-requirements-ledger.md:36:- **What changed:** §1.3's toast-ladder definition corrected — the name budget NARROWS 12 → 8 across the rungs before the count forms (the 8-rung is load-bearing: AT-608's @118 toast lands on it; a fixed-12 reading flips the pinned `Mobile +1d past ◆` to RED — Q-9/A-16, executed). The flag clause gained its count and mixed forms (`flagged 2 +2d each`; `flagged 2 overlaps (‹A› +1d, ‹B› +3d)`) in §1.6 and LLR-604.2. The overlap bullet's agreement claim scoped to moved sets and added deltas (the conflict totals differ by the documented pre-existing 1d). §5 notes AT-608's evidence line shows the prototype's TOTAL (added = 1d). P-9 scoped: the two NEW strings (flag clause, refusal) have executed components and a stated derivation, not executed strings.
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys
+sys.path.insert(0, "tests")
+from types import SimpleNamespace
+from datetime import date, timedelta
+from pathlib import Path
+import kg_board
+from taskboard.models import plan_move, Task
+from taskboard.app import TaskboardApp as A
+KT = kg_board.TODAY
+class Shim(A):
+    def __init__(self, board, width):
+        self.board=board; self._w=width
+    @property
+    def screen(self): return SimpleNamespace(size=SimpleNamespace(width=self._w))
+
+today = date.today()
+b = kg_board.milestones(kg_board.shifted("scratch2-board.json"), today)
+u9 = Task("Undated follower", phase="Next", depends_on=["tm2"], id="u9")   # no dates
+u8 = Task("Dated follower", phase="Next", start_date=(today+timedelta(days=20)).isoformat(),
+          due_date=(today+timedelta(days=24)).isoformat(), depends_on=["tm2"], id="u8")
+b.tasks += [u9, u8]
+p = plan_move(b, "tm2", 0, 1, "push_delta", today)
+print("push_delta moved:", sorted(p.moved))
+p2 = plan_move(b, "tm2", 0, 1, "together", today)
+print("together moved:", sorted(p2.moved), "shift u9:", p2.shift.get("u9"))
+# u9 has no dates: did anything about it change in the plan?
+print("u9 planned dates:", p2.moved.get("u9"))
+for w in (118, 60, 40):
+    print(f"w={w}:", A._cascade_toast(Shim(b, w), b.task_by_id("tm2"), p2))
+PY
+push_delta moved: ['tm2', 'tm3', 'tm4']
+together moved: ['tm2', 'tm3', 'tm4', 'tm5', 'u8', 'u9'] shift u9: 1
+u9 planned dates: (None, None)
+w=118: ▌Audit dependencies due Oct 9 (+1d) · moved 5 +1d each · Mobile App +1d past ◆ · u undo · m change for this move
+w=60: ▌Audit… due Oct 9 (+1d) · moved 5 +1d each · Mobile +1d pas…
+w=40: ▌Audit… due Oct 9 (+1d) · moved 5 +1d e…
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && grep -n "print(\|pprint\|breakpoint(\|TODO\|FIXME\|XXX" taskboard/models.py taskboard/app.py | tail -20
+(no output)
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python - <<'PY'
+import sys
+sys.path.insert(0, "tests")
+from types import SimpleNamespace
+from pathlib import Path
+import kg_board
+from taskboard.models import Board, Task, plan_move
+from taskboard.app import TaskboardApp as A
+KT = kg_board.TODAY
+class Shim(A):
+    def __init__(self, b, w): self.board=b; self._w=w
+    @property
+    def screen(self): return SimpleNamespace(size=SimpleNamespace(width=self._w))
+# width 0 and 2
+b = kg_board.milestones(kg_board.build())
+p = plan_move(b, "tm2", 0, 1, "push_delta", KT)
+for w in (0, 1, 2, 3):
+    s = A._cascade_toast(Shim(b, w), b.task_by_id("tm2"), p)
+    print(w, repr(s))
+PY
+0 ''
+1 '…'
+2 '▌…'
+3 '▌A…'
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=50, offset=618][0m
+[0m
+[0m← [0mWrite .dev-flow/2026-10-06-batch-01/evidence/inc001-002-deepseek-review.md
+Wrote file successfully.
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && git status --short && echo "--- report exists ---" && ls -la .dev-flow/2026-10-06-batch-01/evidence/inc001-002-deepseek-review.md
+M .dev-flow/state.json
+ M .gitattributes
+ M README.md
+ M taskboard/app.py
+ M taskboard/keymap.py
+ M taskboard/modals.py
+ M taskboard/models.py
+ M taskboard/views.py
+ M tests/test_colour_budget_app.py
+?? .dev-flow/2026-10-04-batch-02/decisions-log.json
+?? .dev-flow/2026-10-06-batch-01/
+?? .dev-flow/rollover_b2b.py
+?? scratch-board.json
+?? scratch2-board.json
+?? tests/test_cascade.py
+?? tests/test_cascade_app.py
+--- report exists ---
+-rw-r--r-- 1 jjgh8 197609 10610 Oct  6 19:11 .dev-flow/2026-10-06-batch-01/evidence/inc001-002-deepseek-review.md
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rm -f scratch-board.json scratch2-board.json && git status --short | grep -i scratch; echo "exit:$?"
+exit:1
+[0m
+Scratch files created by my probes (`scratch*.json` from `kg_board.shifted`) were removed; the only file I wrote is the named report. Full report below.
+
+---
+
+# Adversarial read-only review — increments 001 + 002 (deepseek-flash)
+
+**Mode:** read-only. **Ran:** `tests/test_cascade.py` + `tests/test_cascade_app.py` (18 passed), full suite once (`2504 passed in 378s`, G-011 did not fire), ~10 standalone probes.
+
+**Tree note / premise correction.** The brief says the editor "is NOT yet cascaded — known, by design", but the working tree **does** contain increment 003 (`_on_task_edited` routes dates through `_apply_cascade`; `ProjectModal` has `#f-date-links`). I reviewed the cumulative diff as it exists; this affects DS-2 and the "editor between a bump and `m`" question. I verified both editor behaviours instead of trusting the note.
+
+## Findings
+
+### DS-1 — MEDIUM — `_short_title` crashes on an empty/blank title
+`taskboard/app.py:1083-1091` (`out = words[0]`, line 1086). `split()` → `[]` raises `IndexError`. Titles are not guaranteed non-empty: `Task.from_dict` does `d.get("title","Untitled")` (`models.py:857`), so a board file / teammate push with `"title": ""` loads fine but the first cascade toast that names it raises. Move is applied+saved; toast is lost. **Fix:** `words = t.split(); if not words: return ""`. **Repro EXECUTED:** `_short_title("",12)` → `IndexError`; full path `action_due_bump → _apply_cascade → _cascade_toast → _short_title` traceback; via `pilot.press("+")` the exception is swallowed and no Toast appears while dates still move.
+
+### DS-2 — MEDIUM — the toast formats `None` when the moved task has no due
+`taskboard/app.py:1101` + `1145` (`_md(nd)`; `_md` = `f"{d:%b} {d.day}"`, `app.py:38`). A move with `due_delta == 0` on a task whose due is `None` leaves `moved[task] = (start, None)` → `TypeError`. Bump can't hit it (`dd=±1`), but the editor can: a task with a start and **no due**, editing only its **start** calls `_apply_cascade(task, sd, 0)` (`app.py:1878`). Engine is fine; only the toast dies. **Fix:** guard the lead when `nd is None`. **Repro EXECUTED:** Shim `_cascade_toast` on `start=today, due=None`, `plan_move(...,1,0)` → `TypeError`; undated-task bump control toasts fine.
+
+### DS-3 — LOW — `together` counts an undated dependent as "moved"
+`models.py:1936-1938` / `put` `models.py:1930-1934`; consumed at `app.py:1099-1100`,`1126-1141`. Under `together` every downstream task is put with `shift=due_delta` even with no dates → `plan.moved[id]=(None,None)`, counted/named by the toast. Contract clause is "WHO moved". TC-631 exercises this but only asserts `"moved" in said`. **Fix:** only put tasks whose planned dates differ (or filter `(None,None)` in the toast). **Repro EXECUTED:** toast `moved 5 +1d each` while `moved["u9"]==(None,None)` (only 4 moved).
+
+### DS-4 — MEDIUM — AT-611 has no test node anywhere
+`01-requirements.md:183,291`; `increment-001.md:9` ("AT-607..AT-611 arrive with 002/003"). 002/003 delivered 607-610; `grep -rn "AT-611\|AT_611" tests/` → nothing. §5 requires "one node each"; §5.2 "every HLR has a passing AT". Behaviours are covered at unit level (TC-619/620/621/622) and executed in `p1-thresholds.txt`, but the black-box AT is absent. **Fix:** add the AT-611 node or formally fold it and amend the contract.
+
+### DS-5 — LOW — the tested `restore` is not the code path the app runs
+`models.py:2018-2023`; app never imports it — `action_undo` inline loops `app.py:1280-1284`, `action_cascade_mode` `app.py:1202-1206`. TC-623/630 test `restore`, but production duplicates it → false confidence, drift risk. **Fix:** call `restore(...)`.
+
+### DS-6 — LOW — unused import `bump_due`
+`app.py:21`; after inc-003 nothing calls it (only the docstring at `app.py:1071`). Inc-002's reverse-census A3 ("increment 003 still uses it") is no longer true. **Fix:** drop the import.
+
+### DS-7 — LOW — `CASCADE_VERB` has no `"push"` entry
+`app.py:1081`. `plan_move` accepts `"push"`; `_apply_cascade(mode="push")` would `KeyError`. Unreachable today; a landmine. **Fix:** add `"push": "pushed"` or assert.
+
+### Observations
+- **`m` after `u`** (EXECUTED): entry is gone, `m` refuses verbatim, writes nothing — consistent with LLR-604.4/§6.3.
+- **Editor between bump and `m`** (EXECUTED): title-only save pushes no undo entry → `m` re-applies correctly; date-changing save pushes its own entry → `m` re-applies that.
+- **`save_atomic` failure mid-cascade** (`app.py:1172-1183`): memory ahead of disk with the undo entry already pushed; inherited single-task posture.
+- **`m` clobbers intervening non-undoable changes** (e.g. team sync) by restoring snapshot dates; same as shipped undo.
+
+## Verified-clean
+Deleted moved-task project, moved task with no project, cycles (2-cycle under `together` mixed dated/undated; self-loop and 2-cycles under `push_delta` terminate), `restore` with vanished task/project, toast ladder at widths 0/1/2/3/24/40/60 (grammatical; `▌` survives ≥2), and the `project_over` population asymmetry (reconciles for the "slips further" comparison).
+
+## Verdict
+**HIGH: 0 · MEDIUM: 3 (DS-1, DS-2, DS-4) · LOW: 4 (DS-3, DS-5, DS-6, DS-7) · Observations: 4.**
+
+Moderate-to-high confidence that 001+002 are structurally sound: the engine survives the pathological inputs named in the brief, the undo/mode interlock matches the contract, and the suite is green (2504). The material issues are all in the **reporting layer** — two unguarded `None`/empty inputs kill the toast while leaving the move applied (DS-1, DS-2; one-line guards), `together` over-counts undated dependents (DS-3), and AT-611 is missing (DS-4). None corrupts the board or breaks the one-undo-entry promise. I would not block on the LOWs, but DS-1/DS-2 should be folded before the operator's visual verdict, and DS-4 resolved (or the contract amended) before the batch can claim §5.2.

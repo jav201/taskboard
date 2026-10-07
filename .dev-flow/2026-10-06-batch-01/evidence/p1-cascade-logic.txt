@@ -1,0 +1,126 @@
+cascade_logic — TODAY 2026-09-30 · offsets are days from today · · = not moved
+pre-existing overlaps (rule 9', before any move): tw5<tw4 3d, tm3<tm2 2d, tm4<tm3 3d, tm5<tm4 1d, ta6<ta4 11d
+
+=== 1a Mobile: m2 later by 3 (whole bar)   [tm2 start +3 due +3]  world=base
+  task  before (s..d)             flag     push_delta       together           push
+  tm2    -8.. +2             -5.. +5        -5.. +5        -5.. +5        -5.. +5
+  tm3    +1..+12                   ·        +4..+15        +4..+15        +6..+17
+  tm4   +10..+28                   ·       +13..+31       +13..+31       +18..+36
+  tm5   +28..+35                   ·       +31..+38       +31..+38       +37..+44
+  flag       moves  0 others · new/worse conflicts: tm3<tm2 5d · past project due: none
+  push_delta moves  3 others · new/worse conflicts: none · past project due: pmob +3d (was +0)
+  together   moves  3 others · new/worse conflicts: none · past project due: pmob +3d (was +0)
+  push       moves  3 others · new/worse conflicts: none · past project due: pmob +9d (was +0)
+
+=== 1b Mobile: m2 earlier by 3   [tm2 start -3 due -3]  world=base
+  task  before (s..d)             flag     push_delta       together           push
+  tm2    -8.. +2            -11.. -1       -11.. -1       -11.. -1       -11.. -1
+  tm3    +1..+12                   ·              ·        -2.. +9              ·
+  tm4   +10..+28                   ·              ·        +7..+25              ·
+  tm5   +28..+35                   ·              ·       +25..+32              ·
+  flag       moves  0 others · new/worse conflicts: none · past project due: none
+  push_delta moves  0 others · new/worse conflicts: none · past project due: none
+  together   moves  3 others · new/worse conflicts: none · past project due: none
+  push       moves  0 others · new/worse conflicts: none · past project due: none
+
+=== 1c Web: w2 +5 (two chains: w4, w5)   [tw2 start +5 due +5]  world=base
+  task  before (s..d)             flag     push_delta       together           push
+  tw2   -25.. -3            -20.. +2       -20.. +2       -20.. +2       -20.. +2
+  tw4     —.. +6                   ·              ·         —..+11              ·
+  tw5    +4..+10                   ·              ·        +9..+15        +7..+13
+  flag       moves  0 others · new/worse conflicts: none · past project due: none
+  push_delta moves  0 others · new/worse conflicts: none · past project due: none
+  together   moves  2 others · new/worse conflicts: none · past project due: pweb +5d (was +4)
+  push       moves  1 others · new/worse conflicts: none · past project due: none
+
+=== 1d Web: w2 +12 (collides this time)   [tw2 start +12 due +12]  world=base
+  task  before (s..d)             flag     push_delta       together           push
+  tw2   -25.. -3            -13.. +9       -13.. +9       -13.. +9       -13.. +9
+  tw4     —.. +6                   ·         —.. +9         —..+18         —.. +9
+  tw5    +4..+10                   ·       +10..+16       +16..+22       +10..+16
+  flag       moves  0 others · new/worse conflicts: tw4<tw2 3d, tw5<tw2 6d · past project due: none
+  push_delta moves  2 others · new/worse conflicts: none · past project due: pweb +6d (was +4)
+  together   moves  2 others · new/worse conflicts: none · past project due: pweb +12d (was +4)
+  push       moves  2 others · new/worse conflicts: none · past project due: pweb +6d (was +4)
+
+=== 1e milestone td0 +15 (start == due moves whole)   [td0 start +0 due +15]  world=milestone
+  task  before (s..d)             flag     push_delta       together           push
+  td5   +30..+60                   ·       +34..+64       +45..+75       +34..+64
+  td0   +18..+18            +33..+33       +33..+33       +33..+33       +33..+33
+  flag       moves  0 others · new/worse conflicts: td5<td0 4d · past project due: none
+  push_delta moves  1 others · new/worse conflicts: none · past project due: pdwh +4d (was +0)
+  together   moves  1 others · new/worse conflicts: none · past project due: pdwh +15d (was +0)
+  push       moves  1 others · new/worse conflicts: none · past project due: pdwh +4d (was +0)
+
+=== 1f m2 +3 while m3 is DONE (cascade stops)   [tm2 start +3 due +3]  world=done_dep
+  task  before (s..d)             flag     push_delta       together           push
+  tm2    -8.. +2             -5.. +5        -5.. +5        -5.. +5        -5.. +5
+  flag       moves  0 others · new/worse conflicts: none · past project due: none
+  push_delta moves  0 others · new/worse conflicts: none · past project due: none
+  together   moves  0 others · new/worse conflicts: none · past project due: none
+  push       moves  0 others · new/worse conflicts: none · past project due: none
+
+=== 1g milestone: start delta ignored   [td0 start +4 due +15]  world=milestone
+  task  before (s..d)       push_delta
+  td5   +30..+60            +34..+64
+  td0   +18..+18            +33..+33
+  push_delta moves  1 others · new/worse conflicts: none · past project due: pdwh +4d (was +0)
+
+=== 2 push (strict) vs push_delta
+  m2 +3    push: 3 moved, pmob +9d, max shift 9d · push_delta: 3 moved, pmob +3d, max shift 3d · together: 3 moved, pmob +3d, max shift 3d
+  w2 +12   push: 2 moved, pweb +6d, max shift 6d · push_delta: 2 moved, pweb +6d, max shift 6d · together: 2 moved, pweb +12d, max shift 12d
+  td0 +15  push: 1 moved, pdwh +4d, max shift 4d · push_delta: 1 moved, pdwh +4d, max shift 4d · together: 1 moved, pdwh +15d, max shift 15d
+  zero move on m2: push moves ['tm3', 'tm4', 'tm5'] (shifts [2, 5, 6]); push_delta moves []
+  -> strict push treats ANY edit (even +0) as permission to repair old overlaps:
+     the operator moves m2 by 3d and Mobile slips 9d. push_delta = 3d. DEFAULT = push_delta.
+
+=== 4 setting: project.extra['date_links'] (default push_delta) + per-move override
+  tm2: project pmob -> push_delta
+  ta4: project papi -> together
+  td4: project pdwh -> flag
+
+=== 4a cross-project: a4 (api=together) +5, d2 (dwh=flag) waits on it   [ta4 start +5 due +5]  world=cross
+  task  before (s..d)         together
+  ta4    -9.. +4             -4.. +9
+  ta6    -6.. -1             -1.. +4
+  td2    +2.. +9             +7..+14
+  together   moves  2 others · new/worse conflicts: none · past project due: none
+
+=== 4b same move, per-move override = flag   [ta4 start +5 due +5]  world=cross
+  task  before (s..d)             flag
+  ta4    -9.. +4             -4.. +9
+  flag       moves  0 others · new/worse conflicts: ta6<ta4 16d, td2<ta4 8d · past project due: none
+
+=== 5a due-only bump (+ key x4) on m3 (has a start)   [tm3 start +0 due +4]  world=base
+  task  before (s..d)             flag     push_delta       together           push
+  tm3    +1..+12             +1..+16        +1..+16        +1..+16        +1..+16
+  tm4   +10..+28                   ·       +14..+32       +14..+32       +17..+35
+  tm5   +28..+35                   ·       +32..+39       +32..+39       +36..+43
+  flag       moves  0 others · new/worse conflicts: tm4<tm3 7d · past project due: none
+  push_delta moves  2 others · new/worse conflicts: none · past project due: pmob +4d (was +0)
+  together   moves  2 others · new/worse conflicts: none · past project due: pmob +4d (was +0)
+  push       moves  2 others · new/worse conflicts: none · past project due: pmob +8d (was +0)
+
+=== 5b whole-bar move of m3 by +4   [tm3 start +4 due +4]  world=base
+  task  before (s..d)             flag     push_delta       together           push
+  tm3    +1..+12             +5..+16        +5..+16        +5..+16        +5..+16
+  tm4   +10..+28                   ·       +14..+32       +14..+32       +17..+35
+  tm5   +28..+35                   ·       +32..+39       +32..+39       +36..+43
+  flag       moves  0 others · new/worse conflicts: tm4<tm3 7d · past project due: none
+  push_delta moves  2 others · new/worse conflicts: none · past project due: pmob +4d (was +0)
+  together   moves  2 others · new/worse conflicts: none · past project due: pmob +4d (was +0)
+  push       moves  2 others · new/worse conflicts: none · past project due: pmob +8d (was +0)
+
+=== 5c due-only bump -2 (earlier) pulls nothing except in together   [tm3 start +0 due -2]  world=base
+  task  before (s..d)             flag     push_delta       together           push
+  tm3    +1..+12             +1..+10        +1..+10        +1..+10        +1..+10
+  tm4   +10..+28                   ·              ·        +8..+26       +11..+29
+  tm5   +28..+35                   ·              ·       +26..+33       +30..+37
+  flag       moves  0 others · new/worse conflicts: none · past project due: none
+  push_delta moves  0 others · new/worse conflicts: none · past project due: none
+  together   moves  2 others · new/worse conflicts: none · past project due: none
+  push       moves  2 others · new/worse conflicts: none · past project due: pmob +2d (was +0)
+  -> strict push pushes m4/m5 LATER although m3 moved EARLIER (old overlap repaired);
+     strict push also slipped w5 +3d on 1c, where w2 +5 collided with nothing.
+
+all asserts passed

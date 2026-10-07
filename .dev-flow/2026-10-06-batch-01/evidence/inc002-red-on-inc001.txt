@@ -1,0 +1,5 @@
+tests\test_cascade_app.py:102: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_cascade_app.py::test_AT_607_the_bump_moves_the_chain_and_says_so
+FAILED tests/test_cascade_app.py::test_AT_608_m_reapplies_the_last_move_under_the_next_mode
+2 failed in 0.96s
