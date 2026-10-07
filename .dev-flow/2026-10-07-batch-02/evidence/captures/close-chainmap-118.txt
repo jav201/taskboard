@@ -1,0 +1,30 @@
+◆ CHAIN MAP · who waits on whom                                                 17 linked tasks · ▲2 late · ━ chain 4
+─▌Website Redesign  5 linked · 2 open not linked ───────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Design homepage mockups ──┬─▸ Build component library ──┬─▸ Optimize image assets   ──┬─▸ Launch new homepage
+  ✓                         │   ▷ ready             ▲3d   │   ◂1               Oct 13   │   ◂2               Oct 17
+                            │                             │                             │
+                            ╰─▸ Mockups approved          │                             │
+                                ✓                         │                             │
+                                                          ╰─────────────────────────────╯
+─▌Mobile App  4 linked · ━ critical chain · 1 open not linked ──────────────────── dates  ○ stay  ● push  ○ together ─
+ ┃Audit dependencies      ━━━━▸┃Add push notifications  ━━━━▸┃Offline sync            ━━━━▸┃Beta release to testers
+ ┃○                 Oct 9      ┃◂1               Oct 19      ┃◂1                Nov 4      ┃◂1               Nov 11
+─▌API Platform  4 linked · 2 open not linked ───────────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Partner notice emails   ────▸ Deprecate v1 endpoints
+  ○                Oct 10       ◂1               Oct 14
+
+  Rate limiting           ────▸ SDK regeneration
+  ○                Oct 11       ◂1                  ▲1d
+─▌Data Warehouse  4 linked · 2 open not linked ───────────────────────── set here  dates  ○ stay  ○ push  ● together ─
+  Migrate user table      ────▸ Daily revenue model     ────▸ Revenue model signed    ────▸ BI dashboard cut-over
+  ✓                             ▷ ready          Oct 25       ◂1 off           Oct 25       ◂1                Dec 6
+─▌Ops & Security  6 open · no links ──────────────────────────────────────────────────────────────────────────────────
+
+
+ ✓ done · ▷ ready · ◂N waits on N · ━ critical chain · ─ starts before due · ─ satisfied · ▲ late
+ Build component library                                            x remove the › link · L link · ↵ open · ←→↑↓ move
+ ◂ waits on  ›Design homepage mockups (starts 5d early)
+ ▸ unblocks   Optimize image assets ·  Launch new homepage
+ ▌Website Redesign · Push what it collides with (default): a move pushes waiting tasks by the overlap it adds · m cha…
+  11:28:56 · Wed 07 Oct 2026 · W41 · Mexico City 11:28 · New York 13:28
+ ? Map  ; More  q Quit  1 Lanes  2 Agenda  3 Gantt  4 Kanban  5 Focus  6 Chains  7 Flow  8  9  0  ↵  a  e  d  L  ↓  ↑

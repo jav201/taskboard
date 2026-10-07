@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-07-batch-01",
-  "batch_objective": "Cleanup batch: the P4 residue of 2026-10-06-batch-01 -- DS-5 the app reuses the tested models.restore; bump_due's today-base unified with plan_move's (one rule, ARCH4-4/SEC4-6); Plan.conflicts documented as the totals intermediate (ARCH4-3); the C-5 vanished-task arm pinned (SEC4-3); the toast rungs below 80 pinned as degrade-by-design (GAP-3)",
+  "batch_id": "2026-10-07-batch-02",
+  "batch_objective": "Batch C of the kg_mejoras plan: the chain map view (D-C) behind key 6 -- per-project chain bands, the ----> links with the ready/waits/late marks, the critical chain, the details strip (waits on / unblocks, x remove, L link, ↵ open), the per-chain dates: switch writing extra[date_links] (C-2/C-2b, the rule visible per project), and the K-B high-band cap (+N more); round-7 polish rules: accent = focus only, critical chain = structure not hue",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -79,6 +79,12 @@
       "to": "core",
       "date": "2026-10-07",
       "reason": "batch 2026-10-07-batch-01 opened by rollover from 2026-10-06-batch-01; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-07",
+      "reason": "batch 2026-10-07-batch-02 opened by rollover from 2026-10-07-batch-01; mode core declared by the commission"
     }
   ],
   "guided": false,
@@ -101,9 +107,12 @@
     "P5": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-07T07:18:37",
+    "evaluated_at": "2026-10-07T08:15:33",
     "fired": [
       "B1",
+      "C8",
+      "D1",
+      "D2",
       "E1"
     ],
     "not_fired": [
@@ -121,72 +130,79 @@
       "C5",
       "C6",
       "C7",
-      "C8",
-      "D1",
-      "D2",
       "E2",
       "E3",
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-07-batch-01/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-07-batch-02/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-07-batch-01/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-01/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-07-batch-01/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-07-batch-02/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-02/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-07-batch-02/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-07-batch-01/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-07-batch-01/evidence/",
+    "increments": "repo:.dev-flow/2026-10-07-batch-02/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-07-batch-02/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-01.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-01.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-01/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-01/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-02.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-02.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-02/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-02/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "f66542510944bdc40ae7352c4a7e28c83b7c18fd",
+  "base_ref": "79ad4386a8776bf2c6d063df1ea31cb553d10860",
   "artifacts": {},
   "decisions_log": [
     {
       "station": "P0",
       "date": "2026-10-07",
-      "decision": "standing authorization — the operator's commission ('Haz el residuo de P4... Sigue llamando a Deepseek'): P0 approved. Batch 2026-10-07-batch-01 opened by rollover from 2026-10-06-batch-01 (its 13-entry log archived; the interrupted first attempt's archive verified verbatim and accepted); base_ref f665425; triggers B1 (bump_due/restore asserted by other tests) and E1 (5 residue items) fired; the work splits into two DISJOINT halves for two DeepSeek instances in parallel: product (models/app: DS-5 restore reuse, bump_due today-base unification, Plan.conflicts doc) and tests (C-5 pin, GAP-3 width pins) — per the operator's parallelization request; P1 is next (a lean contract: the residue items are fully specified by the P4 findings)."
+      "decision": "standing authorization — the operator's commission ('Arranca y continua hasta terminar los cambios propuestos... Sigue usando Deepseek'): P0 approved. Batch 2026-10-07-batch-02 (Batch C of the kg_mejoras plan) opened by rollover from 2026-10-07-batch-01 (6-entry log archived); base_ref 79ad438 == origin/main; the chain map view (D-C) is the batch's core: per-project chain bands, ----> links, ready/waits/late marks, the critical chain, the details strip, the per-chain dates: switch on the shipped extra[date_links] storage (C-2/C-2b — the rule visible per project, UXV-6's deferral), the K-B high-band cap; round-7 polish: accent = focus only, critical chain = structure not hue; triggers B1 C8 D1 D2 E1 fired; P1 derives the contract from the D-C frames (the prototype's own renders) next."
     },
     {
       "station": "P1",
       "date": "2026-10-07",
-      "decision": "standing authorization — P1 approved: US-701/HLR-701/LLR-701.1-.3 derived from the P4 findings (the five drift risks, all behavior-verified by the P4 lenses); ledger LED .1; scan clean (security_required false — no new surface); contract lean (the residue was fully specified at P4); validator 0 block; the two DeepSeek instances are mid-flight (V4 Pro: the product refactor in models/app; Flash: DONE — TC-701/702 appended, 15 nodes green, tests-only); P2 (the four lenses over this small delta) is next once both chunks land; per the batch's size the P2/P3/P4 ceremony stays proportionate but every gate still runs."
+      "decision": "standing authorization — P1 approved: US-801/802/803, HLR-801 (the D-C frame as the law), HLR-802 (the per-chain dates: switch on the shipped storage — UXV-6's deferral), HLR-803 (the high-band cap), LLR-801.1/.2/802.1/803.1; AT-801..803, TC-801..806; ledger LED .1; IFC Part A (Part B none); scan security_required false; P2 (the four lenses over the contract) is next, then the increments — 001 the chain map renderer+wiring (DeepSeek V4 Pro product port under a coordinator brief), 002 the switch + cap, tests in parallel (Flash)."
     },
     {
       "station": "P2",
       "date": "2026-10-07",
-      "decision": "standing authorization — P2/P4 (combined for this 40-line cleanup, declared at P1): the four lenses over the whole delta — qa PASS-WITH-NOTES (QAR-1 the narrow-but-real TC-702 pin), architect PASS, security PASS (SEC-R-1 none), ux PASS-WITH-NOTES (UXR-1 the constructed-string vs painted-widget note — accepted, AT-607 covers the 80 painted rung) — with the equivalence verified branch-by-branch (date_base provably identical at both seats; restore sites byte-identical; the pins' mutants executed live and RED, reverted); no HIGH no MEDIUM no folds owed; the gate evidence = the full suite (V4 Pro's 2514-passed run + the coordinator's close run) + the lenses' targeted 28-node runs."
+      "decision": "standing authorization — P1 iteration 2 approved: P2 iteration-1's four-lens FAIL folded (LED .2): the C-2b oracle both sizes (C-2b-80x24 added), two fixtures, the heavy critical chain + greyscale law, the per-width switch/footer literals with the verbatim explainers, the label↔stored-string map, set here, the x/m view-dispatch decided (x → unlink_tasks + the new refusal literal; m → the selected task's project rule), HLR-803 re-scoped as the shipped cap's characterization pin, the port citation corrected, §2.7's four premises, TC-807 S1, TC↔arms enumerated; validator 0 block; P2 iteration 2 (the four lenses re-read the delta) is next."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-07",
+      "decision": "standing authorization — P1 iteration 3 approved: P2 iteration-2's literal folds landed (LED .3: set here at both widths, the ▌ wide footer with the verbatim LONG labels, the strip's early-days measure as the prototype's plain difference, the full-band no-links head, the generic 80 head-drop rule, L's views tuple, the per-arm fixtures with the in-test pdwh=together, the required date.today(), §2.8 none) plus the V26 pairings; validator 0 block; P2 iteration 3 (the final lens re-read of the delta) is next; then the increments with DeepSeek (V4 Pro the renderer+wiring port, Flash the tests), disjoint as before."
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-07",
+      "decision": "standing authorization — P2 approved at iteration 4: iteration 1 FAIL (oracle contradictions) → iteration 2 FAIL (literal pins) → iteration 3 (security PASS-WITH-NOTES, ux PASS; qa+architect FAIL on one residual: LLR-802.1's live text kept the stale ◆/(118) — the .3 fold had amended HLR-802 but not LLR-802.1's repeated literal, the lesson recorded) → iteration 4 folds (LED .4: LLR-802.1 corrected, the ○ gloss, the frozen-calendar clause for the exact-row arms, AT-801/803 fixtures, the legend row) verified by the qa lens with PASS-WITH-NOTES; validator 0 block; the contract is now §-exact against the C-2b law at both widths with every arm RED-able on a named runnable board; P3 increment 001 (the chain map renderer+wiring, DeepSeek V4 Pro; the tests, DeepSeek Flash, disjoint) is next."
     },
     {
       "station": "P3",
       "date": "2026-10-07",
-      "decision": "standing authorization — P3 increment 001 approved: LLR-701.1 (date_base shared by bump_due/plan_move; both app restore sites on models.restore; Plan.conflicts documented) + LLR-701.2 (TC-701) + LLR-701.3 (TC-702), implemented by DeepSeek V4 Pro (product) and Flash (tests) in parallel disjoint chunks per the operator's request; 2 SOURCE + 1 test file; the refactor's oracle the whole suite (2514 green); the pins' mutants executed RED by the ux lens; the packet at 03-increments/increment-001.md."
+      "decision": "standing authorization — P3 increment 001 approved (revision 2): LLR-801.1 (the C-2b renderer, byte-exact at both sizes, with the CM-1 column cap and the CM-2 whole-band fold) / LLR-801.2 (key 6, L's views, the x/m view-dispatch with the verbatim refusal) / LLR-802.1 (the per-chain switch, stored strings, set here at both widths, the bright-selection fold) / LLR-803.1 (the shipped cap pinned) — product by DeepSeek V4 Pro, tests by Flash (13 nodes), review folds by the coordinator; code-reviewer r1 BLOCK-UNTIL CM-1/CM-2 fixed RED-first under the second exception, r2 PASS-WITH-NOTES with both HIGHs verified by re-running the original repros; the 12 census REDs reconciled by execution (KEYBAR_BASE, README, TITLES, the counts, L's tuple, the view-keys pins); AT-201's accent law honored by inking the selection bright; close gate 2529 passed 0 failed; the packet + LED .5 at their homes."
     },
     {
       "station": "P4",
       "date": "2026-10-07",
-      "decision": "standing authorization — P4 approved: validation = the combined lens swarm (recorded at the P2 gate) + the close suite; 04-validation.md written; carried notes: QAR-1/UXR-1 (TC-702's string-level pins — proportionate for a cleanup; widen if the clause matrix grows)."
+      "decision": "standing authorization — P4 approved: validation = the code-reviewer's rev-2 (both HIGHs verified on the fixed tree, the resize-heal and the deep-chain-fold notes carried) + the combined P2 lens pass at the contract + the close suite 2529/0; the captures (close-chainmap-118, the m-cycle with 'Move the whole chain (set here)', close-chainmap-80) and the verdict sheet (veredicto-batchc.html, PV-816..819) are the operator's; carried to BACKLOG: the per-band cap/split for deep chains, the resize-heal re-verify, AT-801b's docstring nit."
     },
     {
       "station": "P5",
       "date": "2026-10-07",
-      "decision": "standing authorization — the residue batch CLOSED at P5: close gate 2514 passed 0 failed; BACKLOG reconciled (the five P4 residue items done, nothing open, base ref re-stamped to f665425); the canon folded (4 rows); 05-close.md written (the parallel-DeepSeek split recorded: V4 Pro product + Flash tests, disjoint by file, meeting at the green suite); the close validator run next; the coordinator commits and pushes now — the operator ordered this work done ('Haz el residuo de P4'), the gates are the verification, and the push is the coordinator's under the standing authorization."
+      "decision": "standing authorization — the batch CLOSED at P5: close gate 2529 passed 0 failed; BACKLOG reconciled (Batch C done-pending-verdict, three small carries, base ref re-stamped); the canon folded (7 rows); 05-close.md written; the close validator next; the coordinator commits and pushes now under the operator's commission ('continua hasta terminar los cambios propuestos')."
     }
   ],
   "standing_authorization": {
     "autonomous": true,
     "merge": false,
     "asked_on": "2026-10-07",
-    "operator_words": "Operator (Javier), 2026-10-07: 'Haz el residuo de P4 y si puedes empezar el siguiente incremento paralelizando seria bueno. Sigue llamando a Deepseek.' Read with the established chain: Gates -- autonomous with the same two exceptions; Git -- the COORDINATOR commits and pushes after verification (this cleanup's scope is residue the operator already ordered done; the push follows the gates, no PR); data safeguard -- synthetic boards only, never the operator's real board."
+    "operator_words": "Operator (Javier), 2026-10-07: 'Arranca y continua hasta terminar los cambios propuestos para el proyecto. Sigue usando Deepseek.' Read with the established chain: Gates -- autonomous with the two exceptions; Git -- the COORDINATOR commits and pushes after the gates (the operator commissioned the full remainder of the plan; each batch pushes at its close, no PR); data safeguard -- synthetic boards only, never the operator's real board."
   },
   "obsidian_synced": false,
-  "created_at": "2026-10-07T07:17:26.462463",
+  "created_at": "2026-10-07T08:14:50.016076",
   "resumption_note": "STOPPED per operator 2026-10-06: increment 002 APPROVED. Next: increment 003 (LLR-604.3 the editor's date save routes through the cascade; LLR-604.5 the Linked dates select in ProjectModal storing extra['date_links']; AT-609/AT-610; the IFC Part B #f-date-links block owed by the increment that creates it). Then P4 (four lenses re-read the close tree, captures, fold-canon) and P5 (close: BACKLOG F2 reconcile, fold-canon, operator visual verdict PV-612+, coordinator commit+push). Env: run tests with NO_COLOR unset + TERM=xterm-256color + PYTHONIOENCODING=utf-8 or colour-census tests false-red. All work uncommitted by design; the coordinator commits+pushes after the operator's verdict."
 }

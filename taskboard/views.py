@@ -17,6 +17,8 @@ import copy
 import math
 import os
 import re
+import textwrap
+import unicodedata
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import NamedTuple
@@ -29,8 +31,9 @@ from rich.table import Table
 from rich.text import Text
 
 from . import history
-from .models import (Board, Task, critical_chain, days_in_phase, link_conflicts, link_marks,
-                     open_predecessors, parse_iso, unblocks_count)
+from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Task, critical_chain,
+                     days_in_phase, link_conflicts, link_marks, open_predecessors,
+                     parse_iso, unblocks_count)
 from .team_sync import TeamState, sync_tone
 from .wave import DOT_ROWS, Bitmap, load_curve
 
@@ -5338,6 +5341,505 @@ def render_kanban(board, show_archived, selected_id, today=None,
 
 
 # ---------------------------------------------------------------------------
+# view: CHAIN MAP (the C-2b oracle, batch 2026-10-07-batch-02)
+#
+# The dependency web as a grid: one band per project that has links, tiles laid
+# left to right by dependency depth, edges routed in the gaps (a depth +2 skip
+# rides its own lane under the band). The critical chain is STRUCTURE — heavy
+# `━`/`┃` and bold — never hue. The per-project dates switch reads `date_links`
+# through the shipped lenient read (absent or junk resolves to the default) and
+# paints the LABELS, never the stored strings.
+# ---------------------------------------------------------------------------
+# the labels↔stored map (the contract's): stay↔flag / push↔push_delta /
+# together↔together. The STORED strings never paint.
+CHAINMAP_SHORT = {"flag": "stay", "push_delta": "push", "together": "together"}
+CHAINMAP_LABELS = {"flag": "Keep others, flag conflicts",
+                   "push_delta": "Push what it collides with",
+                   "together": "Move the whole chain"}
+CHAINMAP_WHY = {"flag": "only the moved task moves; overlaps are flagged",
+                "push_delta": "a move pushes waiting tasks by the overlap it adds",
+                "together": "a move shifts every later task by the same days"}
+CHAINMAP_WHY_SHORT = {"flag": "nothing else moves; overlaps flagged",
+                      "push_delta": "waiters move by the overlap this adds",
+                      "together": "all downstream shifts the same days"}
+
+# the chain map's selection follows the app-wide budget: bright, never accent.
+
+# box-drawing connectors with per-direction weight (light ─ / heavy ━), derived
+# from Unicode names — the same table the C-2b prototype built.
+_CH_U, _CH_D, _CH_L, _CH_R = 1, 2, 4, 8
+_CH_DIR = {"UP": (_CH_U,), "DOWN": (_CH_D,), "LEFT": (_CH_L,), "RIGHT": (_CH_R,),
+           "HORIZONTAL": (_CH_L, _CH_R), "VERTICAL": (_CH_U, _CH_D)}
+
+
+def _chainmap_box_table():
+    out = {}
+    for cp in range(0x2500, 0x2580):
+        words = unicodedata.name(chr(cp), "").replace("BOX DRAWINGS ", "").split()
+        if not words or set(words) & {"DOUBLE", "DASH", "TRIPLE", "QUADRUPLE",
+                                      "ARC", "DIAGONAL", "SINGLE"}:
+            continue
+        w: dict[int, bool] = {}
+        if words[0] in ("LIGHT", "HEAVY"):
+            for x in words[1:]:
+                for d in _CH_DIR.get(x, ()):
+                    w[d] = words[0] == "HEAVY"
+        else:
+            pend: list[int] = []
+            for x in words:
+                if x in _CH_DIR:
+                    pend += _CH_DIR[x]
+                elif x in ("LIGHT", "HEAVY"):
+                    for d in pend:
+                        w[d] = x == "HEAVY"
+                    pend = []
+        if w:
+            out.setdefault(frozenset(w.items()), chr(cp))
+    for bits, ch in {_CH_D | _CH_L: "╮", _CH_D | _CH_R: "╭",
+                     _CH_U | _CH_L: "╯", _CH_U | _CH_R: "╰"}.items():
+        out[frozenset((d, False) for d in (_CH_U, _CH_D, _CH_L, _CH_R) if bits & d)] = ch
+    return out
+
+
+_CHAINMAP_BOX = _chainmap_box_table()
+
+
+def _chainmap_box(bits: int, heavy: int) -> str:
+    if bits in (_CH_L, _CH_R):
+        bits, heavy = _CH_L | _CH_R, (_CH_L | _CH_R) if heavy else 0
+    if bits in (_CH_U, _CH_D):
+        bits, heavy = _CH_U | _CH_D, (_CH_U | _CH_D) if heavy else 0
+    key = frozenset((d, bool(heavy & d)) for d in (_CH_U, _CH_D, _CH_L, _CH_R) if bits & d)
+    return _CHAINMAP_BOX.get(key) or _CHAINMAP_BOX[frozenset(
+        (d, bool(heavy)) for d in (_CH_U, _CH_D, _CH_L, _CH_R) if bits & d)]
+
+
+def _chainmap_st(text: str, fg: str, bg: str | None = None, bold: bool = False) -> str:
+    """Markup with an explicit hex fg (and bg); `text` must be plain, unescaped."""
+    return f"[{'bold ' if bold else ''}{fg}{' on ' + bg if bg else ''}]{escape(text)}[/]"
+
+
+def _chainmap_pad(markup: str, width: int) -> str:
+    """Pad `markup` out to `width` cells, measured by its RENDERED width — an
+    escaped `[` is one cell here, where `_strip` would read it as a tag (S1)."""
+    return markup + " " * max(0, width - Text.from_markup(markup, emoji=False).cell_len)
+
+
+def _chainmap_mode(pr) -> str:
+    """The band's rule, read leniently: absent or junk resolves to the default."""
+    v = pr.extra.get("date_links") if pr is not None else None
+    return v if v in CASCADE_MODES else CASCADE_DEFAULT_MODE
+
+
+def _chainmap_conflict_days(board: Board, waiter: Task, pred: Task, today: date) -> int:
+    """Days the waiter starts (or today, if undated) before `pred` is due — the
+    prototype's plain `(pred.due − start).days`, not `link_overlap`'s +1."""
+    s = parse_iso(waiter.start_date) or today
+    d = parse_iso(pred.due_date)
+    return (d - s).days if d and d > s else 0
+
+
+def _chainmap_depths(board: Board, tasks: list[Task]) -> dict[str, int]:
+    """Longest path from a task with no (in-band) predecessor; a stored cycle is
+    cut by the `seen` set so the render always terminates."""
+    ids = {t.id for t in tasks}
+    memo: dict[str, int] = {}
+
+    def depth(t: Task, seen=()) -> int:
+        if t.id in memo:
+            return memo[t.id]
+        ps = [p for x in t.depends_on if x in ids and x not in seen
+              and (p := board.task_by_id(x))]
+        memo[t.id] = 0 if not ps else 1 + max(depth(p, seen + (t.id,)) for p in ps)
+        return memo[t.id]
+    for t in tasks:
+        depth(t)
+    return memo
+
+
+def _chainmap_plan(board: Board, show_archived: bool):
+    """(tasks, linked, depth, chain, ncol, bands, bare) — the one answer the
+    renderer and the navigator share, so a cursor can never rest on a tile the
+    view does not draw (the F-3 law)."""
+    tasks = list(board.visible_tasks(show_archived))
+    tid = {t.id for t in tasks}
+    linked = [t for t in tasks if any(x in tid for x in t.depends_on)
+              or any(t.id in o.depends_on for o in tasks)]
+    depth = _chainmap_depths(board, linked)
+    chain = set(critical_chain(board))
+    ncol = max(depth.values()) + 1 if depth else 1
+    # CM-1: cap the columns so the tile width can never crash the wrapper (the
+    # 24-column floor gives tile_w >= 3 -> inner >= 1); the oracle frames use
+    # ncol 4, so the cap never moves them. Deeper chains pile into the last
+    # column instead of raising.
+    ncol = min(ncol, 4)
+    depth = {tid: min(d, ncol - 1) for tid, d in depth.items()}
+    projects = board.visible_projects(show_archived)
+    bands = [(pr, [t for t in linked if t.project_id == pr.id]) for pr in projects]
+    bands = [(pr, ts) for pr, ts in bands if ts]
+    bare = [pr for pr in projects if not any(t.project_id == pr.id for t in linked)]
+    return tasks, linked, depth, chain, ncol, bands, bare
+
+
+def _chainmap_switch(mode: str, wide: bool, custom: bool) -> str:
+    """The per-band `dates` switch: `○`/`●` per mode, `set here` when custom."""
+    parts = []
+    for m in CASCADE_MODES:
+        on = m == mode
+        parts.append(c("●" if on else "○", "bright" if on else "dim")
+                     + (" " if wide else "")
+                     + c(CHAINMAP_SHORT[m], "bright" if on else "dim", bold=on))
+    lead = (c("set here  ", "hd") if custom else "") + (c("dates  ", "mut") if wide else "")
+    return lead + ("  " if wide else " ").join(parts)
+
+
+def _chainmap_band_rule(pr, facts: list[str], switch: str, width: int) -> str:
+    """`─▌Name  facts ─────── switch ─` (exactly `width` cells); the rule wears
+    the project's hue shaded 50%, the name the project hue; facts shed from the
+    right while the row is too wide."""
+    rc = _shade_hex(HEX[pr.color], 0.5)
+    head = _chainmap_st("─", rc) + c("▌", pr.color) + c(escape(pr.name), pr.color, bold=True)
+    sw_w = vis(_strip(switch))
+    facts = list(facts)
+    while True:
+        f = (c("  ", "dim") + c(" · ", "dim").join(facts)) if facts else ""
+        used = vis(_strip(head + f)) + 1 + (1 + sw_w + 1 if switch else 0) + 1
+        if used + 2 <= width or not facts:
+            break
+        facts.pop()
+    fill = width - used
+    return head + f + " " + _chainmap_st("─" * max(1, fill), rc) \
+        + ((" " + switch + " ") if switch else "") + _chainmap_st("─", rc)
+
+
+def _chainmap_keys(items) -> str:
+    """Key hints out of the accent: bold bright keys, muted verbs."""
+    return c(" · ", "dim").join(c(k, "bright", bold=True) + (" " + c(v, "mut") if v else "")
+                                for k, v in items)
+
+
+def _chainmap_edge_style(k: str) -> str:
+    return {"crit": f"bold {HEX['bright']}", "over": HEX["over"],
+            "ash": HEX["ash"]}.get(k, HEX["mut"])
+
+
+def _chainmap_legend(width: int, items) -> str:
+    """The legend row, shedding entries from the right until it fits."""
+    while items:
+        out = " " + c(" · ", "dim").join(c(g, k) + " " + c(escape(t), "dim") for g, k, t in items)
+        if vis(_strip(out)) <= width:
+            return _pad(out, width)
+        items = items[:-1]
+    return " " * width
+
+
+class _ChainmapCanvas:
+    """Cells of (glyph, style); rows are joined into runs at the end."""
+
+    def __init__(self, w: int, h: int):
+        self.w, self.h = w, h
+        self.g = [[(" ", "")] * w for _ in range(h)]
+
+    def put(self, r: int, x: int, s: str, style: str) -> None:
+        for i, ch in enumerate(s):
+            if 0 <= r < self.h and 0 <= x + i < self.w:
+                self.g[r][x + i] = (ch, style)
+
+    def line(self, r: int) -> str:
+        out, run, st = [], "", None
+        for ch, s in self.g[r] + [("", "END")]:
+            if s != st:
+                if run:
+                    out.append(f"[{st}]{escape(run)}[/]" if st else escape(run))
+                run, st = "", s
+            run += ch
+        return "".join(out)
+
+
+class _ChainmapWires:
+    """Connector bits + heavy bits per cell; the highest-ranked tone colours it."""
+    RANK = {"crit": 3, "over": 2, "mut": 1, "ash": 0}
+
+    def __init__(self):
+        self.bits: dict[tuple[int, int], int] = {}
+        self.heavy: dict[tuple[int, int], int] = {}
+        self.tone: dict[tuple[int, int], str] = {}
+
+    def set(self, r, x, bit, k, heavy=None):
+        self.bits[(r, x)] = self.bits.get((r, x), 0) | bit
+        if heavy if heavy is not None else k == "crit":
+            self.heavy[(r, x)] = self.heavy.get((r, x), 0) | bit
+        if (r, x) not in self.tone or self.RANK[k] >= self.RANK[self.tone[(r, x)]]:
+            self.tone[(r, x)] = k
+
+    def hseg(self, r, x0, x1, k, heavy=None):
+        a, z = sorted((x0, x1))
+        for x in range(a, z + 1):
+            self.set(r, x, (_CH_L if x > a else 0) | (_CH_R if x < z else 0), k, heavy)
+
+    def vseg(self, x, r0, r1, k, heavy=None):
+        a, z = sorted((r0, r1))
+        for r in range(a, z + 1):
+            self.set(r, x, (_CH_U if r > a else 0) | (_CH_D if r < z else 0), k, heavy)
+
+    def path(self, pts, k, heavy=None):
+        for (x0, r0), (x1, r1) in zip(pts, pts[1:]):
+            if r0 == r1:
+                self.hseg(r0, x0, x1, k, heavy)
+            else:
+                self.vseg(x0, r0, r1, k, heavy)
+
+    def draw(self, cv: _ChainmapCanvas) -> None:
+        for (r, x), bt in self.bits.items():
+            k = self.tone[(r, x)]
+            cv.put(r, x, _chainmap_box(bt, self.heavy.get((r, x), 0)), _chainmap_edge_style(k))
+
+
+def _chainmap_tile(cv: _ChainmapCanvas, board: Board, t: Task, rr: int, x: int,
+                   tile_w: int, is_sel: bool, is_crit: bool, today: date,
+                   wide: bool) -> bool:
+    """D-C's two-row tile, inked by the C-2b budget. Returns is_sel."""
+    is_done = board.is_done(t)
+    d = parse_iso(t.due_date)
+    late = d and d < today and not is_done
+    pre = open_predecessors(board, t)
+    ready = not is_done and t.depends_on and not pre
+    bad = any(_chainmap_conflict_days(board, t, q, today) for q in pre)
+    inner = tile_w - 2
+    words = textwrap.wrap(t.title, inner) or [""]
+    l1, rest = fit(words[0], inner), " ".join(words[1:])
+    if is_done:
+        mk, mk_k = "✓", "ash"
+    elif pre:
+        mk, mk_k = f"◂{len(pre)}", "over" if bad else "hd"
+    elif ready:
+        mk, mk_k = ("▷ ready" if wide else "▷"), "done"
+    else:
+        mk, mk_k = "○", "mut"
+    meta, meta_k = ("", "ash") if is_done else (f"▲{(today - d).days}d", "over") if late \
+        else ((_md(d), "mut") if d else ("", "mut"))
+    if rest and vis(rest) > inner - vis(mk) - vis(meta) - 2 and not late:
+        meta = ""
+    mid_w = inner - vis(mk) - vis(meta) - 2
+    l2_mid = fit(rest, max(0, mid_w)) if rest and mid_w > 3 else " " * max(0, mid_w)
+    crit = is_crit and not is_done
+    if is_done:
+        bg, fg = "", HEX["ash"]
+    elif is_sel:
+        # the app-wide budget: accent is the today's-rule/studs/cursor seat --
+        # the selection is bright+bold like every other view (AT-201)
+        bg, fg = f" on {HEX['frame']}", HEX["bright"]
+    else:
+        bg, fg = f" on {HEX['frame']}", HEX["over"] if late else HEX["bright"] if crit else HEX["hd"]
+    bold = "bold " if (is_sel or crit) and not is_done else ""
+    cv.put(rr, x, " " + l1 + " ", f"{bold}{fg}{bg}")
+    cv.put(rr + 1, x, " ", f"{fg}{bg}".strip() if bg else "")
+    cv.put(rr + 1, x + 1, mk, f"{HEX['bright'] if is_sel else HEX[mk_k]}{bg}")
+    cv.put(rr + 1, x + 1 + vis(mk), " " + l2_mid + " ", f"{fg}{bg}")
+    cv.put(rr + 1, x + 1 + vis(mk) + 1 + vis(l2_mid) + 1, meta + " ",
+           f"{HEX['bright'] if is_sel else HEX[meta_k]}{bg}")
+    if crit:                                     # the structural critical mark: a heavy left edge
+        for r in (rr, rr + 1):
+            cv.put(r, x, "┃", f"bold {HEX['bright']}{bg}")
+    return is_sel
+
+
+def render_chainmap(board, show_archived, selected_id, today=None,
+                    width=68, height=0, line_map=None) -> Text:
+    """The chain map (the C-2b oracle): who waits on whom, per project, with the
+    per-band dates switch and the heavy critical chain, fitting the screen at
+    118x30 and 80x24."""
+    today = today or date.today()
+    w = _clamp_width(width)
+    if line_map is not None:
+        line_map.clear()          # CM-2: the drawn set is rebuilt every render
+    tasks, linked, depth, chain, ncol, bands, bare = _chainmap_plan(board, show_archived)
+    sel = board.task_by_id(selected_id)
+    if sel is None or sel not in linked:
+        sel = linked[0] if linked else None
+    wide = w >= 100
+    gap = 5 if wide else 3
+    tile_w = (w - 2 - gap * (ncol - 1)) // ncol
+    col_x = [1 + d * (tile_w + gap) for d in range(ncol)]
+
+    plans = []
+    for pr, ts in bands:
+        slot: dict[str, int] = {}
+        used: dict[int, set] = {}
+        for d in range(ncol):
+            for t in (t for t in ts if depth[t.id] == d):
+                pre = [slot[x] for x in t.depends_on if x in slot]
+                s = sorted(pre)[len(pre) // 2] if pre else 0
+                while s in used.setdefault(d, set()):
+                    s += 1
+                used[d].add(s)
+                slot[t.id] = s
+        edges = [(board.task_by_id(x), t) for t in ts for x in t.depends_on if x in slot]
+        skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
+        nslot = max(slot.values()) + 1 if slot else 1
+        plans.append(dict(pr=pr, ts=ts, slot=slot, edges=edges, skips=skips,
+                          tiles_h=3 * nslot - 1 + len(skips)))
+
+    # vertical rhythm: ONE padding pair for every band, the most that fits
+    foot = 3
+    body_h = height - 1 - foot - 1      # header + footer(3) + mode footer(1)
+    core = sum(1 + p["tiles_h"] for p in plans) + (1 if bare else 0)
+    pad = leg = None
+    for want_leg in (True, False):
+        for pa, pb in ((1, 1), (0, 1), (0, 0)):
+            if core + len(plans) * (pa + pb) + want_leg <= body_h:
+                pad, leg = (pa, pb), want_leg
+                break
+        if pad:
+            break
+    pad = pad or (0, 0)
+
+    def edge_tone(p, t):
+        if board.is_done(p):
+            return "ash"
+        if _chainmap_conflict_days(board, t, p, today):
+            return "over"
+        return "crit" if (p.id in chain and t.id in chain and not board.is_done(p)) else "mut"
+
+    def is_crit(p, t):
+        return p.id in chain and t.id in chain and not board.is_done(p)
+
+    body: list[str] = []
+    for p in plans:
+        seg_h = 1 + pad[0] + p["tiles_h"] + pad[1]
+        if len(body) + seg_h > body_h:
+            break                 # CM-2: whole-band fold — the head never dangles
+        pr, ts = p["pr"], p["ts"]
+        own = [t for t in tasks if t.project_id == pr.id]
+        n_un = sum(1 for t in own if t not in ts and not board.is_done(t))
+        facts = [c(f"{len(ts)} linked", "dim")] + ([c(f"{n_un} open not linked", "dim")] if n_un else [])
+        if any(t.id in chain for t in ts):
+            facts.insert(1, _chainmap_st("━", HEX["bright"], None, True) + c(" critical chain", "hd"))
+        mode = _chainmap_mode(pr)
+        body.append(_chainmap_band_rule(pr, facts, _chainmap_switch(mode, wide,
+                                                                    mode != CASCADE_DEFAULT_MODE), w))
+        body += [" " * w] * pad[0]
+        cv = _ChainmapCanvas(w, p["tiles_h"])
+        wires = _ChainmapWires()
+        arrows: dict[tuple[int, int], str] = {}
+        lane0 = 3 * (max(p["slot"].values()) + 1) - 1
+        for pt, t in p["edges"]:
+            k = edge_tone(pt, t)
+            x_s, x_t = col_x[depth[pt.id]] + tile_w, col_x[depth[t.id]] - 1
+            r1, r2 = 3 * p["slot"][pt.id], 3 * p["slot"][t.id]
+            if (pt, t) in p["skips"]:
+                lane = lane0 + p["skips"].index((pt, t))
+                m1, m2 = x_s + gap // 2, col_x[depth[t.id]] - 1 - gap // 2
+                wires.path([(x_s, r1), (m1, r1), (m1, lane), (m2, lane), (m2, r2), (x_t, r2)],
+                           k, is_crit(pt, t))
+            else:
+                m = x_s + gap // 2
+                wires.path([(x_s, r1), (m, r1), (m, r2), (x_t, r2)], k, is_crit(pt, t))
+            arrows[(r2, x_t)] = k
+        wires.draw(cv)
+        for (rr, x), k in arrows.items():
+            cv.put(rr, x, "▸", _chainmap_edge_style(k))
+        top = 1 + len(body)
+        for t in ts:
+            rr, x = 3 * p["slot"][t.id], col_x[depth[t.id]]
+            _chainmap_tile(cv, board, t, rr, x, tile_w, t.id == (sel.id if sel else None),
+                           t.id in chain, today, wide)
+            if line_map is not None:
+                line_map[t.id] = top + rr
+        body += [cv.line(r) for r in range(cv.h)]
+        body += [" " * w] * pad[1]
+    if bare:
+        for pr in bare:
+            n = sum(1 for t in tasks if t.project_id == pr.id and not board.is_done(t))
+            body.append(_chainmap_band_rule(pr, [c(f"{n} open", "dim"), c("no links", "dim")], "", w))
+    body = body[:body_h]
+    body += [" " * w] * (body_h - len(body))
+    if leg:
+        body[-1] = _chainmap_legend(w, [("✓", "ash", "done"), ("▷", "done", "ready"),
+                                        ("◂N", "hd", "waits on N"),
+                                        ("━", "bright", "critical chain"),
+                                        ("─", "over", "starts before due"),
+                                        ("─", "ash", "satisfied"), ("▲", "over", "late")])
+
+    # footer: the selected task's links (both directions), keys out of accent
+    if sel is not None:
+        pre_all = [board.task_by_id(x) for x in sel.depends_on if board.task_by_id(x)]
+        succ = [t for t in tasks if sel.id in t.depends_on]
+    else:
+        pre_all, succ = [], []
+
+    def ref(t, focus=False, waiter=None):
+        w_, p_ = (sel, t) if waiter is None else (waiter, sel)
+        g = _chainmap_conflict_days(board, w_, p_, today)
+        k = "ash" if board.is_done(t) else "over" if g else "ink"
+        s = clip(t.title, 24 if wide else 16)
+        extra = c(f" (starts {g}d early)", "over") if g else (c(" ✓", "ash") if board.is_done(t) else "")
+        return (c("›", "bright", bold=True) if focus else " ") + c(escape(s), k, bold=focus) + extra
+
+    ft1 = c(" ◂ waits on  ", "mut") + (c(" · ", "dim").join(ref(t, i == 0) for i, t in enumerate(pre_all))
+                                       if pre_all else c("nothing", "dim"))
+    ft2 = c(" ▸ unblocks  ", "mut") + (c(" · ", "dim").join(ref(t, waiter=t) for t in succ)
+                                       if succ else c("nothing waits on it", "dim"))
+    keys = [("x", "remove the › link"), ("L", "link"), ("↵", "open"), ("←→↑↓", "move")] if wide \
+        else [("x", "remove ›"), ("L", "link"), ("↵", "open")]
+    kb = _chainmap_keys(keys)
+    kb_raw = " · ".join((f"{k} {v}" if v else k) for k, v in keys)
+    seltitle_raw = clip(sel.title, 30 if wide else 22) if sel else ""
+    seltxt = c(" " + escape(seltitle_raw), "bright", bold=True) if sel else ""
+    # measured RAW, so a hostile title's `[` never inflates the gap (S1)
+    gap = max(1, w - (1 + vis(seltitle_raw) if sel else 0) - vis(kb_raw) - 1)
+    ft3 = seltxt + " " * gap + kb + " "
+
+    def _foot_row(ln: str) -> str:
+        if Text.from_markup(ln, emoji=False).cell_len <= w:
+            return _chainmap_pad(ln, w)
+        return c(fit(_strip(ln), w), "mut")
+
+    footer = [_foot_row(ln) for ln in (ft3, ft1, ft2)]
+
+    n_late = sum(1 for t in linked if (d := parse_iso(t.due_date)) and d < today and not board.is_done(t))
+    title = c("◆ CHAIN MAP", "bright", bold=True) + c(" · who waits on whom", "mut")
+    n_drawn = sum(len(ts) for _pr, ts in bands)
+    right = (c(f"{n_drawn} linked tasks", "mut") + c(" · ", "dim") + c(f"▲{n_late} late", "over")
+             + c(" · ", "dim") + _chainmap_st("━", HEX["bright"], None, True)
+             + c(f" chain {len(chain)}", "hd"))
+    lines = ([header(title, right, w)]
+             + [_chainmap_pad(x, w) for x in body]
+             + [_chainmap_pad(x, w) for x in footer])
+
+    # the mode footer: the selected chain's rule (LONG labels + explainers)
+    if sel is not None and (pr := board.project_by_id(sel.project_id)) is not None:
+        mode = _chainmap_mode(pr)
+        src = "set here" if mode != CASCADE_DEFAULT_MODE else "default"
+        if wide:
+            foot = (c(" ▌", pr.color) + c(f"{escape(pr.name)} · ", "mut")
+                    + c(CHAINMAP_LABELS[mode], "bright", bold=True) + c(f" ({src}): ", "dim")
+                    + c(CHAINMAP_WHY[mode], "ink") + c(" · ", "dim") + _chainmap_keys([("m", "change")]))
+        else:
+            foot = (c(" ▌", pr.color) + c(CHAINMAP_SHORT[mode], "bright", bold=True) + c(": ", "dim")
+                    + c(CHAINMAP_WHY_SHORT[mode], "ink") + c(" · ", "dim")
+                    + _chainmap_keys([("m", "change for this chain")]))
+        if Text.from_markup(foot, emoji=False).cell_len > w:
+            foot = c(fit(_strip(foot), w), "mut")
+        lines.append(_chainmap_pad(foot, w))
+    else:
+        lines.append(" " * w)
+
+    return to_text(lines, height, w)
+
+
+def _chainmap_nav(board: Board, show_archived: bool) -> list[list[str]]:
+    """The chain map's on-screen order: one column per depth, tasks top-to-bottom
+    (band order, then draw order) — left/right walks the chain, up/down a column."""
+    _tasks, linked, depth, _chain, ncol, bands, _bare = _chainmap_plan(board, show_archived)
+    cols: list[list[str]] = [[] for _ in range(ncol)]
+    for _pr, ts in bands:
+        for t in ts:
+            cols[depth[t.id]].append(t.id)
+    return cols
+
+
+# ---------------------------------------------------------------------------
 # dispatcher
 # ---------------------------------------------------------------------------
 RENDERERS = {
@@ -5349,6 +5851,7 @@ RENDERERS = {
     "flow": render_flow,
     "standup": render_standup,
     "people": render_people,
+    "chainmap": render_chainmap,
 }
 
 
@@ -5693,6 +6196,9 @@ def nav_model(mode, board, show_archived, today=None, width: int = 68,
     if mode in ("flow", "standup"):  # read-only dashboards: no selectable rows
         return []
 
+    if mode == "chainmap":     # one column per depth; arrows walk the chains
+        return _chainmap_nav(board, show_archived)
+
     if mode == "kanban":       # the phase columns, in THE shared seat's order
         tasks = kanban_work(tasks)       # a milestone is never a card (LLR-603.1)
         # The matrix presentation renders through `_kanban_matrix`, which does
@@ -5931,6 +6437,17 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
                             "advisory: they never block editing",
                             "recomputed on open and after ctrl+s"]),
         ]
+    if mode == "chainmap":
+        return [
+            ("what it is for", ["the dependency web: who waits on whom, per",
+                                "project, with ready/waits/late marks."]),
+            ("first thing to do", ["6 opens it; arrows walk the chains; ↵ opens",
+                                   "x drops the selected task incoming link."]),
+            ("the marks", ["✓ done · ▷ ready · ○ chain head · ◂N waits",
+                           "┃ heavy = the critical chain · ▲Nd late",
+                           "dates switch = the rule a move follows",
+                           "set here = that project rule is custom"]),
+        ]
     return []
 
 
@@ -5964,6 +6481,9 @@ def help_example(mode: str) -> tuple[str, str]:
     if mode == "setup":
         return ("▌ D:/team/taskboard  ✓  exists and is writable",
                 "each row shows its check and its note")
+    if mode == "chainmap":
+        return ("┃Audit dependencies ━━▸┃Add push notifications",
+                "the heavy chain is the critical path; each tile's mark says its state")
     return ("", "")
 
 
@@ -6102,6 +6622,14 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
             out.append((c("++text++", "green"), "highlight: green / resolved"))
             if any(t.images for t in pinned):
                 out.append((c("▤", "mut"), "task has images"))
+    if mode == "chainmap":
+        out.append((c("✓", "ash"), "done"))
+        out.append((c("▷", "done"), "ready"))
+        out.append((c("◂N", "hd"), "waits on N open"))
+        out.append((c("━", "bright"), "critical chain"))
+        out.append((c("─", "over"), "starts before due"))
+        out.append((c("─", "ash"), "satisfied"))
+        out.append((c("▲", "over"), "late"))
     if mode == "swimlanes":
         for present, days, label in (("overdue", -1, "days overdue — ▲ is the only alert"),
                                      ("today", 0, "due today"),

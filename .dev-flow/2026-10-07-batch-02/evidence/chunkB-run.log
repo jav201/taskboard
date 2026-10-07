@@ -1,0 +1,1641 @@
+[0m
+> build · deepseek-flash
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-02/ 2>/dev/null && echo "---" && ls -la .dev-flow/2026-10-07-batch-02/evidence/ 2>/dev/null
+total 88
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 08:14 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 09:42 ..
+-rw-r--r-- 1 jjgh8 197609  7715 Oct  7 08:14 00-checklists.md
+-rw-r--r-- 1 jjgh8 197609  6797 Oct  7 09:36 01-requirements-ledger.md
+-rw-r--r-- 1 jjgh8 197609 22913 Oct  7 09:39 01-requirements.md
+-rw-r--r-- 1 jjgh8 197609  3476 Oct  7 08:14 02-review.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 08:14 03-increments
+-rw-r--r-- 1 jjgh8 197609  7643 Oct  7 08:14 04-validation.md
+-rw-r--r-- 1 jjgh8 197609  6163 Oct  7 08:14 05-close.md
+-rw-r--r-- 1 jjgh8 197609  3258 Oct  7 08:15 PLAN.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 09:44 evidence
+---
+total 26
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 09:44 .
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 08:14 ..
+-rw-r--r-- 1 jjgh8 197609 4123 Oct  7 09:42 chunkA-brief.md
+-rw-r--r-- 1 jjgh8 197609   40 Oct  7 09:44 chunkA-run.log
+-rw-r--r-- 1 jjgh8 197609 3703 Oct  7 09:43 chunkB-brief.md
+-rw-r--r-- 1 jjgh8 197609   39 Oct  7 09:44 chunkB-run.log
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 08:38 frames
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/chunkB-brief.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/chunkA-brief.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/01-requirements.md
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-02/evidence/frames/ && echo "---ROOT---" && ls -la && echo "---tests---" && ls tests/
+total 32
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 08:38 .
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 09:44 ..
+-rw-r--r-- 1 jjgh8 197609 3887 Oct  7 08:19 C-2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 4322 Oct  7 08:19 C-2b-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 2414 Oct  7 08:38 C-2b-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 3860 Oct  7 08:19 D-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 2147 Oct  7 08:19 D-C-80x24.txt
+---ROOT---
+total 1081
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 09:39 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  3 10:50 ..
+drwxr-xr-x 1 jjgh8 197609      0 Jul 21 10:24 .claude
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 09:42 .dev-flow
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 18:10 .fast-dev-flow
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 09:41 .git
+-rw-r--r-- 1 jjgh8 197609    480 Oct  7 08:14 .gitattributes
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 09:40 .githooks
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 21:47 .github
+-rw-r--r-- 1 jjgh8 197609   1135 Aug  7 09:28 .gitignore
+drwxr-xr-x 1 jjgh8 197609      0 Aug  3 08:33 .pytest_cache
+drwxr-xr-x 1 jjgh8 197609      0 Sep  5 18:17 .ruff_cache
+drwxr-xr-x 1 jjgh8 197609      0 Jul 20 18:55 .s19tool
+-rw-r--r-- 1 jjgh8 197609  12974 Aug  7 09:28 BACKGROUND.md
+-rw-r--r-- 1 jjgh8 197609  10390 Aug  7 09:28 HANDOFF.md
+-rw-r--r-- 1 jjgh8 197609 754282 Aug  7 09:28 PENDING.md
+-rw-r--r-- 1 jjgh8 197609  17027 Oct  6 16:04 README.md
+-rw-r--r-- 1 jjgh8 197609  83630 Oct  7 07:38 REQUIREMENTS.md
+-rw-r--r-- 1 jjgh8 197609   1711 Oct  2 08:09 RUN.md
+drwxr-xr-x 1 jjgh8 197609      0 Aug 15 02:18 _prototypes
+drwxr-xr-x 1 jjgh8 197609      0 Jul 31 17:19 _tui_prism_proposal
+drwxr-xr-x 1 jjgh8 197609      0 Jul 20 18:55 build
+-rw-r--r-- 1 jjgh8 197609   1378 Jul 23 19:01 debug-cdc3df.log
+drwxr-xr-x 1 jjgh8 197609      0 Oct  2 08:28 docs
+-rw-r--r-- 1 jjgh8 197609  10857 Aug 29 10:52 handoff-batch-10.md
+-rw-r--r-- 1 jjgh8 197609   7646 Aug 31 18:24 handoff-batch-11-team-sync.md
+-rw-r--r-- 1 jjgh8 197609   7275 Sep  1 09:38 handoff-batch-12-setup-help.md
+-rw-r--r-- 1 jjgh8 197609   8019 Aug 20 18:15 handoff-lanes-grid.md
+-rw-r--r-- 1 jjgh8 197609  10788 Aug 18 21:32 handoff-next-level.md
+-rw-r--r-- 1 jjgh8 197609   4258 Aug 18 16:00 handoff-three-prototypes.md
+drwxr-xr-x 1 jjgh8 197609      0 Sep 30 20:58 prototypes
+-rw-r--r-- 1 jjgh8 197609   1073 Aug  7 22:11 pyproject.toml
+-rw-r--r-- 1 jjgh8 197609   1023 Aug  7 21:48 requirements.txt
+drwxr-xr-x 1 jjgh8 197609      0 Oct  5 00:12 taskboard
+drwxr-xr-x 1 jjgh8 197609      0 Sep  1 15:01 taskboard.egg-info
+drwxr-xr-x 1 jjgh8 197609      0 Oct  6 20:48 tests
+drwxr-xr-x 1 jjgh8 197609      0 Aug 15 02:40 tools
+-rw-r--r-- 1 jjgh8 197609   2720 Jul 18 11:08 wezterm.lua
+---tests---
+__pycache__
+conftest.py
+kg_board.py
+test_agenda.py
+test_app.py
+test_archive.py
+test_cascade.py
+test_cascade_app.py
+test_cells.py
+test_cities.py
+test_colour_budget.py
+test_colour_budget_app.py
+test_control_bytes.py
+test_dependencies.py
+test_details_grid.py
+test_details_links.py
+test_details_markup.py
+test_edit_window.py
+test_emoji_picker.py
+test_english.py
+test_field.py
+test_flow.py
+test_flow_view.py
+test_focus.py
+test_gantt.py
+test_gantt_board.py
+test_gantt_link.py
+test_gantt_milestones.py
+test_gantt_polish.py
+test_highlight_segments.py
+test_history.py
+test_kanban_milestones.py
+test_kanban_priority.py
+test_kanban_readable.py
+test_keymap.py
+test_lanes_grid.py
+test_legend.py
+test_link_migration.py
+test_link_picker.py
+test_links.py
+test_markup_census.py
+test_markup_sites.py
+test_milestone_offer.py
+test_milestone_offer_seam.py
+test_milestones.py
+test_momentum.py
+test_motion.py
+test_no_live_board.py
+test_occupancy.py
+test_palette_ration.py
+test_precommit_gate.py
+test_prism_laws.py
+test_privacy_sweep.py
+test_readme.py
+test_report.py
+test_requirements.py
+test_rescue.py
+test_row_cost.py
+test_scratch_cannot_be_committed.py
+test_setup_help.py
+test_span_economy.py
+test_spend.py
+test_swimlanes.py
+test_sync_fields.py
+test_team_sync.py
+test_team_views.py
+test_vertical_fill.py
+test_view_survival.py
+test_wave.py
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-118x30.txt
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-80x24.txt
+[0m
+[0m$ [0mwc -l tests/test_cascade_app.py tests/test_gantt_board.py tests/kg_board.py tests/conftest.py tests/test_cascade.py tests/test_keymap.py taskboard/views.py taskboard/app.py taskboard/keymap.py taskboard/models.py .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/variants_polish.py 2>/dev/null
+691 tests/test_cascade_app.py
+   954 tests/test_gantt_board.py
+   265 tests/kg_board.py
+    22 tests/conftest.py
+   269 tests/test_cascade.py
+   440 tests/test_keymap.py
+  6254 taskboard/views.py
+  2069 taskboard/app.py
+   280 taskboard/keymap.py
+  2217 taskboard/models.py
+   790 .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/variants_polish.py
+ 14251 total
+[0m
+[0m→ [0mRead tests/kg_board.py
+[0m→ [0mRead tests/conftest.py
+[0m→ [0mRead tests/test_cascade_app.py
+[0m→ [0mRead tests/test_gantt_board.py[90m [limit=160][0m
+[0m→ [0mRead .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/variants_polish.py
+[0m✱ [0mGrep "^def |^    def |legend_entries|help_usage|render_"[90m in taskboard · 100 matches[0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "chainmap|chain_map|CHAIN MAP|render_chain" --glob '!*.pyc' -g '!.dev-flow/**' | head -50
+(no output)
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "def legend_entries|def help_usage|VIEW_ORDER|def action_view|def unlink_tasks|def action_archive|def action_cascade_mode|def refresh_view|def _cascade_toast" taskboard/*.py
+taskboard/views.py:5830:def help_usage(mode: str) -> list[tuple[str, list[str]]]:
+taskboard/views.py:5970:def legend_entries(mode: str, board: Board, today: date | None = None,
+taskboard/modals.py:736:    def action_archive(self) -> None:
+taskboard/app.py:52:VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people", "setup"]
+taskboard/app.py:1020:    def unlink_tasks(self, waiter: Task, pred: Task) -> None:
+taskboard/app.py:1097:    def _cascade_toast(self, task: Task, plan, sd: int = 0) -> str:
+taskboard/app.py:1197:    def action_cascade_mode(self) -> None:
+taskboard/app.py:1335:    def refresh_view(self) -> None:
+taskboard/app.py:1395:    def action_view(self, mode: str) -> None:
+taskboard/app.py:1396:        if mode not in VIEW_ORDER:
+taskboard/app.py:1964:    def action_archive(self) -> None:
+[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1, limit=120][0m
+[0m✱ [0mGrep "def render_view|def render_kanban|def render_gantt|def render_flow|def render_focus|def render_standup|def render_people|def render_setup"[90m in taskboard · 8 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [offset=5355, limit=180][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "RENDERERS" taskboard/*.py tests/*.py
+tests/test_app.py:57:    assert "columns" not in views.RENDERERS
+taskboard/views.py:5343:RENDERERS = {
+taskboard/views.py:5422:    fn = RENDERERS.get(mode, render_swimlanes)
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=5319][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=100, offset=626][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && python -c "
+from pathlib import Path
+for f in ['C-2b-118x30.txt','C-2b-80x24.txt']:
+    p=Path('.dev-flow/2026-10-07-batch-02/evidence/frames')/f
+    data=p.read_bytes()
+    print('===',f,'bytes',len(data))
+    lines=data.decode('utf-8').split('\n')
+    for i,l in enumerate(lines):
+        print(i, len(l), repr(l))
+"
+Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+  File "C:\Users\jjgh8\anaconda3\Lib\encodings\cp1252.py", line 19, in encode
+=== C-2b-118x30.txt bytes 4322
+0 119     return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u25c6' in position 1: character maps to <undefined>
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && PYTHONIOENCODING=utf-8 python -c "
+from pathlib import Path
+for f in ['C-2b-118x30.txt','C-2b-80x24.txt']:
+    p=Path('.dev-flow/2026-10-07-batch-02/evidence/frames')/f
+    data=p.read_bytes()
+    print('===',f,'bytes',len(data))
+    lines=data.decode('utf-8').split('\n')
+    print('nlines',len(lines),'last empty?',lines[-1]=='')
+    for i,l in enumerate(lines):
+        print(i, len(l))
+"
+=== C-2b-118x30.txt bytes 4322
+nlines 30 last empty? False
+0 119
+1 119
+2 119
+3 119
+4 119
+5 119
+6 119
+7 119
+8 119
+9 119
+10 119
+11 119
+12 119
+13 119
+14 119
+15 119
+16 119
+17 119
+18 119
+19 119
+20 119
+21 119
+22 119
+23 119
+24 119
+25 119
+26 119
+27 119
+28 119
+29 118
+=== C-2b-80x24.txt bytes 2414
+nlines 24 last empty? False
+0 81
+1 81
+2 81
+3 81
+4 81
+5 81
+6 81
+7 81
+8 81
+9 81
+10 81
+11 81
+12 81
+13 81
+14 81
+15 81
+16 81
+17 81
+18 81
+19 81
+20 81
+21 81
+22 81
+23 80
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && ls -R .claude/worktrees/kg-mejoras/prototypes/kg_mejoras 2>/dev/null | head -80
+.claude/worktrees/kg-mejoras/prototypes/kg_mejoras:
+DEPS-CONTRACT.md
+FLOW-CONTRACT.md
+IMPLEMENTATION-PLAN.md
+NOTES.md
+README-AUDIT.md
+__pycache__
+baseline.py
+build_html.py
+build_questions.py
+build_verdict_a2.py
+build_verdict_b1.py
+build_verdict_b2a.py
+build_verdict_p.py
+build_verdict_s.py
+capture_cascade.py
+capture_deps_gantt.py
+capture_deps_kanban.py
+capture_flow.py
+capture_gantt.py
+capture_kanban.py
+capture_polish.py
+capture_reconcile.py
+capture_round5.py
+cascade.py
+cascade_logic.py
+deps_logic.py
+fixture.py
+flow_logic.py
+flows.py
+out
+proto_app.py
+shoot.ps1
+variants_cascade.py
+variants_deps_gantt.py
+variants_deps_kanban.py
+variants_flow.py
+variants_gantt.py
+variants_kanban.py
+variants_polish.py
+variants_reconcile.py
+variants_round5.py
+
+.claude/worktrees/kg-mejoras/prototypes/kg_mejoras/__pycache__:
+baseline.cpython-312.pyc
+capture_cascade.cpython-312.pyc
+capture_kanban.cpython-312.pyc
+capture_round5.cpython-312.pyc
+cascade.cpython-312.pyc
+cascade_logic.cpython-312.pyc
+deps_logic.cpython-312.pyc
+fixture.cpython-312.pyc
+flows.cpython-312.pyc
+proto_app.cpython-312.pyc
+variants_cascade.cpython-312.pyc
+variants_deps_gantt.cpython-312.pyc
+variants_deps_kanban.cpython-312.pyc
+variants_flow.cpython-312.pyc
+variants_gantt.cpython-312.pyc
+variants_kanban.cpython-312.pyc
+variants_polish.cpython-312.pyc
+variants_reconcile.cpython-312.pyc
+variants_round5.cpython-312.pyc
+
+.claude/worktrees/kg-mejoras/prototypes/kg_mejoras/out:
+AX-1-118x30.svg
+AX-1-118x30.txt
+AX-1-80x24.svg
+AX-1-80x24.txt
+AX-2-118x30.svg
+AX-2-118x30.txt
+AX-2-80x24.svg
+AX-2-80x24.txt
+C-1a-118x30.svg
+C-1a-118x30.txt
+C-1a-80x24.svg
+C-1a-80x24.txt
+C-1b-118x30.svg
+C-1b-118x30.txt
+C-1b-80x24.svg
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && PYTHONIOENCODING=utf-8 python -c "
+from pathlib import Path
+for f in ['C-2b-118x30.txt','C-2b-80x24.txt']:
+    p=Path('.claude/worktrees/kg-mejoras/prototypes/kg_mejoras/out')/f
+    if p.exists():
+        data=p.read_bytes()
+        lines=data.decode('utf-8').split('\n')
+        print('===',f,'bytes',len(data),'nlines',len(lines))
+        print([len(l) for l in lines])
+    else:
+        print('missing',p)
+" && echo "---capture_polish---" && sed -n '1,80p' .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/capture_polish.py 2>/dev/null | cat -v | head -80
+=== C-2b-118x30.txt bytes 4322 nlines 30
+[119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 118]
+=== C-2b-80x24.txt bytes 2414 nlines 24
+[81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 80]
+---capture_polish---
+"""PROTOTYPE M-bM-^@M-^T capture round 7 (T-C2, C-2b) next to the originals (T-C, C-2).
+    PYTHONIOENCODING=utf-8 python prototypes/kg_mejoras/capture_polish.py
+
+Checks:
+  size     exactly H rows x W cells, every glyph one cell wide (cell_len).
+  board    the board passed in is unchanged (deep snapshot incl. `extra`).
+  law      every accent cell (fg OR bg) of T-C2 / C-2b lies inside a declared
+           focus region, and every declared region holds accent (not vacuous).
+  critical heavy M-bM-^TM-^A cells exist and none of them is accent.
+  tints    every {name} token wears ONE bg per name everywhere; names differ;
+           each bg/fg clears HLS s >= 0.15 and survives 256-colour quantisation
+           as a distinct, non-grey colour.
+  switch   C-2b: each band's rule row marks exactly that band's mode.
+  bands    C-2b: each band rule's shaded hue clears s >= 0.15, also at 256 colours.
+"""
+import colorsys
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from fixture import build, TODAY  # noqa: E402
+from baseline import svg  # noqa: E402
+from capture_round5 import snap  # noqa: E402
+from rich.cells import cell_len  # noqa: E402
+from rich.color import Color, ColorSystem  # noqa: E402
+import variants_flow as VF  # noqa: E402
+import variants_cascade as VC  # noqa: E402
+import variants_polish as VP  # noqa: E402
+
+SIZES = ((118, 30), (80, 24))
+PAIRS = [("T-C", VF.render_tc, "T-C2", VP.render_tc2, "tm3"),
+         ("C-2", VC.render_c2, "C-2b", VP.render_c2b, "tm3")]
+
+
+def hls_s(hexv):
+    r, g, b = (int(hexv[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    return colorsys.rgb_to_hls(r, g, b)[2]
+
+
+def check_size(key, text, W, H):
+    plain = text.plain.split("\n")
+    assert len(plain) == H, (key, W, H, len(plain))
+    for i, ln in enumerate(plain):
+        assert cell_len(ln) == W, (key, W, H, i, cell_len(ln), ln)
+        assert len(ln) == W, (key, "a glyph is not 1 cell", i, ln)
+    return plain
+
+
+def check_law(key, text):
+    acc = VP.accent_cells(text)
+    regions = VP.STATS["focus"]
+    per = {}
+    for r, x, ch in acc:
+        hit = next((ro for ro, rr, a, z in regions if rr == r and a <= x < z), None)
+        assert hit in VP.FOCUS_ROLES, (key, "accent outside focus", r, x, ch)
+        per[hit] = per.get(hit, 0) + 1
+    for ro, rr, a, z in regions:
+        assert any(r == rr and a <= x < z for r, x, _ in acc), (key, "empty focus region", ro, rr, a, z)
+    heavy = [(r, i, s) for r, i, ch, s in VP.styled_cells(text) if ch in "M-bM-^TM-^AM-bM-^TM-^CM-bM-^TM-3M-bM-^TM-;M-bM-^TM-#M-bM-^TM-+M-bM-^UM-^KM-bM-^TM-^OM-bM-^TM-^SM-bM-^TM-^WM-bM-^TM-^["]
+    assert heavy, (key, "no structural critical mark")
+    inside = lambda r, i: any(rr == r and a <= i < z for _, rr, a, z in regions)  # noqa: E731
+    assert not any(VP.ACCENT in (VP._hex(s.color), VP._hex(s.bgcolor))
+                   for r, i, s in heavy if not inside(r, i)), (key, "critical wears accent")
+    return per
+
+
+def check_tints(key, text):
+    seen = {}
+    plain_rows = text.plain.split("\n")
+    cells = {(r, i): s for r, i, _, s in VP.styled_cells(text)}
+    for r, row in enumerate(plain_rows):
+        for m in VP._TOK.finditer(row):
+            nm = m.group(1)
+            full = next((v for v in VP.VAR_TINT if v == nm or (m.group(2) == "M-bM-^@M-&" and nm and v.startswith(nm))), None)
+            if full is None:
+                bg0 = VP._hex(cells[(r, m.start())].bgcolor)
+                assert bg0 in {bg for _, bg in VP.VAR_TINT.values()}, (key, "untinted cut token", r, row)
+                continue
+            bgs = {VP._hex(cells[(r, i)].bgcolor) for i in range(m.start(), m.end())}
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && PYTHONIOENCODING=utf-8 python -c "
+from pathlib import Path
+p=Path('.dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-118x30.txt')
+data=p.read_bytes()
+print('CR count', data.count(b'\r'), 'LF count', data.count(b'\n'))
+print('first line bytes tail', data[:400])
+"
+CR count 29 LF count 29
+first line bytes tail b'\xe2\x97\x86 CHAIN MAP \xc2\xb7 who waits on whom                                                 15 linked tasks \xc2\xb7 \xe2\x96\xb22 late \xc2\xb7 \xe2\x94\x81 chain 4 \r\n\xe2\x94\x80\xe2\x96\x8cWebsite Redesign  4 linked \xc2\xb7 2 open not linked \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80 dates  \xe2\x97\x8b stay  \xe2\x97\x8f push  \xe2\x97\x8b together \xe2\x94\x80\r\n  Design homepage mockups \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x96\xb8 Build component library \xe2\x94\x80\xe2\x94\x80'
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=25, offset=802][0m
+[0m→ [0mRead taskboard/keymap.py
+[0m→ [0mRead taskboard/app.py[90m [limit=120, offset=1330][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=210, offset=1000][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "view_mode ==|view_mode in|def action_archive|def action_add_task|def action_edit|def action_delete|def action_details|def action_link|def _refresh_keybar|def action_cursor|def action_hmove" taskboard/app.py
+522:        if self.view_mode in ("gantt", "swimlanes"):
+568:        if self.view_mode == "gantt":
+643:        if self.view_mode == "kanban" and h and (self.search_query or "").strip():
+648:        if self.view_mode == "kanban":
+650:        elif self.view_mode == "swimlanes":
+676:        if self.view_mode == "focus":
+685:                and self.view_mode == "kanban"):
+691:        if self.view_mode == "gantt":
+714:        if self.view_mode == "kanban":
+732:        if (self.selected_task_id is not None and self.view_mode == "kanban"
+756:    def action_cursor(self, delta: int) -> None:
+759:        if self.view_mode == "setup" and self._setup_state is not None:
+778:    def action_hmove(self, delta: int) -> None:
+819:        kanban = self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+836:            if self.view_mode == "gantt" and self.board.is_done(task):
+921:        if (self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+963:    def action_link(self) -> None:
+969:        if self.view_mode == "gantt":
+1657:    def _refresh_keybar(self) -> None:
+1666:        if self.view_mode == "setup":
+1669:        if self.view_mode == "kanban":
+1674:        elif self.view_mode == "focus":
+1679:        elif self.view_mode == "swimlanes":
+1778:        if self.view_mode == "setup":
+1811:    def action_add_task(self) -> None:
+1812:        if self.view_mode == "setup":
+1827:    def action_details(self) -> None:
+1830:        if self.view_mode == "setup":
+1838:    def action_edit(self) -> None:
+1947:    def action_delete(self) -> None:
+1964:    def action_archive(self) -> None:
+1974:        if self.view_mode == "setup":
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=130, offset=1770][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=75, offset=1947][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=80, offset=1650][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=55, offset=955][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && cat .dev-flow/2026-10-07-batch-02/evidence/chunkA-run.log .dev-flow/2026-10-07-batch-02/evidence/chunkB-run.log && echo "---increments---" && ls -R .dev-flow/2026-10-07-batch-02/03-increments/ && echo "---PLAN---" && cat .dev-flow/2026-10-07-batch-02/PLAN.md
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/chunkA-brief.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/01-requirements.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-118x30.txt
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-80x24.txt
+[0m→ [0mRead .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/variants_polish.py
+[0m→ [0mRead taskboard/keymap.py
+[0m→ [0mRead taskboard/app.py
+[0m→ [0mRead taskboard/app.py[90m [offset=1024][0m
+[0m→ [0mRead taskboard/models.py[90m [offset=1360, limit=80][0m
+[0m→ [0mRead taskboard/models.py[90m [offset=1820, limit=120][0m
+[0m
+[0m$ [0mwc -l "C:\Users\jjgh8\Github\taskboard\taskboard\views.py"
+6254 C:\Users\jjgh8\Github\taskboard\taskboard\views.py
+[0m
+[0m✱ [0mGrep "^(def render_view|def nav_model|def legend_entries|def help_usage|def header|def _pad|def _strip|def c\b|def fit|def vis|def clip|HEX =|def render_|VIEWS|def _legend)"[90m in taskboard/views.py · 26 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [offset=1, limit=130][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=60, offset=626][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=848][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=1572][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=180, offset=5355][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=150, offset=5655][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=455, offset=5805][0m
+[0m✱ [0mGrep "RENDERERS|_clamp_width|def render_chainmap|def finish|def _finish|def _legend\b"[90m in taskboard/views.py · 21 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=5340][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=20, offset=705][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=160, offset=3977][0m
+[0m✱ [0mGrep "def to_text"[90m in taskboard/views.py · 1 match[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=50, offset=802][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=100, offset=725][0m
+[0m✱ [0mGrep "def fill_height"[90m in taskboard/views.py · 1 match[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=687][0m
+[0m
+[0m$ [0mls "C:\Users\jjgh8\Github\taskboard\.claude\worktrees\kg-mejoras\prototypes\kg_mejoras"
+DEPS-CONTRACT.md
+FLOW-CONTRACT.md
+IMPLEMENTATION-PLAN.md
+NOTES.md
+README-AUDIT.md
+__pycache__
+baseline.py
+build_html.py
+build_questions.py
+build_verdict_a2.py
+build_verdict_b1.py
+build_verdict_b2a.py
+build_verdict_p.py
+build_verdict_s.py
+capture_cascade.py
+capture_deps_gantt.py
+capture_deps_kanban.py
+capture_flow.py
+capture_gantt.py
+capture_kanban.py
+capture_polish.py
+capture_reconcile.py
+capture_round5.py
+cascade.py
+cascade_logic.py
+deps_logic.py
+fixture.py
+flow_logic.py
+flows.py
+out
+proto_app.py
+shoot.ps1
+variants_cascade.py
+variants_deps_gantt.py
+variants_deps_kanban.py
+variants_flow.py
+variants_gantt.py
+variants_kanban.py
+variants_polish.py
+variants_reconcile.py
+variants_round5.py
+[0m
+[0m→ [0mRead .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/cascade.py
+[0m→ [0mRead .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/variants_cascade.py
+[0m
+> build · deepseek-flash
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-02/ 2>/dev/null && echo "---" && ls -la .dev-flow/2026-10-07-batch-02/evidence/ 2>/dev/null
+total 88
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 08:14 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 09:42 ..
+-rw-r--r-- 1 jjgh8 197609  7715 Oct  7 08:14 00-checklists.md
+-rw-r--r-- 1 jjgh8 197609  6797 Oct  7 09:36 01-requirements-ledger.md
+-rw-r--r-- 1 jjgh8 197609 22913 Oct  7 09:39 01-requirements.md
+-rw-r--r-- 1 jjgh8 197609  3476 Oct  7 08:14 02-review.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 08:14 03-increments
+-rw-r--r-- 1 jjgh8 197609  7643 Oct  7 08:14 04-validation.md
+-rw-r--r-- 1 jjgh8 197609  6163 Oct  7 08:14 05-close.md
+-rw-r--r-- 1 jjgh8 197609  3258 Oct  7 08:15 PLAN.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 09:44 evidence
+---
+total 26
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 09:44 .
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 08:14 ..
+-rw-r--r-- 1 jjgh8 197609 4123 Oct  7 09:42 chunkA-brief.md
+-rw-r--r-- 1 jjgh8 197609   40 Oct  7 09:44 chunkA-run.log
+-rw-r--r-- 1 jjgh8 197609 3703 Oct  7 09:43 chunkB-brief.md
+-rw-r--r-- 1 jjgh8 197609   39 Oct  7 09:44 chunkB-run.log
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 08:38 frames
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/chunkB-brief.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/chunkA-brief.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/01-requirements.md
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-02/evidence/frames/ && echo "---ROOT---" && ls -la && echo "---tests---" && ls tests/
+total 32
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 08:38 .
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 09:44 ..
+-rw-r--r-- 1 jjgh8 197609 3887 Oct  7 08:19 C-2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 4322 Oct  7 08:19 C-2b-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 2414 Oct  7 08:38 C-2b-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 3860 Oct  7 08:19 D-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 2147 Oct  7 08:19 D-C-80x24.txt
+---ROOT---
+total 1081
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 09:39 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  3 10:50 ..
+drwxr-xr-x 1 jjgh8 197609      0 Jul 21 10:24 .claude
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 09:42 .dev-flow
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 18:10 .fast-dev-flow
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 09:41 .git
+-rw-r--r-- 1 jjgh8 197609    480 Oct  7 08:14 .gitattributes
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 09:40 .githooks
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 21:47 .github
+-rw-r--r-- 1 jjgh8 197609   1135 Aug  7 09:28 .gitignore
+drwxr-xr-x 1 jjgh8 197609      0 Aug  3 08:33 .pytest_cache
+drwxr-xr-x 1 jjgh8 197609      0 Sep  5 18:17 .ruff_cache
+drwxr-xr-x 1 jjgh8 197609      0 Jul 20 18:55 .s19tool
+-rw-r--r-- 1 jjgh8 197609  12974 Aug  7 09:28 BACKGROUND.md
+-rw-r--r-- 1 jjgh8 197609  10390 Aug  7 09:28 HANDOFF.md
+-rw-r--r-- 1 jjgh8 197609 754282 Aug  7 09:28 PENDING.md
+-rw-r--r-- 1 jjgh8 197609  17027 Oct  6 16:04 README.md
+-rw-r--r-- 1 jjgh8 197609  83630 Oct  7 07:38 REQUIREMENTS.md
+-rw-r--r-- 1 jjgh8 197609   1711 Oct  2 08:09 RUN.md
+drwxr-xr-x 1 jjgh8 197609      0 Aug 15 02:18 _prototypes
+drwxr-xr-x 1 jjgh8 197609      0 Jul 31 17:19 _tui_prism_proposal
+drwxr-xr-x 1 jjgh8 197609      0 Jul 20 18:55 build
+-rw-r--r-- 1 jjgh8 197609   1378 Jul 23 19:01 debug-cdc3df.log
+drwxr-xr-x 1 jjgh8 197609      0 Oct  2 08:28 docs
+-rw-r--r-- 1 jjgh8 197609  10857 Aug 29 10:52 handoff-batch-10.md
+-rw-r--r-- 1 jjgh8 197609   7646 Aug 31 18:24 handoff-batch-11-team-sync.md
+-rw-r--r-- 1 jjgh8 197609   7275 Sep  1 09:38 handoff-batch-12-setup-help.md
+-rw-r--r-- 1 jjgh8 197609   8019 Aug 20 18:15 handoff-lanes-grid.md
+-rw-r--r-- 1 jjgh8 197609  10788 Aug 18 21:32 handoff-next-level.md
+-rw-r--r-- 1 jjgh8 197609   4258 Aug 18 16:00 handoff-three-prototypes.md
+drwxr-xr-x 1 jjgh8 197609      0 Sep 30 20:58 prototypes
+-rw-r--r-- 1 jjgh8 197609   1073 Aug  7 22:11 pyproject.toml
+-rw-r--r-- 1 jjgh8 197609   1023 Aug  7 21:48 requirements.txt
+drwxr-xr-x 1 jjgh8 197609      0 Oct  5 00:12 taskboard
+drwxr-xr-x 1 jjgh8 197609      0 Sep  1 15:01 taskboard.egg-info
+drwxr-xr-x 1 jjgh8 197609      0 Oct  6 20:48 tests
+drwxr-xr-x 1 jjgh8 197609      0 Aug 15 02:40 tools
+-rw-r--r-- 1 jjgh8 197609   2720 Jul 18 11:08 wezterm.lua
+---tests---
+__pycache__
+conftest.py
+kg_board.py
+test_agenda.py
+test_app.py
+test_archive.py
+test_cascade.py
+test_cascade_app.py
+test_cells.py
+test_cities.py
+test_colour_budget.py
+test_colour_budget_app.py
+test_control_bytes.py
+test_dependencies.py
+test_details_grid.py
+test_details_links.py
+test_details_markup.py
+test_edit_window.py
+test_emoji_picker.py
+test_english.py
+test_field.py
+test_flow.py
+test_flow_view.py
+test_focus.py
+test_gantt.py
+test_gantt_board.py
+test_gantt_link.py
+test_gantt_milestones.py
+test_gantt_polish.py
+test_highlight_segments.py
+test_history.py
+test_kanban_milestones.py
+test_kanban_priority.py
+test_kanban_readable.py
+test_keymap.py
+test_lanes_grid.py
+test_legend.py
+test_link_migration.py
+test_link_picker.py
+test_links.py
+test_markup_census.py
+test_markup_sites.py
+test_milestone_offer.py
+test_milestone_offer_seam.py
+test_milestones.py
+test_momentum.py
+test_motion.py
+test_no_live_board.py
+test_occupancy.py
+test_palette_ration.py
+test_precommit_gate.py
+test_prism_laws.py
+test_privacy_sweep.py
+test_readme.py
+test_report.py
+test_requirements.py
+test_rescue.py
+test_row_cost.py
+test_scratch_cannot_be_committed.py
+test_setup_help.py
+test_span_economy.py
+test_spend.py
+test_swimlanes.py
+test_sync_fields.py
+test_team_sync.py
+test_team_views.py
+test_vertical_fill.py
+test_view_survival.py
+test_wave.py
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-118x30.txt
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-80x24.txt
+[0m
+[0m$ [0mwc -l tests/test_cascade_app.py tests/test_gantt_board.py tests/kg_board.py tests/conftest.py tests/test_cascade.py tests/test_keymap.py taskboard/views.py taskboard/app.py taskboard/keymap.py taskboard/models.py .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/variants_polish.py 2>/dev/null
+691 tests/test_cascade_app.py
+   954 tests/test_gantt_board.py
+   265 tests/kg_board.py
+    22 tests/conftest.py
+   269 tests/test_cascade.py
+   440 tests/test_keymap.py
+  6254 taskboard/views.py
+  2069 taskboard/app.py
+   280 taskboard/keymap.py
+  2217 taskboard/models.py
+   790 .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/variants_polish.py
+ 14251 total
+[0m
+[0m→ [0mRead tests/kg_board.py
+[0m→ [0mRead tests/conftest.py
+[0m→ [0mRead tests/test_cascade_app.py
+[0m→ [0mRead tests/test_gantt_board.py[90m [limit=160][0m
+[0m→ [0mRead .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/variants_polish.py
+[0m✱ [0mGrep "^def |^    def |legend_entries|help_usage|render_"[90m in taskboard · 100 matches[0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "chainmap|chain_map|CHAIN MAP|render_chain" --glob '!*.pyc' -g '!.dev-flow/**' | head -50
+(no output)
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "def legend_entries|def help_usage|VIEW_ORDER|def action_view|def unlink_tasks|def action_archive|def action_cascade_mode|def refresh_view|def _cascade_toast" taskboard/*.py
+taskboard/views.py:5830:def help_usage(mode: str) -> list[tuple[str, list[str]]]:
+taskboard/views.py:5970:def legend_entries(mode: str, board: Board, today: date | None = None,
+taskboard/modals.py:736:    def action_archive(self) -> None:
+taskboard/app.py:52:VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people", "setup"]
+taskboard/app.py:1020:    def unlink_tasks(self, waiter: Task, pred: Task) -> None:
+taskboard/app.py:1097:    def _cascade_toast(self, task: Task, plan, sd: int = 0) -> str:
+taskboard/app.py:1197:    def action_cascade_mode(self) -> None:
+taskboard/app.py:1335:    def refresh_view(self) -> None:
+taskboard/app.py:1395:    def action_view(self, mode: str) -> None:
+taskboard/app.py:1396:        if mode not in VIEW_ORDER:
+taskboard/app.py:1964:    def action_archive(self) -> None:
+[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1, limit=120][0m
+[0m✱ [0mGrep "def render_view|def render_kanban|def render_gantt|def render_flow|def render_focus|def render_standup|def render_people|def render_setup"[90m in taskboard · 8 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [offset=5355, limit=180][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "RENDERERS" taskboard/*.py tests/*.py
+tests/test_app.py:57:    assert "columns" not in views.RENDERERS
+taskboard/views.py:5343:RENDERERS = {
+taskboard/views.py:5422:    fn = RENDERERS.get(mode, render_swimlanes)
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=5319][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=100, offset=626][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && python -c "
+from pathlib import Path
+for f in ['C-2b-118x30.txt','C-2b-80x24.txt']:
+    p=Path('.dev-flow/2026-10-07-batch-02/evidence/frames')/f
+    data=p.read_bytes()
+    print('===',f,'bytes',len(data))
+    lines=data.decode('utf-8').split('\n')
+    for i,l in enumerate(lines):
+        print(i, len(l), repr(l))
+"
+Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+  File "C:\Users\jjgh8\anaconda3\Lib\encodings\cp1252.py", line 19, in encode
+=== C-2b-118x30.txt bytes 4322
+0 119     return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u25c6' in position 1: character maps to <undefined>
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && PYTHONIOENCODING=utf-8 python -c "
+from pathlib import Path
+for f in ['C-2b-118x30.txt','C-2b-80x24.txt']:
+    p=Path('.dev-flow/2026-10-07-batch-02/evidence/frames')/f
+    data=p.read_bytes()
+    print('===',f,'bytes',len(data))
+    lines=data.decode('utf-8').split('\n')
+    print('nlines',len(lines),'last empty?',lines[-1]=='')
+    for i,l in enumerate(lines):
+        print(i, len(l))
+"
+=== C-2b-118x30.txt bytes 4322
+nlines 30 last empty? False
+0 119
+1 119
+2 119
+3 119
+4 119
+5 119
+6 119
+7 119
+8 119
+9 119
+10 119
+11 119
+12 119
+13 119
+14 119
+15 119
+16 119
+17 119
+18 119
+19 119
+20 119
+21 119
+22 119
+23 119
+24 119
+25 119
+26 119
+27 119
+28 119
+29 118
+=== C-2b-80x24.txt bytes 2414
+nlines 24 last empty? False
+0 81
+1 81
+2 81
+3 81
+4 81
+5 81
+6 81
+7 81
+8 81
+9 81
+10 81
+11 81
+12 81
+13 81
+14 81
+15 81
+16 81
+17 81
+18 81
+19 81
+20 81
+21 81
+22 81
+23 80
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && ls -R .claude/worktrees/kg-mejoras/prototypes/kg_mejoras 2>/dev/null | head -80
+.claude/worktrees/kg-mejoras/prototypes/kg_mejoras:
+DEPS-CONTRACT.md
+FLOW-CONTRACT.md
+IMPLEMENTATION-PLAN.md
+NOTES.md
+README-AUDIT.md
+__pycache__
+baseline.py
+build_html.py
+build_questions.py
+build_verdict_a2.py
+build_verdict_b1.py
+build_verdict_b2a.py
+build_verdict_p.py
+build_verdict_s.py
+capture_cascade.py
+capture_deps_gantt.py
+capture_deps_kanban.py
+capture_flow.py
+capture_gantt.py
+capture_kanban.py
+capture_polish.py
+capture_reconcile.py
+capture_round5.py
+cascade.py
+cascade_logic.py
+deps_logic.py
+fixture.py
+flow_logic.py
+flows.py
+out
+proto_app.py
+shoot.ps1
+variants_cascade.py
+variants_deps_gantt.py
+variants_deps_kanban.py
+variants_flow.py
+variants_gantt.py
+variants_kanban.py
+variants_polish.py
+variants_reconcile.py
+variants_round5.py
+
+.claude/worktrees/kg-mejoras/prototypes/kg_mejoras/__pycache__:
+baseline.cpython-312.pyc
+capture_cascade.cpython-312.pyc
+capture_kanban.cpython-312.pyc
+capture_round5.cpython-312.pyc
+cascade.cpython-312.pyc
+cascade_logic.cpython-312.pyc
+deps_logic.cpython-312.pyc
+fixture.cpython-312.pyc
+flows.cpython-312.pyc
+proto_app.cpython-312.pyc
+variants_cascade.cpython-312.pyc
+variants_deps_gantt.cpython-312.pyc
+variants_deps_kanban.cpython-312.pyc
+variants_flow.cpython-312.pyc
+variants_gantt.cpython-312.pyc
+variants_kanban.cpython-312.pyc
+variants_polish.cpython-312.pyc
+variants_reconcile.cpython-312.pyc
+variants_round5.cpython-312.pyc
+
+.claude/worktrees/kg-mejoras/prototypes/kg_mejoras/out:
+AX-1-118x30.svg
+AX-1-118x30.txt
+AX-1-80x24.svg
+AX-1-80x24.txt
+AX-2-118x30.svg
+AX-2-118x30.txt
+AX-2-80x24.svg
+AX-2-80x24.txt
+C-1a-118x30.svg
+C-1a-118x30.txt
+C-1a-80x24.svg
+C-1a-80x24.txt
+C-1b-118x30.svg
+C-1b-118x30.txt
+C-1b-80x24.svg
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && PYTHONIOENCODING=utf-8 python -c "
+from pathlib import Path
+for f in ['C-2b-118x30.txt','C-2b-80x24.txt']:
+    p=Path('.claude/worktrees/kg-mejoras/prototypes/kg_mejoras/out')/f
+    if p.exists():
+        data=p.read_bytes()
+        lines=data.decode('utf-8').split('\n')
+        print('===',f,'bytes',len(data),'nlines',len(lines))
+        print([len(l) for l in lines])
+    else:
+        print('missing',p)
+" && echo "---capture_polish---" && sed -n '1,80p' .claude/worktrees/kg-mejoras/prototypes/kg_mejoras/capture_polish.py 2>/dev/null | cat -v | head -80
+=== C-2b-118x30.txt bytes 4322 nlines 30
+[119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 118]
+=== C-2b-80x24.txt bytes 2414 nlines 24
+[81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 80]
+---capture_polish---
+"""PROTOTYPE M-bM-^@M-^T capture round 7 (T-C2, C-2b) next to the originals (T-C, C-2).
+    PYTHONIOENCODING=utf-8 python prototypes/kg_mejoras/capture_polish.py
+
+Checks:
+  size     exactly H rows x W cells, every glyph one cell wide (cell_len).
+  board    the board passed in is unchanged (deep snapshot incl. `extra`).
+  law      every accent cell (fg OR bg) of T-C2 / C-2b lies inside a declared
+           focus region, and every declared region holds accent (not vacuous).
+  critical heavy M-bM-^TM-^A cells exist and none of them is accent.
+  tints    every {name} token wears ONE bg per name everywhere; names differ;
+           each bg/fg clears HLS s >= 0.15 and survives 256-colour quantisation
+           as a distinct, non-grey colour.
+  switch   C-2b: each band's rule row marks exactly that band's mode.
+  bands    C-2b: each band rule's shaded hue clears s >= 0.15, also at 256 colours.
+"""
+import colorsys
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from fixture import build, TODAY  # noqa: E402
+from baseline import svg  # noqa: E402
+from capture_round5 import snap  # noqa: E402
+from rich.cells import cell_len  # noqa: E402
+from rich.color import Color, ColorSystem  # noqa: E402
+import variants_flow as VF  # noqa: E402
+import variants_cascade as VC  # noqa: E402
+import variants_polish as VP  # noqa: E402
+
+SIZES = ((118, 30), (80, 24))
+PAIRS = [("T-C", VF.render_tc, "T-C2", VP.render_tc2, "tm3"),
+         ("C-2", VC.render_c2, "C-2b", VP.render_c2b, "tm3")]
+
+
+def hls_s(hexv):
+    r, g, b = (int(hexv[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    return colorsys.rgb_to_hls(r, g, b)[2]
+
+
+def check_size(key, text, W, H):
+    plain = text.plain.split("\n")
+    assert len(plain) == H, (key, W, H, len(plain))
+    for i, ln in enumerate(plain):
+        assert cell_len(ln) == W, (key, W, H, i, cell_len(ln), ln)
+        assert len(ln) == W, (key, "a glyph is not 1 cell", i, ln)
+    return plain
+
+
+def check_law(key, text):
+    acc = VP.accent_cells(text)
+    regions = VP.STATS["focus"]
+    per = {}
+    for r, x, ch in acc:
+        hit = next((ro for ro, rr, a, z in regions if rr == r and a <= x < z), None)
+        assert hit in VP.FOCUS_ROLES, (key, "accent outside focus", r, x, ch)
+        per[hit] = per.get(hit, 0) + 1
+    for ro, rr, a, z in regions:
+        assert any(r == rr and a <= x < z for r, x, _ in acc), (key, "empty focus region", ro, rr, a, z)
+    heavy = [(r, i, s) for r, i, ch, s in VP.styled_cells(text) if ch in "M-bM-^TM-^AM-bM-^TM-^CM-bM-^TM-3M-bM-^TM-;M-bM-^TM-#M-bM-^TM-+M-bM-^UM-^KM-bM-^TM-^OM-bM-^TM-^SM-bM-^TM-^WM-bM-^TM-^["]
+    assert heavy, (key, "no structural critical mark")
+    inside = lambda r, i: any(rr == r and a <= i < z for _, rr, a, z in regions)  # noqa: E731
+    assert not any(VP.ACCENT in (VP._hex(s.color), VP._hex(s.bgcolor))
+                   for r, i, s in heavy if not inside(r, i)), (key, "critical wears accent")
+    return per
+
+
+def check_tints(key, text):
+    seen = {}
+    plain_rows = text.plain.split("\n")
+    cells = {(r, i): s for r, i, _, s in VP.styled_cells(text)}
+    for r, row in enumerate(plain_rows):
+        for m in VP._TOK.finditer(row):
+            nm = m.group(1)
+            full = next((v for v in VP.VAR_TINT if v == nm or (m.group(2) == "M-bM-^@M-&" and nm and v.startswith(nm))), None)
+            if full is None:
+                bg0 = VP._hex(cells[(r, m.start())].bgcolor)
+                assert bg0 in {bg for _, bg in VP.VAR_TINT.values()}, (key, "untinted cut token", r, row)
+                continue
+            bgs = {VP._hex(cells[(r, i)].bgcolor) for i in range(m.start(), m.end())}
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && PYTHONIOENCODING=utf-8 python -c "
+from pathlib import Path
+p=Path('.dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-118x30.txt')
+data=p.read_bytes()
+print('CR count', data.count(b'\r'), 'LF count', data.count(b'\n'))
+print('first line bytes tail', data[:400])
+"
+CR count 29 LF count 29
+first line bytes tail b'\xe2\x97\x86 CHAIN MAP \xc2\xb7 who waits on whom                                                 15 linked tasks \xc2\xb7 \xe2\x96\xb22 late \xc2\xb7 \xe2\x94\x81 chain 4 \r\n\xe2\x94\x80\xe2\x96\x8cWebsite Redesign  4 linked \xc2\xb7 2 open not linked \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80 dates  \xe2\x97\x8b stay  \xe2\x97\x8f push  \xe2\x97\x8b together \xe2\x94\x80\r\n  Design homepage mockups \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x96\xb8 Build component library \xe2\x94\x80\xe2\x94\x80'
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=25, offset=802][0m
+[0m→ [0mRead taskboard/keymap.py
+[0m→ [0mRead taskboard/app.py[90m [limit=120, offset=1330][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=210, offset=1000][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "view_mode ==|view_mode in|def action_archive|def action_add_task|def action_edit|def action_delete|def action_details|def action_link|def _refresh_keybar|def action_cursor|def action_hmove" taskboard/app.py
+522:        if self.view_mode in ("gantt", "swimlanes"):
+568:        if self.view_mode == "gantt":
+643:        if self.view_mode == "kanban" and h and (self.search_query or "").strip():
+648:        if self.view_mode == "kanban":
+650:        elif self.view_mode == "swimlanes":
+676:        if self.view_mode == "focus":
+685:                and self.view_mode == "kanban"):
+691:        if self.view_mode == "gantt":
+714:        if self.view_mode == "kanban":
+732:        if (self.selected_task_id is not None and self.view_mode == "kanban"
+756:    def action_cursor(self, delta: int) -> None:
+759:        if self.view_mode == "setup" and self._setup_state is not None:
+778:    def action_hmove(self, delta: int) -> None:
+819:        kanban = self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+836:            if self.view_mode == "gantt" and self.board.is_done(task):
+921:        if (self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+963:    def action_link(self) -> None:
+969:        if self.view_mode == "gantt":
+1657:    def _refresh_keybar(self) -> None:
+1666:        if self.view_mode == "setup":
+1669:        if self.view_mode == "kanban":
+1674:        elif self.view_mode == "focus":
+1679:        elif self.view_mode == "swimlanes":
+1778:        if self.view_mode == "setup":
+1811:    def action_add_task(self) -> None:
+1812:        if self.view_mode == "setup":
+1827:    def action_details(self) -> None:
+1830:        if self.view_mode == "setup":
+1838:    def action_edit(self) -> None:
+1947:    def action_delete(self) -> None:
+1964:    def action_archive(self) -> None:
+1974:        if self.view_mode == "setup":
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=130, offset=1770][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=75, offset=1947][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=80, offset=1650][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=55, offset=955][0m
+---increments---
+.dev-flow/2026-10-07-batch-02/03-increments/:
+increment-001.md
+---PLAN---
+# PLAN — taskboard — Batch 2026-10-07-batch-02
+
+> **Artifact language.** Canonical **English scaffold**; generate in the batch's language.
+> **Owed in.** `core` ✓ · `full` ✓
+> Seeded by `/dev-flow-init` step 4 in both modes; the living plan is owed at every gate
+> that follows (`/dev-flow` §Living plan is the rule's home).
+
+> **Field guide:** `templates/docs/plan-template.md` explains each field below and the rules that read it. It ships with the flow and is not copied into this batch.
+
+The living compendium of this batch: where-we-are · objective · per-story/per-station status ·
+roadmap + increment plan · key decisions · risks/watch-items · conventions honored ·
+out-of-scope carries · test ledger · decision log (the human-readable mirror of `state.json`).
+**Create at batch open and update at every gate and significant checkpoint** — the
+orchestrator presents the full plan in-conversation at each phase gate.
+
+## Header
+
+| Field | Value |
+|---|---|
+| Project | taskboard |
+| Batch | 2026-10-07-batch-02 |
+| Objective | Batch C of the kg_mejoras plan: the chain map view (D-C) behind key 6 -- per-project chain bands, the ----> links with the ready/waits/late marks, the critical chain, the details strip (waits on / unblocks, x remove, L link, ↵ open), the per-chain dates: switch writing extra[date_links] (C-2/C-2b, the rule visible per project), and the K-B high-band cap (+N more); round-7 polish rules: accent = focus only, critical chain = structure not hue |
+| Standing authorization | Operator (Javier), 2026-10-07: "Arranca y continua hasta terminar los cambios propuestos para el proyecto. Sigue usando Deepseek." Read with the established chain: autonomous gates with the two exceptions; the coordinator commits and pushes at each batch's close (the operator commissioned the full remainder of the plan; no PR); synthetic boards only; implementing agents (DeepSeek instances under coordinator briefs) do NOT commit/push/stash |
+| First gate | exit 0 · V7 did not fire — 0 block 56 notice (inherited); the rollover readback clean; RC-1 origin/main == HEAD == 79ad438 |
+| Premises / RC-1 | <the verified `origin/main` tip, or: no origin — RC-1 not possible, local tip <sha>; each premise the batch rests on> |
+
+## Triggers
+
+The trigger evaluation `state.json`'s `triggers.record` points at: one row per trigger evaluated, fired or not.
+
+| Id | Verdict | Probe output |
+|---|---|---|
+| <A1 / B1 / …> | <fired / not fired> | <the probe run and what it printed> |
+
+## Where we are
+
+<one paragraph: station, what the last gate decided, what is owed next>
+
+## Objective
+
+<the batch objective, restated>
+
+## Per-story / per-station status
+
+| Story / station | Status | Notes |
+|---|---|---|
+| <US-NNN / station> | <status> | <notes> |
+
+## Roadmap + increment plan
+
+<the increments this batch expects, in order>
+
+## Key decisions
+
+| Date | Decision | Why |
+|---|---|---|
+| 2026-10-07 | <decision> | <reason> |
+
+## Risks / watch-items
+
+- <risk · likelihood · mitigation>
+
+## Conventions honored
+
+- <convention>
+
+## Out-of-scope carries
+
+- <what this batch deliberately does not do, and where it is tracked>
+
+## Test ledger
+
+| Suite / command | Last run | Result |
+|---|---|---|
+| <command> | <date> | <result> |
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=200, offset=300][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "def compose|#board|#viewport|#keybar|DEFAULT_CSS|yield |VerticalScroll|Ribbon" taskboard/app.py | head -60
+14:from textual.containers import Vertical, VerticalScroll
+32:from .ribbon import Ribbon
+106:    DEFAULT_CSS = """
+119:    def compose(self) -> ComposeResult:
+169:        box = VerticalScroll(Static("\n".join(rows)), id="help-box")
+171:        yield box
+190:    # arrows must beat the focused VerticalScroll's own scrolling — pitfall A6.
+252:    def compose(self) -> ComposeResult:
+253:        with VerticalScroll(id="viewport"):
+254:            yield BoardView(id="board")
+256:            yield Ribbon(id="ribbon")
+257:            yield KeyBar(id="keybar")
+520:            ribbons.first(Ribbon).update_clock()
+530:        boards = self.query("#board")
+534:        vps = self.query("#viewport")
+557:        ribbon = ribbons.first(Ribbon)
+571:            boards, vps = self.query("#board"), self.query("#viewport")
+600:        keybar = self.query_one("#keybar", KeyBar)
+638:        vps = self.query("#viewport")
+640:        boards = self.query("#board")
+1339:        boards = self.query("#board")
+1344:        vps = self.query("#viewport")
+1382:        vps = self.query("#viewport")
+1658:        bars = self.query("#keybar")
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=70, offset=200][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "def nav_model" taskboard/views.py
+5655:def nav_model(mode, board, show_archived, today=None, width: int = 68,
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=5655][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=60, offset=4600][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=5005][0m
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "KANBAN_HEAD_ROWS|KANBAN_BAND\b|MIN_COL\b|def _cell_rows|KANBAN_HEAD" taskboard/views.py | head -20
+4377:MIN_COL = 12        # a phase column narrower than this shows nothing useful
+4381:                  min_col: int = MIN_COL) -> tuple[int, list[int]]:
+4472:KANBAN_BAND = "\x00high-band"
+4495:    a first group named KANBAN_BAND, after the focus filter and sorted like any
+4535:        groups.insert(0, (KANBAN_BAND, "ink", band_items))
+4574:KANBAN_HEAD_ROWS = 3        # the head row, the phase row, the rule
+4599:def _cell_rows(n: int) -> int:
+4607:    widest wants first; when that leaves a column under MIN_COL, every column
+4608:    gets MIN_COL first and the rest goes by the want above it. Sums to `room`."""
+4610:    if room < k * MIN_COL:
+4622:    if min(widths) >= MIN_COL:
+4624:    return [MIN_COL + s for s in split(room - k * MIN_COL, [d - MIN_COL for d in desired])]
+4641:    cap = max(5, 2 * (height - KANBAN_HEAD_ROWS) // 3) if height else None  # LLR-306.1
+4645:        lifted = groups[0][2] if groups and groups[0][0] == KANBAN_BAND else []
+4688:        fits = max(1, min(n_open, (grid + 1) // (MIN_COL + 1)))
+4693:        desired = [max([MIN_COL] + [vis(t.title) + 5 for t in buckets[i]])
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && cat > "$TEMP/measure_kanban.py" <<'PY'
+import asyncio, sys, os
+from pathlib import Path
+from datetime import date, timedelta
+sys.path.insert(0, str(Path.cwd() / "tests"))
+import kg_board
+import taskboard.app as app_mod
+app_mod.milestones_marked = lambda settings: True
+from taskboard.app import TaskboardApp
+from taskboard.models import Task
+
+def build_crowd(path, n=9):
+    b = kg_board.shifted(path)
+    # add n high tasks into Backlog of pweb
+    for i in range(n):
+        b.tasks.append(Task(f"Crowd high {i}", project_id="pweb", phase="Backlog",
+                            priority="high", id=f"ch{i}"))
+    b.save()
+    return b
+
+async def main():
+    import tempfile
+    for (w,h) in [(118,30),(80,24)]:
+        d = Path(tempfile.mkdtemp())
+        p = d / "board.json"
+        b = build_crowd(p)
+        app = TaskboardApp(board_path=str(p), team_sync_interval=1e9)
+        async with app.run_test(size=(w,h)) as pilot:
+            await pilot.press("4")
+            await pilot.pause()
+            bw = app.query_one("#board")
+            print("TERM", w,h, "board size", bw.size.width, bw.size.height)
+            rows = str(bw.render()).split("\n")
+            for r in rows:
+                if "more ↓" in r or "high" in r:
+                    print(repr(r))
+        print("---")
+
+asyncio.run(main())
+PY
+PYTHONIOENCODING=utf-8 python "$TEMP/measure_kanban.py"
+TERM 118 30 board size 118 28
+'── high  10 open · 4 projects ──────────────────────┼───────────────────────┼────────────────────────┼────────────────'
+'▊ !! Crowd high 0       │                           │                       │                        │                '
+'+8 more ↓               │                           │                       │                        │                '
+'▐ Website Redesign  14 open · 3 high ↑ · project due +10d ──────────────────┼────────────────────────┼────────────────'
+'▊ !! Crowd high 1       │                           │                       │                        │                '
+---
+TERM 80 24 board size 80 22
+'── high  9 open · 4 projects ────────┼────────────────┼─────────────────┼───────'
+'+9 more ↓        │                   │                │                 │       '
+'▐ Website Redesign  14 open · 2 high ↑ · project due +10d ──────────────┼───────'
+---
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && cat > "$TEMP/measure2.py" <<'PY'
+import sys
+from pathlib import Path
+from datetime import date
+sys.path.insert(0, str(Path.cwd() / "tests"))
+import kg_board
+from taskboard import views
+from taskboard.models import Task
+import tempfile
+
+def build_crowd(path, n=9):
+    b = kg_board.shifted(path)
+    for i in range(n):
+        b.tasks.append(Task(f"Crowd high {i}", project_id="pweb", phase="Backlog",
+                            priority="high", id=f"ch{i}"))
+    b.save()
+    return b
+
+for H in (28, 30, 22, 24):
+    d = Path(tempfile.mkdtemp()); p = d/"board.json"
+    b = build_crowd(p)
+    plan = views.kanban_plan(b, False, None, date.today(), 118, H)
+    print("H", H, "cap", getattr(plan,'cap',None), "high lens", [len(x) for x in plan.high], "overflow", plan.overflow)
+PY
+PYTHONIOENCODING=utf-8 python "$TEMP/measure2.py"
+H 28 cap None high lens [5, 2, 3, 0] overflow [8, 0, 0, 0]
+H 30 cap None high lens [6, 2, 3, 0] overflow [7, 0, 0, 0]
+H 22 cap None high lens [4, 2, 3, 0] overflow [9, 0, 0, 0]
+H 24 cap None high lens [4, 2, 3, 0] overflow [9, 0, 0, 0]
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && cat > "$TEMP/measure3.py" <<'PY'
+import sys
+from pathlib import Path
+from datetime import date
+sys.path.insert(0, str(Path.cwd() / "tests"))
+import kg_board
+from taskboard import views
+from taskboard.models import Task
+import tempfile
+
+def build(path, n=0):
+    b = kg_board.shifted(path)
+    for i in range(n):
+        b.tasks.append(Task(f"Crowd high {i}", project_id="pweb", phase="Backlog",
+                            priority="high", id=f"ch{i}"))
+    b.save()
+    return b
+
+for n in (0, 8):
+    print("=== crowd", n)
+    for H in (28, 22):
+        d = Path(tempfile.mkdtemp()); p = d/"board.json"
+        b = build(p, n)
+        plan = views.kanban_plan(b, False, None, date.today(), 118, H)
+        print(" H", H, "shown", [len(x) for x in plan.high], "overflow", plan.overflow)
+PY
+PYTHONIOENCODING=utf-8 python "$TEMP/measure3.py"
+=== crowd 0
+ H 28 shown [4, 2, 3, 0] overflow [0, 0, 0, 0]
+ H 22 shown [4, 2, 3, 0] overflow [0, 0, 0, 0]
+=== crowd 8
+ H 28 shown [5, 2, 3, 0] overflow [7, 0, 0, 0]
+ H 22 shown [4, 2, 3, 0] overflow [8, 0, 0, 0]
+[0m
+[0m→ [0mRead pyproject.toml
+[0m→ [0mRead taskboard/models.py[90m [limit=70, offset=1360][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=40, offset=1885][0m
+[0m
+[0m← [0mWrite tests/test_chainmap.py
+Wrote file successfully.
+[0m
+Now I have enough context. Let me write the two test files.
+[0m← [0mWrite tests/test_chainmap_app.py
+Wrote file successfully.
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -60
+..\..\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:1026: in inner
+    _loop.run_until_complete(task)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ProactorEventLoop running=False closed=False debug=False>
+future = <Task finished name='Task-51' coro=<test_AT_802_the_rule_switch_cycles_and_bumps_follow_it() done, defined at C:\Users\jjgh8\Github\taskboard\tests\test_chainmap_app.py:162> exception=RuntimeError('coroutine raised StopIteration')>
+
+    def run_until_complete(self, future):
+        """Run until the Future is done.
+    
+        If the argument is a coroutine, it is wrapped in a Task.
+    
+        WARNING: It would be disastrous to call run_until_complete()
+        with the same coroutine twice -- it would wrap it in two
+        different Tasks and that can't be good.
+    
+        Return the Future's result, or raise its exception.
+        """
+        self._check_closed()
+        self._check_running()
+    
+        new_task = not futures.isfuture(future)
+        future = tasks.ensure_future(future, loop=self)
+        if new_task:
+            # An exception is raised if the future didn't complete, so there
+            # is no need to log the "destroy pending task" message
+            future._log_destroy_pending = False
+    
+        future.add_done_callback(_run_until_complete_cb)
+        try:
+            self.run_forever()
+        except:
+            if new_task and future.done() and not future.cancelled():
+                # The coroutine raised a BaseException. Consume the exception
+                # to not log a warning, the caller doesn't have access to the
+                # local task.
+                future.exception()
+            raise
+        finally:
+            future.remove_done_callback(_run_until_complete_cb)
+        if not future.done():
+            raise RuntimeError('Event loop stopped before Future completed.')
+    
+>       return future.result()
+E       RuntimeError: coroutine raised StopIteration
+
+..\..\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError
+=========================== short test summary info ===========================
+FAILED tests/test_chainmap.py::test_TC_801_the_exact_c2b_frame_at_118x30 - At...
+FAILED tests/test_chainmap.py::test_TC_802_the_exact_c2b_frame_at_80x24 - Att...
+FAILED tests/test_chainmap.py::test_TC_803_the_critical_chain_differs_without_colour_and_the_fan_in_joins
+FAILED tests/test_chainmap.py::test_TC_804_the_header_counts_both_boards - At...
+FAILED tests/test_chainmap.py::test_TC_807_a_hostile_title_renders_escaped_and_the_width_holds
+FAILED tests/test_chainmap.py::test_TC_808_a_stored_two_cycle_renders_once - ...
+FAILED tests/test_chainmap_app.py::test_AT_801_key_6_paints_the_chain_map_and_x_unlinks
+FAILED tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it
+8 failed, 1 passed in 1.20s
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q --tb=line 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFFFFF.                                                                [100%]
+================================== FAILURES ===================================
+C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py:39: AttributeError: module 'taskboard.views' has no attribute 'render_chainmap'. Did you mean: 'render_kanban'?
+C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py:39: AttributeError: module 'taskboard.views' has no attribute 'render_chainmap'. Did you mean: 'render_kanban'?
+C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py:39: AttributeError: module 'taskboard.views' has no attribute 'render_chainmap'. Did you mean: 'render_kanban'?
+C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py:39: AttributeError: module 'taskboard.views' has no attribute 'render_chainmap'. Did you mean: 'render_kanban'?
+C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py:39: AttributeError: module 'taskboard.views' has no attribute 'render_chainmap'. Did you mean: 'render_kanban'?
+C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py:39: AttributeError: module 'taskboard.views' has no attribute 'render_chainmap'. Did you mean: 'render_kanban'?
+C:\Users\jjgh8\Github\taskboard\tests\test_chainmap_app.py:114: AssertionError: assert '◆ CHAIN MAP · who waits on whom' in '◆ TASKBOARD · grid 2×3                                                                                25 open · 6 due...                                                                                                                      '
+C:\Users\jjgh8\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError: coroutine raised StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_chainmap.py::test_TC_801_the_exact_c2b_frame_at_118x30 - At...
+FAILED tests/test_chainmap.py::test_TC_802_the_exact_c2b_frame_at_80x24 - Att...
+FAILED tests/test_chainmap.py::test_TC_803_the_critical_chain_differs_without_colour_and_the_fan_in_joins
+FAILED tests/test_chainmap.py::test_TC_804_the_header_counts_both_boards - At...
+FAILED tests/test_chainmap.py::test_TC_807_a_hostile_title_renders_escaped_and_the_width_holds
+FAILED tests/test_chainmap.py::test_TC_808_a_stored_two_cycle_renders_once - ...
+FAILED tests/test_chainmap_app.py::test_AT_801_key_6_paints_the_chain_map_and_x_unlinks
+FAILED tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it
+8 failed, 1 passed in 0.97s
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && rg -n "render_chainmap|chainmap" taskboard/*.py | head -20; echo "exit:$?"; git status --short | head -20
+exit:0
+ M .dev-flow/state.json
+ M .gitattributes
+?? .dev-flow/2026-10-07-batch-01/decisions-log.json
+?? .dev-flow/2026-10-07-batch-02/
+?? .dev-flow/rollover_batchc.py
+?? tests/test_chainmap.py
+?? tests/test_chainmap_app.py
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && (python -m ruff --version 2>/dev/null && python -m ruff check tests/test_chainmap.py tests/test_chainmap_app.py) || echo "ruff unavailable"; ls .ruff.toml ruff.toml 2>/dev/null; rg -n "ruff|line-length" pyproject.toml | head
+ruff 0.8.4
+tests\test_chainmap.py:17:28: F401 [*] `datetime.timedelta` imported but unused
+   |
+15 | from __future__ import annotations
+16 | 
+17 | from datetime import date, timedelta
+   |                            ^^^^^^^^^ F401
+18 | from pathlib import Path
+   |
+   = help: Remove unused import: `datetime.timedelta`
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+ruff unavailable
+[0m
+[0m← [0mEdit tests/test_chainmap.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py
+@@ -13,9 +13,9 @@
+ half lands in parallel).
+ """
+ from __future__ import annotations
+ 
+-from datetime import date, timedelta
++from datetime import date
+ from pathlib import Path
+ 
+ import pytest
+ 
+
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && python -m ruff check tests/test_chainmap.py tests/test_chainmap_app.py && echo RUFF_OK
+All checks passed!
+RUFF_OK
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -12
+..\..\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError
+=========================== short test summary info ===========================
+FAILED tests/test_chainmap.py::test_TC_801_the_exact_c2b_frame_at_118x30 - At...
+FAILED tests/test_chainmap.py::test_TC_802_the_exact_c2b_frame_at_80x24 - Att...
+FAILED tests/test_chainmap.py::test_TC_803_the_critical_chain_differs_without_colour_and_the_fan_in_joins
+FAILED tests/test_chainmap.py::test_TC_804_the_header_counts_both_boards - At...
+FAILED tests/test_chainmap.py::test_TC_807_a_hostile_title_renders_escaped_and_the_width_holds
+FAILED tests/test_chainmap.py::test_TC_808_a_stored_two_cycle_renders_once - ...
+FAILED tests/test_chainmap_app.py::test_AT_801_key_6_paints_the_chain_map_and_x_unlinks
+FAILED tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it
+8 failed, 1 passed in 1.18s
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests -q --collect-only 2>&1 | tail -5
+tests/test_wave.py::test_a_bigger_stable_total_paints_less_ink_not_more
+tests/test_wave.py::test_non_decreasing_steps_never_draw_a_falling_curve
+tests/test_wave.py::test_columns_outside_the_grid_are_ignored_not_wrapped
+
+2523 tests collected in 0.56s
+[0m
+[0m← [0mEdit tests/test_chainmap.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_chainmap.py
+@@ -119,9 +119,9 @@
+ head = _render(base, "tm3", 118, 30)[0]
+ assert "15 linked tasks" in head, head
+ 
+ milestones = kg_board.milestones(kg_board.shifted(tmp_path / "ms.json"),
+-                                 date.today())
++                                 TODAY)
+ head = _render(milestones, "td4", 118, 30)[0]
+ assert "17 linked tasks" in head, head
+ 
+ 
+
+[0m
+[0m← [0mEdit tests/test_chainmap_app.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_chainmap_app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_chainmap_app.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_chainmap_app.py
+@@ -230,9 +230,9 @@
+ async with app3.run_test(size=(118, 30), notifications=True) as pilot:
+     await pilot.press("6")
+     await pilot.pause()
+     band = _band(_painted(app3), "Data Warehouse")
+-    assert "● push" in band and "set here" not in band, band
++    assert "● push" in band, band
+     app3.selected_task_id = "td4"
+     app3.refresh_view()
+     await pilot.pause()
+     d4, d0d, d5 = _due(app3.board, "td4"), _due(app3.board, "td0"), \
+
+[0m
+[0m$ [0mcd /c/Users/jjgh8/Github/taskboard && python -m ruff check tests/test_chainmap.py tests/test_chainmap_app.py && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -12
+All checks passed!
+
+..\..\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError
+=========================== short test summary info ===========================
+FAILED tests/test_chainmap.py::test_TC_801_the_exact_c2b_frame_at_118x30 - At...
+FAILED tests/test_chainmap.py::test_TC_802_the_exact_c2b_frame_at_80x24 - Att...
+FAILED tests/test_chainmap.py::test_TC_803_the_critical_chain_differs_without_colour_and_the_fan_in_joins
+FAILED tests/test_chainmap.py::test_TC_804_the_header_counts_both_boards - At...
+FAILED tests/test_chainmap.py::test_TC_807_a_hostile_title_renders_escaped_and_the_width_holds
+FAILED tests/test_chainmap.py::test_TC_808_a_stored_two_cycle_renders_once - ...
+FAILED tests/test_chainmap_app.py::test_AT_801_key_6_paints_the_chain_map_and_x_unlinks
+FAILED tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it
+8 failed, 1 passed in 1.07s
+[0m
+Both files are written, ruff-clean, and collected. The product half has not landed yet, so 8 of 9 nodes are RED by design (AT-803 is the HLR-803 characterization pin and already passes).
+
+## REPORT BACK
+
+### 1. Files + test ids
+
+New files (only `tests/` touched; no git mutations):
+- `tests/test_chainmap.py` — unit layer, `views.render_chainmap` directly, calendar frozen on `kg_board.TODAY`:
+  - `test_TC_801_the_exact_c2b_frame_at_118x30`
+  - `test_TC_802_the_exact_c2b_frame_at_80x24`
+  - `test_TC_803_the_critical_chain_differs_without_colour_and_the_fan_in_joins`
+  - `test_TC_804_the_header_counts_both_boards`
+  - `test_TC_807_a_hostile_title_renders_escaped_and_the_width_holds`
+  - `test_TC_808_a_stored_two_cycle_renders_once`
+- `tests/test_chainmap_app.py` — app layer, real keys:
+  - `test_AT_801_key_6_paints_the_chain_map_and_x_unlinks`
+  - `test_AT_802_the_rule_switch_cycles_and_bumps_follow_it`
+  - `test_AT_803_the_shipped_high_band_cap`
+
+Contract assumptions encoded: renderer seat `views.render_chainmap(board, show_archived, selected_id, today, width, height, line_map)` (the SHIPPED dispatcher shape; the parallel agent's own log greps `def render_chainmap`); `6` = view('chainmap'); `m` writes stored `flag`/`push_delta`/`together`; `x` refusal literal `nothing to remove — the selection waits on no task`. Frames read from `evidence/frames/` with universal-newline split (CRLF-safe).
+
+### 2. RED transcripts (counterfactual), current tree
+
+```
+tests/test_chainmap.py:39: AttributeError: module 'taskboard.views' has no attribute 'render_chainmap'. Did you mean: 'render_kanban'?
+   -> TC-801, TC-802, TC-803, TC-804, TC-807, TC-808 (all six, same seat)
+tests/test_chainmap_app.py:114: AssertionError: assert '◆ CHAIN MAP · who waits on whom' in '◆ TASKBOARD · grid 2×3  25 open · 6 due…'
+   -> AT-801 (key `6` unbound; the default grid view still paints)
+tests/test_chainmap_app.py: (RuntimeError: coroutine raised StopIteration)
+   -> AT-802 (`_band()` finds no `─▌Data Warehouse` because `6` paints no chain map; PEP-479 wraps the helper's `next()`)
+```
+8 failed, 1 passed. Collection: `tests -q --collect-only` → **2523 tests collected** (base 2514 + 9 new).
+
+### 3. Green counts
+
+Product not yet landed (no `render_chainmap`/`chainmap` in `taskboard/`). Last state: **1 of 9 green** — `AT-803` (the high-band cap is a shipped characterization pin: asserts `+7 more ↓` at 118×30, `+8 more ↓` at 80×24, and "no `more ↓`" on the all-fits base board). The other 8 flip GREEN once `views.py`/`app.py`/`keymap.py` land per chunk A. I could not run that flip here.
+
+Risks/notes:
+- `AT-803`'s exact N derives from the shipped `cap = max(5, 2*(height−KANBAN_HEAD_ROWS)//3)` with the measured in-app board heights (28 at 118×30, 22 at 80×24); both asserted as literals, not recomputed.
+- `TC-804`'s milestones board is built with `TODAY` (not the test module's unpatched `date.today()`) so it stays consistent with the frozen `shifted` board.
+- Only `tests/` was created; ruff clean on both files.
+
+Suggested next task: when chunk A lands, re-run `env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q` and confirm the 8 flip; then the full suite (`tests -q`) minus the known G-011 flake and the `KEYBAR_BASE` census re-derivation.

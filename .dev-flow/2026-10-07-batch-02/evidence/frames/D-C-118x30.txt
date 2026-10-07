@@ -1,0 +1,30 @@
+◆ CHAIN MAP · who waits on whom                                                   15 linked tasks · ▲2 late · chain 4 
+ ▾ Website Redesign  4 linked · 2 open not linked                                                                     
+  Design homepage mockups ────▸ Build component library ──┬─▸ Optimize image assets   ──┬─▸ Launch new homepage       
+  ✓                             ▷ ready             ▲3d   │   ◂1                Oct 6   │   ◂2               Oct 10   
+                                                          ╰─────────────────────────────╯                             
+                                                                                                                      
+ ▾ Mobile App  4 linked · 1 open not linked · critical chain                                                          
+  Audit dependencies      ────▸ Add push notifications  ────▸ Offline sync            ────▸ Beta release to testers   
+  ○                 Oct 2       ◂1               Oct 12       ◂1               Oct 28       ◂1                Nov 4   
+                                                                                                                      
+ ▾ API Platform  4 linked · 2 open not linked                                                                         
+  Partner notice emails   ────▸ Deprecate v1 endpoints                                                                
+  ○                 Oct 3       ◂1                Oct 7                                                               
+                                                                                                                      
+  Rate limiting           ────▸ SDK regeneration                                                                      
+  ○                 Oct 4       ◂1                  ▲1d                                                               
+                                                                                                                      
+ ▾ Data Warehouse  3 linked · 2 open not linked                                                                       
+  Migrate user table      ────▸ Daily revenue model     ────▸ BI dashboard cut-over                                   
+  ✓                             ▷ ready          Oct 18       ◂1               Nov 29                                 
+ no links  Ops & Security 5 open                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+ ✓ done · ▷ ready · ◂N waits on N · ─ critical chain · ─ starts before due · ─ satisfied · ▲ late                     
+ Launch new homepage                                                x remove the › link · L link · ↵ open · ←→↑↓ move 
+ ◂ waits on  ›Build component library ·  Optimize image assets (starts 2d early)                                      
+ ▸ unblocks  nothing waits on it                                                                                      

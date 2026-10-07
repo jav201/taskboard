@@ -49,10 +49,11 @@ TICK_SECONDS = 1.0
 # is shown exactly once per board rather than at every launch.
 RENUMBER_NOTICE_KEY = "seen_view_renumber_2026_07"
 
-VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "flow", "standup", "people", "setup"]
+VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "chainmap",
+              "flow", "standup", "people", "setup"]
 VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
-             "5": "focus", "7": "flow", "8": "standup", "9": "people",
-             "0": "setup"}
+             "5": "focus", "6": "chainmap", "7": "flow", "8": "standup",
+             "9": "people", "0": "setup"}
 
 
 class BoardView(Static):
@@ -651,7 +652,7 @@ class TaskboardApp(App):
             presentation = self.lanes_presentation
         else:
             presentation = "grouped"
-        return nav_model(self.view_mode, board, self.show_archived,
+        cols = nav_model(self.view_mode, board, self.show_archived,
                          width=bw or 68, height=h,
                          selected_id=self.selected_task_id,
                          kanban_sort=self.kanban_sort,
@@ -663,6 +664,12 @@ class TaskboardApp(App):
                          focus_presentation=self.focus_presentation,
                          team_state=self.team_state,
                          team_filter=self.team_filter)
+        if self.view_mode == "chainmap":
+            # CM-2/F-3: the map folds whole bands that do not fit -- the cursor
+            # may rest only on the drawn (line_map) tiles.
+            drawn = set(getattr(self, "_line_map", {}))
+            cols = [[tid for tid in col if tid in drawn] for col in cols]
+        return cols
 
     def _nav_flat(self) -> list[str]:
         return [tid for col in self._nav_columns() for tid in col]
@@ -709,6 +716,15 @@ class TaskboardApp(App):
                 pick = ranked[i + 1] if i + 1 < len(ranked) else ranked[i - 1]
                 self.selected_task_id = pick.id
             else:
+                self.selected_task_id = order[0] if order else None
+            return
+        if self.view_mode == "chainmap":
+            # The chain map draws only the LINKED tasks (an unlinked task is not
+            # a tile): a selection on one would park the cursor on a tile the
+            # view does not draw (F-3). Move to the first linked task in draw
+            # order, else off.
+            order = self._nav_flat()
+            if self.selected_task_id not in order:
                 self.selected_task_id = order[0] if order else None
             return
         if self.view_mode == "kanban":
@@ -1028,6 +1044,20 @@ class TaskboardApp(App):
         self.notify(f"{clip(waiter.title, 40)} no longer waits on {clip(pred.title, 40)} "
                     "· u undo", title="Links", markup=False)
 
+    def _chainmap_unlink(self) -> None:
+        """`x` on the chain map (LLR-801.2): remove the selected task's FIRST
+        incoming link through the shipped `unlink_tasks` seat; when it waits on
+        nothing, refuse with the verbatim toast and write nothing."""
+        task = self.selected_task
+        if task is None:
+            return
+        pred = self.board.task_by_id(task.depends_on[0]) if task.depends_on else None
+        if pred is None:
+            self.notify("nothing to remove — the selection waits on no task",
+                        title="Links", severity="warning", markup=False)
+            return
+        self.unlink_tasks(task, pred)
+
     def _create_and_link(self, waiter: Task, title: str) -> None:
         """The picker's create row: a new task in the waiter's project, first
         phase, no dates, and the link to it. `u` takes the link back; the task
@@ -1198,7 +1228,11 @@ class TaskboardApp(App):
         """`m` — re-apply the last date move under the next mode (LLR-604.4):
         flag → push_delta → together → flag. Works only while that move is the
         top of the undo stack; otherwise the refusal, verbatim, and nothing
-        moves. The cycle never offers strict `push`."""
+        moves. The cycle never offers strict `push`. On the chain map the same
+        key is view-dispatched: it cycles the selected task's PROJECT rule."""
+        if self.view_mode == "chainmap":
+            self._chainmap_cycle_rule()
+            return
         entry = self._undo_stack[-1] if self._undo_stack else None
         if entry is None or "cascade" not in entry:
             self.notify("m re-applies the last date move — nothing to re-apply",
@@ -1216,6 +1250,23 @@ class TaskboardApp(App):
                              for one in cas["tasks"]})
         nxt = CASCADE_MODES[(CASCADE_MODES.index(cas["mode"]) + 1) % len(CASCADE_MODES)]
         self._apply_cascade(task, cas["sd"], cas["dd"], mode=nxt)
+
+    def _chainmap_cycle_rule(self) -> None:
+        """`m` on the chain map (LLR-802.1): cycle the selected task's PROJECT
+        rule stay → push → together → stay via the shipped lenient read, write
+        the STORED string to `extra["date_links"]`, save and refresh the footer.
+        A setting, not a move — no undo entry, nothing tops the cascade stack."""
+        task = self.selected_task
+        if task is None:
+            return
+        pr = self.board.project_by_id(task.project_id)
+        if pr is None:
+            return
+        mode = resolve_mode(self.board, task.id)
+        nxt = CASCADE_MODES[(CASCADE_MODES.index(mode) + 1) % len(CASCADE_MODES)]
+        pr.extra["date_links"] = nxt
+        self.board.save()
+        self.refresh_view()
 
     # ---- undo (LLR-010.1: a session LIFO of pre-mutation snapshots) --------
     # The covered domain is EXACTLY the quick keys of §3.0 plus archive `x`
@@ -1976,6 +2027,12 @@ class TaskboardApp(App):
             # task still selected on the board behind it (code review F2,
             # security S-7; operator: "Corregir en el 002")
             self.action_setup_remove()
+            return
+        if self.view_mode == "chainmap":
+            # On the chain map `x` is view-dispatched (LLR-801.2): it removes
+            # the selected task's first incoming link, refusing verbatim when
+            # there is none. The shipped archive meaning is inert here.
+            self._chainmap_unlink()
             return
         task = self.selected_task
         if task is None:

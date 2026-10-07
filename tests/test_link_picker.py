@@ -169,7 +169,8 @@ def test_TC_508_L_is_one_new_key_painted_at_80_columns():
     rows = [k for k in KEYMAP if k.keys == "L"]
     assert len(rows) == 1 and rows[0].action == "link" and rows[0].primary
     assert rows[0].group == "task"
-    assert set(rows[0].views) == {"swimlanes", "agenda", "gantt", "kanban", "focus"}
+    assert set(rows[0].views) == {"swimlanes", "agenda", "gantt", "kanban", "focus",
+                                    "chainmap"}
     for view in ("kanban", "gantt"):
         bar = key_bar_plain(80, view, "primary")
         assert " L" in bar and not re.search(r"\+\d+$", bar), bar

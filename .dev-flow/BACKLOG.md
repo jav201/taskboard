@@ -3,7 +3,7 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `f665425` (local HEAD == `origin/main`; batch 2026-10-07-batch-01 started here)
+**Base ref:** `79ad438` (local HEAD == `origin/main`; batch 2026-10-07-batch-02 started here)
 · **Last refresh:** 2026-10-04
 **Status:** **2296 tests** (batch `2026-10-04-batch-01`, Batch B1: waits-on links — `◂N`/`▸N`,
 the ready message, `L` through the picker and the gantt link mode, the details dependency section,
@@ -20,6 +20,19 @@ environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
 
 - ✓ done in `2026-10-07-batch-01` — the P4 residue closed (DS-5 restore reuse, one
   `date_base` rule, `Plan.conflicts` documented, TC-701/TC-702 pins; 2514 tests green).
+
+- ✓ done in `2026-10-07-batch-02` (Batch C, awaiting the operator's visual verdict) — **the chain map
+  view (key `6`)**: per-project chains, the critical chain in heavy structure, the per-chain `dates`
+  switch on the shipped storage, the x/m view-dispatch, the high-band cap pinned; 2529 tests green;
+  the C-2b oracle byte-exact at 118x30 and 80x24.
+
+## Open — after `2026-10-07-batch-02` (Batch C: the chain map)
+
+- **Deep chains pile into the capped columns and can fold whole at typical heights** (code review
+  rev-2 note): a per-band cap/split (`+N more`, kanban-style) is the refinement.
+- **The chain map's resize-heal leans on a second refresh** (LOW): re-verify the selection against
+  the fresh `line_map` at the end of `refresh_view`.
+- **AT-801b's docstring overclaims** (nit): it says "linking re-renders" but presses escape.
 
 ## Open — after `2026-10-07-batch-01` (the residue batch)
 

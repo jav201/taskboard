@@ -1,0 +1,30 @@
+◆ CHAIN MAP · who waits on whom                                                 15 linked tasks · ▲2 late · ━ chain 4 
+─▌Website Redesign  4 linked · 2 open not linked ───────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Design homepage mockups ────▸ Build component library ──┬─▸ Optimize image assets   ──┬─▸ Launch new homepage       
+  ✓                             ▷ ready             ▲3d   │   ◂1                Oct 6   │   ◂2               Oct 10   
+                                                          ╰─────────────────────────────╯                             
+                                                                                                                      
+─▌Mobile App  4 linked · ━ critical chain · 1 open not linked ──────────────────── dates  ○ stay  ● push  ○ together ─
+ ┃Audit dependencies      ━━━━▸┃Add push notifications  ━━━━▸┃Offline sync            ━━━━▸┃Beta release to testers   
+ ┃○                 Oct 2      ┃◂1               Oct 12      ┃◂1               Oct 28      ┃◂1                Nov 4   
+                                                                                                                      
+─▌API Platform  4 linked · 2 open not linked ───────────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Partner notice emails   ────▸ Deprecate v1 endpoints                                                                
+  ○                 Oct 3       ◂1                Oct 7                                                               
+                                                                                                                      
+  Rate limiting           ────▸ SDK regeneration                                                                      
+  ○                 Oct 4       ◂1                  ▲1d                                                               
+                                                                                                                      
+─▌Data Warehouse  3 linked · 2 open not linked ───────────────────────── set here  dates  ○ stay  ○ push  ● together ─
+  Migrate user table      ────▸ Daily revenue model     ────▸ BI dashboard cut-over                                   
+  ✓                             ▷ ready          Oct 18       ◂1               Nov 29                                 
+                                                                                                                      
+─▌Ops & Security  5 open · no links ──────────────────────────────────────────────────────────────────────────────────
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+ ✓ done · ▷ ready · ◂N waits on N · ━ critical chain · ─ starts before due · ─ satisfied · ▲ late                     
+ Add push notifications                                             x remove the › link · L link · ↵ open · ←→↑↓ move 
+ ◂ waits on  ›Audit dependencies (starts 1d early)                                                                    
+ ▸ unblocks   Offline sync (starts 2d early)                                                                          
+ ▌Mobile App · Push what it collides with (default): a move pushes waiting tasks by the overlap it adds · m change    
