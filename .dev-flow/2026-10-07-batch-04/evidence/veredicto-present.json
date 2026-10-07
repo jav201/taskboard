@@ -1,0 +1,21 @@
+{
+  "batch": "2026-10-07-batch-E-proto",
+  "exported": "2026-10-07T18:16:25.270Z",
+  "answers": {
+    "PRES-CHOICE": {
+      "choice": "pres-c",
+      "label": "PRES-C: una sola superficie interactiva (recomendada)",
+      "note": ""
+    },
+    "PRES-EXPORT": {
+      "choice": "png",
+      "label": "Tambien PNG/imagen",
+      "note": ""
+    },
+    "PRES-KEY": {
+      "choice": "key-r",
+      "label": "Reusar R (el reporte actual) — la presentacion REEMPLAZA al reporte",
+      "note": ""
+    }
+  }
+}

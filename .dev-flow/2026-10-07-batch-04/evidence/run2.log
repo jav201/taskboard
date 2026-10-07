@@ -1,0 +1,821 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead prototypes/present_e/BRIEF.md
+[0m→ [0mRead prototypes/kg_mejoras/variants_polish.py
+[0m→ [0mRead prototypes/kg_mejoras/variants_gantt.py
+[0m→ [0mRead taskboard/report.py
+[0m→ [0mRead taskboard/views.py
+[0m→ [0mRead taskboard/views.py[90m [offset=1188][0m
+[0m
+[0m$ [0mls -la "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/kg_mejoras/" && echo "---OUT---" && ls -la "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/kg_mejoras/out/" 2>/dev/null && echo "---PRESENT_E---" && ls -la "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e/"
+total 680
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 ..
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 .ruff_cache
+-rw-r--r-- 1 jjgh8 197609  3687 Oct  7 11:53 DEPS-CONTRACT.md
+-rw-r--r-- 1 jjgh8 197609  3129 Oct  7 11:53 FLOW-CONTRACT.md
+-rw-r--r-- 1 jjgh8 197609  9466 Oct  7 11:53 IMPLEMENTATION-PLAN.md
+-rw-r--r-- 1 jjgh8 197609 13169 Oct  7 11:53 NOTES.md
+-rw-r--r-- 1 jjgh8 197609 17677 Oct  7 11:53 README-AUDIT.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 __pycache__
+-rw-r--r-- 1 jjgh8 197609  1148 Oct  7 11:53 baseline.py
+-rw-r--r-- 1 jjgh8 197609 35762 Oct  7 11:53 build_html.py
+-rw-r--r-- 1 jjgh8 197609 11603 Oct  7 11:53 build_questions.py
+-rw-r--r-- 1 jjgh8 197609  7156 Oct  7 11:53 build_verdict_a2.py
+-rw-r--r-- 1 jjgh8 197609  6870 Oct  7 11:53 build_verdict_b1.py
+-rw-r--r-- 1 jjgh8 197609  6580 Oct  7 11:53 build_verdict_b2a.py
+-rw-r--r-- 1 jjgh8 197609  7154 Oct  7 11:53 build_verdict_p.py
+-rw-r--r-- 1 jjgh8 197609  4509 Oct  7 11:53 build_verdict_s.py
+-rw-r--r-- 1 jjgh8 197609  8537 Oct  7 11:53 capture_cascade.py
+-rw-r--r-- 1 jjgh8 197609  2052 Oct  7 11:53 capture_deps_gantt.py
+-rw-r--r-- 1 jjgh8 197609  2183 Oct  7 11:53 capture_deps_kanban.py
+-rw-r--r-- 1 jjgh8 197609  2971 Oct  7 11:53 capture_flow.py
+-rw-r--r-- 1 jjgh8 197609  3197 Oct  7 11:53 capture_gantt.py
+-rw-r--r-- 1 jjgh8 197609  3920 Oct  7 11:53 capture_kanban.py
+-rw-r--r-- 1 jjgh8 197609  7034 Oct  7 11:53 capture_polish.py
+-rw-r--r-- 1 jjgh8 197609  7231 Oct  7 11:53 capture_reconcile.py
+-rw-r--r-- 1 jjgh8 197609  8773 Oct  7 11:53 capture_round5.py
+-rw-r--r-- 1 jjgh8 197609  7335 Oct  7 11:53 cascade.py
+-rw-r--r-- 1 jjgh8 197609 11373 Oct  7 11:53 cascade_logic.py
+-rw-r--r-- 1 jjgh8 197609 20072 Oct  7 11:53 deps_logic.py
+-rw-r--r-- 1 jjgh8 197609  5336 Oct  7 11:53 fixture.py
+-rw-r--r-- 1 jjgh8 197609 34999 Oct  7 11:53 flow_logic.py
+-rw-r--r-- 1 jjgh8 197609  8076 Oct  7 11:53 flows.py
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 out
+-rw-r--r-- 1 jjgh8 197609  6109 Oct  7 11:53 proto_app.py
+-rw-r--r-- 1 jjgh8 197609  6612 Oct  7 11:53 shoot.ps1
+-rw-r--r-- 1 jjgh8 197609 22314 Oct  7 11:53 variants_cascade.py
+-rw-r--r-- 1 jjgh8 197609 29629 Oct  7 11:53 variants_deps_gantt.py
+-rw-r--r-- 1 jjgh8 197609 15256 Oct  7 11:53 variants_deps_kanban.py
+-rw-r--r-- 1 jjgh8 197609 29836 Oct  7 11:53 variants_flow.py
+-rw-r--r-- 1 jjgh8 197609 31042 Oct  7 11:53 variants_gantt.py
+-rw-r--r-- 1 jjgh8 197609 27777 Oct  7 11:53 variants_kanban.py
+-rw-r--r-- 1 jjgh8 197609 38235 Oct  7 11:53 variants_polish.py
+-rw-r--r-- 1 jjgh8 197609 15750 Oct  7 11:53 variants_reconcile.py
+-rw-r--r-- 1 jjgh8 197609 30221 Oct  7 11:53 variants_round5.py
+---OUT---
+total 24848
+drwxr-xr-x 1 jjgh8 197609       0 Oct  7 11:53 .
+drwxr-xr-x 1 jjgh8 197609       0 Oct  7 11:53 ..
+-rw-r--r-- 1 jjgh8 197609  211276 Oct  7 11:53 AX-1-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6382 Oct  7 11:53 AX-1-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35224 Oct  7 11:53 AX-1-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3611 Oct  7 11:53 AX-1-80x24.txt
+-rw-r--r-- 1 jjgh8 197609  212060 Oct  7 11:53 AX-2-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6394 Oct  7 11:53 AX-2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   34891 Oct  7 11:53 AX-2-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3614 Oct  7 11:53 AX-2-80x24.txt
+-rw-r--r-- 1 jjgh8 197609  176960 Oct  7 11:53 C-1a-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    5883 Oct  7 11:53 C-1a-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35348 Oct  7 11:53 C-1a-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3325 Oct  7 11:53 C-1a-80x24.txt
+-rw-r--r-- 1 jjgh8 197609  179015 Oct  7 11:53 C-1b-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    5896 Oct  7 11:53 C-1b-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   34577 Oct  7 11:53 C-1b-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3327 Oct  7 11:53 C-1b-80x24.txt
+-rw-r--r-- 1 jjgh8 197609  179423 Oct  7 11:53 C-1c-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    5914 Oct  7 11:53 C-1c-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   36034 Oct  7 11:53 C-1c-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3333 Oct  7 11:53 C-1c-80x24.txt
+-rw-r--r-- 1 jjgh8 197609  179734 Oct  7 11:53 C-1d-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    5889 Oct  7 11:53 C-1d-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   36773 Oct  7 11:53 C-1d-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3304 Oct  7 11:53 C-1d-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   38351 Oct  7 11:53 C-2-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    3887 Oct  7 11:53 C-2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   34111 Oct  7 11:53 C-2-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2182 Oct  7 11:53 C-2-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   41806 Oct  7 11:53 C-2b-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4322 Oct  7 11:53 C-2b-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   36367 Oct  7 11:53 C-2b-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2414 Oct  7 11:53 C-2b-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   47230 Oct  7 11:53 C-3-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4981 Oct  7 11:53 C-3-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35988 Oct  7 11:53 C-3-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2709 Oct  7 11:53 C-3-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   46092 Oct  7 11:53 D-A-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6329 Oct  7 11:53 D-A-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   31980 Oct  7 11:53 D-A-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3273 Oct  7 11:53 D-A-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   45929 Oct  7 11:53 D-A2-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6387 Oct  7 11:53 D-A2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   34428 Oct  7 11:53 D-A2-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3604 Oct  7 11:53 D-A2-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   42336 Oct  7 11:53 D-B-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4834 Oct  7 11:53 D-B-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   31624 Oct  7 11:53 D-B-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2623 Oct  7 11:53 D-B-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   44707 Oct  7 11:53 D-B2-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    5049 Oct  7 11:53 D-B2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   34105 Oct  7 11:53 D-B2-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2782 Oct  7 11:53 D-B2-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   33430 Oct  7 11:53 D-C-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    3860 Oct  7 11:53 D-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   29099 Oct  7 11:53 D-C-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2147 Oct  7 11:53 D-C-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   46291 Oct  7 11:53 D-marks-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4977 Oct  7 11:53 D-marks-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   34246 Oct  7 11:53 D-marks-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2695 Oct  7 11:53 D-marks-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   43947 Oct  7 11:53 G-A-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6373 Oct  7 11:53 G-A-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   33199 Oct  7 11:53 G-A-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3595 Oct  7 11:53 G-A-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   47275 Oct  7 11:53 G-B-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6420 Oct  7 11:53 G-B-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35392 Oct  7 11:53 G-B-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3626 Oct  7 11:53 G-B-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   47101 Oct  7 11:53 G-C-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6292 Oct  7 11:53 G-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35045 Oct  7 11:53 G-C-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3603 Oct  7 11:53 G-C-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   45665 Oct  7 11:53 K-A-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4967 Oct  7 11:53 K-A-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35294 Oct  7 11:53 K-A-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2691 Oct  7 11:53 K-A-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   47042 Oct  7 11:53 K-A2-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4911 Oct  7 11:53 K-A2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35560 Oct  7 11:53 K-A2-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2660 Oct  7 11:53 K-A2-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   51821 Oct  7 11:53 K-B-118x30-tm3.svg
+-rw-r--r-- 1 jjgh8 197609    4512 Oct  7 11:53 K-B-118x30-tm3.txt
+-rw-r--r-- 1 jjgh8 197609   51355 Oct  7 11:53 K-B-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4476 Oct  7 11:53 K-B-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   43294 Oct  7 11:53 K-B-80x24-tm3.svg
+-rw-r--r-- 1 jjgh8 197609    2664 Oct  7 11:53 K-B-80x24-tm3.txt
+-rw-r--r-- 1 jjgh8 197609   42574 Oct  7 11:53 K-B-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2648 Oct  7 11:53 K-B-80x24.txt
+-rw-r--r-- 1 jjgh8 197609  190674 Oct  7 11:53 M-1-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6046 Oct  7 11:53 M-1-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   34777 Oct  7 11:53 M-1-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3329 Oct  7 11:53 M-1-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   52855 Oct  7 11:53 M-2-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4613 Oct  7 11:53 M-2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   37632 Oct  7 11:53 M-2-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2484 Oct  7 11:53 M-2-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   45522 Oct  7 11:53 M-3-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    5018 Oct  7 11:53 M-3-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35100 Oct  7 11:53 M-3-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2806 Oct  7 11:53 M-3-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   46319 Oct  7 11:53 R-1a-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4944 Oct  7 11:53 R-1a-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   31896 Oct  7 11:53 R-1a-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2587 Oct  7 11:53 R-1a-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   47624 Oct  7 11:53 R-1b-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4956 Oct  7 11:53 R-1b-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   38370 Oct  7 11:53 R-1b-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2786 Oct  7 11:53 R-1b-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   50720 Oct  7 11:53 R-1c-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4967 Oct  7 11:53 R-1c-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   38611 Oct  7 11:53 R-1c-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2705 Oct  7 11:53 R-1c-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   46289 Oct  7 11:53 R-KA-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4967 Oct  7 11:53 R-KA-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   35326 Oct  7 11:53 R-KA-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2691 Oct  7 11:53 R-KA-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   51125 Oct  7 11:53 R-ship-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4408 Oct  7 11:53 R-ship-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   46580 Oct  7 11:53 R-ship-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2614 Oct  7 11:53 R-ship-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   29357 Oct  7 11:53 T-A-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    3988 Oct  7 11:53 T-A-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   21205 Oct  7 11:53 T-A-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2180 Oct  7 11:53 T-A-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   34413 Oct  7 11:53 T-B-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4955 Oct  7 11:53 T-B-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   28579 Oct  7 11:53 T-B-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2899 Oct  7 11:53 T-B-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   33804 Oct  7 11:53 T-B2-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4954 Oct  7 11:53 T-B2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   28100 Oct  7 11:53 T-B2-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2901 Oct  7 11:53 T-B2-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   40670 Oct  7 11:53 T-C-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    3863 Oct  7 11:53 T-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   33721 Oct  7 11:53 T-C-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2161 Oct  7 11:53 T-C-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   51419 Oct  7 11:53 T-C2-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4324 Oct  7 11:53 T-C2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   43754 Oct  7 11:53 T-C2-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2409 Oct  7 11:53 T-C2-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   51116 Oct  7 11:53 baseline-gantt-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    6797 Oct  7 11:53 baseline-gantt-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   34805 Oct  7 11:53 baseline-gantt-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    3839 Oct  7 11:53 baseline-gantt-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   44845 Oct  7 11:53 baseline-kanban-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4158 Oct  7 11:53 baseline-kanban-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   41279 Oct  7 11:53 baseline-kanban-80x24.svg
+-rw-r--r-- 1 jjgh8 197609    2472 Oct  7 11:53 baseline-kanban-80x24.txt
+-rw-r--r-- 1 jjgh8 197609   47749 Oct  7 11:53 baseline-kanban-lanes-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    5388 Oct  7 11:53 baseline-kanban-lanes-118x30.txt
+-rw-r--r-- 1 jjgh8 197609   26847 Oct  7 11:53 baseline-kanban-matrix-118x30.svg
+-rw-r--r-- 1 jjgh8 197609    4222 Oct  7 11:53 baseline-kanban-matrix-118x30.txt
+-rw-r--r-- 1 jjgh8 197609    9269 Oct  7 11:53 cascade-logic.txt
+-rw-r--r-- 1 jjgh8 197609   23980 Oct  7 11:53 deps-logic.txt
+-rw-r--r-- 1 jjgh8 197609   16180 Oct  7 11:53 flow-logic.txt
+-rw-r--r-- 1 jjgh8 197609 9802191 Oct  7 11:53 kg-mejoras.html
+-rw-r--r-- 1 jjgh8 197609  112279 Oct  7 11:53 preguntas-a1.html
+-rw-r--r-- 1 jjgh8 197609    1077 Oct  7 11:53 round5-capture.txt
+-rw-r--r-- 1 jjgh8 197609    1385 Oct  7 11:53 taskboard-respuestas-a1.json
+-rw-r--r-- 1 jjgh8 197609  725538 Oct  7 11:53 veredicto-a2.html
+-rw-r--r-- 1 jjgh8 197609 2170553 Oct  7 11:53 veredicto-b1.html
+-rw-r--r-- 1 jjgh8 197609 1791169 Oct  7 11:53 veredicto-b2a.html
+-rw-r--r-- 1 jjgh8 197609  797953 Oct  7 11:53 veredicto-p.html
+-rw-r--r-- 1 jjgh8 197609  557465 Oct  7 11:53 veredicto-s.html
+-rw-r--r-- 1 jjgh8 197609  100445 Oct  7 11:53 wt-AX-1-120x32.png
+-rw-r--r-- 1 jjgh8 197609   59691 Oct  7 11:53 wt-AX-1-82x26.png
+-rw-r--r-- 1 jjgh8 197609  101882 Oct  7 11:53 wt-AX-2-120x32.png
+-rw-r--r-- 1 jjgh8 197609   60395 Oct  7 11:53 wt-AX-2-82x26.png
+-rw-r--r-- 1 jjgh8 197609   99136 Oct  7 11:53 wt-C-1a-120x32.png
+-rw-r--r-- 1 jjgh8 197609   60505 Oct  7 11:53 wt-C-1a-82x26.png
+-rw-r--r-- 1 jjgh8 197609   98747 Oct  7 11:53 wt-C-1b-120x32.png
+-rw-r--r-- 1 jjgh8 197609   60502 Oct  7 11:53 wt-C-1b-82x26.png
+-rw-r--r-- 1 jjgh8 197609   99121 Oct  7 11:53 wt-C-1c-120x32.png
+-rw-r--r-- 1 jjgh8 197609   60574 Oct  7 11:53 wt-C-1c-82x26.png
+-rw-r--r-- 1 jjgh8 197609   99731 Oct  7 11:53 wt-C-1d-120x32.png
+-rw-r--r-- 1 jjgh8 197609   60970 Oct  7 11:53 wt-C-1d-82x26.png
+-rw-r--r-- 1 jjgh8 197609   75641 Oct  7 11:53 wt-C-2-120x32.png
+-rw-r--r-- 1 jjgh8 197609   62180 Oct  7 11:53 wt-C-2-82x26.png
+-rw-r--r-- 1 jjgh8 197609   75596 Oct  7 11:53 wt-C-2b-120x32.png
+-rw-r--r-- 1 jjgh8 197609   62252 Oct  7 11:53 wt-C-2b-82x26.png
+-rw-r--r-- 1 jjgh8 197609   74559 Oct  7 11:53 wt-C-3-120x32.png
+-rw-r--r-- 1 jjgh8 197609   53720 Oct  7 11:53 wt-C-3-82x26.png
+-rw-r--r-- 1 jjgh8 197609   80231 Oct  7 11:53 wt-D-A-120x32.png
+-rw-r--r-- 1 jjgh8 197609   54506 Oct  7 11:53 wt-D-A-82x26.png
+-rw-r--r-- 1 jjgh8 197609   78699 Oct  7 11:53 wt-D-A2-120x32.png
+-rw-r--r-- 1 jjgh8 197609   60564 Oct  7 11:53 wt-D-A2-82x26.png
+-rw-r--r-- 1 jjgh8 197609   75465 Oct  7 11:53 wt-D-B-120x32.png
+-rw-r--r-- 1 jjgh8 197609   48488 Oct  7 11:53 wt-D-B-82x26.png
+-rw-r--r-- 1 jjgh8 197609   80656 Oct  7 11:53 wt-D-B2-120x32.png
+-rw-r--r-- 1 jjgh8 197609   50158 Oct  7 11:53 wt-D-B2-82x26.png
+-rw-r--r-- 1 jjgh8 197609   63931 Oct  7 11:53 wt-D-C-120x32.png
+-rw-r--r-- 1 jjgh8 197609   53270 Oct  7 11:53 wt-D-C-82x26.png
+-rw-r--r-- 1 jjgh8 197609   74386 Oct  7 11:53 wt-G-A-120x32.png
+-rw-r--r-- 1 jjgh8 197609   58440 Oct  7 11:53 wt-G-A-82x26.png
+-rw-r--r-- 1 jjgh8 197609   80609 Oct  7 11:53 wt-G-B-120x32.png
+-rw-r--r-- 1 jjgh8 197609   59757 Oct  7 11:53 wt-G-B-82x26.png
+-rw-r--r-- 1 jjgh8 197609   78997 Oct  7 11:53 wt-G-C-120x32.png
+-rw-r--r-- 1 jjgh8 197609   58532 Oct  7 11:53 wt-G-C-82x26.png
+-rw-r--r-- 1 jjgh8 197609   71878 Oct  7 11:53 wt-K-A-120x32.png
+-rw-r--r-- 1 jjgh8 197609   86402 Oct  7 11:53 wt-K-A-120x40.png
+-rw-r--r-- 1 jjgh8 197609   58507 Oct  7 11:53 wt-K-A-82x26.png
+-rw-r--r-- 1 jjgh8 197609   82229 Oct  7 11:53 wt-K-A2-120x32.png
+-rw-r--r-- 1 jjgh8 197609   82215 Oct  7 11:53 wt-K-B-120x32.png
+-rw-r--r-- 1 jjgh8 197609   62922 Oct  7 11:53 wt-K-B-82x26.png
+-rw-r--r-- 1 jjgh8 197609   94998 Oct  7 11:53 wt-M-1-120x32.png
+-rw-r--r-- 1 jjgh8 197609   55804 Oct  7 11:53 wt-M-1-82x26.png
+-rw-r--r-- 1 jjgh8 197609   88010 Oct  7 11:53 wt-M-2-120x32.png
+-rw-r--r-- 1 jjgh8 197609   59237 Oct  7 11:53 wt-M-2-82x26.png
+-rw-r--r-- 1 jjgh8 197609   82603 Oct  7 11:53 wt-M-3-120x32.png
+-rw-r--r-- 1 jjgh8 197609   51410 Oct  7 11:53 wt-M-3-82x26.png
+-rw-r--r-- 1 jjgh8 197609   67413 Oct  7 11:53 wt-R-1a-120x32.png
+-rw-r--r-- 1 jjgh8 197609   42301 Oct  7 11:53 wt-R-1a-82x26.png
+-rw-r--r-- 1 jjgh8 197609   73344 Oct  7 11:53 wt-R-1b-120x32.png
+-rw-r--r-- 1 jjgh8 197609   51833 Oct  7 11:53 wt-R-1b-82x26.png
+-rw-r--r-- 1 jjgh8 197609   74174 Oct  7 11:53 wt-R-1c-120x32.png
+-rw-r--r-- 1 jjgh8 197609   50134 Oct  7 11:53 wt-R-1c-82x26.png
+-rw-r--r-- 1 jjgh8 197609   66003 Oct  7 11:53 wt-T-A-120x32.png
+-rw-r--r-- 1 jjgh8 197609   44228 Oct  7 11:53 wt-T-A-82x26.png
+-rw-r--r-- 1 jjgh8 197609   61296 Oct  7 11:53 wt-T-B-120x32.png
+-rw-r--r-- 1 jjgh8 197609   43538 Oct  7 11:53 wt-T-B-82x26.png
+-rw-r--r-- 1 jjgh8 197609   60025 Oct  7 11:53 wt-T-B2-120x32.png
+-rw-r--r-- 1 jjgh8 197609   43234 Oct  7 11:53 wt-T-B2-82x26.png
+-rw-r--r-- 1 jjgh8 197609   73140 Oct  7 11:53 wt-T-C-120x32.png
+-rw-r--r-- 1 jjgh8 197609   55582 Oct  7 11:53 wt-T-C-82x26.png
+-rw-r--r-- 1 jjgh8 197609   75991 Oct  7 11:53 wt-T-C2-120x32.png
+-rw-r--r-- 1 jjgh8 197609   57881 Oct  7 11:53 wt-T-C2-82x26.png
+-rw-r--r-- 1 jjgh8 197609   85156 Oct  7 11:53 wt-base-G-120x32.png
+-rw-r--r-- 1 jjgh8 197609   55120 Oct  7 11:53 wt-base-G-82x26.png
+-rw-r--r-- 1 jjgh8 197609   69917 Oct  7 11:53 wt-base-K-120x32.png
+-rw-r--r-- 1 jjgh8 197609   54451 Oct  7 11:53 wt-base-K-82x26.png
+---PRESENT_E---
+total 49
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 ..
+-rw-r--r-- 1 jjgh8 197609  3485 Oct  7 11:53 BRIEF.md
+-rw-r--r-- 1 jjgh8 197609 28721 Oct  7 11:52 run.log
+-rw-r--r-- 1 jjgh8 197609   340 Oct  7 11:54 run2.log
+[0m
+[0m→ [0mRead prototypes/present_e/run.log
+[0m→ [0mRead prototypes/present_e/run2.log
+[0m→ [0mRead prototypes/kg_mejoras/fixture.py
+[0m→ [0mRead prototypes/kg_mejoras/capture_gantt.py
+[0m→ [0mRead prototypes/kg_mejoras/baseline.py
+[0m→ [0mRead taskboard/views.py[90m [offset=2255][0m
+[0m→ [0mRead prototypes/kg_mejoras/IMPLEMENTATION-PLAN.md
+[0m✱ [0mGrep "class Task|class Project|class Board|notes|def is_done|def phase_index|def visible_tasks|def visible_projects|def project_progress|def task_by_id|def project_by_id"[90m in taskboard/models.py · 68 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [offset=783, limit=140][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/kg_mejoras/out" && wc -l G-A-80x24.txt G-A-118x30.txt && echo "--- first 3 lines ---" && sed -n '1,3p' G-A-80x24.txt | cat -A | head -20
+23 G-A-80x24.txt
+  29 G-A-118x30.txt
+  52 total
+--- first 3 lines ---
+M-bM-^WM-^F GANTT M-BM-7 whole board                                     M-bM-^VM-25 past due M-BM-7 chain 4 $
+M-bM-^VM-> Website RedesM-bM-^@M-& M-bM-^VM-22  M-bM-^WM-^BM-bM-^TM-^@M-bM-^WM-^OM-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^UM-^NM-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^WM-^FM-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7 Oct 10$
+  Build component M-bM-^@M-&  M-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^UM-^LM-bM-^WM-^UM-bM-^UM-^NM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-bM-^TM-^FM-BM-7M-BM-7M-BM-7M-bM-^TM-^FM-BM-7    M-bM-^VM-23d$
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "import rich; print('rich', rich.__version__)" && python -c "import sys; sys.path.insert(0,'prototypes/kg_mejoras'); from fixture import build, TODAY; b=build(); print('projects', len(b.visible_projects(False))); web=[p for p in b.visible_projects(False) if p.name=='Website Redesign'][0]; print('web', web.id, web.color, web.due_date); ts=[t for t in b.visible_tasks(False) if t.project_id==web.id]; [print(t.id, repr(t.title), t.phase, t.priority, t.start_date, t.due_date, 'dep', t.depends_on) for t in ts]"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: module 'rich' has no attribute '__version__'
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "import rich; print('rich ok', rich.__file__)" && python -c "import sys; sys.path.insert(0,'prototypes/kg_mejoras'); from fixture import build, TODAY; b=build(); print('projects', len(b.visible_projects(False))); web=[p for p in b.visible_projects(False) if p.name=='Website Redesign'][0]; print('web', web.id, web.color, web.due_date); ts=[t for t in b.visible_tasks(False) if t.project_id==web.id]; [print(t.id, repr(t.title), t.phase, t.priority, t.start_date, t.due_date, 'dep', t.depends_on) for t in ts]"
+rich ok C:\Users\jjgh8\anaconda3\Lib\site-packages\rich\__init__.py
+projects 5
+web pweb violet 2026-10-10
+tw1 'Design homepage mockups' Done normal 2026-08-23 2026-09-10 dep []
+tw2 'Build component library' Review normal 2026-09-05 2026-09-27 dep ['tw1']
+tw3 'Fix checkout 500 error' Doing high 2026-09-24 2026-09-28 dep []
+tw4 'Optimize image assets' Next low None 2026-10-06 dep ['tw2']
+tw5 'Launch new homepage' Backlog high 2026-10-04 2026-10-10 dep ['tw2', 'tw4']
+tw6 'SEO redirects map' Backlog normal None 2026-10-14 dep []
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import sys
+sys.path.insert(0,'prototypes/kg_mejoras')
+from fixture import build, TODAY
+from taskboard.models import critical_chain, parse_iso
+b = build()
+chain = critical_chain(b)
+print('chain ids', sorted(chain))
+web=[p for p in b.visible_projects(False) if p.name=='Website Redesign'][0]
+print('progress', b.project_progress(web.id))
+print('phase_index tw3', b.phase_index(b.task_by_id('tw3')))
+print('parse_iso', parse_iso('2026-10-10'))
+from taskboard.views import gantt_columns, gantt_axis, gantt_window, _gantt_bar, _gantt_span, _gantt_field, gantt_due_chip, gantt_dep_mark, _md
+print('gantt_columns(118)', gantt_columns(118))
+print('gantt_columns(80)', gantt_columns(80))
+"
+chain ids ['tm2', 'tm3', 'tm4', 'tm5']
+progress 0.4166666666666667
+phase_index tw3 2
+parse_iso 2026-10-10
+gantt_columns(118) (30, 7, 79)
+gantt_columns(80) (20, 6, 52)
+[0m
+[0m← [0mWrite prototypes/present_e/variants.py
+Wrote file successfully.
+[0m
+[0m← [0mEdit prototypes/present_e/variants.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+@@ -259,9 +259,9 @@
+         assert vis(_strip(ln)) == width, (vis(_strip(ln)), width, _strip(ln))
+     return to_text(lines, height, width, pinned=pinned)
+ 
+ 
+-def _counts(board, open_t, tasks):
++def _counts(board, open_t, tasks, today):
+     late = sum(1 for t in open_t if (d := parse_iso(t.due_date)) and d < today)
+     done = len(tasks) - len(open_t)
+     return late, len(open_t), done
+ 
+
+[0m
+[0m← [0mEdit prototypes/present_e/variants.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+@@ -271,9 +271,9 @@
+ # --------------------------------------------------------------------------- #
+ def render_presa(board, cursor_id, today, width, height, line_map=None):
+     proj = _project(board)
+     open_t, tasks = _open(board)
+-    late, open_n, done = _counts(board, open_t, tasks)
++    late, open_n, done = _counts(board, open_t, tasks, today)
+     wide = width >= 100
+     label_w, chip_w, field_w = _cols(width, wide)
+     ax = _axis_for(board, proj, open_t, field_w, today)
+     chain = set(critical_chain(board))
+
+[0m
+[0m← [0mEdit prototypes/present_e/variants.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+@@ -325,9 +325,9 @@
+ 
+ def render_presb(board, cursor_id, today, width, height, line_map=None):
+     proj = _project(board)
+     open_t, tasks = _open(board)
+-    late, open_n, done = _counts(board, open_t, tasks)
++    late, open_n, done = _counts(board, open_t, tasks, today)
+     wide = width >= 100
+     p = _P(width, 0, 0, 0, None, set(), today, wide, proj.color)
+ 
+     title = (c("◆ PRESENT", "bright", bold=True) + c(" · ", "dim")
+
+[0m
+[0m← [0mEdit prototypes/present_e/variants.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+@@ -367,9 +367,9 @@
+ 
+ def render_presc(board, cursor_id, today, width, height, line_map=None):
+     proj = _project(board)
+     open_t, tasks = _open(board)
+-    late, open_n, done = _counts(board, open_t, tasks)
++    late, open_n, done = _counts(board, open_t, tasks, today)
+     wide = width >= 100
+     label_w, chip_w, field_w = _cols(width, wide)
+     ax = _axis_for(board, proj, open_t, field_w, today)
+     chain = set(critical_chain(board))
+@@ -377,11 +377,10 @@
+     cursor = board.task_by_id(cursor_id) if board.task_by_id(cursor_id) in open_t else open_t[0]
+ 
+     title = (c("◆ PRESENT", "bright", bold=True) + c(" · ", "dim")
+              + c(escape(proj.name), proj.color, bold=True) + c(" — hybrid", "mut"))
+-    right = (c(f"{open_n} open", "mut") + c(" · ", "dim")
+-             + c(f"▲{late} past due", "over", bold=True) if late
+-             else c(f"{open_n} open", "mut"))
++    right = c(f"{open_n} open", "mut") + c(" · ", "dim") \
++        + (c(f"▲{late} past due", "over", bold=True) if late else c(f"{done} done", "done"))
+     lines = [header(title, right, width)]
+ 
+     lines.append(_span_row(proj, board, p))
+     for t in open_t:
+
+[0m
+[0m← [0mWrite prototypes/present_e/build.py
+Wrote file successfully.
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python prototypes/present_e/build.py
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-A-118x30.svg
+Traceback (most recent call last):
+  File "C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\build.py", line 55, in <module>
+    main()
+  File "C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\build.py", line 43, in main
+    text = fn(board, V.CURSOR, TODAY, W, H)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py", line 301, in render_presa
+    return _finish(lines, height, width)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py", line 259, in _finish
+    assert vis(_strip(ln)) == width, (vis(_strip(ln)), width, _strip(ln))
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (0, 80, '')
+[0m
+[0m← [0mEdit prototypes/present_e/variants.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+@@ -293,12 +293,14 @@
+             lines.append(_task_row(t, board, p))
+             note_w = width - 4
+             for ln in _note_lines(t.notes, note_w, 2):
+                 lines.append(_note_row(ln, width, note_w))
+-    lines.append(_legend([("↳", "mut", "waits on open work"),
+-                          ("●", "mut", "progress"), ("◆", "mut", "committed due"),
+-                          ("╌", "mut", "task reach"), ("─", proj.color, "project span")],
+-                         width))
++    leg = _legend([("↳", "mut", "waits on open work"),
++                   ("●", "mut", "progress"), ("◆", "mut", "committed due"),
++                   ("╌", "mut", "task reach"), ("─", proj.color, "project span")],
++                  width)
++    if leg:
++        lines.append(leg)
+     return _finish(lines, height, width)
+ 
+ 
+ # --------------------------------------------------------------------------- #
+
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python prototypes/present_e/build.py
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-A-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-A-80x24.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-B-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-B-80x24.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-C-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-C-80x24.svg
+ok
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e/out" && echo "===== PRES-A-118x30 =====" && cat PRES-A-118x30.txt && echo "===== PRES-A-80x24 =====" && cat PRES-A-80x24.txt
+===== PRES-A-118x30 =====
+◆ PRESENT · Website Redesign — the gantt                                                ▲2 past due · 5 open · 1 done 
+▌ WEBSITE REDESIGN               ●─────────────────────────────────────╎───────────────────◆···┆·········· Oct 10 +10d
+▌ REVIEW · 1 task─────────────────────────────────────────────────────────────────────────────────────────────────────
+  ▎ Build component library ↗    ◂▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◕┆···╎·········┆·············┆··········  Sep 27 ▲3d
+  · Design tokens are frozen. Build buttons, inputs and cards from the approved mockups and publish the storybook     
+  · before review.                                                                                                    
+▌ DOING · 1 task──────────────────────────────────────────────────────────────────────────────────────────────────────
+  ▎ Fix checkout 500 error ↗     ······┆·············┆·····▬╌╌╌╌╌╌╌╌◑··╎·········┆·············┆··········  Sep 28 ▲2d
+  · The 500 is a missing tax-rate row for new regions. Roll back the last deploy if the fix is not green by end of    
+  · day.                                                                                                              
+▌ NEXT · 1 task───────────────────────────────────────────────────────────────────────────────────────────────────────
+  ▎ Optimize image assets       ↳······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········   Oct 6 +6d
+  · Convert hero images to AVIF and lazy-load below the fold. Target a homepage under 1.5 MB.                         
+▌ BACKLOG · 2 tasks───────────────────────────────────────────────────────────────────────────────────────────────────
+  ▎ Launch new homepage         ↳······┆·············┆·············┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆·········· Oct 10 +10d
+  · Feature-flag the cut-over, set DNS TTL to 300, and keep the rollback doc ready. Waits on the library and the asset
+  · pass.                                                                                                             
+  ▎ SEO redirects map            ······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○····· Oct 14 +14d
+  · Build the 301 map from the old URL scheme and submit the new sitemap after cut-over.                              
+ ↳ waits on open work · ● progress · ◆ committed due · ╌ task reach · ─ project span                                  
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      ===== PRES-A-80x24 =====
+◆ PRESENT · Website Redesign — the gantt          ▲2 past due · 5 open · 1 done 
+▌ WEBSITE REDESIGN     ◂───────────╎───────────────────◆···┆··········    Oct 10
+▌ REVIEW · 1 task───────────────────────────────────────────────────────────────
+  ▎ Build component l… ◂▬╌╌╌╌╌◕┆···╎·········┆·············┆··········       ▲3d
+  · Design tokens are frozen. Build buttons, inputs and cards from the approved 
+  · mockups and publish the storybook before review.                            
+▌ DOING · 1 task────────────────────────────────────────────────────────────────
+  ▎ Fix checkout 500 … ▬╌╌╌╌╌╌╌╌◑··╎·········┆·············┆··········       ▲2d
+  · The 500 is a missing tax-rate row for new regions. Roll back the last deploy
+  · if the fix is not green by end of day.                                      
+▌ NEXT · 1 task─────────────────────────────────────────────────────────────────
+  ▎ Optimize image as…↳········┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········     Oct 6
+  · Convert hero images to AVIF and lazy-load below the fold. Target a homepage 
+  · under 1.5 MB.                                                               
+▌ BACKLOG · 2 tasks─────────────────────────────────────────────────────────────
+  ▎ Launch new homepa…↳········┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆··········    Oct 10
+  · Feature-flag the cut-over, set DNS TTL to 300, and keep the rollback doc    
+  · ready. Waits on the library and the asset pass.                             
+  ▎ SEO redirects map  ········┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○·····    Oct 14
+  · Build the 301 map from the old URL scheme and submit the new sitemap after  
+  · cut-over.
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e/out" && echo "===== PRES-B-118x30 =====" && cat PRES-B-118x30.txt && echo "===== PRES-B-80x24 =====" && cat PRES-B-80x24.txt
+===== PRES-B-118x30 =====
+◆ PRESENT · Website Redesign — the brief                                                ▲2 past due · 5 open · 1 done 
+▌ Website Redesign  due Oct 10  5 open  1 done  ▲2 past due                                                           
+                                                                                                                      
+▌ Build component library                                                                        Review · normal · ▲3d
+   Design tokens are frozen. Build buttons, inputs and cards from the approved mockups and publish the storybook      
+   before review.                                                                                                     
+   ↗ https://design-system.example.com/tokens                                                                         
+                                                                                                                      
+▌ Fix checkout 500 error                                                                            Doing · high · ▲2d
+   The 500 is a missing tax-rate row for new regions. Roll back the last deploy if the fix is not green by end of day.
+   ↗ https://status.example.com/incident/4821                                                                         
+                                                                                                                      
+▌ Optimize image assets                                                                             Next · low · in 6d
+   Convert hero images to AVIF and lazy-load below the fold. Target a homepage under 1.5 MB.                          
+                                                                                                                      
+▌ Launch new homepage                                                                          Backlog · high · in 10d
+   Feature-flag the cut-over, set DNS TTL to 300, and keep the rollback doc ready. Waits on the library and the asset 
+   pass.                                                                                                              
+                                                                                                                      
+▌ SEO redirects map                                                                          Backlog · normal · in 14d
+   Build the 301 map from the old URL scheme and submit the new sitemap after cut-over.                               
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      ===== PRES-B-80x24 =====
+◆ PRESENT · Website Redesign — the brief          ▲2 past due · 5 open · 1 done 
+▌ Website Redesign  due Oct 10  5 open  1 done  ▲2 past due                     
+                                                                                
+▌ Build component library                                  Review · normal · ▲3d
+   Design tokens are frozen. Build buttons, inputs and cards from the approved  
+   mockups and publish the storybook before review.                             
+   ↗ https://design-system.example.com/tokens                                   
+                                                                                
+▌ Fix checkout 500 error                                      Doing · high · ▲2d
+   The 500 is a missing tax-rate row for new regions. Roll back the last deploy 
+   if the fix is not green by end of day.                                       
+   ↗ https://status.example.com/incident/4821                                   
+                                                                                
+▌ Optimize image assets                                       Next · low · in 6d
+   Convert hero images to AVIF and lazy-load below the fold. Target a homepage  
+   under 1.5 MB.                                                                
+                                                                                
+▌ Launch new homepage                                    Backlog · high · in 10d
+   Feature-flag the cut-over, set DNS TTL to 300, and keep the rollback doc     
+   ready. Waits on the library and the asset pass.                              
+                                                                                
+▌ SEO redirects map                                    Backlog · normal · in 14d
+   Build the 301 map from the old URL scheme and submit the new sitemap after   
+   cut-over.
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e/out" && echo "===== PRES-C-118x30 =====" && cat PRES-C-118x30.txt && echo "===== PRES-C-80x24 =====" && cat PRES-C-80x24.txt
+===== PRES-C-118x30 =====
+◆ PRESENT · Website Redesign — hybrid                                                            5 open · ▲2 past due 
+▌ WEBSITE REDESIGN               ●─────────────────────────────────────╎───────────────────◆···┆·········· Oct 10 +10d
+  ▎ Build component library ↗    ◂▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◕┆···╎·········┆·············┆··········  Sep 27 ▲3d
+  ▎ Fix checkout 500 error ↗     ······┆·············┆·····⟦╌╌╌╌╌╌╌╌⟧··╎·········┆·············┆··········  Sep 28 ▲2d
+  ▎ Optimize image assets       ↳······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········   Oct 6 +6d
+  ▎ Launch new homepage         ↳······┆·············┆·············┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆·········· Oct 10 +10d
+  ▎ SEO redirects map            ······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○····· Oct 14 +14d
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   Build component library ↗                                                                                       ▲3d
+  ⟦Fix checkout 500 error ↗                                                                             ⟧          ▲2d
+  · The 500 is a missing tax-rate row for new regions. Roll back the last deploy if the fix is not green by end of    
+  · day.                                                                                                              
+   Optimize image assets                                                                                         in 6d
+   Launch new homepage                                                                                          in 10d
+   SEO redirects map                                                                                            in 14d
+ ←→  move the cursor · the cursor'd task's notes expand                                                               
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      ===== PRES-C-80x24 =====
+◆ PRESENT · Website Redesign — hybrid                      5 open · ▲2 past due 
+▌ WEBSITE REDESIGN     ◂───────────╎───────────────────◆···┆··········    Oct 10
+  ▎ Build component l… ◂▬╌╌╌╌╌◕┆···╎·········┆·············┆··········       ▲3d
+  ▎ Fix checkout 500 … ⟦╌╌╌╌╌╌╌╌⟧··╎·········┆·············┆··········       ▲2d
+  ▎ Optimize image as…↳········┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········     Oct 6
+  ▎ Launch new homepa…↳········┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆··········    Oct 10
+  ▎ SEO redirects map  ········┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○·····    Oct 14
+────────────────────────────────────────────────────────────────────────────────
+   Build component library ↗                                                 ▲3d
+  ⟦Fix checkout 500 error ↗                                         ⟧        ▲2d
+  · The 500 is a missing tax-rate row for new regions. Roll back the last deploy
+  · if the fix is not green by end of day.                                      
+   Optimize image assets                                                   in 6d
+   Launch new homepage                                                    in 10d
+   SEO redirects map                                                      in 14d
+ ←→  move the cursor · the cursor'd task's notes expand
+[0m
+[0m← [0mEdit prototypes/present_e/variants.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+@@ -139,9 +139,9 @@
+ for x, (glyph, tone) in enumerate(cells):
+     if tone == "gap":
+         m = c(" ", "dim")
+     elif glyph != " ":
+-        m = c(glyph, "bright", bold=True) if tone == "crit" else c(glyph, tone)
++        m = c(glyph, "bright", bold=True) if tone in ("crit", "accent") else c(glyph, tone)
+     elif x == ax.tc:
+         m = c(RULE, "bright", bold=True)
+     else:
+         m = c(FIELD_WEEK if x in guides else LATTICE, "ash" if x < ax.tc else "dim")
+
+[0m
+[0m← [0mEdit prototypes/present_e/variants.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+@@ -218,13 +218,12 @@
+ if cursor:
+     lo = next((x for x, (g, _) in enumerate(cells) if g != " "), None)
+     hi = next((x for x in range(len(cells) - 1, -1, -1) if cells[x][0] != " "), None)
+     if lo is not None and hi is not None:
+-        if lo == hi:
+-            cells[lo] = ("⟦", "accent")
+-        else:
+-            cells[lo] = ("⟦", "accent")
+-            cells[hi] = ("⟧", "accent")
++        for x in range(lo, hi + 1):          # the echo `⟦━⟧`: heavy fill in focus
++            cells[x] = ("━", "accent")
++        cells[lo] = ("⟦", "accent")
++        cells[hi] = ("⟧", "accent")
+ label = "  " + c("▎", p.hue) + " " + _title(task, p.label_w - 4)
+ gut = gantt_dep_mark(task, board, p.chain)
+ chip = " " + _big_chip(task.due_date, p.today, p.chip_w, p.wide)
+ return _pad(label + gut + _present_field(cells, p.ax) + chip, p.width)
+
+[0m
+[0m← [0mEdit prototypes/present_e/variants.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\variants.py
+@@ -359,12 +359,14 @@
+     d = parse_iso(t.due_date)
+     due_label, due_tone = _due_text(d, p.today)
+     due_w = 11 if p.wide else 9
+     due = c(fit(due_label, due_w, "right"), due_tone)
+-    title_w = width - 6 - due_w
+-    open_, close = (c("⟦", "accent", bold=True), c("⟧", "accent", bold=True)) if cursor else (" ", " ")
++    max_title = width - 6 - due_w
+     tone = "accent" if cursor else "bright"
+-    return _pad("  " + open_ + _title(t, title_w, tone, bold=True) + close + "  " + due, width)
++    txt = clip(t.title, max_title)
++    gap = max_title - vis(txt)
++    open_, close = (c("⟦", "accent", bold=True), c("⟧", "accent", bold=True)) if cursor else (" ", " ")
++    return _pad("  " + open_ + c(escape(txt), tone, bold=True) + close + " " * gap + "  " + due, width)
+ 
+ 
+ def render_presc(board, cursor_id, today, width, height, line_map=None):
+     proj = _project(board)
+
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python prototypes/present_e/build.py
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-A-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-A-80x24.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-B-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-B-80x24.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-C-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-C-80x24.svg
+ok
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e/out" && sed -n '3,16p' PRES-C-118x30.txt
+▎ Build component library ↗    ◂▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◕┆···╎·········┆·············┆··········  Sep 27 ▲3d
+  ▎ Fix checkout 500 error ↗     ······┆·············┆·····⟦━━━━━━━━⟧··╎·········┆·············┆··········  Sep 28 ▲2d
+  ▎ Optimize image assets       ↳······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········   Oct 6 +6d
+  ▎ Launch new homepage         ↳······┆·············┆·············┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆·········· Oct 10 +10d
+  ▎ SEO redirects map            ······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○····· Oct 14 +14d
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   Build component library                                                                                         ▲3d
+  ⟦Fix checkout 500 error⟧                                                                                         ▲2d
+  · The 500 is a missing tax-rate row for new regions. Roll back the last deploy if the fix is not green by end of    
+  · day.                                                                                                              
+   Optimize image assets                                                                                         in 6d
+   Launch new homepage                                                                                          in 10d
+   SEO redirects map                                                                                            in 14d
+ ←→  move the cursor · the cursor'd task's notes expand
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e/out" && ls -la *.svg *.txt | grep PRES && echo "--- svg head ---" && head -c 300 PRES-C-118x30.svg && echo "" && echo "--- txt line counts ---" && wc -l PRES-A-118x30.txt PRES-A-80x24.txt PRES-B-118x30.txt PRES-B-80x24.txt PRES-C-118x30.txt PRES-C-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 27193 Oct  7 12:01 PRES-A-118x30.svg
+-rw-r--r-- 1 jjgh8 197609  5096 Oct  7 12:01 PRES-A-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 22917 Oct  7 12:01 PRES-A-80x24.svg
+-rw-r--r-- 1 jjgh8 197609  2936 Oct  7 12:01 PRES-A-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 21255 Oct  7 12:01 PRES-B-118x30.svg
+-rw-r--r-- 1 jjgh8 197609  3639 Oct  7 12:01 PRES-B-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 18890 Oct  7 12:01 PRES-B-80x24.svg
+-rw-r--r-- 1 jjgh8 197609  2007 Oct  7 12:01 PRES-B-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 22128 Oct  7 12:01 PRES-C-118x30.svg
+-rw-r--r-- 1 jjgh8 197609  4502 Oct  7 12:01 PRES-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 19625 Oct  7 12:01 PRES-C-80x24.svg
+-rw-r--r-- 1 jjgh8 197609  2582 Oct  7 12:01 PRES-C-80x24.txt
+--- svg head ---
+<svg class="rich-terminal" viewBox="0 0 1470 782.0" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generated with Rich https://www.textualize.io -->
+    <style>
+
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Regular"),
+                url("https://cdnjs.cloudfl
+--- txt line counts ---
+   29 PRES-A-118x30.txt
+   23 PRES-A-80x24.txt
+   29 PRES-B-118x30.txt
+   23 PRES-B-80x24.txt
+   29 PRES-C-118x30.txt
+   23 PRES-C-80x24.txt
+  156 total
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python prototypes/present_e/build.py && echo "--- git status (should be no mutations by me; untracked present_e/out only) ---" && git status --short prototypes/present_e/ 2>/dev/null | head
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-A-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-A-80x24.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-B-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-B-80x24.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-C-118x30.svg
+C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\prototypes\present_e\out\PRES-C-80x24.svg
+ok
+--- git status (should be no mutations by me; untracked present_e/out only) ---
+?? prototypes/present_e/
+[0m
+Done. All three variants built, rendered at both sizes, and exported to `.txt` + `.svg` in this worktree. No git mutations.
+
+## REPORT BACK
+
+**1. Variant list** (in `prototypes/present_e/variants.py`)
+- **PRES-A · "the gantt, large"** — the project's gantt re-laid for a room: bigger due chips, task notes under each row, one section per phase (nearest-to-done first), project span on top.
+- **PRES-B · "the brief"** — a document form: project header (name/due/counts), then one block per open task (title, phase · priority · due, notes wrapped, links line).
+- **PRES-C · "the hybrid"** — top half the gantt field, bottom half brief one-liners for the tasks on screen, an accent `⟦━⟧` cursor (keys ←→ move) whose task's notes expand.
+
+**2. Frame paths** (all under `prototypes/present_e/out/`)
+```
+PRES-A-118x30.txt/.svg   PRES-A-80x24.txt/.svg
+PRES-B-118x30.txt/.svg   PRES-B-80x24.txt/.svg
+PRES-C-118x30.txt/.svg   PRES-C-80x24.txt/.svg
+```
+
+**3. Design decisions — what a presentation needs that the dashboard does not**
+- **PRES-A**: the shipped gantt is built to *fit a whole board* (folding, counts). A presentation reads ONE project slowly, so it spends rows on the notes ("texto de las tareas") and larger labels; the due chip is a room-size `date + distance` (`Oct 10 +10d`), not a 7-cell `Oct 10`. Per-phase sections tell the story Backlog→Done.
+- **PRES-B**: there is no *document* view in the dashboard — the `R` report is HTML, not a frame. This is the on-screen/txt brief: the operator's verbatim ask for "las tareas y el texto de las tareas" as a readable block, links included.
+- **PRES-C**: the dashboard cursor navigates but never *expands* content. Here the `⟦━⟧` cursor (the shipped selection echo) joins the visual half and the text half — move it and the cursor'd task's notes unfold. This is the "present it live" mode.
+
+**4. Export path proof** — `build.py` uses the kg house pipeline (`baseline.svg`): `Console(record=True)` → `export_text` writes the `.txt`, `save_svg` writes the `.svg`. The VERIFY command runs clean, prints the 6 frame paths, and asserts every line is exactly `W` cells over exactly `H` rows (width-1 glyphs only; every untrusted string escaped+clipped — S1). Accent is focus-only: the only teal on any frame is the PRES-C cursor; the today rule is `bright`, not accent (a deliberate budget override of the shipped `_gantt_field`).
+
+**5. Recommendation + one question**
+Recommend **PRES-C** as the shipping direction: it is the only one that unifies the operator's three asks (gantt + tasks + task text) in one surface, and its cursor is the natural seam for "present one task at a time" live or exported.
+
+**Question for the verdict sheet:** *"Should the presentation mode be one interactive surface (PRES-C: gantt + brief with a `⟦━⟧` cursor), or a static export pairing PRES-A (the room gantt) with PRES-B (the document brief) as two separate outputs?"*

@@ -17,6 +17,8 @@ import copy
 import math
 import os
 import re
+import shutil
+import subprocess
 import textwrap
 import unicodedata
 from datetime import date, datetime, timedelta
@@ -31,9 +33,9 @@ from rich.table import Table
 from rich.text import Text
 
 from . import history
-from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Task, critical_chain,
-                     days_in_phase, link_conflicts, link_marks, open_predecessors,
-                     parse_iso, unblocks_count)
+from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Project, Task,
+                     critical_chain, days_in_phase, link_conflicts, link_marks,
+                     open_predecessors, parse_iso, unblocks_count)
 from .team_sync import TeamState, sync_tone
 from .wave import DOT_ROWS, Bitmap, load_curve
 
@@ -627,8 +629,21 @@ def date_chip(task: Task, today: date, board: Board) -> tuple[str, str]:
 # frame helpers (all take the OUTER width `w`)
 # ---------------------------------------------------------------------------
 def _strip(markup: str) -> str:
-    import re
-    return re.sub(r"\[/?[^\]]*\]", "", markup)
+    r"""The visible text of a markup row — rich's own parse, never a regex.
+
+    A regex cannot tell a style tag from a bracket the user printed: `_literal`
+    (the hostile-text exact-print escape) emits runs rich prints as literal
+    `[bold]`, and the old `\[/?[^\]]*\]` deletion ate those as if they were
+    tags — undercounting the row, so `_pad` over-padded and the frame grew
+    past its width while `_present_finish`'s assert agreed with the wrong
+    number (found by TC-1003, batch 2026-10-07-batch-04). `emoji=False` is
+    load-bearing like at `to_text`: with it on, rich rewrites a `:bug:`
+    shortcode to a 2-cell glyph inside the measure while the painters priced
+    it as 5 literal cells (the test_cells width law)."""
+    try:
+        return Text.from_markup(markup, emoji=False).plain
+    except Exception:
+        return markup
 
 
 def header(title: str, right: str, w: int, tone: str = "bright") -> str:
@@ -5837,6 +5852,303 @@ def _chainmap_nav(board: Board, show_archived: bool) -> list[list[str]]:
         for t in ts:
             cols[depth[t.id]].append(t.id)
     return cols
+
+
+# ---------------------------------------------------------------------------
+# presentation (PRES-C): the hybrid — gantt field on top, brief blocks below
+# ---------------------------------------------------------------------------
+# `R` opens the presentation of the selected task's project (the focused project
+# when set). It is read-only: it draws the project, it never writes the board.
+# The layout is byte-faithful to the PRES-C oracle frames (prototypes/present_e),
+# which is why the composition here matches the prototype's renderer exactly: the
+# same label/chip/field split, the same `⟦━⟧` cursor, the same budget (accent =
+# the cursor only; today = bright). S1: every untrusted string is escaped and
+# clipped before it enters markup; every row is exactly `width` cells.
+
+class _PresentGeo(NamedTuple):
+    width: int
+    label_w: int
+    chip_w: int
+    field_w: int
+    ax: GanttAxis
+    chain: set
+    today: date
+    wide: bool
+    hue: str
+
+
+def present_project_id(board: Board, selected_id: str | None,
+                       focused_id: str | None) -> str | None:
+    """The project the presentation shows: the selected task's project, else the
+    focused one, else the first visible project. None only when the board has no
+    visible project at all."""
+    task = board.task_by_id(selected_id)
+    if task is not None and task.project_id is not None:
+        return task.project_id
+    if focused_id is not None:
+        return focused_id
+    projects = board.visible_projects(False)
+    return projects[0].id if projects else None
+
+
+def present_tasks(board: Board, project_id: str | None) -> tuple[list[Task], list[Task]]:
+    """(open tasks by due, all tasks) of one project in gantt order — the same
+    split the gantt lists: work still open first, finished work at the tail."""
+    tasks = gantt_tasks(board, board.visible_tasks(False), project_id)
+    return [t for t in tasks if not board.is_done(t)], tasks
+
+
+def _present_cols(width: int, wide: bool) -> tuple[int, int, int]:
+    """label + gutter + field + space + chip == width (room-sized chips)."""
+    label_w = 32 if wide else 22
+    chip_w = 11 if wide else 9
+    field_w = width - label_w - 1 - 1 - chip_w
+    return label_w, chip_w, field_w
+
+
+def _present_axis(board: Board, proj: Project, open_t: list[Task],
+                  field_w: int, today: date) -> GanttAxis:
+    dues = [d for t in open_t if (d := parse_iso(t.due_date))]
+    starts = [d for t in open_t if (d := parse_iso(t.start_date))]
+    pdue = parse_iso(proj.due_date)
+    margin = timedelta(days=2)
+    lo = min(dues + [today]) - margin
+    hi = max(dues + ([pdue] if pdue else []) + [today]) + margin
+    ctx = min(starts + [lo])
+    return gantt_axis(field_w, today, lo, hi, ctx)
+
+
+def _present_field(cells: list[tuple[str, str]], ax: GanttAxis) -> str:
+    """Cells to markup over the field's own ground. The ONE change from the
+    shipped `_gantt_field`: the today rule is `bright` bold, NOT accent — the
+    C-2b budget reserves accent for the cursor alone."""
+    guides = ax.guides()
+    out = []
+    for x, (glyph, tone) in enumerate(cells):
+        if tone == "gap":
+            m = c(" ", "dim")
+        elif glyph != " ":
+            m = c(glyph, "bright", bold=True) if tone in ("crit", "accent") else c(glyph, tone)
+        elif x == ax.tc:
+            m = c(RULE, "bright", bold=True)
+        else:
+            m = c(FIELD_WEEK if x in guides else LATTICE, "ash" if x < ax.tc else "dim")
+        out.append(m)
+    return "".join(out)
+
+
+def _present_chip(due_iso: str | None, today: date, width: int, wide: bool) -> str:
+    """A room-sized due chip: the date AND the distance (`Oct 10 +10d`)."""
+    d = parse_iso(due_iso)
+    if width <= 0:
+        return ""
+    if d is None:
+        lab, tone = "no due", "dim"
+    elif d < today:
+        n = (today - d).days
+        lab, tone = (f"{_md(d)} ▲{n}d" if wide else f"▲{n}d"), "over"
+    elif d == today:
+        lab, tone = "due today", "soon"
+    else:
+        n = (d - today).days
+        lab, tone = (f"{_md(d)} +{n}d" if wide else _md(d)), "mut"
+    return c(fit(lab, width, "right"), tone)
+
+
+def _present_due(d: date | None, today: date) -> tuple[str, str]:
+    if d is None:
+        return "no due", "dim"
+    n = (d - today).days
+    if n < 0:
+        return f"▲{-n}d", "over"
+    if n == 0:
+        return "today", "soon"
+    return f"in {n}d", "mut"
+
+
+def _present_title(task: Task, width: int) -> str:
+    return c(title_markup(task, max(0, width), False), "bright", bold=True)
+
+
+def _present_note_lines(notes: str, note_w: int, max_lines: int) -> list[str]:
+    notes = (notes or "").strip()
+    if not notes:
+        return []
+    wrapped = textwrap.wrap(notes, note_w) or [""]
+    if len(wrapped) > max_lines:
+        wrapped = wrapped[:max_lines]
+        wrapped[-1] = clip(wrapped[-1], note_w - 1) + "…"
+    return wrapped
+
+
+def _present_note_row(line: str, width: int, note_w: int) -> str:
+    body = c("· ", "dim") + c(escape(clip(line, note_w)), "mut")
+    return _pad("  " + body, width)
+
+
+def _present_span_row(proj: Project, board: Board, p: _PresentGeo) -> str:
+    progress = board.project_progress(proj.id)
+    cells = _gantt_span(proj, p.ax, progress, 0)
+    label = c("▌ ", p.hue) + c(escape(fit(proj.name.upper(), p.label_w - 2)), p.hue, bold=True)
+    chip = " " + _present_chip(proj.due_date, p.today, p.chip_w, p.wide)
+    return _pad(label + " " + _present_field(cells, p.ax) + chip, p.width)
+
+
+def _present_task_row(task: Task, board: Board, p: _PresentGeo, cursor: bool = False) -> str:
+    cells = _gantt_bar(task, board, p.ax, p.chain, 0)
+    if cursor:
+        lo = next((x for x, (g, _) in enumerate(cells) if g != " "), None)
+        hi = next((x for x in range(len(cells) - 1, -1, -1) if cells[x][0] != " "), None)
+        if lo is not None and hi is not None:
+            for x in range(lo, hi + 1):          # the echo `⟦━⟧`: heavy fill in focus
+                cells[x] = ("━", "accent")
+            cells[lo] = ("⟦", "accent")
+            cells[hi] = ("⟧", "accent")
+    label = "  " + c("▎", p.hue) + " " + _present_title(task, p.label_w - 4)
+    gut = gantt_dep_mark(task, board, p.chain)
+    chip = " " + _present_chip(task.due_date, p.today, p.chip_w, p.wide)
+    return _pad(label + gut + _present_field(cells, p.ax) + chip, p.width)
+
+
+def _present_brief(task: Task, p: _PresentGeo, cursor: bool, width: int) -> str:
+    d = parse_iso(task.due_date)
+    due_label, due_tone = _present_due(d, p.today)
+    due_w = 11 if p.wide else 9
+    due = c(fit(due_label, due_w, "right"), due_tone)
+    max_title = width - 6 - due_w
+    tone = "accent" if cursor else "bright"
+    txt = clip(task.title, max_title)
+    gap = max_title - vis(txt)
+    open_, close = (c("⟦", "accent", bold=True), c("⟧", "accent", bold=True)) if cursor else (" ", " ")
+    return _pad("  " + open_ + c(escape(txt), tone, bold=True) + close + " " * gap
+                + "  " + due, width)
+
+
+def _present_counts(open_t: list[Task], tasks: list[Task], today: date) -> tuple[int, int, int]:
+    late = sum(1 for t in open_t if (d := parse_iso(t.due_date)) and d < today)
+    return late, len(open_t), len(tasks) - len(open_t)
+
+
+def _present_finish(lines: list[str], height: int, width: int) -> Text:
+    if len(lines) > height:
+        over = len(lines) - height
+        lines = lines[:height - 1]
+        lines.append(_pad(c(escape(fit(f"  +{over} more rows not shown", width)), "dim"), width))
+    lines = list(lines)
+    if len(lines) < height:
+        lines += [" " * width] * (height - len(lines))
+    for ln in lines:
+        assert vis(_strip(ln)) == width, (vis(_strip(ln)), width, _strip(ln))
+    return to_text(lines, height, width)
+
+
+def render_present(board: Board, project_id: str | None, cursor_id: str | None,
+                   today: date, width: int, height: int) -> Text:
+    """The PRES-C presentation frame: the project's gantt field on top, the brief
+    one-liners below, a `⟦━⟧` cursor across the brief blocks (its task's notes
+    expand). Byte-faithful to the PRES-C oracle at 118x30 and 80x24."""
+    proj = board.project_by_id(project_id)
+    if proj is None:
+        projects = board.visible_projects(False)
+        if not projects:
+            return to_text([_pad(c(escape("no project to present"), "dim"), width)], height, width)
+        proj = projects[0]
+    open_t, tasks = present_tasks(board, project_id)
+    late, open_n, done = _present_counts(open_t, tasks, today)
+    wide = width >= 100
+    label_w, chip_w, field_w = _present_cols(width, wide)
+    ax = _present_axis(board, proj, open_t, field_w, today)
+    chain = set(critical_chain(board))
+    p = _PresentGeo(width, label_w, chip_w, field_w, ax, chain, today, wide, proj.color)
+
+    if open_t:
+        wanted = board.task_by_id(cursor_id)
+        cursor = wanted if wanted in open_t else open_t[0]
+    else:
+        cursor = None
+
+    title = (c("◆ PRESENT", "bright", bold=True) + c(" · ", "dim")
+             + c(escape(proj.name), proj.color, bold=True) + c(" — hybrid", "mut"))
+    right = c(f"{open_n} open", "mut") + c(" · ", "dim") \
+        + (c(f"▲{late} past due", "over", bold=True) if late else c(f"{done} done", "done"))
+    lines = [header(title, right, width)]
+
+    lines.append(_present_span_row(proj, board, p))
+    for t in open_t:
+        lines.append(_present_task_row(t, board, p, cursor=cursor is not None and t.id == cursor.id))
+    lines.append(_pad(c("─" * width, "frame"), width))
+
+    for t in open_t:
+        lines.append(_present_brief(t, p, cursor is not None and t.id == cursor.id, width))
+        if cursor is not None and t.id == cursor.id:
+            note_w = width - 4
+            for ln in _present_note_lines(t.notes, note_w, 3):
+                lines.append(_present_note_row(ln, width, note_w))
+
+    keys = " " + c("←", "bright", bold=True) + c("→", "bright", bold=True) \
+        + c("  move the cursor", "dim") + c(" · ", "dim") \
+        + c("the cursor'd task's notes expand", "dim")
+    lines.append(_pad(keys, width))
+    return _present_finish(lines, height, width)
+
+
+def present_paths(board: Board, project_name: str | None,
+                  today: date | None = None) -> tuple[Path, Path]:
+    """The SVG and PNG export destinations, beside the board in the same
+    `reports/` folder the HTML report used — the shipped destination convention."""
+    today = today or date.today()
+    slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in (project_name or "board"))
+    slug = slug.strip("-")[:40] or "board"
+    base = Path(board.path).parent / "reports" / f"present-{slug}-{today.isoformat()}"
+    return base.with_suffix(".svg"), base.with_suffix(".png")
+
+
+def save_present_svg(text: Text, path: Path, width: int, height: int) -> Path:
+    """The rich export path the report's SVG used: the frame as a standalone SVG.
+    The console writes to devnull so the width-1 glyphs (◆ ╎ ┆) never hit the
+    Windows console's cp1252 encoder on their way to the file."""
+    con = Console(width=width + 2, height=height + 4, force_terminal=True,
+                  color_system="truecolor", record=True,
+                  file=open(os.devnull, "w", encoding="utf-8"))
+    con.print(text, end="")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    con.save_svg(str(path), title="taskboard · presentation")
+    return path
+
+
+def _find_msedge() -> str | None:
+    """The headless Edge binary, from the standard install locations then PATH.
+    None when Edge is not installed — the PNG cannot be rasterised without it."""
+    pfx = os.environ.get("ProgramFiles(x86)") or r"C:\Program Files (x86)"
+    pf = os.environ.get("ProgramFiles") or r"C:\Program Files"
+    for base in (pfx, pf):
+        cand = Path(base) / "Microsoft" / "Edge" / "Application" / "msedge.exe"
+        if cand.is_file():
+            return str(cand)
+    return shutil.which("msedge") or shutil.which("microsoft-edge")
+
+
+def save_present_png(svg_path: Path, png_path: Path,
+                     width: int, height: int) -> Path | None:
+    """Rasterise the SVG to a PNG with headless Edge. The terminal's own
+    screenshot is SVG-only, so the PNG is Edge's render of the same file. None
+    when Edge is absent or the render fails — the SVG is already written and the
+    caller says the PNG needs Edge; it never crashes the export."""
+    exe = _find_msedge()
+    if exe is None:
+        return None
+    png_path.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [exe, "--headless=new", "--disable-gpu",
+           f"--screenshot={png_path}",
+           f"--window-size={width * 10},{height * 20}",
+           svg_path.as_uri()]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, timeout=30)
+    except (subprocess.TimeoutExpired, OSError):
+        return None
+    if proc.returncode != 0 or not png_path.exists():
+        return None
+    return png_path
 
 
 # ---------------------------------------------------------------------------

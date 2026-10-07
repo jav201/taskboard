@@ -1,0 +1,2839 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-04/evidence/inc001-brief.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-04/01-requirements.md
+[0m
+[0m$ [0mls -la "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e"
+total 1050
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 12:17 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 ..
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 12:17 .dev-flow
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 .fast-dev-flow
+-rw-r--r-- 1 jjgh8 197609     65 Oct  7 11:48 .git
+-rw-r--r-- 1 jjgh8 197609    538 Oct  7 12:17 .gitattributes
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 .githooks
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 .github
+-rw-r--r-- 1 jjgh8 197609   1166 Oct  7 11:48 .gitignore
+-rw-r--r-- 1 jjgh8 197609  12974 Oct  7 11:48 BACKGROUND.md
+-rw-r--r-- 1 jjgh8 197609  10390 Oct  7 11:48 HANDOFF.md
+-rw-r--r-- 1 jjgh8 197609 754282 Oct  7 11:48 PENDING.md
+-rw-r--r-- 1 jjgh8 197609  17524 Oct  7 11:48 README.md
+-rw-r--r-- 1 jjgh8 197609  90545 Oct  7 11:48 REQUIREMENTS.md
+-rw-r--r-- 1 jjgh8 197609   1758 Oct  7 11:48 RUN.md
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 _prototypes
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 docs
+-rw-r--r-- 1 jjgh8 197609  11047 Oct  7 11:48 handoff-batch-10.md
+-rw-r--r-- 1 jjgh8 197609   7772 Oct  7 11:48 handoff-batch-11-team-sync.md
+-rw-r--r-- 1 jjgh8 197609   7407 Oct  7 11:48 handoff-batch-12-setup-help.md
+-rw-r--r-- 1 jjgh8 197609   8161 Oct  7 11:48 handoff-lanes-grid.md
+-rw-r--r-- 1 jjgh8 197609  10982 Oct  7 11:48 handoff-next-level.md
+-rw-r--r-- 1 jjgh8 197609   4332 Oct  7 11:48 handoff-three-prototypes.md
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:53 prototypes
+-rw-r--r-- 1 jjgh8 197609   1105 Oct  7 11:48 pyproject.toml
+-rw-r--r-- 1 jjgh8 197609   1043 Oct  7 11:48 requirements.txt
+-rw-r--r-- 1 jjgh8 197609   6200 Oct  7 12:17 rollover_batche.py
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:56 taskboard
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 tests
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 tools
+-rw-r--r-- 1 jjgh8 197609   2786 Oct  7 11:48 wezterm.lua
+[0m
+[0m→ [0mRead prototypes/present_e/build.py
+[0m
+[0m$ [0mls -la "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e" "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e/out" "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/taskboard" "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/tests"
+C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e:
+total 241
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 12:17 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 ..
+-rw-r--r-- 1 jjgh8 197609  3485 Oct  7 11:53 BRIEF.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 12:01 __pycache__
+-rw-r--r-- 1 jjgh8 197609  1888 Oct  7 12:00 build.py
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 12:00 out
+-rw-r--r-- 1 jjgh8 197609 28721 Oct  7 11:52 run.log
+-rw-r--r-- 1 jjgh8 197609 64178 Oct  7 12:02 run2.log
+-rw-r--r-- 1 jjgh8 197609 16771 Oct  7 12:01 variants.py
+-rw-r--r-- 1 jjgh8 197609 94857 Oct  7 12:10 veredicto-present.html
+-rw-r--r-- 1 jjgh8 197609   505 Oct  7 12:17 veredicto-present.json
+
+C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/prototypes/present_e/out:
+total 180
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 12:00 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 12:17 ..
+-rw-r--r-- 1 jjgh8 197609 27193 Oct  7 12:01 PRES-A-118x30.svg
+-rw-r--r-- 1 jjgh8 197609  5096 Oct  7 12:01 PRES-A-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 22917 Oct  7 12:01 PRES-A-80x24.svg
+-rw-r--r-- 1 jjgh8 197609  2936 Oct  7 12:01 PRES-A-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 21255 Oct  7 12:01 PRES-B-118x30.svg
+-rw-r--r-- 1 jjgh8 197609  3639 Oct  7 12:01 PRES-B-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 18890 Oct  7 12:01 PRES-B-80x24.svg
+-rw-r--r-- 1 jjgh8 197609  2007 Oct  7 12:01 PRES-B-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 22128 Oct  7 12:01 PRES-C-118x30.svg
+-rw-r--r-- 1 jjgh8 197609  4502 Oct  7 12:01 PRES-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 19625 Oct  7 12:01 PRES-C-80x24.svg
+-rw-r--r-- 1 jjgh8 197609  2582 Oct  7 12:01 PRES-C-80x24.txt
+
+C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/taskboard:
+total 701
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:56 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 12:17 ..
+-rw-r--r-- 1 jjgh8 197609    107 Oct  7 11:48 __init__.py
+-rw-r--r-- 1 jjgh8 197609   1595 Oct  7 11:48 __main__.py
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:56 __pycache__
+-rw-r--r-- 1 jjgh8 197609 105988 Oct  7 11:48 app.py
+-rw-r--r-- 1 jjgh8 197609   3284 Oct  7 11:48 history.py
+-rw-r--r-- 1 jjgh8 197609  14323 Oct  7 11:48 keymap.py
+-rw-r--r-- 1 jjgh8 197609  90077 Oct  7 11:48 modals.py
+-rw-r--r-- 1 jjgh8 197609  99063 Oct  7 11:48 models.py
+-rw-r--r-- 1 jjgh8 197609  13151 Oct  7 11:48 report.py
+-rw-r--r-- 1 jjgh8 197609   2534 Oct  7 11:48 ribbon.py
+-rw-r--r-- 1 jjgh8 197609   7133 Oct  7 11:48 taskboard.tcss
+-rw-r--r-- 1 jjgh8 197609  17004 Oct  7 11:48 team_sync.py
+-rw-r--r-- 1 jjgh8 197609 318536 Oct  7 11:48 views.py
+-rw-r--r-- 1 jjgh8 197609   6302 Oct  7 11:48 wave.py
+
+C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e/tests:
+total 1552
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 12:17 ..
+-rw-r--r-- 1 jjgh8 197609   1116 Oct  7 11:48 conftest.py
+-rw-r--r-- 1 jjgh8 197609  13436 Oct  7 11:48 kg_board.py
+-rw-r--r-- 1 jjgh8 197609   7417 Oct  7 11:48 test_agenda.py
+-rw-r--r-- 1 jjgh8 197609 212037 Oct  7 11:48 test_app.py
+-rw-r--r-- 1 jjgh8 197609  34644 Oct  7 11:48 test_archive.py
+-rw-r--r-- 1 jjgh8 197609  13601 Oct  7 11:48 test_cascade.py
+-rw-r--r-- 1 jjgh8 197609  34624 Oct  7 11:48 test_cascade_app.py
+-rw-r--r-- 1 jjgh8 197609  17111 Oct  7 11:48 test_cells.py
+-rw-r--r-- 1 jjgh8 197609   9912 Oct  7 11:48 test_chainmap.py
+-rw-r--r-- 1 jjgh8 197609  13155 Oct  7 11:48 test_chainmap_app.py
+-rw-r--r-- 1 jjgh8 197609   8567 Oct  7 11:48 test_cities.py
+-rw-r--r-- 1 jjgh8 197609  10469 Oct  7 11:48 test_colour_budget.py
+-rw-r--r-- 1 jjgh8 197609  29396 Oct  7 11:48 test_colour_budget_app.py
+-rw-r--r-- 1 jjgh8 197609  20691 Oct  7 11:48 test_control_bytes.py
+-rw-r--r-- 1 jjgh8 197609  13992 Oct  7 11:48 test_dependencies.py
+-rw-r--r-- 1 jjgh8 197609  12249 Oct  7 11:48 test_details_grid.py
+-rw-r--r-- 1 jjgh8 197609  13528 Oct  7 11:48 test_details_links.py
+-rw-r--r-- 1 jjgh8 197609   5487 Oct  7 11:48 test_details_markup.py
+-rw-r--r-- 1 jjgh8 197609  23883 Oct  7 11:48 test_edit_window.py
+-rw-r--r-- 1 jjgh8 197609  12198 Oct  7 11:48 test_emoji_picker.py
+-rw-r--r-- 1 jjgh8 197609  14370 Oct  7 11:48 test_english.py
+-rw-r--r-- 1 jjgh8 197609   9086 Oct  7 11:48 test_field.py
+-rw-r--r-- 1 jjgh8 197609   6791 Oct  7 11:48 test_flow.py
+-rw-r--r-- 1 jjgh8 197609   5073 Oct  7 11:48 test_flow_view.py
+-rw-r--r-- 1 jjgh8 197609  10757 Oct  7 11:48 test_focus.py
+-rw-r--r-- 1 jjgh8 197609  30503 Oct  7 11:48 test_gantt.py
+-rw-r--r-- 1 jjgh8 197609  48988 Oct  7 11:48 test_gantt_board.py
+-rw-r--r-- 1 jjgh8 197609  22925 Oct  7 11:48 test_gantt_link.py
+-rw-r--r-- 1 jjgh8 197609  18528 Oct  7 11:48 test_gantt_milestones.py
+-rw-r--r-- 1 jjgh8 197609  32011 Oct  7 11:48 test_gantt_polish.py
+-rw-r--r-- 1 jjgh8 197609   4064 Oct  7 11:48 test_highlight_segments.py
+-rw-r--r-- 1 jjgh8 197609   5287 Oct  7 11:48 test_history.py
+-rw-r--r-- 1 jjgh8 197609  20850 Oct  7 11:48 test_kanban_milestones.py
+-rw-r--r-- 1 jjgh8 197609  19705 Oct  7 11:48 test_kanban_priority.py
+-rw-r--r-- 1 jjgh8 197609  65767 Oct  7 11:48 test_kanban_readable.py
+-rw-r--r-- 1 jjgh8 197609  21918 Oct  7 11:48 test_keymap.py
+-rw-r--r-- 1 jjgh8 197609   9765 Oct  7 11:48 test_lanes_grid.py
+-rw-r--r-- 1 jjgh8 197609  18264 Oct  7 11:48 test_legend.py
+-rw-r--r-- 1 jjgh8 197609  26428 Oct  7 11:48 test_link_migration.py
+-rw-r--r-- 1 jjgh8 197609  18309 Oct  7 11:48 test_link_picker.py
+-rw-r--r-- 1 jjgh8 197609  36831 Oct  7 11:48 test_links.py
+-rw-r--r-- 1 jjgh8 197609  32300 Oct  7 11:48 test_markup_census.py
+-rw-r--r-- 1 jjgh8 197609  62716 Oct  7 11:48 test_markup_sites.py
+-rw-r--r-- 1 jjgh8 197609  35613 Oct  7 11:48 test_milestone_offer.py
+-rw-r--r-- 1 jjgh8 197609   1869 Oct  7 11:48 test_milestone_offer_seam.py
+-rw-r--r-- 1 jjgh8 197609  25339 Oct  7 11:48 test_milestones.py
+-rw-r--r-- 1 jjgh8 197609  20688 Oct  7 11:48 test_momentum.py
+-rw-r--r-- 1 jjgh8 197609  16659 Oct  7 11:48 test_motion.py
+-rw-r--r-- 1 jjgh8 197609   4052 Oct  7 11:48 test_no_live_board.py
+-rw-r--r-- 1 jjgh8 197609  10833 Oct  7 11:48 test_occupancy.py
+-rw-r--r-- 1 jjgh8 197609  16621 Oct  7 11:48 test_palette_ration.py
+-rw-r--r-- 1 jjgh8 197609   8205 Oct  7 11:48 test_precommit_gate.py
+-rw-r--r-- 1 jjgh8 197609  18053 Oct  7 11:48 test_prism_laws.py
+-rw-r--r-- 1 jjgh8 197609   7944 Oct  7 11:48 test_privacy_sweep.py
+-rw-r--r-- 1 jjgh8 197609   9178 Oct  7 11:48 test_readme.py
+-rw-r--r-- 1 jjgh8 197609  15023 Oct  7 11:48 test_report.py
+-rw-r--r-- 1 jjgh8 197609   5884 Oct  7 11:48 test_requirements.py
+-rw-r--r-- 1 jjgh8 197609   5809 Oct  7 11:48 test_rescue.py
+-rw-r--r-- 1 jjgh8 197609  14427 Oct  7 11:48 test_row_cost.py
+-rw-r--r-- 1 jjgh8 197609   4085 Oct  7 11:48 test_scratch_cannot_be_committed.py
+-rw-r--r-- 1 jjgh8 197609  15840 Oct  7 11:48 test_setup_help.py
+-rw-r--r-- 1 jjgh8 197609   8469 Oct  7 11:48 test_span_economy.py
+-rw-r--r-- 1 jjgh8 197609  14790 Oct  7 11:48 test_spend.py
+-rw-r--r-- 1 jjgh8 197609  28232 Oct  7 11:48 test_swimlanes.py
+-rw-r--r-- 1 jjgh8 197609  12856 Oct  7 11:48 test_sync_fields.py
+-rw-r--r-- 1 jjgh8 197609  12857 Oct  7 11:48 test_team_sync.py
+-rw-r--r-- 1 jjgh8 197609  13470 Oct  7 11:48 test_team_views.py
+-rw-r--r-- 1 jjgh8 197609   7308 Oct  7 11:48 test_vertical_fill.py
+-rw-r--r-- 1 jjgh8 197609   4836 Oct  7 11:48 test_view_survival.py
+-rw-r--r-- 1 jjgh8 197609  10149 Oct  7 11:48 test_wave.py
+[0m
+[0m→ [0mRead prototypes/present_e/out/PRES-C-118x30.txt
+[0m→ [0mRead prototypes/present_e/out/PRES-C-80x24.txt
+[0m→ [0mRead prototypes/present_e/variants.py
+[0m→ [0mRead prototypes/present_e/veredicto-present.json
+[0m→ [0mRead prototypes/present_e/BRIEF.md
+[0m→ [0mRead taskboard/report.py
+[0m→ [0mRead taskboard/keymap.py
+[0m✱ [0mGrep "action_report|def action_|report|export_svg|save_screenshot|def action_export|screenshot|def action_standup"[90m in taskboard/app.py · 100 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=220, limit=120][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=80, offset=555][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=220, offset=1][0m
+[0m✱ [0mGrep "^def |^    def |^FIELD_WEEK|^LATTICE|^RULE|^HEX|^def (gantt_field|_gantt_field|gantt_axis|gantt_tasks|_gantt_bar|_gantt_span|gantt_dep_mark|sort_by_due|title_markup|header|to_text|fit|clip|_pad|_strip|c\(|vis|_md)"[90m in taskboard/views.py · 100 matches[0m
+[0m✱ [0mGrep "^def |^FIELD_WEEK|^LATTICE|^RULE =|^HEX =|^    def |export_svg|save_screenshot|def render_view|def gantt_field|def _gantt_field|def gantt_axis|def gantt_tasks|def _gantt_bar|def _gantt_span|def gantt_dep_mark|def sort_by_due|def title_markup|def header|def to_text|def fit|def clip|def _pad|def _strip|def vis|def _md"[90m in taskboard/views.py · 100 matches[0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "^(FIELD_WEEK|LATTICE|RULE|HEX)\s*=|^def (render_view|gantt_field|_gantt_field|gantt_axis|gantt_tasks|_gantt_bar|_gantt_span|gantt_dep_mark|sort_by_due|title_markup|header|to_text|fit|clip|_pad|_strip|vis|_md|c|export_svg|save_screenshot|critical_chain)\b" taskboard/views.py
+41:HEX = {
+74:def c(text: str, key: str, bold: bool = False) -> str:
+83:def vis(s: str) -> int:
+94:def fit(s: str, width: int, align: str = "left") -> str:
+128:RULE = "╎"        # the today boundary at rest
+133:LATTICE = "·"
+280:def title_markup(task: Task, width: int, selected: bool, arrow: bool = True) -> str:
+557:def sort_by_due(tasks: list[Task]) -> list[Task]:
+629:def _strip(markup: str) -> str:
+634:def header(title: str, right: str, w: int, tone: str = "bright") -> str:
+805:def to_text(lines: list[str], height: int, w: int, pinned: int = 0) -> Text:
+851:def clip(s: str, w: int) -> str:
+1575:def _pad(markup: str, width: int) -> str:
+2125:FIELD_WEEK = "┆"      # the Monday column, drawn in the lattice's tone
+2146:def gantt_tasks(board: Board, tasks: list[Task], project_id: str | None) -> list[Task]:
+2277:def gantt_axis(field_w: int, today: date, lo: date, hi: date, ctx: date) -> GanttAxis:
+2443:def gantt_dep_mark(task: Task, board: Board, chain: set[str]) -> str:
+2523:def _gantt_span(project, ax: GanttAxis, progress: float, tick: int
+2555:def _gantt_bar(task: Task, board: Board, ax: GanttAxis, chain: set[str],
+2597:def _gantt_field(cells: list[tuple[str, str]], ax: GanttAxis,
+2646:def _md(d: date) -> str:
+5858:def render_view(mode, board, show_archived, selected_id, today=None,
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=140, offset=41][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=280][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=557][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=130, offset=805][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=60, offset=1575][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=560, offset=2125][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -rniE "export_svg|save_screenshot|export_text|save_svg|\.svg|screenshot" --include=*.py taskboard tests | head -60
+taskboard/models.py:497:# file would EXECUTE — .svg is excluded because it is scriptable. Canonical home
+tests/test_app.py:695:            str(tmp_path / "x.svg"),        # scriptable ext -> skip (F4)
+tests/test_app.py:754:    image-ext local file (os.startfile). A .svg, an .exe and a missing file are
+tests/test_app.py:758:    svg = tmp_path / "vec.svg"
+tests/test_privacy_sweep.py:138:    g = write(tmp_path, "shot.svg", REAL_TITLE)
+tests/test_readme.py:56:                 "docs/taskboard-gantt.svg"):
+tests/test_scratch_cannot_be_committed.py:10:fixture every capture reads, and the four reviewed `.svg` artifacts, live in
+tests/test_scratch_cannot_be_committed.py:27:    "prototypes/out/some-render.svg",
+tests/test_scratch_cannot_be_committed.py:32:    "prototypes/out/kanban-baseline.svg",
+tests/test_scratch_cannot_be_committed.py:33:    "prototypes/out/kanban-flow.svg",
+tests/test_scratch_cannot_be_committed.py:34:    "prototypes/out/kanban-matrix.svg",
+tests/test_scratch_cannot_be_committed.py:35:    "prototypes/out/kanban-triage.svg",
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "`R`|report|Report|SVG|PNG|export|present|presentation" README.md | head -60
+/usr/bin/bash: line 1: R: command not found
+1:# taskboard
+2:
+3:A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
+4:Run it in a borderless terminal window, pin it on top, and it works as a desktop widget: ten
+5:views over one JSON board, with optional team sync through a shared folder.
+6:
+7:<p align="center">
+8:  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes view, live"><br>
+9:  <img src="docs/taskboard-gantt.svg" width="380" alt="gantt — the whole board on a window fitted to the open work">
+10:  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column"><br>
+11:  <img src="docs/taskboard-agenda.png" width="380" alt="agenda — every due date on one shared axis">
+12:  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one panel per project"><br>
+13:  <sub>Renders of the seeded demo board. The gantt is current; the other images predate this
+14:  release's colour changes.</sub>
+15:</p>
+16:
+17:## What it is
+18:
+19:- **A widget, not a window.** No borders: every view commits with rules, and it reflows to
+20:  whatever size the terminal gives it.
+21:- **Ten views** over the same tasks — lanes, agenda, gantt, kanban, focus, chains, flow, standup,
+22:  people, setup — each one key away.
+23:- **One file.** Your board is a single JSON file in your home directory; nothing goes to a
+24:  server.
+25:- **Optional team mode.** Point it at a shared folder and each person's board syncs there;
+26:  teammates' cards show up read-only.
+27:
+28:## Requirements
+29:
+30:- Python **3.12 or newer** (`requires-python = ">=3.12"`).
+31:- **Windows first.** It is built and used on Windows; opening raw image files uses
+32:  `os.startfile`, which is Windows-only. The clipboard code has macOS and Linux branches, but
+33:  those platforms are not tested here.
+34:- Built and verified against **Textual 8.2.8 / rich 15.0.0** (pinned in `requirements.txt`).
+35:  The install pulls in every runtime dependency (`textual`, `tzdata`, `pillow`,
+36:  `textual-image`).
+37:
+38:## Install
+39:
+40:Clone the repository, then install it as a command.
+41:
+42:```powershell
+43:git clone https://github.com/jav201/taskboard.git
+44:cd taskboard
+45:```
+46:
+47:**With pipx (recommended).** pipx gives the app its own environment and puts `taskboard` on
+48:your PATH:
+49:
+50:```powershell
+51:python -m pip install --user pipx
+52:python -m pipx ensurepath        # then open a new terminal so PATH updates
+53:pipx install .
+54:```
+55:
+56:To update after pulling new code: `pipx reinstall taskboard`. This installs the newest
+57:Textual; the exact versions the app is verified against are pinned in `requirements.txt`
+58:(see [`RUN.md`](RUN.md)).
+59:
+60:**With pip.** `pip install --user .` installs the same `taskboard` command. If the shell says
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE '`R`|`S`|report|Report|SVG|PNG|export|present|Present|key' README.md | head -80
+3:A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
+22:  people, setup — each one key away.
+76:help — what the view is for, what its marks mean, an example and its keys; inside help, `m`
+77:shows the full keymap and `?` opens the command palette. `q` quits.
+103:The key bar at the bottom shows the keys that work in the current view; `;` switches it
+104:between the short and the full layer. Every key below is also in the command palette.
+108:| `?` | Help | Per-view help (usage, legend, example, keys); `m` there for the full map |
+109:| `;` | More | Toggle the key bar's layer |
+134:| `R` / `S` | Report / Standup | Write an HTML report / show the week's standup |
+232:## Reports
+234:`R` in the app, or from the shell:
+237:taskboard --report                       # the whole board
+238:taskboard --report "Website Redesign"    # one project
+241:Each writes one self-contained HTML file to a `reports` folder beside your board file and
+260:- `Ctrl+Shift+B` toggles the window frame and `F11` borderless fullscreen (WezTerm keys).
+273:| `reports/` | HTML reports |
+284:| `taskboard --report [PROJECT]` | Write a report and exit |
+296:  app.py          the App: views, selection, keys, team sync timer
+297:  keymap.py       every key binding (the one source of the key bar and the palette)
+303:  report.py       the HTML report
+309:docs/             screenshots and a sample report
+[0m
+[0m→ [0mRead README.md[90m [offset=100, limit=60][0m
+[0m→ [0mRead README.md[90m [limit=100, offset=228][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=220, offset=5858][0m
+[0m✱ [0mGrep "def refresh_view|def _view_board|def _render_board|def _board_text|def render|line_map|def _select_first|def _clamp|self\._line_map|def _apply_clock_settings"[90m in taskboard/app.py · 100 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=130, offset=1360][0m
+[0m✱ [0mGrep "^class |^    BINDINGS|^    DEFAULT_CSS|def compose|def on_mount|ModalScreen|push_screen|class StandupModal"[90m in taskboard/modals.py · 100 matches[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=70, offset=1853][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && ls -la prototypes/ && ls -la prototypes/kg_mejoras/ 2>/dev/null | head -40
+total 2672
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:53 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 12:17 ..
+-rw-r--r-- 1 jjgh8 197609   6146 Oct  7 11:48 build_gantt_html.py
+-rw-r--r-- 1 jjgh8 197609  31617 Oct  7 11:48 build_languages_html.py
+-rw-r--r-- 1 jjgh8 197609   2786 Oct  7 11:48 capture.py
+-rw-r--r-- 1 jjgh8 197609   6510 Oct  7 11:48 capture_axis_variants.py
+-rw-r--r-- 1 jjgh8 197609   2374 Oct  7 11:48 capture_gantt.py
+-rw-r--r-- 1 jjgh8 197609   3678 Oct  7 11:48 capture_gantt_shipped.py
+-rw-r--r-- 1 jjgh8 197609  23101 Oct  7 11:48 capture_languages.py
+-rw-r--r-- 1 jjgh8 197609   6415 Oct  7 11:48 capture_precision_variants.py
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 edit_modal
+-rw-r--r-- 1 jjgh8 197609   9735 Oct  7 11:48 export_to_skill.py
+-rw-r--r-- 1 jjgh8 197609  11739 Oct  7 11:48 focus-board-prototype.html
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 gallery
+-rw-r--r-- 1 jjgh8 197609 355945 Oct  7 11:48 gallery.html
+-rw-r--r-- 1 jjgh8 197609 471887 Oct  7 11:48 gantt-axis-prototype.html
+-rw-r--r-- 1 jjgh8 197609 383653 Oct  7 11:48 gantt-precision-prototype.html
+-rw-r--r-- 1 jjgh8 197609 377284 Oct  7 11:48 gantt-prototype.html
+-rw-r--r-- 1 jjgh8 197609  12444 Oct  7 11:48 gantt_axis_variants.py
+-rw-r--r-- 1 jjgh8 197609   9699 Oct  7 11:48 gantt_precision_variants.py
+-rw-r--r-- 1 jjgh8 197609  21918 Oct  7 11:48 gantt_variants.py
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 kanban_ideas
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 kanban_priority
+-rw-r--r-- 1 jjgh8 197609  21782 Oct  7 11:48 kanban_variants.py
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 keybar_ideas
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:53 kg_mejoras
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 lanes_gauge
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 next_ideas
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 next_level
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 11:48 out
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 12:17 present_e
+-rw-r--r-- 1 jjgh8 197609  37324 Oct  7 11:48 verify_aperture.py
+-rw-r--r-- 1 jjgh8 197609  13442 Oct  7 11:48 verify_board.py
+-rw-r--r-- 1 jjgh8 197609   4530 Oct  7 11:48 verify_ink.py
+-rw-r--r-- 1 jjgh8 197609 775794 Oct  7 11:48 verify_language.py
+-rw-r--r-- 1 jjgh8 197609   4439 Oct  7 11:48 verify_variants.py
+-rw-r--r-- 1 jjgh8 197609  16034 Oct  7 11:48 verify_widget.py
+total 680
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 ..
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 .ruff_cache
+-rw-r--r-- 1 jjgh8 197609  3687 Oct  7 11:53 DEPS-CONTRACT.md
+-rw-r--r-- 1 jjgh8 197609  3129 Oct  7 11:53 FLOW-CONTRACT.md
+-rw-r--r-- 1 jjgh8 197609  9466 Oct  7 11:53 IMPLEMENTATION-PLAN.md
+-rw-r--r-- 1 jjgh8 197609 13169 Oct  7 11:53 NOTES.md
+-rw-r--r-- 1 jjgh8 197609 17677 Oct  7 11:53 README-AUDIT.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:56 __pycache__
+-rw-r--r-- 1 jjgh8 197609  1148 Oct  7 11:53 baseline.py
+-rw-r--r-- 1 jjgh8 197609 35762 Oct  7 11:53 build_html.py
+-rw-r--r-- 1 jjgh8 197609 11603 Oct  7 11:53 build_questions.py
+-rw-r--r-- 1 jjgh8 197609  7156 Oct  7 11:53 build_verdict_a2.py
+-rw-r--r-- 1 jjgh8 197609  6870 Oct  7 11:53 build_verdict_b1.py
+-rw-r--r-- 1 jjgh8 197609  6580 Oct  7 11:53 build_verdict_b2a.py
+-rw-r--r-- 1 jjgh8 197609  7154 Oct  7 11:53 build_verdict_p.py
+-rw-r--r-- 1 jjgh8 197609  4509 Oct  7 11:53 build_verdict_s.py
+-rw-r--r-- 1 jjgh8 197609  8537 Oct  7 11:53 capture_cascade.py
+-rw-r--r-- 1 jjgh8 197609  2052 Oct  7 11:53 capture_deps_gantt.py
+-rw-r--r-- 1 jjgh8 197609  2183 Oct  7 11:53 capture_deps_kanban.py
+-rw-r--r-- 1 jjgh8 197609  2971 Oct  7 11:53 capture_flow.py
+-rw-r--r-- 1 jjgh8 197609  3197 Oct  7 11:53 capture_gantt.py
+-rw-r--r-- 1 jjgh8 197609  3920 Oct  7 11:53 capture_kanban.py
+-rw-r--r-- 1 jjgh8 197609  7034 Oct  7 11:53 capture_polish.py
+-rw-r--r-- 1 jjgh8 197609  7231 Oct  7 11:53 capture_reconcile.py
+-rw-r--r-- 1 jjgh8 197609  8773 Oct  7 11:53 capture_round5.py
+-rw-r--r-- 1 jjgh8 197609  7335 Oct  7 11:53 cascade.py
+-rw-r--r-- 1 jjgh8 197609 11373 Oct  7 11:53 cascade_logic.py
+-rw-r--r-- 1 jjgh8 197609 20072 Oct  7 11:53 deps_logic.py
+-rw-r--r-- 1 jjgh8 197609  5336 Oct  7 11:53 fixture.py
+-rw-r--r-- 1 jjgh8 197609 34999 Oct  7 11:53 flow_logic.py
+-rw-r--r-- 1 jjgh8 197609  8076 Oct  7 11:53 flows.py
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:53 out
+-rw-r--r-- 1 jjgh8 197609  6109 Oct  7 11:53 proto_app.py
+-rw-r--r-- 1 jjgh8 197609  6612 Oct  7 11:53 shoot.ps1
+-rw-r--r-- 1 jjgh8 197609 22314 Oct  7 11:53 variants_cascade.py
+-rw-r--r-- 1 jjgh8 197609 29629 Oct  7 11:53 variants_deps_gantt.py
+-rw-r--r-- 1 jjgh8 197609 15256 Oct  7 11:53 variants_deps_kanban.py
+-rw-r--r-- 1 jjgh8 197609 29836 Oct  7 11:53 variants_flow.py
+[0m
+[0m→ [0mRead prototypes/kg_mejoras/fixture.py
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "^from|^import|def critical_chain|def first_valid_url|def open_predecessors|def link_conflicts|def project_progress|def project_color|def visible_tasks|def visible_projects|def is_done|def task_by_id|def phase_index" taskboard/views.py | head -60
+14:from __future__ import annotations
+16:import copy
+17:import math
+18:import os
+19:import re
+20:import textwrap
+21:import unicodedata
+22:from datetime import date, datetime, timedelta
+23:from pathlib import Path
+24:from typing import NamedTuple
+26:from rich.cells import cell_len, set_cell_size
+27:from rich.console import Console
+28:from rich.markup import escape
+29:from rich.style import Style
+30:from rich.table import Table
+31:from rich.text import Text
+33:from . import history
+34:from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Task, critical_chain,
+37:from .team_sync import TeamState, sync_tone
+38:from .wave import DOT_ROWS, Bitmap, load_curve
+251:def project_color(board: Board, task: Task) -> str:
+256:def first_valid_url(task: Task) -> str | None:
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=45, offset=33][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "def (visible_tasks|visible_projects|is_done|task_by_id|phase_index|project_progress|project_by_id|canonical_phase)" taskboard/models.py
+907:    def canonical_phase(self, name: str) -> str:
+1090:    def project_by_id(self, pid: str | None) -> Project | None:
+1095:    def task_by_id(self, tid: str | None) -> Task | None:
+1100:    def visible_projects(self, show_archived: bool) -> list[Project]:
+1103:    def visible_tasks(self, show_archived: bool) -> list[Task]:
+1107:    def phase_index(self, task: Task) -> int:
+1117:    def project_progress(self, project_id: str, show_archived: bool = False) -> float:
+1121:    def is_done(self, task: Task) -> bool:
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=45, offset=1090][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "def critical_chain" taskboard/models.py
+1396:def critical_chain(board: Board) -> list[str]:
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=40, offset=1396][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && cat requirements.txt && python -c "import textual, rich; print('textual', textual.__version__); print('rich', rich.__version__)" 2>&1 | head
+# Runtime + test deps, pinned to the versions this app was built and verified against.
+# tzdata provides the IANA timezone database for zoneinfo (city clocks) on Windows.
+textual==8.2.8
+rich==15.0.0
+tzdata==2026.3
+# pillow + textual-image are RUNTIME deps (pyproject declares them): paste-image
+# and the image viewer are features of the app, not extras. They were missing
+# here, so a venv built from this file could not run the suite — five tests in
+# test_app.py failed on ImportError. They are not marked skippable on purpose: a
+# skip would hide a broken install of a feature that is supposed to work.
+pillow==12.2.0
+textual-image==0.13.2
+pytest==9.1.1
+pytest-asyncio==1.4.0
+# pyyaml parses .github/workflows/ci.yml in tests/test_precommit_gate.py. A CI
+# workflow that stopped invoking the suite would be a green tick over nothing,
+# and grepping the file would let a command mentioned in a COMMENT satisfy the
+# law -- so it is parsed. Test-only, and this file's header says test deps
+# belong here.
+pyyaml==6.0.3
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: module 'rich' has no attribute '__version__'
+textual 8.2.8
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+from rich.console import Console
+import inspect
+print('save_svg' in dir(Console), 'export_svg' in dir(Console), 'export_text' in dir(Console))
+import textual.app as ta
+print([m for m in dir(ta.App) if 'screenshot' in m or 'export' in m])
+"
+True True True
+['action_screenshot', 'deliver_screenshot', 'export_screenshot', 'save_screenshot']
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+from textual.app import App
+from rich.console import Console
+print('--- save_screenshot ---')
+print(inspect.getsource(App.save_screenshot))
+print('--- export_screenshot ---')
+print(inspect.getsource(App.export_screenshot))
+print('--- Console.export_svg ---')
+print(inspect.signature(Console.export_svg))
+print('--- Console.save_svg ---')
+print(inspect.signature(Console.save_svg))
+"
+--- save_screenshot ---
+    def save_screenshot(
+        self,
+        filename: str | None = None,
+        path: str | None = None,
+        time_format: str | None = None,
+    ) -> str:
+        """Save an SVG screenshot of the current screen.
+
+        Args:
+            filename: Filename of SVG screenshot, or None to auto-generate
+                a filename with the date and time.
+            path: Path to directory for output. Defaults to current working directory.
+            time_format: Date and time format to use if filename is None.
+                Defaults to a format like ISO 8601 with some reserved characters replaced with underscores.
+
+        Returns:
+            Filename of screenshot.
+        """
+        path = path or "./"
+        if not filename:
+            svg_filename = generate_datetime_filename(self.title, ".svg", time_format)
+        else:
+            svg_filename = filename
+        svg_path = os.path.expanduser(os.path.join(path, svg_filename))
+        screenshot_svg = self.export_screenshot()
+        with open(svg_path, "w", encoding="utf-8") as svg_file:
+            svg_file.write(screenshot_svg)
+        return svg_path
+
+--- export_screenshot ---
+    def export_screenshot(
+        self,
+        *,
+        title: str | None = None,
+        simplify: bool = False,
+    ) -> str:
+        """Export an SVG screenshot of the current screen.
+
+        See also [save_screenshot][textual.app.App.save_screenshot] which writes the screenshot to a file.
+
+        Args:
+            title: The title of the exported screenshot or None
+                to use app title.
+            simplify: Simplify the segments by combining contiguous segments with the same style.
+        """
+        assert self._driver is not None, "App must be running"
+        width, height = self.size
+
+        console = Console(
+            width=width,
+            height=height,
+            file=io.StringIO(),
+            force_terminal=True,
+            color_system="truecolor",
+            record=True,
+            legacy_windows=False,
+            safe_box=False,
+        )
+        screen_render = self.screen._compositor.render_update(
+            full=True, screen_stack=self.app._background_screens, simplify=simplify
+        )
+        console.print(screen_render)
+        return console.export_svg(title=title or self.title)
+
+--- Console.export_svg ---
+(self, *, title: str = 'Rich', theme: Optional[rich.terminal_theme.TerminalTheme] = None, clear: bool = True, code_format: str = '<svg class="rich-terminal" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">\n    <!-- Generated with Rich https://www.textualize.io -->\n    <style>\n\n    @font-face {{\n        font-family: "Fira Code";\n        src: local("FiraCode-Regular"),\n                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),\n                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");\n        font-style: normal;\n        font-weight: 400;\n    }}\n    @font-face {{\n        font-family: "Fira Code";\n        src: local("FiraCode-Bold"),\n                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),\n                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");\n        font-style: bold;\n        font-weight: 700;\n    }}\n\n    .{unique_id}-matrix {{\n        font-family: Fira Code, monospace;\n        font-size: {char_height}px;\n        line-height: {line_height}px;\n        font-variant-east-asian: full-width;\n    }}\n\n    .{unique_id}-title {{\n        font-size: 18px;\n        font-weight: bold;\n        font-family: arial;\n    }}\n\n    {styles}\n    </style>\n\n    <defs>\n    <clipPath id="{unique_id}-clip-terminal">\n      <rect x="0" y="0" width="{terminal_width}" height="{terminal_height}" />\n    </clipPath>\n    {lines}\n    </defs>\n\n    {chrome}\n    <g transform="translate({terminal_x}, {terminal_y})" clip-path="url(#{unique_id}-clip-terminal)">\n    {backgrounds}\n    <g class="{unique_id}-matrix">\n    {matrix}\n    </g>\n    </g>\n</svg>\n', font_aspect_ratio: float = 0.61, unique_id: Optional[str] = None) -> str
+--- Console.save_svg ---
+(self, path: Union[str, os.PathLike[str]], *, title: str = 'Rich', theme: Optional[rich.terminal_theme.TerminalTheme] = None, clear: bool = True, code_format: str = '<svg class="rich-terminal" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">\n    <!-- Generated with Rich https://www.textualize.io -->\n    <style>\n\n    @font-face {{\n        font-family: "Fira Code";\n        src: local("FiraCode-Regular"),\n                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),\n                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");\n        font-style: normal;\n        font-weight: 400;\n    }}\n    @font-face {{\n        font-family: "Fira Code";\n        src: local("FiraCode-Bold"),\n                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),\n                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");\n        font-style: bold;\n        font-weight: 700;\n    }}\n\n    .{unique_id}-matrix {{\n        font-family: Fira Code, monospace;\n        font-size: {char_height}px;\n        line-height: {line_height}px;\n        font-variant-east-asian: full-width;\n    }}\n\n    .{unique_id}-title {{\n        font-size: 18px;\n        font-weight: bold;\n        font-family: arial;\n    }}\n\n    {styles}\n    </style>\n\n    <defs>\n    <clipPath id="{unique_id}-clip-terminal">\n      <rect x="0" y="0" width="{terminal_width}" height="{terminal_height}" />\n    </clipPath>\n    {lines}\n    </defs>\n\n    {chrome}\n    <g transform="translate({terminal_x}, {terminal_y})" clip-path="url(#{unique_id}-clip-terminal)">\n    {backgrounds}\n    <g class="{unique_id}-matrix">\n    {matrix}\n    </g>\n    </g>\n</svg>\n', font_aspect_ratio: float = 0.61, unique_id: Optional[str] = None) -> None
+[0m
+[0m→ [0mRead prototypes/capture.py
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+from rich.text import Text
+t = Text.from_markup('[red bold]hello[/] [blue]world[/]')
+print([m for m in dir(t) if 'style' in m.lower() or 'span' in m.lower() or 'render' in m.lower() or 'divide' in m.lower()])
+print('--- spans prop ---')
+print(type(t.spans))
+for s in t.spans: print(s)
+"
+['_spans', '_trim_spans', 'copy_styles', 'divide', 'extend_style', 'get_style_at_offset', 'render', 'spans', 'style', 'styled']
+--- spans prop ---
+<class 'list'>
+Span(0, 5, 'bold red')
+Span(6, 11, 'blue')
+[0m
+[0m→ [0mRead taskboard/taskboard.tcss
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+from rich.text import Text
+from rich.console import Console
+t = Text.from_markup('[b #2dd4bf]x[/] [#e6edf3]y[/] z')
+lines = t.split()
+print('num lines', len(lines))
+for ln in lines:
+    print(repr(ln.plain), [ (s.start,s.end,str(s.style)) for s in ln.spans])
+    for i in range(len(ln.plain)):
+        st = ln.get_style_at_offset(i)
+        col = st.color
+        print(i, repr(ln.plain[i]), st.bold, col.get_truecolor() if col else None, col.hex if col else None)
+"
+Traceback (most recent call last):
+  File "<string>", line 10, in <module>
+TypeError: Text.get_style_at_offset() missing 1 required positional argument: 'offset'
+num lines 1
+'x y z' [(0, 1, 'bold #2dd4bf'), (2, 3, '#e6edf3')]
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+from rich.text import Text
+print(inspect.signature(Text.get_style_at_offset))
+t = Text.from_markup('[b #2dd4bf]x[/] [#e6edf3]y[/] z')
+for i in range(5):
+    st = t.get_style_at_offset(i)
+    col = st.color
+    print(i, repr(t.plain[i]) if i < len(t.plain) else None, 'bold=', st.bold, 'color=', col.get_truecolor() if col else None)
+"
+Traceback (most recent call last):
+  File "<string>", line 7, in <module>
+TypeError: Text.get_style_at_offset() missing 1 required positional argument: 'offset'
+(self, console: 'Console', offset: int) -> rich.style.Style
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+from PIL import ImageFont
+f = ImageFont.load_default()
+print('default', f)
+try:
+    f2 = ImageFont.load_default(20)
+    print('default20', f2)
+except Exception as e:
+    print('err20', e)
+import os
+for p in ['C:/Windows/Fonts/consola.ttf','C:/Windows/Fonts/cour.ttf','C:/Windows/Fonts/lucon.ttf','C:/Windows/Fonts/CascadiaMono.ttf','C:/Windows/Fonts/cascadiamono.ttf']:
+    print(p, os.path.exists(p))
+"
+default <PIL.ImageFont.FreeTypeFont object at 0x000001D63F3AE000>
+default20 <PIL.ImageFont.FreeTypeFont object at 0x000001D63F3AF470>
+C:/Windows/Fonts/consola.ttf True
+C:/Windows/Fonts/cour.ttf True
+C:/Windows/Fonts/lucon.ttf True
+C:/Windows/Fonts/CascadiaMono.ttf True
+C:/Windows/Fonts/cascadiamono.ttf True
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "def fill_height|def collapse_runs" taskboard/views.py
+690:def fill_height(lines: list[str], height: int, w: int,
+737:def collapse_runs(markup: str) -> str:
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=115, offset=690][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "^(def |class )(_cols|_axis_for|_P|_present_field|_big_chip|_due_text|_title|_note_lines|_note_row|_span_row|_task_row|_brief|_counts|_finish|_project|_open)\b" taskboard/views.py
+(no output)
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=5830][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -rnE "action_report|'report'|\"report\"|key_bar|census|Key\(|Report|report" tests/test_keymap.py tests/test_readme.py tests/test_report.py 2>/dev/null | head -60
+tests/test_keymap.py:7:a law rather than a slip. In this app it was total: Textual's `Footer` reported
+tests/test_keymap.py:24:                              fit_bar, key_bar_plain, render_key_bar)
+tests/test_keymap.py:67:                  "manage_phases", "clocks", "report", "standup"}
+tests/test_keymap.py:136:            assert len(key_bar_plain(width, view)) <= width, f"{view} @ {width}"
+tests/test_keymap.py:172:    text = key_bar_plain(24, "swimlanes")
+tests/test_keymap.py:233:            text = key_bar_plain(width, view)
+tests/test_keymap.py:282:                markup = render_key_bar(width, view, layer)
+tests/test_keymap.py:295:    primary = render_key_bar(140, "swimlanes", "primary")
+tests/test_keymap.py:298:    more = render_key_bar(400, "swimlanes", "more")
+tests/test_keymap.py:354:    """Textual's `Footer` is what this replaced: on 8.2.8 it reported its
+tests/test_readme.py:5:Field report (the operator, 2026-09-30): "actualiza el README del repo, está muy
+tests/test_report.py:1:"""The board report — one self-contained HTML file, generated on demand.
+tests/test_report.py:4:report must leave the board byte-identical. A reporting feature that writes is a
+tests/test_report.py:5:reporting feature that can corrupt, and this is the first surface in the app whose
+tests/test_report.py:22:from taskboard.report import (BUCKETS, build_report, report_path, write_report,
+tests/test_report.py:40:    """A board with every state the report has to describe."""
+tests/test_report.py:73:def test_generating_a_report_never_writes_the_board(tmp_path, monkeypatch):
+tests/test_report.py:77:    report that called `board.save()` passed it, because saving an unmodified
+tests/test_report.py:95:    write_report(b, TODAY)
+tests/test_report.py:96:    write_report(b, TODAY, project="Platform")
+tests/test_report.py:97:    build_report(b, TODAY)
+tests/test_report.py:99:    assert saves == [], f"the report called Board.save: {saves}"
+tests/test_report.py:104:def test_the_report_lands_beside_its_own_board(tmp_path):
+tests/test_report.py:105:    """So a fixture's report lands by the fixture — the live board's directory is
+tests/test_report.py:108:    out = write_report(b, TODAY)
+tests/test_report.py:109:    assert out.parent == tmp_path / "reports"
+tests/test_report.py:111:    assert report_path(b, TODAY, "Platform").name.startswith("platform-")
+tests/test_report.py:120:    doc = build_report(loaded(tmp_path), TODAY)
+tests/test_report.py:133:    txt = text_of(build_report(b, TODAY))
+tests/test_report.py:141:def test_a_scoped_report_covers_only_that_project(tmp_path):
+tests/test_report.py:143:    doc = text_of(build_report(b, TODAY, project="Platform"))
+tests/test_report.py:164:    doc = text_of(build_report(loaded(tmp_path), TODAY))
+tests/test_report.py:171:    the same ruling the due meter obeys, carried into the report."""
+tests/test_report.py:173:    doc = text_of(build_report(b, TODAY))
+tests/test_report.py:186:    doc = text_of(build_report(loaded(tmp_path), TODAY)).lower()
+tests/test_report.py:199:    doc = text_of(build_report(loaded(tmp_path), TODAY))
+tests/test_report.py:217:    doc = build_report(b, TODAY)
+tests/test_report.py:226:    doc = build_report(loaded(tmp_path), TODAY)
+tests/test_report.py:240:    doc = build_report(b, TODAY)
+tests/test_report.py:250:def test_the_cli_writes_a_report_and_says_where(tmp_path):
+tests/test_report.py:255:                        "--report"], capture_output=True, text=True)
+tests/test_report.py:257:    assert "Report written to" in r.stdout
+tests/test_report.py:258:    written = r.stdout.split("Report written to", 1)[1].strip()
+tests/test_report.py:269:                         "--report", "Platform"], capture_output=True, text=True)
+tests/test_report.py:273:                          "--report", "Nope"], capture_output=True, text=True)
+tests/test_report.py:277:    assert not list((tmp_path / "reports").glob("nope-*.html"))
+tests/test_report.py:283:def test_the_report_key_is_in_the_seat():
+tests/test_report.py:285:    entry = next(k for k in KEYMAP if k.action == "report")
+tests/test_report.py:289:    assert any(action == "report" for _s, _l, action in palette_commands("swimlanes"))
+tests/test_report.py:292:async def test_pressing_R_writes_the_report_and_reports_the_path(tmp_path, monkeypatch):
+tests/test_report.py:302:        # write (the one-time renumber notice, the 20-day sweep). The report's
+tests/test_report.py:313:    assert any("Report written to" in m for m in said), said
+tests/test_report.py:314:    assert list((tmp_path / "reports").glob("board-*.html"))
+tests/test_report.py:319:    doc = build_report(b, TODAY)
+[0m
+[0m→ [0mRead tests/test_report.py[90m [limit=50, offset=282][0m
+[0m→ [0mRead tests/test_keymap.py[90m [limit=50, offset=55][0m
+[0m→ [0mRead tests/test_keymap.py[90m [limit=55, offset=1][0m
+[0m→ [0mRead tests/test_readme.py
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -rnE '"report"|action_report|action_name.*report|\breport\b' taskboard/ | grep -vE "\.pyc" | head -40
+taskboard/app.py:236:        "details", "edit", "delete", "archive", "purge_done", "report",
+taskboard/app.py:607:    def action_report(self) -> None:
+taskboard/app.py:608:        """`R` — write an HTML report of the board beside the board file.
+taskboard/app.py:612:        from .report import write_report
+taskboard/keymap.py:136:    Key("R", "R", "report", "Report", group="misc", bar=False),
+taskboard/models.py:1291:    no week to report.
+taskboard/report.py:1:"""The board report: one self-contained HTML file, generated on demand.
+taskboard/report.py:267:    """Beside the board it came from — so a fixture's report lands by the fixture
+taskboard/views.py:1774:    A calm board is not an empty screen — it is a board with little to report,
+taskboard/__main__.py:23:        "--report",
+taskboard/__main__.py:28:        help="write an HTML report of the board (or of one PROJECT) and exit",
+taskboard/__main__.py:32:    if args.report is not None:
+taskboard/__main__.py:34:        from .report import write_report
+taskboard/__main__.py:36:        wanted = args.report or None
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "BOARD_ACTIONS" taskboard/app.py
+234:    BOARD_ACTIONS = frozenset({
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "BOARD_ACTIONS|check_action" taskboard/app.py
+71:    `check_action` dropped or which screen shadows which key. `format_key` is
+192:    # `check_action` hands them all back to modals; see below.)
+234:    BOARD_ACTIONS = frozenset({
+244:    def check_action(self, action: str, parameters: tuple[object, ...]) -> bool | None:
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -rnE "BOARD_ACTIONS" taskboard/ tests/
+taskboard/app.py:234:    BOARD_ACTIONS = frozenset({
+tests/test_app.py:3004:    app, and BOARD_ACTIONS membership.
+tests/test_app.py:3006:    missing from BOARD_ACTIONS → the frozenset limb red."""
+tests/test_app.py:3015:        assert action in TaskboardApp.BOARD_ACTIONS
+tests/test_app.py:3411:    on the app, and BOARD_ACTIONS membership. RED: entry after the arrow
+tests/test_app.py:3412:    block → the placement limb red; action missing from BOARD_ACTIONS → the
+tests/test_app.py:3421:    assert "collapse_toggle" in TaskboardApp.BOARD_ACTIONS
+tests/test_app.py:3605:    BOARD_ACTIONS membership. The `=` alias is ONE `"+,="` entry driving
+tests/test_app.py:3609:    from BOARD_ACTIONS → the frozenset limb red."""
+tests/test_app.py:3627:        assert action in TaskboardApp.BOARD_ACTIONS, action
+tests/test_app.py:3948:    BOARD_ACTIONS membership. RED: entry after the arrow block → the
+tests/test_app.py:3949:    placement limb red; action missing from BOARD_ACTIONS → the frozenset
+tests/test_app.py:3959:    assert "standup" in TaskboardApp.BOARD_ACTIONS
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=70, offset=2990][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE '"report"|action_report|report.*BOARD_ACTIONS|BOARD_ACTIONS.*report|"standup"|action_standup' tests/test_app.py
+70:                          "flow", "standup", "people", "setup"]
+73:                         "8": "standup", "9": "people", "0": "setup"}
+3947:    placed BEFORE the arrow block, a real `action_standup` on the app, and
+3953:    entry = by_action["standup"]
+3959:    assert "standup" in TaskboardApp.BOARD_ACTIONS
+3960:    assert callable(getattr(TaskboardApp, "action_standup"))
+4001:        await pilot.press(_key_for("standup"))
+4066:        await pilot.press(_key_for("standup"))
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=130, offset=3940][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -rnE 'press\("R"\)|press\("r"\)|"report"|action_report|_key_for\("report"\)' tests/ | head -40
+tests/test_keymap.py:67:                  "manage_phases", "clocks", "report", "standup"}
+tests/test_report.py:285:    entry = next(k for k in KEYMAP if k.action == "report")
+tests/test_report.py:289:    assert any(action == "report" for _s, _l, action in palette_commands("swimlanes"))
+tests/test_report.py:309:        await pilot.press("R")
+[0m
+[0m# [0mTodos
+[•] Add render_present + helpers + export to views.py
+[ ] Replace action_report with action_present + PresentScreen in app.py
+[ ] Rename R key action/label in keymap.py
+[ ] Update README R row + Reports section
+[ ] Verify: run suite + oracle diff at 118x30 and 80x24
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=10, offset=5836][0m
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\views.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\views.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\views.py
+@@ -5839,8 +5839,322 @@
+     return cols
+ 
+ 
+ # ---------------------------------------------------------------------------
++# presentation (PRES-C): the hybrid — gantt field on top, brief blocks below
++# ---------------------------------------------------------------------------
++# `R` opens the presentation of the selected task's project (the focused project
++# when set). It is read-only: it draws the project, it never writes the board.
++# The layout is byte-faithful to the PRES-C oracle frames (prototypes/present_e),
++# which is why the composition here matches the prototype's renderer exactly: the
++# same label/chip/field split, the same `⟦━⟧` cursor, the same budget (accent =
++# the cursor only; today = bright). S1: every untrusted string is escaped and
++# clipped before it enters markup; every row is exactly `width` cells.
++
++class _PresentGeo(NamedTuple):
++    width: int
++    label_w: int
++    chip_w: int
++    field_w: int
++    ax: GanttAxis
++    chain: set
++    today: date
++    wide: bool
++    hue: str
++
++
++def present_project_id(board: Board, selected_id: str | None,
++                       focused_id: str | None) -> str | None:
++    """The project the presentation shows: the selected task's project, else the
++    focused one, else the first visible project. None only when the board has no
++    visible project at all."""
++    task = board.task_by_id(selected_id)
++    if task is not None and task.project_id is not None:
++        return task.project_id
++    if focused_id is not None:
++        return focused_id
++    projects = board.visible_projects(False)
++    return projects[0].id if projects else None
++
++
++def present_tasks(board: Board, project_id: str | None) -> tuple[list[Task], list[Task]]:
++    """(open tasks by due, all tasks) of one project in gantt order — the same
++    split the gantt lists: work still open first, finished work at the tail."""
++    tasks = gantt_tasks(board, board.visible_tasks(False), project_id)
++    return [t for t in tasks if not board.is_done(t)], tasks
++
++
++def _present_cols(width: int, wide: bool) -> tuple[int, int, int]:
++    """label + gutter + field + space + chip == width (room-sized chips)."""
++    label_w = 32 if wide else 22
++    chip_w = 11 if wide else 9
++    field_w = width - label_w - 1 - 1 - chip_w
++    return label_w, chip_w, field_w
++
++
++def _present_axis(board: Board, proj: Project, open_t: list[Task],
++                  field_w: int, today: date) -> GanttAxis:
++    dues = [d for t in open_t if (d := parse_iso(t.due_date))]
++    starts = [d for t in open_t if (d := parse_iso(t.start_date))]
++    pdue = parse_iso(proj.due_date)
++    margin = timedelta(days=2)
++    lo = min(dues + [today]) - margin
++    hi = max(dues + ([pdue] if pdue else []) + [today]) + margin
++    ctx = min(starts + [lo])
++    return gantt_axis(field_w, today, lo, hi, ctx)
++
++
++def _present_field(cells: list[tuple[str, str]], ax: GanttAxis) -> str:
++    """Cells to markup over the field's own ground. The ONE change from the
++    shipped `_gantt_field`: the today rule is `bright` bold, NOT accent — the
++    C-2b budget reserves accent for the cursor alone."""
++    guides = ax.guides()
++    out = []
++    for x, (glyph, tone) in enumerate(cells):
++        if tone == "gap":
++            m = c(" ", "dim")
++        elif glyph != " ":
++            m = c(glyph, "bright", bold=True) if tone in ("crit", "accent") else c(glyph, tone)
++        elif x == ax.tc:
++            m = c(RULE, "bright", bold=True)
++        else:
++            m = c(FIELD_WEEK if x in guides else LATTICE, "ash" if x < ax.tc else "dim")
++        out.append(m)
++    return "".join(out)
++
++
++def _present_chip(due_iso: str | None, today: date, width: int, wide: bool) -> str:
++    """A room-sized due chip: the date AND the distance (`Oct 10 +10d`)."""
++    d = parse_iso(due_iso)
++    if width <= 0:
++        return ""
++    if d is None:
++        lab, tone = "no due", "dim"
++    elif d < today:
++        n = (today - d).days
++        lab, tone = (f"{_md(d)} ▲{n}d" if wide else f"▲{n}d"), "over"
++    elif d == today:
++        lab, tone = "due today", "soon"
++    else:
++        n = (d - today).days
++        lab, tone = (f"{_md(d)} +{n}d" if wide else _md(d)), "mut"
++    return c(fit(lab, width, "right"), tone)
++
++
++def _present_due(d: date | None, today: date) -> tuple[str, str]:
++    if d is None:
++        return "no due", "dim"
++    n = (d - today).days
++    if n < 0:
++        return f"▲{-n}d", "over"
++    if n == 0:
++        return "today", "soon"
++    return f"in {n}d", "mut"
++
++
++def _present_title(task: Task, width: int) -> str:
++    return c(title_markup(task, max(0, width), False), "bright", bold=True)
++
++
++def _present_note_lines(notes: str, note_w: int, max_lines: int) -> list[str]:
++    notes = (notes or "").strip()
++    if not notes:
++        return []
++    wrapped = textwrap.wrap(notes, note_w) or [""]
++    if len(wrapped) > max_lines:
++        wrapped = wrapped[:max_lines]
++        wrapped[-1] = clip(wrapped[-1], note_w - 1) + "…"
++    return wrapped
++
++
++def _present_note_row(line: str, width: int, note_w: int) -> str:
++    body = c("· ", "dim") + c(escape(clip(line, note_w)), "mut")
++    return _pad("  " + body, width)
++
++
++def _present_span_row(proj: Project, board: Board, p: _PresentGeo) -> str:
++    progress = board.project_progress(proj.id)
++    cells = _gantt_span(proj, p.ax, progress, 0)
++    label = c("▌ ", p.hue) + c(escape(fit(proj.name.upper(), p.label_w - 2)), p.hue, bold=True)
++    chip = " " + _present_chip(proj.due_date, p.today, p.chip_w, p.wide)
++    return _pad(label + " " + _present_field(cells, p.ax) + chip, p.width)
++
++
++def _present_task_row(task: Task, board: Board, p: _PresentGeo, cursor: bool = False) -> str:
++    cells = _gantt_bar(task, board, p.ax, p.chain, 0)
++    if cursor:
++        lo = next((x for x, (g, _) in enumerate(cells) if g != " "), None)
++        hi = next((x for x in range(len(cells) - 1, -1, -1) if cells[x][0] != " "), None)
++        if lo is not None and hi is not None:
++            for x in range(lo, hi + 1):          # the echo `⟦━⟧`: heavy fill in focus
++                cells[x] = ("━", "accent")
++            cells[lo] = ("⟦", "accent")
++            cells[hi] = ("⟧", "accent")
++    label = "  " + c("▎", p.hue) + " " + _present_title(task, p.label_w - 4)
++    gut = gantt_dep_mark(task, board, p.chain)
++    chip = " " + _present_chip(task.due_date, p.today, p.chip_w, p.wide)
++    return _pad(label + gut + _present_field(cells, p.ax) + chip, p.width)
++
++
++def _present_brief(task: Task, p: _PresentGeo, cursor: bool, width: int) -> str:
++    d = parse_iso(task.due_date)
++    due_label, due_tone = _present_due(d, p.today)
++    due_w = 11 if p.wide else 9
++    due = c(fit(due_label, due_w, "right"), due_tone)
++    max_title = width - 6 - due_w
++    tone = "accent" if cursor else "bright"
++    txt = clip(task.title, max_title)
++    gap = max_title - vis(txt)
++    open_, close = (c("⟦", "accent", bold=True), c("⟧", "accent", bold=True)) if cursor else (" ", " ")
++    return _pad("  " + open_ + c(escape(txt), tone, bold=True) + close + " " * gap
++                + "  " + due, width)
++
++
++def _present_counts(open_t: list[Task], tasks: list[Task], today: date) -> tuple[int, int, int]:
++    late = sum(1 for t in open_t if (d := parse_iso(t.due_date)) and d < today)
++    return late, len(open_t), len(tasks) - len(open_t)
++
++
++def _present_finish(lines: list[str], height: int, width: int) -> Text:
++    if len(lines) > height:
++        over = len(lines) - height
++        lines = lines[:height - 1]
++        lines.append(_pad(c(escape(fit(f"  +{over} more rows not shown", width)), "dim"), width))
++    lines = list(lines)
++    if len(lines) < height:
++        lines += [" " * width] * (height - len(lines))
++    for ln in lines:
++        assert vis(_strip(ln)) == width, (vis(_strip(ln)), width, _strip(ln))
++    return to_text(lines, height, width)
++
++
++def render_present(board: Board, project_id: str | None, cursor_id: str | None,
++                   today: date, width: int, height: int) -> Text:
++    """The PRES-C presentation frame: the project's gantt field on top, the brief
++    one-liners below, a `⟦━⟧` cursor across the brief blocks (its task's notes
++    expand). Byte-faithful to the PRES-C oracle at 118x30 and 80x24."""
++    proj = board.project_by_id(project_id)
++    if proj is None:
++        projects = board.visible_projects(False)
++        if not projects:
++            return to_text([_pad(c(escape("no project to present"), "dim"), width)], height, width)
++        proj = projects[0]
++    open_t, tasks = present_tasks(board, project_id)
++    late, open_n, done = _present_counts(open_t, tasks, today)
++    wide = width >= 100
++    label_w, chip_w, field_w = _present_cols(width, wide)
++    ax = _present_axis(board, proj, open_t, field_w, today)
++    chain = set(critical_chain(board))
++    p = _PresentGeo(width, label_w, chip_w, field_w, ax, chain, today, wide, proj.color)
++
++    if open_t:
++        wanted = board.task_by_id(cursor_id)
++        cursor = wanted if wanted in open_t else open_t[0]
++    else:
++        cursor = None
++
++    title = (c("◆ PRESENT", "bright", bold=True) + c(" · ", "dim")
++             + c(escape(proj.name), proj.color, bold=True) + c(" — hybrid", "mut"))
++    right = c(f"{open_n} open", "mut") + c(" · ", "dim") \
++        + (c(f"▲{late} past due", "over", bold=True) if late else c(f"{done} done", "done"))
++    lines = [header(title, right, width)]
++
++    lines.append(_present_span_row(proj, board, p))
++    for t in open_t:
++        lines.append(_present_task_row(t, board, p, cursor=cursor is not None and t.id == cursor.id))
++    lines.append(_pad(c("─" * width, "frame"), width))
++
++    for t in open_t:
++        lines.append(_present_brief(t, p, cursor is not None and t.id == cursor.id, width))
++        if cursor is not None and t.id == cursor.id:
++            note_w = width - 4
++            for ln in _present_note_lines(t.notes, note_w, 3):
++                lines.append(_present_note_row(ln, width, note_w))
++
++    keys = " " + c("←", "bright", bold=True) + c("→", "bright", bold=True) \
++        + c("  move the cursor", "dim") + c(" · ", "dim") \
++        + c("the cursor'd task's notes expand", "dim")
++    lines.append(_pad(keys, width))
++    return _present_finish(lines, height, width)
++
++
++def present_paths(board: Board, project_name: str | None,
++                  today: date | None = None) -> tuple[Path, Path]:
++    """The SVG and PNG export destinations, beside the board in the same
++    `reports/` folder the HTML report used — the shipped destination convention."""
++    today = today or date.today()
++    slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in (project_name or "board"))
++    slug = slug.strip("-")[:40] or "board"
++    base = Path(board.path).parent / "reports" / f"present-{slug}-{today.isoformat()}"
++    return base.with_suffix(".svg"), base.with_suffix(".png")
++
++
++def save_present_svg(text: Text, path: Path, width: int, height: int) -> Path:
++    """The rich export path the report's SVG used: the frame as a standalone SVG."""
++    con = Console(width=width + 2, height=height + 4, force_terminal=True,
++                  color_system="truecolor", record=True)
++    con.print(text, end="")
++    path.parent.mkdir(parents=True, exist_ok=True)
++    con.save_svg(str(path), title="taskboard · presentation")
++    return path
++
++
++def _present_png_font(cell_h: int):
++    """A monospace font for the raster, falling back to PIL's default."""
++    from PIL import ImageFont
++    candidates = (
++        r"C:\Windows\Fonts\consola.ttf",
++        r"C:\Windows\Fonts\CascadiaMono.ttf",
++        r"C:\Windows\Fonts\lucon.ttf",
++        r"C:\Windows\Fonts\cour.ttf",
++        "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
++        "/System/Library/Fonts/Menlo.ttc",
++    )
++    for cand in candidates:
++        if Path(cand).exists():
++            try:
++                return ImageFont.truetype(cand, cell_h)
++            except OSError:
++                pass
++    try:
++        return ImageFont.load_default(cell_h)
++    except Exception:
++        return ImageFont.load_default()
++
++
++def save_present_png(text: Text, path: Path, width: int, height: int) -> Path:
++    """A PNG raster of the same frame, cell for cell in each span's colour. The
++    terminal's own screenshot is SVG-only, so the PNG is rasterised here at the
++    current size; colour is faithful, weight is the SVG's to carry."""
++    from PIL import Image, ImageDraw
++    cell_h = 20
++    font = _present_png_font(cell_h)
++    measure = getattr(font, "getlength", None)
++    cell_w = max(6, int(round(measure("M")))) if measure else 12
++    lines = text.split()
++    img = Image.new("RGB", (width * cell_w, height * cell_h), "#0d1117")
++    draw = ImageDraw.Draw(img)
++    for y, ln in enumerate(lines[:height]):
++        plain = ln.plain
++        n = len(plain)
++        fg: list[tuple[int, int, int] | None] = [None] * n
++        for span in ln.spans:
++            style = span.style
++            rgb = style.color.get_truecolor() if style.color is not None else None
++            for i in range(span.start, min(span.end, n)):
++                fg[i] = rgb
++        for x in range(min(n, width)):
++            ch = plain[x]
++            if ch == " ":
++                continue
++            draw.text((x * cell_w, y * cell_h), ch, font=font,
++                      fill=fg[x] or (230, 237, 243))
++    path.parent.mkdir(parents=True, exist_ok=True)
++    img.save(str(path))
++    return path
++
++
++# ---------------------------------------------------------------------------
+ # dispatcher
+ # ---------------------------------------------------------------------------
+ RENDERERS = {
+     "swimlanes": render_swimlanes,
+
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "\bProject\b" taskboard/views.py | head
+584:    """Project groups ordered by their stalest task; tasks stale-first inside
+3174:    meta = (c(f"Project: {escape(fit(clip(pname, max(0, width - 24)), max(0, width - 24)))}",
+4583:    project: object          # the band's Project, or None (Inbox, another group mode)
+5894:def _present_axis(board: Board, proj: Project, open_t: list[Task],
+5974:def _present_span_row(proj: Project, board: Board, p: _PresentGeo) -> str:
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\views.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\views.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\views.py
+@@ -30,11 +30,11 @@
+ from rich.table import Table
+ from rich.text import Text
+ 
+ from . import history
+-from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Task, critical_chain,
+-                     days_in_phase, link_conflicts, link_marks, open_predecessors,
+-                     parse_iso, unblocks_count)
++from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Project, Task,
++                     critical_chain, days_in_phase, link_conflicts, link_marks,
++                     open_predecessors, parse_iso, unblocks_count)
+ from .team_sync import TeamState, sync_tone
+ from .wave import DOT_ROWS, Bitmap, load_curve
+ 
+ # --- palette (hexes from the approved mockup; all survive rich quantization) --
+
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=10, offset=35][0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
+@@ -32,10 +32,11 @@
+ from .ribbon import Ribbon
+ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
+                         probe_setup_health)
+ from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
+-                    gantt_plan, nav_model, sort_by_due, fit, vis,
+-                    render_view, valid_url)
++                    gantt_plan, nav_model, present_paths, present_project_id,
++                    present_tasks, render_present, render_view, save_present_png,
++                    save_present_svg, sort_by_due, fit, vis, valid_url)
+ 
+ def _md(d: date) -> str:
+     return f"{d:%b} {d.day}"
+ 
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
+@@ -233,9 +233,9 @@
+ # binding from `active_bindings` only on `is False`; None leaves it listed
+ # and merely disabled, i.e. a legend entry that does nothing.
+ BOARD_ACTIONS = frozenset({
+     "add_task", "add_project", "manage_projects", "manage_phases",
+-    "details", "edit", "delete", "archive", "purge_done", "report",
++    "details", "edit", "delete", "archive", "purge_done", "present",
+     "toggle_archived", "open_url", "open_images", "clocks",
+     "phase_move", "prio_cycle", "toggle_blocked", "link",
+     "kanban_sort", "kanban_group", "collapse_toggle",
+     "focus_cycle", "focus_exit", "due_bump", "undo", "standup",
+
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=15, offset=608][0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
+@@ -604,18 +604,24 @@
+     # ("default"), so reading it kept the bar on primary for good
+     # (code review F3, batch 2026-10-02-batch-02)
+     keybar.set_layer("more" if keybar.bar_layer == "primary" else "primary")
+ 
+-def action_report(self) -> None:
+-    """`R` — write an HTML report of the board beside the board file.
++def action_present(self) -> None:
++    """`R` — open the presentation of the selected task's project (the
++    focused project when set): the gantt field on top, the brief blocks
++    below, a `⟦━⟧` cursor. The presentation replaces the HTML report the
++    key used to write; `--report` from the shell still writes that."""
++    project_id = present_project_id(self.board, self.selected_task_id,
++                                    self.focused_project_id)
++    if project_id is None:
++        self.notify("No project to present.", title="Present",
++                    severity="information", timeout=10, markup=False)
++        return
++    proj = self.board.project_by_id(project_id)
++    self.push_screen(PresentScreen(self.board, project_id,
++                                   proj.name if proj else None,
++                                   self.selected_task_id))
+ 
+-    It says where the file went and does NOT open it: opening a browser is
+-    an action the reader did not ask for, so it stays their move."""
+-    from .report import write_report
+-    out = write_report(self.board)
+-    self.notify(f"Report written to {out}", title="Report",
+-                severity="information", timeout=10, markup=False)
+-
+ def action_standup(self) -> None:
+     """`S` — the week in one modal: what moved and what closed, per
+     project, derived from `phase_changed` alone. Nothing is stored for
+     this, and the modal mutates nothing — it is a reading, not an edit."""
+
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=25, offset=179][0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\app.py
+@@ -178,8 +178,99 @@
+         # tail — an unreachable row is an unindicated key
+         self.query_one("#help-box").focus()
+ 
+ 
++class PresentScreen(ModalScreen[None]):
++    """`R` — the presentation (PRES-C): the project's gantt field on top, the
++    brief one-liners below, a `⟦━⟧` cursor across the brief blocks whose task's
++    notes expand. `←`/`→` and `↑`/`↓` move the cursor, `x` exports SVG + PNG to
++    the board's `reports/` folder, `esc`/`q` leave. Read-only: it draws, it never
++    writes the board."""
++
++    BINDINGS = [
++        Binding("escape,q", "close", "Leave", priority=True),
++        Binding("left,h", "move(-1)", "", priority=True),
++        Binding("right,l", "move(1)", "", priority=True),
++        Binding("up,k", "move(-1)", "", priority=True),
++        Binding("down,j", "move(1)", "", priority=True),
++        Binding("x", "export", "Export", priority=True),
++    ]
++
++    DEFAULT_CSS = """
++    PresentScreen {
++        align: center middle;
++        background: #0d1117;
++    }
++    #present-frame {
++        width: 100%;
++        height: 1fr;
++        padding: 0;
++    }
++    #present-hint {
++        width: 100%;
++        height: 1;
++        color: #8b98a5;
++        padding: 0 1;
++    }
++    """
++
++    def __init__(self, board: Board, project_id: str, project_name: str | None,
++                 cursor_id: str | None):
++        super().__init__()
++        self._board = board
++        self._project_id = project_id
++        self._project_name = project_name
++        self._today = date.today()
++        self._cursor_id = cursor_id
++        self._open_ids = [t.id for t in present_tasks(board, project_id)[0]]
++
++    def compose(self) -> ComposeResult:
++        with Vertical(id="present"):
++            yield Static(id="present-frame")
++            yield Static(id="present-hint")
++
++    def on_mount(self) -> None:
++        self._render()
++
++    def on_resize(self, event: events.Resize) -> None:
++        self._render()
++
++    def _frame_height(self) -> int:
++        return max(1, (self.size.height or 0) - 1)
++
++    def _render(self) -> None:
++        frame = self.query_one("#present-frame", Static)
++        w = self.size.width or 0
++        h = self._frame_height()
++        text = render_present(self._board, self._project_id, self._cursor_id,
++                              self._today, w, h)
++        frame.update(text)
++        self.query_one("#present-hint", Static).update(
++            "←→ ↑↓ move · x export SVG+PNG · esc leave")
++
++    def action_move(self, delta: int) -> None:
++        ids = self._open_ids
++        if not ids:
++            return
++        i = ids.index(self._cursor_id) if self._cursor_id in ids else 0
++        self._cursor_id = ids[max(0, min(len(ids) - 1, i + delta))]
++        self._render()
++
++    def action_export(self) -> None:
++        w = self.size.width or 0
++        h = self._frame_height()
++        text = render_present(self._board, self._project_id, self._cursor_id,
++                              self._today, w, h)
++        svg_path, png_path = present_paths(self._board, self._project_name, self._today)
++        save_present_svg(text, svg_path, w, h)
++        save_present_png(text, png_path, w, h)
++        self.app.notify(f"Exported {svg_path.name} + {png_path.name} to {svg_path.parent}",
++                        title="Present", severity="information", timeout=10, markup=False)
++
++    def action_close(self) -> None:
++        self.dismiss(None)
++
++
+ class TaskboardApp(App):
+     """Frameless kanban desktop widget."""
+ 
+     CSS_PATH = "taskboard.tcss"
+
+[0m
+[0m← [0mEdit taskboard/keymap.py
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\keymap.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\keymap.py
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\taskboard\keymap.py
+@@ -132,9 +132,9 @@
+ Key("p", "p", "add_project", "New proj", group="misc", bar=False),
+ Key("P", "P", "manage_projects", "Projects", group="misc", bar=False),
+ Key("f", "f", "manage_phases", "Phases", group="misc", bar=False),
+ Key("c", "c", "clocks", "Clocks", group="misc", bar=False),
+-Key("R", "R", "report", "Report", group="misc", bar=False),
++Key("R", "R", "present", "Present", group="misc", bar=False),
+ # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
+ # derives from the board in ANY view, so — like `R` — it is not scoped.
+ Key("S", "S", "standup", "Standup", group="misc", bar=False),
+ 
+
+[0m
+[0m← [0mEdit README.md
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
+@@ -130,9 +130,9 @@
+ | `f` | Phases | Add, rename, reorder or delete the board's phases |
+ | `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
+ | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
+ | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
+-| `R` / `S` | Report / Standup | Write an HTML report / show the week's standup |
++| `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
+ | `c` | Clocks | Choose the ribbon's two city clocks |
+ | `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
+ 
+ In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
+
+[0m
+[0m← [0mEdit README.md
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
+@@ -228,11 +228,18 @@
+ shared projects) and one `board.<user>.json` per person. Teammates' cards appear read-only in
+ **Standup** (`8`) and **People** (`9`). Setup checks the folder as you edit and says what is
+ wrong.
+ 
++## Presentation
++
++`R` opens the presentation of the selected task's project (the focused project when set): the
++gantt field on top, the brief blocks below, and a cursor whose task's notes expand (`←`/`→`
++and `↑`/`↓` move it). `x` exports what it shows to an SVG and a PNG in the `reports` folder;
++`esc` leaves. The presentation is read-only — it never writes the board.
++
+ ## Reports
+ 
+-`R` in the app, or from the shell:
++From the shell:
+ 
+ ```powershell
+ taskboard --report                       # the whole board
+ taskboard --report "Website Redesign"    # one project
+
+[0m
+[0m← [0mEdit README.md
+Index: C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
++++ C:\Users\jjgh8\Github\taskboard\.claude\worktrees\present-e\README.md
+@@ -276,9 +276,9 @@
+ | `board.json` | Your board: projects, tasks, settings |
+ | `board.json.corrupt` | A copy of an unreadable board, kept before the app starts empty |
+ | `history.jsonl` | One line per phase move and per added task — the Flow view reads it |
+ | `images/<task id>/` | Pasted images, as plain files |
+-| `reports/` | HTML reports |
++| `reports/` | HTML reports and the presentation's SVG + PNG exports |
+ 
+ Never commit a real board: the repo's pre-commit hook (`tools/precommit_privacy.py`) refuses
+ files that carry your board's text.
+ 
+
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "`R`|Report|report|present" README.md
+/usr/bin/bash: line 1: R: command not found
+1:# taskboard
+2:
+3:A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
+4:Run it in a borderless terminal window, pin it on top, and it works as a desktop widget: ten
+5:views over one JSON board, with optional team sync through a shared folder.
+6:
+7:<p align="center">
+8:  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes view, live"><br>
+9:  <img src="docs/taskboard-gantt.svg" width="380" alt="gantt — the whole board on a window fitted to the open work">
+10:  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column"><br>
+11:  <img src="docs/taskboard-agenda.png" width="380" alt="agenda — every due date on one shared axis">
+12:  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one panel per project"><br>
+13:  <sub>Renders of the seeded demo board. The gantt is current; the other images predate this
+14:  release's colour changes.</sub>
+15:</p>
+16:
+17:## What it is
+18:
+19:- **A widget, not a window.** No borders: every view commits with rules, and it reflows to
+20:  whatever size the terminal gives it.
+21:- **Ten views** over the same tasks — lanes, agenda, gantt, kanban, focus, chains, flow, standup,
+22:  people, setup — each one key away.
+23:- **One file.** Your board is a single JSON file in your home directory; nothing goes to a
+24:  server.
+25:- **Optional team mode.** Point it at a shared folder and each person's board syncs there;
+26:  teammates' cards show up read-only.
+27:
+28:## Requirements
+29:
+30:- Python **3.12 or newer** (`requires-python = ">=3.12"`).
+31:- **Windows first.** It is built and used on Windows; opening raw image files uses
+32:  `os.startfile`, which is Windows-only. The clipboard code has macOS and Linux branches, but
+33:  those platforms are not tested here.
+34:- Built and verified against **Textual 8.2.8 / rich 15.0.0** (pinned in `requirements.txt`).
+35:  The install pulls in every runtime dependency (`textual`, `tzdata`, `pillow`,
+36:  `textual-image`).
+37:
+38:## Install
+39:
+40:Clone the repository, then install it as a command.
+41:
+42:```powershell
+43:git clone https://github.com/jav201/taskboard.git
+44:cd taskboard
+45:```
+46:
+47:**With pipx (recommended).** pipx gives the app its own environment and puts `taskboard` on
+48:your PATH:
+49:
+50:```powershell
+51:python -m pip install --user pipx
+52:python -m pipx ensurepath        # then open a new terminal so PATH updates
+53:pipx install .
+54:```
+55:
+56:To update after pulling new code: `pipx reinstall taskboard`. This installs the newest
+57:Textual; the exact versions the app is verified against are pinned in `requirements.txt`
+58:(see [`RUN.md`](RUN.md)).
+59:
+60:**With pip.** `pip install --user .` installs the same `taskboard` command. If the shell says
+61:it is not recognized, your Python user-scripts folder is not on PATH; this prints it:
+62:
+63:```powershell
+64:python -c "import os, sysconfig; print(sysconfig.get_path('scripts', f'{os.name}_user'))"
+65:```
+66:
+67:**From source.** See [`RUN.md`](RUN.md): a virtual environment and `python -m taskboard`.
+68:
+69:## Quick start
+70:
+71:```powershell
+72:taskboard
+73:```
+74:
+75:The first run creates your board and seeds it with demo data. Press `?` in any view for its
+76:help — what the view is for, what its marks mean, an example and its keys; inside help, `m`
+77:shows the full keymap and `?` opens the command palette. `q` quits.
+78:
+79:## Views
+80:
+81:| Key | View | One line |
+82:|-----|------|----------|
+83:| `1` | **Lanes** | One panel per project with its load and due work; `Tab` switches the grid (default) and the classic waves layout |
+84:| `2` | **Agenda** | Every dated task on one shared day axis, by urgency |
+85:| `3` | **Gantt** | The whole board on a window fitted to the open work, with a date ruler on top |
+86:| `4` | **Kanban** | Every task in its phase column; `Tab` cycles grouped, matrix and lanes layouts |
+87:| `5` | **Focus** | Pinned tasks and pinned projects, in five layouts (`Tab`) |
+88:| `6` | **Chains** | The chain map: who waits on whom, per project — the ready/waits/late marks, the critical chain, and the per-chain `dates` rule on screen |
+89:| `7` | **Flow** | Read-only: time in phase, a phase × week heatmap, weekly throughput |
+90:| `8` | **Standup** | Team mode: one row per teammate — load, top task, sync age |
+91:| `9` | **People** | Team mode: one lane per teammate; their cards are read-only |
+92:| `0` | **Setup** | Team configuration, edited in the app with live health checks |
+93:
+94:**Gantt.** Every project has a row. The window fits the open work (from half a day to a week
+95:per cell, the smallest that holds it); when rows run out, projects fold to one span row
+96:(`▸ name  N open`) while the selected task's project stays open (`▾`). Finished work folds into
+97:a `✓n` count. Each row ends in one due chip (`▲3d` late, `today`, `Oct 6`, `no due`), and `↳`
+98:marks a task waiting on open work. The two rows on top are the ruler: months, day numbers,
+99:and the selected task's exact start and due (`⟦━⟧`).
+100:
+101:## Keys
+102:
+103:The key bar at the bottom shows the keys that work in the current view; `;` switches it
+104:between the short and the full layer. Every key below is also in the command palette.
+105:
+106:| Key | Name | One line |
+107:|-----|------|----------|
+108:| `?` | Help | Per-view help (usage, legend, example, keys); `m` there for the full map |
+109:| `;` | More | Toggle the key bar's layer |
+110:| `q` | Quit | Quit |
+111:| `1`–`6`, `7`–`9`, `0` | Views | See [Views](#views) |
+112:| `↑` `↓` / `k` `j` | Move | Move the selection in the order the view draws |
+113:| `←` `→` / `h` `l` | Across | Move between columns (kanban) |
+114:| `Enter` | Details | Every field of the selected task; its links can be changed there |
+115:| `a` / `e` | Add / Edit | Add a task / edit the selected one in the full-screen editor |
+116:| `d` / `Delete` | Delete | Delete the selected task (asks first) |
+117:| `L` | Link | Make the selected task wait on another one (a picker; on the gantt, a link mode) |
+118:| `M` | Milestone | Make the selected task a milestone — one date, its due — or a task again |
+119:| `[` `]` | Phase | Move the selected task one phase back / forward |
+120:| `!` | Priority | Cycle low → normal → high |
+121:| `b` | Blocked | Mark an outside block (`▲`) on the task, or clear it |
+122:| `+` `=` / `-` | Due | Due date one day later / earlier — what waits on it follows by the project's rule |
+123:| `m` | Chain | Re-apply the last date move under the next mode (stay / push / together) |
+124:| `u` | Undo | Undo the last quick change |
+125:| `x` / `v` | Archive | Archive or unarchive / show archived tasks |
+126:| `X` | Purge done | Archive all finished work that has no completion date (asks first) |
+127:| `t` / `T` | Pin | Pin the task / its whole project (Focus view) |
+128:| `o` / `i` | Links / Images | Open the task's http(s) links / view its images |
+129:| `p` / `P` | Projects | Add a project / manage projects |
+130:| `f` | Phases | Add, rename, reorder or delete the board's phases |
+131:| `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
+132:| `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
+133:| `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
+134:| `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
+135:| `c` | Clocks | Choose the ribbon's two city clocks |
+136:| `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
+137:
+138:In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
+139:
+140:## Working with tasks
+141:
+142:- **Phases.** A new board has `Backlog`, `Doing`, `Done`; `f` edits them. The last phase means
+143:  done.
+144:- **Undo.** `u` reverts the last phase move, priority, blocked flag, due change, pin, archive
+145:  or delete. Adding a task is not undoable.
+146:- **Finished work.** A task 20 days in its done phase is archived at startup (archived, never
+147:  deleted). `X` archives all finished work that has no completion date (asks first); `v` shows archived
+148:  tasks and `x` brings one back.
+149:- **Projects.** `p` adds one; `P` manages them (edit, archive, delete). Archiving a project
+150:  archives its open tasks too; deleting a project moves its tasks to the Inbox.
+151:
+152:## Milestones
+153:
+154:A **milestone** is a task with one date — its due — and no duration: a commitment, not work.
+155:`M` on the selected task makes it one (its start becomes its due) or a task again; the editor
+156:(`e`) has the same `milestone` box. A task with no date cannot be a milestone. `+`/`-` move a
+157:milestone's single date, `u` undoes, and team sync carries the flag.
+158:
+159:In the **gantt** a milestone is a row ` ◆ title` with a `◆` on its date and a chip saying how far
+160:it is (`in 10d`, `today`, `▲2d` late); a reached one turns ash (`◆✓`, `✓ done`) and stays among its
+161:project's rows while the project has open work. The ruler marks the selected project's milestones.
+162:
+163:In the **kanban** a milestone is never a card and never counted: it rides its project's band rule
+164:(`◆ Oct 10 Launch · in 10d`), late ones first, then the upcoming ones, then the last one reached.
+165:
+166:**The one-time milestone offer.** The first time this version opens a board that holds one-day
+167:tasks (start = due) or dated tasks with no start, it offers — once — to make milestones of them:
+168:one-day tasks come pre-checked, the others unchecked; `space` toggles, `↵` converts exactly the
+169:checked ones, `esc` converts none (and the offer does not come back). Converting first copies the
+170:board file to `<board>.pre-milestones` and writes `<board>.milestones-log`; `u` undoes the whole
+171:conversion. A board this version creates is never offered. Restoring the backup file brings back a
+172:board without the offer's mark, so it is offered again at the next start.
+173:
+174:## Links and blocking
+175:
+176:A **link** says a task waits on another one. `L` on the selected task opens a picker: tasks of
+177:the same project first, then by due date; type to filter; each row says what the link would mean
+178:for the dates ("overlaps 3d", "ok — due 2d before this starts"). A task already linked says
+179:`↵ removes`; one that would close a loop is shown with the loop and cannot be picked. The picker
+180:can also create a new task to wait on. On the gantt, `L` opens a link mode that draws the link
+181:before you make it. `u` undoes a link like any quick change.
+182:
+183:Cards show `◂N` when the task waits on N open tasks and `▸N` when N open tasks wait on it. When
+184:the last task it waits on is finished, the board says once that it is ready. The details view
+185:(`Enter`) lists what a task waits on and what it unblocks, down the chain, with any date
+186:conflict; there `tab` moves to the links, `x` removes one, `↵` jumps to it and `L` adds one.
+187:
+188:`b` is the **outside block** (`▲`): something no task on the board stands for. It is independent
+189:of links. A task that open tasks still wait on cannot be archived or deleted (nor its project
+190:archived) until it is finished or the links are removed — the refusal names who waits.
+191:
+192:The kanban `unblock` sort puts tasks with the most waiting work first, and the gantt draws the
+193:critical chain (the longest chain of open links) as a heavy `━` line.
+194:
+195:**The one-time link migration.** Boards written by earlier versions recorded a link every time
+196:`b` blocked a task and kept it after unblocking. The first start of this version reads those
+197:links once: a task still blocked on a task now waits on it, links that had been released are
+198:dropped, and blocks with no task to point at stay. Before changing anything it copies the board
+199:file to `<board file>.pre-links-migration` and writes every change to
+200:`<board file>.links-migration-log`; `u` right after the start undoes it. It never runs again on
+201:its own. To go back later, close the app and copy the backup over the board file — the restored
+202:board is migrated again at the next start. If the backup cannot be written the app does not open
+203:the board (free space or write access in its folder, or run `taskboard --board` on a copy).
+204:
+205:## Kanban
+206:
+207:- `s` cycles the sort: project → priority → due → recent → unblock.
+208:- `g` cycles the grouping: project → priority → horizon.
+209:- `z` collapses the last (done) phase to one count row.
+210:- Open high-priority cards float to a `high` band at the top of each column (grouped layout),
+211:  and every open card wears a priority badge: `!!` high, `==` normal, `++` low.
+212:- Phase headers show a WIP limit as `count/limit`, red when over; the default is 3 for `Doing`
+213:  (`wip_limits` in the board's settings).
+214:
+215:## Notes, links and images
+216:
+217:- In notes, `==text==`, `!!text!!` and `++text++` are highlighted yellow, red and green.
+218:- A task with a URL shows `↗`; `o` opens its http(s) links in your browser.
+219:- In the editor, **Paste image** saves the clipboard image as a real file; `i` views a task's
+220:  images inline, and `o` inside the viewer opens them in your default app.
+221:
+222:## Team mode
+223:
+224:Team mode syncs boards through any shared folder — a synced drive or a git checkout works the
+225:same. Turn it on in **Setup** (`0`): the shared folder, who you are, which projects are shared, the
+226:roster, and a time in minutes after which a teammate whose board has not synced is shown as
+227:stale. The app syncs every 30 minutes. The folder holds `team.json` (the roster and
+228:shared projects) and one `board.<user>.json` per person. Teammates' cards appear read-only in
+229:**Standup** (`8`) and **People** (`9`). Setup checks the folder as you edit and says what is
+230:wrong.
+231:
+232:## Presentation
+233:
+234:`R` opens the presentation of the selected task's project (the focused project when set): the
+235:gantt field on top, the brief blocks below, and a cursor whose task's notes expand (`←`/`→`
+236:and `↑`/`↓` move it). `x` exports what it shows to an SVG and a PNG in the `reports` folder;
+237:`esc` leaves. The presentation is read-only — it never writes the board.
+238:
+239:## Reports
+240:
+241:From the shell:
+242:
+243:```powershell
+244:taskboard --report                       # the whole board
+245:taskboard --report "Website Redesign"    # one project
+246:```
+247:
+248:Each writes one self-contained HTML file to a `reports` folder beside your board file and
+249:prints the path. It shows counts and dates only — no forecasts — and never modifies an
+250:existing board (pointed at a board file that does not exist yet, it creates the demo board
+251:first, as the app does). An unknown project name exits with code 2 and lists the projects.
+252:
+253:## Clocks
+254:
+255:The bottom ribbon shows the time, date, ISO week and two city clocks (default Mexico City and
+256:New York). `c` changes them: type a city and it autocompletes. 340 cities are available,
+257:daylight saving included (`zoneinfo`).
+258:
+259:## Frameless window (WezTerm)
+260:
+261:Windows Terminal always draws a title bar, so use [WezTerm](https://wezterm.org). This repo
+262:ships a config, [`wezterm.lua`](wezterm.lua): no window decorations, no tab bar, a dark
+263:background. Load it with `wezterm --config-file wezterm.lua`, or copy it to `~/.wezterm.lua`.
+264:
+265:- It opens your normal shell; uncomment `default_prog` in the file to boot straight into
+266:  `taskboard`.
+267:- `Ctrl+Shift+B` toggles the window frame and `F11` borderless fullscreen (WezTerm keys).
+268:- Keep it on top with PowerToys **Always On Top** (`Win+Ctrl+T`).
+269:
+270:## Data files
+271:
+272:Everything lives under `~/.taskboard/` (or beside the file you pass with `--board`):
+273:
+274:| File | What |
+275:|------|------|
+276:| `board.json` | Your board: projects, tasks, settings |
+277:| `board.json.corrupt` | A copy of an unreadable board, kept before the app starts empty |
+278:| `history.jsonl` | One line per phase move and per added task — the Flow view reads it |
+279:| `images/<task id>/` | Pasted images, as plain files |
+280:| `reports/` | HTML reports and the presentation's SVG + PNG exports |
+281:
+282:Never commit a real board: the repo's pre-commit hook (`tools/precommit_privacy.py`) refuses
+283:files that carry your board's text.
+284:
+285:## Command line
+286:
+287:| Command | What |
+288:|---------|------|
+289:| `taskboard` | Run the app on `~/.taskboard/board.json` |
+290:| `taskboard --board PATH` | Run it on another board file |
+291:| `taskboard --report [PROJECT]` | Write a report and exit |
+292:
+293:`python -m taskboard` is the same command.
+294:
+295:## Development
+296:
+297:See [`RUN.md`](RUN.md) for the environment, the test suite and the privacy hook. CI runs the
+298:suite on pushes to `main` and on pull requests (`.github/workflows/ci.yml`).
+299:
+300:```
+301:taskboard/
+302:  __main__.py     command line
+303:  app.py          the App: views, selection, keys, team sync timer
+304:  keymap.py       every key binding (the one source of the key bar and the palette)
+305:  views.py        the view renderers, nav order and per-view help
+306:  modals.py       editors, pickers, help and other modal screens
+307:  models.py       Project / Task / Board: JSON store, seeding, rescue
+308:  history.py      the log of phase moves and added tasks (history.jsonl)
+309:  team_sync.py    team mode: the shared folder's files, merge, health check
+310:  report.py       the HTML report
+311:  ribbon.py       the bottom clock ribbon
+312:  wave.py         the lanes waves engine
+313:  taskboard.tcss  styles
+314:tests/            pytest suite
+315:tools/            privacy sweep and pre-commit check
+316:docs/             screenshots and a sample report
+317:wezterm.lua       frameless WezTerm config
+318:```
+319:
+320:## Colours
+321:
+322:Eight project colours (lime, green, sky, blue, indigo, violet, fuchsia, pink); red, amber and
+323:teal are kept for overdue, for due today, and for today and the filter field. Boards saved with a retired colour are remapped
+324:once on load.
+325:
+326:## History
+327:
+328:- **Columns was retired**: the kanban is the same phase grid and loses nothing, so the views
+329:  were renumbered.
+330:- Key `6` is free: it belonged to the aperture widget view, which was removed.
+331:
+332:## Limitations
+333:
+334:- Raw image opening is Windows-only; macOS and Linux are untested.
+335:- The Standup and People views need team mode.
+336:- A real board is never part of this repo; the screenshots use the seeded demo data.
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "import taskboard.app, taskboard.views, taskboard.keymap; print('imports ok')"
+imports ok
+[0m
+[0m← [0mWrite C:/Users/jjgh8/AppData/Local/Temp/opencode/diff_present.py
+Wrote file successfully.
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python "C:/Users/jjgh8/AppData/Local/Temp/opencode/diff_present.py"
+=== 118x30: rows plain=30 oracle=30 match=True
+=== 80x24: rows plain=24 oracle=24 match=True
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests -q 2>&1 | tail -60
+r = subprocess.run(["git", "ls-files", "--error-unmatch", rel],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert r.returncode == 0, f"{rel} is not tracked"
+E       AssertionError: prototypes/out/kanban-triage.svg is not tracked
+E       assert 3221225794 == 0
+E        +  where 3221225794 = CompletedProcess(args=['git', 'ls-files', '--error-unmatch', 'prototypes/out/kanban-triage.svg'], returncode=3221225794, stdout='', stderr='').returncode
+
+tests\test_scratch_cannot_be_committed.py:68: AssertionError
+________ test_the_ignored_directory_is_the_one_the_capture_writes_into ________
+
+    def test_the_ignored_directory_is_the_one_the_capture_writes_into():
+        """Ties the rule to the WRITER, so the two cannot drift apart.
+    
+        This was first written as `len(list(out.iterdir())) > 100` -- "the yard is
+        full, so the rule is not theoretical". That asserted transient local state:
+        it passed in the worktree that happened to hold ~890 scratch files and
+        failed the moment the same test ran on a fresh checkout, where the
+        directory holds only the five tracked files. A law that depends on what a
+        machine happens to contain is not a law about the repository.
+    
+        What actually matters is durable: `capture.py` writes into exactly the
+        directory `.gitignore` covers. If someone repoints `OUT`, the ignore rule
+        silently stops covering the output and this goes red."""
+        src = (ROOT / "prototypes" / "capture.py").read_text(encoding="utf-8")
+        assert 'OUT = ROOT / "prototypes" / "out"' in src, (
+            "capture.py no longer writes into the directory .gitignore covers")
+>       assert ignored("prototypes/out/variants.txt"), (
+            "the capture's own output filename is not covered by the rule")
+E       AssertionError: the capture's own output filename is not covered by the rule
+E       assert False
+E        +  where False = ignored('prototypes/out/variants.txt')
+
+tests\test_scratch_cannot_be_committed.py:87: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_keymap.py::test_the_palette_includes_palette_only_globals
+FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+FAILED tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly
+FAILED tests/test_no_live_board.py::test_the_fixture_is_in_git_not_just_on_this_disk
+FAILED tests/test_precommit_gate.py::test_a_staged_leak_is_refused_and_the_file_is_named
+FAILED tests/test_precommit_gate.py::test_clean_staged_content_commits - Asse...
+FAILED tests/test_precommit_gate.py::test_it_fails_closed_when_it_cannot_read_the_board
+FAILED tests/test_precommit_gate.py::test_it_fails_closed_on_a_corrupt_board
+FAILED tests/test_precommit_gate.py::test_the_escape_hatch_is_explicit_and_only_that
+FAILED tests/test_precommit_gate.py::test_binary_staged_files_do_not_break_the_gate
+FAILED tests/test_precommit_gate.py::test_the_hook_wired_in_this_repo_points_at_the_script
+FAILED tests/test_report.py::test_the_cli_writes_a_report_and_says_where - As...
+FAILED tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one
+FAILED tests/test_report.py::test_the_report_key_is_in_the_seat - StopIteration
+FAILED tests/test_report.py::test_pressing_R_writes_the_report_and_reports_the_path
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_probe999.py]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_scratch.log]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/variants.txt]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/some-render.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_ignored_directory_is_the_one_the_capture_writes_into
+25 failed, 2504 passed in 413.28s (0:06:53)
+
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 120000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_markup_census.py tests/test_markup_sites.py -q 2>&1 | tail -50
+here = d() / "a[B]x"
+            path = _one(here, phase="Backlog")
+            (here / "history.jsonl").mkdir()
+            monkeypatch.setattr(history, "HISTORY_ERROR", None)
+            app = _app(path)
+            async with app.run_test(size=SIZE, notifications=True) as pilot:
+                await _press_select(app, pilot, "]")
+                err = history.HISTORY_ERROR
+                if app.board.tasks[0].phase != "Doing":
+                    return "fixture: ] did not move the task"
+                if not err or repr(str(here / "history.jsonl")) not in err:
+                    return f"fixture: the failing write left {err!r}"
+                return _toast_check(app, "Transition log", err, True)
+    
+        for p in PAYLOADS:
+            arms += [
+                (f"Setup duplicate member id [{p!r}]", lambda p=p: setup_arm(p, 2, "Member")),
+                (f"Setup duplicate project id [{p!r}]", lambda p=p: setup_arm(p, 1, "Project")),
+                (f"phase editor add duplicate [{p!r}]", lambda p=p: phase_dup_arm(p, False)),
+                (f"phase editor rename duplicate [{p!r}]", lambda p=p: phase_dup_arm(p, True)),
+            ]
+        for dirname in DIRS:
+            arms += [
+                (f"report-written toast R [{dirname}]", lambda x=dirname: report_arm(x)),
+                (f"board-recovered toast [{dirname}]", lambda x=dirname: recovered_arm(x)),
+            ]
+        arms.append(("transition-log toast ] [a[B]x/history.jsonl a directory]", history_arm))
+        for name, fn in arms:
+            await _collect(failures, name, fn)
+>       _verdict(failures, len(arms))
+
+tests\test_markup_sites.py:572: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+failures = ["report-written toast R [a[B]x]: AttributeError: 'NoneType' object has no attribute 'render_strips'", "report-written toast R [[B]x]: AttributeError: 'NoneType' object has no attribute 'render_strips'"]
+total = 17
+
+    def _verdict(failures: list[str], total: int) -> None:
+>       assert not failures, (f"{len(failures)} of {total} site x payload arms failed:\n  "
+                              + "\n  ".join(failures))
+E       AssertionError: 2 of 17 site x payload arms failed:
+E           report-written toast R [a[B]x]: AttributeError: 'NoneType' object has no attribute 'render_strips'
+E           report-written toast R [[B]x]: AttributeError: 'NoneType' object has no attribute 'render_strips'
+E       assert not ["report-written toast R [a[B]x]: AttributeError: 'NoneType' object has no attribute 'render_strips'", "report-written toast R [[B]x]: AttributeError: 'NoneType' object has no attribute 'render_strips'"]
+
+tests\test_markup_sites.py:153: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+FAILED tests/test_markup_sites.py::test_AT_403_typed_and_os_text_is_painted_exactly
+2 failed, 10 passed in 96.77s (0:01:36)
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -nE "report|def test_TC_401|markup_str|\.update\(|notify|def _sink|render_strips" tests/test_markup_census.py | head -40
+5:handed to a `Label`, `Static`, `Option`, `Select` prompt, `Button` label or `notify`
+20:`notify`, `markup=False`. A new site fed anything else
+48:METHOD_SINKS = {"notify", "update", "add_option", "add_options", "set_options",
+159:    """Collect (qualname, sink, value node, notify-markup-off, kind) per site; a
+216:                off = (name == "notify" and isinstance(kw.get("markup"), ast.Constant)
+394:def _report(sites) -> str:
+399:def test_TC_401_no_textual_sink_takes_a_markup_str():
+407:    assert not unsafe, "Textual sinks fed a markup str:\n" + _report(unsafe)
+428:    assert not unsafe, "markup parsers fed a non-literal:\n" + _report(unsafe)
+465:        self.notify(f"failed: {err}")                      # sink: markup on
+475:        w.update(content=task.title)                       # sink: keyword method sink
+494:        self.notify(f"failed: {err}", markup=False)        # safe: markup off
+517:        ("sink", "Button", "self.confirm"), ("sink", "notify", "f'failed: {err}'"),
+544:        ("sink", "notify", "f'failed: {err}'"),
+564:            "notify", "update", "add_option", "add_options"} <= kinds, kinds
+575:    """`notify(..., markup=False)` calls whose message holds an `escape(...)`
+583:                if not (isinstance(call, ast.Call) and _call_name(call) == "notify"):
+599:def test_TC_405_a_markup_off_notify_shows_the_raw_text():
+602:    markup-off notify in the package builds its message with `escape`; a planted
+614:        self.notify(f'{shown} pinned', markup=False)
+615:        self.notify(f'{escape(name)} done', markup=False)
+616:        self.notify(f'{name} done', markup=False)
+[0m
+[0m→ [0mRead tests/test_markup_census.py[90m [limit=45, offset=394][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str -q 2>&1 | head -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________ test_TC_401_no_textual_sink_takes_a_markup_str ________________
+
+    def test_TC_401_no_textual_sink_takes_a_markup_str():
+        """TC-401 (LLR-401.1). Every site in the package that hands a value to a
+        Textual markup sink hands it markup-inert. RED on base: the census lists the
+        str sites (ConfirmModal / TextPrompt titles, Option and Select labels, the
+        notifies carrying ids, names and exceptions, the standup and help labels) and
+        every `_rich` over user text; GREEN once each is a Text piece or `markup=False`."""
+        unsafe = [s for s in _package_census()
+                  if s["kind"] == "sink" and not s["safe"] and _key(s) not in EXEMPT]
+>       assert not unsafe, "Textual sinks fed a markup str:\n" + _report(unsafe)
+E       AssertionError: Textual sinks fed a markup str:
+E           app.py:246 PresentScreen._render update(text <- render_present(self._board, self._project_id, self._cursor_id, self._tod)
+E       assert not [{'func': <ast.FunctionDef object at 0x000002D5A3AB9F50>, 'kind': 'sink', 'line': 246, 'markup_off': False, ...}]
+
+tests\test_markup_census.py:407: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+1 failed in 0.62s
+[0m
+[0m→ [0mRead tests/test_markup_census.py[90m [limit=130, offset=159][0m
+[0m→ [0mRead tests/test_markup_census.py[90m [limit=110, offset=286][0m
+[0m→ [0mRead tests/test_markup_census.py[90m [limit=75, offset=90][0m
+[0m→ [0mRead tests/test_markup_census.py[90m [limit=50, offset=40][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest "tests/test_report.py::test_the_cli_writes_a_report_and_says_where" "tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one" -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed in 1.73s
+[0m
+[0m→ [0mRead tests/test_report.py[90m [limit=35, offset=250][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && cat pyproject.toml && echo "=== conftest ===" && cat tests/conftest.py
+[project]
+name = "taskboard"
+version = "0.1.0"
+description = "A frameless kanban desktop-widget task board built in Textual."
+# 3.12, not 3.10, and the difference was a FALSE PROMISE until CI ran.
+# `textual-image==0.13.2` requires >=3.12, so a 3.10 or 3.11 environment
+# cannot even install this project's pinned dependencies -- pip refuses
+# before a single test runs. The floor is raised to what is true rather
+# than the dependency loosened, because textual-image is a RUNTIME dep
+# (the image viewer) and unpinning it to reach an older Python would
+# trade a real feature for a version nobody is using.
+requires-python = ">=3.12"
+dependencies = ["textual", "tzdata", "pillow>=10.3.0", "textual-image>=0.13"]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+taskboard = "taskboard.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["taskboard"]
+
+[tool.setuptools.package-data]
+taskboard = ["*.tcss"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+=== conftest ===
+"""Suite-wide test seam (batch 2026-10-04-batch-02, D-611, §5 of its requirements).
+
+The one-time milestone offer is a modal at app start: 274 of the suite's 541 app starts hold a
+candidate (P-9) and would open it, so their keys would land on the offer instead of the view
+under test. Every test therefore starts as if its board had ALREADY answered the offer — the
+app module's own `milestones_marked` reference answers True — unless the test carries the
+marker `milestone_offer`. The base suite's file I/O is unchanged (no offer write at mount); the
+offer's own tests carry the marker; `tests/test_milestone_offer_seam.py` holds the two
+controls that prove the seam both ways.
+"""
+import pytest
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "milestone_offer: the test drives the one-time milestone offer at app start")
+
+
+@pytest.fixture(autouse=True)
+def _milestone_offer_seam(request, monkeypatch):
+    if request.node.get_closest_marker("milestone_offer") is None:
+        monkeypatch.setattr("taskboard.app.milestones_marked", lambda settings: True)
+[0m
+[0m→ [0mRead taskboard/__main__.py
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m taskboard --board "C:/Users/jjgh8/AppData/Local/Temp/opencode/cli_probe.json" --report 2>&1 | tail -5
+Report written to C:\Users\jjgh8\AppData\Local\Temp\opencode\reports\board-2026-10-07.html
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_report.py -q 2>&1 | tail -25
+│ ╭─────────────────────── locals ────────────────────────╮                    
+│ │ apply_selection = True                                │                    
+│ │          height = 30                                  │                    
+│ │             pad = False                               │                    
+│ │      post_style = None                                │                    
+│ │       selection = None                                │                    
+│ │ selection_style = None                                │                    
+│ │           style = Style(                              │                    
+│ │                   │   background=Color(13, 17, 23),   │                    
+│ │                   │   foreground=Color(               │                    
+│ │                   │   │   230,                        │                    
+│ │                   │   │   237,                        │                    
+│ │                   │   │   243                         │                    
+│ │                   │   )                               │                    
+│ │                   )                                   │                    
+│ │          visual = None                                │                    
+│ │          widget = PresentScreen()                     │                    
+│ │           width = 100                                 │                    
+│ ╰───────────────────────────────────────────────────────╯                    
+╰──────────────────────────────────────────────────────────────────────────────
+AttributeError: 'NoneType' object has no attribute 'render_strips'
+=========================== short test summary info ===========================
+FAILED tests/test_report.py::test_the_report_key_is_in_the_seat - StopIteration
+FAILED tests/test_report.py::test_pressing_R_writes_the_report_and_reports_the_path
+2 failed, 16 passed in 2.76s
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest "tests/test_report.py::test_pressing_R_writes_the_report_and_reports_the_path" -q 2>&1 | grep -A 40 "AttributeError\|Traceback\|render_strips\|def _render\|render_present\|_present_" | head -80
+>       strips = visual.render_strips(
+            width,
+            height,
+            style,
+            RenderOptions(
+                widget._get_style,
+                widget.styles,
+                selection if apply_selection else None,
+                selection_style,
+            ),
+        )
+E       AttributeError: 'NoneType' object has no attribute 'render_strips'
+
+C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\visual.py:227: AttributeError
+---------------------------- Captured stderr call -----------------------------
+╭───────────────────── Traceback (most recent call last) ──────────────────────
+│ C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py:4285 in         
+│ render_lines                                                                 
+│                                                                              
+│   4282 │   │   │   │   Strip.blank(crop.width, self.visual_style.rich_style) 
+│   4283 │   │   │   ] * crop.height                                           
+│   4284 │   │   else:                                                         
+│ ❱ 4285 │   │   │   strips = self._styles_cache.render_widget(self, crop)     
+│   4286 │   │   return strips                                                 
+│   4287 │                                                                     
+│   4288 │   def get_style_at(self, x: int, y: int) -> Style:                  
+│                                                                              
+│ ╭─────────────────── locals ────────────────────╮                            
+│ │ crop = Region(x=0, y=0, width=100, height=30) │                            
+│ │ self = PresentScreen()                        │                            
+│ ╰───────────────────────────────────────────────╯                            
+│                                                                              
+│ C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py:116 in   
+│ render_widget                                                                
+│                                                                              
+│   113 │   │   base_background, background = widget.background_colors         
+│   114 │   │   styles = widget.styles                                         
+│   115 │   │   app = widget.app                                               
+│ ❱ 116 │   │   strips = self.render(                                          
+│   117 │   │   │   styles,                                                    
+│   118 │   │   │   widget.region.size,                                        
+│   119 │   │   │   base_background,                                           
+│                                                                              
+│ ╭───────────────────────────────── locals ─────────────────────────────────╮ 
+│ │             app = TaskboardApp(                                          │ 
+│ │                   │   title='taskboard',                                 │ 
+│ │                   │   classes={'-dark-mode'},                            │ 
+│ │                   │   pseudo_classes={'dark', 'focus'}                   │ 
+│ │                   )                                                      │ 
+│ │      background = Color(13, 17, 23)                                      │ 
+│ │ base_background = Color(18, 18, 18)                                      │ 
+│ │ border_subtitle = None                                                   │ 
+│ │    border_title = None                                                   │ 
+│ │            crop = Region(x=0, y=0, width=100, height=30)                 │ 
+│ │            self = <StylesCache width=100>                                │ 
+│ │          styles = RenderStyles(                                          │ 
+--
+│ ❱ 227 │   │   strips = visual.render_strips(                                 
+│   228 │   │   │   width,                                                     
+│   229 │   │   │   height,                                                    
+│   230 │   │   │   style,                                                     
+│                                                                              
+│ ╭─────────────────────── locals ────────────────────────╮                    
+│ │ apply_selection = True                                │                    
+│ │          height = 30                                  │                    
+│ │             pad = False                               │                    
+│ │      post_style = None                                │                    
+│ │       selection = None                                │                    
+│ │ selection_style = None                                │                    
+│ │           style = Style(                              │                    
+│ │                   │   background=Color(13, 17, 23),   │                    
+│ │                   │   foreground=Color(               │                    
+│ │                   │   │   230,                        │                    
+│ │                   │   │   237,                        │                    
+│ │                   │   │   243                         │                    
+│ │                   │   )                               │                    
+│ │                   )                                   │                    
+│ │          visual = None                                │                    
+│ │          widget = PresentScreen()                     │                    
+│ │           width = 100                                 │
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest "tests/test_report.py::test_pressing_R_writes_the_report_and_reports_the_path" -q 2>&1 | grep -nE "visual|widget.py|_styles_cache|render_widget|def render|ContentType|self.visual|_visual|content" | head -40
+52:C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py:4285: in render_lines
+53:    strips = self._styles_cache.render_widget(self, crop)
+54:C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py:116: in render_widget
+56:C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py:221: in render
+58:C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py:455: in render_line
+59:    line = render_content_line(y - gutter.top)
+60:C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py:4263: in render_line
+61:    self._render_content()
+62:C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py:4246: in _render_content
+63:    strips = Visual.to_strips(self, visual, width, height, self.visual_style)
+66:cls = <class 'textual.visual.Visual'>, widget = PresentScreen(), visual = None
+74:        visual: Visual,
+83:        """High level function to render a visual to strips.
+86:            widget: Widget that produced the visual.
+87:            visual: A Visual instance.
+107:>       strips = visual.render_strips(
+120:C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\visual.py:227: AttributeError
+123:│ C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py:4285 in         
+126:│   4282 │   │   │   │   Strip.blank(crop.width, self.visual_style.rich_style) 
+129:│ ❱ 4285 │   │   │   strips = self._styles_cache.render_widget(self, crop)     
+139:│ C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py:116 in   
+140:│ render_widget                                                                
+195:│ C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py:221 in   
+216:│ │        content_size = Size(width=100, height=30)                         │ 
+227:│ │ render_content_line = <bound method Widget.render_line of                │ 
+273:│ C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py:455 in   
+277:│   453 │   │   │   content_y = y - gutter.top                                 
+278:│   454 │   │   │   if content_y < content_height:                             
+279:│ ❱ 455 │   │   │   │   line = render_content_line(y - gutter.top)             
+280:│   456 │   │   │   │   line = line.adjust_cell_length(content_width, inner.ri 
+282:│   458 │   │   │   │   line = Strip.blank(content_width, inner.rich_style)    
+300:│ │       content_height = 30                                                │ 
+301:│ │         content_size = Size(width=100, height=30)                        │ 
+302:│ │        content_width = 100                                               │ 
+303:│ │            content_y = 0                                                 │ 
+325:│ │  render_content_line = <bound method Widget.render_line of               │ 
+368:│ C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py:4263 in         
+371:│   4260 │   │   │   return Strip.blank(self.size.width, self.visual_style.ric 
+374:│ ❱ 4263 │   │   │   self._render_content()                                    
+384:│ C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py:4246 in
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+import textual.widget as w
+src = inspect.getsource(w.Widget.visual.fget) if isinstance(w.Widget.visual, property) else 'not prop'
+print(src)
+" 2>&1 | head -40
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+AttributeError: type object 'Widget' has no attribute 'visual'
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import textual.widget as w
+for name in dir(w.Widget):
+    if 'visual' in name or 'content' in name or 'render' in name:
+        print(name)
+" 2>&1 | head -40
+_render
+_render_content
+_render_widget
+content_offset
+content_region
+content_size
+get_content_height
+get_content_width
+get_visual_style
+post_render
+pre_render
+render
+render_line
+render_lines
+render_str
+scrollable_content_region
+visual_style
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+import textual.widget as w
+print(inspect.getsource(w.Widget._render_content))
+" 2>&1 | head -50
+def _render_content(self) -> None:
+        """Render all lines."""
+        width, height = self.size
+        visual = self._render()
+        strips = Visual.to_strips(self, visual, width, height, self.visual_style)
+        self._render_cache = _RenderCache(self.size, strips)
+        self._dirty_regions.clear()
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+import textual.widget as w
+print(inspect.getsource(w.Widget._render))
+print('---- Screen._render ----')
+import textual.screen as s
+print(inspect.getsource(s.Screen._render))
+" 2>&1 | head -60
+def _render(self) -> Visual:
+        """Get renderable, promoting str to text as required.
+
+        Returns:
+            A Visual.
+        """
+        cache_key = "_render.visual"
+        cached_visual = self._layout_cache.get(cache_key, None)
+        if cached_visual is not None:
+            assert isinstance(cached_visual, Visual)
+            return cached_visual
+        visual = visualize(self, self.render(), markup=self._render_markup)
+        self._layout_cache[cache_key] = visual
+        return visual
+
+---- Screen._render ----
+    def _render(self) -> Visual:
+        """Get renderable, promoting str to text as required.
+
+        Returns:
+            A Visual.
+        """
+        cache_key = "_render.visual"
+        cached_visual = self._layout_cache.get(cache_key, None)
+        if cached_visual is not None:
+            assert isinstance(cached_visual, Visual)
+            return cached_visual
+        visual = visualize(self, self.render(), markup=self._render_markup)
+        self._layout_cache[cache_key] = visual
+        return visual
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+from textual.visual import visualize
+print(inspect.getsource(visualize))
+" 2>&1 | head -60
+def visualize(widget: Widget, obj: object, markup: bool = True) -> Visual:
+    """Get a visual instance from an object.
+
+    If the object does not support the Visual protocol and is a Rich renderable, it
+    will be wrapped in a [RichVisual][textual.visual.RichVisual].
+
+    Args:
+        widget: The parent widget.
+        obj: An object.
+        markup: Enable markup.
+
+    Raises:
+        VisualError: If there is no Visual could be returned to render `obj`.
+
+    Returns:
+        A Visual instance to render the object, or `None` if there is no associated visual.
+    """
+    _rich_traceback_omit = True
+    if isinstance(obj, Visual):
+        # Already a visual
+        return obj
+    # The visualize method should return a Visual if present.
+    visualize = getattr(obj, "visualize", None)
+    if visualize is None:
+        # Doesn't expose the textualize protocol
+        from textual.content import Content
+
+        if isinstance(obj, str):
+            return Content.from_markup(obj) if markup else Content(obj)
+
+        if is_renderable(obj):
+            if isinstance(obj, Text):
+                return Content.from_rich_text(obj, console=widget.app.console)
+
+            # If its is a Rich renderable, wrap it with a RichVisual
+            return RichVisual(widget, rich_cast(obj))
+        else:
+            # We don't know how to make a visual from this object
+            raise VisualError(
+                f"unable to display {obj.__class__.__name__!r} type; must be a str, Rich renderable, or Textual Visual object"
+            )
+    # Call the textualize method to create a visual
+    visual = visualize()
+    if not isinstance(visual, Visual) and is_renderable(visual):
+        return RichVisual(widget, visual)
+    return visual
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=70, offset=361][0m
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+import textual.screen as s
+print('=== Screen.render ===')
+print(inspect.getsource(s.Screen.render))
+" 2>&1 | head -60
+=== Screen.render ===
+    def render(self) -> RenderableType:
+        """Render method inherited from widget, used to render the screen's background.
+
+        Returns:
+            Background renderable.
+        """
+        background = self.styles.background
+        try:
+            base_screen = visible_screen_stack.get().pop()
+        except LookupError:
+            base_screen = None
+
+        if base_screen is not None and base_screen is not self and background.a < 1:
+            # If background is translucent, render a background screen
+            return BackgroundScreen(base_screen, background)
+
+        if background.is_transparent:
+            # If the background is transparent, defer to App.render
+            return self.app.render()
+        # Render a screen of a solid color.
+        return Blank(background)
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+from textual.blank import Blank
+from textual.visual import Visual
+print('Blank MRO:', Blank.__mro__)
+print('isinstance Blank(), Visual:', isinstance(Blank('red'), Visual))
+"
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ModuleNotFoundError: No module named 'textual.blank'
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import textual.screen as s
+import inspect
+src = inspect.getsource(s.Screen)
+import re
+# find imports of Blank / BackgroundScreen
+for line in src.splitlines()[:30]:
+    print(line)
+"
+@rich.repr.auto
+class Screen(Generic[ScreenResultType], Widget):
+    """The base class for screens."""
+
+    AUTO_FOCUS: ClassVar[str | None] = None
+    """A selector to determine what to focus automatically when the screen is activated.
+
+    The widget focused is the first that matches the given [CSS selector](/guide/queries/#query-selectors).
+    Set to `None` to inherit the value from the screen's app.
+    Set to `""` to disable auto focus.
+    """
+
+    CSS: ClassVar[str] = ""
+    """Inline CSS, useful for quick scripts. Rules here take priority over CSS_PATH.
+
+    Note:
+        This CSS applies to the whole app.
+    """
+    CSS_PATH: ClassVar[CSSPathType | None] = None
+    """File paths to load CSS from.
+
+    Note:
+        This CSS applies to the whole app.
+    """
+
+    COMPONENT_CLASSES = {"screen--selection"}
+
+    DEFAULT_CSS = """
+    Screen {
+        layout: vertical;
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import textual, importlib, pkgutil, inspect
+# find Blank
+import textual.screen as s
+print([n for n in dir(s) if 'Blank' in n or 'Background' in n])
+from textual.screen import Blank, BackgroundScreen
+print('Blank', Blank.__mro__)
+print('BackgroundScreen', BackgroundScreen.__mro__)
+"
+['BackgroundScreen', 'Blank']
+Blank (<class 'textual.renderables.blank.Blank'>, <class 'textual.visual.Visual'>, <class 'abc.ABC'>, <class 'object'>)
+BackgroundScreen (<class 'textual.renderables.background_screen.BackgroundScreen'>, <class 'object'>)
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+from textual.screen import BackgroundScreen, Screen
+print('BackgroundScreen has visualize:', hasattr(BackgroundScreen, 'visualize'))
+print('Screen.render default CSS snippet:')
+print(inspect.getsource(Screen.DEFAULT_CSS) if isinstance(Screen.DEFAULT_CSS, str) else Screen.DEFAULT_CSS)
+"
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 1285, in getsource
+BackgroundScreen has visualize: False
+Screen.render default CSS snippet:
+    lines, lnum = getsourcelines(object)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 1267, in getsourcelines
+    lines, lnum = findsource(object)
+                  ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 1078, in findsource
+    file = getsourcefile(object)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 955, in getsourcefile
+    filename = getfile(object)
+               ^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 935, in getfile
+    raise TypeError('module, class, method, function, traceback, frame, or '
+TypeError: module, class, method, function, traceback, frame, or code object was expected, got str
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && cat > /tmp/min_present_test.py <<'EOF'
+import sys
+sys.path.insert(0, r"C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e")
+from taskboard.app import TaskboardApp, PresentScreen
+from pathlib import Path
+import asyncio
+
+async def main():
+    app = TaskboardApp(board_path=str(Path("C:/Users/jjgh8/AppData/Local/Temp/opencode/mp.json")))
+    async with app.run_test(size=(100, 30)) as pilot:
+        await pilot.pause()
+        # get the selected task's project
+        pid = app.board.projects[0].id
+        app.push_screen(PresentScreen(app.board, pid, app.board.projects[0].name, app.selected_task_id))
+        await pilot.pause()
+        print("screen:", type(app.screen).__name__)
+        print("OK, no crash")
+
+asyncio.run(main())
+EOF
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/min_present_test.py 2>&1 | tail -30
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_compositor.py", line 1152, in render_full_update
+    chops = self._render_chops(crop, lambda y: True)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_compositor.py", line 1225, in _render_chops
+    for region, clip, strips in renders:
+                                ^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_compositor.py", line 1071, in _get_renders
+    widget.render_lines(
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py", line 4285, in render_lines
+    strips = self._styles_cache.render_widget(self, crop)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py", line 116, in render_widget
+    strips = self.render(
+             ^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py", line 221, in render
+    strip = render_line(
+            ^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py", line 455, in render_line
+    line = render_content_line(y - gutter.top)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py", line 4263, in render_line
+    self._render_content()
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py", line 4246, in _render_content
+    strips = Visual.to_strips(self, visual, width, height, self.visual_style)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\visual.py", line 227, in to_strips
+    strips = visual.render_strips(
+             ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'render_strips'
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+import textual.widget as w
+print('=== _render_content ===')
+print(inspect.getsource(w.Widget._render_content))
+print('=== render_line ===')
+print(inspect.getsource(w.Widget.render_line))
+"
+=== _render_content ===
+    def _render_content(self) -> None:
+        """Render all lines."""
+        width, height = self.size
+        visual = self._render()
+        strips = Visual.to_strips(self, visual, width, height, self.visual_style)
+        self._render_cache = _RenderCache(self.size, strips)
+        self._dirty_regions.clear()
+
+=== render_line ===
+    def render_line(self, y: int) -> Strip:
+        """Render a line of content.
+
+        Args:
+            y: Y Coordinate of line.
+
+        Returns:
+            A rendered line.
+        """
+        if self.BLANK:
+            return Strip.blank(self.size.width, self.visual_style.rich_style)
+
+        if self._dirty_regions:
+            self._render_content()
+        try:
+            line = self._render_cache.lines[y]
+        except IndexError:
+            line = Strip.blank(self.size.width, self.visual_style.rich_style)
+
+        return line
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+import textual.screen as s
+print('ModalScreen.render' , hasattr(s.ModalScreen, 'render'))
+print('Screen._render', hasattr(s.Screen, '_render'))
+print('Widget._render', hasattr(__import__('textual.widget', fromlist=['Widget']).Widget, '_render'))
+import textual.widget as w
+print('Widget._render is Screen._render?', w.Widget._render is s.Screen._render)
+print('--- Widget._render ---')
+print(inspect.getsource(w.Widget._render))
+"
+ModalScreen.render True
+Screen._render True
+Widget._render True
+Widget._render is Screen._render? True
+--- Widget._render ---
+    def _render(self) -> Visual:
+        """Get renderable, promoting str to text as required.
+
+        Returns:
+            A Visual.
+        """
+        cache_key = "_render.visual"
+        cached_visual = self._layout_cache.get(cache_key, None)
+        if cached_visual is not None:
+            assert isinstance(cached_visual, Visual)
+            return cached_visual
+        visual = visualize(self, self.render(), markup=self._render_markup)
+        self._layout_cache[cache_key] = visual
+        return visual
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+import inspect
+import textual.screen as s
+print('=== ModalScreen.render ===')
+print(inspect.getsource(s.ModalScreen.render))
+"
+=== ModalScreen.render ===
+    def render(self) -> RenderableType:
+        """Render method inherited from widget, used to render the screen's background.
+
+        Returns:
+            Background renderable.
+        """
+        background = self.styles.background
+        try:
+            base_screen = visible_screen_stack.get().pop()
+        except LookupError:
+            base_screen = None
+
+        if base_screen is not None and base_screen is not self and background.a < 1:
+            # If background is translucent, render a background screen
+            return BackgroundScreen(base_screen, background)
+
+        if background.is_transparent:
+            # If the background is transparent, defer to App.render
+            return self.app.render()
+        # Render a screen of a solid color.
+        return Blank(background)
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && cat > /tmp/probe_render.py <<'EOF'
+import sys
+sys.path.insert(0, r"C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e")
+from pathlib import Path
+from textual.blank import Blank if False else None
+from taskboard.app import TaskboardApp, PresentScreen
+from rich.style import Style
+
+app = TaskboardApp(board_path=str(Path("C:/Users/jjgh8/AppData/Local/Temp/opencode/mp.json")))
+import asyncio
+async def main():
+    async with app.run_test(size=(100,30)) as pilot:
+        await pilot.pause()
+        pid = app.board.projects[0].id
+        screen = PresentScreen(app.board, pid, app.board.projects[0].name, app.selected_task_id)
+        # probe before mount
+        print("styles.background before mount:", repr(screen.styles.background))
+        print("has render:", hasattr(screen, 'render'))
+
+asyncio.run(main())
+EOF
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/probe_render.py 2>&1 | tail -20
+File "C:\Users\jjgh8\AppData\Local\Temp\probe_render.py", line 4
+    from textual.blank import Blank if False else None
+                                    ^^
+SyntaxError: invalid syntax
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && cat > /tmp/probe_render.py <<'EOF'
+import sys
+sys.path.insert(0, r"C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e")
+from pathlib import Path
+from taskboard.app import TaskboardApp, PresentScreen
+import asyncio
+
+async def main():
+    app = TaskboardApp(board_path=str(Path("C:/Users/jjgh8/AppData/Local/Temp/opencode/mp.json")))
+    async with app.run_test(size=(100,30)) as pilot:
+        await pilot.pause()
+        pid = app.board.projects[0].id
+        screen = PresentScreen(app.board, pid, app.board.projects[0].name, app.selected_task_id)
+        print("styles.background before mount:", repr(screen.styles.background))
+        print("is_transparent:", screen.styles.background.is_transparent)
+        print("alpha:", screen.styles.background.a)
+
+asyncio.run(main())
+EOF
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/probe_render.py 2>&1 | tail -20
+styles.background before mount: Color(0, 0, 0, a=0)
+is_transparent: True
+alpha: 0
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+from textual.app import App
+print('App has render:', hasattr(App, 'render'))
+import inspect
+print(inspect.getsource(App.render))
+" 2>&1 | head -20
+App has render: True
+    def render(self) -> RenderResult:
+        """Render method, inherited from widget, to render the screen's background.
+
+        May be overridden to customize background visuals.
+
+        """
+        return Blank(self.styles.background)
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && cat > /tmp/probe2.py <<'EOF'
+import sys
+sys.path.insert(0, r"C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e")
+from pathlib import Path
+from taskboard.app import TaskboardApp, PresentScreen
+import asyncio
+from textual.screen import ModalScreen
+
+orig_render = ModalScreen.render
+def traced(self):
+    r = orig_render(self)
+    print("render() returned:", type(r).__name__, repr(r)[:80])
+    print("  is Visual?", hasattr(r, 'visualize'))
+    return r
+ModalScreen.render = traced
+
+async def main():
+    app = TaskboardApp(board_path=str(Path("C:/Users/jjgh8/AppData/Local/Temp/opencode/mp.json")))
+    async with app.run_test(size=(100,30)) as pilot:
+        await pilot.pause()
+        pid = app.board.projects[0].id
+        s = PresentScreen(app.board, pid, app.board.projects[0].name, app.selected_task_id)
+        app.push_screen(s)
+        try:
+            await pilot.pause()
+        except Exception as e:
+            print("EXC:", type(e).__name__, e)
+
+asyncio.run(main())
+EOF
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/probe2.py 2>&1 | tail -30
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_compositor.py", line 1152, in render_full_update
+    chops = self._render_chops(crop, lambda y: True)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_compositor.py", line 1225, in _render_chops
+    for region, clip, strips in renders:
+                                ^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_compositor.py", line 1071, in _get_renders
+    widget.render_lines(
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py", line 4285, in render_lines
+    strips = self._styles_cache.render_widget(self, crop)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py", line 116, in render_widget
+    strips = self.render(
+             ^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py", line 221, in render
+    strip = render_line(
+            ^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\_styles_cache.py", line 455, in render_line
+    line = render_content_line(y - gutter.top)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py", line 4263, in render_line
+    self._render_content()
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widget.py", line 4246, in _render_content
+    strips = Visual.to_strips(self, visual, width, height, self.visual_style)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\visual.py", line 227, in to_strips
+    strips = visual.render_strips(
+             ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'render_strips'
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/probe2.py 2>&1 | grep -E "render\(\) returned|is Visual|EXC:" | head -20
+(no output)
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && cat > /tmp/probe3.py <<'EOF'
+import sys
+sys.path.insert(0, r"C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e")
+from pathlib import Path
+from taskboard.app import TaskboardApp, PresentScreen
+from textual.visual import Visual, visualize
+
+async def main():
+    app = TaskboardApp(board_path=str(Path("C:/Users/jjgh8/AppData/Local/Temp/opencode/mp.json")))
+    async with app.run_test(size=(100,30)) as pilot:
+        await pilot.pause()
+        pid = app.board.projects[0].id
+        s = PresentScreen(app.board, pid, app.board.projects[0].name, app.selected_task_id)
+        r = s.render()
+        print("render() ->", type(r).__name__)
+        print("isinstance Visual:", isinstance(r, Visual))
+        print("has visualize attr:", hasattr(r, 'visualize'))
+        v = visualize(s, r, markup=s._render_markup)
+        print("visualize ->", type(v).__name__ if v is not None else None)
+
+import asyncio
+asyncio.run(main())
+EOF
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/probe3.py 2>&1 | tail -20
+render() -> Blank
+isinstance Visual: True
+has visualize attr: True
+visualize -> Blank
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "
+from textual.screen import BackgroundScreen
+import inspect
+print('has visualize:', hasattr(BackgroundScreen, 'visualize'))
+print('has __rich_console__:', hasattr(BackgroundScreen, '__rich_console__'))
+try:
+    print(inspect.getsource(BackgroundScreen))
+except Exception as e:
+    print('no source', e)
+"
+has visualize: False
+has __rich_console__: True
+class BackgroundScreen:
+    """Tints a renderable and removes links / meta."""
+
+    def __init__(
+        self,
+        screen: Screen,
+        color: Color,
+    ) -> None:
+        """Initialize a BackgroundScreen instance.
+
+        Args:
+            screen: A Screen instance.
+            color: A color (presumably with alpha).
+        """
+        self.screen = screen
+        """Screen to process."""
+        self.color = color
+        """Color to apply (should have alpha)."""
+
+    @classmethod
+    def process_segments(
+        cls, segments: Iterable[Segment], color: Color
+    ) -> Iterable[Segment]:
+        """Apply tint to segments and remove meta + styles
+
+        Args:
+            segments: Incoming segments.
+            color: Color of tint.
+
+        Returns:
+            Segments with applied tint.
+        """
+        from_rich_color = Color.from_rich_color
+        style_from_color = Style.from_color
+        _Segment = Segment
+
+        NULL_STYLE = Style()
+
+        if color.a == 0:
+            # Special case for transparent color
+            for segment in segments:
+                text, style, control = segment
+                if control:
+                    yield segment
+                else:
+                    yield _Segment(
+                        text,
+                        NULL_STYLE if style is None else style.clear_meta_and_links(),
+                        control,
+                    )
+            return
+
+        for segment in segments:
+            text, style, control = segment
+            if control:
+                yield segment
+            else:
+                style = NULL_STYLE if style is None else style.clear_meta_and_links()
+                yield _Segment(
+                    text,
+                    (
+                        style
+                        + style_from_color(
+                            (
+                                (from_rich_color(style.color) + color).rich_color
+                                if style.color is not None
+                                else None
+                            ),
+                            (
+                                (from_rich_color(style.bgcolor) + color).rich_color
+                                if style.bgcolor is not None
+                                else None
+                            ),
+                        )
+                    ),
+                    control,
+                )
+
+    def __rich_console__(
+        self, console: Console, options: ConsoleOptions
+    ) -> RenderResult:
+        segments = console.render(self.screen._compositor, options)
+        color = self.color
+        return self.process_segments(segments, color)
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && python -c "import textual, os; print(os.path.dirname(textual.__file__))"
+C:\Users\jjgh8\anaconda3\Lib\site-packages\textual
+[0m
+[0m$ [0mcd "C:/Users/jjgh8/Github/taskboard/.claude/worktrees/present-e" && grep -rn "def visualize" "C:/Users/jjgh8/anaconda3/Lib/site-packages/textual/" | head -20
+C:/Users/jjgh8/anaconda3/Lib/site-packages/textual/renderables/blank.py:18:    def visualize(self) -> Blank:
+C:/Users/jjgh8/anaconda3/Lib/site-packages/textual/visual.py:55:    def visualize(self, widget: Widget, obj: object) -> Visual | None:
+C:/Users/jjgh8/anaconda3/Lib/site-packages/textual/visual.py:75:def visualize(widget: Widget, obj: object, markup: bool = True) -> Visual:
+[0m
+[93m[1m! [0mpermission requested: external_directory (C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\renderables\*); auto-rejecting
+[0m✗ [0mRead C:/Users/jjgh8/anaconda3/Lib/site-packages/textual/renderables/blank.py failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.

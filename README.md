@@ -131,7 +131,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
 | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
 | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
-| `R` / `S` | Report / Standup | Write an HTML report / show the week's standup |
+| `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
 | `c` | Clocks | Choose the ribbon's two city clocks |
 | `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
 
@@ -229,9 +229,16 @@ shared projects) and one `board.<user>.json` per person. Teammates' cards appear
 **Standup** (`8`) and **People** (`9`). Setup checks the folder as you edit and says what is
 wrong.
 
+## Presentation
+
+`R` opens the presentation of the selected task's project (the focused project when set): the
+gantt field on top, the brief blocks below, and a cursor whose task's notes expand (`←`/`→`
+and `↑`/`↓` move it). `x` exports what it shows to an SVG and a PNG in the `reports` folder;
+`esc` leaves. The presentation is read-only — it never writes the board.
+
 ## Reports
 
-`R` in the app, or from the shell:
+From the shell:
 
 ```powershell
 taskboard --report                       # the whole board
@@ -270,7 +277,7 @@ Everything lives under `~/.taskboard/` (or beside the file you pass with `--boar
 | `board.json.corrupt` | A copy of an unreadable board, kept before the app starts empty |
 | `history.jsonl` | One line per phase move and per added task — the Flow view reads it |
 | `images/<task id>/` | Pasted images, as plain files |
-| `reports/` | HTML reports |
+| `reports/` | HTML reports and the presentation's SVG + PNG exports |
 
 Never commit a real board: the repo's pre-commit hook (`tools/precommit_privacy.py`) refuses
 files that carry your board's text.

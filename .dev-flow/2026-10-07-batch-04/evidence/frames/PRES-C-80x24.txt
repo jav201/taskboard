@@ -1,0 +1,24 @@
+◆ PRESENT · Website Redesign — hybrid                      5 open · ▲2 past due 
+▌ WEBSITE REDESIGN     ◂───────────╎───────────────────◆···┆··········    Oct 10
+  ▎ Build component l… ◂▬╌╌╌╌╌◕┆···╎·········┆·············┆··········       ▲3d
+  ▎ Fix checkout 500 … ⟦━━━━━━━━⟧··╎·········┆·············┆··········       ▲2d
+  ▎ Optimize image as…↳········┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········     Oct 6
+  ▎ Launch new homepa…↳········┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆··········    Oct 10
+  ▎ SEO redirects map  ········┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○·····    Oct 14
+────────────────────────────────────────────────────────────────────────────────
+   Build component library                                                   ▲3d
+  ⟦Fix checkout 500 error⟧                                                   ▲2d
+  · The 500 is a missing tax-rate row for new regions. Roll back the last deploy
+  · if the fix is not green by end of day.                                      
+   Optimize image assets                                                   in 6d
+   Launch new homepage                                                    in 10d
+   SEO redirects map                                                      in 14d
+ ←→  move the cursor · the cursor'd task's notes expand                         
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                

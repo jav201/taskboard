@@ -280,17 +280,17 @@ def test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one(tmp_path):
 # --------------------------------------------------------------------------- #
 # AC9 — the key, and the contract it owes
 # --------------------------------------------------------------------------- #
-def test_the_report_key_is_in_the_seat():
+def test_the_present_key_is_in_the_seat():
     from taskboard.keymap import KEYMAP, fit_bar, palette_commands
-    entry = next(k for k in KEYMAP if k.action == "report")
+    entry = next(k for k in KEYMAP if k.action == "present")
     assert entry.show == "R"
     assert entry.bar is False
     assert "R" not in {show for show, _label in fit_bar(400, "swimlanes")[0]}
-    assert any(action == "report" for _s, _l, action in palette_commands("swimlanes"))
+    assert any(action == "present" for _s, _l, action in palette_commands("swimlanes"))
 
 
-async def test_pressing_R_writes_the_report_and_reports_the_path(tmp_path, monkeypatch):
-    from taskboard.app import TaskboardApp
+async def test_pressing_R_opens_the_presentation_read_only(tmp_path, monkeypatch):
+    from taskboard.app import PresentScreen, TaskboardApp
     loaded(tmp_path, "key.json")
     path = tmp_path / "key.json"
     said = []
@@ -299,8 +299,8 @@ async def test_pressing_R_writes_the_report_and_reports_the_path(tmp_path, monke
         app.notify = lambda *a, **k: said.append(a[0] if a else "")
         await pilot.pause()
         # measured AFTER startup on purpose: launching the app may legitimately
-        # write (the one-time renumber notice, the 20-day sweep). The report's
-        # read-only law is about the REPORT, not about mounting. And it watches
+        # write (the one-time renumber notice, the 20-day sweep). The read-only
+        # law is about the presentation, not about mounting. And it watches
         # for the WRITE, not for a change — saving an unmodified board rewrites
         # identical bytes, which a checksum cannot see.
         before_mtime = path.stat().st_mtime_ns
@@ -308,10 +308,13 @@ async def test_pressing_R_writes_the_report_and_reports_the_path(tmp_path, monke
         monkeypatch.setattr(Board, "save", lambda self: saves.append(self.path))
         await pilot.press("R")
         await pilot.pause()
+        assert isinstance(app.screen, PresentScreen)
         assert saves == [], f"pressing R saved the board: {saves}"
         assert path.stat().st_mtime_ns == before_mtime
-    assert any("Report written to" in m for m in said), said
-    assert list((tmp_path / "reports").glob("board-*.html"))
+        await pilot.press("escape")
+        await pilot.pause()
+        assert not isinstance(app.screen, PresentScreen)
+    assert not list((tmp_path / "reports").glob("board-*.html"))
 
 
 def test_an_empty_board_still_produces_a_document(tmp_path):
