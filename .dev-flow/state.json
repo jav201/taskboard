@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-07-batch-03",
-  "batch_objective": "Cleanup batch: the loose items -- S-4 the link migration's cleanup-before-restore order (the offer's restore-first pattern, a RED arm with a refusing unlink); S-9 a non-text title never crashes (coerce or quarantine at the load boundary); K2-1 the kanban ? legend reads the FILTERED board; UX2-2 a fold-row marker for a late milestone below the fold (cap N more ...); D-623 a project with only milestones draws a rule-only band carrying them; milestones render in lanes/agenda/focus",
+  "batch_id": "2026-10-07-batch-04",
+  "batch_objective": "Batch E of the kg_mejoras plan: the presentation mode behind R (replacing the report) -- the PRES-C interactive hybrid per the operator's verdict 2026-10-07 (gantt on top, brief blocks below, a ⟦━⟧ cursor expanding the notes), exporting SVG and PNG",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -91,6 +91,18 @@
       "to": "core",
       "date": "2026-10-07",
       "reason": "batch 2026-10-07-batch-03 opened by rollover from 2026-10-07-batch-02; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-07",
+      "reason": "batch 2026-10-07-batch-04 opened by rollover from 2026-10-07-batch-02; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-07",
+      "reason": "the parallel tracks reconciled: batch-03 committed on main (46b16be), batch-04 merged from proto/present-e (1666f08); the trunk state points at the tip batch, base_ref = the commit batch-04 landed on"
     }
   ],
   "guided": false,
@@ -144,21 +156,21 @@
     "record": ".dev-flow/2026-10-07-batch-03/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-07-batch-03/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-03/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-07-batch-03/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-07-batch-04/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-04/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-07-batch-04/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-07-batch-03/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-07-batch-03/evidence/",
+    "increments": "repo:.dev-flow/2026-10-07-batch-04/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-07-batch-04/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-03.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-03.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-03/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-03/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-04.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-04.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-04/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-04/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "34bab3c8b110e0a18ddba281c3e75d8597e07a8f",
+  "base_ref": "46b16be5d617cb7838d36ba1d6008af9673c8da4",
   "artifacts": {},
   "decisions_log": [
     {
@@ -190,6 +202,12 @@
       "station": "P5",
       "date": "2026-10-07",
       "decision": "standing authorization — P5 CLOSE: 05-close.md written (gate record, C-44/C-45, backlog: the six items marked done, carries none new); the validator rerun after the record confirmed still-clean; the batch closes uncommitted by design — the coordinator commits and pushes under the operator's commission after the visual verdict; batch E's prototype verdict lands from the present-e worktree."
+    },
+    {
+      "station": "P5",
+      "date": "2026-10-07",
+      "decision": "merge reconciliation -- two batches closed on one trunk; state.json points at 2026-10-07-batch-04 with base_ref 46b16be (the parent batch-04 landed on), so the active-batch lens reads the diff the tip actually carries. Batch-03's sealed record keeps its own gate record at its own commit.",
+      "guided": false
     }
   ],
   "standing_authorization": {
@@ -200,5 +218,5 @@
   },
   "obsidian_synced": false,
   "created_at": "2026-10-07T11:48:16.313804",
-  "resumption_note": "STOPPED per operator 2026-10-06: increment 002 APPROVED. Next: increment 003 (LLR-604.3 the editor's date save routes through the cascade; LLR-604.5 the Linked dates select in ProjectModal storing extra['date_links']; AT-609/AT-610; the IFC Part B #f-date-links block owed by the increment that creates it). Then P4 (four lenses re-read the close tree, captures, fold-canon) and P5 (close: BACKLOG F2 reconcile, fold-canon, operator visual verdict PV-612+, coordinator commit+push). Env: run tests with NO_COLOR unset + TERM=xterm-256color + PYTHONIOENCODING=utf-8 or colour-census tests false-red. All work uncommitted by design; the coordinator commits+pushes after the operator's verdict."
+  "resumption_note": "BOTH tracks closed and merged 2026-10-07: batch-03 (cleanup) at 46b16be, batch-04 (presentation) merged at 1666f08, suite green, validator 0 block. Next: the operator's call on the kg_mejoras plan's remaining batches; open the next batch by rollover from this state."
 }
