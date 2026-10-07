@@ -1,0 +1,30 @@
+◆ PRESENT · Website Redesign — the gantt                                                ▲2 past due · 5 open · 1 done 
+▌ WEBSITE REDESIGN               ●─────────────────────────────────────╎───────────────────◆···┆·········· Oct 10 +10d
+▌ REVIEW · 1 task─────────────────────────────────────────────────────────────────────────────────────────────────────
+  ▎ Build component library ↗    ◂▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◕┆···╎·········┆·············┆··········  Sep 27 ▲3d
+  · Design tokens are frozen. Build buttons, inputs and cards from the approved mockups and publish the storybook     
+  · before review.                                                                                                    
+▌ DOING · 1 task──────────────────────────────────────────────────────────────────────────────────────────────────────
+  ▎ Fix checkout 500 error ↗     ······┆·············┆·····▬╌╌╌╌╌╌╌╌◑··╎·········┆·············┆··········  Sep 28 ▲2d
+  · The 500 is a missing tax-rate row for new regions. Roll back the last deploy if the fix is not green by end of    
+  · day.                                                                                                              
+▌ NEXT · 1 task───────────────────────────────────────────────────────────────────────────────────────────────────────
+  ▎ Optimize image assets       ↳······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········   Oct 6 +6d
+  · Convert hero images to AVIF and lazy-load below the fold. Target a homepage under 1.5 MB.                         
+▌ BACKLOG · 2 tasks───────────────────────────────────────────────────────────────────────────────────────────────────
+  ▎ Launch new homepage         ↳······┆·············┆·············┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆·········· Oct 10 +10d
+  · Feature-flag the cut-over, set DNS TTL to 300, and keep the rollback doc ready. Waits on the library and the asset
+  · pass.                                                                                                             
+  ▎ SEO redirects map            ······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○····· Oct 14 +14d
+  · Build the 301 map from the old URL scheme and submit the new sitemap after cut-over.                              
+ ↳ waits on open work · ● progress · ◆ committed due · ╌ task reach · ─ project span                                  
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
