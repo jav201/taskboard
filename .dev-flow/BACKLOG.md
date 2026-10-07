@@ -3,7 +3,7 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `e085cef` (local HEAD == `origin/main`; batch 2026-10-06-batch-01 started here)
+**Base ref:** `f665425` (local HEAD == `origin/main`; batch 2026-10-07-batch-01 started here)
 · **Last refresh:** 2026-10-04
 **Status:** **2296 tests** (batch `2026-10-04-batch-01`, Batch B1: waits-on links — `◂N`/`▸N`,
 the ready message, `L` through the picker and the gantt link mode, the details dependency section,
@@ -18,17 +18,13 @@ environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
   under the next mode, the per-project `date_links` setting in the project editor. 2512 tests
   green; 27 mutants killed across three batteries.
 
-## Open — after `2026-10-06-batch-01` (Batch B2b: moving linked dates)
+- ✓ done in `2026-10-07-batch-01` — the P4 residue closed (DS-5 restore reuse, one
+  `date_base` rule, `Plan.conflicts` documented, TC-701/TC-702 pins; 2514 tests green).
 
-- **The tested `restore` is not the code path the app runs** (P4 DS-5, LOW): production hand-rolls
-  two restore loops while `models.restore` is unit-tested — three copies of one rule can drift.
-- **`bump_due` has no production caller** (P4 ARCH4-4/SEC4-6, LOW): its today-base is
-  re-implemented in `plan_move`; two implementations of one rule.
-- **`Plan.conflicts` (the totals) is computed but consumed by nobody** (P4 ARCH4-3, NIT).
-- **The C-5 vanished-task arm is unreachable through the UI** (P4 SEC4-3, LOW): deleting a task
-  pushes its own undo entry, evicting the cascade entry the gate reads.
-- **Toast rungs below 80 columns are unpinned** (P4 GAP-3): degrade by design (count rungs, then
-  the clipped lead); the contract pins 118/80 only.
+## Open — after `2026-10-07-batch-01` (the residue batch)
+
+- Nothing open. (Notes carried inside the batch's 04-validation.md: TC-702's string-level pins
+  are proportionate for a cleanup — widen if the toast's clause matrix grows.)
 
 ## Open — after `2026-10-04-batch-02` (Batch B2a: milestones and the one-time offer)
 - **The link migration has the cleanup-before-restore pattern** (security S-4, MEDIUM, B2 P2): in

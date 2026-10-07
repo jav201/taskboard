@@ -635,3 +635,57 @@ async def test_TC_638_the_select_shows_the_default_for_an_unset_rule(tmp_path):
             await pilot.pause()
         sel = app.screen.query_one("#f-date-links", Select)
         assert sel.value == "push_delta", sel.value
+
+
+# --------------------------------------------------------------------------- #
+# TC-701/702 — the C-5 stale-entry refusal and the toast ladder's degrade (GAP-3)
+# --------------------------------------------------------------------------- #
+async def test_TC_701_the_c5_gate_refuses_when_the_moved_task_vanished(tmp_path):
+    """TC-701 (LLR-604.4, C-5): `m` refuses when the top cascade entry names a
+    task no longer on the board. The UI cannot reach this (a delete pushes its
+    own undo entry), so the stale entry is synthesized by hand: after a real `+`
+    on tm2, the entry's `task_id` is pointed at a task that does not exist while
+    its `tasks` list is kept — `m` toasts the verbatim refusal and no date moves."""
+    path, _b = _board(tmp_path)
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118, 30), notifications=True) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        app.selected_task_id = "tm2"
+        app.refresh_view()
+        await pilot.press("+")
+        await pilot.pause()
+        moved = {tid: _due(app.board, tid) for tid in ("tm2", "tm3", "tm4", "tm5")}
+        app._undo_stack[-1]["cascade"]["task_id"] = "gone"   # the C-5 stale entry
+        await pilot.press("m")
+        await pilot.pause()
+        said = "\n".join(_toasts(app))
+        assert "m re-applies the last date move — nothing to re-apply" in said, said
+        assert {tid: _due(app.board, tid) for tid in moved} == moved, "m wrote nothing"
+
+
+async def test_TC_702_the_toast_fits_and_degrades_below_80(tmp_path):
+    """TC-702 (GAP-3): at 118x30 a real `+` on tm2 toasts; re-rendering that move
+    through the ladder at 80/60/40/24 keeps the toast within the width (the
+    degrade-by-design contract), and at 24 the final fit never collapses to an
+    empty string."""
+    from taskboard.models import plan_move, resolve_mode
+    from taskboard.views import vis
+    path, _b = _board(tmp_path)
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118, 30), notifications=True) as pilot:
+        await pilot.press("4")
+        await pilot.pause()
+        app.selected_task_id = "tm2"
+        app.refresh_view()
+        await pilot.press("+")
+        await pilot.pause()
+        assert _toasts(app), "the real bump toasts"
+        plan = plan_move(app.board, "tm2", 0, 1, resolve_mode(app.board, "tm2"), date.today())
+        for width in (80, 60, 40, 24):
+            await pilot.resize_terminal(width, 24)
+            await pilot.pause()
+            text = app._cascade_toast(app.board.task_by_id("tm2"), plan, 0)
+            assert vis(text) <= width, (width, vis(text), text)
+            if width == 24:
+                assert text, "the fit never collapses to nothing at 24"
