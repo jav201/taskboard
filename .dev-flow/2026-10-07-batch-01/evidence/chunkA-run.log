@@ -1,0 +1,342 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-01/evidence/chunkA-brief.md
+[0m→ [0mRead taskboard/models.py
+[0m→ [0mRead taskboard/models.py[90m [offset=1184][0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1180, limit=160][0m
+[0m✱ [0mGrep "restore|from .models import|from taskboard.models import|import models"[90m in taskboard/app.py · 15 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=20, limit=30][0m
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\models.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+@@ -654,8 +654,15 @@
+     except (ValueError, AttributeError):
+         return None
+ 
+ 
++def date_base(stored: str | None, today: date) -> date:
++    """The one "undated means today" base (ARCH4-4/SEC4-6): a readable stored
++    date is itself; an undated or unreadable one is `today` — never an invented
++    epoch. `bump_due` and `plan_move` both build on this rule."""
++    return parse_iso(stored) or today
++
++
+ def bump_due(task: "Task", delta: int, today: date) -> None:
+     """Move `task.due_date` `delta` days and write it back as ISO text.
+ 
+     The base is the task's OWN date, or `today` when there is no readable
+
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\models.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+@@ -669,9 +669,9 @@
+ one: an undated task and a corrupt stored string both parse to None
+ (`parse_iso` leniency), and None means the bump starts from today —
+ never from an invented epoch. Pure bar the one field write; the caller
+ saves (the `set_task_phase` convention)."""
+-base = parse_iso(task.due_date) or today
++base = date_base(task.due_date, today)
+ task.due_date = (base + timedelta(days=delta)).isoformat()
+ if task.milestone:                  # a milestone moves whole: one date (D-605)
+     task.start_date = task.due_date
+ 
+
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\models.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+@@ -1921,11 +1921,11 @@
+ if t.milestone:
+     start_delta = due_delta
+ s, d = _cascade_dates(t)
+ if s is None and start_delta:
+-    s = today
++    s = date_base(t.start_date, today)
+ if d is None and due_delta:
+-    d = today
++    d = date_base(t.due_date, today)
+ plan = Plan(mode)
+ plan.moved[task_id] = (s + timedelta(days=start_delta) if s else None,
+                        d + timedelta(days=due_delta) if d else None)
+ plan.shift[task_id] = due_delta
+
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\models.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+@@ -1843,9 +1843,11 @@
+ """What one date move does to a chain, computed before anything is written."""
+ mode: str
+ moved: dict = field(default_factory=dict)          # id -> (start|None, due|None)
+ shift: dict = field(default_factory=dict)          # id -> days
+-conflicts: list = field(default_factory=list)      # (waiter, pred, TOTAL days) after
++conflicts: list = field(default_factory=list)      # (waiter, pred, TOTAL days) after —
++                                                   # the tested intermediate (TC-629);
++                                                   # production reads new_conflicts
+ new_conflicts: list = field(default_factory=list)  # (waiter, pred, ADDED days)
+ project_over: dict = field(default_factory=dict)   # project id -> days past due, after
+ project_over_before: dict = field(default_factory=dict)
+ 
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -21,9 +21,10 @@
+                      archive_refusal, default_board_path, is_open, link_refusal,
+                      milestone_candidates, milestones_marked, next_priority, parse_iso,
+                      ready_messages, run_link_migration, run_milestone_offer,
+                      set_milestone, strip_controls, waiting_ids,
+-                     CASCADE_MODES, apply_plan, plan_move, resolve_mode, snapshot)
++                     CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
++                     snapshot)
+ from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+                      ProjectPicker,
+                      StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
+
+[0m
+Now the app.py changes — import `restore` and replace both hand-rolled loops:
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -1210,13 +1210,11 @@
+         self.notify("m re-applies the last date move — nothing to re-apply",
+                     title="Move", severity="information", markup=False)
+         return
+     self._undo_stack.pop()                 # undo the entry's writes first
+-    for one in cas["tasks"]:
+-        t = self.board.task_by_id(one["task_id"])
+-        if t is not None:
+-            t.start_date = one["fields"]["start_date"]
+-            t.due_date = one["fields"]["due_date"]
++    restore(self.board, {one["task_id"]: (one["fields"]["start_date"],
++                                          one["fields"]["due_date"])
++                         for one in cas["tasks"]})
+     nxt = CASCADE_MODES[(CASCADE_MODES.index(cas["mode"]) + 1) % len(CASCADE_MODES)]
+     self._apply_cascade(task, cas["sd"], cas["dd"], mode=nxt)
+ 
+ # ---- undo (LLR-010.1: a session LIFO of pre-mutation snapshots) --------
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -1287,13 +1287,11 @@
+ # one date move is ONE step — every moved task's dates come back
+ # together (LLR-604.2; a task purged since is skipped, the
+ # shipped stale-entry rule)
+ cas = entry["cascade"]
+-for one in cas["tasks"]:
+-    t = self.board.task_by_id(one["task_id"])
+-    if t is not None:
+-        t.start_date = one["fields"]["start_date"]
+-        t.due_date = one["fields"]["due_date"]
++restore(self.board, {one["task_id"]: (one["fields"]["start_date"],
++                                      one["fields"]["due_date"])
++                     for one in cas["tasks"]})
+ if len(cas["tasks"]) > 1:
+     self.board.save_atomic()
+ else:
+     self.board.save()
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests -q
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+..................................................................       [100%]
+2514 passed in 384.74s (0:06:24)
+[0m
+[0m$ [0mgit status --short && git diff --stat
+M .dev-flow/state.json
+ M .gitattributes
+ M taskboard/app.py
+ M taskboard/models.py
+ M tests/test_cascade_app.py
+?? .dev-flow/2026-10-06-batch-01/decisions-log.json
+?? .dev-flow/2026-10-07-batch-01/
+?? .dev-flow/rollover_residue.py
+warning: in the working copy of '.dev-flow/state.json', LF will be replaced by CRLF the next time Git touches it
+ .dev-flow/state.json      | 131 ++++++++++++++--------------------------------
+ .gitattributes            |   1 +
+ taskboard/app.py          |  19 +++----
+ taskboard/models.py       |  17 ++++--
+ tests/test_cascade_app.py |  54 +++++++++++++++++++
+ 5 files changed, 116 insertions(+), 106 deletions(-)
+warning: in the working copy of '.gitattributes', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/models.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_cascade_app.py', LF will be replaced by CRLF the next time Git touches it
+[0m
+[0m$ [0mgit diff taskboard/models.py taskboard/app.py
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 861ee29..957e170 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -22,7 +22,8 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
+                      milestone_candidates, milestones_marked, next_priority, parse_iso,
+                      ready_messages, run_link_migration, run_milestone_offer,
+                      set_milestone, strip_controls, waiting_ids,
+-                     CASCADE_MODES, apply_plan, plan_move, resolve_mode, snapshot)
++                     CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
++                     snapshot)
+ from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+                      ProjectPicker,
+@@ -1210,11 +1211,9 @@ class TaskboardApp(App):
+                         title="Move", severity="information", markup=False)
+             return
+         self._undo_stack.pop()                 # undo the entry's writes first
+-        for one in cas["tasks"]:
+-            t = self.board.task_by_id(one["task_id"])
+-            if t is not None:
+-                t.start_date = one["fields"]["start_date"]
+-                t.due_date = one["fields"]["due_date"]
++        restore(self.board, {one["task_id"]: (one["fields"]["start_date"],
++                                              one["fields"]["due_date"])
++                             for one in cas["tasks"]})
+         nxt = CASCADE_MODES[(CASCADE_MODES.index(cas["mode"]) + 1) % len(CASCADE_MODES)]
+         self._apply_cascade(task, cas["sd"], cas["dd"], mode=nxt)
+ 
+@@ -1289,11 +1288,9 @@ class TaskboardApp(App):
+                 # together (LLR-604.2; a task purged since is skipped, the
+                 # shipped stale-entry rule)
+                 cas = entry["cascade"]
+-                for one in cas["tasks"]:
+-                    t = self.board.task_by_id(one["task_id"])
+-                    if t is not None:
+-                        t.start_date = one["fields"]["start_date"]
+-                        t.due_date = one["fields"]["due_date"]
++                restore(self.board, {one["task_id"]: (one["fields"]["start_date"],
++                                                      one["fields"]["due_date"])
++                                     for one in cas["tasks"]})
+                 if len(cas["tasks"]) > 1:
+                     self.board.save_atomic()
+                 else:
+diff --git a/taskboard/models.py b/taskboard/models.py
+index ecd570d..7535b66 100644
+--- a/taskboard/models.py
++++ b/taskboard/models.py
+@@ -655,6 +655,13 @@ def parse_iso(value: str | None) -> date | None:
+         return None
+ 
+ 
++def date_base(stored: str | None, today: date) -> date:
++    """The one "undated means today" base (ARCH4-4/SEC4-6): a readable stored
++    date is itself; an undated or unreadable one is `today` — never an invented
++    epoch. `bump_due` and `plan_move` both build on this rule."""
++    return parse_iso(stored) or today
++
++
+ def bump_due(task: "Task", delta: int, today: date) -> None:
+     """Move `task.due_date` `delta` days and write it back as ISO text.
+ 
+@@ -663,7 +670,7 @@ def bump_due(task: "Task", delta: int, today: date) -> None:
+     (`parse_iso` leniency), and None means the bump starts from today —
+     never from an invented epoch. Pure bar the one field write; the caller
+     saves (the `set_task_phase` convention)."""
+-    base = parse_iso(task.due_date) or today
++    base = date_base(task.due_date, today)
+     task.due_date = (base + timedelta(days=delta)).isoformat()
+     if task.milestone:                  # a milestone moves whole: one date (D-605)
+         task.start_date = task.due_date
+@@ -1837,7 +1844,9 @@ class Plan:
+     mode: str
+     moved: dict = field(default_factory=dict)          # id -> (start|None, due|None)
+     shift: dict = field(default_factory=dict)          # id -> days
+-    conflicts: list = field(default_factory=list)      # (waiter, pred, TOTAL days) after
++    conflicts: list = field(default_factory=list)      # (waiter, pred, TOTAL days) after —
++                                                       # the tested intermediate (TC-629);
++                                                       # production reads new_conflicts
+     new_conflicts: list = field(default_factory=list)  # (waiter, pred, ADDED days)
+     project_over: dict = field(default_factory=dict)   # project id -> days past due, after
+     project_over_before: dict = field(default_factory=dict)
+@@ -1915,9 +1924,9 @@ def plan_move(board: Board, task_id: str, start_delta: int, due_delta: int, mode
+         start_delta = due_delta
+     s, d = _cascade_dates(t)
+     if s is None and start_delta:
+-        s = today
++        s = date_base(t.start_date, today)
+     if d is None and due_delta:
+-        d = today
++        d = date_base(t.due_date, today)
+     plan = Plan(mode)
+     plan.moved[task_id] = (s + timedelta(days=start_delta) if s else None,
+                            d + timedelta(days=due_delta) if d else None)
+warning: in the working copy of 'taskboard/models.py', LF will be replaced by CRLF the next time Git touches it
+[0m
+All three residue items done, full suite green.
+
+## REPORT BACK
+
+**What changed per file:**
+
+`taskboard/models.py`
+- `models.py:658-664` — added module-level helper `date_base(stored, today)` returning `parse_iso(stored) or today` (ARCH4-4/SEC4-6).
+- `models.py:673` — `bump_due` now uses `date_base(task.due_date, today)` instead of the inline `parse_iso(...) or today`.
+- `models.py:1927-1930` — `plan_move` now uses `date_base(t.start_date, today)` / `date_base(t.due_date, today)` for an undated moved task, replacing the inline `= today`.
+- `models.py:1847-1849` — `Plan.conflicts` field comment extended to state it is the after-state TOTALS, kept as the tested intermediate (TC-629), and that production reads `new_conflicts` (ARCH4-3).
+
+`taskboard/app.py`
+- `app.py:25` — imported `restore` from `.models`.
+- `app.py:1214-1216` — `action_cascade_mode` hand-rolled restore loop replaced with `restore(self.board, {task_id: (start, due) ...})`.
+- `app.py:1291-1293` — `action_undo` `"cascade"` branch hand-rolled loop replaced with the same `restore(...)` call.
+
+**Final suite count:** `2514 passed` in 384.74s, zero failures (including `test_win_clipboard_roundtrip`).
+
+**Deviations:**
+- Suite count is 2514, not the 2512 the brief stated. Cause: the tests agent added 2 tests in `tests/test_cascade_app.py` (54 lines, `git diff --stat`); I did not touch `tests/`. No other deviation — no behavior changes, no git mutations, no files beyond the two assigned.

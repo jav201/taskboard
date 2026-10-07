@@ -1,0 +1,223 @@
+[0m
+> build · deepseek-flash
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-01/evidence/chunkB-brief.md
+[0m→ [0mRead tests/test_cascade_app.py
+[0m
+[0m$ [0mgit status && git log --oneline -5 && ls tests/
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .dev-flow/state.json
+	modified:   .gitattributes
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.dev-flow/2026-10-06-batch-01/decisions-log.json
+	.dev-flow/2026-10-07-batch-01/
+	.dev-flow/rollover_residue.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+f665425 feature: moving a task's dates moves what waits on it — cascade engine (push_delta, one overlap measure), +/- and editor routed through it with the C-3 toast and one-step undo, m re-applies under the next mode, per-project date_links setting (batch 2026-10-06-batch-01; operator's visual verdict: all accepted)
+e085cef docs: pair LED-2026-10-04-batch-02.11 back from the three requirement blocks (validator V26)
+f391be7 feature: milestones as a task flag — M key and editor box, gantt M-1 rows with ruler marks, kanban M-2 band rule, one-time M-3 offer migration (backup, log, undo); reached milestones in a legible grey per the operator's visual verdict
+4b2c13a feature: waits-on links with L, details dependencies, archive guard, link migration
+0447070 security: user and synced text never parsed as markup; synced fields validated
+__pycache__
+conftest.py
+kg_board.py
+test_agenda.py
+test_app.py
+test_archive.py
+test_cascade.py
+test_cascade_app.py
+test_cells.py
+test_cities.py
+test_colour_budget.py
+test_colour_budget_app.py
+test_control_bytes.py
+test_dependencies.py
+test_details_grid.py
+test_details_links.py
+test_details_markup.py
+test_edit_window.py
+test_emoji_picker.py
+test_english.py
+test_field.py
+test_flow.py
+test_flow_view.py
+test_focus.py
+test_gantt.py
+test_gantt_board.py
+test_gantt_link.py
+test_gantt_milestones.py
+test_gantt_polish.py
+test_highlight_segments.py
+test_history.py
+test_kanban_milestones.py
+test_kanban_priority.py
+test_kanban_readable.py
+test_keymap.py
+test_lanes_grid.py
+test_legend.py
+test_link_migration.py
+test_link_picker.py
+test_links.py
+test_markup_census.py
+test_markup_sites.py
+test_milestone_offer.py
+test_milestone_offer_seam.py
+test_milestones.py
+test_momentum.py
+test_motion.py
+test_no_live_board.py
+test_occupancy.py
+test_palette_ration.py
+test_precommit_gate.py
+test_prism_laws.py
+test_privacy_sweep.py
+test_readme.py
+test_report.py
+test_requirements.py
+test_rescue.py
+test_row_cost.py
+test_scratch_cannot_be_committed.py
+test_setup_help.py
+test_span_economy.py
+test_spend.py
+test_swimlanes.py
+test_sync_fields.py
+test_team_sync.py
+test_team_views.py
+test_vertical_fill.py
+test_view_survival.py
+test_wave.py
+[0m
+[0m✱ [0mGrep "def (_cascade_toast|plan_move|resolve_mode|vis)"[90m 16 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1080, limit=220][0m
+[0m→ [0mRead taskboard/models.py[90m [offset=1860, limit=160][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=70, limit=30][0m
+[0m→ [0mRead tests/kg_board.py
+[0m
+[0m$ [0mgrep -rn "resize_terminal\|pilot.resize" tests/ | head -20; grep -n "CASCADE_MODES\|CASCADE_ALL_MODES\|CASCADE_DEFAULT_MODE" taskboard/models.py | head
+tests/test_app.py:449:        await pilot.resize_terminal(150, 40)
+tests/test_kanban_readable.py:1067:        await pilot.resize_terminal(80, 24)
+Binary file tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_app.cpython-312.pyc matches
+Binary file tests/__pycache__/test_kanban_readable.cpython-312-pytest-8.3.4.pyc matches
+1829:CASCADE_MODES = ("flag", "push_delta", "together")
+1830:CASCADE_ALL_MODES = CASCADE_MODES + ("push",)
+1831:CASCADE_DEFAULT_MODE = "push_delta"
+1891:    if override in CASCADE_ALL_MODES:
+1896:    return v if v in CASCADE_MODES else CASCADE_DEFAULT_MODE
+1912:    assert mode in CASCADE_ALL_MODES, mode
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=30, offset=435][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=40, offset=1][0m
+Now I'll append the two tests.
+[0m
+[0m← [0mEdit tests/test_cascade_app.py
+Index: C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
++++ C:\Users\jjgh8\Github\taskboard\tests\test_cascade_app.py
+@@ -634,4 +634,58 @@
+         for _ in range(3):
+             await pilot.pause()
+         sel = app.screen.query_one("#f-date-links", Select)
+         assert sel.value == "push_delta", sel.value
++
++
++# --------------------------------------------------------------------------- #
++# TC-701/702 — the C-5 stale-entry refusal and the toast ladder's degrade (GAP-3)
++# --------------------------------------------------------------------------- #
++async def test_TC_701_the_c5_gate_refuses_when_the_moved_task_vanished(tmp_path):
++    """TC-701 (LLR-604.4, C-5): `m` refuses when the top cascade entry names a
++    task no longer on the board. The UI cannot reach this (a delete pushes its
++    own undo entry), so the stale entry is synthesized by hand: after a real `+`
++    on tm2, the entry's `task_id` is pointed at a task that does not exist while
++    its `tasks` list is kept — `m` toasts the verbatim refusal and no date moves."""
++    path, _b = _board(tmp_path)
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.press("4")
++        await pilot.pause()
++        app.selected_task_id = "tm2"
++        app.refresh_view()
++        await pilot.press("+")
++        await pilot.pause()
++        moved = {tid: _due(app.board, tid) for tid in ("tm2", "tm3", "tm4", "tm5")}
++        app._undo_stack[-1]["cascade"]["task_id"] = "gone"   # the C-5 stale entry
++        await pilot.press("m")
++        await pilot.pause()
++        said = "\n".join(_toasts(app))
++        assert "m re-applies the last date move — nothing to re-apply" in said, said
++        assert {tid: _due(app.board, tid) for tid in moved} == moved, "m wrote nothing"
++
++
++async def test_TC_702_the_toast_fits_and_degrades_below_80(tmp_path):
++    """TC-702 (GAP-3): at 118x30 a real `+` on tm2 toasts; re-rendering that move
++    through the ladder at 80/60/40/24 keeps the toast within the width (the
++    degrade-by-design contract), and at 24 the final fit never collapses to an
++    empty string."""
++    from taskboard.models import plan_move, resolve_mode
++    from taskboard.views import vis
++    path, _b = _board(tmp_path)
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(118, 30), notifications=True) as pilot:
++        await pilot.press("4")
++        await pilot.pause()
++        app.selected_task_id = "tm2"
++        app.refresh_view()
++        await pilot.press("+")
++        await pilot.pause()
++        assert _toasts(app), "the real bump toasts"
++        plan = plan_move(app.board, "tm2", 0, 1, resolve_mode(app.board, "tm2"), date.today())
++        for width in (80, 60, 40, 24):
++            await pilot.resize_terminal(width, 24)
++            await pilot.pause()
++            text = app._cascade_toast(app.board.task_by_id("tm2"), plan, 0)
++            assert vis(text) <= width, (width, vis(text), text)
++            if width == 24:
++                assert text, "the fit never collapses to nothing at 24"
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+...............                                                          [100%]
+15 passed in 11.41s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_cascade_app.py -q -k "TC_701 or TC_702" 2>&1 | tail -8
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..                                                                       [100%]
+2 passed, 13 deselected in 1.05s
+[0m
+[0m$ [0mgit diff --stat -- tests/ && git status --short -- tests/
+warning: in the working copy of 'tests/test_cascade_app.py', LF will be replaced by CRLF the next time Git touches it
+ tests/test_cascade_app.py | 54 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ M tests/test_cascade_app.py
+[0m
+REPORT BACK
+
+**Tests appended** (`tests/test_cascade_app.py`, append-only, +54 lines, no existing test touched):
+1. `test_TC_701_the_c5_gate_refuses_when_the_moved_task_vanished` — real `+` on tm2, `app._undo_stack[-1]["cascade"]["task_id"] = "gone"` (tasks list kept), `m` → verbatim refusal toast, all four dates unchanged.
+2. `test_TC_702_the_toast_fits_and_degrades_below_80` — real `+` on tm2 at 118x30, fresh `plan = plan_move(app.board, "tm2", 0, 1, resolve_mode(...), date.today())`, re-rendered via `app._cascade_toast(task, plan, 0)` after `pilot.resize_terminal` to 80/60/40/24; asserts `vis(text) <= width` each, non-empty at 24.
+
+**Run counts:**
+- `pytest tests/test_cascade_app.py -q` → **15 passed** (13 pre-existing + 2 new).
+- `-k "TC_701 or TC_702"` → **2 passed, 13 deselected**.
+
+**Deviations:**
+- Brief says "12+2 nodes"; the file actually held **13** existing tests, so 15 total — otherwise none.
+- Imports (`plan_move`, `resolve_mode`, `vis`) placed as function-local imports to keep the edit strictly append-only; `TaskboardApp`/`date` reused from the existing top imports.
+- No git mutations, nothing touched outside `tests/`.

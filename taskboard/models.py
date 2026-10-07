@@ -655,6 +655,13 @@ def parse_iso(value: str | None) -> date | None:
         return None
 
 
+def date_base(stored: str | None, today: date) -> date:
+    """The one "undated means today" base (ARCH4-4/SEC4-6): a readable stored
+    date is itself; an undated or unreadable one is `today` — never an invented
+    epoch. `bump_due` and `plan_move` both build on this rule."""
+    return parse_iso(stored) or today
+
+
 def bump_due(task: "Task", delta: int, today: date) -> None:
     """Move `task.due_date` `delta` days and write it back as ISO text.
 
@@ -663,7 +670,7 @@ def bump_due(task: "Task", delta: int, today: date) -> None:
     (`parse_iso` leniency), and None means the bump starts from today —
     never from an invented epoch. Pure bar the one field write; the caller
     saves (the `set_task_phase` convention)."""
-    base = parse_iso(task.due_date) or today
+    base = date_base(task.due_date, today)
     task.due_date = (base + timedelta(days=delta)).isoformat()
     if task.milestone:                  # a milestone moves whole: one date (D-605)
         task.start_date = task.due_date
@@ -1837,7 +1844,9 @@ class Plan:
     mode: str
     moved: dict = field(default_factory=dict)          # id -> (start|None, due|None)
     shift: dict = field(default_factory=dict)          # id -> days
-    conflicts: list = field(default_factory=list)      # (waiter, pred, TOTAL days) after
+    conflicts: list = field(default_factory=list)      # (waiter, pred, TOTAL days) after —
+                                                       # the tested intermediate (TC-629);
+                                                       # production reads new_conflicts
     new_conflicts: list = field(default_factory=list)  # (waiter, pred, ADDED days)
     project_over: dict = field(default_factory=dict)   # project id -> days past due, after
     project_over_before: dict = field(default_factory=dict)
@@ -1915,9 +1924,9 @@ def plan_move(board: Board, task_id: str, start_delta: int, due_delta: int, mode
         start_delta = due_delta
     s, d = _cascade_dates(t)
     if s is None and start_delta:
-        s = today
+        s = date_base(t.start_date, today)
     if d is None and due_delta:
-        d = today
+        d = date_base(t.due_date, today)
     plan = Plan(mode)
     plan.moved[task_id] = (s + timedelta(days=start_delta) if s else None,
                            d + timedelta(days=due_delta) if d else None)

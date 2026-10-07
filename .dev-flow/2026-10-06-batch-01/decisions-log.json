@@ -1,0 +1,67 @@
+[
+  {
+    "station": "P0",
+    "date": "2026-10-06",
+    "decision": "standing authorization — the operator's commission (read from the chain: 'Adelante' 2026-10-06 plus the pre-authorized split D-601; PLAN.md header carries the full wording): P0 approved. Batch 2026-10-06-batch-01 opened by rollover from 2026-10-04-batch-02 (its decisions_log, 17 entries, moved to .dev-flow/2026-10-04-batch-02/decisions-log.json); core; flow rev100, the installed bundle; RC-1 origin/main == HEAD == e085cef; RC-2 origin answered; kickoff validator 0 block 55 notice (inherited from closed batches, declared in PLAN.md); triggers B1 B4 C5 C6 C8 D1 D2 E1 F2 fired, A1-A4 judged not fired (the same judgement as the previous five batches); story US-604 READY (refinement in §2.6); P1 is next."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-06",
+    "decision": "standing authorization — the operator's commission (PLAN.md header): P1 approved. Requirements derived: US-604; HLR-604; LLR-604.1-604.5; AT-607..AT-611; TC-618..TC-626; ledger LED .1; IFC Part A (Part B's #f-date-links block owed by the increment that creates it); 8 premises executed TRUE (p1-premises.txt; p1-cascade-logic.txt: the prototype engine's 126-line transcript, all asserts passed); scope decisions D-626..D-632 (the gantt edit-preview mode OUT to BACKLOG, the setting in ProjectModal, one cascade = one undo entry, the editor cascades only on a real date change, the setting local-only, engine strings vs screen labels, flag = the shipped conflict mark); security scan security_required true (flags session, migration, escape), answered in §6.3; contract 25785 characters (V26 budget); validator 0 block; P2 (the four lenses: qa, architect, security, ux — C and D triggers fired) is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P2 iteration 1: qa-reviewer FAIL (blocker Q-1: AT-607's moved-set contradicts the executed engine on the contract's own fixture — tm4 also moves; majors Q-2 AT-608/609 moved-sets, Q-3 the ONE-measure claim false for milestone waiters on disk), architect FAIL (blockers A-1 = Q-1, A-2 = Q-3; major A-3 the undated-task base is new engine behavior; minors A-4..A-6), security-reviewer FAIL (HIGH S-1 = Q-1, S-2 = Q-3; MEDIUM S-3 'atomic save' claim false on disk; LOW S-4, S-5), ux-reviewer FAIL (blocker UX-1 = Q-1; majors UX-2 = Q-3, UX-3 the toast must NAME the moved tasks per the approved C-3 frame; minors UX-4..UX-7) -> iterate-to-refine to P1 (every disposition recorded in 02-review.md next)."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P1 iteration 2 approved: every P2 iteration-1 finding folded (02-review.md; ledger LED .2): the AT thresholds re-derived by executing the prototype engine on the exact AT board (p1_thresholds.py / p1-thresholds.txt — tm3 AND tm4 move, the tm5 discriminator, the editor's +3/+3/+3); D-633 the ONE measure is the shipped link_overlap (the prototype's milestone carve-out dropped; moved sets identical); the toast adopts the approved C-3 ladder (names when they fit); flagged now reachable; m's Key entry and refusal literal pinned; D-634 save_atomic for multi-task cascades; S-4/S-5/Q-6/A-6 folded; TC-627 added (the undated base); contract 31455 characters; validator 0 block; P2 iteration 2 (the same four lenses re-read the delta) is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P1 iteration 3 approved: P2 iteration-2 findings folded (02-review.md iteration 2; ledger LED .3): the toast literals re-pinned to EXECUTED strings (the toast ladder defined in §1.3; p2_arch_probe.py; AT-607 @118 'pushed Add push, Offline sync +1d each', @80 'pushed 2 +1d each'; the project clause full-name-or-first-word, AT-610 'Data +2d past ◆'); the flag clause grammar specified and pinned ('flagged Add push +1d', 'flagged Revenue +2d'); D-633 re-worded (the constant does NOT universally cancel; TC-628 pins the slack boundary); new_conflicts carries ADDED days; AT-610 pins the editor; D-634 extended to the restore; §1.6 rows, §5 listings, §6.3 citation; contract 33747 characters; validator 0 block; P2 iteration 3 (the four lenses re-read the delta) is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P2 iteration 3: qa-reviewer FAIL (major Q-9: §1.3's ladder gloss fixed the name budget at 12 while the adopted ladder narrows 12 to 8 — and AT-608's @118 toast lands on the 8-rung, so a P3 written from the gloss flips the pinned 'Mobile +1d past ◆' to RED; executed), architect PASS-WITH-NOTES (A-16 = Q-9, major; A-17, A-18 minors), security-reviewer PASS-WITH-NOTES (S-12, S-13 LOW), ux-reviewer PASS-WITH-NOTES (UX-10, UX-11 minors) -> iterate-to-refine to P1 (folds: the 12-to-8 narrowing stated, the flag clause's count/mixed forms pinned, the probe's stale checks corrected and transcripts captured, P-9 scoped, §5's parenthetical). NOTE — the iteration counter skipped one fold cycle (the P2-iteration-2 to P1 fold was logged with --station instead of --iterate-to); the counter now catches up."
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P1 iteration 4 approved: P2 iteration-3 findings folded (02-review.md iteration 3; ledger LED .4): §1.3's ladder definition corrected (the name budget narrows 12 to 8; the 8-rung is load-bearing); the flag clause's count and mixed forms pinned; the overlap agreement claim scoped to moved sets and added deltas; P-9 scoped; the probe's checks corrected and transcripts captured (p2-arch-probe.txt, 4 PASS); contract 34300 characters; validator 0 block; P2 iteration 4 (the four lenses re-read the delta — a one-sentence fold plus hygiene) is next."
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P2 approved (iteration 4: the four lenses PASS-WITH-NOTES; 0 blocker, 0 major, 0 HIGH): architect PASS-WITH-NOTES, ux-reviewer PASS-WITH-NOTES, qa-reviewer PASS-WITH-NOTES, security-reviewer PASS-WITH-NOTES; the 3 minors folded at the gate (Q-12 the lead-title clip named; S-14 the probe's encoding reconfigure; S-15 the degenerate-flag-line clause); carried to P4: the D-627 re-siting (the operator's visual verdict) and the scoped P-9 NEW strings; contract 34580 characters across 4 iterations (iteration cap surfaced: root cause was the orchestrator's own unexecuted literals, twice; each iteration shrank the findings — 2 blockers, 2 blockers, 1 major, 0); P3 increment 001 (the cascade engine, LLR-604.1) is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P3 increment 001 approved (revision 2): LLR-604.1, the cascade engine (plan_move/apply_plan/snapshot/restore/resolve_mode + Plan) ported from the proved prototype with its four declared adaptations (Task.milestone, the carve-out dropped per D-633, new_conflicts carries the ADDED days, the undated today base); 1 SOURCE (models.py, at 1/4) + 1 test file; TC-618..TC-630 (13 nodes; the code-review folds C-1 first-overlap KeyError and C-2 vanished-task crash fixed RED-first with TC-629/630; link_overlap delegates to _cascade_overlap per C-3); 10/10 mutants KILLED, 1 BAD harness proof, 0 SURVIVED; code-reviewer r1 BLOCK-UNTIL C-1 fixed without stopping under the second exception, r2 PASS-WITH-NOTES (C-5 carried to increment 002: the app gates a vanished moved task); gate 2499 passed; C-4 accepted (the engine collapses start==due on plan; junk-only); the 5 AT nodes remain the V2 station-expected reds until increments 002/003; increment 002 (the +/- bump + m, AT-607/608) is next."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P3 increment 002 approved (revision 2): LLR-604.2 (the +/- bump routes through the cascade: plan for the resolved mode, ONE multi-task undo entry, save_atomic when >1 task on apply and restore, the C-3 toast ladder — PLAIN TEXT markup=False per the shipped TC-401 law) and LLR-604.4 (m re-applies the last move under the next mode, refusal literal, C-5 gate); 3 SOURCE (app/keymap/views, 3/4) + 2 test files + README; AT-607 and AT-608 (the @118 names / @80 count, the tm5 together discriminator, flagged with the ADDED days, the verbatim refusal) + TC-631 (undated dependent under together — the review's 1-1 HIGH); code-reviewer r1 BLOCK-UNTIL 1-1 fixed RED-first under the second exception, r2 PASS-WITH-NOTES OK-to-advance; 8/8 mutants KILLED, 1 BAD, 0 SURVIVED; gate 2501 passed, 1 failed = the declared G-011 clipboard flake; V2 reds remaining: AT-609/AT-610 (increment 003); STOPPED HERE per the operator's instruction — increment 003 (the editor's date save + the date_links setting, AT-609/610) is implemented next, with its own RED/battery/review/gate."
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P3 increment 003 approved (revision 2): LLR-604.3 (the editor's date save routes date deltas through the cascade with the restore dance, the TC-633 undo patch and say_solo=False — D-629's silence clause; cleared/junk fields write directly with no delta) and LLR-604.5 (the Linked dates select in the project editor, outside the pinned .modal-grid — declared for the P4 visual verdict; lenient read; the extra carve-outs in _on_edited and _on_project_added), implemented by DeepSeek V4 Pro via OpenCode under the coordinator's brief, orchestrated per the operator's request; the coordinator verified the scope, folded the second review's DS-1/2/3/6/7 (TC-632) and the code-review's J/K/L/M/N (TC-634's RED inc003-k-red.txt, TC-635's milestone silence), added AT-611 (the DS-4 gap) and TC-633; code-reviewer r2 OK-to-advance after the J residual; 9/9 mutants KILLED, 1 BAD, 0 SURVIVED; gate 2509 passed 0 failed; 2 SOURCE (app/modals) + 1 test file; P4 (validation: the close tree, captures, the four lenses, the operator's visual verdict) is next."
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-06",
+    "decision": "standing authorization — P4 approved: the four lenses re-read the whole delta on the final tree — qa PASS-WITH-NOTES, architect PASS-WITH-NOTES, security PASS-WITH-NOTES (0 HIGH 0 MEDIUM), ux PASS-WITH-NOTES — the cross-increment threads (mixed undo shapes, m parity bump/editor, the toast ladder 24..118, D-630 team sync, the shipped laws TC-401/TC-411/KEYBAR/README) verified executed and clean; the gate folds landed (the stale docstrings, the U+2212 glyph, the DATE_LINKS_DEFAULT leash, and the three coverage pins TC-636 save_atomic apply+restore / TC-637 m-after-editor + refusal-after-action / TC-638 the select's display default); the NO_COLOR present-but-empty incident declared (three lenses, env -u is the prescription); close gate 2512 passed 0 failed; the operator's visual verdict sheet built (evidence/veredicto-b2b.html: PV-612..PV-615 + UXV-6, the seven close captures); carried to BACKLOG: DS-5, ARCH4-3, ARCH4-4/SEC4-6 (bump_due), SEC4-3, GAP-3; P5 (the operator's visual verdict, BACKLOG reconciliation, fold-canon, the close) is next — the coordinator commits and pushes after the operator's verdict per the standing authorization."
+  },
+  {
+    "station": "P5",
+    "date": "2026-10-06",
+    "decision": "standing authorization — the batch CLOSED at P5: the operator's visual verdict arrived 2026-10-07 (taskboard-veredicto-b2b.json: PV-612, PV-613, PV-614, PV-615, UXV-6 all accepted, no change requests); BACKLOG reconciled (the B2b entry marked done; the P4 residue carried; the F2 base ref re-stamped to e085cef); the canon folded (6 rows); 05-close.md written (including the first external-agent implementation on record — DeepSeek V4 Pro for increment 003, DeepSeek Flash for the second review); the close validator 0 block 56 notice; close gate 2512 passed 0 failed; the coordinator commits and pushes now, under the standing authorization ('Commit + push tras tu veredicto visual')."
+  }
+]

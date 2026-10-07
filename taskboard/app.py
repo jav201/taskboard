@@ -22,7 +22,8 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      milestone_candidates, milestones_marked, next_priority, parse_iso,
                      ready_messages, run_link_migration, run_milestone_offer,
                      set_milestone, strip_controls, waiting_ids,
-                     CASCADE_MODES, apply_plan, plan_move, resolve_mode, snapshot)
+                     CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
+                     snapshot)
 from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
                      ProjectPicker,
@@ -1210,11 +1211,9 @@ class TaskboardApp(App):
                         title="Move", severity="information", markup=False)
             return
         self._undo_stack.pop()                 # undo the entry's writes first
-        for one in cas["tasks"]:
-            t = self.board.task_by_id(one["task_id"])
-            if t is not None:
-                t.start_date = one["fields"]["start_date"]
-                t.due_date = one["fields"]["due_date"]
+        restore(self.board, {one["task_id"]: (one["fields"]["start_date"],
+                                              one["fields"]["due_date"])
+                             for one in cas["tasks"]})
         nxt = CASCADE_MODES[(CASCADE_MODES.index(cas["mode"]) + 1) % len(CASCADE_MODES)]
         self._apply_cascade(task, cas["sd"], cas["dd"], mode=nxt)
 
@@ -1289,11 +1288,9 @@ class TaskboardApp(App):
                 # together (LLR-604.2; a task purged since is skipped, the
                 # shipped stale-entry rule)
                 cas = entry["cascade"]
-                for one in cas["tasks"]:
-                    t = self.board.task_by_id(one["task_id"])
-                    if t is not None:
-                        t.start_date = one["fields"]["start_date"]
-                        t.due_date = one["fields"]["due_date"]
+                restore(self.board, {one["task_id"]: (one["fields"]["start_date"],
+                                                      one["fields"]["due_date"])
+                                     for one in cas["tasks"]})
                 if len(cas["tasks"]) > 1:
                     self.board.save_atomic()
                 else:
