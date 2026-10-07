@@ -181,7 +181,8 @@ def test_foreign_tasks_skip_unparseable_entries(tmp_path):
     )
     state.pull()
     titles = [t.title for t, _ in state.foreign_tasks()]
-    assert titles == ["Good"]
+    assert titles == ["Good", "123"]   # S-9 (batch 2026-10-07-batch-03): a non-text
+    # title is coerced at the load boundary, so the foreign task is kept, not skipped
 
 
 # --------------------------------------------------------------------------- #

@@ -779,6 +779,19 @@ def project_color_on_load(color) -> str:
     return DROPPED_PROJECT_COLORS.get(color, "violet")
 
 
+def _coerce_title(value) -> str:
+    """A present-but-wrong-typed title (S-9): SCALAR values keep the user's text
+    (`str(value)` -- a hand-edited `5` reads "5"); CONTAINERS (list/dict) and
+    None become `Untitled` -- a repr of a pathological structure is not a title
+    and can blow the cell widths. Never raises."""
+    if value is None or isinstance(value, (list, dict)):
+        return "Untitled"
+    try:
+        return str(value)
+    except Exception:
+        return "Untitled"
+
+
 @dataclass
 class Project:
     name: str
@@ -859,9 +872,11 @@ class Task:
                                                              ("Backlog", False))
             phase = d["phase"] if isinstance(d.get("phase"), str) and d["phase"] else legacy_phase
             blocked = bool(d["blocked"]) if "blocked" in d else legacy_blocked
+            raw_title = d.get("title", "Untitled")
+            title = raw_title if isinstance(raw_title, str) else _coerce_title(raw_title)
             return cls(
                 id=d.get("id") or _new_id(),
-                title=d.get("title", "Untitled"),
+                title=title,
                 project_id=d.get("project_id"),
                 phase=phase,
                 blocked=blocked,
@@ -1574,8 +1589,9 @@ def run_link_migration(board: Board, today: date | None = None) -> LinkMigration
     run: the load was unreadable, or the board carries the mark.
 
     Order: the backup (the board file's own bytes), then the log, then the
-    changes, the mark and ONE atomic save. Any failure puts the board back as it
-    was in memory, leaves the file untouched and unmarked, and returns the
+    changes, the mark and ONE atomic save. Any failure restores the board and
+    the mark in memory FIRST, then removes this run's backup/log best-effort
+    (never raising), leaves the file untouched and unmarked, and returns the
     reason — a file name and the OS's words, never a directory path. A malformed
     mark is replaced, and replacing it forces the backup and the log (S2-2)."""
     if board.load_report.get("file_unreadable") or links_marked(board.settings):
@@ -1602,15 +1618,18 @@ def run_link_migration(board: Board, today: date | None = None) -> LinkMigration
         board.settings["migrations"] = mark
         board.save_atomic()
     except OSError as exc:
-        _set_links(board, changes, "before")
-        for made in (result.log, result.backup):     # this failed run's own files
-            if made:
-                (target.parent / made).unlink(missing_ok=True)
-        result.backup = result.log = None
-        if had_mark:
+        _set_links(board, changes, "before")        # restore the board first …
+        if had_mark:                                 # … then the migration mark
             board.settings["migrations"] = old_mark
         else:
             board.settings.pop("migrations", None)
+        for made in (result.log, result.backup):     # then this run's files,
+            if made:                                 # best-effort, never raising
+                try:
+                    (target.parent / made).unlink(missing_ok=True)
+                except OSError:
+                    pass
+        result.backup = result.log = None
         name = Path(exc.filename).name if exc.filename else target.name
         result.error = f"{name}: {exc.strerror or type(exc).__name__}"
     return result

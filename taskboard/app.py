@@ -576,6 +576,12 @@ class TaskboardApp(App):
             if self.search_query:     # render_view draws a filtered view 2 rows
                 size = (size[0], max(1, size[1] - 2))   # shorter (its bar)
             board = self._view_board()
+        elif self.view_mode == "kanban" and self.search_query:
+            # the kanban `?` legend must read the FILTERED board the screen draws
+            # (K2-1): a band whose milestone the query hides is not drawn, so its
+            # `◆` must not be explained. The filtered view is 2 rows shorter too.
+            board = self._view_board()
+            size = (size[0], max(1, size[1] - 2))
         self.push_screen(HelpModal(self.view_mode, board,
                                    today=date.today(), size=size,
                                    show_archived=self.show_archived,

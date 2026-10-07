@@ -3,13 +3,14 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `79ad438` (local HEAD == `origin/main`; batch 2026-10-07-batch-02 started here)
-· **Last refresh:** 2026-10-04
-**Status:** **2296 tests** (batch `2026-10-04-batch-01`, Batch B1: waits-on links — `◂N`/`▸N`,
-the ready message, `L` through the picker and the gantt link mode, the details dependency section,
-the archive/delete guard, the one-time link migration with backup, log, undo and run-once; flow
-rev99 from a read-only snapshot). `test_win_clipboard_roundtrip` remains an intermittent
-environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
+**Base ref:** `34bab3c8` (local HEAD == `origin/main`; batch 2026-10-07-batch-03 started here)
+· **Last refresh:** 2026-10-07
+**Status:** **2541 tests** (batch `2026-10-07-batch-03`, the cleanup batch: S-4 the migration's
+restore-first failure path, S-9 the non-text title at the load boundary, K2-1 the kanban `?`
+legend's drawn-band rule, UX2-2 the fold-row late-milestone marker, D-623 the milestones-only
+rule-only band, milestones in lanes/agenda/focus — 12 new test nodes in `tests/test_cleanup.py`).
+`test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011; did not fire
+at this batch's close).
 
 - ✓ done in `2026-10-06-batch-01` (operator's visual verdict 2026-10-07: PV-612..PV-615 + UXV-6
   all accepted) — **B2b: moving a task's dates moves what waits on it** (US-604): the cascade
@@ -26,6 +27,26 @@ environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
   switch on the shipped storage, the x/m view-dispatch, the high-band cap pinned; 2529 tests green;
   the C-2b oracle byte-exact at 118x30 and 80x24.
 
+- ✓ done in `2026-10-07-batch-03` (the cleanup batch; batch E's presentation-mode prototype round
+  ran in the `present-e` worktree in parallel) — **the six loose items**: S-4 (the link migration
+  restores board+mark FIRST, best-effort cleanup, `result.error` names the original failure —
+  TC-901/AT-901 with the refusing-unlink arm), S-9 (a non-text title coerced at the load boundary —
+  scalars keep the user's text, containers/null read `Untitled` — TC-902's five exact strings; the
+  stale team_sync expectation folded to `["Good", "123"]`), K2-1 (the kanban `?` legend names `◆`
+  only for DRAWN bands — the search-filter half at the app seat, the fold half via one shared
+  `_fold_keep` computation), UX2-2 (a late milestone below the fold marks the fold row
+  `▼ N below · ▲1 ◆` — the canonical literal, LED .3; the `▾ N more` rename reddened 7 TC-311
+  censuses and was reverted), D-623 (a milestones-only project draws its rule-only band carrying
+  `◆`, head `N open`), milestones render with their `◆` identity in lanes/agenda/focus (marker
+  only, CL-9). 2541 tests green; 4 mutants killed (2 per increment); the contract LED .1-.3.
+
+## Open — after `2026-10-07-batch-03` (the cleanup batch)
+
+- Nothing new from this batch. The carries below stand (3 from Batch C · 6 from the B2a residue ·
+  1 present-a-project round); the two minor cleanup-batch notes (the dead `isinstance(task.title,
+  str)` guard at `team_sync.py:226`; the batch PLAN's template cells) are recorded in batch-03's
+  `02-review.md` F1/F2, not promoted to items.
+
 ## Open — after `2026-10-07-batch-02` (Batch C: the chain map)
 
 - **Deep chains pile into the capped columns and can fold whole at typical heights** (code review
@@ -40,22 +61,24 @@ environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
   are proportionate for a cleanup — widen if the toast's clause matrix grows.)
 
 ## Open — after `2026-10-04-batch-02` (Batch B2a: milestones and the one-time offer)
-- **The link migration has the cleanup-before-restore pattern** (security S-4, MEDIUM, B2 P2): in
+- ✓ done in `2026-10-07-batch-03` — **The link migration has the cleanup-before-restore pattern** (security S-4, MEDIUM, B2 P2): in
   `run_link_migration` a failing `unlink` of its own backup/log inside the error handler can raise
   before the board and the mark are restored. B2's offer restores first and cleans up best-effort;
   give the link migration the same order (and a RED arm with a refusing `unlink`).
-- **A task whose title is not text crashes the app** (security S-9, LOW, pre-existing): a board
+- ✓ done in `2026-10-07-batch-03` — **A task whose title is not text crashes the app** (security S-9, LOW, pre-existing): a board
   file with `"title": 5` (or a list) reaches string-only paths at render. B2 only keeps such a task
   out of the milestone offer (D-625). Fix at the load boundary (coerce or quarantine), with a test.
-- **The kanban `?` legend reads the unfiltered board** (code review K2-1, LOW): its `◆` band-rule
+- ✓ done in `2026-10-07-batch-03` — **The kanban `?` legend reads the unfiltered board** (code review K2-1, LOW): its `◆` band-rule
   line is shown when any band has a milestone, including bands folded off screen or filtered out.
-- **A late milestone can sit below the fold on the kanban** (ux UX2-2, PV-605): at 118×30 the high
+- ✓ done in `2026-10-07-batch-03` — **A late milestone can sit below the fold on the kanban** (ux UX2-2, PV-605): at 118×30 the high
   band pushes Ops & Security's late milestone off screen; a marker on the fold row (`▾ N more · ▲1 ◆`)
-  would say it.
-- **A project with only milestones draws no kanban band** (D-623): a rule-only band would carry its
+  would say it. — shipped as the canonical `▼ N below · ▲1 ◆` (the BACKLOG note predated the shipped
+  law; LED .3).
+- ✓ done in `2026-10-07-batch-03` — **A project with only milestones draws no kanban band** (D-623): a rule-only band would carry its
   milestones; today they show on the gantt only.
-- **Milestones in the other views**: lanes, agenda and focus draw a milestone as a plain task (the
-  flag is ignored there). Decide per view with a prototype round first.
+- ✓ done in `2026-10-07-batch-03` — **Milestones in the other views**: lanes, agenda and focus draw a milestone as a plain task (the
+  flag is ignored there). Decide per view with a prototype round first. — decided without a prototype:
+  a marker only (CL-9), per the cleanup commission; the operator's eye is invited at the next visual verdict.
 - **`u` on a single-task change is silent** (ux UXV-3, LOW): after `M` in the kanban the card leaves
   or rejoins the columns with no message; a one-line undo toast would say what came back.
 - **The `?` help at 80 cells cuts lines mid-word with no `…`** (ux UXV-6, LOW; every legend line,
