@@ -1,0 +1,109 @@
+close-review.log -- batch 2026-10-07-batch-03 close-out review lenses (coordinator self-executed)
+tree: C:/Users/jjgh8/Github/taskboard (MAIN checkout)  HEAD: 34bab3c8b110e0a18ddba281c3e75d8597e07a8f  date: 2026-10-07T19:58:53Z
+reviewer pool stand-in: the coordinator (orchestrator own review) — no agent runtime answered to the role names at close-out; each lens file read and executed by the close-out agent, findings recorded here (the dev-flow runtime self-execution record).
+
+== LENS 1 — shall/should check over the requirements text (modal misuse inside a statement is a blocker) ==
+$ grep -n "should\|shall" .dev-flow/2026-10-07-batch-03/01-requirements.md
+4:> This template is the canonical **English scaffold**. Generate the artifact in the batch's development language (`sta
+103:- **Statement:** When `run_link_migration` fails at any point, the system shall restore the board file and the migra
+113:- **Statement:** When a board file carries a task whose title is not a string (a number, a list, a mapping), the sys
+123:- **Statement:** The kanban `?` legend shall name `◆` on the band rule only when a band the screen DRAWS carries a
+133:- **Statement:** `run_link_migration`'s failure path shall restore the board and the mark before any cleanup; the ba
+142:- **Statement:** `Task.from_dict` shall coerce a non-text title: `str(value)` for scalars (the user's digits survive
+151:- **Statement:** `legend_entries("kanban")` shall admit the `◆` band-rule entry only for drawn bands (the filter/f
+→ every modal is "shall" inside a Statement/field; "should" appears nowhere. CLEAN (0 findings).
+
+== LENS 2 — two-layer traceability completeness ==
+(a) behavioral US→AT: US-901→AT-901, US-902→AT-902, US-903→AT-903 — each declared in the contract (§2.6 source stories + per-HLR Acceptance test(s) fields):
+$ grep -n "US-90\|AT-90" .dev-flow/2026-10-07-batch-03/01-requirements.md | cut -c1-100
+61:| US-901 | As the maintainer, I want the link migration's failure path to restore the board and i
+62:| US-902 | As the operator, I want a board file with a non-text title to load safely (coerced at 
+63:| US-903 | As a taskboard user, I want the kanban `?` legend to name only what the drawn board sh
+101:- **Traceability:** US-901
+108:- **Acceptance (black-box):** **Observable outcome:** a failed migration leaves the board untouc
+111:- **Traceability:** US-902
+118:- **Acceptance (black-box):** **Observable outcome:** the bad board opens; the task shows a sane
+121:- **Traceability:** US-903
+126:- **Numeric pass threshold:** AT-903's arms, each reading the PAINTED frame of the named view (C
+128:- **Acceptance (black-box):** **Observable outcome:** what the legend says is on screen is on sc
+154:- **Numeric pass threshold:** AT-903's arms.
+179:Layer A (`TC-901`, `TC-902` — unit) and Layer B (`AT-901`, `AT-902`, `AT-903` — the app laye
+(b) functional US→HLR→LLR→TC — the chains as declared:
+US-901→HLR-901→LLR-901.1→TC-901 · US-902→HLR-902→LLR-902.1→TC-902 · US-903→HLR-903→LLR-903.1→AT-903(arms)/TC-census
+(c) every id resolves to an on-disk test node (V2-style, the increment tests):
+$ grep -n "^def test_TC_901\|^async def test_AT_901\|^async def test_TC_902\|^async def test_AT_902\|^async def test_AT_903" tests/test_cleanup.py
+117:def test_TC_901_the_failed_migration_restores_first_and_surfaces_the_original_error(
+166:async def test_TC_902_a_non_text_title_coerces_at_the_boundary(tmp_path, raw, want):
+201:async def test_AT_901_a_migration_failure_at_startup_names_the_original_failure(
+230:async def test_AT_902_the_five_title_board_opens(tmp_path):
+271:async def test_AT_903_the_render_items(tmp_path, arm):
+→ 12 nodes: TC-901(+happy-path arm) · TC-902 x5 params · AT-901 · AT-902 · AT-903 x4 arms. COMPLETE.
+
+== LENS 3 — the increments own the contract nodes (US→AT→outcome and HLR/LLR→TC per-arm) ==
+increment 001 owns: TC-901, TC-902, AT-901, AT-902, AT-903[1_legend search half] (8 nodes green at chunkB; the folded test_team_sync expectation ["Good","123"] re-ran 16 passed)
+increment 002 owns: AT-903[1_legend fold half, 2_rule_only, 3_fold, 4_views] (the 4 RED-by-design arms, green after inc002 — chunkB-run.log holds their RED transcripts)
+→ both layers trace COMPLETE; no orphan requirement, no orphan node.
+
+== LENS 4 — security pass over the batch diff (taskboard/ + tests/ vs HEAD 34bab3c) ==
+$ git diff --stat HEAD -- taskboard/ tests/
+ taskboard/app.py        |   6 ++
+ taskboard/models.py     |  37 +++++++---
+ taskboard/views.py      | 184 ++++++++++++++++++++++++++++++++++++------------
+ tests/test_team_sync.py |   3 +-
+ 4 files changed, 174 insertions(+), 56 deletions(-)
+$ git diff HEAD -- taskboard/ tests/ | grep -in "eval\|exec\|subprocess\|os.system\|pickle\|marshal\|urllib\|requests\|socket\|token\|secret\|password\|api.key" → exit 1 (no hits):
+no hits
+reading of the full diff (models.py +37, app.py +6, views.py +184/-56, test_team_sync.py 1 expectation):
+- models.py: _coerce_title is pure str()/isinstance — no markup parsing, no eval, no IO; the migration error path handles PATHS but result.error ships only Path(exc.filename).name + the OS words (the shipped convention — no directory paths, no user text);
+- app.py: one new branch passing the FILTERED board + a height adjustment to the existing HelpModal seat — no new input surface;
+- views.py: rendering only — new helpers read plan/band data already in memory; no IO, no subprocess, no network;
+- tests/: synthetic boards in tmp_path only (test_cleanup.py docstring) — no user data, no secrets.
+→ no findings. The S-4/S-9 items this batch closes WERE the security findings (filed by the 2026-10-04 reviews); their fixes close the loop.
+
+== LENS 5 — supersession census on the touched symbols (change-first) ==
+(a) the S-9-superseded guard: chunkA reported taskboard/team_sync.py:226 isinstance(title, str) now dead post-coercion — probe:
+$ grep -n "isinstance" taskboard/team_sync.py
+40:    return data if isinstance(data, dict) else None
+50:    for r in roster if isinstance(roster, list) else []:
+51:        if not (isinstance(r, dict) and isinstance(r.get("id"), str)) or r["id"] in seen:
+55:        out.append({**r, "name": name if isinstance(name, str) and name else r["id"],
+56:                    "hue": hue if isinstance(hue, str) and hue in HEX else "mut"})
+106:        if not isinstance(version, int):
+113:        if (not isinstance(phases, list) or not phases
+114:                or not isinstance(roster, list) or not roster
+115:                or not isinstance(projects, list)):
+124:        if not isinstance(projects, list):
+128:            if isinstance(p, dict) and isinstance(p.get("id"), str)
+193:            if not isinstance(data, dict):
+195:            if not isinstance(data.get("tasks"), list):
+218:                if not isinstance(tdict, dict):
+226:                if not isinstance(task.title, str):
+235:        if not isinstance(data, dict):
+238:        if not isinstance(pushed_at, str):
+258:        if isinstance(phases, list) and phases and all(isinstance(p, str) and p for p in phases):
+261:        if not isinstance(team_projects, list):
+266:            if not isinstance(pd, dict):
+272:            if not isinstance(pid, str) or not pid or pid in seen:
+284:                    if key == "name" and not (isinstance(value, str) and value):
+286:                    if key.endswith("_date") and not (value is None or isinstance(value, str)):
+289:                if isinstance(pd.get("archived"), bool):
+311:    if isinstance(cfg_tolerance, int) and cfg_tolerance > 0:
+336:    if isinstance(team_data, dict):
+338:                  if isinstance(r, dict) and isinstance(r.get("id"), str)]
+340:        isinstance(team_data, dict)
+341:        and isinstance(team_data.get("phases"), list) and team_data["phases"]
+342:        and isinstance(team_data.get("projects"), list) and team_data["projects"]
+386:    if isinstance(team_data, dict):
+388:        if isinstance(cfg_tol, int) and cfg_tol > 0:
+→ line 226 still guards isinstance(t.title, str) — dead but harmless (title is always str post-load); filed as a carry note, not touched (implementation frozen; it is a no-op guard, not a behaviour).
+(b) the superseded fold shape ▾ N more — the BACKLOG UX2-2 note predated the shipped ▼ N below law (LED .3 records the ruling); probe for surviving ▾ fold seats in taskboard/:
+$ grep -n "▾" taskboard/views.py | cut -c1-90
+2847:    """`▾ name  ▲2 ✓1` unfolded, `▸ name  4 open ✓1` folded — the counts 
+2863:    head = c("▾ " if g.unfolded else "▸ ", hue)
+5153:    `▾ N more` note predated it and loses), and for a band cut to the room
+6463:                                "▾ open · ▸ folded when it does not fit."]),
+6548:                "folded: its row says how much is still open; ▾ opens it")
+→ the surviving ▾ seats are the GANTT/group unfold heads (:2847,:2863,:6463,:6548) — a different seat, not the fold row; the kanban fold row reads ▼ N below (:5161) with the · ▲N ◆ suffix (:5179-5180). No live dependency on the superseded shape.
+
+== REVIEW VERDICT ==
+coordinator (orchestrator own review, lenses self-executed at close-out): approve — 0 blocker · 2 minor (the dead isinstance guard note; the PLAN.md still carrying template placeholders at close — see 05-close what-was-not-done).

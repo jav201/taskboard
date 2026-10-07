@@ -1,0 +1,143 @@
+inc001-mutations.log -- batch 2026-10-07-batch-03 increment 001 (S-4/S-9/K2-1-filter)
+tree: C:/Users/jjgh8/Github/taskboard (MAIN checkout)  HEAD: 34bab3c8b110e0a18ddba281c3e75d8597e07a8f
+date: 2026-10-07T19:53:19Z  subject files hashed BEFORE any mutation:
+0ee9326a2bdbdcf333d90fb7e30322483aaa8a0a5793a3dc6600793dfc80fece *taskboard/models.py
+6df92aa031347163a26052b1c8e5e290cc90dc098fb890a2e4cdb8700d266aed *taskboard/app.py
+
+== BASELINE: tests/test_cleanup.py on the shipped increment ==
+............                                                             [100%]
+12 passed in 2.11s
+16 passed in 0.59s
+
+== MUTANT M1 (S-9 counterfactual): _coerce_title returns the raw repr for a container title ==
+position: taskboard/models.py _coerce_title, the None/list/dict guard; operation: list/dict branch returns str(value) instead of 'Untitled'
+         else:
+             board.settings.pop("migrations", None)
++        for made in (result.log, result.backup):     # then this run's files,
++            if made:                                 # best-effort, never raising
++                try:
++                    (target.parent / made).unlink(missing_ok=True)
++                except OSError:
++                    pass
++        result.backup = result.log = None
+         name = Path(exc.filename).name if exc.filename else target.name
+         result.error = f"{name}: {exc.strerror or type(exc).__name__}"
+     return result
+-- RED run: TC-902's container arms must redden (want 'Untitled', get the repr) --
+>       assert titles["t1"] == want, titles
+E       assert "['x']" == 'Untitled'
+>       assert titles["t1"] == want, titles
+E       assert "{'a': 1}" == 'Untitled'
+2 failed, 3 passed, 7 deselected in 0.92s
+
+-- restore M1: cp of the pre-mutation bytes back; sha256 must return to the pre-mutation digest --
+0ee9326a2bdbdcf333d90fb7e30322483aaa8a0a5793a3dc6600793dfc80fece *taskboard/models.py
+(pre-mutation digest recorded at the head of this log: 0ee9326a2bdbdcf333d90fb7e30322483aaa8a0a5793a3dc6600793dfc80fece)
+
+== MUTANT M2 (S-4 counterfactual): the error handler cleans up BEFORE restoring board+mark ==
+position: taskboard/models.py run_link_migration's except OSError block; operation: the unguarded backup/log unlink moved ahead of _set_links/mark restore
++        for made in (result.log, result.backup):     # MUTANT M2: cleanup BEFORE restore
++            if made:                                 # (the pre-S-4 order; the refusing
++                (target.parent / made).unlink(missing_ok=True)  # unlink raises here)
+         _set_links(board, changes, "before")
+-        for made in (result.log, result.backup):     # this failed run's own files
+-            if made:
+-                (target.parent / made).unlink(missing_ok=True)
+-        result.backup = result.log = None
+         if had_mark:
+             board.settings["migrations"] = old_mark
+         else:
+             board.settings.pop("migrations", None)
++        result.backup = result.log = None
+         name = Path(exc.filename).name if exc.filename else target.name
+         result.error = f"{name}: {exc.strerror or type(exc).__name__}"
+     return result
+-- RED run: TC-901 -- the refusing unlink must now escape (or replace the original error) before the restore --
+_ test_TC_901_the_failed_migration_restores_first_and_surfaces_the_original_error _
+src = 'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-16874\\test_TC_901_the_failed_migrati0\\.board.json.6zfv4__q.tmp'
+dst = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16874/test_TC_901_the_failed_migrati0/board.json')
+>       raise PermissionError(errno.EACCES, message, str(dst))
+E       PermissionError: [Errno 13] the original save refused: 'C:\\Users\\jjgh8\\AppData\\Local\\Temp\\pytest-of-jjgh8\\pytest-16874\\test_TC_901_the_failed_migrati0\\board.json'
+tests\test_cleanup.py:108: PermissionError
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16874/test_TC_901_the_failed_migrati0')
+    def test_TC_901_the_failed_migration_restores_first_and_surfaces_the_original_error(
+-- RED verdict granularity: the escaping cleanup exception fails TC-901's 'no exception escapes' + 'result.error names the original' arms --
+1 failed, 11 deselected in 0.30s
+
+-- restore M2: sha256 must return to the pre-mutation digest --
+0ee9326a2bdbdcf333d90fb7e30322483aaa8a0a5793a3dc6600793dfc80fece *taskboard/models.py
+12 passed in 1.89s
+
+== REVERSE CENSUS (trigger family B) -- increment 001's touched symbols: _coerce_title, Task.from_dict, run_link_migration, app.py's kanban-? branch ==
+
+-- B1: symbols asserted by OTHER tests (grep -rln over tests/) --
+$ grep -rln _coerce_title tests/ ; grep -rln run_link_migration tests/ ; grep -rln foreign_tasks tests/
+tests/test_cleanup.py
+tests/test_link_migration.py
+tests/__pycache__/test_cleanup.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_link_migration.cpython-312-pytest-8.3.4.pyc
+tests/test_control_bytes.py
+tests/test_milestones.py
+tests/test_team_sync.py
+tests/__pycache__/test_control_bytes.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_milestones.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_team_sync.cpython-312-pytest-8.3.4.pyc
+→ every hit re-validated: test_cleanup.py (this batch's own pins), test_link_migration.py (the shipped migration arms — the error path's data surface unchanged), test_team_sync.py (the folded ["Good", "123"] expectation — re-ran green above, 16 passed)
+
+-- B2: file moved on disk (probe: git status --porcelain for R/D entries over the increment's files) --
+$ git status --porcelain -- taskboard/models.py taskboard/app.py
+ M taskboard/app.py
+ M taskboard/models.py
+→ ' M' only — no rename, no delete; the old paths are the current paths. Probe executed, did NOT fire.
+
+-- B3: byte-identical golden captures this source (probe over tests/goldens/**) --
+$ ls tests/goldens → no such directory in this repo
+→ the repo holds no golden-capture directory at all; the byte-exact seats this batch touched are the census frames asserted in tests/test_kanban_readable.py (increment 002's seat, probed there). Did NOT fire.
+
+-- B4: artifact produced here consumed elsewhere — the migration's backup/log names --
+$ grep -rn MIGRATION_BACKUP|MIGRATION_LOG taskboard/ tests/ | cut -c1-100
+taskboard/models.py:1474:MIGRATION_BACKUP = ".pre-links-migration"
+taskboard/models.py:1475:MIGRATION_LOG = ".links-migration-log"
+taskboard/models.py:1606:            result.backup = _create_beside(target, MIGRATION_BACKUP,
+taskboard/models.py:1612:            result.log = _create_beside(target, MIGRATION_LOG,
+Binary file taskboard/__pycache__/models.cpython-312.pyc matches
+tests/test_cleanup.py:38:from taskboard.models import (MIGRATION_BACKUP, MIGRATION_LOG, Board, Proje
+tests/test_cleanup.py:98:        if MIGRATION_BACKUP in self.name or MIGRATION_LOG in self.name:
+tests/test_cleanup.py:143:    assert (tmp_path / (path.name + MIGRATION_BACKUP)).exists()
+tests/test_cleanup.py:144:    assert (tmp_path / (path.name + MIGRATION_LOG)).exists()
+tests/test_link_migration.py:32:from taskboard.models import (MIGRATION_BACKUP, MIGRATION_LOG, Board
+tests/test_link_migration.py:119:    taken = path.with_name(path.name + MIGRATION_BACKUP)
+tests/test_link_migration.py:123:    assert result.backup == path.name + MIGRATION_BACKUP + ".1"
+tests/test_link_migration.py:197:    suffix = {"backup": MIGRATION_BACKUP, "log": MIGRATION_LOG}.get
+tests/test_link_migration.py:271:    link = path.with_name(path.name + MIGRATION_BACKUP)
+tests/test_link_migration.py:381:    taken = path.with_name(path.name + MIGRATION_BACKUP)
+tests/test_link_migration.py:387:        backup = path.with_name(path.name + MIGRATION_BACKUP + ".1"
+tests/test_link_migration.py:392:        logs = [n for n in _beside(path) if MIGRATION_LOG in n]
+tests/test_link_migration.py:422:    assert not any(MIGRATION_BACKUP in n or MIGRATION_LOG in n for 
+tests/test_link_migration.py:439:        if MIGRATION_BACKUP in str(file):
+Binary file tests/__pycache__/test_cleanup.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_link_migration.cpython-312-pytest-8.3.4.pyc matches
+→ consumers: models.py (the producer), app.py's undo + the test pins — the constant NAMES did not change this batch, only the order around their removal; every reader re-validated by the green suite.
+
+-- A3: interface consumed by another module changed — run_link_migration consumed by app.py --
+$ grep -rn run_link_migration taskboard/ | cut -c1-90
+taskboard/app.py:23:                     ready_messages, run_link_migration, run_milestone
+taskboard/app.py:324:        result = run_link_migration(self.board)
+taskboard/models.py:1472:# `run_link_migration` applies it ONCE, a backup first.
+taskboard/models.py:1587:def run_link_migration(board: Board, today: date | None = None) -
+Binary file taskboard/__pycache__/app.cpython-312.pyc matches
+Binary file taskboard/__pycache__/models.cpython-312.pyc matches
+→ app.py's _migrate_links call site untouched (signature and result.error contract unchanged); the kanban-? branch (app.py:579-584) is a NEW caller input, not a changed interface. Did NOT fire beyond the declared sites.
+
+== INSTRUMENT RED-PROOF — every instrument shown able to report FAILURE before its PASS was believed ==
+1. pytest (the suite): M1 reddened exactly TC-902's list/dict arms ('2 failed, 3 passed'); M2 reddened TC-901 ('1 failed') — the runner's per-node granularity is the proof it can see a wrong answer (transcripts above).
+2. the refusing-unlink monkeypatch (tests/test_cleanup.py:92-110): its mechanism refuses ONLY the migration's own backup/log names — proven by M2, where the refusal escaped; and by the happy-path arm, where the same unpatched paths succeed.
+3. grep census probes: a planted-absence control returns 0 where the real probe returns N — 'grep -rln _coerce_title tests/' → 3 files (above); a nonsense pattern control:
+$ grep -rln "_coerce_title_nonsense_control" tests/ | wc -l
+0
+→ 0, as required — the probe distinguishes presence from absence.
+
+== VERDICTS ==
+M1 (S-9): KILLED — TC-902[list,dict] RED, scalars GREEN; restore sha256 0ee9326a…fece ✓
+M2 (S-4): KILLED — TC-901 RED (cleanup exception escapes); restore sha256 0ee9326a…fece ✓
+arms that stayed GREEN under each mutant: named above per mutant (the surviving arms are the mutation's own control population).

@@ -1,0 +1,94 @@
+inc002-mutations.log -- batch 2026-10-07-batch-03 increment 002 (the render items: K2-1 fold half, D-623, UX2-2, milestones-in-views)
+tree: C:/Users/jjgh8/Github/taskboard (MAIN checkout)  HEAD: 34bab3c8b110e0a18ddba281c3e75d8597e07a8f
+date: 2026-10-07T19:55:34Z  subject file hashed BEFORE any mutation:
+e2dec7845059ea0066bfb7f43aa09a19cdf6e0a43f60908f8d32272b4075a66f *taskboard/views.py
+
+== BASELINE: the shipped increment ==
+12 passed in 1.90s
+9 passed, 169 deselected in 0.51s
+(the fold census: 6 TC_311 functions, 9 nodes — 7 of them read the canonical '▼ N below' literal: test_kanban_readable.py:480,574,607(x4 params),1221)
+
+== MUTANT M1 (the fold-canon counterfactual): _fold_row's down seat renamed '▼ N below' -> '▾ N more' ==
+position: taskboard/views.py _fold_row (:5161); operation: the historical rename the batch REVERTED — the 7-fold census TC-311 depends on the canonical literal
++            drawn = _fold_keep(band_rows, ids, selected_id, room)
++            if any(band_rule_facts(board, plan.bands[i], today, show_archived, kw)[1]
++                   for i in drawn):
+                 out.append((c("◆", "mut"), "a milestone on its project's band rule"))
+     # THE NO-GHOST LAW, and archived is its clearest case: the mark exists on
+     # screen only while `v` is on AND something is actually archived. Explaining
+-- RED run 1: the fold census (7 literal-reading nodes must redden; the 2 shape-only nodes may survive) --
+7 failed, 2 passed, 169 deselected in 0.65s
+-- RED run 2: AT-903 arm 3 (UX2-2) — its regex reads '▼.*▲1 ◆' --
+        marks the fold row `▾ N more · ▲1 ◆` — RED; arm 4 milestones read with `◆`
+>           assert any(re.search(r"▼.*▲1 ◆", r) for r in rows), \
+1 failed, 11 deselected in 0.37s
+
+-- restore M1: sha256 must return to the pre-mutation digest e2dec784…a66f --
+e2dec7845059ea0066bfb7f43aa09a19cdf6e0a43f60908f8d32272b4075a66f *taskboard/views.py
+
+== MUTANT M2 (the UX2-2 counterfactual): the late-milestone suffix guard made unreachable ==
+position: taskboard/views.py _fold_row (:5179); operation: 'if late_ms:' -> 'if late_ms > 99:' — the fold row's canonical literal survives but the ' · ▲N ◆' marker never paints
++            drawn = _fold_keep(band_rows, ids, selected_id, room)
++            if any(band_rule_facts(board, plan.bands[i], today, show_archived, kw)[1]
++                   for i in drawn):
+                 out.append((c("◆", "mut"), "a milestone on its project's band rule"))
+     # THE NO-GHOST LAW, and archived is its clearest case: the mark exists on
+     # screen only while `v` is on AND something is actually archived. Explaining
+-- RED run: AT-903 arm 3 must redden on the missing marker while the literal census stays GREEN --
+1 failed, 11 deselected in 0.37s
+9 passed, 169 deselected in 0.59s
+
+-- restore M2: sha256 must return to e2dec784…a66f --
+e2dec7845059ea0066bfb7f43aa09a19cdf6e0a43f60908f8d32272b4075a66f *taskboard/views.py
+12 passed in 1.97s
+9 passed, 169 deselected in 0.59s
+
+== REVERSE CENSUS (trigger family B) -- increment 002 touched symbols: _fold_keep, _kanban_band_geometry, _kanban_high_rows, _fold_row, _kanban_grouped, kanban_plan, legend_entries, band_rule_facts, _milestone_title, the lanes/agenda/focus marker sites ==
+
+-- B1: symbols asserted by OTHER tests --
+$ grep -rln _fold_keep tests/  →  (below)
+$ grep -rln legend_entries tests/ | head -8  →  (below)
+tests/test_archive.py
+tests/test_cleanup.py
+tests/test_colour_budget_app.py
+tests/test_gantt_board.py
+tests/test_gantt_milestones.py
+tests/test_gantt_polish.py
+tests/test_kanban_milestones.py
+tests/test_kanban_priority.py
+→ _fold_keep: ZERO direct test references (it is exercised through render_kanban/legend_entries painted frames, not by name) — the symbol-level probe did not fire.
+→ legend_entries: asserted by the 8 suites listed above (head -8; the full list includes the kanban/help census suites) — every reader re-validated green in the baseline runs and in the close suite.
+
+-- B2: file moved on disk --
+$ git status --porcelain -- taskboard/views.py  →  (below)
+ M taskboard/views.py
+→ M only — no rename/delete; probe executed, did NOT fire.
+
+-- B3: byte-identical golden captures this source --
+$ ls tests/goldens → no such directory; the byte-exact kanban seats live in tests/test_kanban_readable.py itself (FOLD regex line 66 + the four literal sites), and the paint census in test_markup_sites/test_colour_budget — green at baseline and at close.
+
+-- B4: artifact produced here consumed elsewhere — the fold row string and the drawn-band geometry --
+$ grep -rn _fold_row( taskboard/views.py | cut -c1-80  →  (below)
+5127:    return lines + [_fold_row(plan.bands, keep, w, cut, late_ms)], 1
+5151:def _fold_row(bands: list, keep: list[int], w: int, cut=None, late_ms: int 
+→ the fold row is produced and consumed inside the kanban renderer; its byte readers are the census tests probed in B1. The agenda axis and the focus title sites feed the app compositor (paint census green).
+
+-- A3: interface consumed by another module changed --
+$ grep -rn legend_entries taskboard/ | cut -c1-90  →  (below)
+taskboard/modals.py:1799:        from .views import help_example, help_usage, legend_entri
+taskboard/modals.py:1800:        entries = legend_entries(self._mode, self._board, self._t
+taskboard/views.py:6570:def legend_entries(mode: str, board: Board, today: date | None = N
+Binary file taskboard/__pycache__/modals.cpython-312.pyc matches
+Binary file taskboard/__pycache__/views.cpython-312.pyc matches
+→ callers: app.py (the HelpModal seat — its kanban+search branch is increment 001) and modals.py (HelpModal itself). Signature unchanged; the kanban branch internal drawn-band computation is the CL-7 seat both sides now read. Did NOT fire beyond the declared sites.
+
+== INSTRUMENT RED-PROOF ==
+1. pytest: M1 reddened exactly the 7 literal-reading census nodes (7 failed, 2 passed) + AT-903 arm 3; M2 reddened arm 3 while the census stayed 9 passed — per-node granularity proven (transcripts above).
+2. the painted-frame reader (tests/test_cleanup.py:53-66 _painted/_text): reads the compositor own cells for arm 4; arm 3 regex reads render_kanban emitted bytes (the EMITTED form, C-42) — both shown RED above under the mutants.
+3. grep probes: nonsense control $ grep -rln _fold_keep_nonsense tests/ | wc -l →
+0
+→ 0 as required — the probe distinguishes presence from absence.
+
+== VERDICTS ==
+M1 (fold-canon rename): KILLED — 7/9 census nodes RED + AT-903[3_fold] RED; restore sha256 e2dec784…a66f ✓
+M2 (UX2-2 suffix unreachable): KILLED — AT-903[3_fold] RED with the census GREEN; restore sha256 e2dec784…a66f ✓

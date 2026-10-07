@@ -1036,7 +1036,8 @@ def _grid_sediment_rows(lane: LaneFacts, today: date, col_w: int,
 
 def _grid_task_row(t: Task, board: Board, lane: LaneFacts, wc: int,
                    selected: bool, today: date) -> str:
-    """The roomier row: prefix, title, then indicators AND the absolute date."""
+    """The roomier row: prefix, title, then indicators AND the absolute date. A
+    milestone wears its `◆` beside the title (CL-9, marker only)."""
     prefix = "▲ " if t.blocked else "▊ "
     pcol = "over" if t.blocked else lane.hue
     right: list[tuple[str, str]] = []
@@ -1048,13 +1049,15 @@ def _grid_task_row(t: Task, board: Board, lane: LaneFacts, wc: int,
         right.append(("↗", "mut"))
     right.append(_grid_chip(t, today))
     rw = sum(vis(x) for x, _ in right) + len(right)
-    title_w = max(0, wc - len(prefix) - rw - 1)
+    ms = "◆" if t.milestone else ""
+    title_w = max(0, wc - len(prefix) - rw - 1 - (2 if ms else 0))
     shown = clip(t.title, title_w)
     body = escape(shown)
     if selected:
         body = f"[reverse]{body}[/reverse]"
-    pad = " " * max(0, wc - len(prefix) - vis(shown) - rw - 1)
-    return (c(prefix, pcol) + c(body, "mut") + pad + " "
+    marker = c("◆", milestone_tone(t, board, today)) + " " if ms else ""
+    pad = " " * max(0, wc - len(prefix) - (2 if ms else 0) - vis(shown) - rw - 1)
+    return (c(prefix, pcol) + marker + c(body, "mut") + pad + " "
             + " ".join(c(x, k) for x, k in right))
 
 
@@ -1608,26 +1611,30 @@ def lattice_tail(geo: FieldGeo, from_col: int, to_col: int, phase: int = 0) -> s
 def _title_row(task: Task, board: Board, lane: LaneFacts, today: date,
                inner: int, selected: bool, geo: FieldGeo) -> Row:
     """A named task: spine, its phase glyph, its title — and the FIELD behind
-    the tail, which is what keeps naming from costing emptiness."""
+    the tail, which is what keeps naming from costing emptiness. A milestone
+    wears its `◆` beside the title (CL-9, marker only)."""
     due = parse_iso(task.due_date)
     days = (due - today).days if due else None
     # archived work is SPENT: its meter is the spent form and its title drops to
     # the spent tone, so a row that is not live work never reads as live work
     cells = due_meter(None if task.archived else days,
                       done=board.is_done(task) or task.archived)
-    title_w = max(0, inner - 5 - len(cells) - 1)
+    ms = "◆" if task.milestone else ""
+    title_w = max(0, inner - 5 - len(cells) - 1 - (2 if ms else 0))
     shown = clip(task.title, title_w)
     body = escape(shown)
     if selected:
         body = f"[reverse]{body}[/reverse]"
-    tail_from = 5 + vis(shown)
+    lead = 5 + (2 if ms else 0)
+    tail_from = lead + vis(shown)
     tail_to = max(tail_from, inner - len(cells) - 1)
     gap = " " * max(0, min(geo.label_w, tail_to) - tail_from)
     glyph, gcol = ((ARCHIVED_MARK, "ash") if task.archived
                    else (phase_glyph({min(3, board.phase_index(task))}), lane.hue))
+    marker = c("◆", milestone_tone(task, board, today)) + " " if ms else ""
     return ((c("▎", "ash" if task.archived else lane.hue) + "  "
              + c(glyph, gcol) + " "
-             + c(body, "ash" if task.archived else "mut") + gap
+             + marker + c(body, "ash" if task.archived else "mut") + gap
              + lattice_tail(geo, tail_from, tail_to) + " "
              + meter_markup(cells)), task.id)
 
@@ -1972,8 +1979,10 @@ def render_agenda(board, show_archived, selected_id, today=None,
             for i in range(lo + 1, hi):               # thin tail rule->dot (not the rule)
                 if cells[i][0] == " ":
                     cells[i] = ("─", "dim")
-            glyph = "◂" if clamp_l else "▸" if clamp_r else "●"
-            cells[col] = (glyph, _DOT_KEY[urgency(t, today, board)])
+            glyph = "◆" if t.milestone else ("◂" if clamp_l else "▸" if clamp_r else "●")
+            key = (milestone_tone(t, board, today) if t.milestone
+                   else _DOT_KEY[urgency(t, today, board)])
+            cells[col] = (glyph, key)
         return cells_markup(cells)
 
     def due_tok(t: Task) -> tuple[str, str]:
@@ -2466,6 +2475,16 @@ def milestone_tone(task: Task, board: Board, today: date) -> str:
     if d is not None and d < today:
         return "over"
     return project_color(board, task)
+
+
+def _milestone_title(task: Task, board: Board, today: date, width: int,
+                     selected: bool, arrow: bool = True) -> str:
+    """`title_markup`, prefixed with a milestone's `◆` — the marker beside the
+    title in lanes/focus (CL-9), marker only; the text keeps `width - 2` cells."""
+    if not task.milestone:
+        return title_markup(task, width, selected, arrow=arrow)
+    return (c("◆", milestone_tone(task, board, today)) + " "
+            + title_markup(task, max(0, width - 2), selected, arrow=arrow))
 
 
 def gantt_milestone_cells(task: Task, board: Board, ax: GanttAxis, today: date,
@@ -3220,7 +3239,8 @@ def _focus_cards(board: Board, tasks: list[Task], selected_id: str | None,
         p = board.project_by_id(t.project_id)
         pcol = p.color if p else "dim"
         spine = c("▌" if sel else "▎", pcol)
-        lines.append(line(spine + " " + title_markup(t, max(0, inner - 3), sel)))
+        lines.append(line(spine + " "
+                          + _milestone_title(t, board, today, max(0, inner - 3), sel)))
         if line_map is not None:
             line_map[t.id] = len(lines) - 1
 
@@ -3311,7 +3331,7 @@ def _focus_tiles(board: Board, tasks: list[Task], selected_id: str | None,
         bottom = c("█" * TILE_W, pcol) if sel else c("━" * TILE_W, pcol)
         spine = c("█" if sel else "▌", pcol)
 
-        title = title_markup(t, content_w - 1, sel, arrow=False)
+        title = _milestone_title(t, board, today, content_w - 1, sel, arrow=False)
         title_line = spine + " " + title
 
         sg, sgcol = status_glyph(board, t)
@@ -3482,7 +3502,10 @@ def _focus_review(board: Board, tasks: list[Task], selected_id: str | None,
         return markup + " " * max(0, pad)
 
     left_rows: list[str] = [c("█" * w_l, pcol)]
-    left_rows.append(spine + " " + c(escape(fit(t.title, w_l - 3)), "ink", bold=True))
+    left_rows.append(spine + " "
+                     + (c("◆", milestone_tone(t, board, today)) + " " if t.milestone else "")
+                     + c(escape(fit(t.title, w_l - 3 - (2 if t.milestone else 0))),
+                         "ink", bold=True))
     left_rows.append(spine)
     sg, sgcol = status_glyph(board, t)
     flags = [c(sg, sgcol)]
@@ -3713,7 +3736,8 @@ def _focus_inspector(board: Board, tasks: list[Task], selected_id: str | None,
         p = board.project_by_id(t.project_id)
         pcol = p.color if p else "dim"
         spine = c("▌" if sel else "▎", pcol)
-        left_rows.append((spine + " " + title_markup(t, max(0, left_w - 3), sel),
+        left_rows.append((spine + " "
+                          + _milestone_title(t, board, today, max(0, left_w - 3), sel),
                           t.id))
 
     right_lines = _focus_detail_lines(board, selected, today, max(0, right_w))
@@ -3736,7 +3760,7 @@ def _focus_image_card(board: Board, t: Task, selected_id: str | None,
     pcol = p.color if p else "dim"
     spine = c("▌" if sel else "▎", pcol)
     dt, dcol = date_chip(t, today, board)
-    title = title_markup(t, max(0, inner - 4 - 6), sel)
+    title = _milestone_title(t, board, today, max(0, inner - 4 - 6), sel)
     row1 = spine + " " + title + " " + c(fit(dt, 6, "right"), dcol)
     img_text = f"🖼 {len(t.images)} image{'s' if len(t.images) != 1 else ''}"
     row2 = "  " + c(escape(clip(img_text, max(0, inner - 4))), "mut")
@@ -3751,7 +3775,7 @@ def _focus_compact_card(board: Board, t: Task, selected_id: str | None,
     pcol = p.color if p else "dim"
     spine = c("▌" if sel else "▎", pcol)
     dt, dcol = date_chip(t, today, board)
-    title = title_markup(t, max(0, inner - 4 - 6), sel)
+    title = _milestone_title(t, board, today, max(0, inner - 4 - 6), sel)
     return [line(spine + " " + title + " " + c(fit(dt, 6, "right"), dcol))]
 
 
@@ -4667,21 +4691,36 @@ def kanban_plan(board, show_archived, selected_id, today, width, height, *,
     in_high = keyed(kanban_order(board, [t for col in high for t in col],
                                  show_archived, **seat))
     rail_titles = w >= KANBAN_WIDE and not collapsed
+    grouped = keyed(kanban_order(board, tasks, show_archived, **seat))
+    if group == "project":
+        # D-623: a project whose only open items are milestones still draws its
+        # rule-only band (its head counts the milestones). The work-card groups
+        # above never saw it — admit it here, in project order.
+        for p in board.visible_projects(show_archived):
+            if focus is not None and p.id != focus:
+                continue
+            if (p.name, p.id) not in grouped:
+                ms = band_milestones(board, p, today, show_archived)
+                if ms:
+                    grouped[(p.name, p.id)] = (p.color, p, [])
     bands = []
-    for key, (color, project, _all) in keyed(kanban_order(board, tasks, show_archived,
-                                                          **seat)).items():
+    for key, (color, project, _all) in grouped.items():
         band_cols = [c_.get(key, (None, None, []))[2] for c_ in cols]
         band_done = _recent_first(done.get(key, (None, None, []))[2])
-        if not any(band_cols) and not band_done:
+        ms = (band_milestones(board, project, today, show_archived)
+              if project is not None else [])
+        if not any(band_cols) and not band_done and not ms:
             continue
         rail = band_done if rail_titles else []
         room = max([_cell_rows(len(c_)) for c_ in band_cols] + [3])
         if 2 * len(rail) > room:
             rail = rail[:(room - 1) // 2]
         n_high = len(in_high.get(key, (None, None, []))[2])
+        band_open = (sum(1 for c_ in band_cols for t in c_ if not t.archived) + n_high)
+        if not band_open and not band_done and ms:
+            band_open = sum(1 for kind, _t in ms if kind != "reached")
         bands.append(KanbanBand(key[0], color, project, band_cols, band_done, rail,
-                                sum(1 for c_ in band_cols for t in c_ if not t.archived)
-                                + n_high, n_high))
+                                band_open, n_high))
     rail_w = KANBAN_RAIL_WIDE if rail_titles else KANBAN_RAIL_NARROW
     if not n_open:                  # one phase: nothing is open, the rail is the board
         rail_w = w
@@ -5003,7 +5042,7 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
                                           n=n_open))
                 + (sep if plan.widths else "") + rail_head)
     head.append(rule_row({x: "┼" for x in seps}, w))
-    if not plan.tasks:
+    if not plan.tasks and not plan.bands:
         return head + [c(fit("  (no tasks — press 'a' to add one)", w), "dim")], 0
 
     shown = range(plan.start, plan.start + len(plan.widths))
@@ -5047,22 +5086,10 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
             rows[1 + 2 * k][1].append(tid)
         bands.append(rows)
 
-    keep = list(range(len(bands)))
+    band_rows = [len(b) for b in bands]
+    ids = [{t for r in b for t in r[1]} for b in bands]
     room = (height - len(head) - len(pinned_rows) - 1) if height else None
-    if room is not None and sum(len(b) for b in bands) > room + 1:
-        # LLR-309.1: the earliest start that still draws the selection's band,
-        # then the bands below it while they fit — a `down` into a band already
-        # on screen moves nothing (P2 UX-14)
-        ids = [{t for r in b for t in r[1]} for b in bands]
-        s = next((i for i, x in enumerate(ids) if selected_id in x), 0)
-        first = s
-        while first > 0 and sum(len(b) for b in bands[first - 1:s + 1]) <= room:
-            first -= 1
-        used, end = sum(len(b) for b in bands[first:s + 1]), s + 1
-        while end < len(bands) and used + len(bands[end]) <= room:
-            used += len(bands[end])
-            end += 1
-        keep = list(range(first, end))
+    keep = _fold_keep(band_rows, ids, selected_id, room)
     drawn = [r for k in keep for r in bands[k]]
     whole = keep == list(range(len(bands)))     # then the fold row's line is free
     cut = None
@@ -5092,14 +5119,42 @@ def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_ma
                 line_map[tid] = len(lines) - 1
     if keep == list(range(len(bands))) and cut is None:
         return lines, 0
-    return lines + [_fold_row(plan.bands, keep, w, cut)], 1
+    # UX2-2: a late milestone folded off below marks the fold row (▲N ◆).
+    late_ms = sum(
+        1 for band in plan.bands[keep[-1] + 1:] if band.project is not None
+        for kind, _t in band_milestones(board, band.project, today, show_archived)
+        if kind == "late")
+    return lines + [_fold_row(plan.bands, keep, w, cut, late_ms)], 1
 
 
-def _fold_row(bands: list, keep: list[int], w: int, cut=None) -> str:
-    """`▲ N above: …   ▼ M below: …` (LLR-309.1), and for a band cut to the
-    room `▲ k more in NAME` / `▼ m more in NAME` between them (LLR-309.2). Every
-    count always prints: when the row does not fit, the `▲` names go first (P2
-    UX-15), then the cut band's name, and only then is the `▼` list clipped."""
+def _fold_keep(band_rows: list[int], ids: list[set[str]], selected_id: str | None,
+               room: int | None) -> list[int]:
+    """The band indices the fold keeps drawn (LLR-309.1): the earliest start that
+    still draws the selection's band, then the bands below it while they fit — a
+    `down` into a band already on screen moves nothing (P2 UX-14). ONE seat, read
+    by both the renderer and the `?` legend, so the legend names only what the
+    screen draws (CL-7)."""
+    keep = list(range(len(band_rows)))
+    if room is not None and sum(band_rows) > room + 1:
+        s = next((i for i, x in enumerate(ids) if selected_id in x), 0)
+        first = s
+        while first > 0 and sum(band_rows[first - 1:s + 1]) <= room:
+            first -= 1
+        used, end = sum(band_rows[first:s + 1]), s + 1
+        while end < len(band_rows) and used + band_rows[end] <= room:
+            used += band_rows[end]
+            end += 1
+        keep = list(range(first, end))
+    return keep
+
+
+def _fold_row(bands: list, keep: list[int], w: int, cut=None, late_ms: int = 0) -> str:
+    """`▲ N above: …   ▼ M below: …` (LLR-309.1 — the SHIPPED shape; the BACKLOG's
+    `▾ N more` note predated it and loses), and for a band cut to the room
+    `▲ k more in NAME` / `▼ m more in NAME` between them (LLR-309.2). Every count
+    always prints: when the row does not fit, the `▲` names go first (P2 UX-15),
+    then the cut band's name, and only then is the `▼` list clipped. A late
+    milestone folded off below appends `· ▲N ◆` to the `▼` side (UX2-2)."""
     names = [f"{b.name} ({b.n_open} open)" for b in bands]
     above, below = names[:keep[0]], names[keep[-1] + 1:]
     up = f"▲ {len(above)} above" if above else ""
@@ -5121,7 +5176,32 @@ def _fold_row(bands: list, keep: list[int], w: int, cut=None) -> str:
         # its counts drop its name
         short = [x.split(" in ")[0] for x in inside]
         full = "   ".join(x for x in [up] + short + tail if x)
+    if late_ms:
+        full += f" · ▲{late_ms} ◆"
     return c(_literal(fit(full, w)), "mut")
+
+
+def _kanban_band_geometry(plan: KanbanPlan, selected_id: str | None, today: date):
+    """(row-counts, ids) per band — the fold's inputs, derived from the plan
+    alone so the renderer and the `?` legend agree on which bands are drawn
+    (CL-7)."""
+    shown = range(plan.start, plan.start + len(plan.widths))
+    rows, ids = [], []
+    for band in plan.bands:
+        cells = max([_cell_rows(len(band.cols[i])) for i in shown] or [0])
+        rail = len(_rail_cells(band, plan, selected_id, today))
+        rows.append(1 + max(cells, rail))
+        ids.append({t.id for col in band.cols for t in col} | {t.id for t in band.rail})
+    return rows, ids
+
+
+def _kanban_high_rows(plan: KanbanPlan) -> int:
+    """The high band's row-count (its rule + its cards), 0 when it draws none."""
+    if not any(plan.high):
+        return 0
+    shown = range(plan.start, plan.start + len(plan.widths))
+    return 1 + max([_cell_rows(len(plan.high[i])) + (1 if plan.overflow[i] else 0)
+                    for i in shown] or [0])
 
 
 def _matrix_junctions(label_w: int, widths: list[int], mid: str) -> dict[int, str]:
@@ -6535,11 +6615,19 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
                 out.append((c(STATUS_MARK[st], "dim"), f"project {st}"))
         lanes, _geo, titles, _prof, _wr = swimlane_plan(board, False, today,
                                                         width, height)
-        named = [t for lane in [ln for ln in lanes if not ln.resting][1:]
-                 for t in lane_titles(lane, titles)]
+        active_lanes = [ln for ln in lanes if not ln.resting]
+        named = [t for lane in active_lanes[1:] for t in lane_titles(lane, titles)]
         for i in sorted({min(3, board.phase_index(t)) for t in named}):
             out.append((c(phase_glyph({i}), hue),
                         f"task in phase {i + 1}: the dot climbs as it advances"))
+        # CL-5: a milestone is drawn when a stacked lane names one (or the lead's
+        # worst-late row is one) — then the legend names its `◆`.
+        ms_drawn = any(t.milestone for t in named)
+        if not ms_drawn and active_lanes and active_lanes[0].late:
+            ms_drawn = sorted(active_lanes[0].late,
+                              key=lambda t: parse_iso(t.due_date))[0].milestone
+        if ms_drawn:
+            out.append((c("◆", hue), "a milestone: one date, no bar"))
         if f["high"]:
             out.append((c("!N", "ink"), "high-priority work still open"))
     if mode == "gantt":
@@ -6655,7 +6743,11 @@ def legend_entries(mode: str, board: Board, today: date | None = None,
             kw = _clamp_width(width)
             plan = kanban_plan(board, show_archived, selected_id, today, kw, height,
                                group=kanban_group, focus=kanban_focus)
-            if any(band_rule_facts(board, b, today, show_archived, kw)[1] for b in plan.bands):
+            band_rows, ids = _kanban_band_geometry(plan, selected_id, today)
+            room = (height - 3 - _kanban_high_rows(plan) - 1) if height else None
+            drawn = _fold_keep(band_rows, ids, selected_id, room)
+            if any(band_rule_facts(board, plan.bands[i], today, show_archived, kw)[1]
+                   for i in drawn):
                 out.append((c("◆", "mut"), "a milestone on its project's band rule"))
     # THE NO-GHOST LAW, and archived is its clearest case: the mark exists on
     # screen only while `v` is on AND something is actually archived. Explaining

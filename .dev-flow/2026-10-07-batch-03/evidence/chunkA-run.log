@@ -1,0 +1,237 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-03/evidence/chunkA-brief.md
+[0m→ [0mRead taskboard/models.py
+[0m→ [0mRead taskboard/app.py
+[0m→ [0mRead taskboard/views.py
+[0m✱ [0mGrep "def run_link_migration"[90m in taskboard/models.py · 1 match[0m
+[0m✱ [0mGrep "def run_milestone_offer"[90m in taskboard/models.py · 1 match[0m
+[0m✱ [0mGrep "def legend_entries"[90m in taskboard/views.py · 1 match[0m
+[0m✱ [0mGrep "legend_entries"[90m in . · 100 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [offset=1572, limit=260][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=6490, limit=260][0m
+[0m✱ [0mGrep "S-9|title.*5|string-only|string render|wrong-typed|non-text title"[90m in .dev-flow/BACKLOG.md · 100 matches[0m
+[0m✗ [0mGrep "S-4|K2-1|K-1|band_rule_facts|cleanup-before-restore" failed[90m in .dev-flow[0m
+[91m[1mError: [0mInvalid ripgrep match output
+[0m→ [0mRead .dev-flow/BACKLOG.md[90m [offset=40, limit=70][0m
+[0m→ [0mRead .dev-flow/BACKLOG.md[90m [offset=340, limit=40][0m
+[0m✱ [0mGrep "^def (kanban_plan|band_rule_facts|_legend_board_facts|render_view|nav_model|filtered_board|_band_rule|_band_facts)"[90m in taskboard/views.py · 8 matches[0m
+[0m✱ [0mGrep "def filtered_board|search_query|kanban_collapsed"[90m in taskboard/views.py · 29 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=130, offset=4630][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=4933][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=5858][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=80, offset=3600][0m
+[0m✱ [0mGrep "class HelpModal|def __init__.*HelpModal|legend_entries\("[90m in taskboard · 3 matches[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=130, offset=1750][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=110, offset=5050][0m
+[0m✱ [0mGrep "^def band_milestones|^def band_milestone_facts|^def kanban_work|^def matches|^def _legend_board_facts"[90m in taskboard/views.py · 5 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=70, offset=4869][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=4435][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=3588][0m
+[0m✱ [0mGrep "^def (_set_links|migrate_links|links_marked|_create_beside)|^class LinkMigration|^LINKS_MIGRATION|^MIGRATION_BACKUP|^MIGRATION_LOG"[90m in taskboard/models.py · 8 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=120, offset=1458][0m
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\models.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+@@ -1573,10 +1573,11 @@
+ """Migrate the board's links ONCE (LLR-505.2). None when there is nothing to
+ run: the load was unreadable, or the board carries the mark.
+ 
+ Order: the backup (the board file's own bytes), then the log, then the
+-changes, the mark and ONE atomic save. Any failure puts the board back as it
+-was in memory, leaves the file untouched and unmarked, and returns the
++changes, the mark and ONE atomic save. Any failure restores the board and
++the mark in memory FIRST, then removes this run's backup/log best-effort
++(never raising), leaves the file untouched and unmarked, and returns the
+ reason — a file name and the OS's words, never a directory path. A malformed
+ mark is replaced, and replacing it forces the backup and the log (S2-2)."""
+ if board.load_report.get("file_unreadable") or links_marked(board.settings):
+     return None
+
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\models.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+@@ -1602,17 +1602,20 @@
+     mark["links"] = LINKS_MIGRATION
+     board.settings["migrations"] = mark
+     board.save_atomic()
+ except OSError as exc:
+-    _set_links(board, changes, "before")
+-    for made in (result.log, result.backup):     # this failed run's own files
+-        if made:
+-            (target.parent / made).unlink(missing_ok=True)
+-    result.backup = result.log = None
+-    if had_mark:
++    _set_links(board, changes, "before")        # restore the board first …
++    if had_mark:                                 # … then the migration mark
+         board.settings["migrations"] = old_mark
+     else:
+         board.settings.pop("migrations", None)
++    for made in (result.log, result.backup):     # then this run's files,
++        if made:                                 # best-effort, never raising
++            try:
++                (target.parent / made).unlink(missing_ok=True)
++            except OSError:
++                pass
++    result.backup = result.log = None
+     name = Path(exc.filename).name if exc.filename else target.name
+     result.error = f"{name}: {exc.strerror or type(exc).__name__}"
+ return result
+ 
+
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=30, offset=767][0m
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\models.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+@@ -778,8 +778,20 @@
+         return color
+     return DROPPED_PROJECT_COLORS.get(color, "violet")
+ 
+ 
++def _coerce_title(value) -> str:
++    """A present-but-wrong-typed title keeps the user's text: `str(value)` when
++    that stringifies cleanly, else the shipped `Untitled` fallback for a MISSING
++    title. Never raises, never drops the text a title does carry (S-9)."""
++    if value is None:
++        return "Untitled"
++    try:
++        return str(value)
++    except Exception:
++        return "Untitled"
++
++
+ @dataclass
+ class Project:
+     name: str
+     color: str = "violet"
+
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=45, offset=853][0m
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\models.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\models.py
+@@ -870,11 +870,13 @@
+ legacy_phase, legacy_blocked = LEGACY_STATUS.get(d.get("status"),
+                                                  ("Backlog", False))
+ phase = d["phase"] if isinstance(d.get("phase"), str) and d["phase"] else legacy_phase
+ blocked = bool(d["blocked"]) if "blocked" in d else legacy_blocked
++raw_title = d.get("title", "Untitled")
++title = raw_title if isinstance(raw_title, str) else _coerce_title(raw_title)
+ return cls(
+     id=d.get("id") or _new_id(),
+-    title=d.get("title", "Untitled"),
++    title=title,
+     project_id=d.get("project_id"),
+     phase=phase,
+     blocked=blocked,
+     extra=_extra_keys(d, _TASK_KEYS),
+
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=30, offset=562][0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -575,8 +575,14 @@
+                 vps.first().size.height or size[1])
+     if self.search_query:     # render_view draws a filtered view 2 rows
+         size = (size[0], max(1, size[1] - 2))   # shorter (its bar)
+     board = self._view_board()
++elif self.view_mode == "kanban" and self.search_query:
++    # the kanban `?` legend must read the FILTERED board the screen draws
++    # (K2-1): a band whose milestone the query hides is not drawn, so its
++    # `◆` must not be explained. The filtered view is 2 rows shorter too.
++    board = self._view_board()
++    size = (size[0], max(1, size[1] - 2))
+ self.push_screen(HelpModal(self.view_mode, board,
+                            today=date.today(), size=size,
+                            show_archived=self.show_archived,
+                            team_state=self.team_state,
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests -q 2>&1 | tail -40
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+F....................................................................... [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+........................................................................ [ 99%]
+.........                                                                [100%]
+================================== FAILURES ===================================
+_________________ test_foreign_tasks_skip_unparseable_entries _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16792/test_foreign_tasks_skip_unpars0')
+
+    def test_foreign_tasks_skip_unparseable_entries(tmp_path):
+        _write_team(tmp_path)
+        state = TeamState(tmp_path, user_id="jav")
+        state.load_config()
+        (tmp_path / "board.ana.json").write_text(
+            __import__("json").dumps({
+                "user": "ana",
+                "pushed_at": "2026-09-01T00:00:00Z",
+                "tasks": [
+                    {"title": "Good", "project_id": "web", "phase": "Doing"},
+                    {"title": 123, "project_id": "web"},  # bad type
+                ],
+            }), encoding="utf-8"
+        )
+        state.pull()
+        titles = [t.title for t, _ in state.foreign_tasks()]
+>       assert titles == ["Good"]
+E       AssertionError: assert ['Good', '123'] == ['Good']
+E         
+E         Left contains one more item: '123'
+E         Use -v to get more diff
+
+tests\test_team_sync.py:184: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_team_sync.py::test_foreign_tasks_skip_unparseable_entries
+1 failed, 2528 passed in 419.62s (0:06:59)
+[0m
+[0m✱ [0mGrep "def foreign_tasks|def _parse|Task.from_dict|isinstance.*title|unparseable|skip"[90m in taskboard/team_sync.py · 36 matches[0m
+[0m→ [0mRead taskboard/team_sync.py[90m [limit=50, offset=205][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=14, offset=779][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=16, offset=1609][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=10, offset=871][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=20, offset=568][0m
+All three fixes implemented and the full suite run. Here is the REPORT BACK.
+
+## REPORT BACK
+
+**Final suite:** `2528 passed, 1 failed` (baseline was 2529 passed). The single failure is a stale test caused by S-9, not by K2-1 — named below.
+
+### 1. S-4 — link migration cleanup-before-restore (MEDIUM)
+- **What changed:** `taskboard/models.py:1619-1632` (error handler) and the docstring at `:1576-1584`.
+- **Design decision (the item allowed one):** mirrored `run_milestone_offer`'s order exactly — on any `OSError` the board is restored FIRST (`_set_links(board, changes, "before")`), then the migration mark (`had_mark → old_mark`, else pop), and only then the run's own backup/log are unlinked inside their own `try/except OSError: pass` so a refusing `unlink` can never mask the original error or leave the mark unrestored. On "re-raise the original error": this function returns a `LinkMigration` (like the offer returns its result), so the original save error is what reaches `result.error`; the cleanup is best-effort and never raises, so the original error can no longer be replaced by a cleanup error. No happy-path change.
+
+### 2. S-9 — non-text title crashes string-only render paths (LOW)
+- **What changed:** `taskboard/models.py:782-791` (new `_coerce_title` helper) and `:874-875` (`Task.from_dict`).
+- **Design decision:** `_coerce_title` returns `str(value)` when it stringifies cleanly (a hand-edited `5` → `"5"`, a list → its repr), `"Untitled"` for `None` (a present-but-null title has no text) or when `str()` raises. `"Untitled"` remains the fallback for a MISSING title (the `.get` default). Never raises, never drops the text a title carries.
+- **Project.from_dict:** checked first — `name=name if isinstance(name, str) and name else "Untitled"` already coerces a non-text name, so there is no exposure to fix; left untouched (only reachable paths fixed).
+
+### 3. K2-1 — kanban `?` legend reads the unfiltered board (LOW)
+- **What changed:** `taskboard/app.py:579-584` — a new `elif self.view_mode == "kanban" and self.search_query:` branch that passes `self._view_board()` (the filtered board) and shrinks `height` by 2, matching the gantt's existing pattern and `render_view`'s filtered-kanban layout.
+- **Left for the render agent (coordination, not fixed):** the "folded off screen" half of K2-1 cannot be fixed at the caller. `legend_entries` (`views.py:6654-6659`) checks **all** `plan.bands` from `kanban_plan`, but the fold (which bands actually draw) is computed later in `_kanban_grouped` (`views.py:5050-5065`). Making the `◆` entry appear only when a *drawn* band carries a milestone requires either `legend_entries` to call the renderer's fold (or a new helper exposing `keep`), or a `kanban_collapsed`/drawn-bands input threaded through `HelpModal` → `legend_entries` — all in `views.py`/`modals.py`, the render agent's files for the next increment. I did not touch `views.py`.
+
+### Left for the tests agent
+- **`tests/test_team_sync.py::test_foreign_tasks_skip_unparseable_entries` (line 184) is now red** — a direct consequence of S-9, not a regression. Old behavior: `Task.from_dict` left `title=123` (int), and `team_sync.foreign_tasks` skipped it via `if not isinstance(task.title, str)`. With S-9 the title is coerced to `"123"`, so the foreign task is kept. **New expected:** `titles == ["Good", "123"]`. Also note the guard at `taskboard/team_sync.py:226` is now dead code (title is always a `str` post-load) — harmless, but flag for cleanup.
+- K2-1 (search-filter half) is not covered by any existing test; a new app-path test (kanban `?` with a search query hiding a milestone-bearing band) would close it.
