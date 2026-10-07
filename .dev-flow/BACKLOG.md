@@ -21,7 +21,7 @@ environmental flake (failed in the batch's gate runs on its own SETUP; G-011).
 - ✓ done in `2026-10-07-batch-01` — the P4 residue closed (DS-5 restore reuse, one
   `date_base` rule, `Plan.conflicts` documented, TC-701/TC-702 pins; 2514 tests green).
 
-- ✓ done in `2026-10-07-batch-02` (Batch C, awaiting the operator's visual verdict) — **the chain map
+- ✓ done in `2026-10-07-batch-02` (Batch C, the operator's visual verdict all accepted 2026-10-07) — **the chain map
   view (key `6`)**: per-project chains, the critical chain in heavy structure, the per-chain `dates`
   switch on the shipped storage, the x/m view-dispatch, the high-band cap pinned; 2529 tests green;
   the C-2b oracle byte-exact at 118x30 and 80x24.
