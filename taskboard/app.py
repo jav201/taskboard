@@ -33,8 +33,9 @@ from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
 from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
-                    gantt_plan, nav_model, sort_by_due, fit, vis,
-                    render_view, valid_url)
+                    gantt_plan, nav_model, present_paths, present_project_id,
+                    present_tasks, render_present, render_view, save_present_png,
+                    save_present_svg, sort_by_due, fit, vis, valid_url)
 
 def _md(d: date) -> str:
     return f"{d:%b} {d.day}"
@@ -178,6 +179,102 @@ class HelpScreen(ModalScreen[None]):
         self.query_one("#help-box").focus()
 
 
+class PresentScreen(ModalScreen[None]):
+    """`R` — the presentation (PRES-C): the project's gantt field on top, the
+    brief one-liners below, a `⟦━⟧` cursor across the brief blocks whose task's
+    notes expand. `←`/`→` and `↑`/`↓` move the cursor, `x` exports SVG + PNG to
+    the board's `reports/` folder, `esc`/`q` leave. Read-only: it draws, it never
+    writes the board."""
+
+    BINDINGS = [
+        Binding("escape,q", "close", "Leave", priority=True),
+        Binding("left,h", "move(-1)", "", priority=True),
+        Binding("right,l", "move(1)", "", priority=True),
+        Binding("up,k", "move(-1)", "", priority=True),
+        Binding("down,j", "move(1)", "", priority=True),
+        Binding("x", "export", "Export", priority=True),
+    ]
+
+    DEFAULT_CSS = """
+    PresentScreen {
+        align: center middle;
+        background: #0d1117;
+    }
+    #present-frame {
+        width: 100%;
+        height: 1fr;
+        padding: 0;
+    }
+    #present-hint {
+        width: 100%;
+        height: 1;
+        color: #8b98a5;
+        padding: 0 1;
+    }
+    """
+
+    def __init__(self, board: Board, project_id: str, project_name: str | None,
+                 cursor_id: str | None):
+        super().__init__()
+        self._board = board
+        self._project_id = project_id
+        self._project_name = project_name
+        self._today = date.today()
+        self._cursor_id = cursor_id
+        self._open_ids = [t.id for t in present_tasks(board, project_id)[0]]
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="present"):
+            yield Static(id="present-frame")
+            yield Static(id="present-hint")
+
+    def on_mount(self) -> None:
+        self._paint()
+
+    def on_resize(self, event: events.Resize) -> None:
+        self._paint()
+
+    def _frame_height(self) -> int:
+        return max(1, (self.size.height or 0) - 1)
+
+    def _paint(self) -> None:
+        frame = self.query_one("#present-frame", Static)
+        w = self.size.width or 0
+        h = self._frame_height()
+        text = render_present(self._board, self._project_id, self._cursor_id,
+                              self._today, w, h)
+        frame.update(text)
+        self.query_one("#present-hint", Static).update(
+            "←→ ↑↓ move · x export SVG+PNG · esc leave")
+
+    def action_move(self, delta: int) -> None:
+        ids = self._open_ids
+        if not ids:
+            return
+        i = ids.index(self._cursor_id) if self._cursor_id in ids else 0
+        self._cursor_id = ids[max(0, min(len(ids) - 1, i + delta))]
+        self._paint()
+
+    def action_export(self) -> None:
+        w = self.size.width or 0
+        h = self._frame_height()
+        text = render_present(self._board, self._project_id, self._cursor_id,
+                              self._today, w, h)
+        svg_path, png_path = present_paths(self._board, self._project_name, self._today)
+        save_present_svg(text, svg_path, w, h)
+        png = save_present_png(svg_path, png_path, w, h)
+        if png is None:
+            self.app.notify(
+                f"Exported {svg_path.name} to {svg_path.parent} — PNG needs Microsoft Edge",
+                title="Present", severity="warning", timeout=10, markup=False)
+        else:
+            self.app.notify(f"Exported {svg_path.name} + {png_path.name} to {svg_path.parent}",
+                            title="Present", severity="information", timeout=10, markup=False)
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
 class TaskboardApp(App):
     """Frameless kanban desktop widget."""
 
@@ -233,7 +330,7 @@ class TaskboardApp(App):
     # and merely disabled, i.e. a legend entry that does nothing.
     BOARD_ACTIONS = frozenset({
         "add_task", "add_project", "manage_projects", "manage_phases",
-        "details", "edit", "delete", "archive", "purge_done", "report",
+        "details", "edit", "delete", "archive", "purge_done", "present",
         "toggle_archived", "open_url", "open_images", "clocks",
         "phase_move", "prio_cycle", "toggle_blocked", "link",
         "kanban_sort", "kanban_group", "collapse_toggle",
@@ -610,15 +707,21 @@ class TaskboardApp(App):
         # (code review F3, batch 2026-10-02-batch-02)
         keybar.set_layer("more" if keybar.bar_layer == "primary" else "primary")
 
-    def action_report(self) -> None:
-        """`R` — write an HTML report of the board beside the board file.
-
-        It says where the file went and does NOT open it: opening a browser is
-        an action the reader did not ask for, so it stays their move."""
-        from .report import write_report
-        out = write_report(self.board)
-        self.notify(f"Report written to {out}", title="Report",
-                    severity="information", timeout=10, markup=False)
+    def action_present(self) -> None:
+        """`R` — open the presentation of the selected task's project (the
+        focused project when set): the gantt field on top, the brief blocks
+        below, a `⟦━⟧` cursor. The presentation replaces the HTML report the
+        key used to write; `--report` from the shell still writes that."""
+        project_id = present_project_id(self.board, self.selected_task_id,
+                                        self.focused_project_id)
+        if project_id is None:
+            self.notify("No project to present.", title="Present",
+                        severity="information", timeout=10, markup=False)
+            return
+        proj = self.board.project_by_id(project_id)
+        self.push_screen(PresentScreen(self.board, project_id,
+                                       proj.name if proj else None,
+                                       self.selected_task_id))
 
     def action_standup(self) -> None:
         """`S` — the week in one modal: what moved and what closed, per

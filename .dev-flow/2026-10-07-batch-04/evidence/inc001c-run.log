@@ -1,0 +1,75 @@
+
+===== M1 on views.py =====
+sha256 before: e4e300fcbb7223a6a9c06e662eac8536c12c722a93b23cf4ed89b573b18b197e
+tests/test_present.py::test_TC_1003_a_hostile_title_and_notes_render_escaped: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 0.40s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: e4e300fcbb7223a6a9c06e662eac8536c12c722a93b23cf4ed89b573b18b197e  OK
+
+===== M2 on views.py =====
+sha256 before: e4e300fcbb7223a6a9c06e662eac8536c12c722a93b23cf4ed89b573b18b197e
+tests/test_present.py::test_TC_1001_the_exact_presc_frame_at_118x30: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 0.38s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: e4e300fcbb7223a6a9c06e662eac8536c12c722a93b23cf4ed89b573b18b197e  OK
+
+===== M3 on app.py =====
+sha256 before: ceeabdc546f725307e2922b1f9216a0b029dc39560d359bc2c94ab684359dce9
+tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 2.13s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+tests/test_report.py::test_pressing_R_opens_the_presentation_read_only: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 0.55s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: ceeabdc546f725307e2922b1f9216a0b029dc39560d359bc2c94ab684359dce9  OK
+
+===== M4 on app.py =====
+sha256 before: ceeabdc546f725307e2922b1f9216a0b029dc39560d359bc2c94ab684359dce9
+tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 2.12s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: ceeabdc546f725307e2922b1f9216a0b029dc39560d359bc2c94ab684359dce9  OK
+
+===== M5 on app.py =====
+sha256 before: ceeabdc546f725307e2922b1f9216a0b029dc39560d359bc2c94ab684359dce9
+tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 3.05s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: ceeabdc546f725307e2922b1f9216a0b029dc39560d359bc2c94ab684359dce9  OK
+
+===== M6 on views.py =====
+sha256 before: e4e300fcbb7223a6a9c06e662eac8536c12c722a93b23cf4ed89b573b18b197e
+tests/test_present.py::test_TC_1003_a_hostile_title_and_notes_render_escaped: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 0.39s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: e4e300fcbb7223a6a9c06e662eac8536c12c722a93b23cf4ed89b573b18b197e  OK
+
+===== battery done =====

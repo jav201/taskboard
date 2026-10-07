@@ -64,7 +64,7 @@ def test_the_lanes_bar_shows_every_universal_key():
 
 
 GLOBAL_ACTIONS = {"open_url", "open_images", "add_project", "manage_projects",
-                  "manage_phases", "clocks", "report", "standup"}
+                  "manage_phases", "clocks", "present", "standup"}
 
 
 def test_global_commands_are_palette_only_not_in_the_bar():

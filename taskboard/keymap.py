@@ -133,7 +133,7 @@ KEYMAP: tuple[Key, ...] = (
     Key("P", "P", "manage_projects", "Projects", group="misc", bar=False),
     Key("f", "f", "manage_phases", "Phases", group="misc", bar=False),
     Key("c", "c", "clocks", "Clocks", group="misc", bar=False),
-    Key("R", "R", "report", "Report", group="misc", bar=False),
+    Key("R", "R", "present", "Present", group="misc", bar=False),
     # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
     # derives from the board in ANY view, so — like `R` — it is not scoped.
     Key("S", "S", "standup", "Standup", group="misc", bar=False),
