@@ -454,15 +454,15 @@ async def test_AT_403_typed_and_os_text_is_painted_exactly(tmp_path, monkeypatch
     Field report (S-5): `app.py` and the phase editor notify a typed id or
     name, a file path and an OS error message with markup ON — the Setup id
     is lowercased (`[LINK=…` becomes Textual's `[link=…` tag), the duplicate
-    phase name is `escape`d, the report and recovery paths and the
+    phase name is `escape`d, the recovery path and the
     transition-log error are not escaped at all, and a board directory named
     `a[B]x` or `[B]x` is a markup tag inside them. Law: each in its own run,
     the toast read off the painted `Toast` equals the text exactly: Setup
     `0` → roster / projects section → `a`, an id typed twice → `Member|Project
     '<id lowercased>' already exists.`; phase editor `a` and `e` with an
-    existing name → `'<name>' already exists.`; `R` → `Report written to
-    <the written file>` (the one `.html` found on disk, compared whole with
-    `str(path)`); an unreadable board at mount → the recovery message naming
+    existing name → `'<name>' already exists.`; `R` → the presentation opens
+    (`PresentScreen`) and `esc` leaves it, writing no report; an unreadable
+    board at mount → the recovery message naming
     the `.corrupt` copy found on disk; a DIRECTORY named `history.jsonl` beside
     the board in `a[B]x`, then `]` → the toast equals `history.HISTORY_ERROR`
     of that same failing write (it holds `repr(path)`, P-16). RED on base:
@@ -514,15 +514,19 @@ async def test_AT_403_typed_and_os_text_is_painted_exactly(tmp_path, monkeypatch
                 return f"the phases changed to {app.board.phases!r}"
             return _toast_check(app, None, f"'{p}' already exists.", True)
 
-    async def report_arm(dirname):
+    async def present_arm(dirname):
         here = d() / dirname
         app = _app(_one(here))
         async with app.run_test(size=SIZE, notifications=True) as pilot:
             await _press_select(app, pilot, "R")
+            if type(app.screen).__name__ != "PresentScreen":
+                return f"R did not open the presentation (screen {type(app.screen).__name__})"
+            await pilot.press("escape")
+            await _settle(pilot)
+            if type(app.screen).__name__ == "PresentScreen":
+                return "esc did not leave the presentation"
             written = list((here / "reports").glob("*.html"))
-            if len(written) != 1:
-                return f"fixture: {len(written)} reports on disk"
-            return _toast_check(app, "Report", f"Report written to {written[0]}", True)
+            return None if not written else f"R wrote a report: {written[0].name}"
 
     async def recovered_arm(dirname):
         here = d() / dirname
@@ -563,7 +567,7 @@ async def test_AT_403_typed_and_os_text_is_painted_exactly(tmp_path, monkeypatch
         ]
     for dirname in DIRS:
         arms += [
-            (f"report-written toast R [{dirname}]", lambda x=dirname: report_arm(x)),
+            (f"R opens the presentation [{dirname}]", lambda x=dirname: present_arm(x)),
             (f"board-recovered toast [{dirname}]", lambda x=dirname: recovered_arm(x)),
         ]
     arms.append(("transition-log toast ] [a[B]x/history.jsonl a directory]", history_arm))

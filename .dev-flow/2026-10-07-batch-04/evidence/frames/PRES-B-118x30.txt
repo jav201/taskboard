@@ -1,0 +1,30 @@
+◆ PRESENT · Website Redesign — the brief                                                ▲2 past due · 5 open · 1 done 
+▌ Website Redesign  due Oct 10  5 open  1 done  ▲2 past due                                                           
+                                                                                                                      
+▌ Build component library                                                                        Review · normal · ▲3d
+   Design tokens are frozen. Build buttons, inputs and cards from the approved mockups and publish the storybook      
+   before review.                                                                                                     
+   ↗ https://design-system.example.com/tokens                                                                         
+                                                                                                                      
+▌ Fix checkout 500 error                                                                            Doing · high · ▲2d
+   The 500 is a missing tax-rate row for new regions. Roll back the last deploy if the fix is not green by end of day.
+   ↗ https://status.example.com/incident/4821                                                                         
+                                                                                                                      
+▌ Optimize image assets                                                                             Next · low · in 6d
+   Convert hero images to AVIF and lazy-load below the fold. Target a homepage under 1.5 MB.                          
+                                                                                                                      
+▌ Launch new homepage                                                                          Backlog · high · in 10d
+   Feature-flag the cut-over, set DNS TTL to 300, and keep the rollback doc ready. Waits on the library and the asset 
+   pass.                                                                                                              
+                                                                                                                      
+▌ SEO redirects map                                                                          Backlog · normal · in 14d
+   Build the 301 map from the old URL scheme and submit the new sitemap after cut-over.                               
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
