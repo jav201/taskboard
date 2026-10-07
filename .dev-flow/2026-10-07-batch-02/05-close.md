@@ -31,7 +31,7 @@ selection bright when AT-201's accent law rejected the prototype's accent backgr
 | Artifact | Human review |
 |---|---|
 | The commission ("termina los cambios propuestos… Sigue usando Deepseek") | ✅ the operator's own words |
-| The visual verdict (PV-816..819, `veredicto-batchc.html`) | ⏳ pending — the batch pushes under the commission; the verdict folds on arrival |
+| The visual verdict (PV-816..819, `veredicto-batchc.html`) | ✅ 2026-10-07 — all four accepted (taskboard-veredicto-batchc.json), no change requests |
 | The code | ❌ machine review only (4 P2 lens iterations at the contract + code-review ×2 at the increment + the close suite) |
 
 ## Lessons carried
@@ -46,4 +46,5 @@ selection bright when AT-201's accent law rejected the prototype's accent backgr
 ## Standing constraints honored
 
 No commits/pushes by the implementing agents; the coordinator commits and pushes once per batch
-under the operator's commission.
+under the operator's commission. The verdict arrived after the push; a follow-up commit lands the
+color captures (the first set was greyscale — the NO_COLOR shell trap, re-taken clean) and the record.
