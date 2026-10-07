@@ -3,12 +3,14 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `34bab3c8` (local HEAD == `origin/main`; batch 2026-10-07-batch-03 started here)
+**Base ref:** `a8208804` (local HEAD == `origin/main`; batch 2026-10-07-batch-05 started here)
 · **Last refresh:** 2026-10-07
-**Status:** **2541 tests** (batch `2026-10-07-batch-03`, the cleanup batch: S-4 the migration's
-restore-first failure path, S-9 the non-text title at the load boundary, K2-1 the kanban `?`
-legend's drawn-band rule, UX2-2 the fold-row late-milestone marker, D-623 the milestones-only
-rule-only band, milestones in lanes/agenda/focus — 12 new test nodes in `tests/test_cleanup.py`).
+**Status:** **2556 tests** (batch `2026-10-07-batch-05`, the carries batch: S5-3 a failed backup
+write leaves no partial file (`_create_beside`'s close-then-unlink guard), F-6 one `Mon D`
+formatter owned at models, UXV-3 the single-task undo toast, UXV-6 the `?` help word-clip, the
+three batch-C chain-map carries — the deep-chain `+N more ↓` cap amending TC-810
+(LED-2026-10-07-batch-05.1), the one-pass resize heal, AT-801b's docstring — and the P4 F-3..F-5
+test-strength arms; 10 new test nodes across 4 new files).
 `test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011; did not fire
 at this batch's close).
 
@@ -40,6 +42,29 @@ at this batch's close).
   `◆`, head `N open`), milestones render with their `◆` identity in lanes/agenda/focus (marker
   only, CL-9). 2541 tests green; 4 mutants killed (2 per increment); the contract LED .1-.3.
 
+- ✓ done in `2026-10-07-batch-05` (the carries batch; contract LED-2026-10-07-batch-05.1) — **the
+  ten-item carry wave**: S5-3 (`_create_beside` unlinks its exclusively-created file best-effort on
+  a failed write — close-then-unlink nested guards, the original error re-raised; both writers
+  inherit through the helper; AT-1101's two arms), F-6 (one `def _md` owned at models.py; the
+  views/app copies deleted for the import; AT-1102's identity pin + 14-date sweep), UXV-3 (the
+  single-task undo toast `Undone — {task.title} is back as it was.`, markup=False, before the
+  save; AT-1103 + the purged-skip arm), UXV-6 (`_clip_words` + `_HelpLine(Label)` — the compositor
+  was cutting height-1 Labels mid-word in the 22-cell help column; AT-1104 + TC-1104), the three
+  batch-C chain-map carries (the per-band `+N more ↓` cap with N exact amending TC-810 — a zero-fit
+  band still drops whole; the chainmap-scoped one-pass resize heal at `refresh_view`'s close; AT-801b's
+  docstring corrected; the amended TC-810 + the new AT-801c), and the P4 F-3..F-5 test-strength arms
+  (AT-601/602 rewritten to walk with keys; AT-602's ash `◆` pinned to the exact column via the
+  shipped axis math; the new offer-to-team-folder arm). 2556 tests green (2556 = 2546 + 10); the
+  M1-M7 mutants KILLED, M8 SURVIVED-with-cause (declared in increment-003's packet), M5 the
+  planted-assignment probe; the B1 present-a-project round closed by batch E (`2026-10-07-batch-04`),
+  marked below.
+
+## Open — after `2026-10-07-batch-05` (the carries batch)
+
+- Nothing new from this batch. The ten-item carry wave it closed (5 from the B2a residue's closable
+  bullets · 3 from Batch C · the present-a-project round closed by batch E) is marked done in place
+  below; the G-011 flake line stands; nothing else opens.
+
 ## Open — after `2026-10-07-batch-03` (the cleanup batch)
 
 - Nothing new from this batch. The carries below stand (3 from Batch C · 6 from the B2a residue ·
@@ -49,11 +74,16 @@ at this batch's close).
 
 ## Open — after `2026-10-07-batch-02` (Batch C: the chain map)
 
-- **Deep chains pile into the capped columns and can fold whole at typical heights** (code review
-  rev-2 note): a per-band cap/split (`+N more`, kanban-style) is the refinement.
-- **The chain map's resize-heal leans on a second refresh** (LOW): re-verify the selection against
-  the fresh `line_map` at the end of `refresh_view`.
-- **AT-801b's docstring overclaims** (nit): it says "linking re-renders" but presses escape.
+- ✓ done in `2026-10-07-batch-05` — **Deep chains pile into the capped columns and can fold whole at typical heights** (code review
+  rev-2 note): a per-band cap/split (`+N more`, kanban-style) is the refinement. — shipped as the
+  per-band `+N more ↓` tail with N exact (the kanban law), amending TC-810
+  (LED-2026-10-07-batch-05.1); a zero-fit band still drops whole, head and canvas (the amended
+  TC-810; M6/M7 KILLED).
+- ✓ done in `2026-10-07-batch-05` — **The chain map's resize-heal leans on a second refresh** (LOW): re-verify the selection against
+  the fresh `line_map` at the end of `refresh_view`. — shipped as `_heal_selection_after_repaint`,
+  the chainmap-scoped re-verify closing `refresh_view` in one pass (the new AT-801c; the generic
+  attempt broke 13 tests — the scope is documented in increment-003's packet).
+- ✓ done in `2026-10-07-batch-05` — **AT-801b's docstring overclaims** (nit): it says "linking re-renders" but presses escape. — docstring corrected to the arm's body.
 
 ## Open — after `2026-10-07-batch-01` (the residue batch)
 
@@ -79,32 +109,48 @@ at this batch's close).
 - ✓ done in `2026-10-07-batch-03` — **Milestones in the other views**: lanes, agenda and focus draw a milestone as a plain task (the
   flag is ignored there). Decide per view with a prototype round first. — decided without a prototype:
   a marker only (CL-9), per the cleanup commission; the operator's eye is invited at the next visual verdict.
-- **`u` on a single-task change is silent** (ux UXV-3, LOW): after `M` in the kanban the card leaves
-  or rejoins the columns with no message; a one-line undo toast would say what came back.
-- **The `?` help at 80 cells cuts lines mid-word with no `…`** (ux UXV-6, LOW; every legend line,
-  not only the new ones).
-- **Test strength, LOW** (qa P4 F-3..F-5): several AT arms set the selection directly instead of
+- ✓ done in `2026-10-07-batch-05` — **`u` on a single-task change is silent** (ux UXV-3, LOW): after `M` in the kanban the card leaves
+  or rejoins the columns with no message; a one-line undo toast would say what came back. — shipped
+  as the one-line toast `Undone — {task.title} is back as it was.` (`title="Undo"`, `markup=False`)
+  before the save at the single-task fall-through (AT-1103 + the purged-skip arm; M3 KILLED).
+- ✓ done in `2026-10-07-batch-05` — **The `?` help at 80 cells cuts lines mid-word with no `…`** (ux UXV-6, LOW; every legend line,
+  not only the new ones). — shipped as `_clip_words` + `_HelpLine(Label)`: the compositor was
+  wrapping height-1 Labels mid-word in the 22-cell help column; every legend meaning and usage
+  bullet now clips at a word boundary with `…` (AT-1104 + TC-1104; M4 KILLED). The example diagram
+  line stays unclipped (out of the legend+usage scope — declared in increment-002's packet).
+- ✓ done in `2026-10-07-batch-05` — **Test strength, LOW** (qa P4 F-3..F-5): several AT arms set the selection directly instead of
   walking with keys; nothing pushes offer-converted milestones to a team folder (same path as `M`,
-  covered by AT-601); AT-602's month-row ash `◆` is checked as "any", not at Mockups' column.
-- **A failed backup write leaves a partial file** (security close S5-3, LOW): `_create_beside`
+  covered by AT-601); AT-602's month-row ash `◆` is checked as "any", not at Mockups' column. — all
+  three shipped: the AT-601/602 arms walk with keys (the bidirectional `_select` + `_editor_save`),
+  the ash is pinned to the exact column via the shipped axis math, and the new
+  offer-converted-to-team-folder arm drives the `M` path end to end (M5's planted-assignment probe
+  is the standing grep pin; the arm's declared limit: only listed projects push).
+- ✓ done in `2026-10-07-batch-05` — **A failed backup write leaves a partial file** (security close S5-3, LOW): `_create_beside`
   (shared by the link migration and the milestone offer) does not remove its exclusively created
   file when the write itself fails (a full disk); the board is never harmed and the next run takes
-  `.1`. Unlink it on a failed write, with a RED arm.
-- **`Mon D` formatter in three copies** (code review F-6, NIT): `_md` in `models.py`, `views.py`
-  and `app.py`; keep one.
+  `.1`. Unlink it on a failed write, with a RED arm. — shipped as the nested close-then-unlink
+  guard with the original error re-raised, both writers inheriting through the helper (AT-1101's
+  two arms; M1/M2 KILLED).
+- ✓ done in `2026-10-07-batch-05` — **`Mon D` formatter in three copies** (code review F-6, NIT): `_md` in `models.py`, `views.py`
+  and `app.py`; keep one. — one `def _md` owned at models.py; the views/app copies deleted for the
+  import (AT-1102's identity pin + 14-date sweep; the census is the standing guard).
 - `test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011): it failed on
   its own clipboard SETUP in every B2 gate run.
 
 ## Open — after `2026-10-04-batch-01` (Batch B1: waits-on links)
 
-- **Present a whole project** (operator request with the visual verdict, 2026-10-04 — a new
+- ✓ done in `2026-10-07-batch-04` (Batch E — marked at this batch's close; the round ran in the
+  `present-e` worktree) — **Present a whole project** (operator request with the visual verdict, 2026-10-04 — a new
   feature, routed to a PROTOTYPE ROUND FIRST, real renders and the operator's verdict before any
   increment): a presentation of one complete project — its gantt, its tasks and the tasks' text —
   in a format fit to present, with an export of what is shown to SVG or an image. Operator's
   words: "presentación de un proyecto completo. Donde se vea el gantt, las tareas y el texto de
   las tareas en un formato apropiado para presentar. Además de poder exportar SVG o una imagen de
-  lo proyectado." Open questions for the round: full-screen view vs export-only; page size and
-  pagination; which task text (notes, links); the export path and file naming.
+  lo proyectado." — shipped as the presentation behind `R` (PRES-C per the operator's verdict:
+  the gantt on top, the brief blocks below, the `⟦━⟧` cursor expanding each task's notes, `x`
+  exporting SVG+PNG to the board's `reports/`; the report key replaced, the shell `--report` CLI
+  untouched; AT-1001 + TC-1001..1004, 2534 green on its branch). The round's open questions were
+  answered by the prototype verdict.
 - ✓ B2a done in `2026-10-04-batch-02` (milestones M-1/M-2 and the M-3 offer); moving linked dates is B2b above — **Batch B2 — milestones, moving linked dates, the M-3 offer** (D-501, the pre-authorized B1/B2
   split): milestones M-1/M-2, moving a task's dates moves what waits on it (round 6), the one-time
   M-3 milestone offer. Seed: the kg_mejoras verdict frames; the waits-on model and the one overlap

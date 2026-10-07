@@ -1,0 +1,49 @@
+
+===== M1 on models.py =====
+sha256 before: 4e38b759b68b85b3e8e5ad5dab36274b82dea92bddc377e86ac007e70513d96e
+pytest tests/test_backup_write.py::test_failed_write_leaves_no_partial_file -q -x --no-header -p no:cacheprovider: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 0.31s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: 96574d9f36204836baaf6d540f861eb57ad3ce349f0fb9cb2b600879cbbdc10c  MISMATCH!
+
+===== M2 on models.py =====
+sha256 before: 96574d9f36204836baaf6d540f861eb57ad3ce349f0fb9cb2b600879cbbdc10c
+pytest tests/test_backup_write.py::test_refusing_unlink_never_masks_the_write_error -q -x --no-header -p no:cacheprovider: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed in 0.28s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: 96574d9f36204836baaf6d540f861eb57ad3ce349f0fb9cb2b600879cbbdc10c  OK
+
+===== M3 on app.py =====
+sha256 before: 7148c8413476031debe6764356afaedafc31428826a531c4ffbf8e218e5b4b04
+BAD: anchor not unique/found (0) — mutation skipped
+
+===== M4 on modals.py =====
+sha256 before: 6446c0b04acd31772085b8186ae2e7d3810c3a9b96291ce900eacc0473c35686
+pytest tests/test_help_clip.py -q -x --no-header -p no:cacheprovider: KILLED (exit 1)
+  !!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+  1 failed, 1 passed in 0.59s
+  C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+  The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+  
+    warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+sha256 restored: 88d45a33b7b495da87f75d4d393beb464cb38531f5fa132421a79d4d3c11b85b  MISMATCH!
+
+===== M5 on test_milestones.py (planted assignment; grep probe) =====
+grep probe exit 0 (non-zero => a direct assignment is visible => pin fires):
+  250:    app.selected_task_id = tid
+  343:        app.selected_task_id = "tw5"
+  373:            app.selected_task_id = tid
+  428:        app.selected_task_id = "tm5"             # nothing open waits on it
+  433:        app.selected_task_id = "tm5"
+  446:    app.selected_task_id = 'ta1'  # MUTATION M5
+sha256 restored: bb62c13a7459aeafe92c12603f5501fe1bbcfd9656b56acb29b1e9e4ef7db731  MISMATCH!
+
+===== battery done =====

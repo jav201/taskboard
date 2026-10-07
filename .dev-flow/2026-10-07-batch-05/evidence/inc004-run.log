@@ -1,0 +1,1954 @@
+[0m
+> build · deepseek-flash
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-05/01-requirements.md
+[0m→ [0mRead tests/test_milestones.py
+[0m→ [0mRead tests/test_gantt_milestones.py
+I'll start by reading the contract and the target test files.
+[0m→ [0mRead tests/kg_board.py
+Now let me read the house patterns and fixtures.
+[0m
+[0m$ [0mgrep -n "selected_task_id =" tests/test_chainmap_app.py tests/test_team_sync.py; echo "---MILESTONE---"; grep -rn "def miles\|def shifted\|def build\|TEAM =\|def milestones\|shifted" tests/kg_board.py | head -50
+tests/test_chainmap_app.py:109:        app.selected_task_id = "tm3"
+tests/test_chainmap_app.py:137:        app.selected_task_id = "tm3"
+tests/test_chainmap_app.py:148:        app.selected_task_id = "tm2"
+tests/test_chainmap_app.py:173:        app.selected_task_id = "td4"
+tests/test_chainmap_app.py:235:        app3.selected_task_id = "td4"
+tests/test_chainmap_app.py:308:        app.selected_task_id = "to5"          # Pen-test findings: no links yet
+---MILESTONE---
+69:TEAM = {"version": 3, "phases": PHASES,
+113:def build(path: Path | str = "kg-board-never-saved.json") -> Board:
+176:def shifted(path: Path | str) -> Board:
+221:    b = shifted(path)
+239:# `shifted` — every offset below is relative to it, as the frames are.
+255:def milestones(b: Board, today: date = TODAY) -> Board:
+[0m
+[0m→ [0mRead tests/test_chainmap_app.py[90m [offset=80, limit=260][0m
+Let me examine the key-walking house pattern and the team fixture patterns.
+[0m
+[0m$ [0mgrep -n "run_milestone_offer\|def run_milestone\|milestone_offer\|def _offer\|shared_dir\|team_shared_dir\|def action_milestone\|offer" taskboard/app.py | head -60
+23:                     ready_messages, run_link_migration, run_milestone_offer,
+371:        # LAST: the one-time milestone offer covers whatever start opened (the
+373:        self._offer_milestones()
+375:    def _offer_milestones(self) -> None:
+376:        """The one-time milestone offer (HLR-605): nothing on an unreadable load or
+378:        here says nothing — no offer was shown, D-616); otherwise the offer opens
+384:            run_milestone_offer(self.board, [])
+387:                         self._on_offer_answered)
+389:    def _on_offer_answered(self, chosen: list | None) -> None:
+390:        result = run_milestone_offer(self.board, list(chosen or []), date.today())
+394:            self.notify(f"Milestone offer stopped: {result.error}. The board file was not "
+395:                        "changed; the offer returns at the next start.",
+412:            self.notify("Not now — this offer won't show again; M makes any task a "
+491:        """Enter team mode if ``board.settings["team_shared_dir"]`` is set.
+498:        shared_dir = self.board.settings.get("team_shared_dir")
+500:        self.team_state = TeamState.from_settings(shared_dir, user_id)
+503:        team_file = self.team_state.shared_dir / TEAM_FILENAME
+506:            self.notify(f"team.json in {shared_dir} could not be read; team sync waits "
+569:        shared_dir = self.board.settings.get("team_shared_dir", "")
+605:            "shared_dir": str(shared_dir) if shared_dir else "",
+1013:    def action_milestone_toggle(self) -> None:
+1222:                    "push": "pushed"}   # strict push: accepted, never offered
+1340:        moves. The cycle never offers strict `push`. On the chain map the same
+1579:        shared_dir = state.get("shared_dir", "").strip()
+1583:        self.board.settings["team_shared_dir"] = shared_dir if enabled else ""
+1587:        if enabled and shared_dir:
+1589:            path = Path(shared_dir)
+1624:            self.team_state = TeamState.from_settings(shared_dir, user_id)
+1666:                                        initial=self._setup_state.get("shared_dir", "")),
+1688:        self._setup_state["shared_dir"] = value.strip()
+[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1000, limit=80][0m
+[0m
+[0m$ [0mgrep -n "def run_milestone_offer\|def run_link_migration\|def _create_beside\|def offer" taskboard/models.py
+1562:def _create_beside(target: Path, suffix: str, data: bytes) -> Path:
+1587:def run_link_migration(board: Board, today: date | None = None) -> LinkMigration | None:
+1692:def run_milestone_offer(board: Board, chosen, today: date | None = None
+[0m
+Let me look at the milestone offer path and the team sync test fixture.
+[0m$ [0mgrep -n "shared/team\|\"shared\"\|shared_dir\|TEAM_FILENAME\|def test_\|_team\|run_milestone_offer\|offer" tests/test_team_sync.py | head -60
+14:from taskboard.team_sync import TEAM_FILENAME, TeamState, _utc_now_iso, sync_tone
+17:def _team_config() -> dict:
+33:def _write_team(shared_dir: Path, cfg: dict | None = None) -> None:
+34:    shared_dir.mkdir(parents=True, exist_ok=True)
+35:    data = cfg if cfg is not None else _team_config()
+36:    (shared_dir / TEAM_FILENAME).write_text(
+51:def test_team_state_from_settings_returns_none_when_no_shared_dir():
+56:def test_load_config_reads_valid_team_json(tmp_path):
+57:    _write_team(tmp_path)
+65:def test_load_config_ignores_invalid_and_missing(tmp_path):
+71:    (tmp_path / TEAM_FILENAME).write_text("not json", encoding="utf-8")
+74:    (tmp_path / TEAM_FILENAME).write_text(
+80:def test_push_writes_only_team_project_tasks(tmp_path):
+81:    _write_team(tmp_path)
+99:def test_push_includes_pushed_at_and_owner(tmp_path):
+100:    _write_team(tmp_path)
+116:def test_pull_reads_other_member_files_and_skips_malformed(tmp_path):
+117:    _write_team(tmp_path)
+146:def test_sync_push_then_pull(tmp_path):
+147:    _write_team(tmp_path)
+168:def test_foreign_tasks_skip_unparseable_entries(tmp_path):
+169:    _write_team(tmp_path)
+191:def test_apply_config_updates_phases_and_projects(tmp_path):
+192:    _write_team(tmp_path)
+208:def test_apply_config_updates_existing_project_fields(tmp_path):
+209:    cfg = _team_config()
+212:    _write_team(tmp_path, cfg)
+228:def test_sync_age_computed_from_pushed_at(tmp_path):
+229:    _write_team(tmp_path)
+248:def test_pull_tolerates_missing_shared_dir(tmp_path):
+263:async def test_first_run_team_mode_prompts_identity_and_syncs(tmp_path):
+264:    shared_dir = tmp_path / "shared"
+265:    _write_team(shared_dir)
+266:    (shared_dir / "board.ana.json").write_text(
+275:    board.settings["team_shared_dir"] = str(shared_dir)
+295:async def test_daemon_sync_pulls_foreign_tasks(tmp_path):
+296:    shared_dir = tmp_path / "shared"
+297:    _write_team(shared_dir)
+300:    board.settings["team_shared_dir"] = str(shared_dir)
+311:        (shared_dir / "board.ana.json").write_text(
+323:def test_team_mode_off_when_no_shared_dir(tmp_path):
+331:def test_sync_tone_flags_stale_by_config_or_default(tmp_path):
+332:    _write_team(tmp_path)
+354:    cfg = _team_config()
+357:    _write_team(tmp_path, cfg)
+[0m
+[0m→ [0mRead taskboard/models.py[90m [offset=1692, limit=80][0m
+[0m→ [0mRead tests/test_team_sync.py[90m [offset=1, limit=50][0m
+[0m→ [0mRead tests/test_team_sync.py[90m [offset=263, limit=60][0m
+[0m→ [0mRead taskboard/app.py[90m [offset=340, limit=100][0m
+[0m
+[0m$ [0mgrep -n "milestone_candidates\|MilestoneOffer\|class MilestoneOffer\|def milestone_candidates\|_on_offer_answered\|MilestoneConversion" taskboard/*.py | head -40
+taskboard/app.py:22:                     milestone_candidates, milestones_marked, next_priority, parse_iso,
+taskboard/app.py:28:                     HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+taskboard/app.py:382:        cands = milestone_candidates(self.board)
+taskboard/app.py:386:        self.push_screen(MilestoneOffer(self.board, cands, date.today()),
+taskboard/app.py:387:                         self._on_offer_answered)
+taskboard/app.py:389:    def _on_offer_answered(self, chosen: list | None) -> None:
+taskboard/modals.py:933:class MilestoneOffer(ModalScreen[list | None]):
+taskboard/modals.py:945:    MilestoneOffer { align: center middle; }
+taskboard/models.py:1659:def milestone_candidates(board: Board) -> list[tuple[Task, bool]]:
+taskboard/models.py:1684:class MilestoneConversion:
+taskboard/models.py:1693:                        ) -> MilestoneConversion | None:
+taskboard/models.py:1708:    cands = [t for t, _preset in milestone_candidates(board)]
+taskboard/models.py:1711:    result = MilestoneConversion([], len(picked - {t.id for t in convert}))
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-05/ 2>/dev/null; echo "---"; ls .dev-flow/2026-10-07-batch-05/ 2>/dev/null
+total 92
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 14:45 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 14:45 ..
+-rw-r--r-- 1 jjgh8 197609  7715 Oct  7 14:45 00-checklists.md
+-rw-r--r-- 1 jjgh8 197609  2042 Oct  7 14:53 01-requirements-ledger.md
+-rw-r--r-- 1 jjgh8 197609 24928 Oct  7 14:53 01-requirements.md
+-rw-r--r-- 1 jjgh8 197609  4097 Oct  7 14:54 02-review.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 14:45 03-increments
+-rw-r--r-- 1 jjgh8 197609  7643 Oct  7 14:45 04-validation.md
+-rw-r--r-- 1 jjgh8 197609  6163 Oct  7 14:45 05-close.md
+-rw-r--r-- 1 jjgh8 197609  3963 Oct  7 14:58 PLAN.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 14:58 evidence
+---
+00-checklists.md
+01-requirements-ledger.md
+01-requirements.md
+02-review.md
+03-increments
+04-validation.md
+05-close.md
+PLAN.md
+evidence
+[0m
+[0m$ [0mgrep -rn "F-3\|F-4\|F-5\|1106\|team folder\|offer-converted" .dev-flow/2026-10-07-batch-05/ 2>/dev/null | head -40
+.dev-flow/2026-10-07-batch-05/01-requirements-ledger.md:12:- **Requirement:** HLR-1101, HLR-1102, HLR-1103, HLR-1104, HLR-1105, HLR-1106, LLR-1101.1, LLR-1102.1, LLR-1103.1, LLR-1104.1, LLR-1105.1, LLR-1106.1
+.dev-flow/2026-10-07-batch-05/01-requirements-ledger.md:14:- **What changed:** new requirements carrying the open BACKLOG items into one batch: S5-3 a failed backup write leaves no partial file; F-6 the `Mon D` formatter in three copies becomes one; UXV-3 `u` on a single-task change names what came back; UXV-6 the `?` help clips at word boundaries with `...`; the chain-map carries — the deep-chain per-band `+N more ↓` cap AMENDS TC-810's whole-band-drop rule (the zero-fit band still drops whole), the resize heal re-verifies the selection in one refresh, AT-801b's docstring; the P4 F-3..F-5 test-strength arms. HLR-1105(a) rides this entry as the fold-law amendment (the amended TC-810 cites it, the fold-canon discipline).
+.dev-flow/2026-10-07-batch-05/01-requirements.md:66:| US-1106 | As a maintainer, I want the acceptance arms to walk the surface with keys, so that the tests prove the user's path, not a shortcut. | qa P4 F-3..F-5 (LOW), carried from batch B2a | READY |
+.dev-flow/2026-10-07-batch-05/01-requirements.md:179:### HLR-1106 — The acceptance arms walk the surface with keys
+.dev-flow/2026-10-07-batch-05/01-requirements.md:180:- **Traceability:** US-1106
+.dev-flow/2026-10-07-batch-05/01-requirements.md:182:- **Statement:** The carried test-strength items shall ship: AT-601's and AT-602's arms walk the selection to its place with KEYS instead of assigning `selected_task_id` directly; one arm drives the offer-converted milestones into a team folder (the `M` path); AT-602's ash `◆` is asserted at the exact column, not "any".
+.dev-flow/2026-10-07-batch-05/01-requirements.md:183:- **Rationale (informative):** qa P4 F-3..F-5 (LOW): an arm that sets the selection directly proves the render, not the path.
+.dev-flow/2026-10-07-batch-05/01-requirements.md:252:### LLR-1106.1 — the key-walking arms
+.dev-flow/2026-10-07-batch-05/01-requirements.md:253:- **Traceability:** HLR-1106
+.dev-flow/2026-10-07-batch-05/02-review.md:17:- **Two-layer (blockers):** ✓ every story has an `AT` (US-1101..1106 → AT-1101..1106) · output reqs name deliverable+observation (no partial file; the 1-line toast; the word-boundary clip; the `+N more ↓` tail; the key-walking arms) · both trace chains complete (US → HLR-1101..1106 → LLR-1101.1..1106.1 → the named TC files) · ATs are genuinely black-box (each drives keys/files and observes the surface)
+.dev-flow/2026-10-07-batch-05/evidence/inc001-run.log:37:1060:        not news: code review F-4, F2-1); a box ticked on a task with no date leaves
+.dev-flow/2026-10-07-batch-05/evidence/inc004-brief.md:4:`C:/Users/jjgh8/Github/taskboard`. The test-strength carries (qa P4 F-3..F-5).
+.dev-flow/2026-10-07-batch-05/evidence/inc004-brief.md:7:- The contract: `.dev-flow/2026-10-07-batch-05/01-requirements.md` — HLR-1106/LLR-1106.1.
+.dev-flow/2026-10-07-batch-05/evidence/inc004-brief.md:20:2. **One team-folder arm.** Add ONE arm that drives the offer-converted milestones into a
+.dev-flow/2026-10-07-batch-05/evidence/inc004-brief.md:23:   team folder, and the offer's conversion path (`run_milestone_offer` / the `M` key on a
+.dev-flow/2026-10-07-batch-05/evidence/p1_fill.py:87:### HLR-1106 — The acceptance arms walk the surface with keys
+.dev-flow/2026-10-07-batch-05/evidence/p1_fill.py:88:- **Traceability:** US-1106
+.dev-flow/2026-10-07-batch-05/evidence/p1_fill.py:90:- **Statement:** The carried test-strength items shall ship: AT-601's and AT-602's arms walk the selection to its place with KEYS instead of assigning `selected_task_id` directly; one arm drives the offer-converted milestones into a team folder (the `M` path); AT-602's ash `◆` is asserted at the exact column, not "any".
+.dev-flow/2026-10-07-batch-05/evidence/p1_fill.py:91:- **Rationale (informative):** qa P4 F-3..F-5 (LOW): an arm that sets the selection directly proves the render, not the path.
+.dev-flow/2026-10-07-batch-05/evidence/p1_fill.py:158:### LLR-1106.1 — the key-walking arms
+.dev-flow/2026-10-07-batch-05/evidence/p1_fill.py:159:- **Traceability:** HLR-1106
+.dev-flow/2026-10-07-batch-05/PLAN.md:22:| Objective | Carries batch: close the BACKLOG's standing items -- S5-3 a failed backup write leaves no partial file (_create_beside unlinks its exclusively created file on a failed write, a RED arm with a refusing remove); F-6 the Mon D formatter in three copies becomes one; UXV-3 `u` on a single-task change says what came back (one-line undo toast); UXV-6 the ? help at 80 cells clips with `...` never mid-word; the chain-map carries (deep chains fold with a per-band +N more cap, the resize-heal re-verifies the selection against the fresh line_map, AT-801b's docstring); the P4 F-3..F-5 test-strength arms; BACKLOG bookkeeping (present-a-project closes with batch E) |
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-05/evidence/inc004-brief.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-05/02-review.md
+[0m
+[0m$ [0mgrep -n "def action_cursor\|def nav\|nav_model\|def cursor\|hmove\|def _select_first\|def action_cursor_down\|action_cursor" taskboard/app.py | head -40
+36:                    gantt_plan, nav_model, present_paths, present_project_id,
+338:        "toggle_presentation", "cursor", "hmove",
+345:        if (action in ("cursor", "hmove", "toggle_presentation")
+764:        cols = nav_model(self.view_mode, board, self.show_archived,
+786:    def _select_first(self) -> None:
+881:    def action_cursor(self, delta: int) -> None:
+903:    def action_hmove(self, delta: int) -> None:
+1906:        exact `action_hmove` landing rule — so the cursor never rests on a
+[0m
+Let me examine the app's navigation model and cursor handling.
+[0m$ [0mgrep -n "def nav_model\|def gantt_plan\b\|GANTT_RULER_ROWS\|def gantt_columns\|def gantt_axis\|def gantt_window\|class GanttAxis\|def cell" taskboard/views.py | head -40
+1962:    def cells_markup(cells: list[tuple[str, str | None]]) -> str:
+2231:GANTT_RULER_ROWS = 2                     # month row + day row, pinned under the header
+2241:class GanttAxis:
+2252:    def cell(self, d: date) -> int:
+2301:def gantt_axis(field_w: int, today: date, lo: date, hi: date, ctx: date) -> GanttAxis:
+2320:def gantt_columns(width: int) -> tuple[int, int, int]:
+2362:def gantt_plan(board: Board, show_archived: bool, selected_id: str | None,
+2434:def gantt_window(groups: list[GanttGroup], today: date
+2949:    body_rows = max(0, h - 1 - GANTT_RULER_ROWS) if height else 10 ** 6
+5378:        def cell_rows(bucket: list[Task], wc: int) -> list[tuple[str, str | None]]:
+6550:def nav_model(mode, board, show_archived, today=None, width: int = 68,
+6673:        body = max(0, height - 1 - GANTT_RULER_ROWS) if height else 10 ** 6
+6953:        body = "\n".join(g_lines[1 + GANTT_RULER_ROWS:])
+[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=760, limit=160][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=6550, limit=150][0m
+[0m
+[0m$ [0mls tests/; echo "---"; grep -n "kg_board\|sys.path\|pythonpath" tests/conftest.py pytest.ini setup.cfg pyproject.toml tox.ini 2>/dev/null | head -30
+__pycache__
+conftest.py
+kg_board.py
+present_board.py
+test_agenda.py
+test_app.py
+test_archive.py
+test_cascade.py
+test_cascade_app.py
+test_cells.py
+test_chainmap.py
+test_chainmap_app.py
+test_cities.py
+test_cleanup.py
+test_colour_budget.py
+test_colour_budget_app.py
+test_control_bytes.py
+test_dependencies.py
+test_details_grid.py
+test_details_links.py
+test_details_markup.py
+test_edit_window.py
+test_emoji_picker.py
+test_english.py
+test_field.py
+test_flow.py
+test_flow_view.py
+test_focus.py
+test_gantt.py
+test_gantt_board.py
+test_gantt_link.py
+test_gantt_milestones.py
+test_gantt_polish.py
+test_highlight_segments.py
+test_history.py
+test_kanban_milestones.py
+test_kanban_priority.py
+test_kanban_readable.py
+test_keymap.py
+test_lanes_grid.py
+test_legend.py
+test_link_migration.py
+test_link_picker.py
+test_links.py
+test_markup_census.py
+test_markup_sites.py
+test_milestone_offer.py
+test_milestone_offer_seam.py
+test_milestones.py
+test_momentum.py
+test_motion.py
+test_no_live_board.py
+test_occupancy.py
+test_palette_ration.py
+test_precommit_gate.py
+test_present.py
+test_prism_laws.py
+test_privacy_sweep.py
+test_readme.py
+test_report.py
+test_requirements.py
+test_rescue.py
+test_row_cost.py
+test_scratch_cannot_be_committed.py
+test_setup_help.py
+test_span_economy.py
+test_spend.py
+test_swimlanes.py
+test_sync_fields.py
+test_team_sync.py
+test_team_views.py
+test_vertical_fill.py
+test_view_survival.py
+test_wave.py
+---
+[0m
+[0m→ [0mRead tests/conftest.py
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+from taskboard.views import nav_model, gantt_plan, gantt_columns, gantt_axis, gantt_window, GANTT_RULER_ROWS
+b = kg_board.milestones(kg_board.shifted('/tmp/xx-board.json'), date.today())
+for (w,h) in [(118,30),(80,24)]:
+    cols = nav_model('gantt', b, False, date.today(), width=w, height=h, selected_id='tw5')
+    print('size',w,h,'flat order:', cols[0])
+    body = h-1-GANTT_RULER_ROWS
+    groups = gantt_plan(b, False, 'tw5', date.today(), body)
+    print('  groups:', [(g.project.id if g.project else None, [t.id for t in g.rows]) for g in groups])
+print('columns118', gantt_columns(118))
+print('columns80', gantt_columns(80))
+for tid in ('tw5','tw0','td0','tw2','ta3'):
+    t=b.task_by_id(tid)
+    print(tid, t.title, 'proj',t.project_id, 'start',t.start_date,'due',t.due_date,'ms',t.milestone)
+print('pweb due', b.project_by_id('pweb').due_date, 'pdwh due', b.project_by_id('pdwh').due_date)
+print('today', date.today())
+"
+
+size 118 30 flat order: ['tw0', 'tw2', 'tw3', 'tw4', 'tw5', 'tw6', 'tm6', 'tm2', 'tm3', 'tm4', 'tm5', 'ta1', 'ta6', 'ta3', 'ta4', 'ta2', 'ta5', 'td2', 'td4', 'td0', 'td3', 'td5', 'to0', 'to1', 'to3', 'to2', 'to5', 'to4']
+  groups: [('pweb', ['tw0', 'tw2', 'tw3', 'tw4', 'tw5', 'tw6']), ('pmob', ['tm6', 'tm2', 'tm3', 'tm4', 'tm5']), ('papi', ['ta1', 'ta6', 'ta3', 'ta4', 'ta2', 'ta5']), ('pdwh', ['td2', 'td4', 'td0', 'td3', 'td5']), ('pops', ['to0', 'to1', 'to3', 'to2', 'to5', 'to4'])]
+size 80 24 flat order: ['tw0', 'tw2', 'tw3', 'tw4', 'tw5', 'tw6', 'tm6', 'tm2', 'tm3', 'tm4', 'tm5', 'ta1', 'ta6', 'ta3', 'ta4', 'ta2', 'ta5', 'td2', 'td4', 'td0', 'td3', 'td5', 'to0', 'to1', 'to3', 'to2', 'to5', 'to4']
+  groups: [('pweb', ['tw0', 'tw2', 'tw3', 'tw4', 'tw5', 'tw6']), ('pmob', ['tm6', 'tm2', 'tm3', 'tm4', 'tm5']), ('papi', ['ta1', 'ta6', 'ta3', 'ta4', 'ta2', 'ta5']), ('pdwh', ['td2', 'td4', 'td0', 'td3', 'td5']), ('pops', ['to0', 'to1', 'to3', 'to2', 'to5', 'to4'])]
+columns118 (30, 7, 79)
+columns80 (20, 6, 52)
+tw5 Launch new homepage proj pweb start 2026-10-17 due 2026-10-17 ms True
+tw0 Mockups approved proj pweb start 2026-09-25 due 2026-09-25 ms True
+td0 Revenue model signed off proj pdwh start 2026-10-25 due 2026-10-25 ms True
+tw2 Build component library proj pweb start 2026-09-12 due 2026-10-04 ms False
+ta3 Partner notice emails proj papi start 2026-10-10 due 2026-10-10 ms True
+pweb due 2026-10-17 pdwh due 2026-12-06
+today 2026-10-07
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_milestones.py tests/test_gantt_milestones.py -q 2>&1 | tail -20
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+......................................................................   [100%]
+70 passed in 15.96s
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0,'.')
+import asyncio, tempfile, pathlib
+import kg_board
+from taskboard.app import TaskboardApp
+from taskboard.views import nav_model
+from taskboard import keymap
+
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp())
+    path = d/'board.json'
+    b = kg_board.shifted(path); b.settings['seen_view_renumber_2026_07']=True; b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        print('default view', app.view_mode, 'default sel', app.selected_task_id)
+        await pilot.press('3'); await pilot.pause()
+        print('after 3 view', app.view_mode, 'sel', app.selected_task_id)
+        print('keymap VIEWS', keymap.VIEWS)
+        cols = app._nav_columns()
+        print('kanban cols:', cols)
+        print('locate ta4:', app._locate(cols))
+        # walk down to ta4
+        sel=app.selected_task_id
+        for _ in range(80):
+            if app.selected_task_id=='ta4': break
+            await pilot.press('down'); await pilot.pause()
+        print('reached ta4?', app.selected_task_id)
+        for _ in range(80):
+            if app.selected_task_id=='ta5': break
+            await pilot.press('down'); await pilot.pause()
+        print('reached ta5?', app.selected_task_id)
+        print('ta1 in cols?', app._locate(app._nav_columns()))
+asyncio.run(main())
+"
+
+default view swimlanes default sel tw1
+after 3 view swimlanes sel tw1
+keymap VIEWS ('swimlanes', 'agenda', 'gantt', 'kanban', 'focus')
+kanban cols: [['ta1', 'ta6', 'ta3', 'ta4', 'ta2', 'ta5', 'to1', 'to3', 'to2', 'to5', 'to4', 'td2', 'td4', 'td3', 'td5'], ['tw2', 'tw3', 'tw4', 'tw5', 'tw6', 'tm6', 'tm2', 'tm3', 'tm4', 'tm5']]
+locate ta4: None
+reached ta4? tw1
+reached ta5? tw1
+ta1 in cols? None
+[0m
+[0m$ [0mgrep -n "VIEWS\|\"1\"\|\"2\"\|\"3\"\|\"4\"\|\"5\"\|digit\|view_mode =" taskboard/app.py | head -40; echo "=== keymap ==="; grep -n "VIEWS\|view\b\|def view" taskboard/keymap.py | head -30
+52:VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
+53:             "5": "focus", "6": "chainmap", "7": "flow", "8": "standup",
+293:        self.view_mode = "swimlanes"
+663:        if self.view_mode == "gantt":
+673:        elif self.view_mode == "kanban" and self.search_query:
+750:        if self.view_mode == "kanban" and h and (self.search_query or "").strip():
+755:        if self.view_mode == "kanban":
+757:        elif self.view_mode == "swimlanes":
+773:        if self.view_mode == "chainmap":
+789:        if self.view_mode == "focus":
+798:                and self.view_mode == "kanban"):
+804:        if self.view_mode == "gantt":
+827:        if self.view_mode == "chainmap":
+836:        if self.view_mode == "kanban":
+854:        if (self.selected_task_id is not None and self.view_mode == "kanban"
+881:        if self.view_mode == "setup" and self._setup_state is not None:
+941:        kanban = self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+958:            if self.view_mode == "gantt" and self.board.is_done(task):
+1043:        if (self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+1091:        if self.view_mode == "gantt":
+1339:        if self.view_mode == "chainmap":
+1558:        self.view_mode = mode
+1565:        self.view_mode = self._pre_setup_view
+1629:        self.view_mode = self._pre_setup_view
+1823:        if self.view_mode == "setup":
+1826:        if self.view_mode == "kanban":
+1831:        elif self.view_mode == "focus":
+1836:        elif self.view_mode == "swimlanes":
+1935:        if self.view_mode == "setup":
+1969:        if self.view_mode == "setup":
+1987:        if self.view_mode == "setup":
+2131:        if self.view_mode == "setup":
+2137:        if self.view_mode == "chainmap":
+=== keymap ===
+29:VIEWS = ("swimlanes", "agenda", "gantt", "kanban", "focus")
+45:    views: tuple[str, ...] | None = None    # None = live in every view
+61:    Key("1", "1", "view('swimlanes')", "Lanes", primary=True, group="views"),
+62:    Key("2", "2", "view('agenda')", "Agenda", primary=True, group="views"),
+63:    Key("3", "3", "view('gantt')", "Gantt", primary=True, group="views"),
+64:    Key("4", "4", "view('kanban')", "Kanban", primary=True, group="views"),
+65:    Key("5", "5", "view('focus')", "Focus", primary=True, group="views"),
+66:    Key("6", "6", "view('chainmap')", "Chains", primary=True, group="views"),
+67:    Key("7", "7", "view('flow')", "Flow", primary=True, group="views"),
+68:    Key("8", "8", "view('standup')", "Standup", primary=True, group="views"),
+69:    Key("9", "9", "view('people')", "People", primary=True, group="views"),
+70:    Key("0", "0", "view('setup')", "Setup", primary=True, group="views"),
+113:    # from anywhere in the view (§6.5 AMD-02).
+122:    # all three — the action itself (toggle_presentation) decides which view
+129:    # in the per-view key bar — the bar's real estate belongs to the view.
+138:    # derives from the board in ANY view, so — like `R` — it is not scoped.
+161:def _live_keys(view: str) -> list[Key]:
+162:    """Every key live in `view`, regardless of layer or bar flag."""
+163:    return [k for k in KEYMAP if k.views is None or view in k.views]
+166:def _layer_keys(view: str, layer: str) -> list[Key]:
+167:    """Keys to display in `layer` for `view`, universal ones first."""
+168:    live = _live_keys(view)
+174:def bar_keys(view: str, layer: str = "more") -> list[Key]:
+175:    """The keys drawn in the per-view key bar: view-local + universal, with
+181:    return [k for k in _layer_keys(view, layer) if k.bar]
+184:def palette_commands(view: str) -> list[tuple[str, str, str]]:
+185:    """All commands reachable from `view` as (show, label, action).
+190:    return [(k.show, k.label, k.action) for k in _layer_keys(view, "more")]
+202:def fit_bar(width: int, view: str, layer: str = "more") -> tuple[list[tuple[str, str]], int]:
+208:    entries = [[k.show, k.label] for k in bar_keys(view, layer)]
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0,'.')
+import asyncio, tempfile, pathlib
+import kg_board
+import taskboard.app as app_mod
+app_mod.milestones_marked = lambda s: True
+from taskboard.app import TaskboardApp
+
+async def main():
+    d = pathlib.Path(tempfile.mkdtemp())
+    path = d/'board.json'
+    b = kg_board.shifted(path); b.settings['seen_view_renumber_2026_07']=True; b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        print('default view', app.view_mode, 'default sel', app.selected_task_id)
+        await pilot.press('3'); await pilot.pause()
+        print('after 3 view', app.view_mode, 'sel', app.selected_task_id)
+        cols = app._nav_columns()
+        print('gantt cols:', cols)
+        for target in ('ta4','ta5','ta1'):
+            for _ in range(120):
+                if app.selected_task_id==target: break
+                await pilot.press('down'); await pilot.pause()
+            print('reached',target,'?', app.selected_task_id)
+asyncio.run(main())
+"
+
+default view swimlanes default sel tw1
+after 3 view gantt sel tw2
+gantt cols: [['tw2', 'tw3', 'tw4', 'tw5', 'tw6', 'tm6', 'tm2', 'tm3', 'tm4', 'tm5', 'ta1', 'ta6', 'ta3', 'ta4', 'ta2', 'ta5', 'td2', 'td4', 'td3', 'td5', 'to1', 'to3', 'to2', 'to5', 'to4']]
+reached ta4 ? ta4
+reached ta5 ? ta5
+reached ta1 ? to4
+[0m
+[0m→ [0mRead tests/test_milestone_offer.py
+[0m→ [0mRead taskboard/team_sync.py[90m [offset=1, limit=120][0m
+[0m→ [0mRead taskboard/app.py[90m [offset=485, limit=70][0m
+[0m→ [0mRead taskboard/team_sync.py[90m [offset=120, limit=160][0m
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+from taskboard.views import HEX, gantt_axis, gantt_columns, gantt_plan, gantt_window, GANTT_RULER_ROWS, render_gantt
+path='/tmp/at602-board.json'
+b = kg_board.milestones(kg_board.shifted(path), date.today())
+today=date.today()
+body=30-1-GANTT_RULER_ROWS
+ax=gantt_axis(gantt_columns(118)[2], today, *gantt_window(gantt_plan(b,False,'tw5',today,body), today))
+tw0due=date.fromisoformat(b.task_by_id('tw0').due_date)
+print('tw0 due', tw0due, 'cell', ax.cell(tw0due), 'ax.w', ax.w)
+print('label_w', gantt_columns(118)[0])
+# month row from render
+txt=render_gantt(b, False, 'tw5', today, 118, 30)
+month=txt.split('\n')[1]
+lw=gantt_columns(118)[0]
+for i,ch in enumerate(month.plain):
+    if ch=='◆':
+        # color
+        print('diamond at abs', i, 'field col', i-lw-1)
+# now paint through app to see rows[1] indices
+import asyncio, taskboard.app as app_mod
+app_mod.milestones_marked=lambda s: True
+from taskboard.app import TaskboardApp
+async def main():
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        for _ in range(80):
+            if app.selected_task_id=='tw5': break
+            await pilot.press('down'); await pilot.pause()
+        strips=app.screen._compositor.render_strips(app.screen.size)
+        rows=[]
+        for s in strips:
+            cells=[]
+            for seg in s:
+                hx=(seg.style.color.triplet.hex.lower() if seg.style and seg.style.color and seg.style.color.triplet else None)
+                cells += [(ch,hx) for ch in seg.text]
+            rows.append(cells)
+        month=rows[1]
+        for idx,(ch,hx) in enumerate(month):
+            if ch=='◆':
+                print('app month diamond idx', idx, 'hx', hx, 'field col', idx-lw-1)
+asyncio.run(main())
+"
+
+tw0 due 2026-09-25 cell 4 ax.w 79
+label_w 30
+diamond at abs 0 field col -31
+diamond at abs 35 field col 4
+diamond at abs 57 field col 26
+app month diamond idx 0 hx #a78bfa field col -31
+app month diamond idx 57 hx #a78bfa field col 26
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys, json; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+from taskboard.views import HEX, gantt_axis, gantt_columns, gantt_plan, gantt_window, GANTT_RULER_ROWS
+path='/tmp/at602b.json'
+b = kg_board.milestones(kg_board.shifted(path), date.today())
+b.settings['seen_view_renumber_2026_07']=True
+b.save()
+today=date.today()
+body=30-1-GANTT_RULER_ROWS
+ax=gantt_axis(gantt_columns(118)[2], today, *gantt_window(gantt_plan(b,False,'tw5',today,body), today))
+tw0due=date.fromisoformat(b.task_by_id('tw0').due_date)
+print('tw0 due', tw0due, 'cell', ax.cell(tw0due), 'ax.w', ax.w)
+print('label_w', gantt_columns(118)[0])
+import asyncio
+import taskboard.app as app_mod
+app_mod.milestones_marked=lambda s: True
+from taskboard.app import TaskboardApp
+REACHED=HEX['reached'].lower()
+async def main():
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        for _ in range(80):
+            if app.selected_task_id=='tw5': break
+            await pilot.press('down'); await pilot.pause()
+        strips=app.screen._compositor.render_strips(app.screen.size)
+        rows=[]
+        for s in strips:
+            cells=[]
+            for seg in s:
+                hx=(seg.style.color.triplet.hex.lower() if seg.style and seg.style.color and seg.style.color.triplet else None)
+                cells += [(ch,hx) for ch in seg.text]
+            rows.append(cells)
+        lw=gantt_columns(118)[0]
+        for idx,(ch,hx) in enumerate(rows[1]):
+            if ch=='◆':
+                print('app month diamond idx', idx, 'hx', hx, 'field col', idx-lw-1, 'reached?', hx==REACHED)
+        print('row1 text:', ''.join(c for c,_ in rows[1])[:120])
+asyncio.run(main())
+"
+
+tw0 due 2026-09-25 cell 4 ax.w 79
+label_w 30
+app month diamond idx 0 hx #a78bfa field col -31 reached? False
+app month diamond idx 35 hx #7a828c field col 4 reached? True
+app month diamond idx 57 hx #a78bfa field col 26 reached? False
+row1 text: ◆ dates · Website Redesign     Sep ◆     ┃Oct  7         ◆              ┃November                     ┃Dec
+[0m
+Let me find the original qa F-3..F-5 findings to interpret the team-folder arm precisely.
+[0m$ [0mgrep -rn "F-3\|F-4\|F-5\|offer-converted\|team folder\|TEAM" .dev-flow/2026-10-04-batch-02/ 2>/dev/null | grep -i "team\|offer\|milestone" | head -30; echo "=== search backlog ==="; grep -rn "P4 F-3\|F-3..F-5\|F-3, F-4\|offer-converted" --include=*.md . 2>/dev/null | head -20
+.dev-flow/2026-10-04-batch-02/01-requirements-ledger.md:44:- **Why:** increment 001 code review F-4 (the start field is pre-filled with the old date, so editing a milestone's due always toasted) and F-1 (the cleared-dates refusal branch had no arm). RED-first: `evidence/inc001-f4-red.txt` (the due-only arm failed on the r1 product), green `inc001-f4-green.txt`.
+.dev-flow/2026-10-04-batch-02/01-requirements.md:139:- **Numeric pass threshold:** on the shifted kg board in the app, in the gantt (`3`, `↓` until `Rate limiting` is selected): `M` on `Rate limiting` (start ≠ due) → the saved file holds `"milestone": true` and `start_date == due_date ==` its due; one toast starting `Rate limiting is a milestone · ◆ ` and holding `start was`; `M` again → `"milestone": false`, the dates unchanged, toast `is a task again`; `M` on `Plan Q4 roadmap` (no date) → exactly one warning toast holding "a milestone needs a date", the file byte-identical; `+` on the milestone → start and due both +1 day; `u` → the dates before `+`; the editor's box ticked with a new due and Save → the flag set and start = that due; team arm: started with a tmp team folder and a sync interval of 0.2 s, `M` → the pushed `board.<user>.json`, polled for at most 5 s, holds `"milestone": true` for that task; 0 failures.
+.dev-flow/2026-10-04-batch-02/02-review.md:44:| A-4 / UX-1 | architect, ux | major / major | LLR-602.1, LLR-603.1 | `_notify_folded` lies for a reached milestone row; `_select_first` lets the kanban selection rest on an undrawn milestone (F-3) | Folded (D-614): `]` on a milestone that stays drawn says "‹title› reached · ◆✓ · u undo", not "folded"; in the kanban (every presentation) the selection is never a milestone — it moves to the nearest drawn card by the grouped z rule; `app.py` joins increments 002 and 003; AT-603 arm: `M` on a card leaves the selection on a drawn card and the next `]` moves THAT card |
+.dev-flow/2026-10-04-batch-02/02-review.md:116:| Q-12 | qa | major (partial) | HLR-601 / AT-601 | no AT reads the pushed `board.<user>.json` | Folded: AT-601 team arm — a tmp team folder, a short sync interval, `M`, the pushed file re-read holds `"milestone": true` |
+.dev-flow/2026-10-04-batch-02/02-review.md:132:- **Verdicts:** architect PASS (A2-1..A2-4, A-11 DISCHARGED) · ux-reviewer PASS (UX-10, UX2-1..UX2-4 DISCHARGED; UX3-1 minor) · qa-reviewer PASS-WITH-NOTES (Q2-1..Q2-3, Q-9, Q-11, Q-12 DISCHARGED; Q3-1..Q3-3 minor) · security-reviewer PASS-WITH-NOTES (S-7b PARTIAL LOW, no new finding; carried to increment 001's gate: the AT's team folder is `tmp_path`, never a default path).
+.dev-flow/2026-10-04-batch-02/03-increments/increment-001.md:77:| **RED counterfactual** | the new tests on the base product (`git archive 4b2c13a` + this increment's tests): collection `ImportError` (`MILESTONE_NEEDS_DATE` absent) — `evidence/inc001-red-on-base.txt`; with the two new imports stubbed, AT-601 fails on its first read after `M` (`KeyError: 'milestone'`: `M` changed nothing) — `evidence/inc001-at601-red-on-base.txt` (code review F-5); the folds RED-first: F-4 `inc001-f4-red.txt`, F2-1 `inc001-f2-1-red.txt`. Base product bytes untouched (an export, not the working tree) |
+.dev-flow/2026-10-04-batch-02/03-increments/increment-001.md:158:| **Independent review** | `code-reviewer` — spawned as a named agent with `agents/code-reviewer.md` · OK-WITH-NOTES at r3, 0 HIGH open. r1 OK-WITH-NOTES: F-1, F-2 MEDIUM (test gaps; its mutants B, C survived) and F-3 LOW folded as tests; F-4 LOW (product: the start toast on an untouched start) folded RED-first with LED .5; F-5 LOW folded (a behavioural RED of AT-601 on base); F-7 NIT folded; F-6 NIT accepted, not folded; F-8 no action. r2 BLOCK-UNTIL F2-1 (HIGH, product, the increment under construction: the F-4 fold silenced the toast when a task becomes a milestone, so an editor save dropped its start unsaid) — fixed without stopping under the standing authorization's second exception, RED-first (`inc001-f2-1-red.txt` → `inc001-f2-1-green.txt`), LED .6, re-frozen r3 and re-reviewed: DISCHARGED (the reviewer re-read the diff, re-ran its ta4 probe and its mutant E). The P2 security carry (AT-601's team folder under `tmp_path`) verified by the reviewer |
+.dev-flow/2026-10-04-batch-02/04-validation.md:26:- **Black-box acceptance (Layer B):** ✓ every story's `AT` observes its outcome through the shipped surface, with boundary and negative arms. The surface is `TaskboardApp` driven with real keys via `run_test`; the painted strips, the toasts, and the saved board file, its backup, its log and the pushed team file are re-read from disk. US-604 is OUT (B2b, D-601), so it owes no AT. Note G-002 (qa F-3).
+.dev-flow/2026-10-04-batch-02/04-validation.md:185:| G-002 | HLR-601..603 | qa F-3..F-5: some AT arms set the selection directly; no push of offer-converted flags; the ash month mark is checked as "any" | minor | BACKLOG |
+.dev-flow/2026-10-04-batch-02/decisions-log.json:35:    "decision": "standing authorization — P2 iteration 3 approved: architect PASS, ux-reviewer PASS, qa-reviewer PASS-WITH-NOTES, security-reviewer PASS-WITH-NOTES; 0 blocker, 0 major, 0 HIGH; the 4 minors (Q3-1, Q3-2/UX3-1, Q3-3/S-7b) folded at the gate (ledger LED .4: the kanban's / filter count excludes milestones; the team arm polls 5 s; the log note asserted); carried to increment 001's gate: the AT team folder is tmp_path (security); P3 is next."
+.dev-flow/2026-10-04-batch-02/decisions-log.json:40:    "decision": "standing authorization — P3 increment 001 approved (revision 3): HLR-601 / LLR-601.1-601.3, the milestone flag, M, the editor box, the details mark; 4 SOURCE (models, app, modals, keymap; at the cap, reason declared); TC-601..608 + AT-601 (41 new nodes); 19/19 mutants KILLED; code-reviewer r1 OK-WITH-NOTES (F-1..F-5, F-7 folded; F-6 NIT open), r2 BLOCK-UNTIL F2-1 (HIGH, product, increment under construction) fixed without stopping under the second exception, RED-first, LED .6, r3 OK-WITH-NOTES 0 HIGH; gate on frozen r3 2346 passed 1 failed (the known clipboard environment flake G-011); TASK_CHIPS_ONE_ROW re-measured 137; increment 002 (the gantt) is next."
+.dev-flow/2026-10-04-batch-02/evidence/inc001-at601-red-on-base.txt:1:$ python -m pytest -q -p no:cacheprovider -rA tests/test_milestones.py -k AT_601   # base 4b2c13a product; the module's two new imports stubbed so the AT itself runs (code review F-5)
+=== search backlog ===
+./.claude/worktrees/present-e/.dev-flow/2026-10-04-batch-02/04-validation.md:185:| G-002 | HLR-601..603 | qa F-3..F-5: some AT arms set the selection directly; no push of offer-converted flags; the ash month mark is checked as "any" | minor | BACKLOG |
+./.claude/worktrees/present-e/.dev-flow/2026-10-04-batch-02/04-validation.md:215:| UXV-3, UXV-6, F-3..F-5, S5-3 | ux, qa, security | BACKLOG | `.dev-flow/BACKLOG.md` |
+./.claude/worktrees/present-e/.dev-flow/2026-10-04-batch-02/05-close.md:113:| UXV-3 silent `u`; UXV-6 help cut at 80; qa F-3..F-5 test strength; F-6 `_md` copies | added | same |
+./.claude/worktrees/present-e/.dev-flow/BACKLOG.md:63:- **Test strength, LOW** (qa P4 F-3..F-5): several AT arms set the selection directly instead of
+./.claude/worktrees/present-e/.dev-flow/BACKLOG.md:64:  walking with keys; nothing pushes offer-converted milestones to a team folder (same path as `M`,
+./.dev-flow/2026-10-04-batch-02/04-validation.md:185:| G-002 | HLR-601..603 | qa F-3..F-5: some AT arms set the selection directly; no push of offer-converted flags; the ash month mark is checked as "any" | minor | BACKLOG |
+./.dev-flow/2026-10-04-batch-02/04-validation.md:215:| UXV-3, UXV-6, F-3..F-5, S5-3 | ux, qa, security | BACKLOG | `.dev-flow/BACKLOG.md` |
+./.dev-flow/2026-10-04-batch-02/05-close.md:113:| UXV-3 silent `u`; UXV-6 help cut at 80; qa F-3..F-5 test strength; F-6 `_md` copies | added | same |
+./.dev-flow/2026-10-07-batch-05/01-requirements-ledger.md:14:- **What changed:** new requirements carrying the open BACKLOG items into one batch: S5-3 a failed backup write leaves no partial file; F-6 the `Mon D` formatter in three copies becomes one; UXV-3 `u` on a single-task change names what came back; UXV-6 the `?` help clips at word boundaries with `...`; the chain-map carries — the deep-chain per-band `+N more ↓` cap AMENDS TC-810's whole-band-drop rule (the zero-fit band still drops whole), the resize heal re-verifies the selection in one refresh, AT-801b's docstring; the P4 F-3..F-5 test-strength arms. HLR-1105(a) rides this entry as the fold-law amendment (the amended TC-810 cites it, the fold-canon discipline).
+./.dev-flow/2026-10-07-batch-05/01-requirements.md:66:| US-1106 | As a maintainer, I want the acceptance arms to walk the surface with keys, so that the tests prove the user's path, not a shortcut. | qa P4 F-3..F-5 (LOW), carried from batch B2a | READY |
+./.dev-flow/2026-10-07-batch-05/01-requirements.md:182:- **Statement:** The carried test-strength items shall ship: AT-601's and AT-602's arms walk the selection to its place with KEYS instead of assigning `selected_task_id` directly; one arm drives the offer-converted milestones into a team folder (the `M` path); AT-602's ash `◆` is asserted at the exact column, not "any".
+./.dev-flow/2026-10-07-batch-05/01-requirements.md:183:- **Rationale (informative):** qa P4 F-3..F-5 (LOW): an arm that sets the selection directly proves the render, not the path.
+./.dev-flow/2026-10-07-batch-05/evidence/inc004-brief.md:4:`C:/Users/jjgh8/Github/taskboard`. The test-strength carries (qa P4 F-3..F-5).
+./.dev-flow/2026-10-07-batch-05/evidence/inc004-brief.md:20:2. **One team-folder arm.** Add ONE arm that drives the offer-converted milestones into a
+./.dev-flow/2026-10-07-batch-05/PLAN.md:22:| Objective | Carries batch: close the BACKLOG's standing items -- S5-3 a failed backup write leaves no partial file (_create_beside unlinks its exclusively created file on a failed write, a RED arm with a refusing remove); F-6 the Mon D formatter in three copies becomes one; UXV-3 `u` on a single-task change says what came back (one-line undo toast); UXV-6 the ? help at 80 cells clips with `...` never mid-word; the chain-map carries (deep chains fold with a per-band +N more cap, the resize-heal re-verifies the selection against the fresh line_map, AT-801b's docstring); the P4 F-3..F-5 test-strength arms; BACKLOG bookkeeping (present-a-project closes with batch E) |
+./.dev-flow/BACKLOG.md:86:- **Test strength, LOW** (qa P4 F-3..F-5): several AT arms set the selection directly instead of
+./.dev-flow/BACKLOG.md:87:  walking with keys; nothing pushes offer-converted milestones to a team folder (same path as `M`,
+[0m
+[0m→ [0mRead .dev-flow/BACKLOG.md[90m [offset=80, limit=20][0m
+Now I understand the full picture. Let me make the edits. First, `tests/test_milestones.py` — the bidirectional key-walk and the editor split.
+[0m
+[0m← [0mEdit tests/test_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+@@ -55,15 +55,21 @@
+     return b.path
+ 
+ 
+ async def _select(app, pilot, tid: str) -> None:
+-    """Walk the view with the real arrow key until `tid` is the selection."""
+-    for _ in range(80):
++    """Walk the view with the real arrow keys until `tid` is the selection — the
++    direction read off the shipped nav seat, the move made by a key press."""
++    for _ in range(200):
+         if app.selected_task_id == tid:
+             return
+-        await pilot.press("down")
++        order = app._nav_flat()
++        cur = app.selected_task_id
++        if tid in order and cur in order and order.index(tid) < order.index(cur):
++            await pilot.press("up")
++        else:
++            await pilot.press("down")
+         await pilot.pause()
+-    raise AssertionError(f"{tid} never selected by ↓")
++    raise AssertionError(f"{tid} never selected by the arrows")
+ 
+ 
+ # --------------------------------------------------------------------------- #
+ # TC-601 — the flag is read only as the boolean true (LLR-601.1)
+
+[0m
+[0m← [0mEdit tests/test_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+@@ -228,10 +228,11 @@
+ 
+ # --------------------------------------------------------------------------- #
+ # TC-605 — the editor's box (LLR-601.3)
+ # --------------------------------------------------------------------------- #
+-async def _edit(app, pilot, tid, **fields):
+-    app.selected_task_id = tid
++async def _editor_save(app, pilot, **fields):
++    """Open the editor for the CURRENT selection, set `fields`, save. The selection
++    is reached before this call (by keys in the amended arms); nothing here assigns."""
+     await pilot.press("e")
+     for _ in range(3):
+         await pilot.pause()
+     scr = app.screen
+@@ -244,8 +245,13 @@
+     for _ in range(3):
+         await pilot.pause()
+ 
+ 
++async def _edit(app, pilot, tid, **fields):
++    app.selected_task_id = tid
++    await _editor_save(app, pilot, **fields)
++
++
+ @pytest.mark.parametrize("arm", ["dated", "start-differs", "undated", "new-task",
+                                  "cleared", "due-only", "tick-only"])
+ async def test_TC_605_the_editor_box_applies_after_the_dates(tmp_path, arm):
+     """TC-605: the box is applied AFTER every other field, so a new due in the same
+
+[0m
+[0m→ [0mRead tests/test_milestones.py[90m [offset=490, limit=30][0m
+[0m
+[0m← [0mEdit tests/test_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+@@ -505,7 +505,8 @@
+ await pilot.pause()
+ assert path.read_bytes() == before
+ said = _toasts(app)
+ assert len(said) == 1 and "a milestone needs a date" in said[0]
+-await _edit(app, pilot, "ta1", f_milestone=True, f_due=_iso(9))
++await _select(app, pilot, "ta1")
++await _editor_save(app, pilot, f_milestone=True, f_due=_iso(9))
+ rec = _saved(path, "ta1")
+ assert (rec["milestone"], rec["start_date"], rec["due_date"]) == (True, _iso(9), _iso(9))
+
+[0m
+[0m← [0mEdit tests/test_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+@@ -26,9 +26,9 @@
+ from taskboard import keymap
+ from taskboard.app import TaskboardApp
+ from taskboard.models import (MILESTONE_NEEDS_DATE, Board, Project, Task, bump_due,
+                               set_milestone)
+-from taskboard.modals import TaskDetails, TaskModal
++from taskboard.modals import MilestoneOffer, TaskDetails, TaskModal
+ from taskboard.team_sync import TEAM_FILENAME, TeamState
+ from taskboard.views import filtered_board
+ 
+ RENUMBER = "seen_view_renumber_2026_07"
+
+[0m
+[0m← [0mEdit tests/test_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+@@ -509,4 +509,43 @@
+         await _select(app, pilot, "ta1")
+         await _editor_save(app, pilot, f_milestone=True, f_due=_iso(9))
+         rec = _saved(path, "ta1")
+         assert (rec["milestone"], rec["start_date"], rec["due_date"]) == (True, _iso(9), _iso(9))
++
++
++# --------------------------------------------------------------------------- #
++# AT-601 arm — the offer's conversions reach a TEAM folder (qa F-4, HLR-1106)
++# --------------------------------------------------------------------------- #
++@pytest.mark.milestone_offer
++async def test_AT_601_offer_converted_milestones_reach_a_team_folder(tmp_path):
++    """AT-601 arm (qa F-4): the offer converts the one-day candidates, and the
++    converted milestone in a TEAM project (`Launch new homepage`, pweb) reaches the
++    shared folder's `board.<user>.json` — the same push path `M` is covered by
++    (AT-601), driven here through the offer's own conversion. RED on base: no offer."""
++    path = tmp_path / "board.json"
++    b = kg_board.one_day(kg_board.shifted(path), date.today())
++    team = tmp_path / "shared"
++    team.mkdir()
++    (team / TEAM_FILENAME).write_text(json.dumps(kg_board.TEAM), encoding="utf-8")
++    b.settings.update({RENUMBER: True, "team_shared_dir": str(team),
++                       "team_user_id": "jav"})
++    b.save()
++    app = TaskboardApp(board_path=str(path), team_sync_interval=0.2)
++    async with app.run_test(size=(118, 40), notifications=True) as pilot:
++        await pilot.pause()
++        assert isinstance(app.screen, MilestoneOffer)
++        await pilot.press("enter")              # the defaults: ta3, tw5, tm5
++        await pilot.pause()
++        assert _saved(path, "tw5")["milestone"] is True     # the offer converted it
++        pushed = team / "board.jav.json"        # the team arm: polled ≤ 5 s
++        for _ in range(50):
++            await pilot.pause(0.1)
++            if pushed.exists() and any(
++                    t["id"] == "tw5" and t.get("milestone") is True for t in
++                    json.loads(pushed.read_text(encoding="utf-8"))["tasks"]):
++                break
++        else:
++            raise AssertionError(
++                "the pushed file never carried the offer-converted milestone")
++        rec = next(t for t in json.loads(pushed.read_text(encoding="utf-8"))["tasks"]
++                   if t["id"] == "tw5")
++        assert (rec["milestone"], rec["start_date"]) == (True, rec["due_date"])
+
+[0m
+[0m← [0mEdit tests/test_gantt_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+@@ -284,8 +284,24 @@
+ def _toasts(app):
+     return [str(t.render()) for t in app.screen.query("Toast")]
+ 
+ 
++async def _select(app, pilot, tid: str) -> None:
++    """Walk the view with the real arrow keys until `tid` is the selection — the
++    direction read off the shipped nav seat, the move made by a key press."""
++    for _ in range(200):
++        if app.selected_task_id == tid:
++            return
++        order = app._nav_flat()
++        cur = app.selected_task_id
++        if tid in order and cur in order and order.index(tid) < order.index(cur):
++            await pilot.press("up")
++        else:
++            await pilot.press("down")
++        await pilot.pause()
++    raise AssertionError(f"{tid} never selected by the arrows")
++
++
+ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them(tmp_path):
+     """AT-602 (US-602): at 118×30 in the gantt, `Launch new homepage` is a ` ◆` row
+     with its date in the field and `in 10d`, no bar; `Mockups approved` is `◆✓`
+     with `✓ done`, all in the reached grey; `Security review sign-off`'s chip `▲2d` is over; the
+
+[0m
+Now `tests/test_gantt_milestones.py` — add the key-walk helper and rewrite the AT-602 selection paths.
+[0m→ [0mRead tests/test_gantt_milestones.py[90m [offset=304, limit=85][0m
+[0m
+[0m← [0mEdit tests/test_gantt_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+@@ -318,13 +318,9 @@
+ app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+ async with app.run_test(size=(118, 30), notifications=True) as pilot:
+     await pilot.press("3")
+     await pilot.pause()
+-    for _ in range(80):
+-        if app.selected_task_id == "tw5":
+-            break
+-        await pilot.press("down")
+-        await pilot.pause()
++    await _select(app, pilot, "tw5")
+     rows = _painted(app)
+     launch = _row(rows, " ◆ Launch new homepage")
+     text = "".join(ch for ch, _ in launch)
+     label_w, _cw, field_w = gantt_columns(118)
+
+[0m
+[0m← [0mEdit tests/test_gantt_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+@@ -337,13 +337,18 @@
+ sec = _row(rows, " ◆ Security review sign-off")
+ stext = "".join(ch for ch, _ in sec)
+ assert stext.rstrip().endswith("▲2d") and sec[stext.rindex("▲2d")][1] == OVER
+ month = rows[1]
+-assert any(ch == "◆" and hx == REACHED for ch, hx in month)
++# the ash `◆` sits at Mockups' exact column, not merely "any": its due
++# through the shipped axis math, at the reached grey.
++ax = gantt_axis(gantt_columns(118)[2], today, *gantt_window(
++        gantt_plan(app.board, False, "tw5", today, 30 - 1 - GANTT_RULER_ROWS),
++        today))
++ash = ax.cell(date.fromisoformat(app.board.task_by_id("tw0").due_date))
++assert month[gantt_columns(118)[0] + 1 + ash] == ("◆", REACHED)
+ assert "◆ milestone · ◆✓ reached" in "".join("".join(c for c, _ in r) for r in rows)
+ # the ruler on another project's milestone
+-app.selected_task_id = "td0"
+-app.refresh_view()
++await _select(app, pilot, "td0")
+ await pilot.pause()
+ rows = _painted(app)
+ dwh = HEX[app.board.project_by_id("pdwh").color].lower()   # as loaded
+ # two marks in its hue: the project due AND the milestone (qa F-2; one = only the due)
+
+[0m
+[0m← [0mEdit tests/test_gantt_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+@@ -353,10 +353,9 @@
+ dwh = HEX[app.board.project_by_id("pdwh").color].lower()   # as loaded
+ # two marks in its hue: the project due AND the milestone (qa F-2; one = only the due)
+ assert sum(ch == "◆" and hx == dwh for ch, hx in rows[1][gantt_columns(118)[0]:]) == 2
+ # ↑ / ↓ over the reached row
+-app.selected_task_id = "tw2"
+-app.refresh_view()
++await _select(app, pilot, "tw2")
+ await pilot.pause()
+ await pilot.press("up")
+ await pilot.pause()
+ assert app.selected_task_id == "tw0"
+
+[0m
+[0m← [0mEdit tests/test_gantt_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+@@ -362,10 +362,9 @@
+ await pilot.press("down")
+ await pilot.pause()
+ assert app.selected_task_id == "tw2"
+ # `]` until Done: reached, not folded
+-app.selected_task_id = "tw5"
+-app.refresh_view()
++await _select(app, pilot, "tw5")
+ await pilot.pause()
+ app.clear_notifications()
+ for _ in range(4):
+     await pilot.press("right_square_bracket")
+
+[0m
+[0m← [0mEdit tests/test_gantt_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+@@ -376,10 +376,9 @@
+ app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+ async with app.run_test(size=(80, 24)) as pilot:
+     await pilot.press("3")
+     await pilot.pause()
+-    app.selected_task_id = "ta3"
+-    app.refresh_view()
++    await _select(app, pilot, "ta3")
+     await pilot.pause()
+     rows = ["".join(ch for ch, _ in r) for r in _painted(app)]
+     assert any("◆ milestone · ◆✓ reached" in r for r in rows)
+     sel = next(r for r in rows if " ◆ Partner notice" in r)
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_milestones.py tests/test_gantt_milestones.py -q 2>&1 | tail -40
+await pilot.pause()
+            rows = _painted(app)
+            dwh = HEX[app.board.project_by_id("pdwh").color].lower()   # as loaded
+            # two marks in its hue: the project due AND the milestone (qa F-2; one = only the due)
+            assert sum(ch == "◆" and hx == dwh for ch, hx in rows[1][gantt_columns(118)[0]:]) == 2
+            # ↑ / ↓ over the reached row
+            await _select(app, pilot, "tw2")
+            await pilot.pause()
+            await pilot.press("up")
+            await pilot.pause()
+            assert app.selected_task_id == "tw0"
+            await pilot.press("down")
+            await pilot.pause()
+            assert app.selected_task_id == "tw2"
+            # `]` until Done: reached, not folded
+            await _select(app, pilot, "tw5")
+            await pilot.pause()
+            app.clear_notifications()
+            for _ in range(4):
+                await pilot.press("right_square_bracket")
+                await pilot.pause()
+            said = _toasts(app)
+            assert sum("Launch new homepage reached · ◆✓" in x for x in said) == 1, said
+            assert not any("folded" in x for x in said)
+            assert "◆✓" in "".join(ch for ch, _ in _row(_painted(app), " ◆ Launch new homepage"))
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.press("3")
+            await pilot.pause()
+            await _select(app, pilot, "ta3")
+            await pilot.pause()
+            rows = ["".join(ch for ch, _ in r) for r in _painted(app)]
+>           assert any("◆ milestone · ◆✓ reached" in r for r in rows)
+E           assert False
+E            +  where False = any(<generator object test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them.<locals>.<genexpr> at 0x0000014DEFE76A80>)
+
+tests\test_gantt_milestones.py:383: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them
+1 failed, 70 passed in 25.16s
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys, json; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+path='/tmp/at602c.json'
+b = kg_board.milestones(kg_board.shifted(path), date.today())
+b.settings['seen_view_renumber_2026_07']=True
+b.save()
+import asyncio
+import taskboard.app as app_mod
+app_mod.milestones_marked=lambda s: True
+from taskboard.app import TaskboardApp
+
+def painted(app):
+    strips=app.screen._compositor.render_strips(app.screen.size)
+    rows=[]
+    for s in strips:
+        cells=[]
+        for seg in s:
+            hx=(seg.style.color.triplet.hex.lower() if seg.style and seg.style.color and seg.style.color.triplet else None)
+            cells += [(ch,hx) for ch in seg.text]
+        rows.append(cells)
+    return rows
+
+async def walk(app,pilot,tid):
+    for _ in range(200):
+        if app.selected_task_id==tid: return
+        order=app._nav_flat(); cur=app.selected_task_id
+        if tid in order and cur in order and order.index(tid)<order.index(cur):
+            await pilot.press('up')
+        else:
+            await pilot.press('down')
+        await pilot.pause()
+    raise AssertionError(tid)
+
+async def main():
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        await walk(app,pilot,'ta3'); await pilot.pause()
+        print('selected', app.selected_task_id)
+        rows=[''.join(ch for ch,_ in r) for r in painted(app)]
+        for r in rows:
+            print(repr(r))
+asyncio.run(main())
+" 2>&1 | head -40
+
+selected ta3
+'◆ GANTT                                                   ▲6 past due · chain 4 '
+'◆ dates · API Plat…  September ┃ 7 ◆ Oct    ◆ ┃November      ┃December          '
+'1st/15th · 2 d/cell   15 ┆    1 ┆╎ ◆ Oct 10   1   ┆  15  ┆   1  ┆   15 ┆        '
+'▸ Website Red… 5 ▲2  ◂───◉───────╎────◆┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 17'
+'▾ Mobile App         ·┆──────────╎─●───────────────◆·┆···┆··┆···┆··┆···┆· Nov 11'
+'  Crash reporting    ·┆··┆···┆·╌▬╌◕·┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·  Oct 8'
+'  Audit dependenci…  ·┆··┆···━▬━━━◑·┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·  Oct 9'
+'  Add push notific… ↳·┆··┆···┆··┆╎━━━━━◔···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 19'
+'  Offline sync      ↳·┆··┆···┆··┆╎··┆·━━━━━━━━━○··┆··┆···┆··┆···┆··┆···┆·  Nov 4'
+' ◆ Beta release to… ↳·┆··┆···┆··┆╎··┆··┆···┆··┆···┆◆ Nov 11·┆···┆··┆···┆· in 35d'
+'▾ API Platform   ▲2  ◂─────◉─────╎──────────◆·┆···┆··┆···┆··┆···┆··┆···┆· Oct 28'
+'  Write API refere…  ·┆··┆╌▬╌╌╌◑┆╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲5d'
+'  SDK regeneration  ↳·┆··┆···┆╌╌╌◕··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲1d'
+' ◆ Partner notice …  ·┆··┆···┆··┆╎·◆ Oct 10┆··┆···┆··┆···┆··┆···┆··┆···┆·  in 3d'
+'  Rate limiting      ·┆··┆···╌▬╌╌╌╌◑┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 11'
+'  Deprecate v1 end… ↳·┆··┆···┆··┆╌╌╌╌○·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 14'
+'  Plan Q4 roadmap    ·┆··┆···┆··┆╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· no due'
+'▸ Data Warehouse  5  ·┆··┆··─────╎────●────────────────────────◆┆··┆···┆·  Dec 6'
+'▸ Ops & Secur… 6 ▲2  ◂───────────╎──◆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 12'
+'                                                                                '
+'                                                                                '
+' ⟦━⟧ selected, exact dates · ◆ milestone · ↳ waits · ↳ starts early · ━ chain   '
+'  15:02:54 · Wed 07 Oct 2026 · W41 · Mexico City 15:02 · New York 17:02         '
+' ? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑ '
+[0m
+[0m$ [0mgrep -n "right_square_bracket\|def action_.*done\|def action_advance\|def action_fold\|reached" taskboard/app.py | head -20
+968:        """When `task` has just reached the last phase, say once which waiting
+994:            # a reached milestone stays drawn among its group's rows (D-606, D-614)
+995:            self.notify(f"{clip(task.title, 40)} reached · ◆✓ · u undo", markup=False)
+2074:    def action_purge_done(self) -> None:
+[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=940, limit=62][0m
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys, json; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+path='/tmp/at602d.json'
+b = kg_board.milestones(kg_board.shifted(path), date.today())
+b.settings['seen_view_renumber_2026_07']=True
+b.save()
+import asyncio
+import taskboard.app as app_mod
+app_mod.milestones_marked=lambda s: True
+from taskboard.app import TaskboardApp
+
+def painted(app):
+    strips=app.screen._compositor.render_strips(app.screen.size)
+    out=[]
+    for s in strips:
+        out.append(''.join(seg.text for seg in s))
+    return out
+
+async def walk(app,pilot,tid):
+    for _ in range(200):
+        if app.selected_task_id==tid: return
+        order=app._nav_flat(); cur=app.selected_task_id
+        if tid in order and cur in order and order.index(tid)<order.index(cur):
+            await pilot.press('up')
+        else:
+            await pilot.press('down')
+        await pilot.pause()
+    raise AssertionError(tid)
+
+async def main():
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        await walk(app,pilot,'tw5')
+        app.clear_notifications()
+        for _ in range(4):
+            await pilot.press('right_square_bracket'); await pilot.pause()
+        print('tw5 phase now', app.board.task_by_id('tw5').phase, 'saved', json.loads(open(path).read())['tasks'] and next(t for t in json.loads(open(path).read())['tasks'] if t['id']=='tw5')['phase'])
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        await walk(app,pilot,'ta3'); await pilot.pause()
+        print('selected', app.selected_task_id)
+        for r in painted(app):
+            if 'reached' in r or 'milestone' in r: print('LEGEND>', repr(r))
+        rows=painted(app)
+        print('has reached legend:', any('◆ milestone · ◆✓ reached' in r for r in rows))
+asyncio.run(main())
+" 2>&1 | tail -20
+
+tw5 phase now Done saved Done
+selected ta3
+LEGEND> ' ⟦━⟧ selected, exact dates · ◆ milestone · ↳ waits · ↳ starts early · ━ chain   '
+has reached legend: False
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys, json; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+path='/tmp/at602d.json'
+# board already has tw5 Done from previous script
+import asyncio
+import taskboard.app as app_mod
+app_mod.milestones_marked=lambda s: True
+from taskboard.app import TaskboardApp
+
+def legend(app):
+    strips=app.screen._compositor.render_strips(app.screen.size)
+    for s in strips:
+        t=''.join(seg.text for seg in s)
+        if 'selected,' in t: return t
+    return ''
+
+async def walk(app,pilot,tid):
+    for _ in range(200):
+        if app.selected_task_id==tid: return
+        order=app._nav_flat(); cur=app.selected_task_id
+        if tid in order and cur in order and order.index(tid)<order.index(cur):
+            await pilot.press('up')
+        else:
+            await pilot.press('down')
+        await pilot.pause()
+    raise AssertionError(tid)
+
+async def main():
+    # method A: direct set + refresh
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        app.selected_task_id='ta3'; app.refresh_view(); await pilot.pause()
+        print('DIRECT selected', app.selected_task_id)
+        print('DIRECT legend', repr(legend(app)))
+        print('DIRECT nav order', app._nav_flat())
+    # method B: walk
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        await walk(app,pilot,'ta3'); await pilot.pause()
+        print('WALK selected', app.selected_task_id)
+        print('WALK legend', repr(legend(app)))
+        print('WALK nav order', app._nav_flat())
+asyncio.run(main())
+" 2>&1 | tail -20
+
+DIRECT selected ta3
+DIRECT legend ' ⟦━⟧ selected, exact dates · ◆ milestone · ◆✓ reached · ↳ waits · ↳ starts early'
+DIRECT nav order ['tw0', 'tw2', 'tw3', 'tw4', 'tw5', 'tw6', 'tm6', 'tm2', 'tm3', 'tm4', 'tm5', 'ta1', 'ta6', 'ta3', 'ta4', 'ta2', 'ta5', 'td2', 'td4', 'td0', 'td3', 'td5', 'to0', 'to1', 'to3', 'to2', 'to5', 'to4']
+WALK selected ta3
+WALK legend ' ⟦━⟧ selected, exact dates · ◆ milestone · ↳ waits · ↳ starts early · ━ chain   '
+WALK nav order ['tw0', 'tw2', 'tw3', 'tw4', 'tw5', 'tw6', 'tm6', 'tm2', 'tm3', 'tm4', 'tm5', 'ta1', 'ta6', 'ta3', 'ta4', 'ta2', 'ta5', 'td2', 'td4', 'td0', 'td3', 'td5', 'to0', 'to1', 'to3', 'to2', 'to5', 'to4']
+[0m
+[0m$ [0mgrep -n "exact dates\|◆✓ reached\|selected," taskboard/views.py | head
+498:    return (pre + badge_markup + title_markup(task, title_w, selected, arrow=False)
+2396:    # group has open work (D-606, M-1: "◆✓ reached")
+2500:        return title_markup(task, width, selected, arrow=arrow)
+2502:            + title_markup(task, max(0, width - 2), selected, arrow=arrow))
+2884:    items = [("⟦━⟧", "bright", "selected, exact dates", "selected"),
+3754:    right_lines = _focus_detail_lines(board, selected, today, max(0, right_w))
+4805:def kanban_card(task, board, wc, selected, *, today, marks=None,
+5282:                          + " " + title_markup(selected, avail - tail_w, False)
+6773:                                   "⟦━⟧ marks the task's exact dates."]),
+6777:                           "◆ title = a milestone · ◆✓ reached · M"]),
+[0m
+[0m→ [0mRead taskboard/views.py[90m [offset=2860, limit=70][0m
+[0m
+[0m$ [0mgrep -n "render_gantt\|_gantt_prev\|previous=\|def refresh_view\|_line_map\|tick=" taskboard/app.py | head -30
+315:        self._gantt_previous: str | None = None
+631:        self._line_map = {}
+634:                              line_map=self._line_map,
+635:                              presentation=self.kanban_presentation, tick=self._tick_n,
+641:                              gantt_previous=self._gantt_previous,
+686:                                   gantt_previous=self._gantt_previous,
+776:            drawn = set(getattr(self, "_line_map", {}))
+1492:    def refresh_view(self) -> None:
+1503:        self._line_map: dict[str, int] = {}
+1506:                              line_map=self._line_map,
+1507:                              presentation=self.kanban_presentation, tick=self._tick_n,
+1513:                              gantt_previous=self._gantt_previous,
+1532:                self._gantt_previous = self._gantt_group
+1536:        idx = getattr(self, "_line_map", {}).get(self.selected_task_id)
+[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1492, limit=70][0m
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys, json; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+path='/tmp/at602d.json'
+import asyncio
+import taskboard.app as app_mod
+app_mod.milestones_marked=lambda s: True
+from taskboard.app import TaskboardApp
+
+def rows(app):
+    strips=app.screen._compositor.render_strips(app.screen.size)
+    return [''.join(seg.text for seg in s) for s in strips]
+
+async def walk(app,pilot,tid):
+    for _ in range(200):
+        if app.selected_task_id==tid: return
+        order=app._nav_flat(); cur=app.selected_task_id
+        if tid in order and cur in order and order.index(tid)<order.index(cur):
+            await pilot.press('up')
+        else:
+            await pilot.press('down')
+        await pilot.pause()
+    raise AssertionError(tid)
+
+async def main():
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        print('DEFAULT sel', app.selected_task_id, 'gantt_group', app._gantt_group, 'prev', app._gantt_previous)
+        app.selected_task_id='ta3'; app.refresh_view(); await pilot.pause()
+        print('DIRECT prev', app._gantt_previous)
+        for r in rows(app): print('D|', repr(r))
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        await walk(app,pilot,'ta3'); await pilot.pause()
+        print('WALK prev', app._gantt_previous)
+        for r in rows(app): print('W|', repr(r))
+asyncio.run(main())
+" 2>&1 | tail -55
+
+DEFAULT sel tw0 gantt_group pweb prev None
+DIRECT prev pweb
+D| '◆ GANTT                                                   ▲6 past due · chain 4 '
+D| '◆ dates · API Plat…  September ┃ 7 ◆ Oct    ◆ ┃November      ┃December          '
+D| '1st/15th · 2 d/cell   15 ┆    1 ┆╎ ◆ Oct 10   1   ┆  15  ┆   1  ┆   15 ┆        '
+D| '▾ Website Redes… ▲2  ◂───────●───╎────◆┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 17'
+D| ' ◆ Mockups approved  ·┆··┆·◆✓ Sep 25┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· ✓ done'
+D| '  Build component …  ▬╌╌╌╌╌╌╌╌╌╌◕╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲3d'
+D| '  Fix checkout 500…  ·┆··┆···┆▬╌◑╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲2d'
+D| '  Optimize image a… ↳·┆··┆···┆··┆╌╌╌◔··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 13'
+D| ' ◆ Launch new home…  ·┆··┆···┆··┆╎··┆·◆✓ Oct 17···┆··┆···┆··┆···┆··┆···┆· ✓ done'
+D| '  SEO redirects map  ·┆··┆···┆··┆╌╌╌╌╌╌╌○··┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 21'
+D| '▸ Mobile App      5  ·┆──────────╎─●───────────────◆·┆···┆··┆···┆··┆···┆· Nov 11'
+D| '▾ API Platform   ▲2  ◂─────●─────╎──────────◆·┆···┆··┆···┆··┆···┆··┆···┆· Oct 28'
+D| '  Write API refere…  ·┆··┆▬╌╌╌╌◑┆╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲5d'
+D| '  SDK regeneration  ↳·┆··┆···┆╌╌╌◕··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲1d'
+D| ' ◆ Partner notice …  ·┆··┆···┆··┆╎·◆ Oct 10┆··┆···┆··┆···┆··┆···┆··┆···┆·  in 3d'
+D| '  Rate limiting      ·┆··┆···▬╌╌╌╌╌◑┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 11'
+D| '  Deprecate v1 end… ↳·┆··┆···┆··┆╌╌╌╌○·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 14'
+D| '  Plan Q4 roadmap    ·┆··┆···┆··┆╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· no due'
+D| '▸ Data Warehouse  5  ·┆··┆··─────╎────●────────────────────────◆┆··┆···┆·  Dec 6'
+D| '▸ Ops & Secur… 6 ▲2  ◂───────────╎──◆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 12'
+D| '                                                                                '
+D| ' ⟦━⟧ selected, exact dates · ◆ milestone · ◆✓ reached · ↳ waits · ↳ starts early'
+D| '  15:03:52 · Wed 07 Oct 2026 · W41 · Mexico City 15:03 · New York 17:03         '
+D| ' ? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑ '
+WALK prev pmob
+W| '◆ GANTT                                                   ▲6 past due · chain 4 '
+W| '◆ dates · API Plat…  September ┃ 7 ◆ Oct    ◆ ┃November      ┃December          '
+W| '1st/15th · 2 d/cell   15 ┆    1 ┆╎ ◆ Oct 10   1   ┆  15  ┆   1  ┆   15 ┆        '
+W| '▸ Website Red… 4 ▲2  ◂───────◉───╎────◆┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 17'
+W| '▾ Mobile App         ·┆──────────╎─●───────────────◆·┆···┆··┆···┆··┆···┆· Nov 11'
+W| '  Crash reporting    ·┆··┆···┆·╌▬╌◕·┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·  Oct 8'
+W| '  Audit dependenci…  ·┆··┆···━▬━━━◑·┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·  Oct 9'
+W| '  Add push notific… ↳·┆··┆···┆··┆╎━━━━━◔···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 19'
+W| '  Offline sync      ↳·┆··┆···┆··┆╎··┆·━━━━━━━━━○··┆··┆···┆··┆···┆··┆···┆·  Nov 4'
+W| ' ◆ Beta release to… ↳·┆··┆···┆··┆╎··┆··┆···┆··┆···┆◆ Nov 11·┆···┆··┆···┆· in 35d'
+W| '▾ API Platform   ▲2  ◂─────◉─────╎──────────◆·┆···┆··┆···┆··┆···┆··┆···┆· Oct 28'
+W| '  Write API refere…  ·┆··┆╌▬╌╌╌◑┆╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲5d'
+W| '  SDK regeneration  ↳·┆··┆···┆╌╌╌◕··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲1d'
+W| ' ◆ Partner notice …  ·┆··┆···┆··┆╎·◆ Oct 10┆··┆···┆··┆···┆··┆···┆··┆···┆·  in 3d'
+W| '  Rate limiting      ·┆··┆···╌▬╌╌╌╌◑┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 11'
+W| '  Deprecate v1 end… ↳·┆··┆···┆··┆╌╌╌╌○·┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 14'
+W| '  Plan Q4 roadmap    ·┆··┆···┆··┆╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· no due'
+W| '▸ Data Warehouse  5  ·┆··┆··─────╎────●────────────────────────◆┆··┆···┆·  Dec 6'
+W| '▸ Ops & Secur… 6 ▲2  ◂───────────╎──◆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 12'
+W| '                                                                                '
+W| '                                                                                '
+W| ' ⟦━⟧ selected, exact dates · ◆ milestone · ↳ waits · ↳ starts early · ━ chain   '
+W| '  15:03:54 · Wed 07 Oct 2026 · W41 · Mexico City 15:03 · New York 17:03         '
+W| ' ? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑ '
+[0m
+[0m$ [0mgrep -n "cursor\|hmove\|gantt\|page\|home\|end\|top\|bottom\|jump" taskboard/keymap.py | head -40
+11:ready and then mounted ZERO children — all 24 live keys rendered as a blank row.
+29:VIEWS = ("swimlanes", "agenda", "gantt", "kanban", "focus")
+56:    Key("?", "?", "legend", "Map", universal=True, primary=True, group="system"),
+62:    Key("2", "2", "view('agenda')", "Agenda", primary=True, group="views"),
+63:    Key("3", "3", "view('gantt')", "Gantt", primary=True, group="views"),
+77:    # `L` — "this task waits on…": the picker, or the link mode in the gantt
+80:        views=("swimlanes", "agenda", "gantt", "kanban", "focus", "chainmap")),
+90:        views=("swimlanes", "agenda", "gantt", "kanban", "focus")),
+115:    # `F` focuses ONE project (kanban and gantt); the escape companion leaves
+118:    Key("F", "F", "focus_cycle", "Focus", views=("kanban", "gantt"), group="kanban"),
+119:    Key("escape", "esc", "focus_exit", "Focus off", views=("kanban", "gantt", "setup"), group="kanban"),
+120:    Key("/", "/", "search", "Search", views=("kanban", "gantt"), group="kanban"),
+144:    Key("down,j", "↓", "cursor(1)", "Down", priority=True, primary=True, group="nav"),
+145:    Key("up,k", "↑", "cursor(-1)", "Up", priority=True, primary=True, group="nav"),
+146:    Key("left,h", "←", "hmove(-1)", "Left", priority=True, group="nav"),
+147:    Key("right,l", "→", "hmove(1)", "Right", priority=True, group="nav"),
+189:    the most reliable doors out (quit, palette itself) are always at the top."""
+248:def render_key_bar(width: int, view: str, layer: str = "more") -> str:
+279:        markup = render_key_bar(max(0, width), self.view_mode, self.bar_layer)
+[0m
+[0m→ [0mRead taskboard/views.py[90m [offset=2362, limit=130][0m
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys, json; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+path='/tmp/at602d.json'
+import asyncio
+import taskboard.app as app_mod
+app_mod.milestones_marked=lambda s: True
+from taskboard.app import TaskboardApp
+
+def rows(app):
+    strips=app.screen._compositor.render_strips(app.screen.size)
+    return [''.join(seg.text for seg in s) for s in strips]
+
+async def walk(app,pilot,tid):
+    for _ in range(200):
+        if app.selected_task_id==tid: return
+        order=app._nav_flat(); cur=app.selected_task_id
+        if tid in order and cur in order and order.index(tid)<order.index(cur):
+            await pilot.press('up')
+        else:
+            await pilot.press('down')
+        await pilot.pause()
+    raise AssertionError(tid)
+
+async def main():
+    for target in ('tw5','ta3'):
+        app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+        async with app.run_test(size=(80,24)) as pilot:
+            await pilot.press('3'); await pilot.pause()
+            await walk(app,pilot,target); await pilot.pause()
+            rr=rows(app)
+            legend=[r for r in rr if 'selected,' in r]
+            has_reached=any('◆ milestone · ◆✓ reached' in r for r in rr)
+            try:
+                sel=next(r for r in rr if ' ◆ Partner notice' in r)
+                tail=sel.rstrip().endswith('in 3d')
+            except StopIteration:
+                tail='NOT DRAWN'
+            print(target, 'prev', app._gantt_previous, 'legend', repr(legend[0] if legend else None), 'has_reached', has_reached, 'partner', tail)
+asyncio.run(main())
+" 2>&1 | tail -10
+
+tw5 prev None legend ' ⟦━⟧ selected, exact dates · ◆ milestone · ◆✓ reached · ↳ waits · ● progress    ' has_reached True partner NOT DRAWN
+ta3 prev pmob legend ' ⟦━⟧ selected, exact dates · ◆ milestone · ↳ waits · ↳ starts early · ━ chain   ' has_reached False partner True
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys, json; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+path='/tmp/at602d.json'
+import asyncio
+import taskboard.app as app_mod
+app_mod.milestones_marked=lambda s: True
+from taskboard.app import TaskboardApp
+def rows(app):
+    strips=app.screen._compositor.render_strips(app.screen.size)
+    return [''.join(seg.text for seg in s) for s in strips]
+async def walk(app,pilot,tid):
+    for _ in range(200):
+        if app.selected_task_id==tid: return
+        order=app._nav_flat(); cur=app.selected_task_id
+        if tid in order and cur in order and order.index(tid)<order.index(cur):
+            await pilot.press('up')
+        else:
+            await pilot.press('down')
+        await pilot.pause()
+    raise AssertionError(tid)
+async def main():
+    app=TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.press('3'); await pilot.pause()
+        await walk(app,pilot,'tw5'); await pilot.pause()
+        for r in rows(app): print('T|', repr(r))
+asyncio.run(main())
+" 2>&1 | tail -26
+
+T| '◆ GANTT                                                   ▲6 past due · chain 4 '
+T| '◆ dates · Website …  Sep   ◆   ┃ 7    ◆ Oct   ┃November      ┃December          '
+T| '1st/15th · 2 d/cell   15 ┆    1 ┆╎  ┆ ◆ Oct 17    ┆  15  ┆   1  ┆   15 ┆        '
+T| '▾ Website Redes… ▲2  ◂───────●───╎────◆┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 17'
+T| ' ◆ Mockups approved  ·┆··┆·◆✓ Sep 25┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· ✓ done'
+T| '  Build component …  ▬╌╌╌╌╌╌╌╌╌╌◕╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲3d'
+T| '  Fix checkout 500…  ·┆··┆···┆▬╌◑╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲2d'
+T| '  Optimize image a… ↳·┆··┆···┆··┆╌╌╌◔··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 13'
+T| ' ◆ Launch new home…  ·┆··┆···┆··┆╎··┆·◆✓ Oct 17···┆··┆···┆··┆···┆··┆···┆· ✓ done'
+T| '  SEO redirects map  ·┆··┆···┆··┆╌╌╌╌╌╌╌○··┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 21'
+T| '▸ Mobile App      5  ·┆──────────╎─●───────────────◆·┆···┆··┆···┆··┆···┆· Nov 11'
+T| '▸ API Platform 6 ▲2  ◂─────●─────╎──────────◆·┆···┆··┆···┆··┆···┆··┆···┆· Oct 28'
+T| '▸ Data Warehouse  5  ·┆··┆··─────╎────●────────────────────────◆┆··┆···┆·  Dec 6'
+T| '▾ Ops & Security ▲2  ◂───────────╎──◆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 12'
+T| ' ◆ Security review…  ·┆··┆···┆··◆ Oct 5┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲2d'
+T| '  Renew TLS certif…  ·┆··┆···┆·▬╌◑··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·    ▲1d'
+T| '  Review pull requ…  ·┆··┆···┆··┆◕··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆·  today'
+T| '  Rotate API keys    ·┆··┆···┆··┆▬╌◔┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· Oct 10'
+T| '  Pen-test findings  ·┆··┆···┆··┆╎·╌╌╌╌╌╌╌╌○··┆···┆··┆···┆··┆···┆··┆···┆· Oct 27'
+T| '  Update onboardin…  ·┆··┆···┆··┆╎··┆··┆···┆··┆···┆··┆···┆··┆···┆··┆···┆· no due'
+T| '                                                                                '
+T| ' ⟦━⟧ selected, exact dates · ◆ milestone · ◆✓ reached · ↳ waits · ● progress    '
+T| '  15:04:44 · Wed 07 Oct 2026 · W41 · Mexico City 15:04 · New York 17:04         '
+T| ' ? Map  ; More  q Quit  1 Lanes  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ↓  ↑ '
+[0m
+[0m$ [0mcd tests && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0,'.')
+import kg_board
+from datetime import date
+from taskboard.views import gantt_plan, GANTT_RULER_ROWS
+path='/tmp/at602d.json'
+from taskboard.models import Board
+b=Board.load(path)
+today=date.today()
+body=24-1-GANTT_RULER_ROWS
+for sel,prev in [('tw5',None),('tw5','pmob'),('ta3','pweb'),('ta3','pmob')]:
+    gs=gantt_plan(b, False, sel, today, body, previous=prev)
+    print('sel',sel,'prev',prev)
+    for g in gs:
+        print('   ', g.project.id if g.project else None, 'open',len(g.open),'rows',len(g.rows),'unfolded',g.unfolded)
+"
+
+sel tw5 prev None
+    pweb open 4 rows 6 unfolded True
+    pmob open 5 rows 5 unfolded False
+    papi open 6 rows 6 unfolded False
+    pdwh open 5 rows 5 unfolded False
+    pops open 6 rows 6 unfolded True
+sel tw5 prev pmob
+    pweb open 4 rows 6 unfolded True
+    pmob open 5 rows 5 unfolded True
+    papi open 6 rows 6 unfolded False
+    pdwh open 5 rows 5 unfolded True
+    pops open 6 rows 6 unfolded False
+sel ta3 prev pweb
+    pweb open 4 rows 6 unfolded True
+    pmob open 5 rows 5 unfolded False
+    papi open 6 rows 6 unfolded True
+    pdwh open 5 rows 5 unfolded False
+    pops open 6 rows 6 unfolded False
+sel ta3 prev pmob
+    pweb open 4 rows 6 unfolded False
+    pmob open 5 rows 5 unfolded True
+    papi open 6 rows 6 unfolded True
+    pdwh open 5 rows 5 unfolded True
+    pops open 6 rows 6 unfolded False
+[0m
+[0m$ [0mgrep -n "_validate_focus\|def action_focus_cycle\|def action_focus_exit\|_gantt_group\|focused_project_id" taskboard/app.py | head -30
+304:        self.focused_project_id: str | None = None   # session-level (LLR-008.1):
+314:        self._gantt_group: str | None = None
+639:                              kanban_focus=self.focused_project_id,
+640:                              gantt_focus=self.focused_project_id,
+685:                                   gantt_focus=self.focused_project_id,
+689:                                   kanban_focus=self.focused_project_id))
+713:                                        self.focused_project_id)
+767:                         kanban_focus=self.focused_project_id,
+768:                         gantt_focus=self.focused_project_id,
+797:        elif (self.focused_project_id is not None
+803:            tasks = [t for t in tasks if t.project_id == self.focused_project_id]
+991:                                        10 ** 6, self.focused_project_id)
+1194:        self.focused_project_id = None
+1482:    def _validate_focus(self) -> None:
+1486:        if self.focused_project_id is None:
+1489:        if self.focused_project_id not in visible:
+1490:            self.focused_project_id = None
+1493:        self._validate_focus()
+1495:        self._track_gantt_group()
+1511:                              kanban_focus=self.focused_project_id,
+1512:                              gantt_focus=self.focused_project_id,
+1523:    def _track_gantt_group(self) -> None:
+1530:        if group != self._gantt_group:
+1531:            if self._gantt_group is not None:
+1532:                self._gantt_previous = self._gantt_group
+1533:            self._gantt_group = group
+1914:    def action_focus_cycle(self) -> None:
+1926:            nxt = cycle[(cycle.index(self.focused_project_id) + 1) % len(cycle)]
+1929:        self.focused_project_id = nxt
+1932:    def action_focus_exit(self) -> None:
+[0m
+[0m$ [0mgrep -rn "◆✓ reached\|\"reached\"\|◆ milestone · ◆✓" tests/test_gantt*.py tests/test_legend.py tests/test_vertical_fill.py 2>/dev/null | head -30
+tests/test_gantt_milestones.py:12:them right after the selection; `]` that leaves a milestone drawn says "reached"; the arrows walk
+tests/test_gantt_milestones.py:35:REACHED = HEX["reached"].lower()   # UXV-5 verdict: reached milestones wear a legible grey
+tests/test_gantt_milestones.py:125:         "tw0": ("✓ done", "reached"), "to0": ("▲2d", "over"), "td0": ("in 18d", None)}
+tests/test_gantt_milestones.py:241:    """TC-611 (D-624): `◆ milestone · ◆✓ reached` follow the selection item, so they
+tests/test_gantt_milestones.py:245:    assert "selected, exact dates · ◆ milestone · ◆✓ reached" in legend, legend
+tests/test_gantt_milestones.py:247:    assert "milestone" not in plain and "reached" not in plain
+tests/test_gantt_milestones.py:311:    `]` pressed on `Launch new homepage` until Done says "reached", never
+tests/test_gantt_milestones.py:348:        assert "◆ milestone · ◆✓ reached" in "".join("".join(c for c, _ in r) for r in rows)
+tests/test_gantt_milestones.py:383:        assert any("◆ milestone · ◆✓ reached" in r for r in rows)
+[0m
+[0m→ [0mRead tests/test_gantt_milestones.py[90m [offset=374, limit=14][0m
+[0m
+[0m← [0mEdit tests/test_gantt_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_gantt_milestones.py
+@@ -376,10 +376,16 @@
+ app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+ async with app.run_test(size=(80, 24)) as pilot:
+     await pilot.press("3")
+     await pilot.pause()
+-    await _select(app, pilot, "ta3")
++    # walk onto the reached milestone's group, so the 80-wide legend draws
++    # (and must name) both marks — reached by keys, not assigned
++    await _select(app, pilot, "tw5")
+     await pilot.pause()
+     rows = ["".join(ch for ch, _ in r) for r in _painted(app)]
+     assert any("◆ milestone · ◆✓ reached" in r for r in rows)
++    # then walk onto Partner notice's group and read its row
++    await _select(app, pilot, "ta3")
++    await pilot.pause()
++    rows = ["".join(ch for ch, _ in r) for r in _painted(app)]
+     sel = next(r for r in rows if " ◆ Partner notice" in r)
+     assert sel.rstrip().endswith("in 3d")
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_milestones.py tests/test_gantt_milestones.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.......................................................................  [100%]
+71 passed in 23.78s
+[0m
+Both files pass (71). Now the grep pin and a check of the amended arm bodies.
+[0m$ [0mgrep -n "selected_task_id =" tests/test_milestones.py tests/test_gantt_milestones.py
+tests/test_milestones.py:62:        if app.selected_task_id == tid:
+tests/test_milestones.py:177:        app.selected_task_id = None
+tests/test_milestones.py:222:        app.selected_task_id = "c" if case == "inbox" else "a"
+tests/test_milestones.py:250:    app.selected_task_id = tid
+tests/test_milestones.py:343:        app.selected_task_id = "tw5"
+tests/test_milestones.py:373:            app.selected_task_id = tid
+tests/test_milestones.py:428:        app.selected_task_id = "tm5"             # nothing open waits on it
+tests/test_milestones.py:433:        app.selected_task_id = "tm5"
+tests/test_gantt_milestones.py:292:        if app.selected_task_id == tid:
+tests/test_gantt_milestones.py:361:        assert app.selected_task_id == "tw0"
+tests/test_gantt_milestones.py:364:        assert app.selected_task_id == "tw2"
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest "tests/test_milestones.py::test_AT_601_a_task_becomes_a_milestone_saved_undoable_said_and_pushed" "tests/test_milestones.py::test_AT_601_offer_converted_milestones_reach_a_team_folder" "tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them" -v 2>&1 | tail -15
+warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\jjgh8\anaconda3\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\jjgh8\Github\taskboard
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collecting ... collected 3 items
+
+tests/test_milestones.py::test_AT_601_a_task_becomes_a_milestone_saved_undoable_said_and_pushed PASSED [ 33%]
+tests/test_milestones.py::test_AT_601_offer_converted_milestones_reach_a_team_folder PASSED [ 66%]
+tests/test_gantt_milestones.py::test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them PASSED [100%]
+
+============================= 3 passed in 13.52s ==============================
+[0m
+Now the full suite once.
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -30
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 62%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 93%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+...............................                                          [100%]
+2551 passed in 447.75s (0:07:27)
+[0m
+Full suite: **2551 passed**. Let me review the final diff.
+[0m$ [0mgit status --short; echo "=== diff stat ==="; git diff --stat
+M .dev-flow/state.json
+ M .gitattributes
+ M taskboard/app.py
+ M taskboard/models.py
+ M taskboard/views.py
+ M tests/test_gantt_milestones.py
+ M tests/test_milestones.py
+?? .dev-flow/2026-10-07-batch-04/decisions-log.json
+?? .dev-flow/2026-10-07-batch-05/
+?? .dev-flow/rollover_batchf.py
+?? tests/test_backup_write.py
+?? tests/test_mon_d.py
+=== diff stat ===
+warning: in the working copy of '.dev-flow/state.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.gitattributes', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/models.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_gantt_milestones.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_milestones.py', LF will be replaced by CRLF the next time Git touches it
+ .dev-flow/state.json           | 110 ++++++++++-------------------------------
+ .gitattributes                 |   1 +
+ taskboard/app.py               |   5 +-
+ taskboard/models.py            |  18 ++++++-
+ taskboard/views.py             |   6 +--
+ tests/test_gantt_milestones.py |  48 ++++++++++++------
+ tests/test_milestones.py       |  68 ++++++++++++++++++++++---
+ 7 files changed, 140 insertions(+), 116 deletions(-)
+[0m
+[0m$ [0mgit diff tests/test_milestones.py tests/test_gantt_milestones.py
+warning: in the working copy of 'tests/test_gantt_milestones.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/tests/test_gantt_milestones.py b/tests/test_gantt_milestones.py
+index d54b850..a1a7d82 100644
+--- a/tests/test_gantt_milestones.py
++++ b/tests/test_gantt_milestones.py
+@@ -285,6 +285,22 @@ def _toasts(app):
+     return [str(t.render()) for t in app.screen.query("Toast")]
+ 
+ 
++async def _select(app, pilot, tid: str) -> None:
++    """Walk the view with the real arrow keys until `tid` is the selection — the
++    direction read off the shipped nav seat, the move made by a key press."""
++    for _ in range(200):
++        if app.selected_task_id == tid:
++            return
++        order = app._nav_flat()
++        cur = app.selected_task_id
++        if tid in order and cur in order and order.index(tid) < order.index(cur):
++            await pilot.press("up")
++        else:
++            await pilot.press("down")
++        await pilot.pause()
++    raise AssertionError(f"{tid} never selected by the arrows")
++
++
+ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them(tmp_path):
+     """AT-602 (US-602): at 118×30 in the gantt, `Launch new homepage` is a ` ◆` row
+     with its date in the field and `in 10d`, no bar; `Mockups approved` is `◆✓`
+@@ -303,11 +319,7 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
+     async with app.run_test(size=(118, 30), notifications=True) as pilot:
+         await pilot.press("3")
+         await pilot.pause()
+-        for _ in range(80):
+-            if app.selected_task_id == "tw5":
+-                break
+-            await pilot.press("down")
+-            await pilot.pause()
++        await _select(app, pilot, "tw5")
+         rows = _painted(app)
+         launch = _row(rows, " ◆ Launch new homepage")
+         text = "".join(ch for ch, _ in launch)
+@@ -326,19 +338,23 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
+         stext = "".join(ch for ch, _ in sec)
+         assert stext.rstrip().endswith("▲2d") and sec[stext.rindex("▲2d")][1] == OVER
+         month = rows[1]
+-        assert any(ch == "◆" and hx == REACHED for ch, hx in month)
++        # the ash `◆` sits at Mockups' exact column, not merely "any": its due
++        # through the shipped axis math, at the reached grey.
++        ax = gantt_axis(gantt_columns(118)[2], today, *gantt_window(
++                gantt_plan(app.board, False, "tw5", today, 30 - 1 - GANTT_RULER_ROWS),
++                today))
++        ash = ax.cell(date.fromisoformat(app.board.task_by_id("tw0").due_date))
++        assert month[gantt_columns(118)[0] + 1 + ash] == ("◆", REACHED)
+         assert "◆ milestone · ◆✓ reached" in "".join("".join(c for c, _ in r) for r in rows)
+         # the ruler on another project's milestone
+-        app.selected_task_id = "td0"
+-        app.refresh_view()
++        await _select(app, pilot, "td0")
+         await pilot.pause()
+         rows = _painted(app)
+         dwh = HEX[app.board.project_by_id("pdwh").color].lower()   # as loaded
+         # two marks in its hue: the project due AND the milestone (qa F-2; one = only the due)
+         assert sum(ch == "◆" and hx == dwh for ch, hx in rows[1][gantt_columns(118)[0]:]) == 2
+         # ↑ / ↓ over the reached row
+-        app.selected_task_id = "tw2"
+-        app.refresh_view()
++        await _select(app, pilot, "tw2")
+         await pilot.pause()
+         await pilot.press("up")
+         await pilot.pause()
+@@ -347,8 +363,7 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
+         await pilot.pause()
+         assert app.selected_task_id == "tw2"
+         # `]` until Done: reached, not folded
+-        app.selected_task_id = "tw5"
+-        app.refresh_view()
++        await _select(app, pilot, "tw5")
+         await pilot.pause()
+         app.clear_notifications()
+         for _ in range(4):
+@@ -362,10 +377,15 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
+     async with app.run_test(size=(80, 24)) as pilot:
+         await pilot.press("3")
+         await pilot.pause()
+-        app.selected_task_id = "ta3"
+-        app.refresh_view()
++        # walk onto the reached milestone's group, so the 80-wide legend draws
++        # (and must name) both marks — reached by keys, not assigned
++        await _select(app, pilot, "tw5")
+         await pilot.pause()
+         rows = ["".join(ch for ch, _ in r) for r in _painted(app)]
+         assert any("◆ milestone · ◆✓ reached" in r for r in rows)
++        # then walk onto Partner notice's group and read its row
++        await _select(app, pilot, "ta3")
++        await pilot.pause()
++        rows = ["".join(ch for ch, _ in r) for r in _painted(app)]
+         sel = next(r for r in rows if " ◆ Partner notice" in r)
+         assert sel.rstrip().endswith("in 3d")
+diff --git a/tests/test_milestones.py b/tests/test_milestones.py
+index ccf5131..9034f74 100644
+--- a/tests/test_milestones.py
++++ b/tests/test_milestones.py
+@@ -27,7 +27,7 @@ from taskboard import keymap
+ from taskboard.app import TaskboardApp
+ from taskboard.models import (MILESTONE_NEEDS_DATE, Board, Project, Task, bump_due,
+                               set_milestone)
+-from taskboard.modals import TaskDetails, TaskModal
++from taskboard.modals import MilestoneOffer, TaskDetails, TaskModal
+ from taskboard.team_sync import TEAM_FILENAME, TeamState
+ from taskboard.views import filtered_board
+ 
+@@ -56,13 +56,19 @@ def _board(tmp_path: Path) -> Path:
+ 
+ 
+ async def _select(app, pilot, tid: str) -> None:
+-    """Walk the view with the real arrow key until `tid` is the selection."""
+-    for _ in range(80):
++    """Walk the view with the real arrow keys until `tid` is the selection — the
++    direction read off the shipped nav seat, the move made by a key press."""
++    for _ in range(200):
+         if app.selected_task_id == tid:
+             return
+-        await pilot.press("down")
++        order = app._nav_flat()
++        cur = app.selected_task_id
++        if tid in order and cur in order and order.index(tid) < order.index(cur):
++            await pilot.press("up")
++        else:
++            await pilot.press("down")
+         await pilot.pause()
+-    raise AssertionError(f"{tid} never selected by ↓")
++    raise AssertionError(f"{tid} never selected by the arrows")
+ 
+ 
+ # --------------------------------------------------------------------------- #
+@@ -223,8 +229,9 @@ async def test_TC_604_the_toast_says_where_the_milestone_shows(tmp_path, case, w
+ # --------------------------------------------------------------------------- #
+ # TC-605 — the editor's box (LLR-601.3)
+ # --------------------------------------------------------------------------- #
+-async def _edit(app, pilot, tid, **fields):
+-    app.selected_task_id = tid
++async def _editor_save(app, pilot, **fields):
++    """Open the editor for the CURRENT selection, set `fields`, save. The selection
++    is reached before this call (by keys in the amended arms); nothing here assigns."""
+     await pilot.press("e")
+     for _ in range(3):
+         await pilot.pause()
+@@ -239,6 +246,11 @@ async def _edit(app, pilot, tid, **fields):
+         await pilot.pause()
+ 
+ 
++async def _edit(app, pilot, tid, **fields):
++    app.selected_task_id = tid
++    await _editor_save(app, pilot, **fields)
++
++
+ @pytest.mark.parametrize("arm", ["dated", "start-differs", "undated", "new-task",
+                                  "cleared", "due-only", "tick-only"])
+ async def test_TC_605_the_editor_box_applies_after_the_dates(tmp_path, arm):
+@@ -494,6 +506,46 @@ async def test_AT_601_a_task_becomes_a_milestone_saved_undoable_said_and_pushed(
+         assert path.read_bytes() == before
+         said = _toasts(app)
+         assert len(said) == 1 and "a milestone needs a date" in said[0]
+-        await _edit(app, pilot, "ta1", f_milestone=True, f_due=_iso(9))
++        await _select(app, pilot, "ta1")
++        await _editor_save(app, pilot, f_milestone=True, f_due=_iso(9))
+         rec = _saved(path, "ta1")
+         assert (rec["milestone"], rec["start_date"], rec["due_date"]) == (True, _iso(9), _iso(9))
++
++
++# --------------------------------------------------------------------------- #
++# AT-601 arm — the offer's conversions reach a TEAM folder (qa F-4, HLR-1106)
++# --------------------------------------------------------------------------- #
++@pytest.mark.milestone_offer
++async def test_AT_601_offer_converted_milestones_reach_a_team_folder(tmp_path):
++    """AT-601 arm (qa F-4): the offer converts the one-day candidates, and the
++    converted milestone in a TEAM project (`Launch new homepage`, pweb) reaches the
++    shared folder's `board.<user>.json` — the same push path `M` is covered by
++    (AT-601), driven here through the offer's own conversion. RED on base: no offer."""
++    path = tmp_path / "board.json"
++    b = kg_board.one_day(kg_board.shifted(path), date.today())
++    team = tmp_path / "shared"
++    team.mkdir()
++    (team / TEAM_FILENAME).write_text(json.dumps(kg_board.TEAM), encoding="utf-8")
++    b.settings.update({RENUMBER: True, "team_shared_dir": str(team),
++                       "team_user_id": "jav"})
++    b.save()
++    app = TaskboardApp(board_path=str(path), team_sync_interval=0.2)
++    async with app.run_test(size=(118, 40), notifications=True) as pilot:
++        await pilot.pause()
++        assert isinstance(app.screen, MilestoneOffer)
++        await pilot.press("enter")              # the defaults: ta3, tw5, tm5
++        await pilot.pause()
++        assert _saved(path, "tw5")["milestone"] is True     # the offer converted it
++        pushed = team / "board.jav.json"        # the team arm: polled ≤ 5 s
++        for _ in range(50):
++            await pilot.pause(0.1)
++            if pushed.exists() and any(
++                    t["id"] == "tw5" and t.get("milestone") is True for t in
++                    json.loads(pushed.read_text(encoding="utf-8"))["tasks"]):
++                break
++        else:
++            raise AssertionError(
++                "the pushed file never carried the offer-converted milestone")
++        rec = next(t for t in json.loads(pushed.read_text(encoding="utf-8"))["tasks"]
++                   if t["id"] == "tw5")
++        assert (rec["milestone"], rec["start_date"]) == (True, rec["due_date"])
+warning: in the working copy of 'tests/test_milestones.py', LF will be replaced by CRLF the next time Git touches it
+[0m
+[0m← [0mEdit tests/test_milestones.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_milestones.py
+@@ -517,35 +517,43 @@
+ # --------------------------------------------------------------------------- #
+ @pytest.mark.milestone_offer
+ async def test_AT_601_offer_converted_milestones_reach_a_team_folder(tmp_path):
+     """AT-601 arm (qa F-4): the offer converts the one-day candidates, and the
+-    converted milestone in a TEAM project (`Launch new homepage`, pweb) reaches the
+-    shared folder's `board.<user>.json` — the same push path `M` is covered by
+-    (AT-601), driven here through the offer's own conversion. RED on base: no offer."""
++    converted milestones in TEAM projects (`Partner notice emails`/papi,
++    `Launch new homepage`/pweb, `Beta release to testers`/pmob) reach the shared
++    folder's `board.<user>.json` — the same push path `M` is covered by (AT-601),
++    driven here through the offer's own conversion. RED on base: no offer."""
+     path = tmp_path / "board.json"
+     b = kg_board.one_day(kg_board.shifted(path), date.today())
+     team = tmp_path / "shared"
+     team.mkdir()
+-    (team / TEAM_FILENAME).write_text(json.dumps(kg_board.TEAM), encoding="utf-8")
++    cfg = dict(kg_board.TEAM, projects=[
++        {"id": "pweb", "name": "Website Redesign", "color": "violet", "status": "on_track"},
++        {"id": "pmob", "name": "Mobile App", "color": "sky", "status": "on_track"},
++        {"id": "papi", "name": "API Platform", "color": "lime", "status": "at_risk"}])
++    (team / TEAM_FILENAME).write_text(json.dumps(cfg), encoding="utf-8")
+     b.settings.update({RENUMBER: True, "team_shared_dir": str(team),
+                        "team_user_id": "jav"})
+     b.save()
++    converted = ("ta3", "tw5", "tm5")           # the offer's pre-checked one-day rows
+     app = TaskboardApp(board_path=str(path), team_sync_interval=0.2)
+     async with app.run_test(size=(118, 40), notifications=True) as pilot:
+         await pilot.pause()
+         assert isinstance(app.screen, MilestoneOffer)
+         await pilot.press("enter")              # the defaults: ta3, tw5, tm5
+         await pilot.pause()
+-        assert _saved(path, "tw5")["milestone"] is True     # the offer converted it
++        for tid in converted:
++            assert _saved(path, tid)["milestone"] is True   # the offer converted them
+         pushed = team / "board.jav.json"        # the team arm: polled ≤ 5 s
+         for _ in range(50):
+             await pilot.pause(0.1)
+-            if pushed.exists() and any(
+-                    t["id"] == "tw5" and t.get("milestone") is True for t in
+-                    json.loads(pushed.read_text(encoding="utf-8"))["tasks"]):
+-                break
++            if pushed.exists():
++                got = {t["id"]: t for t in
++                       json.loads(pushed.read_text(encoding="utf-8"))["tasks"]}
++                if all(got.get(tid, {}).get("milestone") is True for tid in converted):
++                    break
+         else:
+             raise AssertionError(
+-                "the pushed file never carried the offer-converted milestone")
+-        rec = next(t for t in json.loads(pushed.read_text(encoding="utf-8"))["tasks"]
+-                   if t["id"] == "tw5")
+-        assert (rec["milestone"], rec["start_date"]) == (True, rec["due_date"])
++                "the pushed file never carried the offer-converted milestones")
++        for tid in converted:
++            rec = got[tid]
++            assert (rec["milestone"], rec["start_date"]) == (True, rec["due_date"])
+
+[0m
+Let me strengthen the team arm so all three offer-converted milestones (in team projects) are pushed.
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest "tests/test_milestones.py::test_AT_601_offer_converted_milestones_reach_a_team_folder" -v 2>&1 | tail -8
+configfile: pyproject.toml
+plugins: anyio-4.2.0, asyncio-0.25.0, cov-7.1.0, textual-snapshot-1.1.0, timeout-2.3.1, syrupy-4.8.0
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+collecting ... collected 1 item
+
+tests/test_milestones.py::test_AT_601_offer_converted_milestones_reach_a_team_folder PASSED [100%]
+
+============================== 1 passed in 0.53s ==============================
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_milestones.py tests/test_gantt_milestones.py -q 2>&1 | tail -5
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.......................................................................  [100%]
+71 passed in 24.24s
+[0m
+All green. Report:
+
+## Increment 004 — report
+
+**Files changed (only these):**
+- `tests/test_milestones.py`
+- `tests/test_gantt_milestones.py`
+
+No source files touched; `taskboard/app.py`, `models.py`, `views.py` diffs are other agents' increments.
+
+### Per arm
+
+**AT-601 (`test_AT_601_...saved_undoable_said_and_pushed`, test_milestones.py)**
+- What changed: the arm's direct selection shortcut was in the `_edit` helper it called for the last leg. Split `_edit` into `_editor_save(app, pilot, **fields)` (opens the editor on the *current* selection, presses `e`, types, saves — no assignment) and kept `_edit(app, pilot, tid, **fields) = assign + _editor_save` for the untouched TC-605 arms. AT-601 now does `_select(app, pilot, "ta1")` then `_editor_save(...)`.
+- Now walks with keys: `ta4`, `ta5` (already via `_select`), and the new `ta1` leg. `_select` was upgraded from down-only to bidirectional (reads `app._nav_flat()` for direction, moves by `up`/`down` only — ta1 is above ta5, so the old down-only helper could never reach it).
+- Outcome assertions unchanged.
+
+**AT-602 (`test_AT_602_...ruler_marks_them`, test_gantt_milestones.py)**
+- What changed: added a `_select` key-walk helper; replaced all four direct `selected_task_id=` assignments (`tw5` start, `td0`, `tw2`, `tw5`, and the 80×24 `ta3`) with `_select`. Removed the now-redundant `app.refresh_view()` calls (the key press already refreshes).
+- Now walks with keys: every selection in the arm.
+- Column pin: the month-row ash `◆` is no longer "any". It is pinned to `month[label_w + 1 + ax.cell(tw0.due)]` where the column is computed through the shipped axis math (`gantt_axis`/`gantt_window`/`gantt_plan` on `app.board` with `today` and selection `tw5`) and asserted `== ("◆", REACHED)` — Mockups' exact reached-grey column instead of "any gray diamond".
+
+**Team-folder arm (`test_AT_601_offer_converted_milestones_reach_a_team_folder`, new)**
+- Coverage: `shared/team.json` folder pattern (config lists pweb/pmob/papi), `team_shared_dir` + `team_user_id` set, `@pytest.mark.milestone_offer` so the start offer actually opens. Presses `enter` to convert the three pre-checked one-day candidates (`ta3`, `tw5`, `tm5`), asserts each is flagged in the saved board, then polls `board.jav.json` ≤5 s and asserts all three reached the team file with `milestone: true` and `start == due`.
+- Limit: only projects declared in `team.json` are pushed, so the arm lists the three team projects explicitly; the strongest end-to-end the fixture supports.
+
+### AT-602 80×24 nuance (surfaced, not faked)
+The 80×24 block's two assertions required the frame to draw **both** the reached milestone (pweb) and Partner notice (api). The old shortcut (`assign ta3`) left `_gantt_previous = pweb`, a state the arrows **cannot** reproduce — walking into api from pweb must traverse pmob, so the key path keeps pmob open and folds pweb (legend then names `chain`, not `reached`). To keep both outcome assertions byte-identical I now reach the 80-wide legend on the reached milestone's group (`_select tw5`, previous `None` → legend draws both marks) and then `_select ta3` for Partner notice's row. Assertion strings unchanged; a key-driven selection was inserted between them.
+
+### Grep pin
+`grep -n "selected_task_id =" tests/...` — no assignment in either amended arm body. Remaining hits are: comparisons inside the two `_select` helpers (`==`), the untouched TC-604/605/606/608 arms, and the module-level `_edit` helper (kept for TC-605; permitted).
+
+### Tests
+- `tests/test_milestones.py tests/test_gantt_milestones.py -q`: **71 passed** (was 70; +1 team arm).
+- Full suite: **2551 passed, 0 failed** (7:27). Nothing outside the two files reddened.

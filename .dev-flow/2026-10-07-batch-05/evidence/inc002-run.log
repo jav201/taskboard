@@ -1,0 +1,494 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-05/01-requirements.md
+[0m→ [0mRead taskboard/app.py[90m [offset=1380, limit=120][0m
+[0m→ [0mRead taskboard/modals.py[90m [offset=1680, limit=140][0m
+[0m→ [0mRead taskboard/modals.py[90m [offset=1819, limit=80][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=6850, limit=120][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=220, offset=6700][0m
+[0m→ [0mRead tests/test_markup_sites.py
+[0m✱ [0mGrep "def notify"[90m in taskboard · 0 matches[0m
+[0m✱ [0mGlob "tests/*.py"[90m 73 matches[0m
+[0m✱ [0mGrep "run_test"[90m in tests · 100 matches[0m
+[0m✱ [0mGrep "notify\("[90m in taskboard/app.py · 57 matches[0m
+[0m✱ [0mGrep "_undo_stack|action_undo|undo"[90m in tests · 100 matches[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=220, offset=3739][0m
+[0m→ [0mRead tests/test_cascade_app.py[90m [limit=100][0m
+[0m→ [0mRead tests/test_app.py[90m [limit=120, offset=1][0m
+[0m→ [0mRead tests/test_setup_help.py
+[0m
+[0m$ [0mpython -c "import textual; print(textual.__version__)"
+8.2.8
+[0m
+[0m✱ [0mGrep "def c\("[90m in taskboard/views.py · 1 match[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=70][0m
+[0m
+[0m$ [0mcat > /tmp/repro_help.py <<'EOF'
+import asyncio
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from taskboard.app import TaskboardApp
+from taskboard.models import Board, Project, Task
+
+async def main():
+    with TemporaryDirectory() as d:
+        d = Path(d)
+        p = Project("Platform", "sky")
+        t = Task("Widget", p.id, "Doing")
+        b = Board([p], [t], d / "board.json", {"seen_view_renumber_2026_07": True}, ["Backlog","Doing","Done"])
+        b.save()
+        app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            await pilot.press("4")  # kanban
+            await pilot.pause()
+            await pilot.press("question_mark")
+            await pilot.pause()
+            from textual.widgets import Label
+            print("=== screen:", type(app.screen).__name__)
+            for w in app.screen.query(Label):
+                print(repr(str(w.render())))
+            # also painted rows off the help box
+            strips = app.screen._compositor.render_strips(app.screen.size)
+            box = app.screen.query_one("#help-modal-box")
+            r = box.content_region
+            print("=== painted help box region", r)
+            for s in strips[r.y:r.y+r.height]:
+                print(repr(s.crop(r.x, r.x+r.width).text))
+
+asyncio.run(main())
+EOF
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/repro_help.py
+=== screen: HelpModal
+'Help · kanban'
+'Usage'
+'what it is for'
+'  • run the work: move tasks between phases,'
+'  • group by project, priority or horizon.'
+'first thing to do'
+'  • j/k down and up · ↵ opens the card.'
+'  • then: s sort · g group · z collapse.'
+"the card's numbers"
+'  • ·Nd = days IN the phase (ageing)'
+'  • +Nd = days UNTIL the deadline (countdown)'
+'  • +/- move a date · m: the move again,'
+'  • next mode (stay / push / together)'
+'  • ◂N = waits on N open tasks · L links'
+'  • ▸N = N open tasks wait on this one'
+'the board'
+'  • !! high · == normal · ++ low (open only)'
+'  • open highs ride one band on top of the'
+'  • grouped board; +N more ↓ when it is full'
+'  • ▐ band rule: a project once, across columns'
+'  • ◆ on a band rule: a milestone, never a card'
+'  • ┈ splits cards · ✓ the done rail (✓N narrow)'
+'  • ▲ above · ▼ below: bands folded off screen'
+'Legend'
+'▐  project band, by colour'
+"▊  a task card, in its project's colour"
+'==  normal priority, open'
+'Example'
+'▊ !! sync daemon ↗ ·3d ▸2 ◂1 +4d'
+'!! high (== normal, ++ low) · ↗ url · 3d in phase · 2 wait on it · waits on 1 · due in 4d'
+'Keys'
+'?  Map'
+';  More'
+'q  Quit'
+'1  Lanes'
+'2  Agenda'
+'3  Gantt'
+'4  Kanban'
+'5  Focus'
+'6  Chains'
+'7  Flow'
+'8  Standup'
+'9  People'
+'0  Setup'
+'↵  Details'
+'a  Add'
+'e  Edit'
+'d  Del'
+'L  Link'
+'x  Archive'
+'X  Purge done'
+'v  Archived'
+'u  Undo'
+'t  Pin task'
+'T  Pin proj'
+'M  Milestone'
+'[  Phase−'
+']  Phase+'
+'!  Prio'
+'b  Blocked'
+'+  Due+'
+'-  Due-'
+'m  Chain'
+'s  Sort'
+'g  Group'
+'z  Collapse'
+'F  Focus'
+'esc  Focus off'
+'/  Search'
+'⇥  Layout'
+'↓  Down'
+'↑  Up'
+'←  Left'
+'→  Right'
+'m full map · ? palette · esc/q closes'
+=== painted help box region Region(x=5, y=3, width=70, height=17)
+'Help · kanban                                                         '
+'                                                                      '
+'Usage                                           Legend                '
+'                                                                      '
+'what it is for                                  ▐  project band, by co'
+'  • run the work: move tasks between phases,    ▊  a task card, in its'
+'  • group by project, priority or horizon.      ==  normal priority, o'
+'first thing to do                               Example               '
+'  • j/k down and up · ↵ opens the card.                               '
+'  • then: s sort · g group · z collapse.        ▊ !! sync daemon ↗ ·3d'
+"the card's numbers                              !! high (== normal, ++"
+'  • ·Nd = days IN the phase (ageing)            Keys                  '
+'  • +Nd = days UNTIL the deadline (countdown)                         '
+'  • +/- move a date · m: the move again,        ?  Map                '
+'  • next mode (stay / push / together)          ;  More               '
+'m full map · ? palette · esc/q closes                                 '
+'                                                                      '
+[0m
+[0m$ [0mpython -c "import textual.widgets._static as s; import inspect; print(inspect.getsourcefile(s))"
+C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widgets\_static.py
+[0m
+[0m$ [0mpython -c "import textual.widgets._static as s; import inspect; src=inspect.getsource(s.Static.render); print(src)"
+def render(self) -> RenderResult:
+        """Get a rich renderable for the widget's content.
+
+        Returns:
+            A rich renderable.
+        """
+        return self.visual
+[0m
+[0m$ [0mpython -c "import textual.widgets._static as s; import inspect; src=inspect.getsource(s.Static.visual); print(src)"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 1285, in getsource
+    lines, lnum = getsourcelines(object)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 1267, in getsourcelines
+    lines, lnum = findsource(object)
+                  ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 1078, in findsource
+    file = getsourcefile(object)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 955, in getsourcefile
+    filename = getfile(object)
+               ^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\inspect.py", line 935, in getfile
+    raise TypeError('module, class, method, function, traceback, frame, or '
+TypeError: module, class, method, function, traceback, frame, or code object was expected, got property
+[0m
+[0m$ [0mpython - <<'EOF'
+import inspect
+import textual.widgets._static as s
+src = inspect.getsource(s.Static.visual.fget)
+print(src)
+EOF
+@property
+    def visual(self) -> Visual:
+        """The visual to be displayed.
+
+        Note that the visual is what is ultimately rendered in the widget, but may not be the
+        same object set with the `update` method  or `content` property. For instance, if you
+        update with a string, then the visual will be a [Content][textual.content.Content] instance.
+
+        """
+        if self.__visual is None:
+            self.__visual = visualize(self, self.__content, markup=self._render_markup)
+        return self.__visual
+[0m
+[0m$ [0mpython - <<'EOF'
+import inspect
+import textual.content as c
+# find where wrapping happens for widgets
+print([n for n in dir(c.Content) if 'wrap' in n or 'render' in n or 'line' in n.lower()])
+src = inspect.getsource(c.Content.render_lines)
+print(src)
+EOF
+['_wrap_and_format', 'first_line', 'render', 'render_segments', 'render_strips', 'wrap']
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+AttributeError: type object 'Content' has no attribute 'render_lines'
+[0m
+[0m$ [0mpython - <<'EOF'
+import inspect
+import textual.content as c
+print(inspect.getsource(c.Content._wrap_and_format))
+EOF
+def _wrap_and_format(
+        self,
+        width: int,
+        align: TextAlign = "left",
+        overflow: TextOverflow = "fold",
+        no_wrap: bool = False,
+        line_pad: int = 0,
+        tab_size: int = 8,
+        selection: Selection | None = None,
+        selection_style: Style | None = None,
+        post_style: Style | None = None,
+        get_style: Callable[[str | Style], Style] = Style.parse,
+    ) -> list[_FormattedLine]:
+        """Wraps the text and applies formatting.
+
+        Args:
+            width: Desired width.
+            align: Text alignment.
+            overflow: Overflow method.
+            no_wrap: Disabled wrapping.
+            tab_size: Cell with of tabs.
+            selection: Selection information or `None` if no selection.
+            selection_style: Selection style, or `None` if no selection.
+
+        Returns:
+            List of formatted lines.
+        """
+        output_lines: list[_FormattedLine] = []
+
+        if selection is not None:
+            get_span = selection.get_span
+        else:
+
+            def get_span(y: int) -> tuple[int, int] | None:
+                return None
+
+        for y, line in enumerate(self.split(allow_blank=True)):
+            if post_style is not None:
+                line = line.stylize(post_style)
+
+            if selection_style is not None and (span := get_span(y)) is not None:
+                start, end = span
+                if end == -1:
+                    end = len(line.plain)
+                line = line.stylize(selection_style, start, end)
+
+            line = line.expand_tabs(tab_size)
+
+            if no_wrap:
+                if overflow == "fold":
+                    cuts = list(range(0, line.cell_length, width))[1:]
+                    new_lines = [
+                        _FormattedLine(get_style, line, width, y=y, align=align)
+                        for line in line.divide(cuts)
+                    ]
+                else:
+                    line = line.truncate(width, ellipsis=overflow == "ellipsis")
+                    content_line = _FormattedLine(
+                        get_style, line, width, y=y, align=align
+                    )
+                    new_lines = [content_line]
+            else:
+                content_line = _FormattedLine(get_style, line, width, y=y, align=align)
+                offsets = divide_line(
+                    line.plain, width - line_pad * 2, fold=overflow == "fold"
+                )
+                divided_lines = content_line.content.divide(offsets)
+                ellipsis = overflow == "ellipsis"
+                divided_lines = [
+                    (
+                        line.truncate(width, ellipsis=ellipsis)
+                        if last
+                        else line.rstrip().truncate(width, ellipsis=ellipsis)
+                    )
+                    for last, line in loop_last(divided_lines)
+                ]
+
+                new_lines = [
+                    _FormattedLine(
+                        get_style,
+                        content.rstrip_end(width).pad(line_pad, line_pad),
+                        width,
+                        offset,
+                        y,
+                        align=align,
+                    )
+                    for content, offset in zip(divided_lines, [0, *offsets])
+                ]
+                new_lines[-1].line_end = True
+
+            output_lines.extend(new_lines)
+
+        return output_lines
+[0m
+[0m$ [0mpython - <<'EOF'
+import inspect
+import textual.content as c
+print(inspect.getsource(c.divide_line))
+EOF
+def divide_line(text: str, width: int, fold: bool = True) -> list[int]:
+    """Given a string of text, and a width (measured in cells), return a list
+    of cell offsets which the string should be split at in order for it to fit
+    within the given width.
+
+    Args:
+        text: The text to examine.
+        width: The available cell width.
+        fold: If True, words longer than `width` will be folded onto a new line.
+
+    Returns:
+        A list of indices to break the line at.
+    """
+    break_positions: list[int] = []  # offsets to insert the breaks at
+    append = break_positions.append
+    cell_offset = 0
+    _cell_len = cell_len
+
+    for start, _end, word in words(text):
+        word_length = _cell_len(word.rstrip())
+        remaining_space = width - cell_offset
+        word_fits_remaining_space = remaining_space >= word_length
+
+        if word_fits_remaining_space:
+            # Simplest case - the word fits within the remaining width for this line.
+            cell_offset += _cell_len(word)
+        else:
+            # Not enough space remaining for this word on the current line.
+            if word_length > width:
+                # The word doesn't fit on any line, so we can't simply
+                # place it on the next line...
+                if fold:
+                    # Fold the word across multiple lines.
+                    folded_word = chop_cells(word, width=width)
+                    for last, line in loop_last(folded_word):
+                        if start:
+                            append(start)
+                        if last:
+                            cell_offset = _cell_len(line)
+                        else:
+                            start += len(line)
+                else:
+                    # Folding isn't allowed, so crop the word.
+                    if start:
+                        append(start)
+                    cell_offset = _cell_len(word)
+            elif cell_offset and start:
+                # The word doesn't fit within the remaining space on the current
+                # line, but it *can* fit on to the next (empty) line.
+                append(start)
+                cell_offset = _cell_len(word)
+
+    return break_positions
+[0m
+[0m$ [0mpython - <<'EOF'
+from textual.widgets import Static, Label
+print("Static overflow-x default:", Static().styles.overflow_x, "overflow-y:", Static().styles.overflow_y)
+print("Label overflow-x default:", Label().styles.overflow_x, "overflow-y:", Label().styles.overflow_y)
+EOF
+Static overflow-x default: hidden overflow-y: hidden
+Label overflow-x default: hidden overflow-y: hidden
+[0m
+[0m$ [0mpython - <<'EOF'
+from textual.widgets import Static, Label
+s = Static()
+print("text-overflow:", s.styles.text_overflow)
+print("text-wrap:", s.styles.text_wrap)
+print([a for a in dir(s.styles) if 'wrap' in a or 'overflow' in a])
+EOF
+text-overflow: fold
+text-wrap: wrap
+['overflow_x', 'overflow_y', 'text_overflow', 'text_wrap']
+[0m
+[0m$ [0mpython - <<'EOF'
+from textual.widgets import Label
+from rich.text import Text
+import textual.content as content
+
+swatch = "[#3b82f6]▐[/]"
+meaning = "project band, by colour"
+t = Text.assemble(Text.from_markup(swatch), f"  {meaning}")
+print("plain:", repr(t.plain))
+print("cell_length:", t.cell_len)
+# Now make a Label-like content and wrap at width 22
+c = content.Content.from_rich_text(t)
+print("content cell len:", c.cell_length)
+formatted = c._wrap_and_format(22, overflow="fold")
+for line in formatted:
+    print("LINE:", repr(line.content.plain), "width", line.content.cell_length)
+EOF
+plain: Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+  File "C:\Users\jjgh8\anaconda3\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2590' in position 1: character maps to <undefined>
+[0m
+[0m$ [0mPYTHONIOENCODING=utf-8 python - <<'EOF'
+from rich.text import Text
+import textual.content as content
+
+swatch = "[#3b82f6]\u2590[/]"
+meaning = "project band, by colour"
+t = Text.assemble(Text.from_markup(swatch), f"  {meaning}")
+print("plain:", repr(t.plain))
+print("cell_length:", t.cell_len)
+c = content.Content.from_rich_text(t)
+print("content cell len:", c.cell_length)
+formatted = c._wrap_and_format(22, overflow="fold")
+for line in formatted:
+    print("LINE:", repr(line.content.plain), "width", line.content.cell_length)
+EOF
+plain: '▐  project band, by colour'
+cell_length: 26
+content cell len: 26
+LINE: '▐  project band, by' width 19
+LINE: 'colour' width 6
+[0m
+[0m$ [0mcat > /tmp/repro_help2.py <<'EOF'
+import asyncio
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from taskboard.app import TaskboardApp
+from taskboard.models import Board, Project, Task
+
+async def main():
+    with TemporaryDirectory() as d:
+        d = Path(d)
+        p = Project("Platform", "sky")
+        t = Task("Widget", p.id, "Doing")
+        b = Board([p], [t], d / "board.json", {"seen_view_renumber_2026_07": True}, ["Backlog","Doing","Done"])
+        b.save()
+        app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+        async with app.run_test(size=(80, 24)) as pilot:
+            await pilot.pause()
+            await pilot.press("4")
+            await pilot.pause()
+            await pilot.press("question_mark")
+            await pilot.pause()
+            from textual.widgets import Label, VerticalScroll
+            for w in app.screen.query(Label):
+                if "project band" in str(w.render()):
+                    print("region:", w.region, "content_size:", w.content_size)
+                    print("styles width:", w.styles.width, "text-wrap:", w.styles.text_wrap, "text-overflow:", w.styles.text_overflow)
+                    print("content_width:", w.content_width)
+            for vs in app.screen.query(VerticalScroll):
+                print("VS id:", vs.id, "region:", vs.region)
+
+asyncio.run(main())
+EOF
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/repro_help2.py
+Traceback (most recent call last):
+  File "C:\Users\jjgh8\AppData\Local\Temp\repro_help2.py", line 30, in <module>
+    asyncio.run(main())
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\anaconda3\Lib\asyncio\base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\jjgh8\AppData\Local\Temp\repro_help2.py", line 21, in main
+    from textual.widgets import Label, VerticalScroll
+ImportError: cannot import name 'VerticalScroll' from 'textual.widgets' (C:\Users\jjgh8\anaconda3\Lib\site-packages\textual\widgets\__init__.py)
+[0m
+[93m[1m! [0mpermission requested: external_directory (C:\Users\jjgh8\AppData\Local\Temp\*); auto-rejecting
+[0m✗ [0mcd /tmp && sed -i 's/from textual.widgets import Label, VerticalScroll/from textual.widgets import Label\nfrom textual.containers import VerticalScroll/' /tmp/repro_help2.py && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python /tmp/repro_help2.py failed
+[91m[1mError: [0mThe user rejected permission to use this specific tool call.

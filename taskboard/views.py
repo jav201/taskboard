@@ -35,7 +35,7 @@ from rich.text import Text
 from . import history
 from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Project, Task,
                      critical_chain, days_in_phase, link_conflicts, link_marks,
-                     open_predecessors, parse_iso, unblocks_count)
+                     open_predecessors, parse_iso, unblocks_count, _md)
 from .team_sync import TeamState, sync_tone
 from .wave import DOT_ROWS, Bitmap, load_curve
 
@@ -2675,10 +2675,6 @@ def gantt_cadence(ax: GanttAxis) -> tuple[str, list[tuple[date, int]]]:
         name = "1st/15th" if all(b - a >= 3 for a, b in zip(xs, xs[1:])) else "1st"
     pred = GANTT_CADENCES[name]
     return name, [(d, ax.cell(d)) for d in days if pred(d)]
-
-
-def _md(d: date) -> str:
-    return f"{d:%b} {d.day}"
 
 
 def gantt_echo(task: Task, board: Board, ax: GanttAxis, today: date):
@@ -5773,7 +5769,7 @@ def render_chainmap(board, show_archived, selected_id, today=None,
         skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
         nslot = max(slot.values()) + 1 if slot else 1
         plans.append(dict(pr=pr, ts=ts, slot=slot, edges=edges, skips=skips,
-                          tiles_h=3 * nslot - 1 + len(skips)))
+                          tiles_h=3 * nslot - 1 + len(skips), nslot=nslot))
 
     # vertical rhythm: ONE padding pair for every band, the most that fits
     foot = 3
@@ -5801,10 +5797,39 @@ def render_chainmap(board, show_archived, selected_id, today=None,
 
     body: list[str] = []
     for p in plans:
+        pr, ts = p["pr"], p["ts"]
+        slot = p["slot"]
+        nslot = p["nslot"]
         seg_h = 1 + pad[0] + p["tiles_h"] + pad[1]
         if len(body) + seg_h > body_h:
-            break                 # CM-2: whole-band fold — the head never dangles
-        pr, ts = p["pr"], p["ts"]
+            # CM-2 amended (LED .1): a band that fits PARTLY draws its fitting
+            # chains + one `+N more ↓` tail (the kanban law); a band whose FIRST
+            # chain does not fit still drops whole — no head without its canvas.
+            limit = 0
+            for k in range(nslot, 0, -1):
+                drawn_ids = {t.id for t in ts if slot[t.id] < k}
+                nskip = sum(1 for pt, t in p["edges"]
+                            if pt.id in drawn_ids and t.id in drawn_ids
+                            and depth[t.id] - depth[pt.id] > 1)
+                if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= body_h - len(body):
+                    limit = k
+                    break
+            if limit == 0:
+                break            # the first chain does not fit: drop whole
+            drawn = [t for t in ts if slot[t.id] < limit]
+            drawn_ids = {t.id for t in drawn}
+            edges = [(pt, t) for pt, t in p["edges"]
+                     if pt.id in drawn_ids and t.id in drawn_ids]
+            skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
+            tiles_h = 3 * limit - 1 + len(skips)
+            tail_n = nslot - limit
+        else:
+            drawn = ts
+            edges = p["edges"]
+            skips = p["skips"]
+            tiles_h = p["tiles_h"]
+            limit = nslot
+            tail_n = 0
         own = [t for t in tasks if t.project_id == pr.id]
         n_un = sum(1 for t in own if t not in ts and not board.is_done(t))
         facts = [c(f"{len(ts)} linked", "dim")] + ([c(f"{n_un} open not linked", "dim")] if n_un else [])
@@ -5814,16 +5839,16 @@ def render_chainmap(board, show_archived, selected_id, today=None,
         body.append(_chainmap_band_rule(pr, facts, _chainmap_switch(mode, wide,
                                                                     mode != CASCADE_DEFAULT_MODE), w))
         body += [" " * w] * pad[0]
-        cv = _ChainmapCanvas(w, p["tiles_h"])
+        cv = _ChainmapCanvas(w, tiles_h)
         wires = _ChainmapWires()
         arrows: dict[tuple[int, int], str] = {}
-        lane0 = 3 * (max(p["slot"].values()) + 1) - 1
-        for pt, t in p["edges"]:
+        lane0 = 3 * limit - 1
+        for pt, t in edges:
             k = edge_tone(pt, t)
             x_s, x_t = col_x[depth[pt.id]] + tile_w, col_x[depth[t.id]] - 1
-            r1, r2 = 3 * p["slot"][pt.id], 3 * p["slot"][t.id]
-            if (pt, t) in p["skips"]:
-                lane = lane0 + p["skips"].index((pt, t))
+            r1, r2 = 3 * slot[pt.id], 3 * slot[t.id]
+            if (pt, t) in skips:
+                lane = lane0 + skips.index((pt, t))
                 m1, m2 = x_s + gap // 2, col_x[depth[t.id]] - 1 - gap // 2
                 wires.path([(x_s, r1), (m1, r1), (m1, lane), (m2, lane), (m2, r2), (x_t, r2)],
                            k, is_crit(pt, t))
@@ -5835,13 +5860,16 @@ def render_chainmap(board, show_archived, selected_id, today=None,
         for (rr, x), k in arrows.items():
             cv.put(rr, x, "▸", _chainmap_edge_style(k))
         top = 1 + len(body)
-        for t in ts:
-            rr, x = 3 * p["slot"][t.id], col_x[depth[t.id]]
+        for t in drawn:
+            rr, x = 3 * slot[t.id], col_x[depth[t.id]]
             _chainmap_tile(cv, board, t, rr, x, tile_w, t.id == (sel.id if sel else None),
                            t.id in chain, today, wide)
             if line_map is not None:
                 line_map[t.id] = top + rr
         body += [cv.line(r) for r in range(cv.h)]
+        if tail_n:
+            body.append(_chainmap_pad(c(f"+{tail_n} more ↓", "mut"), w))
+            break
         body += [" " * w] * pad[1]
     if bare:
         for pr in bare:

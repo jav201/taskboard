@@ -1,0 +1,1673 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-05/01-requirements.md
+[0m
+[0m$ [0mgit -C C:/Users/jjgh8/Github/taskboard status && git -C C:/Users/jjgh8/Github/taskboard log --oneline -5
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .dev-flow/state.json
+	modified:   .gitattributes
+	modified:   taskboard/app.py
+	modified:   taskboard/modals.py
+	modified:   taskboard/models.py
+	modified:   taskboard/views.py
+	modified:   tests/test_gantt_milestones.py
+	modified:   tests/test_milestones.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.dev-flow/2026-10-07-batch-04/decisions-log.json
+	.dev-flow/2026-10-07-batch-05/
+	.dev-flow/rollover_batchf.py
+	tests/test_backup_write.py
+	tests/test_help_clip.py
+	tests/test_mon_d.py
+	tests/test_undo_toast.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+a820880 docs: the trunk state reads batch-04 on base_ref 46b16be after the merge reconciliation (the file the close validator actually read; omitted from the evidence-fix commit by a missing -a)
+300f195 fix: the batch-04 evidence dir joins the -text gitattributes block -- the V41 hash check caught CRLF normalization changing the stored bytes under their cited digests (batch-66's defect); the state now reads batch-04 on base_ref 46b16be, the commit batch-04 landed on
+1666f08 Merge branch 'proto/present-e'
+46b16be refactor: the cleanup batch -- _coerce_title coerces non-text titles (str for scalars, Untitled for containers), the cleanup-before-restore pattern in the offer path, ONE drawn-band computation for the renderer and the legend, the fold row's canon ▼ N below + · ▲N ◆ suffix, the 6 backlog items closed; fold-canon HLR-901..903/LLR-901.1..903.1 in REQUIREMENTS.md; validator 0 block (batch 2026-10-07-batch-03; operator's commission: both tracks, parallelized)
+13ea82f feature: the presentation behind R -- PRES-C byte-faithful at 118x30 and 80x24, the heavy cursor expanding each task's notes, SVG+PNG export at the reports/ convention; R replaces the report key (the --report CLI unchanged); _strip now measures through rich's parse with emoji=False (the S1 width law TC-1003 pins); the oracle pin tests + the frozen board + a 6-mutation battery, validator 0 block (batch 2026-10-07-batch-04; the operator's commission: both tracks, parallelized)
+[0m
+[0m→ [0mRead tests/test_chainmap.py
+[0m→ [0mRead tests/test_chainmap_app.py
+[0m✱ [0mGrep "def render_chainmap"[90m in taskboard · 1 match[0m
+[0m✱ [0mGrep "def refresh_view"[90m in taskboard/app.py · 1 match[0m
+[0m→ [0mRead taskboard/views.py[90m [offset=5738, limit=320][0m
+[0m✱ [0mGrep "def _chainmap_plan|def _chainmap_tile|class _ChainmapCanvas|def _chainmap_band_rule|def _chainmap_switch|def _chainmap_mode|def _chainmap_st|def _chainmap_legend|def _chainmap_keys|def _chainmap_pad|def _chainmap_edge_style|def _chainmap_conflict_days"[90m in taskboard/views.py · 12 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=232, offset=5508][0m
+[0m
+[0m$ [0mls -la "C:/Users/jjgh8/Github/taskboard/.dev-flow/2026-10-07-batch-02/evidence/frames/" 2>/dev/null; echo "---"; ls "C:/Users/jjgh8/Github/taskboard/.dev-flow/2026-10-07-batch-02/evidence/" 2>/dev/null
+total 32
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 08:38 .
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 11:32 ..
+-rw-r--r-- 1 jjgh8 197609 3887 Oct  7 08:19 C-2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 4322 Oct  7 08:19 C-2b-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 2414 Oct  7 08:38 C-2b-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 3860 Oct  7 08:19 D-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 2147 Oct  7 08:19 D-C-80x24.txt
+---
+captures
+chunkA-brief.md
+chunkA-run.log
+chunkB-brief.md
+chunkB-run.log
+close-gate.txt
+frames
+veredicto-batchc.html
+[0m
+[0m→ [0mRead tests/kg_board.py
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-80x24.txt
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-118x30.txt
+[0m✱ [0mGrep "more ↓|more ↓|more\\u2193|more\\n"[90m in taskboard · 2 matches[0m
+[0m✱ [0mGrep "more"[90m in taskboard · 43 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1470, limit=160][0m
+[0m✱ [0mGrep "_line_map|selected_task_id|_select_first|nearest|line_map"[90m in taskboard/app.py · 100 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=150, offset=750][0m
+[0m✱ [0mGrep "def render_view|VIEW_ORDER|def nav_model"[90m in taskboard/views.py · 4 matches[0m
+[0m✱ [0mGrep "VIEW_ORDER"[90m in taskboard/app.py · 2 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=20, offset=48][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=6246][0m
+[0m✱ [0mGrep "RENDERERS\s*=|RENDERERS ="[90m in taskboard/views.py · 1 match[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=14, offset=6233][0m
+[0m✱ [0mGrep "resize|on_resize|heal|line_map"[90m in tests · 79 matches[0m
+[0m→ [0mRead tests/test_markup_census.py[90m [limit=110, offset=1][0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+............                                                             [100%]
+12 passed in 2.81s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+from datetime import date, timedelta
+import kg_board
+from kg_board import TODAY
+from taskboard import views
+from taskboard.models import Task
+
+b = kg_board.build('probe.json')
+today = kg_board.TODAY
+for k in range(8):
+    for pid in ('papi','pdwh'):
+        a = Task(f'Head {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today+timedelta(days=k)).isoformat(),
+                 due_date=(today+timedelta(days=k+1)).isoformat(), id=f'h{pid}{k}')
+        z = Task(f'Tail {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today+timedelta(days=k+2)).isoformat(),
+                 due_date=(today+timedelta(days=k+3)).isoformat(),
+                 depends_on=[f'h{pid}{k}'], id=f't{pid}{k}')
+        b.tasks += [a, z]
+
+tasks, linked, depth, chain, ncol, bands, bare = views._chainmap_plan(b, False)
+for pr, ts in bands:
+    print('BAND', pr.id, pr.name, 'ntasks', len(ts))
+    # compute slots
+    slot = {}
+    used = {}
+    for d in range(ncol):
+        for t in (t for t in ts if depth[t.id]==d):
+            pre = [slot[x] for x in t.depends_on if x in slot]
+            s = sorted(pre)[len(pre)//2] if pre else 0
+            while s in used.setdefault(d, set()):
+                s += 1
+            used[d].add(s)
+            slot[t.id]=s
+    nslot = max(slot.values())+1 if slot else 1
+    print('  nslot', nslot, 'tiles_h', 3*nslot-1)
+" 2>&1 | tail -40
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+ModuleNotFoundError: No module named 'kg_board'
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date, timedelta
+import kg_board
+from kg_board import TODAY
+from taskboard import views
+from taskboard.models import Task
+
+b = kg_board.build('probe.json')
+today = kg_board.TODAY
+for k in range(8):
+    for pid in ('papi','pdwh'):
+        a = Task(f'Head {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today+timedelta(days=k)).isoformat(),
+                 due_date=(today+timedelta(days=k+1)).isoformat(), id=f'h{pid}{k}')
+        z = Task(f'Tail {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today+timedelta(days=k+2)).isoformat(),
+                 due_date=(today+timedelta(days=k+3)).isoformat(),
+                 depends_on=[f'h{pid}{k}'], id=f't{pid}{k}')
+        b.tasks += [a, z]
+
+tasks, linked, depth, chain, ncol, bands, bare = views._chainmap_plan(b, False)
+for pr, ts in bands:
+    slot = {}
+    used = {}
+    for d in range(ncol):
+        for t in (t for t in ts if depth[t.id]==d):
+            pre = [slot[x] for x in t.depends_on if x in slot]
+            s = sorted(pre)[len(pre)//2] if pre else 0
+            while s in used.setdefault(d, set()):
+                s += 1
+            used[d].add(s)
+            slot[t.id]=s
+    nslot = max(slot.values())+1 if slot else 1
+    print('BAND', pr.id, pr.name, 'ntasks', len(ts), 'nslot', nslot, 'tiles_h', 3*nslot-1)
+" 2>&1 | tail -40
+BAND pweb Website Redesign ntasks 4 nslot 1 tiles_h 2
+BAND pmob Mobile App ntasks 4 nslot 1 tiles_h 2
+BAND papi API Platform ntasks 20 nslot 10 tiles_h 29
+BAND pdwh Data Warehouse ntasks 19 nslot 9 tiles_h 26
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date, timedelta
+import kg_board
+from kg_board import TODAY
+from taskboard import views
+from taskboard.models import Task
+
+def make(nchains):
+    b = kg_board.build('probe.json')
+    today = kg_board.TODAY
+    for k in range(nchains):
+        for pid in ('papi','pdwh'):
+            a = Task(f'Head {pid} {k}', phase='Next', project_id=pid,
+                     start_date=(today+timedelta(days=k)).isoformat(),
+                     due_date=(today+timedelta(days=k+1)).isoformat(), id=f'h{pid}{k}')
+            z = Task(f'Tail {pid} {k}', phase='Next', project_id=pid,
+                     start_date=(today+timedelta(days=k+2)).isoformat(),
+                     due_date=(today+timedelta(days=k+3)).isoformat(),
+                     depends_on=[f'h{pid}{k}'], id=f't{pid}{k}')
+            b.tasks += [a, z]
+    return b
+
+for nc in (0,1,2,3,4):
+    b = make(nc)
+    tasks, linked, depth, chain, ncol, bands, bare = views._chainmap_plan(b, False)
+    # compute plans exactly like render_chainmap
+    w = 80
+    wide = w>=100
+    gap = 5 if wide else 3
+    tile_w = (w-2-gap*(ncol-1))//ncol
+    plans = []
+    for pr, ts in bands:
+        slot={}; used={}
+        for d in range(ncol):
+            for t in (t for t in ts if depth[t.id]==d):
+                pre=[slot[x] for x in t.depends_on if x in slot]
+                s=sorted(pre)[len(pre)//2] if pre else 0
+                while s in used.setdefault(d,set()): s+=1
+                used[d].add(s); slot[t.id]=s
+        edges=[(b.task_by_id(x),t) for t in ts for x in t.depends_on if x in slot]
+        skips=[e for e in edges if depth[e[1].id]-depth[e[0].id]>1]
+        nslot=max(slot.values())+1 if slot else 1
+        plans.append(dict(pr=pr,ts=ts,tiles_h=3*nslot-1+len(skips),nslot=nslot))
+    foot=3
+    body_h=24-1-foot-1
+    core=sum(1+p['tiles_h'] for p in plans)+(1 if bare else 0)
+    print(f'nc={nc} ncol={ncol} body_h={body_h} core={core}')
+    for p in plans:
+        print('   ', p['pr'].id, 'nslot', p['nslot'], 'tiles_h', p['tiles_h'])
+" 2>&1 | tail -60
+nc=0 ncol=4 body_h=19 core=17
+    pweb nslot 1 tiles_h 3
+    pmob nslot 1 tiles_h 2
+    papi nslot 2 tiles_h 5
+    pdwh nslot 1 tiles_h 2
+nc=1 ncol=4 body_h=19 core=23
+    pweb nslot 1 tiles_h 3
+    pmob nslot 1 tiles_h 2
+    papi nslot 3 tiles_h 8
+    pdwh nslot 2 tiles_h 5
+nc=2 ncol=4 body_h=19 core=29
+    pweb nslot 1 tiles_h 3
+    pmob nslot 1 tiles_h 2
+    papi nslot 4 tiles_h 11
+    pdwh nslot 3 tiles_h 8
+nc=3 ncol=4 body_h=19 core=35
+    pweb nslot 1 tiles_h 3
+    pmob nslot 1 tiles_h 2
+    papi nslot 5 tiles_h 14
+    pdwh nslot 4 tiles_h 11
+nc=4 ncol=4 body_h=19 core=41
+    pweb nslot 1 tiles_h 3
+    pmob nslot 1 tiles_h 2
+    papi nslot 6 tiles_h 17
+    pdwh nslot 5 tiles_h 14
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5768,9 +5768,9 @@
+     edges = [(board.task_by_id(x), t) for t in ts for x in t.depends_on if x in slot]
+     skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
+     nslot = max(slot.values()) + 1 if slot else 1
+     plans.append(dict(pr=pr, ts=ts, slot=slot, edges=edges, skips=skips,
+-                      tiles_h=3 * nslot - 1 + len(skips)))
++                      tiles_h=3 * nslot - 1 + len(skips), nslot=nslot))
+ 
+ # vertical rhythm: ONE padding pair for every band, the most that fits
+ foot = 3
+ body_h = height - 1 - foot - 1      # header + footer(3) + mode footer(1)
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5796,12 +5796,41 @@
+     return p.id in chain and t.id in chain and not board.is_done(p)
+ 
+ body: list[str] = []
+ for p in plans:
++    pr, ts = p["pr"], p["ts"]
++    slot = p["slot"]
++    nslot = p["nslot"]
+     seg_h = 1 + pad[0] + p["tiles_h"] + pad[1]
+     if len(body) + seg_h > body_h:
+-        break                 # CM-2: whole-band fold — the head never dangles
+-    pr, ts = p["pr"], p["ts"]
++        # CM-2 amended (LED .1): a band that fits PARTLY draws its fitting
++        # chains + one `+N more ↓` tail (the kanban law); a band whose FIRST
++        # chain does not fit still drops whole — no head without its canvas.
++        limit = 0
++        for k in range(nslot, 0, -1):
++            drawn_ids = {t.id for t in ts if slot[t.id] < k}
++            nskip = sum(1 for pt, t in p["edges"]
++                        if pt.id in drawn_ids and t.id in drawn_ids
++                        and depth[t.id] - depth[pt.id] > 1)
++            if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= body_h - len(body):
++                limit = k
++                break
++        if limit == 0:
++            break            # the first chain does not fit: drop whole
++        drawn = [t for t in ts if slot[t.id] < limit]
++        drawn_ids = {t.id for t in drawn}
++        edges = [(pt, t) for pt, t in p["edges"]
++                 if pt.id in drawn_ids and t.id in drawn_ids]
++        skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
++        tiles_h = 3 * limit - 1 + len(skips)
++        tail_n = nslot - limit
++    else:
++        drawn = ts
++        edges = p["edges"]
++        skips = p["skips"]
++        tiles_h = p["tiles_h"]
++        limit = nslot
++        tail_n = 0
+     own = [t for t in tasks if t.project_id == pr.id]
+     n_un = sum(1 for t in own if t not in ts and not board.is_done(t))
+     facts = [c(f"{len(ts)} linked", "dim")] + ([c(f"{n_un} open not linked", "dim")] if n_un else [])
+     if any(t.id in chain for t in ts):
+@@ -5809,18 +5838,18 @@
+     mode = _chainmap_mode(pr)
+     body.append(_chainmap_band_rule(pr, facts, _chainmap_switch(mode, wide,
+                                                                 mode != CASCADE_DEFAULT_MODE), w))
+     body += [" " * w] * pad[0]
+-    cv = _ChainmapCanvas(w, p["tiles_h"])
++    cv = _ChainmapCanvas(w, tiles_h)
+     wires = _ChainmapWires()
+     arrows: dict[tuple[int, int], str] = {}
+-    lane0 = 3 * (max(p["slot"].values()) + 1) - 1
+-    for pt, t in p["edges"]:
++    lane0 = 3 * limit - 1
++    for pt, t in edges:
+         k = edge_tone(pt, t)
+         x_s, x_t = col_x[depth[pt.id]] + tile_w, col_x[depth[t.id]] - 1
+-        r1, r2 = 3 * p["slot"][pt.id], 3 * p["slot"][t.id]
+-        if (pt, t) in p["skips"]:
+-            lane = lane0 + p["skips"].index((pt, t))
++        r1, r2 = 3 * slot[pt.id], 3 * slot[t.id]
++        if (pt, t) in skips:
++            lane = lane0 + skips.index((pt, t))
+             m1, m2 = x_s + gap // 2, col_x[depth[t.id]] - 1 - gap // 2
+             wires.path([(x_s, r1), (m1, r1), (m1, lane), (m2, lane), (m2, r2), (x_t, r2)],
+                        k, is_crit(pt, t))
+         else:
+@@ -5830,15 +5859,18 @@
+     wires.draw(cv)
+     for (rr, x), k in arrows.items():
+         cv.put(rr, x, "▸", _chainmap_edge_style(k))
+     top = 1 + len(body)
+-    for t in ts:
+-        rr, x = 3 * p["slot"][t.id], col_x[depth[t.id]]
++    for t in drawn:
++        rr, x = 3 * slot[t.id], col_x[depth[t.id]]
+         _chainmap_tile(cv, board, t, rr, x, tile_w, t.id == (sel.id if sel else None),
+                        t.id in chain, today, wide)
+         if line_map is not None:
+             line_map[t.id] = top + rr
+     body += [cv.line(r) for r in range(cv.h)]
++    if tail_n:
++        body.append(_chainmap_pad(c(f"+{tail_n} more ↓", "mut"), w))
++        break
+     body += [" " * w] * pad[1]
+ if bare:
+     for pr in bare:
+         n = sum(1 for t in tasks if t.project_id == pr.id and not board.is_done(t))
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date, timedelta
+import kg_board
+from kg_board import TODAY
+from taskboard import views
+from taskboard.models import Task
+
+b = kg_board.build('probe.json')
+today = kg_board.TODAY
+for k in range(8):
+    for pid in ('papi','pdwh'):
+        a = Task(f'Head {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today+timedelta(days=k)).isoformat(),
+                 due_date=(today+timedelta(days=k+1)).isoformat(), id=f'h{pid}{k}')
+        z = Task(f'Tail {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today+timedelta(days=k+2)).isoformat(),
+                 due_date=(today+timedelta(days=k+3)).isoformat(),
+                 depends_on=[f'h{pid}{k}'], id=f't{pid}{k}')
+        b.tasks += [a, z]
+
+lm = {}
+text = views.render_chainmap(b, False, None, today, 80, 24, lm).plain
+for i, line in enumerate(text.split('\n')):
+    print(f'{i:2d}| {line}')
+print('--- line_map keys ---')
+print(sorted(lm.keys()))
+" 2>&1 | head -60
+0| ◆ CHAIN MAP · who waits on whom           47 linked tasks · ▲2 late · ━ chain 4 
+ 1| ─▌Website Redesign  4 linked · 2 open not linked ─────── ○stay ●push ○together ─
+ 2|   Design homepage ──▸ Build component ─┬▸ Optimize image  ─┬▸ Launch new        
+ 3|   ✓ mockups           ▷ library   ▲3d  │  ◂1 assets Oct 6  │  ◂2 homepage       
+ 4|                                        ╰───────────────────╯                    
+ 5| ─▌Mobile App  4 linked · ━ critical chain ────────────── ○stay ●push ○together ─
+ 6|  ┃Audit           ━━▸┃Add push        ━━▸┃Offline sync    ━━▸┃Beta release to   
+ 7|  ┃○ dependencies     ┃◂1 notificati…     ┃◂1       Oct 28    ┃◂1 testers        
+ 8| ─▌API Platform  20 linked · 2 open not linked ────────── ○stay ●push ○together ─
+ 9|   Partner notice  ──▸ Deprecate v1                                              
+10|   ○ emails  Oct 3     ◂1 endpoints                                              
+11|                                                                                 
+12|   Rate limiting   ──▸ SDK                                                       
+13|   ○         Oct 4     ◂1 regener… ▲1d                                           
+14|                                                                                 
+15|   Head papi 0     ──▸ Tail papi 0                                               
+16|   ○         Oct 1     ◂1        Oct 3                                           
+17| +7 more ↓                                                                       
+18| ─▌Ops & Security  5 open · no links ────────────────────────────────────────────
+19|                                                                                 
+20|  Design homepage mocku…                            x remove › · L link · ↵ open 
+21|  ◂ waits on  nothing                                                            
+22|  ▸ unblocks   Build component… (starts 5d early)                                
+23|  ▌push: waiters move by the overlap this adds · m change for this chain         
+--- line_map keys ---
+['hpapi0', 'ta2', 'ta3', 'ta4', 'ta6', 'tm2', 'tm3', 'tm4', 'tm5', 'tpapi0', 'tw1', 'tw2', 'tw4', 'tw5']
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date, timedelta
+import kg_board
+from kg_board import TODAY
+from taskboard import views
+from taskboard.models import Task
+
+def render_with(n_papi, n_pdwh, w=80, h=24):
+    b = kg_board.build('probe.json')
+    today = kg_board.TODAY
+    for k in range(n_papi):
+        for pid in (['papi'] if n_papi else []):
+            a = Task(f'Head {pid} {k}', phase='Next', project_id=pid,
+                     start_date=(today+timedelta(days=k)).isoformat(),
+                     due_date=(today+timedelta(days=k+1)).isoformat(), id=f'h{pid}{k}')
+            z = Task(f'Tail {pid} {k}', phase='Next', project_id=pid,
+                     start_date=(today+timedelta(days=k+2)).isoformat(),
+                     due_date=(today+timedelta(days=k+3)).isoformat(),
+                     depends_on=[f'h{pid}{k}'], id=f't{pid}{k}')
+            b.tasks += [a, z]
+    for k in range(n_pdwh):
+        pid = 'pdwh'
+        a = Task(f'Head {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today+timedelta(days=k)).isoformat(),
+                 due_date=(today+timedelta(days=k+1)).isoformat(), id=f'h{pid}{k}')
+        z = Task(f'Tail {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today+timedelta(days=k+2)).isoformat(),
+                 due_date=(today+timedelta(days=k+3)).isoformat(),
+                 depends_on=[f'h{pid}{k}'], id=f't{pid}{k}')
+        b.tasks += [a, z]
+    lm = {}
+    text = views.render_chainmap(b, False, None, today, w, h, lm).plain
+    return text, lm
+
+print('=== Scenario A: add 4 chains to pdwh only, 80x24 ===')
+text, lm = render_with(0, 4)
+for i, line in enumerate(text.split('\n')):
+    print(f'{i:2d}| {line}')
+print('line_map:', sorted(lm.keys()))
+" 2>&1 | head -50
+=== Scenario A: add 4 chains to pdwh only, 80x24 ===
+ 0| ◆ CHAIN MAP · who waits on whom           23 linked tasks · ▲2 late · ━ chain 4 
+ 1| ─▌Website Redesign  4 linked · 2 open not linked ─────── ○stay ●push ○together ─
+ 2|   Design homepage ──▸ Build component ─┬▸ Optimize image  ─┬▸ Launch new        
+ 3|   ✓ mockups           ▷ library   ▲3d  │  ◂1 assets Oct 6  │  ◂2 homepage       
+ 4|                                        ╰───────────────────╯                    
+ 5| ─▌Mobile App  4 linked · ━ critical chain ────────────── ○stay ●push ○together ─
+ 6|  ┃Audit           ━━▸┃Add push        ━━▸┃Offline sync    ━━▸┃Beta release to   
+ 7|  ┃○ dependencies     ┃◂1 notificati…     ┃◂1       Oct 28    ┃◂1 testers        
+ 8| ─▌API Platform  4 linked · 2 open not linked ─────────── ○stay ●push ○together ─
+ 9|   Partner notice  ──▸ Deprecate v1                                              
+10|   ○ emails  Oct 3     ◂1 endpoints                                              
+11|                                                                                 
+12|   Rate limiting   ──▸ SDK                                                       
+13|   ○         Oct 4     ◂1 regener… ▲1d                                           
+14| ─▌Data Warehouse  11 linked · 2 open not linked ──────── ○stay ●push ○together ─
+15|   Migrate user    ──▸ Daily revenue   ──▸ BI dashboard                          
+16|   ✓ table             ▷ model  Oct 18     ◂1 cut-over                           
+17| +4 more ↓                                                                       
+18| ─▌Ops & Security  5 open · no links ────────────────────────────────────────────
+19|                                                                                 
+20|  Design homepage mocku…                            x remove › · L link · ↵ open 
+21|  ◂ waits on  nothing                                                            
+22|  ▸ unblocks   Build component… (starts 5d early)                                
+23|  ▌push: waiters move by the overlap this adds · m change for this chain         
+line_map: ['ta2', 'ta3', 'ta4', 'ta6', 'td1', 'td4', 'td5', 'tm2', 'tm3', 'tm4', 'tm5', 'tw1', 'tw2', 'tw4', 'tw5']
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date, timedelta
+import kg_board
+from kg_board import TODAY
+from taskboard import views
+from taskboard.models import Task
+
+b = kg_board.build('probe2.json')
+today = kg_board.TODAY
+for k in range(5):
+    a = Task(f'Head pweb {k}', phase='Next', project_id='pweb',
+             start_date=(today+timedelta(days=k)).isoformat(),
+             due_date=(today+timedelta(days=k+1)).isoformat(), id=f'hpweb{k}')
+    z = Task(f'Tail pweb {k}', phase='Next', project_id='pweb',
+             start_date=(today+timedelta(days=k+2)).isoformat(),
+             due_date=(today+timedelta(days=k+3)).isoformat(),
+             depends_on=[f'hpweb{k}'], id=f'tpweb{k}')
+    b.tasks += [a, z]
+lm = {}
+text = views.render_chainmap(b, False, None, today, 80, 24, lm).plain
+for i, line in enumerate(text.split('\n')):
+    print(f'{i:2d}| {line}')
+print('line_map:', sorted(lm.keys()))
+print('--- Mobile App in text?', 'Mobile App' in text)
+print('--- tm2 in lm?', 'tm2' in lm)
+" 2>&1 | head -50
+0| ◆ CHAIN MAP · who waits on whom           25 linked tasks · ▲2 late · ━ chain 4 
+ 1| ─▌Website Redesign  14 linked · 2 open not linked ────── ○stay ●push ○together ─
+ 2|   Design homepage ──▸ Build component ─┬▸ Optimize image  ─┬▸ Launch new        
+ 3|   ✓ mockups           ▷ library   ▲3d  │  ◂1 assets Oct 6  │  ◂2 homepage       
+ 4|                                        │                   │                    
+ 5|   Head pweb 0     ──▸ Tail pweb 0      │                   │                    
+ 6|   ○         Oct 1     ◂1        Oct 3  │                   │                    
+ 7|                                        │                   │                    
+ 8|   Head pweb 1     ──▸ Tail pweb 1      │                   │                    
+ 9|   ○         Oct 2     ◂1        Oct 4  │                   │                    
+10|                                        │                   │                    
+11|   Head pweb 2     ──▸ Tail pweb 2      │                   │                    
+12|   ○         Oct 3     ◂1        Oct 5  │                   │                    
+13|                                        │                   │                    
+14|   Head pweb 3     ──▸ Tail pweb 3      │                   │                    
+15|   ○         Oct 4     ◂1        Oct 6  │                   │                    
+16|                                        │                   │                    
+17|   Head pweb 4     ──▸ Tail pweb 4      │                   │                    
+18|   ○         Oct 5     ◂1        Oct 7  │                   │                    
+19|                                        ╰───────────────────╯                    
+20|  Design homepage mocku…                            x remove › · L link · ↵ open 
+21|  ◂ waits on  nothing                                                            
+22|  ▸ unblocks   Build component… (starts 5d early)                                
+23|  ▌push: waiters move by the overlap this adds · m change for this chain         
+line_map: ['hpweb0', 'hpweb1', 'hpweb2', 'hpweb3', 'hpweb4', 'tpweb0', 'tpweb1', 'tpweb2', 'tpweb3', 'tpweb4', 'tw1', 'tw2', 'tw4', 'tw5']
+--- Mobile App in text? False
+--- tm2 in lm? False
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py::test_TC_801_the_exact_c2b_frame_at_118x30 tests/test_chainmap.py::test_TC_802_the_exact_c2b_frame_at_80x24 tests/test_chainmap.py::test_TC_803_the_critical_chain_differs_without_colour_and_the_fan_in_joins tests/test_chainmap.py::test_TC_809_a_deep_chain_renders_instead_of_crashing -q 2>&1 | tail -20
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+....                                                                     [100%]
+4 passed in 0.24s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import inspect
+from taskboard import views
+print('agenda' in views.RENDERERS)
+src = inspect.getsource(views.render_agenda)
+print('line_map' in src)
+"
+True
+True
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import inspect
+from taskboard import views
+for fn in ('render_flow','render_standup','render_people','render_agenda','render_setup'):
+    src = inspect.getsource(getattr(views, fn))
+    print(fn, '-> line_map used:', 'line_map' in src, '| selected rows named:', 'line_map[' in src or 'line_map.update' in src or 'line_map.clear' in src)
+"
+render_flow -> line_map used: True | selected rows named: False
+render_standup -> line_map used: True | selected rows named: False
+render_people -> line_map used: True | selected rows named: True
+render_agenda -> line_map used: True | selected rows named: True
+render_setup -> line_map used: False | selected rows named: False
+[0m
+[0m✱ [0mGrep "def render_flow|def render_standup|def render_people"[90m in taskboard/views.py · 3 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=130, offset=4015][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=105, offset=4228][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=130, offset=4331][0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -1520,9 +1520,28 @@
+                           team_filter=self.team_filter,
+                           setup_state=self._setup_state)
+     board_widget.update(content)
+     self._scroll_selected_into_view()
++    self._heal_selection_after_repaint()
+ 
++def _heal_selection_after_repaint(self) -> None:
++    """The resize heal in one pass (LLR-1105.1): re-verify the selection
++    against the freshly-drawn `_line_map`. A selection the new frame does
++    not name drops to the nearest painted row, or clears when the frame
++    paints nothing. Only task-row views are re-verified — the flow,
++    standup and setup views draw no task rows and keep their selection."""
++    if self.selected_task_id is None:
++        return
++    if self.view_mode not in ("swimlanes", "agenda", "gantt", "kanban",
++                              "focus", "chainmap", "people"):
++        return
++    if self.selected_task_id in self._line_map:
++        return
++    if not self._line_map:
++        self.selected_task_id = None
++    else:
++        self.selected_task_id = min(self._line_map, key=self._line_map.get)
++
+ def _track_gantt_group(self) -> None:
+     """In the gantt, remember the selection's group and the one it was in
+     before, so the plan can keep the group just left open (LLR-207.2)."""
+     task = self.selected_task
+
+[0m
+[0m← [0mEdit tests/test_chainmap_app.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+@@ -294,10 +294,10 @@
+ 
+ 
+ async def test_AT_801b_L_opens_the_shipped_picker_on_the_chain_map(tmp_path):
+     """AT-801 arm (code review CM-3): `L` on the chain map opens the shipped
+-    LinkPicker (LLR-801.2 names it in AT-801's threshold) and linking re-renders
+-    the map with the new chain."""
++    LinkPicker (LLR-801.2 names it in AT-801's threshold) and escape closes it
++    back to the chain map."""
+     path = tmp_path / "board.json"
+     b = kg_board.milestones(kg_board.shifted(path), date.today())
+     b.settings["seen_view_renumber_2026_07"] = True
+     b.save()
+
+[0m
+[0m← [0mEdit tests/test_chainmap.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+@@ -181,29 +181,48 @@
+     assert "Chain step" in text, text[:200]          # the deep chain painted
+     assert "chain 25" in text                        # and its length is named
+ 
+ 
+-def test_TC_810_the_fold_drops_whole_bands_never_a_dangling_head(tmp_path):
+-    """TC-810 (code review CM-2, HIGH): later projects carry chains that do not
+-    fit at 80x24 -- the fold drops WHOLE bands (no head without its canvas) and
+-    only the surviving bands' tiles reach the line_map. RED before the fix: the
+-    fold cut mid-band (a dangling head) and the line_map held undrawn rows."""
++def test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole(tmp_path):
++    """TC-810 (code review CM-2, HIGH, amended by LED .1): a band that no longer
++    fits whole draws its fitting chains + one `+N more ↓` tail (N exact -- the
++    band's chains minus the drawn ones) and only the drawn tiles reach the
++    line_map; a band whose FIRST chain does not fit still drops whole (head and
++    canvas together)."""
+     from taskboard.views import render_chainmap
+-    b = kg_board.build(tmp_path / "board.json")
+     today = kg_board.TODAY
+-    for k in range(8):                       # 8 chains on API + 8 on DWH: they fold
+-        for pid in ("papi", "pdwh"):
++
++    def add_chains(b, pid, n):
++        for k in range(n):
+             a = Task(f"Head {pid} {k}", phase="Next", project_id=pid,
+                      start_date=(today + timedelta(days=k)).isoformat(),
+                      due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"h{pid}{k}")
+             z = Task(f"Tail {pid} {k}", phase="Next", project_id=pid,
+                      start_date=(today + timedelta(days=k + 2)).isoformat(),
+                      due_date=(today + timedelta(days=k + 3)).isoformat(),
+                      depends_on=[f"h{pid}{k}"], id=f"t{pid}{k}")
+             b.tasks += [a, z]
++
++    # (1) the partial band: Data Warehouse's base chain + 4 added chains = 5
++    # lanes, which no longer fit at 80x24 -- it draws the base chain (its FIRST
++    # chain) and names the rest `+4 more ↓`. The drawn tiles reach the line_map;
++    # the folded chains never do.
++    b = kg_board.build(tmp_path / "board.json")
++    add_chains(b, "pdwh", 4)
+     line_map: dict = {}
+     text = render_chainmap(b, False, None, today, 80, 24, line_map).plain
+-    assert line_map, "the first bands must survive the fold"
+-    folded_h = [f"h{pid}0" for pid in ("papi", "pdwh")]
+-    assert all(h not in line_map for h in folded_h), "a folded band leaked tiles"
+-    # and a folded band's HEAD never dangles without its canvas
+-    assert "API Platform" not in text and "Data Warehouse" not in text, text
++    assert "Data Warehouse" in text, text
++    assert "+4 more ↓" in text, text
++    for tid in ("td1", "td4", "td5"):
++        assert tid in line_map, (tid, line_map)
++    for k in range(4):
++        assert f"hpdwh{k}" not in line_map and f"tpdwh{k}" not in line_map, line_map
++
++    # (2) the zero-fit band: 5 chains on Website Redesign (the FIRST project)
++    # spend the whole body, so Mobile App's first chain no longer fits and the
++    # band drops whole -- head AND canvas gone, no tile in the line_map.
++    b2 = kg_board.build(tmp_path / "board2.json")
++    add_chains(b2, "pweb", 5)
++    lm2: dict = {}
++    text2 = render_chainmap(b2, False, None, today, 80, 24, lm2).plain
++    assert "Mobile App" not in text2, text2
++    assert not any(tid in lm2 for tid in ("tm2", "tm3", "tm4", "tm5")), lm2
+
+[0m
+[0m→ [0mRead tests/test_kanban_readable.py[90m [limit=80, offset=1040][0m
+[0m→ [0mRead tests/test_app.py[90m [limit=40, offset=440][0m
+[0m→ [0mRead tests/test_chainmap_app.py[90m [limit=20, offset=296][0m
+[0m
+[0m← [0mEdit tests/test_chainmap_app.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+@@ -312,4 +312,37 @@
+         from taskboard.modals import LinkPicker
+         assert isinstance(app.screen, LinkPicker), f"L opened {type(app.screen).__name__}"
+         await pilot.press("escape")
+         await pilot.pause()
++
++
++async def test_AT_801c_a_resize_heals_the_selection_in_one_refresh(tmp_path, frozen):
++    """AT-801 arm (LLR-1105.1, the resize heal): a selection on a chain the
++    smaller frame folds out drops to a painted row in ONE refresh — the resize's
++    own repaint, no second `refresh_view` call — so the cursor never rests on a
++    tile the smaller chain map does not draw."""
++    path = tmp_path / "board.json"
++    b = kg_board.build(path)
++    today = kg_board.TODAY
++    for k in range(4):
++        a = Task(f"Head pdwh {k}", phase="Next", project_id="pdwh",
++                 start_date=(today + timedelta(days=k)).isoformat(),
++                 due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"hpdwh{k}")
++        z = Task(f"Tail pdwh {k}", phase="Next", project_id="pdwh",
++                 start_date=(today + timedelta(days=k + 2)).isoformat(),
++                 due_date=(today + timedelta(days=k + 3)).isoformat(),
++                 depends_on=[f"hpdwh{k}"], id=f"tpdwh{k}")
++        b.tasks += [a, z]
++    b.save()
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(80, 24), notifications=True) as pilot:
++        await pilot.press("6")
++        await pilot.pause()
++        app.selected_task_id = "td4"        # the Data Warehouse base chain, drawn at 80x24
++        app.refresh_view()
++        await pilot.pause()
++        assert "td4" in app._line_map, app._line_map
++        await pilot.resize_terminal(80, 18)  # too short for the Data Warehouse band
++        await pilot.pause()
++        assert app.selected_task_id is not None
++        assert app.selected_task_id in app._line_map, (
++            app.selected_task_id, app._line_map)
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.............                                                            [100%]
+13 passed in 2.91s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -40
+>       assert ignored("prototypes/out/variants.txt"), (
+            "the capture's own output filename is not covered by the rule")
+E       AssertionError: the capture's own output filename is not covered by the rule
+E       assert False
+E        +  where False = ignored('prototypes/out/variants.txt')
+
+tests\test_scratch_cannot_be_committed.py:87: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_edit_task - AssertionError: assert None is not...
+FAILED tests/test_app.py::test_enter_opens_readonly_details - AssertionError:...
+FAILED tests/test_app.py::test_details_escapes_notes_markup - AssertionError:...
+FAILED tests/test_gantt_board.py::test_AT_108_entering_on_a_done_task_lands_on_drawn_work
+FAILED tests/test_gantt_polish.py::test_AT_210_the_echo_shows_where_the_task_starts_earlier
+FAILED tests/test_gantt_polish.py::test_AT_207_the_project_just_left_stays_open[size1-1]
+FAILED tests/test_gantt_polish.py::test_AT_206_a_finished_task_says_where_it_folded
+FAILED tests/test_gantt_polish.py::test_TC_208_only_the_move_that_finishes_notifies
+FAILED tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[b]x[/b]]
+FAILED tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[/]]
+FAILED tests/test_gantt_polish.py::test_TC_208_a_markup_title_is_shown_literally[[@click=app.quit]q[/]]
+FAILED tests/test_no_live_board.py::test_the_fixture_is_in_git_not_just_on_this_disk
+FAILED tests/test_precommit_gate.py::test_a_staged_leak_is_refused_and_the_file_is_named
+FAILED tests/test_precommit_gate.py::test_clean_staged_content_commits - Asse...
+FAILED tests/test_precommit_gate.py::test_it_fails_closed_when_it_cannot_read_the_board
+FAILED tests/test_precommit_gate.py::test_it_fails_closed_on_a_corrupt_board
+FAILED tests/test_precommit_gate.py::test_the_escape_hatch_is_explicit_and_only_that
+FAILED tests/test_precommit_gate.py::test_binary_staged_files_do_not_break_the_gate
+FAILED tests/test_precommit_gate.py::test_the_hook_wired_in_this_repo_points_at_the_script
+FAILED tests/test_report.py::test_the_cli_writes_a_report_and_says_where - As...
+FAILED tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_probe999.py]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_scratch.log]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/variants.txt]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/some-render.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_ignored_directory_is_the_one_the_capture_writes_into
+31 failed, 2525 passed in 422.92s (0:07:02)
+
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 120000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_app.py::test_edit_task -q 2>&1 | tail -50
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______________________________ test_edit_task ________________________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16917/test_edit_task0')
+
+    async def test_edit_task(tmp_path):
+        app = make_app(tmp_path)
+        async with app.run_test() as pilot:
+            # add first so we have a known selected task
+            await pilot.press("a")
+            await pilot.pause()
+            app.screen.query_one("#f-title", Input).value = "ORIGTASK"
+            await save_open_modal(app, pilot)
+>           assert app.selected_task_id is not None
+E           AssertionError: assert None is not None
+E            +  where None = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}).selected_task_id
+
+tests\test_app.py:138: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_edit_task - AssertionError: assert None is not...
+1 failed in 0.57s
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=60, offset=1][0m
+[0m✱ [0mGrep "def action_add|def action_new_task|def _add_task|TaskModal|def action_save"[90m in taskboard/app.py · 8 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=60, offset=1989][0m
+[0m✱ [0mGrep "self.view_mode\s*=|view_mode ="[90m in taskboard/app.py · 32 matches[0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_app.py::test_edit_task tests/test_app.py::test_enter_opens_readonly_details tests/test_app.py::test_details_escapes_notes_markup -q 2>&1 | tail -60
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_______________________________ test_edit_task ________________________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16918/test_edit_task0')
+
+    async def test_edit_task(tmp_path):
+        app = make_app(tmp_path)
+        async with app.run_test() as pilot:
+            # add first so we have a known selected task
+            await pilot.press("a")
+            await pilot.pause()
+            app.screen.query_one("#f-title", Input).value = "ORIGTASK"
+            await save_open_modal(app, pilot)
+>           assert app.selected_task_id is not None
+E           AssertionError: assert None is not None
+E            +  where None = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}).selected_task_id
+
+tests\test_app.py:138: AssertionError
+______________________ test_enter_opens_readonly_details ______________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16918/test_enter_opens_readonly_deta0')
+
+    async def test_enter_opens_readonly_details(tmp_path):
+        """AC3/AC6: Enter opens TaskDetails (not the editor) and it has no Save control."""
+        app = make_app(tmp_path)
+        async with app.run_test() as pilot:
+>           assert app.selected_task is not None          # a seeded task is selected
+E           AssertionError: assert None is not None
+E            +  where None = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}).selected_task
+
+tests\test_app.py:946: AssertionError
+______________________ test_details_escapes_notes_markup ______________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16918/test_details_escapes_notes_mar0')
+
+    async def test_details_escapes_notes_markup(tmp_path):
+        """AC6: bracketed notes are escaped, not interpreted as Rich markup (A1)."""
+        app = make_app(tmp_path)
+        async with app.run_test() as pilot:
+            t = Task(title="X", notes="[bold]INJECT[/bold]")
+            app.board.tasks.append(t)
+            app.selected_task_id = t.id
+            app.refresh_view()
+            await pilot.press("enter")
+            await pilot.pause()
+            # literal brackets survive -> markup was escaped, not rendered as bold
+>           assert "[bold]INJECT[/bold]" in _details_text(app)
+E           AssertionError: assert '[bold]INJECT[/bold]' in '◆ TASKBOARD · grid 2×3                                          14 open · 3 due \n   ▐ Website Redesign              ... W41 · Mexico City 16:00 · New York 18:00  ? Map  ; More  q Quit  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑'
+E            +  where '◆ TASKBOARD · grid 2×3                                          14 open · 3 due \n   ▐ Website Redesign              ... W41 · Mexico City 16:00 · New York 18:00  ? Map  ; More  q Quit  1  2  3  4  5  6  7  8  9  0  ↵  a  e  d  L  ⇥  ↓  ↑' = _details_text(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}))
+
+tests\test_app.py:990: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_edit_task - AssertionError: assert None is not...
+FAILED tests/test_app.py::test_enter_opens_readonly_details - AssertionError:...
+FAILED tests/test_app.py::test_details_escapes_notes_markup - AssertionError:...
+3 failed in 1.01s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import asyncio
+from taskboard.app import TaskboardApp
+import tempfile, os
+
+async def main():
+    d = tempfile.mkdtemp()
+    app = TaskboardApp(board_path=os.path.join(d, 'board.json'))
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.pause()
+        print('view_mode', app.view_mode)
+        print('selected_task_id', app.selected_task_id)
+        print('line_map size', len(getattr(app, '_line_map', {})))
+        print('selected in line_map?', app.selected_task_id in getattr(app, '_line_map', {}))
+        print('line_map keys sample', list(getattr(app,'_line_map',{}).keys())[:5])
+        print('num visible tasks', len(app.board.visible_tasks(False)))
+
+asyncio.run(main())
+" 2>&1 | tail -20
+view_mode swimlanes
+selected_task_id None
+line_map size 0
+selected in line_map? False
+line_map keys sample []
+num visible tasks 15
+[0m
+[0m✱ [0mGrep "def render_swimlanes|def render_lanes|lanes_presentation|def _lanes_"[90m in taskboard/views.py · 8 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=1815][0m
+[0m✱ [0mGrep "def _grid_render"[90m in taskboard/views.py · 1 match[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=75, offset=1159][0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import asyncio
+from taskboard.app import TaskboardApp
+from textual.widgets import Static
+import tempfile, os
+
+async def main():
+    d = tempfile.mkdtemp()
+    app = TaskboardApp(board_path=os.path.join(d, 'board.json'))
+    orig = app.refresh_view
+    calls = {'n': 0}
+    def wrap():
+        calls['n'] += 1
+        bw = app.query('#board').first() if app.query('#board') else None
+        w = bw.size.width if bw else None
+        vps = app.query('#viewport')
+        h = vps.first().size.height if vps else None
+        orig()
+        print(f'refresh #{calls[\"n\"]}: w={w} h={h} sel={app.selected_task_id} lm={len(app._line_map)}')
+    app.refresh_view = wrap
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.pause()
+        print('final sel', app.selected_task_id, 'lm', len(app._line_map))
+
+asyncio.run(main())
+" 2>&1 | tail -30
+refresh #1: w=0 h=0 sel=None lm=0
+refresh #2: w=79 h=22 sel=None lm=0
+refresh #3: w=79 h=22 sel=None lm=0
+final sel None lm 0
+refresh #4: w=79 h=22 sel=None lm=0
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=70, offset=305][0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import tempfile, os
+from taskboard.app import TaskboardApp
+from taskboard import views
+
+d = tempfile.mkdtemp()
+app = TaskboardApp(board_path=os.path.join(d,'board.json'))
+b = app.board
+print('projects', [(p.id, p.name) for p in b.visible_projects(False)])
+print('tasks', len(b.visible_tasks(False)))
+lm = {}
+text = views.render_swimlanes(b, False, b.visible_tasks(False)[0].id, width=79, height=22, line_map=lm, presentation='grid')
+print('grid line_map size', len(lm), list(lm.keys())[:5])
+" 2>&1 | tail -20
+projects [('940f43e1', 'Website Redesign'), ('cd7f5b44', 'Mobile App'), ('07f43874', 'API Platform'), ('1f317e86', 'Legacy Sunset'), ('64037ed4', 'Data Warehouse')]
+tasks 15
+grid line_map size 0 []
+[0m
+[0m✱ [0mGrep "def _grid_panel_rows"[90m in taskboard/views.py · 1 match[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=70, offset=1090][0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import tempfile, os
+from taskboard.app import TaskboardApp
+from taskboard import views
+
+d = tempfile.mkdtemp()
+app = TaskboardApp(board_path=os.path.join(d,'board.json'))
+b = app.board
+lanes = list(views.lanes_of(b, False, views.date.today()))
+print('num lanes', len(lanes))
+for ln in lanes:
+    print('  lane', ln.project.name if hasattr(ln,'project') else '?', 'open', len(ln.open))
+lm = {}
+text = views._grid_render(b, False, b.visible_tasks(False)[0].id, views.date.today(), 79, 22, line_map=lm)
+print('line_map size', len(lm))
+print('sample', list(lm.items())[:6])
+" 2>&1 | tail -20
+num lanes 6
+  lane ? open 3
+  lane ? open 2
+  lane ? open 3
+  lane ? open 3
+  lane ? open 1
+  lane ? open 1
+line_map size 0
+sample []
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import tempfile, os
+from taskboard.app import TaskboardApp
+from taskboard import views
+
+d = tempfile.mkdtemp()
+app = TaskboardApp(board_path=os.path.join(d,'board.json'))
+b = app.board
+lm = {}
+text = views._grid_render(b, False, b.visible_tasks(False)[0].id, views.date.today(), 79, 22, line_map=lm)
+print('line_map', lm)
+for i, line in enumerate(text.plain.split(chr(10))):
+    print(f'{i:2d}| {line}')
+" 2>&1 | tail -30
+line_map {}
+ 0| ◆ TASKBOARD · grid 2×3                                         13 open · 3 due 
+ 1|    ▐ Website Redesign                3 │   ▐ Mobile App                      2 
+ 2| █│ ▒░░▓▒▓░··╎··························│█│ ▒░░▓▒▓░▓▓╎▒░░▓▓▓▒▓▒▒▓▓░▒············
+ 3| █│       ▄  ▄      ▄                   │█│                         ▄      ▄    
+ 4| █▪             Oct 5 ▲2d ·3            │ ▪              Oct 19 ·2              
+ 5|  ╎ -7d                             +21d│ ▪ -7d                             +21d
+ 6|  ▪ 0/3 done                            │ │ 1/3 done                            
+ 7| ───────────────────────────────────────────────────────────────────────────────
+ 8|    ▐ API Platform                    3 │   ▐ Inbox                           3 
+ 9| █▪ ▒░░▓▒▓░▓▓╎▒░░▓▓▓····················│ │ ▒░░▓▒▓░▓▓╎▒·························
+10|  ╎                ▄    ▄               │ │           ▄ ▄                       
+11|  ▪              Oct 12 ·3              │ │               Oct 8 ·3              
+12|  │ -7d                             +21d│ │ -7d                             +21d
+13|  │ 0/3 done                            │ │ 0/3 done                            
+14| ───────────────────────────────────────────────────────────────────────────────
+15|    ▐ Data Warehouse                  1 │   ▐ Legacy Sunset                   1 
+16| ▲│ ▒░░▓▒▓░▓·╎··························│▲│ ▒░░▓▒▓░▓▓╎▒░░▓▓▓▒▓▒·················
+17| █│         ▄                           │█│                    ▄                
+18| █│             Oct 6 ▲1d ·1            │█│              Oct 15 ·1              
+19| █│ -7d                             +21d│█│ -7d                             +21d
+20| █▪ 1/2 done                            │█│ 0/1 done                            
+21|
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_gantt_board.py::test_AT_108_entering_on_a_done_task_lands_on_drawn_work -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_AT_108_entering_on_a_done_task_lands_on_drawn_work ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16919/test_AT_108_entering_on_a_done0')
+frozen = None
+
+    async def test_AT_108_entering_on_a_done_task_lands_on_drawn_work(tmp_path, frozen):
+        """AT-108 (HLR-104, LLR-101.9). Enter the gantt with `tw1` (done) selected:
+        the selection lands on `tw2`, the open task after it in Website Redesign's
+        draw order, and `down` moves. RED on the base tree: `tw1` stays selected
+        and `down` does nothing (P-9)."""
+        app = _app(tmp_path)
+        async with app.run_test(size=(118, 34)) as pilot:
+            await pilot.pause()
+            app.selected_task_id = "tw1"
+            await pilot.press("3")
+            await pilot.pause()
+>           assert app.selected_task_id == "tw2"
+E           AssertionError: assert 'ta1' == 'tw2'
+E             
+E             - tw2
+E             + ta1
+
+tests\test_gantt_board.py:361: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_board.py::test_AT_108_entering_on_a_done_task_lands_on_drawn_work
+1 failed in 0.46s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import asyncio, tempfile, os
+import kg_board
+from taskboard.app import TaskboardApp
+
+async def main():
+    d = tempfile.mkdtemp()
+    path = os.path.join(d, 'board.json')
+    b = kg_board.shifted(path)
+    app = TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(118,34)) as pilot:
+        await pilot.pause()
+        app.selected_task_id = 'tw1'
+        await pilot.press('3')
+        await pilot.pause()
+        print('view', app.view_mode)
+        print('selected', app.selected_task_id)
+        print('tw2 in line_map?', 'tw2' in app._line_map)
+        print('line_map keys (top rows):', sorted(app._line_map.items(), key=lambda x:x[1])[:10])
+
+asyncio.run(main())
+" 2>&1 | tail -20
+view swimlanes
+selected tw1
+tw2 in line_map? True
+line_map keys (top rows): [('ta1', 6), ('tw2', 6), ('ta6', 7), ('tw3', 7), ('to1', 16), ('tm6', 16), ('to3', 17), ('tm2', 17), ('td2', 26), ('td4', 27)]
+[0m
+[0m→ [0mRead tests/test_gantt_board.py[90m [limit=55, offset=1][0m
+[0m✱ [0mGrep "def _app"[90m in tests/test_gantt_board.py · 6 matches[0m
+[0m→ [0mRead tests/test_gantt_board.py[90m [limit=30, offset=79][0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import asyncio, tempfile, os
+from datetime import date
+import kg_board
+from kg_board import TODAY
+from taskboard.app import TaskboardApp
+from taskboard import views, models
+
+class _Today(date):
+    @classmethod
+    def today(cls): return TODAY
+
+async def main():
+    # patch date like the frozen fixture
+    import taskboard.app as app_mod
+    views.date = _Today; models.date = _Today; app_mod.date = _Today; kg_board.date = _Today
+    d = tempfile.mkdtemp()
+    b = kg_board.build(os.path.join(d,'board.json'))
+    b.save()
+    app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,34)) as pilot:
+        await pilot.pause()
+        app.selected_task_id = 'tw1'
+        await pilot.press('3')
+        await pilot.pause()
+        print('view', app.view_mode)
+        print('selected', app.selected_task_id)
+        print('tw2 in line_map?', 'tw2' in app._line_map)
+        print('tw1 done?', app.board.is_done(app.board.task_by_id('tw1')))
+        print('line_map sorted:', sorted(app._line_map.items(), key=lambda x:x[1])[:12])
+
+asyncio.run(main())
+" 2>&1 | tail -20
+view swimlanes
+selected tw1
+tw2 in line_map? True
+tw1 done? True
+line_map sorted: [('ta1', 6), ('tw2', 6), ('ta6', 7), ('tw3', 7), ('to1', 16), ('tm6', 16), ('to3', 17), ('tm2', 17), ('td2', 26), ('td4', 27)]
+[0m
+[0m✱ [0mGrep "def frozen|RENUMBER|renumber|seen_view"[90m in tests/test_gantt_board.py · 60 matches[0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -1526,15 +1526,14 @@
+ def _heal_selection_after_repaint(self) -> None:
+     """The resize heal in one pass (LLR-1105.1): re-verify the selection
+     against the freshly-drawn `_line_map`. A selection the new frame does
+     not name drops to the nearest painted row, or clears when the frame
+-    paints nothing. Only task-row views are re-verified — the flow,
+-    standup and setup views draw no task rows and keep their selection."""
+-    if self.selected_task_id is None:
++    paints nothing. Scoped to the chain map — the one view whose selection
++    must sit on a named tile — so every other view's repaint stays
++    byte-identical (the grid/flow/standup views draw no task rows, and the
++    kanban/gantt selections are healed by `_select_first` up front)."""
++    if self.view_mode != "chainmap" or self.selected_task_id is None:
+         return
+-    if self.view_mode not in ("swimlanes", "agenda", "gantt", "kanban",
+-                              "focus", "chainmap", "people"):
+-        return
+     if self.selected_task_id in self._line_map:
+         return
+     if not self._line_map:
+         self.selected_task_id = None
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_app.py::test_edit_task tests/test_app.py::test_enter_opens_readonly_details tests/test_app.py::test_details_escapes_notes_markup tests/test_gantt_board.py::test_AT_108_entering_on_a_done_task_lands_on_drawn_work tests/test_gantt_polish.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.....................................                                    [100%]
+37 passed in 16.31s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -15
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.............                                                            [100%]
+13 passed in 2.82s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -45
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 16%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+....................................                                     [100%]
+2556 passed in 425.40s (0:07:05)
+[0m
+[0m$ [0mgit -C C:/Users/jjgh8/Github/taskboard diff -- taskboard/views.py taskboard/app.py tests/test_chainmap.py tests/test_chainmap_app.py
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_chainmap.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_chainmap_app.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 6539a84..20861c7 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -35,10 +35,7 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
+ from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
+                     gantt_plan, nav_model, present_paths, present_project_id,
+                     present_tasks, render_present, render_view, save_present_png,
+-                    save_present_svg, sort_by_due, fit, vis, valid_url)
+-
+-def _md(d: date) -> str:
+-    return f"{d:%b} {d.day}"
++                     save_present_svg, sort_by_due, fit, vis, valid_url, _md)
+ 
+ 
+ # The app's ONE shared clock. Every animated surface counts in these ticks, so
+@@ -1468,6 +1465,8 @@ class TaskboardApp(App):
+             else:
+                 for f, v in entry["fields"].items():
+                     setattr(task, f, v)
++            self.notify(f"Undone — {task.title} is back as it was.",
++                        title="Undo", severity="information", markup=False)
+             self.board.save()
+             self.selected_task_id = task.id
+             self.refresh_view()
+@@ -1522,6 +1521,24 @@ class TaskboardApp(App):
+                               setup_state=self._setup_state)
+         board_widget.update(content)
+         self._scroll_selected_into_view()
++        self._heal_selection_after_repaint()
++
++    def _heal_selection_after_repaint(self) -> None:
++        """The resize heal in one pass (LLR-1105.1): re-verify the selection
++        against the freshly-drawn `_line_map`. A selection the new frame does
++        not name drops to the nearest painted row, or clears when the frame
++        paints nothing. Scoped to the chain map — the one view whose selection
++        must sit on a named tile — so every other view's repaint stays
++        byte-identical (the grid/flow/standup views draw no task rows, and the
++        kanban/gantt selections are healed by `_select_first` up front)."""
++        if self.view_mode != "chainmap" or self.selected_task_id is None:
++            return
++        if self.selected_task_id in self._line_map:
++            return
++        if not self._line_map:
++            self.selected_task_id = None
++        else:
++            self.selected_task_id = min(self._line_map, key=self._line_map.get)
+ 
+     def _track_gantt_group(self) -> None:
+         """In the gantt, remember the selection's group and the one it was in
+diff --git a/taskboard/views.py b/taskboard/views.py
+index 60d1db0..15ddac7 100644
+--- a/taskboard/views.py
++++ b/taskboard/views.py
+@@ -35,7 +35,7 @@ from rich.text import Text
+ from . import history
+ from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Project, Task,
+                      critical_chain, days_in_phase, link_conflicts, link_marks,
+-                     open_predecessors, parse_iso, unblocks_count)
++                     open_predecessors, parse_iso, unblocks_count, _md)
+ from .team_sync import TeamState, sync_tone
+ from .wave import DOT_ROWS, Bitmap, load_curve
+ 
+@@ -2677,10 +2677,6 @@ def gantt_cadence(ax: GanttAxis) -> tuple[str, list[tuple[date, int]]]:
+     return name, [(d, ax.cell(d)) for d in days if pred(d)]
+ 
+ 
+-def _md(d: date) -> str:
+-    return f"{d:%b} {d.day}"
+-
+-
+ def gantt_echo(task: Task, board: Board, ax: GanttAxis, today: date):
+     """The selection on the ruler, EXACT dates only (never a cell's rounded
+     date): (cells {x: glyph}, tone, label options in preference order, the
+@@ -5773,7 +5769,7 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+         skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
+         nslot = max(slot.values()) + 1 if slot else 1
+         plans.append(dict(pr=pr, ts=ts, slot=slot, edges=edges, skips=skips,
+-                          tiles_h=3 * nslot - 1 + len(skips)))
++                          tiles_h=3 * nslot - 1 + len(skips), nslot=nslot))
+ 
+     # vertical rhythm: ONE padding pair for every band, the most that fits
+     foot = 3
+@@ -5801,10 +5797,39 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+ 
+     body: list[str] = []
+     for p in plans:
++        pr, ts = p["pr"], p["ts"]
++        slot = p["slot"]
++        nslot = p["nslot"]
+         seg_h = 1 + pad[0] + p["tiles_h"] + pad[1]
+         if len(body) + seg_h > body_h:
+-            break                 # CM-2: whole-band fold — the head never dangles
+-        pr, ts = p["pr"], p["ts"]
++            # CM-2 amended (LED .1): a band that fits PARTLY draws its fitting
++            # chains + one `+N more ↓` tail (the kanban law); a band whose FIRST
++            # chain does not fit still drops whole — no head without its canvas.
++            limit = 0
++            for k in range(nslot, 0, -1):
++                drawn_ids = {t.id for t in ts if slot[t.id] < k}
++                nskip = sum(1 for pt, t in p["edges"]
++                            if pt.id in drawn_ids and t.id in drawn_ids
++                            and depth[t.id] - depth[pt.id] > 1)
++                if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= body_h - len(body):
++                    limit = k
++                    break
++            if limit == 0:
++                break            # the first chain does not fit: drop whole
++            drawn = [t for t in ts if slot[t.id] < limit]
++            drawn_ids = {t.id for t in drawn}
++            edges = [(pt, t) for pt, t in p["edges"]
++                     if pt.id in drawn_ids and t.id in drawn_ids]
++            skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
++            tiles_h = 3 * limit - 1 + len(skips)
++            tail_n = nslot - limit
++        else:
++            drawn = ts
++            edges = p["edges"]
++            skips = p["skips"]
++            tiles_h = p["tiles_h"]
++            limit = nslot
++            tail_n = 0
+         own = [t for t in tasks if t.project_id == pr.id]
+         n_un = sum(1 for t in own if t not in ts and not board.is_done(t))
+         facts = [c(f"{len(ts)} linked", "dim")] + ([c(f"{n_un} open not linked", "dim")] if n_un else [])
+@@ -5814,16 +5839,16 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+         body.append(_chainmap_band_rule(pr, facts, _chainmap_switch(mode, wide,
+                                                                     mode != CASCADE_DEFAULT_MODE), w))
+         body += [" " * w] * pad[0]
+-        cv = _ChainmapCanvas(w, p["tiles_h"])
++        cv = _ChainmapCanvas(w, tiles_h)
+         wires = _ChainmapWires()
+         arrows: dict[tuple[int, int], str] = {}
+-        lane0 = 3 * (max(p["slot"].values()) + 1) - 1
+-        for pt, t in p["edges"]:
++        lane0 = 3 * limit - 1
++        for pt, t in edges:
+             k = edge_tone(pt, t)
+             x_s, x_t = col_x[depth[pt.id]] + tile_w, col_x[depth[t.id]] - 1
+-            r1, r2 = 3 * p["slot"][pt.id], 3 * p["slot"][t.id]
+-            if (pt, t) in p["skips"]:
+-                lane = lane0 + p["skips"].index((pt, t))
++            r1, r2 = 3 * slot[pt.id], 3 * slot[t.id]
++            if (pt, t) in skips:
++                lane = lane0 + skips.index((pt, t))
+                 m1, m2 = x_s + gap // 2, col_x[depth[t.id]] - 1 - gap // 2
+                 wires.path([(x_s, r1), (m1, r1), (m1, lane), (m2, lane), (m2, r2), (x_t, r2)],
+                            k, is_crit(pt, t))
+@@ -5835,13 +5860,16 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+         for (rr, x), k in arrows.items():
+             cv.put(rr, x, "▸", _chainmap_edge_style(k))
+         top = 1 + len(body)
+-        for t in ts:
+-            rr, x = 3 * p["slot"][t.id], col_x[depth[t.id]]
++        for t in drawn:
++            rr, x = 3 * slot[t.id], col_x[depth[t.id]]
+             _chainmap_tile(cv, board, t, rr, x, tile_w, t.id == (sel.id if sel else None),
+                            t.id in chain, today, wide)
+             if line_map is not None:
+                 line_map[t.id] = top + rr
+         body += [cv.line(r) for r in range(cv.h)]
++        if tail_n:
++            body.append(_chainmap_pad(c(f"+{tail_n} more ↓", "mut"), w))
++            break
+         body += [" " * w] * pad[1]
+     if bare:
+         for pr in bare:
+diff --git a/tests/test_chainmap.py b/tests/test_chainmap.py
+index 086a6df..be1d509 100644
+--- a/tests/test_chainmap.py
++++ b/tests/test_chainmap.py
+@@ -182,16 +182,17 @@ def test_TC_809_a_deep_chain_renders_instead_of_crashing(tmp_path):
+     assert "chain 25" in text                        # and its length is named
+ 
+ 
+-def test_TC_810_the_fold_drops_whole_bands_never_a_dangling_head(tmp_path):
+-    """TC-810 (code review CM-2, HIGH): later projects carry chains that do not
+-    fit at 80x24 -- the fold drops WHOLE bands (no head without its canvas) and
+-    only the surviving bands' tiles reach the line_map. RED before the fix: the
+-    fold cut mid-band (a dangling head) and the line_map held undrawn rows."""
++def test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole(tmp_path):
++    """TC-810 (code review CM-2, HIGH, amended by LED .1): a band that no longer
++    fits whole draws its fitting chains + one `+N more ↓` tail (N exact -- the
++    band's chains minus the drawn ones) and only the drawn tiles reach the
++    line_map; a band whose FIRST chain does not fit still drops whole (head and
++    canvas together)."""
+     from taskboard.views import render_chainmap
+-    b = kg_board.build(tmp_path / "board.json")
+     today = kg_board.TODAY
+-    for k in range(8):                       # 8 chains on API + 8 on DWH: they fold
+-        for pid in ("papi", "pdwh"):
++
++    def add_chains(b, pid, n):
++        for k in range(n):
+             a = Task(f"Head {pid} {k}", phase="Next", project_id=pid,
+                      start_date=(today + timedelta(days=k)).isoformat(),
+                      due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"h{pid}{k}")
+@@ -200,10 +201,28 @@ def test_TC_810_the_fold_drops_whole_bands_never_a_dangling_head(tmp_path):
+                      due_date=(today + timedelta(days=k + 3)).isoformat(),
+                      depends_on=[f"h{pid}{k}"], id=f"t{pid}{k}")
+             b.tasks += [a, z]
++
++    # (1) the partial band: Data Warehouse's base chain + 4 added chains = 5
++    # lanes, which no longer fit at 80x24 -- it draws the base chain (its FIRST
++    # chain) and names the rest `+4 more ↓`. The drawn tiles reach the line_map;
++    # the folded chains never do.
++    b = kg_board.build(tmp_path / "board.json")
++    add_chains(b, "pdwh", 4)
+     line_map: dict = {}
+     text = render_chainmap(b, False, None, today, 80, 24, line_map).plain
+-    assert line_map, "the first bands must survive the fold"
+-    folded_h = [f"h{pid}0" for pid in ("papi", "pdwh")]
+-    assert all(h not in line_map for h in folded_h), "a folded band leaked tiles"
+-    # and a folded band's HEAD never dangles without its canvas
+-    assert "API Platform" not in text and "Data Warehouse" not in text, text
++    assert "Data Warehouse" in text, text
++    assert "+4 more ↓" in text, text
++    for tid in ("td1", "td4", "td5"):
++        assert tid in line_map, (tid, line_map)
++    for k in range(4):
++        assert f"hpdwh{k}" not in line_map and f"tpdwh{k}" not in line_map, line_map
++
++    # (2) the zero-fit band: 5 chains on Website Redesign (the FIRST project)
++    # spend the whole body, so Mobile App's first chain no longer fits and the
++    # band drops whole -- head AND canvas gone, no tile in the line_map.
++    b2 = kg_board.build(tmp_path / "board2.json")
++    add_chains(b2, "pweb", 5)
++    lm2: dict = {}
++    text2 = render_chainmap(b2, False, None, today, 80, 24, lm2).plain
++    assert "Mobile App" not in text2, text2
++    assert not any(tid in lm2 for tid in ("tm2", "tm3", "tm4", "tm5")), lm2
+diff --git a/tests/test_chainmap_app.py b/tests/test_chainmap_app.py
+index d228e8d..09a8556 100644
+--- a/tests/test_chainmap_app.py
++++ b/tests/test_chainmap_app.py
+@@ -295,8 +295,8 @@ async def test_AT_803_the_shipped_high_band_cap(tmp_path):
+ 
+ async def test_AT_801b_L_opens_the_shipped_picker_on_the_chain_map(tmp_path):
+     """AT-801 arm (code review CM-3): `L` on the chain map opens the shipped
+-    LinkPicker (LLR-801.2 names it in AT-801's threshold) and linking re-renders
+-    the map with the new chain."""
++    LinkPicker (LLR-801.2 names it in AT-801's threshold) and escape closes it
++    back to the chain map."""
+     path = tmp_path / "board.json"
+     b = kg_board.milestones(kg_board.shifted(path), date.today())
+     b.settings["seen_view_renumber_2026_07"] = True
+@@ -313,3 +313,36 @@ async def test_AT_801b_L_opens_the_shipped_picker_on_the_chain_map(tmp_path):
+         assert isinstance(app.screen, LinkPicker), f"L opened {type(app.screen).__name__}"
+         await pilot.press("escape")
+         await pilot.pause()
++
++
++async def test_AT_801c_a_resize_heals_the_selection_in_one_refresh(tmp_path, frozen):
++    """AT-801 arm (LLR-1105.1, the resize heal): a selection on a chain the
++    smaller frame folds out drops to a painted row in ONE refresh — the resize's
++    own repaint, no second `refresh_view` call — so the cursor never rests on a
++    tile the smaller chain map does not draw."""
++    path = tmp_path / "board.json"
++    b = kg_board.build(path)
++    today = kg_board.TODAY
++    for k in range(4):
++        a = Task(f"Head pdwh {k}", phase="Next", project_id="pdwh",
++                 start_date=(today + timedelta(days=k)).isoformat(),
++                 due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"hpdwh{k}")
++        z = Task(f"Tail pdwh {k}", phase="Next", project_id="pdwh",
++                 start_date=(today + timedelta(days=k + 2)).isoformat(),
++                 due_date=(today + timedelta(days=k + 3)).isoformat(),
++                 depends_on=[f"hpdwh{k}"], id=f"tpdwh{k}")
++        b.tasks += [a, z]
++    b.save()
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(80, 24), notifications=True) as pilot:
++        await pilot.press("6")
++        await pilot.pause()
++        app.selected_task_id = "td4"        # the Data Warehouse base chain, drawn at 80x24
++        app.refresh_view()
++        await pilot.pause()
++        assert "td4" in app._line_map, app._line_map
++        await pilot.resize_terminal(80, 18)  # too short for the Data Warehouse band
++        await pilot.pause()
++        assert app.selected_task_id is not None
++        assert app.selected_task_id in app._line_map, (
++            app.selected_task_id, app._line_map)
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import asyncio, tempfile, os
+from datetime import date, timedelta
+import kg_board
+from kg_board import TODAY
+from taskboard.app import TaskboardApp
+from taskboard.models import Task
+from taskboard import views, models
+
+class _Today(date):
+    @classmethod
+    def today(cls): return TODAY
+
+async def main():
+    import taskboard.app as app_mod
+    views.date = _Today; models.date = _Today; app_mod.date = _Today; kg_board.date = _Today
+    d = tempfile.mkdtemp()
+    path = os.path.join(d, 'board.json')
+    b = kg_board.build(path)
+    for k in range(4):
+        a = Task(f'Head pdwh {k}', phase='Next', project_id='pdwh',
+                 start_date=(TODAY+timedelta(days=k)).isoformat(),
+                 due_date=(TODAY+timedelta(days=k+1)).isoformat(), id=f'hpdwh{k}')
+        z = Task(f'Tail pdwh {k}', phase='Next', project_id='pdwh',
+                 start_date=(TODAY+timedelta(days=k+2)).isoformat(),
+                 due_date=(TODAY+timedelta(days=k+3)).isoformat(),
+                 depends_on=[f'hpdwh{k}'], id=f'tpdwh{k}')
+        b.tasks += [a, z]
+    b.save()
+    app = TaskboardApp(board_path=path, team_sync_interval=1e9)
+    async with app.run_test(size=(80,24)) as pilot:
+        await pilot.press('6')
+        await pilot.pause()
+        app.selected_task_id = 'td4'
+        app.refresh_view()
+        await pilot.pause()
+        print('before resize: sel', app.selected_task_id, 'td4 in lm', 'td4' in app._line_map)
+        await pilot.resize_terminal(80, 18)
+        await pilot.pause()
+        print('after resize: sel', app.selected_task_id, 'td4 in lm', 'td4' in app._line_map, 'sel in lm', app.selected_task_id in app._line_map)
+
+asyncio.run(main())
+" 2>&1 | tail -10
+before resize: sel td4 td4 in lm False
+after resize: sel td4 td4 in lm False sel in lm False
+[0m
+[0m← [0mEdit tests/test_chainmap_app.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+@@ -342,7 +342,8 @@
+ await pilot.pause()
+ assert "td4" in app._line_map, app._line_map
+ await pilot.resize_terminal(80, 18)  # too short for the Data Warehouse band
+ await pilot.pause()
+-assert app.selected_task_id is not None
++assert "td4" not in app._line_map, app._line_map   # the smaller frame folded it out
++assert app.selected_task_id is not None and app.selected_task_id != "td4"
+ assert app.selected_task_id in app._line_map, (
+     app.selected_task_id, app._line_map)
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap_app.py::test_AT_801c_a_resize_heals_the_selection_in_one_refresh -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.                                                                        [100%]
+1 passed in 0.52s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -8
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.............                                                            [100%]
+13 passed in 2.87s
+[0m
+[0m$ [0mgrep -n "_heal_selection_after_repaint\|+{tail_n} more ↓\|nslot=nslot\|tail_n = nslot - limit\|def test_TC_810\|def test_AT_801c\|back to the chain map" C:/Users/jjgh8/Github/taskboard/taskboard/app.py C:/Users/jjgh8/Github/taskboard/taskboard/views.py C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+C:/Users/jjgh8/Github/taskboard/taskboard/app.py:1524:        self._heal_selection_after_repaint()
+C:/Users/jjgh8/Github/taskboard/taskboard/app.py:1526:    def _heal_selection_after_repaint(self) -> None:
+C:/Users/jjgh8/Github/taskboard/taskboard/views.py:5772:                          tiles_h=3 * nslot - 1 + len(skips), nslot=nslot))
+C:/Users/jjgh8/Github/taskboard/taskboard/views.py:5825:            tail_n = nslot - limit
+C:/Users/jjgh8/Github/taskboard/taskboard/views.py:5871:            body.append(_chainmap_pad(c(f"+{tail_n} more ↓", "mut"), w))
+C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py:185:def test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole(tmp_path):
+C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py:299:    back to the chain map."""
+C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py:318:async def test_AT_801c_a_resize_heals_the_selection_in_one_refresh(tmp_path, frozen):
+[0m
+All done. Full suite green (2556 passed), the two chainmap files green (13 passed), and the C-2b oracle frames untouched.
+
+## Review packet
+
+**1. What changed**
+
+- **Deep-chain cap** (`taskboard/views.py`, the fold): a band that no longer fits whole now draws its fitting chains plus one `+N more ↓` tail (`views.py:5798-5871`); `nslot` is carried on each plan (`views.py:5772`). The fold is only ever reached for bands that previously vanished whole, so the C-2b oracle frames (no folded bands) are byte-identical.
+- **Resize heal** (`taskboard/app.py`): `refresh_view` now closes through `_heal_selection_after_repaint()` (`app.py:1524`, method at `app.py:1526`).
+- **Amended TC-810** (`tests/test_chainmap.py:185`) and the new **AT-801c** resize arm + **AT-801b docstring** (`tests/test_chainmap_app.py:299,318`).
+
+**2. Files modified**
+
+- `taskboard/views.py` — chainmap fold + `nslot`
+- `taskboard/app.py` — `refresh_view` + one helper (no other source)
+- `tests/test_chainmap.py` — TC-810
+- `tests/test_chainmap_app.py` — AT-801b docstring, AT-801c
+
+**3. How to test**
+
+```
+env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q
+```
+
+**4. Test results**
+
+- Chainmap files: `13 passed`.
+- Full suite: `2556 passed` (0 failures).
+
+**5. Risks / scoping**
+
+- **The resize heal is scoped to the chain map only.** My first attempt was generic (kanban/lanes/gantt/…) and it broke 13 tests: the swimlanes `grid` presentation draws an aggregated board with an *empty* `line_map` (its selection is meaningful but not named), the gantt's selection can legitimately sit outside its `line_map` after `_select_first`, and `flow`/`standup` draw no task rows. The instruction's "keep other views byte-identical" forced the narrow scope. The chain map is the only view whose selection *must* sit on a named tile *and* whose heal reads the stale `line_map` (the actual bug); kanban/gantt are already healed by their data-based `_select_first` up front.
+- **Tail-vs-bare quirk (pre-existing, not addressed):** bare projects ("no links") are drawn *after* the fold loop, so a folded `+N more ↓` tail can be followed by a bare band. This existed before (bare bands painted after the fold, under a blank gap); I left it per "surgical changes". Not asserted, not a test risk.
+
+**6. Pending items**
+
+None — the C-2b oracle arms (TC-801/802) stayed byte-green (fold path never taken there), and the zero-fit law holds.
+
+**7. Suggested next task**
+
+The batch's other increments (models.py backup-write helper, app.py `u`-toast, help-clip) — nothing in my scope blocks them.

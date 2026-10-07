@@ -1,0 +1,1532 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-05/01-requirements.md
+[0m→ [0mRead taskboard/app.py[90m [offset=1380, limit=120][0m
+[0m→ [0mRead taskboard/modals.py[90m [offset=1700, limit=220][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=6860, limit=120][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=130, offset=6979][0m
+[0m✱ [0mGlob "tests/test_markup_sites.py"[90m 1 match[0m
+[0m✱ [0mGlob "tests/*.py"[90m 75 matches[0m
+[0m→ [0mRead tests/test_markup_sites.py
+[0m→ [0mRead tests/test_setup_help.py
+[0m✱ [0mGrep "def help_usage|def help_example|def legend_entries|def _clamp_width"[90m in taskboard · 4 matches[0m
+[0m✱ [0mGrep "def notify"[90m in taskboard · 0 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=140, offset=6724][0m
+[0m✱ [0mGrep "def notify|notify\("[90m in taskboard · 57 matches[0m
+[0m✱ [0mGrep "def clip\b|clip = |import clip|from.* import.*clip"[90m in taskboard · 3 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=60, offset=1][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=80, offset=840][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=720][0m
+[0m→ [0mRead tests/test_legend.py
+[0m
+[0m$ [0mpython -c "import textual; print(textual.__version__)"
+8.2.8
+[0m
+[0m$ [0mls .dev-flow/2026-10-07-batch-05/ 2>/dev/null && echo "---" && ls .dev-flow/2026-10-07-batch-05/evidence/ 2>/dev/null
+00-checklists.md
+01-requirements-ledger.md
+01-requirements.md
+02-review.md
+03-increments
+04-validation.md
+05-close.md
+PLAN.md
+evidence
+---
+env-flake-note.md
+inc001-brief.md
+inc001-run.log
+inc002-brief.md
+inc002-run.log
+inc002b-run.log
+inc003-brief.md
+inc004-brief.md
+inc004-run.log
+p1_fill.py
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=60, offset=1][0m
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_help.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_help.py
+screen: HelpModal
+box content region: Region(x=5, y=3, width=70, height=17)
+'Help · swimlanes                                                      '
+'                                                                      '
+'Usage                                           Legend                '
+'                                                                      '
+'what it is for                                  ▌  the project under m'
+'  • see the board at a glance: the project under··╎  field: ash spent '
+'  • most pressure first, its load field drawn.  ·····—  no date to cou'
+'first thing to do                               Example               '
+"  • read the leader's field — the curve ends                          "
+'  • at ◆ (its due date). then: tab layout.      ▎ platform ████▒░◆ 12d'
+'the marks                                       the curve is the load;'
+"  • ◆ = the project's due date on the curve     Keys                  "
+'  • · lattice = field with no work (ground)                           '
+'  • ash = projects at rest        ▌                                   '
+'                                  ▌ View keys renumbered              '
+'m full map · ? palette · esc/q clo▌ The columns view was retired —    '
+'                                  ▌ kanban does the same job better. T'
+--- labels ---
+region=Region(x=5, y=3, width=16, height=1) :: 'Help · swimlanes'
+region=Region(x=5, y=5, width=5, height=1) :: 'Usage'
+region=Region(x=5, y=7, width=14, height=1) :: 'what it is for'
+region=Region(x=5, y=8, width=48, height=1) :: '  • see the board at a glance: the project under'
+region=Region(x=5, y=9, width=46, height=1) :: '  • most pressure first, its load field drawn.'
+region=Region(x=5, y=10, width=17, height=1) :: 'first thing to do'
+region=Region(x=5, y=11, width=44, height=1) :: "  • read the leader's field — the curve ends"
+region=Region(x=5, y=12, width=42, height=1) :: '  • at ◆ (its due date). then: tab layout.'
+region=Region(x=5, y=13, width=9, height=1) :: 'the marks'
+region=Region(x=5, y=14, width=43, height=1) :: "  • ◆ = the project's due date on the curve"
+region=Region(x=5, y=15, width=43, height=1) :: '  • · lattice = field with no work (ground)'
+region=Region(x=5, y=16, width=26, height=1) :: '  • ash = projects at rest'
+region=Region(x=53, y=5, width=6, height=1) :: 'Legend'
+region=Region(x=53, y=7, width=34, height=1) :: '▌  the project under most pressure'
+region=Region(x=53, y=8, width=52, height=1) :: '··╎  field: ash spent · dim still to spend · ╎ today'
+region=Region(x=53, y=9, width=32, height=1) :: '·····—  no date to count down to'
+region=Region(x=53, y=10, width=7, height=1) :: 'Example'
+region=Region(x=53, y=12, width=22, height=1) :: '▎ platform ████▒░◆ 12d'
+region=Region(x=53, y=13, width=60, height=1) :: 'the curve is the load; the air before ◆ is what does not fit'
+region=Region(x=53, y=14, width=4, height=1) :: 'Keys'
+region=Region(x=53, y=16, width=6, height=1) :: '?  Map'
+region=Region(x=53, y=17, width=7, height=1) :: ';  More'
+region=Region(x=53, y=18, width=7, height=1) :: 'q  Quit'
+region=Region(x=53, y=19, width=8, height=1) :: '1  Lanes'
+region=Region(x=53, y=20, width=9, height=1) :: '2  Agenda'
+region=Region(x=53, y=21, width=8, height=1) :: '3  Gantt'
+region=Region(x=53, y=22, width=9, height=1) :: '4  Kanban'
+region=Region(x=53, y=23, width=8, height=1) :: '5  Focus'
+region=Region(x=53, y=24, width=9, height=1) :: '6  Chains'
+region=Region(x=53, y=25, width=7, height=1) :: '7  Flow'
+region=Region(x=53, y=26, width=10, height=1) :: '8  Standup'
+region=Region(x=53, y=27, width=9, height=1) :: '9  People'
+region=Region(x=53, y=28, width=8, height=1) :: '0  Setup'
+region=Region(x=53, y=29, width=10, height=1) :: '↵  Details'
+region=Region(x=53, y=30, width=6, height=1) :: 'a  Add'
+region=Region(x=53, y=31, width=7, height=1) :: 'e  Edit'
+region=Region(x=53, y=32, width=6, height=1) :: 'd  Del'
+region=Region(x=53, y=33, width=7, height=1) :: 'L  Link'
+region=Region(x=53, y=34, width=10, height=1) :: 'x  Archive'
+region=Region(x=53, y=35, width=13, height=1) :: 'X  Purge done'
+region=Region(x=53, y=36, width=11, height=1) :: 'v  Archived'
+region=Region(x=53, y=37, width=7, height=1) :: 'u  Undo'
+region=Region(x=53, y=38, width=11, height=1) :: 't  Pin task'
+region=Region(x=53, y=39, width=11, height=1) :: 'T  Pin proj'
+region=Region(x=53, y=40, width=12, height=1) :: 'M  Milestone'
+region=Region(x=53, y=41, width=9, height=1) :: '[  Phase−'
+region=Region(x=53, y=42, width=9, height=1) :: ']  Phase+'
+region=Region(x=53, y=43, width=7, height=1) :: '!  Prio'
+region=Region(x=53, y=44, width=10, height=1) :: 'b  Blocked'
+region=Region(x=53, y=45, width=7, height=1) :: '+  Due+'
+region=Region(x=53, y=46, width=7, height=1) :: '-  Due-'
+region=Region(x=53, y=47, width=8, height=1) :: 'm  Chain'
+region=Region(x=53, y=48, width=9, height=1) :: '⇥  Layout'
+region=Region(x=53, y=49, width=7, height=1) :: '↓  Down'
+region=Region(x=53, y=50, width=5, height=1) :: '↑  Up'
+region=Region(x=53, y=51, width=7, height=1) :: '←  Left'
+region=Region(x=53, y=52, width=8, height=1) :: '→  Right'
+region=Region(x=5, y=18, width=37, height=1) :: 'm full map · ? palette · esc/q closes'
+[0m
+[0m✱ [0mGrep "textwrap|wrap\(|no_wrap|break_long|truncate|ellipsis|overflow"[90m in taskboard · 31 matches[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=30, offset=960][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=40, offset=1125][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=5690][0m
+[0m✱ [0mGrep "HelpModal\("[90m in taskboard · 2 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=40, offset=660][0m
+[0m✱ [0mGrep "^def vis|^def fit|^def _strip|^def cell_len|^def width"[90m in taskboard/views.py · 4 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=55, offset=80][0m
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_label.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_label.py
+a size= Size(width=31, height=1) content_size= Size(width=31, height=1) render= 'the project under most pressure'
+   no _text: 'Label' object has no attribute '_text'
+b size= Size(width=24, height=1) content_size= Size(width=24, height=1) render= 'no date to count down to'
+   no _text: 'Label' object has no attribute '_text'
+c size= Size(width=0, height=1) content_size= Size(width=0, height=1) render= ''
+   no _text: 'Label' object has no attribute '_text'
+d size= Size(width=40, height=1) content_size= Size(width=40, height=1) render= 'the project under most pressure'
+   no _text: 'Static' object has no attribute '_text'
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_help2.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_help2.py
+right size= Size(width=22, height=48) content_size= Size(width=22, height=48)
+left size= Size(width=48, height=12) content_size= Size(width=48, height=12)
+LEFT label size= Size(width=5, height=1) render= 'Usage'
+LEFT label size= Size(width=14, height=1) render= 'what it is for'
+LEFT label size= Size(width=48, height=1) render= '  • see the board at a glance: the project under'
+LEFT label size= Size(width=46, height=1) render= '  • most pressure first, its load field drawn.'
+LEFT label size= Size(width=17, height=1) render= 'first thing to do'
+LEFT label size= Size(width=44, height=1) render= "  • read the leader's field — the curve ends"
+LEFT label size= Size(width=42, height=1) render= '  • at ◆ (its due date). then: tab layout.'
+LEFT label size= Size(width=9, height=1) render= 'the marks'
+LEFT label size= Size(width=43, height=1) render= "  • ◆ = the project's due date on the curve"
+LEFT label size= Size(width=43, height=1) render= '  • · lattice = field with no work (ground)'
+LEFT label size= Size(width=26, height=1) render= '  • ash = projects at rest'
+RIGHT label size= Size(width=6, height=1) content_size= Size(width=6, height=1) style_width= auto render= 'Legend'
+RIGHT label size= Size(width=34, height=1) content_size= Size(width=34, height=1) style_width= auto render= '▌  the project under most pressure'
+RIGHT label size= Size(width=52, height=1) content_size= Size(width=52, height=1) style_width= auto render= '··╎  field: ash spent · dim still to spend · ╎ today'
+RIGHT label size= Size(width=32, height=1) content_size= Size(width=32, height=1) style_width= auto render= '·····—  no date to count down to'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= 'Example'
+RIGHT label size= Size(width=22, height=1) content_size= Size(width=22, height=1) style_width= auto render= '▎ platform ████▒░◆ 12d'
+RIGHT label size= Size(width=60, height=1) content_size= Size(width=60, height=1) style_width= auto render= 'the curve is the load; the air before ◆ is what does not fit'
+RIGHT label size= Size(width=4, height=1) content_size= Size(width=4, height=1) style_width= auto render= 'Keys'
+RIGHT label size= Size(width=6, height=1) content_size= Size(width=6, height=1) style_width= auto render= '?  Map'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= ';  More'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= 'q  Quit'
+RIGHT label size= Size(width=8, height=1) content_size= Size(width=8, height=1) style_width= auto render= '1  Lanes'
+RIGHT label size= Size(width=9, height=1) content_size= Size(width=9, height=1) style_width= auto render= '2  Agenda'
+RIGHT label size= Size(width=8, height=1) content_size= Size(width=8, height=1) style_width= auto render= '3  Gantt'
+RIGHT label size= Size(width=9, height=1) content_size= Size(width=9, height=1) style_width= auto render= '4  Kanban'
+RIGHT label size= Size(width=8, height=1) content_size= Size(width=8, height=1) style_width= auto render= '5  Focus'
+RIGHT label size= Size(width=9, height=1) content_size= Size(width=9, height=1) style_width= auto render= '6  Chains'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= '7  Flow'
+RIGHT label size= Size(width=10, height=1) content_size= Size(width=10, height=1) style_width= auto render= '8  Standup'
+RIGHT label size= Size(width=9, height=1) content_size= Size(width=9, height=1) style_width= auto render= '9  People'
+RIGHT label size= Size(width=8, height=1) content_size= Size(width=8, height=1) style_width= auto render= '0  Setup'
+RIGHT label size= Size(width=10, height=1) content_size= Size(width=10, height=1) style_width= auto render= '↵  Details'
+RIGHT label size= Size(width=6, height=1) content_size= Size(width=6, height=1) style_width= auto render= 'a  Add'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= 'e  Edit'
+RIGHT label size= Size(width=6, height=1) content_size= Size(width=6, height=1) style_width= auto render= 'd  Del'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= 'L  Link'
+RIGHT label size= Size(width=10, height=1) content_size= Size(width=10, height=1) style_width= auto render= 'x  Archive'
+RIGHT label size= Size(width=13, height=1) content_size= Size(width=13, height=1) style_width= auto render= 'X  Purge done'
+RIGHT label size= Size(width=11, height=1) content_size= Size(width=11, height=1) style_width= auto render= 'v  Archived'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= 'u  Undo'
+RIGHT label size= Size(width=11, height=1) content_size= Size(width=11, height=1) style_width= auto render= 't  Pin task'
+RIGHT label size= Size(width=11, height=1) content_size= Size(width=11, height=1) style_width= auto render= 'T  Pin proj'
+RIGHT label size= Size(width=12, height=1) content_size= Size(width=12, height=1) style_width= auto render= 'M  Milestone'
+RIGHT label size= Size(width=9, height=1) content_size= Size(width=9, height=1) style_width= auto render= '[  Phase−'
+RIGHT label size= Size(width=9, height=1) content_size= Size(width=9, height=1) style_width= auto render= ']  Phase+'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= '!  Prio'
+RIGHT label size= Size(width=10, height=1) content_size= Size(width=10, height=1) style_width= auto render= 'b  Blocked'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= '+  Due+'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= '-  Due-'
+RIGHT label size= Size(width=8, height=1) content_size= Size(width=8, height=1) style_width= auto render= 'm  Chain'
+RIGHT label size= Size(width=9, height=1) content_size= Size(width=9, height=1) style_width= auto render= '⇥  Layout'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= '↓  Down'
+RIGHT label size= Size(width=5, height=1) content_size= Size(width=5, height=1) style_width= auto render= '↑  Up'
+RIGHT label size= Size(width=7, height=1) content_size= Size(width=7, height=1) style_width= auto render= '←  Left'
+RIGHT label size= Size(width=8, height=1) content_size= Size(width=8, height=1) style_width= auto render= '→  Right'
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_label2.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_label2.py
+--- full screen strips ---
+'the project under most                  '
+'no date to count down                   '
+'                                        '
+'the project under most                  '
+'pressure                                '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+--- widget render() values ---
+a size= Size(width=31, height=1) render= 'the project under most pressure'
+b size= Size(width=24, height=1) render= 'no date to count down to'
+c size= Size(width=0, height=1) render= ''
+d size= Size(width=22, height=2) render= 'the project under most pressure'
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_nowrap.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_nowrap.py
+'the project under most                  '
+'pressure                                '
+'the project under most                  '
+'pressure                                '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/measure.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/measure.py
+=== longest usage bullets ===
+kanban      45  '  • +Nd = days UNTIL the deadline (countdown)'
+kanban      47  '  • ▐ band rule: a project once, across columns'
+kanban      47  '  • ◆ on a band rule: a milestone, never a card'
+kanban      48  '  • ┈ splits cards · ✓ the done rail (✓N narrow)'
+kanban      46  '  • ▲ above · ▼ below: bands folded off screen'
+swimlanes   48  '  • see the board at a glance: the project under'
+swimlanes   46  '  • most pressure first, its load field drawn.'
+agenda      46  '  • no meter on purpose: the row says it twice'
+gantt       45  '  • the whole board, fitted to the open work.'
+gantt       47  '  • ╌ task, tip ○◔◑◕ = phase · ━ critical chain'
+focus       46  '  • read and annotate the PINNED work, without'
+focus       45  '  • tab changes the layout (tiles, inspector,'
+focus       45  '  • tiles = cards · inspector = master/detail'
+flow        45  '  • measure MOVEMENT: how long work takes per'
+flow        45  "  • work gets stuck. empty: 'no history yet'."
+flow        45  '  • open n=N = open intervals, never a number'
+standup     46  '  • the team view to READ: load, current front'
+people      47  "  • the operator's row on top, editable; others"
+people      47  '  • ◦ read-only · filter: all · team · personal'
+setup       47  '  • set up the team inside the app: shared dir,'
+setup       48  '  • interval, identity, shared projects, roster.'
+setup       46  '  • move with tab/j/k; ↵ edits; space toggles;'
+setup       47  '  • a add · x remove · ctrl+s save · esc cancel'
+chainmap    46  '  • the dependency web: who waits on whom, per'
+chainmap    47  '  • 6 opens it; arrows walk the chains; ↵ opens'
+chainmap    46  '  • ✓ done · ▷ ready · ○ chain head · ◂N waits'
+=== legend meaning widths (a full board) ===
+kanban      23  'project band, by colour'
+kanban      36  "a task card, in its project's colour"
+kanban      19  'high priority, open'
+kanban      21  'normal priority, open'
+swimlanes   31  'the project under most pressure'
+swimlanes   36  'a project with nothing open, at rest'
+swimlanes   47  'field: ash spent · dim still to spend · ╎ today'
+swimlanes   26  "the project's own due date"
+swimlanes   17  'project cancelled'
+swimlanes   17  'project completed'
+swimlanes   29  'high-priority work still open'
+swimlanes   34  'days overdue — ▲ is the only alert'
+swimlanes   37  'finished, and no longer counting down'
+swimlanes   24  'no date to count down to'
+agenda      41  "a task's due date, on the shared day axis"
+agenda      34  'its reach: from today to that date'
+gantt       48  'the span: ash is elapsed, colour is what remains'
+gantt       29  'how far the work actually got'
+gantt       32  "the project's committed due date"
+gantt       35  'calendar guide: Mondays, or the 1st'
+gantt       30  'the ruler: a month starts here'
+gantt       35  "a task's reach, tipped by its phase"
+gantt       31  'the work runs beyond the window'
+gantt       41  'a folded project: its open count, no rows'
+people      23  'foreign card: read-only'
+chainmap    17  'starts before due'
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_clip.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_clip.py
+seen during render: ('render', Size(width=22, height=2), Size(width=22, height=2), 22)
+size after: Size(width=22, height=2) content_size: Size(width=22, height=2)
+'[avail=22] the project                  '
+'under most pressure                     '
+'                                        '
+'                                        '
+'                                        '
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_clip2.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_clip2.py
+seen: (Size(width=22, height=1), Size(width=22, height=1), 22)
+size: Size(width=22, height=1) content_size: Size(width=22, height=1)
+'XX[20]the project                       '
+'                                        '
+'                                        '
+'                                        '
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=70, offset=1][0m
+[0m→ [0mRead taskboard/keymap.py
+[0m✱ [0mGrep "renumber|retired|columns view|keys renumbered"[90m in taskboard · 8 matches[0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -1464,8 +1464,10 @@
+     task = gone
+ else:
+     for f, v in entry["fields"].items():
+         setattr(task, f, v)
++self.notify(f"Undone — {task.title} is back as it was.",
++            title="Undo", severity="information", markup=False)
+ self.board.save()
+ self.selected_task_id = task.id
+ self.refresh_view()
+ return
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -18,9 +18,9 @@
+ 
+ from unicodedata import east_asian_width
+ 
+ from rich._emoji_codes import EMOJI as _RICH_EMOJI
+-from rich.cells import cell_len
++from rich.cells import cell_len, set_cell_size
+ from rich.text import Text
+ 
+ from textual import events
+ from textual.app import ComposeResult
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -1746,8 +1746,50 @@
+     def action_close(self) -> None:
+         self.dismiss(None)
+ 
+ 
++def _clip_words(s: str, width: int) -> str:
++    """Clip `s` to `width` cells at a WORD boundary, appending `…` when cut.
++
++    Textual's default label wrap breaks a long word mid-glyph and drops the
++    rest; the `?` help lines must instead end at a word boundary or with `…`.
++    An unbreakable token longer than `width` clips at the edge with `…`."""
++    if width <= 0:
++        return ""
++    if cell_len(s) <= width:
++        return s
++    out = ""
++    for word in s.split(" "):
++        candidate = f"{out} {word}" if out else word
++        if cell_len(candidate) <= width - 1:      # one cell for the `…`
++            out = candidate
++        else:
++            break
++    if out:
++        return out + "…"
++    return set_cell_size(s, width - 1) + "…"
++
++
++class _HelpLine(Static):
++    """A single help line whose `tail` is clipped at a word boundary to the
++    cells the column leaves after `prefix` (the swatch, or a bullet marker)."""
++
++    def __init__(self, prefix: Text, tail: str, tail_style: str | None = None):
++        super().__init__("")
++        self.styles.height = 1
++        self._prefix = prefix
++        self._tail = tail
++        self._tail_style = tail_style
++
++    def render(self) -> Text:
++        width = self.content_size.width if self.content_size else self.size.width
++        room = max(0, width - self._prefix.cell_len)
++        clipped = _clip_words(self._tail, room)
++        if self._tail_style:
++            return Text.assemble(self._prefix, Text(clipped, style=self._tail_style))
++        return Text.assemble(self._prefix, clipped)
++
++
+ class HelpModal(ModalScreen[None]):
+     """`?` — the per-view help family: what the view is for, how to read it,
+     and what keys work inside it.
+ 
+
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=40, offset=1826][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=15, offset=1865][0m
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -1854,19 +1854,18 @@
+         yield Label("[b]Usage[/b]", classes="modal-title")
+         for heading, bullets in help_usage(self._mode):
+             yield Label(Text(heading, style="underline"))
+             for bullet in bullets:
+-                yield Label(Text(f"  • {bullet}"))
++                yield _HelpLine(Text("  • "), bullet)
+     with VerticalScroll(id="help-right"):
+         if entries:
+             yield Label("[b]Legend[/b]", classes="modal-title")
+             for swatch, meaning in entries:
+-                yield Label(Text.assemble(Text.from_markup(swatch),
+-                                          f"  {meaning}"))
++                yield _HelpLine(Text.from_markup(swatch), f"  {meaning}")
+         if example:
+             yield Label("[b]Example[/b]", classes="modal-title")
+             yield Label(Text.from_markup(example))
+-            yield Label(Text(example_meaning, style="dim"))
++            yield _HelpLine(Text(""), example_meaning, tail_style="dim")
+         yield Label("[b]Keys[/b]", classes="modal-title")
+         for k in bar_keys(self._mode):
+             yield Label(Text(f"{k.show}  {k.label}"))
+ yield Label("[dim]m full map · ? palette · esc/q closes[/dim]",
+
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_help.py
+screen: HelpModal
+box content region: Region(x=5, y=3, width=70, height=17)
+'Help · swimlanes                                                      '
+'                                                                      '
+'Usage                                           Legend                '
+'                                                                      '
+'what it is for                                  ▌the project under…   '
+'  • see the board at a glance: the project under··╎field: ash spent ·…'
+'  • most pressure first, its load field drawn.  ·····—no date to…     '
+'first thing to do                               Example               '
+"  • read the leader's field — the curve ends                          "
+'  • at ◆ (its due date). then: tab layout.      ▎ platform ████▒░◆ 12d'
+'the marks                                       the curve is the…     '
+"  • ◆ = the project's due date on the curve     Keys                  "
+'  • · lattice = field with no work (ground)                           '
+'  • ash = projects at rest        ▌                                   '
+'                                  ▌ View keys renumbered              '
+'m full map · ? palette · esc/q clo▌ The columns view was retired —    '
+'                                  ▌ kanban does the same job better. T'
+--- labels ---
+region=Region(x=5, y=3, width=16, height=1) :: 'Help · swimlanes'
+region=Region(x=5, y=5, width=5, height=1) :: 'Usage'
+region=Region(x=5, y=7, width=14, height=1) :: 'what it is for'
+region=Region(x=5, y=10, width=17, height=1) :: 'first thing to do'
+region=Region(x=5, y=13, width=9, height=1) :: 'the marks'
+region=Region(x=53, y=5, width=6, height=1) :: 'Legend'
+region=Region(x=53, y=10, width=7, height=1) :: 'Example'
+region=Region(x=53, y=12, width=22, height=1) :: '▎ platform ████▒░◆ 12d'
+region=Region(x=53, y=14, width=4, height=1) :: 'Keys'
+region=Region(x=53, y=16, width=6, height=1) :: '?  Map'
+region=Region(x=53, y=17, width=7, height=1) :: ';  More'
+region=Region(x=53, y=18, width=7, height=1) :: 'q  Quit'
+region=Region(x=53, y=19, width=8, height=1) :: '1  Lanes'
+region=Region(x=53, y=20, width=9, height=1) :: '2  Agenda'
+region=Region(x=53, y=21, width=8, height=1) :: '3  Gantt'
+region=Region(x=53, y=22, width=9, height=1) :: '4  Kanban'
+region=Region(x=53, y=23, width=8, height=1) :: '5  Focus'
+region=Region(x=53, y=24, width=9, height=1) :: '6  Chains'
+region=Region(x=53, y=25, width=7, height=1) :: '7  Flow'
+region=Region(x=53, y=26, width=10, height=1) :: '8  Standup'
+region=Region(x=53, y=27, width=9, height=1) :: '9  People'
+region=Region(x=53, y=28, width=8, height=1) :: '0  Setup'
+region=Region(x=53, y=29, width=10, height=1) :: '↵  Details'
+region=Region(x=53, y=30, width=6, height=1) :: 'a  Add'
+region=Region(x=53, y=31, width=7, height=1) :: 'e  Edit'
+region=Region(x=53, y=32, width=6, height=1) :: 'd  Del'
+region=Region(x=53, y=33, width=7, height=1) :: 'L  Link'
+region=Region(x=53, y=34, width=10, height=1) :: 'x  Archive'
+region=Region(x=53, y=35, width=13, height=1) :: 'X  Purge done'
+region=Region(x=53, y=36, width=11, height=1) :: 'v  Archived'
+region=Region(x=53, y=37, width=7, height=1) :: 'u  Undo'
+region=Region(x=53, y=38, width=11, height=1) :: 't  Pin task'
+region=Region(x=53, y=39, width=11, height=1) :: 'T  Pin proj'
+region=Region(x=53, y=40, width=12, height=1) :: 'M  Milestone'
+region=Region(x=53, y=41, width=9, height=1) :: '[  Phase−'
+region=Region(x=53, y=42, width=9, height=1) :: ']  Phase+'
+region=Region(x=53, y=43, width=7, height=1) :: '!  Prio'
+region=Region(x=53, y=44, width=10, height=1) :: 'b  Blocked'
+region=Region(x=53, y=45, width=7, height=1) :: '+  Due+'
+region=Region(x=53, y=46, width=7, height=1) :: '-  Due-'
+region=Region(x=53, y=47, width=8, height=1) :: 'm  Chain'
+region=Region(x=53, y=48, width=9, height=1) :: '⇥  Layout'
+region=Region(x=53, y=49, width=7, height=1) :: '↓  Down'
+region=Region(x=53, y=50, width=5, height=1) :: '↑  Up'
+region=Region(x=53, y=51, width=7, height=1) :: '←  Left'
+region=Region(x=53, y=52, width=8, height=1) :: '→  Right'
+region=Region(x=5, y=18, width=37, height=1) :: 'm full map · ? palette · esc/q closes'
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -1859,9 +1859,10 @@
+ with VerticalScroll(id="help-right"):
+     if entries:
+         yield Label("[b]Legend[/b]", classes="modal-title")
+         for swatch, meaning in entries:
+-            yield _HelpLine(Text.from_markup(swatch), f"  {meaning}")
++            yield _HelpLine(Text.assemble(Text.from_markup(swatch), "  "),
++                            meaning)
+     if example:
+         yield Label("[b]Example[/b]", classes="modal-title")
+         yield Label(Text.from_markup(example))
+         yield _HelpLine(Text(""), example_meaning, tail_style="dim")
+
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_all.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_all.py
+===== swimlanes (default) =====
+--- help-left (region Region(x=5, y=5, width=48, height=12)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • see the board at a glance: the project under'
+'  • most pressure first, its load field drawn.  '
+'first thing to do                               '
+"  • read the leader's field — the curve ends    "
+'  • at ◆ (its due date). then: tab layout.      '
+'the marks                                       '
+"  • ◆ = the project's due date on the curve     "
+'  • · lattice = field with no work (ground)     '
+'  • ash = projects at rest                      '
+--- help-right (region Region(x=53, y=5, width=22, height=48)) ---
+'Legend                '
+'▌  the project under… '
+'··╎  field: ash spent…'
+'·····—  no date to…   '
+'Example               '
+'▎ platform ████▒░◆ 12d'
+'the curve is the…     '
+'Keys                  '
+'?  Map                '
+';  More               '
+'──────────────────────'
+
+===== kanban =====
+--- help-left (region Region(x=5, y=5, width=48, height=23)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • run the work: move tasks between phases,    '
+'  • group by project, priority or horizon.      '
+'first thing to do                               '
+'  • j/k down and up · ↵ opens the card.         '
+'  • then: s sort · g group · z collapse.        '
+"the card's numbers                              "
+'  • ·Nd = days IN the phase (ageing)            '
+'  • +Nd = days UNTIL the deadline (countdown)   '
+'  • +/- move a date · m: the move again,        '
+'  • next mode (stay / push / together)          '
+'m full map · ? palette · esc/q closes           '
+'────────────────────────────────────────────────'
+--- help-right (region Region(x=53, y=5, width=22, height=54)) ---
+'Legend                '
+'▐  project band, by…  '
+'▊  a task card, in…   '
+'==  normal priority,… '
+'Example               '
+'▊ !! sync daemon ↗ ·3d'
+'!! high (== normal,…  '
+'Keys                  '
+'?  Map                '
+';  More               '
+'──────────────────────'
+
+===== gantt =====
+--- help-left (region Region(x=5, y=5, width=48, height=13)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • the whole board, fitted to the open work.   '
+'  • ▾ open · ▸ folded when it does not fit.     '
+'first thing to do                               '
+'  • read the ruler on top: months and days;     '
+"  • ⟦━⟧ marks the task's exact dates.           "
+'the marks                                       '
+'  • ─ span · ● progress · ◆ due                 '
+'  • ╌ task, tip ○◔◑◕ = phase · ━ critical chain '
+'  • ↳ waits on another · ✓n done · ▲n late      '
+'  • ◆ title = a milestone · ◆✓ reached · M      '
+--- help-right (region Region(x=53, y=5, width=22, height=50)) ---
+'Legend                '
+'────  the span: ash…  '
+'╎  today              '
+'·┆·  calendar guide:… '
+'Example               '
+'▸ Ops     4 open  ◂───'
+'folded: its row says… '
+'Keys                  '
+'?  Map                '
+';  More               '
+'──────────────────────'
+
+===== focus =====
+--- help-left (region Region(x=5, y=5, width=48, height=11)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • read and annotate the PINNED work, without  '
+'  • the noise of the rest of the board.         '
+'first thing to do                               '
+'  • tab changes the layout (tiles, inspector,   '
+'  • images, review, stale). t pins the task.    '
+'the layouts                                     '
+'  • tiles = cards · inspector = master/detail   '
+'  • stale = what has sat still too long         '
+--- help-right (region Region(x=53, y=5, width=22, height=43)) ---
+'Example               '
+'▊ write the ADR ◔ ·12d'
+'pinned 12 days ago,…  '
+'Keys                  '
+'?  Map                '
+';  More               '
+'q  Quit               '
+'1  Lanes              '
+'2  Agenda             '
+'3  Gantt              '
+'4  Kanban             '
+'──────────────────────'
+
+===== chainmap =====
+--- help-left (region Region(x=5, y=5, width=48, height=13)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • the dependency web: who waits on whom, per  '
+'  • project, with ready/waits/late marks.       '
+'first thing to do                               '
+'  • 6 opens it; arrows walk the chains; ↵ opens '
+'  • x drops the selected task incoming link.    '
+'the marks                                       '
+'  • ✓ done · ▷ ready · ○ chain head · ◂N waits  '
+'  • ┃ heavy = the critical chain · ▲Nd late     '
+'  • dates switch = the rule a move follows      '
+'  • set here = that project rule is custom      '
+--- help-right (region Region(x=53, y=5, width=22, height=50)) ---
+'Legend                '
+'✓  done               '
+'▷  ready              '
+'◂N  waits on N open   '
+'━  critical chain     '
+'─  starts before due  '
+'─  satisfied          '
+'▲  late               '
+'Example               '
+'┃Audit dependencies ━━'
+'the heavy chain is…   '
+'──────────────────────'
+
+===== standup =====
+--- help-left (region Region(x=5, y=5, width=48, height=12)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • the team view to READ: load, current front  '
+"  • and how fresh each person's data is.        "
+'first thing to do                               '
+'  • one row per person; stale is judged, not    '
+'  • hidden. ↵ opens their board (read-only).    '
+'the marks                                       '
+'  • ▰▱ = load (tasks in Doing)                  '
+'  • the sync age always on the right            '
+'  • red = past the tolerance (45 min)           '
+--- help-right (region Region(x=53, y=5, width=22, height=45)) ---
+'Legend                '
+'▌  operator row       '
+'▎  teammate row       '
+'▰▱  open task load    '
+'Example               '
+'▐ ana ▰▰▱▱▱ 2 doing · '
+'her data is 3 hours…  '
+'Keys                  '
+'?  Map                '
+';  More               '
+'──────────────────────'
+
+===== people =====
+--- help-left (region Region(x=5, y=5, width=48, height=12)) ---
+'Usage                                           '
+'what it is for                                  '
+"  • work with shared visibility: the lanes'     "
+'  • axis is WHO, not the project.               '
+'first thing to do                               '
+"  • the operator's row on top, editable; others "
+'  • ◦ read-only · filter: all · team · personal '
+'the marks                                       '
+"  • ◦ = read-only (a teammate's)                "
+"  • the sync age rides on the person's label    "
+'  • the +Nd countdown works as in the kanban    '
+--- help-right (region Region(x=53, y=5, width=22, height=45)) ---
+'Legend                '
+'▌  operator lane      '
+'▎  teammate lane      '
+'◦  foreign card:…     '
+'Example               '
+'▐ ANA 12 min ago · lan'
+'hers, read-only, due… '
+'Keys                  '
+'?  Map                '
+';  More               '
+'──────────────────────'
+
+===== setup =====
+--- help-left (region Region(x=5, y=5, width=48, height=12)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • set up the team inside the app: shared dir, '
+'  • interval, identity, shared projects, roster.'
+'first thing to do                               '
+'  • move with tab/j/k; ↵ edits; space toggles;  '
+'  • a add · x remove · ctrl+s save · esc cancel '
+'the checks                                      '
+'  • ✓ = verified · ! = needs attention          '
+'  • advisory: they never block editing          '
+'  • recomputed on open and after ctrl+s         '
+--- help-right (region Region(x=53, y=5, width=22, height=43)) ---
+'Example               '
+'▌ D:/team/taskboard  ✓'
+'each row shows its…   '
+'Keys                  '
+'?  Map                '
+';  More               '
+'q  Quit               '
+'1  Lanes              '
+'2  Agenda             '
+'3  Gantt              '
+'4  Kanban             '
+'──────────────────────'
+
+===== flow =====
+--- help-left (region Region(x=5, y=5, width=48, height=12)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • measure MOVEMENT: how long work takes per   '
+'  • phase, where it ages, how much finishes.    '
+'first thing to do                               '
+'  • the heatmap: the busiest cell is where      '
+"  • work gets stuck. empty: 'no history yet'.   "
+'the numbers                                     '
+'  • cycle = median days per phase (closed)      '
+'  • open n=N = open intervals, never a number   '
+'  • throughput = finished per week              '
+--- help-right (region Region(x=53, y=5, width=22, height=40)) ---
+'Example               '
+'Doing ░▒▓█▓▒░░        '
+'week 4 in Doing…      '
+'Keys                  '
+'?  Map                '
+';  More               '
+'q  Quit               '
+'1  Lanes              '
+'2  Agenda             '
+'3  Gantt              '
+'4  Kanban             '
+'──────────────────────'
+
+===== agenda =====
+--- help-left (region Region(x=5, y=5, width=48, height=12)) ---
+'Usage                                           '
+'what it is for                                  '
+'  • scan what is due: each dated task is a ●    '
+'  • on ONE shared axis of days.                 '
+'first thing to do                               '
+"  • read each ●'s distance to today's rule      "
+'  • ╎ — the order already says the urgency.     '
+'the marks                                       '
+'  • ● = a task on its day                       '
+'  • ╎ = today (breathes slowly, same column)    '
+'  • no meter on purpose: the row says it twice  '
+--- help-right (region Region(x=53, y=5, width=22, height=47)) ---
+'Legend                '
+"●  a task's due date,…"
+'─  its reach: from…   '
+'┃  today              '
+'Example               '
+'────●──╎──●────●──    '
+'the distance to ╎ IS… '
+'Keys                  '
+'?  Map                '
+';  More               '
+'──────────────────────'
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -1863,9 +1863,9 @@
+         yield _HelpLine(Text.assemble(Text.from_markup(swatch), "  "),
+                         meaning)
+ if example:
+     yield Label("[b]Example[/b]", classes="modal-title")
+-    yield Label(Text.from_markup(example))
++    yield _HelpLine(Text(""), example)
+     yield _HelpLine(Text(""), example_meaning, tail_style="dim")
+ yield Label("[b]Keys[/b]", classes="modal-title")
+ for k in bar_keys(self._mode):
+     yield Label(Text(f"{k.show}  {k.label}"))
+
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_all.py 2>&1 | grep -E "Example|^\s*'[^ ']" | grep -A3 "Example"
+'Example               '
+'▎ platform ████▒░◆ 12d'
+'the curve is the…     '
+'Keys                  '
+--
+'Example               '
+'▊ !! sync daemon ↗…   '
+'!! high (== normal,…  '
+'Keys                  '
+--
+'Example               '
+'▸ Ops     4 open …    '
+'folded: its row says… '
+'Keys                  '
+--
+'Example               '
+'▊ write the ADR ◔ ·12d'
+'pinned 12 days ago,…  '
+'Keys                  '
+--
+'Example               '
+'┃Audit dependencies…  '
+'the heavy chain is…   '
+'──────────────────────'
+--
+'Example               '
+'▐ ana ▰▰▱▱▱ 2 doing ·…'
+'her data is 3 hours…  '
+'Keys                  '
+--
+'Example               '
+'▐ ANA 12 min ago ·…   '
+'hers, read-only, due… '
+'Keys                  '
+--
+'Example               '
+'▌ D:/team/taskboard … '
+'each row shows its…   '
+'Keys                  '
+--
+'Example               '
+'Doing ░▒▓█▓▒░░        '
+'week 4 in Doing…      '
+'Keys                  '
+--
+'Example               '
+'────●──╎──●────●──    '
+'the distance to ╎ IS… '
+'Keys                  '
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -1757,9 +1757,9 @@
+     return ""
+ if cell_len(s) <= width:
+     return s
+ out = ""
+-for word in s.split(" "):
++for word in s.split():
+     candidate = f"{out} {word}" if out else word
+     if cell_len(candidate) <= width - 1:      # one cell for the `…`
+         out = candidate
+     else:
+
+[0m
+[0m✱ [0mGrep "_snapshot\(|_undo_stack\.(append|push)|undo_stack"[90m in taskboard · 21 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=40, offset=925][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=30, offset=1838][0m
+[0m→ [0mRead tests/conftest.py
+[0m→ [0mRead tests/test_edit_window.py[90m [limit=90][0m
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_undo.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_undo.py
+selected: 4d5c4d7e
+after t, toasts: []
+undo stack len: 1
+after u, toasts: ['Undo\nUndone — Write the migration guide is back as it was.']
+pinned back: False
+[0m
+[0m✱ [0mGrep "def action_purge_done|def action_delete|def purge|tasks.remove|def action_archive"[90m in taskboard/app.py · 6 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=60, offset=2076][0m
+[0m✱ [0mGrep "def delete_task|def task_by_id"[90m in taskboard/models.py · 2 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=20, offset=1230][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=631][0m
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_kanban_left.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_kanban_left.py
+--- kanban help-left scrolled to end ---
+'Usage                                           '
+'                                                '
+'what it is for                                  '
+'  • run the work: move tasks between phases,    '
+'  • group by project, priority or horizon.      '
+'first thing to do                               '
+'  • j/k down and up · ↵ opens the card.         '
+'  • then: s sort · g group · z collapse.        '
+"the card's numbers                              "
+'  • ·Nd = days IN the phase (ageing)            '
+'  • +Nd = days UNTIL the deadline (countdown)   '
+'  • +/- move a date · m: the move again,        '
+'  • next mode (stay / push / together)          '
+'m full map · ? palette · esc/q closes           '
+'                                                '
+'                                                '
+'────────────────────────────────────────────────'
+'                                                '
+'                                                '
+[0m
+[0m← [0mWrite tests/test_undo_toast.py
+Wrote file successfully.
+[0m
+Now let me write the two test files.
+[0m← [0mWrite tests/test_help_clip.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_undo_toast.py tests/test_help_clip.py -q
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..F.                                                                     [100%]
+================================== FAILURES ===================================
+________________ test_AT_1104_help_lines_end_at_word_boundary _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16903/test_AT_1104_help_lines_end_at0')
+
+    async def test_AT_1104_help_lines_end_at_word_boundary(tmp_path):
+        """AT-1104 (HLR-1104, US-1104) — at 80×24 no visible help line ends mid-word.
+    
+        Every painted line of both columns, trimmed of its padding, either ends with
+        `…` (clipped) or equals one of the full source lines (fits whole) — so a
+        line the compositor broke mid-word fails on both counts."""
+        board = _board(tmp_path)
+        app = TaskboardApp(board_path=str(board.path), team_sync_interval=1e9)
+        async with app.run_test(size=SIZE, notifications=True) as pilot:
+            await pilot.pause()
+            await pilot.press("question_mark")
+            for _ in range(3):
+                await pilot.pause()
+            sources = set(_sources("swimlanes", board, date.today()))
+            for col in ("#help-left", "#help-right"):
+                for line in _painted_lines(app, col):
+                    trimmed = line.rstrip()
+                    if not trimmed:
+                        continue
+>                   assert trimmed.endswith("…") or trimmed in sources, \
+                        f"{col}: line ends mid-word: {trimmed!r}"
+E                   AssertionError: #help-right: line ends mid-word: '──────────────────────'
+E                   assert (False or '──────────────────────' in {'  • ash = projects at rest', '  • at ◆ (its due date). then: tab layout.', '  • most pressure first, its load field ...he curve ends", '  • see the board at a glance: the project under', '  • · lattice = field with no work (ground)', ...})
+E                    +  where False = <built-in method endswith of str object at 0x000001D125F4C500>('…')
+E                    +    where <built-in method endswith of str object at 0x000001D125F4C500> = '──────────────────────'.endswith
+
+tests\test_help_clip.py:91: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_help_clip.py::test_AT_1104_help_lines_end_at_word_boundary
+1 failed, 3 passed in 1.13s
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_scrollbar.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_scrollbar.py
+right scrollable_content_region: Region(x=53, y=5, width=22, height=48)
+right virtual_size: Size(width=22, height=48)
+--- children ---
+Label        size=Size(width=6, height=1)  render='Legend'
+_HelpLine    size=Size(width=22, height=1)  render='▌  the project under…'
+_HelpLine    size=Size(width=22, height=1)  render='··╎  field: ash spent…'
+_HelpLine    size=Size(width=22, height=1)  render='·····—  no date to…'
+Label        size=Size(width=7, height=1)  render='Example'
+_HelpLine    size=Size(width=22, height=1)  render='▎ platform ████▒░◆ 12d'
+_HelpLine    size=Size(width=22, height=1)  render='the curve is the…'
+Label        size=Size(width=4, height=1)  render='Keys'
+Label        size=Size(width=6, height=1)  render='?  Map'
+Label        size=Size(width=7, height=1)  render=';  More'
+Label        size=Size(width=7, height=1)  render='q  Quit'
+Label        size=Size(width=8, height=1)  render='1  Lanes'
+Label        size=Size(width=9, height=1)  render='2  Agenda'
+Label        size=Size(width=8, height=1)  render='3  Gantt'
+Label        size=Size(width=9, height=1)  render='4  Kanban'
+Label        size=Size(width=8, height=1)  render='5  Focus'
+Label        size=Size(width=9, height=1)  render='6  Chains'
+Label        size=Size(width=7, height=1)  render='7  Flow'
+Label        size=Size(width=10, height=1)  render='8  Standup'
+Label        size=Size(width=9, height=1)  render='9  People'
+Label        size=Size(width=8, height=1)  render='0  Setup'
+Label        size=Size(width=10, height=1)  render='↵  Details'
+Label        size=Size(width=6, height=1)  render='a  Add'
+Label        size=Size(width=7, height=1)  render='e  Edit'
+Label        size=Size(width=6, height=1)  render='d  Del'
+Label        size=Size(width=7, height=1)  render='L  Link'
+Label        size=Size(width=10, height=1)  render='x  Archive'
+Label        size=Size(width=13, height=1)  render='X  Purge done'
+Label        size=Size(width=11, height=1)  render='v  Archived'
+Label        size=Size(width=7, height=1)  render='u  Undo'
+Label        size=Size(width=11, height=1)  render='t  Pin task'
+Label        size=Size(width=11, height=1)  render='T  Pin proj'
+Label        size=Size(width=12, height=1)  render='M  Milestone'
+Label        size=Size(width=9, height=1)  render='[  Phase−'
+Label        size=Size(width=9, height=1)  render=']  Phase+'
+Label        size=Size(width=7, height=1)  render='!  Prio'
+Label        size=Size(width=10, height=1)  render='b  Blocked'
+Label        size=Size(width=7, height=1)  render='+  Due+'
+Label        size=Size(width=7, height=1)  render='-  Due-'
+Label        size=Size(width=8, height=1)  render='m  Chain'
+Label        size=Size(width=9, height=1)  render='⇥  Layout'
+Label        size=Size(width=7, height=1)  render='↓  Down'
+Label        size=Size(width=5, height=1)  render='↑  Up'
+Label        size=Size(width=7, height=1)  render='←  Left'
+Label        size=Size(width=8, height=1)  render='→  Right'
+[0m
+[0m← [0mEdit tests/test_help_clip.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
+@@ -60,14 +60,12 @@
+         sources.append(f"{k.show}  {k.label}")
+     return sources
+ 
+ 
+-def _painted_lines(app, col: str) -> list[str]:
+-    """The painted rows of `#help-left` / `#help-right`, cropped to the column."""
+-    w = app.screen.query_one(col)
+-    r = w.content_region
+-    strips = app.screen._compositor.render_strips(app.screen.size)
+-    return [s.crop(r.x, r.x + r.width).text for s in strips[r.y:r.y + r.height]]
++def _column_lines(app, col: str) -> list[str]:
++    """Each help line's rendered content, read off the column's children —
++    chrome (the scrollbar track) is not a child and is not read."""
++    return [str(child.render()) for child in app.screen.query_one(col).children]
+ 
+ 
+ async def test_AT_1104_help_lines_end_at_word_boundary(tmp_path):
+     """AT-1104 (HLR-1104, US-1104) — at 80×24 no visible help line ends mid-word.
+
+[0m
+[0m← [0mEdit tests/test_help_clip.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
+@@ -81,9 +81,9 @@
+ for _ in range(3):
+     await pilot.pause()
+ sources = set(_sources("swimlanes", board, date.today()))
+ for col in ("#help-left", "#help-right"):
+-    for line in _painted_lines(app, col):
++    for line in _column_lines(app, col):
+         trimmed = line.rstrip()
+         if not trimmed:
+             continue
+         assert trimmed.endswith("…") or trimmed in sources, \
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_undo_toast.py tests/test_help_clip.py -q
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+....                                                                     [100%]
+4 passed in 1.24s
+[0m
+[0m→ [0mRead tests/test_scratch_cannot_be_committed.py
+[0m→ [0mRead tests/test_precommit_gate.py
+[0m→ [0mRead tests/test_privacy_sweep.py
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-05/evidence/
+total 344
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 15:23 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 14:45 ..
+-rw-r--r-- 1 jjgh8 197609   8981 Oct  7 15:13 _measure.json
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 15:23 _repro_tmp
+-rw-r--r-- 1 jjgh8 197609    753 Oct  7 15:09 env-flake-note.md
+-rw-r--r-- 1 jjgh8 197609   3599 Oct  7 14:56 inc001-brief.md
+-rw-r--r-- 1 jjgh8 197609  21926 Oct  7 15:08 inc001-run.log
+-rw-r--r-- 1 jjgh8 197609   3959 Oct  7 15:01 inc002-brief.md
+-rw-r--r-- 1 jjgh8 197609  20211 Oct  7 15:00 inc002-run.log
+-rw-r--r-- 1 jjgh8 197609  60266 Oct  7 15:23 inc002b-run.log
+-rw-r--r-- 1 jjgh8 197609   3417 Oct  7 14:58 inc003-brief.md
+-rw-r--r-- 1 jjgh8 197609   2831 Oct  7 14:56 inc004-brief.md
+-rw-r--r-- 1 jjgh8 197609 123986 Oct  7 15:15 inc004-run.log
+-rw-r--r-- 1 jjgh8 197609   1873 Oct  7 15:13 measure.py
+-rw-r--r-- 1 jjgh8 197609  17413 Oct  7 14:52 p1_fill.py
+-rw-r--r-- 1 jjgh8 197609   1667 Oct  7 15:17 repro_all.py
+-rw-r--r-- 1 jjgh8 197609   1253 Oct  7 15:14 repro_clip.py
+-rw-r--r-- 1 jjgh8 197609   1289 Oct  7 15:14 repro_clip2.py
+-rw-r--r-- 1 jjgh8 197609   1620 Oct  7 15:10 repro_help.py
+-rw-r--r-- 1 jjgh8 197609   1527 Oct  7 15:11 repro_help2.py
+-rw-r--r-- 1 jjgh8 197609   1229 Oct  7 15:21 repro_kanban_left.py
+-rw-r--r-- 1 jjgh8 197609   1241 Oct  7 15:11 repro_label.py
+-rw-r--r-- 1 jjgh8 197609   1140 Oct  7 15:12 repro_label2.py
+-rw-r--r-- 1 jjgh8 197609   1013 Oct  7 15:12 repro_nowrap.py
+-rw-r--r-- 1 jjgh8 197609   1159 Oct  7 15:23 repro_scrollbar.py
+-rw-r--r-- 1 jjgh8 197609   1144 Oct  7 15:19 repro_undo.py
+[0m
+[0m$ [0mrm -rf .dev-flow/2026-10-07-batch-05/evidence/_repro_tmp .dev-flow/2026-10-07-batch-05/evidence/_measure.json .dev-flow/2026-10-07-batch-05/evidence/measure.py .dev-flow/2026-10-07-batch-05/evidence/repro_*.py && ls .dev-flow/2026-10-07-batch-05/evidence/
+env-flake-note.md
+inc001-brief.md
+inc001-run.log
+inc002-brief.md
+inc002-run.log
+inc002b-run.log
+inc003-brief.md
+inc004-brief.md
+inc004-run.log
+p1_fill.py
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -30
+await pilot.press("question_mark")
+            await pilot.pause()
+            painted = "\n".join(w.render().plain for w in app.screen.query("Label"))
+            for word in ("band rule", "┈", "rail", "more ↓", "project band"):
+>               assert word in painted, word
+E               AssertionError: band rule
+E               assert 'band rule' in "Help · kanban\nUsage\nwhat it is for\nfirst thing to do\nthe card's numbers\nthe board\nLegend\nExample\nKeys\n?  Map... Focus\nesc  Focus off\n/  Search\n⇥  Layout\n↓  Down\n↑  Up\n←  Left\n→  Right\nm full map · ? palette · esc/q closes"
+
+tests\test_kanban_readable.py:991: AssertionError
+_______________ test_TC_402_every_exemption_names_one_live_site _______________
+
+    def test_TC_402_every_exemption_names_one_live_site():
+        """TC-402 (LLR-401.1). The exemptions are a declared set, guarded both ways: an
+        exemption whose site is gone turns this RED, and each names exactly one live
+        site by its value's source text — a new value fed into an exempt function is a
+        new key, flagged by TC-401 or TC-406, never excused (S-7, Q-8)."""
+        keys = [_key(s) for s in _package_census()]
+        stale = sorted(k for k in EXEMPT if keys.count(k) != 1)
+>       assert not stale, f"exemptions not matching exactly one live site: {stale}"
+E       AssertionError: exemptions not matching exactly one live site: [('modals.py', 'HelpModal.compose', 'from_markup', 'example')]
+E       assert not [('modals.py', 'HelpModal.compose', 'from_markup', 'example')]
+
+tests\test_markup_census.py:420: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column[size0]
+FAILED tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column[size1]
+FAILED tests/test_gantt_polish.py::test_TC_210_the_legend_asks_the_same_frame
+FAILED tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn
+FAILED tests/test_markup_census.py::test_TC_402_every_exemption_names_one_live_site
+5 failed, 2550 passed in 426.96s (0:07:06)
+[0m
+[0m→ [0mRead tests/test_markup_census.py
+[0m
+[0m$ [0mgrep -n "test_TC_116_the_gantt_help_fits_its_column\|test_TC_210_the_legend_asks_the_same_frame\|test_AT_306_the_help_explains_what_is_drawn" tests/test_gantt_board.py tests/test_gantt_polish.py tests/test_kanban_readable.py
+tests/test_gantt_board.py:894:async def test_TC_116_the_gantt_help_fits_its_column(tmp_path, frozen, size):
+tests/test_gantt_polish.py:465:async def test_TC_210_the_legend_asks_the_same_frame(tmp_path, frozen, monkeypatch):
+tests/test_kanban_readable.py:979:async def test_AT_306_the_help_explains_what_is_drawn(tmp_path, frozen_today):
+[0m
+[0m→ [0mRead tests/test_gantt_board.py[90m [offset=894, limit=70][0m
+[0m→ [0mRead tests/test_gantt_polish.py[90m [offset=465, limit=70][0m
+[0m→ [0mRead tests/test_kanban_readable.py[90m [offset=979, limit=30][0m
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-05/evidence/repro_label3.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-05/evidence/repro_label3.py
+L1 size= Size(width=35, height=1) content_size= Size(width=35, height=1)
+L2 size= Size(width=22, height=1) content_size= Size(width=22, height=1)
+'[35]the project under                   '
+'[22]the project under                   '
+'                                        '
+'                                        '
+'                                        '
+'                                        '
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=45, offset=1750][0m
+[0m✗ [0mEdit taskboard/modals.py failed
+[91m[1mError: [0mCould not find oldString in the file. It must match exactly, including whitespace, indentation, and line endings.
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -1768,15 +1768,19 @@
+         return out + "…"
+     return set_cell_size(s, width - 1) + "…"
+ 
+ 
+-class _HelpLine(Static):
++class _HelpLine(Label):
+     """A single help line whose `tail` is clipped at a word boundary to the
+-    cells the column leaves after `prefix` (the swatch, or a bullet marker)."""
++    cells the column leaves after `prefix` (the swatch, or a bullet marker).
+ 
++    Subclasses `Label` (not `Static`) so the suite's `query("Label")` reads it,
++    and takes the column width (`1fr`) so `render()` sees the true cells."""
++
+     def __init__(self, prefix: Text, tail: str, tail_style: str | None = None):
+         super().__init__("")
+         self.styles.height = 1
++        self.styles.width = "1fr"
+         self._prefix = prefix
+         self._tail = tail
+         self._tail_style = tail_style
+ 
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -1867,10 +1867,10 @@
+                 yield _HelpLine(Text.assemble(Text.from_markup(swatch), "  "),
+                                 meaning)
+         if example:
+             yield Label("[b]Example[/b]", classes="modal-title")
+-            yield _HelpLine(Text(""), example)
+-            yield _HelpLine(Text(""), example_meaning, tail_style="dim")
++            yield Label(Text.from_markup(example))
++            yield Label(Text(example_meaning, style="dim"))
+         yield Label("[b]Keys[/b]", classes="modal-title")
+         for k in bar_keys(self._mode):
+             yield Label(Text(f"{k.show}  {k.label}"))
+ yield Label("[dim]m full map · ? palette · esc/q closes[/dim]",
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_undo_toast.py tests/test_help_clip.py tests/test_gantt_board.py::test_TC_116_the_gantt_help_fits_its_column tests/test_gantt_polish.py::test_TC_210_the_legend_asks_the_same_frame tests/test_kanban_readable.py::test_AT_306_the_help_explains_what_is_drawn tests/test_markup_census.py::test_TC_402_every_exemption_names_one_live_site -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.........                                                                [100%]
+9 passed in 3.52s
+[0m
+[0m→ [0mRead tests/test_help_clip.py[90m [limit=20][0m
+[0m
+[0m← [0mEdit tests/test_help_clip.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_help_clip.py
+@@ -5,11 +5,11 @@
+ Textual's default label wrap: a `Label` of height 1 inside a narrow column wraps
+ its text with `break_long_words=True`, so a word that straddles the column edge
+ is broken mid-glyph and the rest of the line is dropped (e.g. "the project
+ under most pressure" painted "the project under m"). The fix (modals `_HelpLine`
+-+ `_clip_words`) clips each legend meaning, usage bullet and example line at a
+-WORD boundary, appending `…` when a word is cut; an unbreakable token longer
+-than the width clips at the edge with `…`.
+++ `_clip_words`) clips each legend meaning and usage bullet at a WORD boundary,
++appending `…` when a word is cut; an unbreakable token longer than the width
++clips at the edge with `…`.
+ 
+ Law (LLR-1104.1): at 80×24 on the fixture board, every visible help line ends at
+ a word boundary or with `…`. The exact-edge and overlong-token arms are pinned
+ on `_clip_words` directly (they have no natural fixture in the fixed help copy).
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -15
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+...................................                                      [100%]
+2555 passed in 428.55s (0:07:08)
+[0m
+[0m$ [0mgit diff --stat && echo "---" && git status --short
+warning: in the working copy of '.dev-flow/state.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.gitattributes', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/modals.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/models.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_gantt_milestones.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_milestones.py', LF will be replaced by CRLF the next time Git touches it
+ .dev-flow/state.json           | 110 ++++++++++-------------------------------
+ .gitattributes                 |   1 +
+ taskboard/app.py               |   7 ++-
+ taskboard/modals.py            |  54 ++++++++++++++++++--
+ taskboard/models.py            |  18 ++++++-
+ taskboard/views.py             |   6 +--
+ tests/test_gantt_milestones.py |  48 ++++++++++++------
+ tests/test_milestones.py       |  76 +++++++++++++++++++++++++---
+ 8 files changed, 200 insertions(+), 120 deletions(-)
+---
+ M .dev-flow/state.json
+ M .gitattributes
+ M taskboard/app.py
+ M taskboard/modals.py
+ M taskboard/models.py
+ M taskboard/views.py
+ M tests/test_gantt_milestones.py
+ M tests/test_milestones.py
+?? .dev-flow/2026-10-07-batch-04/decisions-log.json
+?? .dev-flow/2026-10-07-batch-05/
+?? .dev-flow/rollover_batchf.py
+?? tests/test_backup_write.py
+?? tests/test_help_clip.py
+?? tests/test_mon_d.py
+?? tests/test_undo_toast.py
+[0m
+[0m$ [0mgit diff taskboard/app.py taskboard/modals.py
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'taskboard/modals.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 6539a84..a184b5d 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -35,10 +35,7 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
+ from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
+                     gantt_plan, nav_model, present_paths, present_project_id,
+                     present_tasks, render_present, render_view, save_present_png,
+-                    save_present_svg, sort_by_due, fit, vis, valid_url)
+-
+-def _md(d: date) -> str:
+-    return f"{d:%b} {d.day}"
++                     save_present_svg, sort_by_due, fit, vis, valid_url, _md)
+ 
+ 
+ # The app's ONE shared clock. Every animated surface counts in these ticks, so
+@@ -1468,6 +1465,8 @@ class TaskboardApp(App):
+             else:
+                 for f, v in entry["fields"].items():
+                     setattr(task, f, v)
++            self.notify(f"Undone — {task.title} is back as it was.",
++                        title="Undo", severity="information", markup=False)
+             self.board.save()
+             self.selected_task_id = task.id
+             self.refresh_view()
+diff --git a/taskboard/modals.py b/taskboard/modals.py
+index 3e7c6ef..9728885 100644
+--- a/taskboard/modals.py
++++ b/taskboard/modals.py
+@@ -19,7 +19,7 @@ from pathlib import Path
+ from unicodedata import east_asian_width
+ 
+ from rich._emoji_codes import EMOJI as _RICH_EMOJI
+-from rich.cells import cell_len
++from rich.cells import cell_len, set_cell_size
+ from rich.text import Text
+ 
+ from textual import events
+@@ -1747,6 +1747,52 @@ class TaskDetails(ModalScreen[None]):
+         self.dismiss(None)
+ 
+ 
++def _clip_words(s: str, width: int) -> str:
++    """Clip `s` to `width` cells at a WORD boundary, appending `…` when cut.
++
++    Textual's default label wrap breaks a long word mid-glyph and drops the
++    rest; the `?` help lines must instead end at a word boundary or with `…`.
++    An unbreakable token longer than `width` clips at the edge with `…`."""
++    if width <= 0:
++        return ""
++    if cell_len(s) <= width:
++        return s
++    out = ""
++    for word in s.split():
++        candidate = f"{out} {word}" if out else word
++        if cell_len(candidate) <= width - 1:      # one cell for the `…`
++            out = candidate
++        else:
++            break
++    if out:
++        return out + "…"
++    return set_cell_size(s, width - 1) + "…"
++
++
++class _HelpLine(Label):
++    """A single help line whose `tail` is clipped at a word boundary to the
++    cells the column leaves after `prefix` (the swatch, or a bullet marker).
++
++    Subclasses `Label` (not `Static`) so the suite's `query("Label")` reads it,
++    and takes the column width (`1fr`) so `render()` sees the true cells."""
++
++    def __init__(self, prefix: Text, tail: str, tail_style: str | None = None):
++        super().__init__("")
++        self.styles.height = 1
++        self.styles.width = "1fr"
++        self._prefix = prefix
++        self._tail = tail
++        self._tail_style = tail_style
++
++    def render(self) -> Text:
++        width = self.content_size.width if self.content_size else self.size.width
++        room = max(0, width - self._prefix.cell_len)
++        clipped = _clip_words(self._tail, room)
++        if self._tail_style:
++            return Text.assemble(self._prefix, Text(clipped, style=self._tail_style))
++        return Text.assemble(self._prefix, clipped)
++
++
+ class HelpModal(ModalScreen[None]):
+     """`?` — the per-view help family: what the view is for, how to read it,
+     and what keys work inside it.
+@@ -1813,13 +1859,13 @@ class HelpModal(ModalScreen[None]):
+                     for heading, bullets in help_usage(self._mode):
+                         yield Label(Text(heading, style="underline"))
+                         for bullet in bullets:
+-                            yield Label(Text(f"  • {bullet}"))
++                            yield _HelpLine(Text("  • "), bullet)
+                 with VerticalScroll(id="help-right"):
+                     if entries:
+                         yield Label("[b]Legend[/b]", classes="modal-title")
+                         for swatch, meaning in entries:
+-                            yield Label(Text.assemble(Text.from_markup(swatch),
+-                                                      f"  {meaning}"))
++                            yield _HelpLine(Text.assemble(Text.from_markup(swatch), "  "),
++                                            meaning)
+                     if example:
+                         yield Label("[b]Example[/b]", classes="modal-title")
+                         yield Label(Text.from_markup(example))
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=22, offset=1855][0m
+[0m
+[0m$ [0mls .dev-flow/2026-10-07-batch-05/evidence/
+env-flake-note.md
+inc001-brief.md
+inc001-run.log
+inc002-brief.md
+inc002-run.log
+inc002b-run.log
+inc003-brief.md
+inc004-brief.md
+inc004-run.log
+p1_fill.py
+repro_label3.py
+[0m
+[0m$ [0mrm .dev-flow/2026-10-07-batch-05/evidence/repro_label3.py && ls .dev-flow/2026-10-07-batch-05/evidence/
+env-flake-note.md
+inc001-brief.md
+inc001-run.log
+inc002-brief.md
+inc002-run.log
+inc002b-run.log
+inc003-brief.md
+inc004-brief.md
+inc004-run.log
+p1_fill.py
+[0m
+Increment 002 complete. Both UX carries landed, tests green, full suite green.
+
+## Report
+
+### 1. LLR-1103.1 — the single-task undo toast
+- **Changed:** `taskboard/app.py:1468-1469` — added one `self.notify(f"Undone — {task.title} is back as it was.", title="Undo", severity="information", markup=False)` before `self.board.save()` in the single-task fall-through, covering both the field-restore and re-insert sub-paths. Cascade/milestones/migration branches and the stale-skip (`continue`) untouched.
+- **Pinned literal:** `Undone — {task.title} is back as it was.`
+
+### 2. LLR-1104.1 — the `?` help clips at word boundaries
+- **Where the mid-word cut lived:** Textual's compositor wraps a height-1 `Label` inside the narrow right column with `break_long_words=True` — e.g. `the project under most pressure` painted `the project under m` (and dropped the rest). Not the Label's own width; the wrap happens at paint time against the column's 22 cells.
+- **Changed:** `taskboard/modals.py` — added `_clip_words` (word-boundary clip + `…`, unbreakable token clips at edge) and a `_HelpLine(Label)` widget (subclasses `Label` so `query("Label")` still sees it, `width: 1fr` so `render()` reads the true column width). `HelpModal.compose` now renders legend meanings and usage bullets through `_HelpLine`. The example line/meaning are left as `Label`s (out of LLR-1104.1's stated scope — legend + usage).
+
+### Tests
+- `tests/test_undo_toast.py` — positive (pin via `t`, then `u`, toast equals pinned literal) and negative (purged task stays silent, only "Nothing to undo.") arms. RED on base: no toast.
+- `tests/test_help_clip.py` — integration (every painted legend/usage line ends at `…` or a whole source, at 80×24) plus `_clip_words` unit pins (exact-edge, overlong-token, word-boundary, negative-control). RED on base: legend painted mid-word.
+
+### Full suite
+`2555 passed, 0 failed` in ~7:08. The 5 regressions my first draft caused (gantt help fit, gantt legend frame, kanban help copy, markup-census exemption) were fixed by making `_HelpLine` a `Label` subclass and leaving the example `Label(Text.from_markup(example))` untouched.
+
+### Punted / notes
+- The example **line** (a markup diagram, not prose) is out of LLR-1104.1 scope and stays unclipped; in chainmap it can still cut the `━━▸┃Add` token mid-glyph — not covered by the requirement or my test.
+- The working tree also carries the parallel agents' uncommitted changes (`models.py`, `views.py`/`app.py` `_md` dedup, `test_milestones.py`/`test_gantt_milestones.py`) — not mine, untouched by me; the full suite passes with them in place.

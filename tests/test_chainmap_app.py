@@ -294,9 +294,9 @@ async def test_AT_803_the_shipped_high_band_cap(tmp_path):
 
 
 async def test_AT_801b_L_opens_the_shipped_picker_on_the_chain_map(tmp_path):
-    """AT-801 arm (code review CM-3): `L` on the chain map opens the shipped
-    LinkPicker (LLR-801.2 names it in AT-801's threshold) and linking re-renders
-    the map with the new chain."""
+    """AT-801b arm (code review CM-3): `L` on the chain map opens the shipped
+    LinkPicker (LLR-801.2 names it in AT-801b's threshold) and escape closes it
+    back to the chain map."""
     path = tmp_path / "board.json"
     b = kg_board.milestones(kg_board.shifted(path), date.today())
     b.settings["seen_view_renumber_2026_07"] = True
@@ -313,3 +313,37 @@ async def test_AT_801b_L_opens_the_shipped_picker_on_the_chain_map(tmp_path):
         assert isinstance(app.screen, LinkPicker), f"L opened {type(app.screen).__name__}"
         await pilot.press("escape")
         await pilot.pause()
+
+
+async def test_AT_801c_a_resize_heals_the_selection_in_one_refresh(tmp_path, frozen):
+    """AT-1105 / AT-801c arm (LLR-1105.1, the resize heal): a selection on a chain the
+    smaller frame folds out drops to a painted row in ONE refresh — the resize's
+    own repaint, no second `refresh_view` call — so the cursor never rests on a
+    tile the smaller chain map does not draw."""
+    path = tmp_path / "board.json"
+    b = kg_board.build(path)
+    today = kg_board.TODAY
+    for k in range(4):
+        a = Task(f"Head pdwh {k}", phase="Next", project_id="pdwh",
+                 start_date=(today + timedelta(days=k)).isoformat(),
+                 due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"hpdwh{k}")
+        z = Task(f"Tail pdwh {k}", phase="Next", project_id="pdwh",
+                 start_date=(today + timedelta(days=k + 2)).isoformat(),
+                 due_date=(today + timedelta(days=k + 3)).isoformat(),
+                 depends_on=[f"hpdwh{k}"], id=f"tpdwh{k}")
+        b.tasks += [a, z]
+    b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(80, 24), notifications=True) as pilot:
+        await pilot.press("6")
+        await pilot.pause()
+        app.selected_task_id = "td4"        # the Data Warehouse base chain, drawn at 80x24
+        app.refresh_view()
+        await pilot.pause()
+        assert "td4" in app._line_map, app._line_map
+        await pilot.resize_terminal(80, 18)  # too short for the Data Warehouse band
+        await pilot.pause()
+        assert "td4" not in app._line_map, app._line_map   # the smaller frame folded it out
+        assert app.selected_task_id is not None and app.selected_task_id != "td4"
+        assert app.selected_task_id in app._line_map, (
+            app.selected_task_id, app._line_map)

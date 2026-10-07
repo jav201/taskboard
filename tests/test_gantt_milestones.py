@@ -285,6 +285,22 @@ def _toasts(app):
     return [str(t.render()) for t in app.screen.query("Toast")]
 
 
+async def _select(app, pilot, tid: str) -> None:
+    """Walk the view with the real arrow keys until `tid` is the selection — the
+    direction read off the shipped nav seat, the move made by a key press."""
+    for _ in range(200):
+        if app.selected_task_id == tid:
+            return
+        order = app._nav_flat()
+        cur = app.selected_task_id
+        if tid in order and cur in order and order.index(tid) < order.index(cur):
+            await pilot.press("up")
+        else:
+            await pilot.press("down")
+        await pilot.pause()
+    raise AssertionError(f"{tid} never selected by the arrows")
+
+
 async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_marks_them(tmp_path):
     """AT-602 (US-602): at 118×30 in the gantt, `Launch new homepage` is a ` ◆` row
     with its date in the field and `in 10d`, no bar; `Mockups approved` is `◆✓`
@@ -303,11 +319,7 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
     async with app.run_test(size=(118, 30), notifications=True) as pilot:
         await pilot.press("3")
         await pilot.pause()
-        for _ in range(80):
-            if app.selected_task_id == "tw5":
-                break
-            await pilot.press("down")
-            await pilot.pause()
+        await _select(app, pilot, "tw5")
         rows = _painted(app)
         launch = _row(rows, " ◆ Launch new homepage")
         text = "".join(ch for ch, _ in launch)
@@ -326,19 +338,23 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
         stext = "".join(ch for ch, _ in sec)
         assert stext.rstrip().endswith("▲2d") and sec[stext.rindex("▲2d")][1] == OVER
         month = rows[1]
-        assert any(ch == "◆" and hx == REACHED for ch, hx in month)
+        # the ash `◆` sits at Mockups' exact column, not merely "any": its due
+        # through the shipped axis math, at the reached grey.
+        ax = gantt_axis(gantt_columns(118)[2], today, *gantt_window(
+                gantt_plan(app.board, False, "tw5", today, 30 - 1 - GANTT_RULER_ROWS),
+                today))
+        ash = ax.cell(date.fromisoformat(app.board.task_by_id("tw0").due_date))
+        assert month[gantt_columns(118)[0] + 1 + ash] == ("◆", REACHED)
         assert "◆ milestone · ◆✓ reached" in "".join("".join(c for c, _ in r) for r in rows)
         # the ruler on another project's milestone
-        app.selected_task_id = "td0"
-        app.refresh_view()
+        await _select(app, pilot, "td0")
         await pilot.pause()
         rows = _painted(app)
         dwh = HEX[app.board.project_by_id("pdwh").color].lower()   # as loaded
         # two marks in its hue: the project due AND the milestone (qa F-2; one = only the due)
         assert sum(ch == "◆" and hx == dwh for ch, hx in rows[1][gantt_columns(118)[0]:]) == 2
         # ↑ / ↓ over the reached row
-        app.selected_task_id = "tw2"
-        app.refresh_view()
+        await _select(app, pilot, "tw2")
         await pilot.pause()
         await pilot.press("up")
         await pilot.pause()
@@ -347,8 +363,7 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
         await pilot.pause()
         assert app.selected_task_id == "tw2"
         # `]` until Done: reached, not folded
-        app.selected_task_id = "tw5"
-        app.refresh_view()
+        await _select(app, pilot, "tw5")
         await pilot.pause()
         app.clear_notifications()
         for _ in range(4):
@@ -362,10 +377,15 @@ async def test_AT_602_milestones_read_as_dates_reached_ones_quiet_the_ruler_mark
     async with app.run_test(size=(80, 24)) as pilot:
         await pilot.press("3")
         await pilot.pause()
-        app.selected_task_id = "ta3"
-        app.refresh_view()
+        # walk onto the reached milestone's group, so the 80-wide legend draws
+        # (and must name) both marks — reached by keys, not assigned
+        await _select(app, pilot, "tw5")
         await pilot.pause()
         rows = ["".join(ch for ch, _ in r) for r in _painted(app)]
         assert any("◆ milestone · ◆✓ reached" in r for r in rows)
+        # then walk onto Partner notice's group and read its row
+        await _select(app, pilot, "ta3")
+        await pilot.pause()
+        rows = ["".join(ch for ch, _ in r) for r in _painted(app)]
         sel = next(r for r in rows if " ◆ Partner notice" in r)
         assert sel.rstrip().endswith("in 3d")

@@ -1562,14 +1562,28 @@ def migrate_links(board: Board) -> list[LinkChange]:
 def _create_beside(target: Path, suffix: str, data: bytes) -> Path:
     """Write `data` to `<file name><suffix>` beside `target`, or to the first
     free `.1`, `.2`, … — by EXCLUSIVE create, so no existing file is ever
-    overwritten and no symlink (dangling or not) is written through."""
+    overwritten and no symlink (dangling or not) is written through. A write
+    that fails (a full disk) removes the just-created file best-effort — the
+    removal's own failure never masks the original — and re-raises the original
+    exception unchanged."""
     for n in range(1000):
         p = target.with_name(target.name + suffix + (f".{n}" if n else ""))
         if p.is_symlink():
             continue
         try:
             with open(p, "xb") as fh:
-                fh.write(data)
+                try:
+                    fh.write(data)
+                except BaseException:
+                    try:
+                        fh.close()          # release the handle (Windows needs it
+                    except OSError:         # closed before the unlink), best-effort
+                        pass
+                    try:
+                        p.unlink(missing_ok=True)
+                    except OSError:
+                        pass
+                    raise
             return p
         except FileExistsError:
             continue

@@ -19,7 +19,7 @@ from pathlib import Path
 from unicodedata import east_asian_width
 
 from rich._emoji_codes import EMOJI as _RICH_EMOJI
-from rich.cells import cell_len
+from rich.cells import cell_len, set_cell_size
 from rich.text import Text
 
 from textual import events
@@ -1747,6 +1747,52 @@ class TaskDetails(ModalScreen[None]):
         self.dismiss(None)
 
 
+def _clip_words(s: str, width: int) -> str:
+    """Clip `s` to `width` cells at a WORD boundary, appending `…` when cut.
+
+    Textual's default label wrap breaks a long word mid-glyph and drops the
+    rest; the `?` help lines must instead end at a word boundary or with `…`.
+    An unbreakable token longer than `width` clips at the edge with `…`."""
+    if width <= 0:
+        return ""
+    if cell_len(s) <= width:
+        return s
+    out = ""
+    for word in s.split():
+        candidate = f"{out} {word}" if out else word
+        if cell_len(candidate) <= width - 1:      # one cell for the `…`
+            out = candidate
+        else:
+            break
+    if out:
+        return out + "…"
+    return set_cell_size(s, width - 1) + "…"
+
+
+class _HelpLine(Label):
+    """A single help line whose `tail` is clipped at a word boundary to the
+    cells the column leaves after `prefix` (the swatch, or a bullet marker).
+
+    Subclasses `Label` (not `Static`) so the suite's `query("Label")` reads it,
+    and takes the column width (`1fr`) so `render()` sees the true cells."""
+
+    def __init__(self, prefix: Text, tail: str, tail_style: str | None = None):
+        super().__init__("")
+        self.styles.height = 1
+        self.styles.width = "1fr"
+        self._prefix = prefix
+        self._tail = tail
+        self._tail_style = tail_style
+
+    def render(self) -> Text:
+        width = self.content_size.width if self.content_size else self.size.width
+        room = max(0, width - self._prefix.cell_len)
+        clipped = _clip_words(self._tail, room)
+        if self._tail_style:
+            return Text.assemble(self._prefix, Text(clipped, style=self._tail_style))
+        return Text.assemble(self._prefix, clipped)
+
+
 class HelpModal(ModalScreen[None]):
     """`?` — the per-view help family: what the view is for, how to read it,
     and what keys work inside it.
@@ -1813,13 +1859,13 @@ class HelpModal(ModalScreen[None]):
                     for heading, bullets in help_usage(self._mode):
                         yield Label(Text(heading, style="underline"))
                         for bullet in bullets:
-                            yield Label(Text(f"  • {bullet}"))
+                            yield _HelpLine(Text("  • "), bullet)
                 with VerticalScroll(id="help-right"):
                     if entries:
                         yield Label("[b]Legend[/b]", classes="modal-title")
                         for swatch, meaning in entries:
-                            yield Label(Text.assemble(Text.from_markup(swatch),
-                                                      f"  {meaning}"))
+                            yield _HelpLine(Text.assemble(Text.from_markup(swatch), "  "),
+                                            meaning)
                     if example:
                         yield Label("[b]Example[/b]", classes="modal-title")
                         yield Label(Text.from_markup(example))

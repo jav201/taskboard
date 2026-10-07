@@ -1,0 +1,13 @@
+sha256 before: 88d45a33b7b495da87f75d4d393beb464cb38531f5fa132421a79d4d3c11b85b
+anchor count: 1
+pytest tests/test_help_clip.py -q (both arms, no -x, -rf):
+          assert _clip_words("short text", 20) == "short text"
+          assert _clip_words("abcdefgh", 8) == "abcdefgh"
+          assert _clip_words("abcdefg", 8) == "abcdefg"
+  >       assert _clip_words("the project under most pressure", 20) == "the project under…"
+  E       AssertionError: assert 'the project ...most pressure' == 'the project under…'
+  tests\test_help_clip.py:105: AssertionError
+  FAILED tests/test_help_clip.py::test_TC_1104_clip_words_exact_edge_and_overlong_token
+  1 failed, 1 passed in 0.64s
+exit 1 -> KILLED
+sha256 restored: 88d45a33b7b495da87f75d4d393beb464cb38531f5fa132421a79d4d3c11b85b  OK

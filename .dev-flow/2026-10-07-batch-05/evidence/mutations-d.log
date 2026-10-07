@@ -1,0 +1,53 @@
+# Mutation battery — increment 003 (chain-map carries), coordinator-run
+
+All restores verified by sha256 (`OK` on every line). Targeted node for M6/M7:
+`tests/test_chainmap.py::test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole`.
+Transcript style: the coordinator's byte-level runner (evidence/run-mutations-abc.py is
+the increment 001/002/004 sibling; these three ran through equivalent byte-edit scripts
+whose full outputs are quoted below from the session record).
+
+## M6 — the cap's N is off by one — KILLED
+Mutation: `f"+{tail_n} more ↓"` -> `f"+{tail_n + 1} more ↓"` (views.py, the cap tail row).
+Result: exit 1 — the amended TC-810 asserts `+4 more ↓` exactly and the mutant paints `+5`.
+```
+>       assert "+4 more ↓" in text, text
+E       AssertionError: ◆ CHAIN MAP · who waits on whom ...
+```
+Restore: OK.
+
+## M7 — the zero-fit band draws its head — KILLED
+Mutation: the zero-fit guard `if limit == 0: break` -> `if limit == 0: limit = 1`
+(the first chain draws, the head dangles without its canvas).
+Result: exit 1 — the zero-fit band's tiles leak into the line_map.
+```
+>       assert not any(tid in lm2 for tid in ("tm2", "tm3", "tm4", "tm5")), lm2
+E       AssertionError: {'hpweb0': 5, 'hpweb1': 8, ...}
+```
+Restore: OK.
+
+## M8 — the resize heal neutered — SURVIVED (declared, with its cause)
+Mutation A: the heal's guard -> `if True: return`. Mutation B (harder): the heal's call
+at the end of `refresh_view` removed entirely. BOTH left
+`tests/test_chainmap_app.py::test_AT_801c_a_resize_heals_the_selection_in_one_refresh`
+GREEN.
+
+Cause (traced, not guessed): the shipped `_select_first` (app.py) has a chainmap
+branch — a selection not in the nav order moves to the first linked task in draw
+order — and `_nav_flat()` is fold-aware, so on the NEXT refresh_view the stale
+selection is already healed by shipped code. The end-state assertion after
+`pilot.pause()` drains every pending refresh, so the arm observes the healed
+end-state no matter which mechanism got there first. The increment's heal makes the
+FIRST refresh's paint transient-free and lands the cursor on the nearest painted row
+(min line_map row) instead of the first nav task — a real but transient-level
+difference an end-state arm cannot isolate without pinning Textual's own refresh
+churn (3 refreshes per measured resize).
+
+Disposition: SURVIVED-with-cause, declared per the mutation-verdicts grammar (an arm
+that stayed GREEN is named, and why). If the one-refresh law ever needs a paint-level
+pin, that is a new arm asserting mid-repaint state — recorded here as the follow-up,
+not a block.
+
+## Verdict summary
+M6 KILLED · M7 KILLED · M8 SURVIVED (cause declared). Plus, from
+evidence/mutations-abc.log (increments 001/002/004): M1 KILLED · M2 KILLED ·
+M3 KILLED · M4 KILLED · M5 (the planted-assignment grep probe) fired.

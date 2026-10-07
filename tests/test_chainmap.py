@@ -182,16 +182,17 @@ def test_TC_809_a_deep_chain_renders_instead_of_crashing(tmp_path):
     assert "chain 25" in text                        # and its length is named
 
 
-def test_TC_810_the_fold_drops_whole_bands_never_a_dangling_head(tmp_path):
-    """TC-810 (code review CM-2, HIGH): later projects carry chains that do not
-    fit at 80x24 -- the fold drops WHOLE bands (no head without its canvas) and
-    only the surviving bands' tiles reach the line_map. RED before the fix: the
-    fold cut mid-band (a dangling head) and the line_map held undrawn rows."""
+def test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole(tmp_path):
+    """TC-810 (code review CM-2, HIGH, amended by LED .1): a band that no longer
+    fits whole draws its fitting chains + one `+N more ↓` tail (N exact -- the
+    band's chains minus the drawn ones) and only the drawn tiles reach the
+    line_map; a band whose FIRST chain does not fit still drops whole (head and
+    canvas together)."""
     from taskboard.views import render_chainmap
-    b = kg_board.build(tmp_path / "board.json")
     today = kg_board.TODAY
-    for k in range(8):                       # 8 chains on API + 8 on DWH: they fold
-        for pid in ("papi", "pdwh"):
+
+    def add_chains(b, pid, n):
+        for k in range(n):
             a = Task(f"Head {pid} {k}", phase="Next", project_id=pid,
                      start_date=(today + timedelta(days=k)).isoformat(),
                      due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"h{pid}{k}")
@@ -200,10 +201,28 @@ def test_TC_810_the_fold_drops_whole_bands_never_a_dangling_head(tmp_path):
                      due_date=(today + timedelta(days=k + 3)).isoformat(),
                      depends_on=[f"h{pid}{k}"], id=f"t{pid}{k}")
             b.tasks += [a, z]
+
+    # (1) the partial band: Data Warehouse's base chain + 4 added chains = 5
+    # lanes, which no longer fit at 80x24 -- it draws the base chain (its FIRST
+    # chain) and names the rest `+4 more ↓`. The drawn tiles reach the line_map;
+    # the folded chains never do.
+    b = kg_board.build(tmp_path / "board.json")
+    add_chains(b, "pdwh", 4)
     line_map: dict = {}
     text = render_chainmap(b, False, None, today, 80, 24, line_map).plain
-    assert line_map, "the first bands must survive the fold"
-    folded_h = [f"h{pid}0" for pid in ("papi", "pdwh")]
-    assert all(h not in line_map for h in folded_h), "a folded band leaked tiles"
-    # and a folded band's HEAD never dangles without its canvas
-    assert "API Platform" not in text and "Data Warehouse" not in text, text
+    assert "Data Warehouse" in text, text
+    assert "+4 more ↓" in text, text
+    for tid in ("td1", "td4", "td5"):
+        assert tid in line_map, (tid, line_map)
+    for k in range(4):
+        assert f"hpdwh{k}" not in line_map and f"tpdwh{k}" not in line_map, line_map
+
+    # (2) the zero-fit band: 5 chains on Website Redesign (the FIRST project)
+    # spend the whole body, so Mobile App's first chain no longer fits and the
+    # band drops whole -- head AND canvas gone, no tile in the line_map.
+    b2 = kg_board.build(tmp_path / "board2.json")
+    add_chains(b2, "pweb", 5)
+    lm2: dict = {}
+    text2 = render_chainmap(b2, False, None, today, 80, 24, lm2).plain
+    assert "Mobile App" not in text2, text2
+    assert not any(tid in lm2 for tid in ("tm2", "tm3", "tm4", "tm5")), lm2
