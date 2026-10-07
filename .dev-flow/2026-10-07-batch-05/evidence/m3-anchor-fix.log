@@ -1,0 +1,11 @@
+sha256 before: 9d9ac6e0c33fb46176bb50f2193df1b2a23528da258cda77d30a8a7991239921
+two-line anchor count: 1 (the stored run's one-line anchor counted 0 — mutations-abc.log)
+pytest tests/test_undo_toast.py -q (both arms, no -x, -rf):
+              assert app.board.tasks[0].pinned is True
+  >           assert _toast_check(app, "Undo", UNDONE) is None
+  E           assert "no 'Undo' toast equal to 'Undone — Write the migration guide is back as it was.'; toasts []" is None
+  tests\test_undo_toast.py:72: AssertionError
+  FAILED tests/test_undo_toast.py::test_AT_1103_undo_names_the_single_task - as...
+  1 failed, 1 passed in 1.12s
+exit 1 -> KILLED
+sha256 restored: 9d9ac6e0c33fb46176bb50f2193df1b2a23528da258cda77d30a8a7991239921  OK

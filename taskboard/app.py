@@ -35,10 +35,7 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
 from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
                     present_tasks, render_present, render_view, save_present_png,
-                    save_present_svg, sort_by_due, fit, vis, valid_url)
-
-def _md(d: date) -> str:
-    return f"{d:%b} {d.day}"
+                     save_present_svg, sort_by_due, fit, vis, valid_url, _md)
 
 
 # The app's ONE shared clock. Every animated surface counts in these ticks, so
@@ -1468,6 +1465,8 @@ class TaskboardApp(App):
             else:
                 for f, v in entry["fields"].items():
                     setattr(task, f, v)
+            self.notify(f"Undone — {task.title} is back as it was.",
+                        title="Undo", severity="information", markup=False)
             self.board.save()
             self.selected_task_id = task.id
             self.refresh_view()
@@ -1522,6 +1521,24 @@ class TaskboardApp(App):
                               setup_state=self._setup_state)
         board_widget.update(content)
         self._scroll_selected_into_view()
+        self._heal_selection_after_repaint()
+
+    def _heal_selection_after_repaint(self) -> None:
+        """The resize heal in one pass (LLR-1105.1): re-verify the selection
+        against the freshly-drawn `_line_map`. A selection the new frame does
+        not name drops to the nearest painted row, or clears when the frame
+        paints nothing. Scoped to the chain map — the one view whose selection
+        must sit on a named tile — so every other view's repaint stays
+        byte-identical (the grid/flow/standup views draw no task rows, and the
+        kanban/gantt selections are healed by `_select_first` up front)."""
+        if self.view_mode != "chainmap" or self.selected_task_id is None:
+            return
+        if self.selected_task_id in self._line_map:
+            return
+        if not self._line_map:
+            self.selected_task_id = None
+        else:
+            self.selected_task_id = min(self._line_map, key=self._line_map.get)
 
     def _track_gantt_group(self) -> None:
         """In the gantt, remember the selection's group and the one it was in

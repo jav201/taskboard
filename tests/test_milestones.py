@@ -27,7 +27,7 @@ from taskboard import keymap
 from taskboard.app import TaskboardApp
 from taskboard.models import (MILESTONE_NEEDS_DATE, Board, Project, Task, bump_due,
                               set_milestone)
-from taskboard.modals import TaskDetails, TaskModal
+from taskboard.modals import MilestoneOffer, TaskDetails, TaskModal
 from taskboard.team_sync import TEAM_FILENAME, TeamState
 from taskboard.views import filtered_board
 
@@ -56,13 +56,19 @@ def _board(tmp_path: Path) -> Path:
 
 
 async def _select(app, pilot, tid: str) -> None:
-    """Walk the view with the real arrow key until `tid` is the selection."""
-    for _ in range(80):
+    """Walk the view with the real arrow keys until `tid` is the selection — the
+    direction read off the shipped nav seat, the move made by a key press."""
+    for _ in range(200):
         if app.selected_task_id == tid:
             return
-        await pilot.press("down")
+        order = app._nav_flat()
+        cur = app.selected_task_id
+        if tid in order and cur in order and order.index(tid) < order.index(cur):
+            await pilot.press("up")
+        else:
+            await pilot.press("down")
         await pilot.pause()
-    raise AssertionError(f"{tid} never selected by ↓")
+    raise AssertionError(f"{tid} never selected by the arrows")
 
 
 # --------------------------------------------------------------------------- #
@@ -223,8 +229,9 @@ async def test_TC_604_the_toast_says_where_the_milestone_shows(tmp_path, case, w
 # --------------------------------------------------------------------------- #
 # TC-605 — the editor's box (LLR-601.3)
 # --------------------------------------------------------------------------- #
-async def _edit(app, pilot, tid, **fields):
-    app.selected_task_id = tid
+async def _editor_save(app, pilot, **fields):
+    """Open the editor for the CURRENT selection, set `fields`, save. The selection
+    is reached before this call (by keys in the amended arms); nothing here assigns."""
     await pilot.press("e")
     for _ in range(3):
         await pilot.pause()
@@ -237,6 +244,11 @@ async def _edit(app, pilot, tid, **fields):
     scr.query_one("#save").press()
     for _ in range(3):
         await pilot.pause()
+
+
+async def _edit(app, pilot, tid, **fields):
+    app.selected_task_id = tid
+    await _editor_save(app, pilot, **fields)
 
 
 @pytest.mark.parametrize("arm", ["dated", "start-differs", "undated", "new-task",
@@ -494,6 +506,54 @@ async def test_AT_601_a_task_becomes_a_milestone_saved_undoable_said_and_pushed(
         assert path.read_bytes() == before
         said = _toasts(app)
         assert len(said) == 1 and "a milestone needs a date" in said[0]
-        await _edit(app, pilot, "ta1", f_milestone=True, f_due=_iso(9))
+        await _select(app, pilot, "ta1")
+        await _editor_save(app, pilot, f_milestone=True, f_due=_iso(9))
         rec = _saved(path, "ta1")
         assert (rec["milestone"], rec["start_date"], rec["due_date"]) == (True, _iso(9), _iso(9))
+
+
+# --------------------------------------------------------------------------- #
+# AT-601 arm — the offer's conversions reach a TEAM folder (qa F-4, HLR-1106)
+# --------------------------------------------------------------------------- #
+@pytest.mark.milestone_offer
+async def test_AT_601_offer_converted_milestones_reach_a_team_folder(tmp_path):
+    """AT-601 arm (qa F-4): the offer converts the one-day candidates, and the
+    converted milestones in TEAM projects (`Partner notice emails`/papi,
+    `Launch new homepage`/pweb, `Beta release to testers`/pmob) reach the shared
+    folder's `board.<user>.json` — the same push path `M` is covered by (AT-601),
+    driven here through the offer's own conversion. RED on base: no offer."""
+    path = tmp_path / "board.json"
+    b = kg_board.one_day(kg_board.shifted(path), date.today())
+    team = tmp_path / "shared"
+    team.mkdir()
+    cfg = dict(kg_board.TEAM, projects=[
+        {"id": "pweb", "name": "Website Redesign", "color": "violet", "status": "on_track"},
+        {"id": "pmob", "name": "Mobile App", "color": "sky", "status": "on_track"},
+        {"id": "papi", "name": "API Platform", "color": "lime", "status": "at_risk"}])
+    (team / TEAM_FILENAME).write_text(json.dumps(cfg), encoding="utf-8")
+    b.settings.update({RENUMBER: True, "team_shared_dir": str(team),
+                       "team_user_id": "jav"})
+    b.save()
+    converted = ("ta3", "tw5", "tm5")           # the offer's pre-checked one-day rows
+    app = TaskboardApp(board_path=str(path), team_sync_interval=0.2)
+    async with app.run_test(size=(118, 40), notifications=True) as pilot:
+        await pilot.pause()
+        assert isinstance(app.screen, MilestoneOffer)
+        await pilot.press("enter")              # the defaults: ta3, tw5, tm5
+        await pilot.pause()
+        for tid in converted:
+            assert _saved(path, tid)["milestone"] is True   # the offer converted them
+        pushed = team / "board.jav.json"        # the team arm: polled ≤ 5 s
+        for _ in range(50):
+            await pilot.pause(0.1)
+            if pushed.exists():
+                got = {t["id"]: t for t in
+                       json.loads(pushed.read_text(encoding="utf-8"))["tasks"]}
+                if all(got.get(tid, {}).get("milestone") is True for tid in converted):
+                    break
+        else:
+            raise AssertionError(
+                "the pushed file never carried the offer-converted milestones")
+        for tid in converted:
+            rec = got[tid]
+            assert (rec["milestone"], rec["start_date"]) == (True, rec["due_date"])
