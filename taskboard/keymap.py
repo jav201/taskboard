@@ -134,6 +134,9 @@ KEYMAP: tuple[Key, ...] = (
     Key("f", "f", "manage_phases", "Phases", group="misc", bar=False),
     Key("c", "c", "clocks", "Clocks", group="misc", bar=False),
     Key("R", "R", "present", "Present", group="misc", bar=False),
+    # `I` — insert a process template (batch 2026-10-07-batch-07, HLR-1301):
+    # global, palette-only, like `R` (shifted, not scoped to a view).
+    Key("I", "I", "templates", "Templates", group="misc", bar=False),
     # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
     # derives from the board in ANY view, so — like `R` — it is not scoped.
     Key("S", "S", "standup", "Standup", group="misc", bar=False),

@@ -1,0 +1,28 @@
+# Mutation battery — batch-07, coordinator-run (byte-level, restores sha256-verified; all OK)
+
+## M13 — the one-step undo holds only the first id — KILLED
+Mutation: `{"templates": [t.id for t in created]}` -> `{"templates": [created[0].id]}`.
+Node: `tests/test_templates_app.py`. Result: `1 failed, 4 passed` — the undo-removes-ALL
+arm reddens (the other arms stay green — per-arm granularity).
+
+## M14 — the template links are never set — KILLED
+Mutation: the `wait` application (`new.depends_on = [created[one.wait].id]`) -> `pass`.
+Node: `tests/test_templates_app.py`. Result: `2 failed, 3 passed` — the exact-depends_on
+chain arm and the chain-visible arm redden.
+
+## M15 — the lenient read raises on junk — KILLED
+Mutation: `templates()` raises ValueError on a non-dict entry instead of skipping.
+Node: `tests/test_templates.py`. Result: `1 failed, 3 passed` — the lenient-read arm
+(the junk list) reddens.
+
+## Review notes carried into the packets
+- The implementing agent stopped BEFORE writing code and named the `T`-key conflict
+  (`T` ships `project_pin_toggle`, pinned by tests); the contract was corrected to `I`
+  under LED-2026-10-07-batch-07.2 before the first edit — the stop-and-name gate
+  working as designed.
+- README.md gained one keybinding row OUTSIDE the brief's file list because
+  `test_keymap.py::test_the_readme_keybinding_table_matches_the_seat` enforces every
+  bound key documented — forced by a shipped test, declared, accepted.
+- `_read_template` semantics: a malformed task skips the WHOLE template entry (not the
+  task) — dropping a mid-chain task would silently rewire `wait` indices; a bad `wait`
+  drops only that link. Reasoned and accepted; pinned by the store arms.

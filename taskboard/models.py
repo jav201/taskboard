@@ -2248,3 +2248,79 @@ def project_archive_refusal(board: Board, project_id: str) -> str | None:
     return (f"can't archive this project — {n} open task"
             f"{'s' if n != 1 else ''} outside it wait{'' if n != 1 else 's'} on its "
             f"tasks ({_names(waiters)}). Finish them, or remove the links first.")
+
+
+# ---- process/chain templates (batch 2026-10-07-batch-07, HLR-1301) ----------
+@dataclass(frozen=True)
+class TemplateTask:
+    """One task of a process template: its title, optional notes, and the index
+    of the template task it waits on (None = first in the chain, unlinked)."""
+
+    title: str
+    notes: str = ""
+    wait: int | None = None
+
+
+@dataclass(frozen=True)
+class Template:
+    """A named process: a chain of tasks. `wait` is forward-only by construction
+    — an index may only point backwards, so a cycle is impossible."""
+
+    name: str
+    tasks: tuple[TemplateTask, ...]
+
+
+# The two factory presets, always available and listed AFTER user templates.
+PRESET_TEMPLATES: tuple[Template, ...] = (
+    Template("Simple chain", (TemplateTask("Plan"),
+                              TemplateTask("Build", wait=0),
+                              TemplateTask("Ship", wait=1))),
+    Template("Bugfix", (TemplateTask("Triage"),
+                        TemplateTask("Fix", wait=0),
+                        TemplateTask("Verify", wait=1))),
+)
+
+
+def templates(board: Board) -> list[Template]:
+    """The board's insertable templates: user `settings["templates"]` first, the
+    presets after. Lenient, never raising. An entry is skipped when it is not a
+    dict, its name is not non-empty text, its `tasks` is not a list, or a task
+    inside it is not a dict or has a non-text/empty title (a dropped mid-chain
+    task would silently rewire the `wait` targets). A `notes` that is not text
+    reads as ""; a `wait` that is not a valid earlier index reads as None — the
+    task is kept, the link dropped."""
+    out: list[Template] = []
+    for entry in board.settings.get("templates") or []:
+        tpl = _read_template(entry)
+        if tpl is not None:
+            out.append(tpl)
+    out.extend(PRESET_TEMPLATES)
+    return out
+
+
+def _read_template(entry) -> Template | None:
+    if not isinstance(entry, dict):
+        return None
+    name = entry.get("name")
+    if not (isinstance(name, str) and name.strip()):
+        return None
+    body = entry.get("tasks")
+    if not isinstance(body, list):
+        return None
+    tasks: list[TemplateTask] = []
+    for one in body:
+        if not isinstance(one, dict):
+            return None
+        title = one.get("title")
+        if not (isinstance(title, str) and title.strip()):
+            return None
+        notes = one.get("notes", "")
+        if notes is None:
+            notes = ""
+        if not isinstance(notes, str):
+            notes = ""
+        wait = one.get("wait")
+        if not (isinstance(wait, int) and 0 <= wait < len(tasks)):
+            wait = None
+        tasks.append(TemplateTask(title, notes, wait))
+    return Template(name, tuple(tasks))

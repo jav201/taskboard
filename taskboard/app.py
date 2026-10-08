@@ -21,13 +21,13 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
                      archive_refusal, default_board_path, is_open, link_refusal,
                      milestone_candidates, milestones_marked, next_priority, parse_iso,
                      ready_messages, run_link_migration, run_milestone_offer,
-                     set_milestone, strip_controls, waiting_ids,
+                     set_milestone, strip_controls, templates, waiting_ids,
                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
                      snapshot)
 from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
-                     ProjectPicker,
-                     StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
+                     ProjectPicker, StandupModal, TaskDetails, TaskModal, TeamIdentityPicker,
+                     TemplatePicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
@@ -328,7 +328,7 @@ class TaskboardApp(App):
     BOARD_ACTIONS = frozenset({
         "add_task", "add_project", "manage_projects", "manage_phases",
         "details", "edit", "delete", "archive", "purge_done", "present",
-        "toggle_archived", "open_url", "open_images", "clocks",
+        "toggle_archived", "open_url", "open_images", "clocks", "templates",
         "phase_move", "prio_cycle", "toggle_blocked", "link",
         "kanban_sort", "kanban_group", "collapse_toggle",
         "focus_cycle", "focus_exit", "due_bump", "undo", "standup",
@@ -719,6 +719,48 @@ class TaskboardApp(App):
         self.push_screen(PresentScreen(self.board, project_id,
                                        proj.name if proj else None,
                                        self.selected_task_id))
+
+    def action_templates(self) -> None:
+        """`I` — insert a process template (HLR-1301): the picker lists the
+        board's user templates then the presets; the insert lands the tasks in
+        the selected task's project (the focused project when set) as ONE undo
+        step. Resolves the target project exactly like `action_present`; no
+        resolvable project -> the `No project to insert into.` toast."""
+        project_id = present_project_id(self.board, self.selected_task_id,
+                                        self.focused_project_id)
+        if project_id is None:
+            self.notify("No project to insert into.", title="Templates",
+                        severity="information", timeout=10, markup=False)
+            return
+        self.push_screen(TemplatePicker(self.board),
+                         lambda name: self._on_template_picked(name, project_id))
+
+    def _on_template_picked(self, name: str | None, project_id: str) -> None:
+        if name is None:
+            return
+        tpl = next((t for t in templates(self.board) if t.name == name), None)
+        if tpl is None:
+            return
+        if not tpl.tasks:
+            self.notify(f"Template '{name}' is empty.", title="Templates",
+                        severity="information", markup=False)
+            return
+        project = self.board.project_by_id(project_id)
+        pname = project.name if project else "Inbox"
+        created: list[Task] = []
+        for one in tpl.tasks:
+            new = Task(title=one.title, project_id=project_id,
+                       phase=self.board.phases[0], notes=one.notes)
+            self.board.tasks.append(new)
+            created.append(new)
+            if one.wait is not None:
+                new.depends_on = [created[one.wait].id]
+        self._undo_stack.append({"templates": [t.id for t in created]})
+        self.selected_task_id = created[0].id
+        self.board.save()
+        self.refresh_view()
+        self.notify(f"Inserted '{name}' — {len(created)} tasks into {pname}",
+                    title="Templates", severity="information", markup=False)
 
     def action_standup(self) -> None:
         """`S` — the week in one modal: what moved and what closed, per
@@ -1453,6 +1495,19 @@ class TaskboardApp(App):
                 else:
                     self.board.save()
                 self.refresh_view()
+                return
+            if "templates" in entry:
+                # one insert is ONE step — every created task goes together
+                # (the milestones pattern, applied to removal)
+                n = len(entry["templates"])
+                self.board.tasks = [t for t in self.board.tasks
+                                    if t.id not in entry["templates"]]
+                self.selected_task_id = None
+                self.board.save()
+                self.refresh_view()
+                self.notify(f"Template insert undone — {n} task"
+                            f"{'s' if n != 1 else ''} removed",
+                            title="Undo", severity="information", markup=False)
                 return
             task = self.board.task_by_id(entry["task_id"])
             if task is None:

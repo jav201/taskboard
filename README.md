@@ -132,6 +132,7 @@ between the short and the full layer. Every key below is also in the command pal
 | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
 | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
 | `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
+| `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
 | `c` | Clocks | Choose the ribbon's two city clocks |
 | `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
 
