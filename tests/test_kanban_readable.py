@@ -554,7 +554,7 @@ def test_TC_313_the_chrome_names_the_modes_and_counts_hidden_phases(tmp_path):
     _t, rows, _lm = render(e, 80, 24, sel="t0")
     plan = kanban_plan(e, False, "t0", TODAY, 80, 24)
     hidden = 7 - (plan.start + len(plan.widths))
-    assert hidden > 0 and f"{hidden} ▶" in rows[1], rows[1]
+    assert hidden > 0 and f"▸ {hidden}" in rows[1], rows[1]
     empty = Board([], [], tmp_path / "x.json", phases=["Doing", "Done"])
     _t, rows, _lm = render(empty, 80, 24, sel=None)
     assert any("(no tasks — press 'a' to add one)" in r for r in rows)

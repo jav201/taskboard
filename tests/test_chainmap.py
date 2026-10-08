@@ -4,7 +4,9 @@ HLR-801 / LLR-801.1 · TC-801, TC-802, TC-803, TC-804, TC-807, TC-808.
 
 The oracle is C-2b (round-7 verdict): the exact rows the shipped renderer must
 paint, byte-faithful at 118x30 and 80x24, are
-`.dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-*.txt`. The fixture is the
+`.dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-*.txt` — amended under
+LED-2026-10-07-batch-06.1 (the `○` tiles); the sealed batch-02 frames stay
+history. The fixture is the
 kg board (`tests/kg_board.py`), frozen on its own TODAY so `shifted` collapses
 to the frames' fixed dates; the deviating band (Data Warehouse `together`) is
 set IN-TEST — the frames carry it, the base board does not.
@@ -22,10 +24,10 @@ import pytest
 import kg_board
 from kg_board import TODAY
 from taskboard import views
-from taskboard.models import Task
+from taskboard.models import Board, Project, Task
 
 ROOT = Path(__file__).resolve().parents[1]
-FRAMES = ROOT / ".dev-flow" / "2026-10-07-batch-02" / "evidence" / "frames"
+FRAMES = ROOT / ".dev-flow" / "2026-10-07-batch-06" / "evidence" / "frames"
 
 
 def _frame(name: str) -> list[str]:
@@ -183,11 +185,11 @@ def test_TC_809_a_deep_chain_renders_instead_of_crashing(tmp_path):
 
 
 def test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole(tmp_path):
-    """TC-810 (code review CM-2, HIGH, amended by LED .1): a band that no longer
-    fits whole draws its fitting chains + one `+N more ↓` tail (N exact -- the
-    band's chains minus the drawn ones) and only the drawn tiles reach the
-    line_map; a band whose FIRST chain does not fit still drops whole (head and
-    canvas together)."""
+    """TC-810 (code review CM-2, HIGH, amended by LED-2026-10-07-batch-06.1): a
+    band that no longer fits whole draws its fitting chains + `○` tiles + one
+    `+N more ↓` tail (N exact -- the band's chains AND tiles minus the drawn
+    ones) and only the drawn rows reach the line_map; a band whose FIRST row
+    does not fit still drops whole (head and canvas together)."""
     from taskboard.views import render_chainmap
     today = kg_board.TODAY
 
@@ -202,20 +204,22 @@ def test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole(tmp_path):
                      depends_on=[f"h{pid}{k}"], id=f"t{pid}{k}")
             b.tasks += [a, z]
 
-    # (1) the partial band: Data Warehouse's base chain + 4 added chains = 5
-    # lanes, which no longer fit at 80x24 -- it draws the base chain (its FIRST
-    # chain) and names the rest `+4 more ↓`. The drawn tiles reach the line_map;
-    # the folded chains never do.
+    # (1) the partial band: Data Warehouse alone -- its base chain + 6 added
+    # chains + its 2 open `○` tiles (td2, td3) no longer fit at 80x24. It draws
+    # the fitting chains and names the rest `+3 more ↓` (1 chain + 2 tiles); the
+    # folded chains and tiles never reach the line_map.
     b = kg_board.build(tmp_path / "board.json")
-    add_chains(b, "pdwh", 4)
+    b.projects = [p for p in b.projects if p.id == "pdwh"]
+    b.tasks = [t for t in b.tasks if t.project_id == "pdwh"]
+    add_chains(b, "pdwh", 6)
     line_map: dict = {}
     text = render_chainmap(b, False, None, today, 80, 24, line_map).plain
     assert "Data Warehouse" in text, text
-    assert "+4 more ↓" in text, text
+    assert "+3 more ↓" in text, text
     for tid in ("td1", "td4", "td5"):
         assert tid in line_map, (tid, line_map)
-    for k in range(4):
-        assert f"hpdwh{k}" not in line_map and f"tpdwh{k}" not in line_map, line_map
+    for tid in ("td2", "td3", "hpdwh5", "tpdwh5"):
+        assert tid not in line_map, (tid, line_map)
 
     # (2) the zero-fit band: 5 chains on Website Redesign (the FIRST project)
     # spend the whole body, so Mobile App's first chain no longer fits and the
@@ -226,3 +230,44 @@ def test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole(tmp_path):
     text2 = render_chainmap(b2, False, None, today, 80, 24, lm2).plain
     assert "Mobile App" not in text2, text2
     assert not any(tid in lm2 for tid in ("tm2", "tm3", "tm4", "tm5")), lm2
+
+
+# --------------------------------------------------------------------------- #
+# LLR-1201.1 / LLR-1201.2 — every open task is a tile (batch 2026-10-07-batch-06)
+# --------------------------------------------------------------------------- #
+def test_an_open_unlinked_task_is_a_selectable_open_tile(tmp_path, frozen):
+    """LLR-1201.1: an open task with no links paints as a one-row `○` tile with
+    its title and late mark, and reaches the line_map (it is selectable)."""
+    b = _base(tmp_path)
+    line_map: dict = {}
+    rows = _render(b, "tw3", 118, 30, line_map)
+    assert "tw3" in line_map
+    row = rows[line_map["tw3"]]
+    assert "○" in row and "Fix checkout 500 error" in row, row
+    assert "▲2d" in row, row                    # the late mark rides the tile
+
+
+def test_the_no_links_row_only_for_a_project_with_no_open_work(tmp_path, frozen):
+    """LLR-1201.1: a project with no open work at all keeps the inert `no links`
+    row; a project with an open unlinked task draws an `○` tile instead."""
+    lonely = Project("Lonely", "sky")
+    busy = Project("Busy", "lime")
+    done = Task("shipped", lonely.id, "Done", phase_changed=TODAY.isoformat(), id="s1")
+    todo = Task("todo", busy.id, "Doing", id="b1")
+    b = Board([lonely, busy], [done, todo], tmp_path / "b.json",
+              phases=["Doing", "Done"])
+    line_map: dict = {}
+    rows = _render(b, "b1", 118, 30, line_map)
+    assert "no links" in "\n".join(rows)        # Lonely: no open work at all
+    assert "b1" in line_map and "○" in rows[line_map["b1"]]
+
+
+def test_the_nav_reaches_an_open_tile_in_band_order(tmp_path, frozen):
+    """LLR-1201.2: the `○` tiles sit in the depth-0 nav column, after the band's
+    chained heads, so the arrows reach them."""
+    b = _base(tmp_path)
+    cols = views._chainmap_nav(b, False)
+    flat = [tid for col in cols for tid in col]
+    assert "tw3" in flat and "tw6" in flat and "td2" in flat
+    assert cols[0][0] == "tw1"                  # the first depth-0 chain head
+    assert flat.index("tw3") < flat.index("td2")  # band order preserved

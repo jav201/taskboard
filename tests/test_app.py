@@ -1598,9 +1598,9 @@ def test_kanban_windows_phases_when_they_dont_fit(tmp_path):
     # last of them
     assert "PHASE6" in out and "PHASE0" not in out       # only the window is drawn
     assert out.split("\n")[1].rstrip().endswith("✓1")   # the rail, as a count
-    assert "◀ 5" in out                                  # 5 phases hidden to the left
+    assert "◂" in out                                    # 5 phases hidden to the left
     out0 = str(render_kanban(b, False, b.tasks[1].id, date(2026, 7, 17), width=40, height=0))
-    assert "5 ▶" in out0                                 # …and to the right at the start
+    assert "▸ 5" in out0                                 # …and to the right at the start
 
 # --- gantt project bar (dual-density braille + honest due figure) ----------- #
 GANTT_TODAY = date(2026, 7, 20)          # a Monday, so week 0 starts on it

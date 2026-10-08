@@ -1,0 +1,34 @@
+# Mutation battery — batch-06, coordinator-run (byte-level runner, restores sha256-verified)
+
+All four restores returned OK (file hash identical before/after).
+
+## M9 — the `○` admission dropped — KILLED
+Mutation: `_chainmap_plan`'s `unlinked = sort_by_due(...)` -> `unlinked = []`.
+Node: `tests/test_chainmap.py` (whole file). Result: `6 failed, 5 passed` — the
+amended TC-801/TC-802 frames diff (the `○` rows are gone) plus the tile arms.
+
+## M10 — bare rows despite open work — KILLED
+Mutation: the band-admission guard `if ts or unlinked:` -> `if ts:`.
+Node: `tests/test_chainmap.py`. Result: `3 failed, 8 passed` — the arms pinning
+"the `no links` row only for a project with no open work".
+
+## M11 — the cap's N drops the tiles — KILLED
+Mutation: `tail_n = (nslot - limit) + (n_open - n_tiles)` -> `tail_n = (nslot - limit)`.
+Node: `tests/test_chainmap.py::test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole`.
+Result: `1 failed` — the cap count is exact over chains AND tiles.
+
+## M12 — the right window marker removed — KILLED
+Mutation: `_windowed_header`'s `suf = f" ▸ {n - end}" ...` -> `suf = ""`.
+Node: `tests/test_kanban_window.py`. Result: `1 failed, 3 passed` — the hidden-count
+arm reddens while the all-fits and left-marker arms stay green (per-arm granularity).
+
+## Notes
+- M9's transcript doubles as the RED counterfactual for the oracle amendment: on the
+  base tree (no tiles) the amended frames cannot match — the increment's own new
+  assertions fail by construction without the renderer change.
+- Review note recorded by the coordinator: the kanban's hidden-phase markers existed
+  in a prior chrome (`◀ N` / `N ▶`, pinned by test_app.py's window test); batch-06
+  refines the form (`◂` / `▸ N`), keeps the count on both sides' law (right side
+  exact), and adds the left-edge marker case + the `?` bullet — the shipped delta
+  the operator asked for is the discoverability (help + consistent marks), not the
+  existence of marks.

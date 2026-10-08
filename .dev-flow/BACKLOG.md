@@ -3,14 +3,16 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `a8208804` (local HEAD == `origin/main`; batch 2026-10-07-batch-05 started here)
+**Base ref:** `8284d3a` (local HEAD == `origin/main`; batch 2026-10-07-batch-06 started here)
 · **Last refresh:** 2026-10-07
-**Status:** **2556 tests** (batch `2026-10-07-batch-05`, the carries batch: S5-3 a failed backup
-write leaves no partial file (`_create_beside`'s close-then-unlink guard), F-6 one `Mon D`
-formatter owned at models, UXV-3 the single-task undo toast, UXV-6 the `?` help word-clip, the
-three batch-C chain-map carries — the deep-chain `+N more ↓` cap amending TC-810
-(LED-2026-10-07-batch-05.1), the one-pass resize heal, AT-801b's docstring — and the P4 F-3..F-5
-test-strength arms; 10 new test nodes across 4 new files).
+**Status:** **2566 tests** (batch `2026-10-07-batch-06`, the operator-feedback batch: the chain map
+admits every open task — unlinked open tasks as one-row `○` tiles, selectable, reachable by the
+arrows; `L` on a tile creates the first link ON the map via the shipped picker; `x` leaves a tile;
+the `no links` row survives only for a no-open-work project; the C-2b oracle frames amend under
+LED-2026-10-07-batch-06.1 — the amended frames are the new renderer's bytes on the same frozen
+fixture, the sealed batch-02 frames stay history — and the kanban window shows its hidden sides:
+`◂`/`▸ N` (N exact) on the phase-head row + the `?` window bullet; 10 new test nodes across 3
+files; M9-M12 all KILLED).
 `test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011; did not fire
 at this batch's close).
 
@@ -58,6 +60,35 @@ at this batch's close).
   M1-M7 mutants KILLED, M8 SURVIVED-with-cause (declared in increment-003's packet), M5 the
   planted-assignment probe; the B1 present-a-project round closed by batch E (`2026-10-07-batch-04`),
   marked below.
+
+- ✓ done in `2026-10-07-batch-06` (the operator-feedback batch; contract LED-2026-10-07-batch-06.1) —
+  **US-1201 the chain map admits every open task + US-1202 the kanban window shows its hidden
+  sides**: unlinked open tasks paint as one-row `○` tiles (the legend's open-chain-head chrome —
+  `○`, title, due chip, late mark), selectable and reachable by the arrows in band order; `L` on
+  any tile opens the shipped LinkPicker and the pick lands as the task's FIRST incoming link on the
+  map (`x` leaves a re-linkable tile; the strip says `◂ waits on  nothing yet`); the inert
+  `no links` row survives only for a project with no open work (guard `if ts or unlinked:`,
+  views.py:5581); the fold is tile-aware — the `+N more ↓` cap counts chains AND tiles
+  (`tail_n = (nslot - limit) + (n_open - n_tiles)`, views.py:5869); the C-2b frames AMEND under
+  LED-2026-10-07-batch-06.1 (the amended frames are the new renderer's bytes on the same frozen
+  kg fixture + Data Warehouse `together`, CRLF at this batch's evidence home, sha256-verified;
+  `tests/test_chainmap.py`'s FRAMES path moved there; the sealed batch-02 frames stay history);
+  the kanban's phase-head row gains `◂` (start > 0) and `▸ N` (N exact) with no markers when all
+  fits, and the `?` kanban help gains the window bullet. 2566 tests green (2566 = 2556 + 10);
+  M9/M10/M11/M12 KILLED (M9 doubles as the amendment's RED counterfactual); the three
+  layout-driven pinned-test updates (TC-810 · AT-802 · AT-801c) are law-driven, named in
+  increment-002's packet; the operator's visual re-verdict on the amended frames + the new chrome
+  is PENDING in the Open section above.
+
+## Open — after `2026-10-07-batch-06` (the operator-feedback batch)
+
+- **The operator's visual re-verdict on the amended C-2b frames + the new chrome — PENDING** (the
+  `○` tiles, the `L`-on-the-map flow, the `◂`/`▸ N` window marks, the `?` bullets). The batch pushes
+  under the commission; the operator's verdict folds on arrival (batch C's exact form) — requested
+  at close per the contract §5.2.
+- Queued: **batch-07 — process/chain templates** (the operator's request, scoped by the coordinator:
+  user templates in settings + factory presets, a `T` picker, one undo step) — to be contracted at
+  batch-07's P1.
 
 ## Open — after `2026-10-07-batch-05` (the carries batch)
 
