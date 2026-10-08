@@ -38,7 +38,7 @@ from .models import (IMAGE_EXTS, PROJECT_COLORS, PROJECT_STATUSES, TASK_PRIORITI
                      is_open, link_candidates, link_conflicts, loopers_of,
                      open_dependents, project_archive_refusal,
                      grab_clipboard_image, grab_clipboard_text, parse_iso,
-                     resolve_city, save_pil_image)
+                     resolve_city, save_pil_image, templates)
 from .keymap import palette_commands
 from .views import (HEX, clip, gantt_group_key, gantt_link_frame, gantt_link_order,
                     highlight_segments, valid_url)
@@ -925,6 +925,53 @@ class LinkPicker(ModalScreen[tuple[str, str] | None]):
         elif oid and oid.startswith("c:"):
             tid = oid[2:]
             self.dismiss(("unlink" if tid in self.waiter.depends_on else "link", tid))
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class TemplatePicker(ModalScreen[str | None]):
+    """`I` — "insert a process" (HLR-1301). Lists the board's user templates
+    first, then the factory presets, each row `name — N tasks`; selecting a row
+    returns its name, `esc` returns None. Every user string is a Text piece
+    (S1)."""
+
+    BINDINGS = [("escape", "cancel", "Cancel")]
+
+    DEFAULT_CSS = """
+    TemplatePicker { align: center middle; }
+    #template-box { width: 64; max-width: 95%; height: auto; max-height: 90%;
+                    padding: 1 2; background: #0d1219; border: round #334154; }
+    #template-box Label { margin: 0; }
+    #template-list { height: auto; margin-top: 1; }
+    """
+
+    def __init__(self, board: Board):
+        super().__init__()
+        self.board = board
+        self._templates: list = []
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="template-box"):
+            yield Label(Text.assemble(("◆ Templates", "bold"), " — insert a process"),
+                        classes="modal-title")
+            yield OptionList(id="template-list")
+            yield Label(Text("↵ insert  ·  esc cancel", style=HEX["dim"]))
+
+    def on_mount(self) -> None:
+        ol = self.query_one("#template-list", OptionList)
+        self._templates = templates(self.board)
+        options = []
+        for t in self._templates:
+            line = Text(t.name, style="bold")
+            line.append(f" — {len(t.tasks)} tasks", style=HEX["dim"])
+            options.append(Option(line, id=str(len(options))))
+        ol.add_options(options)
+        ol.highlighted = 0 if options else None
+        ol.focus()
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self.dismiss(self._templates[int(event.option.id)].name)
 
     def action_cancel(self) -> None:
         self.dismiss(None)

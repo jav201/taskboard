@@ -3,18 +3,33 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `8284d3a` (local HEAD == `origin/main`; batch 2026-10-07-batch-06 started here)
+**Base ref:** `1cf2f74` (local HEAD == `origin/main`; batch 2026-10-07-batch-07 started here)
 · **Last refresh:** 2026-10-07
-**Status:** **2566 tests** (batch `2026-10-07-batch-06`, the operator-feedback batch: the chain map
-admits every open task — unlinked open tasks as one-row `○` tiles, selectable, reachable by the
-arrows; `L` on a tile creates the first link ON the map via the shipped picker; `x` leaves a tile;
-the `no links` row survives only for a no-open-work project; the C-2b oracle frames amend under
-LED-2026-10-07-batch-06.1 — the amended frames are the new renderer's bytes on the same frozen
-fixture, the sealed batch-02 frames stay history — and the kanban window shows its hidden sides:
-`◂`/`▸ N` (N exact) on the phase-head row + the `?` window bullet; 10 new test nodes across 3
-files; M9-M12 all KILLED).
+**Status:** **2575 tests** (batch `2026-10-07-batch-07`, the templates batch: press `I`, pick a
+template — user templates from the board's `settings["templates"]` first, then the `Simple chain`
+and `Bugfix` factory presets — and the project's chain of tasks exists: created in the first phase
+with no dates, linked exactly as the template's forward-only `wait` declares, ONE undo step
+(`u` removes the whole insert; a second `u` says `Nothing to undo.`), the toast
+`Inserted '<name>' — <N> tasks into <project>`; the `?` help names the key and the board-JSON edit
+seat; the contract's original `T` key was corrected to `I` under LED-2026-10-07-batch-07.2 before
+the first edit — `T` ships `project_pin_toggle` — the implementing agent's stop-and-name gate
+caught it; 9 new test nodes across 2 files; M13-M15 all KILLED).
 `test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011; did not fire
 at this batch's close).
+
+- ✓ done in `2026-10-07-batch-07` (the templates batch; contract LED-2026-10-07-batch-07.1 + the
+  T→I correction LED .2) — **process/chain templates insertable into a project** (US-1301, the
+  operator's request 2026-10-07: "crear templates de procesos o templates de cadenas que se
+  reflejan en tareas que se pueden insertar a proyecto"): the template store at
+  `models.templates(board)` — user `settings["templates"]` first, a lenient read (a malformed entry
+  skips whole; a bad `wait` drops only that link), the two presets; `app.action_templates` + the
+  `TemplatePicker` (LinkPicker chrome) on key `I` (global, palette-only, group misc), the
+  `present_project_id` resolution with the `No project to insert into.` refusal; the insert in
+  `phases[0]` with no dates, ids generated, ONE `{"templates": [ids…]}` undo entry, the pinned
+  toast, the `templates` undo branch at `app.py:1499`; the `?` bullet (`views.py:6837`) + the README
+  `I` row (forced by the shipped README-census test); AT-1301's 9 arms across
+  `tests/test_templates.py` (4 store) + `tests/test_templates_app.py` (5 app). 2575 tests green
+  (2575 = 2566 + 9); M13 (one-id undo) · M14 (no links) · M15 (leniency gone) KILLED.
 
 - ✓ done in `2026-10-06-batch-01` (operator's visual verdict 2026-10-07: PV-612..PV-615 + UXV-6
   all accepted) — **B2b: moving a task's dates moves what waits on it** (US-604): the cascade
@@ -80,15 +95,28 @@ at this batch's close).
   increment-002's packet; the operator's visual re-verdict on the amended frames + the new chrome
   is PENDING in the Open section above.
 
+## Open — after `2026-10-07-batch-07` (the templates batch)
+
+- **Template authoring from the app — v2** ("save this chain as a template"): a name prompt plus a
+  `settings["templates"]` write behind the shipped modal/seam pattern, ONE undo step, its own
+  contract. Declared as the v2 carry inside HLR-1301 (v1 edits templates in the board JSON, the `?`
+  documents it); surfaced by the implementing session as the natural next increment.
+- **The operator's visual re-verdict on the amended C-2b frames + the new chrome — STILL PENDING**
+  (carried from batch-06: the `○` tiles, the `L`-on-the-map flow, the `◂`/`▸ N` window marks, the
+  `?` bullets). Both batches push under the commission; the operator's verdict folds on arrival
+  (batch C's exact form) — requested at each close per the contract §5.2. Item kept open verbatim
+  below.
+
 ## Open — after `2026-10-07-batch-06` (the operator-feedback batch)
 
 - **The operator's visual re-verdict on the amended C-2b frames + the new chrome — PENDING** (the
   `○` tiles, the `L`-on-the-map flow, the `◂`/`▸ N` window marks, the `?` bullets). The batch pushes
   under the commission; the operator's verdict folds on arrival (batch C's exact form) — requested
-  at close per the contract §5.2.
-- Queued: **batch-07 — process/chain templates** (the operator's request, scoped by the coordinator:
-  user templates in settings + factory presets, a `T` picker, one undo step) — to be contracted at
-  batch-07's P1.
+  at close per the contract §5.2. **Carried — still open at batch-07's close; rolled into the
+  "Open — after `2026-10-07-batch-07`" section above.**
+- ~~Queued: batch-07 — process/chain templates~~ — **✓ done in `2026-10-07-batch-07`** (the entry at
+  the top of this file; note the queued item's `T` picker was corrected to `I` under
+  LED-2026-10-07-batch-07.2 before the first edit).
 
 ## Open — after `2026-10-07-batch-05` (the carries batch)
 

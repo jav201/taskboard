@@ -6833,7 +6833,8 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
                            "▐ band rule: a project once, across columns",
                            "◆ on a band rule: a milestone, never a card",
                            "┈ splits cards · ✓ the done rail (✓N narrow)",
-                           "▲ above · ▼ below: bands folded off screen"]),
+                           "▲ above · ▼ below: bands folded off screen",
+                           "I inserts a template · edit it in board JSON"]),
         ]
     if mode == "swimlanes":
         return [

@@ -1,0 +1,1165 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m$ [0mls -la C:/Users/jjgh8/Github/taskboard && echo "---" && ls -la C:/Users/jjgh8/Github/taskboard/taskboard && echo "---" && ls -la C:/Users/jjgh8/Github/taskboard/tests && echo "---" && ls -la C:/Users/jjgh8/Github/taskboard/.dev-flow
+total 1108
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 19:19 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  3 10:50 ..
+drwxr-xr-x 1 jjgh8 197609      0 Jul 21 10:24 .claude
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 19:17 .dev-flow
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 18:10 .fast-dev-flow
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 19:25 .git
+-rw-r--r-- 1 jjgh8 197609    720 Oct  7 19:17 .gitattributes
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 09:40 .githooks
+drwxr-xr-x 1 jjgh8 197609      0 Aug  7 21:47 .github
+-rw-r--r-- 1 jjgh8 197609   1135 Aug  7 09:28 .gitignore
+drwxr-xr-x 1 jjgh8 197609      0 Aug  3 08:33 .pytest_cache
+drwxr-xr-x 1 jjgh8 197609      0 Sep  5 18:17 .ruff_cache
+drwxr-xr-x 1 jjgh8 197609      0 Jul 20 18:55 .s19tool
+-rw-r--r-- 1 jjgh8 197609  12974 Aug  7 09:28 BACKGROUND.md
+-rw-r--r-- 1 jjgh8 197609  10390 Aug  7 09:28 HANDOFF.md
+-rw-r--r-- 1 jjgh8 197609 754282 Aug  7 09:28 PENDING.md
+-rw-r--r-- 1 jjgh8 197609  17981 Oct  7 14:30 README.md
+-rw-r--r-- 1 jjgh8 197609 103848 Oct  7 19:09 REQUIREMENTS.md
+-rw-r--r-- 1 jjgh8 197609   1711 Oct  2 08:09 RUN.md
+drwxr-xr-x 1 jjgh8 197609      0 Aug 15 02:18 _prototypes
+drwxr-xr-x 1 jjgh8 197609      0 Jul 31 17:19 _tui_prism_proposal
+drwxr-xr-x 1 jjgh8 197609      0 Jul 20 18:55 build
+-rw-r--r-- 1 jjgh8 197609   1378 Jul 23 19:01 debug-cdc3df.log
+drwxr-xr-x 1 jjgh8 197609      0 Oct  2 08:28 docs
+-rw-r--r-- 1 jjgh8 197609  10857 Aug 29 10:52 handoff-batch-10.md
+-rw-r--r-- 1 jjgh8 197609   7646 Aug 31 18:24 handoff-batch-11-team-sync.md
+-rw-r--r-- 1 jjgh8 197609   7275 Sep  1 09:38 handoff-batch-12-setup-help.md
+-rw-r--r-- 1 jjgh8 197609   8019 Aug 20 18:15 handoff-lanes-grid.md
+-rw-r--r-- 1 jjgh8 197609  10788 Aug 18 21:32 handoff-next-level.md
+-rw-r--r-- 1 jjgh8 197609   4258 Aug 18 16:00 handoff-three-prototypes.md
+drwxr-xr-x 1 jjgh8 197609      0 Sep 30 20:58 prototypes
+-rw-r--r-- 1 jjgh8 197609   1073 Aug  7 22:11 pyproject.toml
+-rw-r--r-- 1 jjgh8 197609   1023 Aug  7 21:48 requirements.txt
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 14:30 taskboard
+drwxr-xr-x 1 jjgh8 197609      0 Sep  1 15:01 taskboard.egg-info
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 17:54 tests
+drwxr-xr-x 1 jjgh8 197609      0 Aug 15 02:40 tools
+-rw-r--r-- 1 jjgh8 197609   2720 Jul 18 11:08 wezterm.lua
+---
+total 749
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 14:30 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 19:19 ..
+-rw-r--r-- 1 jjgh8 197609    104 Jul 17 20:51 __init__.py
+-rw-r--r-- 1 jjgh8 197609   1595 Jul 31 07:39 __main__.py
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 18:36 __pycache__
+-rw-r--r-- 1 jjgh8 197609 111663 Oct  7 16:36 app.py
+-rw-r--r-- 1 jjgh8 197609   3197 Aug 29 11:03 history.py
+-rw-r--r-- 1 jjgh8 197609  14325 Oct  7 14:30 keymap.py
+-rw-r--r-- 1 jjgh8 197609  91878 Oct  7 16:36 modals.py
+-rw-r--r-- 1 jjgh8 197609 100665 Oct  7 15:43 models.py
+-rw-r--r-- 1 jjgh8 197609  13151 Jul 31 07:39 report.py
+-rw-r--r-- 1 jjgh8 197609   2534 Oct  2 11:19 ribbon.py
+-rw-r--r-- 1 jjgh8 197609   7133 Oct  3 20:05 taskboard.tcss
+-rw-r--r-- 1 jjgh8 197609  16592 Oct  3 10:56 team_sync.py
+-rw-r--r-- 1 jjgh8 197609 342130 Oct  7 18:35 views.py
+-rw-r--r-- 1 jjgh8 197609   6165 Jul 30 16:03 wave.py
+---
+total 1668
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 17:54 .
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 19:19 ..
+drwxr-xr-x 1 jjgh8 197609      0 Oct  7 18:36 __pycache__
+-rw-r--r-- 1 jjgh8 197609   1094 Oct  4 23:58 conftest.py
+-rw-r--r-- 1 jjgh8 197609  13343 Oct  4 22:14 kg_board.py
+-rw-r--r-- 1 jjgh8 197609   6550 Oct  7 14:30 present_board.py
+-rw-r--r-- 1 jjgh8 197609   7417 Jul 30 21:02 test_agenda.py
+-rw-r--r-- 1 jjgh8 197609 207821 Oct  7 17:53 test_app.py
+-rw-r--r-- 1 jjgh8 197609  34644 Oct  3 09:32 test_archive.py
+-rw-r--r-- 1 jjgh8 197609   3166 Oct  7 17:09 test_backup_write.py
+-rw-r--r-- 1 jjgh8 197609  13332 Oct  6 15:35 test_cascade.py
+-rw-r--r-- 1 jjgh8 197609  33933 Oct  7 07:21 test_cascade_app.py
+-rw-r--r-- 1 jjgh8 197609  17111 Oct  2 10:29 test_cells.py
+-rw-r--r-- 1 jjgh8 197609  12808 Oct  7 18:14 test_chainmap.py
+-rw-r--r-- 1 jjgh8 197609  18091 Oct  7 18:36 test_chainmap_app.py
+-rw-r--r-- 1 jjgh8 197609   8382 Jul 30 17:22 test_cities.py
+-rw-r--r-- 1 jjgh8 197609  18013 Oct  7 13:00 test_cleanup.py
+-rw-r--r-- 1 jjgh8 197609  10469 Oct  2 10:29 test_colour_budget.py
+-rw-r--r-- 1 jjgh8 197609  28788 Oct  7 10:32 test_colour_budget_app.py
+-rw-r--r-- 1 jjgh8 197609  20289 Oct  3 11:04 test_control_bytes.py
+-rw-r--r-- 1 jjgh8 197609  13992 Oct  3 22:38 test_dependencies.py
+-rw-r--r-- 1 jjgh8 197609  12015 Oct  3 20:35 test_details_grid.py
+-rw-r--r-- 1 jjgh8 197609  13253 Oct  4 12:57 test_details_links.py
+-rw-r--r-- 1 jjgh8 197609   5375 Oct  3 11:19 test_details_markup.py
+-rw-r--r-- 1 jjgh8 197609  23405 Oct  4 22:13 test_edit_window.py
+-rw-r--r-- 1 jjgh8 197609  12198 Aug  3 15:18 test_emoji_picker.py
+-rw-r--r-- 1 jjgh8 197609  14114 Oct  7 10:26 test_english.py
+-rw-r--r-- 1 jjgh8 197609   8883 Jul 30 16:12 test_field.py
+-rw-r--r-- 1 jjgh8 197609   6643 Aug  7 18:40 test_flow.py
+-rw-r--r-- 1 jjgh8 197609   5073 Oct  2 11:51 test_flow_view.py
+-rw-r--r-- 1 jjgh8 197609  10503 Sep 30 22:42 test_focus.py
+-rw-r--r-- 1 jjgh8 197609  30503 Oct  2 12:18 test_gantt.py
+-rw-r--r-- 1 jjgh8 197609  48988 Oct  3 22:38 test_gantt_board.py
+-rw-r--r-- 1 jjgh8 197609  22892 Oct  4 17:06 test_gantt_link.py
+-rw-r--r-- 1 jjgh8 197609  19323 Oct  7 15:06 test_gantt_milestones.py
+-rw-r--r-- 1 jjgh8 197609  32011 Oct  3 23:09 test_gantt_polish.py
+-rw-r--r-- 1 jjgh8 197609   5176 Oct  7 15:33 test_help_clip.py
+-rw-r--r-- 1 jjgh8 197609   3976 Oct  3 09:03 test_highlight_segments.py
+-rw-r--r-- 1 jjgh8 197609   5142 Aug 29 11:00 test_history.py
+-rw-r--r-- 1 jjgh8 197609  20455 Oct  6 08:03 test_kanban_milestones.py
+-rw-r--r-- 1 jjgh8 197609  19328 Oct  2 16:36 test_kanban_priority.py
+-rw-r--r-- 1 jjgh8 197609  65767 Oct  7 17:53 test_kanban_readable.py
+-rw-r--r-- 1 jjgh8 197609   2875 Oct  7 18:36 test_kanban_window.py
+-rw-r--r-- 1 jjgh8 197609  21919 Oct  7 14:30 test_keymap.py
+-rw-r--r-- 1 jjgh8 197609   9512 Aug 20 19:25 test_lanes_grid.py
+-rw-r--r-- 1 jjgh8 197609  18264 Sep  1 11:09 test_legend.py
+-rw-r--r-- 1 jjgh8 197609  25900 Oct  4 16:35 test_link_migration.py
+-rw-r--r-- 1 jjgh8 197609  17968 Oct  7 10:26 test_link_picker.py
+-rw-r--r-- 1 jjgh8 197609  36831 Oct  4 18:41 test_links.py
+-rw-r--r-- 1 jjgh8 197609  32588 Oct  7 14:30 test_markup_census.py
+-rw-r--r-- 1 jjgh8 197609  62933 Oct  7 14:30 test_markup_sites.py
+-rw-r--r-- 1 jjgh8 197609  34923 Oct  5 00:51 test_milestone_offer.py
+-rw-r--r-- 1 jjgh8 197609   1820 Oct  4 23:58 test_milestone_offer_seam.py
+-rw-r--r-- 1 jjgh8 197609  28629 Oct  7 15:43 test_milestones.py
+-rw-r--r-- 1 jjgh8 197609  20688 Aug 15 20:13 test_momentum.py
+-rw-r--r-- 1 jjgh8 197609   1668 Oct  7 17:09 test_mon_d.py
+-rw-r--r-- 1 jjgh8 197609  16659 Oct  2 07:49 test_motion.py
+-rw-r--r-- 1 jjgh8 197609   3969 Sep  1 09:14 test_no_live_board.py
+-rw-r--r-- 1 jjgh8 197609  10833 Jul 30 21:00 test_occupancy.py
+-rw-r--r-- 1 jjgh8 197609  16621 Sep 30 21:56 test_palette_ration.py
+-rw-r--r-- 1 jjgh8 197609   8013 Aug  7 21:50 test_precommit_gate.py
+-rw-r--r-- 1 jjgh8 197609   8565 Oct  7 14:30 test_present.py
+-rw-r--r-- 1 jjgh8 197609  18053 Oct  3 09:32 test_prism_laws.py
+-rw-r--r-- 1 jjgh8 197609   7944 Aug  7 06:53 test_privacy_sweep.py
+-rw-r--r-- 1 jjgh8 197609   8994 Oct  7 10:52 test_readme.py
+-rw-r--r-- 1 jjgh8 197609  15152 Oct  7 14:30 test_report.py
+-rw-r--r-- 1 jjgh8 197609   5884 Oct  2 08:07 test_requirements.py
+-rw-r--r-- 1 jjgh8 197609   5809 Jul 24 11:49 test_rescue.py
+-rw-r--r-- 1 jjgh8 197609  14131 Aug  6 18:49 test_row_cost.py
+-rw-r--r-- 1 jjgh8 197609   4085 Aug  7 09:35 test_scratch_cannot_be_committed.py
+-rw-r--r-- 1 jjgh8 197609  15840 Oct  2 12:00 test_setup_help.py
+-rw-r--r-- 1 jjgh8 197609   8285 Aug  3 08:46 test_span_economy.py
+-rw-r--r-- 1 jjgh8 197609  14790 Oct  2 07:50 test_spend.py
+-rw-r--r-- 1 jjgh8 197609  28232 Aug  3 16:20 test_swimlanes.py
+-rw-r--r-- 1 jjgh8 197609  12618 Oct  3 11:09 test_sync_fields.py
+-rw-r--r-- 1 jjgh8 197609  12640 Oct  7 12:06 test_team_sync.py
+-rw-r--r-- 1 jjgh8 197609  13470 Oct  2 11:51 test_team_views.py
+-rw-r--r-- 1 jjgh8 197609   4159 Oct  7 15:22 test_undo_toast.py
+-rw-r--r-- 1 jjgh8 197609   7308 Oct  2 07:50 test_vertical_fill.py
+-rw-r--r-- 1 jjgh8 197609   4836 Sep  5 21:09 test_view_survival.py
+-rw-r--r-- 1 jjgh8 197609   9913 Jul 30 16:02 test_wave.py
+---
+total 492
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:19 ..
+-rw-r--r-- 1 jjgh8 197609  3885 Aug 17 11:22 01-requirements.md
+-rw-r--r-- 1 jjgh8 197609 30927 Aug 15 07:13 01b-qa-validation-plan.md
+-rw-r--r-- 1 jjgh8 197609 28076 Aug 15 07:13 02-review-architect.md
+-rw-r--r-- 1 jjgh8 197609 48404 Aug  6 13:48 02-review-qa-iter2.md
+-rw-r--r-- 1 jjgh8 197609 42515 Aug 15 07:13 02-review-qa.md
+-rw-r--r-- 1 jjgh8 197609 14530 Aug 15 20:13 02-review-ux.md
+-rw-r--r-- 1 jjgh8 197609 16827 Aug 15 07:13 02-review.md
+drwxr-xr-x 1 jjgh8 197609     0 Aug 15 20:13 03-increments
+-rw-r--r-- 1 jjgh8 197609 17299 Jul 18 13:02 04-validation.md
+-rw-r--r-- 1 jjgh8 197609  5797 Aug  6 17:10 05-postmortem.md
+drwxr-xr-x 1 jjgh8 197609     0 Jul 20 18:55 06-docs
+drwxr-xr-x 1 jjgh8 197609     0 Jul 31 07:27 2026-07-31-batch-02
+drwxr-xr-x 1 jjgh8 197609     0 Aug  6 11:59 2026-08-03-batch-03
+drwxr-xr-x 1 jjgh8 197609     0 Aug 15 20:13 2026-08-14-batch-04
+drwxr-xr-x 1 jjgh8 197609     0 Aug 16 22:36 2026-08-16-batch-05
+drwxr-xr-x 1 jjgh8 197609     0 Aug 17 11:20 2026-08-17-batch-06
+drwxr-xr-x 1 jjgh8 197609     0 Aug 17 11:22 2026-08-17-batch-07
+drwxr-xr-x 1 jjgh8 197609     0 Aug 18 22:20 2026-08-18-batch-08
+drwxr-xr-x 1 jjgh8 197609     0 Aug 20 19:28 2026-08-19-batch-09
+drwxr-xr-x 1 jjgh8 197609     0 Aug 27 15:14 2026-08-24-batch-10
+drwxr-xr-x 1 jjgh8 197609     0 Sep  5 21:09 2026-09-01-batch-11
+drwxr-xr-x 1 jjgh8 197609     0 Sep 30 21:21 2026-09-01-batch-12
+drwxr-xr-x 1 jjgh8 197609     0 Sep  1 09:09 2026-09-01-cleanup-aperture
+drwxr-xr-x 1 jjgh8 197609     0 Oct  2 07:14 2026-09-30-batch-01
+drwxr-xr-x 1 jjgh8 197609     0 Oct  2 10:00 2026-10-02-batch-01
+drwxr-xr-x 1 jjgh8 197609     0 Oct  2 15:54 2026-10-02-batch-02
+drwxr-xr-x 1 jjgh8 197609     0 Oct  2 22:35 2026-10-02-batch-03
+drwxr-xr-x 1 jjgh8 197609     0 Oct  3 21:13 2026-10-02-batch-04
+drwxr-xr-x 1 jjgh8 197609     0 Oct  4 21:21 2026-10-04-batch-01
+drwxr-xr-x 1 jjgh8 197609     0 Oct  6 08:35 2026-10-04-batch-02
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 07:13 2026-10-06-batch-01
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 08:14 2026-10-07-batch-01
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:48 2026-10-07-batch-02
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 11:48 2026-10-07-batch-03
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 14:45 2026-10-07-batch-04
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 17:43 2026-10-07-batch-05
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 2026-10-07-batch-06
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 2026-10-07-batch-07
+-rw-r--r-- 1 jjgh8 197609 96193 Oct  7 19:02 BACKLOG.md
+-rw-r--r-- 1 jjgh8 197609  2002 Jul 18 13:12 PLAN.md
+-rw-r--r-- 1 jjgh8 197609  6690 Oct  6 08:35 rollover_b2b.py
+-rw-r--r-- 1 jjgh8 197609  6444 Oct  7 08:14 rollover_batchc.py
+-rw-r--r-- 1 jjgh8 197609  6337 Oct  7 14:30 rollover_batche.py
+-rw-r--r-- 1 jjgh8 197609  6653 Oct  7 14:45 rollover_batchf.py
+-rw-r--r-- 1 jjgh8 197609  6718 Oct  7 17:43 rollover_batchg.py
+-rw-r--r-- 1 jjgh8 197609  6553 Oct  7 19:17 rollover_batchh.py
+-rw-r--r-- 1 jjgh8 197609  6454 Oct  7 12:17 rollover_cleanup.py
+-rw-r--r-- 1 jjgh8 197609  6368 Oct  7 07:17 rollover_residue.py
+-rw-r--r-- 1 jjgh8 197609  7001 Oct  7 19:17 state.json
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-07/01-requirements.md
+[0m
+[0m$ [0mls -la C:/Users/jjgh8/Github/taskboard/.dev-flow/2026-10-07-batch-07
+total 76
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 ..
+-rw-r--r-- 1 jjgh8 197609  7715 Oct  7 19:17 00-checklists.md
+-rw-r--r-- 1 jjgh8 197609  2386 Oct  7 19:24 01-requirements-ledger.md
+-rw-r--r-- 1 jjgh8 197609 13191 Oct  7 19:24 01-requirements.md
+-rw-r--r-- 1 jjgh8 197609  3476 Oct  7 19:17 02-review.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 03-increments
+-rw-r--r-- 1 jjgh8 197609  7643 Oct  7 19:17 04-validation.md
+-rw-r--r-- 1 jjgh8 197609  6228 Oct  7 19:17 05-close.md
+-rw-r--r-- 1 jjgh8 197609  2813 Oct  7 19:17 PLAN.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:25 evidence
+[0m
+[0m✱ [0mGrep "class LinkPicker|def action_present|def action_undo|present_project_id|def action_templates|class.*Picker"[90m in taskboard · 13 matches[0m
+[0m✱ [0mGrep "def help_usage|help_usage"[90m in taskboard · 3 matches[0m
+[0m→ [0mRead taskboard/modals.py[90m [offset=801, limit=220][0m
+[0m→ [0mRead taskboard/app.py[90m [offset=700, limit=120][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=160, offset=1405][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=60, offset=6043][0m
+[0m✱ [0mGrep "LinkPicker|action_link|_on_link|push_screen\(LinkPicker|def action_links|def _on_link_picked"[90m in taskboard/app.py · 9 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=140, offset=1085][0m
+[0m✱ [0mGrep "def add_task|def new_id|house|id_seam|def next_id|class Task|def __init__.*Task|class Board|def save|def task_by_id|def project_by_id|def visible_projects|self.settings|settings\["[90m in taskboard/models.py · 64 matches[0m
+[0m→ [0mRead taskboard/keymap.py
+[0m→ [0mRead taskboard/models.py[90m [limit=180, offset=828][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=80, offset=1200][0m
+[0m✱ [0mGrep "def _new_id|_new_id"[90m in taskboard/models.py · 7 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=40, offset=630][0m
+[0m✱ [0mGrep "present|standup|open_url|add_project|manage_projects|manage_phases|clocks"[90m in taskboard/app.py · 100 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=140, offset=275][0m
+[0m✱ [0mGrep "def _snapshot|def _notify|def notify|def selected_task|selected_task\b|def action_add_task|def _on_add_task|Task\(|strip_controls|def _apply_cascade"[90m in taskboard/app.py · 50 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=120, offset=1988][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=60, offset=1386][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=55, offset=1][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=6811][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=6930][0m
+[0m→ [0mRead tests/test_present.py
+[0m→ [0mRead tests/conftest.py
+[0m→ [0mRead tests/test_link_picker.py
+[0m→ [0mRead taskboard/models.py[90m [limit=100, offset=1105][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=70, offset=760][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=60, offset=1][0m
+[0m✱ [0mGrep "^def clip|^HEX|^def vis|def escape|def _md|def fit\b"[90m in taskboard/views.py · 5 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=40, offset=43][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=20, offset=866][0m
+[0m→ [0mRead taskboard/history.py
+[0m→ [0mRead taskboard/models.py[90m [limit=55, offset=1][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=80, offset=2170][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=15, offset=2249][0m
+[0m→ [0mRead tests/present_board.py
+[0m→ [0mRead tests/test_undo_toast.py
+[0m✱ [0mGrep "\btemplates\b|TemplatePicker|TemplateTask|PRESET_TEMPLATES"[90m in taskboard · 0 matches[0m
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/models.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/models.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/models.py
+@@ -2247,4 +2247,80 @@
+     n = len(waiters)
+     return (f"can't archive this project — {n} open task"
+             f"{'s' if n != 1 else ''} outside it wait{'' if n != 1 else 's'} on its "
+             f"tasks ({_names(waiters)}). Finish them, or remove the links first.")
++
++
++# ---- process/chain templates (batch 2026-10-07-batch-07, HLR-1301) ----------
++@dataclass(frozen=True)
++class TemplateTask:
++    """One task of a process template: its title, optional notes, and the index
++    of the template task it waits on (None = first in the chain, unlinked)."""
++
++    title: str
++    notes: str = ""
++    wait: int | None = None
++
++
++@dataclass(frozen=True)
++class Template:
++    """A named process: a chain of tasks. `wait` is forward-only by construction
++    — an index may only point backwards, so a cycle is impossible."""
++
++    name: str
++    tasks: tuple[TemplateTask, ...]
++
++
++# The two factory presets, always available and listed AFTER user templates.
++PRESET_TEMPLATES: tuple[Template, ...] = (
++    Template("Simple chain", (TemplateTask("Plan"),
++                              TemplateTask("Build", wait=0),
++                              TemplateTask("Ship", wait=1))),
++    Template("Bugfix", (TemplateTask("Triage"),
++                        TemplateTask("Fix", wait=0),
++                        TemplateTask("Verify", wait=1))),
++)
++
++
++def templates(board: Board) -> list[Template]:
++    """The board's insertable templates: user `settings["templates"]` first, the
++    presets after. Lenient, never raising. An entry is skipped when it is not a
++    dict, its name is not non-empty text, its `tasks` is not a list, or a task
++    inside it is not a dict or has a non-text/empty title (a dropped mid-chain
++    task would silently rewire the `wait` targets). A `notes` that is not text
++    reads as ""; a `wait` that is not a valid earlier index reads as None — the
++    task is kept, the link dropped."""
++    out: list[Template] = []
++    for entry in board.settings.get("templates") or []:
++        tpl = _read_template(entry)
++        if tpl is not None:
++            out.append(tpl)
++    out.extend(PRESET_TEMPLATES)
++    return out
++
++
++def _read_template(entry) -> Template | None:
++    if not isinstance(entry, dict):
++        return None
++    name = entry.get("name")
++    if not (isinstance(name, str) and name.strip()):
++        return None
++    body = entry.get("tasks")
++    if not isinstance(body, list):
++        return None
++    tasks: list[TemplateTask] = []
++    for one in body:
++        if not isinstance(one, dict):
++            return None
++        title = one.get("title")
++        if not (isinstance(title, str) and title.strip()):
++            return None
++        notes = one.get("notes", "")
++        if notes is None:
++            notes = ""
++        if not isinstance(notes, str):
++            notes = ""
++        wait = one.get("wait")
++        if not (isinstance(wait, int) and 0 <= wait < len(tasks)):
++            wait = None
++        tasks.append(TemplateTask(title, notes, wait))
++    return Template(name, tuple(tasks))
+
+[0m
+[0m← [0mEdit taskboard/keymap.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
+@@ -133,8 +133,11 @@
+ Key("P", "P", "manage_projects", "Projects", group="misc", bar=False),
+ Key("f", "f", "manage_phases", "Phases", group="misc", bar=False),
+ Key("c", "c", "clocks", "Clocks", group="misc", bar=False),
+ Key("R", "R", "present", "Present", group="misc", bar=False),
++# `I` — insert a process template (batch 2026-10-07-batch-07, HLR-1301):
++# global, palette-only, like `R` (shifted, not scoped to a view).
++Key("I", "I", "templates", "Templates", group="misc", bar=False),
+ # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
+ # derives from the board in ANY view, so — like `R` — it is not scoped.
+ Key("S", "S", "standup", "Standup", group="misc", bar=False),
+ 
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -929,8 +929,55 @@
+     def action_cancel(self) -> None:
+         self.dismiss(None)
+ 
+ 
++class TemplatePicker(ModalScreen[str | None]):
++    """`I` — "insert a process" (HLR-1301). Lists the board's user templates
++    first, then the factory presets, each row `name — N tasks`; selecting a row
++    returns its name, `esc` returns None. Every user string is a Text piece
++    (S1)."""
++
++    BINDINGS = [("escape", "cancel", "Cancel")]
++
++    DEFAULT_CSS = """
++    TemplatePicker { align: center middle; }
++    #template-box { width: 64; max-width: 95%; height: auto; max-height: 90%;
++                    padding: 1 2; background: #0d1219; border: round #334154; }
++    #template-box Label { margin: 0; }
++    #template-list { height: auto; margin-top: 1; }
++    """
++
++    def __init__(self, board: Board):
++        super().__init__()
++        self.board = board
++        self._templates: list = []
++
++    def compose(self) -> ComposeResult:
++        with Vertical(id="template-box"):
++            yield Label(Text.assemble(("◆ Templates", "bold"), " — insert a process"),
++                        classes="modal-title")
++            yield OptionList(id="template-list")
++            yield Label(Text("↵ insert  ·  esc cancel", style=HEX["dim"]))
++
++    def on_mount(self) -> None:
++        ol = self.query_one("#template-list", OptionList)
++        self._templates = templates(self.board)
++        options = []
++        for t in self._templates:
++            line = Text(t.name, style="bold")
++            line.append(f" — {len(t.tasks)} tasks", style=HEX["dim"])
++            options.append(Option(line, id=str(len(options))))
++        ol.add_options(options)
++        ol.highlighted = 0 if options else None
++        ol.focus()
++
++    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
++        self.dismiss(self._templates[int(event.option.id)].name)
++
++    def action_cancel(self) -> None:
++        self.dismiss(None)
++
++
+ class MilestoneOffer(ModalScreen[list | None]):
+     """The one-time milestone offer (M-3 as a migration, LLR-605.4): the board's
+     one-day tasks pre-checked, its due-only tasks unchecked, each row naming its
+     project, its date and how many open tasks wait on it. `space` toggles the
+
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/modals.py
+@@ -37,9 +37,9 @@
+                      Board, Project, Task, _new_id, city_names, dependents_chain,
+                      is_open, link_candidates, link_conflicts, loopers_of,
+                      open_dependents, project_archive_refusal,
+                      grab_clipboard_image, grab_clipboard_text, parse_iso,
+-                     resolve_city, save_pil_image)
++                     resolve_city, save_pil_image, templates)
+ from .keymap import palette_commands
+ from .views import (HEX, clip, gantt_group_key, gantt_link_frame, gantt_link_order,
+                     highlight_segments, valid_url)
+ 
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -20,15 +20,15 @@
+ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
+                      archive_refusal, default_board_path, is_open, link_refusal,
+                      milestone_candidates, milestones_marked, next_priority, parse_iso,
+                      ready_messages, run_link_migration, run_milestone_offer,
+-                     set_milestone, strip_controls, waiting_ids,
++                     set_milestone, strip_controls, templates, waiting_ids,
+                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
+                      snapshot)
+ from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+-                     ProjectPicker,
+-                     StandupModal, TaskDetails, TaskModal, TeamIdentityPicker, TextPrompt)
++                     ProjectPicker, StandupModal, TaskDetails, TaskModal, TeamIdentityPicker,
++                     TemplatePicker, TextPrompt)
+ from .keymap import KeyBar, app_bindings, palette_commands
+ from .ribbon import Ribbon
+ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
+                         probe_setup_health)
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -327,9 +327,9 @@
+ # and merely disabled, i.e. a legend entry that does nothing.
+ BOARD_ACTIONS = frozenset({
+     "add_task", "add_project", "manage_projects", "manage_phases",
+     "details", "edit", "delete", "archive", "purge_done", "present",
+-    "toggle_archived", "open_url", "open_images", "clocks",
++    "toggle_archived", "open_url", "open_images", "clocks", "templates",
+     "phase_move", "prio_cycle", "toggle_blocked", "link",
+     "kanban_sort", "kanban_group", "collapse_toggle",
+     "focus_cycle", "focus_exit", "due_bump", "undo", "standup",
+     "toggle_presentation", "cursor", "hmove",
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -719,8 +719,50 @@
+     self.push_screen(PresentScreen(self.board, project_id,
+                                    proj.name if proj else None,
+                                    self.selected_task_id))
+ 
++def action_templates(self) -> None:
++    """`I` — insert a process template (HLR-1301): the picker lists the
++    board's user templates then the presets; the insert lands the tasks in
++    the selected task's project (the focused project when set) as ONE undo
++    step. Resolves the target project exactly like `action_present`; no
++    resolvable project -> the `No project to insert into.` toast."""
++    project_id = present_project_id(self.board, self.selected_task_id,
++                                    self.focused_project_id)
++    if project_id is None:
++        self.notify("No project to insert into.", title="Templates",
++                    severity="information", timeout=10, markup=False)
++        return
++    self.push_screen(TemplatePicker(self.board),
++                     lambda name: self._on_template_picked(name, project_id))
++
++def _on_template_picked(self, name: str | None, project_id: str) -> None:
++    if name is None:
++        return
++    tpl = next((t for t in templates(self.board) if t.name == name), None)
++    if tpl is None:
++        return
++    if not tpl.tasks:
++        self.notify(f"Template '{name}' is empty.", title="Templates",
++                    severity="information", markup=False)
++        return
++    project = self.board.project_by_id(project_id)
++    pname = project.name if project else "Inbox"
++    created: list[Task] = []
++    for one in tpl.tasks:
++        new = Task(title=one.title, project_id=project_id,
++                   phase=self.board.phases[0], notes=one.notes)
++        self.board.tasks.append(new)
++        created.append(new)
++        if one.wait is not None:
++            new.depends_on = [created[one.wait].id]
++    self._undo_stack.append({"templates": [t.id for t in created]})
++    self.selected_task_id = created[0].id
++    self.board.save()
++    self.refresh_view()
++    self.notify(f"Inserted '{name}' — {len(created)} tasks into {pname}",
++                title="Templates", severity="information", markup=False)
++
+ def action_standup(self) -> None:
+     """`S` — the week in one modal: what moved and what closed, per
+     project, derived from `phase_changed` alone. Nothing is stored for
+     this, and the modal mutates nothing — it is a reading, not an edit."""
+
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=45, offset=1448][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=30, offset=1492][0m
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -1495,8 +1495,21 @@
+     else:
+         self.board.save()
+     self.refresh_view()
+     return
++if "templates" in entry:
++    # one insert is ONE step — every created task goes together
++    # (the milestones pattern, applied to removal)
++    n = len(entry["templates"])
++    self.board.tasks = [t for t in self.board.tasks
++                        if t.id not in entry["templates"]]
++    self.selected_task_id = None
++    self.board.save()
++    self.refresh_view()
++    self.notify(f"Template insert undone — {n} task"
++                f"{'s' if n != 1 else ''} removed",
++                title="Undo", severity="information", markup=False)
++    return
+ task = self.board.task_by_id(entry["task_id"])
+ if task is None:
+     gone = entry.get("task")
+     if gone is None:
+
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=40, offset=1845][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=40, offset=1885][0m
+[0m✱ [0mGrep "class _HelpLine"[90m in taskboard/modals.py · 1 match[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=30, offset=1819][0m
+[0m→ [0mRead tests/test_help_clip.py
+[0m
+[0m$ [0mpython -c "
+from rich.cells import cell_len
+cands = [
+ 'I inserts a template chain · v1 edits them in the board JSON',
+ 'I inserts a template · v1 edits templates in the board JSON',
+ 'I inserts a template chain · edit in the board JSON (settings.templates)',
+ 'I inserts a template · v1 edits in the board JSON (settings.templates)',
+ 'I inserts a template chain · edit in settings.templates',
+]
+for c in cands:
+    print(cell_len(c), c)
+"
+60 I inserts a template chain � v1 edits them in the board JSON
+59 I inserts a template � v1 edits templates in the board JSON
+72 I inserts a template chain � edit in the board JSON (settings.templates)
+70 I inserts a template � v1 edits in the board JSON (settings.templates)
+55 I inserts a template chain � edit in settings.templates
+[0m
+[0m$ [0mpython -c "
+from rich.cells import cell_len
+cands = [
+ 'I inserts a template \u2014 v1 edits templates in board JSON',
+ 'I inserts a template \u00b7 v1 edits templates in board JSON',
+ 'I inserts a template \u2014 v1 edits in the board JSON',
+ 'I inserts a template \u2014 v1 edits in board JSON',
+]
+for c in cands:
+    print(cell_len(c), repr(c))
+"
+55 'I inserts a template � v1 edits templates in board JSON'
+55 'I inserts a template � v1 edits templates in board JSON'
+49 'I inserts a template � v1 edits in the board JSON'
+45 'I inserts a template � v1 edits in board JSON'
+[0m
+[0m$ [0mpython -c "
+from rich.cells import cell_len
+cands = [
+ 'I inserts a template \u00b7 edit templates in board JSON',
+ 'I inserts a template \u00b7 v1 edits templates in board JSON',
+ 'I inserts a template; edit in board JSON',
+ 'I inserts a template \u00b7 edit in board JSON',
+ 'I inserts a template; edit settings.templates',
+ 'I inserts a template \u00b7 edit settings.templates',
+ 'I inserts a template \u00b7 settings.templates',
+]
+for c in cands:
+    print(cell_len(c), c)
+"
+51 I inserts a template � edit templates in board JSON
+55 I inserts a template � v1 edits templates in board JSON
+40 I inserts a template; edit in board JSON
+41 I inserts a template � edit in board JSON
+45 I inserts a template; edit settings.templates
+46 I inserts a template � edit settings.templates
+41 I inserts a template � settings.templates
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -6832,9 +6832,10 @@
+                        "grouped board; +N more ↓ when it is full",
+                        "▐ band rule: a project once, across columns",
+                        "◆ on a band rule: a milestone, never a card",
+                        "┈ splits cards · ✓ the done rail (✓N narrow)",
+-                       "▲ above · ▼ below: bands folded off screen"]),
++                       "▲ above · ▼ below: bands folded off screen",
++                       "I inserts a template · edit it in board JSON"]),
+     ]
+ if mode == "swimlanes":
+     return [
+         ("what it is for", ["see the board at a glance: the project under",
+
+[0m
+[0m✱ [0mGrep "DEFAULT_PHASES"[90m in taskboard/models.py · 2 matches[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=45, offset=819][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=30, offset=864][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=20, offset=893][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=50, offset=413][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=60, offset=1496][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=75, offset=1590][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=70, offset=637][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=70, offset=1021][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=40, offset=1090][0m
+[0m
+[0m← [0mWrite tests/test_templates.py
+Wrote file successfully.
+[0m
+[0m← [0mWrite tests/test_templates_app.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_templates.py tests/test_templates_app.py -q 2>&1 | tail -60
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.........                                                                [100%]
+9 passed in 2.17s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -40
+failed the moment the same test ran on a fresh checkout, where the
+        directory holds only the five tracked files. A law that depends on what a
+        machine happens to contain is not a law about the repository.
+    
+        What actually matters is durable: `capture.py` writes into exactly the
+        directory `.gitignore` covers. If someone repoints `OUT`, the ignore rule
+        silently stops covering the output and this goes red."""
+        src = (ROOT / "prototypes" / "capture.py").read_text(encoding="utf-8")
+        assert 'OUT = ROOT / "prototypes" / "out"' in src, (
+            "capture.py no longer writes into the directory .gitignore covers")
+>       assert ignored("prototypes/out/variants.txt"), (
+            "the capture's own output filename is not covered by the rule")
+E       AssertionError: the capture's own output filename is not covered by the rule
+E       assert False
+E        +  where False = ignored('prototypes/out/variants.txt')
+
+tests\test_scratch_cannot_be_committed.py:87: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat
+FAILED tests/test_no_live_board.py::test_the_fixture_is_in_git_not_just_on_this_disk
+FAILED tests/test_precommit_gate.py::test_a_staged_leak_is_refused_and_the_file_is_named
+FAILED tests/test_precommit_gate.py::test_clean_staged_content_commits - Asse...
+FAILED tests/test_precommit_gate.py::test_it_fails_closed_when_it_cannot_read_the_board
+FAILED tests/test_precommit_gate.py::test_it_fails_closed_on_a_corrupt_board
+FAILED tests/test_precommit_gate.py::test_the_escape_hatch_is_explicit_and_only_that
+FAILED tests/test_precommit_gate.py::test_binary_staged_files_do_not_break_the_gate
+FAILED tests/test_precommit_gate.py::test_the_hook_wired_in_this_repo_points_at_the_script
+FAILED tests/test_report.py::test_the_cli_writes_a_report_and_says_where - As...
+FAILED tests/test_report.py::test_the_cli_scopes_to_a_project_and_refuses_an_unknown_one
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_probe999.py]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_scratch.log]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/variants.txt]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/some-render.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_ignored_directory_is_the_one_the_capture_writes_into
+21 failed, 2554 passed in 420.68s (0:07:00)
+
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 120000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat -q 2>&1 | tail -60
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+F                                                                        [100%]
+================================== FAILURES ===================================
+______________ test_the_readme_keybinding_table_matches_the_seat ______________
+
+    def test_the_readme_keybinding_table_matches_the_seat():
+        """THE CONTRACT REACHES THE README. Every key the table documents must be a
+        real binding, and every key the app binds must be documented — the same law
+        the key bar obeys, applied to the page a reader meets first.
+    
+        Read off the RAW KEYMAP, never through the accessor (the M12 lesson)."""
+        import re
+        table = [l for l in _readme().splitlines() if l.startswith("| `")]
+        assert table, "no keybinding table found"
+        documented = set()
+        for line in table:
+            cell = line.split("|")[1]
+            for key in re.findall(r"`([^`]+)`", cell):
+                documented.add(key)
+    
+        # the seat's own keys, in the spelling the README uses
+        spelled = {"?": "?", "q": "q", "enter": "Enter", "tab": "Tab",
+                   "d,delete": "d", "+,=": "+", "escape": "esc",
+                   "down,j": "↓", "up,k": "↑",
+                   "left,h": "←", "right,l": "→"}
+        for k in KEYMAP:
+            want = spelled.get(k.keys, k.keys)
+            if k.action.startswith("view("):
+                want = k.show                      # the views share one table row
+>           assert want in documented, \
+                f"{k.show} ({k.label}) is bound but the README never mentions it"
+E           AssertionError: I (Templates) is bound but the README never mentions it
+E           assert 'I' in {'!', '+', '-', '/', '0', '1', ...}
+
+tests\test_keymap.py:428: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat
+1 failed in 0.27s
+[0m
+[0m$ [0mgrep -n "Present\|Standup\|Templates\|keybinding\|^\| \`" README.md | head -80
+1:# taskboard
+2:
+3:A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
+4:Run it in a borderless terminal window, pin it on top, and it works as a desktop widget: ten
+5:views over one JSON board, with optional team sync through a shared folder.
+6:
+7:<p align="center">
+8:  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes view, live"><br>
+9:  <img src="docs/taskboard-gantt.svg" width="380" alt="gantt — the whole board on a window fitted to the open work">
+10:  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column"><br>
+11:  <img src="docs/taskboard-agenda.png" width="380" alt="agenda — every due date on one shared axis">
+12:  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one panel per project"><br>
+13:  <sub>Renders of the seeded demo board. The gantt is current; the other images predate this
+14:  release's colour changes.</sub>
+15:</p>
+16:
+17:## What it is
+18:
+19:- **A widget, not a window.** No borders: every view commits with rules, and it reflows to
+20:  whatever size the terminal gives it.
+21:- **Ten views** over the same tasks — lanes, agenda, gantt, kanban, focus, chains, flow, standup,
+22:  people, setup — each one key away.
+23:- **One file.** Your board is a single JSON file in your home directory; nothing goes to a
+24:  server.
+25:- **Optional team mode.** Point it at a shared folder and each person's board syncs there;
+26:  teammates' cards show up read-only.
+27:
+28:## Requirements
+29:
+30:- Python **3.12 or newer** (`requires-python = ">=3.12"`).
+31:- **Windows first.** It is built and used on Windows; opening raw image files uses
+32:  `os.startfile`, which is Windows-only. The clipboard code has macOS and Linux branches, but
+33:  those platforms are not tested here.
+34:- Built and verified against **Textual 8.2.8 / rich 15.0.0** (pinned in `requirements.txt`).
+35:  The install pulls in every runtime dependency (`textual`, `tzdata`, `pillow`,
+36:  `textual-image`).
+37:
+38:## Install
+39:
+40:Clone the repository, then install it as a command.
+41:
+42:```powershell
+43:git clone https://github.com/jav201/taskboard.git
+44:cd taskboard
+45:```
+46:
+47:**With pipx (recommended).** pipx gives the app its own environment and puts `taskboard` on
+48:your PATH:
+49:
+50:```powershell
+51:python -m pip install --user pipx
+52:python -m pipx ensurepath        # then open a new terminal so PATH updates
+53:pipx install .
+54:```
+55:
+56:To update after pulling new code: `pipx reinstall taskboard`. This installs the newest
+57:Textual; the exact versions the app is verified against are pinned in `requirements.txt`
+58:(see [`RUN.md`](RUN.md)).
+59:
+60:**With pip.** `pip install --user .` installs the same `taskboard` command. If the shell says
+61:it is not recognized, your Python user-scripts folder is not on PATH; this prints it:
+62:
+63:```powershell
+64:python -c "import os, sysconfig; print(sysconfig.get_path('scripts', f'{os.name}_user'))"
+65:```
+66:
+67:**From source.** See [`RUN.md`](RUN.md): a virtual environment and `python -m taskboard`.
+68:
+69:## Quick start
+70:
+71:```powershell
+72:taskboard
+73:```
+74:
+75:The first run creates your board and seeds it with demo data. Press `?` in any view for its
+76:help — what the view is for, what its marks mean, an example and its keys; inside help, `m`
+77:shows the full keymap and `?` opens the command palette. `q` quits.
+78:
+79:## Views
+80:
+[0m
+[0m$ [0mgrep -n "Present\|Standup\|URL\|Images\|Projects\|Phases\|Clocks\|keybinding\|Key \|^\|" README.md | sed -n '1,60p'
+1:# taskboard
+2:
+3:A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
+4:Run it in a borderless terminal window, pin it on top, and it works as a desktop widget: ten
+5:views over one JSON board, with optional team sync through a shared folder.
+6:
+7:<p align="center">
+8:  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes view, live"><br>
+9:  <img src="docs/taskboard-gantt.svg" width="380" alt="gantt — the whole board on a window fitted to the open work">
+10:  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column"><br>
+11:  <img src="docs/taskboard-agenda.png" width="380" alt="agenda — every due date on one shared axis">
+12:  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one panel per project"><br>
+13:  <sub>Renders of the seeded demo board. The gantt is current; the other images predate this
+14:  release's colour changes.</sub>
+15:</p>
+16:
+17:## What it is
+18:
+19:- **A widget, not a window.** No borders: every view commits with rules, and it reflows to
+20:  whatever size the terminal gives it.
+21:- **Ten views** over the same tasks — lanes, agenda, gantt, kanban, focus, chains, flow, standup,
+22:  people, setup — each one key away.
+23:- **One file.** Your board is a single JSON file in your home directory; nothing goes to a
+24:  server.
+25:- **Optional team mode.** Point it at a shared folder and each person's board syncs there;
+26:  teammates' cards show up read-only.
+27:
+28:## Requirements
+29:
+30:- Python **3.12 or newer** (`requires-python = ">=3.12"`).
+31:- **Windows first.** It is built and used on Windows; opening raw image files uses
+32:  `os.startfile`, which is Windows-only. The clipboard code has macOS and Linux branches, but
+33:  those platforms are not tested here.
+34:- Built and verified against **Textual 8.2.8 / rich 15.0.0** (pinned in `requirements.txt`).
+35:  The install pulls in every runtime dependency (`textual`, `tzdata`, `pillow`,
+36:  `textual-image`).
+37:
+38:## Install
+39:
+40:Clone the repository, then install it as a command.
+41:
+42:```powershell
+43:git clone https://github.com/jav201/taskboard.git
+44:cd taskboard
+45:```
+46:
+47:**With pipx (recommended).** pipx gives the app its own environment and puts `taskboard` on
+48:your PATH:
+49:
+50:```powershell
+51:python -m pip install --user pipx
+52:python -m pipx ensurepath        # then open a new terminal so PATH updates
+53:pipx install .
+54:```
+55:
+56:To update after pulling new code: `pipx reinstall taskboard`. This installs the newest
+57:Textual; the exact versions the app is verified against are pinned in `requirements.txt`
+58:(see [`RUN.md`](RUN.md)).
+59:
+60:**With pip.** `pip install --user .` installs the same `taskboard` command. If the shell says
+[0m
+[0m$ [0mgrep -n "^\| \`\|Present\|Standup\|Palette\|palette" README.md | grep -i "key\|present\|standup\|palette\|url\|image\|project\|phase\|clock" | head -60
+3:A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
+10:  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column"><br>
+12:  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one panel per project"><br>
+13:  <sub>Renders of the seeded demo board. The gantt is current; the other images predate this
+21:- **Ten views** over the same tasks — lanes, agenda, gantt, kanban, focus, chains, flow, standup,
+22:  people, setup — each one key away.
+31:- **Windows first.** It is built and used on Windows; opening raw image files uses
+36:  `textual-image`).
+76:help — what the view is for, what its marks mean, an example and its keys; inside help, `m`
+77:shows the full keymap and `?` opens the command palette. `q` quits.
+81:| Key | View | One line |
+83:| `1` | **Lanes** | One panel per project with its load and due work; `Tab` switches the grid (default) and the classic waves layout |
+86:| `4` | **Kanban** | Every task in its phase column; `Tab` cycles grouped, matrix and lanes layouts |
+87:| `5` | **Focus** | Pinned tasks and pinned projects, in five layouts (`Tab`) |
+88:| `6` | **Chains** | The chain map: who waits on whom, per project — the ready/waits/late marks, the critical chain, and the per-chain `dates` rule on screen |
+89:| `7` | **Flow** | Read-only: time in phase, a phase × week heatmap, weekly throughput |
+90:| `8` | **Standup** | Team mode: one row per teammate — load, top task, sync age |
+94:**Gantt.** Every project has a row. The window fits the open work (from half a day to a week
+95:per cell, the smallest that holds it); when rows run out, projects fold to one span row
+96:(`▸ name  N open`) while the selected task's project stays open (`▾`). Finished work folds into
+101:## Keys
+103:The key bar at the bottom shows the keys that work in the current view; `;` switches it
+104:between the short and the full layer. Every key below is also in the command palette.
+106:| Key | Name | One line |
+108:| `?` | Help | Per-view help (usage, legend, example, keys); `m` there for the full map |
+109:| `;` | More | Toggle the key bar's layer |
+119:| `[` `]` | Phase | Move the selected task one phase back / forward |
+122:| `+` `=` / `-` | Due | Due date one day later / earlier — what waits on it follows by the project's rule |
+127:| `t` / `T` | Pin | Pin the task / its whole project (Focus view) |
+128:| `o` / `i` | Links / Images | Open the task's http(s) links / view its images |
+129:| `p` / `P` | Projects | Add a project / manage projects |
+130:| `f` | Phases | Add, rename, reorder or delete the board's phases |
+131:| `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
+132:| `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
+134:| `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
+135:| `c` | Clocks | Choose the ribbon's two city clocks |
+138:In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
+142:- **Phases.** A new board has `Backlog`, `Doing`, `Done`; `f` edits them. The last phase means
+144:- **Undo.** `u` reverts the last phase move, priority, blocked flag, due change, pin, archive
+146:- **Finished work.** A task 20 days in its done phase is archived at startup (archived, never
+149:- **Projects.** `p` adds one; `P` manages them (edit, archive, delete). Archiving a project
+150:  archives its open tasks too; deleting a project moves its tasks to the Inbox.
+161:project's rows while the project has open work. The ruler marks the selected project's milestones.
+163:In the **kanban** a milestone is never a card and never counted: it rides its project's band rule
+177:the same project first, then by due date; type to filter; each row says what the link would mean
+189:of links. A task that open tasks still wait on cannot be archived or deleted (nor its project
+207:- `s` cycles the sort: project → priority → due → recent → unblock.
+208:- `g` cycles the grouping: project → priority → horizon.
+209:- `z` collapses the last (done) phase to one count row.
+212:- Phase headers show a WIP limit as `count/limit`, red when over; the default is 3 for `Doing`
+215:## Notes, links and images
+218:- A task with a URL shows `↗`; `o` opens its http(s) links in your browser.
+219:- In the editor, **Paste image** saves the clipboard image as a real file; `i` views a task's
+220:  images inline, and `o` inside the viewer opens them in your default app.
+225:same. Turn it on in **Setup** (`0`): the shared folder, who you are, which projects are shared, the
+228:shared projects) and one `board.<user>.json` per person. Teammates' cards appear read-only in
+229:**Standup** (`8`) and **People** (`9`). Setup checks the folder as you edit and says what is
+232:## Presentation
+234:`R` opens the presentation of the selected task's project (the focused project when set): the
+237:`esc` leaves. The presentation is read-only — it never writes the board.
+[0m
+[0m→ [0mRead README.md[90m [offset=101, limit=40][0m
+[0m
+[0m← [0mEdit README.md
+Index: C:/Users/jjgh8/Github/taskboard/README.md
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/README.md
++++ C:/Users/jjgh8/Github/taskboard/README.md
+@@ -131,8 +131,9 @@
+ | `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
+ | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
+ | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
+ | `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
++| `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
+ | `c` | Clocks | Choose the ribbon's two city clocks |
+ | `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
+ 
+ In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_keymap.py -q 2>&1 | tail -20
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................                                                 [100%]
+24 passed in 1.17s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_report.py tests/test_no_live_board.py -q 2>&1 | tail -50
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................                                                 [100%]
+24 passed in 1.86s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_scratch_cannot_be_committed.py tests/test_precommit_gate.py -q 2>&1 | tail -50
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.....................                                                    [100%]
+21 passed in 2.14s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -45
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 13%]
+........................................................................ [ 16%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+.......................................................                  [100%]
+2575 passed in 423.20s (0:07:03)
+[0m
+[0m$ [0mcat pyproject.toml
+[project]
+name = "taskboard"
+version = "0.1.0"
+description = "A frameless kanban desktop-widget task board built in Textual."
+# 3.12, not 3.10, and the difference was a FALSE PROMISE until CI ran.
+# `textual-image==0.13.2` requires >=3.12, so a 3.10 or 3.11 environment
+# cannot even install this project's pinned dependencies -- pip refuses
+# before a single test runs. The floor is raised to what is true rather
+# than the dependency loosened, because textual-image is a RUNTIME dep
+# (the image viewer) and unpinning it to reach an older Python would
+# trade a real feature for a version nobody is using.
+requires-python = ">=3.12"
+dependencies = ["textual", "tzdata", "pillow>=10.3.0", "textual-image>=0.13"]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+taskboard = "taskboard.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["taskboard"]
+
+[tool.setuptools.package-data]
+taskboard = ["*.tcss"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+[0m
+[0m$ [0mls -la C:/Users/jjgh8/Github/taskboard | grep -i "ruff\|flake\|mypy\|pre-commit\|precommit\|setup.cfg\|tox" ; echo "---githooks---"; ls -la C:/Users/jjgh8/Github/taskboard/.githooks 2>/dev/null
+drwxr-xr-x 1 jjgh8 197609      0 Sep  5 18:17 .ruff_cache
+---githooks---
+total 17
+drwxr-xr-x 1 jjgh8 197609   0 Aug  7 09:40 .
+drwxr-xr-x 1 jjgh8 197609   0 Oct  7 19:19 ..
+-rwxr-xr-x 1 jjgh8 197609 306 Aug  7 09:40 pre-commit
+[0m
+[0m→ [0mRead .githooks/pre-commit
+[0m
+[0m$ [0mls -la C:/Users/jjgh8/Github/taskboard | grep -iE "ruff|\.toml$|\.cfg$|\.ini$"; echo "---"; find C:/Users/jjgh8/Github/taskboard -maxdepth 2 -name "ruff.toml" -o -maxdepth 2 -name ".ruff.toml" 2>/dev/null
+drwxr-xr-x 1 jjgh8 197609      0 Sep  5 18:17 .ruff_cache
+-rw-r--r-- 1 jjgh8 197609   1073 Aug  7 22:11 pyproject.toml
+---
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=90, offset=2251][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=55, offset=722][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=20, offset=1498][0m
+[0m→ [0mRead taskboard/keymap.py[90m [limit=20, offset=127][0m
+[0m
+[0m$ [0mgrep -n "class TemplatePicker" C:/Users/jjgh8/Github/taskboard/taskboard/modals.py; grep -n "I inserts a template" C:/Users/jjgh8/Github/taskboard/taskboard/views.py; grep -n "Templates | Insert" C:/Users/jjgh8/Github/taskboard/README.md; grep -n '"templates"' C:/Users/jjgh8/Github/taskboard/taskboard/app.py | head
+933:class TemplatePicker(ModalScreen[str | None]):
+6837:                           "I inserts a template · edit it in board JSON"]),
+135:| `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
+331:        "toggle_archived", "open_url", "open_images", "clocks", "templates",
+758:        self._undo_stack.append({"templates": [t.id for t in created]})
+1499:            if "templates" in entry:
+1502:                n = len(entry["templates"])
+1504:                                    if t.id not in entry["templates"]]
+[0m
+## Review packet — batch-07 increment 001 (templates)
+
+### 1. What changed
+
+- **`taskboard/models.py:2253-2326`** — the store: `TemplateTask`, `Template`, `PRESET_TEMPLATES` (`Simple chain`, `Bugfix`), `templates(board)` (user first, presets after), and `_read_template` (lenient read).
+- **`taskboard/keymap.py:139`** — `Key("I", "I", "templates", "Templates", group="misc", bar=False)`.
+- **`taskboard/app.py`** — `templates` + `TemplatePicker` imports (`:24`, `:30`); `"templates"` in `BOARD_ACTIONS` (`:331`); `action_templates` + `_on_template_picked` (`:723-763`); the `"templates"` undo branch (`:1499-1511`).
+- **`taskboard/modals.py:933`** — `TemplatePicker` (LinkPicker chrome, an `OptionList` of `name — N tasks`, esc closes); `templates` import (`:40`).
+- **`taskboard/views.py:6837`** — one kanban help bullet: `I inserts a template · edit it in board JSON`.
+- **`README.md:135`** — one keybinding-table row for `I` (see Risks).
+- **`tests/test_templates.py`**, **`tests/test_templates_app.py`** — new (4 + 5 tests).
+
+### 2. Picker / insert flow
+
+`I` → `action_templates` resolves the target project via `present_project_id` (same as `action_present`; None → `No project to insert into.`, `markup=False`). Picker lists `templates(board)` (user first, presets after). On a pick, `_on_template_picked` creates each task in `board.phases[0]`, no dates, house-generated ids, notes carried, `depends_on` set from `wait` (forward-only by construction); selects the first; pushes ONE `{"templates": [ids…]}` undo entry; saves; refreshes; toasts `Inserted '<name>' — <N> tasks into <project>`. Empty template → `Template '<name>' is empty.`. `u` removes all created ids in one step.
+
+### 3. How to test
+
+`env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_templates.py tests/test_templates_app.py -q`
+
+### 4. Test results
+
+- Targeted: **9 passed**.
+- Full suite: **2575 passed, 0 failures** (423s).
+
+### 5. Risks / conflicts surfaced
+
+- **Key is `I`, not `T`.** The brief says the help bullet "names `T`" and "`T` opens the picker", but the keymap line and the contract (`01-requirements.md` HLR/LLR-1301) both pin `I`. `T` is already `project_pin_toggle`. I used `I` everywhere.
+- **`README.md` is outside the "Nothing else" list** — I added one row because `test_keymap.py::test_the_readme_keybinding_table_matches_the_seat` enforces "every bound key is documented in the README"; without it the suite reddened on my own keymap change. Flag if you'd rather I drop it and accept that one red.
+- `_read_template` semantics: an empty/non-text title or a non-dict task **skips the whole entry** (dropping a mid-chain task would silently rewire `wait` indices); a bad `wait` only drops that link.
+
+### 6. Pending items
+
+None for this increment.
+
+### 7. Suggested next task
+
+Increment 002 — template authoring from the app ("save this chain as a template"), the declared carry in HLR-1301.

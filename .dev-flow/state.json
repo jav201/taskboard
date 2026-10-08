@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-07-batch-06",
-  "batch_objective": "Operator-feedback batch: make the dependency web actionable where it is seen -- the chain map draws every open task (linked as today, unlinked as selectable open-chain-head tiles) so chains can be CREATED on the map with L (the C-2b oracle frames amend under a formal LED, the operator's visual re-verdict pending at close); and the kanban window shows its hidden sides -- markers on the phase-head row plus help",
+  "batch_id": "2026-10-07-batch-07",
+  "batch_objective": "Templates batch: process/chain templates insertable into a project -- user templates live in the board's settings (portable), factory presets ship as examples; key T opens the picker; the insert creates the tasks in the selected task's project with their depends_on chains, ONE undo step, no invented dates; v1 edits templates in the board JSON (the ? documents it); 'save this chain as a template' is a v2 carry",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -115,6 +115,12 @@
       "to": "core",
       "date": "2026-10-07",
       "reason": "batch 2026-10-07-batch-06 opened by rollover from 2026-10-07-batch-05; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-07",
+      "reason": "batch 2026-10-07-batch-07 opened by rollover from 2026-10-07-batch-06; mode core declared by the commission"
     }
   ],
   "guided": false,
@@ -143,30 +149,30 @@
     "record": "NOT EVALUATED. /dev-flow evaluates the triggers at P0 and rewrites this block with the timestamp of THAT evaluation. An empty `fired` list here is an absence, not a verdict that nothing fired."
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-07-batch-06/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-06/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-07-batch-06/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-07-batch-07/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-07/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-07-batch-07/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-07-batch-06/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-07-batch-06/evidence/",
+    "increments": "repo:.dev-flow/2026-10-07-batch-07/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-07-batch-07/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-06.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-06.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-06/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-06/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-07.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-07.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-07/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-07/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "8284d3af9a570ac773d5370c4308986f32adf2fc",
+  "base_ref": "1cf2f7475f8a1981b03e88478eda7dcbe92f2fde",
   "artifacts": {},
   "decisions_log": [],
   "standing_authorization": {
     "autonomous": true,
     "merge": false,
     "asked_on": "2026-10-07",
-    "operator_words": "Operator (Javier), 2026-10-07: two UX reports from real use -- kanban hides the later phase columns with no on-screen sign of the window, and the chain map shows projects with no tasks and no way to create a chain ('es imposible crear cadenas'). Read with the established chain: Gates -- autonomous with the two exceptions; Git -- the COORDINATOR commits and pushes at each close (no PR); data safeguard -- synthetic boards only; implementing agents (DeepSeek instances under coordinator briefs, the standing 'Sigue usando Deepseek') do NOT commit/push/stash. The C-2b oracle amendment ships under a formal LED with the operator's visual re-verdict requested at close. This batch runs in the MAIN checkout."
+    "operator_words": "Operator (Javier), 2026-10-07: 'Creo que falta algo que no vi y es el crear templates de procesos o templates de cadenas que se reflejan en tareas que se pueden insertar a proyecto.' Read with the established chain: Gates -- autonomous with the two exceptions; Git -- the COORDINATOR commits and pushes at each close (no PR); data safeguard -- synthetic boards only; implementing agents (DeepSeek instances under coordinator briefs) do NOT commit/push/stash; the batch-06 visual re-verdict stays pending in the backlog. This batch runs in the MAIN checkout."
   },
   "obsidian_synced": false,
-  "created_at": "2026-10-07T17:43:28.778176",
+  "created_at": "2026-10-07T19:17:45.034768",
   "resumption_note": "BOTH tracks closed and merged 2026-10-07: batch-03 (cleanup) at 46b16be, batch-04 (presentation) merged at 1666f08, suite green, validator 0 block. Next: the operator's call on the kg_mejoras plan's remaining batches; open the next batch by rollover from this state."
 }

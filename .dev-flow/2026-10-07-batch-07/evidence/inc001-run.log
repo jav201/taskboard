@@ -1,0 +1,137 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-07/01-requirements.md
+[0m→ [0mRead taskboard/models.py
+[0m→ [0mRead taskboard/app.py
+[0m→ [0mRead taskboard/keymap.py
+[0m→ [0mRead taskboard/views.py
+[0m→ [0mRead taskboard/modals.py
+[0m→ [0mRead taskboard/models.py[90m [offset=1188][0m
+[0m→ [0mRead taskboard/app.py[90m [offset=1040][0m
+[0m✱ [0mGrep "def help_usage|def present_project_id|def render_view|def nav_model"[90m in taskboard/views.py · 4 matches[0m
+[0m✱ [0mGrep "def help_usage|present_project_id"[90m in taskboard/views.py · 4 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [offset=6043, limit=40][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=6811, limit=120][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=6930, limit=30][0m
+[0m✱ [0mGlob "tests/test_*.py"[90m 75 matches[0m
+[0m→ [0mRead tests/test_milestone_offer_seam.py
+[0m→ [0mRead tests/test_link_picker.py
+[0m✱ [0mGrep "project_pin_toggle|Pin proj|"T""[90m 26 matches[0m
+[0m✱ [0mGrep "def shifted|def build|def one_day"[90m in . · 25 matches[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-07/evidence/inc001-brief.md
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-07/ && echo "---" && ls .dev-flow/2026-10-07-batch-07/evidence/
+total 72
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 ..
+-rw-r--r-- 1 jjgh8 197609  7715 Oct  7 19:17 00-checklists.md
+-rw-r--r-- 1 jjgh8 197609  1469 Oct  7 19:19 01-requirements-ledger.md
+-rw-r--r-- 1 jjgh8 197609 13189 Oct  7 19:19 01-requirements.md
+-rw-r--r-- 1 jjgh8 197609  3476 Oct  7 19:17 02-review.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:17 03-increments
+-rw-r--r-- 1 jjgh8 197609  7643 Oct  7 19:17 04-validation.md
+-rw-r--r-- 1 jjgh8 197609  6228 Oct  7 19:17 05-close.md
+-rw-r--r-- 1 jjgh8 197609  2813 Oct  7 19:17 PLAN.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 19:20 evidence
+---
+inc001-brief.md
+inc001-run.log
+p1_fill.py
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-07/03-increments
+[0m→ [0mRead .dev-flow/2026-10-07-batch-07/PLAN.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-07/03-increments/increment-001.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-07/00-checklists.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-07/01-requirements-ledger.md
+[0m→ [0mRead tests/test_focus.py[90m [offset=30, limit=40][0m
+[0m→ [0mRead tests/test_focus.py[90m [offset=140, limit=25][0m
+[0m
+[0m$ [0mgit log --oneline -15 && echo "---STATUS---" && git status
+1cf2f74 feature: the chain map admits every open task -- unlinked tasks draw as selectable O tiles so chains are created on the map with the shipped L picker (the C-2b oracle amends under LED-2026-10-07-batch-06.1, operator visual re-verdict pending); the kanban window announces its hidden sides (left/right markers + the ? bullet); x leaves a tile visible and re-linkable; the cap counts chains and tiles; 4 mutations killed; validator 0 block; 2566 tests green (batch 2026-10-07-batch-06; operator's reports: the kanban hides later phases, es imposible crear cadenas)
+8284d3a docs: the batch-05 state reads P5/closed -- the close-out's station row had stayed at P0 after the record landed (the gates the close documents all ran; the commit is 026b245)
+026b245 refactor: the carries batch -- a failed backup write unlinks its partial file (S5-3, both writers through the one helper); one Mon D formatter owned at models (F-6); u on a single-task change names what came back (UXV-3); the ? help clips at word boundaries with ... (UXV-6); the chain map caps a partial band with +N more down (TC-810 amended under LED .1) and heals the resize selection in one refresh; the AT-601/602 arms walk with keys, the ash diamond at its exact column, offer milestones reach a team folder; the BACKLOG's open carries closed; fold-canon HLR-1101..1106/LLR-1101.1..1106.1; 8 mutations killed, one survived with its cause declared; validator 0 block, 2556 tests green (batch 2026-10-07-batch-05; operator's commission: Ok, continuemos)
+a820880 docs: the trunk state reads batch-04 on base_ref 46b16be after the merge reconciliation (the file the close validator actually read; omitted from the evidence-fix commit by a missing -a)
+300f195 fix: the batch-04 evidence dir joins the -text gitattributes block -- the V41 hash check caught CRLF normalization changing the stored bytes under their cited digests (batch-66's defect); the state now reads batch-04 on base_ref 46b16be, the commit batch-04 landed on
+1666f08 Merge branch 'proto/present-e'
+46b16be refactor: the cleanup batch -- _coerce_title coerces non-text titles (str for scalars, Untitled for containers), the cleanup-before-restore pattern in the offer path, ONE drawn-band computation for the renderer and the legend, the fold row's canon ▼ N below + · ▲N ◆ suffix, the 6 backlog items closed; fold-canon HLR-901..903/LLR-901.1..903.1 in REQUIREMENTS.md; validator 0 block (batch 2026-10-07-batch-03; operator's commission: both tracks, parallelized)
+13ea82f feature: the presentation behind R -- PRES-C byte-faithful at 118x30 and 80x24, the heavy cursor expanding each task's notes, SVG+PNG export at the reports/ convention; R replaces the report key (the --report CLI unchanged); _strip now measures through rich's parse with emoji=False (the S1 width law TC-1003 pins); the oracle pin tests + the frozen board + a 6-mutation battery, validator 0 block (batch 2026-10-07-batch-04; the operator's commission: both tracks, parallelized)
+34bab3c docs: the operator's visual verdict on batch C (PV-816..819 all accepted) + the color recaptures (the first set was greyscale — NO_COLOR shell trap) and the verdict sheet
+419dad4 feature: the chain map behind 6 — who waits on whom per project, the per-chain dates rule on the shipped storage, the critical chain in heavy structure, x/m view-dispatch (batch 2026-10-07-batch-02; operator's commission: finish the plan's proposed changes)
+79ad438 refactor: one restore rule and one undated-date base (the P4 residue of batch 2026-10-06 closed) — models.restore at every restore site, date_base shared by bump_due and plan_move, C-5 and narrow-toast pins (batch 2026-10-07-batch-01)
+f665425 feature: moving a task's dates moves what waits on it — cascade engine (push_delta, one overlap measure), +/- and editor routed through it with the C-3 toast and one-step undo, m re-applies under the next mode, per-project date_links setting (batch 2026-10-06-batch-01; operator's visual verdict: all accepted)
+e085cef docs: pair LED-2026-10-04-batch-02.11 back from the three requirement blocks (validator V26)
+f391be7 feature: milestones as a task flag — M key and editor box, gantt M-1 rows with ruler marks, kanban M-2 band rule, one-time M-3 offer migration (backup, log, undo); reached milestones in a legible grey per the operator's visual verdict
+4b2c13a feature: waits-on links with L, details dependencies, archive guard, link migration
+---STATUS---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .dev-flow/state.json
+	modified:   .gitattributes
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.dev-flow/2026-10-07-batch-05/decisions-log.json
+	.dev-flow/2026-10-07-batch-06/decisions-log.json
+	.dev-flow/2026-10-07-batch-07/
+	.dev-flow/rollover_batchg.py
+	.dev-flow/rollover_batchh.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[0m
+[0m$ [0mpython -c "import textual; print(textual.__version__)" 2>&1; echo "---"; grep -rn "Pin proj\|project_pin_toggle\|\"T\"" tests/test_keymap.py tests/test_markup_sites.py 2>&1
+8.2.8
+---
+tests/test_markup_sites.py:267:                _one(d(), project=p), ["T"], "Pin project", f'"{p}" pinned')),
+[0m
+[0m→ [0mRead tests/test_markup_sites.py[90m [offset=240, limit=40][0m
+[0m
+[0m$ [0mgrep -rni "template" taskboard/ tests/ 2>&1 | grep -vi "templates/\|team.json\|template" | head -40; echo "--- direct template hits in taskboard/ ---"; grep -rni "template" taskboard/*.py
+Binary file taskboard/__pycache__/app.cpython-312.pyc matches
+Binary file tests/__pycache__/test_control_bytes.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_setup_help.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_sync_fields.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_team_sync.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_team_views.cpython-312-pytest-8.3.4.pyc matches
+--- direct template hits in taskboard/ ---
+taskboard/app.py:580:                template = team_projects[proj.id].get("template")
+taskboard/app.py:586:                    "template": template if isinstance(template, str) else "",
+taskboard/app.py:595:                    "template": "",
+taskboard/app.py:1609:            # through the sync door: the phases and template republished below
+taskboard/app.py:1625:                    "template": p.get("template", ""),
+taskboard/app.py:1631:                "template": (existing.get("template") if isinstance(existing, dict) else None)
+taskboard/app.py:1801:                         "status": "on_track", "template": "", "shared": False})
+[0m
+I have to stop and surface a hard conflict before writing any code.
+
+## Blocking conflict: the `T` key is already taken
+
+The batch spec (HLR-1301 / LLR-1301.2 / the brief) pins `T` as the template-picker key, but `T` is already bound in the seat to a different action:
+
+- `taskboard/keymap.py:86` — `Key("T", "T", "project_pin_toggle", "Pin proj", group="task")`
+- `taskboard/app.py:1872` — `action_project_pin_toggle` (the `T` handler)
+
+Two tests **outside my allowed file set** press `T` and expect "Pin project":
+
+- `tests/test_focus.py:46` (`test_project_pin_includes_all_its_tasks`) and `:151` (`test_inbox_task_project_pin_is_no_op_and_notifies`)
+- `tests/test_markup_sites.py:267` (`pin toast T …` arm → expects the "Pin project" toast)
+
+So adding `Key("T", "T", "templates", …)` either:
+1. overrides `T` in Textual (later binding wins) → `project_pin_toggle` silently loses its key → the two tests above go RED, or
+2. errors on duplicate key → the app fails to construct → most of the suite RED.
+
+Either way I violate the brief's own gate: *"if anything outside your files reddens, STOP and name it."* The suite-stays-green and the explicit `T` spec are mutually exclusive on this tree.
+
+## What I need from you (one decision)
+
+Three ways to reconcile, in my order of preference:
+
+1. **Re-key `project_pin_toggle` off `T`** and give `T` to templates as specified — but that means also updating `test_focus.py` and `test_markup_sites.py`, which are **outside** the `≤4 source + 2 new test` budget. Needs your explicit approval to touch them (and a new key for "Pin proj").
+2. **Use a different key for templates** (e.g. `K`, `N`, `Y`) — a one-line spec deviation from the pinned `T`, but keeps every existing test untouched and stays inside budget.
+3. **You decide the "Pin proj" replacement key** and I fold the test updates into this increment as a declared extra.
+
+Nothing has been modified yet. Which do you want? If (2), tell me the key you prefer (or approve `K`); if (1)/(3), give me the replacement key for "Pin proj" and I'll treat the two test files as approved additions.
