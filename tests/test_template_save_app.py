@@ -113,7 +113,7 @@ async def test_type_a_name_and_enter_saves_and_lists_in_the_picker(tmp_path):
         await _settle(pilot)
         from taskboard.modals import TemplatePicker
         assert isinstance(app.screen, TemplatePicker)
-        assert _plains(app.screen.query_one("#template-list"))[0] == "Release — 3 tasks"
+        assert _plains(app.screen.query_one("#template-list"))[1] == "Release — 3 tasks"
 
 
 async def test_escape_cancels_and_writes_nothing(tmp_path):

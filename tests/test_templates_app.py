@@ -67,7 +67,7 @@ async def test_I_opens_the_picker_listing_presets_with_counts(tmp_path):
         await _settle(pilot)
         assert isinstance(app.screen, TemplatePicker)
         assert _plains(app.screen.query_one("#template-list")) == \
-            ["Simple chain — 3 tasks", "Bugfix — 3 tasks"]
+            ["New template...", "Simple chain — 3 tasks", "Bugfix — 3 tasks"]
 
 
 async def test_pick_simple_chain_inserts_three_linked_tasks_and_one_undo(tmp_path):
@@ -85,7 +85,7 @@ async def test_pick_simple_chain_inserts_three_linked_tasks_and_one_undo(tmp_pat
         n0 = len(app.board.tasks)
         await pilot.press("I")
         await _settle(pilot)
-        await pilot.press("enter")          # the highlighted row is Simple chain
+        await pilot.press("down", "enter")  # past 'New template...' to Simple chain
         await _settle(pilot)
         assert len(app.board.tasks) == n0 + 3
         created = app.board.tasks[n0:]
@@ -138,8 +138,9 @@ async def test_user_template_lists_before_presets_and_inserts_with_links(tmp_pat
         await pilot.press("I")
         await _settle(pilot)
         assert _plains(app.screen.query_one("#template-list")) == \
-            ["Deploy — 2 tasks", "Simple chain — 3 tasks", "Bugfix — 3 tasks"]
-        await pilot.press("enter")          # the highlighted row is Deploy
+            ["New template...", "Deploy — 2 tasks",
+             "Simple chain — 3 tasks", "Bugfix — 3 tasks"]
+        await pilot.press("down", "enter")  # past 'New template...' to Deploy
         await _settle(pilot)
         assert len(app.board.tasks) == n0 + 2
         created = app.board.tasks[n0:]
@@ -162,7 +163,7 @@ async def test_empty_template_toasts_is_empty(tmp_path):
         n0 = len(app.board.tasks)
         await pilot.press("I")
         await _settle(pilot)
-        await pilot.press("enter")          # the highlighted row is Empty — 0 tasks
+        await pilot.press("down", "enter")  # past 'New template...' to Empty — 0 tasks
         await _settle(pilot)
         assert len(app.board.tasks) == n0
         assert _toast_check(app, "Templates", "Template 'Empty' is empty.") is None

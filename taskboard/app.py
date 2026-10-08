@@ -28,7 +28,7 @@ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
 from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
                      ProjectPicker, StandupModal, TaskDetails, TaskModal, TeamIdentityPicker,
-                     TemplatePicker, TextPrompt)
+                     TemplateEditor, TemplatePicker, TextPrompt)
 from .keymap import KeyBar, app_bindings, palette_commands
 from .ribbon import Ribbon
 from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
@@ -722,11 +722,13 @@ class TaskboardApp(App):
                                        self.selected_task_id))
 
     def action_templates(self) -> None:
-        """`I` — insert a process template (HLR-1301): the picker lists the
-        board's user templates then the presets; the insert lands the tasks in
-        the selected task's project (the focused project when set) as ONE undo
-        step. Resolves the target project exactly like `action_present`; no
-        resolvable project -> the `No project to insert into.` toast."""
+        """`I` — insert a process template (HLR-1301): the picker lists a
+        leading `New template...` row, then the board's user templates, then the
+        presets; the insert lands the tasks in the selected task's project (the
+        focused project when set) as ONE undo step. `New template...` routes to
+        the scratch editor instead (HLR-1501). Resolves the target project
+        exactly like `action_present`; no resolvable project -> the
+        `No project to insert into.` toast."""
         project_id = present_project_id(self.board, self.selected_task_id,
                                         self.focused_project_id)
         if project_id is None:
@@ -734,10 +736,14 @@ class TaskboardApp(App):
                         severity="information", timeout=10, markup=False)
             return
         self.push_screen(TemplatePicker(self.board),
-                         lambda name: self._on_template_picked(name, project_id))
+                         lambda res: self._on_template_picked(res, project_id))
 
-    def _on_template_picked(self, name: str | None, project_id: str) -> None:
-        if name is None:
+    def _on_template_picked(self, res: tuple[str, str] | None, project_id: str) -> None:
+        if res is None:
+            return
+        kind, name = res
+        if kind == "new":
+            self.push_screen(TemplateEditor(), self._on_template_authored)
             return
         tpl = next((t for t in templates(self.board) if t.name == name), None)
         if tpl is None:
@@ -798,6 +804,35 @@ class TaskboardApp(App):
                 entry["notes"] = one.notes
             if one.wait is not None:
                 entry["wait"] = one.wait
+            tasks.append(entry)
+        self.board.settings.setdefault("templates", []).append(
+            {"name": name, "tasks": tasks})
+        self.board.save()
+        self.notify(f"Template '{name}' saved — {len(tasks)} tasks",
+                    title="Templates", severity="information", markup=False)
+
+    def _on_template_authored(self, data: dict | None) -> None:
+        """`I` → `New template...` — author a template from scratch (HLR-1501).
+
+        On save the entry is appended to `settings["templates"]` (created if
+        absent) as a LINEAR chain — task i waits on i-1, task 0 waits on nothing
+        — and the board saved, toasting the pinned literal. A blank name or zero
+        task lines saves NOTHING and toasts one line saying why; esc returns
+        None and writes nothing. NOT an undo step: it writes settings, not
+        tasks (the batch-08 rule)."""
+        if data is None:
+            return
+        name = (data.get("name") or "").strip()
+        lines = [ln.strip() for ln in (data.get("tasks") or []) if ln.strip()]
+        if not name or not lines:
+            self.notify("Template not saved — give it a name and at least one task.",
+                        title="Templates", severity="information", markup=False)
+            return
+        tasks = []
+        for i, title in enumerate(lines):
+            entry = {"title": title}
+            if i:
+                entry["wait"] = i - 1
             tasks.append(entry)
         self.board.settings.setdefault("templates", []).append(
             {"name": name, "tasks": tasks})

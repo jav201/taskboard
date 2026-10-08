@@ -3,26 +3,42 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `9a13c12` (local HEAD == `origin/main` at batch 2026-10-07-batch-08's open; `762d18c`
-the batch-06 verdict commit landed on top before this close)
-· **Last refresh:** 2026-10-07
-**Status:** **2586 tests** (batch `2026-10-07-batch-08`, template authoring v2: on the chain map,
-`,` on a selected tile opens the one-line name prompt prefilled with the chain's first title;
-typing a name + enter saves the tile's whole open component — BFS both directions through
-`depends_on` within the project, open tasks only, deterministic topological order by (depth, board
-order), a fan-in keeps its FIRST predecessor (the rest dropped, declared) — into
-`settings["templates"]`; the board is saved and the toast `Template '<name>' saved — <N> tasks`
-renders (`markup=False`); esc/empty cancels with NOTHING written; the saved template lists FIRST
-in the `I` picker from then on; saving is NOT an undo step (declared); the key ships as the key
-NAME `comma` view-scoped on the chain map, group `task` (a literal `,` is Textual's alias
-separator); the `?` chainmap bullet names it; the in-frame footer key-hints were deliberately
-untouched (byte-golden C-2b frames) — discoverability via the docked keybar + `?`; 11 new test
-nodes across 2 files; M16 (save writes nothing) · M17 (component neutered) KILLED; 3 source files
-— models/app/keymap).
+**Base ref:** `5c4c28a` (local HEAD == `origin/main` at batch 2026-10-07-batch-09's open)
+· **Last refresh:** 2026-10-08
+**Status:** **2592 tests** (batch `2026-10-07-batch-09`, templates v3: scratch authoring — the `I`
+picker gains a leading `New template...` row (reserved id `__new__`, the house `L`-picker create-row
+pattern, not a template); choosing it opens the editor — ONE name field + ONE multi-line tasks
+field (the lightest house-consistent composition: the modal-box shell + `Input` + the app's shipped
+`TextArea` + buttons, ONE `DEFAULT_CSS` rule, no `.tcss` touched); Save appends the linear chain
+(task i waits on i−1, task 0 on nothing; lines trimmed, blank lines skipped) to
+`settings["templates"]` through the batch-08 save/toast contract verbatim (`app.py:835` the
+`entry["wait"] = i - 1`), toasts `Template '<name>' saved — <N> tasks` (`markup=False`); an
+all-empty edit saves NOTHING and says why in one line; esc cancels with nothing written (board file
+byte-identical); the template lists after the authoring row and inserts with `I` reproducing the
+chain; authoring is NOT an undo step (declared); notes stay JSON-only at this version (`?` bullet
+`views.py:6837-6838`); 6 new test nodes in `tests/test_template_new.py` (AT-1501's docstring home);
+the contract's FIRST-row law rippled into 5 pre-existing pinned tests — the session STOPPED and
+named them, the coordinator updated them law-driven (assertions not weakened: `test_templates_app`
+×4 · `test_template_save_app` ×1, named in `evidence/mutations.log`); M18 (the linear wait chain
+not written) KILLED; 2 source files — modals/app, the `views.py` help bullet as doc).
 `test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011): it failed on
-its own clipboard SETUP in every B2 gate run — and fired there again at this batch's full-suite
-run (declared since batch B2; the coordinator verified it fails isolated too; unrelated to this
-batch's surface).
+its own clipboard SETUP in every B2 gate run (declared since batch B2; unrelated to this batch's
+surface — the increment touched no clipboard seat, and the flake did NOT fire in this batch's
+recorded full-suite run).
+
+- ✓ done in `2026-10-07-batch-09` (templates v3: scratch authoring; contract LED-2026-10-07-batch-09.1;
+  the operator's follow-up 2026-10-08: "No puedo hacer una plantilla desde cero tambien?") —
+  **author a template from scratch in the app** (US-1501): the `I` picker's leading
+  `New template...` row (`modals.py:933-985`, the reserved id `__new__` at `:967` — the house
+  `L`-picker create-row pattern) and the `TemplateEditor` (`modals.py:987-1031` — the modal-box
+  shell + `Input` + `TextArea` + buttons, one `DEFAULT_CSS` rule, no `.tcss`); the route + save
+  (`app.py:741-746` the `("new", "")` route · `app.py:814-843` `_on_template_authored` — the
+  all-empty refusal toast, the linear chain at `:835`, the batch-08 settings/save/toast seam
+  verbatim; NOT an undo step, declared); the `?` kanban bullet (`views.py:6837-6838`). AT-1501's
+  6 arms in `tests/test_template_new.py`. 2592 tests (2592 = 2586 + 6; the session's one full run
+  `5 failed, 2587 passed` — the five pre-existing picker-shape arms the contract's FIRST-row law
+  reddened, named by the session's STOP-and-name and closed by the coordinator's five law-driven
+  fixture updates, assertions not weakened); M18 KILLED.
 
 - ✓ done in `2026-10-07-batch-08` (template authoring v2; contract LED-2026-10-07-batch-08.1) —
   **save a chain as a template from the app** (US-1401, the operator's commission 2026-10-07: "si
@@ -117,6 +133,11 @@ batch's surface).
   layout-driven pinned-test updates (TC-810 · AT-802 · AT-801c) are law-driven, named in
   increment-002's packet; the operator's visual re-verdict on the amended frames + the new chrome
   is PENDING in the Open section above.
+
+## Open — after `2026-10-07-batch-09` (templates v3: scratch authoring)
+
+- Nothing new from this batch. The operator's scratch-authoring follow-up it shipped is marked done
+  in place below; the G-011 flake line stands; nothing else opens.
 
 ## Open — after `2026-10-07-batch-08` (template authoring v2)
 
