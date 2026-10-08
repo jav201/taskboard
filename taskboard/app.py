@@ -18,7 +18,8 @@ from textual.widgets import Static
 
 from . import history
 from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
-                     archive_refusal, default_board_path, is_open, link_refusal,
+                     archive_refusal, chain_template, default_board_path, is_open,
+                     link_refusal,
                      milestone_candidates, milestones_marked, next_priority, parse_iso,
                      ready_messages, run_link_migration, run_milestone_offer,
                      set_milestone, strip_controls, templates, waiting_ids,
@@ -760,6 +761,48 @@ class TaskboardApp(App):
         self.board.save()
         self.refresh_view()
         self.notify(f"Inserted '{name}' — {len(created)} tasks into {pname}",
+                    title="Templates", severity="information", markup=False)
+
+    def action_chain_template_save(self) -> None:
+        """`,` — save the selected tile's connected chain as a template (HLR-1401).
+
+        On the chain map (the key is view-scoped there), the selected tile's open
+        chain — its project's component through `depends_on`, both directions — is
+        stored under a name the operator types into the shipped one-line prompt,
+        prefilled with the chain's first task title. Nothing selected -> the
+        refusal toast; a selection carrying no open chain -> its own toast; esc or
+        an empty name cancels, nothing written. On submit the entry is appended to
+        `settings["templates"]` (created if absent) and the board saved, toasting
+        the pinned literal. NOT an undo step: it writes settings, not tasks."""
+        if self.view_mode != "chainmap":
+            return
+        if self.selected_task_id is None:
+            self.notify("Select a chain tile to save.", title="Templates",
+                        severity="information", timeout=10, markup=False)
+            return
+        tpl = chain_template(self.board, self.selected_task_id)
+        if tpl is None:
+            self.notify("The selection carries no open chain.", title="Templates",
+                        severity="information", timeout=10, markup=False)
+            return
+        self.push_screen(TextPrompt("Save chain template", initial=tpl.tasks[0].title),
+                         lambda name: self._on_chain_template_named(name, tpl))
+
+    def _on_chain_template_named(self, name: str | None, tpl) -> None:
+        if not name:                        # esc -> None, blank -> ""
+            return
+        tasks = []
+        for one in tpl.tasks:
+            entry = {"title": one.title}
+            if one.notes:
+                entry["notes"] = one.notes
+            if one.wait is not None:
+                entry["wait"] = one.wait
+            tasks.append(entry)
+        self.board.settings.setdefault("templates", []).append(
+            {"name": name, "tasks": tasks})
+        self.board.save()
+        self.notify(f"Template '{name}' saved — {len(tasks)} tasks",
                     title="Templates", severity="information", markup=False)
 
     def action_standup(self) -> None:

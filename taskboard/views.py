@@ -6921,7 +6921,7 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
             ("what it is for", ["the dependency web: who waits on whom, per",
                                 "project, with ready/waits/late marks."]),
             ("first thing to do", ["6 opens it; arrows walk the chains; ↵ opens",
-                                   "x drops the selected task incoming link."]),
+                                   "x unlinks · , saves the chain as a template."]),
             ("the marks", ["✓ done · ▷ ready · ○ chain head · ◂N waits",
                            "┃ heavy = the critical chain · ▲Nd late",
                            "dates switch = the rule a move follows",
