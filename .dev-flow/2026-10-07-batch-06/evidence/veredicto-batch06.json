@@ -1,0 +1,23 @@
+{
+  "batch": "2026-10-07-batch-06",
+  "exported": "2026-10-08T04:16:18.433Z",
+  "answers": {
+    "CM6-1": {
+      "choice": "accept",
+      "label": "Aceptar"
+    },
+    "CM6-2": {
+      "choice": "accept",
+      "label": "Aceptar"
+    },
+    "KB6-1": {
+      "choice": "accept",
+      "label": "Aceptar"
+    },
+    "KB6-2": {
+      "choice": "accept",
+      "label": "Aceptar"
+    },
+    "notes": "Se ve bien. "
+  }
+}

@@ -101,19 +101,14 @@ at this batch's close).
   `settings["templates"]` write behind the shipped modal/seam pattern, ONE undo step, its own
   contract. Declared as the v2 carry inside HLR-1301 (v1 edits templates in the board JSON, the `?`
   documents it); surfaced by the implementing session as the natural next increment.
-- **The operator's visual re-verdict on the amended C-2b frames + the new chrome — STILL PENDING**
-  (carried from batch-06: the `○` tiles, the `L`-on-the-map flow, the `◂`/`▸ N` window marks, the
-  `?` bullets). Both batches push under the commission; the operator's verdict folds on arrival
-  (batch C's exact form) — requested at each close per the contract §5.2. Item kept open verbatim
-  below.
+- ~~The operator's visual re-verdict on the amended C-2b frames + the new chrome~~ — **all accepted 2026-10-08** (see the batch-06 section below; `veredicto-batch06.json`).
 
 ## Open — after `2026-10-07-batch-06` (the operator-feedback batch)
 
-- **The operator's visual re-verdict on the amended C-2b frames + the new chrome — PENDING** (the
-  `○` tiles, the `L`-on-the-map flow, the `◂`/`▸ N` window marks, the `?` bullets). The batch pushes
-  under the commission; the operator's verdict folds on arrival (batch C's exact form) — requested
-  at close per the contract §5.2. **Carried — still open at batch-07's close; rolled into the
-  "Open — after `2026-10-07-batch-07`" section above.**
+- ✓ done in `2026-10-07-batch-08`'s record — **the operator's visual re-verdict on the amended
+  C-2b frames + the new chrome — ALL FOUR ACCEPTED 2026-10-08** ("Se ve bien.": CM6-1, CM6-2,
+  KB6-1, KB6-2 — `evidence/veredicto-batch06.json` in the batch-06 record). The oracle amendment
+  is operator-verified; LED-2026-10-07-batch-06.1 stands accepted.
 - ~~Queued: batch-07 — process/chain templates~~ — **✓ done in `2026-10-07-batch-07`** (the entry at
   the top of this file; note the queued item's `T` picker was corrected to `I` under
   LED-2026-10-07-batch-07.2 before the first edit).
