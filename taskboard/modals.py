@@ -930,11 +930,12 @@ class LinkPicker(ModalScreen[tuple[str, str] | None]):
         self.dismiss(None)
 
 
-class TemplatePicker(ModalScreen[str | None]):
-    """`I` — "insert a process" (HLR-1301). Lists the board's user templates
-    first, then the factory presets, each row `name — N tasks`; selecting a row
-    returns its name, `esc` returns None. Every user string is a Text piece
-    (S1)."""
+class TemplatePicker(ModalScreen[tuple[str, str] | None]):
+    """`I` — "insert a process" (HLR-1301). Lists a leading `New template...`
+    row, then the board's user templates, then the factory presets, each row
+    `name — N tasks`; selecting a template returns `("insert", name)`, the
+    `New template...` row returns `("new", "")`, `esc` returns None. Every user
+    string is a Text piece (S1)."""
 
     BINDINGS = [("escape", "cancel", "Cancel")]
 
@@ -961,17 +962,70 @@ class TemplatePicker(ModalScreen[str | None]):
     def on_mount(self) -> None:
         ol = self.query_one("#template-list", OptionList)
         self._templates = templates(self.board)
-        options = []
-        for t in self._templates:
+        # the authoring row is NOT a template: it carries a reserved id the
+        # selection handler recognises instead of indexing into `_templates`.
+        options = [Option(Text("New template...", style="bold"), id="__new__")]
+        for i, t in enumerate(self._templates):
             line = Text(t.name, style="bold")
             line.append(f" — {len(t.tasks)} tasks", style=HEX["dim"])
-            options.append(Option(line, id=str(len(options))))
+            options.append(Option(line, id=str(i)))
         ol.add_options(options)
-        ol.highlighted = 0 if options else None
+        ol.highlighted = 0
         ol.focus()
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        self.dismiss(self._templates[int(event.option.id)].name)
+        oid = event.option.id
+        if oid == "__new__":
+            self.dismiss(("new", ""))
+        else:
+            self.dismiss(("insert", self._templates[int(oid)].name))
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class TemplateEditor(ModalScreen[dict | None]):
+    """`I` → `New template...` — author a process from scratch (HLR-1501,
+    LLR-1501.1). ONE name field and ONE multi-line tasks field (one task per
+    line); Save returns ``{"name", "tasks"}`` — the name stripped and the tasks
+    as stripped, non-blank lines in order — `esc` returns None. The linear chain
+    is built by the caller: this modal only collects text, so it writes nothing
+    and toasts nothing (S1: the name is user text and is never painted here as
+    markup)."""
+
+    BINDINGS = [("escape", "cancel", "Cancel")]
+
+    DEFAULT_CSS = """
+    TemplateEditor { align: center middle; }
+    #modal-box #f-tasks { height: 8; border: tall #1b2431; background: #0b111a; }
+    """
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="modal-box", classes="modal"):
+            yield Label("[b]New template[/b]  [dim]· one task per line[/dim]",
+                        classes="modal-title")
+            yield Label("Name")
+            yield Input(placeholder="template name", id="f-name")
+            yield Label("Tasks")
+            yield TextArea("", id="f-tasks")
+            with Horizontal(classes="modal-buttons"):
+                yield Button("Save", variant="success", id="save")
+                yield Button("Cancel", variant="default", id="cancel")
+
+    def on_mount(self) -> None:
+        self.query_one("#f-name", Input).focus()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "save":
+            self._save()
+        else:
+            self.dismiss(None)
+
+    def _save(self) -> None:
+        name = str(self.query_one("#f-name", Input).value).strip()
+        text = self.query_one("#f-tasks", TextArea).text
+        tasks = [ln.strip() for ln in text.splitlines() if ln.strip()]
+        self.dismiss({"name": name, "tasks": tasks})
 
     def action_cancel(self) -> None:
         self.dismiss(None)

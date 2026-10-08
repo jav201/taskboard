@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-07-batch-08",
-  "batch_objective": "Templates v2: authoring -- save a chain as a template from the app: on the chain map, a key saves the selected task's connected chain (its project's component through depends_on, both directions) into settings.templates under a name the operator types; it lists in the I picker from then on; the batch-06 visual re-verdict stays pending",
+  "batch_id": "2026-10-07-batch-09",
+  "batch_objective": "Templates v3: authoring from scratch -- the I picker gains a 'New template...' entry: a small editor (name + one task per line) saves a linear-chain template into settings.templates; empty lines skipped; an all-empty edit saves nothing",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -127,11 +127,17 @@
       "to": "core",
       "date": "2026-10-07",
       "reason": "batch 2026-10-07-batch-08 opened by rollover from 2026-10-07-batch-07; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-07",
+      "reason": "batch 2026-10-07-batch-09 opened by rollover from 2026-10-07-batch-08; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "P0",
+  "phase_status": "not-started",
   "stations_active": [
     "P0",
     "P1",
@@ -141,12 +147,12 @@
     "P5"
   ],
   "iterations_per_station": {
-    "P0": 1,
-    "P1": 1,
-    "P2": 1,
-    "P3": 1,
-    "P4": 1,
-    "P5": 1
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0,
+    "P4": 0,
+    "P5": 0
   },
   "triggers": {
     "evaluated_at": null,
@@ -155,37 +161,30 @@
     "record": "NOT EVALUATED. /dev-flow evaluates the triggers at P0 and rewrites this block with the timestamp of THAT evaluation. An empty `fired` list here is an absence, not a verdict that nothing fired."
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-07-batch-08/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-08/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-07-batch-08/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-07-batch-09/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-09/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-07-batch-09/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-07-batch-08/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-07-batch-08/evidence/",
+    "increments": "repo:.dev-flow/2026-10-07-batch-09/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-07-batch-09/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-08.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-08.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-08/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-08/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-09.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-09.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-09/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-09/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "9a13c12b5116e75c76b2b7978e995eb874045e38",
+  "base_ref": "5c4c28ad075ded9152251604d490dc244f293169",
   "artifacts": {},
-  "decisions_log": [
-    {
-      "station": "P5",
-      "date": "2026-10-07",
-      "decision": "batch closed -- fold-canon discharged (2 ids), final validator 0 block, C-25 suite 2585 passed + the G-011 declared flake; the batch-06 visual verdict folded at 762d18c (all accepted); the backlog holds nothing new open",
-      "guided": false
-    }
-  ],
+  "decisions_log": [],
   "standing_authorization": {
     "autonomous": true,
     "merge": false,
     "asked_on": "2026-10-07",
-    "operator_words": "Operator (Javier), 2026-07 no — 2026-10-07: 'si no hay nada que decidir continua junto con deepseek lo que sigue' — the queued carry is template authoring v2. Read with the established chain: Gates -- autonomous with the two exceptions; Git -- the COORDINATOR commits and pushes at each close; synthetic boards only; DeepSeek implements under coordinator briefs; the verdict sheet for batch-06 ships with this batch's open for the operator's visual re-verdict (still pending). This batch runs in the MAIN checkout."
+    "operator_words": "Operator (Javier), 2026-10-07/08: 'No puedo hacer una plantilla desde cero tambien?' -- template authoring from scratch. Read with the established chain: Gates -- autonomous with the two exceptions; Git -- the COORDINATOR commits and pushes at each close; synthetic boards only; DeepSeek implements under coordinator briefs; this batch runs in the MAIN checkout."
   },
   "obsidian_synced": false,
-  "created_at": "2026-10-07T22:13:41.146611",
+  "created_at": "2026-10-08T07:44:48.744762",
   "resumption_note": "BOTH tracks closed and merged 2026-10-07: batch-03 (cleanup) at 46b16be, batch-04 (presentation) merged at 1666f08, suite green, validator 0 block. Next: the operator's call on the kg_mejoras plan's remaining batches; open the next batch by rollover from this state."
 }

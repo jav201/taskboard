@@ -1,0 +1,544 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-09/01-requirements.md
+[0m→ [0mRead taskboard/modals.py
+[0m→ [0mRead taskboard/app.py
+[0m→ [0mRead taskboard/views.py
+[0m→ [0mRead taskboard/models.py
+[0m✱ [0mGrep "def templates|def _read_template|def chain_template|class Template|def dependents_chain|class TextPrompt"[90m in taskboard · 8 matches[0m
+[0m✱ [0mGrep "help_usage|help|templates|New template"[90m in taskboard/views.py · 51 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [offset=2250, limit=130][0m
+[0m→ [0mRead taskboard/modals.py[90m [offset=1355, limit=90][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=6807, limit=140][0m
+[0m✱ [0mGlob "tests/*.py"[90m 82 matches[0m
+[0m✱ [0mGrep "TemplatePicker|Template|templates|_on_template_picked|chain_template|New template"[90m in tests · 58 matches[0m
+[0m→ [0mRead tests/test_templates_app.py
+[0m→ [0mRead tests/test_template_save_app.py
+[0m→ [0mRead tests/conftest.py
+[0m
+[0m$ [0mgrep -n "modal-box\|modal-title\|modal-buttons\|modal-grid\|TextArea\|#f-notes\|#f-text\|#template-box\|TemplatePicker\|#f-name\|date-input\|date-row" taskboard/taskboard.tcss
+60:#modal-box, #confirm-box {
+65:.modal-title {
+74:.modal-grid {
+80:.modal-grid Label {
+89:#details-box .modal-grid Label {
+95:   selector is what counts: `.modal Label` outranks `.modal-title`, and its
+96:   `margin-top` replaces the whole margin, so `.modal-title`'s `margin-bottom`
+98:#details-box .modal-title {
+101:#details-box .modal-grid {
+114:.modal-buttons {
+119:.modal-buttons Button {
+123:/* date field + calendar button (sits in the modal-grid's 1fr cell) */
+124:.date-row {
+128:.date-row .date-input {
+140:   .modal / #modal-box, keeps its 62-column box. Controls are ONE row tall;
+154:#task-head .modal-title {
+219:#task-box .date-input {
+249:#task-box #f-notes {
+267:#task-foot TextArea {
+[0m
+[0m→ [0mRead taskboard/taskboard.tcss[90m [offset=55, limit=130][0m
+[0m→ [0mRead taskboard/taskboard.tcss[90m [limit=55][0m
+[0m
+[0m$ [0mgrep -n "TextArea\|text-area" taskboard/taskboard.tcss
+267:#task-foot TextArea {
+[0m
+[0m→ [0mRead taskboard/taskboard.tcss[90m [limit=45, offset=245][0m
+[0m→ [0mRead tests/test_help_clip.py
+[0m→ [0mRead taskboard/views.py[90m [limit=70, offset=1795][0m
+[0m
+[0m$ [0mgrep -rn "I inserts\|edit it in board\|New template\|board JSON\|help_usage" tests/
+tests/test_english.py:28:from taskboard.views import help_example, help_usage, render_view
+tests/test_english.py:87:    "para qué es", "lo primero que haces", "los números de la tarjeta",   # help_usage
+tests/test_english.py:155:        usage = help_usage(mode)
+tests/test_english.py:169:    focus = " ".join(" ".join(b) for _h, b in help_usage("focus"))
+tests/test_english.py:171:    people = " ".join(" ".join(b) for _h, b in help_usage("people"))
+tests/test_gantt_milestones.py:29:                             gantt_window, help_usage, legend_entries, milestone_tone,
+tests/test_gantt_milestones.py:256:    bullets = [x for _h, xs in help_usage("gantt") for x in xs]
+tests/test_help_clip.py:25:from taskboard.views import _strip, help_example, help_usage, legend_entries
+tests/test_help_clip.py:44:    for heading, bullets in help_usage(mode):
+tests/test_kanban_milestones.py:242:    bullets = [x for _h, xs in views.help_usage("kanban") for x in xs]
+tests/test_kanban_priority.py:372:    from taskboard.views import help_usage
+tests/test_kanban_priority.py:376:    usage = " ".join(" ".join(b) for _h, b in help_usage("kanban"))
+tests/test_kanban_readable.py:965:    usage = [line for _h, lines in views.help_usage("kanban") for line in lines]
+tests/test_kanban_window.py:64:    usage = [line for _h, lines in views.help_usage("kanban") for line in lines]
+tests/test_links.py:219:    usage = " ".join(x for _h, lines in views.help_usage("kanban") for x in lines)
+tests/test_markup_sites.py:704:    from taskboard.views import help_example, help_usage
+tests/test_markup_sites.py:827:        got["help usage section heading"] = _flags(rows, help_usage("swimlanes")[0][0])
+tests/test_markup_sites.py:829:        got["help usage bullet (plain)"] = _flags(rows, help_usage("swimlanes")[0][1][0][:12])
+Binary file tests/__pycache__/test_english.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_english.cpython-312.pyc matches
+Binary file tests/__pycache__/test_gantt_milestones.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_help_clip.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_kanban_milestones.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_kanban_priority.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_kanban_readable.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_kanban_window.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_links.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_markup_sites.cpython-312-pytest-8.3.4.pyc matches
+[0m
+[0m→ [0mRead tests/test_english.py
+[0m→ [0mRead tests/test_links.py[90m [offset=210, limit=30][0m
+[0m
+[0m$ [0mgrep -rn "board JSON\|JSON-only\|inserts\|authors\|New template" tests/*.py
+tests/test_app.py:1032:    """AC2: Ctrl+V inserts clipboard text into the focused Input."""
+tests/test_app.py:1047:    """AC3: Ctrl+V inserts clipboard text into the focused notes TextArea."""
+tests/test_cells.py:146:    can measure; that is what the picker inserts.
+tests/test_cells.py:159:    """The other half: the glyph the picker inserts must reach the screen."""
+tests/test_edit_window.py:376:    VerticalScroll focuses by default) inserts a stop after the notes."""
+tests/test_emoji_picker.py:7:1. **It inserts the GLYPH, never the `:shortcode:`.** A shortcode is 5+ characters
+tests/test_emoji_picker.py:100:async def test_ctrl_e_inserts_the_glyph_at_the_cursor(tmp_path):
+tests/test_emoji_picker.py:124:async def test_escaping_the_picker_inserts_nothing(tmp_path):
+tests/test_emoji_picker.py:180:# and the reason it inserts a glyph
+tests/test_templates_app.py:1:"""`I` inserts a process template as a linked chain (batch 2026-10-07-batch-07,
+tests/test_templates_app.py:73:async def test_pick_simple_chain_inserts_three_linked_tasks_and_one_undo(tmp_path):
+tests/test_templates_app.py:123:async def test_user_template_lists_before_presets_and_inserts_with_links(tmp_path):
+tests/test_templates_app.py:124:    """A user template lists BEFORE the presets and inserts with its links."""
+tests/test_templates_app.py:154:    """An empty template (0 tasks) inserts nothing and toasts `is empty`."""
+[0m
+[0m$ [0mgrep -rn "_on_template_picked\|TemplatePicker\|action_templates" taskboard/*.py tests/*.py
+taskboard/app.py:31:                     TemplatePicker, TextPrompt)
+taskboard/app.py:724:    def action_templates(self) -> None:
+taskboard/app.py:736:        self.push_screen(TemplatePicker(self.board),
+taskboard/app.py:737:                         lambda name: self._on_template_picked(name, project_id))
+taskboard/app.py:739:    def _on_template_picked(self, name: str | None, project_id: str) -> None:
+taskboard/modals.py:933:class TemplatePicker(ModalScreen[str | None]):
+taskboard/modals.py:942:    TemplatePicker { align: center middle; }
+tests/test_template_save.py:71:    # the insert logic's link builder (models mirror of app._on_template_picked):
+tests/test_template_save_app.py:114:        from taskboard.modals import TemplatePicker
+tests/test_template_save_app.py:115:        assert isinstance(app.screen, TemplatePicker)
+tests/test_templates_app.py:19:from taskboard.modals import TemplatePicker
+tests/test_templates_app.py:68:        assert isinstance(app.screen, TemplatePicker)
+tests/test_templates_app.py:119:        assert not isinstance(app.screen, TemplatePicker)
+[0m
+[0m# [0mTodos
+[•] Add TemplateEditor modal + New template... picker row in modals.py
+[ ] Wire picker routing + save handler in app.py
+[ ] Update kanban help bullet in views.py
+[ ] Write tests/test_template_new.py
+[ ] Run test_template_new.py then full suite
+[0m
+[0m← [0mEdit taskboard/modals.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+@@ -929,13 +929,14 @@
+     def action_cancel(self) -> None:
+         self.dismiss(None)
+ 
+ 
+-class TemplatePicker(ModalScreen[str | None]):
+-    """`I` — "insert a process" (HLR-1301). Lists the board's user templates
+-    first, then the factory presets, each row `name — N tasks`; selecting a row
+-    returns its name, `esc` returns None. Every user string is a Text piece
+-    (S1)."""
++class TemplatePicker(ModalScreen[tuple[str, str] | None]):
++    """`I` — "insert a process" (HLR-1301). Lists a leading `New template...`
++    row, then the board's user templates, then the factory presets, each row
++    `name — N tasks`; selecting a template returns `("insert", name)`, the
++    `New template...` row returns `("new", "")`, `esc` returns None. Every user
++    string is a Text piece (S1)."""
+ 
+     BINDINGS = [("escape", "cancel", "Cancel")]
+ 
+     DEFAULT_CSS = """
+@@ -960,19 +961,25 @@
+ 
+     def on_mount(self) -> None:
+         ol = self.query_one("#template-list", OptionList)
+         self._templates = templates(self.board)
+-        options = []
+-        for t in self._templates:
++        # the authoring row is NOT a template: it carries a reserved id the
++        # selection handler recognises instead of indexing into `_templates`.
++        options = [Option(Text("New template...", style="bold"), id="__new__")]
++        for i, t in enumerate(self._templates):
+             line = Text(t.name, style="bold")
+             line.append(f" — {len(t.tasks)} tasks", style=HEX["dim"])
+-            options.append(Option(line, id=str(len(options))))
++            options.append(Option(line, id=str(i)))
+         ol.add_options(options)
+-        ol.highlighted = 0 if options else None
++        ol.highlighted = 0
+         ol.focus()
+ 
+     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+-        self.dismiss(self._templates[int(event.option.id)].name)
++        oid = event.option.id
++        if oid == "__new__":
++            self.dismiss(("new", ""))
++        else:
++            self.dismiss(("insert", self._templates[int(oid)].name))
+ 
+     def action_cancel(self) -> None:
+         self.dismiss(None)
+ 
+
+[0m
+Now let me make the edits. First, the `TemplatePicker` in modals.py:
+[0m← [0mEdit taskboard/modals.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\modals.py
+@@ -983,8 +983,55 @@
+     def action_cancel(self) -> None:
+         self.dismiss(None)
+ 
+ 
++class TemplateEditor(ModalScreen[dict | None]):
++    """`I` → `New template...` — author a process from scratch (HLR-1501,
++    LLR-1501.1). ONE name field and ONE multi-line tasks field (one task per
++    line); Save returns ``{"name", "tasks"}`` — the name stripped and the tasks
++    as stripped, non-blank lines in order — `esc` returns None. The linear chain
++    is built by the caller: this modal only collects text, so it writes nothing
++    and toasts nothing (S1: the name is user text and is never painted here as
++    markup)."""
++
++    BINDINGS = [("escape", "cancel", "Cancel")]
++
++    DEFAULT_CSS = """
++    TemplateEditor { align: center middle; }
++    #modal-box #f-tasks { height: 8; border: tall #1b2431; background: #0b111a; }
++    """
++
++    def compose(self) -> ComposeResult:
++        with VerticalScroll(id="modal-box", classes="modal"):
++            yield Label("[b]New template[/b]  [dim]· one task per line[/dim]",
++                        classes="modal-title")
++            yield Label("Name")
++            yield Input(placeholder="template name", id="f-name")
++            yield Label("Tasks")
++            yield TextArea("", id="f-tasks")
++            with Horizontal(classes="modal-buttons"):
++                yield Button("Save", variant="success", id="save")
++                yield Button("Cancel", variant="default", id="cancel")
++
++    def on_mount(self) -> None:
++        self.query_one("#f-name", Input).focus()
++
++    def on_button_pressed(self, event: Button.Pressed) -> None:
++        if event.button.id == "save":
++            self._save()
++        else:
++            self.dismiss(None)
++
++    def _save(self) -> None:
++        name = str(self.query_one("#f-name", Input).value).strip()
++        text = self.query_one("#f-tasks", TextArea).text
++        tasks = [ln.strip() for ln in text.splitlines() if ln.strip()]
++        self.dismiss({"name": name, "tasks": tasks})
++
++    def action_cancel(self) -> None:
++        self.dismiss(None)
++
++
+ class MilestoneOffer(ModalScreen[list | None]):
+     """The one-time milestone offer (M-3 as a migration, LLR-605.4): the board's
+     one-day tasks pre-checked, its due-only tasks unchecked, each row naming its
+     project, its date and how many open tasks wait on it. `space` toggles the
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -27,9 +27,9 @@
+                      snapshot)
+ from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+                      HelpModal, ImageViewer, MilestoneOffer, PhaseEditor, ProjectModal,
+                      ProjectPicker, StandupModal, TaskDetails, TaskModal, TeamIdentityPicker,
+-                     TemplatePicker, TextPrompt)
++                     TemplateEditor, TemplatePicker, TextPrompt)
+ from .keymap import KeyBar, app_bindings, palette_commands
+ from .ribbon import Ribbon
+ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
+                         probe_setup_health)
+
+[0m
+Now app.py — import `TemplateEditor` and wire the routing + save handler:
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -721,25 +721,31 @@
+                                    proj.name if proj else None,
+                                    self.selected_task_id))
+ 
+ def action_templates(self) -> None:
+-    """`I` — insert a process template (HLR-1301): the picker lists the
+-    board's user templates then the presets; the insert lands the tasks in
+-    the selected task's project (the focused project when set) as ONE undo
+-    step. Resolves the target project exactly like `action_present`; no
+-    resolvable project -> the `No project to insert into.` toast."""
++    """`I` — insert a process template (HLR-1301): the picker lists a
++    leading `New template...` row, then the board's user templates, then the
++    presets; the insert lands the tasks in the selected task's project (the
++    focused project when set) as ONE undo step. `New template...` routes to
++    the scratch editor instead (HLR-1501). Resolves the target project
++    exactly like `action_present`; no resolvable project -> the
++    `No project to insert into.` toast."""
+     project_id = present_project_id(self.board, self.selected_task_id,
+                                     self.focused_project_id)
+     if project_id is None:
+         self.notify("No project to insert into.", title="Templates",
+                     severity="information", timeout=10, markup=False)
+         return
+     self.push_screen(TemplatePicker(self.board),
+-                     lambda name: self._on_template_picked(name, project_id))
++                     lambda res: self._on_template_picked(res, project_id))
+ 
+-def _on_template_picked(self, name: str | None, project_id: str) -> None:
+-    if name is None:
++def _on_template_picked(self, res: tuple[str, str] | None, project_id: str) -> None:
++    if res is None:
+         return
++    kind, name = res
++    if kind == "new":
++        self.push_screen(TemplateEditor(), self._on_template_authored)
++        return
+     tpl = next((t for t in templates(self.board) if t.name == name), None)
+     if tpl is None:
+         return
+     if not tpl.tasks:
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\app.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\app.py
+@@ -810,8 +810,37 @@
+     self.board.save()
+     self.notify(f"Template '{name}' saved — {len(tasks)} tasks",
+                 title="Templates", severity="information", markup=False)
+ 
++def _on_template_authored(self, data: dict | None) -> None:
++    """`I` → `New template...` — author a template from scratch (HLR-1501).
++
++    On save the entry is appended to `settings["templates"]` (created if
++    absent) as a LINEAR chain — task i waits on i-1, task 0 waits on nothing
++    — and the board saved, toasting the pinned literal. A blank name or zero
++    task lines saves NOTHING and toasts one line saying why; esc returns
++    None and writes nothing. NOT an undo step: it writes settings, not
++    tasks (the batch-08 rule)."""
++    if data is None:
++        return
++    name = (data.get("name") or "").strip()
++    lines = [ln.strip() for ln in (data.get("tasks") or []) if ln.strip()]
++    if not name or not lines:
++        self.notify("Template not saved — give it a name and at least one task.",
++                    title="Templates", severity="information", markup=False)
++        return
++    tasks = []
++    for i, title in enumerate(lines):
++        entry = {"title": title}
++        if i:
++            entry["wait"] = i - 1
++        tasks.append(entry)
++    self.board.settings.setdefault("templates", []).append(
++        {"name": name, "tasks": tasks})
++    self.board.save()
++    self.notify(f"Template '{name}' saved — {len(tasks)} tasks",
++                title="Templates", severity="information", markup=False)
++
+ def action_standup(self) -> None:
+     """`S` — the week in one modal: what moved and what closed, per
+     project, derived from `phase_changed` alone. Nothing is stored for
+     this, and the modal mutates nothing — it is a reading, not an edit."""
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:\Users\jjgh8\Github\taskboard\taskboard\views.py
+===================================================================
+--- C:\Users\jjgh8\Github\taskboard\taskboard\views.py
++++ C:\Users\jjgh8\Github\taskboard\taskboard\views.py
+@@ -6832,10 +6832,11 @@
+                        "grouped board; +N more ↓ when it is full",
+                        "▐ band rule: a project once, across columns",
+                        "◆ on a band rule: a milestone, never a card",
+                        "┈ splits cards · ✓ the done rail (✓N narrow)",
+-                       "▲ above · ▼ below: bands folded off screen",
+-                       "I inserts a template · edit it in board JSON"]),
++                        "▲ above · ▼ below: bands folded off screen",
++                        "I inserts · New template... authors",
++                        "notes stay JSON-only at this version"]),
+     ]
+ if mode == "swimlanes":
+     return [
+         ("what it is for", ["see the board at a glance: the project under",
+
+[0m
+Now the views.py help bullet:
+[0m$ [0mgrep -rn "pilot.click\|#save\|press(\"enter\")\|\.focus()" tests/*.py | head -50
+tests/test_app.py:33:    app.screen.query_one("#save", Button).press()
+tests/test_app.py:193:        app.screen.query_one("#save", Button).press()
+tests/test_app.py:340:        app.screen.query_one("#save", Button).press()
+tests/test_app.py:362:        app.screen.query_one("#save", Button).press()
+tests/test_app.py:375:        app.screen.query_one("#save", Button).press()
+tests/test_app.py:947:        await pilot.press("enter")
+tests/test_app.py:951:        assert len(app.screen.query("#save")) == 0    # read-only: no save button
+tests/test_app.py:968:        await pilot.press("enter")
+tests/test_app.py:987:        await pilot.press("enter")
+tests/test_app.py:1039:        inp.focus()
+tests/test_app.py:1054:        ta.focus()
+tests/test_app.py:1069:        inp.focus()
+tests/test_app.py:1083:        await pilot.press("enter")
+tests/test_app.py:1106:            await pilot.press("enter")
+tests/test_app.py:1132:        await pilot.press("enter")                   # pick seeded (today)
+tests/test_archive.py:454:        app.screen.query_one("#save", Button).press()
+tests/test_cascade_app.py:186:        scr.query_one("#save", Button).press()
+tests/test_cascade_app.py:210:        scr.query_one("#save", Button).press()
+tests/test_cascade_app.py:245:        app.screen.query_one("#save", Button).press()
+tests/test_cascade_app.py:260:        scr.query_one("#save", Button).press()
+tests/test_cascade_app.py:277:        app.screen.query_one("#save", Button).press()
+tests/test_cascade_app.py:290:        scr.query_one("#save", Button).press()
+tests/test_cascade_app.py:439:        scr.query_one("#save", Button).press()
+tests/test_cascade_app.py:472:        scr.query_one("#save", Button).press()
+tests/test_cascade_app.py:510:        scr.query_one("#save", Button).press()
+tests/test_cascade_app.py:541:        scr.query_one("#save", Button).press()
+tests/test_cascade_app.py:601:        scr.query_one("#save", Button).press()
+tests/test_chainmap_app.py:130:        await pilot.press("enter")
+tests/test_chainmap_app.py:365:        await pilot.press("enter")              # the first candidate (Build component library)
+tests/test_colour_budget.py:198:        await pilot.press("enter")
+tests/test_control_bytes.py:260:        await pilot.press("enter")
+tests/test_details_grid.py:44:    await pilot.press("enter")
+tests/test_details_links.py:70:            await pilot.press("enter")
+tests/test_details_links.py:87:        await pilot.press("enter")
+tests/test_details_links.py:95:        await pilot.press("enter")
+tests/test_details_links.py:120:        await pilot.press("enter")
+tests/test_details_links.py:153:        await pilot.press("enter")
+tests/test_details_links.py:159:        await pilot.press("enter")
+tests/test_details_links.py:163:        await pilot.press("enter")
+tests/test_details_links.py:168:        await pilot.press("enter")
+tests/test_details_links.py:194:        await pilot.press("enter")
+tests/test_details_links.py:204:        await pilot.press("enter")
+tests/test_details_links.py:211:        await pilot.press("enter")
+tests/test_details_links.py:218:        await pilot.press("enter")
+tests/test_details_links.py:245:            await pilot.press("enter")
+tests/test_details_markup.py:56:    await pilot.press("enter")
+tests/test_edit_window.py:100:    ta.focus()
+tests/test_edit_window.py:236:            w.focus()
+tests/test_edit_window.py:298:        await pilot.press("enter")
+tests/test_edit_window.py:380:        scr.query_one("#f-title").focus()
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=55, offset=1][0m
+[0m
+[0m← [0mWrite tests/test_template_new.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_template_new.py -q
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+......                                                                   [100%]
+6 passed in 3.50s
+[0m
+All 6 pass. Now the full suite:
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -40
+>           assert _plains(app.screen.query_one("#template-list")) == \
+                ["Deploy — 2 tasks", "Simple chain — 3 tasks", "Bugfix — 3 tasks"]
+E           AssertionError: assert ['New templat...ix — 3 tasks'] == ['Deploy — 2 ...ix — 3 tasks']
+E             
+E             At index 0 diff: 'New template...' != 'Deploy — 2 tasks'
+E             Left contains one more item: 'Bugfix — 3 tasks'
+E             Use -v to get more diff
+
+tests\test_templates_app.py:140: AssertionError
+_____________________ test_empty_template_toasts_is_empty _____________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-16983/test_empty_template_toasts_is_0')
+
+    async def test_empty_template_toasts_is_empty(tmp_path):
+        """An empty template (0 tasks) inserts nothing and toasts `is empty`."""
+        path = tmp_path / "board.json"
+        _board(tmp_path, settings={"templates": [{"name": "Empty", "tasks": []}]})
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(100, 30), notifications=True) as pilot:
+            await pilot.pause()
+            t = app.board.tasks[0]
+            app.selected_task_id = t.id
+            n0 = len(app.board.tasks)
+            await pilot.press("I")
+            await _settle(pilot)
+            await pilot.press("enter")          # the highlighted row is Empty — 0 tasks
+            await _settle(pilot)
+            assert len(app.board.tasks) == n0
+>           assert _toast_check(app, "Templates", "Template 'Empty' is empty.") is None
+E           assert 'no \'Templates\' toast equal to "Template \'Empty\' is empty."; toasts []' is None
+E            +  where 'no \'Templates\' toast equal to "Template \'Empty\' is empty."; toasts []' = _toast_check(TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}), 'Templates', "Template 'Empty' is empty.")
+
+tests\test_templates_app.py:168: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_template_save_app.py::test_type_a_name_and_enter_saves_and_lists_in_the_picker
+FAILED tests/test_templates_app.py::test_I_opens_the_picker_listing_presets_with_counts
+FAILED tests/test_templates_app.py::test_pick_simple_chain_inserts_three_linked_tasks_and_one_undo
+FAILED tests/test_templates_app.py::test_user_template_lists_before_presets_and_inserts_with_links
+FAILED tests/test_templates_app.py::test_empty_template_toasts_is_empty - ass...
+5 failed, 2587 passed in 455.47s (0:07:35)
+[0m
+The new test file is green (6/6), but the full suite reddened 5 pre-existing tests. Let me pin down the exact line numbers of my changes for an accurate report.
+[0m$ [0mgrep -n "class TemplatePicker\|class TemplateEditor\|New template\|__new__\|def _on_template_picked\|def _on_template_authored\|TemplateEditor()\|notes stay JSON-only\|I inserts · New template" taskboard/modals.py taskboard/app.py taskboard/views.py
+taskboard/modals.py:872:        options = [Option(create, id="__new__")]
+taskboard/modals.py:922:        if oid == "__new__":
+taskboard/modals.py:933:class TemplatePicker(ModalScreen[tuple[str, str] | None]):
+taskboard/modals.py:934:    """`I` — "insert a process" (HLR-1301). Lists a leading `New template...`
+taskboard/modals.py:937:    `New template...` row returns `("new", "")`, `esc` returns None. Every user
+taskboard/modals.py:967:        options = [Option(Text("New template...", style="bold"), id="__new__")]
+taskboard/modals.py:978:        if oid == "__new__":
+taskboard/modals.py:987:class TemplateEditor(ModalScreen[dict | None]):
+taskboard/modals.py:988:    """`I` → `New template...` — author a process from scratch (HLR-1501,
+taskboard/modals.py:1005:            yield Label("[b]New template[/b]  [dim]· one task per line[/dim]",
+taskboard/app.py:726:        leading `New template...` row, then the board's user templates, then the
+taskboard/app.py:728:        focused project when set) as ONE undo step. `New template...` routes to
+taskboard/app.py:741:    def _on_template_picked(self, res: tuple[str, str] | None, project_id: str) -> None:
+taskboard/app.py:746:            self.push_screen(TemplateEditor(), self._on_template_authored)
+taskboard/app.py:814:    def _on_template_authored(self, data: dict | None) -> None:
+taskboard/app.py:815:        """`I` → `New template...` — author a template from scratch (HLR-1501).
+taskboard/views.py:6837:                            "I inserts · New template... authors",
+taskboard/views.py:6838:                            "notes stay JSON-only at this version"]),
+[0m
+[0m# [0mTodos
+[✓] Add TemplateEditor modal + New template... picker row in modals.py
+[✓] Wire picker routing + save handler in app.py
+[✓] Update kanban help bullet in views.py
+[✓] Write tests/test_template_new.py
+[✓] Run test_template_new.py then full suite
+[0m
+## Review packet — batch-09 increment 001 (scratch template authoring)
+
+### What changed
+1. **Picker row** — `taskboard/modals.py:933-985`: `TemplatePicker` now returns `tuple[str, str] | None` (house `LinkPicker` "kind tag" convention) and lists `New template...` first via a reserved option id `__new__` (`modals.py:967`, `:978`). Template rows keep index ids.
+2. **Editor modal** — `taskboard/modals.py:987-1031`: new `TemplateEditor(ModalScreen[dict | None])` — one `Input` (`#f-name`) + one `TextArea` (`#f-tasks`), Save/Cancel buttons, esc → `None`; `_save` returns `{"name", "tasks"}` with trimmed/non-blank lines. Thin collector: it writes/toasts nothing.
+3. **Wiring** — `taskboard/app.py:741-746` routes `("new", "")` to the editor; `app.py:814-843` `_on_template_authored` validates (blank name **or** zero lines → nothing + one-line "why" toast), builds the linear chain (`wait = i-1`, task 0 no `wait`), appends through the same `settings.setdefault("templates", [])` seam as batch-08, `save()`, and toasts the exact pinned literal `Template '<name>' saved — <N> tasks` (`markup=False`). Docstring states NOT an undo step (settings, not tasks).
+4. **`?` bullet** — `taskboard/views.py:6837-6838`: split the old kanban bullet into `I inserts · New template... authors` + `notes stay JSON-only at this version` (both ≤44 cells, no Spanish — `test_english.py` still green).
+5. **Tests** — `tests/test_template_new.py` (docstring carries `AT-1501`): 6 tests.
+
+### Editor composition chosen — and why
+`VerticalScroll(id="modal-box", classes="modal")` + `Input` + `TextArea` + `Horizontal(classes="modal-buttons")` buttons, with one `DEFAULT_CSS` rule giving the TextArea `height: 8` and the modal Input's border/background. This is the lightest house-consistent choice: `TextArea` already ships in the app (`TaskModal` uses it for notes/urls/images), the `.modal`/`modal-box` shell is exactly `ProjectModal`/`TextPrompt`, and the only new CSS is one rule on the modal's own `DEFAULT_CSS` (the `TemplatePicker`/`LinkPicker` precedent), so I touched no `.tcss`.
+
+### Test results
+- `tests/test_template_new.py`: **6 passed**.
+- Full suite: **2587 passed, 5 failed** (455s).
+
+### The 5 failures — STOP, naming them (not the G-011 flake)
+All five are pre-existing batch-07/08 tests, all red for the same reason: the contract's mandatory "`New template...` is the FIRST option" changes the shared `I` picker's list and first-highlight:
+- `tests/test_templates_app.py::test_I_opens_the_picker_listing_presets_with_counts` — asserts exact list without `New template...`.
+- `tests/test_templates_app.py::test_pick_simple_chain_inserts_three_linked_tasks_and_one_undo` — `enter` on the first row now opens the editor, not "Simple chain".
+- `tests/test_templates_app.py::test_user_template_lists_before_presets_and_inserts_with_links` — expects `Deploy` at index 0.
+- `tests/test_templates_app.py::test_empty_template_toasts_is_empty` — `enter` now hits `New template...`.
+- `tests/test_template_save_app.py::test_type_a_name_and_enter_saves_and_lists_in_the_picker` — `_plains(...)[0]` was `Release — 3 tasks`, now `New template...`.
+
+None of these are environmental; each pins the pre-batch-09 picker shape. They need their fixtures updated (expect `New template...` first and navigate one row past it). I did **not** touch them, honoring the "Plus ONE NEW test file. Nothing else." cap.
+
+### Risks / pending
+- 5 batch-07/08 tests need fixture updates to reflect the new first row (out of this increment's scope).
+- `TemplatePicker`'s return-type change (`str|None` → `tuple[str,str]|None`) is safe: the only caller is `action_templates`, and no test calls `_on_template_picked` directly.
+
+### Suggested next task
+Approve updating `tests/test_templates_app.py` + `tests/test_template_save_app.py` fixtures for the new `New template...` first row, then re-run the full suite to confirm 0 failures (bar G-011).

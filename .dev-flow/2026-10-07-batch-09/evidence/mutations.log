@@ -1,0 +1,15 @@
+# Mutation battery — batch-09, coordinator-run (byte-level, restore sha256 OK)
+
+## M18 — the linear wait chain not written — KILLED
+Mutation: `entry["wait"] = i - 1` -> `pass` (app.py:835).
+Node: `tests/test_template_new.py`. Result: `1 failed, 5 passed` — the
+round-trip chain arm reddens (the wait indices after an I insert); the editor
+arms (picker-first, toast, all-empty, esc) stay green — per-arm granularity.
+
+## The five law-driven fixture updates (coordinator, after the implementing
+## agent's STOP-and-name: the contract's "New template... FIRST" row changes the
+## shared I picker's shape; the pre-batch-09 tests pin the old shape)
+tests/test_templates_app.py x4 (the listing arms + the enter navigation gains
+`down` past the authoring row) and tests/test_template_save_app.py x1 (the
+saved template lists at index 1 now). Assertions not weakened — same outcomes,
+new shape.
