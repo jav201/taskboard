@@ -3,19 +3,42 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `1cf2f74` (local HEAD == `origin/main`; batch 2026-10-07-batch-07 started here)
+**Base ref:** `9a13c12` (local HEAD == `origin/main` at batch 2026-10-07-batch-08's open; `762d18c`
+the batch-06 verdict commit landed on top before this close)
 · **Last refresh:** 2026-10-07
-**Status:** **2575 tests** (batch `2026-10-07-batch-07`, the templates batch: press `I`, pick a
-template — user templates from the board's `settings["templates"]` first, then the `Simple chain`
-and `Bugfix` factory presets — and the project's chain of tasks exists: created in the first phase
-with no dates, linked exactly as the template's forward-only `wait` declares, ONE undo step
-(`u` removes the whole insert; a second `u` says `Nothing to undo.`), the toast
-`Inserted '<name>' — <N> tasks into <project>`; the `?` help names the key and the board-JSON edit
-seat; the contract's original `T` key was corrected to `I` under LED-2026-10-07-batch-07.2 before
-the first edit — `T` ships `project_pin_toggle` — the implementing agent's stop-and-name gate
-caught it; 9 new test nodes across 2 files; M13-M15 all KILLED).
-`test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011; did not fire
-at this batch's close).
+**Status:** **2586 tests** (batch `2026-10-07-batch-08`, template authoring v2: on the chain map,
+`,` on a selected tile opens the one-line name prompt prefilled with the chain's first title;
+typing a name + enter saves the tile's whole open component — BFS both directions through
+`depends_on` within the project, open tasks only, deterministic topological order by (depth, board
+order), a fan-in keeps its FIRST predecessor (the rest dropped, declared) — into
+`settings["templates"]`; the board is saved and the toast `Template '<name>' saved — <N> tasks`
+renders (`markup=False`); esc/empty cancels with NOTHING written; the saved template lists FIRST
+in the `I` picker from then on; saving is NOT an undo step (declared); the key ships as the key
+NAME `comma` view-scoped on the chain map, group `task` (a literal `,` is Textual's alias
+separator); the `?` chainmap bullet names it; the in-frame footer key-hints were deliberately
+untouched (byte-golden C-2b frames) — discoverability via the docked keybar + `?`; 11 new test
+nodes across 2 files; M16 (save writes nothing) · M17 (component neutered) KILLED; 3 source files
+— models/app/keymap).
+`test_win_clipboard_roundtrip` remains an intermittent environmental flake (G-011): it failed on
+its own clipboard SETUP in every B2 gate run — and fired there again at this batch's full-suite
+run (declared since batch B2; the coordinator verified it fails isolated too; unrelated to this
+batch's surface).
+
+- ✓ done in `2026-10-07-batch-08` (template authoring v2; contract LED-2026-10-07-batch-08.1) —
+  **save a chain as a template from the app** (US-1401, the operator's commission 2026-10-07: "si
+  no hay nada que decidir continua junto con deepseek lo que sigue" — the batch-07 carry):
+  `models.chain_template` (the component walk — BFS both directions through `depends_on` within
+  the project, open tasks only, deterministic topological order by (depth, board order), the
+  fan-in keeps the FIRST predecessor, titles/notes verbatim); `app.action_chain_template_save` +
+  `_on_chain_template_named` (the view guard, the refusal toasts, the TextPrompt prefill with the
+  chain's first title, the `settings["templates"]` append + save + the pinned toast
+  `Template '<name>' saved — <N> tasks`; NOT an undo step — declared); the key
+  `Key("comma", ",", ...)` view-scoped on the chain map, group `task`; the `?` chainmap bullet
+  (`views.py:6924`) + the README `comma` row (`README.md:136`, forced by the shipped README-census
+  test); the in-frame footer key-hints deliberately untouched (byte-golden frames). AT-1401's 11
+  arms across `tests/test_template_save.py` (7 unit) + `tests/test_template_save_app.py` (4 app).
+  2586 tests (2586 = 2575 + 11; the settled full run 2585 passed + the G-011 flake); M16 · M17
+  KILLED.
 
 - ✓ done in `2026-10-07-batch-07` (the templates batch; contract LED-2026-10-07-batch-07.1 + the
   T→I correction LED .2) — **process/chain templates insertable into a project** (US-1301, the
@@ -95,12 +118,15 @@ at this batch's close).
   increment-002's packet; the operator's visual re-verdict on the amended frames + the new chrome
   is PENDING in the Open section above.
 
+## Open — after `2026-10-07-batch-08` (template authoring v2)
+
+- Nothing new from this batch. The authoring-v2 item it closed (queued at batch-07) is marked done
+  in place below; the G-011 flake line stands; nothing else opens.
+
 ## Open — after `2026-10-07-batch-07` (the templates batch)
 
-- **Template authoring from the app — v2** ("save this chain as a template"): a name prompt plus a
-  `settings["templates"]` write behind the shipped modal/seam pattern, ONE undo step, its own
-  contract. Declared as the v2 carry inside HLR-1301 (v1 edits templates in the board JSON, the `?`
-  documents it); surfaced by the implementing session as the natural next increment.
+- ~~Template authoring from the app — v2~~ — **✓ done in `2026-10-07-batch-08`** (the entry at the
+  top of this file; the saved shape keeps the batch-07 store contract, no undo step — declared).
 - ~~The operator's visual re-verdict on the amended C-2b frames + the new chrome~~ — **all accepted 2026-10-08** (see the batch-06 section below; `veredicto-batch06.json`).
 
 ## Open — after `2026-10-07-batch-06` (the operator-feedback batch)

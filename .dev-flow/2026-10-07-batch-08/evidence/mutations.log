@@ -1,0 +1,25 @@
+# Mutation battery — batch-08, coordinator-run (byte-level, restores sha256-verified; all OK)
+
+## M16 — the save writes nothing — KILLED
+Mutation: the `settings["templates"].append(...)` in `_on_chain_template_named` ->
+`_ = (name, tasks)`.
+Node: `tests/test_template_save_app.py`. Result: `2 failed, 2 passed` — the
+settings-written and the picker-lists-it arms redden; the esc-cancels arms stay
+green (per-arm granularity).
+
+## M17 — the component walk neutered — KILLED
+Mutation: `chain_template` returns None at the top.
+Node: `tests/test_template_save.py`. Result: `6 failed, 1 passed` — every
+component arm reddens (both-direction BFS, the fan-in drop, the degenerate single
+task, the None cases), the round-trip arm stays green.
+
+## Review notes for the packets
+- The key ships as `Key("comma", ",", ...)` — a literal `,` is Textual's alias
+  separator; the agent named this. Group `task` (no `chains` group exists).
+- The chain map's in-frame footer key-hint row was deliberately NOT touched (it is
+  byte-golden in the C-2b frames); the `,` key is discoverable via the docked keybar
+  (re-derived from the seat) and the `?` bullet. Recorded as a declared notice.
+- README.md gained the `comma` row (forced by the shipped README-census test).
+- The full suite's single failure is `test_win_clipboard_roundtrip` — the G-011
+  environmental flake (fails in its own clipboard SETUP, isolated too; declared in
+  the BACKLOG since batch B2, unrelated to this batch).

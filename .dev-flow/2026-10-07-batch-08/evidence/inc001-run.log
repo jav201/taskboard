@@ -1,0 +1,1450 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-08/01-requirements.md
+[0m→ [0mRead taskboard/models.py
+[0m→ [0mRead taskboard/app.py
+[0m→ [0mRead taskboard/keymap.py
+[0m→ [0mRead taskboard/views.py
+[0m✱ [0mGrep "def templates|def _read_template|class Template|def is_open|def link_refusal|def chain_template|def critical_chain|def waiting_ids|def sort_by_due"[90m in taskboard/models.py · 10 matches[0m
+[0m✱ [0mGrep "TextPrompt|def _on_template_picked|action_chain|chainmap|def _chain|_on_chain|chain_template_save"[90m in taskboard · 78 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [offset=1400, limit=120][0m
+[0m→ [0mRead taskboard/models.py[90m [offset=2080, limit=300][0m
+[0m→ [0mRead taskboard/modals.py[90m [offset=1365, limit=140][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=120, offset=1120][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=130, offset=1370][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=60, offset=1570][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=50, offset=2190][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=180, offset=5460][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=130, offset=5940][0m
+[0m✱ [0mGrep "chain map|chainmap|CHAIN MAP|remove the ›"[90m in taskboard/modals.py · 77 matches[0m
+[0m✱ [0mGrep "chainmap|CHAIN MAP|chain map"[90m in taskboard/views.py · 76 matches[0m
+[0m✱ [0mGrep "class HelpModal|chainmap|def _view_help|VIEW_HELP|usage|legend"[90m in taskboard/modals.py · 100 matches[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=120, offset=6910][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=80, offset=7100][0m
+[0m
+[0m$ [0mgrep -rn "group=\"chains\"\|group='chains'\|chains\"\|group=\"task\"\|groups\b" taskboard/keymap.py
+73:    Key("enter", "↵", "details", "Details", primary=True, group="task"),
+74:    Key("a", "a", "add_task", "Add", primary=True, group="task"),
+75:    Key("e", "e", "edit", "Edit", primary=True, group="task"),
+76:    Key("d,delete", "d", "delete", "Del", primary=True, group="task"),
+79:    Key("L", "L", "link", "Link", primary=True, group="task",
+81:    Key("x", "x", "archive", "Archive", group="task"),
+82:    Key("X", "X", "purge_done", "Purge done", group="task"),
+83:    Key("v", "v", "toggle_archived", "Archived", group="task"),
+84:    Key("u", "u", "undo", "Undo", group="task"),
+85:    Key("t", "t", "pin_toggle", "Pin task", group="task"),
+86:    Key("T", "T", "project_pin_toggle", "Pin proj", group="task"),
+89:    Key("M", "M", "milestone_toggle", "Milestone", group="task",
+[0m
+[0m✱ [0mGrep "group"[90m in taskboard/keymap.py · 100 matches[0m
+[0m
+[0m$ [0mls .dev-flow/2026-10-07-batch-08/ 2>/dev/null; echo "---"; ls .dev-flow/2026-10-07-batch-07/ 2>/dev/null
+00-checklists.md
+01-requirements-ledger.md
+01-requirements.md
+02-review.md
+03-increments
+04-validation.md
+05-close.md
+PLAN.md
+evidence
+---
+00-checklists.md
+01-requirements-ledger.md
+01-requirements.md
+02-review.md
+03-increments
+04-validation.md
+05-close.md
+PLAN.md
+decisions-log.json
+evidence
+[0m
+[0m$ [0mls .dev-flow/2026-10-07-batch-08/03-increments/ 2>/dev/null; echo "===PLAN==="; cat .dev-flow/2026-10-07-batch-08/PLAN.md 2>/dev/null | head -120
+increment-001.md
+===PLAN===
+# PLAN — taskboard — Batch 2026-10-07-batch-08
+
+> **Artifact language.** Canonical **English scaffold**; generate in the batch's language.
+> **Owed in.** `core` ✓ · `full` ✓
+> Seeded by `/dev-flow-init` step 4 in both modes; the living plan is owed at every gate
+> that follows (`/dev-flow` §Living plan is the rule's home).
+
+> **Field guide:** `templates/docs/plan-template.md` explains each field below and the rules that read it. It ships with the flow and is not copied into this batch.
+
+The living compendium of this batch: where-we-are · objective · per-story/per-station status ·
+roadmap + increment plan · key decisions · risks/watch-items · conventions honored ·
+out-of-scope carries · test ledger · decision log (the human-readable mirror of `state.json`).
+**Create at batch open and update at every gate and significant checkpoint** — the
+orchestrator presents the full plan in-conversation at each phase gate.
+
+## Header
+
+| Field | Value |
+|---|---|
+| Project | taskboard |
+| Batch | 2026-10-07-batch-08 |
+| Objective | Templates v2: authoring -- save a chain as a template from the app: on the chain map, a key saves the selected task's connected chain (its project's component through depends_on, both directions) into settings.templates under a name the operator types; it lists in the I picker from then on; the batch-06 visual re-verdict stays pending |
+| Standing authorization | <none — every gate is asked, or: <the commission, quoted or cited> (runtime cannot prompt)> |
+| First gate | <the first gate run's exit code and what its `V7` line reported> |
+| Premises / RC-1 | <the verified `origin/main` tip, or: no origin — RC-1 not possible, local tip <sha>; each premise the batch rests on> |
+
+## Triggers
+
+The trigger evaluation `state.json`'s `triggers.record` points at: one row per trigger evaluated, fired or not.
+
+| Id | Verdict | Probe output |
+|---|---|---|
+| <A1 / B1 / …> | <fired / not fired> | <the probe run and what it printed> |
+
+## Where we are
+
+<one paragraph: station, what the last gate decided, what is owed next>
+
+## Objective
+
+<the batch objective, restated>
+
+## Per-story / per-station status
+
+| Story / station | Status | Notes |
+|---|---|---|
+| <US-NNN / station> | <status> | <notes> |
+
+## Roadmap + increment plan
+
+<the increments this batch expects, in order>
+
+## Key decisions
+
+| Date | Decision | Why |
+|---|---|---|
+| 2026-10-07 | <decision> | <reason> |
+
+## Risks / watch-items
+
+- <risk · likelihood · mitigation>
+
+## Conventions honored
+
+- <convention>
+
+## Out-of-scope carries
+
+- <what this batch deliberately does not do, and where it is tracked>
+
+## Test ledger
+
+| Suite / command | Last run | Result |
+|---|---|---|
+| <command> | <date> | <result> |
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-08/03-increments/increment-001.md
+[0m
+[0m$ [0mls tests/ | head -100; echo "---TEMPLATE---"; ls tests/ | grep -i "template\|chain\|link" 
+__pycache__
+conftest.py
+kg_board.py
+present_board.py
+test_agenda.py
+test_app.py
+test_archive.py
+test_backup_write.py
+test_cascade.py
+test_cascade_app.py
+test_cells.py
+test_chainmap.py
+test_chainmap_app.py
+test_cities.py
+test_cleanup.py
+test_colour_budget.py
+test_colour_budget_app.py
+test_control_bytes.py
+test_dependencies.py
+test_details_grid.py
+test_details_links.py
+test_details_markup.py
+test_edit_window.py
+test_emoji_picker.py
+test_english.py
+test_field.py
+test_flow.py
+test_flow_view.py
+test_focus.py
+test_gantt.py
+test_gantt_board.py
+test_gantt_link.py
+test_gantt_milestones.py
+test_gantt_polish.py
+test_help_clip.py
+test_highlight_segments.py
+test_history.py
+test_kanban_milestones.py
+test_kanban_priority.py
+test_kanban_readable.py
+test_kanban_window.py
+test_keymap.py
+test_lanes_grid.py
+test_legend.py
+test_link_migration.py
+test_link_picker.py
+test_links.py
+test_markup_census.py
+test_markup_sites.py
+test_milestone_offer.py
+test_milestone_offer_seam.py
+test_milestones.py
+test_momentum.py
+test_mon_d.py
+test_motion.py
+test_no_live_board.py
+test_occupancy.py
+test_palette_ration.py
+test_precommit_gate.py
+test_present.py
+test_prism_laws.py
+test_privacy_sweep.py
+test_readme.py
+test_report.py
+test_requirements.py
+test_rescue.py
+test_row_cost.py
+test_scratch_cannot_be_committed.py
+test_setup_help.py
+test_span_economy.py
+test_spend.py
+test_swimlanes.py
+test_sync_fields.py
+test_team_sync.py
+test_team_views.py
+test_templates.py
+test_templates_app.py
+test_undo_toast.py
+test_vertical_fill.py
+test_view_survival.py
+test_wave.py
+---TEMPLATE---
+test_chainmap.py
+test_chainmap_app.py
+test_details_links.py
+test_gantt_link.py
+test_link_migration.py
+test_link_picker.py
+test_links.py
+test_templates.py
+test_templates_app.py
+[0m
+[0m→ [0mRead tests/test_templates.py
+[0m→ [0mRead tests/test_templates_app.py
+[0m→ [0mRead tests/test_chainmap_app.py
+[0m→ [0mRead tests/conftest.py
+[0m→ [0mRead taskboard/models.py[90m [limit=120, offset=2010][0m
+[0m✱ [0mGrep "^def _ids|^def _live|^def open_dependents|^def open_predecessors|^def link_marks"[90m in taskboard/models.py · 6 matches[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=70, offset=1783][0m
+[0m
+[0m$ [0mgrep -rn "\.group\|group==" taskboard/ | grep -v "kanban_group\|gantt_group\|_group\|gantt_previous\|focused_project\|group_key\|bar_group\|team_filter\|GROUP_SEP\|status\|Priority" 
+taskboard/views.py:304:        k = len(m.group(1))
+taskboard/views.py:785:        full, escapes, content = m.groups()
+taskboard/views.py:3143:        if m.group(1) is not None:
+taskboard/views.py:3144:            out.append((m.group(1), "soon"))
+taskboard/views.py:3145:        elif m.group(2) is not None:
+taskboard/views.py:3146:            out.append((m.group(2), "over"))
+taskboard/views.py:3148:            out.append((m.group(3), "green"))
+taskboard/views.py:3390:                    item = m.group(1).strip()
+taskboard/views.py:3544:    open_items = [m.group(1).strip()
+Binary file taskboard/__pycache__/app.cpython-312.pyc matches
+[0m
+[0m$ [0mgrep -n 'Key(","\|","' taskboard/keymap.py; echo "---count---"; grep -c 'Key(",' taskboard/keymap.py; echo "---keymap test---"; cat tests/test_keymap.py | head -120
+---count---
+0
+---keymap test---
+"""THE KEY BAR IS A CONTRACT.
+
+    EVERY KEY SHOWN WORKS. EVERY KEY THAT WORKS IS SHOWN.
+    A capability whose key is not on screen does not exist.
+
+This defect has now appeared twice on unrelated surfaces, which is what makes it
+a law rather than a slip. In this app it was total: Textual's `Footer` reported
+its bindings ready and mounted ZERO children, so all 24 live keys rendered as a
+blank row — every capability live, nothing displayed.
+
+ORACLE DISCIPLINE, learned the expensive way: these laws read the RAW `KEYMAP`
+tuple. They must never ask the accessor under test what it thinks the keys are —
+the design agent's first version of this oracle called the same function its
+mutant patched and scored zero reds. If a test here calls `bar_keys` or
+`app_bindings` to decide what SHOULD be there, it has stopped being a test.
+"""
+
+import re
+
+from textual.binding import Binding
+
+from taskboard.app import TaskboardApp
+from taskboard.keymap import (KEYMAP, SEP, VIEWS, app_bindings, bar_keys,
+                              fit_bar, key_bar_plain, render_key_bar)
+
+# Read straight off the seat. Not through any function this file is testing.
+RAW_ACTIONS = [k.action for k in KEYMAP]
+RAW_SHOWN = [k.show for k in KEYMAP]
+RAW_UNIVERSAL = [k.show for k in KEYMAP if k.universal]
+
+
+def action_name(action: str) -> str:
+    return action.split("(")[0]
+
+
+# --------------------------------------------------------------------------- #
+# every key that works is shown
+# --------------------------------------------------------------------------- #
+def test_every_binding_the_app_has_comes_from_the_seat():
+    """There is no second list. A binding hand-written on the App class would be
+    a capability the bar knows nothing about."""
+    src_actions = {b.action for b in TaskboardApp.BINDINGS}
+    assert src_actions == set(RAW_ACTIONS)
+    assert len(TaskboardApp.BINDINGS) == len(KEYMAP)
+
+
+def test_every_bar_key_reaches_the_widest_bar():
+    """Given room, the bar shows every key whose `bar` flag is True — no key
+    that is supposed to be drawn is decoration-only."""
+    for view in VIEWS:
+        shown = {show for show, _label in fit_bar(400, view)[0]}
+        expected = {k.show for k in KEYMAP
+                    if (k.views is None or view in k.views) and k.bar}
+        assert shown == expected, f"{view}: {expected - shown} never displayed"
+        assert fit_bar(400, view)[1] == 0
+
+
+def test_the_lanes_bar_shows_every_universal_key():
+    """Stated concretely for the default view, against the raw table."""
+    shown = {show for show, _ in fit_bar(400, "swimlanes")[0]}
+    for k in KEYMAP:
+        if k.views is None and k.bar:
+            assert k.show in shown, f"{k.show} ({k.label}) is live but not shown"
+
+
+GLOBAL_ACTIONS = {"open_url", "open_images", "add_project", "manage_projects",
+                  "manage_phases", "clocks", "present", "standup"}
+
+
+def test_global_commands_are_palette_only_not_in_the_bar():
+    """Global commands stay bound and reachable from `?`, but never claim a
+    bar slot in any view."""
+    for view in VIEWS:
+        bar_shows = {k.show for k in KEYMAP
+                     if (k.views is None or view in k.views) and k.bar}
+        for k in KEYMAP:
+            if action_name(k.action) in GLOBAL_ACTIONS:
+                assert not k.bar, f"{k.show} is bar=True but is a global command"
+                assert k.show not in bar_shows, \
+                    f"{k.show} ({k.label}) appears in the {view} bar"
+
+
+def test_the_palette_includes_palette_only_globals():
+    from taskboard.keymap import palette_commands
+    for view in VIEWS:
+        palette = {action_name(a) for _s, _l, a in palette_commands(view)}
+        for action in GLOBAL_ACTIONS:
+            assert action in palette, f"{action} missing from {view} palette"
+
+
+# --------------------------------------------------------------------------- #
+# every key shown works
+# --------------------------------------------------------------------------- #
+def test_every_shown_key_has_a_real_action_on_the_app():
+    """The other direction, and the one that catches a stale bar: the action of
+    every entry must actually exist as a method (inherited counts — `quit` is
+    Textual's)."""
+    for k in KEYMAP:
+        assert hasattr(TaskboardApp, "action_" + action_name(k.action)), \
+            f"{k.show} ({k.label}) shows a dead action: {k.action}"
+
+
+def test_a_view_specific_key_is_only_shown_where_it_works():
+    """`tab` flips the kanban layout, cycles the Focus Board, or switches
+    swimlanes grid/waves; a no-op elsewhere. A key advertised in a view where it
+    does nothing is the same lie in reverse."""
+    tab = next(k for k in KEYMAP if k.action == "toggle_presentation")
+    assert tab.views == ("kanban", "focus", "swimlanes")
+    for view in ("kanban", "focus", "swimlanes"):
+        assert tab.show in {s for s, _ in fit_bar(400, view)[0]}, view
+    for view in VIEWS:
+        if view not in ("kanban", "focus", "swimlanes"):
+            assert tab.show not in {s for s, _ in fit_bar(400, view)[0]}, view
+
+
+def test_the_seat_has_no_duplicate_keys_or_labels():
+    keys = [k.keys for k in KEYMAP]
+    assert len(keys) == len(set(keys))
+    assert len(RAW_SHOWN) == len(set(RAW_SHOWN))
+[0m
+[0m$ [0mgrep -n "BOARD_ACTIONS" taskboard/app.py
+328:    BOARD_ACTIONS = frozenset({
+[0m
+[0m$ [0mgrep -rn "BOARD_ACTIONS" taskboard/ tests/
+taskboard/app.py:328:    BOARD_ACTIONS = frozenset({
+Binary file taskboard/__pycache__/app.cpython-312.pyc matches
+tests/test_app.py:3004:    app, and BOARD_ACTIONS membership.
+tests/test_app.py:3006:    missing from BOARD_ACTIONS → the frozenset limb red."""
+tests/test_app.py:3015:        assert action in TaskboardApp.BOARD_ACTIONS
+tests/test_app.py:3411:    on the app, and BOARD_ACTIONS membership. RED: entry after the arrow
+tests/test_app.py:3412:    block → the placement limb red; action missing from BOARD_ACTIONS → the
+tests/test_app.py:3421:    assert "collapse_toggle" in TaskboardApp.BOARD_ACTIONS
+tests/test_app.py:3605:    BOARD_ACTIONS membership. The `=` alias is ONE `"+,="` entry driving
+tests/test_app.py:3609:    from BOARD_ACTIONS → the frozenset limb red."""
+tests/test_app.py:3627:        assert action in TaskboardApp.BOARD_ACTIONS, action
+tests/test_app.py:3948:    BOARD_ACTIONS membership. RED: entry after the arrow block → the
+tests/test_app.py:3949:    placement limb red; action missing from BOARD_ACTIONS → the frozenset
+tests/test_app.py:3959:    assert "standup" in TaskboardApp.BOARD_ACTIONS
+Binary file tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_app.cpython-312.pyc matches
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=40, offset=2995][0m
+[0m
+[0m$ [0mgrep -n "remove the ›\|remove ›\|save chain\|Save chain\|chain tpl\|m change\|←→↑↓\|change for this chain" tests/test_chainmap.py tests/test_chainmap_app.py tests/test_help_clip.py tests/test_legend.py
+(no output)
+[0m
+[0m$ [0mgrep -rn "first thing to do\|who waits on whom\|x drops\|arrows walk\|L starts" tests/ | head -40
+tests/test_chainmap_app.py:101:    the arrows walk the chains; `↵` opens the shipped details; `x` on a linked
+tests/test_chainmap_app.py:114:        assert "◆ CHAIN MAP · who waits on whom" in joined
+tests/test_chainmap_app.py:122:        # the arrows walk the chains in draw order (a real move, not a no-op)
+tests/test_gantt_milestones.py:12:them right after the selection; `]` that leaves a milestone drawn says "reached"; the arrows walk
+tests/test_gantt_milestones.py:93:    """TC-609: the arrows walk exactly the rows the frame draws, in its order,
+Binary file tests/__pycache__/test_chainmap_app.cpython-312-pytest-8.3.4.pyc matches
+Binary file tests/__pycache__/test_gantt_milestones.cpython-312-pytest-8.3.4.pyc matches
+[0m
+[0m$ [0mgrep -n "chainmap\|chain map" tests/test_help_clip.py tests/test_english.py tests/test_legend.py
+tests/test_english.py:151:                "chainmap": 3,
+[0m
+[0m→ [0mRead tests/test_english.py[90m [limit=60, offset=120][0m
+[0m
+[0m$ [0mgrep -n "waits on\|unblocks\|remove\|save\|link\|move\|open\|footer\|keys\|`x`\|`L`\|↵" tests/test_chainmap.py | head -60
+/usr/bin/bash: line 1: x: command not found
+/usr/bin/bash: line 1: L: command not found
+1:"""The chain map's unit layer (batch 2026-10-07-batch-02, increment 001).
+2:
+3:HLR-801 / LLR-801.1 · TC-801, TC-802, TC-803, TC-804, TC-807, TC-808.
+4:
+5:The oracle is C-2b (round-7 verdict): the exact rows the shipped renderer must
+6:paint, byte-faithful at 118x30 and 80x24, are
+7:`.dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-*.txt` — amended under
+8:LED-2026-10-07-batch-06.1 (the `○` tiles); the sealed batch-02 frames stay
+9:history. The fixture is the
+10:kg board (`tests/kg_board.py`), frozen on its own TODAY so `shifted` collapses
+11:to the frames' fixed dates; the deviating band (Data Warehouse `together`) is
+12:set IN-TEST — the frames carry it, the base board does not.
+13:
+14:RED on the base tree: `views.render_chainmap` does not exist yet (the product
+15:half lands in parallel).
+16:"""
+17:from __future__ import annotations
+18:
+19:from datetime import date, timedelta
+20:from pathlib import Path
+21:
+22:import pytest
+23:
+24:import kg_board
+25:from kg_board import TODAY
+26:from taskboard import views
+27:from taskboard.models import Board, Project, Task
+28:
+29:ROOT = Path(__file__).resolve().parents[1]
+30:FRAMES = ROOT / ".dev-flow" / "2026-10-07-batch-06" / "evidence" / "frames"
+31:
+32:
+33:def _frame(name: str) -> list[str]:
+34:    """The oracle rows, universal-newline split (the frames ship CRLF)."""
+35:    return (FRAMES / name).read_text(encoding="utf-8").splitlines()
+36:
+37:
+38:def _render(b, sel: str, w: int, h: int, line_map=None) -> list[str]:
+39:    """The shipped renderer's painted rows at a panel size. `today` is the
+40:    board's own TODAY (the frozen calendar); `show_archived` is off."""
+41:    text = views.render_chainmap(b, False, sel, TODAY, width=w, height=h,
+42:                                 line_map=line_map)
+43:    return text.plain.split("\n")
+44:
+45:
+46:class _Today(date):
+47:    @classmethod
+48:    def today(cls):
+49:        return TODAY
+50:
+51:
+52:@pytest.fixture
+53:def frozen(monkeypatch):
+54:    """Freeze the calendar on the oracle board's TODAY so `shifted`'s delta is
+55:    zero and the frames' fixed dates reproduce on any day (the house seam of
+56:    `test_gantt_board.py`). `kg_board` is patched too: `shifted` reads the
+57:    module-level `date`."""
+58:    from taskboard import models
+59:    monkeypatch.setattr(views, "date", _Today)
+60:    monkeypatch.setattr(models, "date", _Today)
+[0m
+[0m$ [0mgrep -n "frame\|assert\|_render\|byte\|faithful\|== " tests/test_chainmap.py | head -60
+6:paint, byte-faithful at 118x30 and 80x24, are
+7:`.dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-*.txt` — amended under
+8:LED-2026-10-07-batch-06.1 (the `○` tiles); the sealed batch-02 frames stay
+11:to the frames' fixed dates; the deviating band (Data Warehouse `together`) is
+12:set IN-TEST — the frames carry it, the base board does not.
+30:FRAMES = ROOT / ".dev-flow" / "2026-10-07-batch-06" / "evidence" / "frames"
+33:def _frame(name: str) -> list[str]:
+34:    """The oracle rows, universal-newline split (the frames ship CRLF)."""
+38:def _render(b, sel: str, w: int, h: int, line_map=None) -> list[str]:
+55:    zero and the frames' fixed dates reproduce on any day (the house seam of
+65:    """The base board (the frames' own fixture): 15 linked tasks, frozen."""
+76:def test_TC_801_the_exact_c2b_frame_at_118x30(tmp_path, frozen):
+78:    rendered frame at 118x30 equals C-2b-118x30.txt, line for line."""
+80:    got = _render(b, "tm3", 118, 30)
+81:    assert got == _frame("C-2b-118x30.txt")
+84:def test_TC_802_the_exact_c2b_frame_at_80x24(tmp_path, frozen):
+87:    got = _render(b, "tm3", 80, 24)
+88:    assert got == _frame("C-2b-80x24.txt")
+101:    rows = _render(b, "tm3", 118, 30)
+105:    assert "┃" in crit and "━━" in crit, crit
+106:    assert "┃" not in light and "━━" not in light, light
+107:    assert "──" in light and "▸" in light and "▸" in crit, (light, crit)
+110:    assert "┬" in joined, "the fan-in node is drawn"
+111:    assert any("╰" in r and "╯" in r for r in rows), "the fan-in join lane is drawn"
+121:    head = _render(base, "tm3", 118, 30)[0]
+122:    assert "15 linked tasks" in head, head
+126:    head = _render(milestones, "td4", 118, 30)[0]
+127:    assert "17 linked tasks" in head, head
+133:def test_TC_807_a_hostile_title_renders_escaped_and_the_width_holds(tmp_path, frozen):
+136:    still spends exactly the frame width (no phantom cells)."""
+140:    rows = _render(b, "tm2", 118, 30)
+143:    assert "[bold]x" in joined, joined          # escaped, not interpreted
+144:    assert "[/]" in joined, joined
+146:        assert views.vis(r) == 118, (views.vis(r), r)
+152:def test_TC_808_a_stored_two_cycle_renders_once(tmp_path, frozen):
+161:    rows = _render(b, "tm3", 118, 30)
+163:    assert joined.count("Cycle A") == 1, joined
+164:    assert joined.count("Cycle B") == 1, joined
+167:def test_TC_809_a_deep_chain_renders_instead_of_crashing(tmp_path):
+183:    assert "Chain step" in text, text[:200]          # the deep chain painted
+184:    assert "chain 25" in text                        # and its length is named
+212:    b.projects = [p for p in b.projects if p.id == "pdwh"]
+213:    b.tasks = [t for t in b.tasks if t.project_id == "pdwh"]
+217:    assert "Data Warehouse" in text, text
+218:    assert "+3 more ↓" in text, text
+220:        assert tid in line_map, (tid, line_map)
+222:        assert tid not in line_map, (tid, line_map)
+231:    assert "Mobile App" not in text2, text2
+232:    assert not any(tid in lm2 for tid in ("tm2", "tm3", "tm4", "tm5")), lm2
+243:    rows = _render(b, "tw3", 118, 30, line_map)
+244:    assert "tw3" in line_map
+246:    assert "○" in row and "Fix checkout 500 error" in row, row
+247:    assert "▲2d" in row, row                    # the late mark rides the tile
+260:    rows = _render(b, "b1", 118, 30, line_map)
+261:    assert "no links" in "\n".join(rows)        # Lonely: no open work at all
+262:    assert "b1" in line_map and "○" in rows[line_map["b1"]]
+271:    assert "tw3" in flat and "tw6" in flat and "td2" in flat
+272:    assert cols[0][0] == "tw1"                  # the first depth-0 chain head
+273:    assert flat.index("tw3") < flat.index("td2")  # band order preserved
+[0m
+[0m$ [0mls .dev-flow/2026-10-07-batch-06/evidence/frames/ 2>/dev/null; echo "===118x30 footer==="; tail -8 .dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-118x30.txt 2>/dev/null | cat -A
+C-2b-118x30.txt
+C-2b-80x24.txt
+===118x30 footer===
+ M-bM-^WM-^K Compress database backups Oct 9                                                                                    ^M$
+ M-bM-^WM-^K Archive old logs Oct 30                                                                                            ^M$
+                                                                                                                      ^M$
+                                                                                                                      ^M$
+ Add push notifications                                             x remove the M-bM-^@M-: link M-BM-7 L link M-BM-7 M-bM-^FM-5 open M-BM-7 M-bM-^FM-^PM-bM-^FM-^RM-bM-^FM-^QM-bM-^FM-^S move ^M$
+ M-bM-^WM-^B waits on  M-bM-^@M-:Audit dependencies (starts 1d early)                                                                    ^M$
+ M-bM-^VM-8 unblocks   Offline sync (starts 2d early)                                                                          ^M$
+ M-bM-^VM-^LMobile App M-BM-7 Push what it collides with (default): a move pushes waiting tasks by the overlap it adds M-BM-7 m change    ^M$
+[0m
+[0m$ [0mgrep -n "def action_kanban_sort\|def action_kanban_group\|def action_collapse_toggle\|def action_focus_cycle\|def action_search\|def action_setup_toggle\|def action_setup_save\|if self.view_mode" taskboard/app.py | head -60
+617:        if self.view_mode in ("gantt", "swimlanes"):
+663:        if self.view_mode == "gantt":
+673:        elif self.view_mode == "kanban" and self.search_query:
+792:        if self.view_mode == "kanban" and h and (self.search_query or "").strip():
+797:        if self.view_mode == "kanban":
+799:        elif self.view_mode == "swimlanes":
+815:        if self.view_mode == "chainmap":
+831:        if self.view_mode == "focus":
+846:        if self.view_mode == "gantt":
+869:        if self.view_mode == "chainmap":
+878:        if self.view_mode == "kanban":
+923:        if self.view_mode == "setup" and self._setup_state is not None:
+1000:            if self.view_mode == "gantt" and self.board.is_done(task):
+1133:        if self.view_mode == "gantt":
+1381:        if self.view_mode == "chainmap":
+1589:        if self.view_mode != "chainmap" or self.selected_task_id is None:
+1602:        if self.view_mode != "gantt" or task is None:
+1644:    def action_setup_save(self) -> None:
+1798:    def action_setup_toggle(self) -> None:
+1898:        if self.view_mode == "setup":
+1901:        if self.view_mode == "kanban":
+1906:        elif self.view_mode == "focus":
+1911:        elif self.view_mode == "swimlanes":
+1944:    def action_kanban_sort(self) -> None:
+1947:        if self.view_mode != "kanban":
+1953:    def action_kanban_group(self) -> None:
+1956:        if self.view_mode != "kanban":
+1962:    def action_collapse_toggle(self) -> None:
+1968:        if self.view_mode != "kanban":
+1989:    def action_focus_cycle(self) -> None:
+1996:        if self.view_mode not in ("kanban", "gantt"):
+2010:        if self.view_mode == "setup":
+2013:        if self.view_mode not in ("kanban", "gantt"):
+2024:    def action_search(self) -> None:
+2029:        if self.view_mode not in ("kanban", "gantt"):
+2044:        if self.view_mode == "setup":
+2062:        if self.view_mode == "setup":
+2206:        if self.view_mode == "setup":
+2212:        if self.view_mode == "chainmap":
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=70, offset=1944][0m
+[0m→ [0mRead taskboard/models.py[90m [offset=2295][0m
+[0m
+[0m← [0mEdit taskboard/models.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/models.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/models.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/models.py
+@@ -2323,4 +2323,65 @@
+         if not (isinstance(wait, int) and 0 <= wait < len(tasks)):
+             wait = None
+         tasks.append(TemplateTask(title, notes, wait))
+     return Template(name, tuple(tasks))
++
++
++def chain_template(board: Board, task_id: str | None) -> Template | None:
++    """The connected open chain of one task, as a process template (LLR-1401.1).
++
++    The component is every OPEN task of the task's own project reachable from it
++    through `depends_on` in BOTH directions — what it waits on, and everything
++    that waits on it, transitively — each once (BFS, a `seen` set). None when the
++    task is missing or is itself done/archived.
++
++    The emitted order is topological and DETERMINISTIC: by (depth, board order),
++    where depth is the longest `depends_on` path from a chain head (a task with no
++    in-component predecessor) — the chain map's own column rule — and board order
++    breaks depth ties. Every `wait` therefore points backward. A task with several
++    predecessors keeps the FIRST in that order as its `wait`; the rest are dropped
++    (the shape holds one link per task, so a fan-in cannot be represented). Titles
++    and notes are carried verbatim. The template's name is the first task's title
++    (the app replaces it at the name prompt)."""
++    task = board.task_by_id(task_id)
++    if task is None or not is_open(board, task):
++        return None
++    by_id = _ids(board)
++    pid = task.project_id
++    seen: set[str] = {task.id}
++    level = [task]
++    while level:
++        nxt: list[Task] = []
++        for t in level:
++            for p in _live(t, by_id):                 # predecessors: t waits on p
++                if p.id not in seen and is_open(board, p) and p.project_id == pid:
++                    seen.add(p.id)
++                    nxt.append(p)
++            for w in by_id.values():                  # dependents: w waits on t
++                if (w.id not in seen and is_open(board, w)
++                        and w.project_id == pid and t.id in w.depends_on):
++                    seen.add(w.id)
++                    nxt.append(w)
++        level = nxt
++    comp = [by_id[tid] for tid in seen]
++    board_index: dict[str, int] = {}
++    for i, t in enumerate(board.tasks):               # first occurrence, as `_ids`
++        board_index.setdefault(t.id, i)
++    memo: dict[str, int] = {}
++
++    def depth(t: Task, path: tuple[str, ...] = ()) -> int:
++        if t.id in memo:
++            return memo[t.id]
++        preds = [p for p in _live(t, by_id) if p.id in seen and p.id not in path]
++        memo[t.id] = 0 if not preds else 1 + max(depth(p, path + (t.id,)) for p in preds)
++        return memo[t.id]
++
++    for t in comp:
++        depth(t)
++    order = sorted(comp, key=lambda t: (memo[t.id], board_index[t.id]))
++    pos = {t.id: i for i, t in enumerate(order)}
++    tasks: list[TemplateTask] = []
++    for t in order:
++        preds = [p for p in _live(t, by_id) if p.id in pos]
++        wait = pos[min(preds, key=lambda p: pos[p.id]).id] if preds else None
++        tasks.append(TemplateTask(t.title, t.notes, wait))
++    return Template(order[0].title, tuple(tasks))
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -17,9 +17,10 @@
+ from textual.widgets import Static
+ 
+ from . import history
+ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
+-                     archive_refusal, default_board_path, is_open, link_refusal,
++                     archive_refusal, chain_template, default_board_path, is_open,
++                     link_refusal,
+                      milestone_candidates, milestones_marked, next_priority, parse_iso,
+                      ready_messages, run_link_migration, run_milestone_offer,
+                      set_milestone, strip_controls, templates, waiting_ids,
+                      CASCADE_MODES, apply_plan, plan_move, resolve_mode, restore,
+
+[0m
+[0m← [0mEdit taskboard/app.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/app.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/app.py
+@@ -762,8 +762,50 @@
+     self.refresh_view()
+     self.notify(f"Inserted '{name}' — {len(created)} tasks into {pname}",
+                 title="Templates", severity="information", markup=False)
+ 
++def action_chain_template_save(self) -> None:
++    """`,` — save the selected tile's connected chain as a template (HLR-1401).
++
++    On the chain map (the key is view-scoped there), the selected tile's open
++    chain — its project's component through `depends_on`, both directions — is
++    stored under a name the operator types into the shipped one-line prompt,
++    prefilled with the chain's first task title. Nothing selected -> the
++    refusal toast; a selection carrying no open chain -> its own toast; esc or
++    an empty name cancels, nothing written. On submit the entry is appended to
++    `settings["templates"]` (created if absent) and the board saved, toasting
++    the pinned literal. NOT an undo step: it writes settings, not tasks."""
++    if self.view_mode != "chainmap":
++        return
++    if self.selected_task_id is None:
++        self.notify("Select a chain tile to save.", title="Templates",
++                    severity="information", timeout=10, markup=False)
++        return
++    tpl = chain_template(self.board, self.selected_task_id)
++    if tpl is None:
++        self.notify("The selection carries no open chain.", title="Templates",
++                    severity="information", timeout=10, markup=False)
++        return
++    self.push_screen(TextPrompt("Save chain template", initial=tpl.tasks[0].title),
++                     lambda name: self._on_chain_template_named(name, tpl))
++
++def _on_chain_template_named(self, name: str | None, tpl) -> None:
++    if not name:                        # esc -> None, blank -> ""
++        return
++    tasks = []
++    for one in tpl.tasks:
++        entry = {"title": one.title}
++        if one.notes:
++            entry["notes"] = one.notes
++        if one.wait is not None:
++            entry["wait"] = one.wait
++        tasks.append(entry)
++    self.board.settings.setdefault("templates", []).append(
++        {"name": name, "tasks": tasks})
++    self.board.save()
++    self.notify(f"Template '{name}' saved — {len(tasks)} tasks",
++                title="Templates", severity="information", markup=False)
++
+ def action_standup(self) -> None:
+     """`S` — the week in one modal: what moved and what closed, per
+     project, derived from `phase_changed` alone. Nothing is stored for
+     this, and the modal mutates nothing — it is a reading, not an edit."""
+
+[0m
+Now add the action methods after `_on_template_picked`:
+[0m← [0mEdit taskboard/keymap.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
+@@ -136,8 +136,12 @@
+ Key("R", "R", "present", "Present", group="misc", bar=False),
+ # `I` — insert a process template (batch 2026-10-07-batch-07, HLR-1301):
+ # global, palette-only, like `R` (shifted, not scoped to a view).
+ Key("I", "I", "templates", "Templates", group="misc", bar=False),
++# `,` — save the selected tile's chain as a template (batch-08, HLR-1401):
++# scoped to the chain map, where the tile is the chain it names.
++Key(",", ",", "chain_template_save", "Save chain tpl",
++    views=("chainmap",), group="task"),
+ # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
+ # derives from the board in ANY view, so — like `R` — it is not scoped.
+ Key("S", "S", "standup", "Standup", group="misc", bar=False),
+ 
+
+[0m
+Now the keymap.py entry. Add after the `I` templates key (misc group) — but view-scoped to chainmap:
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -6920,9 +6920,9 @@
+ return [
+     ("what it is for", ["the dependency web: who waits on whom, per",
+                         "project, with ready/waits/late marks."]),
+     ("first thing to do", ["6 opens it; arrows walk the chains; ↵ opens",
+-                           "x drops the selected task incoming link."]),
++                           "x unlinks · , saves the chain as a template."]),
+     ("the marks", ["✓ done · ▷ ready · ○ chain head · ◂N waits",
+                    "┃ heavy = the critical chain · ▲Nd late",
+                    "dates switch = the rule a move follows",
+                    "set here = that project rule is custom",
+
+[0m
+Now the views.py help copy:
+[0m$ [0mgrep -rn 'press(",")\|press("\[\|press("+\|press(".")\|press(","' tests/ | head; echo "---comma key in textural?---"; python -c "from textual.keys import Keys; print(repr(Keys.Comma))" 2>&1 | head
+tests/test_app.py:76:        await pilot.press("2")
+tests/test_app.py:106:        await pilot.press("1")
+tests/test_app.py:108:        await pilot.press("2")
+tests/test_app.py:110:        await pilot.press("3")
+tests/test_app.py:112:        await pilot.press("4")
+tests/test_app.py:114:        await pilot.press("5")
+tests/test_app.py:121:        await pilot.press("a")
+tests/test_app.py:126:        await pilot.press("2")  # columns -> backlog has the new task
+tests/test_app.py:134:        await pilot.press("a")
+tests/test_app.py:139:        await pilot.press("e")
+---comma key in textural?---
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: type object 'Keys' has no attribute 'Comma'
+[0m
+[0m$ [0mpython -c "
+from textual.keys import _character_to_key, _get_key_aliases, KEY_ALIASES
+import textual.keys as k
+# how does textual map a comma character to a key?
+print([name for name in dir(k) if 'comma' in name.lower() or 'COMMA' in name])
+print([name for name in dir(k) if 'semicolon' in name.lower() or 'period' in name.lower()])
+" 2>&1 | head -20
+[]
+[]
+[0m
+[0m$ [0mpython -c "
+import textual.keys as k
+names = [n for n in dir(k) if n.upper()==n and not n.startswith('_')]
+print([n for n in names if 'COMMA' in n or 'PERIOD' in n or 'SEMI' in n or 'BRACKET' in n or 'PLUS' in n or 'SLASH' in n])
+print('---all Keys attrs sample---')
+" 2>&1 | head
+[]
+---all Keys attrs sample---
+[0m
+[0m$ [0mpython - <<'PY'
+import textual.keys as k
+# find how key names are normalized
+import inspect
+src = inspect.getsource(k.Binding) if hasattr(k, 'Binding') else ''
+print([n for n in dir(k) if not n.startswith('__')][:80])
+PY
+['ASCII_KEY_NAMES', 'Enum', 'KEY_ALIASES', 'KEY_DISPLAY_ALIASES', 'KEY_NAME_REPLACEMENTS', 'KEY_TO_UNICODE_NAME', 'Keys', 'REPLACED_KEYS', '_character_to_key', '_get_key_aliases', '_get_unicode_name_from_key', '_normalize_key_list', 'annotations', 'format_key', 'key_to_character', 'lru_cache', 'unicodedata']
+[0m
+[0m$ [0mpython - <<'PY'
+import textual.keys as k
+print("ASCII_KEY_NAMES comma entry:", k.ASCII_KEY_NAMES.get(","))
+print("_character_to_key(','):", k._character_to_key(","))
+print("_character_to_key('['):", k._character_to_key("["))
+print("_character_to_key('+'):", k._character_to_key("+"))
+print("_character_to_key(';'):", k._character_to_key(";"))
+print("_character_to_key('.'):", k._character_to_key("."))
+PY
+ASCII_KEY_NAMES comma entry: None
+_character_to_key(','): comma
+_character_to_key('['): left_square_bracket
+_character_to_key('+'): plus
+_character_to_key(';'): semicolon
+_character_to_key('.'): full_stop
+[0m
+[0m$ [0mgrep -rn "press(\*\"\|press(\*\|\"New phase\"\|_on_added\|type\|Input" tests/test_app.py tests/test_edit_window.py tests/test_setup_help.py 2>/dev/null | grep -i "press\|input\|type" | head -20
+tests/test_app.py:11:from textual.widgets import Button, Input, OptionList, Select, Static, TextArea
+tests/test_app.py:123:        app.screen.query_one("#f-title", Input).value = "ZZZTASK"
+tests/test_app.py:136:        app.screen.query_one("#f-title", Input).value = "ORIGTASK"
+tests/test_app.py:141:        app.screen.query_one("#f-title", Input).value = "EDITEDTASK"
+tests/test_app.py:152:        app.screen.query_one("#f-title", Input).value = "ARCHME"
+tests/test_app.py:171:        app.screen.query_one("#f-name", Input).value = "NEWPROJ"
+tests/test_app.py:303:    plain text is the name as typed, with no escaping backslash."""
+tests/test_app.py:308:        app.screen.query_one("#f-name", Input).value = "[red]boom[/red]"
+tests/test_app.py:338:        # type-to-find: 'tokyo' resolves to the canonical 'Tokyo' city
+tests/test_app.py:339:        app.screen.query_one("#f-clock1", Input).value = "tokyo"
+tests/test_app.py:352:    """End to end through the real picker, with the widened catalog: he types
+tests/test_app.py:360:        app.screen.query_one("#f-clock1", Input).value = "sao paulo"
+tests/test_app.py:361:        app.screen.query_one("#f-clock2", Input).value = "Kathmandu"   # UTC+5:45
+tests/test_app.py:374:        app.screen.query_one("#f-clock1", Input).value = "Nowhereville"  # not a city
+tests/test_app.py:628:        app.screen.query_one("#f-title", Input).value = "MULTIURL"
+tests/test_app.py:769:        app.screen.query_one("#f-title", Input).value = "IMGTASK"
+tests/test_app.py:801:        app.screen.query_one("#f-title", Input).value = "[red]boom[/red]"
+tests/test_app.py:867:        app.screen.query_one("#f-title", Input).value = "SHOT"
+tests/test_app.py:929:    """AC2: notes typed in the edit modal survive a fresh Board.load from disk."""
+tests/test_app.py:934:        app.screen.query_one("#f-title", Input).value = "NOTETASK"
+[0m
+[0m$ [0mgrep -rn "TextPrompt\|#f-text\|press(\*\|pilot.press(\"e\|pilot.press(\"a" tests/test_link_picker.py tests/test_links.py tests/test_dependencies.py 2>/dev/null | head -20
+tests/test_link_picker.py:236:        await pilot.press(*"crash")
+tests/test_link_picker.py:239:        await pilot.press("enter")
+tests/test_link_picker.py:250:        await pilot.press(*"crash")
+tests/test_link_picker.py:251:        await pilot.press("enter")
+tests/test_link_picker.py:260:        await pilot.press(*"Hero copy")
+tests/test_link_picker.py:262:        await pilot.press("enter")
+tests/test_link_picker.py:273:        assert type(app.screen).__name__ == "TextPrompt"
+tests/test_link_picker.py:274:        await pilot.press("escape")
+tests/test_link_picker.py:279:        await pilot.press(*"beta")
+tests/test_link_picker.py:285:        await pilot.press("escape")
+tests/test_link_picker.py:326:        await pilot.press(*"rotate", "enter")
+tests/test_link_picker.py:335:        await pilot.press(*"Copy deck", "up", "enter")
+tests/test_links.py:470:        await pilot.press("e")
+tests/test_links.py:503:        await pilot.press("escape")
+[0m
+[0m→ [0mRead tests/test_link_picker.py[90m [limit=60, offset=228][0m
+[0m
+[0m← [0mWrite tests/test_template_save.py
+Wrote file successfully.
+[0m
+[0m← [0mEdit tests/test_template_save.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_template_save.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_template_save.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_template_save.py
+@@ -37,10 +37,10 @@
+ a = _task("Alpha", p.id, tid="a")
+ b = _task("Beta", p.id, deps=("a",), tid="b")
+ c = _task("Gamma", p.id, deps=("b",), tid="c")
+ d = _task("Delta", p.id, deps=("c",), tid="d")
+-b = _board([p], [a, b, c, d])
+-tpl = chain_template(b, "c")
++board = _board([p], [a, b, c, d])
++tpl = chain_template(board, "c")
+ assert [t.title for t in tpl.tasks] == ["Alpha", "Beta", "Gamma", "Delta"]
+ assert [t.wait for t in tpl.tasks] == [None, 0, 1, 2]
+ 
+ 
+
+[0m
+[0m$ [0mpython - <<'PY'
+import inspect
+from textual.pilot import Pilot
+src = inspect.getsource(Pilot.press)
+print(src[:2000])
+PY
+async def press(self, *keys: str) -> None:
+        """Simulate key-presses.
+
+        Args:
+            *keys: Keys to press.
+        """
+        if keys:
+            await self._app._press_keys(keys)
+            await self._wait_for_screen()
+[0m
+[0m$ [0mpython - <<'PY'
+import inspect
+from textual.app import App
+src = inspect.getsource(App._press_keys)
+print(src)
+PY
+async def _press_keys(self, keys: Iterable[str]) -> None:
+        """A task to send key events."""
+        import unicodedata
+
+        app = self
+        driver = app._driver
+        assert driver is not None
+        for key in keys:
+            if key.startswith("wait:"):
+                _, wait_ms = key.split(":")
+                await asyncio.sleep(float(wait_ms) / 1000)
+                await app._animator.wait_until_complete()
+            else:
+                if len(key) == 1 and not key.isalnum():
+                    key = _character_to_key(key)
+                original_key = REPLACED_KEYS.get(key, key)
+                char: str | None
+                try:
+                    char = unicodedata.lookup(_get_unicode_name_from_key(original_key))
+                except KeyError:
+                    char = key if len(key) == 1 else None
+                key_event = events.Key(key, char)
+                key_event.set_sender(app)
+                driver.send_message(key_event)
+                await wait_for_idle(0)
+                await app._animator.wait_until_complete()
+                await wait_for_idle(0)
+[0m
+[0m← [0mWrite tests/test_template_save_app.py
+Wrote file successfully.
+[0m
+Now run the two new test files:
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_template_save.py tests/test_template_save_app.py -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+=================================== ERRORS ====================================
+______________ ERROR collecting tests/test_template_save_app.py _______________
+tests\test_template_save_app.py:20: in <module>
+    from taskboard.app import RENUMBER_NOTICE_KEY, TaskboardApp
+taskboard\app.py:276: in <module>
+    class TaskboardApp(App):
+..\..\anaconda3\Lib\site-packages\textual\message_pump.py:111: in __new__
+    class_obj = super().__new__(cls, name, bases, class_dict, **kwargs)
+..\..\anaconda3\Lib\site-packages\textual\app.py:928: in __init_subclass__
+    return super().__init_subclass__(*args, **kwargs)
+..\..\anaconda3\Lib\typing.py:1124: in _generic_init_subclass
+    super(Generic, cls).__init_subclass__(*args, **kwargs)
+..\..\anaconda3\Lib\site-packages\textual\dom.py:591: in __init_subclass__
+    cls._merged_bindings = cls._merge_bindings()
+..\..\anaconda3\Lib\site-packages\textual\dom.py:684: in _merge_bindings
+    BindingsMap(
+..\..\anaconda3\Lib\site-packages\textual\binding.py:206: in __init__
+    for binding in Binding.make_bindings(bindings or {}):
+..\..\anaconda3\Lib\site-packages\textual\binding.py:151: in make_bindings
+    raise InvalidBinding(
+E   textual.binding.InvalidBinding: Can not bind empty string in ','
+=========================== short test summary info ===========================
+ERROR tests/test_template_save_app.py - textual.binding.InvalidBinding: Can n...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.61s
+[0m
+[0m$ [0mpython - <<'PY'
+from textual.binding import Binding
+b = Binding("comma", "foo", "Foo")
+print("key:", b.key, "| key_display:", b.key_display, "| display:", b.key_display)
+# also check the show/display
+print(repr(b.key_display))
+# Check a few punctuation names
+for k in ("comma", "full_stop", "semicolon", "plus", "left_square_bracket"):
+    try:
+        bb = Binding(k, "a", "A")
+        print(k, "->", bb.key_display)
+    except Exception as e:
+        print(k, "ERR", e)
+PY
+key: comma | key_display: None | display: None
+None
+comma -> None
+full_stop -> None
+semicolon -> None
+plus -> None
+left_square_bracket -> None
+[0m
+[0m$ [0mpython - <<'PY'
+from textual.keys import format_key
+for k in ("comma", "plus", "left_square_bracket", "semicolon", "space", "ctrl+s"):
+    print(repr(k), "->", repr(format_key(k)))
+PY
+'comma' -> ','
+'plus' -> '+'
+'left_square_bracket' -> '['
+'semicolon' -> ';'
+'space' -> 'space'
+'ctrl+s' -> 'ctrl+s'
+[0m
+[0m← [0mEdit taskboard/keymap.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/keymap.py
+@@ -137,10 +137,11 @@
+ # `I` — insert a process template (batch 2026-10-07-batch-07, HLR-1301):
+ # global, palette-only, like `R` (shifted, not scoped to a view).
+ Key("I", "I", "templates", "Templates", group="misc", bar=False),
+ # `,` — save the selected tile's chain as a template (batch-08, HLR-1401):
+-# scoped to the chain map, where the tile is the chain it names.
+-Key(",", ",", "chain_template_save", "Save chain tpl",
++# scoped to the chain map, where the tile is the chain it names. Bound as the
++# key NAME `comma` (a literal `,` is Textual's alias separator).
++Key("comma", ",", "chain_template_save", "Save chain tpl",
+     views=("chainmap",), group="task"),
+ # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
+ # derives from the board in ANY view, so — like `R` — it is not scoped.
+ Key("S", "S", "standup", "Standup", group="misc", bar=False),
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_template_save.py tests/test_template_save_app.py -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+...........                                                              [100%]
+11 passed in 2.66s
+[0m
+All 11 pass. Now run the full suite:
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -40
+E                   assert 1 == 0
+E                    +  where 1 = CompletedProcess(args=['powershell', '-NoProfile', '-Command', "Set-Clipboard -Value 'roundtrip 123 ABC taskboard'"], ...rorId : System.Runtime.InteropServices.ExternalException,Microsoft.PowerShell.Commands.SetClipbo \n   ardCommand\n \n").returncode
+
+tests\test_app.py:1215: AssertionError
+______________ test_the_readme_keybinding_table_matches_the_seat ______________
+
+    def test_the_readme_keybinding_table_matches_the_seat():
+        """THE CONTRACT REACHES THE README. Every key the table documents must be a
+        real binding, and every key the app binds must be documented — the same law
+        the key bar obeys, applied to the page a reader meets first.
+    
+        Read off the RAW KEYMAP, never through the accessor (the M12 lesson)."""
+        import re
+        table = [l for l in _readme().splitlines() if l.startswith("| `")]
+        assert table, "no keybinding table found"
+        documented = set()
+        for line in table:
+            cell = line.split("|")[1]
+            for key in re.findall(r"`([^`]+)`", cell):
+                documented.add(key)
+    
+        # the seat's own keys, in the spelling the README uses
+        spelled = {"?": "?", "q": "q", "enter": "Enter", "tab": "Tab",
+                   "d,delete": "d", "+,=": "+", "escape": "esc",
+                   "down,j": "↓", "up,k": "↑",
+                   "left,h": "←", "right,l": "→"}
+        for k in KEYMAP:
+            want = spelled.get(k.keys, k.keys)
+            if k.action.startswith("view("):
+                want = k.show                      # the views share one table row
+>           assert want in documented, \
+                f"{k.show} ({k.label}) is bound but the README never mentions it"
+E           AssertionError: , (Save chain tpl) is bound but the README never mentions it
+E           assert 'comma' in {'!', '+', '-', '/', '0', '1', ...}
+
+tests\test_keymap.py:428: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_win_clipboard_roundtrip - AssertionError: SETU...
+FAILED tests/test_keymap.py::test_the_readme_keybinding_table_matches_the_seat
+2 failed, 2584 passed in 441.25s (0:07:21)
+[0m
+[0m$ [0mgrep -n "Save chain\|chain\|templates\|Templates\|Save\|I \`\|`I`\|keybinding\|Key \|^\| \`" README.md 2>/dev/null | head -60; echo "=== table lines ==="; grep -n '^| `' README.md 2>/dev/null | head -80
+/usr/bin/bash: line 1: I: command not found
+1:# taskboard
+2:
+3:A keyboard-first task board for the terminal, built with [Textual](https://textual.textualize.io/).
+4:Run it in a borderless terminal window, pin it on top, and it works as a desktop widget: ten
+5:views over one JSON board, with optional team sync through a shared folder.
+6:
+7:<p align="center">
+8:  <img src="docs/taskboard-ambient.gif" width="760" alt="taskboard — the lanes view, live"><br>
+9:  <img src="docs/taskboard-gantt.svg" width="380" alt="gantt — the whole board on a window fitted to the open work">
+10:  <img src="docs/taskboard-kanban.png" width="380" alt="kanban — every task in its phase column"><br>
+11:  <img src="docs/taskboard-agenda.png" width="380" alt="agenda — every due date on one shared axis">
+12:  <img src="docs/taskboard-lanes.png" width="380" alt="lanes — one panel per project"><br>
+13:  <sub>Renders of the seeded demo board. The gantt is current; the other images predate this
+14:  release's colour changes.</sub>
+15:</p>
+16:
+17:## What it is
+18:
+19:- **A widget, not a window.** No borders: every view commits with rules, and it reflows to
+20:  whatever size the terminal gives it.
+21:- **Ten views** over the same tasks — lanes, agenda, gantt, kanban, focus, chains, flow, standup,
+22:  people, setup — each one key away.
+23:- **One file.** Your board is a single JSON file in your home directory; nothing goes to a
+24:  server.
+25:- **Optional team mode.** Point it at a shared folder and each person's board syncs there;
+26:  teammates' cards show up read-only.
+27:
+28:## Requirements
+29:
+30:- Python **3.12 or newer** (`requires-python = ">=3.12"`).
+31:- **Windows first.** It is built and used on Windows; opening raw image files uses
+32:  `os.startfile`, which is Windows-only. The clipboard code has macOS and Linux branches, but
+33:  those platforms are not tested here.
+34:- Built and verified against **Textual 8.2.8 / rich 15.0.0** (pinned in `requirements.txt`).
+35:  The install pulls in every runtime dependency (`textual`, `tzdata`, `pillow`,
+36:  `textual-image`).
+37:
+38:## Install
+39:
+40:Clone the repository, then install it as a command.
+41:
+42:```powershell
+43:git clone https://github.com/jav201/taskboard.git
+44:cd taskboard
+45:```
+46:
+47:**With pipx (recommended).** pipx gives the app its own environment and puts `taskboard` on
+48:your PATH:
+49:
+50:```powershell
+51:python -m pip install --user pipx
+52:python -m pipx ensurepath        # then open a new terminal so PATH updates
+53:pipx install .
+54:```
+55:
+56:To update after pulling new code: `pipx reinstall taskboard`. This installs the newest
+57:Textual; the exact versions the app is verified against are pinned in `requirements.txt`
+58:(see [`RUN.md`](RUN.md)).
+59:
+60:**With pip.** `pip install --user .` installs the same `taskboard` command. If the shell says
+=== table lines ===
+83:| `1` | **Lanes** | One panel per project with its load and due work; `Tab` switches the grid (default) and the classic waves layout |
+84:| `2` | **Agenda** | Every dated task on one shared day axis, by urgency |
+85:| `3` | **Gantt** | The whole board on a window fitted to the open work, with a date ruler on top |
+86:| `4` | **Kanban** | Every task in its phase column; `Tab` cycles grouped, matrix and lanes layouts |
+87:| `5` | **Focus** | Pinned tasks and pinned projects, in five layouts (`Tab`) |
+88:| `6` | **Chains** | The chain map: who waits on whom, per project — the ready/waits/late marks, the critical chain, and the per-chain `dates` rule on screen |
+89:| `7` | **Flow** | Read-only: time in phase, a phase × week heatmap, weekly throughput |
+90:| `8` | **Standup** | Team mode: one row per teammate — load, top task, sync age |
+91:| `9` | **People** | Team mode: one lane per teammate; their cards are read-only |
+92:| `0` | **Setup** | Team configuration, edited in the app with live health checks |
+108:| `?` | Help | Per-view help (usage, legend, example, keys); `m` there for the full map |
+109:| `;` | More | Toggle the key bar's layer |
+110:| `q` | Quit | Quit |
+111:| `1`–`6`, `7`–`9`, `0` | Views | See [Views](#views) |
+112:| `↑` `↓` / `k` `j` | Move | Move the selection in the order the view draws |
+113:| `←` `→` / `h` `l` | Across | Move between columns (kanban) |
+114:| `Enter` | Details | Every field of the selected task; its links can be changed there |
+115:| `a` / `e` | Add / Edit | Add a task / edit the selected one in the full-screen editor |
+116:| `d` / `Delete` | Delete | Delete the selected task (asks first) |
+117:| `L` | Link | Make the selected task wait on another one (a picker; on the gantt, a link mode) |
+118:| `M` | Milestone | Make the selected task a milestone — one date, its due — or a task again |
+119:| `[` `]` | Phase | Move the selected task one phase back / forward |
+120:| `!` | Priority | Cycle low → normal → high |
+121:| `b` | Blocked | Mark an outside block (`▲`) on the task, or clear it |
+122:| `+` `=` / `-` | Due | Due date one day later / earlier — what waits on it follows by the project's rule |
+123:| `m` | Chain | Re-apply the last date move under the next mode (stay / push / together) |
+124:| `u` | Undo | Undo the last quick change |
+125:| `x` / `v` | Archive | Archive or unarchive / show archived tasks |
+126:| `X` | Purge done | Archive all finished work that has no completion date (asks first) |
+127:| `t` / `T` | Pin | Pin the task / its whole project (Focus view) |
+128:| `o` / `i` | Links / Images | Open the task's http(s) links / view its images |
+129:| `p` / `P` | Projects | Add a project / manage projects |
+130:| `f` | Phases | Add, rename, reorder or delete the board's phases |
+131:| `s` `g` `z` | Kanban | Sort, group, collapse the last phase |
+132:| `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
+133:| `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
+134:| `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
+135:| `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
+136:| `c` | Clocks | Choose the ribbon's two city clocks |
+137:| `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
+277:| `board.json` | Your board: projects, tasks, settings |
+278:| `board.json.corrupt` | A copy of an unreadable board, kept before the app starts empty |
+279:| `history.jsonl` | One line per phase move and per added task — the Flow view reads it |
+280:| `images/<task id>/` | Pasted images, as plain files |
+281:| `reports/` | HTML reports and the presentation's SVG + PNG exports |
+290:| `taskboard` | Run the app on `~/.taskboard/board.json` |
+291:| `taskboard --board PATH` | Run it on another board file |
+292:| `taskboard --report [PROJECT]` | Write a report and exit |
+[0m
+[0m→ [0mRead README.md[90m [offset=133, limit=6][0m
+[0m
+[0m← [0mEdit README.md
+Index: C:/Users/jjgh8/Github/taskboard/README.md
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/README.md
++++ C:/Users/jjgh8/Github/taskboard/README.md
+@@ -132,8 +132,9 @@
+ | `F` / `/` / `esc` | Focus, filter | Kanban and gantt: focus one project / filter tasks / clear |
+ | `Tab` | Layout | Cycle the layouts of kanban, focus and lanes |
+ | `R` / `S` | Present / Standup | Present the selected task's project (gantt + brief, export SVG+PNG) / show the week's standup |
+ | `I` | Templates | Insert a process template (a named chain of tasks) into the selected task's project |
++| `comma` | Save chain | Save the selected chain as a template (chain map) |
+ | `c` | Clocks | Choose the ribbon's two city clocks |
+ | `space` / `ctrl+s` | Setup | In Setup: toggle a control / save; `Enter` edits a row, `a` / `x` add or remove a row, `Tab` changes section, `esc` discards |
+ 
+ In the task and project editors, `Ctrl+E` inserts an emoji and `Ctrl+V` pastes text.
+
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=45, offset=1180][0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_keymap.py -q 2>&1 | tail -15
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................                                                 [100%]
+24 passed in 1.17s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest "tests/test_app.py::test_win_clipboard_roundtrip" -q 2>&1 | tail -15
+sample = "roundtrip 123 ABC taskboard"
+        try:
+            for _ in range(5):
+                setup = _ps(f"Set-Clipboard -Value {_ps_literal(sample)}")
+>               assert setup.returncode == 0, (
+                    "SETUP failed — this is the environment, not the code under "
+                    f"test: {setup.stderr.strip()!r}")
+E                   AssertionError: SETUP failed — this is the environment, not the code under test: "Set-Clipboard : Requested Clipboard operation did not succeed.\nAt line:1 char:1\n+ Set-Clipboard -Value 'roundtrip 123 ABC taskboard'\n+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n    + CategoryInfo          : NotSpecified: (:) [Set-Clipboard], ExternalException\n    + FullyQualifiedErrorId : System.Runtime.InteropServices.ExternalException,Microsoft.PowerShell.Commands.SetClipbo \n   ardCommand"
+E                   assert 1 == 0
+E                    +  where 1 = CompletedProcess(args=['powershell', '-NoProfile', '-Command', "Set-Clipboard -Value 'roundtrip 123 ABC taskboard'"], ...rorId : System.Runtime.InteropServices.ExternalException,Microsoft.PowerShell.Commands.SetClipbo \n   ardCommand\n \n").returncode
+
+tests\test_app.py:1215: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_win_clipboard_roundtrip - AssertionError: SETU...
+1 failed in 4.19s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -25
+The race is closed by ORDER, not by sleeping: read with our code FIRST, then
+        ask the oracle. If the oracle still sees the sample after our read, nothing
+        moved during it. If it does not, the clipboard was contended and the attempt
+        is retried rather than blamed on the app. Sustained contention fails loudly
+        and says so, which is a different sentence from "the roundtrip is broken."
+        """
+        import sys
+        if sys.platform != "win32":
+            pytest.skip("windows clipboard path only")
+        prior = _clipboard_now()
+        sample = "roundtrip 123 ABC taskboard"
+        try:
+            for _ in range(5):
+                setup = _ps(f"Set-Clipboard -Value {_ps_literal(sample)}")
+>               assert setup.returncode == 0, (
+                    "SETUP failed — this is the environment, not the code under "
+                    f"test: {setup.stderr.strip()!r}")
+E                   AssertionError: SETUP failed — this is the environment, not the code under test: "Set-Clipboard : Requested Clipboard operation did not succeed.\nAt line:1 char:1\n+ Set-Clipboard -Value 'roundtrip 123 ABC taskboard'\n+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n    + CategoryInfo          : NotSpecified: (:) [Set-Clipboard], ExternalException\n    + FullyQualifiedErrorId : System.Runtime.InteropServices.ExternalException,Microsoft.PowerShell.Commands.SetClipbo \n   ardCommand"
+E                   assert 1 == 0
+E                    +  where 1 = CompletedProcess(args=['powershell', '-NoProfile', '-Command', "Set-Clipboard -Value 'roundtrip 123 ABC taskboard'"], ...rorId : System.Runtime.InteropServices.ExternalException,Microsoft.PowerShell.Commands.SetClipbo \n   ardCommand\n \n").returncode
+
+tests\test_app.py:1215: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_app.py::test_win_clipboard_roundtrip - AssertionError: SETU...
+1 failed, 2585 passed in 437.37s (0:07:17)
+[0m
+[0m$ [0mgit status --short
+M .dev-flow/state.json
+ M .gitattributes
+ M README.md
+ M taskboard/app.py
+ M taskboard/keymap.py
+ M taskboard/models.py
+ M taskboard/views.py
+?? .dev-flow/2026-10-07-batch-05/decisions-log.json
+?? .dev-flow/2026-10-07-batch-06/decisions-log.json
+?? .dev-flow/2026-10-07-batch-06/evidence/gen_verdict_sheet.py
+?? .dev-flow/2026-10-07-batch-06/evidence/kanban-demo.json
+?? .dev-flow/2026-10-07-batch-06/evidence/veredicto-batch06.html
+?? .dev-flow/2026-10-07-batch-06/evidence/veredicto-board.json
+?? .dev-flow/2026-10-07-batch-07/decisions-log.json
+?? .dev-flow/2026-10-07-batch-08/
+?? .dev-flow/rollover_batchg.py
+?? .dev-flow/rollover_batchh.py
+?? .dev-flow/rollover_batchi.py
+?? tests/test_template_save.py
+?? tests/test_template_save_app.py
+[0m
+[0m$ [0mgit diff --stat taskboard/models.py taskboard/app.py taskboard/keymap.py taskboard/views.py README.md
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+ README.md           |  1 +
+ taskboard/app.py    | 45 ++++++++++++++++++++++++++++++++++++++-
+ taskboard/keymap.py |  5 +++++
+ taskboard/models.py | 61 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ taskboard/views.py  |  2 +-
+ 5 files changed, 112 insertions(+), 2 deletions(-)
+[0m
+[0m$ [0mgit diff taskboard/keymap.py taskboard/views.py
+diff --git a/taskboard/keymap.py b/taskboard/keymap.py
+index 87f4cba..22fc93a 100644
+--- a/taskboard/keymap.py
++++ b/taskboard/keymap.py
+@@ -137,6 +137,11 @@ KEYMAP: tuple[Key, ...] = (
+     # `I` — insert a process template (batch 2026-10-07-batch-07, HLR-1301):
+     # global, palette-only, like `R` (shifted, not scoped to a view).
+     Key("I", "I", "templates", "Templates", group="misc", bar=False),
++    # `,` — save the selected tile's chain as a template (batch-08, HLR-1401):
++    # scoped to the chain map, where the tile is the chain it names. Bound as the
++    # key NAME `comma` (a literal `,` is Textual's alias separator).
++    Key("comma", ",", "chain_template_save", "Save chain tpl",
++        views=("chainmap",), group="task"),
+     # `S` reads the week (shifted, like X/P/R — a rarer, bigger gesture); it
+     # derives from the board in ANY view, so — like `R` — it is not scoped.
+     Key("S", "S", "standup", "Standup", group="misc", bar=False),
+diff --git a/taskboard/views.py b/taskboard/views.py
+index ce06909..21f8519 100644
+--- a/taskboard/views.py
++++ b/taskboard/views.py
+@@ -6921,7 +6921,7 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
+             ("what it is for", ["the dependency web: who waits on whom, per",
+                                 "project, with ready/waits/late marks."]),
+             ("first thing to do", ["6 opens it; arrows walk the chains; ↵ opens",
+-                                   "x drops the selected task incoming link."]),
++                                   "x unlinks · , saves the chain as a template."]),
+             ("the marks", ["✓ done · ▷ ready · ○ chain head · ◂N waits",
+                            "┃ heavy = the critical chain · ▲Nd late",
+                            "dates switch = the rule a move follows",
+[0m
+[0m$ [0mgit diff taskboard/app.py
+warning: in the working copy of 'taskboard/app.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/taskboard/app.py b/taskboard/app.py
+index 8cb01c1..abd64f6 100644
+--- a/taskboard/app.py
++++ b/taskboard/app.py
+@@ -18,7 +18,8 @@ from textual.widgets import Static
+ 
+ from . import history
+ from .models import (AUTO_ARCHIVE_DAYS, IMAGE_EXTS, Board, Project, Task,
+-                     archive_refusal, default_board_path, is_open, link_refusal,
++                     archive_refusal, chain_template, default_board_path, is_open,
++                     link_refusal,
+                      milestone_candidates, milestones_marked, next_priority, parse_iso,
+                      ready_messages, run_link_migration, run_milestone_offer,
+                      set_milestone, strip_controls, templates, waiting_ids,
+@@ -762,6 +763,48 @@ class TaskboardApp(App):
+         self.notify(f"Inserted '{name}' — {len(created)} tasks into {pname}",
+                     title="Templates", severity="information", markup=False)
+ 
++    def action_chain_template_save(self) -> None:
++        """`,` — save the selected tile's connected chain as a template (HLR-1401).
++
++        On the chain map (the key is view-scoped there), the selected tile's open
++        chain — its project's component through `depends_on`, both directions — is
++        stored under a name the operator types into the shipped one-line prompt,
++        prefilled with the chain's first task title. Nothing selected -> the
++        refusal toast; a selection carrying no open chain -> its own toast; esc or
++        an empty name cancels, nothing written. On submit the entry is appended to
++        `settings["templates"]` (created if absent) and the board saved, toasting
++        the pinned literal. NOT an undo step: it writes settings, not tasks."""
++        if self.view_mode != "chainmap":
++            return
++        if self.selected_task_id is None:
++            self.notify("Select a chain tile to save.", title="Templates",
++                        severity="information", timeout=10, markup=False)
++            return
++        tpl = chain_template(self.board, self.selected_task_id)
++        if tpl is None:
++            self.notify("The selection carries no open chain.", title="Templates",
++                        severity="information", timeout=10, markup=False)
++            return
++        self.push_screen(TextPrompt("Save chain template", initial=tpl.tasks[0].title),
++                         lambda name: self._on_chain_template_named(name, tpl))
++
++    def _on_chain_template_named(self, name: str | None, tpl) -> None:
++        if not name:                        # esc -> None, blank -> ""
++            return
++        tasks = []
++        for one in tpl.tasks:
++            entry = {"title": one.title}
++            if one.notes:
++                entry["notes"] = one.notes
++            if one.wait is not None:
++                entry["wait"] = one.wait
++            tasks.append(entry)
++        self.board.settings.setdefault("templates", []).append(
++            {"name": name, "tasks": tasks})
++        self.board.save()
++        self.notify(f"Template '{name}' saved — {len(tasks)} tasks",
++                    title="Templates", severity="information", markup=False)
++
+     def action_standup(self) -> None:
+         """`S` — the week in one modal: what moved and what closed, per
+         project, derived from `phase_changed` alone. Nothing is stored for
+[0m
+Done. Increment 001 is implemented and green (one pre-existing environmental failure noted below).
+
+## What changed
+
+**1. `models.py:2328` — `chain_template(board, task_id) -> Template | None`** (new, after `_read_template`).
+- BFS both directions through `depends_on`, within the task's own project, open tasks only (skip done/archived), each once. `None` when the task is missing, done, or archived.
+- **Ordering decision:** deterministic topological order by `(depth, board order)` — `depth` = longest `depends_on` path from a chain head (the chain map's own `_chainmap_depths` column rule); board order (first occurrence, as `_ids`) breaks depth ties. Every `wait` therefore points backward.
+- **Drop decision:** a task with several predecessors keeps the FIRST in that order (smallest position) as its `wait`; the rest are dropped (one link per task — no fan-in). Titles/notes verbatim. Template `name` = the first task's title.
+
+**2. `app.py:766` — `action_chain_template_save` + `_on_chain_template_named`** (`chain_template` added to the models import at `app.py:21`).
+- View guard (silent no-op off chainmap, matching `action_kanban_sort`), `nothing selected` refusal toast, `chain_template` `None` → `The selection carries no open chain.` toast; else TextPrompt prefilled with `tpl.tasks[0].title`. On submit: append `{"name","tasks"}` to `settings["templates"]` (created via `setdefault`), `save()`, toast the pinned `Template '<name>' saved — <N> tasks`. Esc/empty cancels, nothing written. Docstring declares it is **NOT** an undo step.
+
+**3. `keymap.py:142` — `Key("comma", ",", "chain_template_save", "Save chain tpl", views=("chainmap",), group="task")`**. Bound as the key name `comma` — a literal `,` is Textual's alias separator (`InvalidBinding: Can not bind empty string`). Group is `task` (the fitting existing group; there is no `chains` group).
+
+**4. `views.py:6924` — `help_usage("chainmap")`** bullet now names `,`. The docked keybar re-derives from the seat automatically. I did **not** touch the chainmap footer key-hint list (`render_chainmap` `keys`) — it is byte-faithful-golden (`test_TC_801/802`).
+
+**5. `README.md:136`** — added the `comma` keybinding row (required by `test_keymap.py::test_the_readme_keybinding_table_matches_the_seat`). Doc, outside the source budget.
+
+**6. New tests:** `tests/test_template_save.py` (7 unit arms) and `tests/test_template_save_app.py` (4 app arms, docstring carries `AT-1401`).
+
+## Test results
+- New files: **11 passed**.
+- Full suite: **2585 passed, 1 failed** — `test_app.py::test_win_clipboard_roundtrip` (environmental: PowerShell `Set-Clipboard` → "Requested Clipboard operation did not succeed"; the test's own message states "SETUP failed — this is the environment, not the code under test"). Unrelated to this increment.
+
+## Punted / notes
+- README.md edited (doc) — forced by the keymap contract test; named here as outside the listed file set.
+- Chainmap footer key hints left untouched to preserve the golden frames (visual re-verdict still pending per §5.2).
+- `BOARD_ACTIONS` not touched (not read by app logic; spec says "nothing else").

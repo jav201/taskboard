@@ -2324,3 +2324,64 @@ def _read_template(entry) -> Template | None:
             wait = None
         tasks.append(TemplateTask(title, notes, wait))
     return Template(name, tuple(tasks))
+
+
+def chain_template(board: Board, task_id: str | None) -> Template | None:
+    """The connected open chain of one task, as a process template (LLR-1401.1).
+
+    The component is every OPEN task of the task's own project reachable from it
+    through `depends_on` in BOTH directions — what it waits on, and everything
+    that waits on it, transitively — each once (BFS, a `seen` set). None when the
+    task is missing or is itself done/archived.
+
+    The emitted order is topological and DETERMINISTIC: by (depth, board order),
+    where depth is the longest `depends_on` path from a chain head (a task with no
+    in-component predecessor) — the chain map's own column rule — and board order
+    breaks depth ties. Every `wait` therefore points backward. A task with several
+    predecessors keeps the FIRST in that order as its `wait`; the rest are dropped
+    (the shape holds one link per task, so a fan-in cannot be represented). Titles
+    and notes are carried verbatim. The template's name is the first task's title
+    (the app replaces it at the name prompt)."""
+    task = board.task_by_id(task_id)
+    if task is None or not is_open(board, task):
+        return None
+    by_id = _ids(board)
+    pid = task.project_id
+    seen: set[str] = {task.id}
+    level = [task]
+    while level:
+        nxt: list[Task] = []
+        for t in level:
+            for p in _live(t, by_id):                 # predecessors: t waits on p
+                if p.id not in seen and is_open(board, p) and p.project_id == pid:
+                    seen.add(p.id)
+                    nxt.append(p)
+            for w in by_id.values():                  # dependents: w waits on t
+                if (w.id not in seen and is_open(board, w)
+                        and w.project_id == pid and t.id in w.depends_on):
+                    seen.add(w.id)
+                    nxt.append(w)
+        level = nxt
+    comp = [by_id[tid] for tid in seen]
+    board_index: dict[str, int] = {}
+    for i, t in enumerate(board.tasks):               # first occurrence, as `_ids`
+        board_index.setdefault(t.id, i)
+    memo: dict[str, int] = {}
+
+    def depth(t: Task, path: tuple[str, ...] = ()) -> int:
+        if t.id in memo:
+            return memo[t.id]
+        preds = [p for p in _live(t, by_id) if p.id in seen and p.id not in path]
+        memo[t.id] = 0 if not preds else 1 + max(depth(p, path + (t.id,)) for p in preds)
+        return memo[t.id]
+
+    for t in comp:
+        depth(t)
+    order = sorted(comp, key=lambda t: (memo[t.id], board_index[t.id]))
+    pos = {t.id: i for i, t in enumerate(order)}
+    tasks: list[TemplateTask] = []
+    for t in order:
+        preds = [p for p in _live(t, by_id) if p.id in pos]
+        wait = pos[min(preds, key=lambda p: pos[p.id]).id] if preds else None
+        tasks.append(TemplateTask(t.title, t.notes, wait))
+    return Template(order[0].title, tuple(tasks))
