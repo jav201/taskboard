@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-07-batch-05",
-  "batch_objective": "Carries batch: close the BACKLOG's standing items -- S5-3 a failed backup write leaves no partial file (_create_beside unlinks its exclusively created file on a failed write, a RED arm with a refusing remove); F-6 the Mon D formatter in three copies becomes one; UXV-3 `u` on a single-task change says what came back (one-line undo toast); UXV-6 the ? help at 80 cells clips with `...` never mid-word; the chain-map carries (deep chains fold with a per-band +N more cap, the resize-heal re-verifies the selection against the fresh line_map, AT-801b's docstring); the P4 F-3..F-5 test-strength arms; BACKLOG bookkeeping (present-a-project closes with batch E)",
+  "batch_id": "2026-10-07-batch-06",
+  "batch_objective": "Operator-feedback batch: make the dependency web actionable where it is seen -- the chain map draws every open task (linked as today, unlinked as selectable open-chain-head tiles) so chains can be CREATED on the map with L (the C-2b oracle frames amend under a formal LED, the operator's visual re-verdict pending at close); and the kanban window shows its hidden sides -- markers on the phase-head row plus help",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -109,11 +109,17 @@
       "to": "core",
       "date": "2026-10-07",
       "reason": "batch 2026-10-07-batch-05 opened by rollover from 2026-10-07-batch-04; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-07",
+      "reason": "batch 2026-10-07-batch-06 opened by rollover from 2026-10-07-batch-05; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "P0",
+  "phase_status": "not-started",
   "stations_active": [
     "P0",
     "P1",
@@ -123,12 +129,12 @@
     "P5"
   ],
   "iterations_per_station": {
-    "P0": 1,
-    "P1": 1,
-    "P2": 1,
-    "P3": 4,
-    "P4": 1,
-    "P5": 1
+    "P0": 0,
+    "P1": 0,
+    "P2": 0,
+    "P3": 0,
+    "P4": 0,
+    "P5": 0
   },
   "triggers": {
     "evaluated_at": null,
@@ -137,37 +143,30 @@
     "record": "NOT EVALUATED. /dev-flow evaluates the triggers at P0 and rewrites this block with the timestamp of THAT evaluation. An empty `fired` list here is an absence, not a verdict that nothing fired."
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-07-batch-05/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-05/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-07-batch-05/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-07-batch-06/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-07-batch-06/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-07-batch-06/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-07-batch-05/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-07-batch-05/evidence/",
+    "increments": "repo:.dev-flow/2026-10-07-batch-06/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-07-batch-06/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-05.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-05.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-05/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-05/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-07-batch-06.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-07-batch-06.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-07-batch-06/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-06/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "a820880423830bd206a134e4944ddfd7d7ad4854",
+  "base_ref": "8284d3af9a570ac773d5370c4308986f32adf2fc",
   "artifacts": {},
-  "decisions_log": [
-    {
-      "station": "P5",
-      "date": "2026-10-07",
-      "decision": "batch closed -- the close-out recorded the gates; the coordinator discharged the fold-canon and the V2 tokens, the final validator run read 0 block, the C-25 suite ran 2556 passed 0 failed, commit 026b245 pushed",
-      "guided": false
-    }
-  ],
+  "decisions_log": [],
   "standing_authorization": {
     "autonomous": true,
     "merge": false,
     "asked_on": "2026-10-07",
-    "operator_words": "Operator (Javier), 2026-10-07: 'Ok, continuemos' -- continue until the plan's proposed changes are done; the remaining work is the BACKLOG's standing carries. Read with the established chain: Gates -- autonomous with the two exceptions; Git -- the COORDINATOR commits and pushes at each close (no PR); data safeguard -- synthetic boards only; implementing agents (DeepSeek instances under coordinator briefs, the standing 'Sigue usando Deepseek') do NOT commit/push/stash. This batch runs in the MAIN checkout."
+    "operator_words": "Operator (Javier), 2026-10-07: two UX reports from real use -- kanban hides the later phase columns with no on-screen sign of the window, and the chain map shows projects with no tasks and no way to create a chain ('es imposible crear cadenas'). Read with the established chain: Gates -- autonomous with the two exceptions; Git -- the COORDINATOR commits and pushes at each close (no PR); data safeguard -- synthetic boards only; implementing agents (DeepSeek instances under coordinator briefs, the standing 'Sigue usando Deepseek') do NOT commit/push/stash. The C-2b oracle amendment ships under a formal LED with the operator's visual re-verdict requested at close. This batch runs in the MAIN checkout."
   },
   "obsidian_synced": false,
-  "created_at": "2026-10-07T14:45:07.191635",
+  "created_at": "2026-10-07T17:43:28.778176",
   "resumption_note": "BOTH tracks closed and merged 2026-10-07: batch-03 (cleanup) at 46b16be, batch-04 (presentation) merged at 1666f08, suite green, validator 0 block. Next: the operator's call on the kg_mejoras plan's remaining batches; open the next batch by rollover from this state."
 }

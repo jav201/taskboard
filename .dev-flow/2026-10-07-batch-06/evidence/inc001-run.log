@@ -1,0 +1,3111 @@
+[0m
+> build · deepseek-v4-pro
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-06/01-requirements.md
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-06/ && echo "---" && ls -la .dev-flow/2026-10-07-batch-06/evidence/ 2>/dev/null; echo "---tests---"; ls tests/
+total 76
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 17:43 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 17:43 ..
+-rw-r--r-- 1 jjgh8 197609  7715 Oct  7 17:43 00-checklists.md
+-rw-r--r-- 1 jjgh8 197609  2106 Oct  7 17:46 01-requirements-ledger.md
+-rw-r--r-- 1 jjgh8 197609 17120 Oct  7 17:46 01-requirements.md
+-rw-r--r-- 1 jjgh8 197609  3476 Oct  7 17:43 02-review.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 17:43 03-increments
+-rw-r--r-- 1 jjgh8 197609  7643 Oct  7 17:43 04-validation.md
+-rw-r--r-- 1 jjgh8 197609  6163 Oct  7 17:43 05-close.md
+-rw-r--r-- 1 jjgh8 197609  2813 Oct  7 17:43 PLAN.md
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 17:47 evidence
+---
+total 33
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 17:47 .
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 17:43 ..
+-rw-r--r-- 1 jjgh8 197609 6540 Oct  7 17:47 inc001-brief.md
+-rw-r--r-- 1 jjgh8 197609  107 Oct  7 17:48 inc001-run.log
+-rw-r--r-- 1 jjgh8 197609 9567 Oct  7 17:44 p1_fill.py
+-rw-r--r-- 1 jjgh8 197609 5681 Oct  7 17:46 p1b_fill.py
+---tests---
+__pycache__
+conftest.py
+kg_board.py
+present_board.py
+test_agenda.py
+test_app.py
+test_archive.py
+test_backup_write.py
+test_cascade.py
+test_cascade_app.py
+test_cells.py
+test_chainmap.py
+test_chainmap_app.py
+test_cities.py
+test_cleanup.py
+test_colour_budget.py
+test_colour_budget_app.py
+test_control_bytes.py
+test_dependencies.py
+test_details_grid.py
+test_details_links.py
+test_details_markup.py
+test_edit_window.py
+test_emoji_picker.py
+test_english.py
+test_field.py
+test_flow.py
+test_flow_view.py
+test_focus.py
+test_gantt.py
+test_gantt_board.py
+test_gantt_link.py
+test_gantt_milestones.py
+test_gantt_polish.py
+test_help_clip.py
+test_highlight_segments.py
+test_history.py
+test_kanban_milestones.py
+test_kanban_priority.py
+test_kanban_readable.py
+test_keymap.py
+test_lanes_grid.py
+test_legend.py
+test_link_migration.py
+test_link_picker.py
+test_links.py
+test_markup_census.py
+test_markup_sites.py
+test_milestone_offer.py
+test_milestone_offer_seam.py
+test_milestones.py
+test_momentum.py
+test_mon_d.py
+test_motion.py
+test_no_live_board.py
+test_occupancy.py
+test_palette_ration.py
+test_precommit_gate.py
+test_present.py
+test_prism_laws.py
+test_privacy_sweep.py
+test_readme.py
+test_report.py
+test_requirements.py
+test_rescue.py
+test_row_cost.py
+test_scratch_cannot_be_committed.py
+test_setup_help.py
+test_span_economy.py
+test_spend.py
+test_swimlanes.py
+test_sync_fields.py
+test_team_sync.py
+test_team_views.py
+test_undo_toast.py
+test_vertical_fill.py
+test_view_survival.py
+test_wave.py
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-06/01-requirements-ledger.md
+[0m→ [0mRead .dev-flow/2026-10-07-batch-06/PLAN.md
+[0m
+[0m$ [0mls -la .dev-flow/2026-10-07-batch-06/03-increments/ && echo "---" && ls -la .dev-flow/2026-10-07-batch-02/evidence/frames/ 2>/dev/null
+total 20
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 17:43 .
+drwxr-xr-x 1 jjgh8 197609     0 Oct  7 17:43 ..
+-rw-r--r-- 1 jjgh8 197609 13494 Oct  7 17:43 increment-001.md
+---
+total 32
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 08:38 .
+drwxr-xr-x 1 jjgh8 197609    0 Oct  7 11:32 ..
+-rw-r--r-- 1 jjgh8 197609 3887 Oct  7 08:19 C-2-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 4322 Oct  7 08:19 C-2b-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 2414 Oct  7 08:38 C-2b-80x24.txt
+-rw-r--r-- 1 jjgh8 197609 3860 Oct  7 08:19 D-C-118x30.txt
+-rw-r--r-- 1 jjgh8 197609 2147 Oct  7 08:19 D-C-80x24.txt
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-06/03-increments/increment-001.md
+[0m→ [0mRead tests/test_chainmap.py
+[0m→ [0mRead tests/test_chainmap_app.py
+[0m
+[0m$ [0mwc -l taskboard/views.py && echo "---" && grep -n "def render_chainmap\|def _chainmap\|def render_kanban\|def help_usage\|def _kanban\|KanbanPlan\|class.*Plan\|def vis" taskboard/views.py
+7214 taskboard/views.py
+---
+85:def vis(s: str) -> int:
+4477:def _kanban_groups(board, tasks, show_archived) -> list[tuple[str, str, list[Task]]]:
+4626:class KanbanPlan(NamedTuple):
+4642:def _kanban_widths(room: int, desired: list[int]) -> list[int]:
+4667:                focus=None) -> KanbanPlan:
+4749:    return KanbanPlan(tasks, start, widths, rail_w, rail_titles, high, overflow, bands)
+4752:def kanban_nav(plan: KanbanPlan) -> list[list[str]]:
+4857:def _kanban_cell(cards, board, wc, selected_id, today, marks,
+5000:def _rail_cells(band: KanbanBand, plan: KanbanPlan, selected_id, today) -> list[str]:
+5020:def _kanban_grouped(board, show_archived, selected_id, today, w, height, line_map,
+5195:def _kanban_band_geometry(plan: KanbanPlan, selected_id: str | None, today: date):
+5209:def _kanban_high_rows(plan: KanbanPlan) -> int:
+5229:def _kanban_matrix(board, show_archived, selected_id, today, w, height, line_map) -> list[str]:
+5288:def _kanban_cell_order(board, tasks, sort, today):
+5311:def _kanban_lanes(board, show_archived, selected_id, today, w, height, line_map,
+5413:def render_kanban(board, show_archived, selected_id, today=None,
+5466:def _chainmap_box_table():
+5498:def _chainmap_box(bits: int, heavy: int) -> str:
+5508:def _chainmap_st(text: str, fg: str, bg: str | None = None, bold: bool = False) -> str:
+5513:def _chainmap_pad(markup: str, width: int) -> str:
+5519:def _chainmap_mode(pr) -> str:
+5525:def _chainmap_conflict_days(board: Board, waiter: Task, pred: Task, today: date) -> int:
+5533:def _chainmap_depths(board: Board, tasks: list[Task]) -> dict[str, int]:
+5551:def _chainmap_plan(board: Board, show_archived: bool):
+5575:def _chainmap_switch(mode: str, wide: bool, custom: bool) -> str:
+5587:def _chainmap_band_rule(pr, facts: list[str], switch: str, width: int) -> str:
+5606:def _chainmap_keys(items) -> str:
+5612:def _chainmap_edge_style(k: str) -> str:
+5617:def _chainmap_legend(width: int, items) -> str:
+5689:def _chainmap_tile(cv: _ChainmapCanvas, board: Board, t: Task, rr: int, x: int,
+5738:def render_chainmap(board, show_archived, selected_id, today=None,
+5954:def _chainmap_nav(board: Board, show_archived: bool) -> list[list[str]]:
+6756:def help_usage(mode: str) -> list[tuple[str, list[str]]]:
+[0m
+[0m→ [0mRead taskboard/views.py[90m [offset=4626, limit=260][0m
+[0m→ [0mRead taskboard/views.py[90m [offset=5195, limit=470][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=480, offset=5664][0m
+[0m
+[0m$ [0mgrep -n "_chainmap_nav\|render_chainmap\|LinkPicker\|chainmap\|def action_\|BINDINGS\|def _on_key\|link_task\|unlink" taskboard/app.py | head -80
+27:from .modals import (ClockModal, GanttLinkMode, LinkPicker, CommandPalette, ConfirmModal,
+50:VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "chainmap",
+53:             "5": "focus", "6": "chainmap", "7": "flow", "8": "standup",
+67:    Derived from `active_bindings`, never from a BINDINGS list: a hand-written
+102:    BINDINGS = [Binding("escape,question_mark,q", "dismiss", "Close",
+186:    BINDINGS = [
+247:    def action_move(self, delta: int) -> None:
+255:    def action_export(self) -> None:
+271:    def action_close(self) -> None:
+287:    BINDINGS = app_bindings()
+656:    def action_legend(self) -> None:
+697:    def action_layer_toggle(self) -> None:
+707:    def action_present(self) -> None:
+723:    def action_standup(self) -> None:
+730:    def action_clocks(self) -> None:
+773:        if self.view_mode == "chainmap":
+827:        if self.view_mode == "chainmap":
+828:            # The chain map draws only the LINKED tasks (an unlinked task is not
+878:    def action_cursor(self, delta: int) -> None:
+900:    def action_hmove(self, delta: int) -> None:
+927:    def action_phase_move(self, delta: int) -> None:
+1000:    def action_prio_cycle(self) -> None:
+1010:    def action_milestone_toggle(self) -> None:
+1072:    def action_toggle_blocked(self) -> None:
+1085:    def action_link(self) -> None:
+1098:        self.push_screen(LinkPicker(self.board, waiter),
+1106:                self.link_tasks(waiter, pred)
+1107:            elif kind == "unlink" and pred is not None:
+1108:                self.unlink_tasks(waiter, pred)
+1124:    def link_tasks(self, waiter: Task, pred: Task) -> bool:
+1142:    def unlink_tasks(self, waiter: Task, pred: Task) -> None:
+1153:    def _chainmap_unlink(self) -> None:
+1155:        incoming link through the shipped `unlink_tasks` seat; when it waits on
+1165:        self.unlink_tasks(task, pred)
+1182:        self.link_tasks(waiter, new)
+1204:    def action_due_bump(self, delta: int) -> None:
+1333:    def action_cascade_mode(self) -> None:
+1339:        if self.view_mode == "chainmap":
+1340:            self._chainmap_cycle_rule()
+1360:    def _chainmap_cycle_rule(self) -> None:
+1405:    def action_undo(self) -> None:
+1534:        if self.view_mode != "chainmap" or self.selected_task_id is None:
+1572:    def action_view(self, mode: str) -> None:
+1582:    def action_setup_exit(self) -> None:
+1589:    def action_setup_save(self) -> None:
+1668:    def action_setup_section(self) -> None:
+1676:    def action_setup_edit(self) -> None:
+1743:    def action_setup_toggle(self) -> None:
+1766:    def action_setup_add(self) -> None:
+1804:    def action_setup_remove(self) -> None:
+1825:    def action_team_filter_cycle(self) -> None:
+1839:    def action_toggle_presentation(self) -> None:
+1862:    def action_pin_toggle(self) -> None:
+1872:    def action_project_pin_toggle(self) -> None:
+1889:    def action_kanban_sort(self) -> None:
+1898:    def action_kanban_group(self) -> None:
+1907:    def action_collapse_toggle(self) -> None:
+1934:    def action_focus_cycle(self) -> None:
+1952:    def action_focus_exit(self) -> None:
+1969:    def action_search(self) -> None:
+1988:    def action_add_task(self) -> None:
+2004:    def action_details(self) -> None:
+2015:    def action_edit(self) -> None:
+2094:    def action_purge_done(self) -> None:
+2124:    def action_delete(self) -> None:
+2141:    def action_archive(self) -> None:
+2157:        if self.view_mode == "chainmap":
+2161:            self._chainmap_unlink()
+2186:    def action_toggle_archived(self) -> None:
+2190:    def action_open_url(self) -> None:
+2199:    def action_open_images(self) -> None:
+2234:    def action_add_project(self) -> None:
+2247:    def action_manage_projects(self) -> None:
+2251:    def action_manage_phases(self) -> None:
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=130, offset=6756][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=180, offset=760][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=130, offset=1085][0m
+[0m→ [0mRead taskboard/app.py[90m [limit=80, offset=2141][0m
+[0m→ [0mRead tests/kg_board.py
+[0m
+[0m$ [0mcat -A .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-118x30.txt | head -40
+M-bM-^WM-^F CHAIN MAP M-BM-7 who waits on whom                                                 15 linked tasks M-BM-7 M-bM-^VM-22 late M-BM-7 M-bM-^TM-^A chain 4 ^M$
+M-bM-^TM-^@M-bM-^VM-^LWebsite Redesign  4 linked M-BM-7 2 open not linked M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@ dates  M-bM-^WM-^K stay  M-bM-^WM-^O push  M-bM-^WM-^K together M-bM-^TM-^@^M$
+  Design homepage mockups M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^VM-8 Build component library M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-,M-bM-^TM-^@M-bM-^VM-8 Optimize image assets   M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-,M-bM-^TM-^@M-bM-^VM-8 Launch new homepage       ^M$
+  M-bM-^\M-^S                             M-bM-^VM-7 ready             M-bM-^VM-23d   M-bM-^TM-^B   M-bM-^WM-^B1                Oct 6   M-bM-^TM-^B   M-bM-^WM-^B2               Oct 10   ^M$
+                                                          M-bM-^UM-0M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^UM-/                             ^M$
+                                                                                                                      ^M$
+M-bM-^TM-^@M-bM-^VM-^LMobile App  4 linked M-BM-7 M-bM-^TM-^A critical chain M-BM-7 1 open not linked M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@ dates  M-bM-^WM-^K stay  M-bM-^WM-^O push  M-bM-^WM-^K together M-bM-^TM-^@^M$
+ M-bM-^TM-^CAudit dependencies      M-bM-^TM-^AM-bM-^TM-^AM-bM-^TM-^AM-bM-^TM-^AM-bM-^VM-8M-bM-^TM-^CAdd push notifications  M-bM-^TM-^AM-bM-^TM-^AM-bM-^TM-^AM-bM-^TM-^AM-bM-^VM-8M-bM-^TM-^COffline sync            M-bM-^TM-^AM-bM-^TM-^AM-bM-^TM-^AM-bM-^TM-^AM-bM-^VM-8M-bM-^TM-^CBeta release to testers   ^M$
+ M-bM-^TM-^CM-bM-^WM-^K                 Oct 2      M-bM-^TM-^CM-bM-^WM-^B1               Oct 12      M-bM-^TM-^CM-bM-^WM-^B1               Oct 28      M-bM-^TM-^CM-bM-^WM-^B1                Nov 4   ^M$
+                                                                                                                      ^M$
+M-bM-^TM-^@M-bM-^VM-^LAPI Platform  4 linked M-BM-7 2 open not linked M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@ dates  M-bM-^WM-^K stay  M-bM-^WM-^O push  M-bM-^WM-^K together M-bM-^TM-^@^M$
+  Partner notice emails   M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^VM-8 Deprecate v1 endpoints                                                                ^M$
+  M-bM-^WM-^K                 Oct 3       M-bM-^WM-^B1                Oct 7                                                               ^M$
+                                                                                                                      ^M$
+  Rate limiting           M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^VM-8 SDK regeneration                                                                      ^M$
+  M-bM-^WM-^K                 Oct 4       M-bM-^WM-^B1                  M-bM-^VM-21d                                                               ^M$
+                                                                                                                      ^M$
+M-bM-^TM-^@M-bM-^VM-^LData Warehouse  3 linked M-BM-7 2 open not linked M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@ set here  dates  M-bM-^WM-^K stay  M-bM-^WM-^K push  M-bM-^WM-^O together M-bM-^TM-^@^M$
+  Migrate user table      M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^VM-8 Daily revenue model     M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^VM-8 BI dashboard cut-over                                   ^M$
+  M-bM-^\M-^S                             M-bM-^VM-7 ready          Oct 18       M-bM-^WM-^B1               Nov 29                                 ^M$
+                                                                                                                      ^M$
+M-bM-^TM-^@M-bM-^VM-^LOps & Security  5 open M-BM-7 no links M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@M-bM-^TM-^@^M$
+                                                                                                                      ^M$
+                                                                                                                      ^M$
+                                                                                                                      ^M$
+ M-bM-^\M-^S done M-BM-7 M-bM-^VM-7 ready M-BM-7 M-bM-^WM-^BN waits on N M-BM-7 M-bM-^TM-^A critical chain M-BM-7 M-bM-^TM-^@ starts before due M-BM-7 M-bM-^TM-^@ satisfied M-BM-7 M-bM-^VM-2 late                     ^M$
+ Add push notifications                                             x remove the M-bM-^@M-: link M-BM-7 L link M-BM-7 M-bM-^FM-5 open M-BM-7 M-bM-^FM-^PM-bM-^FM-^RM-bM-^FM-^QM-bM-^FM-^S move ^M$
+ M-bM-^WM-^B waits on  M-bM-^@M-:Audit dependencies (starts 1d early)                                                                    ^M$
+ M-bM-^VM-8 unblocks   Offline sync (starts 2d early)                                                                          ^M$
+ M-bM-^VM-^LMobile App M-BM-7 Push what it collides with (default): a move pushes waiting tasks by the overlap it adds M-BM-7 m change
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-118x30.txt
+[0m→ [0mRead .dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-80x24.txt
+[0m
+[0m$ [0mgrep -n "^def _md\|^def _shade_hex\|^def _strip\|^def clip\|^def fit\|^def escape\|^def _clamp_width\|^def _pad\|^def header\|^def bottom\|^def to_text\|^def line\|^def _windowed_header\|^def _phase_window\|^MIN_COL\|^KANBAN_" taskboard/views.py
+96:def fit(s: str, width: int, align: str = "left") -> str:
+631:def _strip(markup: str) -> str:
+649:def header(title: str, right: str, w: int, tone: str = "bright") -> str:
+671:def line(inner: str, w: int | None = None) -> str:
+700:def bottom(junctions: dict[int, str] | None, w: int) -> str:
+729:def _clamp_width(width: int) -> int:
+820:def to_text(lines: list[str], height: int, w: int, pinned: int = 0) -> Text:
+866:def clip(s: str, w: int) -> str:
+961:def _shade_hex(hex6: str, k: float) -> str:
+1593:def _pad(markup: str, width: int) -> str:
+4415:MIN_COL = 12        # a phase column narrower than this shows nothing useful
+4418:def _phase_window(board: Board, grid: int, selected: Task | None,
+4435:def _windowed_header(board: Board, start: int, widths: list[int],
+4510:KANBAN_BAND = "\x00high-band"
+4609:KANBAN_RAIL_WIDE = 16       # the rail drawing done titles, from KANBAN_WIDE cells
+4610:KANBAN_RAIL_NARROW = 7      # the rail as a count (narrower, or collapsed)
+4611:KANBAN_WIDE = 100
+4612:KANBAN_HEAD_ROWS = 3        # the head row, the phase row, the rule
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=96][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=45, offset=4415][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=180, offset=5020][0m
+[0m→ [0mRead tests/test_kanban_readable.py
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.............                                                            [100%]
+13 passed in 3.09s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import kg_board
+from taskboard import views
+from taskboard.models import Board, Project, Task
+
+# 4-phase fixture: 3 open + Done
+def four(path):
+    p = Project('Wide', 'violet')
+    phases = ['A','B','C','Done']
+    tasks = [Task('t %s'%ph, p.id, ph, 'normal', id='t'+str(i)) for i,ph in enumerate(phases)]
+    return Board([p], tasks, path, phases=phases)
+
+b = four('x.json')
+t = views.render_kanban(b, False, 't0', kg_board.TODAY, width=80, height=0)
+print('=== 80 wide, sel t0 ===')
+for i,l in enumerate(t.plain.split(chr(10))):
+    if i<3: print(repr(l))
+"
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ModuleNotFoundError: No module named 'kg_board'
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import kg_board
+from taskboard import views
+from taskboard.models import Board, Project, Task
+
+def four(path):
+    p = Project('Wide', 'violet')
+    phases = ['A','B','C','Done']
+    tasks = [Task('t %s'%ph, p.id, ph, 'normal', id='t'+str(i)) for i,ph in enumerate(phases)]
+    return Board([p], tasks, path, phases=phases)
+
+b = four('x.json')
+t = views.render_kanban(b, False, 't0', kg_board.TODAY, width=80, height=0)
+print('=== 80 wide, sel t0 ===')
+for i,l in enumerate(t.plain.split(chr(10))):
+    if i<3: print(repr(l))
+t = views.render_kanban(b, False, 't3', kg_board.TODAY, width=80, height=0)
+print('=== 80 wide, sel t3 (last) ===')
+for i,l in enumerate(t.plain.split(chr(10))):
+    if i<3: print(repr(l))
+"
+=== 80 wide, sel t0 ===
+'KANBAN · grouped                                                        4 tasks '
+'A                      1│B                     1│C                     1│✓1     '
+'────────────────────────┼───────────────────────┼───────────────────────┼───────'
+=== 80 wide, sel t3 (last) ===
+'KANBAN · grouped                                                        4 tasks '
+'A                      1│B                     1│C                     1│✓1     '
+'────────────────────────┼───────────────────────┼───────────────────────┼───────'
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=60, offset=4435][0m
+[0m
+[0m$ [0mgrep -n "presentation\|kanban_presentation\|_windowed_header\|matrix\|lanes" taskboard/app.py | head -40
+50:VIEW_ORDER = ["swimlanes", "agenda", "gantt", "kanban", "focus", "chainmap",
+52:VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
+180:    """`R` — the presentation (PRES-C): the project's gantt field on top, the
+293:        self.view_mode = "swimlanes"
+294:        self.kanban_presentation = "grouped"
+300:        self.focus_presentation = "tiles"  # session-level (batch-07): tiles /
+302:        self.lanes_presentation = "grid"   # session-level (batch-09): grid /
+322:        self._pre_setup_view: str = "swimlanes"
+335:        "toggle_presentation", "cursor", "hmove",
+342:        if (action in ("cursor", "hmove", "toggle_presentation")
+451:            "The views are now 1 lanes · 2 agenda · 3 gantt · 4 kanban.",
+617:        if self.view_mode in ("gantt", "swimlanes"):
+618:            # gantt: advance the flow packet. lanes: breathe the today rule.
+635:                              presentation=self.kanban_presentation, tick=self._tick_n,
+642:                              lanes_presentation=self.lanes_presentation,
+643:                              focus_presentation=self.focus_presentation,
+687:                                   kanban_presentation=self.kanban_presentation,
+708:        """`R` — open the presentation of the selected task's project (the
+710:        below, a `⟦━⟧` cursor. The presentation replaces the HTML report the
+742:        # The lanes view's allocator spends the HEIGHT it is given, so how many
+756:            presentation = self.kanban_presentation
+757:        elif self.view_mode == "swimlanes":
+758:            presentation = self.lanes_presentation
+760:            presentation = "grouped"
+769:                         presentation=presentation,
+770:                         focus_presentation=self.focus_presentation,
+839:            # its phase, in the presentation's own column order (the `z` rule)
+855:                and self.kanban_presentation == "grouped"):
+941:        kanban = self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+1043:        if (self.view_mode == "kanban" and self.kanban_presentation == "grouped"
+1509:                              presentation=self.kanban_presentation, tick=self._tick_n,
+1516:                              lanes_presentation=self.lanes_presentation,
+1517:                              focus_presentation=self.focus_presentation,
+1829:        team views (V3 standup and V2 people lanes)."""
+1839:    def action_toggle_presentation(self) -> None:
+1840:        """Tab flips the kanban layout, cycles the Focus Board presentations,
+1841:        switches swimlanes grid/waves, or cycles setup sections; a no-op
+1847:            modes = ("grouped", "matrix", "lanes")
+1848:            self.kanban_presentation = modes[(modes.index(self.kanban_presentation) + 1)
+1853:            self.focus_presentation = modes[(modes.index(self.focus_presentation) + 1)
+[0m
+[0m$ [0mgrep -rn "▶\|◀\|◂\|▸" tests/test_kanban_readable.py tests/test_cells.py tests/test_kanban_milestones.py tests/test_kanban_priority.py 2>/dev/null | head -40
+tests/test_kanban_readable.py:180:    # since batch 2026-10-04-batch-01 `tm5` paints `◂1` (it waits on `tm4`);
+tests/test_kanban_readable.py:182:    assert _plain(r2) == "▊    testers ◂1 +35d    "
+tests/test_kanban_readable.py:190:    left — age, then the link marks `▸N`/`◂N` (batch 2026-10-04-batch-01, they
+tests/test_kanban_readable.py:193:    component library`'s `-3d` is shed before `▸2`."""
+tests/test_kanban_readable.py:203:    hub = b.task_by_id("tw2")                       # ▸2 and a due
+tests/test_kanban_readable.py:557:    assert hidden > 0 and f"{hidden} ▶" in rows[1], rows[1]
+tests/test_kanban_readable.py:963:    shows the meta order (`▸N` before the due); the legend calls `▐` the
+tests/test_kanban_readable.py:972:    assert line.index("▸") < line.index("+4d")
+[0m
+[0m$ [0mgrep -rln "presentation=\"matrix\"\|presentation=\"lanes\"\|presentation='matrix'\|presentation='lanes'\|_windowed_header\|matrix\|lanes" tests/ | head; echo "---grep ▶/◀ across tests---"; grep -rln "▶\|◀" tests/
+tests/test_agenda.py
+tests/test_app.py
+tests/test_archive.py
+tests/test_cells.py
+tests/test_chainmap.py
+tests/test_cleanup.py
+tests/test_colour_budget.py
+tests/test_colour_budget_app.py
+tests/test_control_bytes.py
+tests/test_emoji_picker.py
+---grep ▶/◀ across tests---
+tests/test_app.py
+tests/test_kanban_readable.py
+tests/__pycache__/test_app.cpython-312-pytest-8.3.4.pyc
+tests/__pycache__/test_app.cpython-312.pyc
+tests/__pycache__/test_kanban_readable.cpython-312-pytest-8.3.4.pyc
+[0m
+[0m$ [0mgrep -n "▶\|◀" tests/test_app.py
+1601:    assert "◀ 5" in out                                  # 5 phases hidden to the left
+1603:    assert "5 ▶" in out0                                 # …and to the right at the start
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=55, offset=1570][0m
+[0m
+[0m$ [0mgrep -n "▶\|◀\|◂\|▸\|_windowed_header\|def test" tests/test_cells.py | head -60
+78:def test_every_row_is_exactly_the_width_it_was_given(mode, name, title, width):
+90:def test_the_project_name_is_hostile_too(name, title):
+109:def test_fit_returns_exactly_w_cells(s, w):
+114:def test_fit_pads_to_w_cells_in_every_alignment(align):
+120:def test_clip_never_exceeds_w_cells(s, w):
+126:def test_clip_does_not_split_a_wide_glyph():
+139:def test_a_shortcode_is_drawn_as_itself_not_as_a_glyph():
+158:def test_a_literal_emoji_survives_and_is_measured():
+182:def test_card_cell_aging_token_follows_the_stamp_and_never_lies():
+228:def test_card_cell_aging_token_sheds_before_the_archived_mark():
+262:def test_card_cell_shows_the_deadline_countdown_on_every_dated_card():
+325:def test_card_cell_deadline_token_keeps_the_width_contract():
+[0m
+[0m$ [0mgrep -rn "▶\|◀" taskboard/ | grep -v "▸\|◂"
+taskboard/views.py:4437:    """Phase-name header cells, with `◀ N` / `N ▶` counts for hidden phases.
+taskboard/views.py:4456:        pre = f"◀ {start} " if (i == 0 and start > 0) else ""
+taskboard/views.py:4457:        suf = f" {n - end} ▶" if (i == len(widths) - 1 and end < n) else ""
+Binary file taskboard/__pycache__/aperture.cpython-312.pyc matches
+Binary file taskboard/__pycache__/language.cpython-312.pyc matches
+Binary file taskboard/__pycache__/views.cpython-312.pyc matches
+[0m
+[0m# [0mTodos
+[•] Task 1: change _windowed_header markers (◂ / ▸ N) in views.py
+[ ] Task 1: add kanban help bullet in help_usage
+[ ] Task 1: write tests/test_kanban_window.py
+[ ] Task 1: update test_app.py + test_kanban_readable.py marker assertions
+[ ] Task 2: admit open unlinked tasks as ○ tiles in _chainmap_plan/render_chainmap
+[ ] Task 2: wire nav + seats (_chainmap_nav, selection strip) for ○ tiles
+[ ] Task 2: add chainmap help bullet
+[ ] Task 2: regenerate C-2b oracle frames + move FRAMES path
+[ ] Task 2: extend test_chainmap.py / test_chainmap_app.py with new arms
+[ ] Verify: targeted suites + full suite green
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -4433,9 +4433,9 @@
+ 
+ 
+ def _windowed_header(board: Board, start: int, widths: list[int],
+                      tasks: list[Task], n: int | None = None) -> list[str]:
+-    """Phase-name header cells, with `◀ N` / `N ▶` counts for hidden phases.
++    """Phase-name header cells, with `◂` / `▸ N` marks for hidden phases.
+ 
+     Every cell ends with the WIP tag (HLR-005, LLR-005.2): ` n/limit` when the
+     phase has a limit, bare ` n` when it does not — `n` counted from
+     `phase_buckets` over the view's visible tasks. The tag is laid out LAST
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -4452,10 +4452,10 @@
+ count = len(buckets[start + i])
+ limit = board.wip_limit(phase)
+ tag = f" {count}/{limit}" if limit is not None else f" {count}"
+ tone = "over" if (limit is not None and count > limit) else "mut"
+-pre = f"◀ {start} " if (i == 0 and start > 0) else ""
+-suf = f" {n - end} ▶" if (i == len(widths) - 1 and end < n) else ""
++pre = "◂ " if (i == 0 and start > 0) else ""
++suf = f" ▸ {n - end}" if (i == len(widths) - 1 and end < n) else ""
+ avail = wc - len(pre) - len(suf)
+ if avail < 1:                       # no room for a label -> markers only
+     cells.append(c(fit((pre + suf).strip(), wc), "mut"))
+     continue
+
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python -c "
+from rich.cells import cell_len
+s = 'more phases than fit — the window follows the selection (j/k into a later column) · ◂ ▸ mark the hidden sides'
+print('len', cell_len(s))
+print(s)
+"
+len 109
+more phases than fit — the window follows the selection (j/k into a later column) · ◂ ▸ mark the hidden sides
+[0m
+[0m$ [0mgrep -n "help_usage\|help_example\|def.*help\|44" taskboard/*.py | head -30
+taskboard/modals.py:1845:        from .views import help_example, help_usage, legend_entries
+taskboard/modals.py:1853:        example, example_meaning = help_example(self._mode)
+taskboard/modals.py:1859:                    for heading, bullets in help_usage(self._mode):
+taskboard/views.py:715:    field of blank rows above it: on a real board, 84 swept kanban sizes and 44
+taskboard/views.py:1957:    axis_w = max(12, min(44, (budget * 6) // 10)) if budget >= 20 else 0
+taskboard/views.py:6756:def help_usage(mode: str) -> list[tuple[str, list[str]]]:
+taskboard/views.py:6759:    bullet fits the help column's 44 cells."""
+taskboard/views.py:6874:def help_example(mode: str) -> tuple[str, str]:
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=45, offset=1840][0m
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python -c "
+from rich.cells import cell_len
+lines = [
+'more phases than fit — the window follows the',
+'selection (j/k into a later column) · ◂ ▸ mark',
+'the hidden sides',
+]
+for l in lines: print(cell_len(l), repr(l))
+"
+45 'more phases than fit — the window follows the'
+46 'selection (j/k into a later column) · ◂ ▸ mark'
+16 'the hidden sides'
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python -c "
+from rich.cells import cell_len
+cands = [
+'more phases than fit — the window follows',
+'the selection (j/k into a later column) · ◂ ▸',
+'mark the hidden sides',
+'more phases than fit — the window follows the',
+'selection (j/k into a later column) · ◂ ▸',
+'mark the hidden sides',
+'◂ ▸ mark the hidden sides',
+'more phases than fit — the window follows the selection',
+'(j/k into a later column) · ◂ ▸ mark the hidden sides',
+]
+for l in cands: print(cell_len(l), repr(l))
+"
+41 'more phases than fit — the window follows'
+45 'the selection (j/k into a later column) · ◂ ▸'
+21 'mark the hidden sides'
+45 'more phases than fit — the window follows the'
+41 'selection (j/k into a later column) · ◂ ▸'
+21 'mark the hidden sides'
+25 '◂ ▸ mark the hidden sides'
+55 'more phases than fit — the window follows the selection'
+53 '(j/k into a later column) · ◂ ▸ mark the hidden sides'
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python -c "
+from rich.cells import cell_len
+cands = [
+'the selection (j/k into a later column) ·',
+'the selection (j/k into a later column)',
+]
+for l in cands: print(cell_len(l), repr(l))
+"
+41 'the selection (j/k into a later column) ·'
+39 'the selection (j/k into a later column)'
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -6761,9 +6761,12 @@
+ return [
+     ("what it is for", ["run the work: move tasks between phases,",
+                         "group by project, priority or horizon."]),
+     ("first thing to do", ["j/k down and up · ↵ opens the card.",
+-                           "then: s sort · g group · z collapse."]),
++                           "then: s sort · g group · z collapse.",
++                           "more phases than fit — the window follows",
++                           "the selection (j/k into a later column) ·",
++                           "◂ ▸ mark the hidden sides"]),
+     ("the card's numbers", ["·Nd = days IN the phase (ageing)",
+                             "+Nd = days UNTIL the deadline (countdown)",
+                             "+/- move a date · m: the move again,",
+                             "next mode (stay / push / together)",
+
+[0m
+[0m$ [0mgrep -n "def _kanban_board" tests/test_app.py
+1466:def _kanban_board(tmp_path):
+[0m
+[0m→ [0mRead tests/test_app.py[90m [limit=40, offset=1466][0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date
+from taskboard.models import Board, Project, Task
+from taskboard.views import render_kanban, _phase_window
+
+def kanban_board():
+    b = Board.load('k.json')
+    b.projects.clear(); b.tasks.clear()
+    alpha = Project('Alpha', 'cyan', 'on_track')
+    beta = Project('Beta', 'amber', 'on_track')
+    b.projects += [alpha, beta]
+    b.tasks += [Task('KA one', alpha.id, 'Backlog'), Task('KA two', alpha.id, 'Backlog'),
+                Task('KA three', alpha.id, 'Backlog'), Task('KA doing', alpha.id, 'Doing'),
+                Task('KB done', beta.id, 'Done'), Task('KB blocked', beta.id, 'Doing', blocked=True),
+                Task('Loose one', None, 'Backlog')]
+    return b
+
+b = kanban_board()
+b.phases = [f'Phase{i}' for i in range(8)]
+for t in b.tasks: t.phase = b.phases[0]
+b.tasks[0].phase = b.phases[7]
+
+start, widths = _phase_window(b, 38, b.tasks[0])
+print('window', start, widths)
+out = str(render_kanban(b, False, b.tasks[0].id, date(2026,7,17), width=40, height=0))
+print('=== sel tasks[0] (Phase7) ===')
+for i,l in enumerate(out.split(chr(10))):
+    if i<2: print(repr(l))
+out0 = str(render_kanban(b, False, b.tasks[1].id, date(2026,7,17), width=40, height=0))
+print('=== sel tasks[1] (Phase0) ===')
+for i,l in enumerate(out0.split(chr(10))):
+    if i<2: print(repr(l))
+"
+window 5 [12, 12, 12]
+=== sel tasks[0] (Phase7) ===
+'KANBAN · grouped                7 tasks '
+'◂ PHASE5       0│PHASE6        0│✓1     '
+=== sel tasks[1] (Phase0) ===
+'KANBAN · grouped                7 tasks '
+'PHASE0           6│PHASE1  0 ▸ 5│✓1     '
+[0m
+[0m← [0mEdit tests/test_app.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_app.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_app.py
+@@ -1597,11 +1597,11 @@
+     # the window spans the OPEN phases, and follows a done selection to the
+     # last of them
+     assert "PHASE6" in out and "PHASE0" not in out       # only the window is drawn
+     assert out.split("\n")[1].rstrip().endswith("✓1")   # the rail, as a count
+-    assert "◀ 5" in out                                  # 5 phases hidden to the left
++    assert "◂" in out                                    # 5 phases hidden to the left
+     out0 = str(render_kanban(b, False, b.tasks[1].id, date(2026, 7, 17), width=40, height=0))
+-    assert "5 ▶" in out0                                 # …and to the right at the start
++    assert "▸ 5" in out0                                 # …and to the right at the start
+ 
+ # --- gantt project bar (dual-density braille + honest due figure) ----------- #
+ GANTT_TODAY = date(2026, 7, 20)          # a Monday, so week 0 starts on it
+ GANTT_MIDWEEK = date(2026, 7, 23)        # a Thursday, so the today rule sits mid-grid
+
+[0m
+[0m← [0mEdit tests/test_kanban_readable.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_kanban_readable.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_kanban_readable.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_kanban_readable.py
+@@ -553,9 +553,9 @@
+ e = eight_phases(tmp_path / "e.json")
+ _t, rows, _lm = render(e, 80, 24, sel="t0")
+ plan = kanban_plan(e, False, "t0", TODAY, 80, 24)
+ hidden = 7 - (plan.start + len(plan.widths))
+-assert hidden > 0 and f"{hidden} ▶" in rows[1], rows[1]
++assert hidden > 0 and f"▸ {hidden}" in rows[1], rows[1]
+ empty = Board([], [], tmp_path / "x.json", phases=["Doing", "Done"])
+ _t, rows, _lm = render(empty, 80, 24, sel=None)
+ assert any("(no tasks — press 'a' to add one)" in r for r in rows)
+ 
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+import kg_board
+from taskboard import views
+from taskboard.models import Board, Project, Task
+
+def fx(path):
+    p = Project('Wide', 'violet')
+    phases = ['Backlog','Next','Doing','Review','Done']
+    tasks = [Task('task %s'%ph, p.id, ph, 'normal', id='t%d'%i) for i,ph in enumerate(phases)]
+    return Board([p], tasks, path, phases=phases)
+
+b = fx('x.json')
+for sel in ('t0','t1','t3'):
+    t = views.render_kanban(b, False, sel, kg_board.TODAY, width=40, height=0)
+    rows = t.plain.split(chr(10))
+    print(sel, repr(rows[1]))
+t = views.render_kanban(b, False, 't0', kg_board.TODAY, width=80, height=0)
+print('w80', repr(t.plain.split(chr(10))[1]))
+t = views.render_kanban(b, False, 't0', kg_board.TODAY, width=118, height=0)
+print('w118', repr(t.plain.split(chr(10))[1]))
+"
+t0 'BACKLOG         1│NEXT     1 ▸ 2│✓1     '
+t1 '◂ NEXT       1│DOING     1/3 ▸ 1│✓1     '
+t3 '◂ DOING     1/3│REVIEW         1│✓1     '
+w80 'BACKLOG           1│NEXT          1│DOING         1/3│REVIEW           1│✓1     '
+w118 'BACKLOG                   1│NEXT                 1│DOING               1/3│REVIEW                   1│✓ DONE 1        '
+[0m
+[0m← [0mWrite tests/test_kanban_window.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_kanban_window.py tests/test_kanban_readable.py tests/test_cells.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 54%]
+........................................................................ [ 72%]
+........................................................................ [ 90%]
+.......................................                                  [100%]
+399 passed in 20.38s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_app.py -q -k "kanban" 2>&1 | tail -15
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+..............................                                           [100%]
+30 passed, 132 deselected in 10.00s
+[0m
+[0m$ [0mgrep -n "def sort_by_due\|def _recent_first\|def open_predecessors\|def critical_chain\|def unblocks_count" taskboard/views.py taskboard/models.py
+taskboard/views.py:559:def sort_by_due(tasks: list[Task]) -> list[Task]:
+taskboard/views.py:4500:def _recent_first(tasks: list[Task]) -> list[Task]:
+taskboard/models.py:1392:def unblocks_count(board: Board, task: Task) -> int:
+taskboard/models.py:1411:def critical_chain(board: Board) -> list[str]:
+taskboard/models.py:1795:def open_predecessors(board: Board, task: Task, by_id: dict | None = None) -> list[Task]:
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=15, offset=559][0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-06/evidence/inc001-brief.md
+[0m→ [0mRead taskboard/views.py[90m [limit=135, offset=5746][0m
+[0m
+[0m$ [0mgrep -rn "nothing" tests/test_chainmap.py tests/test_chainmap_app.py
+tests/test_chainmap_app.py:103:    waits on nothing refuses with the verbatim toast."""
+tests/test_chainmap_app.py:147:        # x on a task that waits on nothing refuses verbatim
+tests/test_chainmap_app.py:156:        assert "nothing to remove — the selection waits on no task" in said, said
+tests/test_chainmap_app.py:167:    under `stay` the same bump moves nothing else."""
+tests/test_chainmap_app.py:199:        # m -> stay; the same bump moves nothing else
+tests/test_chainmap_app.py:267:    names what fits and counts the rest); the all-fits base board caps nothing
+tests/test_chainmap_app.py:293:        assert "more ↓" not in _joined(app3), "an all-fits band caps nothing"
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=20, offset=866][0m
+[0m
+[0m$ [0mgrep -n "def _md\|_md(" taskboard/views.py | head -5
+2528:    lab = _md(d)
+2691:        lab = _md(e)
+2704:        L, R = _md(s), _md(e)
+2713:        txt = f"no start · due {_md(e)}"
+2717:    txt = f"starts {_md(s)} · no due"
+[0m
+[0m$ [0mgrep -rn "def _md" taskboard/
+taskboard/models.py:2147:def _md(d: date) -> str:
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=8, offset=2147][0m
+[0m
+[0m$ [0mgrep -n "from .models import\|from taskboard.models import\|_md\|import models" taskboard/views.py | head -20
+36:from .models import (Board, CASCADE_DEFAULT_MODE, CASCADE_MODES, Project, Task,
+38:                     open_predecessors, parse_iso, unblocks_count, _md)
+2528:    lab = _md(d)
+2691:        lab = _md(e)
+2704:        L, R = _md(s), _md(e)
+2713:        txt = f"no start · due {_md(e)}"
+2717:    txt = f"starts {_md(s)} · no due"
+2998:        mlabel = c(fit(f"today {today:%a} {_md(today)}", label_w - 1, "right") + " ", "accent")
+4950:        out = [("◆ ", tone), (_md(d), dk)]
+5711:        else ((_md(d), "mut") if d else ("", "mut"))
+6057:        lab, tone = (f"{_md(d)} ▲{n}d" if wide else f"▲{n}d"), "over"
+6062:        lab, tone = (f"{_md(d)} +{n}d" if wide else _md(d)), "mut"
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5550,9 +5550,12 @@
+ 
+ def _chainmap_plan(board: Board, show_archived: bool):
+     """(tasks, linked, depth, chain, ncol, bands, bare) — the one answer the
+     renderer and the navigator share, so a cursor can never rest on a tile the
+-    view does not draw (the F-3 law)."""
++    view does not draw (the F-3 law). `bands` is (project, linked, unlinked):
++    the open unlinked tasks a band draws as one-row `○` tiles (LLR-1201.1),
++    FIFO by due — they are the head's `open not linked` count. `bare` is only
++    a project with no open work at all (no linked task, no open unlinked task)."""
+     tasks = list(board.visible_tasks(show_archived))
+     tid = {t.id for t in tasks}
+     linked = [t for t in tasks if any(x in tid for x in t.depends_on)
+               or any(t.id in o.depends_on for o in tasks)]
+@@ -5564,12 +5567,22 @@
+     # ncol 4, so the cap never moves them. Deeper chains pile into the last
+     # column instead of raising.
+     ncol = min(ncol, 4)
+     depth = {tid: min(d, ncol - 1) for tid, d in depth.items()}
++    linked_ids = {t.id for t in linked}
+     projects = board.visible_projects(show_archived)
+-    bands = [(pr, [t for t in linked if t.project_id == pr.id]) for pr in projects]
+-    bands = [(pr, ts) for pr, ts in bands if ts]
+-    bare = [pr for pr in projects if not any(t.project_id == pr.id for t in linked)]
++    bands = []
++    bare = []
++    for pr in projects:
++        ts = [t for t in linked if t.project_id == pr.id]
++        unlinked = sort_by_due([t for t in tasks
++                                if t.project_id == pr.id
++                                and t.id not in linked_ids
++                                and not board.is_done(t)])
++        if ts or unlinked:
++            bands.append((pr, ts, unlinked))
++        else:
++            bare.append(pr)
+     return tasks, linked, depth, chain, ncol, bands, bare
+ 
+ 
+ def _chainmap_switch(mode: str, wide: bool, custom: bool) -> str:
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5747,8 +5747,31 @@
+             cv.put(r, x, "┃", f"bold {HEX['bright']}{bg}")
+     return is_sel
+ 
+ 
++def _chainmap_open_tile(cv: _ChainmapCanvas, board: Board, t: Task, rr: int, x: int,
++                        tile_w: int, is_sel: bool, today: date, wide: bool) -> bool:
++    """One-row `○` tile for an open unlinked task (LLR-1201.1): the chain-head
++    chrome — `○`, title, due chip, late mark — no connectors, no meta row."""
++    inner = tile_w - 2
++    d = parse_iso(t.due_date)
++    late = d and d < today
++    meta, meta_k = (f"▲{(today - d).days}d", "over") if late \
++        else ((_md(d), "mut") if d else ("", "mut"))
++    fg = HEX["bright"] if is_sel else (HEX["over"] if late else HEX["hd"])
++    bg = f" on {HEX['frame']}"
++    bold = "bold " if is_sel else ""
++    title = clip(t.title, max(0, inner - vis(meta) - 2))
++    gap = max(0, inner - vis(meta) - 2 - vis(title))
++    cv.put(rr, x, " ", f"{bold}{fg}{bg}")
++    cv.put(rr, x + 1, "○", f"{HEX['bright'] if is_sel else 'mut'}{bg}")
++    cv.put(rr, x + 2, " " + title, f"{bold}{fg}{bg}")
++    cv.put(rr, x + 3 + vis(title), " " * gap, f"{bold}{fg}{bg}")
++    cv.put(rr, x + 3 + vis(title) + gap, meta, f"{HEX['bright'] if is_sel else HEX[meta_k]}{bg}")
++    cv.put(rr, x + 3 + vis(title) + gap + vis(meta), " ", f"{bold}{fg}{bg}")
++    return is_sel
++
++
+ def render_chainmap(board, show_archived, selected_id, today=None,
+                     width=68, height=0, line_map=None) -> Text:
+     """The chain map (the C-2b oracle): who waits on whom, per project, with the
+     per-band dates switch and the heavy critical chain, fitting the screen at
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5781,10 +5781,11 @@
+ if line_map is not None:
+     line_map.clear()          # CM-2: the drawn set is rebuilt every render
+ tasks, linked, depth, chain, ncol, bands, bare = _chainmap_plan(board, show_archived)
+ sel = board.task_by_id(selected_id)
+-if sel is None or sel not in linked:
+-    sel = linked[0] if linked else None
++if sel is None or sel not in tasks:
++    sel = linked[0] if linked else next(
++        (t for _pr, _ts, u in bands for t in u), None)
+ wide = w >= 100
+ gap = 5 if wide else 3
+ tile_w = (w - 2 - gap * (ncol - 1)) // ncol
+ col_x = [1 + d * (tile_w + gap) for d in range(ncol)]
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5790,9 +5790,9 @@
+ tile_w = (w - 2 - gap * (ncol - 1)) // ncol
+ col_x = [1 + d * (tile_w + gap) for d in range(ncol)]
+ 
+ plans = []
+-for pr, ts in bands:
++for pr, ts, unlinked in bands:
+     slot: dict[str, int] = {}
+     used: dict[int, set] = {}
+     for d in range(ncol):
+         for t in (t for t in ts if depth[t.id] == d):
+@@ -5803,11 +5803,13 @@
+             used[d].add(s)
+             slot[t.id] = s
+     edges = [(board.task_by_id(x), t) for t in ts for x in t.depends_on if x in slot]
+     skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
+-    nslot = max(slot.values()) + 1 if slot else 1
+-    plans.append(dict(pr=pr, ts=ts, slot=slot, edges=edges, skips=skips,
+-                      tiles_h=3 * nslot - 1 + len(skips), nslot=nslot))
++    nslot = max(slot.values()) + 1 if slot else 0
++    chain_h = (3 * nslot - 1 + len(skips)) if slot else 0
++    plans.append(dict(pr=pr, ts=ts, unlinked=unlinked, slot=slot, edges=edges,
++                      skips=skips, nslot=nslot,
++                      tiles_h=chain_h + len(unlinked)))
+ 
+ # vertical rhythm: ONE padding pair for every band, the most that fits
+ foot = 3
+ body_h = height - 1 - foot - 1      # header + footer(3) + mode footer(1)
+
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=90, offset=5815][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=5904][0m
+[0m
+[0m$ [0mgrep -rn "linked\|open not linked\|no links\| open" tests/test_chainmap.py tests/test_chainmap_app.py
+tests/test_chainmap.py:63:    """The base board (the frames' own fixture): 15 linked tasks, frozen."""
+tests/test_chainmap.py:116:    """TC-804 (HLR-801): the base board's header holds `15 linked tasks`; the
+tests/test_chainmap.py:117:    milestones board's holds `17 linked tasks` (it adds td0 and re-points td5)."""
+tests/test_chainmap.py:120:    assert "15 linked tasks" in head, head
+tests/test_chainmap.py:125:    assert "17 linked tasks" in head, head
+tests/test_chainmap_app.py:101:    the arrows walk the chains; `↵` opens the shipped details; `x` on a linked
+tests/test_chainmap_app.py:115:        assert "15 linked tasks" in joined and "▲2 late" in joined and "━ chain 4" in joined
+tests/test_chainmap_app.py:128:        # ↵ opens the shipped details
+tests/test_chainmap_app.py:136:        # x on a linked task unlinks its incoming link; the frame re-renders
+tests/test_chainmap_app.py:252:    """The kg base with more open highs in Backlog than fit: 8 extra high tasks
+tests/test_chainmap_app.py:265:    """AT-803 (LLR-803.1): on a Backlog with more open highs than fit the band
+tests/test_chainmap_app.py:297:    """AT-801b arm (code review CM-3): `L` on the chain map opens the shipped
+tests/test_chainmap_app.py:308:        app.selected_task_id = "to5"          # Pen-test findings: no links yet
+tests/test_chainmap_app.py:313:        assert isinstance(app.screen, LinkPicker), f"L opened {type(app.screen).__name__}"
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=55, offset=5955][0m
+[0m→ [0mRead taskboard/views.py[90m [limit=30, offset=5926][0m
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5835,40 +5835,47 @@
+     return p.id in chain and t.id in chain and not board.is_done(p)
+ 
+ body: list[str] = []
+ for p in plans:
+-    pr, ts = p["pr"], p["ts"]
++    pr, ts, unlinked = p["pr"], p["ts"], p["unlinked"]
+     slot = p["slot"]
+     nslot = p["nslot"]
++    n_open = len(unlinked)
+     seg_h = 1 + pad[0] + p["tiles_h"] + pad[1]
+     if len(body) + seg_h > body_h:
+         # CM-2 amended (LED .1): a band that fits PARTLY draws its fitting
+-        # chains + one `+N more ↓` tail (the kanban law); a band whose FIRST
+-        # chain does not fit still drops whole — no head without its canvas.
++        # chains + `○` tiles + one `+N more ↓` tail (the kanban law); a band
++        # whose FIRST row does not fit still drops whole — no head without
++        # its canvas.
++        remaining = body_h - len(body)
+         limit = 0
+         for k in range(nslot, 0, -1):
+             drawn_ids = {t.id for t in ts if slot[t.id] < k}
+             nskip = sum(1 for pt, t in p["edges"]
+                         if pt.id in drawn_ids and t.id in drawn_ids
+                         and depth[t.id] - depth[pt.id] > 1)
+-            if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= body_h - len(body):
++            if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= remaining:
+                 limit = k
+                 break
+-        if limit == 0:
+-            break            # the first chain does not fit: drop whole
+         drawn = [t for t in ts if slot[t.id] < limit]
+         drawn_ids = {t.id for t in drawn}
+         edges = [(pt, t) for pt, t in p["edges"]
+                  if pt.id in drawn_ids and t.id in drawn_ids]
+         skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
+-        tiles_h = 3 * limit - 1 + len(skips)
+-        tail_n = nslot - limit
++        chain_h = (3 * limit - 1 + len(skips)) if limit else 0
++        n_tiles = max(0, min(n_open, remaining - 1 - pad[0] - chain_h - 1))
++        if (nslot and limit == 0) or (not nslot and n_tiles == 0):
++            break            # the first row does not fit: drop whole
++        tiles_h = chain_h + n_tiles
++        tail_n = (nslot - limit) + (n_open - n_tiles)
+     else:
+         drawn = ts
+         edges = p["edges"]
+         skips = p["skips"]
++        chain_h = (3 * nslot - 1 + len(skips)) if slot else 0
+         tiles_h = p["tiles_h"]
+         limit = nslot
++        n_tiles = n_open
+         tail_n = 0
+     own = [t for t in tasks if t.project_id == pr.id]
+     n_un = sum(1 for t in own if t not in ts and not board.is_done(t))
+     facts = [c(f"{len(ts)} linked", "dim")] + ([c(f"{n_un} open not linked", "dim")] if n_un else [])
+@@ -5904,8 +5911,14 @@
+         _chainmap_tile(cv, board, t, rr, x, tile_w, t.id == (sel.id if sel else None),
+                        t.id in chain, today, wide)
+         if line_map is not None:
+             line_map[t.id] = top + rr
++    for i, t in enumerate(unlinked[:n_tiles]):
++        rr = chain_h + i
++        _chainmap_open_tile(cv, board, t, rr, col_x[0], tile_w,
++                            t.id == (sel.id if sel else None), today, wide)
++        if line_map is not None:
++            line_map[t.id] = top + rr
+     body += [cv.line(r) for r in range(cv.h)]
+     if tail_n:
+         body.append(_chainmap_pad(c(f"+{tail_n} more ↓", "mut"), w))
+         break
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5951,9 +5951,9 @@
+     extra = c(f" (starts {g}d early)", "over") if g else (c(" ✓", "ash") if board.is_done(t) else "")
+     return (c("›", "bright", bold=True) if focus else " ") + c(escape(s), k, bold=focus) + extra
+ 
+ ft1 = c(" ◂ waits on  ", "mut") + (c(" · ", "dim").join(ref(t, i == 0) for i, t in enumerate(pre_all))
+-                                   if pre_all else c("nothing", "dim"))
++                                   if pre_all else c("nothing yet", "dim"))
+ ft2 = c(" ▸ unblocks  ", "mut") + (c(" · ", "dim").join(ref(t, waiter=t) for t in succ)
+                                    if succ else c("nothing waits on it", "dim"))
+ keys = [("x", "remove the › link"), ("L", "link"), ("↵", "open"), ("←→↑↓", "move")] if wide \
+     else [("x", "remove ›"), ("L", "link"), ("↵", "open")]
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5973,9 +5973,9 @@
+ footer = [_foot_row(ln) for ln in (ft3, ft1, ft2)]
+ 
+ n_late = sum(1 for t in linked if (d := parse_iso(t.due_date)) and d < today and not board.is_done(t))
+ title = c("◆ CHAIN MAP", "bright", bold=True) + c(" · who waits on whom", "mut")
+-n_drawn = sum(len(ts) for _pr, ts in bands)
++n_drawn = sum(len(ts) for _pr, ts, _u in bands)
+ right = (c(f"{n_drawn} linked tasks", "mut") + c(" · ", "dim") + c(f"▲{n_late} late", "over")
+          + c(" · ", "dim") + _chainmap_st("━", HEX["bright"], None, True)
+          + c(f" chain {len(chain)}", "hd"))
+ lines = ([header(title, right, w)]
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -6004,14 +6004,17 @@
+ 
+ 
+ def _chainmap_nav(board: Board, show_archived: bool) -> list[list[str]]:
+     """The chain map's on-screen order: one column per depth, tasks top-to-bottom
+-    (band order, then draw order) — left/right walks the chain, up/down a column."""
++    (band order, then draw order) — left/right walks the chain, up/down a column.
++    The `○` tiles sit at the depth-0 column, after the band's chains (LLR-1201.2)."""
+     _tasks, linked, depth, _chain, ncol, bands, _bare = _chainmap_plan(board, show_archived)
+     cols: list[list[str]] = [[] for _ in range(ncol)]
+-    for _pr, ts in bands:
++    for _pr, ts, unlinked in bands:
+         for t in ts:
+             cols[depth[t.id]].append(t.id)
++        for t in unlinked:
++            cols[0].append(t.id)
+     return cols
+ 
+ 
+ # ---------------------------------------------------------------------------
+
+[0m
+[0m$ [0mgrep -rn "chainmap\|help_usage" tests/test_help_clip.py tests/test_setup_help.py 2>/dev/null | head; echo "---"; grep -rln "help_usage\|○ chain head\|chain head" tests/ | head
+tests/test_help_clip.py:25:from taskboard.views import _strip, help_example, help_usage, legend_entries
+tests/test_help_clip.py:44:    for heading, bullets in help_usage(mode):
+---
+tests/test_english.py
+tests/test_gantt_milestones.py
+tests/test_help_clip.py
+tests/test_kanban_milestones.py
+tests/test_kanban_priority.py
+tests/test_kanban_readable.py
+tests/test_kanban_window.py
+tests/test_links.py
+tests/test_markup_sites.py
+tests/__pycache__/test_english.cpython-312-pytest-8.3.4.pyc
+[0m
+[0m→ [0mRead tests/test_help_clip.py
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python -c "
+from rich.cells import cell_len
+s='○ an open task with no links yet — L starts its chain here'
+print(cell_len(s), s)
+"
+58 ○ an open task with no links yet — L starts its chain here
+[0m
+[0m$ [0menv -u NO_COLOR PYTHONIOENCODING=utf-8 python -c "
+from rich.cells import cell_len
+for l in ['○ an open task with no links yet — L starts its', 'chain here', '○ an open task with no links yet — L starts', 'its chain here']:
+    print(cell_len(l), repr(l))
+"
+47 '○ an open task with no links yet — L starts its'
+10 'chain here'
+43 '○ an open task with no links yet — L starts'
+14 'its chain here'
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -6923,9 +6923,11 @@
+                                "x drops the selected task incoming link."]),
+         ("the marks", ["✓ done · ▷ ready · ○ chain head · ◂N waits",
+                        "┃ heavy = the critical chain · ▲Nd late",
+                        "dates switch = the rule a move follows",
+-                       "set here = that project rule is custom"]),
++                       "set here = that project rule is custom",
++                       "○ an open task with no links yet — L starts",
++                       "its chain here"]),
+     ]
+ return []
+ 
+ 
+
+[0m
+[0m$ [0mls .dev-flow/2026-10-07-batch-06/evidence/ && echo "---" && mkdir -p .dev-flow/2026-10-07-batch-06/evidence/frames
+inc001-brief.md
+inc001-run.log
+p1_fill.py
+p1b_fill.py
+---
+[0m
+[0m← [0mWrite .dev-flow/2026-10-07-batch-06/evidence/gen_frames.py
+Wrote file successfully.
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-06/evidence/gen_frames.py
+wrote C:\Users\jjgh8\Github\taskboard\.dev-flow\2026-10-07-batch-06\evidence\frames\C-2b-118x30.txt  (30 rows)
+wrote C:\Users\jjgh8\Github\taskboard\.dev-flow\2026-10-07-batch-06\evidence\frames\C-2b-80x24.txt  (24 rows)
+[0m
+[0m→ [0mRead .dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-118x30.txt
+[0m→ [0mRead .dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-80x24.txt
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5748,12 +5748,13 @@
+     return is_sel
+ 
+ 
+ def _chainmap_open_tile(cv: _ChainmapCanvas, board: Board, t: Task, rr: int, x: int,
+-                        tile_w: int, is_sel: bool, today: date, wide: bool) -> bool:
++                        w: int, is_sel: bool, today: date, wide: bool) -> bool:
+     """One-row `○` tile for an open unlinked task (LLR-1201.1): the chain-head
+-    chrome — `○`, title, due chip, late mark — no connectors, no meta row."""
+-    inner = tile_w - 2
++    chrome — `○`, title, due chip, late mark — no connectors, no meta row. The
++    row spans the panel width (nothing to align: no connectors)."""
++    inner = w - 2
+     d = parse_iso(t.due_date)
+     late = d and d < today
+     meta, meta_k = (f"▲{(today - d).days}d", "over") if late \
+         else ((_md(d), "mut") if d else ("", "mut"))
+
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5914,9 +5914,9 @@
+     if line_map is not None:
+         line_map[t.id] = top + rr
+ for i, t in enumerate(unlinked[:n_tiles]):
+     rr = chain_h + i
+-    _chainmap_open_tile(cv, board, t, rr, col_x[0], tile_w,
++    _chainmap_open_tile(cv, board, t, rr, 0, w,
+                         t.id == (sel.id if sel else None), today, wide)
+     if line_map is not None:
+         line_map[t.id] = top + rr
+ body += [cv.line(r) for r in range(cv.h)]
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-06/evidence/gen_frames.py && echo "=== 118 ===" && cat .dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-118x30.txt
+wrote C:\Users\jjgh8\Github\taskboard\.dev-flow\2026-10-07-batch-06\evidence\frames\C-2b-118x30.txt  (30 rows)
+wrote C:\Users\jjgh8\Github\taskboard\.dev-flow\2026-10-07-batch-06\evidence\frames\C-2b-80x24.txt  (24 rows)
+=== 118 ===
+◆ CHAIN MAP · who waits on whom                                                 15 linked tasks · ▲2 late · ━ chain 4 
+─▌Website Redesign  4 linked · 2 open not linked ───────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Design homepage mockups ────▸ Build component library ──┬─▸ Optimize image assets   ──┬─▸ Launch new homepage       
+  ✓                             ▷ ready             ▲3d   │   ◂1                Oct 6   │   ◂2               Oct 10   
+                                                          ╰─────────────────────────────╯                             
+ ○ Fix checkout 500 error                                                                                         ▲2d 
+ ○ SEO redirects map                                                                                           Oct 14 
+─▌Mobile App  4 linked · ━ critical chain · 1 open not linked ──────────────────── dates  ○ stay  ● push  ○ together ─
+ ┃Audit dependencies      ━━━━▸┃Add push notifications  ━━━━▸┃Offline sync            ━━━━▸┃Beta release to testers   
+ ┃○                 Oct 2      ┃◂1               Oct 12      ┃◂1               Oct 28      ┃◂1                Nov 4   
+ ○ Crash reporting                                                                                              Oct 1 
+─▌API Platform  4 linked · 2 open not linked ───────────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Partner notice emails   ────▸ Deprecate v1 endpoints                                                                
+  ○                 Oct 3       ◂1                Oct 7                                                               
+                                                                                                                      
+  Rate limiting           ────▸ SDK regeneration                                                                      
+  ○                 Oct 4       ◂1                  ▲1d                                                               
+ ○ Write API reference                                                                                            ▲5d 
+ ○ Plan Q4 roadmap                                                                                                    
+─▌Data Warehouse  3 linked · 2 open not linked ───────────────────────── set here  dates  ○ stay  ○ push  ● together ─
+  Migrate user table      ────▸ Daily revenue model     ────▸ BI dashboard cut-over                                   
+  ✓                             ▷ ready          Oct 18       ◂1               Nov 29                                 
+ ○ Compress database backups                                                                                    Oct 9 
+ ○ Archive old logs                                                                                            Oct 30 
+                                                                                                                      
+                                                                                                                      
+ Add push notifications                                             x remove the › link · L link · ↵ open · ←→↑↓ move 
+ ◂ waits on  ›Audit dependencies (starts 1d early)                                                                    
+ ▸ unblocks   Offline sync (starts 2d early)                                                                          
+ ▌Mobile App · Push what it collides with (default): a move pushes waiting tasks by the overlap it adds · m change
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5760,16 +5760,15 @@
+         else ((_md(d), "mut") if d else ("", "mut"))
+     fg = HEX["bright"] if is_sel else (HEX["over"] if late else HEX["hd"])
+     bg = f" on {HEX['frame']}"
+     bold = "bold " if is_sel else ""
+-    title = clip(t.title, max(0, inner - vis(meta) - 2))
+-    gap = max(0, inner - vis(meta) - 2 - vis(title))
++    title = clip(t.title, max(0, inner - vis(meta) - 1))
+     cv.put(rr, x, " ", f"{bold}{fg}{bg}")
+     cv.put(rr, x + 1, "○", f"{HEX['bright'] if is_sel else 'mut'}{bg}")
+     cv.put(rr, x + 2, " " + title, f"{bold}{fg}{bg}")
+-    cv.put(rr, x + 3 + vis(title), " " * gap, f"{bold}{fg}{bg}")
+-    cv.put(rr, x + 3 + vis(title) + gap, meta, f"{HEX['bright'] if is_sel else HEX[meta_k]}{bg}")
+-    cv.put(rr, x + 3 + vis(title) + gap + vis(meta), " ", f"{bold}{fg}{bg}")
++    if meta:
++        cv.put(rr, x + 3 + vis(title), " " + meta,
++               f"{HEX['bright'] if is_sel else HEX[meta_k]}{bg}")
+     return is_sel
+ 
+ 
+ def render_chainmap(board, show_archived, selected_id, today=None,
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-06/evidence/gen_frames.py && echo "=== 118 ===" && cat .dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-118x30.txt && echo "=== 80 ===" && cat .dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-80x24.txt
+wrote C:\Users\jjgh8\Github\taskboard\.dev-flow\2026-10-07-batch-06\evidence\frames\C-2b-118x30.txt  (30 rows)
+wrote C:\Users\jjgh8\Github\taskboard\.dev-flow\2026-10-07-batch-06\evidence\frames\C-2b-80x24.txt  (24 rows)
+=== 118 ===
+◆ CHAIN MAP · who waits on whom                                                 15 linked tasks · ▲2 late · ━ chain 4 
+─▌Website Redesign  4 linked · 2 open not linked ───────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Design homepage mockups ────▸ Build component library ──┬─▸ Optimize image assets   ──┬─▸ Launch new homepage       
+  ✓                             ▷ ready             ▲3d   │   ◂1                Oct 6   │   ◂2               Oct 10   
+                                                          ╰─────────────────────────────╯                             
+ ○ Fix checkout 500 error ▲2d                                                                                         
+ ○ SEO redirects map Oct 14                                                                                           
+─▌Mobile App  4 linked · ━ critical chain · 1 open not linked ──────────────────── dates  ○ stay  ● push  ○ together ─
+ ┃Audit dependencies      ━━━━▸┃Add push notifications  ━━━━▸┃Offline sync            ━━━━▸┃Beta release to testers   
+ ┃○                 Oct 2      ┃◂1               Oct 12      ┃◂1               Oct 28      ┃◂1                Nov 4   
+ ○ Crash reporting Oct 1                                                                                              
+─▌API Platform  4 linked · 2 open not linked ───────────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Partner notice emails   ────▸ Deprecate v1 endpoints                                                                
+  ○                 Oct 3       ◂1                Oct 7                                                               
+                                                                                                                      
+  Rate limiting           ────▸ SDK regeneration                                                                      
+  ○                 Oct 4       ◂1                  ▲1d                                                               
+ ○ Write API reference ▲5d                                                                                            
+ ○ Plan Q4 roadmap                                                                                                    
+─▌Data Warehouse  3 linked · 2 open not linked ───────────────────────── set here  dates  ○ stay  ○ push  ● together ─
+  Migrate user table      ────▸ Daily revenue model     ────▸ BI dashboard cut-over                                   
+  ✓                             ▷ ready          Oct 18       ◂1               Nov 29                                 
+ ○ Compress database backups Oct 9                                                                                    
+ ○ Archive old logs Oct 30                                                                                            
+                                                                                                                      
+                                                                                                                      
+ Add push notifications                                             x remove the › link · L link · ↵ open · ←→↑↓ move 
+ ◂ waits on  ›Audit dependencies (starts 1d early)                                                                    
+ ▸ unblocks   Offline sync (starts 2d early)                                                                          
+ ▌Mobile App · Push what it collides with (default): a move pushes waiting tasks by the overlap it adds · m change    
+=== 80 ===
+◆ CHAIN MAP · who waits on whom           15 linked tasks · ▲2 late · ━ chain 4 
+─▌Website Redesign  4 linked · 2 open not linked ─────── ○stay ●push ○together ─
+  Design homepage ──▸ Build component ─┬▸ Optimize image  ─┬▸ Launch new        
+  ✓ mockups           ▷ library   ▲3d  │  ◂1 assets Oct 6  │  ◂2 homepage       
+                                       ╰───────────────────╯                    
+ ○ Fix checkout 500 error ▲2d                                                   
+ ○ SEO redirects map Oct 14                                                     
+─▌Mobile App  4 linked · ━ critical chain ────────────── ○stay ●push ○together ─
+ ┃Audit           ━━▸┃Add push        ━━▸┃Offline sync    ━━▸┃Beta release to   
+ ┃○ dependencies     ┃◂1 notificati…     ┃◂1       Oct 28    ┃◂1 testers        
+ ○ Crash reporting Oct 1                                                        
+─▌API Platform  4 linked · 2 open not linked ─────────── ○stay ●push ○together ─
+  Partner notice  ──▸ Deprecate v1                                              
+  ○ emails  Oct 3     ◂1 endpoints                                              
+                                                                                
+  Rate limiting   ──▸ SDK                                                       
+  ○         Oct 4     ◂1 regener… ▲1d                                           
+ ○ Write API reference ▲5d                                                      
+ ○ Plan Q4 roadmap                                                              
+                                                                                
+ Add push notifications                            x remove › · L link · ↵ open 
+ ◂ waits on  ›Audit dependenc… (starts 1d early)                                
+ ▸ unblocks   Offline sync (starts 2d early)                                    
+ ▌push: waiters move by the overlap this adds · m change for this chain
+[0m
+[0m← [0mEdit tests/test_chainmap.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+@@ -3,9 +3,11 @@
+ HLR-801 / LLR-801.1 · TC-801, TC-802, TC-803, TC-804, TC-807, TC-808.
+ 
+ The oracle is C-2b (round-7 verdict): the exact rows the shipped renderer must
+ paint, byte-faithful at 118x30 and 80x24, are
+-`.dev-flow/2026-10-07-batch-02/evidence/frames/C-2b-*.txt`. The fixture is the
++`.dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-*.txt` — amended under
++LED-2026-10-07-batch-06.1 (the `○` tiles); the sealed batch-02 frames stay
++history. The fixture is the
+ kg board (`tests/kg_board.py`), frozen on its own TODAY so `shifted` collapses
+ to the frames' fixed dates; the deviating band (Data Warehouse `together`) is
+ set IN-TEST — the frames carry it, the base board does not.
+ 
+
+[0m
+[0m← [0mEdit tests/test_chainmap.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+@@ -26,9 +26,9 @@
+ from taskboard import views
+ from taskboard.models import Task
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+-FRAMES = ROOT / ".dev-flow" / "2026-10-07-batch-02" / "evidence" / "frames"
++FRAMES = ROOT / ".dev-flow" / "2026-10-07-batch-06" / "evidence" / "frames"
+ 
+ 
+ def _frame(name: str) -> list[str]:
+     """The oracle rows, universal-newline split (the frames ship CRLF)."""
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py -q 2>&1 | tail -40
+# (1) the partial band: Data Warehouse's base chain + 4 added chains = 5
+        # lanes, which no longer fit at 80x24 -- it draws the base chain (its FIRST
+        # chain) and names the rest `+4 more ↓`. The drawn tiles reach the line_map;
+        # the folded chains never do.
+        b = kg_board.build(tmp_path / "board.json")
+        add_chains(b, "pdwh", 4)
+        line_map: dict = {}
+        text = render_chainmap(b, False, None, today, 80, 24, line_map).plain
+>       assert "Data Warehouse" in text, text
+E       AssertionError: ◆ CHAIN MAP · who waits on whom           23 linked tasks · ▲2 late · ━ chain 4 
+E         ─▌Website Redesign  4 linked · 2 open not linked ─────── ○stay ●push ○together ─
+E           Design homepage ──▸ Build component ─┬▸ Optimize image  ─┬▸ Launch new        
+E           ✓ mockups           ▷ library   ▲3d  │  ◂1 assets Oct 6  │  ◂2 homepage       
+E                                                ╰───────────────────╯                    
+E          ○ Fix checkout 500 error ▲2d                                                   
+E          ○ SEO redirects map Oct 14                                                     
+E         ─▌Mobile App  4 linked · ━ critical chain ────────────── ○stay ●push ○together ─
+E          ┃Audit           ━━▸┃Add push        ━━▸┃Offline sync    ━━▸┃Beta release to   
+E          ┃○ dependencies     ┃◂1 notificati…     ┃◂1       Oct 28    ┃◂1 testers        
+E          ○ Crash reporting Oct 1                                                        
+E         ─▌API Platform  4 linked · 2 open not linked ─────────── ○stay ●push ○together ─
+E           Partner notice  ──▸ Deprecate v1                                              
+E           ○ emails  Oct 3     ◂1 endpoints                                              
+E                                                                                         
+E           Rate limiting   ──▸ SDK                                                       
+E           ○         Oct 4     ◂1 regener… ▲1d                                           
+E          ○ Write API reference ▲5d                                                      
+E          ○ Plan Q4 roadmap                                                              
+E                                                                                         
+E          Design homepage mocku…                            x remove › · L link · ↵ open 
+E          ◂ waits on  nothing yet                                                        
+E          ▸ unblocks   Build component… (starts 5d early)                                
+E          ▌push: waiters move by the overlap this adds · m change for this chain         
+E       assert 'Data Warehouse' in '◆ CHAIN MAP · who waits on whom           23 linked tasks · ▲2 late · ━ chain 4 \n─▌Website Redesign  4 linked · 2 op...rly)                                \n ▌push: waiters move by the overlap this adds · m change for this chain         '
+
+tests\test_chainmap.py:215: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_chainmap.py::test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole
+1 failed, 7 passed in 0.84s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import timedelta
+import kg_board
+from taskboard import views
+from taskboard.models import Task
+
+today = kg_board.TODAY
+
+def add_chains(b, pid, n):
+    for k in range(n):
+        a = Task(f'Head {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today + timedelta(days=k)).isoformat(),
+                 due_date=(today + timedelta(days=k + 1)).isoformat(), id=f'h{pid}{k}')
+        z = Task(f'Tail {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today + timedelta(days=k + 2)).isoformat(),
+                 due_date=(today + timedelta(days=k + 3)).isoformat(),
+                 depends_on=[f'h{pid}{k}'], id=f't{pid}{k}')
+        b.tasks += [a, z]
+
+# Part 2 scenario: 5 chains on pweb
+b2 = kg_board.build('b2.json')
+add_chains(b2, 'pweb', 5)
+lm2 = {}
+text2 = views.render_chainmap(b2, False, None, today, 80, 24, lm2).plain
+print('=== PART2: pweb + 5 chains, 80x24 ===')
+print(text2)
+print('Mobile App in text:', 'Mobile App' in text2)
+print('tm2..tm5 in lm2:', [tid for tid in ('tm2','tm3','tm4','tm5') if tid in lm2])
+print('lm2 keys:', sorted(lm2.keys()))
+"
+=== PART2: pweb + 5 chains, 80x24 ===
+◆ CHAIN MAP · who waits on whom           25 linked tasks · ▲2 late · ━ chain 4 
+─▌Website Redesign  14 linked · 2 open not linked ────── ○stay ●push ○together ─
+  Design homepage ──▸ Build component ─┬▸ Optimize image  ─┬▸ Launch new        
+  ✓ mockups           ▷ library   ▲3d  │  ◂1 assets Oct 6  │  ◂2 homepage       
+                                       │                   │                    
+  Head pweb 0     ──▸ Tail pweb 0      │                   │                    
+  ○         Oct 1     ◂1        Oct 3  │                   │                    
+                                       │                   │                    
+  Head pweb 1     ──▸ Tail pweb 1      │                   │                    
+  ○         Oct 2     ◂1        Oct 4  │                   │                    
+                                       │                   │                    
+  Head pweb 2     ──▸ Tail pweb 2      │                   │                    
+  ○         Oct 3     ◂1        Oct 5  │                   │                    
+                                       │                   │                    
+  Head pweb 3     ──▸ Tail pweb 3      │                   │                    
+  ○         Oct 4     ◂1        Oct 6  │                   │                    
+                                       ╰───────────────────╯                    
+ ○ Fix checkout 500 error ▲2d                                                   
+ ○ SEO redirects map Oct 14                                                     
++1 more ↓                                                                       
+ Design homepage mocku…                            x remove › · L link · ↵ open 
+ ◂ waits on  nothing yet                                                        
+ ▸ unblocks   Build component… (starts 5d early)                                
+ ▌push: waiters move by the overlap this adds · m change for this chain         
+Mobile App in text: False
+tm2..tm5 in lm2: []
+lm2 keys: ['hpweb0', 'hpweb1', 'hpweb2', 'hpweb3', 'tpweb0', 'tpweb1', 'tpweb2', 'tpweb3', 'tw1', 'tw2', 'tw3', 'tw4', 'tw5', 'tw6']
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import timedelta
+import kg_board
+from taskboard import views
+from taskboard.models import Task
+
+today = kg_board.TODAY
+
+def add_chains(b, pid, n):
+    for k in range(n):
+        a = Task(f'Head {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today + timedelta(days=k)).isoformat(),
+                 due_date=(today + timedelta(days=k + 1)).isoformat(), id=f'h{pid}{k}')
+        z = Task(f'Tail {pid} {k}', phase='Next', project_id=pid,
+                 start_date=(today + timedelta(days=k + 2)).isoformat(),
+                 due_date=(today + timedelta(days=k + 3)).isoformat(),
+                 depends_on=[f'h{pid}{k}'], id=f't{pid}{k}')
+        b.tasks += [a, z]
+
+# single-project board: only pdwh
+b = kg_board.build('b.json')
+b.projects = [p for p in b.projects if p.id == 'pdwh']
+b.tasks = [t for t in b.tasks if t.project_id == 'pdwh']
+add_chains(b, 'pdwh', 6)   # base (1) + 6 = 7 chains, + 2 tiles (td2, td3)
+lm = {}
+text = views.render_chainmap(b, False, None, today, 80, 24, lm).plain
+print(text)
+print('lm keys:', sorted(lm.keys()))
+"
+◆ CHAIN MAP · who waits on whom           15 linked tasks · ▲0 late · ━ chain 2 
+─▌Data Warehouse  15 linked · ━ critical chain ───────── ○stay ●push ○together ─
+  Migrate user table     ──▸ Daily revenue model    ──▸ BI dashboard cut-over   
+  ✓                          ▷               Oct 18     ◂1              Nov 29  
+                                                                                
+ ┃Head pdwh 0            ━━▸┃Tail pdwh 0                                        
+ ┃○                Oct 1    ┃◂1               Oct 3                             
+                                                                                
+  Head pdwh 1            ──▸ Tail pdwh 1                                        
+  ○                Oct 2     ◂1               Oct 4                             
+                                                                                
+  Head pdwh 2            ──▸ Tail pdwh 2                                        
+  ○                Oct 3     ◂1               Oct 5                             
+                                                                                
+  Head pdwh 3            ──▸ Tail pdwh 3                                        
+  ○                Oct 4     ◂1               Oct 6                             
+                                                                                
+  Head pdwh 4            ──▸ Tail pdwh 4                                        
+  ○                Oct 5     ◂1               Oct 7                             
++3 more ↓                                                                       
+ Migrate user table                                x remove › · L link · ↵ open 
+ ◂ waits on  nothing yet                                                        
+ ▸ unblocks   Daily revenue m…                                                  
+ ▌push: waiters move by the overlap this adds · m change for this chain         
+lm keys: ['hpdwh0', 'hpdwh1', 'hpdwh2', 'hpdwh3', 'hpdwh4', 'td1', 'td4', 'td5', 'tpdwh0', 'tpdwh1', 'tpdwh2', 'tpdwh3', 'tpdwh4']
+[0m
+[0m← [0mEdit tests/test_chainmap.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+@@ -184,13 +184,13 @@
+     assert "chain 25" in text                        # and its length is named
+ 
+ 
+ def test_TC_810_the_fold_caps_a_partial_band_and_still_drops_whole(tmp_path):
+-    """TC-810 (code review CM-2, HIGH, amended by LED .1): a band that no longer
+-    fits whole draws its fitting chains + one `+N more ↓` tail (N exact -- the
+-    band's chains minus the drawn ones) and only the drawn tiles reach the
+-    line_map; a band whose FIRST chain does not fit still drops whole (head and
+-    canvas together)."""
++    """TC-810 (code review CM-2, HIGH, amended by LED-2026-10-07-batch-06.1): a
++    band that no longer fits whole draws its fitting chains + `○` tiles + one
++    `+N more ↓` tail (N exact -- the band's chains AND tiles minus the drawn
++    ones) and only the drawn rows reach the line_map; a band whose FIRST row
++    does not fit still drops whole (head and canvas together)."""
+     from taskboard.views import render_chainmap
+     today = kg_board.TODAY
+ 
+     def add_chains(b, pid, n):
+@@ -203,22 +203,24 @@
+                      due_date=(today + timedelta(days=k + 3)).isoformat(),
+                      depends_on=[f"h{pid}{k}"], id=f"t{pid}{k}")
+             b.tasks += [a, z]
+ 
+-    # (1) the partial band: Data Warehouse's base chain + 4 added chains = 5
+-    # lanes, which no longer fit at 80x24 -- it draws the base chain (its FIRST
+-    # chain) and names the rest `+4 more ↓`. The drawn tiles reach the line_map;
+-    # the folded chains never do.
++    # (1) the partial band: Data Warehouse alone -- its base chain + 6 added
++    # chains + its 2 open `○` tiles (td2, td3) no longer fit at 80x24. It draws
++    # the fitting chains and names the rest `+3 more ↓` (1 chain + 2 tiles); the
++    # folded chains and tiles never reach the line_map.
+     b = kg_board.build(tmp_path / "board.json")
+-    add_chains(b, "pdwh", 4)
++    b.projects = [p for p in b.projects if p.id == "pdwh"]
++    b.tasks = [t for t in b.tasks if t.project_id == "pdwh"]
++    add_chains(b, "pdwh", 6)
+     line_map: dict = {}
+     text = render_chainmap(b, False, None, today, 80, 24, line_map).plain
+     assert "Data Warehouse" in text, text
+-    assert "+4 more ↓" in text, text
++    assert "+3 more ↓" in text, text
+     for tid in ("td1", "td4", "td5"):
+         assert tid in line_map, (tid, line_map)
+-    for k in range(4):
+-        assert f"hpdwh{k}" not in line_map and f"tpdwh{k}" not in line_map, line_map
++    for tid in ("td2", "td3", "hpdwh5", "tpdwh5"):
++        assert tid not in line_map, (tid, line_map)
+ 
+     # (2) the zero-fit band: 5 chains on Website Redesign (the FIRST project)
+     # spend the whole body, so Mobile App's first chain no longer fits and the
+     # band drops whole -- head AND canvas gone, no tile in the line_map.
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........                                                                 [100%]
+8 passed in 0.29s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap_app.py -q 2>&1 | tail -40
+│ │              '#5b6675'), Span(958, 959, '#51731a'), Span(961, 978,       │ 
+│ │              '#c9d4e0 on #334154'), Span(978, 981, '#f43f5e'), Span(981, │ 
+│ │              998, '#c9d4e0 on #334154'), Span(1041, 1042, '#c9d4e0 on    │ 
+│ │              #334154'), Span(1042, 1043, '#8b98a5 on #334154'),          │ 
+│ │              Span(1043, 1052, '#c9d4e0 on #334154'), Span(1052, 1058,    │ 
+│ │              '#8b98a5 on #334154'), Span(1061, 1062, '#c9d4e0 on         │ 
+│ │              #334154'), Span(1062, 1064, '#f43f5e on #334154'),          │ 
+│ │              Span(1064, 1077, '#c9d4e0 on #334154'), Span(1077, 1078,    │ 
+│ │              '#8b98a5 on #334154'), Span(1201, 1218, '#c9d4e0 on         │ 
+│ │              #334154'), Span(1218, 1221, '#f43f5e'), Span(1221, 1238,    │ 
+│ │              '#f43f5e on #334154'), Span(1281, 1282, '#c9d4e0 on         │ 
+│ │              #334154'), Span(1282, 1283, '#8b98a5 on #334154'),          │ 
+│ │              Span(1283, 1292, '#c9d4e0 on #334154'), Span(1292, 1298,    │ 
+│ │              '#8b98a5 on #334154'), Span(1301, 1318, '#f43f5e on         │ 
+│ │              #334154'), Span(1360, 1369, '#8b98a5'), Span(1440, 1463,    │ 
+│ │              'bold #e6edf7'), Span(1490, 1491, 'bold #e6edf7'),          │ 
+│ │              Span(1492, 1500, '#8b98a5'), Span(1500, 1503, '#5b6675'),   │ 
+│ │              Span(1503, 1504, 'bold #e6edf7'), Span(1505, 1509,          │ 
+│ │              '#8b98a5'), Span(1509, 1512, '#5b6675'), Span(1512, 1513,   │ 
+│ │              'bold #e6edf7'), Span(1514, 1518, '#8b98a5'), Span(1520,    │ 
+│ │              1533, '#8b98a5'), Span(1533, 1544, '#5b6675'), Span(1600,   │ 
+│ │              1613, '#8b98a5'), Span(1614, 1648, '#f43f5e'), Span(1680,   │ 
+│ │              1682, '#a78bfa'), Span(1682, 1686, 'bold #e6edf7'),         │ 
+│ │              Span(1686, 1688, '#5b6675'), Span(1688, 1725, '#e6edf3'),   │ 
+│ │              Span(1725, 1728, '#5b6675'), Span(1728, 1729, 'bold         │ 
+│ │              #e6edf7'), Span(1730, 1751, '#8b98a5')] ''>                 │ 
+│ ╰──────────────────────────────────────────────────────────────────────────╯ 
+│                                                                              
+│ C:\Users\jjgh8\anaconda3\Lib\site-packages\rich\console.py:1496 in get_style 
+╰──────────────────────────────────────────────────────────────────────────────
+MissingStyle: Failed to get style 'mut on #334154'; unable to parse 'mut' as 
+color; 'mut' is not a valid color
+
+NOTE: 1 of 2 errors shown. Run with textual run --dev to see all errors.
+=========================== short test summary info ===========================
+FAILED tests/test_chainmap_app.py::test_AT_801_key_6_paints_the_chain_map_and_x_unlinks
+FAILED tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it
+FAILED tests/test_chainmap_app.py::test_AT_801b_L_opens_the_shipped_picker_on_the_chain_map
+FAILED tests/test_chainmap_app.py::test_AT_801c_a_resize_heals_the_selection_in_one_refresh
+4 failed, 1 passed in 6.60s
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5762,9 +5762,9 @@
+ bg = f" on {HEX['frame']}"
+ bold = "bold " if is_sel else ""
+ title = clip(t.title, max(0, inner - vis(meta) - 1))
+ cv.put(rr, x, " ", f"{bold}{fg}{bg}")
+-cv.put(rr, x + 1, "○", f"{HEX['bright'] if is_sel else 'mut'}{bg}")
++cv.put(rr, x + 1, "○", f"{HEX['bright'] if is_sel else HEX['mut']}{bg}")
+ cv.put(rr, x + 2, " " + title, f"{bold}{fg}{bg}")
+ if meta:
+     cv.put(rr, x + 3 + vis(title), " " + meta,
+            f"{HEX['bright'] if is_sel else HEX[meta_k]}{bg}")
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -30
+path = tmp_path / "board.json"
+        b = kg_board.build(path)
+        today = kg_board.TODAY
+        for k in range(4):
+            a = Task(f"Head pdwh {k}", phase="Next", project_id="pdwh",
+                     start_date=(today + timedelta(days=k)).isoformat(),
+                     due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"hpdwh{k}")
+            z = Task(f"Tail pdwh {k}", phase="Next", project_id="pdwh",
+                     start_date=(today + timedelta(days=k + 2)).isoformat(),
+                     due_date=(today + timedelta(days=k + 3)).isoformat(),
+                     depends_on=[f"hpdwh{k}"], id=f"tpdwh{k}")
+            b.tasks += [a, z]
+        b.save()
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(80, 24), notifications=True) as pilot:
+            await pilot.press("6")
+            await pilot.pause()
+            app.selected_task_id = "td4"        # the Data Warehouse base chain, drawn at 80x24
+            app.refresh_view()
+            await pilot.pause()
+>           assert "td4" in app._line_map, app._line_map
+E           AssertionError: {'ta2': 12, 'ta3': 12, 'ta4': 15, 'ta6': 15, ...}
+E           assert 'td4' in {'ta2': 12, 'ta3': 12, 'ta4': 15, 'ta6': 15, ...}
+E            +  where {'ta2': 12, 'ta3': 12, 'ta4': 15, 'ta6': 15, ...} = TaskboardApp(title='taskboard', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'})._line_map
+
+tests\test_chainmap_app.py:343: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it
+FAILED tests/test_chainmap_app.py::test_AT_801c_a_resize_heals_the_selection_in_one_refresh
+2 failed, 11 passed in 3.23s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it -q 2>&1 | grep -A 40 "def test_AT_802\|AssertionError\|assert" | head -80
+async def test_AT_802_the_rule_switch_cycles_and_bumps_follow_it(tmp_path):
+        """AT-802 (LLR-802.1): the band shows `● push` by default; `m` on the chain
+        map cycles Data Warehouse push→together→stay→push writing the STORED string
+        (`push_delta`/`together`/`flag`) and marking `set here` while it deviates;
+        under `together` a `+` bump on td4 moves td0 and td5 keeping their gaps;
+        under `stay` the same bump moves nothing else."""
+        path, _b = _milestones(tmp_path)
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+            await pilot.press("6")
+            await pilot.pause()
+            app.selected_task_id = "td4"
+            app.refresh_view()
+            await pilot.pause()
+    
+>           band = _band(_painted(app), "Data Warehouse")
+
+tests\test_chainmap_app.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rows = ['◆ CHAIN MAP · who waits on whom                                                 17 linked tasks · ▲2 late · ━ chain ...                      ╰─▸ Mockups approved          │                             │                             ', ...]
+name = 'Data Warehouse'
+
+    def _band(rows: list[str], name: str) -> str:
+>       return next(r for r in rows if f"─▌{name}" in r)
+E       StopIteration
+
+tests\test_chainmap_app.py:57: StopIteration
+
+The above exception was the direct cause of the following exception:
+
+self = <Coroutine test_AT_802_the_rule_switch_cycles_and_bumps_follow_it>
+
+    def runtest(self) -> None:
+        self.obj = wrap_in_sync(
+            # https://github.com/pytest-dev/pytest-asyncio/issues/596
+            self.obj,  # type: ignore[has-type]
+        )
+>       super().runtest()
+
+..\..\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:533:
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date, timedelta
+import kg_board
+from taskboard import views
+from taskboard.models import Task
+
+today = kg_board.TODAY
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+views.date = _Today
+import taskboard.models as models
+models.date = _Today
+kg_board.date = _Today
+
+# milestones board
+b = kg_board.milestones(kg_board.shifted('ms.json'), kg_board.TODAY)
+lm = {}
+t = views.render_chainmap(b, False, 'td4', kg_board.TODAY, width=118, height=30, line_map=lm)
+print('=== milestones 118x30, sel td4 ===')
+print(t.plain)
+print('td4 in lm:', 'td4' in lm)
+print('bands drawn:', [r.split(chr(32))[0] for r in t.plain.split(chr(10)) if '─▌' in r])
+"
+=== milestones 118x30, sel td4 ===
+◆ CHAIN MAP · who waits on whom                                                 17 linked tasks · ▲2 late · ━ chain 4 
+─▌Website Redesign  5 linked · 2 open not linked ───────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Design homepage mockups ──┬─▸ Build component library ──┬─▸ Optimize image assets   ──┬─▸ Launch new homepage       
+  ✓                         │   ▷ ready             ▲3d   │   ◂1                Oct 6   │   ◂2               Oct 10   
+                            │                             │                             │                             
+                            ╰─▸ Mockups approved          │                             │                             
+                                ✓                         │                             │                             
+                                                          ╰─────────────────────────────╯                             
+ ○ Fix checkout 500 error ▲2d                                                                                         
+ ○ SEO redirects map Oct 14                                                                                           
+─▌Mobile App  4 linked · ━ critical chain · 1 open not linked ──────────────────── dates  ○ stay  ● push  ○ together ─
+ ┃Audit dependencies      ━━━━▸┃Add push notifications  ━━━━▸┃Offline sync            ━━━━▸┃Beta release to testers   
+ ┃○                 Oct 2      ┃◂1               Oct 12      ┃◂1               Oct 28      ┃◂1                Nov 4   
+ ○ Crash reporting Oct 1                                                                                              
+─▌API Platform  4 linked · 2 open not linked ───────────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Partner notice emails   ────▸ Deprecate v1 endpoints                                                                
+  ○                 Oct 3       ◂1                Oct 7                                                               
+                                                                                                                      
+  Rate limiting           ────▸ SDK regeneration                                                                      
+  ○                 Oct 4       ◂1                  ▲1d                                                               
+ ○ Write API reference ▲5d                                                                                            
+ ○ Plan Q4 roadmap                                                                                                    
+─▌Data Warehouse  4 linked · 2 open not linked ─────────────────────────────────── dates  ○ stay  ● push  ○ together ─
+  Migrate user table      ────▸ Daily revenue model     ────▸ Revenue model signed    ────▸ BI dashboard cut-over     
+  ✓                             ▷ ready          Oct 18       ◂1 off           Oct 18       ◂1               Nov 29   
++2 more ↓                                                                                                             
+ Daily revenue model                                                x remove the › link · L link · ↵ open · ←→↑↓ move 
+ ◂ waits on  ›Migrate user table ✓                                                                                    
+ ▸ unblocks   Revenue model signed off                                                                                
+ ▌Data Warehouse · Push what it collides with (default): a move pushes waiting tasks by the overlap it adds · m change
+td4 in lm: True
+bands drawn: ['─▌Website', '─▌Mobile', '─▌API', '─▌Data']
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date, timedelta
+import kg_board
+from taskboard import views
+from taskboard import models
+
+today = kg_board.TODAY
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+
+# replicate the test frozen fixture + _milestones
+views.date = _Today
+models.date = _Today
+kg_board.date = _Today
+
+RENUMBER = 'seen_view_renumber_2026_07'
+path = 'ms.json'
+b = kg_board.milestones(kg_board.shifted(path), date.today())  # date.today() is REAL
+b.settings[RENUMBER] = True
+b.save()
+
+lm = {}
+t = views.render_chainmap(b, False, 'td4', kg_board.TODAY, width=118, height=30, line_map=lm)
+rows = t.plain.split(chr(10))
+print('Data Warehouse drawn:', any('─▌Data Warehouse' in r for r in rows))
+print('bands:', [r.split(chr(32))[0] for r in rows if '─▌' in r])
+print('td4 in lm:', 'td4' in lm)
+"
+Data Warehouse drawn: True
+bands: ['─▌Website', '─▌Mobile', '─▌API', '─▌Data']
+td4 in lm: True
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it -q 2>&1 | grep -B2 -A6 "StopIteration\|assert.*Data\|Data Warehouse" | head -60
+async def test_AT_802_the_rule_switch_cycles_and_bumps_follow_it(tmp_path):
+        """AT-802 (LLR-802.1): the band shows `● push` by default; `m` on the chain
+        map cycles Data Warehouse push→together→stay→push writing the STORED string
+        (`push_delta`/`together`/`flag`) and marking `set here` while it deviates;
+        under `together` a `+` bump on td4 moves td0 and td5 keeping their gaps;
+        under `stay` the same bump moves nothing else."""
+        path, _b = _milestones(tmp_path)
+        app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+        async with app.run_test(size=(118, 30), notifications=True) as pilot:
+--
+            await pilot.pause()
+    
+>           band = _band(_painted(app), "Data Warehouse")
+
+tests\test_chainmap_app.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rows = ['◆ CHAIN MAP · who waits on whom                                                 17 linked tasks · ▲2 late · ━ chain ...                      ╰─▸ Mockups approved          │                             │                             ', ...]
+name = 'Data Warehouse'
+
+    def _band(rows: list[str], name: str) -> str:
+>       return next(r for r in rows if f"─▌{name}" in r)
+E       StopIteration
+
+tests\test_chainmap_app.py:57: StopIteration
+
+The above exception was the direct cause of the following exception:
+
+self = <Coroutine test_AT_802_the_rule_switch_cycles_and_bumps_follow_it>
+
+    def runtest(self) -> None:
+--
+
+self = <ProactorEventLoop running=False closed=False debug=False>
+future = <Task finished name='Task-1' coro=<test_AT_802_the_rule_switch_cycles_and_bumps_follow_it() done, defined at C:\Users\jjgh8\Github\taskboard\tests\test_chainmap_app.py:162> exception=RuntimeError('coroutine raised StopIteration')>
+
+    def run_until_complete(self, future):
+        """Run until the Future is done.
+    
+        If the argument is a coroutine, it is wrapped in a Task.
+    
+--
+    
+>       return future.result()
+E       RuntimeError: coroutine raised StopIteration
+
+..\..\anaconda3\Lib\asyncio\base_events.py:687: RuntimeError
+=========================== short test summary info ===========================
+FAILED tests/test_chainmap_app.py::test_AT_802_the_rule_switch_cycles_and_bumps_follow_it
+1 failed in 0.49s
+[0m
+[0m$ [0mgrep -n "def render_view\|render_chainmap\|def refresh_view\|_line_map\|#board\|def _view_board" taskboard/views.py taskboard/app.py | head -40
+taskboard/views.py:5774:def render_chainmap(board, show_archived, selected_id, today=None,
+taskboard/views.py:6329:    "chainmap": render_chainmap,
+taskboard/views.py:6333:def render_view(mode, board, show_archived, selected_id, today=None,
+taskboard/app.py:625:        boards = self.query("#board")
+taskboard/app.py:631:        self._line_map = {}
+taskboard/app.py:634:                              line_map=self._line_map,
+taskboard/app.py:666:            boards, vps = self.query("#board"), self.query("#viewport")
+taskboard/app.py:747:        boards = self.query("#board")
+taskboard/app.py:776:            drawn = set(getattr(self, "_line_map", {}))
+taskboard/app.py:1477:    def _view_board(self) -> Board:
+taskboard/app.py:1494:    def refresh_view(self) -> None:
+taskboard/app.py:1498:        boards = self.query("#board")
+taskboard/app.py:1505:        self._line_map: dict[str, int] = {}
+taskboard/app.py:1508:                              line_map=self._line_map,
+taskboard/app.py:1528:        against the freshly-drawn `_line_map`. A selection the new frame does
+taskboard/app.py:1536:        if self.selected_task_id in self._line_map:
+taskboard/app.py:1538:        if not self._line_map:
+taskboard/app.py:1541:            self.selected_task_id = min(self._line_map, key=self._line_map.get)
+taskboard/app.py:1556:        idx = getattr(self, "_line_map", {}).get(self.selected_task_id)
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=70, offset=1494][0m
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import asyncio, sys
+sys.path.insert(0, 'tests')
+from datetime import date
+import kg_board
+from taskboard import app as app_mod
+from taskboard.app import TaskboardApp
+from taskboard import views, models
+
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+views.date = _Today; models.date = _Today; app_mod.date = _Today; kg_board.date = _Today
+
+RENUMBER='seen_view_renumber_2026_07'
+path='ms.json'
+b = kg_board.milestones(kg_board.shifted(path), date.today())
+b.settings[RENUMBER]=True
+b.save()
+
+async def main():
+    app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press('6')
+        await pilot.pause()
+        app.selected_task_id='td4'
+        app.refresh_view()
+        await pilot.pause()
+        vp = app.query_one('#viewport')
+        print('viewport size:', vp.size)
+        print('line_map keys:', sorted(app._line_map.keys()))
+        print('td4 in lm:', 'td4' in app._line_map)
+        rows = str(app.query_one('#board').render()).split(chr(10))
+        print('bands:', [r.split(chr(32))[0] for r in rows if '─▌' in r])
+asyncio.run(main())
+"
+viewport size: Size(width=118, height=28)
+line_map keys: ['ta1', 'td2', 'tm6', 'to1', 'tw2']
+td4 in lm: False
+bands: []
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import asyncio, sys
+sys.path.insert(0, 'tests')
+from datetime import date
+import kg_board
+from taskboard import app as app_mod
+from taskboard.app import TaskboardApp
+from taskboard import views, models
+
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+views.date = _Today; models.date = _Today; app_mod.date = _Today; kg_board.date = _Today
+
+RENUMBER='seen_view_renumber_2026_07'
+path='ms.json'
+b = kg_board.milestones(kg_board.shifted(path), date.today())
+b.settings[RENUMBER]=True
+b.save()
+
+async def main():
+    app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+    async with app.run_test(size=(118,30), notifications=True) as pilot:
+        await pilot.press('6')
+        await pilot.pause()
+        app.selected_task_id='td4'
+        app.refresh_view()
+        await pilot.pause()
+        print(str(app.query_one('#board').render()))
+asyncio.run(main())
+"
+◆ TASKBOARD · grid 2×3                                                                                27 open · 6 due 
+   ▐ API Platform                                       6 │   ▐ Website Redesign                                   5  
+█│ ▒░░▓··········╎········································│█│ ▒░░▓▒▓░▓······╎········································ 
+█│     ▄       ▄        ▄     ▄     ▄                     │█│         ▄ ▄              ▄              ▄     ▄         
+█▪                      Sep 25 ▲5d ·6                     │█│                      Sep 27 ▲3d ·5                      
+█▪ -7d                                                +21d│█│ -7d                                                +21d 
+ ╎ ▊ Write API reference                           Sep 25 │█▪ ▊ Build component library                       Sep 27  
+ ▪ +5 more                                                │ ╎ +4 more                                                 
+ │ 0/6 done                                               │ ▪ 2/7 done                                                
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   ▐ Ops & Security                                     6 │   ▐ Mobile App                                         5  
+█│ ▒░░▓▒▓░▓▓▓▒░··╎········································│█│ ▒░░▓▒▓░▓▓▓▒░░▓╎▓······································· 
+█│             ▄ ▄    ▄   ▄                            ▄  │█│                ▄ ▄                   ▄                  
+█│                      Sep 29 ▲1d ·6                     │█▪                        Oct 1 ·5                         
+█│ -7d                                                +21d│ ╎ -7d                                              +21d ▸ 
+█│ ▊ Renew TLS certificate                       ! Sep 29 │ ▪ ▊ Crash reporting                                Oct 1  
+█▪ +5 more                                                │ ▪ +4 more                                                 
+ ╎ 0/6 done                                               │ ▪ 1/6 done                                                
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   ▐ Data Warehouse                                     5 │                                                           
+█│ ▒░░▓▒▓░▓▓▓▒░░▓╎▓▒▓▒▒▓▓░▒░▓▓░▓▓░························│                                                           
+ ╎                                ▄                ▄      │                                                           
+ ▪                        Oct 9 ·5                        │                                                           
+ ▪ -7d                                              +21d ▸│                                                           
+ ▪ ▊ Compress database backups                      Oct 9 │                                                           
+ ▪ +4 more                                                │                                                           
+ ▪ 1/6 done                                               │
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date
+import kg_board
+from taskboard import views
+from taskboard import models
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+views.date = _Today; models.date = _Today; kg_board.date = _Today
+RENUMBER='seen_view_renumber_2026_07'
+b = kg_board.milestones(kg_board.shifted('ms.json'), date.today())
+b.settings[RENUMBER]=True
+b.save()
+for h in (28, 30):
+    lm={}
+    t = views.render_chainmap(b, False, 'td4', kg_board.TODAY, width=118, height=h, line_map=lm)
+    rows = t.plain.split(chr(10))
+    print(f'=== height {h} (body_h={h-5}) ===')
+    print('bands:', [r.split(chr(32))[0] for r in rows if '─▌' in r])
+    print('td4 in lm:', 'td4' in lm)
+"
+=== height 28 (body_h=23) ===
+bands: ['─▌Website', '─▌Mobile', '─▌API']
+td4 in lm: False
+=== height 30 (body_h=25) ===
+bands: ['─▌Website', '─▌Mobile', '─▌API', '─▌Data']
+td4 in lm: True
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import asyncio, sys
+sys.path.insert(0, 'tests')
+from datetime import date
+import kg_board
+from taskboard import app as app_mod
+from taskboard.app import TaskboardApp
+from taskboard import views, models
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+views.date = _Today; models.date = _Today; app_mod.date = _Today; kg_board.date = _Today
+
+path='b.json'
+b = kg_board.build(path)  # base, no together
+b.save()
+
+async def main():
+    app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+    async with app.run_test(size=(80,24), notifications=True) as pilot:
+        await pilot.press('6')
+        await pilot.pause()
+        vp = app.query_one('#viewport')
+        print('size(80,24) viewport:', vp.size)
+        for sel in ('ta4','td4','tm2'):
+            app.selected_task_id = sel
+            app.refresh_view()
+            await pilot.pause()
+            print(f'  sel {sel}: in lm =', sel in app._line_map)
+        await pilot.resize_terminal(80, 18)
+        await pilot.pause()
+        vp = app.query_one('#viewport')
+        print('size(80,18) viewport:', vp.size)
+        for sel in ('ta4','td4','tm2'):
+            app.selected_task_id = sel
+            app.refresh_view()
+            await pilot.pause()
+            print(f'  sel {sel}: in lm =', sel in app._line_map)
+asyncio.run(main())
+"
+size(80,24) viewport: Size(width=80, height=22)
+  sel ta4: in lm = False
+  sel td4: in lm = False
+  sel tm2: in lm = False
+size(80,18) viewport: Size(width=80, height=16)
+  sel ta4: in lm = False
+  sel td4: in lm = False
+  sel tm2: in lm = False
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import asyncio, sys
+sys.path.insert(0, 'tests')
+from datetime import date
+import kg_board
+from taskboard import app as app_mod
+from taskboard.app import TaskboardApp
+from taskboard import views, models
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+views.date = _Today; models.date = _Today; app_mod.date = _Today; kg_board.date = _Today
+
+b = kg_board.build('b.json')
+b.save()
+
+async def main():
+    app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+    async with app.run_test(size=(80,24), notifications=True) as pilot:
+        await pilot.press('6')
+        await pilot.pause()
+        app.selected_task_id='tm2'
+        app.refresh_view()
+        await pilot.pause()
+        print('lm:', sorted(app._line_map.keys()))
+        rows = str(app.query_one('#board').render()).split(chr(10))
+        for r in rows:
+            if '─▌' in r or 'more' in r: print(repr(r))
+asyncio.run(main())
+"
+lm: []
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import asyncio, sys
+sys.path.insert(0, 'tests')
+from datetime import date
+import kg_board
+from taskboard import app as app_mod
+from taskboard.app import TaskboardApp
+from taskboard import views, models
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+views.date = _Today; models.date = _Today; app_mod.date = _Today; kg_board.date = _Today
+
+b = kg_board.build('b.json')
+b.save()
+
+async def main():
+    app = TaskboardApp(board_path=str(b.path), team_sync_interval=1e9)
+    async with app.run_test(size=(80,24), notifications=True) as pilot:
+        await pilot.press('6')
+        await pilot.pause()
+        app.selected_task_id='tm2'
+        app.refresh_view()
+        await pilot.pause()
+        print(str(app.query_one('#board').render()))
+asyncio.run(main())
+"
+◆ TASKBOARD · grid 2×3                                          25 open · 6 due 
+   ▐ API Platform                    6 │   ▐ Website Redesign                5  
+█│ ▒░░······╎··························│█│ ▒░░▓▒▓···╎·························· 
+█▪   ▄     ▄   ▄ ▄   ▄                 │█│      ▄▄         ▄    ▄    ▄          
+█▪            Sep 25 ▲5d ·6            │█▪            Sep 27 ▲3d ·5             
+ ╎ -7d                             +21d│█▪ -7d                             +21d 
+ │ 0/6 done                            │ ╎ 1/6 done                             
+────────────────────────────────────────────────────────────────────────────────
+   ▐ Ops & Security                  5 │   ▐ Mobile App                      5  
+█│ ▒░░▓▒▓░▓·╎··························│█│ ▒░░▓▒▓░▓▓╎▒························· 
+█│         ▄▄  ▄                     ▄ │█▪           ▄▄            ▄            
+█│            Sep 29 ▲1d ·5            │ ╎               Oct 1 ·5               
+█▪ -7d                             +21d│ ▪ -7d                           +21d ▸ 
+ ╎ 0/5 done                            │ ▪ 1/6 done                             
+────────────────────────────────────────────────────────────────────────────────
+   ▐ Data Warehouse                  4 │                                        
+█│ ▒░░▓▒▓░▓▓╎▒░░▓▓▓▒▓▒▒▓···············│                                        
+ ╎                     ▄          ▄    │                                        
+ ▪               Oct 9 ·4              │                                        
+ ▪ -7d                           +21d ▸│                                        
+ ▪ 1/5 done                            │
+[0m
+[0m$ [0mgrep -n "VIEW_KEYS\|action_view\|\"6\"\|'6'\|view_keys\|def action_view" taskboard/app.py | head -20
+52:VIEW_KEYS = {"1": "swimlanes", "2": "agenda", "3": "gantt", "4": "kanban",
+53:             "5": "focus", "6": "chainmap", "7": "flow", "8": "standup",
+1572:    def action_view(self, mode: str) -> None:
+[0m
+[0m→ [0mRead taskboard/app.py[90m [limit=30, offset=1572][0m
+[0m
+[0m$ [0mgrep -n "view\|VIEW_KEYS\|\"6\"\|'6'\|action_view" taskboard/keymap.py | head -20
+27:from .views import HEX
+45:    views: tuple[str, ...] | None = None    # None = live in every view
+60:    # -- views ----------------------------------------------------------------
+61:    Key("1", "1", "view('swimlanes')", "Lanes", primary=True, group="views"),
+62:    Key("2", "2", "view('agenda')", "Agenda", primary=True, group="views"),
+63:    Key("3", "3", "view('gantt')", "Gantt", primary=True, group="views"),
+64:    Key("4", "4", "view('kanban')", "Kanban", primary=True, group="views"),
+65:    Key("5", "5", "view('focus')", "Focus", primary=True, group="views"),
+66:    Key("6", "6", "view('chainmap')", "Chains", primary=True, group="views"),
+67:    Key("7", "7", "view('flow')", "Flow", primary=True, group="views"),
+68:    Key("8", "8", "view('standup')", "Standup", primary=True, group="views"),
+69:    Key("9", "9", "view('people')", "People", primary=True, group="views"),
+70:    Key("0", "0", "view('setup')", "Setup", primary=True, group="views"),
+80:        views=("swimlanes", "agenda", "gantt", "kanban", "focus", "chainmap")),
+90:        views=("swimlanes", "agenda", "gantt", "kanban", "focus")),
+109:    Key("s", "s", "kanban_sort", "Sort", views=("kanban",), group="kanban"),
+110:    Key("g", "g", "kanban_group", "Group", views=("kanban",), group="kanban"),
+113:    # from anywhere in the view (§6.5 AMD-02).
+114:    Key("z", "z", "collapse_toggle", "Collapse", views=("kanban",), group="kanban"),
+118:    Key("F", "F", "focus_cycle", "Focus", views=("kanban", "gantt"), group="kanban"),
+[0m
+[0m→ [0mRead tests/test_chainmap_app.py[90m [limit=90, offset=162][0m
+[0m
+[0m← [0mEdit tests/test_chainmap_app.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+@@ -166,9 +166,9 @@
+ under `together` a `+` bump on td4 moves td0 and td5 keeping their gaps;
+ under `stay` the same bump moves nothing else."""
+ path, _b = _milestones(tmp_path)
+ app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+-async with app.run_test(size=(118, 30), notifications=True) as pilot:
++async with app.run_test(size=(118, 32), notifications=True) as pilot:
+     await pilot.press("6")
+     await pilot.pause()
+     app.selected_task_id = "td4"
+     app.refresh_view()
+
+[0m
+[0m← [0mEdit tests/test_chainmap_app.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+@@ -226,9 +226,9 @@
+         p["date_links"] = 5
+ path3.write_text(json.dumps(raw), encoding="utf-8")
+ 
+ app3 = TaskboardApp(board_path=str(path3), team_sync_interval=1e9)
+-async with app3.run_test(size=(118, 30), notifications=True) as pilot:
++async with app3.run_test(size=(118, 32), notifications=True) as pilot:
+     await pilot.press("6")
+     await pilot.pause()
+     band = _band(_painted(app3), "Data Warehouse")
+     assert "● push" in band, band
+
+[0m
+[0m→ [0mRead tests/test_chainmap_app.py[90m [limit=32, offset=318][0m
+[0m
+[0m← [0mEdit tests/test_chainmap_app.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+@@ -321,29 +321,19 @@
+ own repaint, no second `refresh_view` call — so the cursor never rests on a
+ tile the smaller chain map does not draw."""
+ path = tmp_path / "board.json"
+ b = kg_board.build(path)
+-today = kg_board.TODAY
+-for k in range(4):
+-    a = Task(f"Head pdwh {k}", phase="Next", project_id="pdwh",
+-             start_date=(today + timedelta(days=k)).isoformat(),
+-             due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"hpdwh{k}")
+-    z = Task(f"Tail pdwh {k}", phase="Next", project_id="pdwh",
+-             start_date=(today + timedelta(days=k + 2)).isoformat(),
+-             due_date=(today + timedelta(days=k + 3)).isoformat(),
+-             depends_on=[f"hpdwh{k}"], id=f"tpdwh{k}")
+-    b.tasks += [a, z]
+ b.save()
+ app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+ async with app.run_test(size=(80, 24), notifications=True) as pilot:
+     await pilot.press("6")
+     await pilot.pause()
+-    app.selected_task_id = "td4"        # the Data Warehouse base chain, drawn at 80x24
++    app.selected_task_id = "ta4"        # API's chain, drawn at 80x24
+     app.refresh_view()
+     await pilot.pause()
+-    assert "td4" in app._line_map, app._line_map
+-    await pilot.resize_terminal(80, 18)  # too short for the Data Warehouse band
++    assert "ta4" in app._line_map, app._line_map
++    await pilot.resize_terminal(80, 18)  # too short for the API Platform band
+     await pilot.pause()
+-    assert "td4" not in app._line_map, app._line_map   # the smaller frame folded it out
+-    assert app.selected_task_id is not None and app.selected_task_id != "td4"
++    assert "ta4" not in app._line_map, app._line_map   # the smaller frame folded it out
++    assert app.selected_task_id is not None and app.selected_task_id != "ta4"
+     assert app.selected_task_id in app._line_map, (
+         app.selected_task_id, app._line_map)
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -30
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+.............                                                            [100%]
+13 passed in 3.05s
+[0m
+[0m$ [0mgrep -n "LinkPicker\|action_link\|pick\|depends_on\|_on_link_picked" tests/test_link_picker.py tests/test_links.py tests/test_dependencies.py 2>/dev/null | head -40
+tests/test_link_picker.py:5:The operator's verdict (round 3, D-B2): one key, `L`, a picker with the same project
+tests/test_link_picker.py:24:from taskboard.modals import LinkPicker
+tests/test_link_picker.py:128:    b.task_by_id("tw6").depends_on.append("tw5")
+tests/test_link_picker.py:156:    chain = [Task(f"T{i}", phase="Doing", depends_on=[f"T{i - 1}"] if i else [], id=f"T{i}")
+tests/test_link_picker.py:181:async def test_TC_510_the_picker_filters_starts_on_a_candidate_and_creates(tmp_path):
+tests/test_link_picker.py:189:    b.task_by_id("tw6").depends_on.append("tw5")
+tests/test_link_picker.py:198:        assert isinstance(scr, LinkPicker)
+tests/test_link_picker.py:214:async def test_AT_502_L_links_from_the_picker(tmp_path):
+tests/test_link_picker.py:225:    b.task_by_id("tw6").depends_on.append("tw5")
+tests/test_link_picker.py:242:        assert saved["tw5"]["depends_on"] == ["tw2", "tw4", "tm6"]
+tests/test_link_picker.py:253:        assert app.board.task_by_id("tw5").depends_on == ["tw2", "tw4"]
+tests/test_link_picker.py:256:        assert app.board.task_by_id("tw5").depends_on == ["tw2", "tw4", "tm6"]
+tests/test_link_picker.py:268:        assert app.board.task_by_id("tw5").depends_on[-1] == new.id
+tests/test_link_picker.py:287:        assert app.board.task_by_id("tm2").depends_on == []
+tests/test_link_picker.py:291:    """TC-507 (LLR-502.1; code review T2, battery P14): the picker never offers a
+tests/test_link_picker.py:293:    leaves `depends_on` and the undo stack as they were and names the loop. RED:
+tests/test_link_picker.py:304:        assert m2.depends_on == [] and len(app._undo_stack) == stack
+tests/test_link_picker.py:310:    """TC-510 (LLR-502.2, code review T5/T6): the picker's painted row for a linked
+tests/test_link_picker.py:328:        assert app.board.task_by_id("tw5").depends_on[-1] == "to2"
+tests/test_link_picker.py:331:        assert app.board.task_by_id("tw5").depends_on == ["tw2", "tw4"]
+tests/test_link_picker.py:340:        assert app.board.task_by_id("tw5").depends_on == ["tw2", "tw4"]
+tests/test_links.py:4:task id to `depends_on` — so links piled up unseen behind the flag, and unblocking
+tests/test_links.py:27:    `depends_on` exactly as it was (board and file), and is one undo step each.
+tests/test_links.py:28:    RED on base: `b` opens BlockerPicker (P-1) and, picked, appends an id."""
+tests/test_links.py:36:        stored = list(app.board.task_by_id("tm3").depends_on)
+tests/test_links.py:42:            assert (t.blocked, t.depends_on) == (want, stored)
+tests/test_links.py:44:            assert (saved["tm3"]["blocked"], saved["tm3"]["depends_on"]) == (want, stored)
+tests/test_links.py:83:        lambda b: b.task_by_id("tw6").depends_on.append("tw5"),            # 1 L w6→w5
+tests/test_links.py:85:        lambda b: b.task_by_id("tw5").depends_on.remove("tw4"),            # 3 remove w5→w4
+tests/test_links.py:86:        lambda b: b.task_by_id("tw5").depends_on.append("tw4"),            # 4 its undo
+tests/test_links.py:92:        lambda b: b.task_by_id("ta2").depends_on.remove("ta3"),            # 10 remove a2→a3
+tests/test_links.py:119:            for x in t.depends_on:
+tests/test_links.py:130:    w = Task("W", phase="Backlog", depends_on=["A", "A", "W", "ghost"], id="W")
+tests/test_links.py:135:    foreign = Task("Theirs", phase="Backlog", depends_on=["A"], id="W")
+tests/test_links.py:140:    b.tasks.append(Task("Done waiter", phase="Done", depends_on=["A"], id="D"))
+tests/test_links.py:250:    ws = [Task(f"W{i}", phase="Backlog", depends_on=["H"], id=f"W{i}", blocked=(i == 0))
+tests/test_links.py:259:        w.depends_on = []
+tests/test_links.py:266:    ws[1].depends_on = []
+tests/test_links.py:323:    ws = [Task(f"W{i}", phase="Backlog", depends_on=["H"], id=f"W{i}") for i in range(5)]
+tests/test_links.py:347:    chain = [Task(f"c{i}", phase="Doing", depends_on=[f"c{i - 1}"] if i else [], id=f"c{i}")
+[0m
+[0m→ [0mRead tests/test_link_picker.py[90m [limit=100, offset=214][0m
+[0m
+[0m$ [0mgrep -n "class LinkPicker\|def compose\|def _candidates\|def _options\|phase\|waiter.phase\|def on_option\|def action_" taskboard/modals.py | grep -i "linkpicker\|candidate\|waiter" | head; echo "---"; grep -n "class LinkPicker" taskboard/modals.py
+801:class LinkPicker(ModalScreen[tuple[str, str] | None]):
+---
+801:class LinkPicker(ModalScreen[tuple[str, str] | None]):
+[0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=110, offset=801][0m
+[0m
+[0m$ [0mgrep -n "def link_candidates\|def link_refusal" taskboard/models.py
+2151:def link_refusal(board: Board, waiter: Task, pred: Task) -> str | None:
+2212:def link_candidates(board: Board, waiter: Task, query: str = "",
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=45, offset=2151][0m
+[0m→ [0mRead taskboard/models.py[90m [limit=45, offset=2212][0m
+[0m→ [0mRead taskboard/modals.py[90m [limit=40, offset=911][0m
+[0m
+[0m$ [0mgrep -n "def __init__" taskboard/models.py | head -5; echo "---"; sed -n '/class Board/,/def /p' taskboard/models.py | head -30
+906:    def __init__(self, projects: list[Project], tasks: list[Task], path: Path,
+---
+class Board:
+    """Owns projects + tasks and the JSON file behind them."""
+
+    def __init__(self, projects: list[Project], tasks: list[Task], path: Path,
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=30, offset=906][0m
+[0m
+[0m$ [0mgrep -n "class Project" taskboard/models.py; sed -n '/class Project/,/def /p' taskboard/models.py | head -20
+796:class Project:
+class Project:
+    name: str
+    color: str = "violet"
+    status: str = "on_track"
+    archived: bool = False
+    pinned: bool = False
+    start_date: str | None = None
+    due_date: str | None = None
+    extra: dict = field(default_factory=dict)
+    id: str = field(default_factory=_new_id)
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "Project":
+[0m
+[0m$ [0mgrep -n "class Task" taskboard/models.py; sed -n '/class Task/,/phase/p' taskboard/models.py | head -25
+828:class Task:
+class Task:
+    title: str
+    project_id: str | None = None
+    phase: str = "Backlog"
+[0m
+[0m→ [0mRead taskboard/models.py[90m [limit=40, offset=828][0m
+[0m→ [0mRead tests/test_chainmap.py[90m [limit=15, offset=1][0m
+[0m
+[0m← [0mEdit tests/test_chainmap.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+@@ -23,9 +23,9 @@
+ 
+ import kg_board
+ from kg_board import TODAY
+ from taskboard import views
+-from taskboard.models import Task
++from taskboard.models import Board, Project, Task
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ FRAMES = ROOT / ".dev-flow" / "2026-10-07-batch-06" / "evidence" / "frames"
+ 
+
+[0m
+[0m→ [0mRead tests/test_chainmap.py[90m [limit=10, offset=225][0m
+[0m
+[0m← [0mEdit tests/test_chainmap.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap.py
+@@ -229,4 +229,45 @@
+     lm2: dict = {}
+     text2 = render_chainmap(b2, False, None, today, 80, 24, lm2).plain
+     assert "Mobile App" not in text2, text2
+     assert not any(tid in lm2 for tid in ("tm2", "tm3", "tm4", "tm5")), lm2
++
++
++# --------------------------------------------------------------------------- #
++# LLR-1201.1 / LLR-1201.2 — every open task is a tile (batch 2026-10-07-batch-06)
++# --------------------------------------------------------------------------- #
++def test_an_open_unlinked_task_is_a_selectable_open_tile(tmp_path, frozen):
++    """LLR-1201.1: an open task with no links paints as a one-row `○` tile with
++    its title and late mark, and reaches the line_map (it is selectable)."""
++    b = _base(tmp_path)
++    line_map: dict = {}
++    rows = _render(b, "tw3", 118, 30, line_map)
++    assert "tw3" in line_map
++    row = rows[line_map["tw3"]]
++    assert "○" in row and "Fix checkout 500 error" in row, row
++    assert "▲2d" in row, row                    # the late mark rides the tile
++
++
++def test_the_no_links_row_only_for_a_project_with_no_open_work(tmp_path, frozen):
++    """LLR-1201.1: a project with no open work at all keeps the inert `no links`
++    row; a project with an open unlinked task draws an `○` tile instead."""
++    lonely = Project("Lonely", "sky")
++    busy = Project("Busy", "lime")
++    done = Task("shipped", lonely.id, "Done", phase_changed=TODAY.isoformat(), id="s1")
++    todo = Task("todo", busy.id, "Doing", id="b1")
++    b = Board([lonely, busy], [done, todo], tmp_path / "b.json",
++              phases=["Doing", "Done"])
++    line_map: dict = {}
++    rows = _render(b, "b1", 118, 30, line_map)
++    assert "no links" in "\n".join(rows)        # Lonely: no open work at all
++    assert "b1" in line_map and "○" in rows[line_map["b1"]]
++
++
++def test_the_nav_reaches_an_open_tile_in_band_order(tmp_path, frozen):
++    """LLR-1201.2: the `○` tiles sit in the depth-0 nav column, after the band's
++    chained heads, so the arrows reach them."""
++    b = _base(tmp_path)
++    cols = views._chainmap_nav(b, False)
++    flat = [tid for col in cols for tid in col]
++    assert "tw3" in flat and "tw6" in flat and "td2" in flat
++    assert cols[0][0] == "tw1"                  # the first depth-0 chain head
++    assert flat.index("tw3") < flat.index("td2")  # band order preserved
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py -q 2>&1 | tail -20
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+...........                                                              [100%]
+11 passed in 0.31s
+[0m
+[0m→ [0mRead tests/test_chainmap_app.py[90m [limit=15, offset=316][0m
+[0m→ [0mRead tests/test_chainmap_app.py[90m [limit=10, offset=331][0m
+[0m
+[0m← [0mEdit tests/test_chainmap_app.py
+Index: C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
++++ C:/Users/jjgh8/Github/taskboard/tests/test_chainmap_app.py
+@@ -336,4 +336,80 @@
+         assert "ta4" not in app._line_map, app._line_map   # the smaller frame folded it out
+         assert app.selected_task_id is not None and app.selected_task_id != "ta4"
+         assert app.selected_task_id in app._line_map, (
+             app.selected_task_id, app._line_map)
++
++
++# --------------------------------------------------------------------------- #
++# LLR-1201.2 — chains are created on the map (batch 2026-10-07-batch-06)
++# --------------------------------------------------------------------------- #
++async def test_L_links_an_open_tile_on_the_map(tmp_path, frozen):
++    """LLR-1201.2: an open unlinked task paints as a selectable `○` tile; `L` on
++    it opens the shipped LinkPicker, the pick lands as its FIRST incoming link,
++    and the re-render keeps the task drawn (now inside a chain)."""
++    path, _b = _frozen_base(tmp_path)
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(118, 32), notifications=True) as pilot:
++        await pilot.press("6")
++        await pilot.pause()
++        app.selected_task_id = "tw3"            # Fix checkout 500 error: no links
++        app.refresh_view()
++        await pilot.pause()
++        assert "tw3" in app._line_map
++        row = _painted(app)[app._line_map["tw3"]]
++        assert "○" in row and "Fix checkout 500 error" in row, row
++
++        await pilot.press("L")
++        await pilot.pause()
++        from taskboard.modals import LinkPicker
++        assert isinstance(app.screen, LinkPicker)
++        await pilot.press("enter")              # the first candidate (Build component library)
++        await pilot.pause()
++        assert app.board.task_by_id("tw3").depends_on == ["tw2"]
++        assert "tw3" in app._line_map           # still drawn, now inside the chain
++
++
++async def test_x_unlinks_a_linked_tile_back_to_an_open_tile(tmp_path, frozen):
++    """LLR-1201.2: `x` drops the first incoming link and the task REMAINS a
++    visible, re-linkable `○` tile (never vanishes)."""
++    path, b = _frozen_base(tmp_path)
++    b.task_by_id("tw3").depends_on = ["tw2"]    # the tile's first incoming link
++    b.save()
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(118, 32), notifications=True) as pilot:
++        await pilot.press("6")
++        await pilot.pause()
++        app.selected_task_id = "tw3"
++        app.refresh_view()
++        await pilot.pause()
++        assert app.board.task_by_id("tw3").depends_on == ["tw2"]
++        await pilot.press("x")
++        await pilot.pause()
++        assert app.board.task_by_id("tw3").depends_on == []
++        assert "tw3" in app._line_map
++        row = _painted(app)[app._line_map["tw3"]]
++        assert "○" in row and "Fix checkout 500 error" in row, row
++
++
++async def test_nav_reaches_an_open_tile(tmp_path, frozen):
++    """LLR-1201.2: the arrows reach an `○` tile — it sits in the depth-0 nav
++    column and the cursor can rest on it."""
++    path, _b = _frozen_base(tmp_path)
++    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
++    async with app.run_test(size=(118, 32), notifications=True) as pilot:
++        await pilot.press("6")
++        await pilot.pause()
++        app.selected_task_id = "tw3"
++        app.refresh_view()
++        await pilot.pause()
++        assert "tw3" in app._line_map
++        cols = app._nav_columns()
++        flat = [tid for col in cols for tid in col]
++        assert "tw3" in flat                  # reachable in nav order
++        # a real move onto the tile: from the previous nav task, one `down`
++        idx = flat.index("tw3")
++        app.selected_task_id = flat[idx - 1]
++        app.refresh_view()
++        await pilot.pause()
++        await pilot.press("down")
++        await pilot.pause()
++        assert app.selected_task_id == "tw3"
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -40
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+...................                                                      [100%]
+19 passed in 4.31s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -50
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 16%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+..............................................                           [100%]
+2566 passed in 447.08s (0:07:27)
+[0m
+[0m$ [0mcd .dev-flow/2026-10-07-batch-06/evidence/frames && python -c "
+from pathlib import Path
+for f in ('C-2b-118x30.txt', 'C-2b-80x24.txt'):
+    raw = Path(f).read_bytes()
+    print(f, 'CRLF:', raw.count(b'\r\n'), 'lines:', raw.count(b'\n'), 'has lone LF:', raw.count(b'\n') - raw.count(b'\r\n'))
+    import hashlib
+    print('  sha256:', hashlib.sha256(raw).hexdigest())
+"
+C-2b-118x30.txt CRLF: 30 lines: 30 has lone LF: 0
+  sha256: cd955e185f60282aa9fe6297915370931ff0043079775462a3817e956aac56f3
+C-2b-80x24.txt CRLF: 24 lines: 24 has lone LF: 0
+  sha256: 227a2ced15770d006e359474b7c0dbdc07acc71f957b4af253fb50d1f790be58
+[0m
+[0m$ [0mgrep -n "for pr, ts in bands\|for _pr, ts in bands\|for pr, ts, \|for _pr, ts, " taskboard/views.py; echo "--- any remaining 2-tuple unpack of bands ---"; grep -n "in bands" taskboard/views.py
+5794:    for pr, ts, unlinked in bands:
+5977:    n_drawn = sum(len(ts) for _pr, ts, _u in bands)
+6012:    for _pr, ts, unlinked in bands:
+--- any remaining 2-tuple unpack of bands ---
+2804:    for _ym, x0, _x1 in bands:
+5100:    band_rows = [len(b) for b in bands]
+5101:    ids = [{t for r in b for t in r[1]} for b in bands]
+5104:    drawn = [r for k in keep for r in bands[k]]
+5169:    names = [f"{b.name} ({b.n_open} open)" for b in bands]
+5787:            (t for _pr, _ts, u in bands for t in u), None)
+5794:    for pr, ts, unlinked in bands:
+5977:    n_drawn = sum(len(ts) for _pr, ts, _u in bands)
+6012:    for _pr, ts, unlinked in bands:
+[0m
+[0m$ [0mgit status --short && echo "--- diff stat ---" && git diff --stat
+M .dev-flow/state.json
+ M .gitattributes
+ M taskboard/views.py
+ M tests/test_app.py
+ M tests/test_chainmap.py
+ M tests/test_chainmap_app.py
+ M tests/test_kanban_readable.py
+?? .dev-flow/2026-10-07-batch-05/decisions-log.json
+?? .dev-flow/2026-10-07-batch-06/
+?? .dev-flow/rollover_batchg.py
+?? b.json
+?? k.json
+?? ms.json
+?? tests/test_kanban_window.py
+--- diff stat ---
+warning: in the working copy of '.dev-flow/state.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.gitattributes', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_chainmap.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_chainmap_app.py', LF will be replaced by CRLF the next time Git touches it
+ .dev-flow/state.json          |  59 +++++++++++-----------
+ .gitattributes                |   1 +
+ taskboard/views.py            | 114 ++++++++++++++++++++++++++++++++----------
+ tests/test_app.py             |   4 +-
+ tests/test_chainmap.py        |  77 ++++++++++++++++++++++------
+ tests/test_chainmap_app.py    | 100 +++++++++++++++++++++++++++++-------
+ tests/test_kanban_readable.py |   2 +-
+ 7 files changed, 264 insertions(+), 93 deletions(-)
+[0m
+[0m$ [0mls -la b.json k.json ms.json 2>/dev/null; echo "--- state.json/gitattributes diff ---"; git diff .dev-flow/state.json .gitattributes | head -40
+-rw-r--r-- 1 jjgh8 197609 14236 Oct  7 18:10 b.json
+-rw-r--r-- 1 jjgh8 197609  8981 Oct  7 17:53 k.json
+-rw-r--r-- 1 jjgh8 197609 15630 Oct  7 18:09 ms.json
+--- state.json/gitattributes diff ---
+warning: in the working copy of '.dev-flow/state.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.gitattributes', LF will be replaced by CRLF the next time Git touches it
+diff --git a/.dev-flow/state.json b/.dev-flow/state.json
+index 522b28e..e6b420f 100644
+--- a/.dev-flow/state.json
++++ b/.dev-flow/state.json
+@@ -1,8 +1,8 @@
+ {
+   "project": "taskboard",
+   "language": "en",
+-  "batch_id": "2026-10-07-batch-05",
+-  "batch_objective": "Carries batch: close the BACKLOG's standing items -- S5-3 a failed backup write leaves no partial file (_create_beside unlinks its exclusively created file on a failed write, a RED arm with a refusing remove); F-6 the Mon D formatter in three copies becomes one; UXV-3 `u` on a single-task change says what came back (one-line undo toast); UXV-6 the ? help at 80 cells clips with `...` never mid-word; the chain-map carries (deep chains fold with a per-band +N more cap, the resize-heal re-verifies the selection against the fresh line_map, AT-801b's docstring); the P4 F-3..F-5 test-strength arms; BACKLOG bookkeeping (present-a-project closes with batch E)",
++  "batch_id": "2026-10-07-batch-06",
++  "batch_objective": "Operator-feedback batch: make the dependency web actionable where it is seen -- the chain map draws every open task (linked as today, unlinked as selectable open-chain-head tiles) so chains can be CREATED on the map with L (the C-2b oracle frames amend under a formal LED, the operator's visual re-verdict pending at close); and the kanban window shows its hidden sides -- markers on the phase-head row plus help",
+   "owner": "C:/Users/jjgh8/Github/taskboard",
+   "mode": "core",
+   "mode_history": [
+@@ -109,11 +109,17 @@
+       "to": "core",
+       "date": "2026-10-07",
+       "reason": "batch 2026-10-07-batch-05 opened by rollover from 2026-10-07-batch-04; mode core declared by the commission"
++    },
++    {
++      "from": null,
++      "to": "core",
++      "date": "2026-10-07",
++      "reason": "batch 2026-10-07-batch-06 opened by rollover from 2026-10-07-batch-05; mode core declared by the commission"
+     }
+   ],
+   "guided": false,
+-  "current_station": "P5",
+-  "phase_status": "closed",
++  "current_station": "P0",
++  "phase_status": "not-started",
+   "stations_active": [
+     "P0",
+     "P1",
+@@ -123,12 +129,12 @@
+     "P5"
+   ],
+   "iterations_per_station": {
+-    "P0": 1,
+[0m
+[0m$ [0mrm -f b.json k.json ms.json && git status --short
+M .dev-flow/state.json
+ M .gitattributes
+ M taskboard/views.py
+ M tests/test_app.py
+ M tests/test_chainmap.py
+ M tests/test_chainmap_app.py
+ M tests/test_kanban_readable.py
+?? .dev-flow/2026-10-07-batch-05/decisions-log.json
+?? .dev-flow/2026-10-07-batch-06/
+?? .dev-flow/rollover_batchg.py
+?? tests/test_kanban_window.py
+[0m
+[0m$ [0mgit diff taskboard/views.py
+diff --git a/taskboard/views.py b/taskboard/views.py
+index 15ddac7..1d2f0d2 100644
+--- a/taskboard/views.py
++++ b/taskboard/views.py
+@@ -4434,7 +4434,7 @@ def _phase_window(board: Board, grid: int, selected: Task | None,
+ 
+ def _windowed_header(board: Board, start: int, widths: list[int],
+                      tasks: list[Task], n: int | None = None) -> list[str]:
+-    """Phase-name header cells, with `◀ N` / `N ▶` counts for hidden phases.
++    """Phase-name header cells, with `◂` / `▸ N` marks for hidden phases.
+ 
+     Every cell ends with the WIP tag (HLR-005, LLR-005.2): ` n/limit` when the
+     phase has a limit, bare ` n` when it does not — `n` counted from
+@@ -4453,8 +4453,8 @@ def _windowed_header(board: Board, start: int, widths: list[int],
+         limit = board.wip_limit(phase)
+         tag = f" {count}/{limit}" if limit is not None else f" {count}"
+         tone = "over" if (limit is not None and count > limit) else "mut"
+-        pre = f"◀ {start} " if (i == 0 and start > 0) else ""
+-        suf = f" {n - end} ▶" if (i == len(widths) - 1 and end < n) else ""
++        pre = "◂ " if (i == 0 and start > 0) else ""
++        suf = f" ▸ {n - end}" if (i == len(widths) - 1 and end < n) else ""
+         avail = wc - len(pre) - len(suf)
+         if avail < 1:                       # no room for a label -> markers only
+             cells.append(c(fit((pre + suf).strip(), wc), "mut"))
+@@ -5551,7 +5551,10 @@ def _chainmap_depths(board: Board, tasks: list[Task]) -> dict[str, int]:
+ def _chainmap_plan(board: Board, show_archived: bool):
+     """(tasks, linked, depth, chain, ncol, bands, bare) — the one answer the
+     renderer and the navigator share, so a cursor can never rest on a tile the
+-    view does not draw (the F-3 law)."""
++    view does not draw (the F-3 law). `bands` is (project, linked, unlinked):
++    the open unlinked tasks a band draws as one-row `○` tiles (LLR-1201.1),
++    FIFO by due — they are the head's `open not linked` count. `bare` is only
++    a project with no open work at all (no linked task, no open unlinked task)."""
+     tasks = list(board.visible_tasks(show_archived))
+     tid = {t.id for t in tasks}
+     linked = [t for t in tasks if any(x in tid for x in t.depends_on)
+@@ -5565,10 +5568,20 @@ def _chainmap_plan(board: Board, show_archived: bool):
+     # column instead of raising.
+     ncol = min(ncol, 4)
+     depth = {tid: min(d, ncol - 1) for tid, d in depth.items()}
++    linked_ids = {t.id for t in linked}
+     projects = board.visible_projects(show_archived)
+-    bands = [(pr, [t for t in linked if t.project_id == pr.id]) for pr in projects]
+-    bands = [(pr, ts) for pr, ts in bands if ts]
+-    bare = [pr for pr in projects if not any(t.project_id == pr.id for t in linked)]
++    bands = []
++    bare = []
++    for pr in projects:
++        ts = [t for t in linked if t.project_id == pr.id]
++        unlinked = sort_by_due([t for t in tasks
++                                if t.project_id == pr.id
++                                and t.id not in linked_ids
++                                and not board.is_done(t)])
++        if ts or unlinked:
++            bands.append((pr, ts, unlinked))
++        else:
++            bare.append(pr)
+     return tasks, linked, depth, chain, ncol, bands, bare
+ 
+ 
+@@ -5735,6 +5748,29 @@ def _chainmap_tile(cv: _ChainmapCanvas, board: Board, t: Task, rr: int, x: int,
+     return is_sel
+ 
+ 
++def _chainmap_open_tile(cv: _ChainmapCanvas, board: Board, t: Task, rr: int, x: int,
++                        w: int, is_sel: bool, today: date, wide: bool) -> bool:
++    """One-row `○` tile for an open unlinked task (LLR-1201.1): the chain-head
++    chrome — `○`, title, due chip, late mark — no connectors, no meta row. The
++    row spans the panel width (nothing to align: no connectors)."""
++    inner = w - 2
++    d = parse_iso(t.due_date)
++    late = d and d < today
++    meta, meta_k = (f"▲{(today - d).days}d", "over") if late \
++        else ((_md(d), "mut") if d else ("", "mut"))
++    fg = HEX["bright"] if is_sel else (HEX["over"] if late else HEX["hd"])
++    bg = f" on {HEX['frame']}"
++    bold = "bold " if is_sel else ""
++    title = clip(t.title, max(0, inner - vis(meta) - 1))
++    cv.put(rr, x, " ", f"{bold}{fg}{bg}")
++    cv.put(rr, x + 1, "○", f"{HEX['bright'] if is_sel else HEX['mut']}{bg}")
++    cv.put(rr, x + 2, " " + title, f"{bold}{fg}{bg}")
++    if meta:
++        cv.put(rr, x + 3 + vis(title), " " + meta,
++               f"{HEX['bright'] if is_sel else HEX[meta_k]}{bg}")
++    return is_sel
++
++
+ def render_chainmap(board, show_archived, selected_id, today=None,
+                     width=68, height=0, line_map=None) -> Text:
+     """The chain map (the C-2b oracle): who waits on whom, per project, with the
+@@ -5746,15 +5782,16 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+         line_map.clear()          # CM-2: the drawn set is rebuilt every render
+     tasks, linked, depth, chain, ncol, bands, bare = _chainmap_plan(board, show_archived)
+     sel = board.task_by_id(selected_id)
+-    if sel is None or sel not in linked:
+-        sel = linked[0] if linked else None
++    if sel is None or sel not in tasks:
++        sel = linked[0] if linked else next(
++            (t for _pr, _ts, u in bands for t in u), None)
+     wide = w >= 100
+     gap = 5 if wide else 3
+     tile_w = (w - 2 - gap * (ncol - 1)) // ncol
+     col_x = [1 + d * (tile_w + gap) for d in range(ncol)]
+ 
+     plans = []
+-    for pr, ts in bands:
++    for pr, ts, unlinked in bands:
+         slot: dict[str, int] = {}
+         used: dict[int, set] = {}
+         for d in range(ncol):
+@@ -5767,9 +5804,11 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+                 slot[t.id] = s
+         edges = [(board.task_by_id(x), t) for t in ts for x in t.depends_on if x in slot]
+         skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
+-        nslot = max(slot.values()) + 1 if slot else 1
+-        plans.append(dict(pr=pr, ts=ts, slot=slot, edges=edges, skips=skips,
+-                          tiles_h=3 * nslot - 1 + len(skips), nslot=nslot))
++        nslot = max(slot.values()) + 1 if slot else 0
++        chain_h = (3 * nslot - 1 + len(skips)) if slot else 0
++        plans.append(dict(pr=pr, ts=ts, unlinked=unlinked, slot=slot, edges=edges,
++                          skips=skips, nslot=nslot,
++                          tiles_h=chain_h + len(unlinked)))
+ 
+     # vertical rhythm: ONE padding pair for every band, the most that fits
+     foot = 3
+@@ -5797,38 +5836,45 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+ 
+     body: list[str] = []
+     for p in plans:
+-        pr, ts = p["pr"], p["ts"]
++        pr, ts, unlinked = p["pr"], p["ts"], p["unlinked"]
+         slot = p["slot"]
+         nslot = p["nslot"]
++        n_open = len(unlinked)
+         seg_h = 1 + pad[0] + p["tiles_h"] + pad[1]
+         if len(body) + seg_h > body_h:
+             # CM-2 amended (LED .1): a band that fits PARTLY draws its fitting
+-            # chains + one `+N more ↓` tail (the kanban law); a band whose FIRST
+-            # chain does not fit still drops whole — no head without its canvas.
++            # chains + `○` tiles + one `+N more ↓` tail (the kanban law); a band
++            # whose FIRST row does not fit still drops whole — no head without
++            # its canvas.
++            remaining = body_h - len(body)
+             limit = 0
+             for k in range(nslot, 0, -1):
+                 drawn_ids = {t.id for t in ts if slot[t.id] < k}
+                 nskip = sum(1 for pt, t in p["edges"]
+                             if pt.id in drawn_ids and t.id in drawn_ids
+                             and depth[t.id] - depth[pt.id] > 1)
+-                if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= body_h - len(body):
++                if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= remaining:
+                     limit = k
+                     break
+-            if limit == 0:
+-                break            # the first chain does not fit: drop whole
+             drawn = [t for t in ts if slot[t.id] < limit]
+             drawn_ids = {t.id for t in drawn}
+             edges = [(pt, t) for pt, t in p["edges"]
+                      if pt.id in drawn_ids and t.id in drawn_ids]
+             skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
+-            tiles_h = 3 * limit - 1 + len(skips)
+-            tail_n = nslot - limit
++            chain_h = (3 * limit - 1 + len(skips)) if limit else 0
++            n_tiles = max(0, min(n_open, remaining - 1 - pad[0] - chain_h - 1))
++            if (nslot and limit == 0) or (not nslot and n_tiles == 0):
++                break            # the first row does not fit: drop whole
++            tiles_h = chain_h + n_tiles
++            tail_n = (nslot - limit) + (n_open - n_tiles)
+         else:
+             drawn = ts
+             edges = p["edges"]
+             skips = p["skips"]
++            chain_h = (3 * nslot - 1 + len(skips)) if slot else 0
+             tiles_h = p["tiles_h"]
+             limit = nslot
++            n_tiles = n_open
+             tail_n = 0
+         own = [t for t in tasks if t.project_id == pr.id]
+         n_un = sum(1 for t in own if t not in ts and not board.is_done(t))
+@@ -5866,6 +5912,12 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+                            t.id in chain, today, wide)
+             if line_map is not None:
+                 line_map[t.id] = top + rr
++        for i, t in enumerate(unlinked[:n_tiles]):
++            rr = chain_h + i
++            _chainmap_open_tile(cv, board, t, rr, 0, w,
++                                t.id == (sel.id if sel else None), today, wide)
++            if line_map is not None:
++                line_map[t.id] = top + rr
+         body += [cv.line(r) for r in range(cv.h)]
+         if tail_n:
+             body.append(_chainmap_pad(c(f"+{tail_n} more ↓", "mut"), w))
+@@ -5900,7 +5952,7 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+         return (c("›", "bright", bold=True) if focus else " ") + c(escape(s), k, bold=focus) + extra
+ 
+     ft1 = c(" ◂ waits on  ", "mut") + (c(" · ", "dim").join(ref(t, i == 0) for i, t in enumerate(pre_all))
+-                                       if pre_all else c("nothing", "dim"))
++                                       if pre_all else c("nothing yet", "dim"))
+     ft2 = c(" ▸ unblocks  ", "mut") + (c(" · ", "dim").join(ref(t, waiter=t) for t in succ)
+                                        if succ else c("nothing waits on it", "dim"))
+     keys = [("x", "remove the › link"), ("L", "link"), ("↵", "open"), ("←→↑↓", "move")] if wide \
+@@ -5922,7 +5974,7 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+ 
+     n_late = sum(1 for t in linked if (d := parse_iso(t.due_date)) and d < today and not board.is_done(t))
+     title = c("◆ CHAIN MAP", "bright", bold=True) + c(" · who waits on whom", "mut")
+-    n_drawn = sum(len(ts) for _pr, ts in bands)
++    n_drawn = sum(len(ts) for _pr, ts, _u in bands)
+     right = (c(f"{n_drawn} linked tasks", "mut") + c(" · ", "dim") + c(f"▲{n_late} late", "over")
+              + c(" · ", "dim") + _chainmap_st("━", HEX["bright"], None, True)
+              + c(f" chain {len(chain)}", "hd"))
+@@ -5953,12 +6005,15 @@ def render_chainmap(board, show_archived, selected_id, today=None,
+ 
+ def _chainmap_nav(board: Board, show_archived: bool) -> list[list[str]]:
+     """The chain map's on-screen order: one column per depth, tasks top-to-bottom
+-    (band order, then draw order) — left/right walks the chain, up/down a column."""
++    (band order, then draw order) — left/right walks the chain, up/down a column.
++    The `○` tiles sit at the depth-0 column, after the band's chains (LLR-1201.2)."""
+     _tasks, linked, depth, _chain, ncol, bands, _bare = _chainmap_plan(board, show_archived)
+     cols: list[list[str]] = [[] for _ in range(ncol)]
+-    for _pr, ts in bands:
++    for _pr, ts, unlinked in bands:
+         for t in ts:
+             cols[depth[t.id]].append(t.id)
++        for t in unlinked:
++            cols[0].append(t.id)
+     return cols
+ 
+ 
+@@ -6762,7 +6817,10 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
+             ("what it is for", ["run the work: move tasks between phases,",
+                                 "group by project, priority or horizon."]),
+             ("first thing to do", ["j/k down and up · ↵ opens the card.",
+-                                   "then: s sort · g group · z collapse."]),
++                                   "then: s sort · g group · z collapse.",
++                                   "more phases than fit — the window follows",
++                                   "the selection (j/k into a later column) ·",
++                                   "◂ ▸ mark the hidden sides"]),
+             ("the card's numbers", ["·Nd = days IN the phase (ageing)",
+                                     "+Nd = days UNTIL the deadline (countdown)",
+                                     "+/- move a date · m: the move again,",
+@@ -6866,7 +6924,9 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
+             ("the marks", ["✓ done · ▷ ready · ○ chain head · ◂N waits",
+                            "┃ heavy = the critical chain · ▲Nd late",
+                            "dates switch = the rule a move follows",
+-                           "set here = that project rule is custom"]),
++                           "set here = that project rule is custom",
++                           "○ an open task with no links yet — L starts",
++                           "its chain here"]),
+         ]
+     return []
+[0m
+[0m→ [0mRead taskboard/views.py[90m [limit=12, offset=85][0m
+[0m
+[0m← [0mEdit taskboard/views.py
+Index: C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+===================================================================
+--- C:/Users/jjgh8/Github/taskboard/taskboard/views.py
++++ C:/Users/jjgh8/Github/taskboard/taskboard/views.py
+@@ -5760,9 +5760,9 @@
+     else ((_md(d), "mut") if d else ("", "mut"))
+ fg = HEX["bright"] if is_sel else (HEX["over"] if late else HEX["hd"])
+ bg = f" on {HEX['frame']}"
+ bold = "bold " if is_sel else ""
+-title = clip(t.title, max(0, inner - vis(meta) - 1))
++title = clip(t.title, max(0, inner - vis(meta) - 2))
+ cv.put(rr, x, " ", f"{bold}{fg}{bg}")
+ cv.put(rr, x + 1, "○", f"{HEX['bright'] if is_sel else HEX['mut']}{bg}")
+ cv.put(rr, x + 2, " " + title, f"{bold}{fg}{bg}")
+ if meta:
+
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python .dev-flow/2026-10-07-batch-06/evidence/gen_frames.py && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -8
+wrote C:\Users\jjgh8\Github\taskboard\.dev-flow\2026-10-07-batch-06\evidence\frames\C-2b-118x30.txt  (30 rows)
+wrote C:\Users\jjgh8\Github\taskboard\.dev-flow\2026-10-07-batch-06\evidence\frames\C-2b-80x24.txt  (24 rows)
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+...................                                                      [100%]
+19 passed in 3.96s
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -c "
+import sys; sys.path.insert(0, 'tests')
+from datetime import date
+import kg_board
+from taskboard import views, models
+from taskboard.models import Board, Project, Task
+class _Today(date):
+    @classmethod
+    def today(cls): return kg_board.TODAY
+views.date = _Today; models.date = _Today; kg_board.date = _Today
+
+p = Project('Long', 'sky')
+t = Task('A [bold]very[/bold] long hostile title that runs well past any tile width'*2, p.id, 'Doing', due_date=kg_board._d(5), id='t0')
+b = Board([p], [t], 'b.json', phases=['Doing','Done'])
+lm = {}
+text = views.render_chainmap(b, False, 't0', kg_board.TODAY, width=80, height=24, line_map=lm)
+rows = text.plain.split(chr(10))
+for i, r in enumerate(rows):
+    w = views.vis(r)
+    if w != 80:
+        print('ROW', i, 'width', w, repr(r))
+print('done, row for t0:', repr(rows[lm['t0']]))
+print('escaped bracket present:', '[bold]' in rows[lm['t0']])
+"
+done, row for t0: ' ○ A [bold]very[/bold] long hostile title that runs well past any tile wi… Oct 5'
+escaped bracket present: True
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest -q 2>&1 | tail -6
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+..............................................                           [100%]
+2566 passed in 422.53s (0:07:02)
+[0m
+[0m$ [0menv -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_kanban_window.py tests/test_kanban_readable.py tests/test_cells.py -q 2>&1 | tail -4 && echo "===== TASK 2 =====" && env -u NO_COLOR TERM=xterm-256color COLORTERM=truecolor PYTHONIOENCODING=utf-8 python -m pytest tests/test_chainmap.py tests/test_chainmap_app.py -q 2>&1 | tail -4
+........................................................................ [ 72%]
+........................................................................ [ 90%]
+.......................................                                  [100%]
+399 passed in 19.32s
+===== TASK 2 =====
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+...................                                                      [100%]
+19 passed in 4.13s
+[0m
+[0m$ [0mgit status --short
+M .dev-flow/state.json
+ M .gitattributes
+ M taskboard/views.py
+ M tests/test_app.py
+ M tests/test_chainmap.py
+ M tests/test_chainmap_app.py
+ M tests/test_kanban_readable.py
+?? .dev-flow/2026-10-07-batch-05/decisions-log.json
+?? .dev-flow/2026-10-07-batch-06/
+?? .dev-flow/rollover_batchg.py
+?? tests/test_kanban_window.py
+[0m
+[0m# [0mTodos
+[✓] Task 1: change _windowed_header markers (◂ / ▸ N) in views.py
+[✓] Task 1: add kanban help bullet in help_usage
+[✓] Task 1: write tests/test_kanban_window.py
+[✓] Task 1: update test_app.py + test_kanban_readable.py marker assertions
+[✓] Task 2: admit open unlinked tasks as ○ tiles in _chainmap_plan/render_chainmap
+[✓] Task 2: wire nav + seats (_chainmap_nav, selection strip) for ○ tiles
+[✓] Task 2: add chainmap help bullet
+[✓] Task 2: regenerate C-2b oracle frames + move FRAMES path
+[✓] Task 2: extend test_chainmap.py / test_chainmap_app.py with new arms
+[✓] Verify: targeted suites + full suite green
+[0m
+Both increments are implemented and green. Report below.
+
+## TASK 1 — LLR-1202.1 (kanban window markers)
+
+**Changed** (`taskboard/views.py`):
+- `_windowed_header` (`views.py:4456-4457`): left marker `◀ {start}` → `◂` (count dropped), right marker `{n-end} ▶` → `▸ {n-end}` (glyph/count swapped, small triangle). Docstring updated (`views.py:4437`). No-marker case is byte-identical to today.
+- `help_usage("kanban")` (`views.py:6817-6822`): added the window bullet to "first thing to do", wrapped across 3 lines (each ≤44 cells) so the joined text reconstructs the verbatim tail `… · ◂ ▸ mark the hidden sides`.
+- New `tests/test_kanban_window.py` (4 open phases + Done; width 40 fits 2 → `▸ 2`; selection to last phase → `◂`, no `▸`; width 80 fits all → no markers; help bullet present).
+- `tests/test_app.py:1601-1603` and `tests/test_kanban_readable.py:557` updated to the new glyphs (`◂`, `▸ 5`, `▸ {hidden}`).
+
+**Verify:** `test_kanban_window.py + test_kanban_readable.py + test_cells.py` → **399 passed**.
+
+## TASK 2 — LLR-1201.1/.2 (chain-map `○` tiles)
+
+**Renderer** (`taskboard/views.py`):
+- `_chainmap_plan` (`views.py:5551`): bands are now `(project, linked, unlinked)`; `unlinked` = open, unlinked tasks sorted FIFO-by-due via `sort_by_due` (soonest first, undated last). `bare` = only projects with no open work at all.
+- `_chainmap_open_tile` (`views.py:5751`): one full-width row — `○` + title + due chip/late mark, escaped+clipped (S1), no connectors/meta row.
+- `render_chainmap`: selection fallback admits tiles; `nslot` is `0` for a chainless band; the fold draws fitting chains **then** fitting `○` tiles, and `+N more ↓` counts **remaining chains + tiles**. Tiles painted after chains (full-width, nothing to align); footer "◂ waits on **nothing yet**".
+
+**Choice (tiles after chains, FIFO by due):** chains carry the structure/connectors the operator is reading; the `○` tiles are the "unlinked" remainder, so trailing them keeps a band scannable top-down (chains → open heads). FIFO-by-due matches the board's other due-ordered surfaces.
+
+**Nav/seats:** `_chainmap_nav` (`views.py:6012`) places tiles in the depth-0 column after each band's chained heads. `L` on a tile uses the shipped `open_link_picker`/`link_tasks` path (verified it handles a first incoming link — `depends_on` goes `[] → [pred]`); `x` via `_chainmap_unlink` leaves the task as an `○` tile. Help bullet added (`views.py:6927-6928`).
+
+**Oracle amendment:** frames rendered exactly as `test_chainmap.py` renders and written (CRLF) to `.dev-flow/2026-10-07-batch-06/evidence/frames/C-2b-{118x30,80x24}.txt`; `tests/test_chainmap.py`'s `FRAMES` moved there + docstring notes the LED. Summary of the row deltas at both sizes: every band gains its `○` tile rows after its chains; the Ops "no links" row is gone (Ops becomes a `○`-tile band); at 80×24 the taller body folds out Data Warehouse and Ops (fold law), at 118×30 only Ops folds out.
+
+**Reddened "untouched laws" — reported, not over-reach:** three pinned tests reddened solely because the tiles change the layout, not because the mechanism changed:
+- `TC-810` — `+N more ↓` now counts chains **and** tiles; updated in place (its fold mechanism — drop-whole + cap — is intact).
+- `AT-802` / `AT-801c` — Data Warehouse folds out at the old terminal sizes; AT-802 uses `(118, 32)`, AT-801c reselects API's `ta4` (drawn at 80×24, folded at 80×18).
+
+**New arms:** unit — `○` tile paints + selectable (late mark); `no links` only for no-open-work; nav reaches a tile in band order. app — `L` links an `○` tile on the map (picker → `enter` → `depends_on` lands → still drawn); `x` returns a linked tile to an `○` tile; nav `down` reaches a tile.
+
+**Verify:** `test_chainmap.py + test_chainmap_app.py` → **19 passed**; **full suite → 2566 passed, 0 failures** (nothing outside my files reddened).
+
+## Punted / notes
+- The amended frames are generated (not hand-authored); the operator's visual re-verdict is still owed at close per the LED.
+- `.dev-flow/state.json` / `.gitattributes` show as modified but are the batch tooling's own rollover state (untouched by me); I did not commit anything.
+
+Files changed: `taskboard/views.py` (1 source file), `tests/test_app.py`, `tests/test_chainmap.py`, `tests/test_chainmap_app.py`, `tests/test_kanban_readable.py`, `tests/test_kanban_window.py` (new), and the `.dev-flow/2026-10-07-batch-06/` evidence tree (frames + generator).

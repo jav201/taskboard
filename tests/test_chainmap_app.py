@@ -1,4 +1,4 @@
-"""The chain map's app layer (batch 2026-10-07-batch-02, increment 001).
+"""The chain map's app layer (batch 2026-10-07-batch-02; batch-06 adds AT-1201 — the chain map admits every open task) (batch 2026-10-07-batch-02, increment 001).
 
 HLR-801 / LLR-801.2 (AT-801) · HLR-802 / LLR-802.1 (AT-802) · HLR-803 /
 LLR-803.1 (AT-803).
@@ -167,7 +167,7 @@ async def test_AT_802_the_rule_switch_cycles_and_bumps_follow_it(tmp_path):
     under `stay` the same bump moves nothing else."""
     path, _b = _milestones(tmp_path)
     app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
-    async with app.run_test(size=(118, 30), notifications=True) as pilot:
+    async with app.run_test(size=(118, 32), notifications=True) as pilot:
         await pilot.press("6")
         await pilot.pause()
         app.selected_task_id = "td4"
@@ -227,7 +227,7 @@ async def test_AT_802_the_rule_switch_cycles_and_bumps_follow_it(tmp_path):
     path3.write_text(json.dumps(raw), encoding="utf-8")
 
     app3 = TaskboardApp(board_path=str(path3), team_sync_interval=1e9)
-    async with app3.run_test(size=(118, 30), notifications=True) as pilot:
+    async with app3.run_test(size=(118, 32), notifications=True) as pilot:
         await pilot.press("6")
         await pilot.pause()
         band = _band(_painted(app3), "Data Warehouse")
@@ -322,28 +322,94 @@ async def test_AT_801c_a_resize_heals_the_selection_in_one_refresh(tmp_path, fro
     tile the smaller chain map does not draw."""
     path = tmp_path / "board.json"
     b = kg_board.build(path)
-    today = kg_board.TODAY
-    for k in range(4):
-        a = Task(f"Head pdwh {k}", phase="Next", project_id="pdwh",
-                 start_date=(today + timedelta(days=k)).isoformat(),
-                 due_date=(today + timedelta(days=k + 1)).isoformat(), id=f"hpdwh{k}")
-        z = Task(f"Tail pdwh {k}", phase="Next", project_id="pdwh",
-                 start_date=(today + timedelta(days=k + 2)).isoformat(),
-                 due_date=(today + timedelta(days=k + 3)).isoformat(),
-                 depends_on=[f"hpdwh{k}"], id=f"tpdwh{k}")
-        b.tasks += [a, z]
     b.save()
     app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
     async with app.run_test(size=(80, 24), notifications=True) as pilot:
         await pilot.press("6")
         await pilot.pause()
-        app.selected_task_id = "td4"        # the Data Warehouse base chain, drawn at 80x24
+        app.selected_task_id = "ta4"        # API's chain, drawn at 80x24
         app.refresh_view()
         await pilot.pause()
-        assert "td4" in app._line_map, app._line_map
-        await pilot.resize_terminal(80, 18)  # too short for the Data Warehouse band
+        assert "ta4" in app._line_map, app._line_map
+        await pilot.resize_terminal(80, 18)  # too short for the API Platform band
         await pilot.pause()
-        assert "td4" not in app._line_map, app._line_map   # the smaller frame folded it out
-        assert app.selected_task_id is not None and app.selected_task_id != "td4"
+        assert "ta4" not in app._line_map, app._line_map   # the smaller frame folded it out
+        assert app.selected_task_id is not None and app.selected_task_id != "ta4"
         assert app.selected_task_id in app._line_map, (
             app.selected_task_id, app._line_map)
+
+
+# --------------------------------------------------------------------------- #
+# LLR-1201.2 — chains are created on the map (batch 2026-10-07-batch-06)
+# --------------------------------------------------------------------------- #
+async def test_L_links_an_open_tile_on_the_map(tmp_path, frozen):
+    """LLR-1201.2: an open unlinked task paints as a selectable `○` tile; `L` on
+    it opens the shipped LinkPicker, the pick lands as its FIRST incoming link,
+    and the re-render keeps the task drawn (now inside a chain)."""
+    path, _b = _frozen_base(tmp_path)
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118, 32), notifications=True) as pilot:
+        await pilot.press("6")
+        await pilot.pause()
+        app.selected_task_id = "tw3"            # Fix checkout 500 error: no links
+        app.refresh_view()
+        await pilot.pause()
+        assert "tw3" in app._line_map
+        row = _painted(app)[app._line_map["tw3"]]
+        assert "○" in row and "Fix checkout 500 error" in row, row
+
+        await pilot.press("L")
+        await pilot.pause()
+        from taskboard.modals import LinkPicker
+        assert isinstance(app.screen, LinkPicker)
+        await pilot.press("enter")              # the first candidate (Build component library)
+        await pilot.pause()
+        assert app.board.task_by_id("tw3").depends_on == ["tw2"]
+        assert "tw3" in app._line_map           # still drawn, now inside the chain
+
+
+async def test_x_unlinks_a_linked_tile_back_to_an_open_tile(tmp_path, frozen):
+    """LLR-1201.2: `x` drops the first incoming link and the task REMAINS a
+    visible, re-linkable `○` tile (never vanishes)."""
+    path, b = _frozen_base(tmp_path)
+    b.task_by_id("tw3").depends_on = ["tw2"]    # the tile's first incoming link
+    b.save()
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118, 32), notifications=True) as pilot:
+        await pilot.press("6")
+        await pilot.pause()
+        app.selected_task_id = "tw3"
+        app.refresh_view()
+        await pilot.pause()
+        assert app.board.task_by_id("tw3").depends_on == ["tw2"]
+        await pilot.press("x")
+        await pilot.pause()
+        assert app.board.task_by_id("tw3").depends_on == []
+        assert "tw3" in app._line_map
+        row = _painted(app)[app._line_map["tw3"]]
+        assert "○" in row and "Fix checkout 500 error" in row, row
+
+
+async def test_nav_reaches_an_open_tile(tmp_path, frozen):
+    """LLR-1201.2: the arrows reach an `○` tile — it sits in the depth-0 nav
+    column and the cursor can rest on it."""
+    path, _b = _frozen_base(tmp_path)
+    app = TaskboardApp(board_path=str(path), team_sync_interval=1e9)
+    async with app.run_test(size=(118, 32), notifications=True) as pilot:
+        await pilot.press("6")
+        await pilot.pause()
+        app.selected_task_id = "tw3"
+        app.refresh_view()
+        await pilot.pause()
+        assert "tw3" in app._line_map
+        cols = app._nav_columns()
+        flat = [tid for col in cols for tid in col]
+        assert "tw3" in flat                  # reachable in nav order
+        # a real move onto the tile: from the previous nav task, one `down`
+        idx = flat.index("tw3")
+        app.selected_task_id = flat[idx - 1]
+        app.refresh_view()
+        await pilot.pause()
+        await pilot.press("down")
+        await pilot.pause()
+        assert app.selected_task_id == "tw3"

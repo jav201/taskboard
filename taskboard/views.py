@@ -4434,7 +4434,7 @@ def _phase_window(board: Board, grid: int, selected: Task | None,
 
 def _windowed_header(board: Board, start: int, widths: list[int],
                      tasks: list[Task], n: int | None = None) -> list[str]:
-    """Phase-name header cells, with `◀ N` / `N ▶` counts for hidden phases.
+    """Phase-name header cells, with `◂` / `▸ N` marks for hidden phases.
 
     Every cell ends with the WIP tag (HLR-005, LLR-005.2): ` n/limit` when the
     phase has a limit, bare ` n` when it does not — `n` counted from
@@ -4453,8 +4453,8 @@ def _windowed_header(board: Board, start: int, widths: list[int],
         limit = board.wip_limit(phase)
         tag = f" {count}/{limit}" if limit is not None else f" {count}"
         tone = "over" if (limit is not None and count > limit) else "mut"
-        pre = f"◀ {start} " if (i == 0 and start > 0) else ""
-        suf = f" {n - end} ▶" if (i == len(widths) - 1 and end < n) else ""
+        pre = "◂ " if (i == 0 and start > 0) else ""
+        suf = f" ▸ {n - end}" if (i == len(widths) - 1 and end < n) else ""
         avail = wc - len(pre) - len(suf)
         if avail < 1:                       # no room for a label -> markers only
             cells.append(c(fit((pre + suf).strip(), wc), "mut"))
@@ -5551,7 +5551,10 @@ def _chainmap_depths(board: Board, tasks: list[Task]) -> dict[str, int]:
 def _chainmap_plan(board: Board, show_archived: bool):
     """(tasks, linked, depth, chain, ncol, bands, bare) — the one answer the
     renderer and the navigator share, so a cursor can never rest on a tile the
-    view does not draw (the F-3 law)."""
+    view does not draw (the F-3 law). `bands` is (project, linked, unlinked):
+    the open unlinked tasks a band draws as one-row `○` tiles (LLR-1201.1),
+    FIFO by due — they are the head's `open not linked` count. `bare` is only
+    a project with no open work at all (no linked task, no open unlinked task)."""
     tasks = list(board.visible_tasks(show_archived))
     tid = {t.id for t in tasks}
     linked = [t for t in tasks if any(x in tid for x in t.depends_on)
@@ -5565,10 +5568,20 @@ def _chainmap_plan(board: Board, show_archived: bool):
     # column instead of raising.
     ncol = min(ncol, 4)
     depth = {tid: min(d, ncol - 1) for tid, d in depth.items()}
+    linked_ids = {t.id for t in linked}
     projects = board.visible_projects(show_archived)
-    bands = [(pr, [t for t in linked if t.project_id == pr.id]) for pr in projects]
-    bands = [(pr, ts) for pr, ts in bands if ts]
-    bare = [pr for pr in projects if not any(t.project_id == pr.id for t in linked)]
+    bands = []
+    bare = []
+    for pr in projects:
+        ts = [t for t in linked if t.project_id == pr.id]
+        unlinked = sort_by_due([t for t in tasks
+                                if t.project_id == pr.id
+                                and t.id not in linked_ids
+                                and not board.is_done(t)])
+        if ts or unlinked:
+            bands.append((pr, ts, unlinked))
+        else:
+            bare.append(pr)
     return tasks, linked, depth, chain, ncol, bands, bare
 
 
@@ -5735,6 +5748,29 @@ def _chainmap_tile(cv: _ChainmapCanvas, board: Board, t: Task, rr: int, x: int,
     return is_sel
 
 
+def _chainmap_open_tile(cv: _ChainmapCanvas, board: Board, t: Task, rr: int, x: int,
+                        w: int, is_sel: bool, today: date, wide: bool) -> bool:
+    """One-row `○` tile for an open unlinked task (LLR-1201.1): the chain-head
+    chrome — `○`, title, due chip, late mark — no connectors, no meta row. The
+    row spans the panel width (nothing to align: no connectors)."""
+    inner = w - 2
+    d = parse_iso(t.due_date)
+    late = d and d < today
+    meta, meta_k = (f"▲{(today - d).days}d", "over") if late \
+        else ((_md(d), "mut") if d else ("", "mut"))
+    fg = HEX["bright"] if is_sel else (HEX["over"] if late else HEX["hd"])
+    bg = f" on {HEX['frame']}"
+    bold = "bold " if is_sel else ""
+    title = clip(t.title, max(0, inner - vis(meta) - 2))
+    cv.put(rr, x, " ", f"{bold}{fg}{bg}")
+    cv.put(rr, x + 1, "○", f"{HEX['bright'] if is_sel else HEX['mut']}{bg}")
+    cv.put(rr, x + 2, " " + title, f"{bold}{fg}{bg}")
+    if meta:
+        cv.put(rr, x + 3 + vis(title), " " + meta,
+               f"{HEX['bright'] if is_sel else HEX[meta_k]}{bg}")
+    return is_sel
+
+
 def render_chainmap(board, show_archived, selected_id, today=None,
                     width=68, height=0, line_map=None) -> Text:
     """The chain map (the C-2b oracle): who waits on whom, per project, with the
@@ -5746,15 +5782,16 @@ def render_chainmap(board, show_archived, selected_id, today=None,
         line_map.clear()          # CM-2: the drawn set is rebuilt every render
     tasks, linked, depth, chain, ncol, bands, bare = _chainmap_plan(board, show_archived)
     sel = board.task_by_id(selected_id)
-    if sel is None or sel not in linked:
-        sel = linked[0] if linked else None
+    if sel is None or sel not in tasks:
+        sel = linked[0] if linked else next(
+            (t for _pr, _ts, u in bands for t in u), None)
     wide = w >= 100
     gap = 5 if wide else 3
     tile_w = (w - 2 - gap * (ncol - 1)) // ncol
     col_x = [1 + d * (tile_w + gap) for d in range(ncol)]
 
     plans = []
-    for pr, ts in bands:
+    for pr, ts, unlinked in bands:
         slot: dict[str, int] = {}
         used: dict[int, set] = {}
         for d in range(ncol):
@@ -5767,9 +5804,11 @@ def render_chainmap(board, show_archived, selected_id, today=None,
                 slot[t.id] = s
         edges = [(board.task_by_id(x), t) for t in ts for x in t.depends_on if x in slot]
         skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
-        nslot = max(slot.values()) + 1 if slot else 1
-        plans.append(dict(pr=pr, ts=ts, slot=slot, edges=edges, skips=skips,
-                          tiles_h=3 * nslot - 1 + len(skips), nslot=nslot))
+        nslot = max(slot.values()) + 1 if slot else 0
+        chain_h = (3 * nslot - 1 + len(skips)) if slot else 0
+        plans.append(dict(pr=pr, ts=ts, unlinked=unlinked, slot=slot, edges=edges,
+                          skips=skips, nslot=nslot,
+                          tiles_h=chain_h + len(unlinked)))
 
     # vertical rhythm: ONE padding pair for every band, the most that fits
     foot = 3
@@ -5797,38 +5836,45 @@ def render_chainmap(board, show_archived, selected_id, today=None,
 
     body: list[str] = []
     for p in plans:
-        pr, ts = p["pr"], p["ts"]
+        pr, ts, unlinked = p["pr"], p["ts"], p["unlinked"]
         slot = p["slot"]
         nslot = p["nslot"]
+        n_open = len(unlinked)
         seg_h = 1 + pad[0] + p["tiles_h"] + pad[1]
         if len(body) + seg_h > body_h:
             # CM-2 amended (LED .1): a band that fits PARTLY draws its fitting
-            # chains + one `+N more ↓` tail (the kanban law); a band whose FIRST
-            # chain does not fit still drops whole — no head without its canvas.
+            # chains + `○` tiles + one `+N more ↓` tail (the kanban law); a band
+            # whose FIRST row does not fit still drops whole — no head without
+            # its canvas.
+            remaining = body_h - len(body)
             limit = 0
             for k in range(nslot, 0, -1):
                 drawn_ids = {t.id for t in ts if slot[t.id] < k}
                 nskip = sum(1 for pt, t in p["edges"]
                             if pt.id in drawn_ids and t.id in drawn_ids
                             and depth[t.id] - depth[pt.id] > 1)
-                if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= body_h - len(body):
+                if 1 + pad[0] + (3 * k - 1 + nskip) + 1 <= remaining:
                     limit = k
                     break
-            if limit == 0:
-                break            # the first chain does not fit: drop whole
             drawn = [t for t in ts if slot[t.id] < limit]
             drawn_ids = {t.id for t in drawn}
             edges = [(pt, t) for pt, t in p["edges"]
                      if pt.id in drawn_ids and t.id in drawn_ids]
             skips = [e for e in edges if depth[e[1].id] - depth[e[0].id] > 1]
-            tiles_h = 3 * limit - 1 + len(skips)
-            tail_n = nslot - limit
+            chain_h = (3 * limit - 1 + len(skips)) if limit else 0
+            n_tiles = max(0, min(n_open, remaining - 1 - pad[0] - chain_h - 1))
+            if (nslot and limit == 0) or (not nslot and n_tiles == 0):
+                break            # the first row does not fit: drop whole
+            tiles_h = chain_h + n_tiles
+            tail_n = (nslot - limit) + (n_open - n_tiles)
         else:
             drawn = ts
             edges = p["edges"]
             skips = p["skips"]
+            chain_h = (3 * nslot - 1 + len(skips)) if slot else 0
             tiles_h = p["tiles_h"]
             limit = nslot
+            n_tiles = n_open
             tail_n = 0
         own = [t for t in tasks if t.project_id == pr.id]
         n_un = sum(1 for t in own if t not in ts and not board.is_done(t))
@@ -5866,6 +5912,12 @@ def render_chainmap(board, show_archived, selected_id, today=None,
                            t.id in chain, today, wide)
             if line_map is not None:
                 line_map[t.id] = top + rr
+        for i, t in enumerate(unlinked[:n_tiles]):
+            rr = chain_h + i
+            _chainmap_open_tile(cv, board, t, rr, 0, w,
+                                t.id == (sel.id if sel else None), today, wide)
+            if line_map is not None:
+                line_map[t.id] = top + rr
         body += [cv.line(r) for r in range(cv.h)]
         if tail_n:
             body.append(_chainmap_pad(c(f"+{tail_n} more ↓", "mut"), w))
@@ -5900,7 +5952,7 @@ def render_chainmap(board, show_archived, selected_id, today=None,
         return (c("›", "bright", bold=True) if focus else " ") + c(escape(s), k, bold=focus) + extra
 
     ft1 = c(" ◂ waits on  ", "mut") + (c(" · ", "dim").join(ref(t, i == 0) for i, t in enumerate(pre_all))
-                                       if pre_all else c("nothing", "dim"))
+                                       if pre_all else c("nothing yet", "dim"))
     ft2 = c(" ▸ unblocks  ", "mut") + (c(" · ", "dim").join(ref(t, waiter=t) for t in succ)
                                        if succ else c("nothing waits on it", "dim"))
     keys = [("x", "remove the › link"), ("L", "link"), ("↵", "open"), ("←→↑↓", "move")] if wide \
@@ -5922,7 +5974,7 @@ def render_chainmap(board, show_archived, selected_id, today=None,
 
     n_late = sum(1 for t in linked if (d := parse_iso(t.due_date)) and d < today and not board.is_done(t))
     title = c("◆ CHAIN MAP", "bright", bold=True) + c(" · who waits on whom", "mut")
-    n_drawn = sum(len(ts) for _pr, ts in bands)
+    n_drawn = sum(len(ts) for _pr, ts, _u in bands)
     right = (c(f"{n_drawn} linked tasks", "mut") + c(" · ", "dim") + c(f"▲{n_late} late", "over")
              + c(" · ", "dim") + _chainmap_st("━", HEX["bright"], None, True)
              + c(f" chain {len(chain)}", "hd"))
@@ -5953,12 +6005,15 @@ def render_chainmap(board, show_archived, selected_id, today=None,
 
 def _chainmap_nav(board: Board, show_archived: bool) -> list[list[str]]:
     """The chain map's on-screen order: one column per depth, tasks top-to-bottom
-    (band order, then draw order) — left/right walks the chain, up/down a column."""
+    (band order, then draw order) — left/right walks the chain, up/down a column.
+    The `○` tiles sit at the depth-0 column, after the band's chains (LLR-1201.2)."""
     _tasks, linked, depth, _chain, ncol, bands, _bare = _chainmap_plan(board, show_archived)
     cols: list[list[str]] = [[] for _ in range(ncol)]
-    for _pr, ts in bands:
+    for _pr, ts, unlinked in bands:
         for t in ts:
             cols[depth[t.id]].append(t.id)
+        for t in unlinked:
+            cols[0].append(t.id)
     return cols
 
 
@@ -6762,7 +6817,10 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
             ("what it is for", ["run the work: move tasks between phases,",
                                 "group by project, priority or horizon."]),
             ("first thing to do", ["j/k down and up · ↵ opens the card.",
-                                   "then: s sort · g group · z collapse."]),
+                                   "then: s sort · g group · z collapse.",
+                                   "more phases than fit — the window follows",
+                                   "the selection (j/k into a later column) ·",
+                                   "◂ ▸ mark the hidden sides"]),
             ("the card's numbers", ["·Nd = days IN the phase (ageing)",
                                     "+Nd = days UNTIL the deadline (countdown)",
                                     "+/- move a date · m: the move again,",
@@ -6866,7 +6924,9 @@ def help_usage(mode: str) -> list[tuple[str, list[str]]]:
             ("the marks", ["✓ done · ▷ ready · ○ chain head · ◂N waits",
                            "┃ heavy = the critical chain · ▲Nd late",
                            "dates switch = the rule a move follows",
-                           "set here = that project rule is custom"]),
+                           "set here = that project rule is custom",
+                           "○ an open task with no links yet — L starts",
+                           "its chain here"]),
         ]
     return []
 
