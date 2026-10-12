@@ -64,7 +64,7 @@ Gate run on frozen r2: `python -m pytest -q -p no:cacheprovider` → **2375 pass
 
 | Field | Value |
 |---|---|
-| **RED counterfactual** | the increment-002 tests on the increment-001 tree (`views.py` at `4b2c13a`, `app.py` without the 002 hunk), the three new helper names stubbed to raise so every arm runs: 24 of 26 arms RED (`evidence/inc002-red-on-inc001.txt`); the 2 GREEN arms are labelled regression pins (C-40 corollary): "a selected reached milestone unfolds its group" (the shipped seat already unfolds a selection's group) and "a project without milestones marks only its due" (a negative control). The folds RED-first: G-2 `inc002-g2-red.txt` → `inc002-g2-green.txt` |
+| **RED counterfactual** | the increment-002 tests on the increment-001 tree (`views.py` at `7073592`, `app.py` without the 002 hunk), the three new helper names stubbed to raise so every arm runs: 24 of 26 arms RED (`evidence/inc002-red-on-inc001.txt`); the 2 GREEN arms are labelled regression pins (C-40 corollary): "a selected reached milestone unfolds its group" (the shipped seat already unfolds a selection's group) and "a project without milestones marks only its due" (a negative control). The folds RED-first: G-2 `inc002-g2-red.txt` → `inc002-g2-green.txt` |
 
 | Field | Value |
 |---|---|

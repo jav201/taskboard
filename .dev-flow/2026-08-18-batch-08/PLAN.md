@@ -8,7 +8,7 @@ presentations, and a global live search/filter — without changing the model.
 
 ## Verified at intake
 
-- Base currency: `main` @ `a93b17e` (batch-07 merged).
+- Base currency: `main` @ `511c893` (batch-07 merged).
 - Suite green: `python -m pytest tests/ -q -k "not test_win_clipboard_roundtrip"` → 849 passed.
 - Prototype approved: `prototypes/next_level/out/next-level.html` (variants 1A/1B, 2A/2B, 3A/3B/3C).
 

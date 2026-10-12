@@ -35,11 +35,11 @@ refuses loops and refuses to archive or delete work others still wait on; an exi
 
 ## RC-1 and flow currency
 
-- RC-1 (a): `git fetch origin` → `origin/main` = `0447070ba154` = HEAD = merge-base; nothing to rebase. `base_ref` stamped from it (`state.json`).
-- RC-2: `git fetch origin` answered; `origin/main`'s newest commit 2026-10-03 20:47 −0600 (`0447070`).
+- RC-1 (a): `git fetch origin` → `origin/main` = `f599b8cf3ff7` = HEAD = merge-base; nothing to rebase. `base_ref` stamped from it (`state.json`).
+- RC-2: `git fetch origin` answered; `origin/main`'s newest commit 2026-10-03 20:47 −0600 (`f599b8c`).
 - RC-1 (b): no story already shipped on `origin/main` (`evidence/p0-probes.txt` §RC-1 (b): `LinkPicker`, `open_waiters`, link mode, link migration — 0 hits; the `↳ waits on` / `◂` hits are the shipped gantt gutter and the off-window glyphs).
 - Rollover from `2026-10-02-batch-04` (P5 closed): its `decisions_log` MOVED to `.dev-flow/2026-10-02-batch-04/decisions-log.json` (28 entries); every single-slot field retired per `stations/shared-batch.md` §Batch rollover (triggers re-evaluated below, artifacts cleared, homes re-pointed, owner re-stamped, authorization re-recorded from this batch's commission, `base_ref` = HEAD, `created_at` re-stamped, `guided` false: not the project's first batch); `mode_history` carried and appended. Seeds from the snapshot's `devflow-init.py` run in a scratch tree (it refuses an initialised `.dev-flow/`), date 2026-10-04; `.gitattributes` gains this batch's `evidence/** -text`; the build caches were already in `.git/info/exclude`. The increment skeleton is held back until P3 so no packet precedes its increment.
-- Flow: rev99 snapshot `1154c8a`; `V7` clean. Validator at kickoff (coordinator, `0447070`): **0 block · 26 notice**, exit 0 — re-run by this agent before the rollover: same.
+- Flow: rev99 snapshot `1154c8a`; `V7` clean. Validator at kickoff (coordinator, `f599b8c`): **0 block · 26 notice**, exit 0 — re-run by this agent before the rollover: same.
 - **Inherited NOTICEs declared** (all 26 predate this batch): `V9` ×8 legacy packets in the flat `.dev-flow/03-increments/` declare no SOURCE count, ×1 batch-02's `increment-002.md` 4-source warning; `V13` ×3 batch-01's `nav-order` address, batch-04's `field-rows` address reached by `REQUIREMENTS.md`, and the computed addresses; `V22` ×3 LLRs of batches 01/02 never used as an IFC owner and 5 legacy US ids not in the canon; `V23` an unparseable design-review citation in legacy `increment-006.md`; `V30` the bundle derives its floors from a subset (benign on this runtime, `SKILL.md`); `V42` ×7 deferral markers in batch-03's record; `V53` the closed-record census count; `V57` batch-04's close record predates this tree by 1 commit (the coordinator's commit). None is this batch's to fix; a closed record is not re-anchored.
 - Not runnable here (`SKILL.md` step 4): `V15`, `V16`, `V17` — `not-run` (no canon tree, no checkout table, no hook settings on a bundle runtime).
 - Mechanisms unavailable on this runtime, named once (`SKILL.md` step 5): no slash commands, no hooks, no prompt guard, no operator prompt (the standing authorization above closes the gates). Reviewer roles are **spawned as named sub-agents** of this runtime (`qa-reviewer`, `architect`, `security-reviewer`, `ux-reviewer`, `code-reviewer`, `tester`), each told to follow the snapshot's `agents/<role>.md` — independent reviewers, never inline self-review.
@@ -56,7 +56,7 @@ refuses loops and refuses to archive or delete work others still wait on; an exi
 | C | fired | new user-text surfaces (picker rows, details section, guard and ready toasts, link-mode status line) and a migration that writes user data (backup, log, board) → security-reviewer at P2 and close (also commissioned); the scan runs at P1 |
 | D | fired | user-visible (marks, picker, details section, gantt link mode, toasts) → ux-reviewer at P2/P4; captures 118×30 and 80×24, base and close |
 | E | fired | 5 stories, 4 planned increments |
-| F | F2 fired | `BACKLOG.md` header base ref `56a1b10` ≠ HEAD `0447070` → reconciled at close; F1 not fired: `V7` clean on the pinned snapshot |
+| F | F2 fired | `BACKLOG.md` header base ref `be81d68` ≠ HEAD `f599b8c` → reconciled at close; F1 not fired: `V7` clean on the pinned snapshot |
 
 ## Per-story / per-station status
 
@@ -167,7 +167,7 @@ Listed at P1, captured at P3, closed at P5 (`05-close.md`). Each is the most con
 | increment-003 gate run (frozen r2) | 2026-10-04 | 2281 passed, 1 failed (clipboard environment flake) in 408.93 s (`evidence/inc003-gate-r2.txt`) |
 | increment-002 gate run (frozen r2) | 2026-10-04 | 2265 passed in 355.60 s, exit 0 (`evidence/inc002-gate-r2.txt`) |
 | increment-001 gate run (frozen r4) | 2026-10-04 | 2242 passed in 311.84 s, exit 0 (`evidence/inc001-gate-r4.txt`) |
-| `python -m pytest -q -p no:cacheprovider` (base `0447070`) | 2026-10-04 | 2218 passed in 339.95 s, exit 0 (`evidence/base-suite.txt`) |
+| `python -m pytest -q -p no:cacheprovider` (base `f599b8c`) | 2026-10-04 | 2218 passed in 339.95 s, exit 0 (`evidence/base-suite.txt`) |
 
 ## Decision log
 

@@ -23,7 +23,7 @@
 | 1 | Context of use per story: user · **task** · **environment** |  ✓ | `01-requirements.md` §2.3 (one operator; the daily read of every view and the weekly gantt re-plan; Windows Terminal truecolor, 80×24 to full screen; 256-colour survival asked by the commission) |
 | 2 | Observable outcome stated per story |  ✓ | US-201..205 each state their outcome ("so that …"); AT table §5 |
 | 3 | Risk estimate: importance and criticality, used to prioritise |  ✓ | `Priority:` per HLR in §3; risks in `PLAN.md` §Risks / watch-items |
-| 4 | RC-1: `origin/main` tip fetched and recorded in `PLAN.md` **before** deriving |  ✓ | `PLAN.md` §RC-1: `git fetch origin` → `origin/main` = `a0e7d9a7c76d` = HEAD = merge-base |
+| 4 | RC-1: `origin/main` tip fetched and recorded in `PLAN.md` **before** deriving |  ✓ | `PLAN.md` §RC-1: `git fetch origin` → `origin/main` = `cfc28a3351de` = HEAD = merge-base |
 | 5 | RC-2: `origin` reachable and the age of its newest commit recorded in `PLAN.md` **before** deriving (`git ls-remote --exit-code --heads origin`; V25) |  ⚠ | origin reachable (the P0 fetch succeeded); the newest commit's age was not written into `PLAN.md` — declared here |
 | 6 | "already shipped?" check per candidate story |  ✓ | `evidence/p0-probes.txt` P-1..P-10: every answer measured absent on the base tree (no hint, no toast, accent present, Spanish painted, …) |
 | 7 | `flow_hash` verified against the manifest (C-45 PULL) |  ✓ | `V7` silent at P0–P2; the live bundle became rev99-wip mid-batch (V7 BLOCK, `evidence/validator-p3-inc001.txt`), and by operator ruling the batch is pinned to the declared rev98 bundle (skills `48154ab`), V7 clean from there on (`PLAN.md` header "Flow pin") |

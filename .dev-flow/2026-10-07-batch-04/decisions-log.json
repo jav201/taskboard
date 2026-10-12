@@ -2,7 +2,7 @@
   {
     "station": "P0",
     "date": "2026-10-07",
-    "decision": "standing authorization — the operator's 'HAz ambas, paraleliza': P0 approved. Batch 2026-10-07-batch-03 (the loose-items cleanup) opened by rollover from 2026-10-07-batch-02 (8-entry log archived); base_ref 34bab3c; the six items from BACKLOG: S-4 (migration cleanup-before-restore, MEDIUM), S-9 (non-text title at the load boundary, LOW), K2-1 (the kanban ? legend reads the filtered board, LOW), UX2-2 (the fold-row late-milestone marker, LOW), D-623 (rule-only band for a milestones-only project), milestones in lanes/agenda/focus; batch E (presentation mode) runs its PROTOTYPE ROUND in the .claude/worktrees/present-e worktree in parallel (per the flow's one-slot-per-checkout ruling); triggers B1 C5 C6 C8 D1 E1 fired; P1 next (a compact contract: the items are specified by the BACKLOG + the security reviews)."
+    "decision": "standing authorization — the operator's 'HAz ambas, paraleliza': P0 approved. Batch 2026-10-07-batch-03 (the loose-items cleanup) opened by rollover from 2026-10-07-batch-02 (8-entry log archived); base_ref 5f3c9bb; the six items from BACKLOG: S-4 (migration cleanup-before-restore, MEDIUM), S-9 (non-text title at the load boundary, LOW), K2-1 (the kanban ? legend reads the filtered board, LOW), UX2-2 (the fold-row late-milestone marker, LOW), D-623 (rule-only band for a milestones-only project), milestones in lanes/agenda/focus; batch E (presentation mode) runs its PROTOTYPE ROUND in the .claude/worktrees/present-e worktree in parallel (per the flow's one-slot-per-checkout ruling); triggers B1 C5 C6 C8 D1 E1 fired; P1 next (a compact contract: the items are specified by the BACKLOG + the security reviews)."
   },
   {
     "station": "P1",
@@ -32,7 +32,7 @@
   {
     "station": "P5",
     "date": "2026-10-07",
-    "decision": "merge reconciliation -- two batches closed on one trunk; state.json points at 2026-10-07-batch-04 with base_ref 46b16be (the parent batch-04 landed on), so the active-batch lens reads the diff the tip actually carries. Batch-03's sealed record keeps its own gate record at its own commit.",
+    "decision": "merge reconciliation -- two batches closed on one trunk; state.json points at 2026-10-07-batch-04 with base_ref 14eaada (the parent batch-04 landed on), so the active-batch lens reads the diff the tip actually carries. Batch-03's sealed record keeps its own gate record at its own commit.",
     "guided": false
   }
 ]

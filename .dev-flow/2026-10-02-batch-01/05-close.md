@@ -28,7 +28,7 @@
 | Field | Value |
 |---|---|
 | Gate record | `cd <home>/.claude/skills/dev-flow && PYTHONUTF8=1 python scripts/devflow-validate.py <project>` · exit 0 · **0 block** · 17 notice · 61 n/a · 2026-10-02 · `evidence/validator-close.txt`. Notices: V9 ×8, V22 (canon US), V23, V30 inherited from the base record; V26 contract over budget (declared at P2); V13, V22 (LLR owner), V53 census counts; V57 the dirty tree, declared in the next row |
-| Gated tree | `57a60756fda953bdde5d26c64bcf0eec202f44c8` · dirty — every change is in the working tree for the coordinator's commit (standing authorization: this agent does not commit): `taskboard/views.py`, `taskboard/app.py`, `taskboard/modals.py`, `tests/kg_board.py`, `tests/test_gantt_board.py`, `tests/test_colour_budget.py`, `tests/test_readme.py`, `tests/test_gantt.py`, `tests/test_app.py`, `tests/test_archive.py`, `tests/test_dependencies.py`, `tests/test_motion.py`, `tests/test_spend.py`, `tests/test_vertical_fill.py`, `tests/test_requirements.py`, `tests/test_cells.py`, `README.md`, `RUN.md`, `docs/taskboard-gantt.svg`, `.gitattributes`, `REQUIREMENTS.md`, `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-09-30-batch-01/decisions-log.json`, `.dev-flow/2026-10-02-batch-01/**` |
+| Gated tree | `dbcebe03f59162e231dea80e0212a6e27b4afe44` · dirty — every change is in the working tree for the coordinator's commit (standing authorization: this agent does not commit): `taskboard/views.py`, `taskboard/app.py`, `taskboard/modals.py`, `tests/kg_board.py`, `tests/test_gantt_board.py`, `tests/test_colour_budget.py`, `tests/test_readme.py`, `tests/test_gantt.py`, `tests/test_app.py`, `tests/test_archive.py`, `tests/test_dependencies.py`, `tests/test_motion.py`, `tests/test_spend.py`, `tests/test_vertical_fill.py`, `tests/test_requirements.py`, `tests/test_cells.py`, `README.md`, `RUN.md`, `docs/taskboard-gantt.svg`, `.gitattributes`, `REQUIREMENTS.md`, `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-09-30-batch-01/decisions-log.json`, `.dev-flow/2026-10-02-batch-01/**` |
 | Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`), folded with `devflow-init.py --fold-canon`: 30 folded, 0 kept, 0 refused |
 
 ---
@@ -114,7 +114,7 @@ LLR-101.10 and LLR-102.5 were amended at P4 (LED .29–.31).
 | app-wide colour budget, operator questions D4, D9, D10, D12, D13, D14, UXV-2, UXV-3, weekend shading | carried | same section |
 | UXV-7, UXV-9, `_strip` F5, panels < 3 rows, help right column, Setup sync interval, README audit #4/#10, outdated screenshots, S-8, S-5 | carried | same section |
 | UXV-12 not re-walked; inherited personal strings in state/BACKLOG | added at close | same section |
-| header refresh | done — 1611 tests, base `57a6075`; the base ref moves when the coordinator commits | `.dev-flow/BACKLOG.md` header |
+| header refresh | done — 1611 tests, base `dbcebe0`; the base ref moves when the coordinator commits | `.dev-flow/BACKLOG.md` header |
 
 ---
 

@@ -21,8 +21,8 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Batch | 2026-10-07-batch-04 |
 | Objective | Batch E of the kg_mejoras plan: the presentation mode behind R (replacing the report) -- the PRES-C interactive hybrid per the operator's verdict 2026-10-07 (gantt on top, brief blocks below, a ⟦━⟧ cursor expanding the notes), exporting SVG and PNG |
 | Standing authorization | Operator (username_subject), 2026-10-07: "Arranca y continua hasta terminar los cambios propuestos para el proyecto" + "HAz ambas, paraleliza" (the cleanup batch and this presentation batch in parallel, this one in the `present-e` worktree) + "Sigue usando Deepseek". Read with the established chain: autonomous gates with the two exceptions; the coordinator commits and pushes at each batch's close; synthetic boards only; implementing agents do NOT commit/push/stash |
-| First gate | the batch opened by rollover from 2026-10-07-batch-02 (`34bab3c`); the scaffold readback was clean (state.json `batch_id` rolled, the ledger seeded with LED-2026-10-07-batch-04.1); the tree then forked into `.claude/worktrees/present-e` so the parallel cleanup batch could land on main |
-| Premises / RC-1 | RC-1: no origin — local tip `34bab3c` (= `origin/main` as of batch C's push, unverified here); premises P-1..P-3 in `01-requirements.md` §2.7, all TRUE with executed evidence |
+| First gate | the batch opened by rollover from 2026-10-07-batch-02 (`5f3c9bb`); the scaffold readback was clean (state.json `batch_id` rolled, the ledger seeded with LED-2026-10-07-batch-04.1); the tree then forked into `.claude/worktrees/present-e` so the parallel cleanup batch could land on main |
+| Premises / RC-1 | RC-1: no origin — local tip `5f3c9bb` (= `origin/main` as of batch C's push, unverified here); premises P-1..P-3 in `01-requirements.md` §2.7, all TRUE with executed evidence |
 
 ## Triggers
 

@@ -2,7 +2,7 @@
   {
     "station": "P0",
     "date": "2026-10-02",
-    "decision": "batch opened by rollover from 2026-10-02-batch-02 (decisions_log archived to its decisions-log.json); core; flow pinned to rev98 by operator ruling at kickoff (verbatim: \"Sí, fijar a rev98\"; skills commit 48154ab, read-only snapshot; reason: ~/.claude/skills is rev99-wip and its SKILL.md fails V7); standing authorization = the operator's kickoff answers relayed in the commission; RC-1 origin/main == HEAD 13745f6; kickoff validator 0 block 18 notice (inherited, declared in PLAN.md); triggers B1 B4 C D E F2 fired, A judged not fired (D-310); US-301..303 READY, commission item 9 recorded as decision D-301; approved under the standing authorization; P1 is next."
+    "decision": "batch opened by rollover from 2026-10-02-batch-02 (decisions_log archived to its decisions-log.json); core; flow pinned to rev98 by operator ruling at kickoff (verbatim: \"Sí, fijar a rev98\"; skills commit 48154ab, read-only snapshot; reason: ~/.claude/skills is rev99-wip and its SKILL.md fails V7); standing authorization = the operator's kickoff answers relayed in the commission; RC-1 origin/main == HEAD 7f2e0a1; kickoff validator 0 block 18 notice (inherited, declared in PLAN.md); triggers B1 B4 C D E F2 fired, A judged not fired (D-310); US-301..303 READY, commission item 9 recorded as decision D-301; approved under the standing authorization; P1 is next."
   },
   {
     "station": "P1",
@@ -47,6 +47,6 @@
   {
     "station": "P5",
     "date": "2026-10-02",
-    "decision": "P5 closed under the standing authorization: canon folded (22 rows; LLR-306.1 reworded with its shall; HLR-003, LLR-003.2 superseded); BACKLOG reconciled (A2 done, 20 items added incl. PV-1..PV-10 and G-002 DEFER; header 1855 / 13745f6); privacy sweep 0 new hits; closing validator recorded in 05-close.md; the coordinator commits after the operator's visual verdict."
+    "decision": "P5 closed under the standing authorization: canon folded (22 rows; LLR-306.1 reworded with its shall; HLR-003, LLR-003.2 superseded); BACKLOG reconciled (A2 done, 20 items added incl. PV-1..PV-10 and G-002 DEFER; header 1855 / 7f2e0a1); privacy sweep 0 new hits; closing validator recorded in 05-close.md; the coordinator commits after the operator's visual verdict."
   }
 ]

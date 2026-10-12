@@ -2,7 +2,7 @@ UX walkthrough — batch 2026-10-02-batch-04 — Phase 4 — ux-reviewer
 ====================================================================
 Date: 2026-10-03. Trigger family D. Stack: Textual 8.2.8 TUI, Python 3.12.7.
 Trees walked: the working tree (the change) and `git archive HEAD taskboard`
-(the base, 56a1b10), for contrast only.
+(the base, be81d68), for contrast only.
 
 MECHANISM
 ---------

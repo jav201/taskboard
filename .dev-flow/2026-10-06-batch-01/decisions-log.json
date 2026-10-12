@@ -2,7 +2,7 @@
   {
     "station": "P0",
     "date": "2026-10-06",
-    "decision": "standing authorization — the operator's commission (read from the chain: 'Adelante' 2026-10-06 plus the pre-authorized split D-601; PLAN.md header carries the full wording): P0 approved. Batch 2026-10-06-batch-01 opened by rollover from 2026-10-04-batch-02 (its decisions_log, 17 entries, moved to .dev-flow/2026-10-04-batch-02/decisions-log.json); core; flow rev100, the installed bundle; RC-1 origin/main == HEAD == e085cef; RC-2 origin answered; kickoff validator 0 block 55 notice (inherited from closed batches, declared in PLAN.md); triggers B1 B4 C5 C6 C8 D1 D2 E1 F2 fired, A1-A4 judged not fired (the same judgement as the previous five batches); story US-604 READY (refinement in §2.6); P1 is next."
+    "decision": "standing authorization — the operator's commission (read from the chain: 'Adelante' 2026-10-06 plus the pre-authorized split D-601; PLAN.md header carries the full wording): P0 approved. Batch 2026-10-06-batch-01 opened by rollover from 2026-10-04-batch-02 (its decisions_log, 17 entries, moved to .dev-flow/2026-10-04-batch-02/decisions-log.json); core; flow rev100, the installed bundle; RC-1 origin/main == HEAD == d020ccb; RC-2 origin answered; kickoff validator 0 block 55 notice (inherited from closed batches, declared in PLAN.md); triggers B1 B4 C5 C6 C8 D1 D2 E1 F2 fired, A1-A4 judged not fired (the same judgement as the previous five batches); story US-604 READY (refinement in §2.6); P1 is next."
   },
   {
     "station": "P1",
@@ -62,6 +62,6 @@
   {
     "station": "P5",
     "date": "2026-10-06",
-    "decision": "standing authorization — the batch CLOSED at P5: the operator's visual verdict arrived 2026-10-07 (taskboard-veredicto-b2b.json: PV-612, PV-613, PV-614, PV-615, UXV-6 all accepted, no change requests); BACKLOG reconciled (the B2b entry marked done; the P4 residue carried; the F2 base ref re-stamped to e085cef); the canon folded (6 rows); 05-close.md written (including the first external-agent implementation on record — DeepSeek V4 Pro for increment 003, DeepSeek Flash for the second review); the close validator 0 block 56 notice; close gate 2512 passed 0 failed; the coordinator commits and pushes now, under the standing authorization ('Commit + push tras tu veredicto visual')."
+    "decision": "standing authorization — the batch CLOSED at P5: the operator's visual verdict arrived 2026-10-07 (taskboard-veredicto-b2b.json: PV-612, PV-613, PV-614, PV-615, UXV-6 all accepted, no change requests); BACKLOG reconciled (the B2b entry marked done; the P4 residue carried; the F2 base ref re-stamped to d020ccb); the canon folded (6 rows); 05-close.md written (including the first external-agent implementation on record — DeepSeek V4 Pro for increment 003, DeepSeek Flash for the second review); the close validator 0 block 56 notice; close gate 2512 passed 0 failed; the coordinator commits and pushes now, under the standing authorization ('Commit + push tras tu veredicto visual')."
   }
 ]

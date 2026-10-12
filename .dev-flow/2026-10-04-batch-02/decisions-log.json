@@ -2,7 +2,7 @@
   {
     "station": "P0",
     "date": "2026-10-04",
-    "decision": "standing authorization — the operator's kickoff commission (Gates: \"Autónomo + ambas excepciones\"): P0 approved. Batch opened by rollover from 2026-10-04-batch-01 (its decisions_log, 24 entries, moved to .dev-flow/2026-10-04-batch-01/decisions-log.json); core; flow rev100, the installed bundle (skills 1d3c364; operator: \"rev100, la instalada\"); RC-1 origin/main == HEAD == merge-base 4b2c13a; RC-2 origin answered; kickoff validator 0 block 31 notice (inherited, declared in PLAN.md); triggers B1 B4 C5 C6 C8 D1 D2 E1 F2 fired, A1-A4 judged not fired (D-602); stories US-601, US-602, US-603, US-605 READY; D-601: US-604 moving linked dates OUT to BACKLOG as B2b under the pre-authorized split (P-17: no move mode exists); P1 is next."
+    "decision": "standing authorization — the operator's kickoff commission (Gates: \"Autónomo + ambas excepciones\"): P0 approved. Batch opened by rollover from 2026-10-04-batch-01 (its decisions_log, 24 entries, moved to .dev-flow/2026-10-04-batch-01/decisions-log.json); core; flow rev100, the installed bundle (skills 1d3c364; operator: \"rev100, la instalada\"); RC-1 origin/main == HEAD == merge-base 7073592; RC-2 origin answered; kickoff validator 0 block 31 notice (inherited, declared in PLAN.md); triggers B1 B4 C5 C6 C8 D1 D2 E1 F2 fired, A1-A4 judged not fired (D-602); stories US-601, US-602, US-603, US-605 READY; D-601: US-604 moving linked dates OUT to BACKLOG as B2b under the pre-authorized split (P-17: no move mode exists); P1 is next."
   },
   {
     "station": "P1",

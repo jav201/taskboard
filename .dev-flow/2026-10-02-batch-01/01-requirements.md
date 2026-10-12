@@ -126,7 +126,7 @@ prototype code is a design source, not code to paste (`IMPLEMENTATION-PLAN.md` �
 | P-4 | On the rendered kanban and gantt the accent paints, besides today's rule, these non-focus marks: the gantt title, `cadena crítica N`, `└─►`; the kanban title, the `+Nd` relative-due token, the card `↗`, the horizon group's colour (`This week` label, its `▐`, the lanes `THIS WEEK` label) and the matrix percent | premise | ✅ TRUE | census over RENDERED spans (Q-24), base tree, oracle board + one URL card, every presentation × group mode: `evidence/p0-probes.txt` §P-4 | LLR-103.1..3 |
 | P-5 | `README.md` carries the personal OneDrive path 3× and `RUN.md` 1× | premise | ✅ TRUE | `grep -n OneDrive README.md RUN.md` → README 90, 108, 125; RUN 4 | LLR-104.1 |
 | P-6 | Nine views ship (`VIEW_ORDER`) and `?` is bound to `legend` (the help modal) | premise | ✅ TRUE | `VIEW_ORDER` len 9; `keymap.py:63` `Key("?", "?", "legend", "Map", …)` | LLR-104.1 |
-| P-7 | Base suite is green | premise | ✅ TRUE | `python -m pytest -q` at `57a6075` → 1535 passed in 131.49 s (`evidence/base-suite.txt`) | — |
+| P-7 | Base suite is green | premise | ✅ TRUE | `python -m pytest -q` at `dbcebe0` → 1535 passed in 131.49 s (`evidence/base-suite.txt`) | — |
 | P-8 | The critical chain of the oracle board is `tm2 → tm3 → tm4 → tm5` (4 tasks) | premise | ✅ TRUE | `critical_chain(kg_board.build())` → `['tm2','tm3','tm4','tm5']` | AT-106 |
 
 | P-9 | On the base tree `_select_first` keeps a done task selected in the gantt (the first visible task of the oracle board, `tw1`, is done) | premise | ✅ TRUE | qa-reviewer probe (Q-2): `visible_tasks` → `['tw1',…]`, `is_done(tw1)` True; `app.py:563-571` | LLR-101.9 |

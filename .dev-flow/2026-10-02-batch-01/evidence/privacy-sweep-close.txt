@@ -14,6 +14,6 @@ HIT onedrive x2: tests/test_readme.py
 swept 83 changed/added files (entity-decoded); 11 file-pattern hits
 $ python sweep_board.py .   # strings of the real board (~/.taskboard/board.json) over every changed/added file
 156 board strings (>=8 chars) vs 83 files: 0 files hit
-# Classification (orchestrator): README/RUN home-path = the generic ~/.taskboard/ data location (documented, not personal); tests/test_readme.py = the guard regexes themselves; onedrive = the premise/test wording, no path; .dev-flow/state.json owner (value-identical to HEAD 57a6075; the line is re-indented) and the e-mail/username strings on three lines of the git-identity note in .dev-flow/BACKLOG.md (byte-identical as a set with HEAD) = inherited, not introduced by this batch (operator item).
+# Classification (orchestrator): README/RUN home-path = the generic ~/.taskboard/ data location (documented, not personal); tests/test_readme.py = the guard regexes themselves; onedrive = the premise/test wording, no path; .dev-flow/state.json owner (value-identical to HEAD dbcebe0; the line is re-indented) and the e-mail/username strings on three lines of the git-identity note in .dev-flow/BACKLOG.md (byte-identical as a set with HEAD) = inherited, not introduced by this batch (operator item).
 # The privacy-sweep-close.txt hit is this file's own header (the word 'onedrive' in the command comment, written while the sweep ran).
 # security-reviewer close check (N3): 01-requirements.md:268 matches `Users/` inside the prose of the HOME_PATH regex itself, not a path; no username on that line.

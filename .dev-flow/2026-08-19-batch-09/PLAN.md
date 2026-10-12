@@ -6,7 +6,7 @@
 
 ## Verified at intake
 
-- Base: `main` @ `7d0e12d` (batch-08 merged).
+- Base: `main` @ `b5789f8` (batch-08 merged).
 - Suite green: `python -m pytest tests/ -q -k "not test_win_clipboard_roundtrip"` → 860 passed.
 - Prototype approved: `prototypes/lanes_gauge/out/lanes-gauge.html?variant=g2`.
 

@@ -1,7 +1,7 @@
 # CHUNK A — DeepSeek V4 Pro — increment 001 of batch 2026-10-07-batch-03 (the cleanup batch, MAIN checkout)
 
 You are the software-dev implementer for the SAFE-FIXES half of the cleanup batch in
-`<home>/Github/taskboard` (Textual TUI; 2529 pytest tests green at base 34bab3c).
+`<home>/Github/taskboard` (Textual TUI; 2529 pytest tests green at base 5f3c9bb).
 A second agent works in ANOTHER worktree (disjoint tree) — you own ONLY this checkout.
 Do NOT touch `tests/` (the tests agent is separate).
 

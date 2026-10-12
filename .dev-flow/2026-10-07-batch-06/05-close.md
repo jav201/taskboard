@@ -28,11 +28,11 @@
 | Field | Value |
 |---|---|
 | Gate record | `python "<home>/.claude/skills/dev-flow/scripts/devflow-validate.py" --brief .` → **5 block · 37 notice · exit 1** · 2026-10-07 — the close-out's validation loop over the filled record. The seed baseline (run before any close-out fill) read 0 block · 51 notice; the loop cleared every block reachable inside the close-out's writable set (`.dev-flow/**`): the packets' reserved fields, the RED counterfactuals, the review naming, the evidence digests, the V41 shape (evidence-home rows only). The 5 blocks that remain are ONE class, OUTSIDE `.dev-flow/**`: **5 × V22 — the canon fold-back** (`HLR-1201` · `HLR-1202` · `LLR-1201.1` · `LLR-1201.2` · `LLR-1202.1` are not yet tokens in the living canon `REQUIREMENTS.md`): discharge = `python "<home>/.claude/skills/dev-flow/scripts/devflow-init.py" --fold-canon` at the coordinator's commit step, then re-run — the same class batch-2026-10-07-batch-05 recorded and discharged at its commit; the close-out does not edit `REQUIREMENTS.md`, per the commission. **No `V2` finding fires** — the AT-1201/AT-1202 dash tokens the coordinator placed in the test files' docstrings (`tests/test_chainmap_app.py:1` · `tests/test_kanban_window.py:1`) satisfy the AT-token rule. The 37 NOTICEs are historical-batch lines (`V9`/`V13`/`V22`/`V23`/`V42`/`V53` over older sealed batches) plus the runtime-expected ones (`V27`'s decisions-log currency over the rolled `state.json` · `V30`'s bundle-floor half-derivation) | **Final run after the fold-canon discharge: 0 block · 37 notice · exit 0 · 2026-10-07.**
-| Gated tree | `8284d3af9a570ac773d5370c4308986f32adf2fc` · dirty — `taskboard/views.py` · `tests/{test_app,test_chainmap,test_chainmap_app,test_kanban_readable}.py` (the batch's frozen-surface edits) · `tests/test_kanban_window.py` (new) · `.dev-flow/2026-10-07-batch-06/` (the batch record, incl. `evidence/`) · `.dev-flow/BACKLOG.md` · `.dev-flow/state.json` · `.gitattributes` (the batch-06 evidence `-text` line the rollover added) · `.dev-flow/2026-10-07-batch-05/decisions-log.json` · `.dev-flow/rollover_batchg.py` — uncommitted **by design**: the coordinator commits and pushes once per batch under the operator's commission, after the verdict |
+| Gated tree | `cb02e72de0ac1585b42f838637ef6b4924b18f6c` · dirty — `taskboard/views.py` · `tests/{test_app,test_chainmap,test_chainmap_app,test_kanban_readable}.py` (the batch's frozen-surface edits) · `tests/test_kanban_window.py` (new) · `.dev-flow/2026-10-07-batch-06/` (the batch record, incl. `evidence/`) · `.dev-flow/BACKLOG.md` · `.dev-flow/state.json` · `.gitattributes` (the batch-06 evidence `-text` line the rollover added) · `.dev-flow/2026-10-07-batch-05/decisions-log.json` · `.dev-flow/rollover_batchg.py` — uncommitted **by design**: the coordinator commits and pushes once per batch under the operator's commission, after the verdict |
 | Requirements canon | `repo:REQUIREMENTS.md` — the living-canon fold-back for this batch's ids (US-1201/1202 · HLR-1201/1202 · LLR-1201.1/.2 · LLR-1202.1) is the coordinator's `--fold-canon` step at the commit (the close-out does not edit `REQUIREMENTS.md`, per the commission) |
 
 - **Found before the batch:** `none — no tracked file was modified when the batch began` (RC-1: local
-  `8284d3a` == `origin/main` at the open, pushed at batch-05's close; the batch-06 rollover's own
+  `cb02e72` == `origin/main` at the open, pushed at batch-05's close; the batch-06 rollover's own
   bookkeeping — `state.json`, the batch dir, `rollover_batchg.py`, the `.gitattributes` line — is the
   batch's, listed in the dirty set above)
 
@@ -154,7 +154,7 @@ implementing agent committed, pushed, or stashed anything.
 | `02-review.md` (the lenses) | 0 blocker · 0 major · 0 minor | ❌ | `none` | — |
 | `03-increments/increment-001..002.md` | the 16-row gates signed · M9-M12 executed per the transcript · digests verified | ❌ | `none` | — |
 | `04-validation.md` | `Result: PASS` · the ledger reconciles 2556 − 0 + 10 = 2566 | ❌ | `none` | — |
-| `05-close.md` | the `Gated tree` row binds `8284d3a` · C-44/C-45 answered | ❌ | `none` | — |
+| `05-close.md` | the `Gated tree` row binds `cb02e72` · C-44/C-45 answered | ❌ | `none` | — |
 | The code | the two full greens at 2566 · the M9-M12 battery all KILLED | ❌ | `none — not audited line by line beyond the packets' diff reads` | the untouched regions of views.py outside the diff hunks |
 | The commission (the operator's two reports) | recorded in `PLAN.md` + `state.json` | ✅ | — | the operator's own words |
 

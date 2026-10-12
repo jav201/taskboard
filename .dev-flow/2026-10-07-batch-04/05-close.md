@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Gate record | `python "<home>/.claude/skills/dev-flow/scripts/devflow-validate.py" --brief .` · exit 0 · 0 block · 41 notice · 2026-10-07 |
-| Gated tree | `34bab3c` + the batch's working copy — dirty: `taskboard/{views,app,keymap}.py`, `README.md`, `REQUIREMENTS.md` (the fold-canon), `tests/{test_present,present_board,test_report,test_keymap,test_markup_sites,test_markup_census}.py`, `.dev-flow/state.json`, `.gitattributes`, `.dev-flow/rollover_batche.py`, `.dev-flow/2026-10-07-batch-04/**`; the prototype round's dirs (`prototypes/kg_mejoras/`, `prototypes/present_e/`) stay on disk uncommitted — `.git/info/exclude`, house rule, with committed copies of the oracle frames and the verdict under `evidence/` |
+| Gated tree | `5f3c9bb` + the batch's working copy — dirty: `taskboard/{views,app,keymap}.py`, `README.md`, `REQUIREMENTS.md` (the fold-canon), `tests/{test_present,present_board,test_report,test_keymap,test_markup_sites,test_markup_census}.py`, `.dev-flow/state.json`, `.gitattributes`, `.dev-flow/rollover_batche.py`, `.dev-flow/2026-10-07-batch-04/**`; the prototype round's dirs (`prototypes/kg_mejoras/`, `prototypes/present_e/`) stay on disk uncommitted — `.git/info/exclude`, house rule, with committed copies of the oracle frames and the verdict under `evidence/` |
 | Requirements canon | `.dev-flow/BACKLOG.md` + the batch's `01-requirements.md` (the ids: US-1001, HLR-1001, LLR-1001.1, LLR-1001.2) |
 
 ## Objective outcome

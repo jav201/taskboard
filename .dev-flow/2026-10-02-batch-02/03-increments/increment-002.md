@@ -24,7 +24,7 @@ is bold bright (`.modal-title`); the help key map draws its heading and keys bol
 input borders keep the accent (the edited-field focus role). **Code review found a pre-existing
 bug, fixed here (D-218):** `;` never showed the key bar's `more` layer — the toggle read
 Textual's CSS `layer` (always `"default"`) instead of `bar_layer` — so half of "both layers" had
-been invisible since commit 8b73920.
+been invisible since commit 71c9616.
 
 ## 2 · Files modified
 
@@ -175,7 +175,7 @@ Gate run on the frozen round-1 tree: `python -m pytest -q -p no:cacheprovider` �
 
 ## 6 · Pending items / spec deviations
 
-- `;` showing the `more` layer is a visible behaviour change the operator has not seen since 8b73920 (D-218) — named in the close.
+- `;` showing the `more` layer is a visible behaviour change the operator has not seen since 71c9616 (D-218) — named in the close.
 
 ## 7 · Suggested next task
 

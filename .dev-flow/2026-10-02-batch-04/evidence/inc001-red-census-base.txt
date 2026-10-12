@@ -1,4 +1,4 @@
-== base export of HEAD 56a1b10 + this increment's new test files ==
+== base export of HEAD be81d68 + this increment's new test files ==
 == run 1: tests/test_markup_census.py
 E       AssertionError: Textual sinks fed a markup str:
 E           app.py:280 TaskboardApp._sweep_old_done notify(f"{len(moved)} task(s) finished more than {AUTO_ARCHIVE_DAYS} days ago were arch)

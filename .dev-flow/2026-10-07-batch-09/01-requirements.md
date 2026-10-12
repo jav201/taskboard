@@ -74,7 +74,7 @@
 
 | # | Premise, as a truth-apt proposition | Tier | Verdict | Executed evidence (command output / `file:line` — **NOT** a citation of another document) | Disposition |
 |---|---|---|---|---|---|
-| P-1 | The v1 store + the `I` picker + the batch-08 save all ship and green — scratch authoring reuses the store/picker seats and the same save/toast contract | base behavior | TRUE | `git show 979cf59 --stat` + the green suite | HLR-1501 composes them |
+| P-1 | The v1 store + the `I` picker + the batch-08 save all ship and green — scratch authoring reuses the store/picker seats and the same save/toast contract | base behavior | TRUE | `git show 68ec908 --stat` + the green suite | HLR-1501 composes them |
 
 - **Premise evaluation:** 1 premise(s) · ✅ TRUE
 

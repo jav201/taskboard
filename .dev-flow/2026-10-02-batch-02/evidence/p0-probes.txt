@@ -1,4 +1,4 @@
-$ python .dev-flow/2026-10-02-batch-02/evidence/p0_probes.py   # base a0e7d9a, 2026-10-02
+$ python .dev-flow/2026-10-02-batch-02/evidence/p0_probes.py   # base cfc28a3, 2026-10-02
 == P-1 accent census, 118x30, oracle board (+URL card, team, history, setup state)
   swimlanes waves: 25 accent run(s)
      row 0: '◆ TASKBOARD'

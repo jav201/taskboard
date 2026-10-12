@@ -76,7 +76,7 @@ Gate run on the frozen tree: `python -m pytest -q -p no:cacheprovider` → **185
 
 | Field | Value |
 |---|---|
-| **RED counterfactual** | AT-307's horizon arm and both 14-high arms and TC-311 RED on the increment-002 tree for the specified reason (the render taller than the panel, the viewport scrolled, the fold row past its bottom) · `evidence/inc003-red.txt` · the title-seat nodes RED on base `13745f6` (`a[b` printed for a-backslash-[b) · `evidence/inc003-red-on-base.txt` · restore digests in `evidence/inc003-mutations.txt` |
+| **RED counterfactual** | AT-307's horizon arm and both 14-high arms and TC-311 RED on the increment-002 tree for the specified reason (the render taller than the panel, the viewport scrolled, the fold row past its bottom) · `evidence/inc003-red.txt` · the title-seat nodes RED on base `7f2e0a1` (`a[b` printed for a-backslash-[b) · `evidence/inc003-red-on-base.txt` · restore digests in `evidence/inc003-mutations.txt` |
 
 | Field | Value |
 |---|---|

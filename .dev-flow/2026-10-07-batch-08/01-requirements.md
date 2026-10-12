@@ -74,7 +74,7 @@
 
 | # | Premise, as a truth-apt proposition | Tier | Verdict | Executed evidence (command output / `file:line` — **NOT** a citation of another document) | Disposition |
 |---|---|---|---|---|---|
-| P-1 | The v1 store + picker + insert all ship (batch-07, 2575 green) — authoring only writes `settings.templates` and reuses the read/insert seats | base behavior | TRUE | `git show bafa1e3 --stat` (the batch-07 files) + the green suite | HLR-1401 composes them |
+| P-1 | The v1 store + picker + insert all ship (batch-07, 2575 green) — authoring only writes `settings.templates` and reuses the read/insert seats | base behavior | TRUE | `git show 2d56030 --stat` (the batch-07 files) + the green suite | HLR-1401 composes them |
 
 - **Premise evaluation:** 1 premise(s) · ✅ TRUE
 

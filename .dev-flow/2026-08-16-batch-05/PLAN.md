@@ -17,7 +17,7 @@ The deliberation artifacts are in `prototypes/keybar_ideas/`.
 ## Verified at intake (executed, not asserted)
 
 - **RC-1 base currency:** `git fetch origin` 2026-08-16 → `HEAD == origin/main ==
-  merge-base == bfc000d`. Branch current. Working tree has one untracked
+  merge-base == 4c9d618`. Branch current. Working tree has one untracked
   deliberation directory: `prototypes/keybar_ideas/`.
 - **Flow currency (C-45 PULL):** `~/.claude/skills/dev-flow` == backup repo
   `~/kimi/agent-skills/dev-flow` at **rev25** (0 real diffs, 0 missing both

@@ -2,7 +2,7 @@
   {
     "station": "P0",
     "date": "2026-10-02",
-    "decision": "batch opened by rollover from 2026-10-02-batch-03 (decisions_log archived to its decisions-log.json, 10 entries); core; flow rev99, the installed bundle (operator at kickoff: \"rev99, la instalada\"); standing authorization = the operator's kickoff answers relayed in the commission (Gates \"Autónomo, agente Opus\"; Git \"Commit + push a main\", coordinator only; merge false); RC-1 origin/main == HEAD 56a1b10; kickoff validator 0 block 26 notice (inherited, declared in PLAN.md); triggers B1 B4 C D E F2 fired, A judged not fired (D-401); US-401..403 READY; approved under the standing authorization; P1 is next."
+    "decision": "batch opened by rollover from 2026-10-02-batch-03 (decisions_log archived to its decisions-log.json, 10 entries); core; flow rev99, the installed bundle (operator at kickoff: \"rev99, la instalada\"); standing authorization = the operator's kickoff answers relayed in the commission (Gates \"Autónomo, agente Opus\"; Git \"Commit + push a main\", coordinator only; merge false); RC-1 origin/main == HEAD be81d68; kickoff validator 0 block 26 notice (inherited, declared in PLAN.md); triggers B1 B4 C D E F2 fired, A judged not fired (D-401); US-401..403 READY; approved under the standing authorization; P1 is next."
   },
   {
     "station": "P1",

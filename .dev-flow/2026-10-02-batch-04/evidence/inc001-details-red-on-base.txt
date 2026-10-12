@@ -1,6 +1,6 @@
 $ python -B -m pytest -q -p no:cacheprovider -rA tests/test_details_markup.py
-# tree: git archive 56a1b10 (base; taskboard/ unmodified) with tests/test_details_markup.py from the working tree (round 2, HOSTILE extended)
-# base export check: diff -r against a fresh `git archive 56a1b10 taskboard` -> identical
+# tree: git archive be81d68 (base; taskboard/ unmodified) with tests/test_details_markup.py from the working tree (round 2, HOSTILE extended)
+# base export check: diff -r against a fresh `git archive be81d68 taskboard` -> identical
 # taskboard imported from the export: True
 C:\Users\<user>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
 The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"

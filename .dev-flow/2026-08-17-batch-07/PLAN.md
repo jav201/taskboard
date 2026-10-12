@@ -12,7 +12,7 @@ marked `pinned` (and projects marked `pinned`) appear. Three presentations:
 
 ## Verified at intake
 
-- **RC-1 base currency:** batch-06 just merged to `origin/main` @ `449aebe`; local `main` is current.
+- **RC-1 base currency:** batch-06 just merged to `origin/main` @ `2ce78ed`; local `main` is current.
 - **Flow currency:** local dev-flow mirror verified current against `~/.claude/commands/` (no diff).
 - **Prototype approved:** `prototypes/focus-board-prototype.html`, variants A/C/D.
 

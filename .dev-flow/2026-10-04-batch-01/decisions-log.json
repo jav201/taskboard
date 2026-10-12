@@ -2,7 +2,7 @@
   {
     "station": "P0",
     "date": "2026-10-04",
-    "decision": "batch opened by rollover from 2026-10-02-batch-04 (decisions_log archived to its decisions-log.json, 28 entries); core; flow PINNED to rev99, the read-only snapshot of skills commit 1154c8a (operator at kickoff: \"Fijar a rev99\"; rev100 in progress fails V7); standing authorization = the operator's kickoff answers relayed in the commission (Gates \"Autónomo + regla de HIGH de pruebas\"; Git \"Commit + push tras tu veredicto visual\", coordinator only; merge false; migration safeguard \"Respaldo automático + deshacer\"); RC-1 origin/main == HEAD 0447070; kickoff validator 0 block 26 notice (inherited, declared in PLAN.md); triggers B1 B4 C D E F2 fired, A judged not fired (D-502); D-501: B1 only (US-501..505 READY), B2 (milestones, moving linked dates, the M-3 offer) to BACKLOG under the pre-authorized split; approved under the standing authorization; P1 is next."
+    "decision": "batch opened by rollover from 2026-10-02-batch-04 (decisions_log archived to its decisions-log.json, 28 entries); core; flow PINNED to rev99, the read-only snapshot of skills commit 1154c8a (operator at kickoff: \"Fijar a rev99\"; rev100 in progress fails V7); standing authorization = the operator's kickoff answers relayed in the commission (Gates \"Autónomo + regla de HIGH de pruebas\"; Git \"Commit + push tras tu veredicto visual\", coordinator only; merge false; migration safeguard \"Respaldo automático + deshacer\"); RC-1 origin/main == HEAD f599b8c; kickoff validator 0 block 26 notice (inherited, declared in PLAN.md); triggers B1 B4 C D E F2 fired, A judged not fired (D-502); D-501: B1 only (US-501..505 READY), B2 (milestones, moving linked dates, the M-3 offer) to BACKLOG under the pre-authorized split; approved under the standing authorization; P1 is next."
   },
   {
     "station": "P1",
@@ -89,7 +89,7 @@
   {
     "station": "P5",
     "date": "2026-10-04",
-    "decision": "P5 close under the standing authorization: security close pass PASS-WITH-NOTES (F1 LOW → D-530, operator and BACKLOG); BACKLOG reconciled (B1 done; B2 and 14 findings added; base ref 0447070, refreshed 2026-10-04); canon folded (18 rows, evidence/p5-fold-canon.txt); close captures re-shot on the final product (base lanes re-shot, ux E-1); PV-1..PV-7 handed to the operator with base→close captures; working tree left for the coordinator's commit after the visual verdict",
+    "decision": "P5 close under the standing authorization: security close pass PASS-WITH-NOTES (F1 LOW → D-530, operator and BACKLOG); BACKLOG reconciled (B1 done; B2 and 14 findings added; base ref f599b8c, refreshed 2026-10-04); canon folded (18 rows, evidence/p5-fold-canon.txt); close captures re-shot on the final product (base lanes re-shot, ux E-1); PV-1..PV-7 handed to the operator with base→close captures; working tree left for the coordinator's commit after the visual verdict",
     "by": "software-dev (standing authorization: autonomous gates)"
   },
   {

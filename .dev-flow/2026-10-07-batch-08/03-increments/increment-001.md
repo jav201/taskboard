@@ -326,7 +326,7 @@ the close number; the orchestrator's C-25 owns the ONE final clean-tree run.
 ## 6 · Pending items / spec deviations
 
 - None open in this increment. The batch-06 visual re-verdict backlog item was CLOSED by the
-  coordinator's fold before this batch closed (commit `762d18c`, operator verdict "Se ve bien."
+  coordinator's fold before this batch closed (commit `782a102`, operator verdict "Se ve bien."
   2026-10-08, all four accepted — `2026-10-07-batch-06/evidence/veredicto-batch06.json`); it is
   recorded as done in the backlog and is NOT reopened here. The only spec deviation: the README
   row outside the brief's file list (forced by the shipped census test — declared in §2, §4, and

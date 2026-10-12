@@ -1,5 +1,5 @@
 $ python -B -m pytest -q -p no:cacheprovider -rA tests/test_markup_sites.py -k AT_407
-# env: PYTHONIOENCODING=utf-8 (so the painted middle dot is recorded, not replaced); tree: increment-001 working tree on 56a1b10, increment 002 not applied
+# env: PYTHONIOENCODING=utf-8 (so the painted middle dot is recorded, not replaced); tree: increment-001 working tree on be81d68, increment 002 not applied
 <home>\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
 The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
 

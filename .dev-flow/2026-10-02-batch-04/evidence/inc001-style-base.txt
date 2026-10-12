@@ -1,5 +1,5 @@
 $ python -B .dev-flow/2026-10-02-batch-04/evidence/inc001_style_base.py
-tree: HEAD 56a1b10; taskboard/ modified against HEAD: no
+tree: HEAD be81d68; taskboard/ modified against HEAD: no
     'details title': {'bold': True, 'dim': False, 'reverse': False, 'underline': False, 'color': '#8b98a5'},
     'details title tail': {'bold': True, 'dim': False, 'reverse': False, 'underline': False, 'color': '#8b98a5'},
     'details — placeholders': [{'bold': False, 'dim': False, 'reverse': False, 'underline': False, 'color': '#9ca2a8'}, {'bold': False, 'dim': False, 'reverse': False, 'underline': False, 'color': '#606a75'}, {'bold': False, 'dim': False, 'reverse': False, 'underline': False, 'color': '#606a75'}],

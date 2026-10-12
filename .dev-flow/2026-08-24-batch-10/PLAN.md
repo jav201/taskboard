@@ -12,7 +12,7 @@ su propio batch por ser cross-repo (decisión del operador).
 ## Verified at intake
 
 - **Base-currency (RC-1):** `git fetch origin` → merge-base == `origin/main` tip
-  == `b56d9d5` (el fix del countdown kanban, pusheado hoy). No stale tree.
+  == `56654f5` (el fix del countdown kanban, pusheado hoy). No stale tree.
 - **Suite green:** 880 passed (`test_win_clipboard_roundtrip` flake ambiental
   pre-existente, reproducido en árbol limpio; se excluye por convención).
 - **Already-shipped check:** `git grep velocity/throughput origin/main` → solo
@@ -636,7 +636,7 @@ $ git status --short
 ?? prototypes/vista/
 ```
 
-All batch-10 touched files are committed in `0cf0e72`. The untracked
+All batch-10 touched files are committed in `8a800ca`. The untracked
 `prototypes/*` directories belong to a parallel batch-11 exploration and are
 NOT part of this batch. No uncommitted batch-10 changes remain; no reverts
 were needed.
@@ -658,7 +658,7 @@ were needed.
 
 **Status:** complete.
 
-- `.dev-flow/BACKLOG.md` refreshed with new base ref `0cf0e72`, test count
+- `.dev-flow/BACKLOG.md` refreshed with new base ref `8a800ca`, test count
   (1024 green), and a "Shipped — batch-10" section summarizing scope and
   deferring US-C.
 - `README.md` was already updated in increment 2 for the new `7` Flow view

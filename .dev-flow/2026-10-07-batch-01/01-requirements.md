@@ -60,7 +60,7 @@
 |----|------------|--------|------------|
 | US-701 | As the maintainer, I want the P4 residue closed — one restore rule, one today-base rule, the totals documented, the C-5 arm and the narrow-width toast rungs pinned — so that the shipped cascade cannot silently drift from its tested primitives. | P4 findings DS-5, ARCH4-3/4, SEC4-3/6, GAP-3 of batch 2026-10-06-batch-01 (`.dev-flow/2026-10-06-batch-01/04-validation.md`) | READY |
 
-**US-701 — refinement:** INVEST all ✓ (the five items are named, severitized and behavior-specified by the P4 findings; the refactor is behavior-preserving by definition, its oracle the 2512-test suite at `f665425`). Classification: READY.
+**US-701 — refinement:** INVEST all ✓ (the five items are named, severitized and behavior-specified by the P4 findings; the refactor is behavior-preserving by definition, its oracle the 2512-test suite at `20b0b86`). Classification: READY.
 
 #### Refinement log (one block per story)
 

@@ -9,7 +9,7 @@
 
 > **Mode: validation.** Author: `qa-reviewer` (named sub-agent, `agents/qa-reviewer.md`), 2026-10-02. **Iteration 3:** re-issued on the frozen tree, after increment 004 round 3. Iteration 2's FAIL rested on stale gate evidence (G-010) and is superseded.
 > **Who executed what.**
-> 1. **The gate run.** It was **re-executed by the orchestrator** on the frozen tree (base `57a6075` + increments 001–004 round 3): `python -m pytest -q -p no:cacheprovider` → **1611 passed in 162.76 s, exit 0**. The transcript (redacted) is `evidence/full-suite-close.txt`, overwritten, and its header names the round-3 frozen tree. I read the tail from that run's own output and did not run the suite. **Revision check (`executed` by qa-reviewer):** the transcript was written at 09:28:18. The newest file under `taskboard/` and the three new test files is `taskboard/views.py` at 09:21:32, so the run postdates every edit. The 1606 and 1610 runs of iterations 1–2 are superseded.
+> 1. **The gate run.** It was **re-executed by the orchestrator** on the frozen tree (base `dbcebe0` + increments 001–004 round 3): `python -m pytest -q -p no:cacheprovider` → **1611 passed in 162.76 s, exit 0**. The transcript (redacted) is `evidence/full-suite-close.txt`, overwritten, and its header names the round-3 frozen tree. I read the tail from that run's own output and did not run the suite. **Revision check (`executed` by qa-reviewer):** the transcript was written at 09:28:18. The newest file under `taskboard/` and the three new test files is `taskboard/views.py` at 09:21:32, so the run postdates every edit. The 1606 and 1610 runs of iterations 1–2 are superseded.
 > 2. **RED-on-base transcripts and mutation batteries.** These were **executed by the increment author** and recorded in `03-increments/increment-00N.md` + `evidence/`, including `inc004-red.txt` and `inc004-mutations.txt` (4 of 4 KILLED). I evaluate them here.
 > 3. **My own checks.** I ran only read-only checks, each `executed` by `qa-reviewer`:
 >    - `pytest --collect-only -q -p no:cacheprovider` to prove each node id below exists on disk: **1611 collected** = the gate run's 1611 passed; 77 in the three new files.
@@ -194,7 +194,7 @@ Every AT drives `TaskboardApp` through `App.run_test()` and reads the painted pa
 | `1535` | `4` | `80` | `1611` | `1611` | `n/a — the project's CI command is the full suite (no slow marker)` / `1611` | yes |
 
 - **Sources:**
-  - base: `evidence/base-suite.txt` (1535 passed at `57a6075`).
+  - base: `evidence/base-suite.txt` (1535 passed at `dbcebe0`).
   - increment 001: `1588 = 1535 − 4 + 57`. The 4 deleted are the gantt arm of `test_every_view_marks_an_archived_row` and the 3 gantt arms of the bottom-axis law. The 57 added are 48 in `test_gantt_board.py`, 3 legend-row arms and 6 nodes of `test_readme.py`.
   - increment 002: `1606 = 1588 − 0 + 18`: 14 in `test_colour_budget.py`, 1 trailing-backslash node and 3 more `test_readme.py` nodes.
   - increment 003 adds nothing of its own; its nodes are counted inside 001/002.

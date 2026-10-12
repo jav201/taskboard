@@ -74,7 +74,7 @@ Gate run on frozen r3: `python -m pytest -q -p no:cacheprovider` → **2346 pass
 
 | Field | Value |
 |---|---|
-| **RED counterfactual** | the new tests on the base product (`git archive 4b2c13a` + this increment's tests): collection `ImportError` (`MILESTONE_NEEDS_DATE` absent) — `evidence/inc001-red-on-base.txt`; with the two new imports stubbed, AT-601 fails on its first read after `M` (`KeyError: 'milestone'`: `M` changed nothing) — `evidence/inc001-at601-red-on-base.txt` (code review F-5); the folds RED-first: F-4 `inc001-f4-red.txt`, F2-1 `inc001-f2-1-red.txt`. Base product bytes untouched (an export, not the working tree) |
+| **RED counterfactual** | the new tests on the base product (`git archive 7073592` + this increment's tests): collection `ImportError` (`MILESTONE_NEEDS_DATE` absent) — `evidence/inc001-red-on-base.txt`; with the two new imports stubbed, AT-601 fails on its first read after `M` (`KeyError: 'milestone'`: `M` changed nothing) — `evidence/inc001-at601-red-on-base.txt` (code review F-5); the folds RED-first: F-4 `inc001-f4-red.txt`, F2-1 `inc001-f2-1-red.txt`. Base product bytes untouched (an export, not the working tree) |
 
 | Field | Value |
 |---|---|

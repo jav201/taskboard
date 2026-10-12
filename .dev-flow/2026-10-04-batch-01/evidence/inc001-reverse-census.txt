@@ -1,4 +1,4 @@
-## inc001 reverse census — 2026-10-03 — tree base 0447070 + increment 001
+## inc001 reverse census — 2026-10-03 — tree base f599b8c + increment 001
 
 ### Q-1: test files that start TaskboardApp AND hold a link or a blocked task (grep)
 tests/test_app.py: depends_on=10 blocked=True=4 kg_board=0

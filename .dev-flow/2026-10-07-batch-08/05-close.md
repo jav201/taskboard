@@ -28,12 +28,12 @@
 | Field | Value |
 |---|---|
 | Gate record | `python "<home>/.claude/skills/dev-flow/scripts/devflow-validate.py" --brief .` — seed baseline (before any close-out fill, over the unchanged seed files): **0 block · 52 notice · exit 0** · 2026-10-07 · mid-loop (record filled, close not yet written): **0 block · 42 notice · exit 0** · 2026-10-07 · **final loop over the complete record: 2 block · 39 notice · exit 1** · 2026-10-07. The seed carried no block: the 52 notices were the unfilled-seed placeholders (V31-V44/V47-V51/V54 — cleared by this record pass) over the historical and runtime/standing lines. **The 2 remaining blocks are ONE class, OUTSIDE the close-out's writable set: 2 × V22 — the canon fold-back** (`HLR-1401` · `LLR-1401.1` are declared as headings in the active batch's `01-requirements.md` but are not yet tokens in the living canon `REQUIREMENTS.md`; the rule fires only once the close exists): discharge = `python "<home>/.claude/skills/dev-flow/scripts/devflow-init.py" --fold-canon` at the coordinator's commit step, then re-run — the same class batch-2026-10-07-batch-07 recorded and discharged at its commit; this close-out does not edit `REQUIREMENTS.md`, per the commission. **No `V2` finding fires** — the AT-1401 dash token the rule reads sits in `tests/test_template_save_app.py`'s docstring (line 3, verified). The 39 notices: the historical/standing set (V9/V13/V22/V23/V27/V30/V42/V53 over older sealed batches, the runtime floor, V56) **plus V57's dirty-tree notice** — expected, the `Gated tree` row below declares the dirty set by design, uncommitted until the coordinator's commit. The V56 notice stands by design — the packet names both transcripts (the `6 failed`/`2 failed` sit in `evidence/mutations.log`'s deliberate per-mutant REDs and `evidence/inc001-run.log:1108`'s first full-suite attempt, tabled in increment-001 §4) and the rule's under-report branch is a notice, never a refusal | **Final run after the fold-canon discharge: 0 block · 39 notice · exit 0 · 2026-10-07.**
-| Gated tree | `762d18cc4de2cf9a595fa3c49c29599b9f9524da` · dirty — `taskboard/{models,app,keymap,views}.py` · `README.md` (the batch's edits) · `tests/test_template_save.py` · `tests/test_template_save_app.py` (new) · `.dev-flow/2026-10-07-batch-08/` (the batch record, incl. `evidence/`) · `.dev-flow/BACKLOG.md` · `.dev-flow/state.json` · `.gitattributes` (the batch-08 evidence `-text` line the rollover added — verified present at `.gitattributes:16`) · `.dev-flow/2026-10-07-batch-0{5,6,7}/decisions-log.json` · `.dev-flow/rollover_batch{g,h,i}.py` — uncommitted **by design**: the coordinator commits and pushes once per batch under the operator's commission, after the verdict |
+| Gated tree | `782a1024d760e0e392b2b0eb687392d65a53c6cd` · dirty — `taskboard/{models,app,keymap,views}.py` · `README.md` (the batch's edits) · `tests/test_template_save.py` · `tests/test_template_save_app.py` (new) · `.dev-flow/2026-10-07-batch-08/` (the batch record, incl. `evidence/`) · `.dev-flow/BACKLOG.md` · `.dev-flow/state.json` · `.gitattributes` (the batch-08 evidence `-text` line the rollover added — verified present at `.gitattributes:16`) · `.dev-flow/2026-10-07-batch-0{5,6,7}/decisions-log.json` · `.dev-flow/rollover_batch{g,h,i}.py` — uncommitted **by design**: the coordinator commits and pushes once per batch under the operator's commission, after the verdict |
 | Requirements canon | `repo:REQUIREMENTS.md` — the living-canon fold-back for this batch's ids (US-1401 · HLR-1401 · LLR-1401.1) is the coordinator's `--fold-canon` step at the commit when the rule fires it (this close-out does not edit `REQUIREMENTS.md`, per the commission) |
 
 - **Found before the batch:** `none — no tracked file was modified when the batch began` (RC-1: local
-  `9a13c12` == `origin/main` at the open, `state.json` `base_ref`; re-verified at this close by
-  `git rev-parse HEAD origin/main` — both now at `762d18c`, the batch-06 verdict commit the
+  `c3aced3` == `origin/main` at the open, `state.json` `base_ref`; re-verified at this close by
+  `git rev-parse HEAD origin/main` — both now at `782a102`, the batch-06 verdict commit the
   coordinator landed on top of the base, docs-only). The untracked `decisions-log.json` files
   (batch-05/06/07) and `rollover_batch{g,h}.py` predate the batch — the coordinator's carried
   bookkeeping, listed in the dirty set; the batch-08 rollover's own files (the batch dir,
@@ -94,7 +94,7 @@ settled run, 2586 collected at this close.
 | Control | What failure it closes | Measured origin |
 |---|---|---|
 | — (candidate, not minted) — the key-name-before-key-literal rule: when a contract names a punctuation key, bind the Textual key NAME (probe `_character_to_key`) and ship the literal as the DISPLAY — never bind the literal (Textual's binding grammar treats `,` as the alias separator and dies at construction) | a keymap line that kills COLLECTION with `InvalidBinding` — the first `,` construction died before any test ran (`evidence/inc001-run.log:978-1000`); the batch-07 parent rule (grep the shipped seat before the contract freezes a key) catches collisions, NOT grammar traps — this is its complement | this batch's executed evidence + batch-07's T-key stop (the seat-check candidate is now THREE batches deep) |
-| — (candidate, not minted) — the golden-frame documentation-seat rule: a new chainmap key that must not disturb the byte-golden footer documents at the docked-keybar + `?` seats instead, and the record declares the trade | an in-frame hint edit that would reopen the byte-exact oracle the operator re-verified at `762d18c` — this batch deliberately vetoed its own footer hint and recorded the discoverability trade | `02-review.md` observation (a) · the packet's §1/§5 · the close's lessons |
+| — (candidate, not minted) — the golden-frame documentation-seat rule: a new chainmap key that must not disturb the byte-golden footer documents at the docked-keybar + `?` seats instead, and the record declares the trade | an in-frame hint edit that would reopen the byte-exact oracle the operator re-verified at `782a102` — this batch deliberately vetoed its own footer hint and recorded the discoverability trade | `02-review.md` observation (a) · the packet's §1/§5 · the close's lessons |
 
 **The four landings — record which ones actually happened:**
 
@@ -141,7 +141,7 @@ settled run, 2586 collected at this close.
 |---|---|---|
 | US-1401 — save a chain as a template from the app (the operator's 'continua junto con deepseek lo que sigue' 2026-10-07 — the batch-07 carry) | ✅ done in `2026-10-07-batch-08` (the walk + the action + the view-scoped `comma` key + the doc seats; AT-1401's 11 arms; M16/M17 KILLED) | BACKLOG · `03-increments/increment-001.md` |
 | Template authoring from the app — v2 (queued at batch-07, the backlog's ONLY open feature item) | ✅ **CLOSED** — shipped by this batch; struck in place in the "Open — after `2026-10-07-batch-07`" section | BACKLOG |
-| the batch-06 visual re-verdict (amended C-2b frames + the new chrome) | **CLOSED before this batch closed** — the coordinator folded the operator's verdict ("Se ve bien.", all four accepted) at `762d18c`; the backlog's re-verdict item reads done; NOT reopened here | BACKLOG · `2026-10-07-batch-06/evidence/veredicto-batch06.json` |
+| the batch-06 visual re-verdict (amended C-2b frames + the new chrome) | **CLOSED before this batch closed** — the coordinator folded the operator's verdict ("Se ve bien.", all four accepted) at `782a102`; the backlog's re-verdict item reads done; NOT reopened here | BACKLOG · `2026-10-07-batch-06/evidence/veredicto-batch06.json` |
 | carries | NOTHING new open — the "Open — after `2026-10-07-batch-08`" section reads "Nothing new from this batch"; the G-011 environmental flake line stands as the only standing item | the "Open — after `2026-10-07-batch-08`" section in `.dev-flow/BACKLOG.md` |
 
 ---
@@ -176,17 +176,17 @@ open_items_next: 0
 | `02-review.md` (the lenses) | 0 blocker · 0 major · 0 minor — two declared observations | ❌ | `none` | — |
 | `03-increments/increment-001.md` | the 16-row gate signed · M16/M17 executed per the transcript · digests verified | ❌ | `none` | — |
 | `04-validation.md` | `Result: PASS` · the ledger reconciles 2575 − 0 + 11 = 2586 | ❌ | `none` | — |
-| `05-close.md` | the `Gated tree` row binds `762d18c` · C-44/C-45 answered | ❌ | `none` | — |
+| `05-close.md` | the `Gated tree` row binds `782a102` · C-44/C-45 answered | ❌ | `none` | — |
 | The code | the settled full run 2585 + the declared flake · the M16-M17 battery all KILLED | ❌ | `none — not audited line by line beyond the packet's diff reads` | the untouched regions of the product files outside the diff hunks |
 | The commission (the operator's request) | recorded in `PLAN.md` + `state.json` | ✅ | — | the operator's own words |
-| The batch-06 visual verdict fold | `762d18c` == the coordinator's commit on top of the base, re-verified by `git rev-parse` | ✅ | — | the operator's "Se ve bien." — the human verdict itself, accepted as given |
+| The batch-06 visual verdict fold | `782a102` == the coordinator's commit on top of the base, re-verified by `git rev-parse` | ✅ | — | the operator's "Se ve bien." — the human verdict itself, accepted as given |
 
 - **Human perimeter:** `the operator's 2026-10-07 words are the commissioning input — "si no hay nada
   que decidir continua junto con deepseek lo que sigue" — read with the established chain: the
   gates run autonomously under the two exceptions; the COORDINATOR commits and pushes at each close
   (no PR); synthetic boards only; the implementing agents do NOT commit/push/stash. The batch-06
   visual verdict arrived mid-batch ("Se ve bien.", all four accepted) and was folded by the
-  coordinator at 762d18c before this close — the record carries it as done, not pending. The
+  coordinator at 782a102 before this close — the record carries it as done, not pending. The
   auto-mode decision record: (1) at P1 the coordinator scoped the queued carry to its contract —
   one increment, one HLR, the fan-in drop and the no-undo semantics declared in the text; (2) the
   `,` key's group deviated from the brief's guess to the shipped seat (task) at the agent's seat
@@ -210,7 +210,7 @@ open_items_next: 0
   control is recorded in §2.
 - **Golden frames veto in-frame hints; the keybar and `?` are the documentation seats.** The
   chainmap footer's key-hint row is byte-golden in the C-2b frames the operator re-verified at
-  762d18c. Shipping `,` WITHOUT touching it costs nothing discoverable — the docked keybar
+  782a102. Shipping `,` WITHOUT touching it costs nothing discoverable — the docked keybar
   re-derives from the keymap seat and the `?` bullet names the key — while touching it would have
   reopened the oracle. First batch where a golden frame actively vetoed an in-frame hint; the
   trade is declared, and recurrence makes it a rule.

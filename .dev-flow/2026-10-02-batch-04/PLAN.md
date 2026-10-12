@@ -26,11 +26,11 @@ never reach the terminal from a board or a synced file; the details view shows i
 
 ## RC-1 and flow currency
 
-- RC-1 (a): `git fetch origin` → `origin/main` = `56a1b10cc466` = HEAD = merge-base; nothing to rebase. `base_ref` stamped from it.
-- RC-2: `git ls-remote --exit-code --heads origin` answered (exit 0); `origin/main`'s newest commit 2026-10-02 21:08 −0600 (`56a1b10`).
+- RC-1 (a): `git fetch origin` → `origin/main` = `be81d68e5c9c` = HEAD = merge-base; nothing to rebase. `base_ref` stamped from it.
+- RC-2: `git ls-remote --exit-code --heads origin` answered (exit 0); `origin/main`'s newest commit 2026-10-02 21:08 −0600 (`be81d68`).
 - RC-1 (b): no story already shipped on `origin/main` (`01-requirements.md` §2.6, P-3, P-4, P-5, P-8).
 - Rollover from `2026-10-02-batch-03` (P5 closed): its `decisions_log` MOVED to `.dev-flow/2026-10-02-batch-03/decisions-log.json` (10 entries); every single-slot field retired per `stations/shared-batch.md` §Batch rollover (triggers re-evaluated below, artifacts cleared, homes re-pointed, owner re-stamped, authorization re-recorded from this batch's commission, `base_ref` = HEAD, `created_at` re-stamped); `mode_history` carried and appended. Seeds from the installed bundle's `devflow-init.py` run in a scratch tree (it refuses an initialised `.dev-flow/`), batch id substituted; `.gitattributes` gains this batch's `evidence/** -text`; the build caches were already in `.git/info/exclude`. The increment skeleton is held back until P3 so no packet precedes its increment.
-- Flow: rev99 (`flow_hash 16c4f1a047699996`); `V7` clean. From P4 (2026-10-03 13:24) the installed `SKILL.md` carries rev100 work by another session and fails `V7`; the validator runs from a read-only snapshot of the rev99 commit `1154c8a` (D-420). Validator at kickoff (coordinator, `56a1b10`): **0 block · 26 notice**, exit 0 — re-run by this agent before the rollover: same.
+- Flow: rev99 (`flow_hash 16c4f1a047699996`); `V7` clean. From P4 (2026-10-03 13:24) the installed `SKILL.md` carries rev100 work by another session and fails `V7`; the validator runs from a read-only snapshot of the rev99 commit `1154c8a` (D-420). Validator at kickoff (coordinator, `be81d68`): **0 block · 26 notice**, exit 0 — re-run by this agent before the rollover: same.
 - **Inherited NOTICEs declared** (all 26 predate this batch): `V9` ×8 legacy packets (`increment-001..003`, `006..010` in the flat `.dev-flow/03-increments/`) declare no SOURCE count, ×1 batch-02's `increment-002.md` 4-source warning; `V13` ×2 batch-01's IFC address `nav-order` reached by undeclared files, and batch-03's computed addresses; `V22` ×3 LLRs of batches 01/02 never used as an IFC owner and 5 legacy US ids not in the canon; `V23` an unparseable design-review citation in legacy `increment-006.md`; `V26` batch-03's live contract over its size budget; `V30` the bundle derives its floors from a subset (benign on this runtime, `SKILL.md`); `V42` ×7 deferral markers in batch-03's record without a keyed backlog entry; `V53` the closed-record census count; `V57` batch-03's close record predates this tree by 1 commit (the coordinator's commit). None is this batch's to fix; a closed record is not re-anchored.
 - Not runnable here (`SKILL.md` step 4): `V15`, `V16`, `V17` — `not-run` (no canon tree, no checkout table, no hook settings on a bundle runtime).
 - Mechanisms unavailable on this runtime, named once (`SKILL.md` step 5): no slash commands, no hooks, no prompt guard, no operator prompt (the standing authorization above closes the gates). Reviewer roles are **spawned as named sub-agents** of this runtime (`qa-reviewer`, `architect`, `security-reviewer`, `ux-reviewer`, `code-reviewer`, `tester`), each told to follow the installed bundle's `agents/<role>.md` — independent reviewers, never inline self-review.
@@ -47,7 +47,7 @@ never reach the terminal from a board or a synced file; the details view shows i
 | C | fired | `devflow-scan-spec.py` → `security_required: true` (flags `form`, `escape`); file-derived and synced text rendered by Textual (C-17) → hostile-input ATs; security-reviewer at P2 and close (also commissioned) |
 | D | fired | user-visible (the details grid; toasts) → ux-reviewer at P2/P4, captures 140×40 / 80×24 |
 | E | fired | 3 stories, 3 planned increments |
-| F | F2 fired | `BACKLOG.md` header base ref `13745f6` ≠ HEAD `56a1b10` → reconciled at close; F1 not fired: `V7` clean |
+| F | F2 fired | `BACKLOG.md` header base ref `7f2e0a1` ≠ HEAD `be81d68` → reconciled at close; F1 not fired: `V7` clean |
 
 ## Per-story / per-station status
 
@@ -134,7 +134,7 @@ Re-cut after P2 iteration 1 (C-21: AT-407 added, AT-401..406 redefined):
 
 | Suite / command | Last run | Result |
 |---|---|---|
-| `python -m pytest -q -p no:cacheprovider` (base `56a1b10`) | 2026-10-02 | 1854 passed, 1 failed (clipboard environment, G-011) in 217.28 s (`evidence/base-suite.txt`) |
+| `python -m pytest -q -p no:cacheprovider` (base `be81d68`) | 2026-10-02 | 1854 passed, 1 failed (clipboard environment, G-011) in 217.28 s (`evidence/base-suite.txt`) |
 | increment-004 gate run (frozen r3) | 2026-10-04 | 2218 passed in 398.62 s, exit 0 (`evidence/inc004-gate-r3.txt`); frozen r4 (docstring only) details files 91 passed |
 | P4 gate run (final tree) | 2026-10-03 | 2214 passed in 306.98 s, exit 0 (`evidence/p4-gate.txt`) |
 | same, after increment 002 (frozen r4, grid file deselected) | 2026-10-03 | 2206 passed, 1 failed (clipboard environment) in 351.84 s (`evidence/inc002-green.txt`) |

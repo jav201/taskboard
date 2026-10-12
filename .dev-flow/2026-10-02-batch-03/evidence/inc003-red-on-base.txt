@@ -232,7 +232,7 @@ mode = 'agenda', kw = {}
         matrix and lanes, the Focus views — now writes its piece through `_literal`
         too (increment 001). Rich drops the backslash before ANY bracket, so on the
         base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
-        (measured at every width 24..100). RED on base `13745f6`."""
+        (measured at every width 24..100). RED on base `7f2e0a1`."""
         title = "a" + chr(92) + "[b"
         p = Project("P", "sky")
         t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
@@ -254,7 +254,7 @@ mode = 'kanban', kw = {'presentation': 'matrix'}
         matrix and lanes, the Focus views — now writes its piece through `_literal`
         too (increment 001). Rich drops the backslash before ANY bracket, so on the
         base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
-        (measured at every width 24..100). RED on base `13745f6`."""
+        (measured at every width 24..100). RED on base `7f2e0a1`."""
         title = "a" + chr(92) + "[b"
         p = Project("P", "sky")
         t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
@@ -276,7 +276,7 @@ mode = 'kanban', kw = {'presentation': 'lanes'}
         matrix and lanes, the Focus views — now writes its piece through `_literal`
         too (increment 001). Rich drops the backslash before ANY bracket, so on the
         base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
-        (measured at every width 24..100). RED on base `13745f6`."""
+        (measured at every width 24..100). RED on base `7f2e0a1`."""
         title = "a" + chr(92) + "[b"
         p = Project("P", "sky")
         t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
@@ -298,7 +298,7 @@ mode = 'focus', kw = {'focus_presentation': 'inspector'}
         matrix and lanes, the Focus views — now writes its piece through `_literal`
         too (increment 001). Rich drops the backslash before ANY bracket, so on the
         base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
-        (measured at every width 24..100). RED on base `13745f6`."""
+        (measured at every width 24..100). RED on base `7f2e0a1`."""
         title = "a" + chr(92) + "[b"
         p = Project("P", "sky")
         t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())
@@ -320,7 +320,7 @@ mode = 'focus', kw = {'focus_presentation': 'review'}
         matrix and lanes, the Focus views — now writes its piece through `_literal`
         too (increment 001). Rich drops the backslash before ANY bracket, so on the
         base tree a task titled a-backslash-[b printed as `a[b` in every one of these seats
-        (measured at every width 24..100). RED on base `13745f6`."""
+        (measured at every width 24..100). RED on base `7f2e0a1`."""
         title = "a" + chr(92) + "[b"
         p = Project("P", "sky")
         t = Task(title, p.id, "Doing", pinned=True, due_date=TODAY.isoformat())

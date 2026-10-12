@@ -118,7 +118,7 @@ above this line is ever edited._
 - **Requirement:** LLR-202.1
 - **Date:** 2026-10-02
 - **What changed:** LLR-202.1 also requires `;` to switch the key bar's layer; the toggle read Textual's CSS `layer` and never left `primary`.
-- **Why:** increment 002 code review F3 (HIGH, pre-existing since 8b73920): HLR-202's "both layers" had no visible `more` half; decision D-218.
+- **Why:** increment 002 code review F3 (HIGH, pre-existing since 71c9616): HLR-202's "both layers" had no visible `more` half; decision D-218.
 - **Evidence:** reviewer probe (`bar_layer` stays `primary` after two `;`); mutant F3 KILLED (`evidence/inc002-mutations.txt`).
 
 ### LED-2026-10-02-batch-02.17 — the filter has no key

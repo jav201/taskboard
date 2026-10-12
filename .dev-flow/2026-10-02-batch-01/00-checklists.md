@@ -23,7 +23,7 @@
 | 1 | Context of use per story: user · **task** · **environment** |  ✓ | `01-requirements.md` §2.3 (user, task UX-14, environment 80×24 to full screen, Windows Terminal) |
 | 2 | Observable outcome stated per story |  ✓ | each US in §2.6 states its outcome ("so that …"); AT table §5 |
 | 3 | Risk estimate: importance and criticality, used to prioritise |  ✓ | `Priority:` per HLR in §3; risks in `PLAN.md` §Risks / watch-items |
-| 4 | RC-1: `origin/main` tip fetched and recorded in `PLAN.md` **before** deriving |  ✓ | `PLAN.md` §RC-1: `git fetch origin` → `origin/main` = `57a60756fda9` = HEAD |
+| 4 | RC-1: `origin/main` tip fetched and recorded in `PLAN.md` **before** deriving |  ✓ | `PLAN.md` §RC-1: `git fetch origin` → `origin/main` = `dbcebe03f591` = HEAD |
 | 5 | RC-2: `origin` reachable and the age of its newest commit recorded in `PLAN.md` **before** deriving (`git ls-remote --exit-code --heads origin`; V25) |  ⚠ | origin reachable (the P0 fetch succeeded); the newest commit's age was not written into `PLAN.md` — declared here |
 | 6 | "already shipped?" check per candidate story |  ✓ | §2.6 DoR column and `evidence/p0-probes.txt`; US-105 classified OUT (A2) |
 | 7 | `flow_hash` verified against the manifest (C-45 PULL) |  ✓ | `PLAN.md` §RC-1: validator at P0, `V7` silent (bundle hashes match) |
@@ -144,5 +144,5 @@ not read like a gate nobody ran.
 ## Sign-off
 
 - P0 · P1 · P2 · P3 · P4 · P5: self-approved by the agent under the standing authorization ("Autónomo, agente Opus"), each recorded in `state.json` `decisions_log`; 0 HIGH open.
-- Close privacy sweep (S-4, S-8): `evidence/privacy-sweep-close.txt` — entity-decoded, file names only; 0 real-board strings in any changed file; 2 inherited hits (state `owner`, BACKLOG e-mail) unchanged from `57a6075`, carried to BACKLOG.
+- Close privacy sweep (S-4, S-8): `evidence/privacy-sweep-close.txt` — entity-decoded, file names only; 0 real-board strings in any changed file; 2 inherited hits (state `owner`, BACKLOG e-mail) unchanged from `dbcebe0`, carried to BACKLOG.
 - Close security verification (a)–(c): security-reviewer PASS-WITH-NOTES, 0 HIGH — BACKLOG S-5/S-8/close entries present, sweep independently re-run (84 files, 0 new personal strings), review rows recorded; N1–N3 (LOW, wording of the sweep classification and the BACKLOG entry) folded.

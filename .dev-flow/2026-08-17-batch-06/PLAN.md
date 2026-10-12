@@ -11,7 +11,7 @@ project-focus filter to cut density on busy boards.
 ## Verified at intake (executed, not asserted)
 
 - **RC-1 base currency:** `git fetch origin` 2026-08-17 → `HEAD == origin/main ==
-  merge-base == 8b73920`. Branch current. Untracked deliberation directory
+  merge-base == 71c9616`. Branch current. Untracked deliberation directory
   `prototypes/next_ideas/` present.
 - **Flow currency (C-45 PULL):** `~/.claude/skills/dev-flow` == backup repo
   `~/kimi/agent-skills/dev-flow` at **rev25** (verified at batch-05; no reason to

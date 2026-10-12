@@ -112,7 +112,7 @@ the accent only for focus and today; ≤7-day dues amber; the selection is rever
 | P-5 | `board.is_done(t)` is `t.phase == board.phases[-1]` | premise | ✅ TRUE | `p0-probes.txt` §P-5; `models.py` `Board.is_done` | HLR-304 |
 | P-6 | The chosen R-1b frame, re-rendered over this tree with the same metric, reads 11.8 chars (13 in full) at 118×30 and 6.2 (3 in full) at 80×24 | premise | ✅ TRUE | `p0-probes.txt` §P-6 (C-39 pre-execution of the readability threshold) | HLR-301 threshold |
 | P-7 | The board panel is the terminal's width and 2 rows shorter: terminal 118×30 → panel 118×28, 80×24 → 80×22, 120×32 → 120×30 | premise | ✅ TRUE | `evidence/p1-geometry.txt` | §1.3, AT sizes |
-| P-8 | Base suite is green | premise | ✅ TRUE | `python -m pytest -q -p no:cacheprovider` at `13745f6` (`evidence/base-suite.txt`) | — |
+| P-8 | Base suite is green | premise | ✅ TRUE | `python -m pytest -q -p no:cacheprovider` at `7f2e0a1` (`evidence/base-suite.txt`) | — |
 
 - **Premise evaluation:** 8 premise(s) · ✅ TRUE 8 / ❌ FALSE 0 / ❓ UNDECIDABLE 0
 

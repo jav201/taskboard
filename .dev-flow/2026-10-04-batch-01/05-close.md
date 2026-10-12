@@ -24,7 +24,7 @@
 | Field | Value |
 |---|---|
 | Gate record | Second re-close, 2026-10-04 (D-535): `cd <rev99 snapshot>/dev-flow && python scripts/devflow-validate.py <repo>` from the read-only rev99 snapshot (`1154c8a`, `state.json` `flow_pin`), exit 0, **0 block · 31 notice · 60 not applicable** (`evidence/validator-reclose2.txt`); the re-close (D-531) and the first close gave the same, 0 block · 31 notice (`evidence/validator-reclose.txt`, `evidence/validator-close.txt`). This batch's own notices, declared: `V26` (the live contract ~60k characters against the 54k budget — amendments A-1..A-12 kept in it), `V13` ×3 (the canon quotes three IFC addresses after the fold), `V57` (the tree is dirty: the coordinator commits). Every other notice is inherited from closed batches or the legacy `.dev-flow/03-increments/` |
-| Gated tree | `0447070ba1547f2d4b01e217cc2abcf7a98fa1e0` · dirty: every change is still in the working tree, waiting for the coordinator's commit (standing authorization: the coordinator commits and pushes after the operator's visual verdict; this agent does not commit). Files: `taskboard/models.py`, `taskboard/app.py`, `taskboard/views.py`, `taskboard/modals.py`, `taskboard/keymap.py`, `README.md`, `REQUIREMENTS.md`, `.gitattributes`, `tests/kg_board.py`, `tests/test_app.py`, `tests/test_colour_budget_app.py`, `tests/test_dependencies.py`, `tests/test_gantt_board.py`, `tests/test_gantt_polish.py`, `tests/test_kanban_readable.py`, `tests/test_markup_census.py`, `tests/test_markup_sites.py`, new `tests/test_links.py`, `tests/test_link_migration.py`, `tests/test_link_picker.py`, `tests/test_details_links.py`, `tests/test_gantt_link.py`; records `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-10-02-batch-04/decisions-log.json` (rollover), `.dev-flow/2026-10-04-batch-01/` |
+| Gated tree | `f599b8cf3ff7eee92e9d93cde183c1d7719f862e` · dirty: every change is still in the working tree, waiting for the coordinator's commit (standing authorization: the coordinator commits and pushes after the operator's visual verdict; this agent does not commit). Files: `taskboard/models.py`, `taskboard/app.py`, `taskboard/views.py`, `taskboard/modals.py`, `taskboard/keymap.py`, `README.md`, `REQUIREMENTS.md`, `.gitattributes`, `tests/kg_board.py`, `tests/test_app.py`, `tests/test_colour_budget_app.py`, `tests/test_dependencies.py`, `tests/test_gantt_board.py`, `tests/test_gantt_polish.py`, `tests/test_kanban_readable.py`, `tests/test_markup_census.py`, `tests/test_markup_sites.py`, new `tests/test_links.py`, `tests/test_link_migration.py`, `tests/test_link_picker.py`, `tests/test_details_links.py`, `tests/test_gantt_link.py`; records `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-10-02-batch-04/decisions-log.json` (rollover), `.dev-flow/2026-10-04-batch-01/` |
 | Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`), folded with the rev99 snapshot's `devflow-init.py --fold-canon`: 18 folded, 0 refused at the first close (`evidence/p5-fold-canon.txt`); at each re-close this batch's own 18 uncommitted rows were removed and folded again from the amended statements, 18 folded, then 0 (`evidence/p5-fold-canon-reclose.txt`, `evidence/p5-fold-canon-reclose2.txt`) |
 
 ---
@@ -195,13 +195,13 @@ synthetic boards were used; the operator's real board was never opened.
 | Wording seams between the two `L` surfaces and the toasts | added | ux N-1..N-4, N-7 |
 | The picker lists every open task | added | increment 003 risk |
 | A comment overstates the line-map rule | added | code review 005 NIT |
-| Base ref + refresh date | bumped to `0447070` · 2026-10-04 | `BACKLOG.md` header |
+| Base ref + refresh date | bumped to `f599b8c` · 2026-10-04 | `BACKLOG.md` header |
 
 ### Visual decisions — the operator's verdict (2026-10-04, `evidence/operator-verdict-provisional.json`)
 
 Each is the most conservative reversible reading where the verdict frames left a detail open
 (`PLAN.md`). Captures under `evidence/captures/` (`.svg` + `.txt`, 118×30 and 80×24; base from
-`0447070`, close from the product as first closed; `close2-*` after increment 006 — `close2-kanban-lanes-{118x30,80x24}` (D-529), `close2-gantt-link-{118x30,80x24,118x20}` (D-528; at 118×20 the waiter's row now drawn where it folded); `close3-kanban-lanes-{118x30,80x24}` after increment 007 (D-533: `◂N` on every waiting card)).
+`f599b8c`, close from the product as first closed; `close2-*` after increment 006 — `close2-kanban-lanes-{118x30,80x24}` (D-529), `close2-gantt-link-{118x30,80x24,118x20}` (D-528; at 118×20 the waiter's row now drawn where it folded); `close3-kanban-lanes-{118x30,80x24}` after increment 007 (D-533: `◂N` on every waiting card)).
 
 | Id | Decision | Captures (before → after) | ux recommendation → operator verdict |
 |---|---|---|---|

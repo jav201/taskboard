@@ -59,7 +59,7 @@ ls: cannot access 'tests/goldens': No such file or directory
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `0447070` (local HEAD == `origin/main`; batch 2026-10-04-batch-01 started here)
+**Base ref:** `f599b8c` (local HEAD == `origin/main`; batch 2026-10-04-batch-01 started here)
 
 ## RC-1 (b) — US-604's outcome is not already shipped (the executed grep, Q-6):
 $ git grep -l "push_delta\|date_links\|plan_move" origin/main

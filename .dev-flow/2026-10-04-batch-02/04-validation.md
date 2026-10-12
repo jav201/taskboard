@@ -39,7 +39,7 @@
 
 | Run | Executor | Tree | Command | Output | State |
 |---|---|---|---|---|---|
-| Base suite | orchestrator (P1) | `4b2c13a` | `python -m pytest -q` | `evidence/base-suite.txt`: 2306 passed in 450.07 s, exit 0 | `executed` |
+| Base suite | orchestrator (P1) | `7073592` | `python -m pytest -q` | `evidence/base-suite.txt`: 2306 passed in 450.07 s, exit 0 | `executed` |
 | **The ONE complete gate run** (C-25) | **orchestrator** | the product at close: increment 004 frozen r2 plus the P4 test folds (`evidence/close-frozen.sha256`) | `python -B -m pytest -q -p no:cacheprovider` | `evidence/close-gate.txt`: **1 failed, 2485 passed in 476.36 s**. The failure is `tests/test_app.py::test_win_clipboard_roundtrip`, a clipboard SETUP failure in the environment (G-011) | `executed` |
 | Increment 004 gate (frozen r2, before the P4 folds) | orchestrator | 004 r2 | same | `evidence/inc004-gate-r2.txt`: 1 failed (the same flake), 2485 passed in 470.77 s | `executed` |
 | Freeze check | qa-reviewer | working tree | `sha256sum -c inc004-frozen-r2.sha256` and `find -newer` | all 7 hashes match; no product, test or README file newer than the gate's start | `executed` |

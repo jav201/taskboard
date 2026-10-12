@@ -28,7 +28,7 @@
 | Field | Value |
 |---|---|
 | Gate record | `python "<home>/.claude/skills/dev-flow/scripts/devflow-validate.py" --brief .` → **6 block · 34 notice · exit 1** · 2026-10-07 — every block is the SAME class, `V22`'s canon fold-back (the six requirement ids mirrored into `REQUIREMENTS.md`), which sits outside the close-out's writable file set (`.dev-flow/**` + one `.gitattributes` line); the loop cleared every other block it found (`V59` trace id · `V36` reviewer naming · `V41` evidence paths · `V56` figure naming) and the remaining NOTICEs are historical-batch lines or the three runtime-expected ones named in §5. Discharge: `python "<home>/.claude/skills/dev-flow/scripts/devflow-init.py" --fold-canon` at the coordinator's commit step, then re-run — recorded in *What was NOT done* |
-| Gated tree | `34bab3c8b110e0a18ddba281c3e75d8597e07a8f` · dirty — `taskboard/app.py` · `taskboard/models.py` · `taskboard/views.py` · `tests/test_team_sync.py` (the batch's frozen-surface edits) · `tests/test_cleanup.py` (new) · `.dev-flow/2026-10-07-batch-03/` (new) · `.dev-flow/BACKLOG.md` · `.dev-flow/state.json` · `.gitattributes` · `.dev-flow/2026-10-07-batch-02/decisions-log.json` · `.dev-flow/rollover_cleanup.py` — uncommitted **by design**: the coordinator commits and pushes once per batch under the operator's commission, after the verdict |
+| Gated tree | `5f3c9bb6c202b2a487310f90625dac3bed1872f7` · dirty — `taskboard/app.py` · `taskboard/models.py` · `taskboard/views.py` · `tests/test_team_sync.py` (the batch's frozen-surface edits) · `tests/test_cleanup.py` (new) · `.dev-flow/2026-10-07-batch-03/` (new) · `.dev-flow/BACKLOG.md` · `.dev-flow/state.json` · `.gitattributes` · `.dev-flow/2026-10-07-batch-02/decisions-log.json` · `.dev-flow/rollover_cleanup.py` — uncommitted **by design**: the coordinator commits and pushes once per batch under the operator's commission, after the verdict |
 | Requirements canon | `repo:REQUIREMENTS.md` (`artifact_homes.requirements_canon`) — the living-canon table; this batch's HLR-901/902/903 + LLR rows land in it at the coordinator's commit (the close-out's allowed file set is `.dev-flow/**` plus one `.gitattributes` line, so the canon itself was not writable here — declared, not deferred silently) |
 
 ---
@@ -89,7 +89,7 @@ and was reverted (LED .3, `evidence/inc002-mutations.log` M1). Suite at close: *
 | `.dev-flow/2026-10-07-batch-03/` | 📋 left on purpose — the batch record (this close) | the artifacts themselves |
 | `.dev-flow/state.json` · `.gitattributes` · `.dev-flow/2026-10-07-batch-02/decisions-log.json` · `.dev-flow/rollover_cleanup.py` | 📋 left on purpose — the batch's own bookkeeping (decisions, the evidence-line attribute, the archived batch-C log, the P0 rollover helper) | `git status --porcelain` |
 
-- **Found before the batch:** `none — no tracked file was modified when the batch began` (base_ref `34bab3c8…` equals the pushed Batch C tip; the tree was clean at open)
+- **Found before the batch:** `none — no tracked file was modified when the batch began` (base_ref `5f3c9bb6…` equals the pushed Batch C tip; the tree was clean at open)
 
 ### Conditional-gate discharge
 
@@ -155,7 +155,7 @@ the skill names (`V30`'s bundle-floor half-derivation; `V53`'s closed-record cen
 | `02-review.md` (the lenses) | `evidence/close-review.log` executed · 0 blockers · 2 minors | ❌ | `none` | — |
 | `03-increments/increment-001.md` · `increment-002.md` | the 16-row gates signed · M1–M2 kills executed per packet · digests verified | ❌ | `none` | — |
 | `04-validation.md` | `Result: PASS` · the ledger reconciles 2529 − 0 + 12 = 2541 | ❌ | `none` | — |
-| `05-close.md` | the `Gated tree` row binds `34bab3c8…` · C-44/C-45 answered | ❌ | `none` | — |
+| `05-close.md` | the `Gated tree` row binds `5f3c9bb6…` · C-44/C-45 answered | ❌ | `none` | — |
 | The code | the close suite 2541 green · 4 mutants KILLED · the diff read (LENS 4) | ❌ | `none` — not audited line by line beyond the diff read | the untouched 6,800-line views.py outside the diff hunks |
 | The commission ("HAz ambas, paraleliza" + the standing authorization) | recorded in `state.json` | ✅ | — | the operator's own words |
 

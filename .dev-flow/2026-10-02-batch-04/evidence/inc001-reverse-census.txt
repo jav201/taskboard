@@ -1,4 +1,4 @@
-== increment 001 reverse census, working tree vs base 56a1b10 ==
+== increment 001 reverse census, working tree vs base be81d68 ==
 -- B1: tests (outside this increment's new files) naming a touched symbol
 _rich: test_emoji_picker.py 
 notes_preview: 

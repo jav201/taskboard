@@ -27,9 +27,9 @@ predictably (sticky visited, urgent last), shades weekends and clips its echo ho
 
 ## RC-1 and flow currency
 
-- RC-1: `git fetch origin` → `origin/main` = `a0e7d9a7c76d` = HEAD = merge-base. `base_ref` stamped from it.
+- RC-1: `git fetch origin` → `origin/main` = `cfc28a3351de` = HEAD = merge-base. `base_ref` stamped from it.
 - Rollover from `2026-10-02-batch-01` (P5 closed): its `decisions_log` MOVED to `.dev-flow/2026-10-02-batch-01/decisions-log.json`; every single-slot field retired per `stations/shared-batch.md` §Batch rollover (triggers re-evaluated below, artifacts cleared, homes re-pointed, owner re-stamped, authorization re-asked, `base_ref` = HEAD); `mode_history` carried and appended. The increment skeleton is held back until P3 so no packet precedes its increment.
-- Flow: rev98 — from 2026-10-02 (after increment 001) the PINNED snapshot of skills commit `48154ab` (header row "Flow pin"); before that the live bundle, then still rev98 (kickoff and P0–P2 runs V7-clean). Validator at kickoff (coordinator, `a0e7d9a`): **0 block · 17 notice**, exit 0 — re-run by this agent before the rollover: same.
+- Flow: rev98 — from 2026-10-02 (after increment 001) the PINNED snapshot of skills commit `48154ab` (header row "Flow pin"); before that the live bundle, then still rev98 (kickoff and P0–P2 runs V7-clean). Validator at kickoff (coordinator, `cfc28a3`): **0 block · 17 notice**, exit 0 — re-run by this agent before the rollover: same.
 - **Inherited NOTICEs declared** (all 17 predate this batch): `V9` ×8 legacy packets (`increment-001..003`, `006..010` in the flat `.dev-flow/03-increments/`) declare no SOURCE count; `V13` ×2 batch-01's IFC address `nav-order` reached by 144 undeclared files, and its computed `task-rows` address; `V22` ×2 batch-01 LLRs never used as an IFC owner (a question per id), and 5 legacy US ids not in the canon; `V23` an unparseable design-review citation in legacy `increment-006.md`; `V26` batch-01's live contract is 62 205 characters (> 54 000); `V30` the bundle derives its floors from a subset (benign on this runtime, `SKILL.md`); `V53` the closed-record census count; `V57` batch-01's close record predates this tree by 1 commit (the coordinator's commit). None is this batch's to fix; a closed record is not re-anchored.
 - Not runnable here (`SKILL.md` step 4): `V15`, `V16`, `V17` — `not-run` (no canon tree, no checkout table, no hook settings on a bundle runtime).
 - Mechanisms unavailable on this runtime, named once (`SKILL.md` step 5): no slash commands, no hooks, no prompt guard, no operator prompt (the standing authorization above closes the gates). Reviewer roles are **spawned as named sub-agents** of this runtime (`qa-reviewer`, `ux-reviewer`, `code-reviewer`, `security-reviewer`, `tester` where owed), each given its `agents/<role>.md` — independent reviewers, never inline self-review.
@@ -46,7 +46,7 @@ predictably (sticky visited, urgent last), shades weekends and clips its echo ho
 | C | fired | `devflow-scan-spec.py` → `security_required: true` (flags `token`, `role`); the toast prints a file-derived title through `notify` (C-17) → security-reviewer at P2 and on increment 005 |
 | D | fired | user-visible on every view → ux-reviewer at P2/P4, captures 118×30 / 80×24 |
 | E | fired | 5 stories, 5 planned increments |
-| F | F2 fired | `BACKLOG.md` header base ref `57a6075` ≠ HEAD `a0e7d9a` → reconciled at close; F1 not fired: `V7` clean |
+| F | F2 fired | `BACKLOG.md` header base ref `dbcebe0` ≠ HEAD `cfc28a3` → reconciled at close; F1 not fired: `V7` clean |
 
 ## Per-story / per-station status
 
@@ -118,7 +118,7 @@ predictably (sticky visited, urgent last), shades weekends and clips its echo ho
 
 | Suite / command | Last run | Result |
 |---|---|---|
-| `python -m pytest -q -p no:cacheprovider` (base `a0e7d9a`) | 2026-10-02 | 1611 passed in 176.37 s (`evidence/base-suite.txt`) |
+| `python -m pytest -q -p no:cacheprovider` (base `cfc28a3`) | 2026-10-02 | 1611 passed in 176.37 s (`evidence/base-suite.txt`) |
 | same, after increment 001 | 2026-10-02 | 1630 passed in 173.42 s (`evidence/inc001-green.txt`) |
 | same, after increment 002 | 2026-10-02 | 1634 passed in 201.05 s (`evidence/inc002-green.txt`) |
 | same, after increment 003 | 2026-10-02 | 1643 passed in 183.38 s (`evidence/inc003-green.txt`) |

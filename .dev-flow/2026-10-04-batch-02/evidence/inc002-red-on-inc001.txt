@@ -1,4 +1,4 @@
-$ python -m pytest -q -p no:cacheprovider -rA tests/test_gantt_milestones.py   # increment-001 product (views.py at 4b2c13a, app.py without the 002 hunk) + increment-002 tests; the three NEW helper names stubbed to raise so every arm runs
+$ python -m pytest -q -p no:cacheprovider -rA tests/test_gantt_milestones.py   # increment-001 product (views.py at 7073592, app.py without the 002 hunk) + increment-002 tests; the three NEW helper names stubbed to raise so every arm runs
 PASSED tests/test_gantt_milestones.py::test_TC_609_a_selected_reached_milestone_unfolds_its_group
 PASSED tests/test_gantt_milestones.py::test_TC_611_a_project_without_milestones_marks_only_its_due
 FAILED tests/test_gantt_milestones.py::test_TC_609_rows_merge_reached_milestones_by_due_while_open_work_remains

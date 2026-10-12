@@ -43,5 +43,5 @@ Ops & Security     room  70: '◆ Sep 28 Security review sign-off · 2d late' (4
 Ops & Security     room  40: '◆ Sep 28 Security review sign… · 2d late' (40)
 Ops & Security     room  20: '◆ Sep 28 · 2d late' (18)
 
-## HLR-603 count threshold (executed on base 4b2c13a, kanban `N tasks` = visible tasks)
+## HLR-603 count threshold (executed on base 7073592, kanban `N tasks` = visible tasks)
 visible tasks: 31 · milestones: 6 · non-milestone: 25

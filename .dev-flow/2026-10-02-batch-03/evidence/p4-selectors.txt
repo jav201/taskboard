@@ -1,4 +1,4 @@
-G-010 re-collection, 2026-10-02, tree = working tree over 13745f6; each line: nodes collected · -k selector (tests/test_kanban_readable.py)
+G-010 re-collection, 2026-10-02, tree = working tree over 7f2e0a1; each line: nodes collected · -k selector (tests/test_kanban_readable.py)
 52 · AT_301 or TC_302 or TC_303
 11 · AT_301 or TC_304 or TC_305
 5 · AT_302 or TC_306

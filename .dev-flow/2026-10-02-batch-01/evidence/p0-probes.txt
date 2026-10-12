@@ -1,4 +1,4 @@
-# P0 probes — 2026-10-02 — tree 57a6075 (tests/kg_board.py added, untracked)
+# P0 probes — 2026-10-02 — tree dbcebe0 (tests/kg_board.py added, untracked)
 $ python probe (render_gantt / nav_model on kg_board, selected tw3)
 118x30 rows=30 last-row:                -48d     SEP          today             NOV            DEC            JAN    +115d         +9 not shown
   nav=28 drawn=21 nav-not-drawn=7 done-in-nav=['tw1', 'tm1', 'td1']

@@ -44,7 +44,7 @@
 
 | Run | Executor | Tree | Command | Output | State |
 |---|---|---|---|---|---|
-| Base suite | orchestrator (P1, P-12) | `0447070` | `python -m pytest -q` | `evidence/base-suite.txt`: 2218 passed in 339.95 s, exit 0 | `executed` |
+| Base suite | orchestrator (P1, P-12) | `f599b8c` | `python -m pytest -q` | `evidence/base-suite.txt`: 2218 passed in 339.95 s, exit 0 | `executed` |
 | **The ONE complete gate run** (C-25) | **orchestrator** | frozen r3 = the product at close | `python -m pytest -q -p no:cacheprovider` | `evidence/inc004-gate-r3.txt`: **1 failed, 2294 passed in 576.52 s**. The failure is `tests/test_app.py::test_win_clipboard_roundtrip`, with SETUP message "SETUP failed — this is the environment…" (`Set-Clipboard` `ExternalException`) | `executed` |
 | Freeze check: is the tree on disk the gated tree? | qa-reviewer | working tree | `sha256sum -c` over `inc001-frozen-r4`, `inc002-frozen-r2`, `inc003-frozen-r2`, `inc004-frozen-r3` | Every changed file matches its **latest** freeze: `views.py`, `modals.py`, `app.py` and `test_gantt_link.py` / `test_markup_census.py` match r3; `models.py`, `keymap.py`, `README.md` and the 003 tests match 003-r2; the 002 tests match 002-r2; `kg_board.py` and `test_app.py` match 001-r4. Mismatches against earlier freezes belong only to files a later increment re-froze | `executed` |
 | Targeted run of the batch's nodes plus README/keymap/census/S1 | **qa-reviewer** | same tree | `python -B -m pytest -q -p no:cacheprovider -rA tests/test_gantt_link.py tests/test_links.py tests/test_link_picker.py tests/test_details_links.py tests/test_link_migration.py tests/test_readme.py tests/test_keymap.py tests/test_markup_census.py tests/test_markup_sites.py` | **124 passed in 153.15 s**, 0 failed | `executed` |

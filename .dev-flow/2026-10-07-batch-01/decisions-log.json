@@ -2,7 +2,7 @@
   {
     "station": "P0",
     "date": "2026-10-07",
-    "decision": "standing authorization — the operator's commission ('Haz el residuo de P4... Sigue llamando a Deepseek'): P0 approved. Batch 2026-10-07-batch-01 opened by rollover from 2026-10-06-batch-01 (its 13-entry log archived; the interrupted first attempt's archive verified verbatim and accepted); base_ref f665425; triggers B1 (bump_due/restore asserted by other tests) and E1 (5 residue items) fired; the work splits into two DISJOINT halves for two DeepSeek instances in parallel: product (models/app: DS-5 restore reuse, bump_due today-base unification, Plan.conflicts doc) and tests (C-5 pin, GAP-3 width pins) — per the operator's parallelization request; P1 is next (a lean contract: the residue items are fully specified by the P4 findings)."
+    "decision": "standing authorization — the operator's commission ('Haz el residuo de P4... Sigue llamando a Deepseek'): P0 approved. Batch 2026-10-07-batch-01 opened by rollover from 2026-10-06-batch-01 (its 13-entry log archived; the interrupted first attempt's archive verified verbatim and accepted); base_ref 20b0b86; triggers B1 (bump_due/restore asserted by other tests) and E1 (5 residue items) fired; the work splits into two DISJOINT halves for two DeepSeek instances in parallel: product (models/app: DS-5 restore reuse, bump_due today-base unification, Plan.conflicts doc) and tests (C-5 pin, GAP-3 width pins) — per the operator's parallelization request; P1 is next (a lean contract: the residue items are fully specified by the P4 findings)."
   },
   {
     "station": "P1",
@@ -27,6 +27,6 @@
   {
     "station": "P5",
     "date": "2026-10-07",
-    "decision": "standing authorization — the residue batch CLOSED at P5: close gate 2514 passed 0 failed; BACKLOG reconciled (the five P4 residue items done, nothing open, base ref re-stamped to f665425); the canon folded (4 rows); 05-close.md written (the parallel-DeepSeek split recorded: V4 Pro product + Flash tests, disjoint by file, meeting at the green suite); the close validator run next; the coordinator commits and pushes now — the operator ordered this work done ('Haz el residuo de P4'), the gates are the verification, and the push is the coordinator's under the standing authorization."
+    "decision": "standing authorization — the residue batch CLOSED at P5: close gate 2514 passed 0 failed; BACKLOG reconciled (the five P4 residue items done, nothing open, base ref re-stamped to 20b0b86); the canon folded (4 rows); 05-close.md written (the parallel-DeepSeek split recorded: V4 Pro product + Flash tests, disjoint by file, meeting at the green suite); the close validator run next; the coordinator commits and pushes now — the operator ordered this work done ('Haz el residuo de P4'), the gates are the verification, and the push is the coordinator's under the standing authorization."
   }
 ]

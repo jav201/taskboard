@@ -28,7 +28,7 @@
 | Field | Value |
 |---|---|
 | Gate record | `cd <scratchpad>/devflow-rev98-48154ab/dev-flow && python scripts/devflow-validate.py <project>` (the PINNED rev98 bundle, skills `48154ab`, operator ruling "Sí, fijar a rev98") · exit 0 · **0 block** · 19 notice · 61 n/a · 2026-10-02 · `evidence/validator-close.txt`. Notices: 16 are inherited and declared in `PLAN.md` (V9 ×9, V13 batch-01 `nav-order`, V22 ×3, V23, V30, V53). This batch's own are three: V13 (its IFC address `kanban-grouped-body/card-rows` is computed, so grep cannot follow it; it is listed with batch-01's two in one notice); V26 size (the live contract is 62701 characters against a budget of 54000; the P2 and P4 amendments grew it, and moving the §6.5 narration into the ledger is left to the next batch's P1 rather than rewritten at close); V57 (the dirty tree, declared in the next row). The first close run had 1 block: V26 two-way, LLR-309.2 → LED .18, where the ledger entry did not name LLR-309.2. It was fixed in the ledger and the validator re-run |
-| Gated tree | `13745f6f268f7f080141f9c0226b2441541dbff5` · dirty: every change is still in the working tree, waiting for the coordinator's commit (standing authorization; this agent does not commit). Files: `taskboard/views.py`, `taskboard/app.py`, `tests/test_kanban_readable.py` (new), `tests/kg_board.py`, `tests/test_app.py`, `tests/test_kanban_priority.py`, `tests/test_prism_laws.py`, `.gitattributes`, `REQUIREMENTS.md`, `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-10-02-batch-02/decisions-log.json` (new), `.dev-flow/2026-10-02-batch-03/**` (new) |
+| Gated tree | `7f2e0a160940084ad2ab76b4008c23a5debe4bb1` · dirty: every change is still in the working tree, waiting for the coordinator's commit (standing authorization; this agent does not commit). Files: `taskboard/views.py`, `taskboard/app.py`, `tests/test_kanban_readable.py` (new), `tests/kg_board.py`, `tests/test_app.py`, `tests/test_kanban_priority.py`, `tests/test_prism_laws.py`, `.gitattributes`, `REQUIREMENTS.md`, `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-10-02-batch-02/decisions-log.json` (new), `.dev-flow/2026-10-02-batch-03/**` (new) |
 | Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`), folded with the pinned `devflow-init.py --fold-canon`. First run: 21 folded (10 HLR + 11 LLR), 1 refused, because LLR-306.1's statement had no `shall`. The statement was reworded with no change of meaning; the second run folded LLR-306.1 (1 folded, 21 kept, 0 refused). HLR-003 and LLR-003.2 are marked `superseded by …` (D-301, D-313) |
 
 ---
@@ -49,7 +49,7 @@
 
 **Readability:** oracle board, measured on the panel's body rows at scroll 0, with a title counted only when its whole first word is drawn (`evidence/captures/readability-*.txt`).
 
-| Panel | Base (`13745f6`) avg visible title chars · full titles | Close avg · full | Threshold |
+| Panel | Base (`7f2e0a1`) avg visible title chars · full titles | Close avg · full | Threshold |
 |---|---|---|---|
 | 118×30 | 7.3 · 0 | **11.8 · 13** | ≥ 11.0 · ≥ 12 |
 | 80×24 | 1.0 · 0 | **6.2 · 3** | ≥ 5.5 |
@@ -115,7 +115,7 @@
 
 - **G-005, from the P4 qa review, is discharged here:**
   - (a) iteration 1's `p4-gate.txt` has no header. Its digest is in `04-validation.md`. The final gate `p4-gate3.txt` names its command through this record.
-  - (b) every `captures/base-*`, `inc001-*` and `close-*` file comes from `evidence/capture.py` (`python <file> OUT_DIR LABEL`, run in the captured tree). The base set is of the base tree `13745f6`; the close set was re-taken on the final tree (G-009).
+  - (b) every `captures/base-*`, `inc001-*` and `close-*` file comes from `evidence/capture.py` (`python <file> OUT_DIR LABEL`, run in the captured tree). The base set is of the base tree `7f2e0a1`; the close set was re-taken on the final tree (G-009).
   - (c) `.gitattributes` gets one line, `.dev-flow/2026-10-02-batch-03/evidence/** -text`, following the earlier batches' pattern, and is listed in §0.
 
 ### Conditional-gate discharge
@@ -142,7 +142,7 @@
 | Batch A2: readable kanban K-A + R-1b | shipped (uncommitted) | increments 001–003; BACKLOG entry marked ✓ done |
 | The operator's verdicts on PV-1..PV-10. Operator questions: the high-band cap at a cut band (UXV3-12), `up` re-flow (UXV3-3), lateral moves (UXV3-5), `at risk` (UXV3-2), the entry cursor (UXV3-9), `done today` (UXV3-8), the help at 80×24 (UXV3-4), the no-match copy and `z` (UXV3-10/11), the fold row at 80 (UXV3-13), band counts vs fold counts (UXV3-14), the toast over the fold row (UXV3-15). Also: `collapse_runs` S-2, the gantt's nav height under `/`, `_phase_window` reuse, done work past the rail, horizon `Done (0 open)`, the detail line, the AT-307 transient, and ⏸ DEFER G-002 (four threshold clauses asserted weaker than written) | added | `.dev-flow/BACKLOG.md` §Open — after `2026-10-02-batch-03` (20 items) |
 | Everything else in BACKLOG | carried | `.dev-flow/BACKLOG.md` |
-| Header refresh | done: 1855 tests, base `13745f6`. The base ref moves when the coordinator commits | `.dev-flow/BACKLOG.md` header |
+| Header refresh | done: 1855 tests, base `7f2e0a1`. The base ref moves when the coordinator commits | `.dev-flow/BACKLOG.md` header |
 
 ---
 

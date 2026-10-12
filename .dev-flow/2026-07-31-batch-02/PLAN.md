@@ -54,7 +54,7 @@ stepped over.
 - Already-shipped check for "report": `grep` finds only `load_report` (load
   health) and `archivable_report` (archive counts) — **unrelated. The story is new.**
 - Backlog routing: no `docs/engineering-rules.md`, so the canonical file is
-  `.dev-flow/BACKLOG.md`. Its **header is stale** (`Base ref b3cc60d`, "226 tests
+  `.dev-flow/BACKLOG.md`. Its **header is stale** (`Base ref 1e174e7`, "226 tests
   green", "none pushed") while its body is current — fix at close.
 
 ## Story intake (INVEST + Definition of Ready)

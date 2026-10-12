@@ -24,9 +24,9 @@ ruler, selection echo, no-drop law); colour budget on kanban + gantt; README + R
 
 ## RC-1 and flow currency
 
-- RC-1: `git fetch origin` → `origin/main` = `57a60756fda9` = HEAD = merge-base. `base_ref` stamped from it.
+- RC-1: `git fetch origin` → `origin/main` = `dbcebe03f591` = HEAD = merge-base. `base_ref` stamped from it.
 - Flow: rev98 bundle `<home>\.claude\skills\dev-flow`; validator at P0 after the rollover: **0 block · 35 notice · 45 n/a**, `V7` silent (bundle hashes match).
-- Inherited NOTICEs declared (kickoff run at `57a6075`: 0 block, 15 notice): `V9` ×8 legacy packets without a SOURCE count; `V22` 5 legacy US ids not in the canon; `V23` an unparseable design-review citation in a legacy packet (batch-12 era); `V27`/`V28` (batch-12 superseded unclosed — its record is the old schema, not back-filled); `V30` bundle subset (benign on this runtime); `V53` closed-record census; `V57` the batch-01 record predates the tree by 2 commits (re-gate commits). The other P0 NOTICEs are this batch's own seeded placeholders, filled as stations run.
+- Inherited NOTICEs declared (kickoff run at `dbcebe0`: 0 block, 15 notice): `V9` ×8 legacy packets without a SOURCE count; `V22` 5 legacy US ids not in the canon; `V23` an unparseable design-review citation in a legacy packet (batch-12 era); `V27`/`V28` (batch-12 superseded unclosed — its record is the old schema, not back-filled); `V30` bundle subset (benign on this runtime); `V53` closed-record census; `V57` the batch-01 record predates the tree by 2 commits (re-gate commits). The other P0 NOTICEs are this batch's own seeded placeholders, filled as stations run.
 - Not runnable here (`SKILL.md` step 4): `V15`, `V16`, `V17` — `not-run` (no canon tree, no checkout table, no hook settings on a bundle runtime).
 - Reviewer roles: spawned as named sub-agents of this runtime (`qa-reviewer`, `ux-reviewer`, `code-reviewer`, `security-reviewer`, `tester` where owed), each given its `agents/<role>.md` brief — independent reviewers, never inline self-review.
 
@@ -103,7 +103,7 @@ bottom axis only to remove it.
 
 | Suite / command | Last run | Result |
 |---|---|---|
-| `python -m pytest -q -p no:cacheprovider` (base `57a6075`) | 2026-10-02 | 1535 passed in 131.49 s (`evidence/base-suite.txt`) |
+| `python -m pytest -q -p no:cacheprovider` (base `dbcebe0`) | 2026-10-02 | 1535 passed in 131.49 s (`evidence/base-suite.txt`) |
 | same, `--ignore=tests/test_colour_budget.py` (after increment 001) | 2026-10-02 | 1588 passed in 167.75 s (`evidence/inc001-green.txt`) |
 
 ## Decision log

@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Batch | 2026-10-07-batch-02 |
 | Objective | Batch C of the kg_mejoras plan: the chain map view (D-C) behind key 6 -- per-project chain bands, the ----> links with the ready/waits/late marks, the critical chain, the details strip (waits on / unblocks, x remove, L link, ↵ open), the per-chain dates: switch writing extra[date_links] (C-2/C-2b, the rule visible per project), and the K-B high-band cap (+N more); round-7 polish rules: accent = focus only, critical chain = structure not hue |
 | Standing authorization | Operator (username_subject), 2026-10-07: "Arranca y continua hasta terminar los cambios propuestos para el proyecto. Sigue usando Deepseek." Read with the established chain: autonomous gates with the two exceptions; the coordinator commits and pushes at each batch's close (the operator commissioned the full remainder of the plan; no PR); synthetic boards only; implementing agents (DeepSeek instances under coordinator briefs) do NOT commit/push/stash |
-| First gate | exit 0 · V7 did not fire — 0 block 56 notice (inherited); the rollover readback clean; RC-1 origin/main == HEAD == 79ad438 |
+| First gate | exit 0 · V7 did not fire — 0 block 56 notice (inherited); the rollover readback clean; RC-1 origin/main == HEAD == 903d6bc |
 | Premises / RC-1 | <the verified `origin/main` tip, or: no origin — RC-1 not possible, local tip <sha>; each premise the batch rests on> |
 
 ## Triggers

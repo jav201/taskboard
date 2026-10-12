@@ -8,7 +8,7 @@
 
 ## Verified at intake
 
-- **Base-currency (RC-1):** local `main` == `origin/main` == `ff4bb7e` después del push de cleanup-aperture. El handoff de batch-12 ya está commiteado como `9dda458`.
+- **Base-currency (RC-1):** local `main` == `origin/main` == `2e98bb3` después del push de cleanup-aperture. El handoff de batch-12 ya está commiteado como `eb45368`.
 - **Suite green:** 1284 passed (`python -m pytest tests/ -q`). `test_win_clipboard_roundtrip` es flake ambiental pre-existente; se excluye por convención.
 - **Design prototype:** `prototypes/team_sync/generate.py` contiene el copy autorizado para V8 setup y V9 help family.
 - **Keybinding `0` verified free** tras la limpieza del aperture/widget.
@@ -156,7 +156,7 @@ RED arm verified by temporarily returning `(True, "ok")` for all checks: the unw
 
 ## Increment 4 — US-S3: per-view help family
 
-**Status:** complete. **Commit:** `3a11eb0` (merged with inc-5).
+**Status:** complete. **Commit:** `8a023bf` (merged with inc-5).
 
 ### Changes
 - `taskboard/modals.py`: refactor `LegendModal` → `HelpModal`.
@@ -172,7 +172,7 @@ RED arm verified by temporarily returning `(True, "ok")` for all checks: the unw
 
 ## Increment 5 — US-S4: keybar per-view law
 
-**Status:** complete. **Commit:** `3a11eb0` (merged with inc-4).
+**Status:** complete. **Commit:** `8a023bf` (merged with inc-4).
 
 ### Changes
 - `taskboard/keymap.py`: `bar` flag; global commands `bar=False`; `palette_commands` includes all live keys.
@@ -203,10 +203,10 @@ RED arm verified by temporarily returning `(True, "ok")` for all checks: the unw
 
 - Working files reconciled; `prototypes/*` remains untracked exploratory work.
 - `state.json` and `.dev-flow/BACKLOG.md` updated.
-- **Post-close finding (fixed in `33eb4bf`):** the ATs for US-S2 did not exercise every editable row operation (`Enter`, `Space`, `a`, `x`) during the increment; the HLR-S2.3 list of editable fields was correct, but the derived test cases stopped at save/esc/health/stepper. This allowed a constructor mismatch (`TextPrompt(..., value=...)` vs `initial=...`) to ship. Corrective action: added 5 executable-setup command tests and updated the US-S2 ATs above.
+- **Post-close finding (fixed in `c84fa49`):** the ATs for US-S2 did not exercise every editable row operation (`Enter`, `Space`, `a`, `x`) during the increment; the HLR-S2.3 list of editable fields was correct, but the derived test cases stopped at save/esc/health/stepper. This allowed a constructor mismatch (`TextPrompt(..., value=...)` vs `initial=...`) to ship. Corrective action: added 5 executable-setup command tests and updated the US-S2 ATs above.
 
 # Phase 6 — Push
 
 **Status:** complete.
 
-- Pushed to `origin/main`: `ff4bb7e..33eb4bf` (includes the post-close `33eb4bf` hotfix for the Setup `TextPrompt` bug and missing ATs).
+- Pushed to `origin/main`: `2e98bb3..c84fa49` (includes the post-close `c84fa49` hotfix for the Setup `TextPrompt` bug and missing ATs).

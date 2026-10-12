@@ -66,7 +66,7 @@ Gate run (the P4 gate run over the final tree, frozen r2): `python -m pytest -q 
 
 | Field | Value |
 |---|---|
-| Mutation applied | (a) the base tree `56a1b10` (`git archive`) with this increment's test files; (b) the stylesheet battery; (c) AT-406's visibility clause at 80×12 |
+| Mutation applied | (a) the base tree `be81d68` (`git archive`) with this increment's test files; (b) the stylesheet battery; (c) AT-406's visibility clause at 80×12 |
 | Where it ran | scratch exports; (c) on the current tree with the test's own helpers (read-only) |
 | Transcript | `inc003-red-on-base.txt`: 23 failed / 27 passed — 17 from THIS rule (5 grid nodes, 12 project/phase arms), 6 from the earlier increments' parse fixes (the new payloads on notes, title, image and viewer-title arms; code review F3); `inc003-f1-red.txt`: at 80×12 the old clause True, the new False |
 | Restore proven by | the battery's per-mutant sha256 check (all OK) |

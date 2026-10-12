@@ -113,7 +113,7 @@ RC-1 (b): none already shipped (`p0-probes.txt`).
 | P-8 | `Board.load` on a missing path seeds and saves, settings empty; the seed has 11 open due-only tasks | premise | ✅ TRUE | §P-8 | LLR-605.3 |
 | P-9 | Of the suite's 541 app starts (372 tests), 274 (251 tests, 27 files) hold a candidate and would open the offer at mount — all through due-only tasks, 0 through a one-day task | premise | ✅ TRUE | `evidence/p1-offer-census.txt` (2306 passed, exit 0) / `p1-offer-census.json` (`p1_offer_census.py`) | §5 seam |
 | P-10 | The undo snapshot lacks `start_date`, `milestone` | premise | ✅ TRUE | §P-10 | LLR-601.2 |
-| P-11 | Base suite at `4b2c13a`: 2306 passed, exit 0 | premise | ✅ TRUE | `base-suite.txt` | ledger base |
+| P-11 | Base suite at `7073592`: 2306 passed, exit 0 | premise | ✅ TRUE | `base-suite.txt` | ledger base |
 | P-12 | `TASK_CHIPS_ONE_ROW` 122; the date/flags half ~76 cells at 80 | premise | ✅ TRUE | §P-12 | LLR-601.3 |
 | P-13 | `OptionList` binds `enter` (select) and the arrows, not `space`; a focused list highlights its first enabled option and `↓` skips a disabled one | premise | ✅ TRUE | `p1-premises.txt` §P-13; qa P2 probe 2 (`seq [1, 2, 3, 5]`) | LLR-605.4 |
 | P-14 | `bump_due` moves only the due | premise | ✅ TRUE | §P-14 | LLR-601.1 |

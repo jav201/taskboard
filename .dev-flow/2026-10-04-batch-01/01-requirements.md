@@ -82,7 +82,7 @@ RC-1 (b), already shipped? — none (`evidence/p0-probes.txt` §RC-1 (b)).
 | P-8 | Textual's `OptionList` paints a two-line `Text` prompt literally and its cursor skips a disabled option | premise | ✅ TRUE | `p1-premises.txt` §P-8 | LLR-502.2, LLR-503.1 |
 | P-10 | The undo stack holds one task per entry (`_snapshot` → `task_id`, `fields`) and `depends_on` and `blocked` are in its fields | premise | ✅ TRUE | `p1-premises.txt` §P-10 | LLR-502.1, LLR-505.3 |
 | P-11 | `deps_logic.py` re-executed over today's `taskboard` prints output identical to the verdict's `out/deps-logic.txt`; its migration lands L1..L6 on the stated rule and all invariants hold | premise | ✅ TRUE | `evidence/p1-deps-logic-rerun.txt` | LLR-501.1, LLR-505.1 |
-| P-12 | Base suite at `0447070`: 2218 passed, exit 0, in 339.95 s | premise | ✅ TRUE | `evidence/base-suite.txt` | test ledger base |
+| P-12 | Base suite at `f599b8c`: 2218 passed, exit 0, in 339.95 s | premise | ✅ TRUE | `evidence/base-suite.txt` | test ledger base |
 | P-13 | `L`, `m` and `6` are unbound at base; `c` is Clocks | premise | ✅ TRUE | `evidence/p0-probes.txt` §keys | LLR-502.1 |
 | P-14 | No `edit bar`, `milestone` or `date_links` exists in `taskboard/` at base | premise | ✅ TRUE | `grep -n -i` over `taskboard/*.py` → 0 lines | D-501 |
 | P-15 | The contract's thresholds (counts, overlaps, loop path, chain, releases) executed with the prototype's rule functions over the kg board | premise | ✅ TRUE | `evidence/p1-thresholds.txt` | HLR-502, HLR-503, LLR-501.1, LLR-501.4 |

@@ -63,7 +63,7 @@ above this line is ever edited._
 - **Date:** 2026-10-02
 - **What changed:** the kanban help drops the per-column band and explains the bands, `┈`, the rail and the cap.
 - **Why:** the shipped copy ("the top of each column") becomes false with HLR-305.
-- **Evidence:** `views.help_usage("kanban")` at `13745f6`.
+- **Evidence:** `views.help_usage("kanban")` at `7f2e0a1`.
 
 ### LED-2026-10-02-batch-03.9 — the board folds whole bands and says so
 - **Requirement:** HLR-309
@@ -147,7 +147,7 @@ above this line is ever edited._
 - **Date:** 2026-10-02
 - **What changed:** the escaping clause covers `title_markup`, which writes through `_literal` since increment 001; one regression node per title seat (agenda, matrix, lanes, Focus inspector and review); the sample titles are 58 and 24 characters.
 - **Why:** P4 qa-reviewer G-003a (a shared helper changed outside the declared scope, with no regression node) and G-003b.
-- **Evidence:** `evidence/inc003-red-on-base.txt` (the seat nodes RED on `13745f6`).
+- **Evidence:** `evidence/inc003-red-on-base.txt` (the seat nodes RED on `7f2e0a1`).
 
 ### LED-2026-10-02-batch-03.21 — the cut keeps whole cards and every count
 - **Requirement:** LLR-309.2

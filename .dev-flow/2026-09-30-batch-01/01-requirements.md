@@ -90,7 +90,7 @@ cal-f-start cal-f-due` and the `_save` payload are a contract with `app._on_task
 
 | # | Premise | Tier | Verdict | Executed evidence | Disposition |
 |---|---|---|---|---|---|
-| P-1 | The shipped editor shows 3 note rows and scrolls title and Save off-screen at both sizes | premise | ✅ TRUE | `measure_real.py` on base `a9bbd1c` → `evidence/measure-baseline.json`: notes_rows_visible 3/3, title_fully_visible false, save_fully_visible false | — |
+| P-1 | The shipped editor shows 3 note rows and scrolls title and Save off-screen at both sizes | premise | ✅ TRUE | `measure_real.py` on base `b6adac8` → `evidence/measure-baseline.json`: notes_rows_visible 3/3, title_fully_visible false, save_fully_visible false | — |
 | P-2 | `kanban_order` is the single ordering seat consumed by both `_kanban_column_rows` and `nav_model` | premise | ✅ TRUE | `grep -n kanban_order taskboard/views.py` → 4050 (renderer), 4247 (lanes), 4713/4734 (nav) | — |
 | P-3 | App CSS outranks `DEFAULT_CSS` (so one-row overrides can live in `taskboard.tcss`) | hypothesis | ✅ TRUE | round NOTES.md; re-verified in P3 by the focus-mark TC (style read back from the widget) | — |
 | P-4 | `_highlight_markup` is the one renderer of `==`/`!!`/`++` and maps them to `soon`/`over`/`green` | premise | ✅ TRUE | `views.py:2613-2631` read | — |
@@ -116,7 +116,7 @@ cal-f-start cal-f-due` and the `_save` payload are a contract with `app._on_task
   - **Shipped surface:** `TaskboardApp` → `e` opens `TaskModal` on the selected task.
   - **Acceptance test(s):** AT-001, AT-005
   - **Boundary catalog (QC-3):** ☑ boundary (80×24 smallest supported, 120×36 reference) ☑ empty (new task, no notes) ☐ invalid — N/A: no input value is judged by layout ☐ error — N/A: layout raises nothing
-  - **Negative control:** the base editor (`a9bbd1c`) yields 3 rows and title/Save off-screen — the AT is RED on base (captured at P3).
+  - **Negative control:** the base editor (`b6adac8`) yields 3 rows and title/Save off-screen — the AT is RED on base (captured at P3).
 
 ### HLR-002 — Live highlighted preview
 - **Traceability:** US-001

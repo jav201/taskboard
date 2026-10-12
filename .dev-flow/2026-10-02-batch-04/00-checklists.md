@@ -23,9 +23,9 @@
 | 1 | Context of use per story: user · **task** · **environment** | ✓ | `01-requirements.md` §2.6 (operator at a terminal; team mode via a shared folder, §2.3) |
 | 2 | Observable outcome stated per story | ✓ | §2.6 refinement log, Evaluability per story |
 | 3 | Risk estimate: importance and criticality, used to prioritise | ✓ | S1 MEDIUM (crash from synced text) first, S2 LOW, the grid last (HLR priorities high/medium/medium) |
-| 4 | RC-1: `origin/main` tip fetched and recorded in `PLAN.md` **before** deriving | ✓ | `PLAN.md` §RC-1: `56a1b10` = HEAD = merge-base |
+| 4 | RC-1: `origin/main` tip fetched and recorded in `PLAN.md` **before** deriving | ✓ | `PLAN.md` §RC-1: `be81d68` = HEAD = merge-base |
 | 5 | RC-2: `origin` reachable and the age of its newest commit recorded in `PLAN.md` **before** deriving (`git ls-remote --exit-code --heads origin`; V25) | ✓ | `PLAN.md` §RC-1 (exit 0; newest commit 2026-10-02 21:08 −0600) |
-| 6 | "already shipped?" check per candidate story | ✓ | §2.6 RC-1 (b): P-3, P-4, P-5, P-8 measured on `56a1b10` |
+| 6 | "already shipped?" check per candidate story | ✓ | §2.6 RC-1 (b): P-3, P-4, P-5, P-8 measured on `be81d68` |
 | 7 | `flow_hash` verified against the manifest (C-45 PULL) | ✓ | validator `V7` clean at kickoff (`flow_hash 16c4f1a047699996`, rev99) |
 | 8 | **Triggers evaluated AND recorded — the ones that fired and the ones that did not, each with its probe (C-48)** | ✓ | `PLAN.md` §Triggers; `state.json` `triggers` |
 | 9 | Mode declared; any change recorded in `mode_history` with its reason | ✓ | `state.json` `mode: core`, `mode_history` appended at rollover |

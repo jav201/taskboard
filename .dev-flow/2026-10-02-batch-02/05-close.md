@@ -28,7 +28,7 @@
 | Field | Value |
 |---|---|
 | Gate record | `cd <scratchpad>/devflow-rev98-48154ab/dev-flow && python scripts/devflow-validate.py <project>` (the PINNED rev98 bundle, skills `48154ab`, operator ruling "Fijar el batch a rev98") · exit 0 · **0 block** · 18 notice · 62 n/a · 2026-10-02 · `evidence/validator-close.txt`. Notices: the 17 inherited ones declared in `PLAN.md` (V9 ×8, V13, V22 ×2, V23, V26, V30, V53, V57); this batch's own: V9 on increment 002 (4 SOURCE files — at the cap, the reason declared in its §2; V9 notices every packet at 4 by design), V13 (its IFC address is computed), V22 (LLR-201.3 constrains and transforms no node), V57 the dirty tree — declared in the next row |
-| Gated tree | `a0e7d9a7c76d51859a53400dc195d74182342873` · dirty — every change is in the working tree for the coordinator's commit (standing authorization: this agent does not commit): `taskboard/views.py`, `taskboard/app.py`, `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/ribbon.py`, `taskboard/team_sync.py`, `taskboard/taskboard.tcss`, `tests/kg_board.py`, `tests/test_colour_budget_app.py`, `tests/test_english.py`, `tests/test_gantt_polish.py`, `tests/test_cells.py`, `tests/test_colour_budget.py`, `tests/test_flow_view.py`, `tests/test_gantt_board.py`, `tests/test_keymap.py`, `tests/test_setup_help.py`, `tests/test_team_views.py`, `.gitattributes`, `REQUIREMENTS.md`, `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-10-02-batch-01/decisions-log.json`, `.dev-flow/2026-10-02-batch-02/**` |
+| Gated tree | `cfc28a3351de9b03ad022f702a990f1505643c45` · dirty — every change is in the working tree for the coordinator's commit (standing authorization: this agent does not commit): `taskboard/views.py`, `taskboard/app.py`, `taskboard/modals.py`, `taskboard/keymap.py`, `taskboard/ribbon.py`, `taskboard/team_sync.py`, `taskboard/taskboard.tcss`, `tests/kg_board.py`, `tests/test_colour_budget_app.py`, `tests/test_english.py`, `tests/test_gantt_polish.py`, `tests/test_cells.py`, `tests/test_colour_budget.py`, `tests/test_flow_view.py`, `tests/test_gantt_board.py`, `tests/test_keymap.py`, `tests/test_setup_help.py`, `tests/test_team_views.py`, `.gitattributes`, `REQUIREMENTS.md`, `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-10-02-batch-01/decisions-log.json`, `.dev-flow/2026-10-02-batch-02/**` |
 | Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`), folded with the pinned `devflow-init.py --fold-canon`: 23 folded (10 HLR + 13 LLR), 0 refused; a second run: 0 folded, 23 kept |
 
 ---
@@ -113,7 +113,7 @@ their parents (`04-validation.md` iteration 2: 23/23, 0 blocker); HLR-203 was am
 | D9 page hint, D14 toast, D5 weekend shading, UXV-2, UXV-3, UXV-7 | shipped (uncommitted) | increments 004–005 |
 | the operator's verdicts on D-203/204/205/208/211/213/214/217; UXV2-1 (`date_chip`), UXV2-2 (key-bar groups), UXV2-8 (`today` tones); stale previous group; other-side clip; security L1 and S-5; cleanups (group_of, HEAT, F6, param ids, lattice bullet); Setup wrap at 80×24 | added | `.dev-flow/BACKLOG.md` §Open — after `2026-10-02-batch-02` |
 | Batch A2 and everything else in BACKLOG | carried | `.dev-flow/BACKLOG.md` |
-| header refresh | done — 1677 tests, base `a0e7d9a`; the base ref moves when the coordinator commits | `.dev-flow/BACKLOG.md` header |
+| header refresh | done — 1677 tests, base `cfc28a3`; the base ref moves when the coordinator commits | `.dev-flow/BACKLOG.md` header |
 
 ---
 

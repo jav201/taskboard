@@ -102,7 +102,7 @@
       "from": null,
       "to": "core",
       "date": "2026-10-07",
-      "reason": "the parallel tracks reconciled: batch-03 committed on main (46b16be), batch-04 merged from proto/present-e (1666f08); the trunk state points at the tip batch, base_ref = the commit batch-04 landed on"
+      "reason": "the parallel tracks reconciled: batch-03 committed on main (14eaada), batch-04 merged from proto/present-e (6ba798f); the trunk state points at the tip batch, base_ref = the commit batch-04 landed on"
     },
     {
       "from": null,
@@ -175,7 +175,7 @@
     "metrics": "vault:taskboard/dev-flow-batches/2026-10-07-batch-09/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "5c4c28ad075ded9152251604d490dc244f293169",
+  "base_ref": "adbcc38cfc7612b6a5a084ccaeaf284c82335ff2",
   "artifacts": {},
   "decisions_log": [
     {
@@ -193,5 +193,5 @@
   },
   "obsidian_synced": false,
   "created_at": "2026-10-08T07:44:48.744762",
-  "resumption_note": "BOTH tracks closed and merged 2026-10-07: batch-03 (cleanup) at 46b16be, batch-04 (presentation) merged at 1666f08, suite green, validator 0 block. Next: the operator's call on the kg_mejoras plan's remaining batches; open the next batch by rollover from this state."
+  "resumption_note": "BOTH tracks closed and merged 2026-10-07: batch-03 (cleanup) at 14eaada, batch-04 (presentation) merged at 6ba798f, suite green, validator 0 block. Next: the operator's call on the kg_mejoras plan's remaining batches; open the next batch by rollover from this state."
 }

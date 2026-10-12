@@ -87,7 +87,7 @@ Gate run on the frozen round-3 tree (`evidence/inc001-frozen-r3.sha256`, 11/11 O
 
 | Field | Value |
 |---|---|
-| Mutation applied | (a) the base tree `56a1b10` with this increment's new tests overlaid (`git archive` export); (b) the battery below on the increment tree |
+| Mutation applied | (a) the base tree `be81d68` with this increment's new tests overlaid (`git archive` export); (b) the battery below on the increment tree |
 | Instrument | `evidence/mutate.py` (batch-local; byte-exact restore after run 1) and `tester`'s `evidence/inc001_style_mutations.py` |
 | Where it ran | scratch exports in the session scratchpad, never the live checkout |
 | Transcript | `evidence/inc001-red-on-base.txt` (AT-401 29/67, AT-402 5/12, AT-403 11/17, TC-412 2/3 arms RED; TC-415 1/40 — the base calendar title's stray backslash); `evidence/inc001-red-census-base.txt` (TC-401, TC-402, TC-406 RED; TC-417 trigger-absent: `highlight_segments` missing); `evidence/inc001-details-red-on-base.txt` (8 failed) |

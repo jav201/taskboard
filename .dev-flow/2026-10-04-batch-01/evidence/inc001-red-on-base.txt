@@ -1,7 +1,7 @@
-## RED on base 0447070 (git archive) + this increment's tests — 2026-10-03
+## RED on base f599b8c (git archive) + this increment's tests — 2026-10-03
 
 ### collection of test_link_migration.py on base
-## RED on base 0447070 (git archive) + this increment's tests — 2026-10-03
+## RED on base f599b8c (git archive) + this increment's tests — 2026-10-03
 
 ### collection of test_link_migration.py on base
 

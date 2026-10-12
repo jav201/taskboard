@@ -12,7 +12,7 @@ reviewed increment.
 ## Verified at intake (executed, not asserted)
 
 - **RC-1 base currency:** `git fetch origin` 2026-08-14 → `HEAD == origin/main ==
-  merge-base == 47726e8`. Branch current. Working tree DIRTY (36 files) — see
+  merge-base == 70af67a`. Branch current. Working tree DIRTY (36 files) — see
   risks.
 - **Flow currency (C-45 PULL):** `~/.claude/skills/dev-flow` == backup repo
   `~/kimi/agent-skills/dev-flow` at **rev25** (0 real diffs, 0 missing both

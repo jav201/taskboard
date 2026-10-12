@@ -101,7 +101,7 @@ Textual 8.2.8, Rich 15.0.0, Python 3.12; no new dependency; the board file forma
 - **Evaluability:** a `team.json` whose project status is `[@click=app.pwn]X`, colour `evil` and name `123` is applied: the project picker shows a valid status and clicking its line fires no action; every view renders (base: the click ran the action; gantt raised `KeyError`, P-12).
 - **Classification:** READY.
 
-RC-1 (b), already shipped? — none: on `origin/main` = `56a1b10` the census flags 45 sites (P-8), `Board.load` keeps ESC (P-3), sync keeps it (P-4), the grid paints 0-row cells (P-5), a synced status fires an action (P-12).
+RC-1 (b), already shipped? — none: on `origin/main` = `be81d68` the census flags 45 sites (P-8), `Board.load` keeps ESC (P-3), sync keeps it (P-4), the grid paints 0-row cells (P-5), a synced status fires an action (P-12).
 
 ### 2.7 Premise evaluation (C-43)
 
@@ -116,7 +116,7 @@ RC-1 (b), already shipped? — none: on `origin/main` = `56a1b10` the census fla
 | P-7 | In the app, `notify(payload, markup=False)` paints a toast holding the payload; `notify(escape(payload))` raises `MarkupError`; `run_test` paints toasts only with `notifications=True` | premise | ✅ TRUE | `p0-probes.txt` §P-7 | LLR-401.2; the ATs run with `notifications=True` |
 | P-8 | The first census over `taskboard/` found 150 sink sites: 102 markup-inert, 45 not (34 `modals.py`, 11 `app.py`), 3 built from app constants only | premise | ✅ TRUE | `evidence/p1-census-base.txt` (C-39 pre-execution) | TC-404 floor |
 | P-9 | Root cause: an auto-height grid row is sized to the Label's 1-line content and `margin-top: 1` consumes it; zero margin paints the cells | premise | ✅ TRUE | `evidence/p1-grid-minimise.txt` (variants `no-margin`, `fix-scoped`) | LLR-403.1 |
-| P-10 | Base suite: 1854 passed, 1 failed — `test_win_clipboard_roundtrip`, whose own SETUP message names the environment (`Set-Clipboard` failed), the known flake (G-011) | premise | ✅ TRUE | `evidence/base-suite.txt` at `56a1b10` | test ledger base |
+| P-10 | Base suite: 1854 passed, 1 failed — `test_win_clipboard_roundtrip`, whose own SETUP message names the environment (`Set-Clipboard` failed), the known flake (G-011) | premise | ✅ TRUE | `evidence/base-suite.txt` at `be81d68` | test ledger base |
 | P-11 | Under the iteration-2 rule (no non-literal value reaches a parser) the census over `modals.py` / `app.py` finds 150 sink sites — 89 markup-inert, 58 not (11 `app.py`, 47 `modals.py`), 3 exempt — and 15 parser calls, all over a non-literal (`modals.py`: the `_rich` sites and `notes_preview`); `x\\\` (and `a\\`) and `:smile:` through `_rich(escape(...))` paint altered (`evidence/p1-pieces-probe.txt`) | premise | ✅ TRUE | `evidence/p1-census-iter2.txt`; `evidence/p1-pieces-probe.txt` | LLR-401.1, LLR-401.3 |
 | P-12 | On base, a `team.json` project status `[@click=app.pwn]X` applied by `apply_config_to_board` makes a click on the project picker line fire `app.pwn`; colour `evil` makes the gantt raise `KeyError`; name `123` raises in render | premise | ✅ TRUE | `evidence/p1-sync-fields-probe.txt` (re-run of the reviewer's `p_status.py`) | HLR-404 |
 | P-13 | `Text.assemble` and `Text.append` paint `x\\\`, `a\\`, `:smile:` and `[b]y[/b]` exactly, and a style given as a piece applies only to that piece | premise | ✅ TRUE | `evidence/p1-pieces-probe.txt` | LLR-401.3 |

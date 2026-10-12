@@ -1,4 +1,4 @@
-iteration-2 census over taskboard/ (base tree, 56a1b10 product code)
+iteration-2 census over taskboard/ (base tree, be81d68 product code)
 sink sites: 150 | markup-inert: 89 | not: 58 | exempt: 3
 parser calls: 15 | over a literal: 0 | over a non-literal: 15
 sinks not inert by module: {'app.py': 11, 'modals.py': 47}

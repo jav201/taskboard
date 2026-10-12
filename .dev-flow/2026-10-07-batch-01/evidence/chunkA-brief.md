@@ -1,7 +1,7 @@
 # CHUNK A (product) — DeepSeek V4 Pro — increment 001 of batch 2026-10-07-batch-01
 
 You are the software-dev implementer for the PRODUCT half of a small cleanup batch in
-`<home>/Github/taskboard` (Textual TUI; 2512 pytest tests green at base `f665425`).
+`<home>/Github/taskboard` (Textual TUI; 2512 pytest tests green at base `20b0b86`).
 A second agent works on TESTS only; you must NOT touch anything under `tests/`.
 
 ## YOUR FILES (exclusive)

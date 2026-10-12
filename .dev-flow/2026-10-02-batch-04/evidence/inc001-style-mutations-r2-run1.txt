@@ -1,5 +1,5 @@
 # superseded run 1 of round 2 (kept as the measurement behind arm [50]'s note: deleting the escape survives because it is not a fault); the current transcript is inc001-style-mutations.txt
-$ PYTHONIOENCODING=utf-8 python -B .dev-flow/2026-10-02-batch-04/evidence/inc001_style_mutations.py <scratch: git archive 56a1b10 + working-tree taskboard/ and tests/ overlaid>
+$ PYTHONIOENCODING=utf-8 python -B .dev-flow/2026-10-02-batch-04/evidence/inc001_style_mutations.py <scratch: git archive be81d68 + working-tree taskboard/ and tests/ overlaid>
 node: tests/test_markup_sites.py::test_TC_415_converted_sites_keep_their_painted_style
 arms: 51 (49 STYLE_BASE + 2 law); mutants: 51, one per arm
 

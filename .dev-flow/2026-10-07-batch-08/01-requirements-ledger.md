@@ -14,4 +14,4 @@ above this line is ever edited._
 - **Date:** 2026-10-07
 - **What changed:** new requirements closing the batch-07 carry: a chain-map key saves the selected task's connected component (open tasks, both directions through depends_on, within the project) as a user template under a typed name; fan-in collapses to the first predecessor (the template shape cannot hold a diamond — declared); saving writes settings only, not an undo step (declared); the degenerate single-task component is allowed.
 - **Why:** the operator's 'continua junto con deepseek lo que sigue' 2026-10-07 — the queued carry.
-- **Evidence:** the batch-07 store/picker/insert seats (bafa1e3) · the fan-in/shape analysis in LLR-1401.1.
+- **Evidence:** the batch-07 store/picker/insert seats (2d56030) · the fan-in/shape analysis in LLR-1401.1.

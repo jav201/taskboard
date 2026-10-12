@@ -28,7 +28,7 @@
 | Field | Value |
 |---|---|
 | Gate record | Re-close, 2026-10-04: `devflow-validate.py --brief` from the same rev99 snapshot, **0 block · 26 notice · 61 not applicable**, exit 0 (`evidence/validator-reclose.txt`, sha256 `98315fdc…`, the same notice set as the first close). First close, 2026-10-03: `devflow-validate.py --brief` from the read-only rev99 snapshot (skills `1154c8a`, flow_hash `16c4f1a047699996`, D-420), 2026-10-03: **0 block · 26 notice · 61 not applicable**, exit 0 (`evidence/validator-close.txt`, sha256 `98315fdc…`). The notices are inherited from closed batches, plus V57 for the uncommitted tree (this table's own Gated tree row). |
-| Gated tree | `56a1b10cc4667bfcde3ff84c593e770eced990a8` · dirty: every change is still in the working tree, waiting for the coordinator's commit (standing authorization: the coordinator commits and pushes to `main`; this agent does not commit). Files: `taskboard/modals.py`, `taskboard/app.py`, `taskboard/views.py`, `taskboard/models.py`, `taskboard/team_sync.py`, `taskboard/taskboard.tcss`, `tests/test_app.py`, `tests/test_archive.py`, `tests/test_details_markup.py`, `tests/test_edit_window.py`, `tests/test_prism_laws.py`, `tests/test_markup_census.py` (new), `tests/test_markup_sites.py` (new), `tests/test_highlight_segments.py` (new), `tests/test_control_bytes.py` (new), `tests/test_sync_fields.py` (new), `tests/test_details_grid.py` (new), `.gitattributes`, `REQUIREMENTS.md`, `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-10-02-batch-03/decisions-log.json` (new), `.dev-flow/2026-10-02-batch-04/**` (new) |
+| Gated tree | `be81d68e5c9c799771b97f745cc7c0dd11305fa4` · dirty: every change is still in the working tree, waiting for the coordinator's commit (standing authorization: the coordinator commits and pushes to `main`; this agent does not commit). Files: `taskboard/modals.py`, `taskboard/app.py`, `taskboard/views.py`, `taskboard/models.py`, `taskboard/team_sync.py`, `taskboard/taskboard.tcss`, `tests/test_app.py`, `tests/test_archive.py`, `tests/test_details_markup.py`, `tests/test_edit_window.py`, `tests/test_prism_laws.py`, `tests/test_markup_census.py` (new), `tests/test_markup_sites.py` (new), `tests/test_highlight_segments.py` (new), `tests/test_control_bytes.py` (new), `tests/test_sync_fields.py` (new), `tests/test_details_grid.py` (new), `.gitattributes`, `REQUIREMENTS.md`, `.dev-flow/state.json`, `.dev-flow/BACKLOG.md`, `.dev-flow/2026-10-02-batch-03/decisions-log.json` (new), `.dev-flow/2026-10-02-batch-04/**` (new) |
 | Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`), folded with the rev99 snapshot's `devflow-init.py --fold-canon`: 13 folded (4 HLR, 9 LLR), 0 refused; a second run folds nothing (`evidence/p5-fold-canon.txt`); at the re-close the LLR-403.1 row was updated by hand to amendment A-7 (the fold never rewrites an existing row, D-423) |
 
 ---
@@ -75,7 +75,7 @@ Tests: 1855 → 2218. The P4 gate run was 2214 passed, exit 0 (`evidence/p4-gate
   - Re-running the r2 script overwrote its hand-edited battery. I restored it by replaying the two recorded edits (N13, then R7/R8), and the restored file matches its recorded hash.
   - No account path remains under the batch folder.
 - **S6-2 (LOW), discharged:** S4-3 and S4-4 already carry their text in `BACKLOG.md` ("Hand-edited data is normalised silently", and the census residuals item).
-- **Re-close delta pass (2026-10-04): PASS-WITH-NOTES, no HIGH.** Increment 004 is presentation only: two CSS rules scoped to `#details-box`, no Python change, no new input, I/O or network path. The new evidence holds no secret, account name or personal data. S7-1 (LOW, pre-existing): `state.json` `owner` carries the full local path with the account name, already at `56a1b10` → BACKLOG.
+- **Re-close delta pass (2026-10-04): PASS-WITH-NOTES, no HIGH.** Increment 004 is presentation only: two CSS rules scoped to `#details-box`, no Python change, no new input, I/O or network path. The new evidence holds no secret, account name or personal data. S7-1 (LOW, pre-existing): `state.json` `owner` carries the full local path with the account name, already at `be81d68` → BACKLOG.
 - **Noted:** `p4-gate.txt` does not name the tree it ran on. The reviewer tied it to the final tree through the frozen hashes. Recorded here and left as-is.
 
 ---
@@ -149,7 +149,7 @@ Tests: 1855 → 2218. The P4 gate run was 2214 passed, exit 0 (`evidence/p4-gate
 | `run_test` hides toasts unless `notifications=True` | added | P4 ux note |
 | `.modal-title`'s `margin-bottom` never applies to a Label title inside `.modal` | added | code review of increment 004 (observation) |
 | `state.json` `owner` holds the full local path (S7-1) | added | security re-close delta pass |
-| Base ref + refresh date | bumped to `56a1b10` · 2026-10-03 | `BACKLOG.md` header |
+| Base ref + refresh date | bumped to `be81d68` · 2026-10-03 | `BACKLOG.md` header |
 
 ### Visual decisions — the operator's verdict (2026-10-04, `evidence/operator-verdict-provisional.json`)
 

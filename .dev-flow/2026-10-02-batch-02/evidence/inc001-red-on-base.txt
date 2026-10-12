@@ -1,4 +1,4 @@
-$ (scratch: git archive HEAD + the new tests/test_colour_budget_app.py and tests/kg_board.py) python -m pytest -q -p no:cacheprovider tests/test_colour_budget_app.py -rA   # increment 001 RED on base a0e7d9a
+$ (scratch: git archive HEAD + the new tests/test_colour_budget_app.py and tests/kg_board.py) python -m pytest -q -p no:cacheprovider tests/test_colour_budget_app.py -rA   # increment 001 RED on base cfc28a3
 PASSED tests/test_colour_budget_app.py::test_TC_202_the_census_set_is_complete
 FAILED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[118-30]
 FAILED tests/test_colour_budget_app.py::test_TC_201_every_view_title_is_bold_bright[24-10]

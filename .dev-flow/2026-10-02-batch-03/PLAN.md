@@ -23,9 +23,9 @@ named once, finished work on a narrow rail, the urgent cards first in one capped
 
 ## RC-1 and flow currency
 
-- RC-1: `git fetch origin` → `origin/main` = `13745f6f268f` = HEAD = merge-base. `base_ref` stamped from it.
+- RC-1: `git fetch origin` → `origin/main` = `7f2e0a160940` = HEAD = merge-base. `base_ref` stamped from it.
 - Rollover from `2026-10-02-batch-02` (P5 closed): its `decisions_log` MOVED to `.dev-flow/2026-10-02-batch-02/decisions-log.json`; every single-slot field retired per `stations/shared-batch.md` §Batch rollover (triggers re-evaluated below, artifacts cleared, homes re-pointed, owner re-stamped, authorization re-recorded from this batch's commission, `base_ref` = HEAD, `created_at` re-stamped); `mode_history` carried and appended. Seeds from the pinned bundle's `devflow-init.py` run in a scratch tree (it refuses an initialised `.dev-flow/`), batch id substituted. The increment skeleton is held back until P3 so no packet precedes its increment.
-- Flow: rev98, the PINNED snapshot of skills commit `48154ab` (header row "Flow pin"). Validator at kickoff (coordinator, `13745f6`): **0 block · 18 notice**, exit 0 — re-run by this agent before the rollover: same (V7 clean).
+- Flow: rev98, the PINNED snapshot of skills commit `48154ab` (header row "Flow pin"). Validator at kickoff (coordinator, `7f2e0a1`): **0 block · 18 notice**, exit 0 — re-run by this agent before the rollover: same (V7 clean).
 - **Inherited NOTICEs declared** (all 18 predate this batch): `V9` ×8 legacy packets (`increment-001..003`, `006..010` in the flat `.dev-flow/03-increments/`) declare no SOURCE count, and ×1 batch-02's `increment-002.md` 4-source warning; `V13` ×2 batch-01's IFC address `nav-order` reached by undeclared files, and its computed `task-rows` addresses; `V22` ×3 batch-01 and batch-02 LLRs never used as an IFC owner, and 5 legacy US ids not in the canon; `V23` an unparseable design-review citation in legacy `increment-006.md`; `V30` the bundle derives its floors from a subset (benign on this runtime, `SKILL.md`); `V53` the closed-record census count; `V57` batch-02's close record predates this tree by 1 commit (the coordinator's commit). None is this batch's to fix; a closed record is not re-anchored.
 - Not runnable here (`SKILL.md` step 4): `V15`, `V16`, `V17` — `not-run` (no canon tree, no checkout table, no hook settings on a bundle runtime).
 - Mechanisms unavailable on this runtime, named once (`SKILL.md` step 5): no slash commands, no hooks, no prompt guard, no operator prompt (the standing authorization above closes the gates). Reviewer roles are **spawned as named sub-agents** of this runtime (`qa-reviewer`, `ux-reviewer`, `code-reviewer`, `security-reviewer`, `tester` where owed), each told to follow the pinned bundle's `agents/<role>.md` — independent reviewers, never inline self-review.
@@ -42,7 +42,7 @@ named once, finished work on a narrow rail, the urgent cards first in one capped
 | C | fired | `devflow-scan-spec.py` → `security_required: true` (flags `token`, `form`, vocabulary); file-derived project names and split titles are printed as markup (C-17) → hostile-input arms; security-reviewer at P2 |
 | D | fired | user-visible → ux-reviewer at P2/P4, captures 118×30 / 80×24 |
 | E | fired | 3 stories, 2 planned increments, the most-tested renderer replaced |
-| F | F2 fired | `BACKLOG.md` header base ref `a0e7d9a` ≠ HEAD `13745f6` → reconciled at close; F1 not fired: `V7` clean on the pinned bundle |
+| F | F2 fired | `BACKLOG.md` header base ref `cfc28a3` ≠ HEAD `7f2e0a1` → reconciled at close; F1 not fired: `V7` clean on the pinned bundle |
 
 ## Per-story / per-station status
 
@@ -126,7 +126,7 @@ Re-cut after P2 iteration 1 (C-21: AT-307, AT-308 added; AT-303 re-defined):
 
 | Suite / command | Last run | Result |
 |---|---|---|
-| `python -m pytest -q -p no:cacheprovider` (base `13745f6`) | 2026-10-02 | 1677 passed in 237.82 s (`evidence/base-suite.txt`) |
+| `python -m pytest -q -p no:cacheprovider` (base `7f2e0a1`) | 2026-10-02 | 1677 passed in 237.82 s (`evidence/base-suite.txt`) |
 | same, after increment 001 | 2026-10-02 | 1821 passed in 306.79 s (`evidence/inc001-green.txt`) |
 | same, after increment 002 | 2026-10-02 | 1845 passed in 357.16 s (`evidence/inc002-green.txt`) |
 | P4 gate run, iteration 1 | 2026-10-02 | 1845 passed in 306.00 s (`evidence/p4-gate.txt`) |

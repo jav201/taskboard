@@ -12,8 +12,8 @@
 | Objective | Batch B2 of the `kg_mejoras` plan. Commissioned: milestones as a task flag (gantt M-1 with the AX-2 ruler marks, kanban M-2 band rule, a key and the editor), moving linked dates (round 6), and the one-time M-3 milestone offer as a migration. Run under the pre-authorized split (D-601): **B2a** = milestones (US-601, US-602, US-603, US-605); **B2b** = moving linked dates (US-604) → `BACKLOG.md`. |
 | Flow | **rev100, the installed bundle** — operator ruling at kickoff: "rev100, la instalada". `~/.claude/skills` HEAD `1d3c364` = the last declared rev100 commit. Contingency (commission): if the installed bundle starts failing `V7` mid-batch, continue from a read-only `git archive` snapshot of `1d3c364` in the session scratchpad and record it here as the pin. `~/.claude` is never edited. |
 | Standing authorization | the operator's commission, asked at this batch's kickoff and relayed by the coordinator (this runtime is a delegated sub-agent and cannot prompt), dated 2026-10-04: **Gates — "Autónomo + ambas excepciones":** end-to-end autonomous, self-approve each gate, record every un-asked decision. A HIGH ONLY in tests/evidence (reviewer confirms product correct) OR a HIGH in the increment UNDER CONSTRUCTION (not yet approved) may be fixed without stopping, with a RED-first proof, recorded and re-reviewed. STOP and report: a HIGH in code already approved or shipped, any security HIGH, any HIGH touching the operator's data (migrations). **Git — "Commit + push tras tu veredicto visual":** the COORDINATOR commits/pushes after verification and the operator's visual verdict; this agent does NOT commit, push, stash, reset or checkout anything; `merge: false (no PR; coordinator commits+pushes to main after the operator's visual verdict)`. **Migration safeguard — "Sí: respaldo + registro + deshacer":** the one-time milestone offer converts NOTHING the operator didn't choose in the picker; whatever it converts is backed up first, logged, revertible with `u`, never offered twice. Never open, read or write the operator's real board — tests and synthetic boards only. Also in `state.json` `standing_authorization`. |
-| First gate | kickoff run by the coordinator @`4b2c13a`: exit 0, **0 block · 31 notice**; re-run by this agent before the rollover: exit 0, 0 block · 31 notice; `V7` clean (no `V7` line: the bundle's bytes match its manifest). After the rollover: exit 0, 0 block · 43 notice (the 31 inherited + the new batch's seeded placeholders and an empty ledger, `V27`). |
-| Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = HEAD = merge-base = `4b2c13ae6ab2`; nothing to rebase; `base_ref` stamped from it. RC-2: `git ls-remote --exit-code --heads origin` answered (5 heads, exit 0); `origin/main`'s newest commit 2026-10-04 19:06 −0600. RC-1 (b): no story already shipped on `origin/main` (`evidence/p0-probes.txt` §RC-1 (b): `milestone`, `date_links`, `push_delta`, `◆✓`, the move keys — 0 hits). Premise table: `01-requirements.md` §2.7. |
+| First gate | kickoff run by the coordinator @`7073592`: exit 0, **0 block · 31 notice**; re-run by this agent before the rollover: exit 0, 0 block · 31 notice; `V7` clean (no `V7` line: the bundle's bytes match its manifest). After the rollover: exit 0, 0 block · 43 notice (the 31 inherited + the new batch's seeded placeholders and an empty ledger, `V27`). |
+| Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = HEAD = merge-base = `7073592738ff`; nothing to rebase; `base_ref` stamped from it. RC-2: `git ls-remote --exit-code --heads origin` answered (5 heads, exit 0); `origin/main`'s newest commit 2026-10-04 19:06 −0600. RC-1 (b): no story already shipped on `origin/main` (`evidence/p0-probes.txt` §RC-1 (b): `milestone`, `date_links`, `push_delta`, `◆✓`, the move keys — 0 hits). Premise table: `01-requirements.md` §2.7. |
 
 ## Triggers
 
@@ -34,7 +34,7 @@ Evaluated 2026-10-04 at P0 (`devflow-init.py --fired … --not-fired …`); prob
 | D2 | fired | the verdict frames come from a rich-rendered prototype, not Textual: the picker's keys (`space`, `↵`, `esc`) and `M` are verified through the real app (C-16) |
 | E1 | fired | 5 commissioned stories (4 run) |
 | E2, E3 | not fired | no high risk declared at intake beyond the migration, which family C covers; not a client deliverable |
-| F2 | fired | `BACKLOG.md` header base ref `0447070` ≠ HEAD `4b2c13a` → reconciled at close |
+| F2 | fired | `BACKLOG.md` header base ref `f599b8c` ≠ HEAD `7073592` → reconciled at close |
 | F1 | not fired | `V7` clean on the installed rev100 bundle |
 
 ## Where we are
@@ -151,7 +151,7 @@ The close editor and details captures were re-shot after UXV-1, and now show the
 | increment-001 gate run (frozen r3) | 2026-10-04 | 2346 passed, 1 failed (clipboard environment flake) in 452.81 s (`evidence/inc001-gate-r3.txt`) |
 | close gate (004 r2 + P4 test folds) | 2026-10-05 | 2485 passed, 1 failed (clipboard environment flake) in 476.36 s (`evidence/close-gate.txt`) |
 | increment-004 gate run (frozen r2) | 2026-10-05 | 2485 passed, 1 failed (flake) in 470.77 s (`evidence/inc004-gate-r2.txt`) |
-| `python -m pytest -q -p no:cacheprovider` (base `4b2c13a`) | 2026-10-04 | 2306 passed in 450.07 s, exit 0 (`evidence/base-suite.txt`) |
+| `python -m pytest -q -p no:cacheprovider` (base `7073592`) | 2026-10-04 | 2306 passed in 450.07 s, exit 0 (`evidence/base-suite.txt`) |
 
 ## Decision log
 

@@ -115,7 +115,7 @@ Full suite: see `04-validation.md` (the orchestrator's one complete run).
 | Arms that stayed GREEN | **none** — 6 mutations, 6 KILLED (the two SURVIVED first cuts were mutation-design bugs — a no-op `pass` prepend and an arm that read the brief's copy of the title — both fixed and re-run, transcript shows the clean pass) |
 
 Plus the base-tree RED the template's first column asks about: on `HEAD`
-(`34bab3c`, before this batch) `views.render_present` does not exist —
+(`5f3c9bb`, before this batch) `views.render_present` does not exist —
 `git show HEAD:taskboard/views.py | grep -c render_present` prints `0`, so
 `tests/test_present.py` fails at import on the base tree. The worker's own
 first-run logs carry the same shape (`inc001-run.log`).
@@ -212,7 +212,7 @@ first-run logs carry the same shape (`inc001-run.log`).
 ### Signed-balance test ledger
 
 `post = base − deleted + added` → `2534 = 2529 − 0 + 5` ✓ reconciles
-(base `2529` = the worktree suite at `34bab3c` + the worker's code, the old R
+(base `2529` = the worktree suite at `5f3c9bb` + the worker's code, the old R
 tests still passing; `+5` = `tests/test_present.py`; the two rewritten R tests
 replace two deleted ones 1:1, names swapped, count neutral; the final number is
 the orchestrator's complete run cited in `04-validation.md`).

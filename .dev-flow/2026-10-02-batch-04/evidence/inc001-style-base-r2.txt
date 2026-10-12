@@ -1,6 +1,6 @@
-$ PYTHONPATH=. TREE_LABEL="git archive 56a1b10 (base), taskboard/ unmodified; tests/test_markup_sites.py from the working tree (round 2)" python -B <evidence>/inc001_style_base.py
+$ PYTHONPATH=. TREE_LABEL="git archive be81d68 (base), taskboard/ unmodified; tests/test_markup_sites.py from the working tree (round 2)" python -B <evidence>/inc001_style_base.py
 taskboard imported from the tree under cwd: yes
-tree: git archive 56a1b10 (base), taskboard/ unmodified; tests/test_markup_sites.py from the working tree (round 2)
+tree: git archive be81d68 (base), taskboard/ unmodified; tests/test_markup_sites.py from the working tree (round 2)
     'details title': {'bold': True, 'dim': False, 'reverse': False, 'underline': False, 'color': '#8b98a5'},
     'details title tail': {'bold': True, 'dim': False, 'reverse': False, 'underline': False, 'color': '#8b98a5'},
     'details — placeholders': [{'bold': False, 'dim': False, 'reverse': False, 'underline': False, 'color': '#9ca2a8'}, {'bold': False, 'dim': False, 'reverse': False, 'underline': False, 'color': '#606a75'}, {'bold': False, 'dim': False, 'reverse': False, 'underline': False, 'color': '#606a75'}],

@@ -229,7 +229,7 @@ Every AT drives `TaskboardApp` through `App.run_test()` and reads what the app p
 - **Iteration 2:** increment 006 adds `1677 = 1677 − 2 + 2`. The two AT-207 functions (each 1 node, counted in increment 005's +15) were deleted, and one node of 2 arms was added (`inc006-suite.txt` 1677; `p4-gate2.txt` 1677). Summed over the batch: `1611 − 2 + 68 = 1677`. The new-file count is still 66 (`test_gantt_polish.py` 33). Iteration 1's row read `1611 − 0 + 66 = 1677`, which is the same post-count before the re-cut.
 
 - **Sources** (each packet's ledger is checked against its green transcript):
-  - **base:** `evidence/base-suite.txt`, 1611 passed at `a0e7d9a`.
+  - **base:** `evidence/base-suite.txt`, 1611 passed at `cfc28a3`.
   - **001:** `1630 = 1611 − 0 + 19` (`inc001-green.txt` 1630). 19 nodes in `test_colour_budget_app.py`. 3 rewrites in place (`test_cells`, `test_colour_budget`, `test_team_views`).
   - **002:** `1634 = 1630 − 0 + 4` (`inc002-green.txt` 1634). TC-203, TC-204 ×2, AT-202. `test_keymap` rewritten in place.
   - **003:** `1643 = 1634 − 0 + 9` (`inc003-green.txt` 1643). `test_english.py` 9. 7 pins rewritten in place.
@@ -260,7 +260,7 @@ Every AT drives `TaskboardApp` through `App.run_test()` and reads what the app p
 
 | Regression id (`AT-NNN` / `TC-NNN`) | Pre-fix run (evidence it FAILED) | Pre-fix RED kind (value / shape) | Post-fix value-discriminating? (QC-2) | Post-fix result | Reconciled node |
 |-------------------------------------|----------------------------------|----------------------------------|----------------------------------------|-----------------|-----------------|
-| AT-202 + `test_keymap` layer node (D-218: `;` never reached the `more` layer since 8b73920, because `action_layer_toggle` read Textual's CSS `layer`; found by code review of increment 002, F3) | mutant F3 re-applies the pre-fix toggle: `evidence/inc002-mutations.txt:187-222`, AT-202 and `test_keymap.py::test_the_app_paints_its_keys_instead_of_a_blank_row` FAILED, `'primary' == 'more'` (executed by the increment author) | value (the node exists and the layer reads the wrong value) | yes. AT-202 asserts `bar_layer == layer` for each layer AND that the two painted bars differ (`seen[0] != seen[1]`); MG (accent on the `more` layer only) is killed by AT-202 alone. | pass — gate run (orchestrator) | `tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent`; `tests/test_keymap.py::test_the_app_paints_its_keys_instead_of_a_blank_row` |
+| AT-202 + `test_keymap` layer node (D-218: `;` never reached the `more` layer since 71c9616, because `action_layer_toggle` read Textual's CSS `layer`; found by code review of increment 002, F3) | mutant F3 re-applies the pre-fix toggle: `evidence/inc002-mutations.txt:187-222`, AT-202 and `test_keymap.py::test_the_app_paints_its_keys_instead_of_a_blank_row` FAILED, `'primary' == 'more'` (executed by the increment author) | value (the node exists and the layer reads the wrong value) | yes. AT-202 asserts `bar_layer == layer` for each layer AND that the two painted bars differ (`seen[0] != seen[1]`); MG (accent on the `more` layer only) is killed by AT-202 alone. | pass — gate run (orchestrator) | `tests/test_colour_budget_app.py::test_AT_202_the_chrome_spends_no_accent`; `tests/test_keymap.py::test_the_app_paints_its_keys_instead_of_a_blank_row` |
 
 ### Evidence checklist — qa-reviewer (full)
 > Attach `qa-reviewer`'s completed evidence checklist (items in `agents/qa-reviewer.md`), each marked ✓/✗ with one-line evidence. An unchecked or evidence-less item blocks the gate.

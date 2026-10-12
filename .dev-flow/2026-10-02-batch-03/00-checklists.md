@@ -23,7 +23,7 @@
 | 1 | Context of use per story: user · **task** · **environment** |  ✓ | `01-requirements.md` §2.3: one operator; the daily read of the kanban (key `4`), moving cards with `[`/`]`; Windows Terminal truecolor, 80×24 to full screen |
 | 2 | Observable outcome stated per story |  ✓ | US-301..303 each state their outcome ("so that …"); AT table §5 |
 | 3 | Risk estimate: importance and criticality, used to prioritise |  ✓ | `Priority:` per HLR in §3; risks in `PLAN.md` §Risks / watch-items |
-| 4 | RC-1: `origin/main` tip fetched and recorded in `PLAN.md` **before** deriving |  ✓ | `PLAN.md` §RC-1: `git fetch origin` → `origin/main` = `13745f6f268f` = HEAD = merge-base |
+| 4 | RC-1: `origin/main` tip fetched and recorded in `PLAN.md` **before** deriving |  ✓ | `PLAN.md` §RC-1: `git fetch origin` → `origin/main` = `7f2e0a160940` = HEAD = merge-base |
 | 5 | RC-2: `origin` reachable and the age of its newest commit recorded in `PLAN.md` **before** deriving (`git ls-remote --exit-code --heads origin`; V25) |  ⚠ | origin is reachable (the P0 fetch succeeded), but the newest commit's age was not written into `PLAN.md`. Declared here, as in batch-02 |
 | 6 | "already shipped?" check per candidate story |  ✓ | `evidence/p0-probes.txt` P-1..P-6 and `evidence/p1-geometry.txt`: each feature measured absent on the base tree (one-row cards, a per-column band, no rail, no fold row) |
 | 7 | `flow_hash` verified against the manifest (C-45 PULL) |  ✓ | the pinned rev98 bundle (skills `48154ab`, operator: "Sí, fijar a rev98"); V7 clean at kickoff and at close |

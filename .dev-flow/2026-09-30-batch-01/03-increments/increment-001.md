@@ -93,7 +93,7 @@ suite at the batch gate: see increment 002 §4 (`evidence/full-suite-after.txt`)
 
 ### RED counterfactual — executed, not predicted
 
-RED on base (`a9bbd1c`, `modals.py`/`taskboard.tcss` untouched in the tree at the time):
+RED on base (`b6adac8`, `modals.py`/`taskboard.tcss` untouched in the tree at the time):
 `evidence/inc001-red-on-base.txt` — **29 failed, 3 passed**. The 3 GREEN-on-base nodes are the
 preservation tests by design (payload round trip, ProjectModal box, escape discards); each is
 shown RED under its own mutation below.

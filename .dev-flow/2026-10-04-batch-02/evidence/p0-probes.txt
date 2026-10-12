@@ -1,10 +1,10 @@
-# p0-probes — batch 2026-10-04-batch-02 — 2026-10-04T21:22:04-06:00 — HEAD 4b2c13a
+# p0-probes — batch 2026-10-04-batch-02 — 2026-10-04T21:22:04-06:00 — HEAD 7073592
 
 ## RC-1 (a)
 $ git rev-parse HEAD origin/main; git merge-base HEAD origin/main
-4b2c13ae6ab2ad66ceaa6b54e2f9abbc8900f7d2
-4b2c13ae6ab2ad66ceaa6b54e2f9abbc8900f7d2
-4b2c13ae6ab2ad66ceaa6b54e2f9abbc8900f7d2
+7073592738ffd247d5c10d13b819341036a0009c
+7073592738ffd247d5c10d13b819341036a0009c
+7073592738ffd247d5c10d13b819341036a0009c
 
 ## RC-2
 $ git ls-remote --exit-code --heads origin | wc -l ; exit
@@ -83,8 +83,8 @@ taskboard/models.py:1663:    """THE overlap measure (`cascade.overlap`, one ever
 (exit 0)
 
 ## F2 backlog currency
-6:**Base ref:** `0447070` (local HEAD == `origin/main`; batch 2026-10-04-batch-01 started here)
-HEAD 4b2c13a
+6:**Base ref:** `f599b8c` (local HEAD == `origin/main`; batch 2026-10-04-batch-01 started here)
+HEAD 7073592
 
 ## F1 flow identity
 V7 clean in the kickoff run (0 block); installed skills HEAD:

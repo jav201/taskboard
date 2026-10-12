@@ -3,7 +3,7 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `5c4c28a` (local HEAD == `origin/main` at batch 2026-10-07-batch-09's open)
+**Base ref:** `adbcc38` (local HEAD == `origin/main` at batch 2026-10-07-batch-09's open)
 · **Last refresh:** 2026-10-08
 **Status:** **2592 tests** (batch `2026-10-07-batch-09`, templates v3: scratch authoring — the `I`
 picker gains a leading `New template...` row (reserved id `__new__`, the house `L`-picker create-row
@@ -427,7 +427,7 @@ recorded full-suite run).
   The residuals they named (UXV2-3/4/5/6/7) stay as known behaviour, not defects.
 - **The key bar's `more` layer has no group boundaries** since the group hues left (UXV2-2, D-211):
   a dim ` · ` group separator costs ~7 cells (~3 keys dropped at 80). `;` reaches it again since
-  D-218 (the toggle had read Textual's CSS `layer` since 8b73920).
+  D-218 (the toggle had read Textual's CSS `layer` since 71c9616).
 - **Soon-due amber outside `reldue_token`** (UXV2-1, HLR-203 amended, LED .19): the Focus view's
   `date_chip` seats — tiles, cards, image and compact cards, the detail pane, the review layout's
   selected-task line — still paint +1..+7d in `later` slate (`_URG_COLOR["week"]`). Operator: extend
@@ -483,7 +483,7 @@ recorded full-suite run).
   increment 004 round 3 (proven by its node and mutant H5 only) — glance at a focused gantt under a
   `/` filter that empties it at the next UX pass.
 - **Inherited personal strings in committed state** (P5 privacy sweep, not introduced by
-  `2026-10-02-batch-01`; byte-identical in `57a6075`): `.dev-flow/state.json` `owner` holds the
+  `2026-10-02-batch-01`; byte-identical in `dbcebe0`): `.dev-flow/state.json` `owner` holds the
   absolute project path with the home folder (the flow writes it), and this file's git-identity note below carries personal
   e-mail addresses and the username on three lines. Operator decides whether to scrub.
 - ✓ done in `2026-10-02-batch-02` (HLR-210) — **The ruler's echo for a task starting before the window** draws `⟦` at the window edge with
@@ -562,7 +562,7 @@ recorded full-suite run).
   way this batch's first version was. The lesson is local to this constant and
   is recorded in `test_the_pulse_rides_the_ONE_shared_clock_and_clears_the_floor`.
 
-## Shipped — batch-10 (`0cf0e72`, 2026-08-29)
+## Shipped — batch-10 (`8a800ca`, 2026-08-29)
 
 - **US-A transitions log:** append-only `history.jsonl` sidecar, hooked into
   `set_task_phase` and `add_task`, never raises.
@@ -576,7 +576,7 @@ recorded full-suite run).
 - **No new carry-overs.** All batch-10 acceptance tests pass (1024 total);
   mutation evidence recorded in `.dev-flow/2026-08-24-batch-10/PLAN.md`.
 
-## Shipped — batch-11 (`2eda873`, 2026-09-01)
+## Shipped — batch-11 (`601337b`, 2026-09-01)
 
 - **US-T1 sync core:** `taskboard/team_sync.py` with `TeamState`
   (load/push/pull/sync), one file per person (`board.<user>.json`),
@@ -590,7 +590,7 @@ recorded full-suite run).
 - **No new carry-overs.** All batch-11 acceptance tests pass (1290 total);
   mutation evidence recorded in `.dev-flow/2026-09-01-batch-11/PLAN.md`.
 
-## Shipped — batch-12 (`3a11eb0`, 2026-09-01)
+## Shipped — batch-12 (`8a023bf`, 2026-09-01)
 
 - **US-S1 initial sync on mount:** configured identities sync immediately on
   mount, before the daemon's first tick.
@@ -618,7 +618,7 @@ recorded full-suite run).
   history. Force-pushed with `--force-with-lease`.
 
   **WHAT REMAINS, MEASURED AFTER THE PUSH, NOT ASSUMED.** The old commits are
-  still reachable on GitHub by SHA: `eec3c8c`, `694f38a` and `ec8c940` all
+  still reachable on GitHub by SHA: `eec3c8c`, `694f38a` and `3845bde` all
   answer the API, and the leaked file downloads (2 545 bytes) at `694f38a`.
   They are not linked from anything and cannot be found by browsing, but "hard
   to find" is not "gone". Two things actually close it:
@@ -660,7 +660,7 @@ recorded full-suite run).
 
 - **`main`'s HISTORY still carries the operator's board data.** `caa4bab` and
   `ff733ec` are clean and `6083c01` is clean, but `694f38a` and every commit
-  back to `5ae4d42` (2026-07-24) still contain **two project names and one task
+  back to `c480dc4` (2026-07-24) still contain **two project names and one task
   title** from the operator's board in
   `.fast-dev-flow/archive/20260724-025459-spec.md` — not quoted here, because
   AC6 forbids this file from carrying them and writing this entry tripped that
@@ -751,7 +751,7 @@ recorded full-suite run).
   run (`board_strings` sort order, and `git check-ignore` answering from the
   INDEX so every `.gitignore` negation went untested).*
   · *Branch-side work — capture scripts, the widget constructor, the scratch
-  `.gitignore` — landed on `kanban-variants` (`f5f0e81`, 164 green), which is
+  `.gitignore` — landed on `kanban-variants` (`8f01e63`, 164 green), which is
   NOT merged; see above.*
 
 - **DONE** · `2026-08-06-fastflow-04` — **the gantt gets its gauge.** The three

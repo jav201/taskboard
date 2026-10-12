@@ -2,7 +2,7 @@
   {
     "station": "P0",
     "date": "2026-10-07",
-    "decision": "standing authorization — the operator's commission ('Arranca y continua hasta terminar los cambios propuestos... Sigue usando Deepseek'): P0 approved. Batch 2026-10-07-batch-02 (Batch C of the kg_mejoras plan) opened by rollover from 2026-10-07-batch-01 (6-entry log archived); base_ref 79ad438 == origin/main; the chain map view (D-C) is the batch's core: per-project chain bands, ----> links, ready/waits/late marks, the critical chain, the details strip, the per-chain dates: switch on the shipped extra[date_links] storage (C-2/C-2b — the rule visible per project, UXV-6's deferral), the K-B high-band cap; round-7 polish: accent = focus only, critical chain = structure not hue; triggers B1 C8 D1 D2 E1 fired; P1 derives the contract from the D-C frames (the prototype's own renders) next."
+    "decision": "standing authorization — the operator's commission ('Arranca y continua hasta terminar los cambios propuestos... Sigue usando Deepseek'): P0 approved. Batch 2026-10-07-batch-02 (Batch C of the kg_mejoras plan) opened by rollover from 2026-10-07-batch-01 (6-entry log archived); base_ref 903d6bc == origin/main; the chain map view (D-C) is the batch's core: per-project chain bands, ----> links, ready/waits/late marks, the critical chain, the details strip, the per-chain dates: switch on the shipped extra[date_links] storage (C-2/C-2b — the rule visible per project, UXV-6's deferral), the K-B high-band cap; round-7 polish: accent = focus only, critical chain = structure not hue; triggers B1 C8 D1 D2 E1 fired; P1 derives the contract from the D-C frames (the prototype's own renders) next."
   },
   {
     "station": "P1",

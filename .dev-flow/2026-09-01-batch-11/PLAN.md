@@ -13,7 +13,7 @@ batch-email y V7 chains quedan para batches posteriores (declarado en intake).
 
 ## Verified at intake
 
-- **Base-currency (RC-1):** local `main` == `origin/main` == `e831250` después del
+- **Base-currency (RC-1):** local `main` == `origin/main` == `9645d64` después del
   push de batch-10. No stale tree.
 - **Suite green:** 1024 passed (`python -m pytest tests/ -q`).
   `test_win_clipboard_roundtrip` es flake ambiental pre-existente; se excluye por
@@ -154,7 +154,7 @@ names its RED arm. UI strings stay in the app's register (English).
 
 ## Increment 1 — US-T1 parte 1: módulo `taskboard/team_sync.py`
 
-**Status:** complete. **Commit:** `f390205`.
+**Status:** complete. **Commit:** `3ca59c5`.
 
 ### What changed
 - New module `taskboard/team_sync.py`:
@@ -534,7 +534,7 @@ committed as part of this batch.
 
 # Post-close hotfix — 2026-09-05 — `people` nav crashed with team mode off
 
-**Commit:** `f0b64d5` (branch `fix-people-nav-none`, from `4d8ebd6`) · **Files:** 2
+**Commit:** `3d3110d` (branch `fix-people-nav-none`, from `8ddb475`) · **Files:** 2
 · **Status:** fixed, suite green.
 
 ## What happened
@@ -597,7 +597,7 @@ Only `nav_model` was exposed:
 - **RED:** both new tests failed with the operator's exact frames
   (`app.py:582` → `_nav_columns` → `views.py:4668`).
 - **GREEN:** `tests/test_team_views.py` 253 passed.
-- **Suite:** baseline on `4d8ebd6` 1303 passed / 1 environmental
+- **Suite:** baseline on `8ddb475` 1303 passed / 1 environmental
   `test_win_clipboard_roundtrip` failure (WinError 206, the documented flake);
   after the fix **1306 passed**, 0 failed.
 - **ruff:** 4 pre-existing findings on `views.py`/`test_team_views.py`, byte-identical
@@ -627,7 +627,7 @@ renderer is not evidence the navigator has one.*
 
 # Post-close hardening — 2026-09-05 — the view-survival law
 
-**Branch:** `view-survival-law` (from `main`, HEAD `068ff59`) · **Files:** 1
+**Branch:** `view-survival-law` (from `main`, HEAD `0f1f025`) · **Files:** 1
 · **Status:** law added, all cells green, no new defects.
 
 ## What this is
