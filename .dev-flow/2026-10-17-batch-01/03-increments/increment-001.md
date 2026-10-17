@@ -1,231 +1,118 @@
-# Increment 001 — <REQ-ID> · `<Short title>`
-
-> **Artifact language**
-> This template is the canonical **English scaffold**. Generate the artifact in the batch's development
-> language — the **prose**, and never a label. **Where that language is declared:**
-> `state.json`'s `language` key in `core` and `full`. The normative RULES below are
-> language-independent.
-
-> **Owed in.** `core` ✓ · `full` ✓
-
-> **Field guide:** `templates/guides/increment-template.md` explains each field below and the rules that read it. It ships with the flow and is not copied into this batch.
-
-> **Reserved field names.** The **field names and block keywords below are language-independent** — the
-> validator parses them literally and they are never translated:
-> `SOURCE files` · `Instrument RED-proof` · `Correction population` · `Mutation verdicts` · `Emitted-form assertion` · `Reverse census` · `RED counterfactual` · `Independent review` · `Evidence files` · `Traces to` · `File` · `Kind` · `source` · `test` · `doc` · `config` · `generated` · `fixture` · `⏸ DEFER`
-> Everything else on this page — headings, guidance, the prose in every cell — is translated with the batch.
-> **One strategy, not two:** the flow ships no alias table, so a translated label is read as an ABSENT one and the rule keyed on it reports a true-sounding silence.
-> **And one FLOW-WIDE reserved token, read out of this artifact by `V42` no matter which template minted it:** `⏸ DEFER`. It is a MARKER rather than a field name, which is why it is stated here *and* in `/dev-flow` §Language of artifacts rather than in a per-template list — a deferral can be written in any batch artifact, including the ones that carry no block at all.
-
-> **Where this lives:** the **repo**, next to the diff it describes —
-> `.dev-flow/2026-10-17-batch-01/03-increments/increment-001.md`. It is not synced to the vault.
-
-> **Notice convention.** `⚠` yellow = notice: does not block, obliges you to DECLARE the reason here.
-> `✗` red = block. `✓` green = satisfied **with its evidence cited**. A notice repeated for three
-> consecutive batches becomes a rule or is retired.
-
-> **A table you may delete.** A table whose `| **Field** |` row reads `none — <reason>`, or whose question one line of the gate checklist answers, may be deleted, its field row kept: `stations/core-runbook.md` §*A minimal increment packet* is a one-function change written that way.
+# Increment 001 — LLR-1701.1 · `the tick row's label names the selection, never the scale, in both views`
 
 | Field | Value |
 |---|---|
 | Batch | `2026-10-17-batch-01` |
 | Increment | `001` |
-| Lane (if the batch forked) | `<lane name>` · `<modules owned by this lane>` |
-| Requirement(s) | `<R-NNN vN / LLR-NNN.n>` |
-| Acceptance | `<AT-NNN>` · white-box `<TC-NNN>` · unit `<layer-0 nodes>` |
-| Agent | `software-dev` |
+| Lane (if the batch forked) | none — one lane |
+| Requirement(s) | `HLR-1701` / `LLR-1701.1` (LED-2026-10-17-batch-01.1, .2, .3) |
+| Acceptance | `AT-1701` · white-box `TC-1701` · unit: `_gantt_tick_label` (layer 0: three branches, cyclomatic 4) |
+| Agent | `software-dev` (the orchestrator, self-implemented) |
 | Date | `2026-10-17` |
-
----
 
 ## 1 · What changed
 
-*(BLUF: state the outcome first, then the mechanism. Name the shipped surface the user reaches.)*
-
----
+The operator's commission of 2026-10-17 («Es la etiqueta de Mondays y cells? … hay que quitarla. No agrega valor»). `taskboard/views.py` gains `_gantt_tick_label(selected, echo, meta, label_w)`, the one rule both views now call for the tick row's label: `selected task ▸` in the echo's tone, bold, when the selected task's echo fits the field; the echo's own text plus ` ▸` when it does not; `selected: no dates` in `dim` for a dateless selection; blank with nothing selected. `_gantt_frame` (the gantt view, and link mode, which paints the same frame) and `_present_ruler` (the presentation and its `x` export) both call it; `_gantt_scale_label` — the scale text `Mondays · 1 day = 2 cells` / `Mondays · .5 d/cell` — is deleted (P-1: it had no other caller). Five pinned tests of earlier batches change law-driven (§4), and `tests/test_tick_label.py` encodes why: no frame of either view or of the export ever paints the scale text, and the label names the selected task.
 
 ## 2 · Files modified
 
-**The budget counts SOURCE files only. Tests are not capped. Product docs and `.dev-flow/**` are outside the count.**
-
-One row per file. `Kind` is one of `source` · `test` · `doc` · `config` · `generated` · `fixture`; `Traces to` names the US/HLR/LLR (or `R-<AREA>-<NNN>`) ids the file serves, and `doc` rows leave it empty.
-
 | File | Kind | Traces to | Change |
 |---|---|---|---|
+| `taskboard/views.py` | source | LLR-1701.1 | `_gantt_tick_label` added; `_gantt_scale_label` deleted; `_gantt_frame` and `_present_ruler` label their tick row with it; `_present_ruler` docstring |
+| `tests/test_tick_label.py` | test | HLR-1701, LLR-1701.1 | new: TC-1701 (26 nodes, the pattern's positive control and the layer-0 branch test among them) and AT-1701 (4 nodes) |
+| `tests/test_gantt_board.py` | test | HLR-1701, LLR-1701.1 | AT-104: the day-row label assertion `Mondays · 1 cell = 1 day` → `selected task ▸`, docstring (its "nothing selected" premise was false: `_select_first` re-selects); TC-110 deleted with the function it pinned |
+| `tests/test_present_rulers.py` | test | HLR-1701, LLR-1701.1 | TC-1601: the no-cursor tick label `Mondays · 1 day = 2 cells` → blank, plus the ticks still paint; docstring |
+| `tests/test_present_room.py` | test | HLR-1701, LLR-1701.1 | TC-1608: the `_scale_text` helper (it called the deleted function) → `_is_scale_text`, written from the rule (the `SCALE_TEXT` pattern, after code-review F-3) with its own positive control and false-match guard; (c)'s last arm: no selection → blank; module docstring |
+| `tests/test_gantt.py` | test | HLR-1701 | the dead-cell law `dead <= 25` → `<= 25.5` = 25 + 100·15/2880, the 15 cells the removed `Mondays · 1 d/cell` inked at 96×30 (QA2-1); docstring states the derivation |
+| `.dev-flow/2026-10-17-batch-01/evidence/mutate.py` | doc | LLR-1701.1 | the mutation battery (7 mutants, 19 arms) |
+| `.dev-flow/2026-10-17-batch-01/evidence/capture_app.py` | doc | HLR-1701 | batch-01's capture tool re-aimed at the gantt view |
+| `.dev-flow/2026-10-17-batch-01/evidence/captures/app-001-*.svg`, `app-001-118x31-gantt-selected.png` | generated | HLR-1701 | the real app at 118×31 and 80×25: gantt selected, none, dateless; presentation all hidden |
 
 | Count | Value |
 |---|---|
-| **SOURCE files** | **`<N>` / 4** |
-| Test files | `<N>` (uncapped) |
-| Doc files | `<N>` (outside the count) |
-
-- ⚠ **At exactly 4 source files:** state here why this increment could not be cut smaller.
-- ⚠ **Above 4:** this does not auto-block, but the reason goes here **and** the design/close review looks at it.
-- ✗ If a file belongs to another lane's file set, stop: lanes may not share a file.
-
----
+| **SOURCE files** | **1 / 4** |
 
 ## 3 · How to test
 
-```bash
-<the exact commands, copy-pasteable>
-```
-
----
+`python -m pytest -q -p no:cacheprovider tests/test_tick_label.py tests/test_present_room.py tests/test_present_rulers.py tests/test_gantt_board.py tests/test_gantt.py tests/test_present.py`; full suite `python -m pytest -q -p no:cacheprovider`; mutants `python .dev-flow/2026-10-17-batch-01/evidence/mutate.py <a tree no one else reads>`; captures `python .dev-flow/2026-10-17-batch-01/evidence/capture_app.py`. By hand: `3` with a task selected → the third row's label reads `selected task ▸`.
 
 ## 4 · Test results
 
-| Layer | Owed in | Nodes | Result |
-|---|---|---|---|
-| **0 · unit** (cyclomatic ≥3, or crosses a declared module boundary) | `core` · `full` | `<nodes>` | <N passed> |
-| **A · white-box** `TC-NNN` ↔ LLR | `core` · `full` | `<nodes>` | <N passed> |
-| **B · black-box** `AT-NNN` ↔ story, through the shipped surface | `core` · `full` | `<nodes>` | <N passed> |
-
-### RED counterfactual — executed, not predicted
-
-| Field | Value |
-|---|---|
-| Mutation applied | `<what was changed to make the assertion fail>` |
-| Instrument | project code: your own hand or a script in the project's stack, the restore checked by hash · a batch whose subject is the flow: `python scripts/devflow-mutate.py --select ID,ID`, run from the bundle root — field guide §`Mutation verdicts` |
-| Where it ran | **the tree, and who ran it** — the orchestrator when a spawned sub-agent wrote the code (`stations/p3-implementation.md` §Phase 3); never a tree another lane or session is reading |
-| Transcript | `<paste: the RED output, plus confirmation the mutation actually applied>` |
-| Restore proven by | **file hash returned to its pre-mutation value** (`git status` alone is insufficient, and vacuous for an untracked file) |
-| Bytecode cache | cleared / run with `PYTHONDONTWRITEBYTECODE=1` (C-46) |
-| Arms resolved at baseline | `<N>` — **assert the expected count.** An arm the harness cannot see is an arm it cannot report inert; a whitespace-delimited node pattern silently drops every *parametrized* arm |
-| Verdict granularity | **per resolved node id**, never the process exit code — a runner exits non-zero if ANY arm fails, so an inert arm hides behind a sibling that failed |
-| Arms that stayed GREEN | `<name them, or 'none'>` — `3 passed` unread in a transcript is how four arms once survived a fully removed gate |
-
-| Field | Value |
-|---|---|
-| **RED counterfactual** | `<the mutation that made THIS increment's OWN new assertion fail, by position and operation · where its transcript is stored · the restore digest that returned the file to its pre-mutation bytes — or: none — no new assertion in this increment>` |
-
-| Field | Value |
-|---|---|
-| **Mutation verdicts** | `<per resolved node: the mutation by position and operation · KILLED / CRASH / SURVIVED / BAD (the mutation's anchor did not apply) · the arms that stayed GREEN, named · the transcript's path under artifact_homes.evidence and the restore digest — or: none — no mutation battery in this increment>` |
-
-### Instrument RED-proof — every instrument shown able to report FAILURE first
-
-| Instrument | Known-bad input fed to it | The FAILURE it reported |
+| Layer | Nodes | Result |
 |---|---|---|
-| `<test / counter / mutation harness / grep / parser>` | `<the corruption planted in its MECHANISM, not in its verdict>` | `<the failure it printed, verbatim — and where>` |
+| 0 | `tests/test_tick_label.py::test_TC_1701_the_label_function_branches` | in the full suite (`suite-001.txt`) |
+| A | `tests/test_tick_label.py` TC-1701 (the other 25 nodes); TC-1608, TC-1601, AT-104, the dead-cell law, TC-1001/TC-1002 (PRES-R2 frames, unchanged) | in the full suite (`suite-001.txt`) |
+| B | `tests/test_tick_label.py::test_AT_1701_the_tick_row_names_the_selection` ×2, `::test_AT_1701_a_board_with_no_task_has_a_blank_label` ×2 | in the full suite (`suite-001.txt`) |
+| full suite | `python -m pytest -q -p no:cacheprovider` | 2 failed, 2661 passed — 2663 collected = 2634 at base − 1 (TC-110) + 30 (`test_tick_label.py`); the 2 failures are the known standup pair in `tests/test_team_views.py` (pre-existing since the 2026-10-11 rewrite, backlog) (`suite-001.txt`); `test_present_room.py` re-run alone after code-review F-3: 7 passed (`suite-001-f3.txt`) |
+
+Assertions that changed, and why each legitimately did (B1, the census of LED .1/.2 and QA2-1): AT-104 (2026-10-02-batch-01) — the day row's label is no longer the scale; the test cleared `selected_task_id`, but the gantt view re-selects a drawn task (F-3), so the label names it; TC-110 — deleted with `_gantt_scale_label`, whose fit at 20 cells it pinned (coordinator's decision); TC-1601 (2026-10-16-batch-01) — with no cursor the label is blank where it was the scale, and the ticks are now asserted to paint; TC-1608 (c) — its scale helper called the deleted function, and its no-selection arm expected the scale; the dead-cell law — the scale's 15 cells are blank by the operator's decision, the bound moves by exactly their share. No other assertion changed; the PRES-R2 and C-2b oracle frames are unchanged (B3: no cursor-less frame among them).
 
 | Field | Value |
 |---|---|
-| **Instrument RED-proof** | `<N instruments, each shown RED before its first PASS was believed — or: none — no instrument beyond the suite>` |
+| **RED counterfactual** | `tests/test_tick_label.py` run on the base source (`HEAD` `de9c4a2`, `taskboard/` unmodified, `views.py` sha256 `42181496e6d0148959a4faa9b7ebda940ff0a005d6c7a58c5b8bb1cb24127294`, the transcript's header): 27 failed, 3 passed — every TC-1701/AT-1701 arm RED on the scale text (`assert 'Mondays · 1 cell = 1 day' == 'selected task ▸'`), GREEN only the pattern's positive control and the gantt too-long-echo arm ×2 (unchanged behaviour: the base already labelled an overflowing echo with its own text) · `.dev-flow/2026-10-17-batch-01/evidence/red-001.txt` · the restore is the increment's own bytes, `views.py` sha256 `28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876` |
+| **Mutation verdicts** | 7 mutants × 19 arms, one node per run, all KILLED: M1 the no-selection branch returns the scale text (5 arms) · M2 the echo branch paints `dim` (2) · M3 the dateless branch paints `over` (2) · M4 a too-long echo labelled `selected task` (2) · M5 a dateless selection treated as none (2) · M6 the gantt view passes no selection (3, incl. link mode and AT-1701) · M7 the presentation passes no cursor (3, incl. TC-1608 and AT-1701) · arms that stayed GREEN: none · run in a scratch `git worktree` holding the increment's exact bytes while the full suite ran in the checkout · `.dev-flow/2026-10-17-batch-01/evidence/mutation-001.txt` · restore digest `28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876` (before = after, every arm) |
+| **Instrument RED-proof** | 1 instrument: the scale-text pattern `SCALE_TEXT` — shown able to report a match first: its positive control matches the five old labels, plain and inside a `save_present_svg` SVG (`test_TC_1701_the_scale_pattern_sees_every_old_label`), and on the base tree the sweep arms went RED on it (`red-001.txt`); the harness `mutate.py` asserts its arm count (19) and that each edit applied |
+| **Emitted-form assertion** | 1 artifact: the presentation's `x` SVG — TC-1701 (b) reads the bytes `save_present_svg` writes, with `&#160;` read as a space (measured on the base export: 54 × `&#160;`, 0 × `&amp;#160;`), positive controls `PRESENT` and `Redesign` readable in it |
+| **Reverse census** | 5 probes: B1 `grep -rln "_gantt_scale_label\|d/cell\|1 cell = 1 day\|1 day = 2 cells\|cadence" tests/` → `test_gantt_board.py` (AT-104 changed, TC-110 deleted; `:223-227, 238, 318, 336-343, 750` read and survive), `test_present_rulers.py` (TC-1601 changed; `:105-108, 200-208` survive), `test_present_room.py` (TC-1608 changed; `:70, 100` survive), `test_gantt_polish.py:336-338`, `test_present_hide.py:203-211`, `test_gantt.py:589-606` (survive), `test_gantt_link.py:53` (a comment about the axis, unaffected); plus the C-39 full-suite pre-execution, which found the one hit grep cannot see — `test_gantt.py:287`, the dead-cell law (changed, QA2-1) · B2 no file moved · B3 the PRES-R2 and C-2b frames: 0 hits of the pattern (`grep -c cell` → 0), unchanged; only increment 001's `PRES-R-*.txt` of 2026-10-16-batch-01 match, read by no test · B4 the `x` export: TC-1701 (b) reads it · A3 `git grep -n _gantt_scale_label -- taskboard tests` after the change → no hit; `gantt_day_row`'s signature and `meta` unchanged — 0 foreign hits left |
+| **Correction population** | the operator's correction of shipped label text: the population is every site that painted `_gantt_scale_label` — `_gantt_frame` (gantt view, link mode, the gantt legend's frame call reads only the month row and body) and `_present_ruler` (presentation, `x` SVG, PNG raster of that SVG) — enumerated by `git grep` before the first edit (P-1); both sites now call `_gantt_tick_label`, all covered by TC-1701 |
 
-### Emitted-form assertion — assert the bytes the producer EMITS (C-42)
-
-| Artifact emitted | The assertion, run against the EMITTED form | What it returned |
-|---|---|---|
-| `<the file / report / screen / record>` | `<the command or predicate, pasted>` | `<its actual output, verbatim>` |
-
-| Field | Value |
-|---|---|
-| **Emitted-form assertion** | `<N artifacts, each asserted against the form its producer emitted — or: none — this increment emits no artifact>` |
-
-### Evidence files — bytes at a declared home, verbatim, hash-verified (C-59)
+### Evidence files
 
 | Evidence artifact | Path — under `artifact_homes.evidence` | SHA-256 |
 |---|---|---|
-| `<the transcript / capture / snapshot / .PRE copy>` | `<the path, as stored>` | `<the 64-hex digest of the bytes AT THAT PATH>` |
+| suite-001.txt | .dev-flow/2026-10-17-batch-01/evidence/suite-001.txt | 7fd65d3115e5a816b9653977267d1d3c91da057639adca382faa56bc9b8440df |
+| suite-001-f3.txt | .dev-flow/2026-10-17-batch-01/evidence/suite-001-f3.txt | 94f0aa50d63df60964e0bb5613ca42b2cb4e4a6913c719409aa55ab3b3616ed5 |
+| red-001.txt | .dev-flow/2026-10-17-batch-01/evidence/red-001.txt | c2fd3dae79744abd4176e2ff926075970621af1ee38509aa09886093341a4194 |
+| mutation-001.txt | .dev-flow/2026-10-17-batch-01/evidence/mutation-001.txt | e2f8ecbf103ed75a2ba4508464703cf1fc54cdf7f9f51468aa56d98417e0cf7a |
+| app-001-118x31-gantt-nodates.svg | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-118x31-gantt-nodates.svg | b89c53b4e46fe8c8a6f133db599f1d7f7fed58fc1fe817c16f6a70a834398701 |
+| app-001-118x31-gantt-none.svg | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-118x31-gantt-none.svg | f839722a4dc868487a7beaec95b7fe58ff6999f95e0dda527cd514a6d889f2f2 |
+| app-001-118x31-gantt-selected.svg | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-118x31-gantt-selected.svg | afd60f196d4be44aab2e73671472bc11eaa277c178564c7f140d5667e5ec794f |
+| app-001-118x31-present-all-hidden.svg | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-118x31-present-all-hidden.svg | 438663cffab18dab24cb7611abbba288e6a3257b669641305d57f578a2cb7a4a |
+| app-001-80x25-gantt-nodates.svg | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-80x25-gantt-nodates.svg | 4905984e9283b33ef6b8ac84b1a51e1b9caef9ad8f72267507bffdafd3d39045 |
+| app-001-80x25-gantt-none.svg | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-80x25-gantt-none.svg | a57e267f32b8b900325dd335b392a68e0592daa318896f768b3cdaa9efd01946 |
+| app-001-80x25-gantt-selected.svg | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-80x25-gantt-selected.svg | 322bfd18a11ae587bd24ed913f5cf8052edfa5ab29d1b77d2e44cd5dc4963c96 |
+| app-001-80x25-present-all-hidden.svg | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-80x25-present-all-hidden.svg | b79754272eb4af7aad77355dc303d65dda1ad2d4fda878c506ab8e00b92e2d08 |
+| app-001-118x31-gantt-selected.png | .dev-flow/2026-10-17-batch-01/evidence/captures/app-001-118x31-gantt-selected.png | 09c7a75538d8c7faa81b2c72a6081c3cda53706cbfd7a7502fc27190715ca436 |
 
 | Field | Value |
 |---|---|
-| **Evidence files** | `<N artifacts, each at the declared home and cited with the digest of its stored bytes — or: none — this increment cites no evidence file>` |
+| **Evidence files** | 13 artifacts, each at the declared home, with the digest of its bytes on disk (rows printed by `devflow-evidence.py`; its `--write` refused because the root `.gitattributes` carries no mark for this home — the mark is the nested `evidence/.gitattributes` (`** -text`), since the root file is a pre-existing dirty file the commission leaves alone; `git check-attr text` → `unset`) |
 
-### Load-bearing emptiness — what is this resting on that is only true today? (C-55)
-
-| Field | Value |
-|---|---|
-| Does any claim here rest on the tree holding NO instance of some case? | `<yes: name it / no>` |
-| If the result is an ABSENCE, what made the search wide enough | `<the over-broad property — and the guard that protects it>` |
-| Guard labelled as protecting a CONCLUSION, not a behaviour | `<node id — else the next reader "improves" it away>` |
-| Conjunctive criteria: one mutation per conjunct | `<per-conjunct verdicts, or 'no conjunctive criterion'>` |
-| Synthetic instance of the absent case | `<fixture / in-memory module that contains what the tree lacks>` |
-| **Positive control for every probe that returned an ABSENCE** | `<the known-present case, and the NON-absent output the same unmodified probe returned on it>` — uniformity over heterogeneous inputs (N-of-N) is one failure repeated, not a measurement |
-
-### Reverse census — trigger family B, and A3
-
-| Probe | Command | Result |
-|---|---|---|
-| B1 symbols asserted by **other** tests | `grep -rl <symbol> tests/` | `<files, and whose they are>` |
-| B2 file moved on disk | `<glob probe over the old path>` | `<readers found>` |
-| B3 byte-identical golden captures this source | `grep <source> tests/goldens/**` | `<hits>` |
-| B4 artifact produced here is consumed elsewhere | `<who reads the path/format written>` | `<consumers>` |
-| A3 interface consumed by another module changed | `grep <symbol>` outside its owning module | `<hits>` |
+## 4b · Independent review
 
 | Field | Value |
 |---|---|
-| **Reverse census** | `<N probes run of B1 · B2 · B3 · B4 · A3, each with its command and its verdict — N hits, and where every hit was re-validated — or: none — this increment touches no code symbol or shared surface>` |
-
-### Correction population — enumerated BEFORE the first site was edited
-
-| Correction | Population — the assertion category | Enumeration method (the command) | Count | Sites edited | Sites left, and why |
-|---|---|---|---|---|---|
-| `<the claim being corrected>` | `<what kind of thing must be true everywhere>` | `<the command, pasted>` | `<N>` | `<…>` | `<…>` |
-
-| Field | Value |
-|---|---|
-| **Correction population** | `<N corrections, each enumerated with its method before its first site was edited — or: none — no correction>` |
-
-#### Supersession-completeness inspection (V-3)
-
-| Superseded marker | grep result | All surviving refs negative? | Evidence (file:line) |
-|-------------------|-------------|------------------------------|----------------------|
-| `<marker>` | `<N hits>` | yes/no | `<…>` |
-
-### Signed-balance test ledger
-
-`post = base − deleted + added` → `<post> = <base> − <D> + <A>`  ✓ reconciles
-
----
-
-## 4b · Independent review — the lens the author cannot be
-
-| Field | Value |
-|---|---|
-| **Independent review** | `<who reviewed · the verdict · how every HIGH was resolved — or: WAIVED-BY-OPERATOR — and the reason, in the operator's own words>` |
-
-*Example of a filled cell:* `` `code-reviewer` · PASS-WITH-NOTES, 0 HIGH / 5 MEDIUM · all five
-folded into this increment — F1 severity census, F2 block truncation, F3 blocklist, F4 scope
-state, F5 this table ``
-
----
+| **Independent review** | `code-reviewer` — spawned as a generic agent with agents/code-reviewer.md · PASS-with-notes (OK to advance), 0 HIGH · F-1 MEDIUM: four canon rows (HLR-105, LLR-101.10, LLR-1601.1, LLR-1602.2) still `active` while requiring the scale label → planned at close step 1 (the canon's status cells, with LLR-102.2; LED .1/.2 §6.3) · F-2 LOW: the README hero image → Out of scope (LED .2), to `BACKLOG.md` at the close · F-3 LOW: `test_present_room.py`'s `"cell" in label` would also match `cancelled` → fixed: the same pattern as `SCALE_TEXT`, plus a false-match guard; the file re-run, 7 passed (`suite-001-f3.txt`) · F-4 NIT: `meta["cadence"]` written and no longer read → kept: `gantt_day_row`'s `meta` is left unchanged on purpose (A3 not fired; LLR-102.1's cadence still drives the ticks) |
 
 ## 5 · Risks
 
-*(What could break that this increment does not cover. Be specific enough to act on.)*
-
----
+The label column narrows below 60 columns (`max(6, width // 3)`): at 48 columns `selected: no dates` reads `selected: no d…` (accepted, LLR-1701.1); below 48 `selected task ▸` is cut too. The gantt view always holds a selection while it draws a task (`_select_first`), so "blank" appears only when it draws none (a search that matches nothing, a board without open tasks) — stated in HLR-1701. The capture's `gantt-none` step reaches that state through a search (`zzqx`), not a cleared selection.
 
 ## 6 · Pending items / spec deviations
 
-*(Anything surfaced and not closed here. Every line lands in the canonical backlog at batch close —
-if the increment surfaced it, the backlog owns it.)*
-
----
+None against the contract. Carried: the README hero image `docs/taskboard-gantt.svg` still shows `Mondays · 1 d/cell` (Out of scope, LED .2; to `BACKLOG.md` at the close); the operator's approval of `selected: no dates` stays an open backlog item. Finding for the record: AT-104's "nothing selected" premise had been false since batch 2026-10-02-batch-01 (the base label was the scale shown *with* a selection) — corrected in its docstring.
 
 ## 7 · Suggested next task
 
----
+Phase 4, `stations/p4-validation.md`: the gate run of the full suite.
 
 ## Increment gate checklist
 
-| # | Item | Owed in | ✓/⚠/✗ | Evidence (node id · command output · file:line) |
-|---|---|---|---|---|
-| 1 | ≤4 source files, or reason declared | all | | |
-| 2 | Tests written in this same increment | all | | |
-| 3 | Layer 0 written where the criterion applies | `core` · `full` ‹one complete run owned by the orchestrator ~ Layer 0› | | |
-| 4 | **RED counterfactual** declared — the mutation that made this increment's OWN new assertion fail, where its transcript is stored, and the restore digest, or `none` (C-20/C-40; read by `V44`) | `core` · `full` ‹RED counterfactual mandatory ~ RED counterfactual› | | |
-| 5 | **Reverse census** declared — the five probes run with their commands and verdicts, the ones that did NOT fire named with their probe, or `none` (C-26/C-48; read by `V43`) | `core` · `full` ‹reverse census of the touched symbol ~ Reverse census› | | |
-| 6 | `code-reviewer` passed — a HIGH blocks; the verdict, the reviewer and each HIGH's resolution are declared in **§4b** (`ABSENT` is the empty state there, not a value) | `core` · `full` ‹RED counterfactual mandatory ~ code-reviewer› | | |
-| 7 | No file from another lane touched | all | | |
-| 8 | Frozen interfaces untouched (or returned to the trunk) | all | | |
-| 9 | Coverage claims verified **on disk**, not from intent | all | | |
-| 10 | Load-bearing emptiness declared, with its synthetic instance (C-55) | all | | |
-| 11 | **Mutation verdicts** declared — **per arm**, inert arms named, registry ids cited, or `none` (C-40 rider; read by `V37`) | all | | |
-| 12 | **Instrument RED-proof** declared — every instrument shown able to report a FAILURE before its first PASS was believed, or `none` (C-57) | all | | |
-| 13 | **Correction population** declared — enumerated with its method before the first site was edited, or `none` (C-14) | all | | |
-| 14 | **Emitted-form assertion** declared — per artifact emitted, the assertion run against the EMITTED form and what it returned, or `none` (C-42; read by `V38`) | all | | |
-| 15 | **Independent review** names somebody — in one of the forms §4b publishes; a cell naming nobody is empty (`V36`). §4b is the grammar's one home | all | | |
-| 16 | **Evidence files** declared — every cited artifact at the home `artifact_homes.evidence` names, cited with the digest of its STORED bytes, or `none` (C-59; read by `V41`) | all | | |
+| # | Item | ✓/⚠/✗ | Evidence |
+|---|---|---|---|
+| 1 | SOURCE budget | ✓ | §2: 1 source file |
+| 2 | Tests in this increment | ✓ | `tests/test_tick_label.py` (30 nodes) + 5 law-driven updates |
+| 3 | Layer 0 where it applies | ✓ | `_gantt_tick_label`: cyclomatic 4 → `test_TC_1701_the_label_function_branches`, every branch, killed M1–M5 |
+| 4 | RED counterfactual | ✓ | §4, `red-001.txt`: 27 failed on base |
+| 5 | Reverse census | ✓ | §4: 5 probes + the C-39 pre-execution; every hit re-validated |
+| 6 | `code-reviewer` passed | ✓ | §4b: PASS-with-notes, 0 HIGH |
+| 7 | No file from another lane | ✓ | one lane |
+| 8 | Frozen interfaces untouched | ✓ | none frozen in this repo |
+| 9 | Coverage verified on disk | ✓ | `suite-001.txt` |
+| 10 | Load-bearing emptiness | ✓ | the absence claims (no scale text; no caller of the deleted function) each carry a positive control: the pattern matches the old labels; `git grep` found the 3 sites before the change |
+| 11 | Mutation verdicts | ✓ | §4: 19/19 KILLED |
+| 12 | Instrument RED-proof | ✓ | §4: the pattern's positive control; the harness's arm count |
+| 13 | Correction population | ✓ | §4: 2 sites, enumerated first |
+| 14 | Emitted-form assertion | ✓ | §4: the `x` SVG bytes |
+| 15 | Independent review | ✓ | §4b: spawned `code-reviewer`; F-3 fixed, F-1/F-2/F-4 routed |
+| 16 | Evidence files | ✓ | §4: 13 digests printed by `devflow-evidence.py` (`--write` refused on the root mark; declared) |

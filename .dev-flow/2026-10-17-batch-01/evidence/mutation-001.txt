@@ -1,0 +1,59 @@
+tree: C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\probe
+arms: 19 over 7 mutants
+before: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+line ending: CRLF
+
+== M1: the no-selection branch returns text
+M1 tests/test_tick_label.py::test_TC_1701_gantt_dateless_and_no_selection[118-30]: KILLED -- 1 failed in 0.53s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M1 tests/test_tick_label.py::test_TC_1701_present_follows_the_same_rule[118-30]: KILLED -- 1 failed in 0.55s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M1 tests/test_tick_label.py::test_TC_1701_the_label_function_branches: KILLED -- 1 failed in 0.52s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M1 tests/test_tick_label.py::test_TC_1701_no_gantt_frame_paints_the_scale[118-30]: KILLED -- 1 failed in 1.02s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M1 tests/test_tick_label.py::test_AT_1701_a_board_with_no_task_has_a_blank_label[size0]: KILLED -- 1 failed in 0.74s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+
+== M2: the echo branch paints dim, not the echo tone
+M2 tests/test_tick_label.py::test_TC_1701_gantt_names_the_selected_task[118-30]: KILLED -- 1 failed in 0.59s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M2 tests/test_tick_label.py::test_TC_1701_the_label_function_branches: KILLED -- 1 failed in 0.52s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+
+== M3: the dateless branch paints the over tone, not dim
+M3 tests/test_tick_label.py::test_TC_1701_gantt_dateless_and_no_selection[118-30]: KILLED -- 1 failed in 0.57s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M3 tests/test_tick_label.py::test_TC_1701_the_label_function_branches: KILLED -- 1 failed in 0.50s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+
+== M4: a too-long echo is labelled "selected task" anyway
+M4 tests/test_tick_label.py::test_TC_1701_gantt_too_long_echo_keeps_its_dates[118-30]: KILLED -- 1 failed in 0.54s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M4 tests/test_tick_label.py::test_TC_1701_present_follows_the_same_rule[118-30]: KILLED -- 1 failed in 0.56s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+
+== M5: a dateless selection is treated as no selection
+M5 tests/test_tick_label.py::test_TC_1701_gantt_dateless_and_no_selection[118-30]: KILLED -- 1 failed in 0.54s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M5 tests/test_tick_label.py::test_TC_1701_present_follows_the_same_rule[80-24]: KILLED -- 1 failed in 0.55s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+
+== M6: the gantt view passes no selection to the label
+M6 tests/test_tick_label.py::test_TC_1701_gantt_names_the_selected_task[118-30]: KILLED -- 1 failed in 0.57s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M6 tests/test_tick_label.py::test_TC_1701_link_mode_names_the_candidate[118-30]: KILLED -- 1 failed in 0.56s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M6 tests/test_tick_label.py::test_AT_1701_the_tick_row_names_the_selection[size0]: KILLED -- 1 failed in 0.80s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+
+== M7: the presentation passes no cursor to the label
+M7 tests/test_tick_label.py::test_TC_1701_present_follows_the_same_rule[118-30]: KILLED -- 1 failed in 0.60s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M7 tests/test_present_room.py::test_TC_1608_the_tick_row_names_the_selected_task[118-30]: KILLED -- 1 failed in 0.51s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+M7 tests/test_tick_label.py::test_AT_1701_the_tick_row_names_the_selection[size1]: KILLED -- 1 failed in 2.32s
+  after: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+
+after all: 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876
+not killed: 0

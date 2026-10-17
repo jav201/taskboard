@@ -205,11 +205,14 @@ async def test_AT_103_chips_and_the_dependency_gutter(tmp_path, frozen):
 # AT-104 — the ruler at the top; no tick lost but under the echo (US-102)
 # =========================================================================== #
 async def test_AT_104_the_ruler_is_at_the_top(tmp_path, frozen):
-    """AT-104 (HLR-105, HLR-106). With nothing selected, painted rows 1–2 are
-    the month row (names, `┃` between months, today's `30`) and the day row
-    (its label naming the cadence and scale; Monday numbers seven days apart,
-    none touching); the last row is no axis. RED on the base tree: rows 1–2
-    are project and task rows."""
+    """AT-104 (HLR-105, HLR-106). Painted rows 1–2 are the month row (names,
+    `┃` between months, today's `30`) and the day row (Monday numbers seven
+    days apart, none touching); the last row is no axis. RED on the base tree:
+    rows 1–2 are project and task rows. Clearing `selected_task_id` does not
+    leave the gantt without a selection — the view re-selects a drawn task
+    (F-3, `_select_first`) — so the day row's label names it, `selected task
+    ▸`; it carried the scale label until the operator removed it (HLR-1701,
+    batch 2026-10-17-batch-01)."""
     app = _app(tmp_path)
     async with app.run_test(size=(118, 34)) as pilot:
         await _open_gantt(pilot, app, None)
@@ -219,7 +222,7 @@ async def test_AT_104_the_ruler_is_at_the_top(tmp_path, frozen):
         out = painted(app)
         assert "September 2026" in out[1] and "October" in out[1] and "┃" in out[1]
         assert re.search(r"\b30\b", out[1])
-        assert "Mondays · 1 cell = 1 day" in out[2]
+        assert out[2][:30].strip() == "selected task ▸", out[2]
         days = [int(x) for x in re.findall(r"(?<!\S)(\d{1,2})(?!\S)", out[2][30:])]
         assert len(days) >= 8, out[2]
         for a, b in zip(days, days[1:]):
@@ -911,15 +914,6 @@ async def test_TC_116_the_gantt_help_fits_its_column(tmp_path, frozen, size):
             right = app.screen.query_one("#help-right")   # modal's own layout leaves
             for lab in right.query(Label):                # it 22 cells — BACKLOG
                 assert lab.size.width <= right.content_region.width, str(lab.render())
-
-
-def test_TC_110_the_scale_label_fits_at_half_a_day_per_cell():
-    """TC-110 (LLR-101.10, UXV-6). At 80 columns a window of half a day per cell
-    names its scale whole — `Mondays · .5 d/cell` — not clipped with `…`."""
-    lines, _lm, _t = render(kg_board.build(), 80, 24, "tw3", focus="pweb")
-    _groups, ax = plan_axis(kg_board.build(), 80, 24, "tw3", focus="pweb")
-    assert ax.k == 0.5
-    assert "Mondays · .5 d/cell" in lines[2] and "…" not in lines[2][:20], lines[2]
 
 
 def test_TC_107_the_motions_ride_the_fitted_axis_and_clear_the_clip_marker():

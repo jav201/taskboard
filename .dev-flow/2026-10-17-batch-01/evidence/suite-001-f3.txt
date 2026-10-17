@@ -1,0 +1,6 @@
+# increment 001, after code-review F-3 (tests/test_present_room.py detector aligned with SCALE_TEXT): the file re-run on its own; the full suite (suite-001.txt) collected the earlier version of this file
+# command: python -m pytest -q -p no:cacheprovider --color=no tests/test_present_room.py
+
+.......                                                                  [100%]
+7 passed in 0.54s
+# exit: 0

@@ -13,9 +13,13 @@ the shipped frame:
 - the tick row's label `Mondays · 1 day = 2 cells` names the axis scale, which
   means nothing to a meeting, while the bright dates on that same row belong to
   the selected task. The label names what those dates are: `selected task ▸`
-  ("cursor" is engineer jargon). The scale shows only when nothing is selected.
+  ("cursor" is engineer jargon). With nothing selected the label is blank: the
+  operator removed the scale everywhere on 2026-10-17 («No agrega valor»;
+  HLR-1701, batch 2026-10-17-batch-01, `tests/test_tick_label.py`).
 """
 from __future__ import annotations
+
+import re
 
 import pytest
 
@@ -34,15 +38,10 @@ def _label(b, w, h, cursor):
     return _rows(b, w, h, cursor)[2][:views._present_cols(w, w >= 100)[0]].strip()
 
 
-def _scale_text(b, w):
-    """The scale label the tick row carried before the verdict, from the
-    renderer's own axis — the text the label must never be while a task is
-    selected."""
-    proj = b.project_by_id(pb.PROJECT_ID)
-    open_t, _ = views.present_tasks(b, pb.PROJECT_ID)
-    label_w, _chip, field_w = views._present_cols(w, w >= 100)
-    ax = views._present_axis(b, proj, open_t, field_w, pb.TODAY)
-    return views._gantt_scale_label(ax.k, views.gantt_cadence(ax)[0], label_w)
+def _is_scale_text(label: str) -> bool:
+    """The shape the removed scale label had — `<cadence> · <n> cell…` or
+    `<cadence> · <k> d/cell` — written from that rule, not from a renderer."""
+    return re.search(r"(?:daily|Mondays|1st/15th|1st) · |\bd/cell\b|\bcells?\b", label) is not None
 
 
 @pytest.mark.parametrize("w, h", SIZES)
@@ -84,15 +83,16 @@ def test_TC_1608_no_selected_task_ever_gets_the_scale_label(tmp_path, w, h):
     """TC-1608 (c): every open task in turn as the selection, plus one with no
     dates — the label is never the scale text; it names the selected task, or
     carries the echo's own dates when they did not fit the field, or says the
-    task has none. The scale returns only with nothing selected — which
-    `render_present` reaches only when the project has no open task, so that is
-    the arm driven here."""
+    task has none. With nothing selected — which `render_present` reaches only
+    when the project has no open task, the arm driven here — the label is
+    blank: the scale is gone everywhere (HLR-1701, batch 2026-10-17-batch-01)."""
     b = pb.build(tmp_path / "board.json")
-    scale = _scale_text(b, w)
+    assert _is_scale_text("Mondays · 1 day = 2 cells") and _is_scale_text("Mondays · .5 d/cell")
+    assert not _is_scale_text("cancelled") and not _is_scale_text("no start · due Oct 6 ▸")
     open_t, _ = views.present_tasks(b, pb.PROJECT_ID)
     for t in open_t:
         label = _label(b, w, h, t.id)
-        assert label != scale.strip() and "cell" not in label, (t.id, label)
+        assert not _is_scale_text(label), (t.id, label)
         assert label.endswith("▸"), (t.id, label)
 
     nodate = open_t[0]
@@ -102,7 +102,7 @@ def test_TC_1608_no_selected_task_ever_gets_the_scale_label(tmp_path, w, h):
     for t in b.tasks:
         if t.project_id == pb.PROJECT_ID:
             t.phase = "Done"
-    assert _label(b, w, h, None) == _scale_text(b, w).strip(), "no selection lost the scale"
+    assert _label(b, w, h, None) == "", "no selection paints a label"
 
 
 def test_TC_1608_an_echo_too_long_keeps_its_own_dates(tmp_path):

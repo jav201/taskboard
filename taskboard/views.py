@@ -2846,11 +2846,18 @@ def gantt_month_row(ax: GanttAxis, today: date,
     return out
 
 
-def _gantt_scale_label(k: float, name: str, label_w: int) -> str:
-    if label_w >= 26:
-        scale = {0.5: "1 day = 2 cells", 1: "1 cell = 1 day"}.get(k, f"1 cell = {k:g} days")
-        return f"{name} · {scale}"
-    return f"{name} · {f'{k:g}'.lstrip('0')} d/cell"     # `.5`: fits a 20-cell label
+def _gantt_tick_label(selected: Task | None, echo, meta: dict, label_w: int) -> str:
+    """The tick row's label, one rule for the gantt view and the presentation:
+    it names what the row's lit dates belong to — `selected task ▸` in the
+    echo's tone, the echo's own text when it did not fit the field,
+    `selected: no dates` for a selection with none — and is blank with nothing
+    selected. Never the axis scale: «No agrega valor» (operator, 2026-10-17)."""
+    if echo is not None:
+        text = meta["echo_label"] or "selected task"
+        return c(fit(text + " ▸", label_w - 1, "right") + " ", echo[1], bold=True)
+    if selected is not None:
+        return c(fit("selected: no dates", label_w - 1, "right") + " ", "dim")
+    return ""
 
 
 # --------------------------------------------------------------------------- #
@@ -2998,12 +3005,7 @@ def _gantt_frame(board, show_archived, selected_id, today=None, width=68, height
                   + c(tag[1:], "dim") + c(escape(name), sel_p.color, bold=True) + " ")
     else:
         mlabel = c(fit(f"today {today:%a} {_md(today)}", label_w - 1, "right") + " ", "accent")
-    if dmeta["echo_label"]:
-        dlabel = c(fit(dmeta["echo_label"] + " ▸", label_w - 1, "right") + " ",
-                   echo[1], bold=True)
-    else:
-        dlabel = c(fit(_gantt_scale_label(ax.k, dmeta["cadence"], label_w),
-                       label_w - 1, "right") + " ", "dim")
+    dlabel = _gantt_tick_label(sel, echo, dmeta, label_w)
     tail = " " * (chip_w + 1) if chip_w else ""
     lines.append(_pad(_pad(mlabel, label_w) + " " + "".join(mcells) + tail, w))
     lines.append(_pad(_pad(dlabel, label_w) + " " + "".join(dcells) + tail, w))
@@ -6208,11 +6210,10 @@ def _present_ruler(proj: Project, board: Board, p: _PresentGeo,
     """The gantt view's two ruler rows re-seated in the present columns (label |
     gutter | field | space + chip blank): the month row with the project's due
     `◆` and `today <Wkd> <Mon D>` in the label; the tick row with the cursor
-    task's exact dates (`gantt_echo`), labelled `selected task ▸` — what the lit
-    dates belong to, in words a meeting reads — or with the echo's full text when
-    it did not fit in the field, `selected: no dates` when the task has none, and
-    with the scale only when there is no cursor. No weekend shading: the present
-    field has none."""
+    task's exact dates (`gantt_echo`), labelled by `_gantt_tick_label` — the
+    gantt view's rule: `selected task ▸`, the echo's own text when it did not
+    fit, `selected: no dates`, blank with no cursor. No weekend shading: the
+    present field has none."""
     ax, today = p.ax, p.today
     marks: dict[int, tuple[str, str]] = {}
     if (pd := parse_iso(proj.due_date)) and 0 <= ax.cell(pd) < ax.w:
@@ -6221,14 +6222,7 @@ def _present_ruler(proj: Project, board: Board, p: _PresentGeo,
     mcells = gantt_month_row(ax, today, marks)
     dcells, meta = gantt_day_row(ax, today, echo, shade_weekends=False)
     mlabel = c(fit(f"today {today:%a} {_md(today)}", p.label_w - 1, "right") + " ", "accent")
-    if echo is not None:
-        text = meta["echo_label"] or "selected task"
-        dlabel = c(fit(text + " ▸", p.label_w - 1, "right") + " ", echo[1], bold=True)
-    elif cursor is not None:
-        dlabel = c(fit("selected: no dates", p.label_w - 1, "right") + " ", "dim")
-    else:
-        dlabel = c(fit(_gantt_scale_label(ax.k, meta["cadence"], p.label_w),
-                       p.label_w - 1, "right") + " ", "dim")
+    dlabel = _gantt_tick_label(cursor, echo, meta, p.label_w)
     tail = " " * (p.chip_w + 1)
     return [_pad(_pad(mlabel, p.label_w) + " " + "".join(mcells) + tail, p.width),
             _pad(_pad(dlabel, p.label_w) + " " + "".join(dcells) + tail, p.width)]

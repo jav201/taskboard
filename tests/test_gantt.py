@@ -276,15 +276,21 @@ def test_the_carrying_fraction_clears_what_rev3_measured(tmp_path):
 
 
 def test_emptiness_is_bounded_where_the_content_could_actually_fill_the_screen(tmp_path):
-    """`dead <= 25` on the fixture whose content exceeds the screen (kept at its
-    original value; measured 24.6 % on G-A + AX-2, batch 2026-10-02-batch-01).
+    """`dead <= 25.5` on the fixture whose content exceeds the screen (25 since
+    batch 2026-10-02-batch-01, measured 24.6 % on G-A + AX-2). Rebaselined by
+    batch 2026-10-17-batch-01: the operator removed the tick row's scale label
+    («No agrega valor», HLR-1701), and at 96x30 with nothing selected its
+    `Mondays · 1 d/cell` inked 15 cells; those cells are now honest emptiness,
+    so the bound is 25 + 100 * 15 / 2880 = 25.52, written 25.5 (measured
+    25.10 %). The bound is derived from the removal, never from the new
+    measurement.
 
     The guard that keeps it from going vacuous changed with the design: the
     extreme fixture used to OVERFLOW (`+N not shown`); with folding (HLR-102)
     nothing is hidden, so the proof that the content exceeds the screen is now
     that some project had to fold."""
     out = rows(_load(tmp_path, 8, 44, "dead_e.json"), 96, 30)
-    assert _census(out)["dead"] <= 25.0, _census(out)["dead"]
+    assert _census(out)["dead"] <= 25.5, _census(out)["dead"]
     assert any(l.startswith("▸") for l in out), (
         "the extreme fixture no longer exceeds the screen; this law went vacuous")
     assert not any("not shown" in l for l in out), "folding should have held it"

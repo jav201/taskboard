@@ -1,0 +1,659 @@
+# RED on the base source (HEAD de9c4a2, taskboard/ unmodified: git diff --stat HEAD -- taskboard -> empty)
+# sha256 taskboard/views.py: 42181496e6d0148959a4faa9b7ebda940ff0a005d6c7a58c5b8bb1cb24127294
+# command: python -m pytest -q -p no:cacheprovider --color=no -rf tests/test_tick_label.py
+
+.FF..FFFFFFFFFFFFFFFFFFFFFFFFF                                           [100%]
+================================== FAILURES ===================================
+_____________ test_TC_1701_gantt_names_the_selected_task[118-30] ______________
+
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_gantt_names_the_selected_task(w, h):
+        """TC-1701 (a), gantt: `tw3` (past due: `over`) has an echo that fits, so
+        the label reads `selected task ▸` in the echo's tone, bold — the row's lit
+        dates (`Sep 24`) are that task's."""
+        b = kg_board.build()
+        row = _gantt_rows(b, "tw3", w, h)[2]
+>       assert _label(row, w) == "selected task ▸", row
+E       AssertionError:      Mondays · 1 cell = 1 day  14 Sep 24 ⟦━━━⟧ Sep 28      12     19     26     2      9      16     23     30        
+E       assert 'Mondays · 1 cell = 1 day' == 'selected task ▸'
+E         
+E         - selected task ▸
+E         + Mondays · 1 cell = 1 day
+
+tests\test_tick_label.py:83: AssertionError
+______________ test_TC_1701_gantt_names_the_selected_task[80-24] ______________
+
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_gantt_names_the_selected_task(w, h):
+        """TC-1701 (a), gantt: `tw3` (past due: `over`) has an echo that fits, so
+        the label reads `selected task ▸` in the echo's tone, bold — the row's lit
+        dates (`Sep 24`) are that task's."""
+        b = kg_board.build()
+        row = _gantt_rows(b, "tw3", w, h)[2]
+>       assert _label(row, w) == "selected task ▸", row
+E       AssertionError: 1st/15th · 2 d/cell    Sep 24 ⟦━⟧╎Sep 28 15   ┆  1   ┆  15  ┆   1  ┆   15       
+E       assert '1st/15th · 2 d/cell' == 'selected task ▸'
+E         
+E         - selected task ▸
+E         + 1st/15th · 2 d/cell
+
+tests\test_tick_label.py:83: AssertionError
+___________ test_TC_1701_gantt_selection_before_the_window[118-30] ____________
+
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_gantt_selection_before_the_window(w, h):
+        """TC-1701 (a), gantt boundary: `tw1` ends before the fitted window — its
+        echo sits at the window's edge (`◂`) and the label still names it."""
+        b = kg_board.build()
+        row = _gantt_rows(b, "tw1", w, h)[2]
+>       assert _label(row, w) == "selected task ▸", row
+E       AssertionError:      Mondays · 1 cell = 1 day  ◂⟧ Aug 23–Sep 10╎    5      12     19     26     2      9      16     23     30        
+E       assert 'Mondays · 1 cell = 1 day' == 'selected task ▸'
+E         
+E         - selected task ▸
+E         + Mondays · 1 cell = 1 day
+
+tests\test_tick_label.py:104: AssertionError
+____________ test_TC_1701_gantt_selection_before_the_window[80-24] ____________
+
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_gantt_selection_before_the_window(w, h):
+        """TC-1701 (a), gantt boundary: `tw1` ends before the fitted window — its
+        echo sits at the window's edge (`◂`) and the label still names it."""
+        b = kg_board.build()
+        row = _gantt_rows(b, "tw1", w, h)[2]
+>       assert _label(row, w) == "selected task ▸", row
+E       AssertionError: 1st/15th · 2 d/cell  ◂━⟧ Aug 23–Sep 10 ┆ 15   ┆  1   ┆  15  ┆   1  ┆   15       
+E       assert '1st/15th · 2 d/cell' == 'selected task ▸'
+E         
+E         - selected task ▸
+E         + 1st/15th · 2 d/cell
+
+tests\test_tick_label.py:104: AssertionError
+____________ test_TC_1701_gantt_dateless_and_no_selection[118-30] _____________
+
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_gantt_dateless_and_no_selection(w, h):
+        """TC-1701 (a), gantt: `ta5` has no date — `selected: no dates`, dim; with
+        nothing selected the label column is blank."""
+        b = kg_board.build()
+>       assert _label(_gantt_rows(b, "ta5", w, h)[2], w) == "selected: no dates"
+E       AssertionError: assert 'Mondays · 1 cell = 1 day' == 'selected: no dates'
+E         
+E         - selected: no dates
+E         + Mondays · 1 cell = 1 day
+
+tests\test_tick_label.py:113: AssertionError
+_____________ test_TC_1701_gantt_dateless_and_no_selection[80-24] _____________
+
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_gantt_dateless_and_no_selection(w, h):
+        """TC-1701 (a), gantt: `ta5` has no date — `selected: no dates`, dim; with
+        nothing selected the label column is blank."""
+        b = kg_board.build()
+>       assert _label(_gantt_rows(b, "ta5", w, h)[2], w) == "selected: no dates"
+E       AssertionError: assert '1st/15th · 2 d/cell' == 'selected: no dates'
+E         
+E         - selected: no dates
+E         + 1st/15th · 2 d/cell
+
+tests\test_tick_label.py:113: AssertionError
+_________ test_TC_1701_gantt_search_that_hides_the_selection[118-30] __________
+
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_gantt_search_that_hides_the_selection(w, h):
+        """TC-1701 (a), gantt boundary: a search that keeps tasks but not the
+        selected one — the frame has no selection to name, so the label is blank."""
+        b = kg_board.build()
+        fb = views.filtered_board(b, b.task_by_id("tm1").title, False)
+        assert fb.visible_tasks(False) and fb.task_by_id("tw3") is None
+>       assert _label(_gantt_rows(fb, "tw3", w, h)[2], w) == ""
+E       AssertionError: assert 'Mondays · 1 day = 2 cells' == ''
+E         
+E         + Mondays · 1 day = 2 cells
+
+tests\test_tick_label.py:125: AssertionError
+__________ test_TC_1701_gantt_search_that_hides_the_selection[80-24] __________
+
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_gantt_search_that_hides_the_selection(w, h):
+        """TC-1701 (a), gantt boundary: a search that keeps tasks but not the
+        selected one — the frame has no selection to name, so the label is blank."""
+        b = kg_board.build()
+        fb = views.filtered_board(b, b.task_by_id("tm1").title, False)
+        assert fb.visible_tasks(False) and fb.task_by_id("tw3") is None
+>       assert _label(_gantt_rows(fb, "tw3", w, h)[2], w) == ""
+E       AssertionError: assert 'Mondays · .5 d/cell' == ''
+E         
+E         + Mondays · .5 d/cell
+
+tests\test_tick_label.py:125: AssertionError
+_____________ test_TC_1701_link_mode_names_the_candidate[118-30] ______________
+
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_link_mode_names_the_candidate(w, h):
+        """TC-1701 (a), link mode: the candidate is the selection — `selected task
+        ▸`; with no candidate the label is blank."""
+        b = kg_board.build()
+        waiter = b.task_by_id("tw5")
+        text, _ = views.gantt_link_frame(b, False, waiter, b.task_by_id("tm3"), kg_board.TODAY,
+                                         w, h, "r", set())
+>       assert _label(text.plain.split("\n")[2], w) == "selected task ▸"
+E       AssertionError: assert 'Mondays · 1 cell = 1 day' == 'selected task ▸'
+E         
+E         - selected task ▸
+E         + Mondays · 1 cell = 1 day
+
+tests\test_tick_label.py:136: AssertionError
+______________ test_TC_1701_link_mode_names_the_candidate[80-24] ______________
+
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_link_mode_names_the_candidate(w, h):
+        """TC-1701 (a), link mode: the candidate is the selection — `selected task
+        ▸`; with no candidate the label is blank."""
+        b = kg_board.build()
+        waiter = b.task_by_id("tw5")
+        text, _ = views.gantt_link_frame(b, False, waiter, b.task_by_id("tm3"), kg_board.TODAY,
+                                         w, h, "r", set())
+>       assert _label(text.plain.split("\n")[2], w) == "selected task ▸"
+E       AssertionError: assert '1st/15th · 2 d/cell' == 'selected task ▸'
+E         
+E         - selected task ▸
+E         + 1st/15th · 2 d/cell
+
+tests\test_tick_label.py:136: AssertionError
+______________ test_TC_1701_gantt_at_48_columns_cuts_as_painted _______________
+
+    def test_TC_1701_gantt_at_48_columns_cuts_as_painted():
+        """TC-1701 (a), the 16-cell label at 48 columns: `selected task ▸` fits
+        whole; `selected: no dates` is cut by `fit` (accepted)."""
+        b = kg_board.build()
+>       assert _label(_gantt_rows(b, "tw3", 48, 20)[2], 48) == "selected task ▸"
+E       AssertionError: assert '1st/15th · 3 d…' == 'selected task ▸'
+E         
+E         - selected task ▸
+E         + 1st/15th · 3 d…
+
+tests\test_tick_label.py:145: AssertionError
+_____________ test_TC_1701_present_follows_the_same_rule[118-30] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_TC_1701_present_follows_t0')
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_present_follows_the_same_rule(tmp_path, w, h):
+        """TC-1701 (a), presentation: the oracle cursor → `selected task ▸`; a
+        whole-window echo → its own dates; a dateless cursor → `selected: no
+        dates`; no open task, so no cursor → blank (it was the scale)."""
+        b = pb.build(tmp_path / "board.json")
+        assert _present_label(b, pb.CURSOR, w, h) == "selected task ▸"
+        b.task_by_id("tw6").start_date = "2026-09-01"
+        assert _present_label(b, "tw6", w, h) == "Sep 1 → Oct 14 ▸"
+        nodate = b.task_by_id("tw6")
+        nodate.start_date = nodate.due_date = None
+        assert _present_label(b, "tw6", w, h) == "selected: no dates"
+        for t in b.tasks:
+            if t.project_id == pb.PROJECT_ID:
+                t.phase = "Done"
+>       assert _present_label(b, None, w, h) == ""
+E       AssertionError: assert 'Mondays · 1 day = 2 cells' == ''
+E         
+E         + Mondays · 1 day = 2 cells
+
+tests\test_tick_label.py:172: AssertionError
+______________ test_TC_1701_present_follows_the_same_rule[80-24] ______________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_TC_1701_present_follows_t1')
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_present_follows_the_same_rule(tmp_path, w, h):
+        """TC-1701 (a), presentation: the oracle cursor → `selected task ▸`; a
+        whole-window echo → its own dates; a dateless cursor → `selected: no
+        dates`; no open task, so no cursor → blank (it was the scale)."""
+        b = pb.build(tmp_path / "board.json")
+        assert _present_label(b, pb.CURSOR, w, h) == "selected task ▸"
+        b.task_by_id("tw6").start_date = "2026-09-01"
+        assert _present_label(b, "tw6", w, h) == "Sep 1 → Oct 14 ▸"
+        nodate = b.task_by_id("tw6")
+        nodate.start_date = nodate.due_date = None
+        assert _present_label(b, "tw6", w, h) == "selected: no dates"
+        for t in b.tasks:
+            if t.project_id == pb.PROJECT_ID:
+                t.phase = "Done"
+>       assert _present_label(b, None, w, h) == ""
+E       AssertionError: assert 'Mondays · .5 d/cell' == ''
+E         
+E         + Mondays · .5 d/cell
+
+tests\test_tick_label.py:172: AssertionError
+___________ test_TC_1701_present_every_task_hidden_is_blank[118-30] ___________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_TC_1701_present_every_tas0')
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_present_every_task_hidden_is_blank(tmp_path, w, h):
+        """TC-1701 (a), presentation empty boundary: every task hidden from the
+        presentation (the `space` route) leaves no cursor — the label is blank."""
+        b = pb.build(tmp_path / "board.json")
+        for t in b.tasks:
+            if t.project_id == pb.PROJECT_ID:
+                t.show_in_present = False
+        assert views.present_tasks(b, pb.PROJECT_ID)[0] == []
+>       assert _present_label(b, None, w, h) == ""
+E       AssertionError: assert 'Mondays · 1 day = 2 cells' == ''
+E         
+E         + Mondays · 1 day = 2 cells
+
+tests\test_tick_label.py:184: AssertionError
+___________ test_TC_1701_present_every_task_hidden_is_blank[80-24] ____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_TC_1701_present_every_tas1')
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_present_every_task_hidden_is_blank(tmp_path, w, h):
+        """TC-1701 (a), presentation empty boundary: every task hidden from the
+        presentation (the `space` route) leaves no cursor — the label is blank."""
+        b = pb.build(tmp_path / "board.json")
+        for t in b.tasks:
+            if t.project_id == pb.PROJECT_ID:
+                t.show_in_present = False
+        assert views.present_tasks(b, pb.PROJECT_ID)[0] == []
+>       assert _present_label(b, None, w, h) == ""
+E       AssertionError: assert 'Mondays · .5 d/cell' == ''
+E         
+E         + Mondays · .5 d/cell
+
+tests\test_tick_label.py:184: AssertionError
+__________________ test_TC_1701_the_label_function_branches ___________________
+
+    def test_TC_1701_the_label_function_branches():
+        """TC-1701 layer 0: `_gantt_tick_label` over each branch — fits, does not
+        fit, no date, no selection — exact text, tone and width."""
+        sel = object()
+        echo = ({}, "over", [], "Sep 24 → Sep 28")
+>       fits = views._gantt_tick_label(sel, echo, {"echo_label": None}, 20)
+E       AttributeError: module 'taskboard.views' has no attribute '_gantt_tick_label'. Did you mean: '_gantt_group_label'?
+
+tests\test_tick_label.py:195: AttributeError
+____________________ test_TC_1701_the_scale_label_is_gone _____________________
+
+    def test_TC_1701_the_scale_label_is_gone():
+        """TC-1701 (c): the scale label's function no longer exists."""
+>       assert not hasattr(views, "_gantt_scale_label")
+E       AssertionError: assert not True
+E        +  where True = hasattr(views, '_gantt_scale_label')
+
+tests\test_tick_label.py:206: AssertionError
+____________ test_TC_1701_no_gantt_frame_paints_the_scale[118-30] _____________
+
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", [(118, 30), (80, 24), (60, 20), (48, 20)])
+    def test_TC_1701_no_gantt_frame_paints_the_scale(w, h):
+        """TC-1701 (b): every visible task of the oracle board as the selection,
+        and none, and link mode with three candidates and none — no row of any
+        frame holds the scale text."""
+        b = kg_board.build()
+        sels = [t.id for t in b.visible_tasks(False)] + [None]
+        assert len(sels) == 29
+        label_w = views.gantt_columns(w)[0]
+        for sel in sels:
+            rows = _gantt_rows(b, sel, w, h)
+            assert len(rows) == h and re.search(r"\d", rows[2][label_w:]), (sel, rows[2])
+            for i, row in enumerate(rows):
+>               assert not SCALE_TEXT.search(row), (sel, i, row)
+E               AssertionError: ('tw1', 2, '     Mondays · 1 cell = 1 day  ◂⟧ Aug 23–Sep 10╎    5      12     19     26     2      9      16     23     30        ')
+E               assert not <re.Match object; span=(5, 15), match='Mondays · '>
+E                +  where <re.Match object; span=(5, 15), match='Mondays · '> = <built-in method search of re.Pattern object at 0x000002B013896930>('     Mondays · 1 cell = 1 day  ◂⟧ Aug 23–Sep 10╎    5      12     19     26     2      9      16     23     30        ')
+E                +    where <built-in method search of re.Pattern object at 0x000002B013896930> = re.compile('(?:daily|Mondays|1st/15th|1st) · |\\bd/cell\\b|\\bcells?\\b').search
+
+tests\test_tick_label.py:225: AssertionError
+_____________ test_TC_1701_no_gantt_frame_paints_the_scale[80-24] _____________
+
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", [(118, 30), (80, 24), (60, 20), (48, 20)])
+    def test_TC_1701_no_gantt_frame_paints_the_scale(w, h):
+        """TC-1701 (b): every visible task of the oracle board as the selection,
+        and none, and link mode with three candidates and none — no row of any
+        frame holds the scale text."""
+        b = kg_board.build()
+        sels = [t.id for t in b.visible_tasks(False)] + [None]
+        assert len(sels) == 29
+        label_w = views.gantt_columns(w)[0]
+        for sel in sels:
+            rows = _gantt_rows(b, sel, w, h)
+            assert len(rows) == h and re.search(r"\d", rows[2][label_w:]), (sel, rows[2])
+            for i, row in enumerate(rows):
+>               assert not SCALE_TEXT.search(row), (sel, i, row)
+E               AssertionError: ('tw1', 2, '1st/15th · 2 d/cell  ◂━⟧ Aug 23–Sep 10 ┆ 15   ┆  1   ┆  15  ┆   1  ┆   15       ')
+E               assert not <re.Match object; span=(0, 11), match='1st/15th · '>
+E                +  where <re.Match object; span=(0, 11), match='1st/15th · '> = <built-in method search of re.Pattern object at 0x000002B013896930>('1st/15th · 2 d/cell  ◂━⟧ Aug 23–Sep 10 ┆ 15   ┆  1   ┆  15  ┆   1  ┆   15       ')
+E                +    where <built-in method search of re.Pattern object at 0x000002B013896930> = re.compile('(?:daily|Mondays|1st/15th|1st) · |\\bd/cell\\b|\\bcells?\\b').search
+
+tests\test_tick_label.py:225: AssertionError
+_____________ test_TC_1701_no_gantt_frame_paints_the_scale[60-20] _____________
+
+w = 60, h = 20
+
+    @pytest.mark.parametrize("w, h", [(118, 30), (80, 24), (60, 20), (48, 20)])
+    def test_TC_1701_no_gantt_frame_paints_the_scale(w, h):
+        """TC-1701 (b): every visible task of the oracle board as the selection,
+        and none, and link mode with three candidates and none — no row of any
+        frame holds the scale text."""
+        b = kg_board.build()
+        sels = [t.id for t in b.visible_tasks(False)] + [None]
+        assert len(sels) == 29
+        label_w = views.gantt_columns(w)[0]
+        for sel in sels:
+            rows = _gantt_rows(b, sel, w, h)
+            assert len(rows) == h and re.search(r"\d", rows[2][label_w:]), (sel, rows[2])
+            for i, row in enumerate(rows):
+>               assert not SCALE_TEXT.search(row), (sel, i, row)
+E               AssertionError: ('tw1', 2, '1st/15th · 3 d/cell  ◂⟧ Aug 23–Sep 10   1   15    1         ')
+E               assert not <re.Match object; span=(0, 11), match='1st/15th · '>
+E                +  where <re.Match object; span=(0, 11), match='1st/15th · '> = <built-in method search of re.Pattern object at 0x000002B013896930>('1st/15th · 3 d/cell  ◂⟧ Aug 23–Sep 10   1   15    1         ')
+E                +    where <built-in method search of re.Pattern object at 0x000002B013896930> = re.compile('(?:daily|Mondays|1st/15th|1st) · |\\bd/cell\\b|\\bcells?\\b').search
+
+tests\test_tick_label.py:225: AssertionError
+_____________ test_TC_1701_no_gantt_frame_paints_the_scale[48-20] _____________
+
+w = 48, h = 20
+
+    @pytest.mark.parametrize("w, h", [(118, 30), (80, 24), (60, 20), (48, 20)])
+    def test_TC_1701_no_gantt_frame_paints_the_scale(w, h):
+        """TC-1701 (b): every visible task of the oracle board as the selection,
+        and none, and link mode with three candidates and none — no row of any
+        frame holds the scale text."""
+        b = kg_board.build()
+        sels = [t.id for t in b.visible_tasks(False)] + [None]
+        assert len(sels) == 29
+        label_w = views.gantt_columns(w)[0]
+        for sel in sels:
+            rows = _gantt_rows(b, sel, w, h)
+            assert len(rows) == h and re.search(r"\d", rows[2][label_w:]), (sel, rows[2])
+            for i, row in enumerate(rows):
+>               assert not SCALE_TEXT.search(row), (sel, i, row)
+E               AssertionError: ('tw1', 2, '1st/15th · 3 d…  ◂⟧ Aug 23–Sep 10  15   1       ')
+E               assert not <re.Match object; span=(0, 11), match='1st/15th · '>
+E                +  where <re.Match object; span=(0, 11), match='1st/15th · '> = <built-in method search of re.Pattern object at 0x000002B013896930>('1st/15th · 3 d…  ◂⟧ Aug 23–Sep 10  15   1       ')
+E                +    where <built-in method search of re.Pattern object at 0x000002B013896930> = re.compile('(?:daily|Mondays|1st/15th|1st) · |\\bd/cell\\b|\\bcells?\\b').search
+
+tests\test_tick_label.py:225: AssertionError
+______ test_TC_1701_no_present_frame_or_export_paints_the_scale[118-30] _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_TC_1701_no_present_frame_0')
+w = 118, h = 30
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_no_present_frame_or_export_paints_the_scale(tmp_path, w, h):
+        """TC-1701 (b): every open task as the cursor, a dateless cursor and no
+        cursor — no row of the frame and nothing in its `x` SVG holds the scale
+        text."""
+        b = pb.build(tmp_path / "board.json")
+        open_t, _ = views.present_tasks(b, pb.PROJECT_ID)
+        cases = [t.id for t in open_t]
+        assert len(cases) >= 5
+    
+        def check(cursor, tag):
+            text = views.render_present(b, pb.PROJECT_ID, cursor, pb.TODAY, w, h)
+            rows = text.plain.split("\n")
+            label_w = views._present_cols(w, w >= 100)[0]
+            assert "today" in rows[1] and re.search(r"\d", rows[2][label_w:]), (tag, rows[2])
+            for i, row in enumerate(rows):
+                assert not SCALE_TEXT.search(row), (tag, i, row)
+            svg = _svg_text(views.save_present_svg(text, tmp_path / f"{tag}.svg", w, h))
+            assert "PRESENT" in svg and "Redesign" in svg, "probe cannot read the SVG"
+            assert not SCALE_TEXT.search(svg), tag
+    
+        for tid in cases:
+            check(tid, tid)
+        nodate = b.task_by_id(cases[0])
+        nodate.start_date = nodate.due_date = None
+        check(nodate.id, "nodate")
+        for t in b.tasks:
+            if t.project_id == pb.PROJECT_ID:
+                t.phase = "Done"
+>       check(None, "none")
+
+tests\test_tick_label.py:263: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cursor = None, tag = 'none'
+
+    def check(cursor, tag):
+        text = views.render_present(b, pb.PROJECT_ID, cursor, pb.TODAY, w, h)
+        rows = text.plain.split("\n")
+        label_w = views._present_cols(w, w >= 100)[0]
+        assert "today" in rows[1] and re.search(r"\d", rows[2][label_w:]), (tag, rows[2])
+        for i, row in enumerate(rows):
+>           assert not SCALE_TEXT.search(row), (tag, i, row)
+E           AssertionError: ('none', 2, '    Mondays · 1 day = 2 cells  28  ╎         5             12            19            26            2                ')
+E           assert not <re.Match object; span=(4, 14), match='Mondays · '>
+E            +  where <re.Match object; span=(4, 14), match='Mondays · '> = <built-in method search of re.Pattern object at 0x000002B013896930>('    Mondays · 1 day = 2 cells  28  ╎         5             12            19            26            2                ')
+E            +    where <built-in method search of re.Pattern object at 0x000002B013896930> = re.compile('(?:daily|Mondays|1st/15th|1st) · |\\bd/cell\\b|\\bcells?\\b').search
+
+tests\test_tick_label.py:250: AssertionError
+_______ test_TC_1701_no_present_frame_or_export_paints_the_scale[80-24] _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_TC_1701_no_present_frame_1')
+w = 80, h = 24
+
+    @pytest.mark.parametrize("w, h", SIZES)
+    def test_TC_1701_no_present_frame_or_export_paints_the_scale(tmp_path, w, h):
+        """TC-1701 (b): every open task as the cursor, a dateless cursor and no
+        cursor — no row of the frame and nothing in its `x` SVG holds the scale
+        text."""
+        b = pb.build(tmp_path / "board.json")
+        open_t, _ = views.present_tasks(b, pb.PROJECT_ID)
+        cases = [t.id for t in open_t]
+        assert len(cases) >= 5
+    
+        def check(cursor, tag):
+            text = views.render_present(b, pb.PROJECT_ID, cursor, pb.TODAY, w, h)
+            rows = text.plain.split("\n")
+            label_w = views._present_cols(w, w >= 100)[0]
+            assert "today" in rows[1] and re.search(r"\d", rows[2][label_w:]), (tag, rows[2])
+            for i, row in enumerate(rows):
+                assert not SCALE_TEXT.search(row), (tag, i, row)
+            svg = _svg_text(views.save_present_svg(text, tmp_path / f"{tag}.svg", w, h))
+            assert "PRESENT" in svg and "Redesign" in svg, "probe cannot read the SVG"
+            assert not SCALE_TEXT.search(svg), tag
+    
+        for tid in cases:
+            check(tid, tid)
+        nodate = b.task_by_id(cases[0])
+        nodate.start_date = nodate.due_date = None
+        check(nodate.id, "nodate")
+        for t in b.tasks:
+            if t.project_id == pb.PROJECT_ID:
+                t.phase = "Done"
+>       check(None, "none")
+
+tests\test_tick_label.py:263: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cursor = None, tag = 'none'
+
+    def check(cursor, tag):
+        text = views.render_present(b, pb.PROJECT_ID, cursor, pb.TODAY, w, h)
+        rows = text.plain.split("\n")
+        label_w = views._present_cols(w, w >= 100)[0]
+        assert "today" in rows[1] and re.search(r"\d", rows[2][label_w:]), (tag, rows[2])
+        for i, row in enumerate(rows):
+>           assert not SCALE_TEXT.search(row), (tag, i, row)
+E           AssertionError: ('none', 2, 'Mondays · .5 d/cell  28  ╎         5             12            19               ')
+E           assert not <re.Match object; span=(0, 10), match='Mondays · '>
+E            +  where <re.Match object; span=(0, 10), match='Mondays · '> = <built-in method search of re.Pattern object at 0x000002B013896930>('Mondays · .5 d/cell  28  ╎         5             12            19               ')
+E            +    where <built-in method search of re.Pattern object at 0x000002B013896930> = re.compile('(?:daily|Mondays|1st/15th|1st) · |\\bd/cell\\b|\\bcells?\\b').search
+
+tests\test_tick_label.py:250: AssertionError
+____________ test_AT_1701_the_tick_row_names_the_selection[size0] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_AT_1701_the_tick_row_name0')
+frozen = None, size = (118, 31)
+
+    @pytest.mark.parametrize("size", [(118, 31), (80, 25)])
+    async def test_AT_1701_the_tick_row_names_the_selection(tmp_path, frozen, size):
+        """AT-1701 (HLR-1701) arms 1-3 and 5, keys only: `3` — the app selects the
+        first drawn task — the tick row's label reads `selected task ▸`; `L` (link
+        mode) names its candidate the same way; `esc`, `/` `Daily` `enter` — the
+        search keeps one open task and the app selects it: the label still names
+        the selection; `/` `zzqx` `enter` — a query no task holds: nothing drawn,
+        nothing selected, the label is blank and the month row still holds
+        `today`; a fresh run presses `R` — the presentation's tick row reads
+        `selected task ▸`. No painted row of any arm holds the scale text. RED on
+        the base tree: the label was the scale."""
+        w = size[0]
+        app = _app(tmp_path, kg_board.build())
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            rows = _rows(app.query_one("#board"))
+>           assert rows[2].lstrip().startswith("selected task ▸"), rows[2]
+E           AssertionError:      Mondays · 1 cell = 1 day  ◂━━━━━━━━━━━━⟧ Sep 5–27     12     19     26     2      9      16     23     30        
+E           assert False
+E            +  where False = <built-in method startswith of str object at 0x000002B015E31350>('selected task ▸')
+E            +    where <built-in method startswith of str object at 0x000002B015E31350> = 'Mondays · 1 cell = 1 day  ◂━━━━━━━━━━━━⟧ Sep 5–27     12     19     26     2      9      16     23     30        '.startswith
+E            +      where 'Mondays · 1 cell = 1 day  ◂━━━━━━━━━━━━⟧ Sep 5–27     12     19     26     2      9      16     23     30        ' = <built-in method lstrip of str object at 0x000002B015EBF930>()
+E            +        where <built-in method lstrip of str object at 0x000002B015EBF930> = '     Mondays · 1 cell = 1 day  ◂━━━━━━━━━━━━⟧ Sep 5–27     12     19     26     2      9      16     23     30        '.lstrip
+
+tests\test_tick_label.py:316: AssertionError
+____________ test_AT_1701_the_tick_row_names_the_selection[size1] _____________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_AT_1701_the_tick_row_name1')
+frozen = None, size = (80, 25)
+
+    @pytest.mark.parametrize("size", [(118, 31), (80, 25)])
+    async def test_AT_1701_the_tick_row_names_the_selection(tmp_path, frozen, size):
+        """AT-1701 (HLR-1701) arms 1-3 and 5, keys only: `3` — the app selects the
+        first drawn task — the tick row's label reads `selected task ▸`; `L` (link
+        mode) names its candidate the same way; `esc`, `/` `Daily` `enter` — the
+        search keeps one open task and the app selects it: the label still names
+        the selection; `/` `zzqx` `enter` — a query no task holds: nothing drawn,
+        nothing selected, the label is blank and the month row still holds
+        `today`; a fresh run presses `R` — the presentation's tick row reads
+        `selected task ▸`. No painted row of any arm holds the scale text. RED on
+        the base tree: the label was the scale."""
+        w = size[0]
+        app = _app(tmp_path, kg_board.build())
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            rows = _rows(app.query_one("#board"))
+>           assert rows[2].lstrip().startswith("selected task ▸"), rows[2]
+E           AssertionError: 1st/15th · 2 d/cell  ⟦━━━━━━━━━━⟧╎Sep 5–27 ┆  ┆  1   ┆  15  ┆   1  ┆   15       
+E           assert False
+E            +  where False = <built-in method startswith of str object at 0x000002B016044B90>('selected task ▸')
+E            +    where <built-in method startswith of str object at 0x000002B016044B90> = '1st/15th · 2 d/cell  ⟦━━━━━━━━━━⟧╎Sep 5–27 ┆  ┆  1   ┆  15  ┆   1  ┆   15       '.startswith
+E            +      where '1st/15th · 2 d/cell  ⟦━━━━━━━━━━⟧╎Sep 5–27 ┆  ┆  1   ┆  15  ┆   1  ┆   15       ' = <built-in method lstrip of str object at 0x000002B016044B90>()
+E            +        where <built-in method lstrip of str object at 0x000002B016044B90> = '1st/15th · 2 d/cell  ⟦━━━━━━━━━━⟧╎Sep 5–27 ┆  ┆  1   ┆  15  ┆   1  ┆   15       '.lstrip
+
+tests\test_tick_label.py:316: AssertionError
+_________ test_AT_1701_a_board_with_no_task_has_a_blank_label[size0] __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_AT_1701_a_board_with_no_t0')
+frozen = None, size = (118, 31)
+
+    @pytest.mark.parametrize("size", [(118, 31), (80, 25)])
+    async def test_AT_1701_a_board_with_no_task_has_a_blank_label(tmp_path, frozen, size):
+        """AT-1701 (HLR-1701) arm 4, empty boundary: a board file with projects and
+        no task — nothing can be selected — `3` paints the ruler (`today` on the
+        month row) with a blank tick label and no scale text anywhere."""
+        b = kg_board.build()
+        b.tasks.clear()
+        app = _app(tmp_path, b)
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            rows = _rows(app.query_one("#board"))
+            assert "today" in rows[1], rows[1]
+>           assert rows[2][:views.gantt_columns(size[0])[0]].strip() == "", rows[2]
+E           AssertionError:     Mondays · 1 day = 2 cells  28  ╎         5             12            19            26            2                
+E           assert 'Mondays · 1 day = 2 cells' == ''
+E             
+E             + Mondays · 1 day = 2 cells
+
+tests\test_tick_label.py:371: AssertionError
+_________ test_AT_1701_a_board_with_no_task_has_a_blank_label[size1] __________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20040/test_AT_1701_a_board_with_no_t1')
+frozen = None, size = (80, 25)
+
+    @pytest.mark.parametrize("size", [(118, 31), (80, 25)])
+    async def test_AT_1701_a_board_with_no_task_has_a_blank_label(tmp_path, frozen, size):
+        """AT-1701 (HLR-1701) arm 4, empty boundary: a board file with projects and
+        no task — nothing can be selected — `3` paints the ruler (`today` on the
+        month row) with a blank tick label and no scale text anywhere."""
+        b = kg_board.build()
+        b.tasks.clear()
+        app = _app(tmp_path, b)
+        async with app.run_test(size=size) as pilot:
+            await pilot.pause()
+            await pilot.press("3")
+            await pilot.pause()
+            rows = _rows(app.query_one("#board"))
+            assert "today" in rows[1], rows[1]
+>           assert rows[2][:views.gantt_columns(size[0])[0]].strip() == "", rows[2]
+E           AssertionError: Mondays · .5 d/cell  28  ╎         5             12            19               
+E           assert 'Mondays · .5 d/cell' == ''
+E             
+E             + Mondays · .5 d/cell
+
+tests\test_tick_label.py:371: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_names_the_selected_task[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_names_the_selected_task[80-24]
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_selection_before_the_window[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_selection_before_the_window[80-24]
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_dateless_and_no_selection[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_dateless_and_no_selection[80-24]
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_search_that_hides_the_selection[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_search_that_hides_the_selection[80-24]
+FAILED tests/test_tick_label.py::test_TC_1701_link_mode_names_the_candidate[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_link_mode_names_the_candidate[80-24]
+FAILED tests/test_tick_label.py::test_TC_1701_gantt_at_48_columns_cuts_as_painted
+FAILED tests/test_tick_label.py::test_TC_1701_present_follows_the_same_rule[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_present_follows_the_same_rule[80-24]
+FAILED tests/test_tick_label.py::test_TC_1701_present_every_task_hidden_is_blank[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_present_every_task_hidden_is_blank[80-24]
+FAILED tests/test_tick_label.py::test_TC_1701_the_label_function_branches - A...
+FAILED tests/test_tick_label.py::test_TC_1701_the_scale_label_is_gone - Asser...
+FAILED tests/test_tick_label.py::test_TC_1701_no_gantt_frame_paints_the_scale[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_no_gantt_frame_paints_the_scale[80-24]
+FAILED tests/test_tick_label.py::test_TC_1701_no_gantt_frame_paints_the_scale[60-20]
+FAILED tests/test_tick_label.py::test_TC_1701_no_gantt_frame_paints_the_scale[48-20]
+FAILED tests/test_tick_label.py::test_TC_1701_no_present_frame_or_export_paints_the_scale[118-30]
+FAILED tests/test_tick_label.py::test_TC_1701_no_present_frame_or_export_paints_the_scale[80-24]
+FAILED tests/test_tick_label.py::test_AT_1701_the_tick_row_names_the_selection[size0]
+FAILED tests/test_tick_label.py::test_AT_1701_the_tick_row_names_the_selection[size1]
+FAILED tests/test_tick_label.py::test_AT_1701_a_board_with_no_task_has_a_blank_label[size0]
+FAILED tests/test_tick_label.py::test_AT_1701_a_board_with_no_task_has_a_blank_label[size1]
+27 failed, 3 passed in 2.05s
+# exit: 1

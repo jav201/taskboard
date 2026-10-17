@@ -110,8 +110,9 @@ def test_TC_1601_an_echo_too_long_for_the_field_moves_to_the_label(tmp_path):
 
 def test_TC_1601_a_project_with_no_open_task_still_paints_its_ruler(tmp_path):
     """TC-1601 (LLR-1601.1, HLR-1601 empty boundary): every task done — the two
-    ruler rows still paint (today in the label, the month on the band, the scale
-    label on the tick row: there is no cursor to echo)."""
+    ruler rows still paint (today in the label, the month on the band, the day
+    ticks on the tick row, whose label is blank: there is no cursor to echo and
+    the scale label is gone — HLR-1701, batch 2026-10-17-batch-01)."""
     b = pb.build(tmp_path / "board.json")
     for t in b.tasks:
         if t.project_id == pb.PROJECT_ID:
@@ -119,7 +120,8 @@ def test_TC_1601_a_project_with_no_open_task_still_paints_its_ruler(tmp_path):
     rows = _rows(b, 118, 30)
     assert "today Wed Sep 30" in rows[1], rows[1]
     assert "October" in rows[1], rows[1]                 # a month band (the window narrows)
-    assert rows[2].lstrip().startswith("Mondays · 1 day = 2 cells"), rows[2]   # no echo
+    assert rows[2][:30].strip() == "", rows[2]                     # no echo, no label
+    assert any(ch.isdigit() for ch in rows[2][31:]), rows[2]      # the ticks paint
     for r in rows:
         assert views.vis(r) == 118
 
