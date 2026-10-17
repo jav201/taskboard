@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-17-batch-01 |
 | Objective | Gantt tick label: remove the scale label (e.g. 'Mondays · 1 day = 2 cells') everywhere it is painted; the gantt view's tick-row label follows the presentation's rule (selected task ▸ / the echo's own text / selected: no dates / blank), and the presentation's no-selection fallback becomes blank |
-| Last updated | P0 · 2026-10-17 |
+| Last updated | P3 · 2026-10-17 |
 | Standing authorization | standing authorization — the operator's commission, 2026-10-17 (Spanish, quoted): «Es la etiqueta de Mondays y cells? Si es así, hay que quitarla. No agrega valor» — referring to the scale label `_gantt_scale_label(...)` (e.g. `Mondays · 1 day = 2 cells`) left of the tick row in the gantt view (`taskboard/views.py` ~3001–3006) and the presentation (`_present_ruler`, ~6222–6227). The coordinator relayed the commission with its decisions (scale label removed everywhere; the gantt view's tick label follows the presentation's rule; the presentation's no-cursor fallback becomes blank; `_gantt_scale_label` deleted if nothing else calls it; no prototype round). Read as: every gate of this batch is autonomous (the runtime cannot prompt; reviewer roles are spawned sub-agents); commits on the local branch `gantt-tick-label` are authorized; **push, merge, reset and force are NOT authorized**; synthetic boards only; at most 4 source files per increment. |
 | First gate | step 1, on `main` `d79a33e` before the branch: exit 0 — 0 block · 40 notice · 65 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 62 notice. |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `d79a33e51d2d7509a9ff5d64b9098027665d7d72` = local `main`; `git switch -c gantt-tick-label main`, `git rebase --autostash origin/main` → `up to date`; `base_ref` = `d79a33e`. RC-1 (b): not already shipped — `git grep -n "_gantt_scale_label" origin/main -- taskboard` → `views.py:2849` (def), `:3005` (the gantt view's tick label), `:6230` (the presentation's no-cursor fallback). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest `origin/main` commit 2026-10-17 09:09 -0600. Premises P-1..P-4: `01-requirements.md` §2.7. |
@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0 — the batch is open by rollover from `2026-10-16-batch-01` on `d79a33e`; triggers evaluated (B1 B3 B4 D1 fired; no ARQ/PDR/DDR); one story READY. Next: P1, the contract.
+P3 — P0 closed (`3cde009`); P1 contract (1 US, 1 HLR, 1 LLR; AT-1701, TC-1701); P2 iteration 1 `iterate-to-refine` → LED .2; P2 iteration 2 `approve` (architect, qa-reviewer, ux-reviewer), minors folded in LED .3. Next: increment 001 — the helper, the deleted scale label, TC-1701/AT-1701 in `tests/test_tick_label.py`, the law-driven updates to five pinned tests (QA2-1 included), RED, mutants, `code-reviewer`.
 
 ## Objective
 
@@ -62,11 +62,12 @@ The tick row's label never shows the scale text; in both views it names the sele
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-1701 | READY | P0 |
+| US-1701 | READY → P3 | P2 approved (iteration 2) |
+| P2 | approve | `02-review.md` (2 iterations) |
 
 ## Roadmap + increment plan
 
-- 001 — one tick-label rule for both views; `_gantt_scale_label` deleted; pinned tests updated law-driven; TC-1701 / AT-1701: `taskboard/views.py`, tests.
+- 001 — one tick-label rule for both views; `_gantt_scale_label` deleted; pinned tests updated law-driven (AT-104, TC-110 deleted, TC-1601, TC-1608 (c), the dead-cell law); TC-1701 / AT-1701 in `tests/test_tick_label.py`: 1 source file (`taskboard/views.py`).
 
 ## Key decisions
 
@@ -80,6 +81,10 @@ The tick row's label never shows the scale text; in both views it names the sele
 | 2026-10-17 | no prototype round | coordinator: a removal the operator decided directly; the visible result is shown by real-app captures |
 | 2026-10-17 | both sites call one helper, `_gantt_tick_label` | one rule in code too, so the two views cannot drift into two dialects again |
 | 2026-10-17 | the evidence home's `-text` mark is a nested `evidence/.gitattributes` (`** -text`), not a line in the root `.gitattributes` | the root `.gitattributes` is a pre-existing dirty file the commission says to leave alone; `git check-attr text` on a path in the home → `unset` |
+| 2026-10-17 | P2 iteration 1 → `iterate-to-refine`; amended in LED-2026-10-17-batch-01.2 | 1 blocker (QA-1: the AT's selection states not reachable as written) and 8 requirement-defect majors; a requirement defect goes back to P1 (`stations/p2-review.md` §Gate) |
+| 2026-10-17 | P2 iteration 2 → `approve`; minors in LED .3; QA2-1 carried into increment 001 | all three lenses approve; every remaining item a minor fix changing no obligation (`stations/p2-review.md` §Gate, the commission reads as autonomy over the gate) |
+| 2026-10-17 | the dead-cell law (`tests/test_gantt.py:287`) is rebaselined to `<= 25.5` = 25 + 100·15/2880 | the 15 cells are the ink of the scale text the operator removed (base 24.58 %, patched 25.10 %); derived from the rule, not the new measurement (qa-reviewer, architect) |
+| 2026-10-17 | the README hero image (`docs/taskboard-gantt.svg`, `Mondays · 1 d/cell`) stays out of scope, carried to `BACKLOG.md` | a static file generated by 2026-10-02-batch-01's `make_readme_gantt.py`, not painted by the app; regenerating it re-renders every change since then — a docs change outside the commission (architect A-3) |
 | 2026-10-17 | asked at the gate — the operator's verdict on batch 2026-10-16-batch-01's captures, relayed by the coordinator: «Ya vi las capturas, se ven todo en orden.» (including `app-004-80x25-present-open.svg`) approves the 80-column Present frame and the increment-004 captures; it discharges that batch's backlog item "the operator's visual verdict on the 80-column oracle frame" (marked resolved in `BACKLOG.md`; batch-01's closed records untouched) | the operator reviewed the captures |
 
 ## Risks / watch-items
@@ -105,10 +110,16 @@ The tick row's label never shows the scale text; in both views it names the sele
 
 **Step 3 / P0:** 0 block · 62 notice — the step-3 placeholder NOTICEs (`V27`, `V31`–`V34`, `V36`–`V38`, `V41`, `V43`–`V51`, `V54`) over the unfilled seeds, leaving as rows fill them; the historical NOTICEs above; `V30`. `V25` does not apply (origin exists).
 
+**P1 gate:** 0 block · 57 notice — the step-3 placeholders still unfilled at P1 (`V31`, `V32`, `V36`–`V38`, `V41`, `V43`, `V44`, `V47`–`V51`, `V54` on the packet, validation and close seeds), the historical NOTICEs, `V30`; `V62` at the P1 gate until this rewrite.
+
+**P2 iteration 1 → P1 (LED .2) gate:** 0 block · 57 notice — as at P1; `V62` until the plan named P1/P2.
+
+**P2 gate (iteration 2):** 0 block · 56 notice — the remaining step-3 placeholders (packet, validation, close seeds), the historical NOTICEs, `V30`.
+
 **Found before the batch:** `.gitattributes`, `.dev-flow/2026-10-07-batch-0{8,9}/evidence/inc001-brief.md` (modified), untracked `.dev-flow/2026-10-07-batch-0{5..8}/decisions-log.json`, `.dev-flow/2026-10-07-batch-06/evidence/{gen_verdict_sheet.py,kanban-demo.json,veredicto-batch06.html,veredicto-board.json}`, `.dev-flow/rollover_batch{g,h,i,j}.py`. Not touched.
 
 ## Test ledger
 
 | Suite / command | Last run | Result |
 |---|---|---|
-| — | — | — |
+| C-39 pre-execution: `python -m pytest -q -p no:cacheprovider` on the patched tree in a scratch worktree (no new tests) | 2026-10-17 | 8 failed, 2626 passed in 492.52s — the 2 standup base failures + `test_gantt_board.py::test_AT_104…`, `::test_TC_110…`, `test_present_room.py::test_TC_1608_no_selected…` ×2, `test_present_rulers.py::test_TC_1601…`, `test_gantt.py::test_emptiness_is_bounded…` (QA2-1) |

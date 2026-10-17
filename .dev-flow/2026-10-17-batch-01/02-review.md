@@ -9,15 +9,15 @@
 
 ## ✅ Verdict (read first)
 
-- **Gate:** `approve` → Phase 3  /  `iterate-to-refine` → Phase 1 (blockers present, or a requirement-defect major)
-- **Out-of-scope findings:** `<N>` named and routed below  /  `none`
+- **Gate:** `approve` → Phase 3 — after one `iterate-to-refine` (iteration 1: 1 blocker, 8 majors, all three lenses; amended in LED-2026-10-17-batch-01.2). Iteration 2: architect `approve`, qa-reviewer `approve`, ux-reviewer `approve`; their minors folded in LED-2026-10-17-batch-01.3 and re-read; one implementation finding (QA2-1) carried into increment 001.
+- **Out-of-scope findings:** 1 named and routed below (A-3, the README hero image → `BACKLOG.md`)
 
-- **Findings:** `<B>` blocker · `<M>` major · `<m>` minor
-- **shall/should check:** ✓ clean  /  ✗ misuse (blocker)
-- **Two-layer (blockers):** ✓ every story has an `AT` · output reqs name deliverable+observation · both trace chains complete · ATs are genuinely black-box  /  ✗ `<which>`
-- **Census (change-first):** done — best-effort + gate-confirmed  /  ⚠ incomplete   (NEVER stamp "VERIFIED COMPLETE")
-- **Security:** ✓ no findings  /  ⚠ `<N>` findings
-- **Evidence checklists (architect / qa / security):** ✓ all complete  /  ✗ `<missing>`
+- **Findings:** iteration 1: 1 blocker · 8 major · 9 minor; iteration 2: 0 blocker · 1 major (QA2-1, implementation, owned by increment 001) · 7 minor
+- **shall/should check:** ✓ clean
+- **Two-layer (blockers):** ✓ every story has an `AT` · output reqs name deliverable+observation · both trace chains complete · ATs are genuinely black-box (after LED .2: QA-1 resolved, confirmed in iteration 2)
+- **Census (change-first):** done — best-effort + gate-confirmed
+- **Security:** ✓ no findings — not run: trigger family C did not fire (`core`)
+- **Evidence checklists (architect / qa / ux):** ✓ all complete (below)
 
 > If gate = `approve` and every line is ✓, the Detail below is reference. Any blocker/⚠ → read the matching part.
 
@@ -25,36 +25,73 @@
 
 ## Detail (reference)
 
+Reviewers: `architect`, `qa-reviewer`, `ux-reviewer` (D1 fired) — each `spawned — generic agent with agents/<role>.md`, read-only, in parallel, 2026-10-17.
+
 ### Findings
 | ID | Reviewer | Severity | Area / Req | What | Recommendation | Status |
 |----|----------|----------|------------|------|----------------|--------|
-| `<one row per finding>` | | | | | | |
-
-**A worked example — text to read, never rows of your record.** It sits in a fence so that nothing has to be deleted: a row copied out of it would claim a finding nobody raised. Write your own rows in the table above.
-
-```text
-| *(example)* F1 | architect | blocker / major / minor | | | | open / fixed |
-```
+| QA-1 | qa-reviewer | blocker | HLR-1701 / AT-1701 | the AT does not say how a user reaches each selection state; the gantt view re-selects the first drawn task (`app.py:970-991`), so "none" is reachable only where no open task is drawn | name each arm's key path or board file; "none" through a board with projects and no task; dateless arm in TC only; premise row for the ruler in that state | fixed — LED .2 (AT arms named; P-5) |
+| QA-2 | qa-reviewer | major | LLR-1701.1 (b) | the SVG half of the sweep needs the export's text unescaped, and its positive control only runs on plain strings | unescape `&#160;`; add an SVG-form positive control | fixed — LED .2 (the export's `&#160;` is unescaped, measured: 54 × `&#160;`, 0 × `&amp;#160;` on the base no-cursor SVG; SVG positive control added) |
+| QA-3 | qa-reviewer | major | LLR-1701.1 (a) | no `kg_board` task overflows the field at 118 or 80, so the gantt "does not fit" arm had no input | pre-execute the fixture | fixed — LED .2 (P-6: no task does; `tw1` set to Jul 1 → Dec 31 paints `Jul 1 → Dec 31 ▸` at both) |
+| QA-4 | qa-reviewer | major | HLR-1701 negative control | the cited base assertion (`test_gantt_board.py:222`) is the no-selection arm, not the selection arm; no control proves the tone assertions can go RED | re-cite; add tone mutations | fixed — LED .2 (negative control re-cited to the base code path; tone mutants in the battery) |
+| QA-5 | qa-reviewer | minor | LLR-1701.1 (b) | case sensitivity unstated; `Daily revenue model` is painted | state it; add false-match guards | fixed — LED .2 |
+| QA-6 | qa-reviewer | minor | LLR-1701.1 (b) | link mode not in the sweep | add it | fixed — LED .2 (with A-4, UX-1) |
+| QA-7 | qa-reviewer | minor | LLR-1701.1 | the positive-control strings were not listed | write them verbatim from the rule | fixed — LED .2 |
+| A-1 | architect | major | LED .1, §6.3 | LLR-102.2 (`REQUIREMENTS.md:47`, "its label column shall name the cadence and the scale") and LLR-1602.2 (`:204`, "the ruler (scale label)") also require the scale label | add both to the supersession set | fixed — LED .2 |
+| A-3 | architect | major | §1.2 | the README hero image `docs/taskboard-gantt.svg:157` shows `Mondays · 1 d/cell` | in scope or Out with reason | fixed — Out with reason (LED .2): a static file generated by `make_readme_gantt.py`, not painted by the app; regenerating it re-renders the whole board with every change since 2026-10-02-batch-01, a docs change outside the commission → `BACKLOG.md` |
+| A-4 | architect | minor | LLR-1701.1 | link mode (`gantt_link_frame`) driven by no arm | add candidate and `cand=None` arms | fixed — LED .2 |
+| A-5 | architect | minor | census | three docstrings go stale (`test_present_room.py:13-16`, `test_gantt_board.py:210`, `views.py:6210-6212`); `test_gantt_link.py:53` matches the grep but is a comment about the axis | update the three; record the link hit as unaffected | carried into increment 001 (census) |
+| A-6 | architect | minor | HLR-1701 boundary | the presentation's second no-cursor route — every task hidden with `space` — is not driven | add it as an empty-boundary arm | fixed — LED .2 |
+| UX-1 | ux-reviewer | major | HLR-1701 / AT-1701 | link mode paints the frame with the candidate as the selection; no arm | AT arm: `L`, the candidate's label; TC arm with no candidate | fixed — LED .2 |
+| UX-2 | ux-reviewer | major | HLR-1701 | a search that hides the selected task makes the label blank — a new, unstated outcome | state it; add an arm | fixed — LED .2 (stated; TC arm over `filtered_board`) |
+| UX-3 | ux-reviewer | major | HLR-1701 boundary | a selection whose dates lie outside the window: the echo clamps to an edge glyph and the label still says `selected task ▸` | add a boundary arm asserting the label and the edge glyph | fixed — LED .2 |
+| UX-4 | ux-reviewer | minor | LLR-1701.1 | at 48 columns `selected: no dates` is cut to `selected: no d…` | state it, pin the painted text | fixed — LED .2 (stated as accepted; pinned at 48) |
+| UX-5 | ux-reviewer | minor | §2.3 | the context of use names no task | add the task | fixed — LED .2 |
+| UX-6 | ux-reviewer | minor | §5.2 | captures cover selection vs none only; tone is visual | add a dateless-selection capture at 80×25 and a presentation no-cursor capture; read tone from the SVG fills | fixed — LED .2 (two more capture steps; the tone is asserted in TC-1701 from the markup, and the SVG fills are read in the packet) |
 
 ### shall / should check
 > Any modal `should` / `debería` inside an HLR/LLR statement is a writing error → blocker.
 
-`<result>`
+Clean: `shall` only in HLR-1701 and LLR-1701.1 statements; no `should` in either (architect, qa-reviewer).
 
 ### Two-layer acceptance review (blockers)
 > (a) every story has a black-box `AT`; (b) every output-producing requirement names its observable deliverable + observation method; (c) BOTH traceability chains complete (behavioral US→AT→outcome + functional US→HLR→LLR→TC); (d) each `AT` is genuinely black-box — drives the surface, asserts the outcome, references NO internal symbol.
 
 | Story / Req | (a) AT present | (b) deliverable+method named | (c) both chains | (d) black-box pure | Status |
 |-------------|----------------|------------------------------|-----------------|--------------------|--------|
-| US-001 | yes/no | yes/no/n/a | yes/no | yes/no | ✓ / blocker |
+| US-1701 / HLR-1701 | yes (AT-1701) | yes (`#board`, `#present-frame`, the `x` SVG) | yes (US-1701→AT-1701; US-1701→HLR-1701→LLR-1701.1→TC-1701) | iteration 1: no (QA-1); after LED .2: yes — keys `3`, `L`, `R`, board files only | ✓ after LED .2 |
 
 ### Supersession census (change-first)
 > Planned new/moved/edited files checked against EVERY guard family (behavioral-placeholder · structural/placement · AST-composition · frozen-module). State reservations; the increment gate is the completeness guarantee, not this census.
 
-`<files × families run · reservations · what the I-gate must confirm>`
+Planned files: `taskboard/views.py` (edited), `tests/test_tick_label.py` (new), `tests/test_gantt_board.py`, `tests/test_present_rulers.py`, `tests/test_present_room.py` (edited). Reverse grep over `tests/` for `_gantt_scale_label`, the scale strings and `cadence` (architect): **must change** — `test_gantt_board.py:222` (AT-104), `:916-922` (TC-110, deleted), `test_present_rulers.py:122` (TC-1601), `test_present_room.py:37-45,103` (helper and TC-1608 (c)); **read and survive** — `test_gantt_board.py:223-227, 238, 318, 336-343, 750`, `test_gantt_polish.py:336-338`, `test_present_rulers.py:105-108, 200-208`, `test_present_room.py:70, 100`, `test_present_hide.py:203-211`, `test_gantt.py:589-606`; **matched, unaffected** — `test_gantt_link.py:53` (a comment about the axis). Goldens (B3): PRES-R2 and C-2b frames, 0 hits; only increment 001's `PRES-R-*.txt` match, read by no test. Outside `tests/`: the canon rows (A-1) and the README image (A-3). No frozen modules are declared in this repo. Pre-executed threshold (C-39): the full suite on the patched tree in a scratch worktree — recorded in PLAN §Test ledger. Reservations: best-effort; the increment gate confirms.
 
 ### Security review summary
-`<security-reviewer findings + verdict, or "not run — trigger family C did not fire" in core>`
+Not run — trigger family C did not fire (`core`): the P1 scan returned `security_required: false`, `flags: none`.
 
-### Evidence checklists (full) — architect · qa-reviewer · security-reviewer
+### Evidence checklists (full) — architect · qa-reviewer · ux-reviewer
 > Attach each reviewer's completed evidence checklist (items in their agent files), ✓/✗ + one-line evidence.
+
+**architect (iteration 1):** ✓ constraints stated (§2.4) · ✓ alternatives n/a (decided by operator/coordinator) · ✓ n/a constraints marked · ✓ rationale tied to constraints (one helper) · ✗ risks listed — canon supersession incomplete (A-1), README image unnamed (A-3) · ✓ cost n/a · ✓ diagram n/a · ✓ what would change it (the `selected: no dates` carry) · ✓ two-layer (a)–(d).
+
+**qa-reviewer (iteration 1, mode plan):** ✓ Given/When/Then · ✗ explicit expected for "none" (QA-1) · ✓ edge cases · ✓ regression checklist · ✓ exit criteria · ✓ no PII · ✓ mode declared · ✓ results `planned` · ✗ layer B black-box (QA-1) · ✗ bidirectional reachability (QA-1) · ✓ no unfilled template.
+
+**ux-reviewer (iteration 1):** ✓ context of use (task missing — UX-5) · ✓ four branches observable at 118/80 · ✗ interaction cases (UX-1/2/3) · ✓ narrow widths (UX-4) · ✓ real mechanism (`run_test`) · ✓/✗ painted result — tone needs SVG fills (UX-6) · ✓ empty/boundary listed · ✗ evaluation with users — not performed (one-person team); expert inspection performed; walkthrough `planned`.
+
+### Iteration 2 (2026-10-17) — the amended contract (LED .2)
+
+Reviewers: the same three lenses, `spawned — generic agent with agents/<role>.md`, read-only, in parallel. Every iteration-1 finding was confirmed resolved (A-5 carried into increment 001 as recorded).
+
+| ID | Reviewer | Severity | Area / Req | What | Recommendation | Status |
+|----|----------|----------|------------|------|----------------|--------|
+| QA2-1 | qa-reviewer | major | census / `tests/test_gantt.py:287` | the dead-cell law `dead <= 25` (base 24.58 %, patched 25.10 %) is a pinned test the census missed — found by the pre-executed full suite (C-39), not by grep | rebaseline to 25 + 100·15/2880 = 25.52 → `<= 25.5`, docstring states the derivation; name it | carried — implementation finding owned by increment 001 (`stations/p2-review.md`: not a gate token); architect agrees ("law-driven: the 15 cells are the ink the operator removed") |
+| QA2-2 | qa-reviewer | minor | AT-1701 arm (3) | the query text is not named | name it | fixed — LED .3 (`Daily`, `zzqx`) |
+| QA2-3 | qa-reviewer | minor | AT-1701 arm (2) | link mode's first candidate not probed from the app | run it | done — passes on the patched scratch tree |
+| QA2-4 | qa-reviewer | minor | P-5 | the no-task board route not probed | run it | done — AT arm (4) passes on the patched scratch tree |
+| QA2-5 | qa-reviewer | minor | TC-1701 (b) | the sweep does not prove the tick row was painted | add a painted check per frame | fixed — LED .3 |
+| A2-1 | architect | minor | §2.7 | a blank line cut P-5..P-8 off the table | delete it | fixed — LED .3 |
+| A2-2 | architect | minor | §1.3 | the label column's narrow case | add it | fixed — LED .3 |
+| UX2-1 | ux-reviewer | minor | P-7 / TC-1701 (a) | the off-window field text looked cut | reword P-7, pin the field at 118 and 80 | fixed — LED .3: re-measured, the dates are whole (`Aug 23–Sep 10` at both); the earlier probe printed only 12 cells; pinned |
+| UX2-n | ux-reviewer | notice | HLR-1701 arm (3) | the re-select half of a search (a search that hides the selection but draws others) was not driven on screen | — | fixed — LED .3: arm (3) first searches `Daily`, the label names the app's new selection |
+
+**Evidence checklists (iteration 2):** architect — ✓ on all items (constraints §2.4; alternatives n/a; Out list with reasons; rationale; risks incl. the five canon rows and the dead-cell law; cost n/a; diagram n/a; what would change it; two-layer). qa-reviewer (mode plan, results `planned`) — ✓ on all items (Given/When/Then; explicit expected per arm; edge cases; regression checklist, see QA2-1; exit criteria; no PII; layer B black-box through `#board`, `#glink-frame`, `#present-frame` and the `x` SVG; bidirectional reachability; no unfilled template). ux-reviewer — ✓ context of use with task; ✓ every case observable at 118/80; ✓ link mode, search, off-window stated with arms; ✗→✓ off-window field pinned (UX2-1, LED .3); ✓ real mechanism; ✓/✗ painted tone — asserted from markup, the packet reads the SVG fills; walkthrough `planned`; evaluation with users not performed (one-person team), expert inspection performed.
