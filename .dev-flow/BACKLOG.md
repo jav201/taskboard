@@ -134,6 +134,10 @@ recorded full-suite run).
   increment-002's packet; the operator's visual re-verdict on the amended frames + the new chrome
   is PENDING in the Open section above.
 
+## Open — after `2026-10-16-batch-01` (present v2: ruler, chips, hide flag, `?` keys)
+
+- the operator's visual verdict on the 80-column oracle frame — `evidence/frames/PRES-R-80x24.txt` of batch `2026-10-16-batch-01`; only the 118×31 and 80×25 app frames were shown at the prototype round, never an 80×24 `render_b2` frame (owner: operator; opened at that batch's P2).
+
 ## Open — after `2026-10-07-batch-09` (templates v3: scratch authoring)
 
 - Nothing new from this batch. The operator's scratch-authoring follow-up it shipped is marked done

@@ -19,36 +19,54 @@
 
 | Field | Value |
 |---|---|
-| Last amended by | `<batch_id>` |
+| Last amended by | `2026-10-16-batch-01` |
 | Date | `2026-10-16` |
 
 ---
 
 ## 1 · Context — the system boundary
 
-*(What is inside this system, what is outside it, and every service it talks to across the boundary.
-This is what the security family reads: a new crossing here is a new attack surface.)*
+taskboard is a local, single-user terminal app. Everything it touches crosses one of these lines.
 
 | External actor / service | Direction | What crosses | Notes |
 |---|---|---|---|
+| the operator's terminal | in / out | key presses, the painted screen | Textual; the only interactive surface |
+| the board file `board.json` (default `~/.taskboard/board.json`) | in / out | projects, tasks, settings | read at mount, written on every mutation (`Board.save`); a corrupt file is quarantined |
+| the board's `reports/` folder | out | presentation SVG/PNG, the HTML report | `views.present_paths`, `report.py` |
+| `history.jsonl` beside the board | out | the transition log | `history.py` |
+| a shared team folder (`team.json`, `user-*.json`) | in / out | team projects' tasks | `team_sync.py`; personal tasks never leave |
+| Microsoft Edge (headless) | out | the SVG to rasterise | `views.save_present_png`; absent → SVG only |
+| the clipboard | in | text, images | the editors' paste |
 
 ---
 
 ## 2 · Composition — the modules
 
-**The `paths` column is the mechanical part.** It is what makes this a map and not an essay: any touched
-file is classified by path prefix, so the A-family triggers can be evaluated by anyone, including a script.
-
 | Module | Paths it owns | What it encapsulates | What it EXPOSES | What does NOT belong to it |
 |---|---|---|---|---|
-| `<name>` | `src/<...>/**` | `<the one responsibility>` | `<public functions / classes / events>` | `<the temptations to resist>` |
+| `taskboard` (the shipped package) | `taskboard/**` | the whole application; its layers are the next table | `main`, `TaskboardApp` | tests, tooling, prototypes |
+| `tests` | `tests/**` | the suite | — | shipped code |
+| `tools` | `tools/**` | repo tooling (the privacy hook, sweeps) | — | shipped code |
+| `docs` | `docs/**` and the `*.md` files at the root | project documentation | — | code |
+| `dev-flow record` | `.dev-flow/**`, `.fast-dev-flow/**` | the batch records and their evidence | — | shipped code |
+| `prototypes` | `prototypes/**`, `_prototypes/**`, `_tui_prism_proposal/**` | throwaway prototype rounds and their captures | — | shipped code (nothing in `taskboard/` imports them) |
+| `packaging` | `.githooks/**`, `.github/**`, `.claude/**`, `.s19tool/**`, `build/**`, `taskboard.egg-info/**` and the root files `pyproject.toml`, `requirements.txt`, `.gitattributes`, `.gitignore`, `wezterm.lua`, `debug-*.log` | install, repo settings, local build output | — | code |
 
-**Staleness rule — the map checks itself.** A touched file that falls under **no** declared module means
-this map is out of date: **ARQ fires on its own** and the map is amended before requirements are derived.
-Silence is not an option here, because a stale map makes every A-family verdict meaningless.
+**The layers of `taskboard/**`** — one file belongs to exactly one layer. These are the units the A-family triggers count ("touches ≥2 modules" counts layers), and the dependency and interface tables below are written over them. They are listed by file because the package is flat; the glob above is the mechanical claim (`V8`).
 
-- **Every path in the tree is claimed by exactly one module.** Overlapping prefixes are a defect of this
-  document, not an ambiguity to be resolved case by case.
+| Layer | Files | What it encapsulates | What it EXPOSES | What does NOT belong to it |
+|---|---|---|---|---|
+| `models` | `models.py`, `history.py` | the board's data, its JSON (de)serialisation, its pure queries, the transition log | `Board`, `Project`, `Task`, `Board.load/save`, the query functions | any markup, any widget, any key |
+| `views` | `views.py`, `wave.py`, `ribbon.py` | every board render: pure functions from a `Board` (+ size, today, view state) to Rich markup / `Text` | `render_view`, `render_present`, the gantt/kanban/chainmap renderers, `legend_entries`, `help_usage`, the export writers | reading keys, mutating the board, Textual widgets |
+| `keymap` | `keymap.py` | the one key seat: every binding, the key bar, the palette list | `KEYMAP`, `Key`, `app_bindings`, `bar_keys`, `palette_commands`, `fit_bar`, `KeyBar` | actions themselves, help copy |
+| `modals` | `modals.py` | the modal screens (editors, pickers, help, standup) | `TaskModal`, `ProjectModal`, `HelpModal`, `CommandPalette`, … | the main screen, board persistence policy |
+| `app` | `app.py`, `__main__.py`, `__init__.py`, `taskboard.tcss` | the Textual application: actions, the undo stack, the screens it pushes (`PresentScreen`), saving after mutations | `TaskboardApp`, `PresentScreen`, `main` | rendering a board (that is `views`), declaring a key (that is `keymap`) |
+| `team_sync` | `team_sync.py` | the shared-folder push/pull | `TeamSync` (`foreign_tasks`, `probe_setup_health`, `sync_tone`) | the board's own file |
+| `report` | `report.py` | the HTML report | `build_report` | the presentation |
+
+**Staleness rule — the map checks itself.** A touched file that falls under **no** declared module means this map is out of date: **ARQ fires on its own** and the map is amended before requirements are derived.
+
+- **Every path in the tree is claimed by exactly one module.** Overlapping prefixes are a defect of this document, not an ambiguity to be resolved case by case.
 
 ---
 
@@ -56,9 +74,13 @@ Silence is not an option here, because a stale map makes every A-family verdict 
 
 | Module | Depends on | Forbidden direction | Why the ban exists |
 |---|---|---|---|
-
-*(The forbidden directions are the load-bearing part: they are what stops the graph becoming a mesh, and
-they are what makes lanes parallelisable at all.)*
+| `models` | — | `models` → anything in the package | the data layer is loadable and testable alone; `team_sync` and the report read it |
+| `views` | `models`, `team_sync` (`sync_tone` at module level, `probe_setup_health` function-local — the two import each other, one direction at function scope only) | `views` → `app`, `modals`, `keymap` | renders are pure functions; the oracle frames are byte-tested without an app |
+| `keymap` | `views` (colours) | `keymap` → `app`, `modals` | the seat is read by the app and the modals, never the reverse |
+| `modals` | `models`, `views`, `keymap` | `modals` → `app` at import time (a local import inside an action is tolerated: `HelpModal.action_map`) | the app pushes modals; a modal importing the app would cycle |
+| `app` | every module above | — | the top of the graph |
+| `team_sync` | `models`; `views.HEX` function-local only (`team_sync.py:48`, local to dodge the import cycle — tolerated like `modals` → `app`) | `team_sync` → `app`; `team_sync` → `views` at import time | it runs headless on a timer |
+| `report` | `models`, `views` | — | — |
 
 ---
 
@@ -66,40 +88,24 @@ they are what makes lanes parallelisable at all.)*
 
 | Interface | Owner module | Consumers | Shape | Frozen? |
 |---|---|---|---|---|
+| `board.json` task record | `models` | `team_sync` (pushes `Board._to_dict`, `team_sync.py:157`; pulls through `Task.from_dict`, `:221`, into `foreign_tasks` for the team views only — a pulled task never joins the board, so a teammate's `show_in_present` never hides anything in this board's presentation), every older/newer app version (unknown keys round-trip through `extra`) | one JSON object per task; optional keys omitted when at their default only where the model says so (`show_in_present`, batch 2026-10-16-batch-01) | no |
+| `Task` fields | `models` | `app` (`_on_task_edited` sets editor keys by name, `_UNDO_FIELDS`), `views`, `modals` | dataclass attributes | no |
+| `render_present(board, project_id, cursor_id, today, width, height) -> Text` | `views` | `app.PresentScreen` (paint, export) | a `height`×`width` `Text` | no |
+| `present_tasks(board, project_id)` / `present_hidden(board, project_id)` | `views` | `app.PresentScreen` (reads `[0]`) | `present_tasks` → `tuple[list[Task], list[Task]]` (shown open by due, shown all), `present_hidden` → `list[Task]`, gantt order | no |
+| `present_span_label(start, due) -> str` | `views` | `views.render_present`, tests | the field-row chip text | no |
+| `gantt_day_row(ax, today, echo, *, shade_weekends=True)` | `views` | `views` (the gantt view, the presentation) | list of cell markup + meta | no |
+| `KEYMAP`, `bar_keys`, `global_keys`, `palette_commands` | `keymap` | `app` (bindings), `modals.HelpModal`, `modals.CommandPalette` | tuples of `Key` | no |
+| `TaskModal` result dict | `modals` | `app._on_task_added` / `_on_task_edited` | `{field: value}` keyed by `Task` field names; `_on_task_added` pops `milestone`, `_on_task_edited` pops `archived`/`milestone`/`start_date`/`due_date` and routes `phase` through the board; every other key (the new `show_in_present` among them) is applied by `setattr` | no |
 
 - **Changing one of these is trigger A3** — it fires ARQ, PDR *and* DDR, and it is never done inside a lane.
-- A **frozen** interface is one the current batch committed to at PDR: no lane touches it; the work returns
-  to the trunk instead.
 
 ---
 
 ## 5 · Rationale — the decisions, and why
 
-IEEE 1016 requires this section, and it earns its place for one practical reason: **it is what stops a
-boundary being re-litigated every batch.** Record the decision, the alternative rejected, and what would
-have to become true for the decision to be re-opened.
-
-| # | Decision | Alternative rejected | What would re-open it |
-|---|---|---|---|
-
----
-
-## 6 · Parallelisation worksheet *(filled per batch, at ARQ)*
-
-Two increments are parallelisable when **`modules(A) ∩ modules(B) = { }`**, **or** when they touch the
-same domain on **different layers** (UI/UX vs functional) *and* the interface between them is frozen and
-neither lane touches it.
-
-| Lane | Modules | Layer | Files it owns | Disjoint from the others? |
-|---|---|---|---|---|
-
-If the intersection is **not** empty there are exactly two exits, and both are explicit decisions:
-
-1. **re-cut the increments**, or
-2. **move the module boundary — here, in this document**.
-
-The second is the one that actually prevents spaghetti; the first only routes around it for one batch.
-
-- ⚠ Same-domain lanes with an interface that is **not** frozen: that is not parallelism, it is a collision
-  with a delay — both lanes advance and meet the conflict at integration, the most expensive moment.
-- **This orders the CODE.** The order of *merit* — what goes first — still comes from the intake risk estimate.
+| Decision | Alternative rejected | Re-open when |
+|---|---|---|
+| renders live in `views` as pure functions over a `Board` | rendering inside widgets | a render needs live widget state it cannot take as an argument |
+| the key seat is one tuple (`KEYMAP`) and the help/bar/palette derive from it | per-screen binding lists | a screen needs a key the seat cannot express |
+| optional board keys are omitted at their default when byte-identity of existing boards matters | always writing every field (`asdict`) | a consumer needs the key present to tell "default" from "unknown" |
+| the presentation lives in `app` (`PresentScreen`) beside the main screen, not in `modals` | moving it to `modals` | `app.py` is split |

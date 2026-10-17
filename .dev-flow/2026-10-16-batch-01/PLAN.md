@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-16-batch-01 |
 | Objective | Present view v2: a date ruler (variant B) and start-end chips on the R field, a per-task persisted 'show in presentation' flag (space hides, a shows all), and the ? help modal's Keys band plus a pinned global-keys line |
-| Last updated | P0 · 2026-10-16 |
+| Last updated | P3 · 2026-10-16 |
 | Standing authorization | standing authorization — the operator's commission, 2026-10-16 (Spanish, quoted): «Que se guarde en la tarea, una bandera basta. … 2. Se ve mejor en acento … Arranca el batch» and «Ok, implementa la recomendación con los keys.» Verdict page `prototypes/present_rulers/present-rulers-prototype.html`: variant B + start–end chips + a persisted hide flag + the `?` legend fix. Read as: every gate of this batch is autonomous (the runtime cannot prompt; reviewer roles are spawned sub-agents); commits on the batch branch are authorized; **push is NOT authorized**; synthetic boards only; three increments as commissioned. |
 | First gate | step 1, before rollover, on the stale local `main` (`e017ade`): exit 1 — 33 block (32 × `V59` naming the untracked `prototypes/present_rulers/**` files, which are this batch's prototype evidence and enter increment 001's §2; 1 × `V10` on the closed batch-09 contract's IFC placeholder, a record the rollover retires) · 39 notice; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. After rollover on `origin/main`: 0 block · 59 notice. |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `64443beeb1c0a9921b4969262bfecfd75ae0137d`; local `main` (`e017ade`) shares NO merge-base with it (`git merge-base` empty; `198 ahead / 199 behind`) — origin was rewritten 2026-10-11 to scrub personal names (every author `username_subject`); `git diff --stat HEAD origin/main -- taskboard` empty. A rebase across unrelated histories is not possible, so the batch branches from the origin tip: `git switch -c present-v2 origin/main`; `base_ref` = `64443be`; local `main` untouched. RC-1 (b): no story is already shipped — `git grep -n "show_in_present\|present_span_label\|global_keys" origin/main` → no hit. RC-2: `git ls-remote --exit-code --heads origin` answered (newest commit 2026-10-11). Premises P-1..P-5: `01-requirements.md` §2.7, all TRUE with executed evidence. |
@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0 — the batch is open on branch `present-v2` from `origin/main`; triggers evaluated (ARQ, PDR, DDR taken up); next is the DoR and the commit of the seeded record, then ARQ.
+P3 — ARQ approved; P1 contract amended once (LED .4) after P2 iteration 1, minor amendments LED .5/.6 at the P2 gate; P2 approved (architect, ux, security approve; qa iterate on one minor, approved by the orchestrator); PDR sealed approved with conditions PC-1..PC-11. Increment 001 (ruler + chips) is next.
 
 ## Objective
 
