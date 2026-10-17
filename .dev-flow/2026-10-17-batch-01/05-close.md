@@ -27,19 +27,20 @@
 
 | Field | Value |
 |---|---|
-| Gate record | `<the validator command, the exit code THAT run printed, and 0 block · date>` |
-| Gated tree | `<the 40-hex HEAD at the gate · clean — or: dirty — the files>` |
-| Requirements canon | `<the canon path `artifact_homes.requirements_canon` declares — every id this batch's `01-requirements.md` declares as a heading is a token in it>` |
+| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" .` from the project root · exit 0 · 0 block · 40 notice · 2026-10-17 |
+| Gated tree | `28e99607c06b17c1e919f6ebd6fe1a70edc66b5e` · dirty — .dev-flow/2026-10-07-batch-08/evidence/inc001-brief.md, .dev-flow/2026-10-07-batch-09/evidence/inc001-brief.md, .dev-flow/BACKLOG.md, .gitattributes, .dev-flow/2026-10-07-batch-05/decisions-log.json, .dev-flow/2026-10-07-batch-06/decisions-log.json, .dev-flow/2026-10-07-batch-06/evidence/gen_verdict_sheet.py, .dev-flow/2026-10-07-batch-06/evidence/kanban-demo.json, .dev-flow/2026-10-07-batch-06/evidence/veredicto-batch06.html, .dev-flow/2026-10-07-batch-06/evidence/veredicto-board.json, .dev-flow/2026-10-07-batch-07/decisions-log.json, .dev-flow/2026-10-07-batch-08/decisions-log.json, .dev-flow/rollover_batchg.py, .dev-flow/rollover_batchh.py, .dev-flow/rollover_batchi.py, .dev-flow/rollover_batchj.py (the close record itself excluded) |
+| Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`) — `devflow-init.py --fold-canon`: 2 folded, 0 kept, 0 refused (HLR-1701, LLR-1701.1); the status cells of the five rows whose scale-label clauses HLR-1701 supersedes (HLR-105, LLR-101.10, LLR-102.2 of 2026-10-02-batch-01; LLR-1601.1, LLR-1602.2 of 2026-10-16-batch-01) rewritten by hand to name the superseded clause (code-review F-1; LED .1/.2) |
 
 ---
 
 ## 1 · What changed
 
-*(BLUF. What the user can now do that they could not before, and through which surface. Then the mechanism.)*
+The tick row's label no longer shows the axis scale (`Mondays · 1 day = 2 cells`) anywhere: in the gantt view (`3`, and link mode `L`) and in the presentation (`R`, and its `x` export) it names the selected task — `selected task ▸` in the echo's tone, the echo's own dates when they do not fit, `selected: no dates` for a dateless selection — and is blank with nothing selected. One function, `views._gantt_tick_label`, holds the rule for both views; `_gantt_scale_label` is deleted.
 
 | Requirement | Version | Verified by | Verdict |
 |---|---|---|---|
-| `R-NNN` | `vN` | `AT-NNN` · `TC-NNN` | |
+| `HLR-1701` | v1 (LED .1, amended .2, .3) | `AT-1701` · `TC-1701` | PASS (`suite-p4.txt`) |
+| `LLR-1701.1` | v1 (LED .1, amended .2, .3) | `TC-1701` (26 nodes; layer 0 `the_label_function_branches`); 19/19 mutants KILLED | PASS |
 
 ---
 
@@ -48,16 +49,14 @@
 | Control | What failure it closes | Measured origin |
 |---|---|---|
 
-**The four landings — record which ones actually happened. Command-but-not-template is *half-encoded*, and the missing half is the enforceable one:**
-
 | # | Landing | Done? | SHA / path |
 |---|---|---|---|
-| 1 | the **command** (`commands/…`) — the rule itself | | |
-| 2 | its **artifact** (a template section) — a control with no output degrades to "I thought about it" | | |
-| 3 | the **catalog** entry (`dev-flow-lessons`) with its measured origin | | |
-| 4 | **committed and pushed**, manifest re-hashed and bumped | | |
+| 1 | the **command** (`commands/…`) — the rule itself | n/a | no control minted |
+| 2 | its **artifact** (a template section) — a control with no output degrades to "I thought about it" | n/a | no control minted |
+| 3 | the **catalog** entry (`dev-flow-lessons`) with its measured origin | n/a | no control minted |
+| 4 | **committed and pushed**, manifest re-hashed and bumped | n/a | no control minted |
 
-- **New controls:** `<N control(s) minted → C-NN, C-NN | none — the reason this batch minted none>`
+- **New controls:** none — the one lesson this batch met (a grep census cannot see a test that measures a screen metric: the dead-cell law moved with the removed label) was caught by the existing C-39 pre-execution of the full suite, which is what that control is for; no new control is needed.
 
 ---
 
@@ -65,13 +64,21 @@
 
 | File | State | Evidence |
 |---|---|---|
-| `<path>` | ✅ committed **and landed** (PR / merge named; with no `origin` remote, the local branch and the no-origin premise) · 🗑️ deliberately reverted · 📋 left on purpose, path + remaining work in the backlog | |
+| `taskboard/views.py` | ✅ committed on the local branch `gantt-tick-label`, not pushed (push not authorized) | `63c9669` |
+| `tests/test_tick_label.py`, `tests/test_gantt.py`, `tests/test_gantt_board.py`, `tests/test_present_room.py`, `tests/test_present_rulers.py` | ✅ committed on `gantt-tick-label`, not pushed | `63c9669` |
+| `REQUIREMENTS.md` | ✅ committed on `gantt-tick-label`, not pushed | the deliverable commit (close step 6) |
+| `.dev-flow/state.json`, `.dev-flow/2026-10-16-batch-01/decisions-log.json` (the rollover archive) | ✅ committed on `gantt-tick-label`, not pushed | `3cde009`, then each later commit |
+| `.dev-flow/2026-10-17-batch-01/**` (contract, ledger, review, packet, validation, plan, evidence: transcripts, harnesses, captures) | ✅ committed on `gantt-tick-label`, not pushed | `3cde009`, `de9c4a2`, `63c9669`, the deliverable commit |
+| `.dev-flow/2026-10-17-batch-01/05-close.md`, `.dev-flow/BACKLOG.md` | ✅ committed on `gantt-tick-label`, not pushed | the close commit (close step 8) |
+| scratch `git worktree` (`…/scratchpad/probe`, detached at `3cde009`) | 🗑️ removed after the close (`git worktree remove`), outside the repository | the C-39 pre-execution and the mutation battery ran there |
 
 - **Found before the batch:** `.dev-flow/2026-10-07-batch-08/evidence/inc001-brief.md @ a751d73fdcddc239d01f02a2dfcb9ec042222110` `.dev-flow/2026-10-07-batch-09/evidence/inc001-brief.md @ 737b913e5559b8337969790137c4bda87fac2788` `.gitattributes @ 5650216ed19fb4d68b5ae282a0bd5042024dc222`
 
+Also found before the batch, untracked and left alone: `.dev-flow/2026-10-07-batch-0{5,6,7,8}/decisions-log.json`, `.dev-flow/2026-10-07-batch-06/evidence/{gen_verdict_sheet.py,kanban-demo.json,veredicto-batch06.html,veredicto-board.json}`, `.dev-flow/rollover_batch{g,h,i,j}.py`.
+
 ### Conditional-gate discharge
 
-- **Conditional-gate discharge:** `<N condition(s) · ✅ all discharged | N condition(s) · ⚠ M outstanding, named below | none — no gate closed conditionally>`
+- **Conditional-gate discharge:** none — no gate closed conditionally (P2 approved in iteration 2 with its minors folded in LED .3; QA2-1 was an implementation finding, discharged in increment 001: `tests/test_gantt.py:287`; P4 PASS-WITH-NOTES with three minor gaps, each accepted or routed).
 
 | Condition | Discharged? | The artifact line that proves it |
 |---|---|---|
@@ -82,6 +89,13 @@
 
 | Item | Move | Reference |
 |---|---|---|
+| the operator's visual verdict on the 80-column oracle frame (batch 2026-10-16-batch-01) | ✓ resolved — the operator's verdict «Ya vi las capturas, se ven todo en orden.», recorded asked at the gate | `BACKLOG.md` (marked at `3cde009`), PLAN §Key decisions, `decisions_log` |
+| the gantt view's own tick label (batch 2026-10-16-batch-01, code review F1) | ✓ done in this batch | `63c9669` |
+| the README hero image `docs/taskboard-gantt.svg` still shows `Mondays · 1 d/cell` | added (new lane) | LED .2 (Out of scope), 04-validation G-003, code review F-2 |
+| `views._present_ruler` repeats the gantt ruler's layout lines (batch-01 F3) | carried, narrowed: the label rule is now shared; the layout lines are not | `_gantt_tick_label` |
+| the operator's approval of `selected: no dates` | carried, widened: the text now also appears in the gantt view | HLR-1701 |
+| the 2 standup tests failing since the 2026-10-11 rewrite | carried, unchanged | `suite-p4.txt` |
+| `test_win_clipboard_roundtrip` environment failure | carried; it passed in both of this batch's full runs | `suite-001.txt`, `suite-p4.txt` |
 
 ---
 
@@ -91,18 +105,18 @@ Extract, do not invent: a key the artifacts did not record goes `null`, and the 
 
 ```yaml
 type: dev-flow-batch
-project: <str>
-batch_id: <str>
+project: taskboard
+batch_id: 2026-10-17-batch-01
 mode: core
-verdict: pass | iterate
-increments: <int>
-source_files_max: <int>          # highest source-file count in any one increment
-notices_raised: <int>            # distinct NOTICE ids declared in PLAN.md
-rework_returns: <int>            # items that came back, per QA's phase checklists
-triggers_fired: <str>            # e.g. "B1,B4,C3"
-tests_base_to_post: "<base> -> <post>"
-new_control: <str | none>
-open_items_next: <int>
+verdict: pass
+increments: 1
+source_files_max: 1              # increment 001 (taskboard/views.py)
+notices_raised: null             # PLAN.md declares NOTICEs as ranges and counts per gate, not one id per line
+rework_returns: 1                # P2 iterate-to-refine (iterations_per_station P1 = 1)
+triggers_fired: "B1,B3,B4,D1"
+tests_base_to_post: "2634 -> 2663"
+new_control: none
+open_items_next: 7               # the 2026-10-16-batch-01 lane (6 still open) + the 2026-10-17-batch-01 lane (1)
 ```
 
 ---
@@ -111,18 +125,11 @@ open_items_next: <int>
 
 | Artifact | Machine verdict (citation) | Human review | Depth | Deliberately NOT reviewed |
 |---|---|---|---|---|
-| `<one row per human-auditable artifact this batch produced>` | | | | |
+| batch 2026-10-16-batch-01's increment-004 captures (incl. `app-004-80x25-present-open.svg`) | — | ✅ the operator's verdict, 2026-10-17: «Ya vi las capturas, se ven todo en orden.» | `light` | |
+| `01-requirements.md` / ledger | P2 review (2 iterations), `V26` green | ❌ | `none — reviewed by the architect, qa and ux agents, not by a human` | |
+| Code (`taskboard/views.py`) and tests | code-reviewer PASS-with-notes, 0 HIGH; 19/19 mutants KILLED | ❌ | `none — agent review only` | not audited line by line |
+| `04-validation.md` | qa-reviewer PASS-WITH-NOTES | ❌ | `none` | |
+| the captures `evidence/captures/app-001-*.svg`, `app-001-118x31-gantt-selected.png` | TC-1701 asserts the painted text and tone; fills read from the SVG | ❌ | `none — produced for the operator's review, not yet seen` | |
 
-**A worked example — text to read, never rows of your record.** It sits in a fence so that
-nothing has to be deleted: a row copied out of it would claim a reading that did not happen.
-Write your own rows in the table above, one per artifact.
-
-```text
-| *(example)* `01-requirements.md` | gate §4 ✓ · `V26` green | ✅ | `rigorous` | |
-| *(example)* Test cases / ATs | `V37` 12/12 · mutants 9/9 KILLED | ✅ | `light` | the fixture matrix behind `AT-007` |
-| *(example)* Evidence view | `V41` — every cited file resolved | ❌ | `none — read the packet summaries instead` | |
-| *(example)* Code | gates + reviewer verdict `PASS` | ✅ | `spot-check` | not audited line by line |
-```
-
-- **Human perimeter:** `<what this flow does NOT cover and the operator owns — e.g. personnel selection, organisational environment, business judgement | none — why nothing lies outside>`
-- **Human review ledger:** `<human:NAME — N artifact(s) reviewed, M rigorous · K declared not-reviewed | none — why this batch recorded no human review>`
+- **Human perimeter:** the operator owns whether `selected task ▸` / `selected: no dates` read well in the gantt view (no user evaluation was done), the visual check of this batch's captures, whether to regenerate the README hero image, and the push/merge of `gantt-tick-label` (not authorized here).
+- **Human review ledger:** human:operator — 1 artifact(s) reviewed, 0 rigorous · 4 declared not-reviewed
