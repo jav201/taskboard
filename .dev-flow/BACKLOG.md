@@ -3,8 +3,9 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `adbcc38` (local HEAD == `origin/main` at batch 2026-10-07-batch-09's open)
-· **Last refresh:** 2026-10-08
+**Base ref:** `64443be` (`origin/main` at batch 2026-10-16-batch-01's open; the batch's commits sit on the local branch `present-v2`, not pushed — the commission forbids a push)
+· **Last refresh:** 2026-10-17 (2026-10-16-batch-01 close)
+**Status (2026-10-16-batch-01 close):** 2634 tests collected on `present-v2` (2632 passed in `suite-004.txt`; the P4 gate run: 2631 passed + the 2 pre-existing standup failures + 1 clipboard environment failure)
 **Status:** **2592 tests** (batch `2026-10-07-batch-09`, templates v3: scratch authoring — the `I`
 picker gains a leading `New template...` row (reserved id `__new__`, the house `L`-picker create-row
 pattern, not a template); choosing it opens the editor — ONE name field + ONE multi-line tasks
@@ -136,9 +137,15 @@ recorded full-suite run).
 
 ## Open — after `2026-10-16-batch-01` (present v2: ruler, chips, hide flag, `?` keys)
 
-- the operator's visual verdict on the 80-column oracle frame — `evidence/frames/PRES-R-80x24.txt` of batch `2026-10-16-batch-01`; only the 118×31 and 80×25 app frames were shown at the prototype round, never an 80×24 `render_b2` frame (owner: operator; opened at that batch's P2).
+- the operator's visual verdict on the 80-column oracle frame — `evidence/frames/PRES-R2-80x24.txt` of batch `2026-10-16-batch-01` (PRES-R2 since increment 004; PRES-R-80x24 is increment 001's evidence); only the 118×31 and 80×25 app frames were shown at the prototype round, never an 80×24 `render_b2` frame (owner: operator; opened at that batch's P2).
 - two standup tests fail on `origin/main` itself since the 2026-10-11 history rewrite: `tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable` and `::test_standup_flags_stale_member_in_over_tone` (the scrubbed fixture name no longer matches what the standup paints) — pre-existing at `base_ref` `64443be`, evidence `.dev-flow/2026-10-16-batch-01/evidence/preexisting-base-failures.txt`; not touched by that batch.
 - `views._present_ruler` repeats ~10 lines of the gantt view's ruler label/tail layout (`render_gantt`'s ruler block) — a shared helper would touch the gantt view's code; deferred cleanup (code review F3, increment 001).
+
+- the operator's approval or rejection of the tick-row label `selected: no dates` (dim) for a selected task with no dates — batch `2026-10-16-batch-01` increment 004 decided it (the verdict of 2026-10-17 named only the fits / does-not-fit / no-selection cases); LED-2026-10-16-batch-01.8, 04-validation G-006 (owner: operator).
+- option for the operator: the gantt view's own tick row (`views.py` `render_gantt`, ~line 3001) still shows the scale label (`Mondays · 1 day = 2 cells`) while a task is selected; the 2026-10-17 verdict covered the presentation only (increment 004 code review F1).
+- `tests/test_app.py::test_win_clipboard_roundtrip` failed at batch `2026-10-16-batch-01`'s P4 gate run and two re-runs in its setup guard (the machine-global clipboard refused `Set-Clipboard`); no batch change touches clipboard code; green in suite-001..004 — re-run the node when the clipboard is free (`evidence/p4-clipboard-env.txt`, 04-validation G-001).
+- doc-only cleanup: comments and docstrings that still name the superseded oracle or "hybrid" — `views.py` ~6023/6028/6273 (`render_present`'s docstring says PRES-R), `tests/test_present.py` ~75 and the `*_presc_frame_*` test names (04-validation G-005).
+- optional: the PNG export is asserted only as "file or the Edge toast", never its content (04-validation G-004); and `mutate.py` prints mutants truncated before the changed token (G-007).
 
 ## Open — after `2026-10-07-batch-09` (templates v3: scratch authoring)
 
