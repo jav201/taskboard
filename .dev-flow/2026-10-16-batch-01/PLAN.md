@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — ARQ approved; P1 contract amended once (LED .4) after P2 iteration 1, minor amendments LED .5/.6 at the P2 gate; P2 approved (architect, ux, security approve; qa iterate on one minor, approved by the orchestrator); PDR sealed approved with conditions PC-1..PC-11. Increment 001 (ruler + chips) is next.
+P3 — increments 001 (`ea002aa`), 002 (`d30aa8e`), 003 (`2292e63`) implemented, reviewed (code-reviewer PASS/PASS-with-notes, no HIGH) and committed; full suite 2625 passed + 2 pre-existing base failures. The session stopped at its context budget: `HANDOFF.md` names what is left (DDR, P4, P5 close).
 
 ## Objective
 
@@ -108,6 +108,8 @@ Make the presentation readable in time (ruler + chips), let the presenter leave 
 
 **P0 (after rollover):** 0 block · 59 notice — the step-3 placeholder NOTICEs (`V9`, `V27`, `V31`–`V34`, `V36`–`V38`, `V41`–`V51`, `V54`) over the unfilled seeds; `V25`/`V30` as tabled; historical NOTICEs over closed batches (`V13`, `V22`, `V23`, `V42`, `V53`) unchanged from batch-09.
 
+**P3 gates:** `V2` BLOCKed AT-1602/AT-1603 at increments 001/002 — the station-expected red for nodes owed by later increments (`commands/dev-flow.md` §Two-layer validation model), cleared at 003; `V9` NOTICEs at 4 source files (increment 002, reason declared in §2) and on the historical root-level packets; `V27` between each packet and its decision; `V56` none. **Gate at the end of P3: 0 block.**
+
 **Found before the batch:** `.gitattributes` (two evidence marks of batches 08/09 never committed) and, through it, `.dev-flow/2026-10-07-batch-0{8,9}/evidence/inc001-brief.md` read as modified (line endings only); untracked `.dev-flow/2026-10-07-batch-0{5..8}/decisions-log.json`, `.dev-flow/2026-10-07-batch-06/evidence/{gen_verdict_sheet.py,kanban-demo.json,veredicto-batch06.html,veredicto-board.json}`, `.dev-flow/rollover_batch{g,h,i,j}.py`. Not touched.
 
 ## Test ledger
@@ -115,3 +117,7 @@ Make the presentation readable in time (ruler + chips), let the presenter leave 
 | Suite / command | Last run | Result |
 |---|---|---|
 | `python -m pytest -q -p no:cacheprovider` (baseline, local `main` `e017ade`, source identical to `origin/main`) | 2026-10-16 | 2592 passed in 564.80s |
+| the same on `origin/main` `64443be` (test files differ by the name scrub) | 2026-10-16 | 2 standup tests fail on base (`evidence/preexisting-base-failures.txt`) |
+| full suite after increment 001 (`evidence/suite-001.txt`) | 2026-10-16 | 2 failed, 2603 passed |
+| full suite after increment 002 (`evidence/suite-002.txt`) | 2026-10-16 | 2 failed, 2616 passed |
+| full suite after increment 003 (`evidence/suite-003.txt`) | 2026-10-16 | 2 failed, 2625 passed |
