@@ -148,8 +148,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "P1",
@@ -244,6 +244,21 @@
       "station": "P2",
       "date": "2026-10-17",
       "decision": "standing authorization — P2 iteration 2: approve (architect, qa-reviewer, ux-reviewer all approve); minors folded in LED-2026-10-17-batch-01.3 and re-read; QA2-1 (the dead-cell law, tests/test_gantt.py:287) carried into increment 001 as an implementation finding; gate 0 block"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-17",
+      "decision": "standing authorization — P3 increment 001 (63c9669): _gantt_tick_label in both views, _gantt_scale_label deleted; AT-1701/TC-1701 30 nodes; RED 27 failed on base; 19/19 mutants killed; suite 2661 passed + 2 known standup failures; code-reviewer PASS-with-notes, 0 HIGH (F-3 fixed; F-1 to the close; F-2 out of scope; F-4 kept); gate 0 block"
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-17",
+      "decision": "standing authorization — P4 PASS-WITH-NOTES: the orchestrator's gate run on 63c9669 (suite-p4.txt) 2661 passed, 2 failed = the known standup pair; ledger 2634 - 1 + 30 = 2663 reconciles; qa-reviewer 10/11 rows, gaps G-001..G-003 all minor (the x key read at its producer; 60/48 and hide-all at renderer level; the README image out of scope)"
+    },
+    {
+      "station": "P5",
+      "date": "2026-10-17",
+      "decision": "standing authorization — P5 close batch: canon folded (HLR-1701, LLR-1701.1; 2 folded) and the five superseded rows' status cells updated; backlog reconciled (gantt tick label done, README image added, 80-column verdict resolved at P0); no new control; push not authorized, commits stay on gantt-tick-label"
     }
   ],
   "obsidian_synced": false,

@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-17-batch-01 |
 | Objective | Gantt tick label: remove the scale label (e.g. 'Mondays · 1 day = 2 cells') everywhere it is painted; the gantt view's tick-row label follows the presentation's rule (selected task ▸ / the echo's own text / selected: no dates / blank), and the presentation's no-selection fallback becomes blank |
-| Last updated | P4 · 2026-10-17 |
+| Last updated | P5 · 2026-10-17 |
 | Standing authorization | standing authorization — the operator's commission, 2026-10-17 (Spanish, quoted): «Es la etiqueta de Mondays y cells? Si es así, hay que quitarla. No agrega valor» — referring to the scale label `_gantt_scale_label(...)` (e.g. `Mondays · 1 day = 2 cells`) left of the tick row in the gantt view (`taskboard/views.py` ~3001–3006) and the presentation (`_present_ruler`, ~6222–6227). The coordinator relayed the commission with its decisions (scale label removed everywhere; the gantt view's tick label follows the presentation's rule; the presentation's no-cursor fallback becomes blank; `_gantt_scale_label` deleted if nothing else calls it; no prototype round). Read as: every gate of this batch is autonomous (the runtime cannot prompt; reviewer roles are spawned sub-agents); commits on the local branch `gantt-tick-label` are authorized; **push, merge, reset and force are NOT authorized**; synthetic boards only; at most 4 source files per increment. |
 | First gate | step 1, on `main` `d79a33e` before the branch: exit 0 — 0 block · 40 notice · 65 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 62 notice. |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `d79a33e51d2d7509a9ff5d64b9098027665d7d72` = local `main`; `git switch -c gantt-tick-label main`, `git rebase --autostash origin/main` → `up to date`; `base_ref` = `d79a33e`. RC-1 (b): not already shipped — `git grep -n "_gantt_scale_label" origin/main -- taskboard` → `views.py:2849` (def), `:3005` (the gantt view's tick label), `:6230` (the presentation's no-cursor fallback). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest `origin/main` commit 2026-10-17 09:09 -0600. Premises P-1..P-4: `01-requirements.md` §2.7. |
@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P4 — increment 001 implemented, reviewed (`code-reviewer` PASS-with-notes, 0 HIGH; F-3 fixed) and committed: `_gantt_tick_label` in both views, `_gantt_scale_label` deleted; RED on base 27 failed; 19/19 mutants killed; full suite 2 failed (known standup pair) / 2661 passed; captures under `evidence/captures/`. Next: the P4 gate run on the committed tree, the qa-reviewer's evaluation, then the close.
+Closed (P5, 2026-10-17) — increment 001 (`63c9669`) implemented, reviewed (code-reviewer PASS-with-notes, 0 HIGH) and committed; P4 PASS-WITH-NOTES on the gate run (2661 passed + the 2 known standup failures); the canon folded (HLR-1701, LLR-1701.1) and five superseded rows' status cells updated; the batch is closed on the local branch `gantt-tick-label`, not pushed (the commission forbids a push).
 
 ## Objective
 
@@ -62,7 +62,9 @@ The tick row's label never shows the scale text; in both views it names the sele
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-1701 | implemented | increment 001 · AT-1701 pass |
+| US-1701 | DONE | increment 001 · AT-1701 pass |
+| P4 | PASS-WITH-NOTES | `04-validation.md`, gate run `evidence/suite-p4.txt` |
+| P5 | closed | `05-close.md` |
 | P2 | approve | `02-review.md` (2 iterations) |
 
 ## Roadmap + increment plan
@@ -118,12 +120,15 @@ The tick row's label never shows the scale text; in both views it names the sele
 
 **P3 gate (increment 001):** 0 block · 47 notice — `V2` BLOCKed at P3 entry (AT-1701 had no node — the station-expected red, `commands/dev-flow.md` §Two-layer validation model), cleared when `tests/test_tick_label.py` landed; `V27` reads `increment 4` in the P0 verdict decision, which names batch 2026-10-16-batch-01's increment-004 captures, not a packet of this batch — declared, the decision's words are the operator's record; `V47`–`V51`, `V54` the validation and close placeholders (P4/P5 fill them); the historical NOTICEs (`V9` ×13 on older packets, `V13` ×8, `V22` ×5, `V23`, `V42` ×9, `V53`), `V30`. **Deviation:** `devflow-evidence.py --write` refused (`the evidence home is not marked -text`) because it reads only the root `.gitattributes`, which this batch may not touch; the home is marked by the nested `evidence/.gitattributes` (`git check-attr text` → `unset`) and the rows the script printed were pasted into the packet; `V41` re-hashed them.
 
+**P4 gate:** 0 block · 43 notice — as at P3 less the validation placeholders. **Close step 5 / final gate:** 0 block; `V57` (the `Gated tree` placeholder at step 5; at the final gate the record predates the tree by 1 commit) — both expected by the runbook; the historical NOTICEs (`V9`, `V13`, `V22`, `V23`, `V42`, `V53`), `V27` (the P0 decision naming batch-01's increment-004 captures), `V30`. Close step 9 (push) is `not-run`: the commission forbids a push; the commits stay on the local branch. `/dev-flow-sync`: `not-run` — no deployment record in a bundle install.
+
 **Found before the batch:** `.gitattributes`, `.dev-flow/2026-10-07-batch-0{8,9}/evidence/inc001-brief.md` (modified), untracked `.dev-flow/2026-10-07-batch-0{5..8}/decisions-log.json`, `.dev-flow/2026-10-07-batch-06/evidence/{gen_verdict_sheet.py,kanban-demo.json,veredicto-batch06.html,veredicto-board.json}`, `.dev-flow/rollover_batch{g,h,i,j}.py`. Not touched.
 
 ## Test ledger
 
 | Suite / command | Last run | Result |
 |---|---|---|
+| P4 gate run on `63c9669` (`evidence/suite-p4.txt`) | 2026-10-17 | 2 failed, 2661 passed in 513.70s — the known standup pair |
 | RED: `tests/test_tick_label.py` on the base source (`evidence/red-001.txt`) | 2026-10-17 | 27 failed, 3 passed |
 | full suite after increment 001 (`evidence/suite-001.txt`) | 2026-10-17 | 2 failed, 2661 passed — 2663 = 2634 − 1 + 30; the 2 failures are the known standup pair |
 | mutation battery (`evidence/mutation-001.txt`) | 2026-10-17 | 7 mutants, 19 arms, all KILLED |
