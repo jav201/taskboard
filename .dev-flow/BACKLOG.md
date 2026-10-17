@@ -137,7 +137,7 @@ recorded full-suite run).
 
 ## Open — after `2026-10-16-batch-01` (present v2: ruler, chips, hide flag, `?` keys)
 
-- the operator's visual verdict on the 80-column oracle frame — `evidence/frames/PRES-R2-80x24.txt` of batch `2026-10-16-batch-01` (PRES-R2 since increment 004; PRES-R-80x24 is increment 001's evidence); only the 118×31 and 80×25 app frames were shown at the prototype round, never an 80×24 `render_b2` frame (owner: operator; opened at that batch's P2).
+- ✓ resolved 2026-10-17 (recorded by batch `2026-10-17-batch-01`, PLAN §Key decisions and `decisions_log`, asked at the gate): the operator's visual verdict on the 80-column oracle frame — `evidence/frames/PRES-R2-80x24.txt` of batch `2026-10-16-batch-01`. The operator reviewed that batch's captures, `app-004-80x25-present-open.svg` included: «Ya vi las capturas, se ven todo en orden.» — the 80-column Present frame and the increment-004 captures are approved.
 - two standup tests fail on `origin/main` itself since the 2026-10-11 history rewrite: `tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable` and `::test_standup_flags_stale_member_in_over_tone` (the scrubbed fixture name no longer matches what the standup paints) — pre-existing at `base_ref` `64443be`, evidence `.dev-flow/2026-10-16-batch-01/evidence/preexisting-base-failures.txt`; not touched by that batch.
 - `views._present_ruler` repeats ~10 lines of the gantt view's ruler label/tail layout (`render_gantt`'s ruler block) — a shared helper would touch the gantt view's code; deferred cleanup (code review F3, increment 001).
 

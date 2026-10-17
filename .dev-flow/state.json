@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-16-batch-01",
-  "batch_objective": "Present view v2: a date ruler (variant B) and start-end chips on the R field, a per-task persisted 'show in presentation' flag (space hides, a shows all), and the ? help modal's Keys band plus a pinned global-keys line",
+  "batch_id": "2026-10-17-batch-01",
+  "batch_objective": "Gantt tick label: remove the scale label (e.g. 'Mondays · 1 day = 2 cells') everywhere it is painted; the gantt view's tick-row label follows the presentation's rule (selected task ▸ / the echo's own text / selected: no dates / blank), and the presentation's no-selection fallback becomes blank",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -139,49 +139,47 @@
       "to": "core",
       "date": "2026-10-16",
       "reason": "batch 2026-10-16-batch-01 opened by rollover from 2026-10-07-batch-09; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-17",
+      "reason": "batch 2026-10-17-batch-01 opened by rollover from 2026-10-16-batch-01; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "P0",
+  "phase_status": "not-started",
   "stations_active": [
     "P0",
-    "ARQ",
     "P1",
     "P2",
-    "PDR",
     "P3",
-    "DDR",
     "P4",
     "P5"
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 1,
+    "P1": 0,
     "P2": 0,
     "P3": 0,
     "P4": 0,
-    "P5": 0,
-    "ARQ": 0,
-    "DDR": 0,
-    "PDR": 0
+    "P5": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-16T19:06:06",
+    "evaluated_at": "2026-10-17T16:15:26",
     "fired": [
-      "A2",
-      "A3",
       "B1",
+      "B3",
       "B4",
-      "C8",
-      "D1",
-      "E1"
+      "D1"
     ],
     "not_fired": [
       "A1",
+      "A2",
+      "A3",
       "A4",
       "B2",
-      "B3",
       "C1",
       "C2",
       "C3",
@@ -189,109 +187,41 @@
       "C5",
       "C6",
       "C7",
+      "C8",
       "D2",
+      "E1",
       "E2",
       "E3",
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-16-batch-01/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-17-batch-01/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-16-batch-01/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-16-batch-01/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-16-batch-01/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-17-batch-01/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-17-batch-01/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-17-batch-01/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-16-batch-01/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-16-batch-01/evidence/",
+    "increments": "repo:.dev-flow/2026-10-17-batch-01/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-17-batch-01/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-16-batch-01.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-16-batch-01.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-16-batch-01/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-16-batch-01/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-17-batch-01.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-17-batch-01.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-17-batch-01/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-17-batch-01/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "64443beeb1c0a9921b4969262bfecfd75ae0137d",
+  "base_ref": "d79a33e51d2d7509a9ff5d64b9098027665d7d72",
   "artifacts": {},
   "decisions_log": [
     {
       "station": "P0",
-      "date": "2026-10-16",
-      "decision": "standing authorization — P0 closed under the operator's commission of 2026-10-16 (Arranca el batch): batch opened on present-v2 from origin/main, three stories READY, triggers A2/A3 fired so ARQ is next"
-    },
-    {
-      "station": "ARQ",
-      "date": "2026-10-16",
-      "decision": "standing authorization — ARQ module map approved under the 2026-10-16 commission after the architect's iterate (V8 glob blocker, team_sync/views edges, the show_in_present team decision, two interface shapes) was fixed in docs/ARCHITECTURE.md; V8 reads 16 modules, no orphan files; P1 is next"
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-16",
-      "decision": "standing authorization — P1 requirements approved under the 2026-10-16 commission: 3 US, 3 HLR, 7 LLR, 6 premises TRUE, IFC Part A two FLOW blocks, scan security_required false; P2 review is next"
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-16",
-      "decision": "standing authorization — P2 iteration 1: architect, qa-reviewer and ux-reviewer each returned iterate-to-refine (1 blocker A-1: the Keys band cannot be unscrolled at 80x24; majors QA-1..4, UX-1..3, A-2); requirement defects return to P1 for amendment, then a full P2 re-review"
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-16",
-      "decision": "standing authorization — P1 iteration 1 amendments approved under the 2026-10-16 commission (LED-2026-10-16-batch-01.4: 9 requirements amended per the P2 findings); the full P2 re-review is next"
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-16",
-      "decision": "standing authorization — P2 approved after one iterate-to-refine: iteration 2 architect approve, ux-reviewer approve, security-reviewer approve (2 LOW fixed, LED .6), qa-reviewer iterate on one minor catalog item fixed in LED .5 and approved by the orchestrator under the 2026-10-16 commission; PDR is next"
-    },
-    {
-      "station": "PDR",
-      "date": "2026-10-16",
-      "decision": "standing authorization — PDR-2026-10-16-batch-01 sealed approved with conditions (PC-1..PC-11, applied to the proposal, re-read at the DDR) under the 2026-10-16 commission; architect, qa-reviewer and ux-reviewer each approved with conditions; P3 is next"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-16",
-      "decision": "standing authorization — P3 increment 001 approved under the 2026-10-16 commission: ruler B + start-end chips in views.py (1 source file), PRES-R oracle written and cross-checked vs render_b2 (D1/D2/D3), 8/8 mutants killed, 16 nodes RED on base, code-reviewer 0 HIGH (F1/F2 fixed, F3 to backlog), full suite 2603 passed + 2 pre-existing base failures; increment 002 is next"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-16",
-      "decision": "standing authorization — P3 increment 002 approved under the 2026-10-16 commission: the persisted show-in-presentation flag across models/views/app/modals (4 source files, declared), 10/11 mutants killed + N7 equivalent (reviewer-verified), 12/13 new nodes RED on ea002aa, code-reviewer PASS with notes (3 LOW, all addressed), full suite 2616 passed + 2 pre-existing base failures; increment 003 is next"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-16",
-      "decision": "standing authorization — P3 increment 003 approved under the 2026-10-16 commission: the ? help Keys band (column-major, re-laid on resize) and the global keys docked outside the scroll, derived from KEYMAP (2 source files), 6/6 mutants killed, AT-1603 RED on d30aa8e, code-reviewer PASS with notes (F1/F3 fixed, F2 kept), full suite 2625 passed + 2 pre-existing base failures; the DDR is next"
-    },
-    {
-      "station": "P3",
       "date": "2026-10-17",
-      "decision": "asked at the gate — the operator's verdict on the P3 handoff (2026-10-17): (1) local main was reset to origin/main by the coordinator, with a backup branch (backup/main-pre-reset-2026-10-17); recorded, not done by this batch; (2) the tick-row label 'Mondays · 1 day = 2 cells' means nothing to a meeting audience and must be fixed — coordinator's decision: the label reads 'selected task ▸' (it names the thing whose dates are echoed, not the axis scale; 'cursor' is engineer jargon in a meeting), the echo's full text stays the fallback when it does not fit, the scale only with no cursor; (3) remove the ' — hybrid' title suffix and the in-frame keys row: both are visible to the room and reach the x export, the hint row below the frame carries the keys; (4) at 80x24 the ? Keys band scrolls and only the Global line is guaranteed — accepted, the operator runs the app larger. Items 2 and 3 become increment 004 (views.py only)"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-17",
-      "decision": "asked at the gate — P3 increment 004 approved under the operator's verdict of 2026-10-17: views.py only (1 source file) — tick label 'selected task ▸' in the echo's tone when the echo fits (echo text fallback kept, 'selected: no dates' for a dateless selection, the scale only with no selection), no ' — hybrid', no in-frame keys row; PRES-R2 frames (PRES-R kept as increment 001's evidence), TC-1608 (7 nodes), 10 RED on 8303045, 7/7 mutants killed, code-reviewer PASS with notes (F3/F4 fixed, F1 to backlog, F2 owed to the operator), full suite 2632 passed + 2 pre-existing base failures; the DDR is next"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P3 closed: increments 001-004 committed (ea002aa, d30aa8e, 2292e63, 8cd8dbd); DDR next"
-    },
-    {
-      "station": "DDR",
-      "date": "2026-10-17",
-      "decision": "standing authorization — DDR approved: architect approved (3 LOW notes), qa-reviewer approved with conditions on one MEDIUM (LLR-1601.2 still named the PRES-R frames) — applied as LED .9 and re-read, so no condition remains; PC-1..PC-11 discharged by re-reading the tests at 8cd8dbd; each AT in exactly one node; ledger 2592 -> 2634 collected reconciles; P4 next"
-    },
-    {
-      "station": "P4",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P4 PASS-WITH-NOTES: the orchestrator's gate run on 8cd8dbd (suite-p4.txt) 2631 passed, 3 failed = the 2 pre-existing standup failures + test_win_clipboard_roundtrip, an environment failure (the clipboard refused Set-Clipboard in the test's setup guard; no batch change touches clipboard code; not-run on 8cd8dbd, carried); qa-reviewer reconciled both layers: 11/11 requirements, every AT in one node, ledger 2592 -> 2634; gaps G-001..G-007 all minor"
+      "decision": "asked at the gate — the operator, 2026-10-17, on batch 2026-10-16-batch-01's captures (app-004-80x25-present-open.svg included), relayed by the coordinator: «Ya vi las capturas, se ven todo en orden.» — the 80-column Present frame and the increment-004 captures are approved; the backlog item 'the operator's visual verdict on the 80-column oracle frame (now PRES-R2)' is discharged and marked resolved in BACKLOG.md; batch-01's closed records are not edited"
     }
   ],
   "obsidian_synced": false,
-  "created_at": "2026-10-16T19:05:41.277546",
-  "resumption_note": "Batch 2026-10-16-batch-01 opened by rollover from 2026-10-07-batch-09 on 2026-10-16; see its PLAN.md."
+  "created_at": "2026-10-17T16:11:35.855642",
+  "resumption_note": "Batch 2026-10-17-batch-01 opened by rollover from 2026-10-16-batch-01 on 2026-10-17; see its PLAN.md."
 }
