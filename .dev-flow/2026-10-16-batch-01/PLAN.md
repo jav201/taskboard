@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P3 — increments 001 (`ea002aa`), 002 (`d30aa8e`), 003 (`2292e63`) implemented, reviewed (code-reviewer PASS/PASS-with-notes, no HIGH) and committed; full suite 2625 passed + 2 pre-existing base failures. The session stopped at its context budget: `HANDOFF.md` names what is left (DDR, P4, P5 close).
+P3 — increments 001 (`ea002aa`), 002 (`d30aa8e`), 003 (`2292e63`) and 004 (the operator's verdict on the handoff, 2026-10-17: tick label `selected task ▸`, no ` — hybrid`, no in-frame keys row) implemented, reviewed (code-reviewer PASS/PASS-with-notes, no HIGH) and committed; full suite 2632 passed + 2 pre-existing base failures. DDR, P4 and the P5 close follow.
 
 ## Objective
 
@@ -71,6 +71,7 @@ Make the presentation readable in time (ruler + chips), let the presenter leave 
 - 001 — ruler B + chips: `views.py`; new oracle frames; tests.
 - 002 — the flag: `models.py`, `app.py` (`PresentScreen`), `modals.py` (task editor), `views.py` (filter).
 - 003 — `?` Keys band + pinned global line: `modals.py`, `keymap.py`.
+- 004 — the operator's verdict on the handoff (2026-10-17): the tick label names the selected task; no ` — hybrid`, no in-frame keys row: `views.py`; PRES-R frames regenerated; TC-1608.
 
 ## Key decisions
 
@@ -85,10 +86,15 @@ Make the presentation readable in time (ruler + chips), let the presenter leave 
 | 2026-10-16 | hidden count in the hint row only | the frame is what the room sees and what `x` exports |
 | 2026-10-16 | `?`: Keys as a full-width grid band; globals pinned at the bottom, derived from `KEYMAP` | the 118×40 capture clipped the left-column block exactly at `R` and `S` |
 | 2026-10-16 | the oracle frames are re-captured into this batch's evidence; the batch-04 frames stay untouched | brief item 5 |
+| 2026-10-17 | local `main` reset to `origin/main` by the coordinator, backup branch `backup/main-pre-reset-2026-10-17` | the operator's verdict on the handoff, item 1 — recorded, not done by this batch |
+| 2026-10-17 | the tick row's label reads `selected task ▸` (echo tone, bold) when the echo fits; the echo's full text when it does not; the scale only with no selection | operator: «"Mondays · 1 day = 2 cells" means nothing to a meeting audience»; coordinator: the label names the thing whose dates are echoed, "cursor" is engineer jargon in a meeting |
+| 2026-10-17 | a selected task with no date: `selected: no dates` (dim) | orchestrator's decision — the verdict did not name the case; the label still names the selection and never shows the scale while one exists |
+| 2026-10-17 | the header drops ` — hybrid`; the in-frame keys row is removed | operator: both are visible to the room and reach the `x` export; the hint row below the frame carries the keys |
+| 2026-10-17 | at 80×24 the `?` Keys band scrolls; only the Global line is guaranteed unscrolled | operator: accepted — the app normally runs larger |
 
 ## Risks / watch-items
 
-- the re-captured oracle comes from the shipped renderer · medium · cross-checked row by row against the prototype's `render_b2` (`evidence/gen_frames.py`), the two known deltas named
+- the re-captured oracle comes from the shipped renderer · medium · cross-checked row by row against the prototype's `render_b2` (`evidence/gen_frames.py`); after increment 004 one delta remains (D3, the tick label)
 - the editor's measured chip-row thresholds (`TASK_CHIPS_ONE_ROW`) may move with a new checkbox · medium · place the box where the 80-column sweep holds; stop and report if no place does
 - the global line cannot be one line at 80 columns · certain · wraps at an entry boundary; named in LLR-1603.2
 
@@ -99,7 +105,7 @@ Make the presentation readable in time (ruler + chips), let the presenter leave 
 
 ## Out-of-scope carries
 
-- the header's ` — hybrid` suffix and the in-frame keys row (the prototype capture dropped them) stay as shipped — for the operator's verdict
+- ~~the header's ` — hybrid` suffix and the in-frame keys row~~ — resolved by the operator's verdict (2026-10-17), removed in increment 004
 - undo of the hide flag — not an undo step (declared)
 
 ## Gate notices and runtime absences
@@ -121,3 +127,4 @@ Make the presentation readable in time (ruler + chips), let the presenter leave 
 | full suite after increment 001 (`evidence/suite-001.txt`) | 2026-10-16 | 2 failed, 2603 passed |
 | full suite after increment 002 (`evidence/suite-002.txt`) | 2026-10-16 | 2 failed, 2616 passed |
 | full suite after increment 003 (`evidence/suite-003.txt`) | 2026-10-16 | 2 failed, 2625 passed |
+| full suite after increment 004 (`evidence/suite-004.txt`) | 2026-10-17 | 2 failed, 2632 passed |

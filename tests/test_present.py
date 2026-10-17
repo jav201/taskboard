@@ -6,7 +6,10 @@ The oracle was PRES-C (the operator's verdict 2026-10-07 on the prototype round)
 batch 2026-10-16-batch-01 (HLR-1601, LED-2026-10-16-batch-01.1) supersedes it with
 PRES-R — PRES-C plus the variant-B date ruler and the start–end chips — so the
 exact rows the shipped renderer must paint, byte-faithful at 118x30 and 80x24, are
-`.dev-flow/2026-10-16-batch-01/evidence/frames/PRES-R-*.txt` (written and
+`.dev-flow/2026-10-16-batch-01/evidence/frames/PRES-R2-*.txt` (PRES-R after the
+operator's verdict of 2026-10-17, increment 004: no ` — hybrid`, no in-frame keys
+row, the tick label `selected task ▸`; PRES-R stays on disk as increment 001's
+evidence; written and
 cross-checked against the approved prototype by that folder's `gen_frames.py`;
 the batch-04 PRES-C frames stay on disk untouched). The fixture is the PRES-C
 oracle board (`tests/present_board.py`), frozen on its own TODAY; the frames carry
@@ -73,15 +76,15 @@ def _plain(widget) -> str:
 # --------------------------------------------------------------------------- #
 def test_TC_1001_the_exact_presc_frame_at_118x30(tmp_path):
     """TC-1001 (LLR-1001.1): on the oracle board, the rendered frame at
-    118x30 equals PRES-R-118x30.txt, line for line."""
+    118x30 equals PRES-R2-118x30.txt, line for line."""
     b = pb.build(tmp_path / "board.json")
-    assert _render(b, 118, 30) == _frame("PRES-R-118x30.txt")
+    assert _render(b, 118, 30) == _frame("PRES-R2-118x30.txt")
 
 
 def test_TC_1002_the_exact_presc_frame_at_80x24(tmp_path):
-    """TC-1002 (LLR-1001.1): the same board at 80x24 equals PRES-R-80x24.txt."""
+    """TC-1002 (LLR-1001.1): the same board at 80x24 equals PRES-R2-80x24.txt."""
     b = pb.build(tmp_path / "board.json")
-    assert _render(b, 80, 24) == _frame("PRES-R-80x24.txt")
+    assert _render(b, 80, 24) == _frame("PRES-R2-80x24.txt")
 
 
 # --------------------------------------------------------------------------- #
@@ -108,7 +111,7 @@ def test_TC_1003_a_hostile_title_and_notes_render_escaped(tmp_path):
 # --------------------------------------------------------------------------- #
 def test_TC_1004_the_empty_boundaries_still_paint(tmp_path):
     """TC-1004 (HLR-1001, boundary): a project whose tasks are all done still
-    presents the project (header, span row, keys row — no task rows, no crash);
+    presents the project (header, ruler, span row — no task rows, no crash);
     a board with no visible projects paints the `no project to present` line."""
     b = pb.build(tmp_path / "board.json")
     for t in b.tasks:
@@ -132,7 +135,7 @@ def test_TC_1004_the_empty_boundaries_still_paint(tmp_path):
 async def test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle(
         tmp_path, monkeypatch, frozen):
     """AT-1001 (US-1001, HLR-1001): on the oracle board saved to disk,
-    pressing `R` paints the PRES-R-118x30 frame through the shipped surface;
+    pressing `R` paints the PRES-R2-118x30 frame through the shipped surface;
     moving the cursor expands another task's notes; `x` writes the SVG (+ the
     PNG where Microsoft Edge renders it); `esc` leaves without a trace — the
     board untouched (no save, same mtime) and no HTML report written. The
@@ -165,7 +168,7 @@ async def test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle(
         assert isinstance(app.screen, PresentScreen)
         frame = app.screen.query_one("#present-frame", Static)
         painted = _plain(frame).split("\n")
-        assert painted == _frame("PRES-R-118x30.txt")
+        assert painted == _frame("PRES-R2-118x30.txt")
         assert "The 500 is a missing tax-rate row" in "\n".join(painted)
 
         # the cursor moves and another task's notes expand

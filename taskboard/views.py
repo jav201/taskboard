@@ -6208,8 +6208,10 @@ def _present_ruler(proj: Project, board: Board, p: _PresentGeo,
     """The gantt view's two ruler rows re-seated in the present columns (label |
     gutter | field | space + chip blank): the month row with the project's due
     `◆` and `today <Wkd> <Mon D>` in the label; the tick row with the cursor
-    task's exact dates (`gantt_echo`), labelled with the echo's full text when it
-    did not fit in the field, else the scale. No weekend shading: the present
+    task's exact dates (`gantt_echo`), labelled `selected task ▸` — what the lit
+    dates belong to, in words a meeting reads — or with the echo's full text when
+    it did not fit in the field, `selected: no dates` when the task has none, and
+    with the scale only when there is no cursor. No weekend shading: the present
     field has none."""
     ax, today = p.ax, p.today
     marks: dict[int, tuple[str, str]] = {}
@@ -6219,9 +6221,11 @@ def _present_ruler(proj: Project, board: Board, p: _PresentGeo,
     mcells = gantt_month_row(ax, today, marks)
     dcells, meta = gantt_day_row(ax, today, echo, shade_weekends=False)
     mlabel = c(fit(f"today {today:%a} {_md(today)}", p.label_w - 1, "right") + " ", "accent")
-    if meta["echo_label"]:
-        dlabel = c(fit(meta["echo_label"] + " ▸", p.label_w - 1, "right") + " ",
-                   echo[1], bold=True)
+    if echo is not None:
+        text = meta["echo_label"] or "selected task"
+        dlabel = c(fit(text + " ▸", p.label_w - 1, "right") + " ", echo[1], bold=True)
+    elif cursor is not None:
+        dlabel = c(fit("selected: no dates", p.label_w - 1, "right") + " ", "dim")
     else:
         dlabel = c(fit(_gantt_scale_label(ax.k, meta["cadence"], p.label_w),
                        p.label_w - 1, "right") + " ", "dim")
@@ -6289,7 +6293,7 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         cursor = None
 
     title = (c("◆ PRESENT", "bright", bold=True) + c(" · ", "dim")
-             + c(escape(proj.name), proj.color, bold=True) + c(" — hybrid", "mut"))
+             + c(escape(proj.name), proj.color, bold=True))
     right = c(f"{open_n} open", "mut") + c(" · ", "dim") \
         + (c(f"▲{late} past due", "over", bold=True) if late else c(f"{done} done", "done"))
     lines = [header(title, right, width)]
@@ -6306,11 +6310,6 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
             note_w = width - 4
             for ln in _present_note_lines(t.notes, note_w, 3):
                 lines.append(_present_note_row(ln, width, note_w))
-
-    keys = " " + c("←", "bright", bold=True) + c("→", "bright", bold=True) \
-        + c("  move the cursor", "dim") + c(" · ", "dim") \
-        + c("the cursor'd task's notes expand", "dim")
-    lines.append(_pad(keys, width))
     return _present_finish(lines, height, width)
 
 

@@ -120,7 +120,38 @@ M003 = [
      [K + "test_TC_1606_the_band_re_lays_when_the_terminal_shrinks"]),
 ]
 
-BATTERIES = {"001": M001, "002": M002, "003": M003}
+Q = "tests/test_present_room.py::"
+M004 = [
+    ("Q1", "taskboard/views.py",
+     "    if echo is not None:\n        text = meta", "    if meta[\"echo_label\"]:\n        text = meta",
+     [Q + "test_TC_1608_the_tick_row_names_the_selected_task"]),
+    ("Q2", "taskboard/views.py",
+     'text = meta["echo_label"] or "selected task"', 'text = meta["echo_label"] or "cursor\'s dates"',
+     [Q + "test_TC_1608_the_tick_row_names_the_selected_task",
+      Q + "test_TC_1608_the_frame_and_its_export_hold_no_presenter_text"]),
+    ("Q3", "taskboard/views.py",
+     'p.label_w - 1, "right") + " ", echo[1], bold=True)',
+     'p.label_w - 1, "right") + " ", "dim", bold=True)',
+     [Q + "test_TC_1608_the_tick_row_names_the_selected_task"]),
+    ("Q4", "taskboard/views.py",
+     "    elif cursor is not None:\n", "    elif False:\n",
+     [Q + "test_TC_1608_no_selected_task_ever_gets_the_scale_label"]),
+    ("Q5", "taskboard/views.py",
+     " + c(escape(proj.name), proj.color, bold=True))",
+     " + c(escape(proj.name), proj.color, bold=True) + c(\" — hybrid\", \"mut\"))",
+     [Q + "test_TC_1608_the_frame_and_its_export_hold_no_presenter_text"]),
+    ("Q6", "taskboard/views.py",
+     "                lines.append(_present_note_row(ln, width, note_w))\n    return _present_finish",
+     "                lines.append(_present_note_row(ln, width, note_w))\n"
+     "    lines.append(_pad(\" ←→  move the cursor · the cursor'd task's notes expand\", width))\n"
+     "    return _present_finish",
+     [Q + "test_TC_1608_the_frame_and_its_export_hold_no_presenter_text"]),
+    ("Q7", "taskboard/views.py",
+     'text = meta["echo_label"] or "selected task"', 'text = "selected task"',
+     [Q + "test_TC_1608_an_echo_too_long_keeps_its_own_dates"]),
+]
+
+BATTERIES = {"001": M001, "002": M002, "003": M003, "004": M004}
 
 
 def sha(p: Path) -> str:

@@ -177,8 +177,9 @@ async def test_TC_1604_space_moves_the_cursor_and_the_ends_hold(tmp_path, monkey
     """TC-1604 (LLR-1602.2 c–i, k): `space` on `Fix checkout 500 error` hides it,
     saves once, and the cursor lands on the next task by due (`Optimize image
     assets`); hiding the LAST shown task moves the cursor up; with every task
-    hidden the frame keeps header, ruler, span row, separator and keys row and
-    paints no brief row; `space` then writes nothing; `a` brings every task back
+    hidden the frame keeps header, ruler, span row and separator and paints
+    nothing below them (no brief row; the keys live in the hint row,
+    increment 004); `space` then writes nothing; `a` brings every task back
     (one save) with a cursor; `a` with nothing hidden writes nothing and never
     opens the app's add-task editor; the frame never says `hidden`."""
     s = _Presenting(tmp_path, monkeypatch)
@@ -206,7 +207,7 @@ async def test_TC_1604_space_moves_the_cursor_and_the_ends_hold(tmp_path, monkey
         assert len(s.saves) == 5
         assert "Website Redesign" in frame[0] and "today Wed Sep 30" in frame[1]
         assert "WEBSITE REDESIGN" in frame[3] and frame[4].startswith("────")
-        assert "move the cursor" in frame[5]
+        assert frame[5].strip() == "", frame[5]
         assert "⟦" not in "\n".join(frame[4:]), "a brief row painted with every task hidden"
 
         await pilot.press("space")

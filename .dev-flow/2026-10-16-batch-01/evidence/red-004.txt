@@ -1,0 +1,16 @@
+# RED counterfactual, increment 004: tests/test_present_room.py + the repinned PRES-R frames run against taskboard/views.py at 8303045 (the batch's last commit before the increment)
+# working views.py sha256 before swap: 42181496e6d0148959a4faa9b7ebda940ff0a005d6c7a58c5b8bb1cb24127294
+$ python -m pytest -q -p no:cacheprovider tests/test_present_room.py tests/test_present.py tests/test_present_hide.py
+FAILED tests/test_present_room.py::test_TC_1608_the_frame_and_its_export_hold_no_presenter_text[118-30]
+FAILED tests/test_present_room.py::test_TC_1608_the_frame_and_its_export_hold_no_presenter_text[80-24]
+FAILED tests/test_present_room.py::test_TC_1608_the_tick_row_names_the_selected_task[118-30]
+FAILED tests/test_present_room.py::test_TC_1608_the_tick_row_names_the_selected_task[80-24]
+FAILED tests/test_present_room.py::test_TC_1608_no_selected_task_ever_gets_the_scale_label[118-30]
+FAILED tests/test_present_room.py::test_TC_1608_no_selected_task_ever_gets_the_scale_label[80-24]
+FAILED tests/test_present.py::test_TC_1001_the_exact_presc_frame_at_118x30 - ...
+FAILED tests/test_present.py::test_TC_1002_the_exact_presc_frame_at_80x24 - A...
+FAILED tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle
+FAILED tests/test_present_hide.py::test_TC_1604_space_moves_the_cursor_and_the_ends_hold
+10 failed, 15 passed in 17.81s
+# restored views.py sha256: 42181496e6d0148959a4faa9b7ebda940ff0a005d6c7a58c5b8bb1cb24127294
+# restore verified

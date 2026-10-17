@@ -1,4 +1,7 @@
-"""The PRES-R oracle frames (batch 2026-10-16-batch-01) and their cross-check.
+"""The PRES-R2 oracle frames (batch 2026-10-16-batch-01, increment 004) and their cross-check.
+
+Increment 001 wrote PRES-R-*.txt (kept on disk as its evidence); increment 004
+writes PRES-R2-*.txt, the frame after the operator's verdict of 2026-10-17.
 
     python .dev-flow/2026-10-16-batch-01/evidence/gen_frames.py           # cross-check only
     python .dev-flow/2026-10-16-batch-01/evidence/gen_frames.py --write   # (re)write the frames
@@ -9,13 +12,13 @@ Because they come from the shipped renderer, every row is cross-checked against 
 APPROVED prototype's renderer, `render_b2` in `prototypes/present_rulers/app_capture.py`
 (variant B + start-end chips, the operator's verdict of 2026-10-16), at both sizes.
 
-Criterion: every row equal, except the three declared deltas —
-  D1 row 0, the header: the shipped title keeps its ` — hybrid` suffix;
-  D2 the shipped in-frame keys row (`←→  move the cursor · ...`), absent in render_b2,
-     which shifts nothing above it (it is the last content row);
-  D3 row 2's LABEL column only (the first label_w cells): the commission (decision 1)
-     labels the tick row with the scale unless the echo did not fit in the field;
-     render_b2 wrote `cursor's dates ▸` there. The field and chip cells must match.
+Criterion: every row equal, except one declared delta —
+  D3 row 2's LABEL column only (the first label_w cells): the shipped tick row reads
+     `selected task ▸` (the operator's verdict of 2026-10-17, increment 004) where
+     render_b2 wrote `cursor's dates ▸`. The field and chip cells must match.
+Increment 004 retired the former deltas D1 (the header's ` — hybrid` suffix) and D2
+(the in-frame keys row): the shipped frame no longer carries either, so those rows
+now match the prototype byte for byte.
 Exit 0 when the criterion holds (and, with --write, the frames are written), else 1.
 """
 from __future__ import annotations
@@ -35,7 +38,6 @@ from taskboard import views  # noqa: E402
 
 FRAMES = HERE / "frames"
 SIZES = [(118, 30), (80, 24)]
-KEYS_ROW = " ←→  move the cursor · the cursor'd task's notes expand"
 
 
 def shipped(board, w: int, h: int) -> list[str]:
@@ -48,19 +50,14 @@ def prototype(board, w: int, h: int) -> list[str]:
 
 
 def crosscheck(ship: list[str], proto: list[str], label_w: int) -> list[str]:
-    """The rows that differ beyond D1/D2/D3, as readable lines; empty = criterion holds."""
+    """The rows that differ beyond D3, as readable lines; empty = criterion holds."""
     bad = []
-    body = [r for r in ship if r.rstrip() != KEYS_ROW.rstrip()]          # D2
-    removed = len(ship) - len(body)
-    if removed != 1:
-        bad.append(f"D2: expected exactly one in-frame keys row, found {removed}")
-    body += [" " * len(ship[0])] * removed                               # the pad it displaced
-    for i, (a, b) in enumerate(zip(body, proto)):
-        if i == 0:                                                       # D1
-            if a.replace(" — hybrid", "", 1).split() != b.split():
-                bad.append(f"row 0 differs beyond D1:\n  shipped {a!r}\n  proto   {b!r}")
-            continue
+    if len(ship) != len(proto):
+        bad.append(f"row count: shipped {len(ship)}, proto {len(proto)}")
+    for i, (a, b) in enumerate(zip(ship, proto)):
         if i == 2:                                                       # D3
+            if a[:label_w].strip() != "selected task ▸":
+                bad.append(f"row 2 label: {a[:label_w]!r}")
             a, b = a[label_w:], b[label_w:]
         if a != b:
             bad.append(f"row {i}:\n  shipped {a!r}\n  proto   {b!r}")
@@ -74,13 +71,13 @@ def main(argv: list[str]) -> int:
         ship, proto = shipped(board, w, h), prototype(board, w, h)
         bad = crosscheck(ship, proto, views._present_cols(w, w >= 100)[0])
         print(f"{w}x{h}: {len(ship)} rows · cross-check vs render_b2: "
-              + ("HOLDS (deltas D1, D2, D3 only)" if not bad else f"FAILS ({len(bad)})"))
+              + ("HOLDS (delta D3 only)" if not bad else f"FAILS ({len(bad)})"))
         for line in bad:
             print("  " + line)
         ok = ok and not bad
         if "--write" in argv and not bad:
             FRAMES.mkdir(parents=True, exist_ok=True)
-            out = FRAMES / f"PRES-R-{w}x{h}.txt"
+            out = FRAMES / f"PRES-R2-{w}x{h}.txt"
             out.write_text("\n".join(ship) + "\n", encoding="utf-8", newline="\n")
             print(f"  wrote {out.relative_to(ROOT).as_posix()}")
     return 0 if ok else 1

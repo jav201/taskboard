@@ -264,6 +264,16 @@
       "station": "P3",
       "date": "2026-10-16",
       "decision": "standing authorization — P3 increment 003 approved under the 2026-10-16 commission: the ? help Keys band (column-major, re-laid on resize) and the global keys docked outside the scroll, derived from KEYMAP (2 source files), 6/6 mutants killed, AT-1603 RED on d30aa8e, code-reviewer PASS with notes (F1/F3 fixed, F2 kept), full suite 2625 passed + 2 pre-existing base failures; the DDR is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-17",
+      "decision": "asked at the gate — the operator's verdict on the P3 handoff (2026-10-17): (1) local main was reset to origin/main by the coordinator, with a backup branch (backup/main-pre-reset-2026-10-17); recorded, not done by this batch; (2) the tick-row label 'Mondays · 1 day = 2 cells' means nothing to a meeting audience and must be fixed — coordinator's decision: the label reads 'selected task ▸' (it names the thing whose dates are echoed, not the axis scale; 'cursor' is engineer jargon in a meeting), the echo's full text stays the fallback when it does not fit, the scale only with no cursor; (3) remove the ' — hybrid' title suffix and the in-frame keys row: both are visible to the room and reach the x export, the hint row below the frame carries the keys; (4) at 80x24 the ? Keys band scrolls and only the Global line is guaranteed — accepted, the operator runs the app larger. Items 2 and 3 become increment 004 (views.py only)"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-17",
+      "decision": "asked at the gate — P3 increment 004 approved under the operator's verdict of 2026-10-17: views.py only (1 source file) — tick label 'selected task ▸' in the echo's tone when the echo fits (echo text fallback kept, 'selected: no dates' for a dateless selection, the scale only with no selection), no ' — hybrid', no in-frame keys row; PRES-R2 frames (PRES-R kept as increment 001's evidence), TC-1608 (7 nodes), 10 RED on 8303045, 7/7 mutants killed, code-reviewer PASS with notes (F3/F4 fixed, F1 to backlog, F2 owed to the operator), full suite 2632 passed + 2 pre-existing base failures; the DDR is next"
     }
   ],
   "obsidian_synced": false,
