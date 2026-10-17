@@ -1,0 +1,5 @@
+Pre-existing on base_ref 64443be (taskboard/views.py at base, all other files at base too: git status shows no other source change):
+FAILED tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable
+FAILED tests/test_team_views.py::test_standup_flags_stale_member_in_over_tone
+2 failed, 251 passed in 2.68s
+restore sha256 4d55119a4e726910c7672911c07cfba16578ee5c17037d727271f309ea76def1 matches=yes

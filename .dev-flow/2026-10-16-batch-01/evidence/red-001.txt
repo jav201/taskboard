@@ -1,0 +1,20 @@
+RED on base: tests of increment 001 against taskboard/views.py at base_ref 64443be
+        """TC-1602 (LLR-1601.2): over once the due has passed, dim with no dates, mut
+FAILED tests/test_present_rulers.py::test_TC_1601_the_ruler_rows_their_colours_and_no_weekend
+FAILED tests/test_present_rulers.py::test_TC_1601_an_echo_too_long_for_the_field_moves_to_the_label
+FAILED tests/test_present_rulers.py::test_TC_1601_a_project_with_no_open_task_still_paints_its_ruler
+FAILED tests/test_present_rulers.py::test_TC_1602_the_span_label_cases[start0-due0-Sep 24\u201328]
+FAILED tests/test_present_rulers.py::test_TC_1602_the_span_label_cases[start1-due1-Aug 21\u2013Oct 10]
+FAILED tests/test_present_rulers.py::test_TC_1602_the_span_label_cases[start2-due2-Dec 28\u2013Jan 3]
+FAILED tests/test_present_rulers.py::test_TC_1602_the_span_label_cases[None-due3-due Oct 14]
+FAILED tests/test_present_rulers.py::test_TC_1602_the_span_label_cases[start4-due4-Oct 6]
+FAILED tests/test_present_rulers.py::test_TC_1602_the_span_label_cases[start5-None-from Sep 3]
+FAILED tests/test_present_rulers.py::test_TC_1602_the_span_label_cases[None-None-no dates]
+FAILED tests/test_present_rulers.py::test_TC_1602_the_chip_tones_and_an_unparseable_date
+FAILED tests/test_present_rulers.py::test_TC_1602_the_oracle_boards_chips_whole_at_both_sizes
+FAILED tests/test_present_rulers.py::test_AT_1601_R_paints_the_ruler_and_the_dates_follow_the_cursor
+FAILED tests/test_present.py::test_TC_1001_the_exact_presc_frame_at_118x30 - ...
+FAILED tests/test_present.py::test_TC_1002_the_exact_presc_frame_at_80x24 - A...
+FAILED tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle
+16 failed, 2 passed in 4.44s
+restore sha256 fdfc82532dfabc6728aa363814c90014befab53c2780cc663ec0a51ac141b5bc (matches: yes)

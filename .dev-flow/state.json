@@ -249,6 +249,11 @@
       "station": "PDR",
       "date": "2026-10-16",
       "decision": "standing authorization — PDR-2026-10-16-batch-01 sealed approved with conditions (PC-1..PC-11, applied to the proposal, re-read at the DDR) under the 2026-10-16 commission; architect, qa-reviewer and ux-reviewer each approved with conditions; P3 is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-16",
+      "decision": "standing authorization — P3 increment 001 approved under the 2026-10-16 commission: ruler B + start-end chips in views.py (1 source file), PRES-R oracle written and cross-checked vs render_b2 (D1/D2/D3), 8/8 mutants killed, 16 nodes RED on base, code-reviewer 0 HIGH (F1/F2 fixed, F3 to backlog), full suite 2603 passed + 2 pre-existing base failures; increment 002 is next"
     }
   ],
   "obsidian_synced": false,

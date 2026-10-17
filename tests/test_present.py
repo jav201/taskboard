@@ -2,11 +2,15 @@
 
 HLR-1001 / LLR-1001.1 · TC-1001, TC-1002, TC-1003, TC-1004 · AT-1001.
 
-The oracle is PRES-C (the operator's verdict 2026-10-07 on the prototype round):
-the exact rows the shipped renderer must paint, byte-faithful at 118x30 and
-80x24, are `.dev-flow/2026-10-07-batch-04/evidence/frames/PRES-C-*.txt`. The
-fixture is the PRES-C oracle board (`tests/present_board.py`), frozen on its own
-TODAY; the frames carry the `tw3` cursor and its notes expansion.
+The oracle was PRES-C (the operator's verdict 2026-10-07 on the prototype round);
+batch 2026-10-16-batch-01 (HLR-1601, LED-2026-10-16-batch-01.1) supersedes it with
+PRES-R — PRES-C plus the variant-B date ruler and the start–end chips — so the
+exact rows the shipped renderer must paint, byte-faithful at 118x30 and 80x24, are
+`.dev-flow/2026-10-16-batch-01/evidence/frames/PRES-R-*.txt` (written and
+cross-checked against the approved prototype by that folder's `gen_frames.py`;
+the batch-04 PRES-C frames stay on disk untouched). The fixture is the PRES-C
+oracle board (`tests/present_board.py`), frozen on its own TODAY; the frames carry
+the `tw3` cursor and its notes expansion.
 
 RED on the base tree: `views.render_present` does not exist yet (the renderer
 landed in this batch's increment 001).
@@ -23,7 +27,7 @@ from taskboard import views
 from taskboard.models import Board
 
 ROOT = Path(__file__).resolve().parents[1]
-FRAMES = ROOT / ".dev-flow" / "2026-10-07-batch-04" / "evidence" / "frames"
+FRAMES = ROOT / ".dev-flow" / "2026-10-16-batch-01" / "evidence" / "frames"
 
 
 class _Today(date):
@@ -47,7 +51,7 @@ def frozen(monkeypatch):
 
 
 def _frame(name: str) -> list[str]:
-    """The oracle rows, universal-newline split (the frames ship CRLF)."""
+    """The oracle rows, universal-newline split."""
     return (FRAMES / name).read_text(encoding="utf-8").splitlines()
 
 
@@ -65,19 +69,19 @@ def _plain(widget) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# TC-1001 / TC-1002 — the exact PRES-C rows at both operator sizes
+# TC-1001 / TC-1002 — the exact PRES-R rows at both operator sizes
 # --------------------------------------------------------------------------- #
 def test_TC_1001_the_exact_presc_frame_at_118x30(tmp_path):
     """TC-1001 (LLR-1001.1): on the oracle board, the rendered frame at
-    118x30 equals PRES-C-118x30.txt, line for line."""
+    118x30 equals PRES-R-118x30.txt, line for line."""
     b = pb.build(tmp_path / "board.json")
-    assert _render(b, 118, 30) == _frame("PRES-C-118x30.txt")
+    assert _render(b, 118, 30) == _frame("PRES-R-118x30.txt")
 
 
 def test_TC_1002_the_exact_presc_frame_at_80x24(tmp_path):
-    """TC-1002 (LLR-1001.1): the same board at 80x24 equals PRES-C-80x24.txt."""
+    """TC-1002 (LLR-1001.1): the same board at 80x24 equals PRES-R-80x24.txt."""
     b = pb.build(tmp_path / "board.json")
-    assert _render(b, 80, 24) == _frame("PRES-C-80x24.txt")
+    assert _render(b, 80, 24) == _frame("PRES-R-80x24.txt")
 
 
 # --------------------------------------------------------------------------- #
@@ -128,7 +132,7 @@ def test_TC_1004_the_empty_boundaries_still_paint(tmp_path):
 async def test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle(
         tmp_path, monkeypatch, frozen):
     """AT-1001 (US-1001, HLR-1001): on the oracle board saved to disk,
-    pressing `R` paints the PRES-C-118x30 frame through the shipped surface;
+    pressing `R` paints the PRES-R-118x30 frame through the shipped surface;
     moving the cursor expands another task's notes; `x` writes the SVG (+ the
     PNG where Microsoft Edge renders it); `esc` leaves without a trace — the
     board untouched (no save, same mtime) and no HTML report written. The
@@ -158,7 +162,7 @@ async def test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle(
         assert isinstance(app.screen, PresentScreen)
         frame = app.screen.query_one("#present-frame", Static)
         painted = _plain(frame).split("\n")
-        assert painted == _frame("PRES-C-118x30.txt")
+        assert painted == _frame("PRES-R-118x30.txt")
         assert "The 500 is a missing tax-rate row" in "\n".join(painted)
 
         # the cursor moves and another task's notes expand

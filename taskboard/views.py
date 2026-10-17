@@ -2724,12 +2724,14 @@ def _ruler_cell(ch: str, key: str, bold: bool = False, reverse: bool = False) ->
     return f"[{style}]{escape(ch)}[/]"
 
 
-def gantt_day_row(ax: GanttAxis, today: date, echo) -> tuple[list[str], dict]:
+def gantt_day_row(ax: GanttAxis, today: date, echo, *,
+                  shade_weekends: bool = True) -> tuple[list[str], dict]:
     """The day row's field cells (markup, one per cell) and what was placed.
 
     Layers, in order: the echo, then each tick where it and one blank either
     side are free (a tick ends on its own cell at the right edge), then the
-    today rule where today's column is still blank — or today's tick, lit."""
+    today rule where today's column is still blank — or today's tick, lit.
+    The presentation passes `shade_weekends=False`: its field shades none."""
     w = ax.w
     glyph: list = [None] * w
     owner = [""] * w
@@ -2785,7 +2787,7 @@ def gantt_day_row(ax: GanttAxis, today: date, echo) -> tuple[list[str], dict]:
         else:
             ch, key, bold = glyph[x]
             m = _ruler_cell(ch, key, bold)
-        out.append(_on_weekend(m) if x in weekends else m)
+        out.append(_on_weekend(m) if shade_weekends and x in weekends else m)
     return out, meta
 
 
@@ -6021,12 +6023,15 @@ def _chainmap_nav(board: Board, show_archived: bool) -> list[list[str]]:
 # presentation (PRES-C): the hybrid — gantt field on top, brief blocks below
 # ---------------------------------------------------------------------------
 # `R` opens the presentation of the selected task's project (the focused project
-# when set). It is read-only: it draws the project, it never writes the board.
-# The layout is byte-faithful to the PRES-C oracle frames (prototypes/present_e),
-# which is why the composition here matches the prototype's renderer exactly: the
-# same label/chip/field split, the same `⟦━⟧` cursor, the same budget (accent =
-# the cursor only; today = bright). S1: every untrusted string is escaped and
-# clipped before it enters markup; every row is exactly `width` cells.
+# when set). The renderer only draws; it never writes the board.
+# The layout is byte-faithful to the oracle frames of batch 2026-10-16-batch-01
+# (`PRES-R-*`, the PRES-C frames of batch 2026-10-07-batch-04 plus the variant-B
+# ruler and the start–end chips of prototypes/present_rulers): the label/chip/
+# field split, the `⟦━⟧` cursor (bright in the field), the gantt view's own
+# two-row ruler above the span row (today accent, as in the gantt view — the
+# operator's verdict; the field's today rule stays bright). S1: every untrusted
+# string is escaped and clipped before it enters markup; every row is exactly
+# `width` cells.
 
 class _PresentGeo(NamedTuple):
     width: int
@@ -6062,9 +6067,10 @@ def present_tasks(board: Board, project_id: str | None) -> tuple[list[Task], lis
 
 
 def _present_cols(width: int, wide: bool) -> tuple[int, int, int]:
-    """label + gutter + field + space + chip == width (room-sized chips)."""
-    label_w = 32 if wide else 22
-    chip_w = 11 if wide else 9
+    """label + gutter + field + space + chip == width. The chip is 13 at every
+    width: `Aug 21–Oct 10` is 13 (12 clipped it at 80)."""
+    label_w = 30 if wide else 20
+    chip_w = 13
     field_w = width - label_w - 1 - 1 - chip_w
     return label_w, chip_w, field_w
 
@@ -6084,7 +6090,8 @@ def _present_axis(board: Board, proj: Project, open_t: list[Task],
 def _present_field(cells: list[tuple[str, str]], ax: GanttAxis) -> str:
     """Cells to markup over the field's own ground. The ONE change from the
     shipped `_gantt_field`: the today rule is `bright` bold, NOT accent — the
-    C-2b budget reserves accent for the cursor alone."""
+    field keeps the C-2b budget (the ruler above it lights today accent, as the
+    gantt view does: the operator's verdict of 2026-10-16)."""
     guides = ax.guides()
     out = []
     for x, (glyph, tone) in enumerate(cells):
@@ -6100,22 +6107,32 @@ def _present_field(cells: list[tuple[str, str]], ax: GanttAxis) -> str:
     return "".join(out)
 
 
-def _present_chip(due_iso: str | None, today: date, width: int, wide: bool) -> str:
-    """A room-sized due chip: the date AND the distance (`Oct 10 +10d`)."""
-    d = parse_iso(due_iso)
-    if width <= 0:
-        return ""
-    if d is None:
-        lab, tone = "no due", "dim"
-    elif d < today:
-        n = (today - d).days
-        lab, tone = (f"{_md(d)} ▲{n}d" if wide else f"▲{n}d"), "over"
-    elif d == today:
-        lab, tone = "due today", "soon"
+def present_span_label(start: date | None, due: date | None) -> str:
+    """Both dates of a field row, no arithmetic for the room: `Sep 24–28`,
+    `Aug 21–Oct 10` (across months, and across years with no year), `due Oct 14`
+    (no start), `Oct 6` (start == due), `from Sep 3` (no due), `no dates`."""
+    if due is None:
+        return f"from {_md(start)}" if start else "no dates"
+    if start is None:
+        return f"due {_md(due)}"
+    if start == due:
+        return _md(due)
+    if (start.year, start.month) == (due.year, due.month):
+        return f"{_md(start)}–{due.day}"
+    return f"{_md(start)}–{_md(due)}"
+
+
+def _present_chip(start_iso: str | None, due_iso: str | None, today: date,
+                  width: int) -> str:
+    """The field row's chip: its start–end, `over` once the due has passed."""
+    s, d = parse_iso(start_iso), parse_iso(due_iso)
+    if s is None and d is None:
+        tone = "dim"
+    elif d is not None and d < today:
+        tone = "over"
     else:
-        n = (d - today).days
-        lab, tone = (f"{_md(d)} +{n}d" if wide else _md(d)), "mut"
-    return c(fit(lab, width, "right"), tone)
+        tone = "mut"
+    return c(fit(present_span_label(s, d), width, "right"), tone)
 
 
 def _present_due(d: date | None, today: date) -> tuple[str, str]:
@@ -6153,7 +6170,7 @@ def _present_span_row(proj: Project, board: Board, p: _PresentGeo) -> str:
     progress = board.project_progress(proj.id)
     cells = _gantt_span(proj, p.ax, progress, 0)
     label = c("▌ ", p.hue) + c(escape(fit(proj.name.upper(), p.label_w - 2)), p.hue, bold=True)
-    chip = " " + _present_chip(proj.due_date, p.today, p.chip_w, p.wide)
+    chip = " " + _present_chip(proj.start_date, proj.due_date, p.today, p.chip_w)
     return _pad(label + " " + _present_field(cells, p.ax) + chip, p.width)
 
 
@@ -6169,8 +6186,35 @@ def _present_task_row(task: Task, board: Board, p: _PresentGeo, cursor: bool = F
             cells[hi] = ("⟧", "accent")
     label = "  " + c("▎", p.hue) + " " + _present_title(task, p.label_w - 4)
     gut = gantt_dep_mark(task, board, p.chain)
-    chip = " " + _present_chip(task.due_date, p.today, p.chip_w, p.wide)
+    chip = " " + _present_chip(task.start_date, task.due_date, p.today, p.chip_w)
     return _pad(label + gut + _present_field(cells, p.ax) + chip, p.width)
+
+
+def _present_ruler(proj: Project, board: Board, p: _PresentGeo,
+                   cursor: Task | None) -> list[str]:
+    """The gantt view's two ruler rows re-seated in the present columns (label |
+    gutter | field | space + chip blank): the month row with the project's due
+    `◆` and `today <Wkd> <Mon D>` in the label; the tick row with the cursor
+    task's exact dates (`gantt_echo`), labelled with the echo's full text when it
+    did not fit in the field, else the scale. No weekend shading: the present
+    field has none."""
+    ax, today = p.ax, p.today
+    marks: dict[int, tuple[str, str]] = {}
+    if (pd := parse_iso(proj.due_date)) and 0 <= ax.cell(pd) < ax.w:
+        marks[ax.cell(pd)] = ("◆", proj.color)
+    echo = gantt_echo(cursor, board, ax, today) if cursor is not None else None
+    mcells = gantt_month_row(ax, today, marks)
+    dcells, meta = gantt_day_row(ax, today, echo, shade_weekends=False)
+    mlabel = c(fit(f"today {today:%a} {_md(today)}", p.label_w - 1, "right") + " ", "accent")
+    if meta["echo_label"]:
+        dlabel = c(fit(meta["echo_label"] + " ▸", p.label_w - 1, "right") + " ",
+                   echo[1], bold=True)
+    else:
+        dlabel = c(fit(_gantt_scale_label(ax.k, meta["cadence"], p.label_w),
+                       p.label_w - 1, "right") + " ", "dim")
+    tail = " " * (p.chip_w + 1)
+    return [_pad(_pad(mlabel, p.label_w) + " " + "".join(mcells) + tail, p.width),
+            _pad(_pad(dlabel, p.label_w) + " " + "".join(dcells) + tail, p.width)]
 
 
 def _present_brief(task: Task, p: _PresentGeo, cursor: bool, width: int) -> str:
@@ -6207,9 +6251,10 @@ def _present_finish(lines: list[str], height: int, width: int) -> Text:
 
 def render_present(board: Board, project_id: str | None, cursor_id: str | None,
                    today: date, width: int, height: int) -> Text:
-    """The PRES-C presentation frame: the project's gantt field on top, the brief
-    one-liners below, a `⟦━⟧` cursor across the brief blocks (its task's notes
-    expand). Byte-faithful to the PRES-C oracle at 118x30 and 80x24."""
+    """The presentation frame: the date ruler, the project's gantt field with
+    start–end chips, the brief one-liners below, a `⟦━⟧` cursor across the brief
+    blocks (its task's notes expand). Byte-faithful to the PRES-R oracle
+    (batch 2026-10-16-batch-01) at 118x30 and 80x24."""
     proj = board.project_by_id(project_id)
     if proj is None:
         projects = board.visible_projects(False)
@@ -6236,6 +6281,7 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         + (c(f"▲{late} past due", "over", bold=True) if late else c(f"{done} done", "done"))
     lines = [header(title, right, width)]
 
+    lines += _present_ruler(proj, board, p, cursor)
     lines.append(_present_span_row(proj, board, p))
     for t in open_t:
         lines.append(_present_task_row(t, board, p, cursor=cursor is not None and t.id == cursor.id))

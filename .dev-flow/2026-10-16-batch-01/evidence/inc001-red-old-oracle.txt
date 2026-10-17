@@ -1,0 +1,6 @@
+tests\test_present.py:161: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_present.py::test_TC_1001_the_exact_presc_frame_at_118x30 - ...
+FAILED tests/test_present.py::test_TC_1002_the_exact_presc_frame_at_80x24 - A...
+FAILED tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle
+3 failed, 2 passed in 2.24s

@@ -1,0 +1,30 @@
+◆ PRESENT · Website Redesign — hybrid                                                            5 open · ▲2 past due 
+             today Wed Sep 30  September 2026                        30┃October          ◆                            
+    Mondays · 1 day = 2 cells        14           Sep 24 ⟦━━━━━━━━⟧ Sep 28     5             12                       
+▌ WEBSITE REDESIGN             ●─────────────────────────────────────╎───────────────────◆···┆·········· Aug 21–Oct 10
+  ▎ Build component library ↗  ◂▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◕┆···╎·········┆·············┆··········      Sep 5–27
+  ▎ Fix checkout 500 error ↗   ······┆·············┆·····⟦━━━━━━━━⟧··╎·········┆·············┆··········     Sep 24–28
+  ▎ Optimize image assets     ↳······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········     due Oct 6
+  ▎ Launch new homepage       ↳······┆·············┆·············┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆··········      Oct 4–10
+  ▎ SEO redirects map          ······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○·····    due Oct 14
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   Build component library                                                                                         ▲3d
+  ⟦Fix checkout 500 error⟧                                                                                         ▲2d
+  · The 500 is a missing tax-rate row for new regions. Roll back the last deploy if the fix is not green by end of    
+  · day.                                                                                                              
+   Optimize image assets                                                                                         in 6d
+   Launch new homepage                                                                                          in 10d
+   SEO redirects map                                                                                            in 14d
+ ←→  move the cursor · the cursor'd task's notes expand                                                               
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      

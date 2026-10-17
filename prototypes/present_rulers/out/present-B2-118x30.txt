@@ -1,0 +1,30 @@
+◆ PRESENT · Website Redesign — hybrid                                                            5 open · ▲2 past due 
+               today Wed Sep 30  September 2026                        30┃October          ◆                          
+               cursor's dates ▸        14            21            28  ╎ Oct 4 ⟦━━━━━━━━━━━━⟧ Oct 10                  
+▌ WEBSITE REDESIGN               ●─────────────────────────────────────╎───────────────────◆···┆·········· Oct 10 +10d
+  ▎ Build component library ↗    ◂▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◕┆···╎·········┆·············┆··········  Sep 27 ▲3d
+  ▎ Fix checkout 500 error ↗     ······┆·············┆·····▬╌╌╌╌╌╌╌╌◑··╎·········┆·············┆··········  Sep 28 ▲2d
+  ▎ Optimize image assets       ↳······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········   Oct 6 +6d
+  ▎ Launch new homepage         ↳······┆·············┆·············┆···╎·······⟦━━━━━━━━━━━━⟧··┆·········· Oct 10 +10d
+  ▎ SEO redirects map            ······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○····· Oct 14 +14d
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   Build component library                                                                                         ▲3d
+   Fix checkout 500 error                                                                                          ▲2d
+   Optimize image assets                                                                                         in 6d
+  ⟦Launch new homepage⟧                                                                                         in 10d
+  · Feature-flag the cut-over, set DNS TTL to 300, and keep the rollback doc ready. Waits on the library and the asset
+  · pass.                                                                                                             
+   SEO redirects map                                                                                            in 14d
+ ←→  move the cursor · the cursor'd task's notes expand                                                               
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      

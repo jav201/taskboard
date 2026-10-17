@@ -50,3 +50,10 @@ above this line is ever edited._
 - **What changed:** LLR-1602.1: `show_in_present` joins `_TASK_KEYS`; a hand-edited non-boolean loads as shown and is dropped on save; after hide-then-show nothing remains in `extra` (security F1). HLR-1602 / AT-1602: the export arm asserts the hidden task's title is absent and the open count drops, not only the word `hidden` (security F2).
 - **Why:** the security-reviewer's P2 return (C8 fired), 2026-10-16: `approve`, two LOW.
 - **Evidence:** `models.py:706-709` (`_TASK_KEYS`), `models.py:995` (the `{**extra, **d}` merge); `app.py:255-260` (the export re-renders with the frame's arguments).
+
+### LED-2026-10-16-batch-01.7 — the oracle cross-check's third delta (P3, increment 001)
+- **Requirement:** HLR-1601
+- **Date:** 2026-10-16
+- **What changed:** §6.3 (the cross-check criterion that HLR-1601's threshold rests on). **Before →** "every row must be equal except two listed deltas — row 0's title … and the shipped in-frame keys row". **After →** "… except three listed deltas — D1 …, D2 …, and D3 row 2's label column only …". **Deleted:** `two listed deltas`. **New:** `three listed deltas`, `D3`.
+- **Why:** running `evidence/gen_frames.py` at increment 001 showed one row differing beyond D1/D2: the tick row's label column. The prototype `render_b2` labels it `cursor's dates ▸` whenever an echo exists; the commission (decision 1) says "tick row = scale label (or the echo label when it does not fit in the field)", which the shipped renderer follows. The field and chip cells of that row match the prototype byte for byte.
+- **Evidence:** `evidence/gen_frames.py` output (`HOLDS (deltas D1, D2, D3 only)` at 118x30 and 80x24). Parent re-read: HLR-1601's statement is unchanged (the ruler's label column is LLR-1601.1's, which already states the commission's rule); TC-1001/TC-1002/AT-1001 unchanged.
