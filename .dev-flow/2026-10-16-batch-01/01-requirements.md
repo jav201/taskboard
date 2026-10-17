@@ -188,11 +188,11 @@ The PRES-C oracle board (`tests/present_board.py`) stays the fixture for the fra
 
 ### LLR-1601.2 — Start–end chips on every field row
 - **Traceability:** HLR-1601
-- **Ledger:** LED-2026-10-16-batch-01.1, LED-2026-10-16-batch-01.4, LED-2026-10-16-batch-01.5
+- **Ledger:** LED-2026-10-16-batch-01.1, LED-2026-10-16-batch-01.4, LED-2026-10-16-batch-01.5, LED-2026-10-16-batch-01.9
 - **Statement:** `views` shall provide `present_span_label(start, due)` returning `<Mon D>–<D>` when both dates fall in one month of one year, `<Mon D>–<Mon D>` across months (across years too, with no year: `Dec 28–Jan 3`), `due <Mon D>` with no start, `<Mon D>` when start equals due, `from <Mon D>` with no due, and `no dates` with neither; the span row (the project's start and due) and every task row shall end with that label right-aligned in a 13-cell chip, toned `over` when the due is before today, `dim` with no dates, `mut` otherwise; the present columns shall be label 30 / chip 13 when the width is at least 100, label 20 / chip 13 below; the brief rows keep the relative due unchanged.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest tests/test_present_rulers.py -q -k TC_1602` and the oracle arms `tests/test_present.py -k "TC_1001 or TC_1002"`
-- **Numeric pass threshold:** TC-1602's six label cases, the cross-year case, an unparseable date read as absent, and three tones pass; TC-1001/TC-1002 equal `.dev-flow/2026-10-16-batch-01/evidence/frames/PRES-R-118x30.txt` / `PRES-R-80x24.txt` line for line; TC-1602 also checks the oracle board's chips as literals written by hand from `tests/present_board.py`'s dates.
+- **Numeric pass threshold:** TC-1602's six label cases, the cross-year case, an unparseable date read as absent, and three tones pass; TC-1001/TC-1002 equal `.dev-flow/2026-10-16-batch-01/evidence/frames/PRES-R2-118x30.txt` / `PRES-R2-80x24.txt` line for line; TC-1602 also checks the oracle board's chips as literals written by hand from `tests/present_board.py`'s dates.
 - **Negative control:** chip width 12 clips `Aug 21–Oct 10` (TC-1602 width arm RED at 12).
 - **Boundary catalog:** ☑ boundary (cross-month, cross-year, start == due) ☑ empty (no dates) ☑ invalid (an unparseable date reads as absent, `parse_iso` — TC-1602) ☐ error — none
 

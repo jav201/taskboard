@@ -142,8 +142,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -274,6 +274,21 @@
       "station": "P3",
       "date": "2026-10-17",
       "decision": "asked at the gate — P3 increment 004 approved under the operator's verdict of 2026-10-17: views.py only (1 source file) — tick label 'selected task ▸' in the echo's tone when the echo fits (echo text fallback kept, 'selected: no dates' for a dateless selection, the scale only with no selection), no ' — hybrid', no in-frame keys row; PRES-R2 frames (PRES-R kept as increment 001's evidence), TC-1608 (7 nodes), 10 RED on 8303045, 7/7 mutants killed, code-reviewer PASS with notes (F3/F4 fixed, F1 to backlog, F2 owed to the operator), full suite 2632 passed + 2 pre-existing base failures; the DDR is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-17",
+      "decision": "standing authorization — P3 closed: increments 001-004 committed (ea002aa, d30aa8e, 2292e63, 8cd8dbd); DDR next"
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-17",
+      "decision": "standing authorization — DDR approved: architect approved (3 LOW notes), qa-reviewer approved with conditions on one MEDIUM (LLR-1601.2 still named the PRES-R frames) — applied as LED .9 and re-read, so no condition remains; PC-1..PC-11 discharged by re-reading the tests at 8cd8dbd; each AT in exactly one node; ledger 2592 -> 2634 collected reconciles; P4 next"
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-17",
+      "decision": "standing authorization — P4 PASS-WITH-NOTES: the orchestrator's gate run on 8cd8dbd (suite-p4.txt) 2631 passed, 3 failed = the 2 pre-existing standup failures + test_win_clipboard_roundtrip, an environment failure (the clipboard refused Set-Clipboard in the test's setup guard; no batch change touches clipboard code; not-run on 8cd8dbd, carried); qa-reviewer reconciled both layers: 11/11 requirements, every AT in one node, ledger 2592 -> 2634; gaps G-001..G-007 all minor"
     }
   ],
   "obsidian_synced": false,

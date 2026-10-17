@@ -1,0 +1,13 @@
+# P4: tests/test_app.py::test_win_clipboard_roundtrip failed in suite-p4.txt; it passed in suite-001..004. The test's own SETUP guard names the cause: the machine-global Windows clipboard refused Set-Clipboard (ExternalException) — the environment, not the code.
+# batch diff touching clipboard code (git diff 64443be..HEAD -G'clipboard|Set-Clipboard|Get-Clipboard' --stat -- taskboard/):
+# (empty above = no batch change touches clipboard code)
+$ python -m pytest -q -p no:cacheprovider tests/test_app.py::test_win_clipboard_roundtrip   (re-run, 2026-10-17T15:02:22Z)
+        exactly like a regression. Measured 2026-08-07: it failed once inside a full
+        suite run and passed 3/3 in isolation.
+             reported as a failed assertion about the app.
+                    "SETUP failed — this is the environment, not the code under "
+E                   AssertionError: SETUP failed — this is the environment, not the code under test: "Set-Clipboard : Requested Clipboard operation did not succeed.\nAt line:1 char:1\n+ Set-Clipboar
+1 failed in 4.33s
+$ python -m pytest -q -p no:cacheprovider tests/test_app.py::test_win_clipboard_roundtrip   (re-run 2, 2026-10-17T15:05:48Z, HEAD 8cd8dbd)
+E                   AssertionError: SETUP failed — this is the environment, not the code under test: "Set-Clipboard : Requested Clipboard operation did not succeed.\nAt line:1 char:1\n+ Set-Clipboar
+1 failed in 4.44s
