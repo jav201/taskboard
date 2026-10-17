@@ -259,6 +259,11 @@
       "station": "P3",
       "date": "2026-10-16",
       "decision": "standing authorization — P3 increment 002 approved under the 2026-10-16 commission: the persisted show-in-presentation flag across models/views/app/modals (4 source files, declared), 10/11 mutants killed + N7 equivalent (reviewer-verified), 12/13 new nodes RED on ea002aa, code-reviewer PASS with notes (3 LOW, all addressed), full suite 2616 passed + 2 pre-existing base failures; increment 003 is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-16",
+      "decision": "standing authorization — P3 increment 003 approved under the 2026-10-16 commission: the ? help Keys band (column-major, re-laid on resize) and the global keys docked outside the scroll, derived from KEYMAP (2 source files), 6/6 mutants killed, AT-1603 RED on d30aa8e, code-reviewer PASS with notes (F1/F3 fixed, F2 kept), full suite 2625 passed + 2 pre-existing base failures; the DDR is next"
     }
   ],
   "obsidian_synced": false,

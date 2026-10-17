@@ -1,0 +1,11 @@
+RED on base: increment 003's tests against modals.py and keymap.py at d30aa8e (increment 002's commit)
+ERROR tests/test_help_keys.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.57s
+restore sha256 (of the two files' digests) bc1a88072e17118c3da79c31d6b9af282b34d602f6a273ee8caf45d2866c3250 (matches: yes)
+
+AT-1603 alone (an import-free copy of the node, tests/_red_at1603_tmp.py, deleted after) against the same base files:
+FAILED tests/_red_at1603_tmp.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling[118x30]
+FAILED tests/_red_at1603_tmp.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling[80x24]
+2 failed in 4.83s
+restore sha256 (of the two files' digests) bc1a88072e17118c3da79c31d6b9af282b34d602f6a273ee8caf45d2866c3250 (matches: yes)

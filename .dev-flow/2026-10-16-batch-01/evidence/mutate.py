@@ -94,7 +94,33 @@ M002 = [
       H + "test_TC_1604_the_hint_row_carries_the_keys_and_the_count"]),
 ]
 
-BATTERIES = {"001": M001, "002": M002}
+K = "tests/test_help_keys.py::"
+M003 = [
+    ("P1", "taskboard/modals.py",
+     "row = [cells[c * rows + r] for c in range(ncol) if c * rows + r < len(cells)]",
+     "row = [cells[r * ncol + c] for c in range(ncol) if r * ncol + c < len(cells)]",
+     [K + "test_TC_1606_the_grid_reads_down_then_across"]),
+    ("P2", "taskboard/keymap.py",
+     "    return [k for k in _live_keys(view) if not k.bar]",
+     "    return [k for k in KEYMAP if k.show in ('o', 'i', 'p', 'P', 'f', 'c', 'R', 'I', 'S')]",
+     [K + "test_TC_1607_global_keys_are_the_live_palette_only_keys"]),
+    ("P3", "taskboard/modals.py",
+     "    #help-foot { dock: bottom; height: auto; }\n", "    #help-foot { height: auto; }\n",
+     [K + "test_AT_1603_the_help_shows_the_global_keys_without_scrolling"]),
+    ("P4", "taskboard/modals.py",
+     "if cell_len(cur + joined) > width and cur.strip():",
+     "if cell_len(cur + joined) > 10 ** 6 and cur.strip():",
+     [K + "test_TC_1607_the_line_packs_and_wraps_only_between_entries"]),
+    ("P5", "taskboard/modals.py",
+     "    ncol = max(1, width // cw)\n", "    ncol = max(1, width // cw + 1)\n",
+     [K + "test_TC_1606_the_gantt_band_fits_the_box_at_both_sizes"]),
+    ("P6", "taskboard/modals.py",
+     '        width = self.query_one("#help-modal-box").scrollable_content_region.width\n',
+     '        return\n',
+     [K + "test_TC_1606_the_band_re_lays_when_the_terminal_shrinks"]),
+]
+
+BATTERIES = {"001": M001, "002": M002, "003": M003}
 
 
 def sha(p: Path) -> str:

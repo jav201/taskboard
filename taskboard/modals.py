@@ -1853,6 +1853,40 @@ class TaskDetails(ModalScreen[None]):
         self.dismiss(None)
 
 
+def keys_grid(cells: list[str], width: int) -> list[str]:
+    """`cells` (`<show> <label>`) laid out column-major in as many columns as
+    `width` holds — each column the longest cell plus two — so the list reads
+    down, then across, and no row is wider than `width` (one column when even
+    one cell does not fit)."""
+    if not cells:
+        return []
+    cw = max(cell_len(c) for c in cells) + 2
+    ncol = max(1, width // cw)
+    rows = -(-len(cells) // ncol)
+    out = []
+    for r in range(rows):
+        row = [cells[c * rows + r] for c in range(ncol) if c * rows + r < len(cells)]
+        out.append("".join(x + " " * (cw - cell_len(x)) for x in row).rstrip())
+    return out
+
+
+GLOBAL_LEAD = "Global  "
+
+
+def global_lines(entries: list[str], width: int) -> list[str]:
+    """`Global  <show> <label>  <show> <label> …` packed into `width`, breaking
+    only between entries; a continuation row is indented under the first entry."""
+    lines, cur = [], GLOBAL_LEAD
+    for e in entries:
+        joined = e if cur in (GLOBAL_LEAD, " " * len(GLOBAL_LEAD)) else "  " + e
+        if cell_len(cur + joined) > width and cur.strip():
+            lines.append(cur.rstrip())
+            cur, joined = " " * len(GLOBAL_LEAD), e
+        cur += joined
+    lines.append(cur.rstrip())
+    return lines
+
+
 def _clip_words(s: str, width: int) -> str:
     """Clip `s` to `width` cells at a WORD boundary, appending `…` when cut.
 
@@ -1904,8 +1938,13 @@ class HelpModal(ModalScreen[None]):
     and what keys work inside it.
 
     The left side carries the USAGE copy (one section per view), the right side
-    carries the live legend, an annotated example, and the view's own keybar.
-    From here `m` opens the FULL keymap and `?` opens the command palette.
+    carries the live legend and an annotated example; under both, a full-width
+    band lists the view's keys column-major, sized to the box. Docked at the
+    bottom, outside the scroll, the global palette-only keys (`R` Present, `S`
+    Standup, … — read from `KEYMAP`, never typed here) and the closing hint: they
+    are visible at every size, however long the body (batch
+    2026-10-16-batch-01, LLR-1603.1/.2). From here `m` opens the FULL keymap
+    and `?` opens the command palette.
     """
 
     BINDINGS = [
@@ -1919,10 +1958,15 @@ class HelpModal(ModalScreen[None]):
     #help-modal-box {
         width: 110; max-width: 95%; height: auto; max-height: 90%;
         padding: 1 2; background: #0d1219; border: round #334154;
+        scrollbar-size-vertical: 1;   /* the body scrolls as one: keep the columns' width */
     }
     #help-modal-box .modal-title { margin: 0 0 1 0; }
     #help-left { width: 48; height: auto; }
     #help-right { width: 1fr; height: auto; }
+    #help-cols { height: auto; }
+    #help-keys-title { margin: 1 0 0 0; }
+    #help-foot { dock: bottom; height: auto; }
+    #help-global, #help-hint { width: 100%; }
     """
 
     def __init__(self, mode: str, board: Board, today=None, size=(96, 30),
@@ -1947,7 +1991,6 @@ class HelpModal(ModalScreen[None]):
         self._team_filter = team_filter
 
     def compose(self) -> ComposeResult:
-        from .keymap import bar_keys
         from .views import help_example, help_usage, legend_entries
         entries = legend_entries(self._mode, self._board, self._today,
                                  *self._dims, show_archived=self._show_archived,
@@ -1959,7 +2002,7 @@ class HelpModal(ModalScreen[None]):
         example, example_meaning = help_example(self._mode)
         with VerticalScroll(id="help-modal-box"):
             yield Label(Text(f"Help · {self._mode}", style="bold"), classes="modal-title")
-            with Horizontal():
+            with Horizontal(id="help-cols"):
                 with VerticalScroll(id="help-left"):
                     yield Label("[b]Usage[/b]", classes="modal-title")
                     for heading, bullets in help_usage(self._mode):
@@ -1976,11 +2019,43 @@ class HelpModal(ModalScreen[None]):
                         yield Label("[b]Example[/b]", classes="modal-title")
                         yield Label(Text.from_markup(example))
                         yield Label(Text(example_meaning, style="dim"))
-                    yield Label("[b]Keys[/b]", classes="modal-title")
-                    for k in bar_keys(self._mode):
-                        yield Label(Text(f"{k.show}  {k.label}"))
-            yield Label("[dim]m full map · ? palette · esc/q closes[/dim]",
-                        classes="modal-title")
+            yield Label("[b]Keys[/b] [dim]· this view[/dim]", classes="modal-title",
+                        id="help-keys-title")
+            # composed at the box's ESTIMATED width so the first layout already
+            # holds the band's rows (the scroll range is right from the start);
+            # `_fit_keys` then re-lays both at the measured width
+            band, glob = self._key_texts(min(110, self.app.size.width * 95 // 100) - 8)
+            yield Label(Text(band), id="help-keys")
+            with Vertical(id="help-foot"):
+                yield Label(Text.assemble((glob[:len(GLOBAL_LEAD)], "bold"),
+                                          glob[len(GLOBAL_LEAD):]), id="help-global")
+                yield Label("[dim]m full map · ? palette · esc/q closes[/dim]",
+                            id="help-hint")
+
+    def on_mount(self) -> None:
+        self.call_after_refresh(self._fit_keys)
+
+    def on_resize(self, event: events.Resize) -> None:
+        self.call_after_refresh(self._fit_keys)
+
+    def _fit_keys(self) -> None:
+        """Lay the Keys band and the global line out at the width the box gives
+        its content now (the scrollbar, when there is one, already taken)."""
+        width = self.query_one("#help-modal-box").scrollable_content_region.width
+        if width <= 0:
+            return
+        band, glob = self._key_texts(width)
+        self.query_one("#help-keys", Label).update(Text(band))
+        self.query_one("#help-global", Label).update(
+            Text.assemble((glob[:len(GLOBAL_LEAD)], "bold"), glob[len(GLOBAL_LEAD):]))
+
+    def _key_texts(self, width: int) -> tuple[str, str]:
+        """The band (column-major `bar_keys`) and the pinned global line
+        (`global_keys`, entries never split) at `width`, as plain text."""
+        from .keymap import bar_keys, global_keys
+        band = keys_grid([f"{k.show:<3} {k.label}" for k in bar_keys(self._mode)], width)
+        glob = global_lines([f"{k.show} {k.label}" for k in global_keys(self._mode)], width)
+        return "\n".join(band), "\n".join(glob)
 
     def action_palette(self) -> None:
         self.app.push_screen(CommandPalette(palette_commands(self._mode)),

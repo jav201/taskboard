@@ -189,6 +189,12 @@ def bar_keys(view: str, layer: str = "more") -> list[Key]:
     return [k for k in _layer_keys(view, layer) if k.bar]
 
 
+def global_keys(view: str) -> list[Key]:
+    """The live keys the bar never draws (`bar=False`: R Present, S Standup, …),
+    in seat order — the `?` help pins them so they are found without the palette."""
+    return [k for k in _live_keys(view) if not k.bar]
+
+
 def palette_commands(view: str) -> list[tuple[str, str, str]]:
     """All commands reachable from `view` as (show, label, action).
 

@@ -1,0 +1,83 @@
+C:\Users\jjgh8\anaconda3\Lib\site-packages\pytest_asyncio\plugin.py:207: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 16%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 84%]
+........FF.............................................................. [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 93%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+______ test_standup_renders_one_row_per_member_and_own_row_identifiable _______
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20001/test_standup_renders_one_row_p0')
+
+    def test_standup_renders_one_row_per_member_and_own_row_identifiable(tmp_path):
+        state = _make_state(tmp_path, user_id="jav")
+        board = _board(tmp_path)
+        text = str(render_standup(board, False, None, team_state=state, width=80, height=0))
+    
+>       assert "username_subject" in text
+E       AssertionError: assert 'username_subject' in 'STANDUP · all · team · personal                                                 \n───────────────────────────────────...                                   —\n▎ Ana          ▱▱▱▱▱ —                                                         —'
+
+tests\test_team_views.py:78: AssertionError
+________________ test_standup_flags_stale_member_in_over_tone _________________
+
+tmp_path = WindowsPath('C:/Users/jjgh8/AppData/Local/Temp/pytest-of-jjgh8/pytest-20001/test_standup_flags_stale_membe0')
+
+    def test_standup_flags_stale_member_in_over_tone(tmp_path):
+        state = _make_state(tmp_path, user_id="jav")
+        board = _board(tmp_path)
+    
+        now = datetime.now(timezone.utc)
+        stale = (now - timedelta(minutes=60)).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        (tmp_path / "board.ana.json").write_text(
+            json.dumps({"user": "ana", "pushed_at": stale, "tasks": []}),
+            encoding="utf-8",
+        )
+        state.pull()
+    
+        markup = render_standup(board, False, None, team_state=state, width=80, height=0).markup
+        lines = markup.splitlines()
+        ana_line = next(line for line in lines if "Ana" in line)
+        assert HEX["over"] in ana_line, "stale row should wear the over tone"
+>       jav_line = next(line for line in lines if "username_subject" in line)
+E       StopIteration
+
+tests\test_team_views.py:103: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable
+FAILED tests/test_team_views.py::test_standup_flags_stale_member_in_over_tone
+2 failed, 2625 passed in 509.01s (0:08:29)

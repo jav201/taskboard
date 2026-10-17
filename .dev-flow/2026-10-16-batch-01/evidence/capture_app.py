@@ -45,7 +45,7 @@ PLANS = {
     "001": [("present-open", ["R"]), ("cursor-moved", ["right", "right"])],
     "002": [("present-open", ["R"]), ("hidden", ["space"]), ("show-all", ["a"]),
             ("editor", ["escape", "e"])],
-    "003": [("gantt-help", ["3", "question_mark"])],
+    "003": [("gantt-help", ["3", "question_mark"]), ("gantt-help-end", ["end"])],
 }
 
 
