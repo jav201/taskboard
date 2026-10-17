@@ -705,7 +705,7 @@ _PROJECT_KEYS = {"id", "name", "color", "status", "archived", "pinned", "start_d
                  "due_date", "extra"}
 _TASK_KEYS = {"id", "title", "project_id", "phase", "blocked", "priority", "start_date",
               "due_date", "notes", "urls", "images", "archived", "pinned", "extra",
-              "phase_changed", "depends_on", "milestone",
+              "phase_changed", "depends_on", "milestone", "show_in_present",
               "status", "url"}          # last two: legacy, consumed by the migration
 
 
@@ -847,6 +847,10 @@ class Task:
     # one date, its due, no duration (batch 2026-10-04-batch-02, D-603). Only the
     # boolean true counts: a hand-edited or synced "yes" is not a milestone.
     milestone: bool = False
+    # shown in the presentation (`R`); only the JSON `false` hides, and the key
+    # is written only then (`Board._to_dict`), so a board with nothing hidden
+    # keeps its bytes (batch 2026-10-16-batch-01, LLR-1602.1)
+    show_in_present: bool = True
     extra: dict = field(default_factory=dict)
     id: str = field(default_factory=_new_id)
 
@@ -895,6 +899,7 @@ class Task:
                 phase_changed=(d.get("phase_changed")
                                if isinstance(d.get("phase_changed"), str) else None),
                 milestone=d.get("milestone") is True,
+                show_in_present=d.get("show_in_present") is not False,
             )
         except Exception as exc:                    # never let one bad task raise
             return _rescue_task(d, type(exc).__name__)
@@ -992,6 +997,8 @@ class Board:
         """Serialize a Project/Task, merging its preserved unknown keys back in
         (known fields win, so our model is always the source of truth)."""
         d = asdict(item)
+        if d.get("show_in_present") is True:
+            del d["show_in_present"]
         return {**d.pop("extra", {}), **d}
 
     def _serialized(self) -> str:

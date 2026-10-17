@@ -300,7 +300,9 @@ async def test_pressing_R_opens_the_presentation_read_only(tmp_path, monkeypatch
         await pilot.pause()
         # measured AFTER startup on purpose: launching the app may legitimately
         # write (the one-time renumber notice, the 20-day sweep). The read-only
-        # law is about the presentation, not about mounting. And it watches
+        # law is about the presentation, not about mounting — and since batch
+        # 2026-10-16-batch-01 it is the narrower law: OPENING it writes
+        # nothing; only `space`/`a` write, and only the hide flag (AT-1602). And it watches
         # for the WRITE, not for a change — saving an unmodified board rewrites
         # identical bytes, which a checksum cannot see.
         before_mtime = path.stat().st_mtime_ns

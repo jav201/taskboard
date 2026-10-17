@@ -136,6 +136,9 @@ async def test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle(
     moving the cursor expands another task's notes; `x` writes the SVG (+ the
     PNG where Microsoft Edge renders it); `esc` leaves without a trace — the
     board untouched (no save, same mtime) and no HTML report written. The
+    narrower law since batch 2026-10-16-batch-01 (LLR-1602.2): opening,
+    moving, exporting and leaving write nothing; only `space`/`a` write, and
+    only the flag (`tests/test_present_hide.py::test_AT_1602_...`). The
     startup milestone offer stays open underneath the presentation: unanswered,
     it writes nothing (D-615/616)."""
     from textual.widgets import Static

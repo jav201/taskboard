@@ -35,7 +35,8 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
                         probe_setup_health)
 from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
-                    present_tasks, render_present, render_view, save_present_png,
+                    present_hidden, present_tasks, render_present, render_view,
+                    save_present_png,
                      save_present_svg, sort_by_due, fit, vis, valid_url, _md)
 
 
@@ -178,11 +179,15 @@ class HelpScreen(ModalScreen[None]):
 
 
 class PresentScreen(ModalScreen[None]):
-    """`R` — the presentation (PRES-C): the project's gantt field on top, the
-    brief one-liners below, a `⟦━⟧` cursor across the brief blocks whose task's
-    notes expand. `←`/`→` and `↑`/`↓` move the cursor, `x` exports SVG + PNG to
-    the board's `reports/` folder, `esc`/`q` leave. Read-only: it draws, it never
-    writes the board."""
+    """`R` — the presentation: the date ruler and the project's gantt field on
+    top, the brief one-liners below, a `⟦━⟧` cursor across the brief blocks whose
+    task's notes expand. `←`/`→` and `↑`/`↓` move the cursor, `x` exports SVG +
+    PNG to the board's `reports/` folder, `esc`/`q` leave — none of these writes
+    the board. It writes exactly ONE thing, the per-task "show in presentation"
+    flag (batch 2026-10-16-batch-01, LLR-1602.2): `space` hides the cursor task,
+    `a` shows every hidden task again, each saved at once. The hidden count
+    rides the hint row only — the frame is what the room sees and what `x`
+    exports."""
 
     BINDINGS = [
         Binding("escape,q", "close", "Leave", priority=True),
@@ -191,6 +196,10 @@ class PresentScreen(ModalScreen[None]):
         Binding("up,k", "move(-1)", "", priority=True),
         Binding("down,j", "move(1)", "", priority=True),
         Binding("x", "export", "Export", priority=True),
+        # priority like the screen's other keys; today the screen's own `a`
+        # already beats the app's non-priority add-task `a` (no focusable child)
+        Binding("space", "hide", "", priority=True),
+        Binding("a", "show_all", "", priority=True),
     ]
 
     DEFAULT_CSS = """
@@ -219,7 +228,6 @@ class PresentScreen(ModalScreen[None]):
         self._project_name = project_name
         self._today = date.today()
         self._cursor_id = cursor_id
-        self._open_ids = [t.id for t in present_tasks(board, project_id)[0]]
 
     def compose(self) -> ComposeResult:
         with Vertical(id="present"):
@@ -242,15 +250,53 @@ class PresentScreen(ModalScreen[None]):
         text = render_present(self._board, self._project_id, self._cursor_id,
                               self._today, w, h)
         frame.update(text)
+        hint = ("←→ ↑↓ move · ␣ hide · a show all · x export · esc leave" if w >= 100
+                else "←→ move · ␣ hide · a all · x export · esc")
+        hidden = len(present_hidden(self._board, self._project_id))
         self.query_one("#present-hint", Static).update(
-            "←→ ↑↓ move · x export SVG+PNG · esc leave")
+            Text(hint + (f" · {hidden} hidden" if hidden else "")))
+
+    def _shown_ids(self) -> list[str]:
+        """The cursor's stops: the shown open tasks, read live (a flag change
+        moves them)."""
+        return [t.id for t in present_tasks(self._board, self._project_id)[0]]
+
+    def _cursor(self, ids: list[str]) -> str | None:
+        """The task the frame draws the cursor on — the renderer's own rule."""
+        return self._cursor_id if self._cursor_id in ids else (ids[0] if ids else None)
 
     def action_move(self, delta: int) -> None:
-        ids = self._open_ids
-        if not ids:
+        ids = self._shown_ids()
+        cur = self._cursor(ids)
+        if cur is None:
             return
-        i = ids.index(self._cursor_id) if self._cursor_id in ids else 0
-        self._cursor_id = ids[max(0, min(len(ids) - 1, i + delta))]
+        self._cursor_id = ids[max(0, min(len(ids) - 1, ids.index(cur) + delta))]
+        self._paint()
+
+    def action_hide(self) -> None:
+        """`space` — leave the cursor task out of the presentation; the cursor
+        moves to the next task by due (the previous one at the end)."""
+        ids = self._shown_ids()
+        cur = self._cursor(ids)
+        if cur is None:
+            return
+        i = ids.index(cur)
+        self._board.task_by_id(cur).show_in_present = False
+        self._board.save()
+        rest = ids[:i] + ids[i + 1:]
+        self._cursor_id = rest[min(i, len(rest) - 1)] if rest else None
+        self._paint()
+
+    def action_show_all(self) -> None:
+        """`a` — every hidden task back in the presentation; nothing hidden,
+        nothing written."""
+        hidden = present_hidden(self._board, self._project_id)
+        if not hidden:
+            return
+        for t in hidden:
+            t.show_in_present = True
+        self._board.save()
+        self._cursor_id = self._cursor(self._shown_ids())
         self._paint()
 
     def action_export(self) -> None:

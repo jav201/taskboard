@@ -50,7 +50,51 @@ M001 = [
      ["tests/test_present_rulers.py::test_TC_1601_an_echo_too_long_for_the_field_moves_to_the_label"]),
 ]
 
-BATTERIES = {"001": M001}
+H = "tests/test_present_hide.py::"
+M002 = [
+    ("N1", "taskboard/models.py",
+     '        if d.get("show_in_present") is True:\n            del d["show_in_present"]\n', "",
+     [H + "test_TC_1603_a_board_with_nothing_hidden_keeps_its_bytes"]),
+    ("N2", "taskboard/models.py",
+     'show_in_present=d.get("show_in_present") is not False,',
+     'show_in_present=bool(d.get("show_in_present", True)),',
+     [H + "test_TC_1603_only_json_false_hides"]),
+    ("N3", "taskboard/models.py",
+     '"milestone", "show_in_present",', '"milestone",',
+     [H + "test_TC_1603_only_json_false_hides",
+      H + "test_TC_1603_a_hidden_task_writes_false_and_nothing_else"]),
+    ("N4", "taskboard/views.py",
+     "tasks = [t for t in _present_pool(board, project_id) if t.show_in_present]",
+     "tasks = [t for t in _present_pool(board, project_id)]",
+     [H + "test_TC_1604_the_filter_and_the_axis_fit_the_shown_tasks",
+      H + "test_AT_1602_space_hides_and_it_is_remembered_a_shows_all"]),
+    ("N5", "taskboard/app.py",
+     "show_in_present = False\n        self._board.save()\n", "show_in_present = False\n",
+     [H + "test_AT_1602_space_hides_and_it_is_remembered_a_shows_all"]),
+    ("N6", "taskboard/app.py",
+     "        if not hidden:\n            return\n        for t in hidden:", "        for t in hidden:",
+     [H + "test_TC_1604_space_moves_the_cursor_and_the_ends_hold"]),
+    ("N7", "taskboard/app.py",
+     'Binding("a", "show_all", "", priority=True)', 'Binding("a", "show_all", "", priority=False)',
+     [H + "test_TC_1604_space_moves_the_cursor_and_the_ends_hold"]),
+    ("N8", "taskboard/app.py",
+     "self._cursor_id = rest[min(i, len(rest) - 1)] if rest else None",
+     "self._cursor_id = rest[0] if rest else None",
+     [H + "test_TC_1604_space_moves_the_cursor_and_the_ends_hold"]),
+    ("N9", "taskboard/app.py",
+     'Text(hint + (f" · {hidden} hidden" if hidden else ""))', "Text(hint)",
+     [H + "test_TC_1604_the_hint_row_carries_the_keys_and_the_count"]),
+    ("N10", "taskboard/modals.py",
+     '            "show_in_present": bool(self.query_one("#f-present", Checkbox).value),\n', "",
+     [H + "test_TC_1605_the_editor_box_at_80x24"]),
+    ("N11", "taskboard/views.py",
+     "    return [t for t in _present_pool(board, project_id) if not t.show_in_present]",
+     "    return []",
+     [H + "test_TC_1604_the_filter_and_the_axis_fit_the_shown_tasks",
+      H + "test_TC_1604_the_hint_row_carries_the_keys_and_the_count"]),
+]
+
+BATTERIES = {"001": M001, "002": M002}
 
 
 def sha(p: Path) -> str:

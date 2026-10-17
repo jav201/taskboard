@@ -6,7 +6,9 @@ The exact fixture the PRES-C oracle frames were rendered from
 (`prototypes/kg_mejoras/fixture.py build()`), frozen on its own TODAY, with the
 NOTES / URLS overlay the presentation variant adds
 (`prototypes/present_e/variants.py`). `path` points at a scratch name; `save()`
-must never be called — the presentation is read-only.
+must never be called by these fixtures — the presentation writes only the
+"show in presentation" flag, on `space`/`a` (batch 2026-10-16-batch-01), and
+the tests that press those keys save a copy under `tmp_path`.
 """
 from __future__ import annotations
 

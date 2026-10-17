@@ -1,0 +1,21 @@
+RED on base: increment 002's tests against models.py, views.py, app.py, modals.py at ea002aa (increment 001's commit)
+FAILED tests/test_present_hide.py::test_TC_1603_a_hidden_task_writes_false_and_nothing_else
+FAILED tests/test_present_hide.py::test_TC_1603_only_json_false_hides[no] - A...
+FAILED tests/test_present_hide.py::test_TC_1603_only_json_false_hides[0] - At...
+FAILED tests/test_present_hide.py::test_TC_1603_only_json_false_hides[None]
+FAILED tests/test_present_hide.py::test_TC_1603_only_json_false_hides[True]
+FAILED tests/test_present_hide.py::test_TC_1604_the_filter_and_the_axis_fit_the_shown_tasks
+FAILED tests/test_present_hide.py::test_TC_1604_space_moves_the_cursor_and_the_ends_hold
+FAILED tests/test_present_hide.py::test_TC_1604_the_hint_row_carries_the_keys_and_the_count[size0-\u2190\u2192 \u2191\u2193 move \xb7 \u2423 hide \xb7 a show all \xb7 x export \xb7 esc leave]
+FAILED tests/test_present_hide.py::test_TC_1604_the_hint_row_carries_the_keys_and_the_count[size1-\u2190\u2192 move \xb7 \u2423 hide \xb7 a all \xb7 x export \xb7 esc]
+FAILED tests/test_present_hide.py::test_TC_1605_the_editor_box_at_80x24 - tex...
+FAILED tests/test_present_hide.py::test_TC_1605_a_new_task_starts_shown - tex...
+FAILED tests/test_present_hide.py::test_AT_1602_space_hides_and_it_is_remembered_a_shows_all
+FAILED tests/test_edit_window.py::test_the_notes_own_the_screen_while_writing[120x36]
+FAILED tests/test_edit_window.py::test_the_notes_own_the_screen_while_writing[80x24]
+FAILED tests/test_edit_window.py::test_a_new_task_gets_the_same_room - textua...
+FAILED tests/test_edit_window.py::test_focus_mark_shows_on_every_one_row_control
+FAILED tests/test_edit_window.py::test_tab_walks_the_editor_and_save_works_from_the_keys[120x36]
+FAILED tests/test_edit_window.py::test_tab_walks_the_editor_and_save_works_from_the_keys[80x24]
+18 failed, 32 passed in 39.61s
+restore sha256 (of the four files' digests) 280885dc0815f5941943b3fa77fb3262f239ed43a23f7ef1d7be50a5ebcda011 (matches: yes)

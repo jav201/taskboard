@@ -394,6 +394,10 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
                             + "  [dim]· ctrl+e emoji[/dim]", classes="modal-title")
                 yield Input(value=(t.title if t else ""), placeholder="what needs doing",
                             id="f-title")
+                # the presentation flag (LLR-1602.3): in the title row because the
+                # chip row's folded form already needs all 80 columns
+                yield Checkbox("Show in presentation",
+                               value=t.show_in_present if t else True, id="f-present")
             # two halves so the row can fold in two below TASK_CHIPS_ONE_ROW
             # (on_resize) instead of clipping the flags off the right edge
             with Horizontal(id="task-chips"):
@@ -541,6 +545,7 @@ class TaskModal(ClipboardPasteMixin, EmojiPickerMixin, DatePickerMixin,
             "archived": bool(self.query_one("#f-archived", Checkbox).value),
             "pinned": bool(self.query_one("#f-pinned", Checkbox).value),
             "milestone": bool(self.query_one("#f-milestone", Checkbox).value),
+            "show_in_present": bool(self.query_one("#f-present", Checkbox).value),
             "priority": self._val("f-priority"),
             "start_date": self._val("f-start") or None,
             "due_date": self._val("f-due") or None,

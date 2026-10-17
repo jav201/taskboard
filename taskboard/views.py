@@ -6061,9 +6061,22 @@ def present_project_id(board: Board, selected_id: str | None,
 
 def present_tasks(board: Board, project_id: str | None) -> tuple[list[Task], list[Task]]:
     """(open tasks by due, all tasks) of one project in gantt order — the same
-    split the gantt lists: work still open first, finished work at the tail."""
-    tasks = gantt_tasks(board, board.visible_tasks(False), project_id)
+    split the gantt lists: work still open first, finished work at the tail.
+    Only the tasks shown in the presentation: a hidden one leaves the field,
+    the brief, the counts and the axis alike."""
+    tasks = [t for t in _present_pool(board, project_id) if t.show_in_present]
     return [t for t in tasks if not board.is_done(t)], tasks
+
+
+def present_hidden(board: Board, project_id: str | None) -> list[Task]:
+    """The project's tasks left out of the presentation — the ones
+    `present_tasks` would otherwise return (visible, open or done)."""
+    return [t for t in _present_pool(board, project_id) if not t.show_in_present]
+
+
+def _present_pool(board: Board, project_id: str | None) -> list[Task]:
+    """The one population both split: the project's visible tasks, gantt order."""
+    return gantt_tasks(board, board.visible_tasks(False), project_id)
 
 
 def _present_cols(width: int, wide: bool) -> tuple[int, int, int]:

@@ -43,7 +43,8 @@ models.date = _Today
 # board view with the oracle cursor selected
 PLANS = {
     "001": [("present-open", ["R"]), ("cursor-moved", ["right", "right"])],
-    "002": [("present-open", ["R"]), ("hidden", ["space"]), ("show-all", ["a"])],
+    "002": [("present-open", ["R"]), ("hidden", ["space"]), ("show-all", ["a"]),
+            ("editor", ["escape", "e"])],
     "003": [("gantt-help", ["3", "question_mark"])],
 }
 

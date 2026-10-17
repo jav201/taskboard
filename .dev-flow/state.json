@@ -254,6 +254,11 @@
       "station": "P3",
       "date": "2026-10-16",
       "decision": "standing authorization — P3 increment 001 approved under the 2026-10-16 commission: ruler B + start-end chips in views.py (1 source file), PRES-R oracle written and cross-checked vs render_b2 (D1/D2/D3), 8/8 mutants killed, 16 nodes RED on base, code-reviewer 0 HIGH (F1/F2 fixed, F3 to backlog), full suite 2603 passed + 2 pre-existing base failures; increment 002 is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-16",
+      "decision": "standing authorization — P3 increment 002 approved under the 2026-10-16 commission: the persisted show-in-presentation flag across models/views/app/modals (4 source files, declared), 10/11 mutants killed + N7 equivalent (reviewer-verified), 12/13 new nodes RED on ea002aa, code-reviewer PASS with notes (3 LOW, all addressed), full suite 2616 passed + 2 pre-existing base failures; increment 003 is next"
     }
   ],
   "obsidian_synced": false,
