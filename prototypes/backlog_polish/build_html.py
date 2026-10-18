@@ -57,6 +57,7 @@ SCENE_NAMES = {"gantt-long": "gantt · nota larga bajo el cursor",
                "gantt-hidden": "gantt · 1 tarea oculta",
                "gantt-short": "gantt · nota de 3 párrafos",
                "narrow-30x12": "30 × 12 · el marco angosto",
+               "narrow-30x12-x": "30 × 12 · después de x: el aviso",
                "narrow-20x12": "20 × 12 · el escalón siguiente",
                "narrow-50x20-hidden": "50 × 20 · la pista compacta, 1 oculta"}
 
@@ -142,9 +143,7 @@ def main() -> None:
         "salvo <code>esc</code>/<code>q</code> hace nada y <code>x</code> avisa en vez de exportar; la "
         "pista se acorta en pasos y, si aun así no cabe, se corta con <code>…</code>. Se muestra para "
         "su visto bueno. Un detalle abierto (UX2-2): entre 32 y 35 columnas <code>esc leave</code> "
-        "aparece dos veces, en el marco y en la pista. El aviso de <code>x</code> (<code>Widen the terminal to 36+ "
-        "columns to export</code>) no sale en estas capturas: <code>export_screenshot</code> no pinta avisos sobre "
-        "la presentación (tampoco el de exportar a 118 columnas); su texto lo verifica la prueba AT-1903.</p>" + narrow + "</section>")
+        "aparece dos veces, en el marco y en la pista. Después de <code>x</code> aparece el aviso <code>Widen the terminal to 36+ columns to export</code> (segunda captura).</p>" + narrow + "</section>")
     page = f"""<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Backlog polish round</title>

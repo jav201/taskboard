@@ -20,7 +20,7 @@ Items (the 2026-10-18-batch-01 P4 walkthrough's UX4-2, UX4-3, UX4-4):
   hint80    the terse 80-column hint: current · A a middle wording · B double spaces
   notecap   the gantt view's 3-row note cap: current · A fill the free rows · B 6 rows
 and, for review only (shipped by increment 002 under the commission's FIX class):
-  narrow    the frame and hint below 36 columns
+  narrow    the frame and hint below 36 columns, and the `x` notice
 Writes `out/<id>.svg`, `out/<id>.png` and `out/manifest.json` (each pair's SHA-256).
 """
 from __future__ import annotations
@@ -183,10 +183,10 @@ SCENES = {
 }
 LOOKS = {"contrast": ["current", "A", "B"], "hint80": ["current", "A", "B"],
          "notecap": ["current", "A", "B"]}
-# the `x` notice is not in these captures: `export_screenshot` paints no toast over
-# PresentScreen (probed at 118 columns too, where the shipped "Exported …" toast is
-# absent from the SVG), so the notice is asserted by AT-1903's text only
+# `run_test` disables toasts unless asked (`notifications=True`); the scene that
+# presses `x` asks, after clearing the start-up toasts, so the notice is seen painted
 NARROW = [("narrow-30x12", (30, 12), [("resize", (30, 12))]),
+          ("narrow-30x12-x", (30, 12), [("resize", (30, 12)), ("key", "x")]),
           ("narrow-20x12", (20, 12), [("resize", (20, 12))]),
           ("narrow-50x20-hidden", (50, 20), [("key", "space"), ("resize", (50, 20))])]
 
@@ -201,12 +201,15 @@ async def _shot_in(tmp: Path, size, steps, render, hint, path: Path) -> None:
     app_mod.render_present, app_mod.PresentScreen._hint = render, hint
     try:
         app = app_mod.TaskboardApp(board_path=str(tmp / "board.json"))
-        async with app.run_test(size=size) as pilot:
+        toasts = ("key", "x") in steps
+        async with app.run_test(size=size, notifications=toasts) as pilot:
             for _ in range(50):
                 if type(app.screen).__name__ == "MilestoneOffer":
                     await pilot.press("escape")
                     break
                 await pilot.pause()
+            await pilot.pause()
+            app.clear_notifications()
             await pilot.pause()
             app.selected_task_id = nb.CURSOR
             await pilot.press("R")

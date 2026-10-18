@@ -473,6 +473,17 @@
   "png_sha256": "09a9db32dffda2c322d411c872bae5f725ae4721e28ec28adc24a54e8fe67352"
  },
  {
+  "id": "narrow-current-narrow-30x12-x",
+  "item": "narrow",
+  "look": "current",
+  "scene": "narrow-30x12-x",
+  "size": "30x12",
+  "svg": "narrow-current-narrow-30x12-x.svg",
+  "svg_sha256": "8c0147c5a42f96f2e9e50fa4e9262d277cb3e534bd3504c52262167bee24642c",
+  "png": "narrow-current-narrow-30x12-x.png",
+  "png_sha256": "f04f8e7ea1bdef0240dfa827e01d9e6506fca066680dac91f8a4adbd10ea5941"
+ },
+ {
   "id": "narrow-current-narrow-20x12",
   "item": "narrow",
   "look": "current",
