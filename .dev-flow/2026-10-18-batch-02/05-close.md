@@ -27,8 +27,8 @@
 
 | Field | Value |
 |---|---|
-| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" .` from the project root · exit 0 · 0 block · 58 notice · 2026-10-18 |
-| Gated tree | `09033b250911665e000bb274370e2a5b9c14a786` · dirty — .dev-flow/2026-10-07-batch-08/evidence/inc001-brief.md, .dev-flow/2026-10-07-batch-09/evidence/inc001-brief.md, .dev-flow/BACKLOG.md, .gitattributes, .dev-flow/2026-10-07-batch-05/decisions-log.json, .dev-flow/2026-10-07-batch-06/decisions-log.json, .dev-flow/2026-10-07-batch-06/evidence/gen_verdict_sheet.py, .dev-flow/2026-10-07-batch-06/evidence/kanban-demo.json, .dev-flow/2026-10-07-batch-06/evidence/veredicto-batch06.html, .dev-flow/2026-10-07-batch-06/evidence/veredicto-board.json, .dev-flow/2026-10-07-batch-07/decisions-log.json, .dev-flow/2026-10-07-batch-08/decisions-log.json, .dev-flow/rollover_batchg.py, .dev-flow/rollover_batchh.py, .dev-flow/rollover_batchi.py, .dev-flow/rollover_batchj.py (the close record itself excluded) |
+| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" .` from the project root · exit 0 · 0 block · 41 notice · 2026-10-18 |
+| Gated tree | `3bc444635692733ec7aa7573e0b8e098a79a90f6` · dirty — .dev-flow/2026-10-07-batch-08/evidence/inc001-brief.md, .dev-flow/2026-10-07-batch-09/evidence/inc001-brief.md, .gitattributes, .dev-flow/2026-10-07-batch-05/decisions-log.json, .dev-flow/2026-10-07-batch-06/decisions-log.json, .dev-flow/2026-10-07-batch-06/evidence/gen_verdict_sheet.py, .dev-flow/2026-10-07-batch-06/evidence/kanban-demo.json, .dev-flow/2026-10-07-batch-06/evidence/veredicto-batch06.html, .dev-flow/2026-10-07-batch-06/evidence/veredicto-board.json, .dev-flow/2026-10-07-batch-07/decisions-log.json, .dev-flow/2026-10-07-batch-08/decisions-log.json, .dev-flow/rollover_batchg.py, .dev-flow/rollover_batchh.py, .dev-flow/rollover_batchi.py, .dev-flow/rollover_batchj.py (the close record itself excluded) |
 | Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`) — `devflow-init.py --fold-canon`: 10 folded, 0 kept, 0 refused (HLR-1901..HLR-1905, LLR-1901.1..LLR-1905.1); the status cell of LLR-1803.2 (the hint's two wordings, 2026-10-18-batch-01) updated by hand: superseded in part by LLR-1904.1 |
 
 ---
@@ -91,7 +91,7 @@ Also found before the batch, untracked and left alone: `.dev-flow/2026-10-07-bat
 
 ### Conditional-gate discharge
 
-- **Conditional-gate discharge:** 7 condition(s) · ✅ all discharged — the PDR's `approved with conditions` (PC-1..PC-6) and the DDR architect lens's DDR-C1, each re-read at the DDR (the table below).
+- **Conditional-gate discharge:** 7 condition(s) · ✅ all discharged — the PDR's `approved with conditions` (PC-1..PC-6) and the DDR architect lens's DC-1, each re-read at the DDR (the table below).
 
 | Condition | Discharged? | The artifact line that proves it |
 |---|---|---|
@@ -99,9 +99,9 @@ Also found before the batch, untracked and left alone: `.dev-flow/2026-10-07-bat
 | PC-2 the wide-path truncate reachable | ✓ re-read by the architect | `tests/test_present_narrow.py::test_TC_1904_an_overflowing_count_is_cut_visibly`; N7 KILLED |
 | PC-3 a reddening mutant per narrow-key guard | ✓ re-read by the architect | AT-1903's keys; N10–N14 KILLED; N15 an equivalent mutant, declared |
 | PC-4 AT-1905's corrupted copies; TC-1901's mutant | ✓ re-read by the qa-reviewer | `tests/test_backlog_polish_round.py` (8 arms); M3 KILLED |
-| PC-5 the notice seen painted | ✓ by exercise after DDR-C1 | `prototypes/backlog_polish/out/narrow-current-narrow-30x12-x.png` |
+| PC-5 the notice seen painted | ✓ by exercise after DC-1 | `prototypes/backlog_polish/out/narrow-current-narrow-30x12-x.png` |
 | PC-6 `esc`/`q`, the page, the enablers | ✓ re-read by the architect | `design/design-proposal.md` §3, §7; `docs/ARCHITECTURE.md` §4 |
-| DDR-C1 PC-5 exercised, not declared | ✓ re-read by the orchestrator | the same capture; `design/DDR-2026-10-18-batch-02.md` §B |
+| DC-1 PC-5 exercised, not declared | ✓ re-read by the orchestrator | the same capture; `design/DDR-2026-10-18-batch-02.md` §B |
 
 ---
 
