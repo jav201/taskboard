@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-18-batch-01 |
 | Objective | Present v3: two views inside R -- the gantt view as shipped, its cursor note keeping line breaks and list items, and the split view (prototype D2 stacked: the gantt rows on top, every shown open task's notes below at once, two columns from 100 wide); 1/2 and tab/shift+tab switch, pgdn/pgup scroll the notes; R always opens on the gantt view |
-| Last updated | P3 · 2026-10-18 |
+| Last updated | P5 · 2026-10-18 |
 | Standing authorization | standing authorization — the coordinator's commission of 2026-10-18 (the runtime cannot prompt): «Open a NEW dev-flow batch in `C:\Users\jjgh8\Github\taskboard` and implement the approved presentation design … Create a new local branch `present-v3` from main … follow the runbook … Run P4 and the P5 close.» Hard rules quoted from it: «No push, merge, reset or force», «At most 4 SOURCE files per increment», «Never rewrite oracle frames whose hashes earlier increments recorded», «An independent `code-reviewer` per increment, spawned». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents); commits on `present-v3` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's design verdicts of 2026-10-17/18 on `prototypes/present_views/` (round 2, D2 · stacked) are the design authority. |
 | First gate | step 1, on `main` `6ddea9f` before the branch: exit 1 — 85 block, all `V59` naming the untracked `prototypes/present_views/**` files (this batch's prototype evidence: committed by increment 001 and named in its §2; the regenerable PNGs, embedded in the prototype page, go to `.git/info/exclude`) · 41 notice; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 62 notice. |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `e97e6e6466e708cd2dac37b19c2260950bc34b51`; `git merge-base main origin/main` = `e97e6e6` = the origin tip, local `main` 1 ahead / 0 behind (`6ddea9f`, a backlog-only commit) — no rebase is owed; `git switch -c present-v3 main`; `base_ref` = `6ddea9f726f87edfb1152abc152e999cf31d9f04`. RC-1 (b): not already shipped — `git grep -n "PRESENT_VIEWS\|present_alloc\|present_note_lines" origin/main -- taskboard` → no hit; `render_present` on `origin/main` takes no `view` (`views.py:6263-6264`). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest `origin/main` commit 2026-10-17 18:02 -0600. Premises P-1..P-8: `01-requirements.md` §2.7. |
@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0 — the batch is open on `present-v3` by rollover from 2026-10-17-batch-01; three stories READY; triggers A2/A3 fired, so ARQ is next, then P1.
+Closed (P5, 2026-10-18) — ARQ approved (one iterate), P1/P2 approved after one iterate-to-refine, the PDR sealed approved with conditions, increments 001 (`a729f78`, views.py) and 002 (`038b5f2`, app.py + README) implemented, reviewed (code-reviewer OK to advance, 0 HIGH, each re-read after its fold) and committed; the DDR approved; P4 PASS-WITH-NOTES; the batch is closed on the local branch `present-v3`, not pushed (the commission forbids a push).
 
 ## Objective
 
@@ -62,14 +62,19 @@ Give the presentation a second, switchable view that shows every shown open task
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-1801 | READY | the split view |
-| US-1802 | READY | the gantt note's line breaks |
-| US-1803 | READY | keys, scroll, shared state |
+| US-1801 | DONE | increment 001 (renderer), 002 (screen) · AT-1801 pass |
+| US-1802 | DONE | increment 001 · AT-1802 pass |
+| US-1803 | DONE | increments 001, 002 · AT-1803 pass |
+| ARQ | approved | `docs/ARCHITECTURE.md` (`92aafe0`) |
+| PDR | approved with conditions | `design/PDR-2026-10-18-batch-01.md`; conditions re-read at the DDR / P4 |
+| DDR | approved | `design/DDR-2026-10-18-batch-01.md` |
+| P4 | PASS-WITH-NOTES | `04-validation.md`, gate run `evidence/suite-p4.txt` |
+| P5 | closed | `05-close.md` |
 
 ## Roadmap + increment plan
 
 - 001 — the renderer: `taskboard/views.py` (the split view, the shared note wrapper, the gantt note fix, the header's view word); the PRES-V3 oracle frames; renderer tests. 1 source file.
-- 002 — the screen: `taskboard/app.py` (`PresentScreen`: keys, view and scroll state, hint row, export of the current view), `taskboard/views.py` (`present_paths` view suffix); app-level tests; README. 2 source files.
+- 002 — the screen: `taskboard/app.py` (`PresentScreen`: keys, view and page state, hint row, export of the current view); app-level tests; README. 1 source file (`present_paths`' view suffix shipped in 001's `views.py`).
 
 ## Key decisions
 
@@ -78,6 +83,15 @@ Give the presentation a second, switchable view that shows every shown open task
 | 2026-10-18 | branch `present-v3` from local `main` `6ddea9f`; no rebase | `main` already contains `origin/main` (merge-base = origin tip); the commission names `main` |
 | 2026-10-18 | rollover by script (the 2026-10-07 `rollover_batchj.py` pattern, using `devflow-init.py`'s own seed helpers); the evidence home's `-text` mark is a per-directory `evidence/.gitattributes` | the root `.gitattributes` was dirty before the batch and the commission says to leave it alone (the 2026-10-17-batch-01 precedent) |
 | 2026-10-18 | the prototype's PNGs go to `.git/info/exclude`; its sources, SVGs and page are committed by increment 001 | the page embeds every PNG (6 MB) and `app_capture*.py` regenerate them; the 2026-10-16-batch-01 precedent committed the round's sources and SVGs |
+| 2026-10-18 | one renderer with a `view` argument; the view and the page live on `PresentScreen`, never persisted | ARQ / PDR D1, D3; the brief: the presentation writes only the flag |
+| 2026-10-18 | `scroll` is a page; pages tile with no gap and never move back; the whole area pages when no cursor note can scroll | UX-1 (a 5-row step skipped rows), the brief's area scroll, PDR PC-U1 |
+| 2026-10-18 | the cursor keeps a row below the per-note floor; a page-0 overflow keeps the cursor's block in view | QA-1, QA2-1 |
+| 2026-10-18 | a one-row cut reads ` … +N lines`, no second `…` | the brief's wording, UX-4 |
+| 2026-10-18 | the hint's long wording only when it fits the row | QA-10's 100-column arm found a 107-cell hint in a 98-cell row |
+| 2026-10-18 | the split view exports to `-split` files | exporting both views on one day keeps both (PDR D4) |
+| 2026-10-18 | notes with wide glyphs wrap by cells; ASCII keeps `textwrap` | code-review F1 (increment 001), S-3; every ASCII oracle frame unchanged |
+| 2026-10-18 | a resize resets the page | code-review F1 (increment 002): dead pages after a taller resize |
+| 2026-10-18 | `present_paths` does not validate `view` (S-1); the deleted note helpers break two frozen prototypes | internal callers pass a constant; ARCHITECTURE §3 |
 
 ## Risks / watch-items
 
@@ -100,10 +114,15 @@ Give the presentation a second, switchable view that shows every shown open task
 
 **P0 (step 3, after the rollover):** 0 block · 62 notice — the step-3 placeholder NOTICEs (`V9`, `V27`, `V31`–`V34`, `V36`–`V38`, `V41`, `V43`–`V51`, `V54`) over the unfilled seeds; `V30` (bundle run); historical NOTICEs over closed batches (`V9` on old packets, `V13`, `V22`, `V23`, `V42`, `V53`) unchanged from 2026-10-17-batch-01.
 
+**ARQ … P5 gates:** 0 block at every gate after step 1. `V2` did not block at P3 (the AT nodes were on disk before their increment's commit). `V26` BLOCKed once at the ARQ gate run (the contract's ledger cells named LED .1 before the ledger held it) — cleared by writing LED .1. `V62` NOTICEs between each `--station` move and this plan's rewrite (DDR, P4) — cleared here. `V23` NOTICEs on the DDR record's and the proposal's template placeholders until they were filled. `V27` between each packet and its decision. Historical NOTICEs over closed batches (`V9` on old packets, `V13`, `V22`, `V23`, `V42`, `V53`) unchanged; `V25` does not apply (origin exists); `V30` (bundle run). At close step 5 `V57` (the `Gated tree` placeholder) and at the final gate `V57` (record predates the tree by 1 commit) — both expected by the runbook. **Gate notices at the close:** declared in this section.
+
 **Found before the batch:** tracked and modified — `.gitattributes`, `.dev-flow/2026-10-07-batch-0{8,9}/evidence/inc001-brief.md` (line endings only); untracked — `.dev-flow/2026-10-07-batch-0{5..8}/decisions-log.json`, `.dev-flow/2026-10-07-batch-06/evidence/{gen_verdict_sheet.py,kanban-demo.json,veredicto-batch06.html,veredicto-board.json}`, `.dev-flow/rollover_batch{g,h,i,j}.py`. Not touched.
 
 ## Test ledger
 
 | Suite / command | Last run | Result |
 |---|---|---|
-| `python -m pytest -q -p no:cacheprovider` on `base_ref` | — | owed at increment 001 (`evidence/suite-base.txt`) |
+| `python -m pytest -q -p no:cacheprovider` on a `git archive 6ddea9f` export (`evidence/suite-base.txt`) | 2026-10-18 | 14 failed, 2649 passed — the 2 known standup failures + 12 git-dependent tests that need a `.git` (10 in `test_scratch_cannot_be_committed.py`, one each in `test_no_live_board.py` and `test_precommit_gate.py`; the transcript's header miscounts them, 04-validation G-5) |
+| full suite after increment 001, worktree (`evidence/suite-001.txt`) | 2026-10-18 | 2 failed, 2709 passed |
+| full suite after increment 002, worktree (`evidence/suite-002.txt`) | 2026-10-18 | 2 failed, 2721 passed |
+| P4 gate run on `038b5f2`, clean worktree (`evidence/suite-p4.txt`) | 2026-10-18 | 2 failed, 2721 passed — the 2 pre-existing standup failures; `test_win_clipboard_roundtrip` passed |

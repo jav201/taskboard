@@ -154,8 +154,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -266,6 +266,21 @@
       "station": "P3",
       "date": "2026-10-18",
       "decision": "standing authorization — P3 increment 001 approved under the 2026-10-18 commission: the split view and the note wrapper in views.py (a729f78); RED 51 on base, 30/30 mutants killed, 2709 passed + 2 known standup failures; code-reviewer OK to advance, 0 HIGH (F1 fixed: cell-width wrap, LED .6); increment 002 is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P3 increment 002 approved under the 2026-10-18 commission: the view keys, page, hint and export in app.py; RED 16 on base, 16/16 mutants killed, 2721 passed + 2 known standup failures; code-reviewer OK to advance, 0 HIGH (F1 fixed: resize resets the page, LED .5); every LLR covered, the DDR is next"
+    },
+    {
+      "station": "DDR",
+      "date": "2026-10-18",
+      "decision": "standing authorization — DDR approved under the 2026-10-18 commission: architect and qa-reviewer approve, PDR conditions PC-A1/A2/Q1/Q2/U1 re-read discharged, PC-U2 at P4; P4 is next"
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P4 PASS-WITH-NOTES under the 2026-10-18 commission: the orchestrator's gate run on 038b5f2 (2721 passed + the 2 known standup failures), qa-reviewer 10/10 requirements pass, ledger 2663 + 60 = 2723, ux walkthrough pass-with-notes; G-1..G-5 minor; the close is next"
     }
   ],
   "obsidian_synced": false,

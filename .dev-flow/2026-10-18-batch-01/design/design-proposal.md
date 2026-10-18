@@ -15,7 +15,7 @@
 > **Source:** `/dev-flow-init` step 4's seed-by-level table, which is this fact's one home. A level marked `—` **does not owe this artifact, and its absence is not an omission**; `by trigger` means the station exists only when the `triggers` block fired, and `stations_active` in `state.json` is the authority for *this* batch. Where a SECTION or a gate row is owed more narrowly than the artifact, it says so on the row.
 
 > **Where this lives: the VAULT + Drive**, not the repo — it is deliberation, and its traceability to
-> code is weak. It is **cited by id** from the repo (`PDR-<batch_id>#D<n>`), never copied.
+> code is weak. It is **cited by id** from the repo (`PDR-2026-10-18-batch-01#D1`), never copied.
 > What binds code — a frozen interface, a design characteristic — also lands in the **repo**, in the
 > requirement or in `docs/ARCHITECTURE.md`. *The vault keeps the deliberation; the repo keeps the commitment.*
 

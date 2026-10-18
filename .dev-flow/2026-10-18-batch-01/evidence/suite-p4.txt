@@ -1,0 +1,15 @@
+$ P4 gate run -- a clean git worktree at 038b5f2 (present-v3 after increment 002), git status: 0 changed files
+$ python -m pytest -q -p no:cacheprovider --color=no
+        markup = render_standup(board, False, None, team_state=state, width=80, height=0).markup
+        lines = markup.splitlines()
+        ana_line = next(line for line in lines if "Ana" in line)
+        assert HEX["over"] in ana_line, "stale row should wear the over tone"
+>       jav_line = next(line for line in lines if "username_subject" in line)
+E       StopIteration
+
+tests\test_team_views.py:103: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable
+FAILED tests/test_team_views.py::test_standup_flags_stale_member_in_over_tone
+2 failed, 2721 passed in 513.07s (0:08:33)
+exit 1
