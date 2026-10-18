@@ -27,8 +27,8 @@
 
 | Field | Value |
 |---|---|
-| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" .` from the project root · exit 0 · 0 block · 41 notice · 2026-10-18 |
-| Gated tree | `6bb313008a69ed9725c07ccff71b460feb7e44ed` · dirty — .dev-flow/2026-10-07-batch-08/evidence/inc001-brief.md, .dev-flow/2026-10-07-batch-09/evidence/inc001-brief.md, .dev-flow/BACKLOG.md, .gitattributes, .dev-flow/2026-10-07-batch-05/decisions-log.json, .dev-flow/2026-10-07-batch-06/decisions-log.json, .dev-flow/2026-10-07-batch-06/evidence/gen_verdict_sheet.py, .dev-flow/2026-10-07-batch-06/evidence/kanban-demo.json, .dev-flow/2026-10-07-batch-06/evidence/veredicto-batch06.html, .dev-flow/2026-10-07-batch-06/evidence/veredicto-board.json, .dev-flow/2026-10-07-batch-07/decisions-log.json, .dev-flow/2026-10-07-batch-08/decisions-log.json, .dev-flow/rollover_batchg.py, .dev-flow/rollover_batchh.py, .dev-flow/rollover_batchi.py, .dev-flow/rollover_batchj.py (the close record itself excluded) |
+| Gate record | `python "C:/Users/jjgh8/.claude/skills/dev-flow/scripts/devflow-validate.py" .` from the project root · exit 0 · 0 block · 39 notice · 2026-10-18 |
+| Gated tree | `7eb3f5e0db1a28b2463bd4c69f3d42f7bcb06b7f` · dirty — .dev-flow/2026-10-07-batch-08/evidence/inc001-brief.md, .dev-flow/2026-10-07-batch-09/evidence/inc001-brief.md, .gitattributes, .dev-flow/2026-10-07-batch-05/decisions-log.json, .dev-flow/2026-10-07-batch-06/decisions-log.json, .dev-flow/2026-10-07-batch-06/evidence/gen_verdict_sheet.py, .dev-flow/2026-10-07-batch-06/evidence/kanban-demo.json, .dev-flow/2026-10-07-batch-06/evidence/veredicto-batch06.html, .dev-flow/2026-10-07-batch-06/evidence/veredicto-board.json, .dev-flow/2026-10-07-batch-07/decisions-log.json, .dev-flow/2026-10-07-batch-08/decisions-log.json, .dev-flow/rollover_batchg.py, .dev-flow/rollover_batchh.py, .dev-flow/rollover_batchi.py, .dev-flow/rollover_batchj.py (the close record itself excluded) |
 | Requirements canon | `REQUIREMENTS.md` (`artifact_homes.requirements_canon`) — `devflow-init.py --fold-canon`: 10 folded, 0 kept, 0 refused (HLR-1801..HLR-1803, LLR-1801.1..LLR-1803.3); the status cells of the three rows this batch supersedes in part (LLR-1001.1's oracle, LLR-1601.1's header row, LLR-1602.2 (j)'s hint texts) updated by hand |
 
 ---
@@ -91,7 +91,7 @@ Also found before the batch, untracked and left alone: `.dev-flow/2026-10-07-bat
 
 ### Conditional-gate discharge
 
-- **Conditional-gate discharge:** 1 conditional gate — the PDR, `approved with conditions` (PC-A1, PC-A2, PC-Q1, PC-Q2, PC-U1, PC-U2), each re-read at the DDR or P4.
+- **Conditional-gate discharge:** 6 condition(s) · ✅ all discharged — the PDR's `approved with conditions` (PC-A1, PC-A2, PC-Q1, PC-Q2, PC-U1, PC-U2), each re-read at the DDR or P4 (the table below).
 
 | Condition | Discharged? | The artifact line that proves it |
 |---|---|---|
