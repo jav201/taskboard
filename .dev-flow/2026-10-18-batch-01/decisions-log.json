@@ -1,0 +1,62 @@
+[
+  {
+    "station": "P0",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P0 closed under the coordinator's commission of 2026-10-18 (implement the approved presentation design): batch opened on present-v3 from main 6ddea9f by rollover (3369900), three stories READY, triggers A2/A3 fired so ARQ is next"
+  },
+  {
+    "station": "ARQ",
+    "date": "2026-10-18",
+    "decision": "standing authorization — ARQ module map approved under the 2026-10-18 commission after the architect's iterate (A-1 the prototypes' private-name dependency, A-2..A-5 interface rows and the keymap carve-out; A-6 withdrawn) was folded into docs/ARCHITECTURE.md and re-read (approve); P1 is next"
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P1 requirements approved under the 2026-10-18 commission: 3 US, 3 HLR, 7 LLR, 8 premises TRUE, IFC Part A one FLOW block (7 nodes), scan security_required true (form/escape, answered in §6.3; C8 so security-reviewer joins P2); P2 review is next"
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P2 iteration 1: architect iterate-to-refine (major A-1: LLR-1801.3's parent; minors A-2..A-8), qa-reviewer iterate-to-refine (major QA-1 below-floor share, QA-3, QA-4; QA-2 AT export arm; minors), ux-reviewer iterate-to-refine (blocker UX-1: pgdn skipped note rows; minors UX-2..UX-7), security-reviewer approve (3 LOW); requirement defects return to P1 for amendment, then a P2 re-review"
+  },
+  {
+    "station": "P1",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P1 iteration 1 amendments (LED-2026-10-18-batch-01.2) folded: LLR-1801.3 retraced to HLR-1803 and made page-based, the below-floor share, the empty split, the hint fit rule, the AT export/pgup arms; P2 re-review is next"
+  },
+  {
+    "station": "P2",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P2 approved under the 2026-10-18 commission after iteration 2 (architect, qa-reviewer, ux-reviewer approve; security-reviewer approve, 0 HIGH); iteration-2 minors folded in LED-2026-10-18-batch-01.3; the PDR is next"
+  },
+  {
+    "station": "PDR",
+    "date": "2026-10-18",
+    "decision": "standing authorization — PDR sealed approved with conditions under the 2026-10-18 commission (architect PC-A1/A2, qa-reviewer PC-Q1/Q2, ux-reviewer PC-U1 applied at the seal, PC-U2 owed at P4; LED-2026-10-18-batch-01.4); P3 is next"
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P3 increment 001 approved under the 2026-10-18 commission: the split view and the note wrapper in views.py (a729f78); RED 51 on base, 30/30 mutants killed, 2709 passed + 2 known standup failures; code-reviewer OK to advance, 0 HIGH (F1 fixed: cell-width wrap, LED .6); increment 002 is next"
+  },
+  {
+    "station": "P3",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P3 increment 002 approved under the 2026-10-18 commission: the view keys, page, hint and export in app.py; RED 16 on base, 16/16 mutants killed, 2721 passed + 2 known standup failures; code-reviewer OK to advance, 0 HIGH (F1 fixed: resize resets the page, LED .5); every LLR covered, the DDR is next"
+  },
+  {
+    "station": "DDR",
+    "date": "2026-10-18",
+    "decision": "standing authorization — DDR approved under the 2026-10-18 commission: architect and qa-reviewer approve, PDR conditions PC-A1/A2/Q1/Q2/U1 re-read discharged, PC-U2 at P4; P4 is next"
+  },
+  {
+    "station": "P4",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P4 PASS-WITH-NOTES under the 2026-10-18 commission: the orchestrator's gate run on 038b5f2 (2721 passed + the 2 known standup failures), qa-reviewer 10/10 requirements pass, ledger 2663 + 60 = 2723, ux walkthrough pass-with-notes; G-1..G-5 minor; the close is next"
+  },
+  {
+    "station": "P5",
+    "date": "2026-10-18",
+    "decision": "standing authorization — P5 close batch under the 2026-10-18 commission: the close record (gate exit 0 on 6bb3130), the backlog lane (Present v3 done, Slide kept optional, Cards dropped, the review notes carried); present-v3 not pushed (push not authorized)"
+  }
+]
