@@ -160,7 +160,7 @@
     }
   ],
   "guided": false,
-  "current_station": "P3",
+  "current_station": "DDR",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -277,6 +277,11 @@
       "station": "P3",
       "date": "2026-10-18",
       "decision": "standing authorization — increment 002 gated under the 2026-10-18 commission: below 36 columns the presentation paints the longest fitting PRESENT_NARROW rung in mut, takes no key but esc/q and x notifies; the hint's four wordings and the visible cut; 2 source files; RED on base 5/6 (the 6th a pin); 19/20 mutants KILLED (N15 a declared pin); 2739 passed, 0 failed (run 2; run 1's HelpModal timing flake recorded); code-reviewer OK to advance after F1-F3 (LED .6, .7)"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-18",
+      "decision": "standing authorization — increment 003 gated under the 2026-10-18 commission: the polish prototype round (45 real-app captures: contrast, hint80, notecap at 118x31/80x25 with 1-2 variants each, the narrow frame for review; manifest; one Spanish page recommending contrast A, hint80 A, notecap A); 0 source files, no file under taskboard/ changed; AT-1905 RED on base and on 8 corrupted copies; 2740 passed, 0 failed; code-reviewer OK to advance after F1-F4 (LED .8); P3 complete, the DDR is next"
     }
   ],
   "obsidian_synced": false,

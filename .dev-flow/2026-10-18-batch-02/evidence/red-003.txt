@@ -1,0 +1,26 @@
+# RED counterfactual, increment 003: tests/test_backlog_polish_round.py run against base_ref 9e82b10 (a git archive export, the test copied in; prototypes/backlog_polish/ does not exist there) — RED. Its corrupted-copy arms (a capture moved aside, a variant equal to the current look, an external href, a non-export SVG, a digest drift, a recommendation naming another item's capture) run inside the node on copies of the committed round, each asserting the checker's rejection.
+$ python -m pytest -q -p no:cacheprovider tests/test_backlog_polish_round.py   (base export)
+E       AssertionError: assert ['no page bac...ototype.html'] == []
+E         
+E         Left contains one more item: 'no page backlog-polish-prototype.html'
+E         Use -v to get more diff
+FAILED tests/test_backlog_polish_round.py::test_AT_1905_the_round_is_fit_for_a_verdict
+1 failed in 0.60s
+
+# LLR-1905.1 inspection, on the increment-003 tree
+$ git diff --stat 1ba8c3f -- taskboard/   (after running capture.py and build_html.py)
+(empty above = no file under taskboard/ changed)
+$ grep -n "write_text\|write_bytes\|open(" prototypes/backlog_polish/*.py
+prototypes/backlog_polish/build_html.py:167:    PAGE.write_text(page, encoding="utf-8")
+prototypes/backlog_polish/capture.py:221:    path.write_text(re.sub(r"@font-face\s*\{[^}]*\}", "", svg), encoding="utf-8")
+prototypes/backlog_polish/capture.py:261:    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1, ensure_ascii=False) + "\n",
+$ grep -c . on the round's own paths: OUT = HERE / "out", PAGE = HERE / "backlog-polish-prototype.html"
+prototypes/backlog_polish/build_html.py:23:OUT = HERE / "out"
+prototypes/backlog_polish/build_html.py:24:PAGE = HERE / "backlog-polish-prototype.html"
+prototypes/backlog_polish/capture.py:49:OUT = HERE / "out"
+
+# positive control for the empty diff above: the same command over increment 002's range
+$ git diff --stat 2c6ac76 1ba8c3f -- taskboard/
+ taskboard/app.py   | 52 +++++++++++++++++++++++++++++++++++++++++++---------
+ taskboard/views.py | 29 +++++++++++++++++++----------
+ 2 files changed, 62 insertions(+), 19 deletions(-)
