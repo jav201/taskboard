@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-17-batch-01",
-  "batch_objective": "Gantt tick label: remove the scale label (e.g. 'Mondays · 1 day = 2 cells') everywhere it is painted; the gantt view's tick-row label follows the presentation's rule (selected task ▸ / the echo's own text / selected: no dates / blank), and the presentation's no-selection fallback becomes blank",
+  "batch_id": "2026-10-18-batch-01",
+  "batch_objective": "Present v3: two views inside R -- the gantt view as shipped, its cursor note keeping line breaks and list items, and the split view (prototype D2 stacked: the gantt rows on top, every shown open task's notes below at once, two columns from 100 wide); 1/2 and tab/shift+tab switch, pgdn/pgup scroll the notes; R always opens on the gantt view",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -145,39 +145,53 @@
       "to": "core",
       "date": "2026-10-17",
       "reason": "batch 2026-10-17-batch-01 opened by rollover from 2026-10-16-batch-01; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-18",
+      "reason": "batch 2026-10-18-batch-01 opened by rollover from 2026-10-17-batch-01; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "P0",
+  "phase_status": "not-started",
   "stations_active": [
     "P0",
+    "ARQ",
     "P1",
     "P2",
+    "PDR",
     "P3",
+    "DDR",
     "P4",
     "P5"
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 1,
+    "P1": 0,
     "P2": 0,
     "P3": 0,
     "P4": 0,
-    "P5": 0
+    "P5": 0,
+    "ARQ": 0,
+    "DDR": 0,
+    "PDR": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-17T16:15:26",
+    "evaluated_at": "2026-10-18T10:55:13",
     "fired": [
+      "A2",
+      "A3",
       "B1",
       "B3",
       "B4",
-      "D1"
+      "C8",
+      "D1",
+      "E1"
     ],
     "not_fired": [
       "A1",
-      "A2",
-      "A3",
       "A4",
       "B2",
       "C1",
@@ -187,81 +201,33 @@
       "C5",
       "C6",
       "C7",
-      "C8",
       "D2",
-      "E1",
       "E2",
       "E3",
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-17-batch-01/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-18-batch-01/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-17-batch-01/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-17-batch-01/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-17-batch-01/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-18-batch-01/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-18-batch-01/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-18-batch-01/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-17-batch-01/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-17-batch-01/evidence/",
+    "increments": "repo:.dev-flow/2026-10-18-batch-01/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-18-batch-01/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-17-batch-01.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-17-batch-01.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-17-batch-01/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-17-batch-01/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-18-batch-01.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-18-batch-01.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-18-batch-01/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-18-batch-01/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "d79a33e51d2d7509a9ff5d64b9098027665d7d72",
+  "base_ref": "6ddea9f726f87edfb1152abc152e999cf31d9f04",
   "artifacts": {},
-  "decisions_log": [
-    {
-      "station": "P0",
-      "date": "2026-10-17",
-      "decision": "asked at the gate — the operator, 2026-10-17, on batch 2026-10-16-batch-01's captures (app-004-80x25-present-open.svg included), relayed by the coordinator: «Ya vi las capturas, se ven todo en orden.» — the 80-column Present frame and the increment-004 captures are approved; the backlog item 'the operator's visual verdict on the 80-column oracle frame (now PRES-R2)' is discharged and marked resolved in BACKLOG.md; batch-01's closed records are not edited"
-    },
-    {
-      "station": "P0",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P0 Definition of Ready: US-1701 READY (INVEST all ✓; AT stated at the behaviour level); triggers B1 B3 B4 D1 fired, A1-A4 not fired so no ARQ/PDR/DDR; RC-1 origin/main d79a33e = base_ref, RC-1 (b) not shipped, RC-2 answered; batch record committed in 3cde009"
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P1 contract: US-1701 → HLR-1701 → LLR-1701.1; AT-1701, TC-1701; LED-2026-10-17-batch-01.1 (supersedes the scale-label clauses of HLR-105, LLR-101.10, LLR-1601.1); premises P-1..P-4 TRUE; scan security_required false; gate 0 block"
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P2 iteration 1: iterate-to-refine (architect, qa-reviewer, ux-reviewer; 1 blocker QA-1 AT reachability, 8 majors QA-2..4, A-1, A-3, UX-1..3 — requirement defects); amend P1 in LED-2026-10-17-batch-01.2 and review again"
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P1 iteration 1: LED-2026-10-17-batch-01.2 folds the P2 iteration-1 findings (QA-1..7, A-1, A-3..6, UX-1..6); premises P-5..P-8 TRUE by probe; scan security_required false; gate 0 block"
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P2 iteration 2: approve (architect, qa-reviewer, ux-reviewer all approve); minors folded in LED-2026-10-17-batch-01.3 and re-read; QA2-1 (the dead-cell law, tests/test_gantt.py:287) carried into increment 001 as an implementation finding; gate 0 block"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P3 increment 001 (63c9669): _gantt_tick_label in both views, _gantt_scale_label deleted; AT-1701/TC-1701 30 nodes; RED 27 failed on base; 19/19 mutants killed; suite 2661 passed + 2 known standup failures; code-reviewer PASS-with-notes, 0 HIGH (F-3 fixed; F-1 to the close; F-2 out of scope; F-4 kept); gate 0 block"
-    },
-    {
-      "station": "P4",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P4 PASS-WITH-NOTES: the orchestrator's gate run on 63c9669 (suite-p4.txt) 2661 passed, 2 failed = the known standup pair; ledger 2634 - 1 + 30 = 2663 reconciles; qa-reviewer 10/11 rows, gaps G-001..G-003 all minor (the x key read at its producer; 60/48 and hide-all at renderer level; the README image out of scope)"
-    },
-    {
-      "station": "P5",
-      "date": "2026-10-17",
-      "decision": "standing authorization — P5 close batch: canon folded (HLR-1701, LLR-1701.1; 2 folded) and the five superseded rows' status cells updated; backlog reconciled (gantt tick label done, README image added, 80-column verdict resolved at P0); no new control; push not authorized, commits stay on gantt-tick-label"
-    }
-  ],
+  "decisions_log": [],
   "obsidian_synced": false,
-  "created_at": "2026-10-17T16:11:35.855642",
+  "created_at": "2026-10-18T10:37:20.631773",
   "resumption_note": "Batch 2026-10-17-batch-01 opened by rollover from 2026-10-16-batch-01 on 2026-10-17; see its PLAN.md."
 }
