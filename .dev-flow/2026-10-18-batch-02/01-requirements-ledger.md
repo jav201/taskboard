@@ -43,3 +43,17 @@ above this line is ever edited._
 - **What changed:** Before → After. LLR-1901.1's numeric pass threshold: a 13-cell name painted `thirteen_cel…` → `thirteen_ce…`. The 12-cell column holds 11 cells of the name and `…` (`fit`), as HLR-1901's statement says; the contract's literal had 12. Found by TC-1901's first run (`AssertionError: assert 'thirteen_cel…' in '▎ thirteen_ce… …'`). Parent HLR-1901 re-read: unchanged ("its first 11 cells and `…`"). TC re-derived: the arm asserts `thirteen_ce…`.
 - **Why:** a wrong literal in the contract, not in the code (C-36: the literal reconciled to what `fit(name, 12)` emits).
 - **Evidence:** `python -m pytest tests/test_team_views.py` → `1 failed, 254 passed` with the old literal, `255 passed` after.
+
+### LED-2026-10-18-batch-02.6 — AT-1903's narrow keys (P3, increment 002)
+- **Requirement:** HLR-1903
+- **Date:** 2026-10-18
+- **What changed:** Before → After. AT-1903 at 30 columns: `1`, `tab`, `→`, `h`, `pagedown`, `pageup`, `space`, `a`, `x` → `tab`, `→`, `pagedown`, `pageup`, `space`, `a`, `x`; `1`, `shift+tab` and `h` declared as reaching the same guarded actions (`action_view`, `action_move`). The pairs `1` + `tab` (split → gantt → split) and `→` + `h` undo each other, so with the view or move guard removed the kept frame still matched: N12 and N13 SURVIVED the first battery run (`mutation-002.txt`, first run, not kept — the kept transcript is the rerun). Parent HLR-1903 re-read: unchanged. The AT re-derived: each pressed key changes the kept frame if it acts.
+- **Why:** the increment-002 battery (C-40: an arm that cannot go RED is inert — rewrite it).
+- **Evidence:** the first battery run's N12/N13 `GREEN (SURVIVED)`; the rerun's verdicts in `evidence/mutation-002.txt`.
+
+### LED-2026-10-18-batch-02.7 — TC-1903's sweep sampled above the floor (P3, increment 002 review)
+- **Requirement:** LLR-1903.1
+- **Date:** 2026-10-18
+- **What changed:** Before → After. TC-1903: widths 0–120 × heights 1, 2, 5, 24, 31 → widths 0–35 (every narrow width) and 36, 37, 50, 79, 80, 99, 100, 118, 120 (the floor, the label/two-column breakpoints, the operator sizes) × heights 1, 5, 31. `PRESENT_NARROW`'s rungs are built from `PRESENT_MIN_WIDTH` (code-review F2); the test keeps its literal table. Parent HLR-1903 re-read: unchanged.
+- **Why:** code-review F1 (MEDIUM): the full sweep took 20.6 s, 2.5× the next presentation node; the width law above 36 is the shipped frame's, already pinned at the operator sizes (TC-1001/1002) — 1.8 s after.
+- **Evidence:** `pytest --durations=3 tests/test_present_narrow.py` → `1.80s call … test_TC_1903_every_width_renders_a_whole_frame`.

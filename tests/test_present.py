@@ -74,7 +74,7 @@ def _plain(widget) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# TC-1001 / TC-1002 — the exact PRES-R rows at both operator sizes
+# TC-1001 / TC-1002 — the exact PRES-V3 gantt rows at both operator sizes
 # --------------------------------------------------------------------------- #
 def test_TC_1001_the_exact_presc_frame_at_118x30(tmp_path):
     """TC-1001 (LLR-1001.1): on the oracle board, the rendered frame at

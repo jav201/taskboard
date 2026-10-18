@@ -1,0 +1,23 @@
+# RED counterfactual, increment 002: tests/test_present_narrow.py (new, as reviewed and folded) run against base_ref 9e82b10 (a git archive export, the file copied in). Expected: every node RED but test_TC_1904_the_current_view_is_bold_and_bright, a regression pin (the shipped hint already paints the current view bold).
+$ python -m pytest -q -p no:cacheprovider tests/test_present_narrow.py
+E           AssertionError: (36, 0, '   today Wed Sep 30                 ')
+E                   AssertionError: ('gantt', 0, 1, '1 gantt 2 split ⇥ · ←→ · ␣ hide · a all · x export · esc')
+E                   assert '1 gantt 2 sp... export · esc' == ''
+E                     
+E                     + 1 gantt 2 split ⇥ · ←→ · ␣ hide · a all · x export · esc
+E       AssertionError: 1 gantt 2 split ⇥ · ←→ · ␣ hide · a all · x export · esc · 123456 hidden
+E       assert (72 == 34)
+E        +  where 72 = <function vis at 0x000001F297BE31A0>('1 gantt 2 split ⇥ · ←→ · ␣ hide · a all · x export · esc · 123456 hidden')
+E        +    where <function vis at 0x000001F297BE31A0> = views.vis
+E           textual.css.query.NoMatches: No nodes match '#present-frame' on PresentScreen()
+E           AssertionError: (36, 35, '   today Wed Sep 30                 ')
+E       AssertionError: (50, '1 gantt 2 split ⇥ · ←→ · ␣ hide · a all · x export · esc · 3 hidden')
+E       assert 67 <= (50 - 2)
+E        +  where 67 = <function vis at 0x000001F297BE31A0>('1 gantt 2 split ⇥ · ←→ · ␣ hide · a all · x export · esc · 3 hidden')
+E        +    where <function vis at 0x000001F297BE31A0> = views.vis
+FAILED tests/test_present_narrow.py::test_TC_1903_every_width_renders_a_whole_frame
+FAILED tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits
+FAILED tests/test_present_narrow.py::test_TC_1904_an_overflowing_count_is_cut_visibly
+FAILED tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits
+FAILED tests/test_present_narrow.py::test_AT_1904_the_hint_shortens_and_cuts_visibly
+5 failed, 1 passed in 6.88s

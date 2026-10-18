@@ -36,7 +36,7 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
 from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
                     present_hidden, present_tasks, render_present, render_view,
-                    save_present_png, PRESENT_VIEWS,
+                    save_present_png, PRESENT_MIN_WIDTH, PRESENT_VIEWS,
                      save_present_svg, sort_by_due, fit, vis, valid_url, _md)
 
 
@@ -272,24 +272,44 @@ class PresentScreen(ModalScreen[None]):
         self.query_one("#present-frame", Static).update(self._frame_text())
         self.query_one("#present-hint", Static).update(self._hint(self.size.width or 0))
 
+    def _narrow(self) -> bool:
+        """Below `PRESENT_MIN_WIDTH` the frame shows only how wide it must be:
+        no key but `esc`/`q` acts there, since nothing would show what it did."""
+        return (self.size.width or 0) < PRESENT_MIN_WIDTH
+
     def _hint(self, w: int) -> Text:
         """The keys, under the frame: the view switch (the current view bright),
         then the moves, then the hidden count — never painted in the frame. The
-        long wording when it fits the hint's `w - 2` cells, else the short one."""
+        first wording that fits the hint's `w - 2` cells, longest first; below
+        `PRESENT_MIN_WIDTH` only `esc leave` and the count; whatever is left
+        over is cut with a visible `…`."""
+        room = w - 2
+        if room <= 0:
+            return Text()
         hidden = len(present_hidden(self._board, self._project_id))
         tail = f" · {hidden} hidden" if hidden else ""
+        if w < PRESENT_MIN_WIDTH:
+            hint = Text("esc leave" + tail, style="#8b98a5")
+            hint.truncate(room, overflow="ellipsis")
+            return hint
         split = PRESENT_VIEWS[self._view] == "split"
-        long_keys = (("pgdn notes · " if split else "")
-                     + "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave")
-        names = sum(len(f"{i + 1} {n}  ") for i, n in enumerate(PRESENT_VIEWS))
-        wide = names + vis(long_keys + tail) <= w - 2
-        keys = long_keys if wide else (("pgdn · " if split else "")
-                                       + "⇥ · ←→ · ␣ hide · a all · x export · esc")
+        wordings = (
+            ("  ", ("pgdn notes · " if split else "")
+             + "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"),
+            (" ", ("pgdn · " if split else "") + "⇥ · ←→ · ␣ hide · a all · x export · esc"),
+            (" ", ("pgdn " if split else "") + "⇥ ←→ ␣ x esc"),
+            (" ", "esc"),
+        )
+        for gap, keys in wordings:
+            names = sum(vis(f"{i + 1} {n}{gap}") for i, n in enumerate(PRESENT_VIEWS))
+            if names + vis(keys + tail) <= room:
+                break
         hint = Text()
         for i, name in enumerate(PRESENT_VIEWS):
             hint.append(f"{i + 1} {name}", style="bold #e6edf7" if i == self._view else "#5b6675")
-            hint.append("  " if wide else " ")
+            hint.append(gap)
         hint.append(keys + tail, style="#8b98a5")
+        hint.truncate(room, overflow="ellipsis")
         return hint
 
     def _shown_ids(self) -> list[str]:
@@ -302,6 +322,8 @@ class PresentScreen(ModalScreen[None]):
         return self._cursor_id if self._cursor_id in ids else (ids[0] if ids else None)
 
     def action_move(self, delta: int) -> None:
+        if self._narrow():
+            return
         ids = self._shown_ids()
         cur = self._cursor(ids)
         if cur is None:
@@ -312,6 +334,8 @@ class PresentScreen(ModalScreen[None]):
 
     def action_view(self, index: int) -> None:
         """`1` / `2` — show that view, its notes scrolled back to the top."""
+        if self._narrow():
+            return
         self._view, self._scroll = index, 0
         self._paint()
 
@@ -323,6 +347,8 @@ class PresentScreen(ModalScreen[None]):
         """`pgdn` / `pgup` — the split view's notes one page down / up; a page
         that would paint the same frame (nothing left below) is not taken, so
         `pgup` answers at once."""
+        if self._narrow():
+            return
         if PRESENT_VIEWS[self._view] != "split":
             return
         new = max(0, self._scroll + delta)
@@ -336,6 +362,8 @@ class PresentScreen(ModalScreen[None]):
     def action_hide(self) -> None:
         """`space` — leave the cursor task out of the presentation; the cursor
         moves to the next task by due (the previous one at the end)."""
+        if self._narrow():
+            return
         ids = self._shown_ids()
         cur = self._cursor(ids)
         if cur is None:
@@ -351,6 +379,8 @@ class PresentScreen(ModalScreen[None]):
     def action_show_all(self) -> None:
         """`a` — every hidden task back in the presentation; nothing hidden,
         nothing written."""
+        if self._narrow():
+            return
         hidden = present_hidden(self._board, self._project_id)
         if not hidden:
             return
@@ -363,6 +393,10 @@ class PresentScreen(ModalScreen[None]):
 
     def action_export(self) -> None:
         w = self.size.width or 0
+        if self._narrow():
+            self.app.notify(f"Widen the terminal to {PRESENT_MIN_WIDTH}+ columns to export",
+                            title="Present", severity="warning", timeout=6, markup=False)
+            return
         h = self._frame_height()
         text = self._frame_text()
         svg_path, png_path = present_paths(self._board, self._project_name, self._today,

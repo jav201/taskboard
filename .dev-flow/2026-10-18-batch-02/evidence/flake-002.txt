@@ -1,0 +1,11 @@
+# the isolated re-runs of the node that failed in suite-002-run1.txt (tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling[118x30]; HelpModal paint after 3 pauses; no file of this batch reaches modals.py or keymap.py: git diff --stat HEAD -- taskboard/keymap.py taskboard/modals.py -> empty)
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling   (run 1)
+2 passed in 6.49s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling   (run 2)
+2 passed in 6.48s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling   (run 3)
+2 passed in 6.40s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling   (run 4)
+2 passed in 6.90s
+$ python -m pytest -q -p no:cacheprovider tests/test_help_keys.py::test_AT_1603_the_help_shows_the_global_keys_without_scrolling   (run 5)
+2 passed in 6.57s

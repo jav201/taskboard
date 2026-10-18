@@ -6022,18 +6022,18 @@ def _chainmap_nav(board: Board, show_archived: bool) -> list[list[str]]:
 
 
 # ---------------------------------------------------------------------------
-# presentation (PRES-C): the hybrid — gantt field on top, brief blocks below
+# presentation: two views, the gantt field on top of each
 # ---------------------------------------------------------------------------
 # `R` opens the presentation of the selected task's project (the focused project
 # when set). The renderer only draws; it never writes the board.
-# The layout is byte-faithful to the oracle frames of batch 2026-10-16-batch-01
-# (`PRES-R-*`, the PRES-C frames of batch 2026-10-07-batch-04 plus the variant-B
-# ruler and the start–end chips of prototypes/present_rulers): the label/chip/
-# field split, the `⟦━⟧` cursor (bright in the field), the gantt view's own
-# two-row ruler above the span row (today accent, as in the gantt view — the
-# operator's verdict; the field's today rule stays bright). S1: every untrusted
-# string is escaped and clipped before it enters markup; every row is exactly
-# `width` cells.
+# The layout is byte-faithful to the PRES-V3 oracle frames of batch
+# 2026-10-18-batch-01 (`gantt` and `split`, each with the variant-B ruler and the
+# start–end chips): the label/chip/field split, the `⟦━⟧` cursor (bright in the
+# field), the gantt view's own two-row ruler above the span row (today accent,
+# as in the gantt view — the operator's verdict; the field's today rule stays
+# bright). Below `PRESENT_MIN_WIDTH` the frame is one line saying how wide it
+# must be. S1: every untrusted string is escaped and clipped before it enters
+# markup; every row is exactly `width` cells.
 
 class _PresentGeo(NamedTuple):
     width: int
@@ -6166,6 +6166,10 @@ def _present_title(task: Task, width: int) -> str:
 
 
 PRESENT_VIEWS = ("gantt", "split")
+PRESENT_MIN_WIDTH = 36     # the narrowest frame whose gantt field keeps one cell
+# below it, the longest of these that fits: the number and the way out last longest
+PRESENT_NARROW = tuple(r.format(PRESENT_MIN_WIDTH) for r in (
+    "widen to {}+ columns · esc leave", "widen to {}+ columns", "needs {}+ cols", "{}+ cols", "{}+"))
 _PRESENT_ITEM = re.compile(r"\d{1,3}\. ")
 
 
@@ -6477,7 +6481,12 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
     task gets a block — a heading and its whole note when they fit, else a fair
     share (`present_alloc`), each cut declared — two columns from 100 wide, one
     below; `scroll` scrolls the notes (`_present_stack`). Byte-faithful to the
-    PRES-V3 oracle frames (batch 2026-10-18-batch-01) at 118x30 and 80x24."""
+    PRES-V3 oracle frames (batch 2026-10-18-batch-01) at 118x30 and 80x24.
+    Below `PRESENT_MIN_WIDTH` no view fits: one `mut` line, the longest rung of
+    `PRESENT_NARROW` that fits, whatever the view, cursor or scroll."""
+    if width < PRESENT_MIN_WIDTH:
+        msg = next((m for m in PRESENT_NARROW if vis(m) <= width), PRESENT_NARROW[-1])
+        return to_text([_pad(c(escape(fit(msg, width)), "mut"), width)], height, width)
     proj = board.project_by_id(project_id)
     if proj is None:
         projects = board.visible_projects(False)

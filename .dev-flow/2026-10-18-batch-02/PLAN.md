@@ -88,13 +88,13 @@ The open items of the `BACKLOG.md` lanes after 2026-10-16-batch-01, 2026-10-17-b
 | Story / station | Status | Notes |
 |---|---|---|
 | US-1901 | DONE | increment 001 · AT-1901, AT-1902 pass |
-| US-1902 | READY | the presentation at any width |
+| US-1902 | DONE | increment 002 · AT-1903, AT-1904 pass |
 | US-1903 | READY | the polish prototype round |
 | ARQ | approved | `docs/ARCHITECTURE.md` amended (one iterate: F1, F2 folded) |
 | P1 | approved (one iterate-to-refine) | 5 HLR, 5 LLR, AT-1901..1905, TC-1901..1904 (LLR-1905.1 by inspection), premises P-1..P-9; scan flags `truncate`, `escape` answered |
 | P2 | approved | iteration 1 iterate-to-refine (9 majors → LED .2), iteration 2 approve (7 minors → LED .3) |
 | PDR | approved with conditions | `design/PDR-2026-10-18-batch-02.md`; PC-1..PC-6 (PC-1..PC-3 as LED .4) |
-| P3 | in progress | increment 001 done (0 source files; RED 2+1 on base; 12/12 mutants KILLED; 2733 passed, 0 failed; code-reviewer OK, 0 HIGH); increment 002 next |
+| P3 | in progress | increment 001 done (0 source files; RED 2+1 on base; 12/12 mutants KILLED; 2733 passed, 0 failed; code-reviewer OK, 0 HIGH); increment 002 done (2 source files; RED 5/6 on base, the 6th a pin; 19/20 mutants KILLED, N15 a declared pin; 2739 passed, 0 failed on run 2 — run 1 had a HelpModal timing flake; code-reviewer OK after F1-F3); increment 003 next |
 
 ## Roadmap + increment plan
 
@@ -145,3 +145,4 @@ The open items of the `BACKLOG.md` lanes after 2026-10-16-batch-01, 2026-10-17-b
 |---|---|---|
 | `python -m pytest -q -p no:cacheprovider tests/test_team_views.py` on `backlog-fixes` = `9e82b10` | 2026-10-18 | 2 failed, 251 passed — the 2 standup failures |
 | full suite after increment 001, working tree (`evidence/suite-001.txt`) | 2026-10-18 | 0 failed, 2733 passed — `test_win_clipboard_roundtrip` passed |
+| full suite after increment 002, working tree (`evidence/suite-002.txt`, run 2) | 2026-10-18 | 0 failed, 2739 passed; run 1 (`suite-002-run1.txt`) 1 failed — a HelpModal paint-timing flake, 5/5 green alone (`flake-002.txt`) |

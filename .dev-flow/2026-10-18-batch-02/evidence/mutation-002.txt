@@ -1,0 +1,45 @@
+# mutation battery, increment 002 — run by the orchestrator in a scratch copy of the increment tree (scratchpad/mut2: taskboard/, tests/, pyproject.toml copied from the backlog-fixes working tree with increment 002 as reviewed and folded: LED .6, LED .7, code-review F1-F3); harness .dev-flow/2026-10-18-batch-02/evidence/mutate.py. An earlier run, before LED .6, had N12 and N13 SURVIVED (AT-1903 pressed key pairs that undo each other).
+$ python mutate.py 002
+arms: 20
+N1 the floor at 35 · taskboard/views.py: 'PRESENT_MIN_WIDTH = 36 ' -> 'PRESENT_MIN_WIDTH = 35 '
+    tests/test_present_narrow.py::test_TC_1903_every_width_renders_a_whole_frame: RED (KILLED) · 1 failed in 0.50s · restored 51f752a5e5d4
+N1 the floor at 35 · taskboard/views.py: 'PRESENT_MIN_WIDTH = 36 ' -> 'PRESENT_MIN_WIDTH = 35 '
+    tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits: RED (KILLED) · 1 failed in 4.23s · restored 51f752a5e5d4
+N2 the floor at 37 · taskboard/views.py: 'PRESENT_MIN_WIDTH = 36 ' -> 'PRESENT_MIN_WIDTH = 37 '
+    tests/test_present_narrow.py::test_TC_1903_every_width_renders_a_whole_frame: RED (KILLED) · 1 failed in 0.50s · restored 51f752a5e5d4
+N3 a rung dropped · taskboard/views.py: '"needs {}+ cols", ' -> ''
+    tests/test_present_narrow.py::test_TC_1903_every_width_renders_a_whole_frame: RED (KILLED) · 1 failed in 0.50s · restored 51f752a5e5d4
+N3 a rung dropped · taskboard/views.py: '"needs {}+ cols", ' -> ''
+    tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits: RED (KILLED) · 1 failed in 3.70s · restored 51f752a5e5d4
+N4 the rung in dim · taskboard/views.py: 'escape(fit(msg, width)), "mut")' -> 'escape(fit(msg, width)), "dim")'
+    tests/test_present_narrow.py::test_TC_1903_every_width_renders_a_whole_frame: RED (KILLED) · 1 failed in 0.52s · restored 51f752a5e5d4
+N5 no compact wording · taskboard/app.py: '            (" ", ("pgdn " if split else "") + "⇥ ←→ ␣ x esc"),\n' -> ''
+    tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits: RED (KILLED) · 1 failed in 0.53s · restored d3936fb54a2a
+N5 no compact wording · taskboard/app.py: '            (" ", ("pgdn " if split else "") + "⇥ ←→ ␣ x esc"),\n' -> ''
+    tests/test_present_narrow.py::test_AT_1904_the_hint_shortens_and_cuts_visibly: RED (KILLED) · 1 failed in 2.71s · restored d3936fb54a2a
+N6 the narrow hint uncut · taskboard/app.py: '            hint.truncate(room, overflow="ellipsis")\n            return hint' -> '            return hint'
+    tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits: RED (KILLED) · 1 failed in 0.50s · restored d3936fb54a2a
+N6 the narrow hint uncut · taskboard/app.py: '            hint.truncate(room, overflow="ellipsis")\n            return hint' -> '            return hint'
+    tests/test_present_narrow.py::test_AT_1904_the_hint_shortens_and_cuts_visibly: RED (KILLED) · 1 failed in 2.80s · restored d3936fb54a2a
+N7 the wide hint uncut (PC-2) · taskboard/app.py: '        hint.truncate(room, overflow="ellipsis")\n        return hint' -> '        return hint'
+    tests/test_present_narrow.py::test_TC_1904_an_overflowing_count_is_cut_visibly: RED (KILLED) · 1 failed in 0.53s · restored d3936fb54a2a
+N8 no zero-budget guard · taskboard/app.py: '        if room <= 0:\n            return Text()' -> '        if False:\n            return Text()'
+    tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits: RED (KILLED) · 1 failed in 0.49s · restored d3936fb54a2a
+N9 the narrow hint keeps the names · taskboard/app.py: '        if w < PRESENT_MIN_WIDTH:\n            hint = Text("esc leave"' -> '        if False:\n            hint = Text("esc leave"'
+    tests/test_present_narrow.py::test_TC_1904_the_hint_takes_the_first_wording_that_fits: RED (KILLED) · 1 failed in 0.49s · restored d3936fb54a2a
+N9 the narrow hint keeps the names · taskboard/app.py: '        if w < PRESENT_MIN_WIDTH:\n            hint = Text("esc leave"' -> '        if False:\n            hint = Text("esc leave"'
+    tests/test_present_narrow.py::test_AT_1904_the_hint_shortens_and_cuts_visibly: RED (KILLED) · 1 failed in 2.97s · restored d3936fb54a2a
+N10 space acts when narrow · taskboard/app.py: 'the previous one at the end)."""\n        if self._narrow():\n            return' -> 'the previous one at the end)."""'
+    tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits: RED (KILLED) · 1 failed in 3.52s · restored d3936fb54a2a
+N11 a acts when narrow · taskboard/app.py: 'nothing written."""\n        if self._narrow():\n            return' -> 'nothing written."""'
+    tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits: RED (KILLED) · 1 failed in 3.55s · restored d3936fb54a2a
+N12 the view keys act when narrow · taskboard/app.py: 'scrolled back to the top."""\n        if self._narrow():\n            return' -> 'scrolled back to the top."""'
+    tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits: RED (KILLED) · 1 failed in 4.03s · restored d3936fb54a2a
+N13 the moves act when narrow · taskboard/app.py: 'def action_move(self, delta: int) -> None:\n        if self._narrow():\n            return' -> 'def action_move(self, delta: int) -> None:'
+    tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits: RED (KILLED) · 1 failed in 4.33s · restored d3936fb54a2a
+N14 x exports when narrow · taskboard/app.py: '        if self._narrow():\n            self.app.notify(' -> '        if False:\n            self.app.notify('
+    tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits: RED (KILLED) · 1 failed in 4.87s · restored d3936fb54a2a
+N15 pgdn acts when narrow (a declared regression pin) · taskboard/app.py: '`pgup` answers at once."""\n        if self._narrow():\n            return' -> '`pgup` answers at once."""'
+    tests/test_present_narrow.py::test_AT_1903_narrowed_the_presentation_says_how_wide_and_waits: GREEN (SURVIVED) · 1 passed in 3.98s · restored d3936fb54a2a
+killed 19 / 20 arms; bad 0
+exit=0
