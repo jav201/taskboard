@@ -1,0 +1,20 @@
+$ cd <git archive 6ddea9f (base_ref) export> + increment 002's test files (test_present_views_app.py, test_present_hide.py, test_markup_census.py) and the PRES-V3 frames copied in; taskboard/app.py sha256 34eeea5a393deafa677e360c1fa93535fc941d8d222fac31d8be1d8f79e221d8 (base)
+$ python -m pytest -q -p no:cacheprovider --color=no tests/test_present_views_app.py tests/test_present_hide.py tests/test_markup_census.py
+FAILED tests/test_present_views_app.py::test_AT_1801_2_shows_every_task_text_at_once[size0-PRES-V3-split-118x30.txt]
+FAILED tests/test_present_views_app.py::test_AT_1801_2_shows_every_task_text_at_once[size1-PRES-V3-split-80x24.txt]
+FAILED tests/test_present_views_app.py::test_AT_1802_the_gantt_note_keeps_its_line_breaks[size0-PRES-V3-gantt-notes-118x30.txt]
+FAILED tests/test_present_views_app.py::test_AT_1802_the_gantt_note_keeps_its_line_breaks[size1-PRES-V3-gantt-notes-80x24.txt]
+FAILED tests/test_present_views_app.py::test_AT_1803_the_view_keys_and_what_the_views_share
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[118]
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[100]
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[99]
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[96]
+FAILED tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[80]
+FAILED tests/test_present_views_app.py::test_TC_1809_each_view_exports_to_its_own_file
+FAILED tests/test_present_views_app.py::test_TC_1810_the_bindings_and_the_scroll_state
+FAILED tests/test_present_hide.py::test_TC_1604_the_hint_row_carries_the_keys_and_the_count[size0-1 gantt  2 split  \u21e5 next \xb7 \u2190\u2192 \u2191\u2193 move \xb7 \u2423 hide \xb7 a show all \xb7 x export \xb7 esc leave]
+FAILED tests/test_present_hide.py::test_TC_1604_the_hint_row_carries_the_keys_and_the_count[size1-1 gantt 2 split \u21e5 \xb7 \u2190\u2192 \xb7 \u2423 hide \xb7 a all \xb7 x export \xb7 esc]
+FAILED tests/test_markup_census.py::test_TC_401_no_textual_sink_takes_a_markup_str
+FAILED tests/test_markup_census.py::test_TC_402_every_exemption_names_one_live_site
+16 failed, 15 passed in 36.16s
+exit 1

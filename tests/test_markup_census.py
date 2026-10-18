@@ -76,9 +76,8 @@ EXEMPT = {
         "help_example(mode): a constant example per view",
     ("modals.py", "HelpModal.compose", "from_markup", "swatch"):
         "legend_entries: swatches built from the palette (app constants)",
-    ("app.py", "PresentScreen._paint", "update",
-     "text <- render_present(self._board, self._project_id, self._cursor_id, self._today, w, h)"):
-        "the presentation seat: views.render_present builds Rich markup with escape (the board-seat family, D-405, out of this census)",
+    ("app.py", "PresentScreen._paint", "update", "self._frame_text()"):
+        "the presentation seat: PresentScreen._frame_text returns views.render_present, which builds Rich markup with escape (the board-seat family, D-405, out of this census; batch 2026-10-18-batch-01 moved the call into _frame_text, shared with the x export)",
 }
 
 

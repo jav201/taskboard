@@ -36,3 +36,17 @@ above this line is ever edited._
 - **What changed:** LLR-1801.3 Before: the whole text pages from its top for `p >= 1` → After: when page 0 windowed the column onto the cursor's block, the pages start at the first block page 0 showed (ux-reviewer PDR PC-1: at 80×18 the first `pgdn` jumped the text back to `Build component library`); New: a TC-1806 arm and mutant M19. LLR-1801.2: TC-1802 gains the room-6 row where the half-room promise binds (qa-reviewer PDR PC-1: M5 survived every other row, the surplus going to the cursor first); TC-1804's "the cursor's note longer as the cursor's" arm relabelled a regression pin, M5 no longer claimed there (qa-reviewer PDR PC-2).
 - **Why:** the PDR of 2026-10-18 (architect, qa-reviewer, ux-reviewer: `approved with conditions`).
 - **Evidence:** `tests/test_present_views.py::test_TC_1806_the_first_page_down_never_moves_the_text_back` green after the fold; mutant M19 restores the pre-fold paging and reddens it (packet 001's battery); the qa-reviewer's battery in its own scratch copy (`mut001.txt`: M5 SURVIVED the ns1 row and the cursor-gets-more arm).
+
+### LED-2026-10-18-batch-01.5 — a resize resets the page (P3, increment 002)
+- **Requirement:** LLR-1803.1
+- **Date:** 2026-10-18
+- **What changed:** Before: `_scroll` reset to 0 on a view change, a cursor move, `space` and `a` → After: also on a resize. TC-1810 gains the arm (`pgdn`, resize to 80×40, `_scroll == 0`); New: mutant N12. The parent HLR-1803 re-read: its "no row a page skips" and "no dead pages" hold only if a page belongs to the size it was cut for — unchanged in wording, now true across a resize.
+- **Why:** code-review F1 (increment 002, MEDIUM): a page kept across a taller resize is clamped to a lower last page, so the next `pgup` presses repaint the same frame — dead pages.
+- **Evidence:** `tests/test_present_views_app.py::test_TC_1810_the_bindings_and_the_scroll_state`; mutant N12 in `evidence/mutation-002.txt`.
+
+### LED-2026-10-18-batch-01.6 — notes with wide glyphs wrap by cells (P3, increment 001)
+- **Requirement:** LLR-1801.1
+- **Date:** 2026-10-18
+- **What changed:** Before: "each line wrapped by `textwrap.wrap` at `max(4, w - vis(lead))`" → After: wrapped at that many CELLS — `textwrap.wrap` when every glyph is one cell wide (so every ASCII frame, the PRES-V3 oracle included, is unchanged), else a greedy word wrap measured in cells (`_wrap_cells`). TC-1801 gains a CJK-and-emoji arm; New: mutant M20. Parent HLR-1801 re-read: "text from every shown open task with notes is on screen" and LLR-1801.3's "every wrapped row" now hold for wide glyphs too.
+- **Why:** code-review F1 (increment 001, MEDIUM; security-reviewer S-3 at P2 had declared it): `textwrap` counts code points, so a CJK row came back 40 cells wide at w = 20 and `clip` hid half of it behind one `…` that no cut count or page could reveal.
+- **Evidence:** `tests/test_present_views.py::test_TC_1801_line_breaks_bullets_and_numbers_are_kept` (the wide arm); `evidence/gen_frames.py` (the 8 frames unchanged); M20 in `evidence/mutation-001.txt`.

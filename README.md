@@ -233,17 +233,26 @@ wrong.
 
 ## Presentation
 
-`R` opens the presentation of the selected task's project (the focused project when set): a
-date ruler (today, the months, and the selected task's dates echoed on the tick row), the
-gantt field with each task's start–end dates beside its bar, the brief blocks below, and a
-cursor whose task's notes expand (`←`/`→` and `↑`/`↓` move it). `x` exports what it shows to
-an SVG and a PNG in the `reports` folder; `esc` leaves. The frame carries no key hints, so the
-room and the export see only the project.
+`R` opens the presentation of the selected task's project (the focused project when set). It
+has two views, and `R` always opens on the first:
 
-`space` hides the cursor's task from the presentation and `a` shows every hidden task again;
-the hint row under the frame counts the hidden ones. The choice is saved on the task (a
-**Show in presentation** toggle in the task editor) and every task is shown by default. That
-flag is the only thing the presentation writes.
+- **`1` gantt** — a date ruler (today, the months, and the selected task's dates echoed on the
+  tick row), the gantt field with each task's start–end dates beside its bar, the brief blocks
+  below, and a cursor whose task's notes expand, keeping their line breaks and lists.
+- **`2` split** — the same ruler and field on top and, below them, the notes of every shown
+  open task at once: a heading (title, dates, days late or left) and the note, in two columns
+  from 100 columns wide. When everything does not fit, the cursor's note gets more room and a
+  cut note says `… +N lines`; `pgdn`/`pgup` page through the notes.
+
+`tab` and `shift+tab` (`⇥`, `⇧⇥`) switch between the views; `←`/`→` and `↑`/`↓` move the
+cursor, which both views share. `x` exports the view on screen to an SVG and a PNG in the
+`reports` folder (the split view's files end in `-split`); `esc` leaves. The keys live in the
+hint row under the frame, never in the frame, so the room and the export see only the project.
+
+`space` hides the cursor's task from the presentation (both views) and `a` shows every hidden
+task again; the hint row under the frame counts the hidden ones. The choice is saved on the
+task (a **Show in presentation** toggle in the task editor) and every task is shown by
+default. That flag is the only thing the presentation writes.
 
 ## Reports
 

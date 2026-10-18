@@ -261,6 +261,11 @@
       "station": "PDR",
       "date": "2026-10-18",
       "decision": "standing authorization — PDR sealed approved with conditions under the 2026-10-18 commission (architect PC-A1/A2, qa-reviewer PC-Q1/Q2, ux-reviewer PC-U1 applied at the seal, PC-U2 owed at P4; LED-2026-10-18-batch-01.4); P3 is next"
+    },
+    {
+      "station": "P3",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P3 increment 001 approved under the 2026-10-18 commission: the split view and the note wrapper in views.py (a729f78); RED 51 on base, 30/30 mutants killed, 2709 passed + 2 known standup failures; code-reviewer OK to advance, 0 HIGH (F1 fixed: cell-width wrap, LED .6); increment 002 is next"
     }
   ],
   "obsidian_synced": false,

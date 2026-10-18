@@ -227,13 +227,16 @@ async def test_TC_1604_space_moves_the_cursor_and_the_ends_hold(tmp_path, monkey
 
 
 @pytest.mark.parametrize("size, hint", [
-    ((118, 31), "←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"),
-    ((80, 25), "←→ move · ␣ hide · a all · x export · esc"),
+    ((118, 31), "1 gantt  2 split  ⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave"),
+    ((80, 25), "1 gantt 2 split ⇥ · ←→ · ␣ hide · a all · x export · esc"),
 ])
 async def test_TC_1604_the_hint_row_carries_the_keys_and_the_count(
         tmp_path, monkeypatch, frozen, size, hint):
     """TC-1604 (LLR-1602.2 j): the commission's hint texts, then ` · <n> hidden`
-    with n the hidden tasks (none → no tail)."""
+    with n the hidden tasks (none → no tail). Since batch 2026-10-18-batch-01
+    (LLR-1802.2) the hint opens with the view switch and `tab` (R opens on the
+    gantt view); at 80 columns `←→` drops its word so the split view's
+    `pgdn` and a two-digit count still fit (tests/test_present_views.py)."""
     s = _Presenting(tmp_path, monkeypatch, size)
     async with s.app.run_test(size=s.size) as pilot:
         await s.open(pilot)

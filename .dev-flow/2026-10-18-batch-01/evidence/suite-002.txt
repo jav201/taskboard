@@ -1,0 +1,15 @@
+$ git worktree at a729f78 (increment 001) + increment 002's files (taskboard/app.py sha256 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701)
+$ python -m pytest -q -p no:cacheprovider --color=no
+        markup = render_standup(board, False, None, team_state=state, width=80, height=0).markup
+        lines = markup.splitlines()
+        ana_line = next(line for line in lines if "Ana" in line)
+        assert HEX["over"] in ana_line, "stale row should wear the over tone"
+>       jav_line = next(line for line in lines if "username_subject" in line)
+E       StopIteration
+
+tests\test_team_views.py:103: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable
+FAILED tests/test_team_views.py::test_standup_flags_stale_member_in_over_tone
+2 failed, 2721 passed in 512.50s (0:08:32)
+exit 1

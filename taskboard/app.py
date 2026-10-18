@@ -36,7 +36,7 @@ from .team_sync import (TEAM_FILENAME, TeamState, _read_json, clean_roster,
 from .views import (clip, filtered_board, focus_tasks, gantt_group_key, group_key,
                     gantt_plan, nav_model, present_paths, present_project_id,
                     present_hidden, present_tasks, render_present, render_view,
-                    save_present_png,
+                    save_present_png, PRESENT_VIEWS,
                      save_present_svg, sort_by_due, fit, vis, valid_url, _md)
 
 
@@ -179,15 +179,20 @@ class HelpScreen(ModalScreen[None]):
 
 
 class PresentScreen(ModalScreen[None]):
-    """`R` — the presentation: the date ruler and the project's gantt field on
-    top, the brief one-liners below, a `⟦━⟧` cursor across the brief blocks whose
-    task's notes expand. `←`/`→` and `↑`/`↓` move the cursor, `x` exports SVG +
-    PNG to the board's `reports/` folder, `esc`/`q` leave — none of these writes
-    the board. It writes exactly ONE thing, the per-task "show in presentation"
-    flag (batch 2026-10-16-batch-01, LLR-1602.2): `space` hides the cursor task,
-    `a` shows every hidden task again, each saved at once. The hidden count
-    rides the hint row only — the frame is what the room sees and what `x`
-    exports."""
+    """`R` — the presentation, in two views (batch 2026-10-18-batch-01): `gantt`,
+    the date ruler and the project's gantt field on top, the brief one-liners
+    below, a `⟦━⟧` cursor across them whose task's notes expand; and `split`, the
+    same field on top and every shown open task's notes below at once. `R`
+    always opens on `gantt` (the view is not remembered); `1` / `2` pick a view,
+    `tab` / `shift+tab` cycle them, `pgdn` / `pgup` scroll the split view's
+    notes. The cursor and the hidden tasks are shared by both views.
+    `←`/`→` and `↑`/`↓` move the cursor, `x` exports the current view's frame
+    as SVG + PNG to the board's `reports/` folder, `esc`/`q` leave — none of
+    these writes the board. It writes exactly ONE thing, the per-task "show in
+    presentation" flag (batch 2026-10-16-batch-01, LLR-1602.2): `space` hides
+    the cursor task, `a` shows every hidden task again, each saved at once. The
+    keys and the hidden count ride the hint row only — the frame is what the
+    room sees and what `x` exports."""
 
     BINDINGS = [
         Binding("escape,q", "close", "Leave", priority=True),
@@ -200,6 +205,15 @@ class PresentScreen(ModalScreen[None]):
         # already beats the app's non-priority add-task `a` (no focusable child)
         Binding("space", "hide", "", priority=True),
         Binding("a", "show_all", "", priority=True),
+        # the app's own `1`/`2` (views) are not reached past this modal screen,
+        # and its priority `tab` (toggle_presentation) is released while a
+        # modal is open (`TaskboardApp.check_action`)
+        Binding("1", "view(0)", "", priority=True),
+        Binding("2", "view(1)", "", priority=True),
+        Binding("tab", "cycle(1)", "", priority=True),
+        Binding("shift+tab", "cycle(-1)", "", priority=True),
+        Binding("pagedown", "scroll(1)", "", priority=True),
+        Binding("pageup", "scroll(-1)", "", priority=True),
     ]
 
     DEFAULT_CSS = """
@@ -228,6 +242,8 @@ class PresentScreen(ModalScreen[None]):
         self._project_name = project_name
         self._today = date.today()
         self._cursor_id = cursor_id
+        self._view = 0           # R always opens on the gantt view
+        self._scroll = 0
 
     def compose(self) -> ComposeResult:
         with Vertical(id="present"):
@@ -238,23 +254,43 @@ class PresentScreen(ModalScreen[None]):
         self._paint()
 
     def on_resize(self, event: events.Resize) -> None:
+        self._scroll = 0                 # the pages are cut for the old size
         self._paint()
 
     def _frame_height(self) -> int:
         return max(1, (self.size.height or 0) - 1)
 
+    def _frame_text(self, scroll: int | None = None) -> Text:
+        """The current view's frame at the panel's size — what is painted and
+        what `x` exports."""
+        return render_present(self._board, self._project_id, self._cursor_id,
+                              self._today, self.size.width or 0, self._frame_height(),
+                              PRESENT_VIEWS[self._view],
+                              self._scroll if scroll is None else scroll)
+
     def _paint(self) -> None:
-        frame = self.query_one("#present-frame", Static)
-        w = self.size.width or 0
-        h = self._frame_height()
-        text = render_present(self._board, self._project_id, self._cursor_id,
-                              self._today, w, h)
-        frame.update(text)
-        hint = ("←→ ↑↓ move · ␣ hide · a show all · x export · esc leave" if w >= 100
-                else "←→ move · ␣ hide · a all · x export · esc")
+        self.query_one("#present-frame", Static).update(self._frame_text())
+        self.query_one("#present-hint", Static).update(self._hint(self.size.width or 0))
+
+    def _hint(self, w: int) -> Text:
+        """The keys, under the frame: the view switch (the current view bright),
+        then the moves, then the hidden count — never painted in the frame. The
+        long wording when it fits the hint's `w - 2` cells, else the short one."""
         hidden = len(present_hidden(self._board, self._project_id))
-        self.query_one("#present-hint", Static).update(
-            Text(hint + (f" · {hidden} hidden" if hidden else "")))
+        tail = f" · {hidden} hidden" if hidden else ""
+        split = PRESENT_VIEWS[self._view] == "split"
+        long_keys = (("pgdn notes · " if split else "")
+                     + "⇥ next · ←→ ↑↓ move · ␣ hide · a show all · x export · esc leave")
+        names = sum(len(f"{i + 1} {n}  ") for i, n in enumerate(PRESENT_VIEWS))
+        wide = names + vis(long_keys + tail) <= w - 2
+        keys = long_keys if wide else (("pgdn · " if split else "")
+                                       + "⇥ · ←→ · ␣ hide · a all · x export · esc")
+        hint = Text()
+        for i, name in enumerate(PRESENT_VIEWS):
+            hint.append(f"{i + 1} {name}", style="bold #e6edf7" if i == self._view else "#5b6675")
+            hint.append("  " if wide else " ")
+        hint.append(keys + tail, style="#8b98a5")
+        return hint
 
     def _shown_ids(self) -> list[str]:
         """The cursor's stops: the shown open tasks, read live (a flag change
@@ -271,6 +307,30 @@ class PresentScreen(ModalScreen[None]):
         if cur is None:
             return
         self._cursor_id = ids[max(0, min(len(ids) - 1, ids.index(cur) + delta))]
+        self._scroll = 0
+        self._paint()
+
+    def action_view(self, index: int) -> None:
+        """`1` / `2` — show that view, its notes scrolled back to the top."""
+        self._view, self._scroll = index, 0
+        self._paint()
+
+    def action_cycle(self, delta: int) -> None:
+        """`tab` / `shift+tab` — the next / previous view, wrapping."""
+        self.action_view((self._view + delta) % len(PRESENT_VIEWS))
+
+    def action_scroll(self, delta: int) -> None:
+        """`pgdn` / `pgup` — the split view's notes one page down / up; a page
+        that would paint the same frame (nothing left below) is not taken, so
+        `pgup` answers at once."""
+        if PRESENT_VIEWS[self._view] != "split":
+            return
+        new = max(0, self._scroll + delta)
+        if new == self._scroll:
+            return
+        if delta > 0 and self._frame_text(new).plain == self._frame_text().plain:
+            return
+        self._scroll = new
         self._paint()
 
     def action_hide(self) -> None:
@@ -285,6 +345,7 @@ class PresentScreen(ModalScreen[None]):
         self._board.save()
         rest = ids[:i] + ids[i + 1:]
         self._cursor_id = rest[min(i, len(rest) - 1)] if rest else None
+        self._scroll = 0
         self._paint()
 
     def action_show_all(self) -> None:
@@ -297,14 +358,15 @@ class PresentScreen(ModalScreen[None]):
             t.show_in_present = True
         self._board.save()
         self._cursor_id = self._cursor(self._shown_ids())
+        self._scroll = 0
         self._paint()
 
     def action_export(self) -> None:
         w = self.size.width or 0
         h = self._frame_height()
-        text = render_present(self._board, self._project_id, self._cursor_id,
-                              self._today, w, h)
-        svg_path, png_path = present_paths(self._board, self._project_name, self._today)
+        text = self._frame_text()
+        svg_path, png_path = present_paths(self._board, self._project_name, self._today,
+                                           PRESENT_VIEWS[self._view])
         save_present_svg(text, svg_path, w, h)
         png = save_present_png(svg_path, png_path, w, h)
         if png is None:

@@ -1,0 +1,65 @@
+tree: C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\probe2
+increment: 002 · arms: 16 over 12 mutants
+before: taskboard/app.py 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+before: taskboard/views.py 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== N1 (taskboard/app.py): the screen's `2` loses priority
+N1 tests/test_present_views_app.py::test_TC_1810_the_bindings_and_the_scroll_state: KILLED -- 1 failed in 0.50s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N2 (taskboard/app.py): a page down past the end is taken
+N2 tests/test_present_views_app.py::test_TC_1810_the_bindings_and_the_scroll_state: KILLED -- 1 failed in 4.62s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+N2 tests/test_present_views_app.py::test_AT_1803_the_view_keys_and_what_the_views_share: KILLED -- 1 failed in 4.94s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N3 (taskboard/app.py): a cursor move keeps the scroll
+N3 tests/test_present_views_app.py::test_TC_1810_the_bindings_and_the_scroll_state: KILLED -- 1 failed in 5.12s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N4 (taskboard/app.py): the gantt hint offers pgdn
+N4 tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[118]: KILLED -- 1 failed in 2.17s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N5 (taskboard/app.py): the bold marks the other view
+N5 tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[80]: KILLED -- 1 failed in 2.23s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N6 (taskboard/views.py): both views export to one file
+N6 tests/test_present_views_app.py::test_TC_1809_each_view_exports_to_its_own_file: KILLED -- 1 failed in 0.48s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+N6 tests/test_present_views_app.py::test_AT_1803_the_view_keys_and_what_the_views_share: KILLED -- 1 failed in 7.82s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== N7 (taskboard/views.py): the gantt export changes its shipped name
+N7 tests/test_present_views_app.py::test_TC_1809_each_view_exports_to_its_own_file: KILLED -- 1 failed in 0.50s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== N8 (taskboard/app.py): R opens on the split view
+N8 tests/test_present_views_app.py::test_AT_1803_the_view_keys_and_what_the_views_share: KILLED -- 1 failed in 2.23s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+N8 tests/test_present_views_app.py::test_TC_1810_the_bindings_and_the_scroll_state: KILLED -- 1 failed in 2.20s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+N8 tests/test_present_views_app.py::test_AT_1802_the_gantt_note_keeps_its_line_breaks[size0-PRES-V3-gantt-notes-118x30.txt]: KILLED -- 1 failed in 2.21s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N9 (taskboard/app.py): x exports the gantt file whatever the view
+N9 tests/test_present_views_app.py::test_AT_1803_the_view_keys_and_what_the_views_share: KILLED -- 1 failed in 7.25s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N11 (taskboard/app.py): the long hint wording whatever the width
+N11 tests/test_present_views_app.py::test_TC_1808_the_hint_row_per_view[100]: KILLED -- 1 failed in 2.38s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N12 (taskboard/app.py): a resize keeps the page cut for the old size
+N12 tests/test_present_views_app.py::test_TC_1810_the_bindings_and_the_scroll_state: KILLED -- 1 failed in 5.33s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+== N10 (taskboard/app.py): tab stops at the last view instead of wrapping
+N10 tests/test_present_views_app.py::test_AT_1803_the_view_keys_and_what_the_views_share: KILLED -- 1 failed in 2.55s
+  after: 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+after all: taskboard/app.py 9878f3e3e6da3fe0eccc2d4d801b6e219aa15e4a248b73f16af74c2b793ce701
+
+after all: taskboard/views.py 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+not killed: 0
