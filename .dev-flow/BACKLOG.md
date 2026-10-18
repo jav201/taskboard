@@ -3,8 +3,8 @@
 Shared by `/dev-flow` and `/fast-dev-flow`. Every open item lives here exactly once.
 No `docs/engineering-rules.md` exists in this repo, so this is the default location.
 
-**Base ref:** `64443be` (`origin/main` at batch 2026-10-16-batch-01's open; the batch's commits sit on the local branch `present-v2`, not pushed — the commission forbids a push)
-· **Last refresh:** 2026-10-17 (2026-10-16-batch-01 close)
+**Base ref:** `6ddea9f` (local `main` at batch 2026-10-18-batch-01's open, 1 ahead of `origin/main` `e97e6e6`; the batch's commits sit on the local branch `present-v3`, not pushed — the commission forbids a push)
+· **Last refresh:** 2026-10-18 (2026-10-18-batch-01 close)
 **Status (2026-10-16-batch-01 close):** 2634 tests collected on `present-v2` (2632 passed in `suite-004.txt`; the P4 gate run: 2631 passed + the 2 pre-existing standup failures + 1 clipboard environment failure)
 **Status:** **2592 tests** (batch `2026-10-07-batch-09`, templates v3: scratch authoring — the `I`
 picker gains a leading `New template...` row (reserved id `__new__`, the house `L`-picker create-row
@@ -137,7 +137,19 @@ recorded full-suite run).
 
 ## Open — operator requests (2026-10-17)
 
-- **Present v3: several views during the presentation, the task content readable** (prototype FIRST; next in line). The operator, 2026-10-17: «Agrega al backlog que durante el reporte tengamos varias vistas (vamos a prototipar). El gantt se queda, es necesario, pero también quiero opciones para que se vea el contenido de las tareas (al menos el texto) al momento de la presentación. Empecemos por ahí, una vez prototipado y aceptado seguimos con implementación de ello y el backlog.» Scope: the gantt view of `R` stays; add one or more switchable views inside the presentation that show each task's content — at least the notes text — for the room. Order: a tui-design prototype round with real-app captures and the operator's verdict, then a dev-flow batch to implement it, then the rest of this backlog. Owner: coordinator (prototype), operator (verdict).
+- ✓ done in `2026-10-18-batch-01` (present v3, on the local branch `present-v3`, not pushed) — **Present v3: several views during the presentation, the task content readable**: `R` has two views — `1` gantt (as shipped; the cursor note now keeps its line breaks and lists) and `2` split (the prototype's D2 · stacked: the gantt rows on top, every shown open task's notes below at once, two columns from 100 wide, the fair share with every cut declared); `tab`/`shift+tab` cycle, `pgdn`/`pgup` page the notes, `R` always opens on gantt, `x` exports the current view (`-split` files). The prototype round (`prototypes/present_views/`, round 2) and the operator's verdicts of 2026-10-17/18. The original request: **Present v3: several views during the presentation, the task content readable** (prototype FIRST; next in line). The operator, 2026-10-17: «Agrega al backlog que durante el reporte tengamos varias vistas (vamos a prototipar). El gantt se queda, es necesario, pero también quiero opciones para que se vea el contenido de las tareas (al menos el texto) al momento de la presentación. Empecemos por ahí, una vez prototipado y aceptado seguimos con implementación de ello y el backlog.» Scope: the gantt view of `R` stays; add one or more switchable views inside the presentation that show each task's content — at least the notes text — for the room. Order: a tui-design prototype round with real-app captures and the operator's verdict, then a dev-flow batch to implement it, then the rest of this backlog. Owner: coordinator (prototype), operator (verdict).
+
+## Open — after `2026-10-18-batch-01` (present v3: the split view, the view keys)
+
+- optional, future: round 1's **Slide** view (C) — one task fills the frame like a deck slide, its note scrollable (`prototypes/present_views/views_proto.py` `render_slide`, captures `out/118-C-slide*.png`, `out/80-C-slide*.png`) — kept by the operator's verdict (2026-10-17/18) as a possible third view of `R`; prototype it against the shipped split view before any batch.
+- dropped: round 1's **Cards** view (B) — the operator's verdict (2026-10-17/18): not pursued; recorded here so it is not re-proposed.
+- optional: a paged note window can start on a numbered item's continuation row (ux-reviewer UX-2) — snapping a page to an item's start; and in the area scroll the headings scroll with the text (UX-3).
+- optional: `present_note_lines` wraps by code points (`textwrap`), so a note with wide glyphs (CJK, emoji) can wrap into a row `clip` cuts with a visible `…` (security-reviewer S-3) — a cell-width wrap.
+- optional: below ~60 columns the presentation's short hint is still wider than its row and is clipped (code-review F2, increment 002).
+- optional: at 80 columns the presentation's short hint drops the key words (`⇥ · ←→ ·`, `a all`) though 24 cells stay free — a middle wording could keep `⇥ next` and `a show all` (P4 ux walkthrough UX4-3).
+- optional: the gantt view keeps the cursor's note to 3 rows while 6 (80×25) to 11 (118×31) rows below stay empty — the cap could grow to fill the free rows (P4 ux walkthrough UX4-4; `2` shows the whole note today).
+- optional: the dim view word and cut marks are ~3:1 against the background — if a screen share washes them out, `dim` → `mut` is a one-token change (P4 ux walkthrough UX4-2, accepted).
+- pre-existing (on `base_ref` too): below ~36 columns `render_present` asserts on the gantt ruler's row width (`today Wed Sep 30` in a 20-cell label) — found by the increment-001 code review's fuzz; probed on the `6ddea9f` export at 20 and 30 columns.
 
 ## Open — after `2026-10-17-batch-01` (the tick row's label: no scale text, one rule in both views)
 

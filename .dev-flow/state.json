@@ -281,6 +281,11 @@
       "station": "P4",
       "date": "2026-10-18",
       "decision": "standing authorization — P4 PASS-WITH-NOTES under the 2026-10-18 commission: the orchestrator's gate run on 038b5f2 (2721 passed + the 2 known standup failures), qa-reviewer 10/10 requirements pass, ledger 2663 + 60 = 2723, ux walkthrough pass-with-notes; G-1..G-5 minor; the close is next"
+    },
+    {
+      "station": "P5",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P5 close batch under the 2026-10-18 commission: the close record (gate exit 0 on 6bb3130), the backlog lane (Present v3 done, Slide kept optional, Cards dropped, the review notes carried); present-v3 not pushed (push not authorized)"
     }
   ],
   "obsidian_synced": false,
