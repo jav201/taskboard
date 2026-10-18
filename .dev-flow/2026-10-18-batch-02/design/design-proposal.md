@@ -56,10 +56,10 @@ State dynamics of `PresentScreen` against its width (the one viewpoint that appl
            width >= 36                         width < 36
   ┌──────────────────────────┐  resize   ┌───────────────────────────┐
   │ wide: the views' frame;  │ ────────▶ │ narrow: one mut rung;     │
-  │ every key acts; x exports│ ◀──────── │ only esc acts; x notifies │
+  │ every key acts; x exports│ ◀──────── │ only esc/q act; x notifies│
   └──────────────────────────┘  resize   └───────────────────────────┘
-   state (view, cursor, page, hidden) is untouched in narrow, so widening repaints it as it was
-   (a resize resets the page, as shipped — LED .5 of 2026-10-18-batch-01)
+   state (view, cursor, hidden) is untouched in narrow, so widening repaints it as it was;
+   the page is not kept: a resize resets it, as shipped (LED .5 of 2026-10-18-batch-01)
 ```
 
 ## 4 · Interfaces that change — and which ones FREEZE
@@ -73,15 +73,15 @@ State dynamics of `PresentScreen` against its width (the one viewpoint that appl
 
 | Id | Layer (0 unit / A white / B black / UX) | What it asserts | **The mutation that would turn it RED** |
 |---|---|---|---|
-| TC-1901 | A | the two repaired standup nodes + the 12/13-cell name-cell arm | `is_self` → muted spine (`prefix = c("▌", "bright")…` swapped); the stale tone on every row (`tone = "over"`) |
+| TC-1901 | A | the two repaired standup nodes + the 12/13-cell name-cell arm | `is_self` → muted spine (`prefix = c("▌", "bright")…` swapped); the stale tone on every row (`tone = "over"`); the name cap `min(12, …)` → `min(13, …)` (the 13-cell arm) |
 | AT-1901 | B | key `8`: `▌ username_su…`, `▎ Ana` | the same spine swap |
-| TC-1902 | 0 | the helper's seven arms (pass, skip on refusal ×5, refusal then pass, contention ×5 fails, refusal ×4 then contention fails, a disturbing reader fails, mismatch fails) | a refusal raises instead of returning; contention returns a reason; a mismatch returns a reason |
+| TC-1902 | 0 | the helper's eight arms (pass, skip on refusal ×5, refusal then pass, contention ×5 fails, refusal ×4 then contention fails, contention then refusal ×4 fails, a disturbing reader fails, mismatch fails) | a refusal raises instead of returning; contention returns a reason; a mismatch returns a reason; `assert not seeded` → `assert refusal is not None` (PC-1: the skip keyed on the last attempt) |
 | AT-1902 | B | the real test body under a refusing `_ps` → skip quoting the refusal, 5 seeds, the restore | the skip replaced by `pytest.fail(reason)`; on `base_ref` the SETUP assert |
 | TC-1903 | 0/A | the width × height × view × cursor × scroll × board sweep; the rung table; `mut` | threshold 36 → 35 and → 37; a rung dropped; `"mut"` → `"dim"` |
-| AT-1903 | B | the resize ladder 60 … 1, the keys at 30 change nothing, `x` notifies and writes nothing, back at 118 the kept frame | a guard removed from `action_hide` (the board written); the export guard removed (an SVG in `reports/`) |
-| TC-1904 | 0 | the hint over widths 1–140 × views × 0/3/10 hidden against the literal threshold table; bold span | the compact wording removed; `hint.truncate` removed; the `room <= 0` guard removed; the narrow branch keeping the names |
+| AT-1903 | B | the resize ladder 60 … 1, the keys at 30 (`1`, `tab`, `→`, `h`, `pagedown`, `pageup`, `space`, `a`, `x`) change nothing, `x` notifies and writes nothing, back at 118 the kept frame | the guard removed from `action_hide` (the board written), `action_show_all` (the hidden task back), `action_view` (gantt at 118), `action_move` (the cursor moved); the export guard removed (an SVG in `reports/`); `action_scroll`'s guard a declared regression pin (a resize resets the page) |
+| TC-1904 | 0 | the hint over widths 1–140 × views × 0/3/10 hidden against the literal threshold table; bold span; an overflowing count (a patched `present_hidden` of 123456 tasks) at 36 columns | the compact wording removed; the narrow `truncate` removed (widths 3–21); the wide `truncate` removed (the overflowing-count arm, PC-2); the `room <= 0` guard removed; the narrow branch keeping the names |
 | AT-1904 | B | 50/40/30/15 columns with 3 hidden, both views, the bold span | the compact wording removed (50 columns shows `esc`); the narrow branch removed |
-| AT-1905 | B | the page, the manifest, the captures, the variants differ, `data-recommend`, three RED arms on copies | its own arms: a capture moved aside, a variant equal to the current look, an external `href` |
+| AT-1905 | B | the page, the manifest, the captures, the variants differ, `data-recommend`, the RED arms on copies | its own arms: a capture moved aside, a variant equal to the current look, an external `href`, an SVG without the `terminal-` classes, a digest that disagrees with the manifest, a `data-recommend` missing or naming another item's capture (PC-4) |
 
 **Declared here, at authoring time, not at execution time.** A proposed case whose reddening mutation
 cannot be named is not yet a test case — it is a hope. Layer 0 applies where the unit has cyclomatic
@@ -99,14 +99,14 @@ complexity ≥3 **or** transforms data crossing a declared module boundary.
 | repairing the six round files' imports | their recorded outputs came from the deleted helpers; a repaired script would not reproduce them (PLAN §Key decisions) |
 | lifting the polish literals into module constants so the round can patch them | a production change made for a prototype (ARCHITECTURE §3) |
 
-Risk: the narrow rungs, the guard and the compact wording are UI the operator has not seen — shown in the round (HLR-1905) at 30×12 and 50×20.
+Risk: the narrow rungs, the guard and the compact wording are UI the operator has not seen — shown in the round (HLR-1905) at 30×12 and 50×20, with a 30×12 capture taken after `x` so the notice is seen painted (PC-5); AT-1903 asserts the notice's text only.
 
 ## 7 · Forward-applicability table — **the section that makes this document honest**
 
 | Output of this PDR | Named consumer downstream | Where the consumer will read it |
 |---|---|---|
 | design characteristics | the Phase-3 increments | §1, §3 and §4 here → increments 001–003's packets §1 |
-| enablers (fixtures, data, scaffolding, env) | Phase 3 and validation | the 12-task project built in TC-1904 from `tests/present_board.py`; `tests/present_notes_board.py` for the ATs and the round; Edge for the round's PNGs |
+| enablers (fixtures, data, scaffolding, env) | Phase 3 and validation | the 12-task project built in TC-1904 from `tests/present_board.py`; `tests/present_notes_board.py` for the ATs and the round; the fake `_ps` (AT-1902, TC-1902's fakes); the synthetic team folder with `username_subject` and `Ana` (AT-1901, `tests/test_team_views.py::_team_config`); the board saved under `tmp_path` so `reports/` lands there (AT-1903); Edge for the round's PNGs |
 | proposed test cases | layers 0/A/B and the DDR | §5 → the packets' §4 `Mutation verdicts`; the DDR's checklist row 4 |
 | design → requirement traceability | the matrix and the DDR | §5's Id column ↔ `01-requirements.md` §3/§4; the packets' §2 `Traces to` |
 

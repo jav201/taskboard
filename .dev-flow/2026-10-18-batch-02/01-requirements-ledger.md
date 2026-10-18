@@ -29,3 +29,10 @@ above this line is ever edited._
 - **What changed:** HLR-1903: "every presentation key but `esc`" → "but `esc`/`q` (leave)" (A2-1: `q` is bound with `escape`); AT-1903: before narrowing, `space` hides the cursor task and `2` opens the split view; at 30 columns `1` replaces `2`, so the view, cursor and hidden-set guards are each observed against the kept frame, and `pagedown`'s guard is declared a regression pin (a resize resets the page) (QA2-1). LLR-1903.1: "the arrows" → "every key bound to `move` (the arrows and `h j k l`)" (A2-1). LLR-1901.1: the name cell is read on the row stripped of its padding (QA2-3). LLR-1905.1: its `inspection` scope stated (A2-2). §2.7 P-7: the narrow hint's first whole widths 11 / 22 / 23 for 0 / 3 / 10 hidden (QA2-2). The US-1902 refinement log restated to the amended HLR-1903/1904 (UX2-1). Not changed: UX2-2 (`esc leave` in both the 32–35 rung and the hint — left for the operator's look in the round).
 - **Why:** the P2 review of 2026-10-18, iteration 2 (architect, qa-reviewer, ux-reviewer `approve`, each with minors).
 - **Evidence:** the reviewers' returns (`02-review.md` §Iteration 2).
+
+### LED-2026-10-18-batch-02.4 — PDR conditions on the test cases (PDR seal)
+- **Requirement:** HLR-1903, LLR-1902.1, LLR-1904.1
+- **Date:** 2026-10-18
+- **What changed:** LLR-1902.1's TC-1902: New arm — contended then refused ×4 → `AssertionError` holding `contended` (PC-1: the mutant `assert not seeded` → `assert refusal is not None` survived the seven arms, executed by the reviewer). LLR-1904.1's TC-1904: New arm — `present_hidden` patched to 123456 tasks, at 36 columns the `esc` wording is cut to 34 cells with `…` (PC-2: the wide-path truncate was unreachable with 0/3/10 hidden). HLR-1903's AT-1903: the keys pressed at 30 columns gain `tab`, `h`, `pageup` (PC-3).
+- **Why:** the PDR of 2026-10-18 (`design/PDR-2026-10-18-batch-02.md`, approved with conditions PC-1..PC-6).
+- **Evidence:** the reviewer's mutant run on a copy of the helper draft (`<scratchpad>/qa_pdr/mut_clip.py`): the original fails "contended ×4 then refused", the mutant skips.

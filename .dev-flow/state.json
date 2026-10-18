@@ -160,7 +160,7 @@
     }
   ],
   "guided": false,
-  "current_station": "PDR",
+  "current_station": "P3",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -262,6 +262,11 @@
       "station": "P2",
       "date": "2026-10-18",
       "decision": "standing authorization — P2 approved under the 2026-10-18 commission: iteration 1 iterate-to-refine (architect, qa-reviewer, ux-reviewer; 9 majors folded as LED .2), iteration 2 approve from all three with 7 minors folded as LED .3 (UX2-2 declared for the round); the PDR is next"
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-18",
+      "decision": "standing authorization — PDR sealed approved with conditions under the 2026-10-18 commission: PC-1 (a surviving helper mutant, executed by the qa lens; the eighth TC-1902 arm), PC-2 (the wide truncate's overflow arm), PC-3 (a mutant per AT-1903 guard) folded as LED .4; PC-4, PC-6 applied to the proposal; PC-5 owed at increment 003; P3 is next"
     }
   ],
   "obsidian_synced": false,
