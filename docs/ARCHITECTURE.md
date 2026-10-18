@@ -19,8 +19,8 @@
 
 | Field | Value |
 |---|---|
-| Last amended by | `2026-10-16-batch-01` |
-| Date | `2026-10-16` |
+| Last amended by | `2026-10-18-batch-01` |
+| Date | `2026-10-18` |
 
 ---
 
@@ -58,7 +58,7 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
 |---|---|---|---|---|
 | `models` | `models.py`, `history.py` | the board's data, its JSON (de)serialisation, its pure queries, the transition log | `Board`, `Project`, `Task`, `Board.load/save`, the query functions | any markup, any widget, any key |
 | `views` | `views.py`, `wave.py`, `ribbon.py` | every board render: pure functions from a `Board` (+ size, today, view state) to Rich markup / `Text` | `render_view`, `render_present`, the gantt/kanban/chainmap renderers, `legend_entries`, `help_usage`, the export writers | reading keys, mutating the board, Textual widgets |
-| `keymap` | `keymap.py` | the one key seat: every binding, the key bar, the palette list | `KEYMAP`, `Key`, `app_bindings`, `bar_keys`, `palette_commands`, `fit_bar`, `KeyBar` | actions themselves, help copy |
+| `keymap` | `keymap.py` | the one key seat: every binding of the main screen and the modals (`PresentScreen.BINDINGS` excepted, §5), the key bar, the palette list | `KEYMAP`, `Key`, `app_bindings`, `bar_keys`, `palette_commands`, `fit_bar`, `KeyBar` | actions themselves, help copy |
 | `modals` | `modals.py` | the modal screens (editors, pickers, help, standup) | `TaskModal`, `ProjectModal`, `HelpModal`, `CommandPalette`, … | the main screen, board persistence policy |
 | `app` | `app.py`, `__main__.py`, `__init__.py`, `taskboard.tcss` | the Textual application: actions, the undo stack, the screens it pushes (`PresentScreen`), saving after mutations | `TaskboardApp`, `PresentScreen`, `main` | rendering a board (that is `views`), declaring a key (that is `keymap`) |
 | `team_sync` | `team_sync.py` | the shared-folder push/pull | `TeamSync` (`foreign_tasks`, `probe_setup_health`, `sync_tone`) | the board's own file |
@@ -81,6 +81,7 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
 | `app` | every module above | — | the top of the graph |
 | `team_sync` | `models`; `views.HEX` function-local only (`team_sync.py:48`, local to dodge the import cycle — tolerated like `modals` → `app`) | `team_sync` → `app`; `team_sync` → `views` at import time | it runs headless on a timer |
 | `report` | `models`, `views` | — | — |
+| `prototypes` | `taskboard` — public AND private names (`_present_ruler`, …) | `taskboard` → `prototypes` | a prototype round is frozen evidence tied to the commit it ran on; a later batch may delete a private name it imports (2026-10-17-batch-01 broke `present_rulers/proto.py`, 2026-10-18-batch-01 `present_rulers/app_capture.py` and `present_views/views_proto.py`), and a batch that re-runs one as a cross-check binds the missing names itself (`.dev-flow/2026-10-18-batch-01/evidence/gen_frames.py`) |
 
 ---
 
@@ -90,9 +91,12 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
 |---|---|---|---|---|
 | `board.json` task record | `models` | `team_sync` (pushes `Board._to_dict`, `team_sync.py:157`; pulls through `Task.from_dict`, `:221`, into `foreign_tasks` for the team views only — a pulled task never joins the board, so a teammate's `show_in_present` never hides anything in this board's presentation), every older/newer app version (unknown keys round-trip through `extra`) | one JSON object per task; optional keys omitted when at their default only where the model says so (`show_in_present`, batch 2026-10-16-batch-01) | no |
 | `Task` fields | `models` | `app` (`_on_task_edited` sets editor keys by name, `_UNDO_FIELDS`), `views`, `modals` | dataclass attributes | no |
-| `render_present(board, project_id, cursor_id, today, width, height) -> Text` | `views` | `app.PresentScreen` (paint, export) | a `height`×`width` `Text` | no |
+| `render_present(board, project_id, cursor_id, today, width, height, view="gantt", scroll=0) -> Text` | `views` | `app.PresentScreen` (paint, export, the scroll clamp), tests, prototypes | a `height`×`width` `Text`; `view` one of `PRESENT_VIEWS` (`gantt`, `split`), `scroll` a page number, read by `split` only (batch 2026-10-18-batch-01) | no |
+| `PRESENT_VIEWS` | `views` | `app.PresentScreen` (the view keys, the hint row), tests | `("gantt", "split")`, the view names in key order | no |
+| `present_paths(board, project_name, today=None, view="gantt")` | `views` | `app.PresentScreen` (export), tests | `(svg, png)` paths in `reports/`; a view other than `gantt` adds `-<view>` to the name | no |
 | `present_tasks(board, project_id)` / `present_hidden(board, project_id)` | `views` | `app.PresentScreen` (reads `[0]`) | `present_tasks` → `tuple[list[Task], list[Task]]` (shown open by due, shown all), `present_hidden` → `list[Task]`, gantt order | no |
 | `present_span_label(start, due) -> str` | `views` | `views.render_present`, tests | the field-row chip text | no |
+| `present_note_lines(notes, w) -> list[tuple[str, str]]`, `present_alloc(ns, cur, room, floor_n=2) -> list[int]` | `views` | `views.render_present`, tests | `(lead, text)` note rows that fit `w`; note rows per task (batch 2026-10-18-batch-01) | no |
 | `gantt_day_row(ax, today, echo, *, shade_weekends=True)` | `views` | `views` (the gantt view, the presentation) | list of cell markup + meta | no |
 | `KEYMAP`, `bar_keys`, `global_keys`, `palette_commands` | `keymap` | `app` (bindings), `modals.HelpModal`, `modals.CommandPalette` | tuples of `Key` | no |
 | `TaskModal` result dict | `modals` | `app._on_task_added` / `_on_task_edited` | `{field: value}` keyed by `Task` field names; `_on_task_added` pops `milestone`, `_on_task_edited` pops `archived`/`milestone`/`start_date`/`due_date` and routes `phase` through the board; every other key (the new `show_in_present` among them) is applied by `setattr` | no |
@@ -109,3 +113,5 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
 | the key seat is one tuple (`KEYMAP`) and the help/bar/palette derive from it | per-screen binding lists | a screen needs a key the seat cannot express |
 | optional board keys are omitted at their default when byte-identity of existing boards matters | always writing every field (`asdict`) | a consumer needs the key present to tell "default" from "unknown" |
 | the presentation lives in `app` (`PresentScreen`) beside the main screen, not in `modals` | moving it to `modals` | `app.py` is split |
+| the presentation's views are one renderer with a `view` argument in `views`; the screen holds only the view index and the scroll offset, never persisted (batch 2026-10-18-batch-01) | a renderer function per view; remembering the last view in `settings` | a third view needs state the renderer cannot take as an argument, or the operator asks for the view to be remembered |
+| the presentation's own keys (`1`/`2`, `tab`, `pgdn`, …) are `PresentScreen.BINDINGS`, outside `KEYMAP`, like its shipped `←→`/`space`/`a`/`x` | adding them to the `KEYMAP` seat | the `?` help or the palette must list the presentation's keys |

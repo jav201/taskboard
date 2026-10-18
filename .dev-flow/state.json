@@ -154,8 +154,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P0",
-  "phase_status": "not-started",
+  "current_station": "PDR",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -169,7 +169,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 0,
+    "P1": 1,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -226,7 +226,38 @@
   },
   "base_ref": "6ddea9f726f87edfb1152abc152e999cf31d9f04",
   "artifacts": {},
-  "decisions_log": [],
+  "decisions_log": [
+    {
+      "station": "P0",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P0 closed under the coordinator's commission of 2026-10-18 (implement the approved presentation design): batch opened on present-v3 from main 6ddea9f by rollover (3369900), three stories READY, triggers A2/A3 fired so ARQ is next"
+    },
+    {
+      "station": "ARQ",
+      "date": "2026-10-18",
+      "decision": "standing authorization — ARQ module map approved under the 2026-10-18 commission after the architect's iterate (A-1 the prototypes' private-name dependency, A-2..A-5 interface rows and the keymap carve-out; A-6 withdrawn) was folded into docs/ARCHITECTURE.md and re-read (approve); P1 is next"
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P1 requirements approved under the 2026-10-18 commission: 3 US, 3 HLR, 7 LLR, 8 premises TRUE, IFC Part A one FLOW block (7 nodes), scan security_required true (form/escape, answered in §6.3; C8 so security-reviewer joins P2); P2 review is next"
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P2 iteration 1: architect iterate-to-refine (major A-1: LLR-1801.3's parent; minors A-2..A-8), qa-reviewer iterate-to-refine (major QA-1 below-floor share, QA-3, QA-4; QA-2 AT export arm; minors), ux-reviewer iterate-to-refine (blocker UX-1: pgdn skipped note rows; minors UX-2..UX-7), security-reviewer approve (3 LOW); requirement defects return to P1 for amendment, then a P2 re-review"
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P1 iteration 1 amendments (LED-2026-10-18-batch-01.2) folded: LLR-1801.3 retraced to HLR-1803 and made page-based, the below-floor share, the empty split, the hint fit rule, the AT export/pgup arms; P2 re-review is next"
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P2 approved under the 2026-10-18 commission after iteration 2 (architect, qa-reviewer, ux-reviewer approve; security-reviewer approve, 0 HIGH); iteration-2 minors folded in LED-2026-10-18-batch-01.3; the PDR is next"
+    }
+  ],
   "obsidian_synced": false,
   "created_at": "2026-10-18T10:37:20.631773",
   "resumption_note": "Batch 2026-10-17-batch-01 opened by rollover from 2026-10-16-batch-01 on 2026-10-17; see its PLAN.md."
