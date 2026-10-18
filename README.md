@@ -105,7 +105,7 @@ between the short and the full layer. Every key below is also in the command pal
 
 | Key | Name | One line |
 |-----|------|----------|
-| `?` | Help | Per-view help (usage, legend, example, keys); `m` there for the full map |
+| `?` | Help | Per-view help (usage, legend, example, keys, and the global keys such as `R` and `S`); `m` there for the full map |
 | `;` | More | Toggle the key bar's layer |
 | `q` | Quit | Quit |
 | `1`–`6`, `7`–`9`, `0` | Views | See [Views](#views) |
@@ -233,10 +233,17 @@ wrong.
 
 ## Presentation
 
-`R` opens the presentation of the selected task's project (the focused project when set): the
-gantt field on top, the brief blocks below, and a cursor whose task's notes expand (`←`/`→`
-and `↑`/`↓` move it). `x` exports what it shows to an SVG and a PNG in the `reports` folder;
-`esc` leaves. The presentation is read-only — it never writes the board.
+`R` opens the presentation of the selected task's project (the focused project when set): a
+date ruler (today, the months, and the selected task's dates echoed on the tick row), the
+gantt field with each task's start–end dates beside its bar, the brief blocks below, and a
+cursor whose task's notes expand (`←`/`→` and `↑`/`↓` move it). `x` exports what it shows to
+an SVG and a PNG in the `reports` folder; `esc` leaves. The frame carries no key hints, so the
+room and the export see only the project.
+
+`space` hides the cursor's task from the presentation and `a` shows every hidden task again;
+the hint row under the frame counts the hidden ones. The choice is saved on the task (a
+**Show in presentation** toggle in the task editor) and every task is shown by default. That
+flag is the only thing the presentation writes.
 
 ## Reports
 
