@@ -160,8 +160,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P4",
-  "phase_status": "in-progress",
+  "current_station": "P5",
+  "phase_status": "closed",
   "stations_active": [
     "P0",
     "ARQ",
@@ -287,6 +287,11 @@
       "station": "DDR",
       "date": "2026-10-18",
       "decision": "standing authorization — DDR sealed approved under the 2026-10-18 commission: architect approved with condition DDR-C1 (PC-5 must be exercised, not declared) — discharged: run_test hides toasts unless notifications=True, the round's narrow-30x12-x capture now paints the export notice; qa-reviewer approved (each AT in one node, ledger 2723 -> 2740, PC-1/PC-4 re-read, N15 an equivalent mutant, the run-1 failure a timing flake); P4 is next"
+    },
+    {
+      "station": "P4",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P4 PASS-WITH-NOTES under the 2026-10-18 commission: the orchestrator's gate run in a clean worktree at 7e849dc, 2740 passed, 0 failed, 0 skipped (the clipboard roundtrip passed); ledger 2723 - 0 + 17 = 2740; qa-reviewer 11/11 evidence rows, G-1..G-8 minor; ux walkthrough pass-with-notes (automated walkthrough and expert inspection performed, evaluation with users not performed)"
     }
   ],
   "obsidian_synced": false,

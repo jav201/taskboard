@@ -1,0 +1,28 @@
+# P4 inspections (01-requirements.md §5.2), by the orchestrator on 7e849dc
+$ grep -c HISTORICAL prototypes/present_rulers/*.py prototypes/present_views/*.py
+prototypes/present_rulers/app_capture.py:1
+prototypes/present_rulers/build_html.py:0
+prototypes/present_rulers/legend_proto.py:0
+prototypes/present_rulers/proto.py:1
+prototypes/present_views/app_capture.py:1
+prototypes/present_views/app_capture2.py:1
+prototypes/present_views/build_html.py:0
+prototypes/present_views/fixture.py:0
+prototypes/present_views/views_d.py:1
+prototypes/present_views/views_proto.py:1
+$ grep -ho 'It last ran against `[0-9a-f]*`' prototypes/present_rulers/*.py prototypes/present_views/*.py
+It last ran against `de9c4a2`
+It last ran against `de9c4a2`
+It last ran against `9810be6`
+It last ran against `9810be6`
+It last ran against `9810be6`
+It last ran against `9810be6`
+$ sed -n 6024,6036p taskboard/views.py | grep -c 'PRES-C\|PRES-R\b\|hybrid'   (the presentation section header)
+0
+# positive control: the same grep over the base header
+$ git show 9e82b10:taskboard/views.py | sed -n 6024,6036p | grep -c 'PRES-C\|PRES-R\b\|hybrid'
+2
+$ grep -n 'TC-1001 / TC-1002 —' tests/test_present.py
+77:# TC-1001 / TC-1002 — the exact PRES-V3 gantt rows at both operator sizes
+$ git diff --stat 9e82b10 7e849dc -- .dev-flow/2026-10-18-batch-01/evidence/frames   (the PRES-V3 oracle frames)
+(empty = unchanged)
