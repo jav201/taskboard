@@ -1,0 +1,55 @@
+$ cd <git archive 6ddea9f (base_ref) export> + increment 001's test files and frames copied in; taskboard/views.py sha256 28c5ad717e2309d40a6d114c7e12825f26800c7954b0b8a06fbdfb27a0587876 (base)
+$ python -m pytest -q -p no:cacheprovider --color=no tests/test_present_views.py tests/test_present.py::test_TC_1001_the_exact_presc_frame_at_118x30 tests/test_present.py::test_TC_1002_the_exact_presc_frame_at_80x24 tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle
+FAILED tests/test_present_views.py::test_TC_1801_line_breaks_bullets_and_numbers_are_kept
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns0-1-40-want0]
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns1-3-14-want1]
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns2-1-9-want2]
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns3--1-9-want3]
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns4-0-1-want4]
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns5-0-3-want5]
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns6-4-9-want6]
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns7-0-3-want7]
+FAILED tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns8-0-6-want8]
+FAILED tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-118x30.txt-tw3-118-30]
+FAILED tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-80x24.txt-tw3-80-24]
+FAILED tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-long-118x30.txt-tw5-118-30]
+FAILED tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-long-80x24.txt-tw5-80-24]
+FAILED tests/test_present_views.py::test_TC_1803_the_gantt_rows_on_top_are_the_gantt_views
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[118-30]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-24]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[100-30]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[99-30]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[140-40]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[118-24]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-30]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[120-36]
+FAILED tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-19]
+FAILED tests/test_present_views.py::test_TC_1804_below_a_row_per_note_every_missing_note_is_declared[80-18]
+FAILED tests/test_present_views.py::test_TC_1804_below_a_row_per_note_every_missing_note_is_declared[118-15]
+FAILED tests/test_present_views.py::test_TC_1804_below_a_row_per_note_every_missing_note_is_declared[80-11]
+FAILED tests/test_present_views.py::test_TC_1806_the_first_page_down_never_moves_the_text_back
+FAILED tests/test_present_views.py::test_TC_1804_every_task_hidden_leaves_the_notes_area_blank
+FAILED tests/test_present_views.py::test_TC_1804_hidden_and_done_tasks_are_in_neither_part
+FAILED tests/test_present_views.py::test_TC_1804_the_cursor_note_gets_more_when_it_does_not_fit
+FAILED tests/test_present_views.py::test_TC_1805_hostile_notes_and_titles_render_literally
+FAILED tests/test_present_views.py::test_TC_1806_pgdn_scrolls_the_cursor_note_and_says_what_is_above
+FAILED tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[80-24-tw5-False]
+FAILED tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[118-30-tw5-False]
+FAILED tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[80-30-tw5-False]
+FAILED tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[60-20-tw3-True]
+FAILED tests/test_present_views.py::test_TC_1806_when_no_cursor_note_can_scroll_the_whole_area_does
+FAILED tests/test_present_views.py::test_TC_1806_scroll_moves_nothing_in_the_gantt_view
+FAILED tests/test_present_views.py::test_TC_1806_every_scroll_keeps_the_frame_exact[118-30]
+FAILED tests/test_present_views.py::test_TC_1806_every_scroll_keeps_the_frame_exact[80-24]
+FAILED tests/test_present_views.py::test_TC_1806_every_scroll_keeps_the_frame_exact[60-20]
+FAILED tests/test_present_views.py::test_TC_1806_every_scroll_keeps_the_frame_exact[118-12]
+FAILED tests/test_present_views.py::test_TC_1806_every_scroll_keeps_the_frame_exact[80-11]
+FAILED tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V3-gantt-notes-118x30.txt-118-30]
+FAILED tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V3-gantt-notes-80x24.txt-80-24]
+FAILED tests/test_present_views.py::test_TC_1807_the_header_names_the_view - ...
+FAILED tests/test_present_views.py::test_TC_1805_hostile_text_on_every_new_escape_site
+FAILED tests/test_present.py::test_TC_1001_the_exact_presc_frame_at_118x30 - ...
+FAILED tests/test_present.py::test_TC_1002_the_exact_presc_frame_at_80x24 - A...
+FAILED tests/test_present.py::test_AT_1001_R_presents_the_project_and_the_frame_is_the_oracle
+51 failed in 2.99s
+exit 1

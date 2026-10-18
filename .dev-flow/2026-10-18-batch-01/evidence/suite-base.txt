@@ -1,0 +1,19 @@
+Base-ref suite (batch 2026-10-18-batch-01, before any change). Run on a 'git archive 6ddea9f' export: an export has no .git, so the 12 tests of tests/test_scratch_cannot_be_committed.py that ask git about ignore rules fail there for that reason alone (they pass in a checkout: every suite-NNN.txt of this batch runs in a git worktree). The 2 standup failures of tests/test_team_views.py are the known pre-existing ones (2026-10-16-batch-01 evidence/preexisting-base-failures.txt).
+
+$ git archive 6ddea9f | tar -x  (base_ref export); python -m pytest -q -p no:cacheprovider --color=no
+FAILED tests/test_no_live_board.py::test_the_fixture_is_in_git_not_just_on_this_disk
+FAILED tests/test_precommit_gate.py::test_the_hook_wired_in_this_repo_points_at_the_script
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_probe999.py]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/_scratch.log]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/variants.txt]
+FAILED tests/test_scratch_cannot_be_committed.py::test_scratch_output_cannot_be_staged[prototypes/out/some-render.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/_fixture_late.json]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-baseline.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-flow.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-matrix.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_inputs_and_reviewed_artifacts_stay_committable[prototypes/out/kanban-triage.svg]
+FAILED tests/test_scratch_cannot_be_committed.py::test_the_ignored_directory_is_the_one_the_capture_writes_into
+FAILED tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable
+FAILED tests/test_team_views.py::test_standup_flags_stale_member_in_over_tone
+14 failed, 2649 passed in 478.43s (0:07:58)
+exit 1

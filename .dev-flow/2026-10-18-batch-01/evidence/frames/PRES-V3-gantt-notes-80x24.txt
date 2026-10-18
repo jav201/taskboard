@@ -1,0 +1,24 @@
+◆ PRESENT · Website Redesign  gantt                        5 open · ▲2 past due 
+   today Wed Sep 30  September 30┃October          ◆                            
+    selected task ▸        28  ╎ Oct 4 ⟦━━━━━━━━━━━━⟧ Oct 10                    
+▌ WEBSITE REDESIGN   ◂─────────╎───────────────────◆···┆·········· Aug 21–Oct 10
+  ▎ Build component… ◂▬╌╌╌◕┆···╎·········┆·············┆··········      Sep 5–27
+  ▎ Fix checkout 50… ◂▬╌╌╌╌╌◑··╎·········┆·············┆··········     Sep 24–28
+  ▎ Optimize image …↳······┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········     due Oct 6
+  ▎ Launch new home…↳······┆···╎·······⟦━━━━━━━━━━━━⟧··┆··········      Oct 4–10
+  ▎ SEO redirects m… ······┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○·····    due Oct 14
+────────────────────────────────────────────────────────────────────────────────
+   Build component library                                                   ▲3d
+   Fix checkout 500 error                                                    ▲2d
+   Optimize image assets                                                   in 6d
+  ⟦Launch new homepage⟧                                                   in 10d
+  · Go-live plan, agreed with marketing and support on Sep 22.                  
+  · 1. Feature-flag the new homepage for internal users first, then 10 % of     
+  · … +11 lines                                                                 
+   SEO redirects map                                                      in 14d
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                

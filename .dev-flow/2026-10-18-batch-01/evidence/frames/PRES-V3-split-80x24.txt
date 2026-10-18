@@ -1,0 +1,24 @@
+◆ PRESENT · Website Redesign  split                        5 open · ▲2 past due 
+   today Wed Sep 30  September 30┃October          ◆                            
+    selected task ▸  ◂━━━━━━⟧ Sep 24–28  5             12                       
+▌ WEBSITE REDESIGN   ◂─────────╎───────────────────◆···┆·········· Aug 21–Oct 10
+  ▎ Build component… ◂▬╌╌╌◕┆···╎·········┆·············┆··········      Sep 5–27
+  ▎ Fix checkout 50… ⟦━━━━━━⟧··╎·········┆·············┆··········     Sep 24–28
+  ▎ Optimize image …↳······┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········     due Oct 6
+  ▎ Launch new home…↳······┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆··········      Oct 4–10
+  ▎ SEO redirects m… ······┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○·····    due Oct 14
+────────────────────────────────────────────────────────────────────────────────
+ ▎ Build component library                                         Sep 5–27 ▲3d 
+ ▎ Design tokens are frozen at v2.3. … +4 lines                                 
+ ▌ Fix checkout 500 error                                         Sep 24–28 ▲2d 
+ ▌ The 500 comes from a missing tax-rate row for the three new regions (CL, PE, 
+ ▌ UY); checkout calls the rate service and gets nothing back.                  
+ ▌ Hotfix PR #412 adds the rows and a guard that falls back to the default      
+ ▌ … +2 lines                                                                   
+ ▎ Optimize image assets                                        due Oct 6 in 6d 
+ ▎ Convert the hero images to AVIF and keep a JPEG fallback.                    
+ ▎ … +2 lines                                                                   
+ ▎ Launch new homepage                                          Oct 4–10 in 10d 
+ ▎ Go-live plan, agreed with marketing and support on Sep 22.                   
+ ▎ … +12 lines                                                                  
+ ▎ SEO redirects map                             no notes  ·  due Oct 14 in 14d 

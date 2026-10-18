@@ -1,0 +1,106 @@
+tree: C:\Users\jjgh8\AppData\Local\Temp\claude\C--Users-jjgh8-clde\3940a65a-4a09-41f4-888b-90e6e8089d9e\scratchpad\probe1
+increment: 001 · arms: 30 over 20 mutants
+before: taskboard/views.py 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M1 (taskboard/views.py): the note is one paragraph again (line breaks dropped)
+M1 tests/test_present_views.py::test_TC_1801_line_breaks_bullets_and_numbers_are_kept: KILLED -- 1 failed in 0.49s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M1 tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V3-gantt-notes-118x30.txt-118-30]: KILLED -- 1 failed in 0.50s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M1 tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-118x30.txt-tw3-118-30]: KILLED -- 1 failed in 0.51s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M2 (taskboard/views.py): a dash item keeps its dash, no bullet
+M2 tests/test_present_views.py::test_TC_1801_line_breaks_bullets_and_numbers_are_kept: KILLED -- 1 failed in 0.50s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M2 tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-118x30.txt-tw3-118-30]: KILLED -- 1 failed in 0.52s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M3 (taskboard/views.py): a numbered item takes one digit only
+M3 tests/test_present_views.py::test_TC_1801_line_breaks_bullets_and_numbers_are_kept: KILLED -- 1 failed in 0.48s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M4 (taskboard/views.py): two columns only above 100 columns
+M4 tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[100-30]: KILLED -- 1 failed in 0.50s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M5 (taskboard/views.py): the cursor is not promised half the room
+M5 tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns8-0-6-want8]: KILLED -- 1 failed in 0.49s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M5 tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-long-80x24.txt-tw5-80-24]: KILLED -- 1 failed in 0.51s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M6 (taskboard/views.py): a cut note says nothing about the cut
+M6 tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-80x24.txt-tw3-80-24]: KILLED -- 1 failed in 0.50s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M6 tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V3-gantt-notes-80x24.txt-80-24]: KILLED -- 1 failed in 0.52s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M6 tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[80-24]: KILLED -- 1 failed in 0.50s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M7 (taskboard/views.py): a task with no notes does not say so
+M7 tests/test_present_views.py::test_TC_1804_every_shown_open_task_with_notes_shows_its_text[118-30]: KILLED -- 1 failed in 0.51s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M7 tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-118x30.txt-tw3-118-30]: KILLED -- 1 failed in 0.51s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M8 (taskboard/views.py): a note row's text is not escaped
+M8 tests/test_present_views.py::test_TC_1805_hostile_notes_and_titles_render_literally: KILLED -- 1 failed in 0.70s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M9 (taskboard/views.py): the cursor's note ignores scroll
+M9 tests/test_present_views.py::test_TC_1806_pgdn_scrolls_the_cursor_note_and_says_what_is_above: KILLED -- 1 failed in 0.53s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M10 (taskboard/views.py): no area scroll when no cursor note can scroll
+M10 tests/test_present_views.py::test_TC_1806_when_no_cursor_note_can_scroll_the_whole_area_does: KILLED -- 1 failed in 0.51s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M11 (taskboard/views.py): the first page down skips the column's top
+M11 tests/test_present_views.py::test_TC_1806_when_no_cursor_note_can_scroll_the_whole_area_does: KILLED -- 1 failed in 0.55s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M14 (taskboard/views.py): a page jumps over rows (the step outgrows the window)
+M14 tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[80-24-tw5-False]: KILLED -- 1 failed in 0.54s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M14 tests/test_present_views.py::test_TC_1806_paging_down_shows_every_row_of_the_note[60-20-tw3-True]: KILLED -- 1 failed in 0.53s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M15 (taskboard/views.py): below a row per note the cursor's note gets no row
+M15 tests/test_present_views.py::test_TC_1802_present_alloc_truth_table[ns7-0-3-want7]: KILLED -- 1 failed in 0.50s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M16 (taskboard/views.py): the one-row cut mark loses its unit
+M16 tests/test_present_views.py::test_TC_1803_the_exact_split_frames[PRES-V3-split-80x24.txt-tw3-80-24]: KILLED -- 1 failed in 0.49s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M18 (taskboard/views.py): an overflowing column at page 0 starts at its top even when that hides the cursor
+M18 tests/test_present_views.py::test_TC_1804_below_a_row_per_note_every_missing_note_is_declared[80-18]: KILLED -- 1 failed in 0.54s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M18 tests/test_present_views.py::test_TC_1804_below_a_row_per_note_every_missing_note_is_declared[118-15]: KILLED -- 1 failed in 0.53s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M19 (taskboard/views.py): the first page down jumps the whole text back to its top
+M19 tests/test_present_views.py::test_TC_1806_the_first_page_down_never_moves_the_text_back: KILLED -- 1 failed in 0.53s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M20 (taskboard/views.py): wide glyphs wrapped by code points again
+M20 tests/test_present_views.py::test_TC_1801_line_breaks_bullets_and_numbers_are_kept: KILLED -- 1 failed in 0.49s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M17 (taskboard/views.py): every task hidden still paints the empty columns
+M17 tests/test_present_views.py::test_TC_1804_every_task_hidden_leaves_the_notes_area_blank: KILLED -- 1 failed in 0.49s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M12 (taskboard/views.py): the gantt note keeps 4 rows, not 3
+M12 tests/test_present_views.py::test_TC_1807_the_cursor_note_keeps_its_line_breaks[PRES-V3-gantt-notes-118x30.txt-118-30]: KILLED -- 1 failed in 0.51s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+== M13 (taskboard/views.py): the header loses its view word
+M13 tests/test_present_views.py::test_TC_1807_the_header_names_the_view: KILLED -- 1 failed in 0.50s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+M13 tests/test_present.py::test_TC_1001_the_exact_presc_frame_at_118x30: KILLED -- 1 failed in 0.47s
+  after: 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+
+after all: taskboard/views.py 460cf8128c618972607fc12778412143d606b7ed9edbd95b104ba2b6bcf0d178
+not killed: 0

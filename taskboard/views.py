@@ -6165,20 +6165,225 @@ def _present_title(task: Task, width: int) -> str:
     return c(title_markup(task, max(0, width), False), "bright", bold=True)
 
 
-def _present_note_lines(notes: str, note_w: int, max_lines: int) -> list[str]:
-    notes = (notes or "").strip()
-    if not notes:
+PRESENT_VIEWS = ("gantt", "split")
+_PRESENT_ITEM = re.compile(r"\d{1,3}\. ")
+
+
+def present_note_lines(notes: str, w: int) -> list[tuple[str, str]]:
+    """A task's notes as (lead, text) rows that fit `w` cells: every line break
+    kept, a run of blank lines collapsed to one blank row, `- ` / `* ` / `• `
+    items drawn `• ` and `1. ` items keeping their number, each item's wrapped
+    rows hanging under its text (the prototype's `wrap_notes`)."""
+    out: list[tuple[str, str]] = []
+    for para in (notes or "").strip().split("\n"):
+        body = para.strip()
+        if not body:
+            if out and out[-1][1]:
+                out.append(("", ""))
+            continue
+        lead = ""
+        if body[:2] in ("- ", "* ", "• "):
+            lead, body = "• ", body[2:]
+        elif m := _PRESENT_ITEM.match(body):
+            lead, body = m.group(0), body[m.end():]
+        tw = max(4, w - vis(lead))
+        rows = (textwrap.wrap(body, tw) if vis(body) == len(body) else _wrap_cells(body, tw)) or [""]
+        out.append((lead, rows[0]))
+        out += [(" " * vis(lead), r) for r in rows[1:]]
+    return out
+
+
+def _wrap_cells(text: str, w: int) -> list[str]:
+    """A greedy word wrap measured in cells, for text holding wide or zero-width
+    glyphs (CJK, emoji), which `textwrap` counts as one column each; a word
+    wider than `w` is split between glyphs."""
+    rows, line = [], ""
+    for word in text.split(" "):
+        cand = f"{line} {word}" if line else word
+        if vis(cand) <= w:
+            line = cand
+            continue
+        if line:
+            rows.append(line)
+        while vis(word) > w:
+            cut = ""
+            for ch in word:
+                if vis(cut + ch) > w:
+                    break
+                cut += ch
+            cut = cut or word[0]
+            rows.append(cut)
+            word = word[len(cut):]
+        line = word
+    return rows + ([line] if line else [])
+
+
+def _present_note_markup(row: tuple[str, str], w: int) -> str:
+    lead, txt = row
+    return _pad(c(escape(lead), "mut") + c(escape(clip(txt, w - vis(lead))), "ink"), w)
+
+
+def _present_cut(rows: list[tuple[str, str]], k: int, w: int) -> list[str]:
+    """`k` rows of a note, `w` cells each; a cut is always declared: the last
+    row says `… +N lines`, and a note kept to one row is its first line, cut,
+    with ` … +N lines` beside it."""
+    if k >= len(rows):
+        return [_present_note_markup(r, w) for r in rows]
+    if k <= 0:
         return []
-    wrapped = textwrap.wrap(notes, note_w) or [""]
-    if len(wrapped) > max_lines:
-        wrapped = wrapped[:max_lines]
-        wrapped[-1] = clip(wrapped[-1], note_w - 1) + "…"
-    return wrapped
+    if k == 1:
+        tag = f" … +{len(rows) - 1} lines"
+        first = (rows[0][0] + rows[0][1]).rstrip()
+        if vis(first) > w - vis(tag):     # the cut mark already says "more": no second "…"
+            first = set_cell_size(first, max(0, w - vis(tag)))
+        return [_pad(c(escape(first), "ink") + c(escape(clip(tag, w)), "dim"), w)]
+    more = c(escape(clip(f"… +{len(rows) - k + 1} lines", w)), "dim")
+    return [_present_note_markup(r, w) for r in rows[:k - 1]] + [_pad(more, w)]
 
 
-def _present_note_row(line: str, width: int, note_w: int) -> str:
-    body = c("· ", "dim") + c(escape(clip(line, note_w)), "mut")
-    return _pad("  " + body, width)
+def _present_scrolled(rows: list[str], room: int, page: int, w: int) -> list[str]:
+    """Page `page` of `rows` (markup, `w` cells) in `room` rows. The pages tile
+    the rows with no gap — page 0 shows the first `room - 1`, every later page
+    the next `room - 2` under `↑ N lines above`, the last page ends on the last
+    row — and the edge rows say what is out of view (`↓ N more lines`), never
+    a silent cut."""
+    if room <= 0:
+        return []
+    if len(rows) <= room:
+        return list(rows)
+    if room < 3:                         # no room for a page: the count only
+        return rows[:room - 1] + [_present_mark(f"↓ {len(rows) - room + 1} more lines", w)]
+    return _present_window(rows, room, 0 if page <= 0 else room - 1 + (page - 1) * (room - 2), w)
+
+
+def _present_window(rows: list[str], room: int, start: int, w: int) -> list[str]:
+    """`room` rows of `rows` from row `start` (clamped so the window ends on
+    the last row at most), `↑ N lines above` first when `start > 0` and
+    `↓ N more lines` last when rows remain; `len(rows) > room >= 3`."""
+    start = max(0, min(start, len(rows) - room + 1))
+    last = start + room - (1 if start else 0) >= len(rows)
+    shown = rows[start:] if last else rows[start:start + room - (2 if start else 1)]
+    out = ([_present_mark(f"↑ {start} lines above", w)] if start else []) + shown
+    below = len(rows) - start - len(shown)
+    return out + ([_present_mark(f"↓ {below} more lines", w)] if below else [])
+
+
+def _present_mark(text: str, w: int) -> str:
+    """An edge row of a paged window: what is out of view, dim."""
+    return _pad(c(escape(clip(text, w)), "dim"), w)
+
+
+def present_alloc(ns: list[int], cur: int, room: int, floor_n: int = 2) -> list[int]:
+    """Note rows per task in the split view: every note whole when they fit.
+    Otherwise the cursor's note is promised up to half the room, every other
+    note `floor_n` rows (1 when even that does not fit: its first line and the
+    cut count), then the cursor takes what is left first and the rest share it
+    round-robin. A task with no notes gets 0 (its heading says `no notes`).
+    Below one row per note the cursor's note still keeps one row and the
+    column ends on `↓ N more lines` (the prototype's `alloc`, that floor
+    added)."""
+    if sum(ns) <= room:
+        return list(ns)
+    has_cur = 0 <= cur < len(ns)
+    want_c = min(ns[cur], max(floor_n, room // 2)) if has_cur else 0
+    ks = [0 if i == cur else min(n, floor_n) for i, n in enumerate(ns)]
+    while sum(ks) + want_c > room and max(ks, default=0) > 1:
+        ks[ks.index(max(ks))] -= 1
+    if has_cur:                          # the cursor's note keeps a row, even over the room
+        ks[cur] = max(min(1, ns[cur]), min(want_c, room - sum(ks)))
+    left = room - sum(ks)
+    if has_cur:
+        add = max(0, min(left, ns[cur] - ks[cur]))
+        ks[cur] += add
+        left -= add
+    while left > 0:
+        grew = False
+        for i in range(len(ns)):
+            if left and ks[i] < ns[i]:
+                ks[i] += 1
+                left -= 1
+                grew = True
+        if not grew:
+            break
+    return ks
+
+
+def _present_heading(task: Task, w: int, on: bool, hue: str, today: date,
+                     empty: bool) -> str:
+    """A split-view block's first row: `▌ Title ··· Sep 24–28 ▲2d` — the
+    accent bar and title are the cursor; a task with no notes says so here."""
+    bar = c("▌ ", "accent") if on else c("▎ ", hue)
+    due, dtone = _present_due(parse_iso(task.due_date), today)
+    right = c(escape(present_span_label(parse_iso(task.start_date), parse_iso(task.due_date))),
+              "mut") + " " + c(due, dtone)
+    if empty:
+        right = c("no notes", "dim") + c("  ·  ", "dim") + right
+    rw = vis(_strip(right))
+    if w - 2 - rw - 1 < 4:                 # too narrow for the dates: the title only
+        right, rw = "", -1
+    tw = max(1, w - 2 - rw - 1)
+    title = c(escape(clip(task.title, tw)), "accent" if on else "bright", bold=True)
+    return _pad(bar + _pad(title, tw) + (" " + right if right else ""), w)
+
+
+class _PresentColumn(NamedTuple):
+    tasks: list
+    notes: list          # present_note_lines per task
+    cur: int             # the cursor's index in `tasks`, -1 when it is not here
+    ks: list             # note rows per task (`present_alloc`)
+
+    def note_scrolls(self) -> bool:
+        """pgdn moves the cursor's note: it is cut and keeps 3 rows or more."""
+        return self.cur >= 0 and 3 <= self.ks[self.cur] < len(self.notes[self.cur])
+
+
+def _present_column(tasks: list[Task], cursor: Task | None, room: int, w: int) -> _PresentColumn:
+    notes = [present_note_lines(t.notes, w - 2) for t in tasks]
+    cur = next((i for i, t in enumerate(tasks) if cursor is not None and t.id == cursor.id), -1)
+    return _PresentColumn(tasks, notes, cur,
+                          present_alloc([len(n) for n in notes], cur, max(0, room - len(tasks))))
+
+
+def _present_stack(col: _PresentColumn, room: int, w: int, hue: str, today: date,
+                   scroll: int, whole: bool) -> list[str]:
+    """One column of the split view, exactly `room` rows of `w` cells: a block
+    per task — its heading, then its note in the rows `present_alloc` gives it.
+    `scroll` is a page: it pages the cursor's note (`note_scrolls`), or, with
+    `whole` (no cursor's note in the frame can scroll), the column's whole
+    text with every note whole — page 1 opens it at its top. At page 0 a
+    column whose blocks overflow the room ends on `↓ N more lines`."""
+    tasks, notes, cur, ks = col
+    bars = [c("▌ ", "accent") if i == cur else c("▎ ", hue) for i in range(len(tasks))]
+
+    def blocks(sizes: list[int], note_scroll: int = 0) -> list[str]:
+        out = []
+        for i, t in enumerate(tasks):
+            out.append(_present_heading(t, w, i == cur, hue, today, not notes[i]))
+            if i == cur and note_scroll and sizes[i] < len(notes[i]):
+                body = [_present_note_markup(r, w - 2) for r in notes[i]]
+                seg = _present_scrolled(body, sizes[i], note_scroll, w - 2)
+            else:
+                seg = _present_cut(notes[i], sizes[i], w - 2)
+            out += [_pad(bars[i] + s, w) for s in seg]
+        return out
+
+    summary = blocks(ks)
+    end = sum(1 + k for k in ks[:cur + 1]) if cur >= 0 else 0      # the row after it
+    top = end - (room - 2) if len(summary) > room >= 3 and end > room - 1 else 0
+    if whole and scroll:
+        # the whole text pages on from the first block page 0 showed, never back
+        first = next((i for i in range(len(tasks)) if sum(1 + k for k in ks[:i + 1]) > top), 0)
+        base = sum(1 + len(n) for n in notes[:first])
+        full = blocks([len(n) for n in notes])
+        out = (_present_scrolled(full, room, scroll - 1, w) if base == 0 else
+               _present_window(full, room, base + (scroll - 1) * (room - 2), w))
+    elif scroll and col.note_scrolls():
+        out = blocks(ks, scroll)
+    elif top:                                                  # keep the cursor's block in view
+        out = _present_window(summary, room, top, w)
+    else:
+        out = _present_scrolled(summary, room, 0, w)
+    return out + [" " * w] * (room - len(out))
 
 
 def _present_span_row(proj: Project, board: Board, p: _PresentGeo) -> str:
@@ -6261,11 +6466,18 @@ def _present_finish(lines: list[str], height: int, width: int) -> Text:
 
 
 def render_present(board: Board, project_id: str | None, cursor_id: str | None,
-                   today: date, width: int, height: int) -> Text:
-    """The presentation frame: the date ruler, the project's gantt field with
-    start–end chips, the brief one-liners below, a `⟦━⟧` cursor across the brief
-    blocks (its task's notes expand). Byte-faithful to the PRES-R oracle
-    (batch 2026-10-16-batch-01) at 118x30 and 80x24."""
+                   today: date, width: int, height: int, view: str = "gantt",
+                   scroll: int = 0) -> Text:
+    """The presentation frame in one of its two views (`PRESENT_VIEWS`); the
+    header names the view in a quiet word. Both draw the date ruler and the
+    project's gantt field with start–end chips, and only the shown open tasks.
+    `gantt`: the brief one-liners below, a `⟦━⟧` cursor across them, the cursor
+    task's note expanded to 3 rows, its line breaks and list items kept.
+    `split` (the prototype's D2 · stacked): below the field every shown open
+    task gets a block — a heading and its whole note when they fit, else a fair
+    share (`present_alloc`), each cut declared — two columns from 100 wide, one
+    below; `scroll` scrolls the notes (`_present_stack`). Byte-faithful to the
+    PRES-V3 oracle frames (batch 2026-10-18-batch-01) at 118x30 and 80x24."""
     proj = board.project_by_id(project_id)
     if proj is None:
         projects = board.visible_projects(False)
@@ -6287,7 +6499,7 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         cursor = None
 
     title = (c("◆ PRESENT", "bright", bold=True) + c(" · ", "dim")
-             + c(escape(proj.name), proj.color, bold=True))
+             + c(escape(proj.name), proj.color, bold=True) + c(f"  {escape(view)}", "dim"))
     right = c(f"{open_n} open", "mut") + c(" · ", "dim") \
         + (c(f"▲{late} past due", "over", bold=True) if late else c(f"{done} done", "done"))
     lines = [header(title, right, width)]
@@ -6298,23 +6510,40 @@ def render_present(board: Board, project_id: str | None, cursor_id: str | None,
         lines.append(_present_task_row(t, board, p, cursor=cursor is not None and t.id == cursor.id))
     lines.append(_pad(c("─" * width, "frame"), width))
 
+    if view == "split" and open_t:
+        room = max(0, height - len(lines))
+        half = (len(open_t) + 1) // 2 if wide else len(open_t)
+        cw = (width - 2 - 3) // 2 if wide else width - 2
+        cols = [_present_column(ts, cursor, room, cw) for ts in (open_t[:half], open_t[half:])]
+        whole = not any(col.note_scrolls() for col in cols)
+        a, b = (_present_stack(col, room, cw, proj.color, today, scroll, whole) for col in cols)
+        if wide:
+            lines += [_pad(" " + a[y] + c(" │ ", "frame") + b[y], width) for y in range(room)]
+        else:
+            lines += [_pad(" " + r, width) for r in a]
+        return _present_finish(lines, height, width)
+
     for t in open_t:
-        lines.append(_present_brief(t, p, cursor is not None and t.id == cursor.id, width))
-        if cursor is not None and t.id == cursor.id:
-            note_w = width - 4
-            for ln in _present_note_lines(t.notes, note_w, 3):
-                lines.append(_present_note_row(ln, width, note_w))
+        on = cursor is not None and t.id == cursor.id
+        lines.append(_present_brief(t, p, on, width))
+        if on:
+            rows = present_note_lines(t.notes, width - 6)
+            lines += [_pad("  " + c("· ", "dim") + r, width)
+                      for r in _present_cut(rows, 3, width - 6)]
     return _present_finish(lines, height, width)
 
 
 def present_paths(board: Board, project_name: str | None,
-                  today: date | None = None) -> tuple[Path, Path]:
+                  today: date | None = None, view: str = "gantt") -> tuple[Path, Path]:
     """The SVG and PNG export destinations, beside the board in the same
-    `reports/` folder the HTML report used — the shipped destination convention."""
+    `reports/` folder the HTML report used — the shipped destination convention.
+    A view other than `gantt` adds its name, so exporting both views on one day
+    keeps both files."""
     today = today or date.today()
     slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in (project_name or "board"))
     slug = slug.strip("-")[:40] or "board"
-    base = Path(board.path).parent / "reports" / f"present-{slug}-{today.isoformat()}"
+    tail = "" if view == "gantt" else f"-{view}"
+    base = Path(board.path).parent / "reports" / f"present-{slug}-{today.isoformat()}{tail}"
     return base.with_suffix(".svg"), base.with_suffix(".png")
 
 

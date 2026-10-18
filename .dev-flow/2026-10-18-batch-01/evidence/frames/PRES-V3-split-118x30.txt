@@ -1,0 +1,30 @@
+◆ PRESENT · Website Redesign  split                                                              5 open · ▲2 past due 
+             today Wed Sep 30  September 2026                        30┃October          ◆                            
+              selected task ▸        14           Sep 24 ⟦━━━━━━━━⟧ Sep 28     5             12                       
+▌ WEBSITE REDESIGN             ●─────────────────────────────────────╎───────────────────◆···┆·········· Aug 21–Oct 10
+  ▎ Build component library ↗  ◂▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◕┆···╎·········┆·············┆··········      Sep 5–27
+  ▎ Fix checkout 500 error ↗   ······┆·············┆·····⟦━━━━━━━━⟧··╎·········┆·············┆··········     Sep 24–28
+  ▎ Optimize image assets     ↳······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········     due Oct 6
+  ▎ Launch new homepage ↗     ↳······┆·············┆·············┆···╎·······╌╌╌╌╌╌╌╌╌╌╌╌╌○··┆··········      Oct 4–10
+  ▎ SEO redirects map          ······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○·····    due Oct 14
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ ▎ Build component library                   Sep 5–27 ▲3d │ ▎ Launch new homepage                    Oct 4–10 in 10d  
+ ▎ Design tokens are frozen at v2.3.                      │ ▎ Go-live plan, agreed with marketing and support on Sep  
+ ▎ • Buttons, inputs and cards: done                      │ ▎ 22.                                                     
+ ▎ • Modal and toast: in review with the design team      │ ▎ 1. Feature-flag the new homepage for internal users     
+ ▎ • Data table: not started, needs the sorting spec      │ ▎    first, then 10 % of traffic for one full business    
+ ▎ Publish the storybook before Friday's review.          │ ▎    day while we watch conversion, error rate and the    
+ ▌ Fix checkout 500 error                   Sep 24–28 ▲2d │ ▎    p95 of the checkout page against last week.          
+ ▌ The 500 comes from a missing tax-rate row for the      │ ▎ 2. Lower the DNS TTL to 300 seconds two days before     
+ ▌ three new regions (CL, PE, UY); checkout calls the     │ ▎    the cut-over so a rollback propagates in minutes,    
+ ▌ rate service and gets nothing back.                    │ ▎    not hours.                                           
+ ▌ Hotfix PR #412 adds the rows and a guard that falls    │ ▎ 3. Support gets the FAQ and the macro set one week      
+ ▌ back to the default rate, with an alert when it does.  │ ▎    before; the status page draft is written in advance  
+ ▌ If the fix is not green by end of day, roll back       │ ▎    and kept unpublished.                                
+ ▌ deploy 2026.09.27.                                     │ ▎ 4. Rollback: flip the flag, restore the old sitemap,    
+ ▎ Optimize image assets                  due Oct 6 in 6d │ ▎    purge the CDN. The runbook lives in the ops wiki     
+ ▎ Convert the hero images to AVIF and keep a JPEG        │ ▎    and was rehearsed on staging.                        
+ ▎ fallback.                                              │ ▎ Risks: the component library slipped three days; if     
+ ▎ Lazy-load everything below the fold.                   │ ▎ the asset pass slips too, launch moves to the           
+ ▎ Target: homepage under 1.5 MB on a 4G profile.         │ ▎ … +2 lines                                              
+                                                          │ ▎ SEO redirects map       no notes  ·  due Oct 14 in 14d  

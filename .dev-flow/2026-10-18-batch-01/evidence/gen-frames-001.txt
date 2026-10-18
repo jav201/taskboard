@@ -1,0 +1,43 @@
+$ python .dev-flow/2026-10-18-batch-01/evidence/gen_frames.py   # before --write: no frame on disk
+PRES-V3-gantt-118x30: 30 rows · on disk != renderer · prototype deltas none
+PRES-V3-gantt-80x24: 24 rows · on disk != renderer · prototype deltas none
+PRES-V3-gantt-notes-118x30: 30 rows · on disk != renderer · prototype deltas none
+PRES-V3-gantt-notes-80x24: 24 rows · on disk != renderer · prototype deltas none
+PRES-V3-split-118x30: 30 rows · on disk != renderer · prototype deltas none
+PRES-V3-split-80x24: 24 rows · on disk != renderer · prototype deltas [11]
+PRES-V3-split-long-118x30: 30 rows · on disk != renderer · prototype deltas none
+PRES-V3-split-long-80x24: 24 rows · on disk != renderer · prototype deltas [11]
+FAILED (8 frames)
+exit 1
+
+$ python .dev-flow/2026-10-18-batch-01/evidence/gen_frames.py --write
+PRES-V3-gantt-118x30: written
+PRES-V3-gantt-118x30: 30 rows · on disk == renderer · prototype deltas none
+PRES-V3-gantt-80x24: written
+PRES-V3-gantt-80x24: 24 rows · on disk == renderer · prototype deltas none
+PRES-V3-gantt-notes-118x30: written
+PRES-V3-gantt-notes-118x30: 30 rows · on disk == renderer · prototype deltas none
+PRES-V3-gantt-notes-80x24: written
+PRES-V3-gantt-notes-80x24: 24 rows · on disk == renderer · prototype deltas none
+PRES-V3-split-118x30: written
+PRES-V3-split-118x30: 30 rows · on disk == renderer · prototype deltas none
+PRES-V3-split-80x24: written
+PRES-V3-split-80x24: 24 rows · on disk == renderer · prototype deltas [11]
+PRES-V3-split-long-118x30: written
+PRES-V3-split-long-118x30: 30 rows · on disk == renderer · prototype deltas none
+PRES-V3-split-long-80x24: written
+PRES-V3-split-long-80x24: 24 rows · on disk == renderer · prototype deltas [11]
+OK (8 frames)
+exit 0
+
+$ python .dev-flow/2026-10-18-batch-01/evidence/gen_frames.py
+PRES-V3-gantt-118x30: 30 rows · on disk == renderer · prototype deltas none
+PRES-V3-gantt-80x24: 24 rows · on disk == renderer · prototype deltas none
+PRES-V3-gantt-notes-118x30: 30 rows · on disk == renderer · prototype deltas none
+PRES-V3-gantt-notes-80x24: 24 rows · on disk == renderer · prototype deltas none
+PRES-V3-split-118x30: 30 rows · on disk == renderer · prototype deltas none
+PRES-V3-split-80x24: 24 rows · on disk == renderer · prototype deltas [11]
+PRES-V3-split-long-118x30: 30 rows · on disk == renderer · prototype deltas none
+PRES-V3-split-long-80x24: 24 rows · on disk == renderer · prototype deltas [11]
+OK (8 frames)
+exit 0
