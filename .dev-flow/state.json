@@ -1,8 +1,8 @@
 {
   "project": "taskboard",
   "language": "en",
-  "batch_id": "2026-10-18-batch-02",
-  "batch_objective": "Backlog fixes: the two standup tests (the scrubbed fixture name against the 12-cell name column), the clipboard test (an environment refusal skips, a roundtrip mismatch fails), the presentation at any width >= 0 and its hint row's fallback below 58 columns, the two stale prototype scripts marked historical; a prototype round, no production change, for the dim view word and cut marks, the 80-column hint and the gantt view's 3-row note cap",
+  "batch_id": "2026-10-18-batch-03",
+  "batch_objective": "Present polish (the operator's verdict of 2026-10-18 on the backlog polish round, variant A of all three items): the dim view word and the cut and edge marks of the presentation in the reached tone (~4.9:1) instead of dim (~3:1); a middle hint wording between the long and the short one, which the 80-column hint takes; the gantt view's cursor note filling the frame's free rows instead of stopping at 3",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -157,11 +157,17 @@
       "to": "core",
       "date": "2026-10-18",
       "reason": "batch 2026-10-18-batch-02 opened by rollover from 2026-10-18-batch-01; mode core declared by the commission"
+    },
+    {
+      "from": null,
+      "to": "core",
+      "date": "2026-10-18",
+      "reason": "batch 2026-10-18-batch-03 opened by rollover from 2026-10-18-batch-02; mode core declared by the commission"
     }
   ],
   "guided": false,
-  "current_station": "P5",
-  "phase_status": "closed",
+  "current_station": "P0",
+  "phase_status": "not-started",
   "stations_active": [
     "P0",
     "ARQ",
@@ -175,7 +181,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 1,
+    "P1": 0,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -185,10 +191,9 @@
     "PDR": 0
   },
   "triggers": {
-    "evaluated_at": "2026-10-18T14:18:46",
+    "evaluated_at": "2026-10-18T17:13:11",
     "fired": [
       "A2",
-      "A3",
       "B1",
       "B3",
       "B4",
@@ -197,6 +202,7 @@
     ],
     "not_fired": [
       "A1",
+      "A3",
       "A4",
       "B2",
       "C1",
@@ -213,87 +219,26 @@
       "F1",
       "F2"
     ],
-    "record": ".dev-flow/2026-10-18-batch-02/PLAN.md#triggers"
+    "record": ".dev-flow/2026-10-18-batch-03/PLAN.md#triggers"
   },
   "artifact_homes": {
-    "requirements": "repo:.dev-flow/2026-10-18-batch-02/01-requirements.md",
-    "requirements_ledger": "repo:.dev-flow/2026-10-18-batch-02/01-requirements-ledger.md",
-    "traceability": "repo:.dev-flow/2026-10-18-batch-02/06-docs/traceability-matrix.md",
+    "requirements": "repo:.dev-flow/2026-10-18-batch-03/01-requirements.md",
+    "requirements_ledger": "repo:.dev-flow/2026-10-18-batch-03/01-requirements-ledger.md",
+    "traceability": "repo:.dev-flow/2026-10-18-batch-03/06-docs/traceability-matrix.md",
     "tests": "repo:tests/",
     "module_map": "repo:docs/ARCHITECTURE.md",
-    "increments": "repo:.dev-flow/2026-10-18-batch-02/03-increments/",
-    "evidence": "repo:.dev-flow/2026-10-18-batch-02/evidence/",
+    "increments": "repo:.dev-flow/2026-10-18-batch-03/03-increments/",
+    "evidence": "repo:.dev-flow/2026-10-18-batch-03/evidence/",
     "backlog": "repo:.dev-flow/BACKLOG.md",
-    "design_pdr": "vault:taskboard/design/PDR-2026-10-18-batch-02.md",
-    "design_ddr": "vault:taskboard/design/DDR-2026-10-18-batch-02.md",
-    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-18-batch-02/",
-    "metrics": "vault:taskboard/dev-flow-batches/2026-10-18-batch-02/README.md",
+    "design_pdr": "vault:taskboard/design/PDR-2026-10-18-batch-03.md",
+    "design_ddr": "vault:taskboard/design/DDR-2026-10-18-batch-03.md",
+    "postmortem": "vault:taskboard/dev-flow-batches/2026-10-18-batch-03/",
+    "metrics": "vault:taskboard/dev-flow-batches/2026-10-18-batch-03/README.md",
     "requirements_canon": "repo:REQUIREMENTS.md"
   },
-  "base_ref": "9e82b10acb94514e10a10c2f6efe799dc920a17e",
+  "base_ref": "620f58c787f855d4d2ad4942c79c5a7cecb55baa",
   "artifacts": {},
-  "decisions_log": [
-    {
-      "station": "P0",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P0 closed under the coordinator's commission of 2026-10-18 (continue with the backlog): batch opened on backlog-fixes from main 9e82b10 by rollover (a641d67), the backlog inventory classified (6 FIX, 3 PROTOTYPE, 3 OPERATOR, 6 DECLINE), three stories READY, triggers A2/A3 fired so ARQ is next"
-    },
-    {
-      "station": "ARQ",
-      "date": "2026-10-18",
-      "decision": "standing authorization — ARQ module map approved under the 2026-10-18 commission after the architect's iterate (F1 the round forks whole functions, not names; F2 six round files, not two; F3-F5 the render_present width domain >= 0, the narrow frame ignoring view/scroll, a tests row) was folded into docs/ARCHITECTURE.md and re-read (approve; the _hint zero-budget case owed at the PDR); P1 is next"
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P1 closed under the 2026-10-18 commission: the live contract US-1901..1903 -> HLR-1901..1905 -> LLR-1901.1..1905.1, AT-1901..1905, TC-1901..1905, premises P-1..P-9 all TRUE (executed), one lane; the security scan flagged truncate/escape, answered in §6.3 (C1-C8 stay not fired); P2 is next"
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P2 iteration 1: iterate-to-refine (architect, qa-reviewer, ux-reviewer: 9 requirement-defect majors, 18 minors, no blocker); every finding folded into the contract as LED-2026-10-18-batch-02.2, P-7 re-probed for the amended design; back to P1"
-    },
-    {
-      "station": "P1",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P1 re-closed under the 2026-10-18 commission with LED-2026-10-18-batch-02.2 applied (the narrow ladder in mut and the narrow key guard, the four hint wordings with the literal threshold table, the clipboard skip limited to refusal, the round's manifest and RED arms); P2 iteration 2 is next"
-    },
-    {
-      "station": "P2",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P2 approved under the 2026-10-18 commission: iteration 1 iterate-to-refine (architect, qa-reviewer, ux-reviewer; 9 majors folded as LED .2), iteration 2 approve from all three with 7 minors folded as LED .3 (UX2-2 declared for the round); the PDR is next"
-    },
-    {
-      "station": "PDR",
-      "date": "2026-10-18",
-      "decision": "standing authorization — PDR sealed approved with conditions under the 2026-10-18 commission: PC-1 (a surviving helper mutant, executed by the qa lens; the eighth TC-1902 arm), PC-2 (the wide truncate's overflow arm), PC-3 (a mutant per AT-1903 guard) folded as LED .4; PC-4, PC-6 applied to the proposal; PC-5 owed at increment 003; P3 is next"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-18",
-      "decision": "standing authorization — increment 001 gated under the 2026-10-18 commission: the standup tests find the row by the painted 12-cell name cell (the scrub's 16-cell placeholder), the clipboard test skips only on a refusal on every attempt; six round files marked HISTORICAL; 0 source files; RED on base (2 standup + AT-1902); 12/12 mutants KILLED; 2733 passed, 0 failed; code-reviewer OK to advance (0 HIGH; L1-L3 accepted, L4 to the backlog)"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-18",
-      "decision": "standing authorization — increment 002 gated under the 2026-10-18 commission: below 36 columns the presentation paints the longest fitting PRESENT_NARROW rung in mut, takes no key but esc/q and x notifies; the hint's four wordings and the visible cut; 2 source files; RED on base 5/6 (the 6th a pin); 19/20 mutants KILLED (N15 a declared pin); 2739 passed, 0 failed (run 2; run 1's HelpModal timing flake recorded); code-reviewer OK to advance after F1-F3 (LED .6, .7)"
-    },
-    {
-      "station": "P3",
-      "date": "2026-10-18",
-      "decision": "standing authorization — increment 003 gated under the 2026-10-18 commission: the polish prototype round (45 real-app captures: contrast, hint80, notecap at 118x31/80x25 with 1-2 variants each, the narrow frame for review; manifest; one Spanish page recommending contrast A, hint80 A, notecap A); 0 source files, no file under taskboard/ changed; AT-1905 RED on base and on 8 corrupted copies; 2740 passed, 0 failed; code-reviewer OK to advance after F1-F4 (LED .8); P3 complete, the DDR is next"
-    },
-    {
-      "station": "DDR",
-      "date": "2026-10-18",
-      "decision": "standing authorization — DDR sealed approved under the 2026-10-18 commission: architect approved with condition DDR-C1 (PC-5 must be exercised, not declared) — discharged: run_test hides toasts unless notifications=True, the round's narrow-30x12-x capture now paints the export notice; qa-reviewer approved (each AT in one node, ledger 2723 -> 2740, PC-1/PC-4 re-read, N15 an equivalent mutant, the run-1 failure a timing flake); P4 is next"
-    },
-    {
-      "station": "P4",
-      "date": "2026-10-18",
-      "decision": "standing authorization — P4 PASS-WITH-NOTES under the 2026-10-18 commission: the orchestrator's gate run in a clean worktree at 7e849dc, 2740 passed, 0 failed, 0 skipped (the clipboard roundtrip passed); ledger 2723 - 0 + 17 = 2740; qa-reviewer 11/11 evidence rows, G-1..G-8 minor; ux walkthrough pass-with-notes (automated walkthrough and expert inspection performed, evaluation with users not performed)"
-    }
-  ],
+  "decisions_log": [],
   "obsidian_synced": false,
-  "created_at": "2026-10-18T14:13:32.679883"
+  "created_at": "2026-10-18T17:05:28.291203"
 }
