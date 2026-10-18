@@ -2,7 +2,7 @@
   "project": "taskboard",
   "language": "en",
   "batch_id": "2026-10-18-batch-02",
-  "batch_objective": "Backlog fixes: the two standup tests (the scrubbed fixture name against the 12-cell name column), the clipboard test (an environment refusal skips, a roundtrip mismatch fails), the presentation at any width >= 1 and its hint row's fallback below 60 columns, the two stale prototype scripts marked historical; a prototype round, no production change, for the dim view word and cut marks, the 80-column hint and the gantt view's 3-row note cap",
+  "batch_objective": "Backlog fixes: the two standup tests (the scrubbed fixture name against the 12-cell name column), the clipboard test (an environment refusal skips, a roundtrip mismatch fails), the presentation at any width >= 0 and its hint row's fallback below 58 columns, the two stale prototype scripts marked historical; a prototype round, no production change, for the dim view word and cut marks, the 80-column hint and the gantt view's 3-row note cap",
   "owner": "C:/Users/jjgh8/Github/taskboard",
   "mode": "core",
   "mode_history": [
@@ -160,8 +160,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P0",
-  "phase_status": "not-started",
+  "current_station": "PDR",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -175,7 +175,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 0,
+    "P1": 1,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -232,7 +232,38 @@
   },
   "base_ref": "9e82b10acb94514e10a10c2f6efe799dc920a17e",
   "artifacts": {},
-  "decisions_log": [],
+  "decisions_log": [
+    {
+      "station": "P0",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P0 closed under the coordinator's commission of 2026-10-18 (continue with the backlog): batch opened on backlog-fixes from main 9e82b10 by rollover (a641d67), the backlog inventory classified (6 FIX, 3 PROTOTYPE, 3 OPERATOR, 6 DECLINE), three stories READY, triggers A2/A3 fired so ARQ is next"
+    },
+    {
+      "station": "ARQ",
+      "date": "2026-10-18",
+      "decision": "standing authorization — ARQ module map approved under the 2026-10-18 commission after the architect's iterate (F1 the round forks whole functions, not names; F2 six round files, not two; F3-F5 the render_present width domain >= 0, the narrow frame ignoring view/scroll, a tests row) was folded into docs/ARCHITECTURE.md and re-read (approve; the _hint zero-budget case owed at the PDR); P1 is next"
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P1 closed under the 2026-10-18 commission: the live contract US-1901..1903 -> HLR-1901..1905 -> LLR-1901.1..1905.1, AT-1901..1905, TC-1901..1905, premises P-1..P-9 all TRUE (executed), one lane; the security scan flagged truncate/escape, answered in §6.3 (C1-C8 stay not fired); P2 is next"
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P2 iteration 1: iterate-to-refine (architect, qa-reviewer, ux-reviewer: 9 requirement-defect majors, 18 minors, no blocker); every finding folded into the contract as LED-2026-10-18-batch-02.2, P-7 re-probed for the amended design; back to P1"
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P1 re-closed under the 2026-10-18 commission with LED-2026-10-18-batch-02.2 applied (the narrow ladder in mut and the narrow key guard, the four hint wordings with the literal threshold table, the clipboard skip limited to refusal, the round's manifest and RED arms); P2 iteration 2 is next"
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P2 approved under the 2026-10-18 commission: iteration 1 iterate-to-refine (architect, qa-reviewer, ux-reviewer; 9 majors folded as LED .2), iteration 2 approve from all three with 7 minors folded as LED .3 (UX2-2 declared for the round); the PDR is next"
+    }
+  ],
   "obsidian_synced": false,
   "created_at": "2026-10-18T14:13:32.679883"
 }

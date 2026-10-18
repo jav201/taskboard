@@ -20,8 +20,8 @@ orchestrator presents the full plan in-conversation at each phase gate.
 |---|---|
 | Project | taskboard |
 | Batch | 2026-10-18-batch-02 |
-| Objective | Backlog fixes: the two standup tests (the scrubbed fixture name against the 12-cell name column), the clipboard test (an environment refusal skips, a roundtrip mismatch fails), the presentation at any width >= 1 and its hint row's fallback below 60 columns, the two stale prototype scripts marked historical; a prototype round, no production change, for the dim view word and cut marks, the 80-column hint and the gantt view's 3-row note cap |
-| Last updated | P0 · 2026-10-18 |
+| Objective | Backlog fixes: the two standup tests (the scrubbed fixture name against the 12-cell name column), the clipboard test (an environment refusal skips, a roundtrip mismatch fails), the presentation at any width >= 0 and its hint row's fallback below 58 columns, the two stale prototype scripts marked historical; a prototype round, no production change, for the dim view word and cut marks, the 80-column hint and the gantt view's 3-row note cap |
+| Last updated | PDR · 2026-10-18 |
 | Standing authorization | standing authorization — the coordinator's commission of 2026-10-18 (the runtime cannot prompt), relaying the operator's words (translated): «Continue with the backlog: fix the Standup tests and the other missing items.» Quoted from the commission: «Open a NEW dev-flow batch in `C:\Users\jjgh8\Github\taskboard` … Create a local branch `backlog-fixes` from main … follow `stations/core-runbook.md`», «No push, merge, reset or force», «At most 4 SOURCE files per increment», «Never rewrite oracle frames whose hashes were recorded; new frames go in new files», «An independent `code-reviewer` per increment, spawned», «P4 and P5 close». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents); commits on the local branch `backlog-fixes` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); the three PROTOTYPE items get a prototype round only — no production change before the operator's verdict (the operator's standing rule for TUI design changes). |
 | First gate | step 1, on `main` `9e82b10` before the branch: exit 0 — 0 block · 40 notice · 65 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 62 notice · 47 not applicable. |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `9e82b10acb94514e10a10c2f6efe799dc920a17e` = local `main` (the previous batch's branch was merged upstream); `git switch -c backlog-fixes main`; HEAD equals the origin tip, so no rebase is owed; `base_ref` = `9e82b10acb94514e10a10c2f6efe799dc920a17e`. RC-1 (b): not already shipped — the standup tests fail on `origin/main` (`python -m pytest tests/test_team_views.py` → 2 failed, 251 passed); `render_present` on `origin/main` asserts below 36 columns (`views.py:6464`; the sweep in `01-requirements.md` §2.7); `PresentScreen._hint` has two wordings and no fallback (`app.py:275-293`); `test_win_clipboard_roundtrip` asserts on its own setup (`tests/test_app.py:1215-1217`). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest `origin/main` commit 2026-10-18 12:27 -0600. Premises: `01-requirements.md` §2.7. |
@@ -34,7 +34,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 |---|---|---|
 | A1 | not fired | judged — `docs/ARCHITECTURE.md` §2 · no module created, no boundary moved: the planned source files (`taskboard/views.py`, `taskboard/app.py`) are existing modules'; the tests and the prototype folder sit under the declared `tests` and `prototypes` modules |
 | A2 | fired | judged — the planned source files are `taskboard/views.py` (module `views`) and `taskboard/app.py` (module `app`): two modules |
-| A3 | fired | judged — `render_present`'s interface row (`docs/ARCHITECTURE.md` §4, consumed by `app.PresentScreen`) gains its width domain: every width ≥ 1 returns a frame, where below 36 it raised |
+| A3 | fired | judged — `render_present`'s interface row (`docs/ARCHITECTURE.md` §4, consumed by `app.PresentScreen`) gains its width domain: every width ≥ 0 returns a frame, where below 36 it raised; `PresentScreen` reads `PRESENT_MIN_WIDTH` (its narrow mode) |
 | A4 | not fired | judged — one lane, increments in order |
 | B1 | fired | `grep -rl` over `tests/`: `render_present` → `test_markup_census.py`, `test_present.py`, `test_present_room.py`, `test_present_rulers.py`, `test_present_views.py`, `test_tick_label.py`; `present-hint` → `test_present_hide.py`, `test_present_views_app.py`; `_hint` → those two plus `test_gantt_polish.py`, `test_link_picker.py` (other screens' own `_hint`); `PresentScreen` → `test_markup_census.py`, `test_markup_sites.py`, `test_present.py`, `test_present_hide.py`, `test_present_views_app.py`, `test_report.py`; `render_standup` → `test_team_views.py`; `grab_clipboard_text` / `test_win_clipboard_roundtrip` → `test_app.py`; `prototypes/present` → `present_board.py`, `present_notes_board.py`, `test_present_rulers.py`, `test_present_views.py` (docstrings citing the rounds) |
 | B2 | not fired | no file moves |
@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0 — the batch is open on the local branch `backlog-fixes` by rollover from 2026-10-18-batch-01; the backlog inventory is classified (below); three stories READY; triggers A2/A3 fired, so ARQ is next.
+PDR — ARQ approved after one iterate; P1/P2 approved after one iterate-to-refine (LED .2) and an approve with minors (LED .3); the design proposal is under review.
 
 ## Objective
 
@@ -67,8 +67,8 @@ The open items of the `BACKLOG.md` lanes after 2026-10-16-batch-01, 2026-10-17-b
 | 1 | the two failing standup tests (16) | FIX | increment 001 — HLR-1901 |
 | 2 | `test_win_clipboard_roundtrip` fails on its own setup (16, G-001) | FIX | increment 001 — HLR-1902 |
 | 3 | `render_present` asserts below ~36 columns (18) | FIX | increment 002 — HLR-1903 |
-| 4 | the short hint clipped below ~60 columns (18, code-review F2) | FIX | increment 002 — HLR-1904 |
-| 5 | `present_rulers/app_capture.py` and `present_views/views_proto.py` no longer import (commission) | FIX | increment 001 — a `HISTORICAL` header note on each round file that no longer runs (doc) |
+| 4 | the short hint clipped below 58 columns (18, code-review F2) | FIX | increment 002 — HLR-1904 |
+| 5 | `present_rulers/app_capture.py` and `present_views/views_proto.py` no longer import (commission) | FIX | increment 001 — a `HISTORICAL` header note on each round file that no longer imports: the two named plus the four that fail with them — `present_rulers/proto.py` (imported by `app_capture.py`; broken since 2026-10-17-batch-01), `present_views/views_d.py` and `app_capture.py` (they import `views_proto`), `app_capture2.py` (it imports `app_capture` and `views_d`) — probed by importing every `.py` of both rounds on `base_ref` (doc) |
 | 6 | stale comments naming PRES-C / PRES-R / "hybrid" (16, G-005): the presentation section header in `views.py`, the TC-1001 banner in `tests/test_present.py` | FIX | increment 002 (comment-only) |
 | 7 | the `*_presc_frame_*` test names (16, G-005) | DECLINE | renaming nodes breaks the citations the sealed batch records hold; their docstrings already name PRES-V3 |
 | 8 | the dim view word and cut marks at ~3:1 (18, UX4-2) | PROTOTYPE | increment 003 — `prototypes/backlog_polish/` |
@@ -90,11 +90,14 @@ The open items of the `BACKLOG.md` lanes after 2026-10-16-batch-01, 2026-10-17-b
 | US-1901 | READY | the suite's two known failures and its environment flake |
 | US-1902 | READY | the presentation at any width |
 | US-1903 | READY | the polish prototype round |
-| ARQ | next | A2, A3 fired |
+| ARQ | approved | `docs/ARCHITECTURE.md` amended (one iterate: F1, F2 folded) |
+| P1 | approved (one iterate-to-refine) | 5 HLR, 5 LLR, AT-1901..1905, TC-1901..1904 (LLR-1905.1 by inspection), premises P-1..P-9; scan flags `truncate`, `escape` answered |
+| P2 | approved | iteration 1 iterate-to-refine (9 majors → LED .2), iteration 2 approve (7 minors → LED .3) |
+| PDR | in progress | `design/design-proposal.md`; architect, qa-reviewer, ux-reviewer |
 
 ## Roadmap + increment plan
 
-- 001 — the suite tells the truth: `tests/test_team_views.py` (standup), `tests/test_app.py` and a new guard test (clipboard), header notes on the stale prototype files. 0 source files.
+- 001 — the suite tells the truth: `tests/test_team_views.py` (standup), `tests/test_app.py` and a new guard test (clipboard), `HISTORICAL` header notes on the six round files that no longer import. 0 source files.
 - 002 — the presentation at any width: `taskboard/views.py` (the narrow frame; the stale section comment), `taskboard/app.py` (`PresentScreen._hint` fallback); renderer and app tests. 2 source files.
 - 003 — the prototype round: `prototypes/backlog_polish/` (capture script, captures, page) and its acceptance test. 0 source files.
 

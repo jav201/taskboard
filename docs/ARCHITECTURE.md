@@ -19,7 +19,7 @@
 
 | Field | Value |
 |---|---|
-| Last amended by | `2026-10-18-batch-01` |
+| Last amended by | `2026-10-18-batch-02` |
 | Date | `2026-10-18` |
 
 ---
@@ -81,7 +81,8 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
 | `app` | every module above | — | the top of the graph |
 | `team_sync` | `models`; `views.HEX` function-local only (`team_sync.py:48`, local to dodge the import cycle — tolerated like `modals` → `app`) | `team_sync` → `app`; `team_sync` → `views` at import time | it runs headless on a timer |
 | `report` | `models`, `views` | — | — |
-| `prototypes` | `taskboard` — public AND private names (`_present_ruler`, …) | `taskboard` → `prototypes` | a prototype round is frozen evidence tied to the commit it ran on; a later batch may delete a private name it imports (2026-10-17-batch-01 broke `present_rulers/proto.py`, 2026-10-18-batch-01 `present_rulers/app_capture.py` and `present_views/views_proto.py`), and a batch that re-runs one as a cross-check binds the missing names itself (`.dev-flow/2026-10-18-batch-01/evidence/gen_frames.py`) |
+| `prototypes` | `taskboard` — public AND private names (`_present_ruler`, …) | `taskboard` → `prototypes` | a prototype round is frozen evidence tied to the commit it ran on; a later batch may delete a private name it imports (2026-10-17-batch-01 broke `present_rulers/proto.py`, 2026-10-18-batch-01 `present_rulers/app_capture.py` and `present_views/views_proto.py`, and with them the files that import them: `present_views/views_d.py`, `app_capture.py`, `app_capture2.py`), and a batch that re-runs one as a cross-check binds the missing names itself (`.dev-flow/2026-10-18-batch-01/evidence/gen_frames.py`); a round file that no longer runs says so in a `HISTORICAL` header naming the last commit it ran on, and is not repaired (2026-10-18-batch-02). A round that shows variants of literals (a tone, a wording, a cap) replaces, in its own process only, whole functions and methods with forked copies it holds (`prototypes/backlog_polish/` rebinds `taskboard.app.render_present` — `app` binds the name at import — `PresentScreen._hint`, and the private `views._present_cut` that `render_present` calls); the forks are frozen to the commit the round ran on, like its imports, and never reach `taskboard/`. Rejected: lifting the literals into module constants of `views`/`app` so a round can patch them — a production change made for a prototype |
+| `tests` | `taskboard`; `prototypes` and `.dev-flow/**` evidence as FILES only (the oracle frames, a round's captures and page — `tests/test_present_views.py`, the round acceptance test of 2026-10-18-batch-02) | `taskboard` → `tests` | the suite reads artifacts; nothing shipped reads the suite |
 
 ---
 
@@ -91,7 +92,8 @@ taskboard is a local, single-user terminal app. Everything it touches crosses on
 |---|---|---|---|---|
 | `board.json` task record | `models` | `team_sync` (pushes `Board._to_dict`, `team_sync.py:157`; pulls through `Task.from_dict`, `:221`, into `foreign_tasks` for the team views only — a pulled task never joins the board, so a teammate's `show_in_present` never hides anything in this board's presentation), every older/newer app version (unknown keys round-trip through `extra`) | one JSON object per task; optional keys omitted when at their default only where the model says so (`show_in_present`, batch 2026-10-16-batch-01) | no |
 | `Task` fields | `models` | `app` (`_on_task_edited` sets editor keys by name, `_UNDO_FIELDS`), `views`, `modals` | dataclass attributes | no |
-| `render_present(board, project_id, cursor_id, today, width, height, view="gantt", scroll=0) -> Text` | `views` | `app.PresentScreen` (paint, export, the scroll clamp), tests, prototypes | a `height`×`width` `Text`; `view` one of `PRESENT_VIEWS` (`gantt`, `split`), `scroll` a page number, read by `split` only (batch 2026-10-18-batch-01) | no |
+| `render_present(board, project_id, cursor_id, today, width, height, view="gantt", scroll=0) -> Text` | `views` | `app.PresentScreen` (paint, export, the scroll clamp), tests, prototypes | a `height`×`width` `Text` for every `width` ≥ 0 (the screen passes `self.size.width or 0`): from `PRESENT_MIN_WIDTH` (36, the narrowest frame whose gantt field keeps one cell) the views' frame, below it one `mut` line — the longest rung of `PRESENT_NARROW` (`widen to 36+ columns · esc leave` … `36+`) that fits, cut with `…` when none does; every row empty at width 0 — and blank rows, ignoring `view`, `scroll` and the cursor (batch 2026-10-18-batch-02); `view` one of `PRESENT_VIEWS` (`gantt`, `split`), `scroll` a page number, read by `split` only (batch 2026-10-18-batch-01) | no |
+| `PRESENT_MIN_WIDTH` | `views` | `app.PresentScreen` (below it no key but `esc` acts, `x` notifies instead of exporting, the hint shows `esc leave`), tests | `36`, an `int` (batch 2026-10-18-batch-02) | no |
 | `PRESENT_VIEWS` | `views` | `app.PresentScreen` (the view keys, the hint row), tests | `("gantt", "split")`, the view names in key order | no |
 | `present_paths(board, project_name, today=None, view="gantt")` | `views` | `app.PresentScreen` (export), tests | `(svg, png)` paths in `reports/`; a view other than `gantt` adds `-<view>` to the name | no |
 | `present_tasks(board, project_id)` / `present_hidden(board, project_id)` | `views` | `app.PresentScreen` (reads `[0]`) | `present_tasks` → `tuple[list[Task], list[Task]]` (shown open by due, shown all), `present_hidden` → `list[Task]`, gantt order | no |
