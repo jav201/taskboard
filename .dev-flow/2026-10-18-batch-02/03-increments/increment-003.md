@@ -115,8 +115,8 @@
 | `prototypes/backlog_polish/out/narrow-current-narrow-20x12.svg` | generated | HLR-1905 | the app's own `export_screenshot()` |
 | `prototypes/backlog_polish/out/narrow-current-narrow-30x12.png` | generated | HLR-1905 | Edge raster (`views.save_present_png`) of the SVG |
 | `prototypes/backlog_polish/out/narrow-current-narrow-30x12.svg` | generated | HLR-1905 | the app's own `export_screenshot()` |
-| `prototypes/backlog_polish/out/narrow-current-narrow-30x12-x.png` | generated | HLR-1905 | Edge raster (`views.save_present_png`) of the SVG — added at the DDR (DDR-C1) |
-| `prototypes/backlog_polish/out/narrow-current-narrow-30x12-x.svg` | generated | HLR-1905 | the app's own `export_screenshot()`, toasts enabled — added at the DDR (DDR-C1) |
+| `prototypes/backlog_polish/out/narrow-current-narrow-30x12-x.png` | generated | HLR-1905 | Edge raster (`views.save_present_png`) of the SVG — added at the DDR (DC-1) |
+| `prototypes/backlog_polish/out/narrow-current-narrow-30x12-x.svg` | generated | HLR-1905 | the app's own `export_screenshot()`, toasts enabled — added at the DDR (DC-1) |
 | `prototypes/backlog_polish/out/narrow-current-narrow-50x20-hidden.png` | generated | HLR-1905 | Edge raster (`views.save_present_png`) of the SVG |
 | `prototypes/backlog_polish/out/narrow-current-narrow-50x20-hidden.svg` | generated | HLR-1905 | the app's own `export_screenshot()` |
 | `prototypes/backlog_polish/out/notecap-A-gantt-long-118x31.png` | generated | HLR-1905 | Edge raster (`views.save_present_png`) of the SVG |
@@ -188,11 +188,11 @@
 
 ## 5 · Risks
 
-The variants are forks of increment 002's code frozen into the round; once the verdict is implemented they go stale, as every round does (ARCHITECTURE §3). The `x` notice is captured painted at 30×12 (DDR-C1; `run_test` needs `notifications=True` for toasts).
+The variants are forks of increment 002's code frozen into the round; once the verdict is implemented they go stale, as every round does (ARCHITECTURE §3). The `x` notice is captured painted at 30×12 (DC-1; `run_test` needs `notifications=True` for toasts).
 
 ## 6 · Pending items / spec deviations
 
-- PDR PC-5 (and the DDR's condition DDR-C1): first declared `not exercised` because no toast reached `export_screenshot`; the DDR's architect lens refused that as a discharge, and the cause was found — `run_test` disables toasts unless `notifications=True`. After the gate, the round gained the scene `narrow-30x12-x` (toasts enabled, the start-up toasts cleared): the notice `Widen the terminal to 36+ columns to export` is painted (`out/narrow-current-narrow-30x12-x.png`); 46 captures. Added after this packet's review as `doc`/`generated` rows (the prototype script and its outputs, no product code), declared in PLAN §Gate notices.
+- PDR PC-5 (and the DDR's condition DC-1): first declared `not exercised` because no toast reached `export_screenshot`; the DDR's architect lens refused that as a discharge, and the cause was found — `run_test` disables toasts unless `notifications=True`. After the gate, the round gained the scene `narrow-30x12-x` (toasts enabled, the start-up toasts cleared): the notice `Widen the terminal to 36+ columns to export` is painted (`out/narrow-current-narrow-30x12-x.png`); 46 captures. Added after this packet's review as `doc`/`generated` rows (the prototype script and its outputs, no product code), declared in PLAN §Gate notices.
 - 12 stale files of the first capture run (`out/hint80-*-split-hidden-*`) stay on disk, excluded in `.git/info/exclude` (a removal was refused by the runtime's safety check; it is the operator's to make).
 - The verdict on the three items is the operator's; `BACKLOG.md` lists them as awaiting it.
 
