@@ -1,4 +1,10 @@
-"""PROTOTYPE round — the presentation's gantt field has no date ruler.
+"""HISTORICAL (2026-10-18-batch-02): this round file no longer runs against the
+shipped tree -- it calls `views._gantt_scale_label`, deleted in 2026-10-17-batch-01 (63c9669), and imports `views._present_note_lines` and `_present_note_row`, deleted in 2026-10-18-batch-01 (a729f78). It last ran against `de9c4a2`; the captures in `out/`
+and the round page are the record. Not repaired on purpose: its outputs came
+from helpers that are gone, so a repaired script would not reproduce them
+(`docs/ARCHITECTURE.md` §3, `prototypes` row).
+
+PROTOTYPE round — the presentation's gantt field has no date ruler.
 
     python prototypes/present_rulers/proto.py
 

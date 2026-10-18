@@ -1174,6 +1174,49 @@ def _clipboard_now() -> str:
     return _ps("Get-Clipboard -Raw").stdout.rstrip("\r\n")
 
 
+def _clipboard_roundtrip(seed, ours, oracle, sample: str, attempts: int = 5) -> str | None:
+    """LLR-1902.1 (TC-1902): the roundtrip's verdict, kept apart from the machine.
+
+    `seed(sample)` puts the sample on the clipboard and returns None, or the
+    refusal text when Windows would not take it; `ours()` is the code under
+    test; `oracle()` the independent reader. The race is closed by ORDER, not
+    by sleeping: our reader FIRST, then the oracle — if the oracle still holds
+    the sample after our read, nothing moved during it.
+
+    Returns None when the roundtrip held. Returns a skip reason ONLY when
+    Windows refused `Set-Clipboard` on every attempt: then the test never ran,
+    and that says nothing about the code (2026-10-16-batch-01 G-001: the
+    refusal failed five batch gates). Everything else RAISES: a held sample
+    our reader did not return is the handle bug; a sample that was set but
+    never still held after our read is contention — or a reader that disturbs
+    the clipboard, which a skip would hide."""
+    refusal = None
+    seeded = 0
+    for _ in range(attempts):
+        refusal = seed(sample)
+        if refusal is not None:
+            continue
+        seeded += 1
+        got = ours()                                  # our reader first...
+        if oracle() != sample:                        # ...then confirm it held
+            continue
+        assert got == sample, (
+            "the clipboard held the sample and grab_clipboard_text did not "
+            f"return it: {got!r} — this IS the handle bug")
+        return None
+    assert not seeded, (
+        f"contended: the sample was set on {seeded} of {attempts} attempts but never "
+        "still held after grab_clipboard_text read it — another process kept "
+        "writing, or the reader disturbs the clipboard")
+    return (f"Set-Clipboard refused the sample on all {attempts} attempts (the machine, "
+            f"not the code under test): {refusal}")
+
+
+def _seed_clipboard(sample: str) -> str | None:
+    setup = _ps(f"Set-Clipboard -Value {_ps_literal(sample)}")
+    return None if setup.returncode == 0 else (setup.stderr.strip() or f"exit {setup.returncode}")
+
+
 def test_win_clipboard_roundtrip():
     """Proves the 64-bit handle fix on real Windows: a string put on the clipboard
     reads back intact (the truncated-handle bug returned None or garbage).
@@ -1203,32 +1246,123 @@ def test_win_clipboard_roundtrip():
     moved during it. If it does not, the clipboard was contended and the attempt
     is retried rather than blamed on the app. Sustained contention fails loudly
     and says so, which is a different sentence from "the roundtrip is broken."
-    """
+
+    A fourth defect, found by five batch gates (2026-10-16-batch-01 G-001):
+    when Windows refuses `Set-Clipboard` itself ("Requested Clipboard operation
+    did not succeed"), the test never ran — yet it was reported FAILED. Now a
+    refusal on every attempt is a SKIP quoting the refusal (HLR-1902); the
+    verdict lives in `_clipboard_roundtrip`, every machine call goes through
+    `_ps` (AT-1902 fakes the machine there)."""
     import sys
     if sys.platform != "win32":
         pytest.skip("windows clipboard path only")
     prior = _clipboard_now()
     sample = "roundtrip 123 ABC taskboard"
     try:
-        for _ in range(5):
-            setup = _ps(f"Set-Clipboard -Value {_ps_literal(sample)}")
-            assert setup.returncode == 0, (
-                "SETUP failed — this is the environment, not the code under "
-                f"test: {setup.stderr.strip()!r}")
-            ours = models.grab_clipboard_text()          # our reader first...
-            if _clipboard_now() != sample:               # ...then confirm it held
-                continue
-            assert ours == sample, (
-                "the clipboard held the sample and grab_clipboard_text did not "
-                f"return it: {ours!r} — this IS the handle bug")
-            return
-        pytest.fail("another process held the clipboard on all 5 attempts; "
-                    "grab_clipboard_text was never given a stable value to read")
+        reason = _clipboard_roundtrip(_seed_clipboard, models.grab_clipboard_text,
+                                      _clipboard_now, sample)
     finally:
         if prior:
             _ps(f"Set-Clipboard -Value {_ps_literal(prior)}")
         else:
             _ps("$null | Set-Clipboard")
+    if reason is not None:
+        pytest.skip(reason)
+
+
+class _Clip:
+    """A fake machine for TC-1902: `seeds` scripts each attempt — "refuse",
+    "hold" (the oracle keeps the sample) or "lose" (another writer, or a
+    reader that disturbs it, replaced it after the read)."""
+
+    def __init__(self, seeds, ours_returns="sample"):
+        self.seeds = list(seeds)
+        self.ours_returns = ours_returns
+        self.held = None
+        self.reads = 0
+
+    def seed(self, sample):
+        what = self.seeds.pop(0)
+        if what == "refuse":
+            return "Set-Clipboard : Requested Clipboard operation did not succeed."
+        self.held = sample if what == "hold" else None
+        self.sample = sample
+        return None
+
+    def ours(self):
+        self.reads += 1
+        return self.sample if self.ours_returns == "sample" else self.ours_returns
+
+    def oracle(self):
+        return self.held
+
+
+SAMPLE = "roundtrip 123 ABC taskboard"
+
+
+@pytest.mark.parametrize("seeds, outcome", [
+    (["hold"], None),
+    (["refuse"] * 5, "skip"),
+    (["refuse", "hold"], None),
+    (["lose"] * 5, "contended"),
+    (["refuse"] * 4 + ["lose"], "contended"),
+    (["lose"] + ["refuse"] * 4, "contended"),
+], ids=["held", "refused-x5", "refused-then-held", "contended-x5",
+        "refused-x4-then-contended", "contended-then-refused-x4"])
+def test_TC_1902_the_roundtrip_verdict(seeds, outcome):
+    """TC-1902 (LLR-1902.1): a refusal on every attempt is a skip reason; a
+    sample that was set but never still held after the read is a failure
+    (contention, or a reader that disturbs the clipboard — a skip would hide
+    the latter); a held sample read back is a pass."""
+    clip = _Clip(seeds)
+    if outcome == "contended":
+        with pytest.raises(AssertionError, match="contended"):
+            _clipboard_roundtrip(clip.seed, clip.ours, clip.oracle, SAMPLE)
+        return
+    got = _clipboard_roundtrip(clip.seed, clip.ours, clip.oracle, SAMPLE)
+    if outcome is None:
+        assert got is None and clip.reads == 1
+    else:
+        assert "Requested Clipboard operation did not succeed" in got
+        assert "5 attempts" in got
+        assert clip.reads == 0, "a refused seed must never reach the reader"
+
+
+def test_TC_1902_a_held_sample_read_wrong_is_the_handle_bug():
+    """TC-1902 (LLR-1902.1): the oracle holds the sample and our reader returns
+    something else — the product failing, never a skip."""
+    clip = _Clip(["hold"], ours_returns=None)
+    with pytest.raises(AssertionError, match="this IS the handle bug"):
+        _clipboard_roundtrip(clip.seed, clip.ours, clip.oracle, SAMPLE)
+
+
+def test_AT_1902_a_refused_setup_skips_with_its_reason(monkeypatch):
+    """AT-1902 (US-1901, HLR-1902): the shipped roundtrip test, its machine
+    faked at its one seam `_ps`: Windows refuses every `Set-Clipboard` →
+    the test reports SKIPPED quoting the refusal, after 5 seeding attempts,
+    and still restores the prior clipboard. No real PowerShell runs."""
+    import subprocess
+    import sys
+    if sys.platform != "win32":
+        pytest.skip("windows clipboard path only")
+    calls = []
+
+    def fake_ps(*args):
+        cmd = " ".join(args)
+        calls.append(cmd)
+        if cmd.startswith("Get-Clipboard"):
+            return subprocess.CompletedProcess(args, 0, "prior text\r\n", "")
+        return subprocess.CompletedProcess(
+            args, 1, "", "Set-Clipboard : Requested Clipboard operation did not succeed.")
+
+    monkeypatch.setitem(globals(), "_ps", fake_ps)
+    with pytest.raises(pytest.skip.Exception) as skipped:
+        test_win_clipboard_roundtrip()
+    assert "Requested Clipboard operation did not succeed" in str(skipped.value)
+    assert "5 attempts" in str(skipped.value)
+    seeds = [c for c in calls if c.startswith("Set-Clipboard -Value 'roundtrip")]
+    assert len(seeds) == 5, calls
+    assert calls[-1] == "Set-Clipboard -Value 'prior text'", calls
 
 
 # ---- project palette (8 colours, after the ration) ----------------------- #

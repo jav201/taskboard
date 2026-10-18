@@ -1,4 +1,10 @@
-"""PROTOTYPE round 2 — D (split) with EVERY shown open task's notes at once.
+"""HISTORICAL (2026-10-18-batch-02): this round file no longer runs against the
+shipped tree -- it imports `views_proto.py`, historical (`views._present_note_lines` and `_present_note_row`, deleted in 2026-10-18-batch-01 (a729f78)). It last ran against `9810be6`; the captures in `out/`
+and the round page are the record. Not repaired on purpose: its outputs came
+from helpers that are gone, so a repaired script would not reproduce them
+(`docs/ARCHITECTURE.md` §3, `prototypes` row).
+
+PROTOTYPE round 2 — D (split) with EVERY shown open task's notes at once.
 
     D2 stacked — the gantt rows, then one block per task (heading + note),
                  two columns from 100 wide, one below; space shared fairly,

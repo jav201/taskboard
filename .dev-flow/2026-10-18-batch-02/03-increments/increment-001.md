@@ -30,202 +30,105 @@
 |---|---|
 | Batch | `2026-10-18-batch-02` |
 | Increment | `001` |
-| Lane (if the batch forked) | `<lane name>` · `<modules owned by this lane>` |
-| Requirement(s) | `<R-NNN vN / LLR-NNN.n>` |
-| Acceptance | `<AT-NNN>` · white-box `<TC-NNN>` · unit `<layer-0 nodes>` |
-| Agent | `software-dev` |
+| Lane (if the batch forked) | none — one lane |
+| Requirement(s) | `HLR-1901` / `LLR-1901.1` · `HLR-1902` / `LLR-1902.1` |
+| Acceptance | `AT-1901`, `AT-1902` · white-box `TC-1901` · unit `TC-1902` |
+| Agent | `software-dev` (the orchestrator, self-implemented) |
 | Date | `2026-10-18` |
 
 ---
 
 ## 1 · What changed
 
-*(BLUF: state the outcome first, then the mechanism. Name the shipped surface the user reaches.)*
-
----
+The suite tells the truth about two things, test-side only. **The standup tests**: the 2026-10-11 scrub (`6bff525`) replaced the fixture's 6-cell roster name with the 16-cell placeholder `username_subject`; the standup paints names in a 12-cell column (`views.py:4303`, `fit` → `username_su…`), so the tests' substring search for the whole placeholder found no row and both failed on `origin/main`. The source was right; the tests now find a row by its 12-cell name cell equal to `views.fit(name, 12)` (`_row_named`, which also refuses a substring or a second match), keep every original assertion, and gain a name-column arm (a 12-cell name whole, a 13-cell name cut) and an app-level AT (key `8`). **The clipboard test**: its loop moved into `_clipboard_roundtrip`, which returns a skip reason only when Windows refused `Set-Clipboard` on every attempt; a held sample read back wrong (the handle bug) and a sample set but never still held after our read (contention, or a reader that disturbs the clipboard) both FAIL; `test_win_clipboard_roundtrip` restores the prior clipboard in `finally` and skips after it. TC-1902 proves both arms with a fake machine; AT-1902 runs the real test body with its one seam `_ps` faked. **The six round files** that no longer import (`prototypes/present_rulers/{proto,app_capture}.py`, `prototypes/present_views/{views_proto,views_d,app_capture,app_capture2}.py`) carry a `HISTORICAL` docstring header naming why and the commit they last ran against (`de9c4a2`, `9810be6`); not repaired, by the PLAN's key decision.
 
 ## 2 · Files modified
 
-**The budget counts SOURCE files only. Tests are not capped. Product docs and `.dev-flow/**` are outside the count.**
-
-One row per file. `Kind` is one of `source` · `test` · `doc` · `config` · `generated` · `fixture`; `Traces to` names the US/HLR/LLR (or `R-<AREA>-<NNN>`) ids the file serves, and `doc` rows leave it empty.
-
 | File | Kind | Traces to | Change |
 |---|---|---|---|
+| `tests/test_team_views.py` | test | HLR-1901, LLR-1901.1 | `_row_named` locator, `SELF_NAME`, `NAME_CELLS`; the two standup nodes repointed to it (assertions kept); new `test_TC_1901_the_name_column_cuts_at_twelve_cells`, `test_AT_1901_the_standup_marks_the_operators_own_row`; imports `fit`, `_strip` |
+| `tests/test_app.py` | test | HLR-1902, LLR-1902.1 | `_clipboard_roundtrip`, `_seed_clipboard`; `test_win_clipboard_roundtrip` through the helper (docstring: the fourth defect); `_Clip` fake; `test_TC_1902_the_roundtrip_verdict` (6 arms), `test_TC_1902_a_held_sample_read_wrong_is_the_handle_bug`, `test_AT_1902_a_refused_setup_skips_with_its_reason` |
+| `prototypes/present_rulers/proto.py` | doc | PLAN inventory #5 (doc rows trace nothing) | `HISTORICAL` header |
+| `prototypes/present_rulers/app_capture.py` | doc | PLAN inventory #5 (doc rows trace nothing) | `HISTORICAL` header |
+| `prototypes/present_views/views_proto.py` | doc | PLAN inventory #5 (doc rows trace nothing) | `HISTORICAL` header |
+| `prototypes/present_views/views_d.py` | doc | PLAN inventory #5 (doc rows trace nothing) | `HISTORICAL` header |
+| `prototypes/present_views/app_capture.py` | doc | PLAN inventory #5 (doc rows trace nothing) | `HISTORICAL` header |
+| `prototypes/present_views/app_capture2.py` | doc | PLAN inventory #5 (doc rows trace nothing) | `HISTORICAL` header |
 
 | Count | Value |
 |---|---|
-| **SOURCE files** | **`<N>` / 4** |
-| Test files | `<N>` (uncapped) |
-| Doc files | `<N>` (outside the count) |
-
-- ⚠ **At exactly 4 source files:** state here why this increment could not be cut smaller.
-- ⚠ **Above 4:** this does not auto-block, but the reason goes here **and** the design/close review looks at it.
-- ✗ If a file belongs to another lane's file set, stop: lanes may not share a file.
-
----
+| **SOURCE files** | **0 / 4** |
 
 ## 3 · How to test
 
-```bash
-<the exact commands, copy-pasteable>
-```
-
----
+`python -m pytest -q -p no:cacheprovider -rs tests/test_team_views.py tests/test_app.py -k "standup or clipboard_roundtrip or TC_1902 or AT_1902 or AT_1901"` (with `PYTHONDONTWRITEBYTECODE=1 PYTHONIOENCODING=utf-8`); the battery: `python .dev-flow/2026-10-18-batch-02/evidence/mutate.py 001` from the root of a scratch copy of the tree; the inspection: `grep -n HISTORICAL prototypes/present_rulers/*.py prototypes/present_views/*.py` → the six files.
 
 ## 4 · Test results
 
-| Layer | Owed in | Nodes | Result |
-|---|---|---|---|
-| **0 · unit** (cyclomatic ≥3, or crosses a declared module boundary) | `core` · `full` | `<nodes>` | <N passed> |
-| **A · white-box** `TC-NNN` ↔ LLR | `core` · `full` | `<nodes>` | <N passed> |
-| **B · black-box** `AT-NNN` ↔ story, through the shipped surface | `core` · `full` | `<nodes>` | <N passed> |
-
-### RED counterfactual — executed, not predicted
-
-| Field | Value |
-|---|---|
-| Mutation applied | `<what was changed to make the assertion fail>` |
-| Instrument | project code: your own hand or a script in the project's stack, the restore checked by hash · a batch whose subject is the flow: `python scripts/devflow-mutate.py --select ID,ID`, run from the bundle root — field guide §`Mutation verdicts` |
-| Where it ran | **the tree, and who ran it** — the orchestrator when a spawned sub-agent wrote the code (`stations/p3-implementation.md` §Phase 3); never a tree another lane or session is reading |
-| Transcript | `<paste: the RED output, plus confirmation the mutation actually applied>` |
-| Restore proven by | **file hash returned to its pre-mutation value** (`git status` alone is insufficient, and vacuous for an untracked file) |
-| Bytecode cache | cleared / run with `PYTHONDONTWRITEBYTECODE=1` (C-46) |
-| Arms resolved at baseline | `<N>` — **assert the expected count.** An arm the harness cannot see is an arm it cannot report inert; a whitespace-delimited node pattern silently drops every *parametrized* arm |
-| Verdict granularity | **per resolved node id**, never the process exit code — a runner exits non-zero if ANY arm fails, so an inert arm hides behind a sibling that failed |
-| Arms that stayed GREEN | `<name them, or 'none'>` — `3 passed` unread in a transcript is how four arms once survived a fully removed gate |
-
-| Field | Value |
-|---|---|
-| **RED counterfactual** | `<the mutation that made THIS increment's OWN new assertion fail, by position and operation · where its transcript is stored · the restore digest that returned the file to its pre-mutation bytes — or: none — no new assertion in this increment>` |
-
-| Field | Value |
-|---|---|
-| **Mutation verdicts** | `<per resolved node: the mutation by position and operation · KILLED / CRASH / SURVIVED / BAD (the mutation's anchor did not apply) · the arms that stayed GREEN, named · the transcript's path under artifact_homes.evidence and the restore digest — or: none — no mutation battery in this increment>` |
-
-### Instrument RED-proof — every instrument shown able to report FAILURE first
-
-| Instrument | Known-bad input fed to it | The FAILURE it reported |
+| Layer | Nodes | Result |
 |---|---|---|
-| `<test / counter / mutation harness / grep / parser>` | `<the corruption planted in its MECHANISM, not in its verdict>` | `<the failure it printed, verbatim — and where>` |
+| 0 | `tests/test_app.py::test_TC_1902_the_roundtrip_verdict` ×6, `::test_TC_1902_a_held_sample_read_wrong_is_the_handle_bug` (TC-1902) | in the full suite (`suite-001.txt`) |
+| A | `tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable`, `::test_standup_flags_stale_member_in_over_tone`, `::test_TC_1901_the_name_column_cuts_at_twelve_cells` (TC-1901) | in the full suite (`suite-001.txt`) |
+| B | `tests/test_team_views.py::test_AT_1901_the_standup_marks_the_operators_own_row` (AT-1901), `tests/test_app.py::test_AT_1902_a_refused_setup_skips_with_its_reason` (AT-1902) | in the full suite (`suite-001.txt`) |
+| full suite | `python -m pytest -q -p no:cacheprovider -rs` on the working tree with increment 001 | 0 failed, 2733 passed (`suite-001.txt`; base 2 failed, 2721 passed: + 10 new nodes, the 2 repaired now pass) |
 
 | Field | Value |
 |---|---|
-| **Instrument RED-proof** | `<N instruments, each shown RED before its first PASS was believed — or: none — no instrument beyond the suite>` |
+| **RED counterfactual** | on `base_ref` `9e82b10` (a `git archive` export): the two standup nodes as base has them fail (`2 failed`), and AT-1902 appended to base's `tests/test_app.py` fails (`AssertionError: SETUP failed — … Requested Clipboard operation did not succeed.`) where a skip is required · `.dev-flow/2026-10-18-batch-02/evidence/red-001.txt` · the RED ran on the export, no file of the tree was mutated (restore digests of the battery below) |
+| **Mutation verdicts** | 8 mutants, 12 arms, all KILLED: M1 the operator's row muted (`if is_self` → `if not is_self`, `views.py` the standup's spine) → TC-1901 ×1, AT-1901 · M2 the stale tone on every row → TC-1901 (stale) · M3 the name column 13 → TC-1901 (12/13 arm) · M4 the skip keyed on the last attempt (PC-1) → TC-1902 [contended-then-refused-x4] · M5 a refusal raises → TC-1902 [refused-x5], AT-1902 · M6 contention returns a reason → TC-1902 ×3 · M7 a mismatch passes → TC-1902 (handle bug) · M8 the skip becomes a failure → AT-1902 · arms that stayed GREEN: none · `.dev-flow/2026-10-18-batch-02/evidence/mutation-001.txt` · restore digests `460cf8128c61…` (`views.py`), `db482b3c6c80…` (`tests/test_app.py`), each re-hashed after every arm |
+| **Instrument RED-proof** | 1 instrument: `evidence/mutate.py` — its first run reported `BAD (anchor matched 2 times)` / `0 times` for M1/M2 (the standup and people views share the spine line; a CRLF checkout) before any verdict was believed; the anchors were made unique and CRLF-aware and the run repeated (`mutation-001.txt` is that run) |
+| **Emitted-form assertion** | 2 artifacts: the standup frame as `#board` renders it (`str(app.query_one("#board").render())`, AT-1901) and as `render_standup` returns it (plain and markup, TC-1901); the pytest outcome as `pytest.skip.Exception`'s message (AT-1902) |
+| **Reverse census** | 5 probes: B1 `grep -rl "render_standup\|username_subject" tests/` → `test_team_views.py` (this increment) and `test_present_views_app.py` (`username_subject` inside a note's text, not the standup — untouched, green in `suite-001.txt`); `grep -rl "grab_clipboard_text\|_clipboard_now\|_ps_literal" tests/` → `test_app.py` only · B2 no file moved · B3 no golden; no oracle frame touched · B4 no artifact written · A3 no interface: `render_standup` and `grab_clipboard_text` unchanged — 0 foreign hits left un-revalidated |
+| **Correction population** | none — no correction |
 
-### Emitted-form assertion — assert the bytes the producer EMITS (C-42)
-
-| Artifact emitted | The assertion, run against the EMITTED form | What it returned |
-|---|---|---|
-| `<the file / report / screen / record>` | `<the command or predicate, pasted>` | `<its actual output, verbatim>` |
-
-| Field | Value |
-|---|---|
-| **Emitted-form assertion** | `<N artifacts, each asserted against the form its producer emitted — or: none — this increment emits no artifact>` |
-
-### Evidence files — bytes at a declared home, verbatim, hash-verified (C-59)
+### Evidence files
 
 | Evidence artifact | Path — under `artifact_homes.evidence` | SHA-256 |
 |---|---|---|
-| `<the transcript / capture / snapshot / .PRE copy>` | `<the path, as stored>` | `<the 64-hex digest of the bytes AT THAT PATH>` |
+| suite-001.txt | .dev-flow/2026-10-18-batch-02/evidence/suite-001.txt | 2c9954e3affcd9b6ac9581b4f52b5f4b1b74f31d73c47a4e5b6e6a2b8670ffab |
+| red-001.txt | .dev-flow/2026-10-18-batch-02/evidence/red-001.txt | e5042cedb6b86a75538455f7a5d39526c2a02c18caceaa29692a000fcb92a892 |
+| mutation-001.txt | .dev-flow/2026-10-18-batch-02/evidence/mutation-001.txt | ca11416732aa96e86e25bfbc989cae1cff6acb3b521144502fbdd09a0a61d497 |
 
 | Field | Value |
 |---|---|
-| **Evidence files** | `<N artifacts, each at the declared home and cited with the digest of its stored bytes — or: none — this increment cites no evidence file>` |
+| **Evidence files** | `3 artifact(s), each at the declared home, with the digest of its bytes on disk` (the battery `mutate.py` is committed beside them; it grows per increment, so its digest is recorded in the last packet that runs it) |
 
-### Load-bearing emptiness — what is this resting on that is only true today? (C-55)
-
-| Field | Value |
-|---|---|
-| Does any claim here rest on the tree holding NO instance of some case? | `<yes: name it / no>` |
-| If the result is an ABSENCE, what made the search wide enough | `<the over-broad property — and the guard that protects it>` |
-| Guard labelled as protecting a CONCLUSION, not a behaviour | `<node id — else the next reader "improves" it away>` |
-| Conjunctive criteria: one mutation per conjunct | `<per-conjunct verdicts, or 'no conjunctive criterion'>` |
-| Synthetic instance of the absent case | `<fixture / in-memory module that contains what the tree lacks>` |
-| **Positive control for every probe that returned an ABSENCE** | `<the known-present case, and the NON-absent output the same unmodified probe returned on it>` — uniformity over heterogeneous inputs (N-of-N) is one failure repeated, not a measurement |
-
-### Reverse census — trigger family B, and A3
-
-| Probe | Command | Result |
-|---|---|---|
-| B1 symbols asserted by **other** tests | `grep -rl <symbol> tests/` | `<files, and whose they are>` |
-| B2 file moved on disk | `<glob probe over the old path>` | `<readers found>` |
-| B3 byte-identical golden captures this source | `grep <source> tests/goldens/**` | `<hits>` |
-| B4 artifact produced here is consumed elsewhere | `<who reads the path/format written>` | `<consumers>` |
-| A3 interface consumed by another module changed | `grep <symbol>` outside its owning module | `<hits>` |
+## 4b · Independent review
 
 | Field | Value |
 |---|---|
-| **Reverse census** | `<N probes run of B1 · B2 · B3 · B4 · A3, each with its command and its verdict — N hits, and where every hit was re-validated — or: none — this increment touches no code symbol or shared surface>` |
-
-### Correction population — enumerated BEFORE the first site was edited
-
-| Correction | Population — the assertion category | Enumeration method (the command) | Count | Sites edited | Sites left, and why |
-|---|---|---|---|---|---|
-| `<the claim being corrected>` | `<what kind of thing must be true everywhere>` | `<the command, pasted>` | `<N>` | `<…>` | `<…>` |
-
-| Field | Value |
-|---|---|
-| **Correction population** | `<N corrections, each enumerated with its method before its first site was edited — or: none — no correction>` |
-
-#### Supersession-completeness inspection (V-3)
-
-| Superseded marker | grep result | All surviving refs negative? | Evidence (file:line) |
-|-------------------|-------------|------------------------------|----------------------|
-| `<marker>` | `<N hits>` | yes/no | `<…>` |
-
-### Signed-balance test ledger
-
-`post = base − deleted + added` → `<post> = <base> − <D> + <A>`  ✓ reconciles
-
----
-
-## 4b · Independent review — the lens the author cannot be
-
-| Field | Value |
-|---|---|
-| **Independent review** | `<who reviewed · the verdict · how every HIGH was resolved — or: WAIVED-BY-OPERATOR — and the reason, in the operator's own words>` |
-
-*Example of a filled cell:* `` `code-reviewer` · PASS-WITH-NOTES, 0 HIGH / 5 MEDIUM · all five
-folded into this increment — F1 severity census, F2 block truncation, F3 blocklist, F4 scope
-state, F5 this table ``
-
----
+| **Independent review** | `code-reviewer` — spawned with agents/code-reviewer.md · OK to advance, 0 HIGH, 0 MEDIUM · L1 (AT-1901 slices Ana's name cell by hand instead of `_row_named`), L2 (`_Clip.sample` first set in `seed`), L3 (`monkeypatch.setitem(globals(), …)` idiom) → accepted as written: style only, each node is KILLED by its battery row, and editing would move the reviewed set · L4 (pre-existing: the restore's own result unchecked; a failed `Get-Clipboard` clears the clipboard on restore) → carried to `BACKLOG.md` |
 
 ## 5 · Risks
 
-*(What could break that this increment does not cover. Be specific enough to act on.)*
-
----
+The clipboard test now skips where it failed; the skip is limited to a refusal on every attempt, so a reader regression still fails (M4, M6). The real node passed on this host in `suite-001.txt` (`test_win_clipboard_roundtrip` passed, no skip reported).
 
 ## 6 · Pending items / spec deviations
 
-*(Anything surfaced and not closed here. Every line lands in the canonical backlog at batch close —
-if the increment surfaced it, the backlog owns it.)*
-
----
+- LED .5: the contract's 13-cell literal `thirteen_cel…` corrected to `thirteen_ce…` (found by TC-1901's first run).
+- L4 → `BACKLOG.md` at the close.
 
 ## 7 · Suggested next task
 
----
+Increment 002 — the presentation at any width.
 
 ## Increment gate checklist
 
-| # | Item | Owed in | ✓/⚠/✗ | Evidence (node id · command output · file:line) |
-|---|---|---|---|---|
-| 1 | ≤4 source files, or reason declared | all | | |
-| 2 | Tests written in this same increment | all | | |
-| 3 | Layer 0 written where the criterion applies | `core` · `full` ‹one complete run owned by the orchestrator ~ Layer 0› | | |
-| 4 | **RED counterfactual** declared — the mutation that made this increment's OWN new assertion fail, where its transcript is stored, and the restore digest, or `none` (C-20/C-40; read by `V44`) | `core` · `full` ‹RED counterfactual mandatory ~ RED counterfactual› | | |
-| 5 | **Reverse census** declared — the five probes run with their commands and verdicts, the ones that did NOT fire named with their probe, or `none` (C-26/C-48; read by `V43`) | `core` · `full` ‹reverse census of the touched symbol ~ Reverse census› | | |
-| 6 | `code-reviewer` passed — a HIGH blocks; the verdict, the reviewer and each HIGH's resolution are declared in **§4b** (`ABSENT` is the empty state there, not a value) | `core` · `full` ‹RED counterfactual mandatory ~ code-reviewer› | | |
-| 7 | No file from another lane touched | all | | |
-| 8 | Frozen interfaces untouched (or returned to the trunk) | all | | |
-| 9 | Coverage claims verified **on disk**, not from intent | all | | |
-| 10 | Load-bearing emptiness declared, with its synthetic instance (C-55) | all | | |
-| 11 | **Mutation verdicts** declared — **per arm**, inert arms named, registry ids cited, or `none` (C-40 rider; read by `V37`) | all | | |
-| 12 | **Instrument RED-proof** declared — every instrument shown able to report a FAILURE before its first PASS was believed, or `none` (C-57) | all | | |
-| 13 | **Correction population** declared — enumerated with its method before the first site was edited, or `none` (C-14) | all | | |
-| 14 | **Emitted-form assertion** declared — per artifact emitted, the assertion run against the EMITTED form and what it returned, or `none` (C-42; read by `V38`) | all | | |
-| 15 | **Independent review** names somebody — in one of the forms §4b publishes; a cell naming nobody is empty (`V36`). §4b is the grammar's one home | all | | |
-| 16 | **Evidence files** declared — every cited artifact at the home `artifact_homes.evidence` names, cited with the digest of its STORED bytes, or `none` (C-59; read by `V41`) | all | | |
+| # | Item | ✓/⚠/✗ | Evidence |
+|---|---|---|---|
+| 1 | SOURCE budget | ✓ | §2: 0 source files |
+| 2 | Tests in this increment | ✓ | §2: 2 test files, 11 new or repointed nodes |
+| 3 | Layer 0 where it applies | ✓ | `_clipboard_roundtrip` (cyclomatic 5): TC-1902 |
+| 4 | RED counterfactual | ✓ | §4, `red-001.txt` |
+| 5 | Reverse census | ✓ | §4: 5 probes |
+| 6 | `code-reviewer` passed | ✓ | §4b: 0 HIGH |
+| 7 | No file from another lane | ✓ | one lane |
+| 8 | Frozen interfaces untouched | ✓ | none frozen |
+| 9 | Coverage verified on disk | ✓ | `suite-001.txt` |
+| 10 | Load-bearing emptiness | ✓ | no claim rests on an absence |
+| 11 | Mutation verdicts | ✓ | §4: 12/12 KILLED |
+| 12 | Instrument RED-proof | ✓ | §4 |
+| 13 | Correction population | ✓ | §4: none, declared |
+| 14 | Emitted-form assertion | ✓ | §4 |
+| 15 | Independent review | ✓ | §4b |
+| 16 | Evidence files | ✓ | §4: digests |

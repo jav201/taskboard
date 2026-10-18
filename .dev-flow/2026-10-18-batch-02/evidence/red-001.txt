@@ -1,0 +1,16 @@
+# RED counterfactual, increment 001 (base_ref 9e82b10, a git archive export).
+# Arm 1 - the standup nodes as base_ref has them: RED (the scrubbed 16-cell placeholder is painted cut to the 12-cell name column, so the whole-name search finds no row; P-1).
+$ python -m pytest -q -p no:cacheprovider tests/test_team_views.py -k standup
+E       AssertionError: assert 'username_subject' in 'STANDUP · all · team · personal                                                 \n───────────────────────────────────...                                   —\n▎ Ana          ▱▱▱▱▱ —                                                         —'
+E       StopIteration
+FAILED tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable
+FAILED tests/test_team_views.py::test_standup_flags_stale_member_in_over_tone
+2 failed, 123 passed, 128 deselected in 1.19s
+
+# Arm 2 - AT-1902 appended to base_ref's tests/test_app.py: RED (base's test_win_clipboard_roundtrip turns a refused Set-Clipboard into AssertionError: SETUP failed where HLR-1902 requires a skip).
+$ python -m pytest -q -p no:cacheprovider tests/test_app.py -k AT_1902
+E                   AssertionError: SETUP failed — this is the environment, not the code under test: 'Set-Clipboard : Requested Clipboard operation did not succeed.'
+E                   assert 1 == 0
+E                    +  where 1 = CompletedProcess(args=("Set-Clipboard -Value 'roundtrip 123 ABC taskboard'",), returncode=1, stdout='', stderr='Set-Clipboard : Requested Clipboard operation did not succeed.').returncode
+FAILED tests/test_app.py::test_AT_1902_a_refused_setup_skips_with_its_reason
+1 failed, 162 deselected in 0.89s

@@ -36,3 +36,10 @@ above this line is ever edited._
 - **What changed:** LLR-1902.1's TC-1902: New arm — contended then refused ×4 → `AssertionError` holding `contended` (PC-1: the mutant `assert not seeded` → `assert refusal is not None` survived the seven arms, executed by the reviewer). LLR-1904.1's TC-1904: New arm — `present_hidden` patched to 123456 tasks, at 36 columns the `esc` wording is cut to 34 cells with `…` (PC-2: the wide-path truncate was unreachable with 0/3/10 hidden). HLR-1903's AT-1903: the keys pressed at 30 columns gain `tab`, `h`, `pageup` (PC-3).
 - **Why:** the PDR of 2026-10-18 (`design/PDR-2026-10-18-batch-02.md`, approved with conditions PC-1..PC-6).
 - **Evidence:** the reviewer's mutant run on a copy of the helper draft (`<scratchpad>/qa_pdr/mut_clip.py`): the original fails "contended ×4 then refused", the mutant skips.
+
+### LED-2026-10-18-batch-02.5 — the 13-cell arm's literal (P3, increment 001)
+- **Requirement:** LLR-1901.1
+- **Date:** 2026-10-18
+- **What changed:** Before → After. LLR-1901.1's numeric pass threshold: a 13-cell name painted `thirteen_cel…` → `thirteen_ce…`. The 12-cell column holds 11 cells of the name and `…` (`fit`), as HLR-1901's statement says; the contract's literal had 12. Found by TC-1901's first run (`AssertionError: assert 'thirteen_cel…' in '▎ thirteen_ce… …'`). Parent HLR-1901 re-read: unchanged ("its first 11 cells and `…`"). TC re-derived: the arm asserts `thirteen_ce…`.
+- **Why:** a wrong literal in the contract, not in the code (C-36: the literal reconciled to what `fit(name, 12)` emits).
+- **Evidence:** `python -m pytest tests/test_team_views.py` → `1 failed, 254 passed` with the old literal, `255 passed` after.

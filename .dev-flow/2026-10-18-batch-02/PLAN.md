@@ -87,14 +87,14 @@ The open items of the `BACKLOG.md` lanes after 2026-10-16-batch-01, 2026-10-17-b
 
 | Story / station | Status | Notes |
 |---|---|---|
-| US-1901 | READY | the suite's two known failures and its environment flake |
+| US-1901 | DONE | increment 001 · AT-1901, AT-1902 pass |
 | US-1902 | READY | the presentation at any width |
 | US-1903 | READY | the polish prototype round |
 | ARQ | approved | `docs/ARCHITECTURE.md` amended (one iterate: F1, F2 folded) |
 | P1 | approved (one iterate-to-refine) | 5 HLR, 5 LLR, AT-1901..1905, TC-1901..1904 (LLR-1905.1 by inspection), premises P-1..P-9; scan flags `truncate`, `escape` answered |
 | P2 | approved | iteration 1 iterate-to-refine (9 majors → LED .2), iteration 2 approve (7 minors → LED .3) |
 | PDR | approved with conditions | `design/PDR-2026-10-18-batch-02.md`; PC-1..PC-6 (PC-1..PC-3 as LED .4) |
-| P3 | in progress | increment 001 next |
+| P3 | in progress | increment 001 done (0 source files; RED 2+1 on base; 12/12 mutants KILLED; 2733 passed, 0 failed; code-reviewer OK, 0 HIGH); increment 002 next |
 
 ## Roadmap + increment plan
 
@@ -135,6 +135,8 @@ The open items of the `BACKLOG.md` lanes after 2026-10-16-batch-01, 2026-10-17-b
 
 **ARQ … PDR gates:** 0 block at every gate. `V62` between each `--station` move and this plan's rewrite (P1 after the iterate) — cleared here. `V23` on the seeded design records' template placeholders (`PDR-<batch_id>`, `PDR-…#D1`) and on the design proposal's preamble (`PDR-<batch_id>#D<n>`, the template's own grammar line) — the DDR record's leave when it is filled; the preamble line stays (template text). `V53` on `tests/test_app.py::_clipboard_roundtrip` (named by LLR-1902.1 before increment 001 writes it). **The PDR panel was one spawned agent applying the architect, qa-reviewer and ux-reviewer role files in turn** — the three lenses were not independent of each other (the P2 and ARQ lenses were separate agents); recorded in the PDR record's Participants.
 
+**P3 (increment 001 gate):** 0 block from the packet; `V2` BLOCKs for AT-1903, AT-1904, AT-1905 — the station-expected red of `commands/dev-flow.md` §*Two-layer validation model* (their nodes land with increments 002 and 003); `V27` until the increment's decision; `V53` cleared (`_clipboard_roundtrip` now on disk).
+
 **Found before the batch:** tracked and modified — `.gitattributes`, `.dev-flow/2026-10-07-batch-0{8,9}/evidence/inc001-brief.md` (line endings only); untracked — `.dev-flow/2026-10-07-batch-0{5..8}/decisions-log.json`, `.dev-flow/2026-10-07-batch-06/evidence/{gen_verdict_sheet.py,kanban-demo.json,veredicto-batch06.html,veredicto-board.json}`, `.dev-flow/rollover_batch{g,h,i,j}.py`. Not touched.
 
 ## Test ledger
@@ -142,3 +144,4 @@ The open items of the `BACKLOG.md` lanes after 2026-10-16-batch-01, 2026-10-17-b
 | Suite / command | Last run | Result |
 |---|---|---|
 | `python -m pytest -q -p no:cacheprovider tests/test_team_views.py` on `backlog-fixes` = `9e82b10` | 2026-10-18 | 2 failed, 251 passed — the 2 standup failures |
+| full suite after increment 001, working tree (`evidence/suite-001.txt`) | 2026-10-18 | 0 failed, 2733 passed — `test_win_clipboard_roundtrip` passed |

@@ -1,0 +1,29 @@
+# mutation battery, increment 001 — run by the orchestrator in a scratch copy of the increment tree (scratchpad/mut: taskboard/, tests/, pyproject.toml copied from the working tree of backlog-fixes); harness .dev-flow/2026-10-18-batch-02/evidence/mutate.py
+$ python mutate.py 001
+arms: 12
+M1 own row muted · taskboard/views.py: '# the operator\'s own row is identifiable by a bright spine\r\n        prefix = c("▌", "bright") + " " if is_self' -> '# the operator\'s own row is identifiable by a bright spine\r\n        prefix = c("▌", "bright") + " " if not is_self'
+    tests/test_team_views.py::test_standup_renders_one_row_per_member_and_own_row_identifiable: RED (KILLED) · 1 failed in 0.47s · restored 460cf8128c61
+M1 own row muted · taskboard/views.py: '# the operator\'s own row is identifiable by a bright spine\r\n        prefix = c("▌", "bright") + " " if is_self' -> '# the operator\'s own row is identifiable by a bright spine\r\n        prefix = c("▌", "bright") + " " if not is_self'
+    tests/test_team_views.py::test_AT_1901_the_standup_marks_the_operators_own_row: RED (KILLED) · 1 failed in 0.63s · restored 460cf8128c61
+M2 stale tone on every row · taskboard/views.py: "tone = sync_tone(team_state, uid)\r\n        # the operator's own row" -> 'tone = "over"\r\n        # the operator\'s own row'
+    tests/test_team_views.py::test_standup_flags_stale_member_in_over_tone: RED (KILLED) · 1 failed in 0.51s · restored 460cf8128c61
+M3 name column 13 · taskboard/views.py: 'name_w = min(12, max(4,' -> 'name_w = min(13, max(4,'
+    tests/test_team_views.py::test_TC_1901_the_name_column_cuts_at_twelve_cells: RED (KILLED) · 1 failed in 0.49s · restored 460cf8128c61
+M4 skip keyed on the last attempt (PC-1) · tests/test_app.py: '    assert not seeded, (' -> '    assert refusal is not None, ('
+    tests/test_app.py::test_TC_1902_the_roundtrip_verdict[contended-then-refused-x4]: RED (KILLED) · 1 failed in 0.86s · restored db482b3c6c80
+M5 a refusal raises · tests/test_app.py: '    return (f"Set-Clipboard refused the sample' -> '    raise AssertionError(f"Set-Clipboard refused the sample'
+    tests/test_app.py::test_TC_1902_the_roundtrip_verdict[refused-x5]: RED (KILLED) · 1 failed in 0.88s · restored db482b3c6c80
+M5 a refusal raises · tests/test_app.py: '    return (f"Set-Clipboard refused the sample' -> '    raise AssertionError(f"Set-Clipboard refused the sample'
+    tests/test_app.py::test_AT_1902_a_refused_setup_skips_with_its_reason: RED (KILLED) · 1 failed in 0.92s · restored db482b3c6c80
+M6 contention returns a reason · tests/test_app.py: '    assert not seeded, (' -> '    assert True or not seeded, ('
+    tests/test_app.py::test_TC_1902_the_roundtrip_verdict[contended-x5]: RED (KILLED) · 1 failed in 0.87s · restored db482b3c6c80
+M6 contention returns a reason · tests/test_app.py: '    assert not seeded, (' -> '    assert True or not seeded, ('
+    tests/test_app.py::test_TC_1902_the_roundtrip_verdict[refused-x4-then-contended]: RED (KILLED) · 1 failed in 0.90s · restored db482b3c6c80
+M6 contention returns a reason · tests/test_app.py: '    assert not seeded, (' -> '    assert True or not seeded, ('
+    tests/test_app.py::test_TC_1902_the_roundtrip_verdict[contended-then-refused-x4]: RED (KILLED) · 1 failed in 0.86s · restored db482b3c6c80
+M7 a mismatch passes · tests/test_app.py: '        assert got == sample, (' -> '        assert True, ('
+    tests/test_app.py::test_TC_1902_a_held_sample_read_wrong_is_the_handle_bug: RED (KILLED) · 1 failed in 0.85s · restored db482b3c6c80
+M8 the skip becomes a failure · tests/test_app.py: '    if reason is not None:\n        pytest.skip(reason)' -> '    if reason is not None:\n        pytest.fail(reason)'
+    tests/test_app.py::test_AT_1902_a_refused_setup_skips_with_its_reason: RED (KILLED) · 1 failed in 0.86s · restored db482b3c6c80
+killed 12 / 12 arms; bad 0
+exit=0

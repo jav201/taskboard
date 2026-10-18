@@ -11,7 +11,8 @@ import pytest
 from taskboard.app import TaskboardApp
 from taskboard.models import Board, Project, Task
 from taskboard.team_sync import TEAM_FILENAME, TeamState, _utc_now_iso
-from taskboard.views import HEX, nav_model, render_people, render_standup, render_team_filter_chrome
+from taskboard.views import (HEX, _strip, fit, nav_model, render_people, render_standup,
+                             render_team_filter_chrome)
 
 
 def _team_config() -> dict:
@@ -70,21 +71,43 @@ def test_team_filter_chrome_highlights_active_segment():
 # --------------------------------------------------------------------------- #
 # AT-T4: V3 standup
 # --------------------------------------------------------------------------- #
+SELF_NAME = "username_subject"     # the scrubbed placeholder: 16 cells
+NAME_CELLS = 12                    # the standup's name column (render_standup's name_w cap)
+
+
+def _row_named(lines: list[str], name: str) -> str:
+    """The standup row whose name cell is `name` as the standup paints it.
+
+    TC-1901 (LLR-1901.1). The name column is 12 cells, so a longer name is
+    painted cut to 11 cells and `…` — the scrub (6bff525) swapped a 6-cell
+    roster name for the 16-cell placeholder, and the old substring search for
+    the whole name found no row at all. The row is matched on its name cell
+    (after the 2-cell spine), never on a substring, so `Ana` cannot match a
+    longer name and a header cannot match a member."""
+    painted = fit(name, NAME_CELLS)
+    rows = [ln for ln in lines if _strip(ln).strip()[2:2 + NAME_CELLS] == painted]
+    assert len(rows) == 1, (painted, rows)
+    return rows[0]
+
+
 def test_standup_renders_one_row_per_member_and_own_row_identifiable(tmp_path):
+    """TC-1901 (LLR-1901.1): one row per member; the operator's own row is the
+    one with the bright spine, a teammate's the muted one."""
     state = _make_state(tmp_path, user_id="jav")
     board = _board(tmp_path)
     text = str(render_standup(board, False, None, team_state=state, width=80, height=0))
 
-    assert "username_subject" in text
-    assert "Ana" in text
     lines = text.splitlines()
-    jav_line = next(line for line in lines if "username_subject" in line)
-    ana_line = next(line for line in lines if "Ana" in line)
+    jav_line = _row_named(lines, SELF_NAME)
+    ana_line = _row_named(lines, "Ana")
+    assert "username_su…" in jav_line, "the 16-cell placeholder is cut to the 12-cell column"
     assert jav_line.strip().startswith("▌ "), "operator row should carry the accent spine"
     assert ana_line.strip().startswith("▎ "), "teammate row should carry the muted spine"
 
 
 def test_standup_flags_stale_member_in_over_tone(tmp_path):
+    """TC-1901 (LLR-1901.1): a teammate whose push is past the stale window
+    wears `over`; the operator's fresh row does not."""
     state = _make_state(tmp_path, user_id="jav")
     board = _board(tmp_path)
 
@@ -98,10 +121,27 @@ def test_standup_flags_stale_member_in_over_tone(tmp_path):
 
     markup = render_standup(board, False, None, team_state=state, width=80, height=0).markup
     lines = markup.splitlines()
-    ana_line = next(line for line in lines if "Ana" in line)
+    ana_line = _row_named(lines, "Ana")
     assert HEX["over"] in ana_line, "stale row should wear the over tone"
-    jav_line = next(line for line in lines if "username_subject" in line)
+    jav_line = _row_named(lines, SELF_NAME)
     assert HEX["over"] not in jav_line, "fresh operator row should not wear over"
+
+
+def test_TC_1901_the_name_column_cuts_at_twelve_cells(tmp_path):
+    """TC-1901 (HLR-1901's boundary): a 12-cell name is painted whole, a
+    13-cell name cut to 11 cells and `…`, each found in its own row only."""
+    cfg = _team_config()
+    cfg["roster"] = [{"id": "jav", "name": SELF_NAME, "hue": "sky"},
+                     {"id": "twl", "name": "twelve_cells", "hue": "amber"},
+                     {"id": "thr", "name": "thirteen_cell", "hue": "green"}]
+    _write_team(tmp_path, cfg)
+    state = TeamState(tmp_path, user_id="jav")
+    state.load_config()
+    lines = str(render_standup(_board(tmp_path), False, None, team_state=state,
+                               width=80, height=0)).splitlines()
+    assert "twelve_cells" in _row_named(lines, "twelve_cells")
+    assert "thirteen_ce…" in _row_named(lines, "thirteen_cell")
+    assert "username_su…" in _row_named(lines, SELF_NAME)
 
 
 def test_standup_filter_changes_top_task_source(tmp_path):
@@ -169,6 +209,28 @@ async def test_standup_key_8_switches_view(tmp_path):
         assert app.view_mode == "standup"
         text = str(app.query_one("#board").render())
         assert "STANDUP" in text
+
+
+async def test_AT_1901_the_standup_marks_the_operators_own_row(tmp_path):
+    """AT-1901 (US-1901, HLR-1901): `8` opens the standup; the operator's row
+    (the 16-cell placeholder, painted cut to the 12-cell name column) carries
+    the bright spine and the teammate's the muted one."""
+    shared_dir = tmp_path / "shared"
+    _write_team(shared_dir)
+    board_path = tmp_path / "board.json"
+    board = Board.load(str(board_path))
+    board.settings["team_shared_dir"] = str(shared_dir)
+    board.settings["team_user_id"] = "jav"
+    board.save()
+
+    app = TaskboardApp(board_path=str(board_path))
+    async with app.run_test(size=(120, 40)) as pilot:
+        await pilot.press("8")
+        rows = [r.strip() for r in str(app.query_one("#board").render()).splitlines()]
+        own = [r for r in rows if "username_su…" in r]
+        mate = [r for r in rows if r[2:15] == "Ana          "]
+        assert len(own) == 1 and own[0].startswith("▌ username_su… "), rows
+        assert len(mate) == 1 and mate[0].startswith("▎ Ana "), rows
 
 
 async def test_action_team_filter_cycle(tmp_path):

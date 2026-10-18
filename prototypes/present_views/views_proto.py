@@ -1,4 +1,10 @@
-"""PROTOTYPE renderers for the presentation's content views (throwaway).
+"""HISTORICAL (2026-10-18-batch-02): this round file no longer runs against the
+shipped tree -- it imports `views._present_note_lines` and `_present_note_row`, deleted in 2026-10-18-batch-01 (a729f78). It last ran against `9810be6`; the captures in `out/`
+and the round page are the record. Not repaired on purpose: its outputs came
+from helpers that are gone, so a repaired script would not reproduce them
+(`docs/ARCHITECTURE.md` §3, `prototypes` row).
+
+PROTOTYPE renderers for the presentation's content views (throwaway).
 
     A  gantt  — the shipped frame, unchanged except the dim view word in the head
     B  cards  — every task as a card: title, phase, dates, notes wrapped, links

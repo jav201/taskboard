@@ -213,11 +213,11 @@ The fixtures `tests/present_board.py` and `tests/present_notes_board.py` stay as
 
 ### LLR-1901.1 — The standup tests find the row by the name as painted
 - **Traceability:** HLR-1901
-- **Ledger:** LED-2026-10-18-batch-02.1, LED-2026-10-18-batch-02.2, LED-2026-10-18-batch-02.3
+- **Ledger:** LED-2026-10-18-batch-02.1, LED-2026-10-18-batch-02.2, LED-2026-10-18-batch-02.3, LED-2026-10-18-batch-02.5
 - **Statement:** `tests/test_team_views.py` shall locate a member's standup row as the row whose name cell — on the row stripped of its padding, the 12 cells after the 2-cell spine — equals `views.fit(name, 12)`, and shall keep both repaired tests' assertions: the operator's row starts with `▌ `, the teammate's with `▎ `, the stale teammate's row holds `HEX["over"]` and the operator's fresh row does not; `render_standup` itself is unchanged.
 - **Validation:** `test (unit)`
 - **Executed verification:** `python -m pytest -q -p no:cacheprovider tests/test_team_views.py -k "standup"`
-- **Numeric pass threshold:** TC-1901 passes: the two repaired nodes, and the name-column arm — a roster of a 12-cell name (`twelve_cells`), a 13-cell name (`thirteen_cell`) and the placeholder paints `twelve_cells`, `thirteen_cel…` and `username_su…` in their rows' name cells, each found by the locator and by no other row.
+- **Numeric pass threshold:** TC-1901 passes: the two repaired nodes, and the name-column arm — a roster of a 12-cell name (`twelve_cells`), a 13-cell name (`thirteen_cell`) and the placeholder paints `twelve_cells`, `thirteen_ce…` and `username_su…` in their rows' name cells, each found by the locator and by no other row.
 - **Negative control:** the repaired nodes go RED when `is_self` picks the muted spine, and when the stale tone is painted on every row (mutations at increment 001 — planned).
 - **Boundary catalog:** ☑ boundary (12 / 13 cells; the 16-cell placeholder) ☐ empty — none ☐ invalid — none ☐ error — none
 

@@ -1,4 +1,10 @@
-"""PROTOTYPE round 2 — B (cursor ruler) + start–end chips + a per-task
+"""HISTORICAL (2026-10-18-batch-02): this round file no longer runs against the
+shipped tree -- it imports `views._present_note_lines` and `_present_note_row`, deleted in 2026-10-18-batch-01 (a729f78), and `proto.py`, historical too. It last ran against `de9c4a2`; the captures in `out/`
+and the round page are the record. Not repaired on purpose: its outputs came
+from helpers that are gone, so a repaired script would not reproduce them
+(`docs/ARCHITECTURE.md` §3, `prototypes` row).
+
+PROTOTYPE round 2 — B (cursor ruler) + start–end chips + a per-task
 "show in presentation" flag, captured FROM THE RUNNING APP.
 
     python prototypes/present_rulers/app_capture.py
