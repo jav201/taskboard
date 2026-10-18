@@ -29,7 +29,7 @@
 | Requirements covered | HLR-1801 (LLR-1801.1, LLR-1801.2) · HLR-1802 (LLR-1802.1) · HLR-1803 (LLR-1801.3, LLR-1803.1, LLR-1803.2, LLR-1803.3) |
 | Modules touched (from `docs/ARCHITECTURE.md`) | `taskboard/**` — layers `views`, `app`; `tests`, `docs`, `dev-flow record`, `prototypes` (committed unmodified) |
 | Triggers that fired | A2 · A3 · B1 · B3 · B4 · C8 · D1 · E1 |
-| Author / reviewers | `architect` · `qa-reviewer` · `ux-reviewer` |
+| Author / reviewers | `architect` · `qa-reviewer` · `ux-reviewer` · `security-reviewer` (C8, at P2) |
 
 ---
 
@@ -62,6 +62,8 @@ pgup         ──▶ page = max(0, page - 1)
 x            ──▶ write the current view's frame to present-<slug>-<date>[-split].svg/.png
 ```
 
+Paging (PDR UX PC-1): when page 0 windowed a column onto the cursor's block, the whole-text paging starts at the first block page 0 showed, so the first `pgdn` never moves the text back to the top.
+
 Split layout: `header · 2 ruler rows · span row · n field rows · rule` then `room` rows; at `width ≥ 100` two columns of `(width − 5) // 2` (`" " + left + " │ " + right`), else one of `width − 2`; per column the blocks `heading + note rows (present_alloc)`; page `p` per column: the cursor's note paged (`note_scrolls`: cut and ≥ 3 rows) or, when no cursor note in the frame can scroll, page `p − 1` of the column's whole text.
 
 ## 4 · Interfaces that change — and which ones FREEZE
@@ -79,11 +81,11 @@ Split layout: `header · 2 ruler rows · span row · n field rows · rule` then 
 | Id | Layer (0 unit / A white / B black / UX) | What it asserts | **The mutation that would turn it RED** |
 |---|---|---|---|
 | TC-1801 | 0 | the wrapper's ten exact rows: breaks, three bullet forms, `1.`/`12.` with a hanging wrap, a collapsed blank run; empty / `None` → `[]` | the line split removed (M1); `- ` kept (M2); one digit only (M3) |
-| TC-1802 | 0 | `present_alloc`'s eight rows exact; ≥ 1 row per note when the room holds it; a cursor with notes always ≥ 1 | the cursor's half dropped (M5); the below-floor row removed (M15) |
+| TC-1802 | 0 | `present_alloc`'s nine rows exact (among them `([5,6,3,13,0], 0, 6) → [3,1,1,1,0]`, where the half-room promise binds); ≥ 1 row per note when the room holds it; a cursor with notes always ≥ 1 | the cursor's half dropped (M5, the room-6 row); the below-floor row removed (M15) |
 | TC-1803 | A | the four PRES-V3 split frames (118×30, 80×24; cursors `tw3`, `tw5`); the split top equals the gantt top | the cut mark removed (M6); the no-notes word removed (M7); the one-row unit dropped (M16) |
-| TC-1804 | A | every noted task's text at nine sizes × every cursor; `no notes`; a per-block cut mark; `│` iff ≥ 100; below the floor every miss declared; all hidden → blank under the rule; hidden/done in neither part; the cursor's note longer as the cursor's | two columns only above 100 (M4); the cursor's half dropped (M5); all-hidden columns painted (M17) |
+| TC-1804 | A | every noted task's text at nine sizes × every cursor; `no notes`; a per-block cut mark; `│` iff ≥ 100; below the floor the cursor's block in view with its note and an edge mark; all hidden → blank under the rule; hidden/done in neither part; the cursor's note longer as the cursor's (a regression pin: the surplus alone also lengthens it) | two columns only above 100 (M4); the cursor's block windowed out (M18); all-hidden columns painted (M17) |
 | TC-1805 | A | markup in notes and titles literal in both views, at the one-row cut, a paged note, a markup cursor title, `\` and `\[` | a note row's escape dropped (M8) |
-| TC-1806 | A | page 1 of the cut cursor note `↑ 3 lines above`; page 999 its last line; paging shows every row (4 sizes); the area scroll at 60×20; gantt ignores scroll; every frame exact | note paging ignored (M9); the area branch removed (M10); page 1 skips the top (M11); a page jumps rows (M14) |
+| TC-1806 | A | page 1 of the cut cursor note `↑ 3 lines above`; page 999 its last line; paging shows every row (4 sizes); the area scroll at 60×20; after a page 0 windowed onto the cursor, page 1 never moves back to the top (80×18); gantt ignores scroll; every frame exact | note paging ignored (M9); the area branch removed (M10); page 1 skips the top (M11); a page jumps rows (M14); the first page down jumps back (M19) |
 | TC-1807 | A | the gantt-notes frames; 3 rows, `1. Feature-flag` on its own row, `… +N lines`; the header word, no key word | 4 rows (M12); the view word dropped (M13) |
 | TC-1001 / TC-1002 / AT-1001 | A / B | repointed to `PRES-V3-gantt-118x30.txt` / `-80x24.txt` | the view word dropped (M13) |
 | TC-1808 | A | the hint at five widths × three states, exact; bold on the current view; within `w − 2` | pgdn in the gantt hint (N4); bold on the other view (N5); `w >= 100` instead of fit (N11) |
@@ -92,6 +94,21 @@ Split layout: `header · 2 ruler rows · span row · n field rows · rule` then 
 | AT-1801 | B | `R`, `2` → the split frame; every noted task's first words after each of five cursor positions; the cursor's block accented | (base: no `2`) |
 | AT-1802 | B | `R` opens on `gantt`; `→ →` → the gantt-notes frame, `1. Feature-flag` on its own row | `R` opens on split (N8) |
 | AT-1803 | B | the view keys, the shared cursor and hidden set, `pgdn`/`pgup`, the two exports by literal path, no key word in frame or SVG, reopen on gantt, 2 saves | the guard removed (N2); split export to the gantt file (N6, N9); `tab` clamps instead of wrapping (N10) |
+
+### 5b · The gauntlet controls that apply, and who pays for them (PDR PC-A1)
+
+| Control | Applies because | Paid by |
+|---|---|---|
+| RED on the base tree for every new and repointed node (C-40) | every TC/AT here is new or repointed | each increment: `evidence/red-001.txt`, `evidence/red-002.txt`, run on a `git archive 6ddea9f` export |
+| the mutation battery, one verdict per arm, restore by digest (C-46, C-57) | the new logic of both increments | `evidence/mutate.py` (M1..M19 on `views.py` at increment 001; N1..N11 on `app.py` and `present_paths` at increment 002), run in a scratch copy of the tree |
+| the byte oracles in new files (B3, C-24) | the gantt frame changes (the view word, the 80-column note wrap) | increment 001: `evidence/gen_frames.py` writes the eight PRES-V3 frames and cross-checks them row for row against `views_d.py`; PRES-R / PRES-R2 untouched |
+| the B1 repoints, named, law-driven (C-26) | earlier batches' tests assert the frame, the hint, the census key | increment 001: TC-1001, TC-1002, AT-1001 (`tests/test_present.py`); increment 002: TC-1604's hint arm (`tests/test_present_hide.py`), TC-402's `PresentScreen._paint` key (`tests/test_markup_census.py`) |
+| the full suite with a saved transcript (C-19) | every increment and P4 | each increment's `evidence/suite-NNN.txt`; P4's `evidence/suite-p4.txt` (the orchestrator's run) |
+| the real-app captures (D1) | the change is what the room sees | increment 002: `evidence/capture_app.py` (SVG at 118×31 and 80×25, PNG at 118 through Edge) |
+
+### 5c · Security lens (C8; PDR PC-A2)
+
+`security-reviewer` approved at P2 (0 HIGH · 0 MEDIUM · 3 LOW). The S1 escape holds at every new markup site — `_present_note_markup`, the one-row cut in `_present_cut`, `_present_heading`, the gantt note rows — proved by TC-1805 (both nodes) and mutant M8. S-1 (`present_paths` takes `view` unvalidated) is accepted: every caller passes a `PRESENT_VIEWS` constant. S-3 (`textwrap` counts code points) is accepted: a wide row is cut by `clip` with a visible `…`, the frame stays exact; a cell-width wrap is a backlog option. No new write: the board is still written only by `space`/`a`; the export writes the shipped `reports/` folder under one new name (`-split`).
 
 ## 6 · Risks and rejected alternatives
 

@@ -154,7 +154,7 @@
     }
   ],
   "guided": false,
-  "current_station": "PDR",
+  "current_station": "P3",
   "phase_status": "in-progress",
   "stations_active": [
     "P0",
@@ -256,6 +256,11 @@
       "station": "P2",
       "date": "2026-10-18",
       "decision": "standing authorization — P2 approved under the 2026-10-18 commission after iteration 2 (architect, qa-reviewer, ux-reviewer approve; security-reviewer approve, 0 HIGH); iteration-2 minors folded in LED-2026-10-18-batch-01.3; the PDR is next"
+    },
+    {
+      "station": "PDR",
+      "date": "2026-10-18",
+      "decision": "standing authorization — PDR sealed approved with conditions under the 2026-10-18 commission (architect PC-A1/A2, qa-reviewer PC-Q1/Q2, ux-reviewer PC-U1 applied at the seal, PC-U2 owed at P4; LED-2026-10-18-batch-01.4); P3 is next"
     }
   ],
   "obsidian_synced": false,
