@@ -19,7 +19,10 @@
 > **And one FLOW-WIDE reserved token, read out of this artifact by `V42` no matter which template minted it:** `⏸ DEFER`. It is a MARKER rather than a field name, which is why it is stated here *and* in `/dev-flow` §Language of artifacts rather than in a per-template list — a deferral can be written in any batch artifact, including the ones that carry no block at all.
 >
 > **And so are the three verdict tokens** `PASS` · `PASS-WITH-NOTES` · `FAIL`, which are VALUES and not prose.
-> A Spanish batch writes `- **Result:** PASS-WITH-NOTES
+> A Spanish batch writes `- **Result:** PASS`, not `- **Resultado:** aprobado`: the label, the tokens and the
+> reviewer-identity tokens below are the machine's vocabulary.
+
+- **Result:** PASS-WITH-NOTES
 - **Gate run:** `python -m pytest -q -p no:cacheprovider --color=no` in a clean git worktree at commit `038b5f2` (`present-v3` after increment 002; 0 changed files) · exit 1 · run and collected by the orchestrator · 2 failed, 2721 passed in 513.07s — the 2 failures are the known standup pair (`tests/test_team_views.py`, failing on `origin/main` since the 2026-10-11 rewrite; `test_win_clipboard_roundtrip` passed in this run) · `evidence/suite-p4.txt`
 - **Layer 0:** 3 unit(s) met the criterion · 3 carry a named reddening mutation (`present_note_lines` M1–M3, M20; `present_alloc` M5, M15; `present_paths` N6, N7 — all KILLED)
 - **Requirements:** 10/10 pass · 0 blocker fails
