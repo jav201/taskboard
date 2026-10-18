@@ -1,0 +1,11 @@
+$ python port_captures.py --root <scratch>/wt-base --mode upto --k 2 --out <scratch>/upto-2   (wt-base at 620f58c = base_ref; the round's A forks of items 1..2 composed)
+gantt-118x31.svg 5c6f695994ab932583bb10685019fd153ab8b82b92cd777681054667f0e0d5c9
+gantt-80x25.svg 8b406d563232b088b98fbed16b8ac0ab31bf04152cbae3281bcf3338c8ff87ae
+split-118x31.svg 29441dc8eb30f5af3a65a3841124ff735db20545b58a7fb05864cea9aa87dd4a
+split-80x25.svg d945b97019c15e9cd6e208ee52de36ea1c900f440fff749ca46f260c3483c6ef
+gantt-hidden-118x31.svg 29081f0e0eb192027d1566bd1c677d9462d34bc7f5f5a3c97ef8191e1f1e9343
+gantt-hidden-80x25.svg efa3e90ffa2bfa364ce9ee0343c8fc957ca6eccf9c8e1432103ff4da60150aa6
+gantt-long-118x31.svg d04a0d4e4d03b193637fba53d0d6d02744e6c068415904d40083d639a30e766f
+gantt-long-80x25.svg dca962409679d566c47b2aa951b439659d74c14c1c0d6d77411567d9df01bcc2
+split-long-118x31.svg a8d20069eff37960eb4b4997ccb7445fcf675eed6900879ab3bf78f4118a28d2
+split-long-80x25.svg 93a1eb0c45dec4f41f433ec631a0d89571bac40763620df121de6a301c293189

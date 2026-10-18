@@ -21,7 +21,7 @@ orchestrator presents the full plan in-conversation at each phase gate.
 | Project | taskboard |
 | Batch | 2026-10-18-batch-03 |
 | Objective | Present polish (the operator's verdict of 2026-10-18 on the backlog polish round, variant A of all three items): the dim view word and the cut and edge marks of the presentation in the reached tone (~4.9:1) instead of dim (~3:1); a middle hint wording between the long and the short one, which the 80-column hint takes; the gantt view's cursor note filling the frame's free rows instead of stopping at 3 |
-| Last updated | P0 · 2026-10-18 |
+| Last updated | PDR · 2026-10-18 |
 | Standing authorization | standing authorization — the coordinator's commission of 2026-10-18 (the runtime cannot prompt), relaying the operator's verdict of 2026-10-18: «Si, apruebo.» (variant A of all three items of `prototypes/backlog_polish/backlog-polish-prototype.html`). Quoted from the commission: «Open a NEW dev-flow batch in `C:\Users\jjgh8\Github\taskboard` … Create the local branch `present-polish` from main … follow `stations/core-runbook.md`», «Port each A faithfully from that round's code and captures», «No push, merge, reset or force», «At most 4 SOURCE files per increment», «Never rewrite oracle frames whose hashes are recorded; new frames go in new files», «An independent `code-reviewer` per increment», «Run P4 and the P5 close». Read as: every gate of this batch is autonomous (reviewer roles are spawned sub-agents); commits on the local branch `present-polish` are authorized, each ending with the commission's co-author line; **push and merge are NOT authorized**; synthetic data only; the operator's name nowhere (`username_subject`); no deletion is commissioned, so the round folder stays (§*Key decisions*). |
 | First gate | step 1, on `main` `620f58c` before the branch: exit 0 — 0 block · 42 notice · 64 not applicable; `V7`: bundle identical to its manifest both directions, 57 declared files, `2026-10-12-rev102`. Step 3 (after the rollover): exit 0 — 0 block · 63 notice · 47 not applicable. |
 | Premises / RC-1 | RC-1 (a): `git fetch origin` → `origin/main` = `620f58c787f855d4d2ad4942c79c5a7cecb55baa` = local `main`; `git switch -c present-polish main`; HEAD equals the origin tip, so no rebase is owed; `base_ref` = `620f58c787f855d4d2ad4942c79c5a7cecb55baa`. RC-1 (b): not already shipped — on `origin/main` the view word and the cut and edge marks are `dim` (`views.py:6243`, `:6244`, `:6277`, `:6511`), `_hint` holds no middle wording (`app.py:297-302`), the gantt note is cut at 3 rows (`views.py:6541`). RC-2: `git ls-remote --exit-code --heads origin` → exit 0; newest `origin/main` commit 2026-10-18 16:39 -0600. Premises: `01-requirements.md` §2.7. |
@@ -34,7 +34,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 |---|---|---|
 | A1 | not fired | judged — `docs/ARCHITECTURE.md` §2 · no module created, no boundary moved: the planned source files (`taskboard/views.py`, `taskboard/app.py`) are existing modules'; the new test file sits under the declared `tests` module |
 | A2 | fired | judged — the planned source files are `taskboard/views.py` (module `views`) and `taskboard/app.py` (module `app`): two modules |
-| A3 | not fired | judged — `docs/ARCHITECTURE.md` §4 · no interface row changes shape: `render_present` keeps its signature and its `height`×`width` frame for every width ≥ 0; `_hint` and `_present_cut` are not interfaces (no row; `_present_cut` is read only by the frozen round, the `prototypes` row of §3) |
+| A3 | not fired | judged — `docs/ARCHITECTURE.md` §4 · no interface row changes shape: the `render_present` row's contract text gains the note fill and the `reached` marks (ARQ amendment), while its signature, its `height`×`width` frame for every width ≥ 0 and `Frozen? no` hold, and the only consumers byte-tied to the note's row count are tests (the PRES-V3 gantt-notes frames drift, B3) and frozen evidence; `_hint` and `_present_cut` are not interfaces (no row; `_present_cut` is read only by the frozen round, the `prototypes` row of §3) |
 | A4 | not fired | judged — one lane, increments in order |
 | B1 | fired | `grep -rl --include=*.py` over `tests/`: `render_present` → `test_markup_census.py`, `test_present.py`, `test_present_narrow.py`, `test_present_room.py`, `test_present_rulers.py`, `test_present_views.py`, `test_tick_label.py`; `_hint` → `test_present_hide.py`, `test_present_narrow.py`, `test_present_views_app.py` (and `test_gantt_polish.py`, `test_link_picker.py`: other screens' own `_hint`); `present-hint` → `test_present_hide.py`, `test_present_narrow.py`, `test_present_views_app.py`; `lines above` / `more lines` / `lines"` → `test_present_views.py`, `test_present_views_app.py`, `test_row_cost.py`; `_present_cut`, `_present_mark` → none |
 | B2 | not fired | no file moves |
@@ -52,7 +52,7 @@ The trigger evaluation `state.json`'s `triggers.record` points at: one row per t
 
 ## Where we are
 
-P0 — the batch is open on `present-polish` from `main` `620f58c`; the triggers are evaluated (A2 fired: ARQ, PDR and DDR taken up); the three stories are READY. ARQ is next.
+PDR — P2 approved after one iterate-to-refine (LED .2, LED .3); the design proposal is written and under the PDR panel.
 
 ## Objective
 
@@ -65,7 +65,11 @@ Ship variant A of the three polish items the operator approved — the quiet mar
 | US-2001 | READY | increment 001 · HLR-2001 / LLR-2001.1 |
 | US-2002 | READY | increment 002 · HLR-2002 / LLR-2002.1 |
 | US-2003 | READY | increment 003 · HLR-2003 / LLR-2003.1 |
-| P0 | in progress | triggers evaluated; refinement done |
+| P0 | done | triggers evaluated; refinement done |
+| ARQ | approved | `docs/ARCHITECTURE.md` amended (one iterate: A-1..A-4 folded) |
+| P1 | approved after one iterate-to-refine | LED .2, LED .3 folded |
+| P2 | approved | iteration 1 iterate-to-refine (6 majors → LED .2, .3), iteration 2 approve (1 minor owed by increment 003) |
+| PDR | in progress | `design/design-proposal.md` |
 
 ## Roadmap + increment plan
 

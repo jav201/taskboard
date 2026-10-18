@@ -1,0 +1,32 @@
+$ python port_captures.py --root <scratch>/wt-base --mode round --out <scratch>/round-A   (wt-base: a scratch worktree at 620f58c = base_ref; 2026-10-18T23:15:33Z)
+contrast-A-gantt-long-118x31.svg d04a0d4e4d03b193637fba53d0d6d02744e6c068415904d40083d639a30e766f
+contrast-A-gantt-long-80x25.svg 35eaac7c59bbb6d0469cd94e7b9f3e9f8474278e2effe33f301c27ee3924be86
+contrast-A-split-long-118x31.svg a8d20069eff37960eb4b4997ccb7445fcf675eed6900879ab3bf78f4118a28d2
+contrast-A-split-long-80x25.svg f644f2c2abaa0bc0d2bfc1deb21f43dbe5ce3b78bfb27644182b80ef919477ad
+hint80-A-gantt-118x31.svg 602471044350df290b400758985f9edd5faac86a8ef8702aeb55a01a343902c8
+hint80-A-gantt-80x25.svg 503b9d5760f6679debb320183bf2cc46cd9a53c5a73aa11eb07f03783c545570
+hint80-A-split-118x31.svg a3ceb475d3146698f330bc42129a93198d8ff55c68ef276cf7c971c4842e9c18
+hint80-A-split-80x25.svg 28f15d84dbdcfd2f6a5887195f1e7495a1b7a52eeea98f3a2a089a38f0df2928
+hint80-A-gantt-hidden-118x31.svg 7123b05c00b23bfecb86d726921b7db46e960f08a40bd195a807d48ac553820f
+hint80-A-gantt-hidden-80x25.svg 2651f91370699cb19fff9641831a79f986ee1b74667b384fd278cddae8f21d32
+notecap-A-gantt-long-118x31.svg 71ade9136a4b17010cf3cd1a9f93002db0f889f622ca8073d1a8a48b72ef5863
+notecap-A-gantt-long-80x25.svg 38e9af197bffbd2d6620e3666373624ceb5f5b10beb90b8ee25c6715dae5c081
+notecap-A-gantt-short-118x31.svg b5a4a40e8d029c9b2dad0ec504fda99c24d6a7b8a671b4acbc1b4bbf8caadb33
+notecap-A-gantt-short-80x25.svg c32ac6f04a84ed3ed84ea53469afdf90fac4d9e3f86bdce58d4d41f3af5dc3dd
+$ python port_captures.py --compare <scratch>/round-A prototypes/backlog_polish/out   (the round's committed captures)
+EQUAL  contrast-A-gantt-long-118x31.svg
+EQUAL  contrast-A-gantt-long-80x25.svg
+EQUAL  contrast-A-split-long-118x31.svg
+EQUAL  contrast-A-split-long-80x25.svg
+EQUAL  hint80-A-gantt-118x31.svg
+EQUAL  hint80-A-gantt-80x25.svg
+EQUAL  hint80-A-gantt-hidden-118x31.svg
+EQUAL  hint80-A-gantt-hidden-80x25.svg
+EQUAL  hint80-A-split-118x31.svg
+EQUAL  hint80-A-split-80x25.svg
+EQUAL  notecap-A-gantt-long-118x31.svg
+EQUAL  notecap-A-gantt-long-80x25.svg
+EQUAL  notecap-A-gantt-short-118x31.svg
+EQUAL  notecap-A-gantt-short-80x25.svg
+0 differ or missing
+exit=0

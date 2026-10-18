@@ -1,0 +1,30 @@
+◆ PRESENT · Website Redesign  gantt                                                              5 open · ▲2 past due 
+             today Wed Sep 30  September 2026                        30┃October          ◆                            
+              selected task ▸        14            21            28  ╎ Oct 4 ⟦━━━━━━━━━━━━⟧ Oct 10                    
+▌ WEBSITE REDESIGN             ●─────────────────────────────────────╎───────────────────◆···┆·········· Aug 21–Oct 10
+  ▎ Build component library ↗  ◂▬╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌◕┆···╎·········┆·············┆··········      Sep 5–27
+  ▎ Fix checkout 500 error ↗   ······┆·············┆·····▬╌╌╌╌╌╌╌╌◑··╎·········┆·············┆··········     Sep 24–28
+  ▎ Optimize image assets     ↳······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌◔··········┆··········     due Oct 6
+  ▎ Launch new homepage ↗     ↳······┆·············┆·············┆···╎·······⟦━━━━━━━━━━━━⟧··┆··········      Oct 4–10
+  ▎ SEO redirects map          ······┆·············┆·············┆···╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌○·····    due Oct 14
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   Build component library                                                                                         ▲3d
+   Fix checkout 500 error                                                                                          ▲2d
+   Optimize image assets                                                                                         in 6d
+  ⟦Launch new homepage⟧                                                                                         in 10d
+  · Go-live plan, agreed with marketing and support on Sep 22.                                                        
+  · 1. Feature-flag the new homepage for internal users first, then 10 % of traffic for one full business day while   
+  ·    we watch conversion, error rate and the p95 of the checkout page against last week.                            
+  · 2. Lower the DNS TTL to 300 seconds two days before the cut-over so a rollback propagates in minutes, not hours.  
+  · 3. Support gets the FAQ and the macro set one week before; the status page draft is written in advance and kept   
+  ·    unpublished.                                                                                                   
+  · 4. Rollback: flip the flag, restore the old sitemap, purge the CDN. The runbook lives in the ops wiki and was     
+  ·    rehearsed on staging.                                                                                          
+  · Risks: the component library slipped three days; if the asset pass slips too, launch moves to the following       
+  · Tuesday, never a Friday.                                                                                          
+  · Owner on call during launch: username_subject.                                                                    
+   SEO redirects map                                                                                            in 14d
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      
+                                                                                                                      

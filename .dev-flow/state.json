@@ -166,8 +166,8 @@
     }
   ],
   "guided": false,
-  "current_station": "P0",
-  "phase_status": "not-started",
+  "current_station": "PDR",
+  "phase_status": "in-progress",
   "stations_active": [
     "P0",
     "ARQ",
@@ -181,7 +181,7 @@
   ],
   "iterations_per_station": {
     "P0": 0,
-    "P1": 0,
+    "P1": 1,
     "P2": 0,
     "P3": 0,
     "P4": 0,
@@ -238,7 +238,38 @@
   },
   "base_ref": "620f58c787f855d4d2ad4942c79c5a7cecb55baa",
   "artifacts": {},
-  "decisions_log": [],
+  "decisions_log": [
+    {
+      "station": "P0",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P0 closed under the coordinator's commission of 2026-10-18 (the operator's verdict «Si, apruebo.» on the polish round, variant A of all three items): batch opened on present-polish from main 620f58c by rollover (89140b7), three stories READY, triggers A2/B1/B3/B4/D1/E1 fired so ARQ is next; base suite 2740 passed"
+    },
+    {
+      "station": "ARQ",
+      "date": "2026-10-18",
+      "decision": "standing authorization — ARQ module map approved under the 2026-10-18 commission after the architect's iterate (A-1 the round's re-run written as done before it ran — now run, compare-round.txt EQUAL x14; A-2 planned paths marked; A-3 A3's evidence names the edited contract cell; A-4 frozen evidence scripts that patch source text) was folded into docs/ARCHITECTURE.md and re-read (approve); P1 is next"
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P1 requirements approved under the 2026-10-18 commission: 3 US, 3 HLR, 3 LLR, 6 premises TRUE (P-6 executed: the round's A captures re-run on 620f58c EQUAL x14), IFC Part A two FLOW blocks (3 nodes), scan flags none / security_required false; P2 review is next (architect, qa-reviewer, ux-reviewer by D1)"
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P2 iteration 1: architect iterate-to-refine (A-1 canon supersessions missing, A-3 verification commands selecting nothing, A-4 TC-2001's base_ref text clause, A-5 the note count under overflow; A-2 minor), qa-reviewer iterate-to-refine (QA-1 the header's flattened title, QA-2 the overflow count; QA-3, QA-4, QA-8 minor; QA-5..QA-7 owed by the increments), ux-reviewer approve (UX-1, UX-2 declared); requirement defects return to P1 for amendment (LED .2, LED .3), then a P2 re-review"
+    },
+    {
+      "station": "P1",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P1 iteration 1 amendments (LED-2026-10-18-batch-03.2, .3) folded: the header's flattened title, the overflow clause and its boundaries, the canon supersessions (HLR-1802, HLR-1904, LLR-1001.1), one pytest command per -k, TC-2001's text clause; P2 re-review is next"
+    },
+    {
+      "station": "P2",
+      "date": "2026-10-18",
+      "decision": "standing authorization — P2 approved under the 2026-10-18 commission after iteration 2 (architect, qa-reviewer, ux-reviewer approve; one minor A2-1/QA2-1 owed by increment 003); the PDR is next"
+    }
+  ],
   "obsidian_synced": false,
   "created_at": "2026-10-18T17:05:28.291203"
 }
